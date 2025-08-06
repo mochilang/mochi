@@ -1,0 +1,85 @@
+/*
+Project Euler Problem 74: Digit Factorial Chains
+
+Given a number, repeatedly replace it with the sum of the factorials of its
+decimal digits. Every starting number eventually falls into a loop.
+The task is to count how many starting values below one million generate a
+chain with exactly sixty non-repeating terms before looping.
+
+This implementation precomputes factorial values for digits 0–9 and memoizes
+both the digit factorial sums and the lengths of previously computed chains.
+For each starting number the chain is built iteratively while tracking visited
+values in a map to detect loops.  Once a loop or cached value is found, chain
+lengths are propagated back through the encountered sequence.
+*/
+
+let DIGIT_FACTORIALS: list<int> = [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880]
+var cache_sum_digit_factorials: map<int, int> = {145: 145}
+var chain_length_cache: map<int, int> = {145: 0, 169: 3, 36301: 3, 1454: 3, 871: 2, 45361: 2, 872: 2}
+
+fun sum_digit_factorials(n: int): int {
+  if n in cache_sum_digit_factorials { return cache_sum_digit_factorials[n] }
+  var m = n
+  var ret = 0
+  if m == 0 { ret = DIGIT_FACTORIALS[0] }
+  while m > 0 {
+    let digit = m % 10
+    ret = ret + DIGIT_FACTORIALS[digit]
+    m = m / 10
+  }
+  cache_sum_digit_factorials[n] = ret
+  return ret
+}
+
+fun chain_length(n: int): int {
+  if n in chain_length_cache { return chain_length_cache[n] }
+  var chain: list<int> = []
+  var seen: map<int, int> = {}
+  var current = n
+  while true {
+    if current in chain_length_cache {
+      let known = chain_length_cache[current]
+      var total = known
+      var i = len(chain) - 1
+      while i >= 0 {
+        total = total + 1
+        chain_length_cache[chain[i]] = total
+        i = i - 1
+      }
+      return chain_length_cache[n]
+    }
+    if current in seen {
+      let loop_start = seen[current]
+      let loop_len = len(chain) - loop_start
+      var i = len(chain) - 1
+      var ahead = 0
+      while i >= 0 {
+        if i >= loop_start {
+          chain_length_cache[chain[i]] = loop_len
+        } else {
+          chain_length_cache[chain[i]] = loop_len + (ahead + 1)
+        }
+        ahead = ahead + 1
+        i = i - 1
+      }
+      return chain_length_cache[n]
+    }
+    seen[current] = len(chain)
+    chain = append(chain, current)
+    current = sum_digit_factorials(current)
+  }
+}
+
+fun solution(num_terms: int, max_start: int): int {
+  var count = 0
+  var i = 1
+  while i < max_start {
+    if chain_length(i) == num_terms {
+      count = count + 1
+    }
+    i = i + 1
+  }
+  return count
+}
+
+print("solution() = " + str(solution(60, 1000)))
