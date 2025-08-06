@@ -4164,6 +4164,18 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				fn = "Array.sum"
 			}
 			return &CallExpr{Func: fn, Args: args}, nil
+		case "min":
+			fn := "Seq.min"
+			if len(args) == 1 && inferType(args[0]) == "array" {
+				fn = "Array.min"
+			}
+			return &CallExpr{Func: fn, Args: args}, nil
+		case "max":
+			fn := "Seq.max"
+			if len(args) == 1 && inferType(args[0]) == "array" {
+				fn = "Array.max"
+			}
+			return &CallExpr{Func: fn, Args: args}, nil
 		case "panic":
 			return &CallExpr{Func: "failwith", Args: args}, nil
 		case "avg":

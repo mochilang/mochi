@@ -1,7 +1,7 @@
 # F# Algorithms Transpiler Output
 
-Completed programs: 26/1077
-Last updated: 2025-08-06 21:04 +0700
+Completed programs: 49/1077
+Last updated: 2025-08-06 21:33 +0700
 
 Checklist:
 
@@ -33,30 +33,30 @@ Checklist:
 | 24 | bit_manipulation/binary_or_operator | ✓ | 571.223ms | 35.5 KB |
 | 25 | bit_manipulation/binary_shifts | ✓ | 571.223ms | 54.8 KB |
 | 26 | bit_manipulation/binary_twos_complement | ✓ | 571.223ms | 55.3 KB |
-| 27 | bit_manipulation/binary_xor_operator |   |  |  |
-| 28 | bit_manipulation/bitwise_addition_recursive |   |  |  |
-| 29 | bit_manipulation/count_1s_brian_kernighan_method |   |  |  |
-| 30 | bit_manipulation/count_number_of_one_bits |   |  |  |
-| 31 | bit_manipulation/excess_3_code |   |  |  |
-| 32 | bit_manipulation/find_previous_power_of_two |   |  |  |
-| 33 | bit_manipulation/find_unique_number |   |  |  |
-| 34 | bit_manipulation/gray_code_sequence |   |  |  |
-| 35 | bit_manipulation/highest_set_bit |   |  |  |
-| 36 | bit_manipulation/index_of_rightmost_set_bit |   |  |  |
-| 37 | bit_manipulation/is_even |   |  |  |
-| 38 | bit_manipulation/is_power_of_two |   |  |  |
-| 39 | bit_manipulation/largest_pow_of_two_le_num |   |  |  |
-| 40 | bit_manipulation/missing_number |   |  |  |
-| 41 | bit_manipulation/numbers_different_signs |   |  |  |
-| 42 | bit_manipulation/power_of_4 |   |  |  |
-| 43 | bit_manipulation/reverse_bits |   |  |  |
-| 44 | bit_manipulation/single_bit_manipulation_operations |   |  |  |
+| 27 | bit_manipulation/binary_xor_operator | ✓ | 571.223ms | 55.4 KB |
+| 28 | bit_manipulation/bitwise_addition_recursive | ✓ | 571.223ms | 63.0 KB |
+| 29 | bit_manipulation/count_1s_brian_kernighan_method | ✓ | 571.223ms | 67.7 KB |
+| 30 | bit_manipulation/count_number_of_one_bits | ✓ | 571.223ms | 66.1 KB |
+| 31 | bit_manipulation/excess_3_code | ✓ | 571.223ms | 31.5 KB |
+| 32 | bit_manipulation/find_previous_power_of_two | ✓ | 571.223ms | 54.9 KB |
+| 33 | bit_manipulation/find_unique_number | ✓ | 571.223ms | 55.1 KB |
+| 34 | bit_manipulation/gray_code_sequence | ✓ | 571.223ms | 55.6 KB |
+| 35 | bit_manipulation/highest_set_bit | ✓ | 571.223ms | 62.7 KB |
+| 36 | bit_manipulation/index_of_rightmost_set_bit | ✓ | 571.223ms | 55.2 KB |
+| 37 | bit_manipulation/is_even | ✓ | 571.223ms | 55.2 KB |
+| 38 | bit_manipulation/is_power_of_two | ✓ | 571.223ms |  |
+| 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 571.223ms | 55.5 KB |
+| 40 | bit_manipulation/missing_number | ✓ | 571.223ms | 40.1 KB |
+| 41 | bit_manipulation/numbers_different_signs | ✓ | 571.223ms | 55.2 KB |
+| 42 | bit_manipulation/power_of_4 | ✓ | 571.223ms | 55.1 KB |
+| 43 | bit_manipulation/reverse_bits | ✓ | 571.223ms | 67.7 KB |
+| 44 | bit_manipulation/single_bit_manipulation_operations | ✓ | 571.223ms | 57.9 KB |
 | 45 | bit_manipulation/swap_all_odd_and_even_bits |   |  |  |
-| 46 | blockchain/diophantine_equation |   |  |  |
-| 47 | boolean_algebra/and_gate |   |  |  |
-| 48 | boolean_algebra/imply_gate |   |  |  |
-| 49 | boolean_algebra/karnaugh_map_simplification |   |  |  |
-| 50 | boolean_algebra/multiplexer |   |  |  |
+| 46 | blockchain/diophantine_equation | ✓ | 571.223ms | 55.8 KB |
+| 47 | boolean_algebra/and_gate | ✓ | 571.223ms | 36.4 KB |
+| 48 | boolean_algebra/imply_gate | ✓ | 571.223ms | 42.4 KB |
+| 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 571.223ms | 55.2 KB |
+| 50 | boolean_algebra/multiplexer | ✓ | 571.223ms | 45.1 KB |
 | 51 | boolean_algebra/nand_gate |   |  |  |
 | 52 | boolean_algebra/nimply_gate |   |  |  |
 | 53 | boolean_algebra/nor_gate |   |  |  |
