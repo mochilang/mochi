@@ -1,5 +1,21 @@
 # 📦 CHANGELOG.md
 
+## [0.10.59] – 2025-08-06T15:21:31+07:00
+
+### Added
+
+* Extensive web API examples covering services like COVID stats, GitHub info, Slack webhooks, Reddit, Open Library, Recaptcha, random anime, Google search, NASA data, Instagram media, Giphy GIFs, Hacker News, Forbes, IP geolocation, IMDb, Amazon, WellRx, quote fetching, job scraping, BBC news, email extraction, image downloads, daily horoscope, weather, stock price and currency conversion
+* Major algorithm expansion including string utilities and searches (Rabin–Karp, KMP, Jaro-Winkler, Levenshtein, validators and case conversions), sorting routines (quick sort variants, radix, merge, shell and topological sorts), graph algorithms (BFS/DFS, Dijkstra, A*, MSTs, SCCs) and dynamic programming examples (word break, subset sum, rod cutting, Viterbi and more)
+* Additional math, financial, physics and fractal utilities such as Ohm's law, inductive reactance, geometric formulas and fractal generators
+
+### Changed
+
+* No notable changes
+
+### Fixed
+
+* No fixes
+
 ## [0.10.58] – 2025-08-05T15:04:41+07:00
 
 ### Added
