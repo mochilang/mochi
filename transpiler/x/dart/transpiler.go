@@ -112,6 +112,7 @@ var (
 	useSubstrClamp    bool
 	useRepeat         bool
 	useParseIntStr    bool
+	useListSet        bool
 	imports           []string
 	testpkgAliases    map[string]struct{}
 	netAliases        map[string]struct{}
@@ -604,6 +605,17 @@ func (s *VarStmt) emit(w io.Writer) error {
 		}
 		return s.Value.emit(w)
 	}
+	baseType := strings.TrimSuffix(typ, "?")
+	if strings.HasPrefix(baseType, "List<") {
+		elem := strings.TrimSuffix(strings.TrimPrefix(baseType, "List<"), ">")
+		_, err := io.WriteString(w, " = <"+elem+">[]")
+		return err
+	}
+	if strings.HasPrefix(baseType, "Map<") {
+		kv := strings.TrimSuffix(strings.TrimPrefix(baseType, "Map<"), ">")
+		_, err := io.WriteString(w, " = <"+kv+">{}")
+		return err
+	}
 	return nil
 }
 
@@ -620,10 +632,34 @@ func (s *AssignStmt) emit(w io.Writer) error {
 		return nil
 	}
 	if iex, ok := s.Target.(*IndexExpr); ok {
+		t := inferType(iex.Target)
+		if strings.HasPrefix(strings.TrimSuffix(t, "?"), "List<") {
+			useListSet = true
+			if _, err := io.WriteString(w, "_set("); err != nil {
+				return err
+			}
+			if err := iex.Target.emit(w); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, ", "); err != nil {
+				return err
+			}
+			if err := iex.Index.emit(w); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, ", "); err != nil {
+				return err
+			}
+			if err := s.Value.emit(w); err != nil {
+				return err
+			}
+			_, err := io.WriteString(w, ")")
+			return err
+		}
 		oldBang := iex.NoBang
 		oldSuf := iex.NoSuffix
 		iex.NoBang = true
-		if strings.HasPrefix(strings.TrimSuffix(inferType(iex.Target), "?"), "Map<") {
+		if strings.HasPrefix(strings.TrimSuffix(t, "?"), "Map<") {
 			iex.NoSuffix = true
 		}
 		if err := iex.emit(w); err != nil {
@@ -4121,6 +4157,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if useListSet {
+		if _, err := io.WriteString(w, "void _set(List l, int i, dynamic v) { while (l.length <= i) { l.add(v); } l[i] = v; }\n\n"); err != nil {
+			return err
+		}
+	}
 	if useBigRat {
 		if _, err := io.WriteString(w, "class BigRat {\n  BigInt num;\n  BigInt den;\n  BigRat(this.num, [BigInt? d]) : den = d ?? BigInt.one {\n    if (den.isNegative) { num = -num; den = -den; }\n    var g = num.gcd(den);\n    num = num ~/ g;\n    den = den ~/ g;\n  }\n  BigRat add(BigRat o) => BigRat(num * o.den + o.num * den, den * o.den);\n  BigRat sub(BigRat o) => BigRat(num * o.den - o.num * den, den * o.den);\n  BigRat mul(BigRat o) => BigRat(num * o.num, den * o.den);\n  BigRat div(BigRat o) => BigRat(num * o.den, den * o.num);\n}\n\nBigRat _bigrat(dynamic n, [dynamic d]) {\n  if (n is BigRat && d == null) return BigRat(n.num, n.den);\n  BigInt numer;\n  BigInt denom = d == null ? BigInt.one : (d is BigInt ? d : BigInt.from((d as num).toInt()));\n  if (n is BigRat) { numer = n.num; denom = n.den; }\n  else if (n is BigInt) { numer = n; }\n  else if (n is int) { numer = BigInt.from(n); }\n  else if (n is num) { numer = BigInt.from(n.toInt()); }\n  else { numer = BigInt.zero; }\n  return BigRat(numer, denom);\n}\nBigInt _num(BigRat r) => r.num;\nBigInt _denom(BigRat r) => r.den;\nBigRat _add(BigRat a, BigRat b) => a.add(b);\nBigRat _sub(BigRat a, BigRat b) => a.sub(b);\nBigRat _mul(BigRat a, BigRat b) => a.mul(b);\nBigRat _div(BigRat a, BigRat b) => a.div(b);\nBigRat _neg(BigRat a) => BigRat(-a.num, a.den);\n\n"); err != nil {
 			return err
@@ -4341,6 +4382,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench, wrapMain bool) (*Pro
 	useSubstrClamp = false
 	useRepeat = false
 	useParseIntStr = false
+	useListSet = false
 	imports = nil
 	testpkgAliases = map[string]struct{}{}
 	netAliases = map[string]struct{}{}
@@ -4883,6 +4925,11 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		fd := &FuncDecl{Name: name, Params: params, ParamTypes: paramTypes, Body: body}
+		if rt, ok := funcReturnTypes[name]; ok && !strings.HasSuffix(rt, "?") {
+			if containsNullReturn(body) {
+				funcReturnTypes[name] = rt + "?"
+			}
+		}
 		return fd, nil
 	case st.While != nil:
 		return convertWhileStmt(st.While)
@@ -4932,6 +4979,9 @@ func convertAssignTarget(as *parser.AssignStmt) (Expr, error) {
 				iexpr.NoSuffix = true
 			} else {
 				iexpr.NoBang = true
+				if strings.HasPrefix(strings.TrimSuffix(inferType(expr), "?"), "List<") {
+					useListSet = true
+				}
 			}
 			expr = iexpr
 		}
@@ -4958,6 +5008,38 @@ func convertAssignTarget(as *parser.AssignStmt) (Expr, error) {
 		}
 	}
 	return expr, nil
+}
+
+func containsNullReturn(stmts []Stmt) bool {
+	for _, st := range stmts {
+		switch s := st.(type) {
+		case *ReturnStmt:
+			if n, ok := s.Value.(*Name); ok && n.Name == "null" {
+				return true
+			}
+		case *IfStmt:
+			if containsNullReturn(s.Then) || containsNullReturn(s.Else) {
+				return true
+			}
+		case *WhileStmt:
+			if containsNullReturn(s.Body) {
+				return true
+			}
+		case *ForRangeStmt:
+			if containsNullReturn(s.Body) {
+				return true
+			}
+		case *ForInStmt:
+			if containsNullReturn(s.Body) {
+				return true
+			}
+		case *BenchStmt:
+			if containsNullReturn(s.Body) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func convertExpr(e *parser.Expr) (Expr, error) {
