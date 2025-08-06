@@ -1,0 +1,85 @@
+/*
+Project Euler Problem 43: Sub-string Divisibility
+
+Find the sum of all 0 to 9 pandigital numbers with a special divisibility property.
+A 0-9 pandigital number uses each digit exactly once. For digits d1..d10 (1-indexed),
+we require:
+- The number formed by d2d3d4 is divisible by 2.
+- The number formed by d3d4d5 is divisible by 3.
+- The number formed by d4d5d6 is divisible by 5.
+- The number formed by d5d6d7 is divisible by 7.
+- The number formed by d6d7d8 is divisible by 11.
+- The number formed by d7d8d9 is divisible by 13.
+- The number formed by d8d9d10 is divisible by 17.
+
+The algorithm generates all permutations of the digits 0 through 9. Each
+complete permutation is tested against the divisibility rules above. Valid
+pandigital numbers are converted to integers and summed.
+*/
+
+fun is_substring_divisible(num: list<int>): bool {
+  if num[3] % 2 != 0 { return false }
+  if (num[2] + num[3] + num[4]) % 3 != 0 { return false }
+  if num[5] % 5 != 0 { return false }
+  let primes: list<int> = [7, 11, 13, 17]
+  var i = 0
+  while i < len(primes) {
+    let p = primes[i]
+    let idx = i + 4
+    let val = num[idx] * 100 + num[idx + 1] * 10 + num[idx + 2]
+    if val % p != 0 { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun remove_at(xs: list<int>, idx: int): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < len(xs) {
+    if i != idx { res = append(res, xs[i]) }
+    i = i + 1
+  }
+  return res
+}
+
+fun digits_to_number(xs: list<int>): int {
+  var value = 0
+  var i = 0
+  while i < len(xs) {
+    value = value * 10 + xs[i]
+    i = i + 1
+  }
+  return value
+}
+
+fun search(prefix: list<int>, remaining: list<int>): int {
+  if len(remaining) == 0 {
+    if is_substring_divisible(prefix) {
+      return digits_to_number(prefix)
+    }
+    return 0
+  }
+  var total = 0
+  var i = 0
+  while i < len(remaining) {
+    let d = remaining[i]
+    let next_prefix = append(prefix, d)
+    let next_remaining = remove_at(remaining, i)
+    total = total + search(next_prefix, next_remaining)
+    i = i + 1
+  }
+  return total
+}
+
+fun solution(n: int): int {
+  var digits: list<int> = []
+  var i = 0
+  while i < n {
+    digits = append(digits, i)
+    i = i + 1
+  }
+  return search([] as list<int>, digits)
+}
+
+print("solution() =", solution(10))
