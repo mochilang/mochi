@@ -59,62 +59,37 @@ exception Continue
 
 exception Return
 
-let rec int_pow base exp =
+let rec binary_count_trailing_zeros a =
   let __ret = ref 0 in
   (try
-  let base = (Obj.magic base : int) in
-  let exp = (Obj.magic exp : int) in
-  let result = ref (1) in
-  let i = ref (0) in
-  (try while (!i < exp) do
-    try
-  result := (!result * base);
-  i := (!i + 1);
-    with Continue -> ()
-  done with Break -> ());
-  __ret := (Obj.magic (!result) : int); raise Return
-  with Return -> !__ret)
-
-and backtrack target exp current current_sum =
-  let __ret = ref 0 in
-  (try
-  let target = (Obj.magic target : int) in
-  let exp = (Obj.magic exp : int) in
-  let current = (Obj.magic current : int) in
-  let current_sum = (Obj.magic current_sum : int) in
-  if (current_sum = target) then (
-  __ret := (Obj.magic (1) : int); raise Return
+  let a = (Obj.magic a : int) in
+  if (a < 0) then (
+  (failwith ("Input value must be a non-negative integer"));
   );
-  let p = int_pow (Obj.repr (current)) (Obj.repr (exp)) in
-  let count = ref (0) in
-  if ((current_sum + p) <= target) then (
-  count := (!count + backtrack (Obj.repr (target)) (Obj.repr (exp)) (Obj.repr ((current + 1))) (Obj.repr ((current_sum + p))));
-  );
-  if (p < target) then (
-  count := (!count + backtrack (Obj.repr (target)) (Obj.repr (exp)) (Obj.repr ((current + 1))) (Obj.repr (current_sum)));
-  );
-  __ret := (Obj.magic (!count) : int); raise Return
-  with Return -> !__ret)
-
-and solve target exp =
-  let __ret = ref 0 in
-  (try
-  let target = (Obj.magic target : int) in
-  let exp = (Obj.magic exp : int) in
-  if not (((((1 <= target) && (target <= 1000)) && (2 <= exp)) && (exp <= 10))) then (
-  print_endline ("Invalid input");
+  if (a = 0) then (
   __ret := (Obj.magic (0) : int); raise Return
   );
-  __ret := (Obj.magic (backtrack (Obj.repr (target)) (Obj.repr (exp)) (Obj.repr (1)) (Obj.repr (0))) : int); raise Return
+  let n = ref (a) in
+  let count = ref (0) in
+  (try while ((!n mod 2) = 0) do
+    try
+  count := (!count + 1);
+  n := (!n / 2);
+    with Continue -> ()
+  done with Break -> ());
+  __ret := (Obj.magic (!count) : int); raise Return
   with Return -> !__ret)
 
 
 let () =
   let mem_start = _mem () in
   let start = _now () in
-  print_endline (string_of_int (solve (Obj.repr (13)) (Obj.repr (2))));
-  print_endline (string_of_int (solve (Obj.repr (10)) (Obj.repr (2))));
-  print_endline (string_of_int (solve (Obj.repr (10)) (Obj.repr (3))));
+  print_endline ((string_of_int (binary_count_trailing_zeros (Obj.repr (25)))));
+  print_endline ((string_of_int (binary_count_trailing_zeros (Obj.repr (36)))));
+  print_endline ((string_of_int (binary_count_trailing_zeros (Obj.repr (16)))));
+  print_endline ((string_of_int (binary_count_trailing_zeros (Obj.repr (58)))));
+  print_endline ((string_of_int (binary_count_trailing_zeros (Obj.repr (4294967296)))));
+  print_endline ((string_of_int (binary_count_trailing_zeros (Obj.repr (0)))));
   let finish = _now () in
   let mem_end = _mem () in
   let dur = (finish - start) / 1000 in

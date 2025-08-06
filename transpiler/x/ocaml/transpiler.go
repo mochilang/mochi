@@ -752,9 +752,9 @@ func (p *PrintExpr) emitPrint(w io.Writer) { p.emit(w) }
 type JSONStmt struct{ Expr Expr }
 
 func (j *JSONStmt) emit(w io.Writer) {
-	io.WriteString(w, "  print_endline ")
+	io.WriteString(w, "  print_endline (")
 	j.Expr.emitPrint(w)
-	io.WriteString(w, ";\n")
+	io.WriteString(w, ");\n")
 }
 
 // IfStmt represents a basic if/else statement.
@@ -2715,6 +2715,13 @@ func isConstExpr(e Expr) bool {
 	}
 }
 
+func isNilExpr(e Expr) bool {
+	if r, ok := e.(*RawExpr); ok && r.Code == "nil" {
+		return true
+	}
+	return false
+}
+
 // BinaryExpr represents a binary operation.
 type BinaryExpr struct {
 	Left  Expr
@@ -2910,6 +2917,20 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		op = "="
 	} else if b.Op == "!=" {
 		op = "<>"
+	}
+	if (op == "=" || op == "<>") && (isNilExpr(b.Left) || isNilExpr(b.Right)) {
+		if isNilExpr(b.Left) && isNilExpr(b.Right) {
+			fmt.Fprintf(w, "(nil %s nil)", op)
+		} else if isNilExpr(b.Right) {
+			fmt.Fprintf(w, "((Obj.repr (")
+			b.Left.emit(w)
+			fmt.Fprintf(w, ")) %s nil)", op)
+		} else {
+			fmt.Fprintf(w, "(nil %s (Obj.repr (", op)
+			b.Right.emit(w)
+			io.WriteString(w, "))")
+		}
+		return
 	}
 	if b.Op == "+" && b.Typ == "string" {
 		op = "^"

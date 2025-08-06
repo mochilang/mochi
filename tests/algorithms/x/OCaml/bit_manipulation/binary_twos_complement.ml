@@ -59,62 +59,82 @@ exception Continue
 
 exception Return
 
-let rec int_pow base exp =
-  let __ret = ref 0 in
+let rec repeat_char ch times =
+  let __ret = ref "" in
   (try
-  let base = (Obj.magic base : int) in
-  let exp = (Obj.magic exp : int) in
-  let result = ref (1) in
+  let times = (Obj.magic times : int) in
+  let res = ref ("") in
   let i = ref (0) in
-  (try while (!i < exp) do
+  (try while (!i < times) do
     try
-  result := (!result * base);
+  res := (!res ^ ch);
   i := (!i + 1);
     with Continue -> ()
   done with Break -> ());
-  __ret := (Obj.magic (!result) : int); raise Return
+  __ret := (Obj.magic (!res) : string); raise Return
   with Return -> !__ret)
 
-and backtrack target exp current current_sum =
-  let __ret = ref 0 in
+and to_binary n =
+  let __ret = ref "" in
   (try
-  let target = (Obj.magic target : int) in
-  let exp = (Obj.magic exp : int) in
-  let current = (Obj.magic current : int) in
-  let current_sum = (Obj.magic current_sum : int) in
-  if (current_sum = target) then (
-  __ret := (Obj.magic (1) : int); raise Return
+  let n = (Obj.magic n : int) in
+  if (n = 0) then (
+  __ret := (Obj.magic ("0") : string); raise Return
   );
-  let p = int_pow (Obj.repr (current)) (Obj.repr (exp)) in
-  let count = ref (0) in
-  if ((current_sum + p) <= target) then (
-  count := (!count + backtrack (Obj.repr (target)) (Obj.repr (exp)) (Obj.repr ((current + 1))) (Obj.repr ((current_sum + p))));
-  );
-  if (p < target) then (
-  count := (!count + backtrack (Obj.repr (target)) (Obj.repr (exp)) (Obj.repr ((current + 1))) (Obj.repr (current_sum)));
-  );
-  __ret := (Obj.magic (!count) : int); raise Return
+  let res = ref ("") in
+  let v = ref (n) in
+  (try while (!v > 0) do
+    try
+  res := ((string_of_int ((!v mod 2))) ^ !res);
+  v := (!v / 2);
+    with Continue -> ()
+  done with Break -> ());
+  __ret := (Obj.magic (!res) : string); raise Return
   with Return -> !__ret)
 
-and solve target exp =
+and pow2 exp =
   let __ret = ref 0 in
   (try
-  let target = (Obj.magic target : int) in
   let exp = (Obj.magic exp : int) in
-  if not (((((1 <= target) && (target <= 1000)) && (2 <= exp)) && (exp <= 10))) then (
-  print_endline ("Invalid input");
-  __ret := (Obj.magic (0) : int); raise Return
+  let res = ref (1) in
+  let i = ref (0) in
+  (try while (!i < exp) do
+    try
+  res := (!res * 2);
+  i := (!i + 1);
+    with Continue -> ()
+  done with Break -> ());
+  __ret := (Obj.magic (!res) : int); raise Return
+  with Return -> !__ret)
+
+and twos_complement number =
+  let __ret = ref "" in
+  (try
+  let number = (Obj.magic number : int) in
+  if (number > 0) then (
+  (failwith ("input must be a negative integer"));
   );
-  __ret := (Obj.magic (backtrack (Obj.repr (target)) (Obj.repr (exp)) (Obj.repr (1)) (Obj.repr (0))) : int); raise Return
+  if (number = 0) then (
+  __ret := (Obj.magic ("0b0") : string); raise Return
+  );
+  let abs_number = if (number < 0) then -(number) else number in
+  let binary_number_length = String.length (to_binary (Obj.repr (abs_number))) in
+  let complement_value = (pow2 (Obj.repr (binary_number_length)) - abs_number) in
+  let complement_binary = to_binary (Obj.repr (complement_value)) in
+  let padding = repeat_char ("0") (Obj.repr ((binary_number_length - String.length (complement_binary)))) in
+  let twos_complement_number = (("1" ^ padding) ^ complement_binary) in
+  __ret := (Obj.magic (("0b" ^ twos_complement_number)) : string); raise Return
   with Return -> !__ret)
 
 
 let () =
   let mem_start = _mem () in
   let start = _now () in
-  print_endline (string_of_int (solve (Obj.repr (13)) (Obj.repr (2))));
-  print_endline (string_of_int (solve (Obj.repr (10)) (Obj.repr (2))));
-  print_endline (string_of_int (solve (Obj.repr (10)) (Obj.repr (3))));
+  print_endline ((twos_complement (Obj.repr (0))));
+  print_endline ((twos_complement (Obj.repr (-(1)))));
+  print_endline ((twos_complement (Obj.repr (-(5)))));
+  print_endline ((twos_complement (Obj.repr (-(17)))));
+  print_endline ((twos_complement (Obj.repr (-(207)))));
   let finish = _now () in
   let mem_end = _mem () in
   let dur = (finish - start) / 1000 in
