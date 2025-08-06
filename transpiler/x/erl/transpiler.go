@@ -4011,6 +4011,22 @@ func convertIfStmt(n *parser.IfStmt, env *types.Env, ctx *context) (*IfStmt, err
 		}
 		elseStmts = append(elseStmts, &LetStmt{Name: newA, Expr: elseExpr})
 		ctx.alias[name] = newA
+		ctx.clearConst(name)
+		if thenCtx.isStringVar(name) || elseCtx.isStringVar(name) {
+			ctx.setStringVar(name, true)
+		}
+		if thenCtx.isMapVar(name) || elseCtx.isMapVar(name) {
+			ctx.setMapVar(name, true)
+		}
+		if thenCtx.isFloatVar(name) || elseCtx.isFloatVar(name) {
+			ctx.setFloatVar(name, true)
+		}
+		if thenCtx.isBoolVar(name) || elseCtx.isBoolVar(name) {
+			ctx.setBoolVar(name, true)
+		}
+		if thenCtx.listStrVar[name] || elseCtx.listStrVar[name] {
+			ctx.setListStrVar(name, true)
+		}
 	}
 
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil

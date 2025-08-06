@@ -1,0 +1,3 @@
+/workspace/mochi/tests/algorithms/x/Erlang/cellular_automata/langtons_ant.erl:113:49: Warning: the result of evaluating operator '++'/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%  113|         Board_4 = lists:sublist(Board_3, Old_x) ++ [Tmp_2] ++ lists:nthtail(Old_x + 1, Board_3),
+%     |                                                 ^

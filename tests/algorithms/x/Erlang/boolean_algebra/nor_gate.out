@@ -1,0 +1,5 @@
+1
+0
+0
+0
+"Truth Table of NOR Gate:\n| Input 1 | Input 2 | Output  |\n|    0     |    0     |    1     |\n|    0     |    1     |    0     |\n|    1     |    0     |    0     |\n|    1     |    1     |    0     |"

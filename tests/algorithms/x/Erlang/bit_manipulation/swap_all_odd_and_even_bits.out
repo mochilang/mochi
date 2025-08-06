@@ -1,0 +1,28 @@
+/workspace/mochi/tests/algorithms/x/Erlang/bit_manipulation/swap_all_odd_and_even_bits.erl:78:22: Warning: variable 'Sign_3' exported from 'case' (line 60, column 9)
+%   78| {Bits_2, N_2, Num_4, Sign_3} = Fun_2(Bits, N_2, Num_3, Sign_3),
+%     |                      ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/bit_manipulation/swap_all_odd_and_even_bits.erl:93:33: Warning: variable 'Sign_3' exported from 'case' (line 60, column 9)
+%   93| {Bits_5, Min_width, N_2, Num_4, Sign_3} = Fun_3(Bits_4, Min_width, N_2, Num_4, Sign_3),
+%     |                                 ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/bit_manipulation/swap_all_odd_and_even_bits.erl:157:7: Warning: variable 'N_5' exported from 'case' (line 139, column 9)
+%  157| {I_6, N_5, Num_7, Result_6} = Fun_6(I_5, N_5, Num_7, Result_5),
+%     |       ^
+
+"   -1: -0000001\n4294967295: 11111111111111111111111111111111"
+[]
+"    0: 00000000\n    0: 00000000"
+[]
+"    1: 00000001\n    2: 00000010"
+[]
+"    2: 00000010\n    1: 00000001"
+[]
+"    3: 00000011\n    3: 00000011"
+[]
+"    4: 00000100\n    8: 00001000"
+[]
+"   23: 00010111\n   43: 00101011"
+[]
+"   24: 00011000\n   36: 00100100"
+[]
