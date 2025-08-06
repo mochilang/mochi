@@ -340,6 +340,8 @@ func header() []byte {
 	prelude += "\n(define (upper s) (string-upcase s))"
 	prelude += "\n(define (lower s) (string-downcase s))"
 	prelude += "\n(define (fmod a b) (- a (* (floor (/ a b)) b)))"
+	prelude += "\n(define (_mod a b) (if (and (integer? a) (integer? b)) (modulo a b) (fmod a b)))"
+	prelude += "\n(define (_div a b) (if (and (integer? a) (integer? b)) (quotient a b) (/ a b)))"
 	prelude += "\n(define (_gt a b) (cond ((and (number? a) (number? b)) (> a b)) ((and (string? a) (string? b)) (string>? a b)) (else (> a b))))"
 	prelude += "\n(define (_lt a b) (cond ((and (number? a) (number? b)) (< a b)) ((and (string? a) (string? b)) (string<? a b)) (else (< a b))))"
 	prelude += "\n(define (_ge a b) (cond ((and (number? a) (number? b)) (>= a b)) ((and (string? a) (string? b)) (string>=? a b)) (else (>= a b))))"
@@ -844,75 +846,99 @@ func convertStmt(st *parser.Statement) (Node, error) {
 			currentEnv.SetVar(name, t, true)
 		}
 		return &List{Elems: []Node{Symbol("define"), Symbol(name), val}}, nil
-	case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
+	case st.Assign != nil:
 		val, err := convertParserExpr(st.Assign.Value)
 		if err != nil {
 			return nil, err
 		}
-		return &List{Elems: []Node{Symbol("set!"), Symbol(st.Assign.Name), val}}, nil
-	case st.Assign != nil && len(st.Assign.Index) > 0 && len(st.Assign.Field) == 0:
-		var target Node = Symbol(st.Assign.Name)
-		typ, _ := currentEnv.GetVar(st.Assign.Name)
-		for i := 0; i < len(st.Assign.Index)-1; i++ {
-			idx := st.Assign.Index[i]
-			idxNode, err := convertParserExpr(idx.Start)
+		pf := st.Assign.Target
+		if pf == nil {
+			return nil, fmt.Errorf("assign target missing")
+		}
+		if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 0 && len(pf.Ops) == 0 {
+			name := pf.Target.Selector.Root
+			return &List{Elems: []Node{Symbol("set!"), Symbol(name), val}}, nil
+		}
+		var target Node
+		var typ types.Type = types.AnyType{}
+		if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 0 {
+			name := pf.Target.Selector.Root
+			target = Symbol(name)
+			if currentEnv != nil {
+				if t, err := currentEnv.GetVar(name); err == nil {
+					typ = t
+				}
+			}
+		} else {
+			target, err = convertParserPrimary(pf.Target)
 			if err != nil {
 				return nil, err
 			}
-			switch t := typ.(type) {
-			case types.ListType:
-				target = &List{Elems: []Node{Symbol("list-ref"), target, idxNode}}
-				typ = t.Elem
+			if currentEnv != nil {
+				typ = types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: pf.Target}}}}, currentEnv)
+			}
+		}
+		for i := 0; i < len(pf.Ops)-1; i++ {
+			op := pf.Ops[i]
+			switch {
+			case op.Index != nil:
+				idxNode, err := convertParserExpr(op.Index.Start)
+				if err != nil {
+					return nil, err
+				}
+				switch t := typ.(type) {
+				case types.ListType:
+					target = &List{Elems: []Node{Symbol("list-ref"), target, idxNode}}
+					typ = t.Elem
+				case types.MapType:
+					needHash = true
+					target = &List{Elems: []Node{Symbol("hash-table-ref"), target, idxNode}}
+					typ = t.Value
+				default:
+					if _, ok := idxNode.(StringLit); ok {
+						needHash = true
+						target = &List{Elems: []Node{Symbol("hash-table-ref"), target, idxNode}}
+					} else {
+						target = &List{Elems: []Node{Symbol("list-ref"), target, idxNode}}
+					}
+					typ = types.AnyType{}
+				}
+			case op.Field != nil:
+				needHash = true
+				target = &List{Elems: []Node{Symbol("hash-table-ref"), target, StringLit(op.Field.Name)}}
+				typ = types.AnyType{}
+			default:
+				return nil, fmt.Errorf("unsupported assignment target")
+			}
+		}
+		if len(pf.Ops) == 0 {
+			return nil, fmt.Errorf("unsupported assignment target")
+		}
+		last := pf.Ops[len(pf.Ops)-1]
+		if last.Index != nil {
+			idxNode, err := convertParserExpr(last.Index.Start)
+			if err != nil {
+				return nil, err
+			}
+			switch typ.(type) {
 			case types.MapType:
 				needHash = true
-				target = &List{Elems: []Node{Symbol("hash-table-ref"), target, idxNode}}
-				typ = t.Value
-			default:
-				target = &List{Elems: []Node{Symbol("list-ref"), target, idxNode}}
-				typ = types.AnyType{}
-			}
-		}
-
-		last := st.Assign.Index[len(st.Assign.Index)-1]
-		idxNode, err := convertParserExpr(last.Start)
-		if err != nil {
-			return nil, err
-		}
-		val, err := convertParserExpr(st.Assign.Value)
-		if err != nil {
-			return nil, err
-		}
-		switch typ.(type) {
-		case types.MapType:
-			needHash = true
-			return &List{Elems: []Node{Symbol("hash-table-set!"), target, idxNode, val}}, nil
-		case types.ListType:
-			return &List{Elems: []Node{Symbol("list-set!"), target, idxNode, val}}, nil
-		default:
-			// When the container type is unknown, attempt a best-effort
-			// guess based on the index. String keys likely indicate a
-			// map, while numeric indices behave like lists. This keeps
-			// list assignments working even when type information is
-			// lost, without breaking string-keyed maps.
-			if _, ok := idxNode.(StringLit); ok {
-				needHash = true
 				return &List{Elems: []Node{Symbol("hash-table-set!"), target, idxNode, val}}, nil
+			case types.ListType:
+				return &List{Elems: []Node{Symbol("list-set!"), target, idxNode, val}}, nil
+			default:
+				if _, ok := idxNode.(StringLit); ok {
+					needHash = true
+					return &List{Elems: []Node{Symbol("hash-table-set!"), target, idxNode, val}}, nil
+				}
+				return &List{Elems: []Node{Symbol("list-set!"), target, idxNode, val}}, nil
 			}
-			return &List{Elems: []Node{Symbol("list-set!"), target, idxNode, val}}, nil
 		}
-	case st.Assign != nil && len(st.Assign.Field) > 0:
-		var target Node = Symbol(st.Assign.Name)
-		for i := 0; i < len(st.Assign.Field)-1; i++ {
-			f := st.Assign.Field[i]
-			target = &List{Elems: []Node{Symbol("hash-table-ref"), target, StringLit(f.Name)}}
+		if last.Field != nil {
+			needHash = true
+			return &List{Elems: []Node{Symbol("hash-table-set!"), target, StringLit(last.Field.Name), val}}, nil
 		}
-		last := st.Assign.Field[len(st.Assign.Field)-1]
-		val, err := convertParserExpr(st.Assign.Value)
-		if err != nil {
-			return nil, err
-		}
-		needHash = true
-		return &List{Elems: []Node{Symbol("hash-table-set!"), target, StringLit(last.Name), val}}, nil
+		return nil, fmt.Errorf("unsupported assignment target")
 	case st.Fun != nil:
 		return convertFuncStmt(st.Fun, st.Fun.Name, false)
 	case st.Return != nil:
@@ -1170,11 +1196,11 @@ func convertParserExpr(e *parser.Expr) (Node, error) {
 	ops := []string{}
 
 	for _, part := range e.Binary.Right {
-		right, err := convertParserPostfix(part.Right)
+		right, err := convertParserUnary(part.Right)
 		if err != nil {
 			return nil, err
 		}
-		rightType := types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: part.Right}}}, currentEnv)
+		rightType := types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: part.Right}}, currentEnv)
 
 		for len(ops) > 0 && precedence(ops[len(ops)-1]) >= precedence(part.Op) {
 			r := exprs[len(exprs)-1]
@@ -1303,6 +1329,19 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 			node = Symbol(name)
 			pf.Ops = pf.Ops[1:]
 		}
+	}
+	// handle Object.keys(map)
+	if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Root == "Object" && pf.Target.Selector.Tail[0] == "keys" && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
+		call := pf.Ops[0].Call
+		if len(call.Args) != 1 {
+			return nil, fmt.Errorf("keys expects 1 arg")
+		}
+		arg, err := convertParserExpr(call.Args[0])
+		if err != nil {
+			return nil, err
+		}
+		needHash = true
+		return &List{Elems: []Node{Symbol("hash-table-keys"), arg}}, nil
 	}
 	// handle selector like `x.contains()` parsed as part of target
 	if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "get" && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
@@ -2472,13 +2511,10 @@ func makeBinary(op string, left, right Node) Node {
 	case "-", "*":
 		return &List{Elems: []Node{Symbol(op), left, right}}
 	case "/":
-		return &List{Elems: []Node{Symbol("/"), left, right}}
+		return &List{Elems: []Node{Symbol("_div"), left, right}}
 	case "%":
-		if hasFloat(left) || hasFloat(right) {
-			needBase = true
-			return &List{Elems: []Node{Symbol("fmod"), left, right}}
-		}
-		return &List{Elems: []Node{Symbol("modulo"), left, right}}
+		needBase = true
+		return &List{Elems: []Node{Symbol("_mod"), left, right}}
 	case "<":
 		if isStr(left) || isStr(right) {
 			return &List{Elems: []Node{Symbol("string<?"), left, right}}
@@ -2585,33 +2621,11 @@ func makeBinaryTyped(op string, left, right Node, lt, rt types.Type) Node {
 		return ok
 	}
 	if op == "/" {
-		_, lint := lt.(types.IntType)
-		if !lint {
-			_, lint = lt.(types.Int64Type)
-		}
-		_, rint := rt.(types.IntType)
-		if !rint {
-			_, rint = rt.(types.Int64Type)
-		}
-		if lint && rint {
-			return &List{Elems: []Node{Symbol("quotient"), left, right}}
-		}
-		return &List{Elems: []Node{Symbol("/"), left, right}}
+		return &List{Elems: []Node{Symbol("_div"), left, right}}
 	}
 	if op == "%" {
-		_, lint := lt.(types.IntType)
-		if !lint {
-			_, lint = lt.(types.Int64Type)
-		}
-		_, rint := rt.(types.IntType)
-		if !rint {
-			_, rint = rt.(types.Int64Type)
-		}
-		if lint && rint {
-			return &List{Elems: []Node{Symbol("modulo"), left, right}}
-		}
 		needBase = true
-		return &List{Elems: []Node{Symbol("fmod"), left, right}}
+		return &List{Elems: []Node{Symbol("_mod"), left, right}}
 	}
 	if isStrType(lt) || isStrType(rt) {
 		if isStrType(lt) {
