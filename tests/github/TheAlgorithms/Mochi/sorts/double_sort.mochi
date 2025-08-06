@@ -1,0 +1,41 @@
+/*
+Bidirectional Bubble Sort (Double Sort)
+
+This algorithm sorts a list of integers in ascending order by performing
+bubble sort passes simultaneously from both ends of the list:
+1. Traverse the array left-to-right, swapping adjacent elements when the
+   next element is smaller.
+2. In the same iteration traverse right-to-left, swapping elements when the
+   previous element is larger.
+Repeating these paired sweeps for roughly half the list length yields a
+sorted list. The algorithm runs in O(n^2) time and sorts in-place.
+*/
+
+fun double_sort(collection: list<int>): list<int> {
+  let no_of_elements = len(collection)
+  let passes = ((no_of_elements - 1) / 2) + 1
+  var i = 0
+  while i < passes {
+    var j = 0
+    while j < no_of_elements - 1 {
+      if collection[j + 1] < collection[j] {
+        let tmp = collection[j]
+        collection[j] = collection[j + 1]
+        collection[j + 1] = tmp
+      }
+      if collection[no_of_elements - 1 - j] < collection[no_of_elements - 2 - j] {
+        let tmp2 = collection[no_of_elements - 1 - j]
+        collection[no_of_elements - 1 - j] = collection[no_of_elements - 2 - j]
+        collection[no_of_elements - 2 - j] = tmp2
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return collection
+}
+
+print(str(double_sort([-1, -2, -3, -4, -5, -6, -7])))
+print(str(double_sort([])))
+print(str(double_sort([-1, -2, -3, -4, -5, -6])))
+print(str(double_sort([-3, 10, 16, -42, 29]) == [-42, -3, 10, 16, 29]))
