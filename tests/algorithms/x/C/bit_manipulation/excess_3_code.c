@@ -17,10 +17,11 @@ static char* str_concat(const char *a, const char *b) {
     return res;
 }
 
-static char* str_int(long long v) {
-    char buf[32];
-    snprintf(buf, sizeof(buf), "%lld", v);
-    return strdup(buf);
+static const char** list_append_str(const char **arr, size_t *len, const char *val) {
+    arr = realloc((void*)arr, (*len + 1) * sizeof(char*));
+    arr[*len] = val;
+    (*len)++;
+    return arr;
 }
 
 #include <time.h>
@@ -60,69 +61,52 @@ static void panic(const char *msg) {
     exit(1);
 }
 
-const char* repeat_char(const char* ch, long long times);
-const char* to_binary(long long n);
-long long pow2(long long exp);
-const char* twos_complement(long long number);
+const char* excess_3_code(long long number);
+void user_main();
 int main(void);
 
-const char* repeat_char(const char* ch, long long times) {
-    const char* res = "";
-    long long i = 0LL;
-    while (i < times) {
-        res = str_concat(res, ch);
-        i = i + 1LL;
+const char* excess_3_code(long long number) {
+    long long n = number;
+    if (n < 0LL) {
+        n = 0LL;
     }
-    return res;
-}
-
-const char* to_binary(long long n) {
+    const char* *mapping = NULL;
+    size_t mapping_len = 0;
+    mapping = list_append_str(mapping, &mapping_len, "0011");
+    mapping = list_append_str(mapping, &mapping_len, "0100");
+    mapping = list_append_str(mapping, &mapping_len, "0101");
+    mapping = list_append_str(mapping, &mapping_len, "0110");
+    mapping = list_append_str(mapping, &mapping_len, "0111");
+    mapping = list_append_str(mapping, &mapping_len, "1000");
+    mapping = list_append_str(mapping, &mapping_len, "1001");
+    mapping = list_append_str(mapping, &mapping_len, "1010");
+    mapping = list_append_str(mapping, &mapping_len, "1011");
+    mapping = list_append_str(mapping, &mapping_len, "1100");
+    const char* res = "";
     if (n == 0LL) {
-        return "0";
+        res = mapping[(int)(0LL)];
+    } else {
+        while (n > 0LL) {
+            long long digit = n % 10LL;
+            res = str_concat(mapping[(int)(digit)], res);
+            n = n / 10LL;
+        }
     }
-    const char* res = "";
-    long long v = n;
-    while (v > 0LL) {
-        res = str_concat(str_int(v % 2LL), res);
-        v = v / 2LL;
-    }
-    return res;
+    return str_concat("0b", res);
 }
 
-long long pow2(long long exp) {
-    long long res = 1LL;
-    long long i = 0LL;
-    while (i < exp) {
-        res = res * 2LL;
-        i = i + 1LL;
-    }
-    return res;
-}
-
-const char* twos_complement(long long number) {
-    if (number > 0LL) {
-        panic("input must be a negative integer");
-    }
-    if (number == 0LL) {
-        return "0b0";
-    }
-    long long abs_number = (number < 0LL ? -(number) : number);
-    long long binary_number_length = strlen(to_binary(abs_number));
-    long long complement_value = pow2(binary_number_length) - abs_number;
-    const char* complement_binary = to_binary(complement_value);
-    const char* padding = repeat_char("0", binary_number_length - strlen(complement_binary));
-    const char* twos_complement_number = str_concat(str_concat("1", padding), complement_binary);
-    return str_concat("0b", twos_complement_number);
+void user_main() {
+    puts(excess_3_code(0LL));
+    puts(excess_3_code(3LL));
+    puts(excess_3_code(2LL));
+    puts(excess_3_code(20LL));
+    puts(excess_3_code(120LL));
 }
 
 int main(void) {
     {
         long long __start = _now();
-        puts(twos_complement(0LL));
-        puts(twos_complement(-1LL));
-        puts(twos_complement(-5LL));
-        puts(twos_complement(-17LL));
-        puts(twos_complement(-207LL));
+        user_main();
         long long __end = _now();
         long long __dur_us = (__end - __start) / 1000;
         long long __mem_bytes = _mem();

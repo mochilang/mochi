@@ -7,14 +7,10 @@
 #include <malloc.h>
 
 
-static char* str_concat(const char *a, const char *b) {
-    size_t len1 = strlen(a);
-    size_t len2 = strlen(b);
-    char *res = malloc(len1 + len2 + 1);
-    memcpy(res, a, len1);
-    memcpy(res + len1, b, len2);
-    res[len1 + len2] = 0;
-    return res;
+static char* str_int(long long v) {
+    char buf[32];
+    snprintf(buf, sizeof(buf), "%lld", v);
+    return strdup(buf);
 }
 
 #include <time.h>
@@ -54,42 +50,46 @@ static void panic(const char *msg) {
     exit(1);
 }
 
-const char* binary_or(long long a, long long b);
+long long bit_xor(long long a, long long b);
+long long find_unique_number(long long * arr, size_t arr_len);
 int main(void);
 
-const char* binary_or(long long a, long long b) {
-    if ((a < 0LL) || (b < 0LL)) {
-        return "ValueError";
-    }
-    const char* res = "";
-    long long x = a;
-    long long y = b;
-    while ((x > 0LL) || (y > 0LL)) {
-        long long bit_a = x % 2LL;
-        long long bit_b = y % 2LL;
-        if ((bit_a == 1LL) || (bit_b == 1LL)) {
-            res = str_concat("1", res);
-        } else {
-            res = str_concat("0", res);
+long long bit_xor(long long a, long long b) {
+    long long ua = a;
+    long long ub = b;
+    long long res = 0LL;
+    long long bit = 1LL;
+    while ((ua > 0LL) || (ub > 0LL)) {
+        long long abit = ua % 2LL;
+        long long bbit = ub % 2LL;
+        if (((abit == 1LL) && (bbit == 0LL)) || ((abit == 0LL) && (bbit == 1LL))) {
+            res = res + bit;
         }
-        x = x / 2LL;
-        y = y / 2LL;
+        ua = ua / 2LL;
+        ub = ub / 2LL;
+        bit = bit * 2LL;
     }
-    if (strcmp(res, "") == 0) {
-        res = "0";
+    return res;
+}
+
+long long find_unique_number(long long * arr, size_t arr_len) {
+    if (arr_len == 0LL) {
+        panic("input list must not be empty");
     }
-    return str_concat("0b", res);
+    long long result = 0LL;
+    for (size_t __i = 0; __i < arr_len; __i++) {
+        long long num = arr[__i];
+        result = bit_xor(result, num);
+    }
+    return result;
 }
 
 int main(void) {
     {
         long long __start = _now();
-        puts(binary_or(25LL, 32LL));
-        puts(binary_or(37LL, 50LL));
-        puts(binary_or(21LL, 30LL));
-        puts(binary_or(58LL, 73LL));
-        puts(binary_or(0LL, 255LL));
-        puts(binary_or(0LL, 256LL));
+        puts(str_int(find_unique_number((long long[]){ 1LL, 1LL, 2LL, 2LL, 3LL }, 5)));
+        puts(str_int(find_unique_number((long long[]){ 4LL, 5LL, 4LL, 6LL, 6LL }, 5)));
+        puts(str_int(find_unique_number((long long[]){ 7LL }, 1)));
         long long __end = _now();
         long long __dur_us = (__end - __start) / 1000;
         long long __mem_bytes = _mem();
