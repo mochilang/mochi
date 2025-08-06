@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 11/1077
-Last updated: 2025-08-06 20:15 +0700
+Completed programs: 31/1077
+Last updated: 2025-08-06 20:36 +0700
 
 Checklist:
 
@@ -27,26 +27,26 @@ Checklist:
 | 18 | backtracking/word_ladder |   |  |  |
 | 19 | backtracking/word_search |   |  |  |
 | 20 | bit_manipulation/binary_and_operator |   |  |  |
-| 21 | bit_manipulation/binary_coded_decimal |   |  |  |
-| 22 | bit_manipulation/binary_count_setbits |   |  |  |
-| 23 | bit_manipulation/binary_count_trailing_zeros |   |  |  |
-| 24 | bit_manipulation/binary_or_operator |   |  |  |
-| 25 | bit_manipulation/binary_shifts |   |  |  |
-| 26 | bit_manipulation/binary_twos_complement |   |  |  |
-| 27 | bit_manipulation/binary_xor_operator |   |  |  |
-| 28 | bit_manipulation/bitwise_addition_recursive |   |  |  |
-| 29 | bit_manipulation/count_1s_brian_kernighan_method |   |  |  |
-| 30 | bit_manipulation/count_number_of_one_bits |   |  |  |
-| 31 | bit_manipulation/excess_3_code |   |  |  |
-| 32 | bit_manipulation/find_previous_power_of_two |   |  |  |
-| 33 | bit_manipulation/find_unique_number |   |  |  |
-| 34 | bit_manipulation/gray_code_sequence |   |  |  |
-| 35 | bit_manipulation/highest_set_bit |   |  |  |
-| 36 | bit_manipulation/index_of_rightmost_set_bit |   |  |  |
-| 37 | bit_manipulation/is_even |   |  |  |
-| 38 | bit_manipulation/is_power_of_two |   |  |  |
-| 39 | bit_manipulation/largest_pow_of_two_le_num |   |  |  |
-| 40 | bit_manipulation/missing_number |   |  |  |
+| 21 | bit_manipulation/binary_coded_decimal | ✓ | 361.0µs | 3.75MB |
+| 22 | bit_manipulation/binary_count_setbits | ✓ | 251.0µs | 3.57MB |
+| 23 | bit_manipulation/binary_count_trailing_zeros | ✓ | 370.0µs | 3.73MB |
+| 24 | bit_manipulation/binary_or_operator | ✓ | 174.0µs | 3.52MB |
+| 25 | bit_manipulation/binary_shifts | ✓ | 288.0µs | 3.62MB |
+| 26 | bit_manipulation/binary_twos_complement | ✓ | 278.0µs | 3.56MB |
+| 27 | bit_manipulation/binary_xor_operator | ✓ | 324.0µs | 3.61MB |
+| 28 | bit_manipulation/bitwise_addition_recursive | ✓ | 318.0µs | 3.53MB |
+| 29 | bit_manipulation/count_1s_brian_kernighan_method | ✓ | 222.0µs | 3.69MB |
+| 30 | bit_manipulation/count_number_of_one_bits | ✓ | 234.0µs | 3.58MB |
+| 31 | bit_manipulation/excess_3_code | ✓ | 273.0µs | 3.59MB |
+| 32 | bit_manipulation/find_previous_power_of_two | ✓ | 283.0µs | 3.73MB |
+| 33 | bit_manipulation/find_unique_number | ✓ | 407.0µs | 3.59MB |
+| 34 | bit_manipulation/gray_code_sequence | ✓ | 248.0µs | 3.44MB |
+| 35 | bit_manipulation/highest_set_bit | ✓ | 216.0µs | 3.69MB |
+| 36 | bit_manipulation/index_of_rightmost_set_bit | ✓ | 221.0µs | 3.54MB |
+| 37 | bit_manipulation/is_even | ✓ | 369.0µs | 3.69MB |
+| 38 | bit_manipulation/is_power_of_two | ✓ | 2.0µs | 3.45MB |
+| 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 266.0µs | 3.58MB |
+| 40 | bit_manipulation/missing_number | ✓ | 224.0µs | 3.48MB |
 | 41 | bit_manipulation/numbers_different_signs |   |  |  |
 | 42 | bit_manipulation/power_of_4 |   |  |  |
 | 43 | bit_manipulation/reverse_bits |   |  |  |
