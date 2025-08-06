@@ -2,8 +2,8 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 138/1077
-Last updated: 2025-08-06 22:04 +0700
+Completed programs: 178/1077
+Last updated: 2025-08-06 22:30 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -159,56 +159,56 @@ Last updated: 2025-08-06 22:04 +0700
 | 150 | conversions/volume_conversions |   |  |  |
 | 151 | conversions/weight_conversion |   |  |  |
 | 152 | data_compression/burrows_wheeler |   |  |  |
-| 153 | data_compression/huffman |   |  |  |
-| 154 | data_compression/lempel_ziv |   |  |  |
-| 155 | data_compression/lempel_ziv_decompress |   |  |  |
-| 156 | data_compression/lz77 |   |  |  |
-| 157 | data_compression/peak_signal_to_noise_ratio |   |  |  |
-| 158 | data_compression/run_length_encoding |   |  |  |
-| 159 | data_structures/arrays/equilibrium_index_in_array |   |  |  |
-| 160 | data_structures/arrays/find_triplets_with_0_sum |   |  |  |
-| 161 | data_structures/arrays/index_2d_array_in_1d |   |  |  |
-| 162 | data_structures/arrays/kth_largest_element |   |  |  |
-| 163 | data_structures/arrays/median_two_array |   |  |  |
-| 164 | data_structures/arrays/monotonic_array |   |  |  |
-| 165 | data_structures/arrays/pairs_with_given_sum |   |  |  |
-| 166 | data_structures/arrays/permutations |   |  |  |
-| 167 | data_structures/arrays/prefix_sum |   |  |  |
-| 168 | data_structures/arrays/product_sum |   |  |  |
-| 169 | data_structures/arrays/sparse_table |   |  |  |
-| 170 | data_structures/arrays/sudoku_solver |   |  |  |
-| 171 | data_structures/binary_tree/avl_tree |   |  |  |
-| 172 | data_structures/binary_tree/basic_binary_tree |   |  |  |
+| 153 | data_compression/huffman | ✓ | 470µs | 2.9 MB |
+| 154 | data_compression/lempel_ziv | ✓ | 539µs | 3.2 MB |
+| 155 | data_compression/lempel_ziv_decompress | ✓ | 739µs | 3.2 MB |
+| 156 | data_compression/lz77 | ✓ | 554µs | 3.3 MB |
+| 157 | data_compression/peak_signal_to_noise_ratio | ✓ | 223µs | 3.1 MB |
+| 158 | data_compression/run_length_encoding | ✓ | 435µs | 3.4 MB |
+| 159 | data_structures/arrays/equilibrium_index_in_array | ✓ | 396µs | 3.2 MB |
+| 160 | data_structures/arrays/find_triplets_with_0_sum | ✓ | 1.719ms | 4.0 MB |
+| 161 | data_structures/arrays/index_2d_array_in_1d | ✓ | 1.097ms | 3.3 MB |
+| 162 | data_structures/arrays/kth_largest_element | ✓ | 428µs | 3.2 MB |
+| 163 | data_structures/arrays/median_two_array | ✓ | 365µs | 3.2 MB |
+| 164 | data_structures/arrays/monotonic_array | ✓ | 284µs | 3.5 MB |
+| 165 | data_structures/arrays/pairs_with_given_sum | ✓ | 421µs | 3.2 MB |
+| 166 | data_structures/arrays/permutations | ✓ | 1.73ms | 3.9 MB |
+| 167 | data_structures/arrays/prefix_sum | ✓ | 326µs | 2.9 MB |
+| 168 | data_structures/arrays/product_sum | ✓ | 465µs | 3.2 MB |
+| 169 | data_structures/arrays/sparse_table | ✓ | 1.936ms | 4.0 MB |
+| 170 | data_structures/arrays/sudoku_solver | ✓ | 1.883ms | 3.2 MB |
+| 171 | data_structures/binary_tree/avl_tree | ✓ | 408µs | 3.3 MB |
+| 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 553µs | 3.1 MB |
 | 173 | data_structures/binary_tree/binary_search_tree |   |  |  |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive |   |  |  |
-| 175 | data_structures/binary_tree/binary_tree_mirror |   |  |  |
-| 176 | data_structures/binary_tree/binary_tree_node_sum |   |  |  |
+| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 1.197ms | 3.2 MB |
+| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 465µs | 3.3 MB |
 | 177 | data_structures/binary_tree/binary_tree_path_sum |   |  |  |
-| 178 | data_structures/binary_tree/diff_views_of_binary_tree |   |  |  |
-| 179 | data_structures/binary_tree/distribute_coins |   |  |  |
-| 180 | data_structures/binary_tree/fenwick_tree |   |  |  |
-| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist |   |  |  |
+| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 571µs | 3.2 MB |
+| 179 | data_structures/binary_tree/distribute_coins | ✓ | 400µs | 3.2 MB |
+| 180 | data_structures/binary_tree/fenwick_tree | ✓ | 552µs | 3.1 MB |
+| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 353µs | 3.2 MB |
 | 182 | data_structures/binary_tree/floor_and_ceiling |   |  |  |
 | 183 | data_structures/binary_tree/inorder_tree_traversal_2022 |   |  |  |
 | 184 | data_structures/binary_tree/is_sorted |   |  |  |
-| 185 | data_structures/binary_tree/is_sum_tree |   |  |  |
-| 186 | data_structures/binary_tree/lazy_segment_tree |   |  |  |
-| 187 | data_structures/binary_tree/lowest_common_ancestor |   |  |  |
-| 188 | data_structures/binary_tree/maximum_fenwick_tree |   |  |  |
-| 189 | data_structures/binary_tree/maximum_sum_bst |   |  |  |
+| 185 | data_structures/binary_tree/is_sum_tree | ✓ | 115µs | 3.0 MB |
+| 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 534µs | 3.4 MB |
+| 187 | data_structures/binary_tree/lowest_common_ancestor | ✓ | 565µs | 3.4 MB |
+| 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 796.747ms | 3.4 MB |
+| 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 427µs | 3.1 MB |
 | 190 | data_structures/binary_tree/merge_two_binary_trees |   |  |  |
 | 191 | data_structures/binary_tree/mirror_binary_tree |   |  |  |
-| 192 | data_structures/binary_tree/non_recursive_segment_tree |   |  |  |
-| 193 | data_structures/binary_tree/number_of_possible_binary_trees |   |  |  |
-| 194 | data_structures/binary_tree/red_black_tree |   |  |  |
-| 195 | data_structures/binary_tree/segment_tree |   |  |  |
-| 196 | data_structures/binary_tree/segment_tree_other |   |  |  |
+| 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 379µs | 3.3 MB |
+| 193 | data_structures/binary_tree/number_of_possible_binary_trees | ✓ | 287µs | 3.1 MB |
+| 194 | data_structures/binary_tree/red_black_tree | ✓ | 1.149ms | 3.2 MB |
+| 195 | data_structures/binary_tree/segment_tree | ✓ | 563µs | 3.2 MB |
+| 196 | data_structures/binary_tree/segment_tree_other | ✓ | 726µs | 3.2 MB |
 | 197 | data_structures/binary_tree/serialize_deserialize_binary_tree |   |  |  |
-| 198 | data_structures/binary_tree/symmetric_tree |   |  |  |
+| 198 | data_structures/binary_tree/symmetric_tree | ✓ | 389µs | 3.4 MB |
 | 199 | data_structures/binary_tree/treap |   |  |  |
-| 200 | data_structures/binary_tree/wavelet_tree |   |  |  |
-| 201 | data_structures/disjoint_set/alternate_disjoint_set |   |  |  |
-| 202 | data_structures/disjoint_set/disjoint_set |   |  |  |
+| 200 | data_structures/binary_tree/wavelet_tree | ✓ | 432µs | 3.2 MB |
+| 201 | data_structures/disjoint_set/alternate_disjoint_set | ✓ | 481µs | 3.2 MB |
+| 202 | data_structures/disjoint_set/disjoint_set | ✓ | 380µs | 3.3 MB |
 | 203 | data_structures/hashing/bloom_filter |   |  |  |
 | 204 | data_structures/hashing/double_hash |   |  |  |
 | 205 | data_structures/hashing/hash_map |   |  |  |

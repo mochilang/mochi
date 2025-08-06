@@ -1,0 +1,184 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden184_data_structures_binary_tree_is_sorted1352336974/001/main.swift:87:42: warning: conditional cast from 'Int' to 'Int' always succeeds
+ 85 |             return res
+ 86 |         }
+ 87 |         let left_idx = (tree.left[index] as? Int ?? 0)
+    |                                          `- warning: conditional cast from 'Int' to 'Int' always succeeds
+ 88 |         if (left_idx != NONE) {
+ 89 |             res = ((concat((res as! [Any?]), (inorder((tree as! Tree), left_idx) as! [Double])) as! [Any?]) as! [Double])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden184_data_structures_binary_tree_is_sorted1352336974/001/main.swift:89:21: error: cannot find 'concat' in scope
+ 87 |         let left_idx = (tree.left[index] as? Int ?? 0)
+ 88 |         if (left_idx != NONE) {
+ 89 |             res = ((concat((res as! [Any?]), (inorder((tree as! Tree), left_idx) as! [Double])) as! [Any?]) as! [Double])
+    |                     `- error: cannot find 'concat' in scope
+ 90 |         }
+ 91 |         res = (_append(res, Double(tree.data[index])) as! [Double])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden184_data_structures_binary_tree_is_sorted1352336974/001/main.swift:89:33: warning: forced cast from '[Double]' to '[Any?]' always succeeds; did you mean to use 'as'?
+ 87 |         let left_idx = (tree.left[index] as? Int ?? 0)
+ 88 |         if (left_idx != NONE) {
+ 89 |             res = ((concat((res as! [Any?]), (inorder((tree as! Tree), left_idx) as! [Double])) as! [Any?]) as! [Double])
+    |                                 `- warning: forced cast from '[Double]' to '[Any?]' always succeeds; did you mean to use 'as'?
+ 90 |         }
+ 91 |         res = (_append(res, Double(tree.data[index])) as! [Double])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden184_data_structures_binary_tree_is_sorted1352336974/001/main.swift:89:61: warning: forced cast of 'Tree' to same type has no effect
+ 87 |         let left_idx = (tree.left[index] as? Int ?? 0)
+ 88 |         if (left_idx != NONE) {
+ 89 |             res = ((concat((res as! [Any?]), (inorder((tree as! Tree), left_idx) as! [Double])) as! [Any?]) as! [Double])
+    |                                                             `- warning: forced cast of 'Tree' to same type has no effect
+ 90 |         }
+ 91 |         res = (_append(res, Double(tree.data[index])) as! [Double])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden184_data_structures_binary_tree_is_sorted1352336974/001/main.swift:89:82: warning: forced cast of '[Double]' to same type has no effect
+ 87 |         let left_idx = (tree.left[index] as? Int ?? 0)
+ 88 |         if (left_idx != NONE) {
+ 89 |             res = ((concat((res as! [Any?]), (inorder((tree as! Tree), left_idx) as! [Double])) as! [Any?]) as! [Double])
+    |                                                                                  `- warning: forced cast of '[Double]' to same type has no effect
+ 90 |         }
+ 91 |         res = (_append(res, Double(tree.data[index])) as! [Double])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden184_data_structures_binary_tree_is_sorted1352336974/001/main.swift:92:44: warning: conditional cast from 'Int' to 'Int' always succeeds
+ 90 |         }
+ 91 |         res = (_append(res, Double(tree.data[index])) as! [Double])
+ 92 |         let right_idx = (tree.right[index] as? Int ?? 0)
+    |                                            `- warning: conditional cast from 'Int' to 'Int' always succeeds
+ 93 |         if (right_idx != NONE) {
+ 94 |             res = ((concat((res as! [Any?]), (inorder((tree as! Tree), right_idx) as! [Double])) as! [Any?]) as! [Double])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden184_data_structures_binary_tree_is_sorted1352336974/001/main.swift:94:21: error: cannot find 'concat' in scope
+ 92 |         let right_idx = (tree.right[index] as? Int ?? 0)
+ 93 |         if (right_idx != NONE) {
+ 94 |             res = ((concat((res as! [Any?]), (inorder((tree as! Tree), right_idx) as! [Double])) as! [Any?]) as! [Double])
+    |                     `- error: cannot find 'concat' in scope
+ 95 |         }
+ 96 |         return res
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden184_data_structures_binary_tree_is_sorted1352336974/001/main.swift:94:33: warning: forced cast from '[Double]' to '[Any?]' always succeeds; did you mean to use 'as'?
+ 92 |         let right_idx = (tree.right[index] as? Int ?? 0)
+ 93 |         if (right_idx != NONE) {
+ 94 |             res = ((concat((res as! [Any?]), (inorder((tree as! Tree), right_idx) as! [Double])) as! [Any?]) as! [Double])
+    |                                 `- warning: forced cast from '[Double]' to '[Any?]' always succeeds; did you mean to use 'as'?
+ 95 |         }
+ 96 |         return res
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden184_data_structures_binary_tree_is_sorted1352336974/001/main.swift:94:61: warning: forced cast of 'Tree' to same type has no effect
+ 92 |         let right_idx = (tree.right[index] as? Int ?? 0)
+ 93 |         if (right_idx != NONE) {
+ 94 |             res = ((concat((res as! [Any?]), (inorder((tree as! Tree), right_idx) as! [Double])) as! [Any?]) as! [Double])
+    |                                                             `- warning: forced cast of 'Tree' to same type has no effect
+ 95 |         }
+ 96 |         return res
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden184_data_structures_binary_tree_is_sorted1352336974/001/main.swift:94:83: warning: forced cast of '[Double]' to same type has no effect
+ 92 |         let right_idx = (tree.right[index] as? Int ?? 0)
+ 93 |         if (right_idx != NONE) {
+ 94 |             res = ((concat((res as! [Any?]), (inorder((tree as! Tree), right_idx) as! [Double])) as! [Any?]) as! [Double])
+    |                                                                                   `- warning: forced cast of '[Double]' to same type has no effect
+ 95 |         }
+ 96 |         return res
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden184_data_structures_binary_tree_is_sorted1352336974/001/main.swift:102:42: warning: conditional cast from 'Int' to 'Int' always succeeds
+100 |             return true
+101 |         }
+102 |         let left_idx = (tree.left[index] as? Int ?? 0)
+    |                                          `- warning: conditional cast from 'Int' to 'Int' always succeeds
+103 |         if (left_idx != NONE) {
+104 |             if (Double(tree.data[index]) < Double(tree.data[left_idx])) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden184_data_structures_binary_tree_is_sorted1352336974/001/main.swift:107:34: warning: forced cast of 'Tree' to same type has no effect
+105 |                 return false
+106 |             }
+107 |             if (!is_sorted((tree as! Tree), left_idx)) {
+    |                                  `- warning: forced cast of 'Tree' to same type has no effect
+108 |                 return false
+109 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden184_data_structures_binary_tree_is_sorted1352336974/001/main.swift:111:44: warning: conditional cast from 'Int' to 'Int' always succeeds
+109 |             }
+110 |         }
+111 |         let right_idx = (tree.right[index] as? Int ?? 0)
+    |                                            `- warning: conditional cast from 'Int' to 'Int' always succeeds
+112 |         if (right_idx != NONE) {
+113 |             if (Double(tree.data[index]) > Double(tree.data[right_idx])) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden184_data_structures_binary_tree_is_sorted1352336974/001/main.swift:116:34: warning: forced cast of 'Tree' to same type has no effect
+114 |                 return false
+115 |             }
+116 |             if (!is_sorted((tree as! Tree), right_idx)) {
+    |                                  `- warning: forced cast of 'Tree' to same type has no effect
+117 |                 return false
+118 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden184_data_structures_binary_tree_is_sorted1352336974/001/main.swift:123:49: warning: forced cast of 'Tree' to same type has no effect
+121 |     }
+122 |     let tree1 = Tree(data: ([2.1, 2.0, 2.2] as! [Double]), left: ([1, NONE, NONE] as! [Int]), right: ([2, NONE, NONE] as! [Int]))
+123 |     print(_p(((("Tree " + "[" + (inorder((tree1 as! Tree), 0) as! [Double]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]") + " is sorted: ") + String(describing: is_sorted((tree1 as! Tree), 0)))))
+    |                                                 `- warning: forced cast of 'Tree' to same type has no effect
+124 |     let tree2 = Tree(data: ([2.1, 2.0, 2.0] as! [Double]), left: ([1, NONE, NONE] as! [Int]), right: ([2, NONE, NONE] as! [Int]))
+125 |     print(_p(((("Tree " + "[" + (inorder((tree2 as! Tree), 0) as! [Double]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]") + " is sorted: ") + String(describing: is_sorted((tree2 as! Tree), 0)))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden184_data_structures_binary_tree_is_sorted1352336974/001/main.swift:123:63: warning: forced cast of '[Double]' to same type has no effect
+121 |     }
+122 |     let tree1 = Tree(data: ([2.1, 2.0, 2.2] as! [Double]), left: ([1, NONE, NONE] as! [Int]), right: ([2, NONE, NONE] as! [Int]))
+123 |     print(_p(((("Tree " + "[" + (inorder((tree1 as! Tree), 0) as! [Double]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]") + " is sorted: ") + String(describing: is_sorted((tree1 as! Tree), 0)))))
+    |                                                               `- warning: forced cast of '[Double]' to same type has no effect
+124 |     let tree2 = Tree(data: ([2.1, 2.0, 2.0] as! [Double]), left: ([1, NONE, NONE] as! [Int]), right: ([2, NONE, NONE] as! [Int]))
+125 |     print(_p(((("Tree " + "[" + (inorder((tree2 as! Tree), 0) as! [Double]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]") + " is sorted: ") + String(describing: is_sorted((tree2 as! Tree), 0)))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden184_data_structures_binary_tree_is_sorted1352336974/001/main.swift:123:219: warning: forced cast of 'Tree' to same type has no effect
+121 |     }
+122 |     let tree1 = Tree(data: ([2.1, 2.0, 2.2] as! [Double]), left: ([1, NONE, NONE] as! [Int]), right: ([2, NONE, NONE] as! [Int]))
+123 |     print(_p(((("Tree " + "[" + (inorder((tree1 as! Tree), 0) as! [Double]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]") + " is sorted: ") + String(describing: is_sorted((tree1 as! Tree), 0)))))
+    |                                                                                                                                                                                                                           `- warning: forced cast of 'Tree' to same type has no effect
+124 |     let tree2 = Tree(data: ([2.1, 2.0, 2.0] as! [Double]), left: ([1, NONE, NONE] as! [Int]), right: ([2, NONE, NONE] as! [Int]))
+125 |     print(_p(((("Tree " + "[" + (inorder((tree2 as! Tree), 0) as! [Double]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]") + " is sorted: ") + String(describing: is_sorted((tree2 as! Tree), 0)))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden184_data_structures_binary_tree_is_sorted1352336974/001/main.swift:125:49: warning: forced cast of 'Tree' to same type has no effect
+123 |     print(_p(((("Tree " + "[" + (inorder((tree1 as! Tree), 0) as! [Double]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]") + " is sorted: ") + String(describing: is_sorted((tree1 as! Tree), 0)))))
+124 |     let tree2 = Tree(data: ([2.1, 2.0, 2.0] as! [Double]), left: ([1, NONE, NONE] as! [Int]), right: ([2, NONE, NONE] as! [Int]))
+125 |     print(_p(((("Tree " + "[" + (inorder((tree2 as! Tree), 0) as! [Double]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]") + " is sorted: ") + String(describing: is_sorted((tree2 as! Tree), 0)))))
+    |                                                 `- warning: forced cast of 'Tree' to same type has no effect
+126 |     let tree3 = Tree(data: ([2.1, 2.0, 2.1] as! [Double]), left: ([1, NONE, NONE] as! [Int]), right: ([2, NONE, NONE] as! [Int]))
+127 |     print(_p(((("Tree " + "[" + (inorder((tree3 as! Tree), 0) as! [Double]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]") + " is sorted: ") + String(describing: is_sorted((tree3 as! Tree), 0)))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden184_data_structures_binary_tree_is_sorted1352336974/001/main.swift:125:63: warning: forced cast of '[Double]' to same type has no effect
+123 |     print(_p(((("Tree " + "[" + (inorder((tree1 as! Tree), 0) as! [Double]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]") + " is sorted: ") + String(describing: is_sorted((tree1 as! Tree), 0)))))
+124 |     let tree2 = Tree(data: ([2.1, 2.0, 2.0] as! [Double]), left: ([1, NONE, NONE] as! [Int]), right: ([2, NONE, NONE] as! [Int]))
+125 |     print(_p(((("Tree " + "[" + (inorder((tree2 as! Tree), 0) as! [Double]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]") + " is sorted: ") + String(describing: is_sorted((tree2 as! Tree), 0)))))
+    |                                                               `- warning: forced cast of '[Double]' to same type has no effect
+126 |     let tree3 = Tree(data: ([2.1, 2.0, 2.1] as! [Double]), left: ([1, NONE, NONE] as! [Int]), right: ([2, NONE, NONE] as! [Int]))
+127 |     print(_p(((("Tree " + "[" + (inorder((tree3 as! Tree), 0) as! [Double]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]") + " is sorted: ") + String(describing: is_sorted((tree3 as! Tree), 0)))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden184_data_structures_binary_tree_is_sorted1352336974/001/main.swift:125:219: warning: forced cast of 'Tree' to same type has no effect
+123 |     print(_p(((("Tree " + "[" + (inorder((tree1 as! Tree), 0) as! [Double]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]") + " is sorted: ") + String(describing: is_sorted((tree1 as! Tree), 0)))))
+124 |     let tree2 = Tree(data: ([2.1, 2.0, 2.0] as! [Double]), left: ([1, NONE, NONE] as! [Int]), right: ([2, NONE, NONE] as! [Int]))
+125 |     print(_p(((("Tree " + "[" + (inorder((tree2 as! Tree), 0) as! [Double]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]") + " is sorted: ") + String(describing: is_sorted((tree2 as! Tree), 0)))))
+    |                                                                                                                                                                                                                           `- warning: forced cast of 'Tree' to same type has no effect
+126 |     let tree3 = Tree(data: ([2.1, 2.0, 2.1] as! [Double]), left: ([1, NONE, NONE] as! [Int]), right: ([2, NONE, NONE] as! [Int]))
+127 |     print(_p(((("Tree " + "[" + (inorder((tree3 as! Tree), 0) as! [Double]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]") + " is sorted: ") + String(describing: is_sorted((tree3 as! Tree), 0)))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden184_data_structures_binary_tree_is_sorted1352336974/001/main.swift:127:49: warning: forced cast of 'Tree' to same type has no effect
+125 |     print(_p(((("Tree " + "[" + (inorder((tree2 as! Tree), 0) as! [Double]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]") + " is sorted: ") + String(describing: is_sorted((tree2 as! Tree), 0)))))
+126 |     let tree3 = Tree(data: ([2.1, 2.0, 2.1] as! [Double]), left: ([1, NONE, NONE] as! [Int]), right: ([2, NONE, NONE] as! [Int]))
+127 |     print(_p(((("Tree " + "[" + (inorder((tree3 as! Tree), 0) as! [Double]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]") + " is sorted: ") + String(describing: is_sorted((tree3 as! Tree), 0)))))
+    |                                                 `- warning: forced cast of 'Tree' to same type has no effect
+128 |     let _benchEnd = _now()
+129 |     let _benchMemEnd = _mem()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden184_data_structures_binary_tree_is_sorted1352336974/001/main.swift:127:63: warning: forced cast of '[Double]' to same type has no effect
+125 |     print(_p(((("Tree " + "[" + (inorder((tree2 as! Tree), 0) as! [Double]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]") + " is sorted: ") + String(describing: is_sorted((tree2 as! Tree), 0)))))
+126 |     let tree3 = Tree(data: ([2.1, 2.0, 2.1] as! [Double]), left: ([1, NONE, NONE] as! [Int]), right: ([2, NONE, NONE] as! [Int]))
+127 |     print(_p(((("Tree " + "[" + (inorder((tree3 as! Tree), 0) as! [Double]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]") + " is sorted: ") + String(describing: is_sorted((tree3 as! Tree), 0)))))
+    |                                                               `- warning: forced cast of '[Double]' to same type has no effect
+128 |     let _benchEnd = _now()
+129 |     let _benchMemEnd = _mem()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden184_data_structures_binary_tree_is_sorted1352336974/001/main.swift:127:219: warning: forced cast of 'Tree' to same type has no effect
+125 |     print(_p(((("Tree " + "[" + (inorder((tree2 as! Tree), 0) as! [Double]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]") + " is sorted: ") + String(describing: is_sorted((tree2 as! Tree), 0)))))
+126 |     let tree3 = Tree(data: ([2.1, 2.0, 2.1] as! [Double]), left: ([1, NONE, NONE] as! [Int]), right: ([2, NONE, NONE] as! [Int]))
+127 |     print(_p(((("Tree " + "[" + (inorder((tree3 as! Tree), 0) as! [Double]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]") + " is sorted: ") + String(describing: is_sorted((tree3 as! Tree), 0)))))
+    |                                                                                                                                                                                                                           `- warning: forced cast of 'Tree' to same type has no effect
+128 |     let _benchEnd = _now()
+129 |     let _benchMemEnd = _mem()

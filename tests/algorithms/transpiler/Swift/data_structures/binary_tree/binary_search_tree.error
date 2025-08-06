@@ -1,0 +1,249 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden173_data_structures_binary_tree_binary_search_tree1553724282/001/main.swift:85:18: warning: comparing non-optional value of type '[Any?]' to 'nil' always returns false
+ 83 |     }
+ 84 |     func insert(_ node: inout [Any?], _ value: Int) -> [Any?] {
+ 85 |         if (node == nil) {
+    |                  `- warning: comparing non-optional value of type '[Any?]' to 'nil' always returns false
+ 86 |             return (create_node(value) as! [Any?])
+ 87 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden173_data_structures_binary_tree_binary_search_tree1553724282/001/main.swift:86:40: warning: forced cast of '[Any?]' to same type has no effect
+ 84 |     func insert(_ node: inout [Any?], _ value: Int) -> [Any?] {
+ 85 |         if (node == nil) {
+ 86 |             return (create_node(value) as! [Any?])
+    |                                        `- warning: forced cast of '[Any?]' to same type has no effect
+ 87 |         }
+ 88 |         if (value < (node[0] as! Int)) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden173_data_structures_binary_tree_binary_search_tree1553724282/001/main.swift:89:42: error: cannot convert value of type 'Any?' to expected argument type '[Any?]'
+ 87 |         }
+ 88 |         if (value < (node[0] as! Int)) {
+ 89 |             node = _set(node, 1, (insert(&node[1], value) as! [Any?]))
+    |                                          `- error: cannot convert value of type 'Any?' to expected argument type '[Any?]'
+ 90 |         } else if (value > (node[0] as! Int)) {
+ 91 |             node = _set(node, 2, (insert(&node[2], value) as! [Any?]))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden173_data_structures_binary_tree_binary_search_tree1553724282/001/main.swift:89:59: warning: forced cast of '[Any?]' to same type has no effect
+ 87 |         }
+ 88 |         if (value < (node[0] as! Int)) {
+ 89 |             node = _set(node, 1, (insert(&node[1], value) as! [Any?]))
+    |                                                           `- warning: forced cast of '[Any?]' to same type has no effect
+ 90 |         } else if (value > (node[0] as! Int)) {
+ 91 |             node = _set(node, 2, (insert(&node[2], value) as! [Any?]))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden173_data_structures_binary_tree_binary_search_tree1553724282/001/main.swift:91:42: error: cannot convert value of type 'Any?' to expected argument type '[Any?]'
+ 89 |             node = _set(node, 1, (insert(&node[1], value) as! [Any?]))
+ 90 |         } else if (value > (node[0] as! Int)) {
+ 91 |             node = _set(node, 2, (insert(&node[2], value) as! [Any?]))
+    |                                          `- error: cannot convert value of type 'Any?' to expected argument type '[Any?]'
+ 92 |         }
+ 93 |         
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden173_data_structures_binary_tree_binary_search_tree1553724282/001/main.swift:91:59: warning: forced cast of '[Any?]' to same type has no effect
+ 89 |             node = _set(node, 1, (insert(&node[1], value) as! [Any?]))
+ 90 |         } else if (value > (node[0] as! Int)) {
+ 91 |             node = _set(node, 2, (insert(&node[2], value) as! [Any?]))
+    |                                                           `- warning: forced cast of '[Any?]' to same type has no effect
+ 92 |         }
+ 93 |         
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden173_data_structures_binary_tree_binary_search_tree1553724282/001/main.swift:97:18: warning: comparing non-optional value of type '[Any?]' to 'nil' always returns false
+ 95 |     }
+ 96 |     func search(_ node: [Any?], _ value: Int) -> Bool {
+ 97 |         if (node == nil) {
+    |                  `- warning: comparing non-optional value of type '[Any?]' to 'nil' always returns false
+ 98 |             return false
+ 99 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden173_data_structures_binary_tree_binary_search_tree1553724282/001/main.swift:109:18: warning: comparing non-optional value of type '[Any?]' to 'nil' always returns false
+107 |     }
+108 |     func inorder(_ node: [Any?], _ acc: [Int]) -> [Int] {
+109 |         if (node == nil) {
+    |                  `- warning: comparing non-optional value of type '[Any?]' to 'nil' always returns false
+110 |             return acc
+111 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden173_data_structures_binary_tree_binary_search_tree1553724282/001/main.swift:112:67: warning: forced cast of '[Int]' to same type has no effect
+110 |             return acc
+111 |         }
+112 |         let left_acc: [Int] = (inorder((node[1] as! [Any?]), (acc as! [Int])) as! [Int])
+    |                                                                   `- warning: forced cast of '[Int]' to same type has no effect
+113 |         let with_node: [Any?] = (_append(left_acc, node[0]) as! [Any?])
+114 |         return (inorder((node[2] as! [Any?]), (with_node as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden173_data_structures_binary_tree_binary_search_tree1553724282/001/main.swift:112:79: warning: forced cast of '[Int]' to same type has no effect
+110 |             return acc
+111 |         }
+112 |         let left_acc: [Int] = (inorder((node[1] as! [Any?]), (acc as! [Int])) as! [Int])
+    |                                                                               `- warning: forced cast of '[Int]' to same type has no effect
+113 |         let with_node: [Any?] = (_append(left_acc, node[0]) as! [Any?])
+114 |         return (inorder((node[2] as! [Any?]), (with_node as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden173_data_structures_binary_tree_binary_search_tree1553724282/001/main.swift:114:70: warning: forced cast of '[Int]' to same type has no effect
+112 |         let left_acc: [Int] = (inorder((node[1] as! [Any?]), (acc as! [Int])) as! [Int])
+113 |         let with_node: [Any?] = (_append(left_acc, node[0]) as! [Any?])
+114 |         return (inorder((node[2] as! [Any?]), (with_node as! [Int])) as! [Int])
+    |                                                                      `- warning: forced cast of '[Int]' to same type has no effect
+115 |     }
+116 |     func find_min(_ node: [Any?]) -> Int {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden173_data_structures_binary_tree_binary_search_tree1553724282/001/main.swift:133:18: warning: comparing non-optional value of type '[Any?]' to 'nil' always returns false
+131 |     }
+132 |     func delete(_ node: inout [Any?], _ value: Int) -> [Any?]? {
+133 |         if (node == nil) {
+    |                  `- warning: comparing non-optional value of type '[Any?]' to 'nil' always returns false
+134 |             return nil
+135 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden173_data_structures_binary_tree_binary_search_tree1553724282/001/main.swift:137:42: error: cannot convert value of type 'Any?' to expected argument type '[Any?]'
+135 |         }
+136 |         if (value < (node[0] as! Int)) {
+137 |             node = _set(node, 1, (delete(&node[1], value) as! [Any?]))
+    |                                          `- error: cannot convert value of type 'Any?' to expected argument type '[Any?]'
+138 |         } else if (value > (node[0] as! Int)) {
+139 |             node = _set(node, 2, (delete(&node[2], value) as! [Any?]))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden173_data_structures_binary_tree_binary_search_tree1553724282/001/main.swift:137:59: warning: forced cast from '[Any?]?' to '[Any?]' only unwraps optionals; did you mean to use '!'?
+135 |         }
+136 |         if (value < (node[0] as! Int)) {
+137 |             node = _set(node, 1, (delete(&node[1], value) as! [Any?]))
+    |                                                           `- warning: forced cast from '[Any?]?' to '[Any?]' only unwraps optionals; did you mean to use '!'?
+138 |         } else if (value > (node[0] as! Int)) {
+139 |             node = _set(node, 2, (delete(&node[2], value) as! [Any?]))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden173_data_structures_binary_tree_binary_search_tree1553724282/001/main.swift:139:42: error: cannot convert value of type 'Any?' to expected argument type '[Any?]'
+137 |             node = _set(node, 1, (delete(&node[1], value) as! [Any?]))
+138 |         } else if (value > (node[0] as! Int)) {
+139 |             node = _set(node, 2, (delete(&node[2], value) as! [Any?]))
+    |                                          `- error: cannot convert value of type 'Any?' to expected argument type '[Any?]'
+140 |         } else {
+141 |             if (String(describing: node[1]) == String(describing: nil as Any?)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden173_data_structures_binary_tree_binary_search_tree1553724282/001/main.swift:139:59: warning: forced cast from '[Any?]?' to '[Any?]' only unwraps optionals; did you mean to use '!'?
+137 |             node = _set(node, 1, (delete(&node[1], value) as! [Any?]))
+138 |         } else if (value > (node[0] as! Int)) {
+139 |             node = _set(node, 2, (delete(&node[2], value) as! [Any?]))
+    |                                                           `- warning: forced cast from '[Any?]?' to '[Any?]' only unwraps optionals; did you mean to use '!'?
+140 |         } else {
+141 |             if (String(describing: node[1]) == String(describing: nil as Any?)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden173_data_structures_binary_tree_binary_search_tree1553724282/001/main.swift:151:42: error: cannot convert value of type 'Any?' to expected argument type '[Any?]'
+149 |             let min_val = Int(find_min((node[2] as! [Any?])))
+150 |             node = _set(node, 0, min_val)
+151 |             node = _set(node, 2, (delete(&node[2], min_val) as! [Any?]))
+    |                                          `- error: cannot convert value of type 'Any?' to expected argument type '[Any?]'
+152 |         }
+153 |         
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden173_data_structures_binary_tree_binary_search_tree1553724282/001/main.swift:151:61: warning: forced cast from '[Any?]?' to '[Any?]' only unwraps optionals; did you mean to use '!'?
+149 |             let min_val = Int(find_min((node[2] as! [Any?])))
+150 |             node = _set(node, 0, min_val)
+151 |             node = _set(node, 2, (delete(&node[2], min_val) as! [Any?]))
+    |                                                             `- warning: forced cast from '[Any?]?' to '[Any?]' only unwraps optionals; did you mean to use '!'?
+152 |         }
+153 |         
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden173_data_structures_binary_tree_binary_search_tree1553724282/001/main.swift:154:22: warning: forced cast from '[Any?]' to '[Any?]?' always succeeds; did you mean to use 'as'?
+152 |         }
+153 |         
+154 |         return (node as! [Any?]?)
+    |                      `- warning: forced cast from '[Any?]' to '[Any?]?' always succeeds; did you mean to use 'as'?
+155 |     }
+156 |     func main() {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden173_data_structures_binary_tree_binary_search_tree1553724282/001/main.swift:157:28: error: 'nil' cannot initialize specified type '[Any?]'
+155 |     }
+156 |     func main() {
+157 |         var root: [Any?] = nil
+    |                   |        `- error: 'nil' cannot initialize specified type '[Any?]'
+    |                   `- note: add '?' to form the optional type '[Any?]?'
+158 |         let nums: [Int] = ([8, 3, 6, 1, 10, 14, 13, 4, 7] as! [Int])
+159 |         for v in nums {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden173_data_structures_binary_tree_binary_search_tree1553724282/001/main.swift:160:38: warning: forced cast of '[Any?]' to same type has no effect
+158 |         let nums: [Int] = ([8, 3, 6, 1, 10, 14, 13, 4, 7] as! [Int])
+159 |         for v in nums {
+160 |             root = (insert(&root, v) as! [Any?])
+    |                                      `- warning: forced cast of '[Any?]' to same type has no effect
+161 |         }
+162 |         print(_p("[" + (inorder((root as! [Any?]), ([] as! [Int])) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden173_data_structures_binary_tree_binary_search_tree1553724282/001/main.swift:162:39: warning: forced cast of '[Any?]' to same type has no effect
+160 |             root = (insert(&root, v) as! [Any?])
+161 |         }
+162 |         print(_p("[" + (inorder((root as! [Any?]), ([] as! [Int])) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+    |                                       `- warning: forced cast of '[Any?]' to same type has no effect
+163 |         print(_p(search((root as! [Any?]), 6)))
+164 |         print(_p(search((root as! [Any?]), 20)))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden173_data_structures_binary_tree_binary_search_tree1553724282/001/main.swift:162:68: warning: forced cast of '[Int]' to same type has no effect
+160 |             root = (insert(&root, v) as! [Any?])
+161 |         }
+162 |         print(_p("[" + (inorder((root as! [Any?]), ([] as! [Int])) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+    |                                                                    `- warning: forced cast of '[Int]' to same type has no effect
+163 |         print(_p(search((root as! [Any?]), 6)))
+164 |         print(_p(search((root as! [Any?]), 20)))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden173_data_structures_binary_tree_binary_search_tree1553724282/001/main.swift:163:31: warning: forced cast of '[Any?]' to same type has no effect
+161 |         }
+162 |         print(_p("[" + (inorder((root as! [Any?]), ([] as! [Int])) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+163 |         print(_p(search((root as! [Any?]), 6)))
+    |                               `- warning: forced cast of '[Any?]' to same type has no effect
+164 |         print(_p(search((root as! [Any?]), 20)))
+165 |         print(_p(Int(find_min((root as! [Any?])))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden173_data_structures_binary_tree_binary_search_tree1553724282/001/main.swift:164:31: warning: forced cast of '[Any?]' to same type has no effect
+162 |         print(_p("[" + (inorder((root as! [Any?]), ([] as! [Int])) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+163 |         print(_p(search((root as! [Any?]), 6)))
+164 |         print(_p(search((root as! [Any?]), 20)))
+    |                               `- warning: forced cast of '[Any?]' to same type has no effect
+165 |         print(_p(Int(find_min((root as! [Any?])))))
+166 |         print(_p(Int(find_max((root as! [Any?])))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden173_data_structures_binary_tree_binary_search_tree1553724282/001/main.swift:165:37: warning: forced cast of '[Any?]' to same type has no effect
+163 |         print(_p(search((root as! [Any?]), 6)))
+164 |         print(_p(search((root as! [Any?]), 20)))
+165 |         print(_p(Int(find_min((root as! [Any?])))))
+    |                                     `- warning: forced cast of '[Any?]' to same type has no effect
+166 |         print(_p(Int(find_max((root as! [Any?])))))
+167 |         root = (delete(&root, 6) as! [Any?])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden173_data_structures_binary_tree_binary_search_tree1553724282/001/main.swift:166:37: warning: forced cast of '[Any?]' to same type has no effect
+164 |         print(_p(search((root as! [Any?]), 20)))
+165 |         print(_p(Int(find_min((root as! [Any?])))))
+166 |         print(_p(Int(find_max((root as! [Any?])))))
+    |                                     `- warning: forced cast of '[Any?]' to same type has no effect
+167 |         root = (delete(&root, 6) as! [Any?])
+168 |         print(_p("[" + (inorder((root as! [Any?]), ([] as! [Int])) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden173_data_structures_binary_tree_binary_search_tree1553724282/001/main.swift:167:34: warning: forced cast from '[Any?]?' to '[Any?]' only unwraps optionals; did you mean to use '!'?
+165 |         print(_p(Int(find_min((root as! [Any?])))))
+166 |         print(_p(Int(find_max((root as! [Any?])))))
+167 |         root = (delete(&root, 6) as! [Any?])
+    |                                  `- warning: forced cast from '[Any?]?' to '[Any?]' only unwraps optionals; did you mean to use '!'?
+168 |         print(_p("[" + (inorder((root as! [Any?]), ([] as! [Int])) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+169 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden173_data_structures_binary_tree_binary_search_tree1553724282/001/main.swift:168:39: warning: forced cast of '[Any?]' to same type has no effect
+166 |         print(_p(Int(find_max((root as! [Any?])))))
+167 |         root = (delete(&root, 6) as! [Any?])
+168 |         print(_p("[" + (inorder((root as! [Any?]), ([] as! [Int])) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+    |                                       `- warning: forced cast of '[Any?]' to same type has no effect
+169 |     }
+170 |     _ = main()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden173_data_structures_binary_tree_binary_search_tree1553724282/001/main.swift:168:68: warning: forced cast of '[Int]' to same type has no effect
+166 |         print(_p(Int(find_max((root as! [Any?])))))
+167 |         root = (delete(&root, 6) as! [Any?])
+168 |         print(_p("[" + (inorder((root as! [Any?]), ([] as! [Int])) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+    |                                                                    `- warning: forced cast of '[Int]' to same type has no effect
+169 |     }
+170 |     _ = main()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden173_data_structures_binary_tree_binary_search_tree1553724282/001/main.swift:170:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+168 |         print(_p("[" + (inorder((root as! [Any?]), ([] as! [Int])) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+169 |     }
+170 |     _ = main()
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+171 |     let _benchEnd = _now()
+172 |     let _benchMemEnd = _mem()

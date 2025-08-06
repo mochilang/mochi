@@ -1,0 +1,144 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden182_data_structures_binary_tree_floor_and_ceiling2057256866/001/main.swift:85:32: warning: forced cast of 'Node' to same type has no effect
+ 83 |             return ([] as! [Int])
+ 84 |         }
+ 85 |         let node = (nodes[idx] as! Node)
+    |                                `- warning: forced cast of 'Node' to same type has no effect
+ 86 |         var result: [Int] = (inorder((nodes as! [Node]), node.left) as! [Int])
+ 87 |         result = (_append(result, node.key) as! [Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden182_data_structures_binary_tree_floor_and_ceiling2057256866/001/main.swift:86:45: warning: forced cast of '[Node]' to same type has no effect
+ 84 |         }
+ 85 |         let node = (nodes[idx] as! Node)
+ 86 |         var result: [Int] = (inorder((nodes as! [Node]), node.left) as! [Int])
+    |                                             `- warning: forced cast of '[Node]' to same type has no effect
+ 87 |         result = (_append(result, node.key) as! [Int])
+ 88 |         result = ((concat((result as! [Any?]), (inorder((nodes as! [Node]), node.right) as! [Int])) as! [Any?]) as! [Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden182_data_structures_binary_tree_floor_and_ceiling2057256866/001/main.swift:86:69: warning: forced cast of '[Int]' to same type has no effect
+ 84 |         }
+ 85 |         let node = (nodes[idx] as! Node)
+ 86 |         var result: [Int] = (inorder((nodes as! [Node]), node.left) as! [Int])
+    |                                                                     `- warning: forced cast of '[Int]' to same type has no effect
+ 87 |         result = (_append(result, node.key) as! [Int])
+ 88 |         result = ((concat((result as! [Any?]), (inorder((nodes as! [Node]), node.right) as! [Int])) as! [Any?]) as! [Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden182_data_structures_binary_tree_floor_and_ceiling2057256866/001/main.swift:88:20: error: cannot find 'concat' in scope
+ 86 |         var result: [Int] = (inorder((nodes as! [Node]), node.left) as! [Int])
+ 87 |         result = (_append(result, node.key) as! [Int])
+ 88 |         result = ((concat((result as! [Any?]), (inorder((nodes as! [Node]), node.right) as! [Int])) as! [Any?]) as! [Int])
+    |                    `- error: cannot find 'concat' in scope
+ 89 |         return result
+ 90 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden182_data_structures_binary_tree_floor_and_ceiling2057256866/001/main.swift:88:35: warning: forced cast from '[Int]' to '[Any?]' always succeeds; did you mean to use 'as'?
+ 86 |         var result: [Int] = (inorder((nodes as! [Node]), node.left) as! [Int])
+ 87 |         result = (_append(result, node.key) as! [Int])
+ 88 |         result = ((concat((result as! [Any?]), (inorder((nodes as! [Node]), node.right) as! [Int])) as! [Any?]) as! [Int])
+    |                                   `- warning: forced cast from '[Int]' to '[Any?]' always succeeds; did you mean to use 'as'?
+ 89 |         return result
+ 90 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden182_data_structures_binary_tree_floor_and_ceiling2057256866/001/main.swift:88:64: warning: forced cast of '[Node]' to same type has no effect
+ 86 |         var result: [Int] = (inorder((nodes as! [Node]), node.left) as! [Int])
+ 87 |         result = (_append(result, node.key) as! [Int])
+ 88 |         result = ((concat((result as! [Any?]), (inorder((nodes as! [Node]), node.right) as! [Int])) as! [Any?]) as! [Int])
+    |                                                                `- warning: forced cast of '[Node]' to same type has no effect
+ 89 |         return result
+ 90 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden182_data_structures_binary_tree_floor_and_ceiling2057256866/001/main.swift:88:89: warning: forced cast of '[Int]' to same type has no effect
+ 86 |         var result: [Int] = (inorder((nodes as! [Node]), node.left) as! [Int])
+ 87 |         result = (_append(result, node.key) as! [Int])
+ 88 |         result = ((concat((result as! [Any?]), (inorder((nodes as! [Node]), node.right) as! [Int])) as! [Any?]) as! [Int])
+    |                                                                                         `- warning: forced cast of '[Int]' to same type has no effect
+ 89 |         return result
+ 90 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden182_data_structures_binary_tree_floor_and_ceiling2057256866/001/main.swift:96:40: warning: forced cast of 'Node' to same type has no effect
+ 94 |         var current: Int = idx
+ 95 |         while (current != Int(-1)) {
+ 96 |             let node = (nodes[current] as! Node)
+    |                                        `- warning: forced cast of 'Node' to same type has no effect
+ 97 |             if (node.key == key) {
+ 98 |                 floor_val = node.key
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden182_data_structures_binary_tree_floor_and_ceiling2057256866/001/main.swift:113:35: warning: forced cast of '[Node]' to same type has no effect
+111 |     }
+112 |     let tree: [Node] = ([Node(key: 10, left: 1, right: 2), Node(key: 5, left: 3, right: 4), Node(key: 20, left: 5, right: 6), Node(key: 3, left: -1, right: -1), Node(key: 7, left: -1, right: -1), Node(key: 15, left: -1, right: -1), Node(key: 25, left: -1, right: -1)] as! [Node])
+113 |     print(_p("[" + (inorder((tree as! [Node]), 0) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+    |                                   `- warning: forced cast of '[Node]' to same type has no effect
+114 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, 8) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+115 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, 14) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden182_data_structures_binary_tree_floor_and_ceiling2057256866/001/main.swift:113:51: warning: forced cast of '[Int]' to same type has no effect
+111 |     }
+112 |     let tree: [Node] = ([Node(key: 10, left: 1, right: 2), Node(key: 5, left: 3, right: 4), Node(key: 20, left: 5, right: 6), Node(key: 3, left: -1, right: -1), Node(key: 7, left: -1, right: -1), Node(key: 15, left: -1, right: -1), Node(key: 25, left: -1, right: -1)] as! [Node])
+113 |     print(_p("[" + (inorder((tree as! [Node]), 0) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+    |                                                   `- warning: forced cast of '[Int]' to same type has no effect
+114 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, 8) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+115 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, 14) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden182_data_structures_binary_tree_floor_and_ceiling2057256866/001/main.swift:114:41: warning: forced cast of '[Node]' to same type has no effect
+112 |     let tree: [Node] = ([Node(key: 10, left: 1, right: 2), Node(key: 5, left: 3, right: 4), Node(key: 20, left: 5, right: 6), Node(key: 3, left: -1, right: -1), Node(key: 7, left: -1, right: -1), Node(key: 15, left: -1, right: -1), Node(key: 25, left: -1, right: -1)] as! [Node])
+113 |     print(_p("[" + (inorder((tree as! [Node]), 0) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+114 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, 8) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+    |                                         `- warning: forced cast of '[Node]' to same type has no effect
+115 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, 14) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+116 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, -1) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden182_data_structures_binary_tree_floor_and_ceiling2057256866/001/main.swift:114:60: warning: forced cast of '[Int]' to same type has no effect
+112 |     let tree: [Node] = ([Node(key: 10, left: 1, right: 2), Node(key: 5, left: 3, right: 4), Node(key: 20, left: 5, right: 6), Node(key: 3, left: -1, right: -1), Node(key: 7, left: -1, right: -1), Node(key: 15, left: -1, right: -1), Node(key: 25, left: -1, right: -1)] as! [Node])
+113 |     print(_p("[" + (inorder((tree as! [Node]), 0) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+114 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, 8) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+    |                                                            `- warning: forced cast of '[Int]' to same type has no effect
+115 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, 14) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+116 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, -1) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden182_data_structures_binary_tree_floor_and_ceiling2057256866/001/main.swift:115:41: warning: forced cast of '[Node]' to same type has no effect
+113 |     print(_p("[" + (inorder((tree as! [Node]), 0) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+114 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, 8) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+115 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, 14) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+    |                                         `- warning: forced cast of '[Node]' to same type has no effect
+116 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, -1) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+117 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, 30) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden182_data_structures_binary_tree_floor_and_ceiling2057256866/001/main.swift:115:61: warning: forced cast of '[Int]' to same type has no effect
+113 |     print(_p("[" + (inorder((tree as! [Node]), 0) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+114 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, 8) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+115 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, 14) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+    |                                                             `- warning: forced cast of '[Int]' to same type has no effect
+116 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, -1) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+117 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, 30) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden182_data_structures_binary_tree_floor_and_ceiling2057256866/001/main.swift:116:41: warning: forced cast of '[Node]' to same type has no effect
+114 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, 8) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+115 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, 14) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+116 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, -1) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+    |                                         `- warning: forced cast of '[Node]' to same type has no effect
+117 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, 30) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+118 |     let _benchEnd = _now()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden182_data_structures_binary_tree_floor_and_ceiling2057256866/001/main.swift:116:61: warning: forced cast of '[Int]' to same type has no effect
+114 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, 8) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+115 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, 14) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+116 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, -1) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+    |                                                             `- warning: forced cast of '[Int]' to same type has no effect
+117 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, 30) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+118 |     let _benchEnd = _now()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden182_data_structures_binary_tree_floor_and_ceiling2057256866/001/main.swift:117:41: warning: forced cast of '[Node]' to same type has no effect
+115 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, 14) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+116 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, -1) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+117 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, 30) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+    |                                         `- warning: forced cast of '[Node]' to same type has no effect
+118 |     let _benchEnd = _now()
+119 |     let _benchMemEnd = _mem()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden182_data_structures_binary_tree_floor_and_ceiling2057256866/001/main.swift:117:61: warning: forced cast of '[Int]' to same type has no effect
+115 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, 14) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+116 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, -1) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+117 |     print(_p("[" + (floor_ceiling((tree as! [Node]), 0, 30) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+    |                                                             `- warning: forced cast of '[Int]' to same type has no effect
+118 |     let _benchEnd = _now()
+119 |     let _benchMemEnd = _mem()
