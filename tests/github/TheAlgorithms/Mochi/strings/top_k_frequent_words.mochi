@@ -1,0 +1,98 @@
+/*
+Top K Frequent Words Using Heap
+-------------------------------
+This program finds the k most common words in a list. It counts occurrences of
+each word, builds a max heap of WordCount records keyed by the frequency, and
+extracts the maximum k times to produce words in descending order of count.
+
+Steps:
+1. Count frequencies with a map.
+2. Build a max heap from WordCount entries.
+3. Repeatedly extract the root up to k times.
+
+The implementation is written in pure Mochi with static types and no FFI.
+*/
+
+type WordCount { word: string, count: int }
+
+var freq_map: map<string, int> = {}
+
+fun heapify(arr: list<WordCount>, index: int, heap_size: int) {
+  var largest: int = index
+  let left: int = 2 * index + 1
+  let right: int = 2 * index + 2
+  if left < heap_size {
+    let left_item: WordCount = arr[left]
+    let largest_item: WordCount = arr[largest]
+    if left_item.count > largest_item.count {
+      largest = left
+    }
+  }
+  if right < heap_size {
+    let right_item: WordCount = arr[right]
+    let largest_item2: WordCount = arr[largest]
+    if right_item.count > largest_item2.count {
+      largest = right
+    }
+  }
+  if largest != index {
+    let temp: WordCount = arr[largest]
+    arr[largest] = arr[index]
+    arr[index] = temp
+    heapify(arr, largest, heap_size)
+  }
+}
+
+fun build_max_heap(arr: list<WordCount>) {
+  var i: int = len(arr) / 2 - 1
+  while i >= 0 {
+    heapify(arr, i, len(arr))
+    i = i - 1
+  }
+}
+
+fun top_k_frequent_words(words: list<string>, k_value: int): list<string> {
+  freq_map = {}
+  var i: int = 0
+  while i < len(words) {
+    let w: string = words[i]
+    if w in freq_map {
+      freq_map[w] = freq_map[w] + 1
+    } else {
+      freq_map[w] = 1
+    }
+    i = i + 1
+  }
+  var heap: list<WordCount> = []
+  for w in freq_map {
+    heap = append(heap, WordCount{ word: w, count: freq_map[w] })
+  }
+  build_max_heap(heap)
+  var result: list<string> = []
+  var heap_size: int = len(heap)
+  var limit: int = k_value
+  if limit > heap_size {
+    limit = heap_size
+  }
+  var j: int = 0
+  while j < limit {
+    let item: WordCount = heap[0]
+    result = append(result, item.word)
+    heap[0] = heap[heap_size - 1]
+    heap[heap_size - 1] = item
+    heap_size = heap_size - 1
+    heapify(heap, 0, heap_size)
+    j = j + 1
+  }
+  return result
+}
+
+fun main() {
+  let sample: list<string> = ["a", "b", "c", "a", "c", "c"]
+  print(top_k_frequent_words(sample, 3))
+  print(top_k_frequent_words(sample, 2))
+  print(top_k_frequent_words(sample, 1))
+  print(top_k_frequent_words(sample, 0))
+}
+
+main()
