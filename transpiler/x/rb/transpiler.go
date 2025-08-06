@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"math"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -76,6 +75,16 @@ def _add(a, b)
 end
 `
 
+const helperStr = `
+def _str(x)
+  if x.is_a?(Float) && x == x.to_i
+    x.to_i.to_s
+  else
+    x.to_s
+  end
+end
+`
+
 const helperPadStart = `
 def _padStart(s, len, ch)
   s.to_s.rjust(len, ch)
@@ -110,7 +119,8 @@ end
 const helperSHA256 = `
 require 'digest'
 def _sha256(bs)
-  Digest::SHA256.digest(bs.pack('C*')).bytes
+  data = bs.is_a?(Array) ? bs.pack('C*') : bs
+  Digest::SHA256.digest(data).bytes
 end
 `
 
@@ -1287,7 +1297,7 @@ func safeName(n string) string {
 		return n
 	}
 	if n != "" && unicode.IsUpper(rune(n[0])) {
-		if n == strings.ToUpper(n) {
+		if n == strings.ToUpper(n) && len(n) > 1 {
 			return n
 		}
 		n = strings.ToLower(n[:1]) + n[1:]
@@ -1610,6 +1620,7 @@ func (f *FuncStmt) emit(e *emitter) {
 type VarStmt struct {
 	Name  string
 	Value Expr
+	Clone bool
 }
 
 func (s *VarStmt) emit(e *emitter) {
@@ -1619,18 +1630,25 @@ func (s *VarStmt) emit(e *emitter) {
 	e.name(s.Name)
 	io.WriteString(e.w, " = ")
 	s.Value.emit(e)
+	if s.Clone {
+		io.WriteString(e.w, ".clone")
+	}
 }
 
 // AssignStmt represents an assignment statement.
 type AssignStmt struct {
 	Name  string
 	Value Expr
+	Clone bool
 }
 
 func (s *AssignStmt) emit(e *emitter) {
 	e.name(s.Name)
 	io.WriteString(e.w, " = ")
 	s.Value.emit(e)
+	if s.Clone {
+		io.WriteString(e.w, ".clone")
+	}
 }
 
 // IndexAssignStmt represents assignment to an indexed element.
@@ -1797,11 +1815,7 @@ func (i *IntLit) emit(e *emitter) { fmt.Fprintf(e.w, "%d", i.Value) }
 type FloatLit struct{ Value float64 }
 
 func (f *FloatLit) emit(e *emitter) {
-	if f.Value == math.Trunc(f.Value) {
-		fmt.Fprintf(e.w, "%.1f", f.Value)
-	} else {
-		fmt.Fprintf(e.w, "%g", f.Value)
-	}
+	fmt.Fprintf(e.w, "%g", f.Value)
 }
 
 type BoolLit struct{ Value bool }
@@ -2030,6 +2044,12 @@ type CastExpr struct {
 }
 
 func (c *CastExpr) emit(e *emitter) {
+	if c.Type == "string" {
+		io.WriteString(e.w, "_str(")
+		c.Value.emit(e)
+		io.WriteString(e.w, ")")
+		return
+	}
 	io.WriteString(e.w, "(")
 	c.Value.emit(e)
 	io.WriteString(e.w, ")")
@@ -2038,8 +2058,6 @@ func (c *CastExpr) emit(e *emitter) {
 		io.WriteString(e.w, ".to_i")
 	case "float":
 		io.WriteString(e.w, ".to_f")
-	case "string":
-		io.WriteString(e.w, ".to_s")
 	case "bigrat":
 		io.WriteString(e.w, ".to_r")
 	}
@@ -2876,6 +2894,9 @@ func Emit(w io.Writer, p *Program) error {
 	if _, err := io.WriteString(w, helperPadStart+"\n"); err != nil {
 		return err
 	}
+	if _, err := io.WriteString(w, helperStr+"\n"); err != nil {
+		return err
+	}
 	if _, err := io.WriteString(w, helperStringEach+"\n"); err != nil {
 		return err
 	}
@@ -3103,7 +3124,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		addVar(st.Var.Name)
-		return &VarStmt{Name: st.Var.Name, Value: v}, nil
+		return &VarStmt{Name: st.Var.Name, Value: v, Clone: true}, nil
 	case st.Assign != nil:
 		v, err := convertExpr(st.Assign.Value)
 		if err != nil {
@@ -3158,7 +3179,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			return &IndexAssignStmt{Target: target, Index: idx, Value: v}, nil
 		}
 		if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
-			return &AssignStmt{Name: identName(st.Assign.Name), Value: v}, nil
+			return &AssignStmt{Name: identName(st.Assign.Name), Value: v, Clone: true}, nil
 		}
 		return nil, fmt.Errorf("unsupported assignment")
 	case st.If != nil:
@@ -4159,6 +4180,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("padStart expects 3 args")
 			}
 			return &CallExpr{Func: "_padStart", Args: args}, nil
+		case "toi":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("toi expects 1 arg")
+			}
+			return &CastExpr{Value: args[0], Type: "int"}, nil
 		case "sha256":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("sha256 expects 1 arg")
@@ -4176,6 +4202,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				}
 			}
 			return &CallExpr{Func: name, Args: args}, nil
+		case "floor":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("floor expects 1 arg")
+			}
+			return &MethodCallExpr{Target: args[0], Method: "floor"}, nil
 		case "now":
 			if len(args) != 0 {
 				return nil, fmt.Errorf("now takes no args")

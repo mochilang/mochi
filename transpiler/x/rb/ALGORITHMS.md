@@ -1,7 +1,7 @@
 # Ruby Algorithms Transpiler Output
 
-Completed programs: 310/1077
-Last updated: 2025-08-06 21:43 +0700
+Completed programs: 501/1077
+Last updated: 2025-08-06 22:14 +0700
 
 Checklist:
 
@@ -321,206 +321,206 @@ Checklist:
 | 312 | dynamic_programming/floyd_warshall | ✓ | 1ms | 12.0 KB |
 | 313 | dynamic_programming/integer_partition | ✓ | 1ms | 118.1 KB |
 | 314 | dynamic_programming/iterating_through_submasks | ✓ | 1ms | 11.0 KB |
-| 315 | dynamic_programming/k_means_clustering_tensorflow |   |  |  |
+| 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 1ms | 13.8 KB |
 | 316 | dynamic_programming/knapsack |   |  |  |
-| 317 | dynamic_programming/largest_divisible_subset |   |  |  |
-| 318 | dynamic_programming/longest_common_subsequence |   |  |  |
-| 319 | dynamic_programming/longest_common_substring |   |  |  |
-| 320 | dynamic_programming/longest_increasing_subsequence |   |  |  |
-| 321 | dynamic_programming/longest_increasing_subsequence_iterative |   |  |  |
-| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn |   |  |  |
-| 323 | dynamic_programming/longest_palindromic_subsequence |   |  |  |
-| 324 | dynamic_programming/matrix_chain_multiplication |   |  |  |
-| 325 | dynamic_programming/matrix_chain_order |   |  |  |
-| 326 | dynamic_programming/max_non_adjacent_sum |   |  |  |
-| 327 | dynamic_programming/max_product_subarray |   |  |  |
-| 328 | dynamic_programming/max_subarray_sum |   |  |  |
-| 329 | dynamic_programming/min_distance_up_bottom |   |  |  |
-| 330 | dynamic_programming/minimum_coin_change |   |  |  |
-| 331 | dynamic_programming/minimum_cost_path |   |  |  |
-| 332 | dynamic_programming/minimum_partition |   |  |  |
-| 333 | dynamic_programming/minimum_size_subarray_sum |   |  |  |
-| 334 | dynamic_programming/minimum_squares_to_represent_a_number |   |  |  |
-| 335 | dynamic_programming/minimum_steps_to_one |   |  |  |
-| 336 | dynamic_programming/minimum_tickets_cost |   |  |  |
-| 337 | dynamic_programming/optimal_binary_search_tree |   |  |  |
-| 338 | dynamic_programming/palindrome_partitioning |   |  |  |
-| 339 | dynamic_programming/range_sum_query |   |  |  |
-| 340 | dynamic_programming/regex_match |   |  |  |
-| 341 | dynamic_programming/rod_cutting |   |  |  |
-| 342 | dynamic_programming/smith_waterman |   |  |  |
-| 343 | dynamic_programming/subset_generation |   |  |  |
-| 344 | dynamic_programming/sum_of_subset |   |  |  |
-| 345 | dynamic_programming/trapped_water |   |  |  |
-| 346 | dynamic_programming/tribonacci |   |  |  |
-| 347 | dynamic_programming/viterbi |   |  |  |
-| 348 | dynamic_programming/wildcard_matching |   |  |  |
-| 349 | dynamic_programming/word_break |   |  |  |
-| 350 | electronics/apparent_power |   |  |  |
-| 351 | electronics/builtin_voltage |   |  |  |
-| 352 | electronics/capacitor_equivalence |   |  |  |
-| 353 | electronics/carrier_concentration |   |  |  |
-| 354 | electronics/charging_capacitor |   |  |  |
-| 355 | electronics/charging_inductor |   |  |  |
-| 356 | electronics/circular_convolution |   |  |  |
-| 357 | electronics/coulombs_law |   |  |  |
-| 358 | electronics/electric_conductivity |   |  |  |
-| 359 | electronics/electric_power |   |  |  |
-| 360 | electronics/electrical_impedance |   |  |  |
-| 361 | electronics/ic_555_timer |   |  |  |
-| 362 | electronics/ind_reactance |   |  |  |
-| 363 | electronics/ohms_law |   |  |  |
-| 364 | electronics/real_and_reactive_power |   |  |  |
-| 365 | electronics/resistor_color_code |   |  |  |
-| 366 | electronics/resistor_equivalence |   |  |  |
-| 367 | electronics/resonant_frequency |   |  |  |
-| 368 | electronics/wheatstone_bridge |   |  |  |
-| 369 | file_transfer/receive_file |   |  |  |
-| 370 | file_transfer/send_file |   |  |  |
-| 371 | file_transfer/tests/test_send_file |   |  |  |
-| 372 | financial/equated_monthly_installments |   |  |  |
-| 373 | financial/exponential_moving_average |   |  |  |
-| 374 | financial/interest |   |  |  |
-| 375 | financial/present_value |   |  |  |
-| 376 | financial/price_plus_tax |   |  |  |
-| 377 | financial/simple_moving_average |   |  |  |
+| 317 | dynamic_programming/largest_divisible_subset | ✓ | 1ms | 11.2 KB |
+| 318 | dynamic_programming/longest_common_subsequence | ✓ | 1ms | 16.3 KB |
+| 319 | dynamic_programming/longest_common_substring | ✓ | 1ms | 31.0 KB |
+| 320 | dynamic_programming/longest_increasing_subsequence | ✓ | 1ms | 11.0 KB |
+| 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 1ms | 17.5 KB |
+| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | ✓ | 1ms | 9.9 KB |
+| 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 1ms | 30.8 KB |
+| 324 | dynamic_programming/matrix_chain_multiplication | ✓ | 1ms | 1.7 KB |
+| 325 | dynamic_programming/matrix_chain_order | ✓ | 1ms | 15.9 KB |
+| 326 | dynamic_programming/max_non_adjacent_sum | ✓ | 1ms | 9.0 KB |
+| 327 | dynamic_programming/max_product_subarray | ✓ | 1ms | 9.0 KB |
+| 328 | dynamic_programming/max_subarray_sum | ✓ | 1ms | 9.5 KB |
+| 329 | dynamic_programming/min_distance_up_bottom | ✓ | 1ms | 56.9 KB |
+| 330 | dynamic_programming/minimum_coin_change | ✓ | 1ms | 11.0 KB |
+| 331 | dynamic_programming/minimum_cost_path | ✓ | 1ms | 9.1 KB |
+| 332 | dynamic_programming/minimum_partition | ✓ | 1ms | 27.4 KB |
+| 333 | dynamic_programming/minimum_size_subarray_sum | ✓ | 1ms | 9.0 KB |
+| 334 | dynamic_programming/minimum_squares_to_represent_a_number | ✓ | 1ms | 9.8 KB |
+| 335 | dynamic_programming/minimum_steps_to_one | ✓ | 1ms | 9.5 KB |
+| 336 | dynamic_programming/minimum_tickets_cost | ✓ | 1ms | 10.3 KB |
+| 337 | dynamic_programming/optimal_binary_search_tree | ✓ | 1ms | 21.5 KB |
+| 338 | dynamic_programming/palindrome_partitioning | ✓ | 1ms | 21.7 KB |
+| 339 | dynamic_programming/range_sum_query | ✓ | 1ms | 12.6 KB |
+| 340 | dynamic_programming/regex_match | ✓ | 1ms | 35.6 KB |
+| 341 | dynamic_programming/rod_cutting | ✓ | 1ms | 9.4 KB |
+| 342 | dynamic_programming/smith_waterman | ✓ | 1ms | 30.6 KB |
+| 343 | dynamic_programming/subset_generation | ✓ | 1ms | 11.8 KB |
+| 344 | dynamic_programming/sum_of_subset | ✓ | 1ms | 11.2 KB |
+| 345 | dynamic_programming/trapped_water | ✓ | 1ms | 9.6 KB |
+| 346 | dynamic_programming/tribonacci | ✓ | 1ms | 9.6 KB |
+| 347 | dynamic_programming/viterbi | ✓ | 1ms | 14.5 KB |
+| 348 | dynamic_programming/wildcard_matching | ✓ | 1ms | 41.1 KB |
+| 349 | dynamic_programming/word_break | ✓ | 1ms | 14.7 KB |
+| 350 | electronics/apparent_power | ✓ | 1ms | 6.5 KB |
+| 351 | electronics/builtin_voltage | ✓ | 1ms | 9.1 KB |
+| 352 | electronics/capacitor_equivalence | ✓ | 1ms | 9.2 KB |
+| 353 | electronics/carrier_concentration | ✓ | 1ms | 11.3 KB |
+| 354 | electronics/charging_capacitor | ✓ | 1ms | 10.6 KB |
+| 355 | electronics/charging_inductor | ✓ | 1ms | 9.8 KB |
+| 356 | electronics/circular_convolution | ✓ | 1ms | 13.6 KB |
+| 357 | electronics/coulombs_law | ✓ | 1ms | 10.9 KB |
+| 358 | electronics/electric_conductivity | ✓ | 1ms | 11.2 KB |
+| 359 | electronics/electric_power | ✓ | 1ms | 14.2 KB |
+| 360 | electronics/electrical_impedance | ✓ | 1ms | 10.3 KB |
+| 361 | electronics/ic_555_timer | ✓ | 1ms | 9.4 KB |
+| 362 | electronics/ind_reactance | ✓ | 1ms | 10.4 KB |
+| 363 | electronics/ohms_law | ✓ | 1ms | 11.4 KB |
+| 364 | electronics/real_and_reactive_power | ✓ | 1ms | 9.3 KB |
+| 365 | electronics/resistor_color_code | ✓ | 1ms | 7.6 KB |
+| 366 | electronics/resistor_equivalence | ✓ | 1ms | 9.3 KB |
+| 367 | electronics/resonant_frequency | ✓ | 1ms | 9.3 KB |
+| 368 | electronics/wheatstone_bridge | ✓ | 1ms | 9.0 KB |
+| 369 | file_transfer/receive_file | ✓ | 1ms | 9.4 KB |
+| 370 | file_transfer/send_file | ✓ | 1ms | 9.1 KB |
+| 371 | file_transfer/tests/test_send_file | ✓ | 1ms | 15.8 KB |
+| 372 | financial/equated_monthly_installments | ✓ | 1ms | 9.0 KB |
+| 373 | financial/exponential_moving_average | ✓ | 1ms | 9.8 KB |
+| 374 | financial/interest | ✓ | 1ms | 9.5 KB |
+| 375 | financial/present_value | ✓ | 1ms | 9.3 KB |
+| 376 | financial/price_plus_tax | ✓ | 1ms | 9.2 KB |
+| 377 | financial/simple_moving_average | ✓ | 1ms | 15.1 KB |
 | 378 | financial/straight_line_depreciation |   |  |  |
-| 379 | financial/time_and_half_pay |   |  |  |
-| 380 | fractals/julia_sets |   |  |  |
-| 381 | fractals/koch_snowflake |   |  |  |
-| 382 | fractals/mandelbrot |   |  |  |
-| 383 | fractals/sierpinski_triangle |   |  |  |
-| 384 | fractals/vicsek |   |  |  |
-| 385 | fuzzy_logic/fuzzy_operations |   |  |  |
-| 386 | genetic_algorithm/basic_string |   |  |  |
-| 387 | geodesy/haversine_distance |   |  |  |
-| 388 | geodesy/lamberts_ellipsoidal_distance |   |  |  |
-| 389 | geometry/geometry |   |  |  |
-| 390 | graphics/bezier_curve |   |  |  |
-| 391 | graphics/butterfly_pattern |   |  |  |
-| 392 | graphics/digital_differential_analyzer_line |   |  |  |
-| 393 | graphics/vector3_for_2d_rendering |   |  |  |
-| 394 | graphs/a_star |   |  |  |
-| 395 | graphs/ant_colony_optimization_algorithms |   |  |  |
-| 396 | graphs/articulation_points |   |  |  |
-| 397 | graphs/basic_graphs |   |  |  |
-| 398 | graphs/bellman_ford |   |  |  |
-| 399 | graphs/bi_directional_dijkstra |   |  |  |
-| 400 | graphs/bidirectional_a_star |   |  |  |
-| 401 | graphs/bidirectional_breadth_first_search |   |  |  |
-| 402 | graphs/bidirectional_search |   |  |  |
+| 379 | financial/time_and_half_pay | ✓ | 1ms | 9.3 KB |
+| 380 | fractals/julia_sets | ✓ | 1ms | 364.3 KB |
+| 381 | fractals/koch_snowflake | ✓ | 1ms | 16.6 KB |
+| 382 | fractals/mandelbrot | ✓ | 1ms | 83.7 KB |
+| 383 | fractals/sierpinski_triangle | ✓ | 1ms | 33.9 KB |
+| 384 | fractals/vicsek | ✓ | 1ms | 15.4 KB |
+| 385 | fuzzy_logic/fuzzy_operations | ✓ | 1ms | 16.8 KB |
+| 386 | genetic_algorithm/basic_string | ✓ | 1ms | 13.2 KB |
+| 387 | geodesy/haversine_distance | ✓ | 1ms | 9.9 KB |
+| 388 | geodesy/lamberts_ellipsoidal_distance | ✓ | 1ms | 9.7 KB |
+| 389 | geometry/geometry | ✓ | 1ms | 23.5 KB |
+| 390 | graphics/bezier_curve | ✓ | 1ms | 11.0 KB |
+| 391 | graphics/butterfly_pattern | ✓ | 1ms | 20.1 KB |
+| 392 | graphics/digital_differential_analyzer_line | ✓ | 1ms | 12.8 KB |
+| 393 | graphics/vector3_for_2d_rendering | ✓ | 1ms | 13.7 KB |
+| 394 | graphs/a_star | ✓ | 1ms | 26.5 KB |
+| 395 | graphs/ant_colony_optimization_algorithms | ✓ | 1.401s | 439.2 KB |
+| 396 | graphs/articulation_points | ✓ | 1ms | 11.5 KB |
+| 397 | graphs/basic_graphs | ✓ | 1ms | 21.8 KB |
+| 398 | graphs/bellman_ford | ✓ | 1ms | 12.3 KB |
+| 399 | graphs/bi_directional_dijkstra | ✓ | 1ms | 21.4 KB |
+| 400 | graphs/bidirectional_a_star | ✓ | 1ms | 198.6 KB |
+| 401 | graphs/bidirectional_breadth_first_search | ✓ | 1ms | 319.6 KB |
+| 402 | graphs/bidirectional_search | ✓ | 1ms | 21.1 KB |
 | 403 | graphs/boruvka |   |  |  |
-| 404 | graphs/breadth_first_search |   |  |  |
-| 405 | graphs/breadth_first_search_2 |   |  |  |
-| 406 | graphs/breadth_first_search_shortest_path |   |  |  |
-| 407 | graphs/breadth_first_search_shortest_path_2 |   |  |  |
-| 408 | graphs/breadth_first_search_zero_one_shortest_path |   |  |  |
-| 409 | graphs/check_bipatrite |   |  |  |
-| 410 | graphs/check_cycle |   |  |  |
-| 411 | graphs/connected_components |   |  |  |
+| 404 | graphs/breadth_first_search | ✓ | 1ms | 11.7 KB |
+| 405 | graphs/breadth_first_search_2 | ✓ | 1ms | 11.8 KB |
+| 406 | graphs/breadth_first_search_shortest_path | ✓ | 1ms | 12.8 KB |
+| 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 1ms | 11.4 KB |
+| 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ | 1ms | 27.2 KB |
+| 409 | graphs/check_bipatrite | ✓ | 1ms | 10.5 KB |
+| 410 | graphs/check_cycle | ✓ | 1ms | 10.9 KB |
+| 411 | graphs/connected_components | ✓ | 1ms | 15.7 KB |
 | 412 | graphs/deep_clone_graph |   |  |  |
-| 413 | graphs/depth_first_search |   |  |  |
-| 414 | graphs/depth_first_search_2 |   |  |  |
-| 415 | graphs/dijkstra |   |  |  |
-| 416 | graphs/dijkstra_2 |   |  |  |
-| 417 | graphs/dijkstra_algorithm |   |  |  |
-| 418 | graphs/dijkstra_alternate |   |  |  |
-| 419 | graphs/dijkstra_binary_grid |   |  |  |
-| 420 | graphs/dinic |   |  |  |
-| 421 | graphs/directed_and_undirected_weighted_graph |   |  |  |
+| 413 | graphs/depth_first_search | ✓ | 1ms | 12.8 KB |
+| 414 | graphs/depth_first_search_2 | ✓ | 1ms | 18.6 KB |
+| 415 | graphs/dijkstra | ✓ | 1ms | 21.0 KB |
+| 416 | graphs/dijkstra_2 | ✓ | 1ms | 12.3 KB |
+| 417 | graphs/dijkstra_algorithm | ✓ | 1ms | 13.8 KB |
+| 418 | graphs/dijkstra_alternate | ✓ | 1ms | 12.5 KB |
+| 419 | graphs/dijkstra_binary_grid | ✓ | 1ms | 49.0 KB |
+| 420 | graphs/dinic | ✓ | 1ms | 86.8 KB |
+| 421 | graphs/directed_and_undirected_weighted_graph | ✓ | 1ms | 27.1 KB |
 | 422 | graphs/edmonds_karp_multiple_source_and_sink |   |  |  |
-| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph |   |  |  |
-| 424 | graphs/even_tree |   |  |  |
+| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 1ms | 48.3 KB |
+| 424 | graphs/even_tree | ✓ | 1ms | 12.4 KB |
 | 425 | graphs/finding_bridges |   |  |  |
-| 426 | graphs/frequent_pattern_graph_miner |   |  |  |
-| 427 | graphs/g_topological_sort |   |  |  |
-| 428 | graphs/gale_shapley_bigraph |   |  |  |
-| 429 | graphs/graph_adjacency_list |   |  |  |
-| 430 | graphs/graph_adjacency_matrix |   |  |  |
-| 431 | graphs/graph_list |   |  |  |
-| 432 | graphs/graphs_floyd_warshall |   |  |  |
-| 433 | graphs/greedy_best_first |   |  |  |
-| 434 | graphs/greedy_min_vertex_cover |   |  |  |
-| 435 | graphs/kahns_algorithm_long |   |  |  |
-| 436 | graphs/kahns_algorithm_topo |   |  |  |
-| 437 | graphs/karger |   |  |  |
-| 438 | graphs/lanczos_eigenvectors |   |  |  |
-| 439 | graphs/markov_chain |   |  |  |
-| 440 | graphs/matching_min_vertex_cover |   |  |  |
-| 441 | graphs/minimum_path_sum |   |  |  |
-| 442 | graphs/minimum_spanning_tree_boruvka |   |  |  |
-| 443 | graphs/minimum_spanning_tree_kruskal |   |  |  |
-| 444 | graphs/minimum_spanning_tree_kruskal2 |   |  |  |
-| 445 | graphs/minimum_spanning_tree_prims |   |  |  |
-| 446 | graphs/minimum_spanning_tree_prims2 |   |  |  |
-| 447 | graphs/multi_heuristic_astar |   |  |  |
-| 448 | graphs/page_rank |   |  |  |
-| 449 | graphs/prim |   |  |  |
-| 450 | graphs/random_graph_generator |   |  |  |
-| 451 | graphs/scc_kosaraju |   |  |  |
-| 452 | graphs/strongly_connected_components |   |  |  |
+| 426 | graphs/frequent_pattern_graph_miner | ✓ | 1ms | 122.5 KB |
+| 427 | graphs/g_topological_sort | ✓ | 1ms | 17.7 KB |
+| 428 | graphs/gale_shapley_bigraph | ✓ | 1ms | 12.6 KB |
+| 429 | graphs/graph_adjacency_list | ✓ | 1ms | 17.7 KB |
+| 430 | graphs/graph_adjacency_matrix | ✓ | 1ms | 16.7 KB |
+| 431 | graphs/graph_list | ✓ | 1ms | 16.2 KB |
+| 432 | graphs/graphs_floyd_warshall | ✓ | 1ms | 14.1 KB |
+| 433 | graphs/greedy_best_first | ✓ | 1ms | 152.2 KB |
+| 434 | graphs/greedy_min_vertex_cover | ✓ | 1ms | 11.9 KB |
+| 435 | graphs/kahns_algorithm_long | ✓ | 1ms | 10.7 KB |
+| 436 | graphs/kahns_algorithm_topo | ✓ | 1ms | 12.0 KB |
+| 437 | graphs/karger | ✓ | 1ms | 50.6 KB |
+| 438 | graphs/lanczos_eigenvectors | ✓ | 1ms | 26.7 KB |
+| 439 | graphs/markov_chain | ✓ | 1ms | -58279 B |
+| 440 | graphs/matching_min_vertex_cover | ✓ | 1ms | 11.8 KB |
+| 441 | graphs/minimum_path_sum | ✓ | 1ms | 9.9 KB |
+| 442 | graphs/minimum_spanning_tree_boruvka | ✓ | 1ms | 23.8 KB |
+| 443 | graphs/minimum_spanning_tree_kruskal | ✓ | 1ms | 20.8 KB |
+| 444 | graphs/minimum_spanning_tree_kruskal2 | ✓ | 1ms | 26.0 KB |
+| 445 | graphs/minimum_spanning_tree_prims | ✓ | 1ms | 22.6 KB |
+| 446 | graphs/minimum_spanning_tree_prims2 | ✓ | 1ms | 16.3 KB |
+| 447 | graphs/multi_heuristic_astar | ✓ | 1ms | 25.1 KB |
+| 448 | graphs/page_rank | ✓ | 1ms | 18.6 KB |
+| 449 | graphs/prim | ✓ | 1ms | 19.2 KB |
+| 450 | graphs/random_graph_generator | ✓ | 1ms | 12.0 KB |
+| 451 | graphs/scc_kosaraju | ✓ | 1ms | 12.7 KB |
+| 452 | graphs/strongly_connected_components | ✓ | 1ms | 18.6 KB |
 | 453 | graphs/tarjans_scc |   |  |  |
-| 454 | graphs/tests/test_min_spanning_tree_kruskal |   |  |  |
-| 455 | graphs/tests/test_min_spanning_tree_prim |   |  |  |
-| 456 | greedy_methods/best_time_to_buy_and_sell_stock |   |  |  |
-| 457 | greedy_methods/fractional_cover_problem |   |  |  |
-| 458 | greedy_methods/fractional_knapsack |   |  |  |
-| 459 | greedy_methods/fractional_knapsack_2 |   |  |  |
-| 460 | greedy_methods/gas_station |   |  |  |
-| 461 | greedy_methods/minimum_coin_change |   |  |  |
-| 462 | greedy_methods/minimum_waiting_time |   |  |  |
-| 463 | greedy_methods/optimal_merge_pattern |   |  |  |
-| 464 | greedy_methods/smallest_range |   |  |  |
-| 465 | hashes/adler32 |   |  |  |
-| 466 | hashes/chaos_machine |   |  |  |
-| 467 | hashes/djb2 |   |  |  |
-| 468 | hashes/elf |   |  |  |
-| 469 | hashes/enigma_machine |   |  |  |
-| 470 | hashes/fletcher16 |   |  |  |
-| 471 | hashes/hamming_code |   |  |  |
-| 472 | hashes/luhn |   |  |  |
-| 473 | hashes/md5 |   |  |  |
-| 474 | hashes/sdbm |   |  |  |
-| 475 | hashes/sha1 |   |  |  |
-| 476 | hashes/sha256 |   |  |  |
-| 477 | knapsack/greedy_knapsack |   |  |  |
-| 478 | knapsack/knapsack |   |  |  |
-| 479 | knapsack/recursive_approach_knapsack |   |  |  |
-| 480 | knapsack/tests/test_greedy_knapsack |   |  |  |
-| 481 | knapsack/tests/test_knapsack |   |  |  |
-| 482 | linear_algebra/gaussian_elimination |   |  |  |
-| 483 | linear_algebra/jacobi_iteration_method |   |  |  |
-| 484 | linear_algebra/lu_decomposition |   |  |  |
-| 485 | linear_algebra/matrix_inversion |   |  |  |
-| 486 | linear_algebra/src/conjugate_gradient |   |  |  |
-| 487 | linear_algebra/src/gaussian_elimination_pivoting |   |  |  |
-| 488 | linear_algebra/src/lib |   |  |  |
-| 489 | linear_algebra/src/polynom_for_points |   |  |  |
-| 490 | linear_algebra/src/power_iteration |   |  |  |
-| 491 | linear_algebra/src/rank_of_matrix |   |  |  |
-| 492 | linear_algebra/src/rayleigh_quotient |   |  |  |
-| 493 | linear_algebra/src/schur_complement |   |  |  |
-| 494 | linear_algebra/src/test_linear_algebra |   |  |  |
-| 495 | linear_algebra/src/transformations_2d |   |  |  |
-| 496 | linear_programming/simplex |   |  |  |
-| 497 | machine_learning/apriori_algorithm |   |  |  |
-| 498 | machine_learning/astar |   |  |  |
-| 499 | machine_learning/automatic_differentiation |   |  |  |
-| 500 | machine_learning/data_transformations |   |  |  |
-| 501 | machine_learning/decision_tree |   |  |  |
-| 502 | machine_learning/dimensionality_reduction |   |  |  |
-| 503 | machine_learning/forecasting/run |   |  |  |
+| 454 | graphs/tests/test_min_spanning_tree_kruskal | ✓ | 1ms | 13.8 KB |
+| 455 | graphs/tests/test_min_spanning_tree_prim | ✓ | 1ms | 30.8 KB |
+| 456 | greedy_methods/best_time_to_buy_and_sell_stock | ✓ | 1ms | 9.0 KB |
+| 457 | greedy_methods/fractional_cover_problem | ✓ | 1ms | 15.5 KB |
+| 458 | greedy_methods/fractional_knapsack | ✓ | 1ms | 12.4 KB |
+| 459 | greedy_methods/fractional_knapsack_2 | ✓ | 1ms | 14.8 KB |
+| 460 | greedy_methods/gas_station | ✓ | 1ms | 12.6 KB |
+| 461 | greedy_methods/minimum_coin_change | ✓ | 1ms | 11.8 KB |
+| 462 | greedy_methods/minimum_waiting_time | ✓ | 1ms | 9.5 KB |
+| 463 | greedy_methods/optimal_merge_pattern | ✓ | 1ms | 13.6 KB |
+| 464 | greedy_methods/smallest_range | ✓ | 1ms | 26.8 KB |
+| 465 | hashes/adler32 | ✓ | 1ms | 32.4 KB |
+| 466 | hashes/chaos_machine | ✓ | 1ms | 47.2 KB |
+| 467 | hashes/djb2 | ✓ | 1ms | 48.0 KB |
+| 468 | hashes/elf | ✓ | 1ms | 72.2 KB |
+| 469 | hashes/enigma_machine | ✓ | 1ms | 54.6 KB |
+| 470 | hashes/fletcher16 | ✓ | 1ms | 239.6 KB |
+| 471 | hashes/hamming_code | ✓ | 1ms | 136.6 KB |
+| 472 | hashes/luhn | ✓ | 1ms | 12.0 KB |
+| 473 | hashes/md5 | ✓ | 1ms | -30695 B |
+| 474 | hashes/sdbm | ✓ | 1ms | 141.5 KB |
+| 475 | hashes/sha1 | ✓ | 1ms | 84.2 KB |
+| 476 | hashes/sha256 | ✓ | 1ms | 65.3 KB |
+| 477 | knapsack/greedy_knapsack | ✓ | 1ms | 10.5 KB |
+| 478 | knapsack/knapsack | ✓ | 1ms | 9.3 KB |
+| 479 | knapsack/recursive_approach_knapsack | ✓ | 1ms | 9.3 KB |
+| 480 | knapsack/tests/test_greedy_knapsack | ✓ | 1ms | 14.0 KB |
+| 481 | knapsack/tests/test_knapsack | ✓ | 1ms | 9.4 KB |
+| 482 | linear_algebra/gaussian_elimination | ✓ | 1ms | 15.3 KB |
+| 483 | linear_algebra/jacobi_iteration_method | ✓ | 1ms | 10.7 KB |
+| 484 | linear_algebra/lu_decomposition | ✓ | 1ms | 16.7 KB |
+| 485 | linear_algebra/matrix_inversion | ✓ | 1ms | 12.2 KB |
+| 486 | linear_algebra/src/conjugate_gradient | ✓ | 1ms | 117.7 KB |
+| 487 | linear_algebra/src/gaussian_elimination_pivoting | ✓ | 1ms | 14.6 KB |
+| 488 | linear_algebra/src/lib | ✓ | 1ms | 14.9 KB |
+| 489 | linear_algebra/src/polynom_for_points | ✓ | 1ms | 41.1 KB |
+| 490 | linear_algebra/src/power_iteration | ✓ | 1ms | 23.3 KB |
+| 491 | linear_algebra/src/rank_of_matrix | ✓ | 1ms | 2.0 KB |
+| 492 | linear_algebra/src/rayleigh_quotient | ✓ | 1ms | 41.6 KB |
+| 493 | linear_algebra/src/schur_complement | ✓ | 1ms | 16.6 KB |
+| 494 | linear_algebra/src/test_linear_algebra | ✓ | 1ms | 82.8 KB |
+| 495 | linear_algebra/src/transformations_2d | ✓ | 1ms | 24.3 KB |
+| 496 | linear_programming/simplex | ✓ | 1ms | 14.2 KB |
+| 497 | machine_learning/apriori_algorithm | ✓ | 1ms | 17.9 KB |
+| 498 | machine_learning/astar | ✓ | 1ms | 70.0 KB |
+| 499 | machine_learning/automatic_differentiation | ✓ | 1ms | 12.6 KB |
+| 500 | machine_learning/data_transformations | ✓ | 1ms | 14.0 KB |
+| 501 | machine_learning/decision_tree | ✓ | 1ms | 87.2 KB |
+| 502 | machine_learning/dimensionality_reduction | ✓ | 1ms | 8.4 KB |
+| 503 | machine_learning/forecasting/run | ✓ | 1ms | 19.1 KB |
 | 504 | machine_learning/frequent_pattern_growth |   |  |  |
-| 505 | machine_learning/gradient_boosting_classifier |   |  |  |
-| 506 | machine_learning/gradient_descent |   |  |  |
-| 507 | machine_learning/k_means_clust |   |  |  |
+| 505 | machine_learning/gradient_boosting_classifier | ✓ | 1ms | 18.4 KB |
+| 506 | machine_learning/gradient_descent | ✓ | 1ms | 205.1 KB |
+| 507 | machine_learning/k_means_clust | ✓ | 1ms | 21.8 KB |
 | 508 | machine_learning/k_nearest_neighbours |   |  |  |
-| 509 | machine_learning/linear_discriminant_analysis |   |  |  |
-| 510 | machine_learning/linear_regression |   |  |  |
-| 511 | machine_learning/local_weighted_learning/local_weighted_learning |   |  |  |
-| 512 | machine_learning/logistic_regression |   |  |  |
-| 513 | machine_learning/loss_functions |   |  |  |
-| 514 | machine_learning/lstm/lstm_prediction |   |  |  |
+| 509 | machine_learning/linear_discriminant_analysis | ✓ | 1ms | 37.7 KB |
+| 510 | machine_learning/linear_regression | ✓ | 1ms | 18.0 KB |
+| 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 1ms | 31.2 KB |
+| 512 | machine_learning/logistic_regression | ✓ | 1ms | 211.4 KB |
+| 513 | machine_learning/loss_functions | ✓ | 1ms | 16.3 KB |
+| 514 | machine_learning/lstm/lstm_prediction | ✓ | 1ms | 152.7 KB |
 | 515 | machine_learning/mfcc |   |  |  |
 | 516 | machine_learning/multilayer_perceptron_classifier |   |  |  |
 | 517 | machine_learning/polynomial_regression |   |  |  |

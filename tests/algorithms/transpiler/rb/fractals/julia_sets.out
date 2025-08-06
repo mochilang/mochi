@@ -1,0 +1,3 @@
+/workspace/mochi/tests/algorithms/transpiler/rb/fractals/julia_sets.rb:186: warning: already initialized constant Complex
+[[0 0 0 1 0] [0 0 1 1 0] [0 0 1 0 0] [0 1 1 0 0] [0 1 0 0 0]]
+[[1 1 1 1 1] [1 1 1 1 1] [1 1 1 1 1] [1 1 1 1 1] [1 1 1 1 1]]
