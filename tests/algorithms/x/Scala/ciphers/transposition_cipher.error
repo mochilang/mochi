@@ -1,0 +1,25 @@
+exit status 1
+Enter message: 
+Enter key [2-0]: 
+java.lang.NumberFormatException: For input string: "q"
+	at java.base/java.lang.NumberFormatException.forInputString(NumberFormatException.java:67)
+	at java.base/java.lang.Integer.parseInt(Integer.java:662)
+	at java.base/java.lang.Integer.parseInt(Integer.java:778)
+	at scala.collection.StringOps$.toInt$extension(StringOps.scala:910)
+	at Main$.main(transposition_cipher.scala:87)
+	at Main$.main(transposition_cipher.scala:107)
+	at Main.main(transposition_cipher.scala)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at scala.reflect.internal.util.RichClassLoader$.$anonfun$run$extension$1(ScalaClassLoader.scala:101)
+	at scala.reflect.internal.util.RichClassLoader$.run$extension(ScalaClassLoader.scala:36)
+	at scala.tools.nsc.CommonRunner.run(ObjectRunner.scala:30)
+	at scala.tools.nsc.CommonRunner.run$(ObjectRunner.scala:28)
+	at scala.tools.nsc.ObjectRunner$.run(ObjectRunner.scala:45)
+	at scala.tools.nsc.CommonRunner.runAndCatch(ObjectRunner.scala:37)
+	at scala.tools.nsc.CommonRunner.runAndCatch$(ObjectRunner.scala:36)
+	at scala.tools.nsc.MainGenericRunner.runTarget$1(MainGenericRunner.scala:71)
+	at scala.tools.nsc.MainGenericRunner.run$1(MainGenericRunner.scala:92)
+	at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:105)
+	at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:113)
+	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
