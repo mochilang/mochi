@@ -1,0 +1,27 @@
+/*
+Project Euler Problem 1: Multiples of 3 and 5
+
+Given a positive integer n, compute the sum of all natural numbers less than n
+that are divisible by 3 or 5. The algorithm iterates from 3 up to n-1 and
+accumulates values divisible by 3 or 5. It runs in O(n) time and uses only
+Mochi standard features so it executes on the runtime/vm without FFI.
+*/
+
+fun solution(n: int): int {
+  var total = 0
+  var e = 3
+  while e < n {
+    if e % 3 == 0 || e % 5 == 0 {
+      total = total + e
+    }
+    e = e + 1
+  }
+  return total
+}
+
+print(str(solution(3)))
+print(str(solution(4)))
+print(str(solution(10)))
+print(str(solution(600)))
+print(str(solution(-7)))
+print(str(solution(1000)))
