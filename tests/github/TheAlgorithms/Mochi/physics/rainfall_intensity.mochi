@@ -1,0 +1,102 @@
+/*
+Calculate rainfall intensity using the Sherman intensity-duration-frequency (IDF) curve.
+Given positive coefficients k, a, b, c, return period T (years) and duration D (minutes),
+the intensity I in mm/h is:
+
+  I = k * T^a / (D + b)^c
+
+The implementation checks all parameters are positive and raises an error otherwise.
+It approximates exponentiation for real powers using a series-based natural logarithm
+and exponential:
+  - ln(x) is computed via the arithmetic-geometric mean series after scaling x to [1,10).
+  - exp(x) is computed via a 30-term Taylor expansion, with reciprocals for negative x.
+Time complexity is O(n) for the series expansions where n = 30.
+*/
+
+fun exp_approx(x: float): float {
+  var y: float = x
+  var is_neg: bool = false
+  if x < 0.0 {
+    is_neg = true
+    y = -x
+  }
+  var term: float = 1.0
+  var sum: float = 1.0
+  var n: int = 1
+  while n < 30 {
+    term = term * y / (n as float)
+    sum = sum + term
+    n = n + 1
+  }
+  if is_neg { return 1.0 / sum }
+  return sum
+}
+
+fun ln_series(x: float): float {
+  let t = (x - 1.0) / (x + 1.0)
+  var term = t
+  var sum = 0.0
+  var n = 1
+  while n <= 19 {
+    sum = sum + term / (n as float)
+    term = term * t * t
+    n = n + 2
+  }
+  return 2.0 * sum
+}
+
+fun ln(x: float): float {
+  var y = x
+  var k = 0
+  while y >= 10.0 {
+    y = y / 10.0
+    k = k + 1
+  }
+  while y < 1.0 {
+    y = y * 10.0
+    k = k - 1
+  }
+  return ln_series(y) + (k as float) * ln_series(10.0)
+}
+
+fun powf(base: float, exponent: float): float {
+  return exp_approx(exponent * ln(base))
+}
+
+fun rainfall_intensity(
+  coefficient_k: float,
+  coefficient_a: float,
+  coefficient_b: float,
+  coefficient_c: float,
+  return_period: float,
+  duration: float
+): float {
+  if coefficient_k <= 0.0 {
+    panic("All parameters must be positive.")
+  }
+  if coefficient_a <= 0.0 {
+    panic("All parameters must be positive.")
+  }
+  if coefficient_b <= 0.0 {
+    panic("All parameters must be positive.")
+  }
+  if coefficient_c <= 0.0 {
+    panic("All parameters must be positive.")
+  }
+  if return_period <= 0.0 {
+    panic("All parameters must be positive.")
+  }
+  if duration <= 0.0 {
+    panic("All parameters must be positive.")
+  }
+  let numerator = coefficient_k * powf(return_period, coefficient_a)
+  let denominator = powf(duration + coefficient_b, coefficient_c)
+  return numerator / denominator
+}
+
+let r1 = rainfall_intensity(1000.0, 0.2, 11.6, 0.81, 10.0, 60.0)
+print(str(r1))
+let r2 = rainfall_intensity(1000.0, 0.2, 11.6, 0.81, 10.0, 30.0)
+print(str(r2))
+let r3 = rainfall_intensity(1000.0, 0.2, 11.6, 0.81, 5.0, 60.0)
+print(str(r3))
