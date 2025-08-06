@@ -1,0 +1,91 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/backtracking/n_queens_math.c:96:18: error: expected identifier or ‘(’ before ‘[’ token
+   96 | static const char[]** list_append_c_char[]ptr(const char[] **arr, size_t *len, const char[] *val) {
+      |                  ^
+/workspace/mochi/tests/algorithms/x/C/backtracking/n_queens_math.c:104:13: error: conflicting types for ‘repeat’; have ‘const char *(const char *, long long int)’
+  104 | const char* repeat(const char* s, long long times);
+      |             ^~~~~~
+/workspace/mochi/tests/algorithms/x/C/backtracking/n_queens_math.c:23:14: note: previous definition of ‘repeat’ with type ‘char *(const char *, int)’
+   23 | static char* repeat(const char *s, int n) {
+      |              ^~~~~~
+/workspace/mochi/tests/algorithms/x/C/backtracking/n_queens_math.c: In function ‘depth_first_search’:
+/workspace/mochi/tests/algorithms/x/C/backtracking/n_queens_math.c:151:18: error: ‘list_append_c_char’ undeclared (first use in this function); did you mean ‘list_append_intptr’?
+  151 |         single = list_append_c_char[]ptr(single, &single_len, build_board(pos, pos_len, n));
+      |                  ^~~~~~~~~~~~~~~~~~
+      |                  list_append_intptr
+/workspace/mochi/tests/algorithms/x/C/backtracking/n_queens_math.c:151:18: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/algorithms/x/C/backtracking/n_queens_math.c:151:37: error: expected expression before ‘]’ token
+  151 |         single = list_append_c_char[]ptr(single, &single_len, build_board(pos, pos_len, n));
+      |                                     ^
+/workspace/mochi/tests/algorithms/x/C/backtracking/n_queens_math.c:161:21: warning: passing argument 1 of ‘strstr’ from incompatible pointer type [-Wincompatible-pointer-types]
+  161 |         if ((strstr(pos, col) != NULL || strstr(dr, row - col) != NULL) || strstr(dl, row + col) != NULL) {
+      |                     ^~~
+      |                     |
+      |                     long long int *
+In file included from /workspace/mochi/tests/algorithms/x/C/backtracking/n_queens_math.c:3:
+/usr/include/string.h:350:34: note: expected ‘const char *’ but argument is of type ‘long long int *’
+  350 | extern char *strstr (const char *__haystack, const char *__needle)
+      |                      ~~~~~~~~~~~~^~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/backtracking/n_queens_math.c:161:26: warning: passing argument 2 of ‘strstr’ makes pointer from integer without a cast [-Wint-conversion]
+  161 |         if ((strstr(pos, col) != NULL || strstr(dr, row - col) != NULL) || strstr(dl, row + col) != NULL) {
+      |                          ^~~
+      |                          |
+      |                          long long int
+/usr/include/string.h:350:58: note: expected ‘const char *’ but argument is of type ‘long long int’
+  350 | extern char *strstr (const char *__haystack, const char *__needle)
+      |                                              ~~~~~~~~~~~~^~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/backtracking/n_queens_math.c:161:49: warning: passing argument 1 of ‘strstr’ from incompatible pointer type [-Wincompatible-pointer-types]
+  161 |         if ((strstr(pos, col) != NULL || strstr(dr, row - col) != NULL) || strstr(dl, row + col) != NULL) {
+      |                                                 ^~
+      |                                                 |
+      |                                                 long long int *
+/usr/include/string.h:350:34: note: expected ‘const char *’ but argument is of type ‘long long int *’
+  350 | extern char *strstr (const char *__haystack, const char *__needle)
+      |                      ~~~~~~~~~~~~^~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/backtracking/n_queens_math.c:161:57: warning: passing argument 2 of ‘strstr’ makes pointer from integer without a cast [-Wint-conversion]
+  161 |         if ((strstr(pos, col) != NULL || strstr(dr, row - col) != NULL) || strstr(dl, row + col) != NULL) {
+      |                                                     ~~~~^~~~~
+      |                                                         |
+      |                                                         long long unsigned int
+/usr/include/string.h:350:58: note: expected ‘const char *’ but argument is of type ‘long long unsigned int’
+  350 | extern char *strstr (const char *__haystack, const char *__needle)
+      |                                              ~~~~~~~~~~~~^~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/backtracking/n_queens_math.c:161:83: warning: passing argument 1 of ‘strstr’ from incompatible pointer type [-Wincompatible-pointer-types]
+  161 |         if ((strstr(pos, col) != NULL || strstr(dr, row - col) != NULL) || strstr(dl, row + col) != NULL) {
+      |                                                                                   ^~
+      |                                                                                   |
+      |                                                                                   long long int *
+/usr/include/string.h:350:34: note: expected ‘const char *’ but argument is of type ‘long long int *’
+  350 | extern char *strstr (const char *__haystack, const char *__needle)
+      |                      ~~~~~~~~~~~~^~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/backtracking/n_queens_math.c:161:91: warning: passing argument 2 of ‘strstr’ makes pointer from integer without a cast [-Wint-conversion]
+  161 |         if ((strstr(pos, col) != NULL || strstr(dr, row - col) != NULL) || strstr(dl, row + col) != NULL) {
+      |                                                                                       ~~~~^~~~~
+      |                                                                                           |
+      |                                                                                           long long unsigned int
+/usr/include/string.h:350:58: note: expected ‘const char *’ but argument is of type ‘long long unsigned int’
+  350 | extern char *strstr (const char *__haystack, const char *__needle)
+      |                                              ~~~~~~~~~~~~^~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/backtracking/n_queens_math.c:165:91: error: ‘append_len’ undeclared (first use in this function)
+  165 |         const char* **result = depth_first_search(list_append_int_new(pos, pos_len, col), append_len, list_append_int_new(dr, dr_len, row - col), append_len, list_append_int_new(dl, dl_len, row + col), append_len, n);
+      |                                                                                           ^~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/backtracking/n_queens_math.c:169:18: warning: implicit declaration of function ‘concat’ [-Wimplicit-function-declaration]
+  169 |         boards = concat(boards, result);
+      |                  ^~~~~~
+/workspace/mochi/tests/algorithms/x/C/backtracking/n_queens_math.c:169:16: warning: assignment to ‘const char ***’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+  169 |         boards = concat(boards, result);
+      |                ^
+/workspace/mochi/tests/algorithms/x/C/backtracking/n_queens_math.c: In function ‘n_queens_solution’:
+/workspace/mochi/tests/algorithms/x/C/backtracking/n_queens_math.c:176:15: error: expected identifier or ‘(’ before ‘[’ token
+  176 |     const char[] **boards = depth_first_search(NULL, 0, NULL, 0, NULL, 0, n);
+      |               ^
+/workspace/mochi/tests/algorithms/x/C/backtracking/n_queens_math.c:184:28: error: ‘boards’ undeclared (first use in this function); did you mean ‘boards_len’?
+  184 |             printf("%d\n", boards[(int)(i)][(int)(j)]);
+      |                            ^~~~~~
+      |                            boards_len
+/workspace/mochi/tests/algorithms/x/C/backtracking/n_queens_math.c:190:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘size_t’ {aka ‘long unsigned int’} [-Wformat=]
+  190 |     printf("%d %s\n", boards_len, "solutions were found.");
+      |             ~^        ~~~~~~~~~~
+      |              |        |
+      |              int      size_t {aka long unsigned int}
+      |             %ld
