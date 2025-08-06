@@ -1,0 +1,111 @@
+/*
+Least Recently Used (LRU) Cache
+
+This algorithm maintains a set of recently accessed keys within a fixed
+capacity. Each access moves the key to the front of the list. If the
+cache is full and a new key is inserted, the key at the end (least
+recently used) is removed. This implementation uses strings for keys
+and performs simple list operations without any external libraries.
+
+Functions:
+- new_cache(n): create an empty cache with capacity n (0 means unlimited).
+- refer(cache, x): record access of key x, evicting the least recent if
+  needed.
+- display(cache): print keys from most to least recent.
+- cache_repr(cache): return string representation of the cache.
+
+Time complexity of refer is O(n) due to list scans. Space complexity is
+O(n) for storing the keys.
+*/
+
+type LRUCache { max_capacity: int, store: list<string> }
+
+fun new_cache(n: int): LRUCache {
+  if n < 0 { panic("n should be an integer greater than 0.") }
+  let cap = if n == 0 { 2147483647 } else { n }
+  return LRUCache{ max_capacity: cap, store: [] as list<string> }
+}
+
+fun remove_element(xs: list<string>, x: string): list<string> {
+  var res: list<string> = []
+  var removed = false
+  var i = 0
+  while i < len(xs) {
+    let v = xs[i]
+    if removed == false && v == x {
+      removed = true
+    } else {
+      res = res + [v]
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun refer(cache: LRUCache, x: string): LRUCache {
+  var store = cache.store
+  var exists = false
+  var i = 0
+  while i < len(store) {
+    if store[i] == x { exists = true }
+    i = i + 1
+  }
+  if exists {
+    store = remove_element(store, x)
+  } else {
+    if len(store) == cache.max_capacity {
+      var new_store: list<string> = []
+      var j = 0
+      while j < len(store) - 1 {
+        new_store = new_store + [store[j]]
+        j = j + 1
+      }
+      store = new_store
+    }
+  }
+  store = [x] + store
+  return LRUCache{ max_capacity: cache.max_capacity, store: store }
+}
+
+fun display(cache: LRUCache) {
+  var i = 0
+  while i < len(cache.store) {
+    print(cache.store[i])
+    i = i + 1
+  }
+}
+
+fun repr_item(s: string): string {
+  var all_digits = true
+  var i = 0
+  while i < len(s) {
+    let ch = s[i]
+    if ch < "0" || ch > "9" { all_digits = false }
+    i = i + 1
+  }
+  if all_digits { return s }
+  return "'" + s + "'"
+}
+
+fun cache_repr(cache: LRUCache): string {
+  var res = "LRUCache(" + str(cache.max_capacity) + ") => ["
+  var i = 0
+  while i < len(cache.store) {
+    res = res + repr_item(cache.store[i])
+    if i < len(cache.store) - 1 { res = res + ", " }
+    i = i + 1
+  }
+  res = res + "]"
+  return res
+}
+
+var lru = new_cache(4)
+lru = refer(lru, "A")
+lru = refer(lru, "2")
+lru = refer(lru, "3")
+lru = refer(lru, "A")
+lru = refer(lru, "4")
+lru = refer(lru, "5")
+var r = cache_repr(lru)
+print(r)
+if r != "LRUCache(4) => [5, 4, 'A', 3]" { panic("Assertion error") }
