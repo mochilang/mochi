@@ -1074,6 +1074,10 @@ func (s *StrBuiltin) emit(w io.Writer) {
 		io.WriteString(w, "(Q.to_string (")
 		s.Expr.emit(w)
 		io.WriteString(w, "))")
+	case "bool":
+		io.WriteString(w, "(string_of_bool (")
+		s.Expr.emit(w)
+		io.WriteString(w, "))")
 	default:
 		io.WriteString(w, "(string_of_int (")
 		s.Expr.emit(w)
@@ -3124,13 +3128,11 @@ let rec __show v =
       let hd = field o 0 in
       let tl = field o 1 in
       let rest = list_aux tl in
-      if rest = "" then __show (obj hd) else __show (obj hd) ^ "; " ^ rest
+      if rest = "" then __show (obj hd) else __show (obj hd) ^ " " ^ rest
   in
   let r = repr v in
   if is_int r then
-    let i = (magic v : int) in
-    if i = 0 || i = 1 then string_of_bool (i <> 0)
-    else string_of_int i
+    string_of_int (magic v : int)
   else
   match tag r with
   | 0 -> if size r = 0 then "[]" else "[" ^ list_aux r ^ "]"
@@ -5538,7 +5540,7 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			return nil, "", err
 		}
 		switch typ {
-		case "int", "float", "bigint", "bigrat":
+		case "int", "float", "bigint", "bigrat", "bool":
 			return &StrBuiltin{Expr: arg, Typ: typ}, "string", nil
 		default:
 			return &FuncCall{Name: "__show", Args: []Expr{arg}, Ret: "string"}, "string", nil
