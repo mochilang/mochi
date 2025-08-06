@@ -5,38 +5,24 @@ fn handleError(err: anyerror) noreturn {
     std.debug.panic("{any}", .{err});
 }
 
-fn excess_3_code(number: i64) []const u8 {
+fn is_power_of_two(number: i64) bool {
+    if (number < 0) {
+        @panic("number must not be negative");
+    }
     var n: i64 = number;
-    if (n < 0) {
-        n = 0;
-    }
-    const mapping: [][]const u8 = blk0: { var _tmp0 = std.heap.page_allocator.alloc([]const u8, 10) catch unreachable; _tmp0[0] = "0011"; _tmp0[1] = "0100"; _tmp0[2] = "0101"; _tmp0[3] = "0110"; _tmp0[4] = "0111"; _tmp0[5] = "1000"; _tmp0[6] = "1001"; _tmp0[7] = "1010"; _tmp0[8] = "1011"; _tmp0[9] = "1100"; break :blk0 _tmp0; };
-    var res: []const u8 = "";
     if (n == 0) {
-        res = mapping[@as(usize, @intCast(0))];
-    } else {
-        while (n > 0) {
-            const digit: i64 = @mod(n, 10);
-            res = _concat_string(mapping[@as(usize, @intCast(digit))], res);
-            n = @divTrunc(n, 10);
-        }
+        return true;
     }
-    return _concat_string("0b", res);
-}
-
-fn mochi_main() void {
-    std.debug.print("{s}\n", .{excess_3_code(0)});
-    std.debug.print("{s}\n", .{excess_3_code(3)});
-    std.debug.print("{s}\n", .{excess_3_code(2)});
-    std.debug.print("{s}\n", .{excess_3_code(20)});
-    std.debug.print("{s}\n", .{excess_3_code(120)});
+    while (@mod(n, 2) == 0) {
+        n = @divTrunc(n, 2);
+    }
+    return n == 1;
 }
 
 pub fn main() void {
     {
         const __start = _now();
         const __start_mem: i64 = _mem();
-        mochi_main();
         const __end = _now();
         const __end_mem: i64 = _mem();
         const __duration_us: i64 = @divTrunc(@as(i64, @intCast(__end - __start)), 1000);
@@ -67,15 +53,6 @@ fn _now() i64 {
     return @as(i64, @intCast(std.time.nanoTimestamp()));
 }
 
-fn _concat_string(lhs: []const u8, rhs: []const u8) []const u8 {
-    const alloc = std.heap.page_allocator;
-    var out = alloc.alloc(u8, lhs.len + rhs.len + 1) catch unreachable;
-    std.mem.copyForwards(u8, out[0..lhs.len], lhs);
-    std.mem.copyForwards(u8, out[lhs.len..lhs.len + rhs.len], rhs);
-    out[lhs.len + rhs.len] = 0;
-    return out[0..lhs.len + rhs.len];
-}
-
 fn _mem() i64 {
     const path = "/proc/self/statm";
     var file = std.fs.openFileAbsolute(path, .{}) catch return 0;
@@ -89,8 +66,4 @@ fn _mem() i64 {
         return pages * std.mem.page_size;
     }
     return 0;
-}
-
-fn _print(v: []const u8) void {
-    std.debug.print("{s}\n", .{v});
 }

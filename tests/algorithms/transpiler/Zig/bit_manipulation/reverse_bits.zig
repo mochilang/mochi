@@ -5,38 +5,45 @@ fn handleError(err: anyerror) noreturn {
     std.debug.panic("{any}", .{err});
 }
 
-fn excess_3_code(number: i64) []const u8 {
+fn get_reverse_bit_string(number: i64) []const u8 {
+    var bit_string: []const u8 = "";
     var n: i64 = number;
-    if (n < 0) {
-        n = 0;
+    var i: i64 = 0;
+    while (i < 32) {
+        bit_string = _concat_string(bit_string, _str(@mod(n, 2)));
+        n = @divTrunc(n, 2);
+        i = i + 1;
     }
-    const mapping: [][]const u8 = blk0: { var _tmp0 = std.heap.page_allocator.alloc([]const u8, 10) catch unreachable; _tmp0[0] = "0011"; _tmp0[1] = "0100"; _tmp0[2] = "0101"; _tmp0[3] = "0110"; _tmp0[4] = "0111"; _tmp0[5] = "1000"; _tmp0[6] = "1001"; _tmp0[7] = "1010"; _tmp0[8] = "1011"; _tmp0[9] = "1100"; break :blk0 _tmp0; };
-    var res: []const u8 = "";
-    if (n == 0) {
-        res = mapping[@as(usize, @intCast(0))];
-    } else {
-        while (n > 0) {
-            const digit: i64 = @mod(n, 10);
-            res = _concat_string(mapping[@as(usize, @intCast(digit))], res);
-            n = @divTrunc(n, 10);
-        }
-    }
-    return _concat_string("0b", res);
+    return bit_string;
 }
 
-fn mochi_main() void {
-    std.debug.print("{s}\n", .{excess_3_code(0)});
-    std.debug.print("{s}\n", .{excess_3_code(3)});
-    std.debug.print("{s}\n", .{excess_3_code(2)});
-    std.debug.print("{s}\n", .{excess_3_code(20)});
-    std.debug.print("{s}\n", .{excess_3_code(120)});
+fn reverse_bit(number_1: i64) []const u8 {
+    if (number_1 < 0) {
+        @panic("the value of input must be positive");
+    }
+    var n: i64 = number_1;
+    var result: i64 = 0;
+    var i: i64 = 1;
+    while (i <= 32) {
+        result = result * 2;
+        const end_bit: i64 = @mod(n, 2);
+        n = @divTrunc(n, 2);
+        result = result + end_bit;
+        i = i + 1;
+    }
+    return get_reverse_bit_string(result);
 }
 
 pub fn main() void {
     {
         const __start = _now();
         const __start_mem: i64 = _mem();
-        mochi_main();
+        std.debug.print("{s}\n", .{reverse_bit(25)});
+        std.debug.print("{s}\n", .{reverse_bit(37)});
+        std.debug.print("{s}\n", .{reverse_bit(21)});
+        std.debug.print("{s}\n", .{reverse_bit(58)});
+        std.debug.print("{s}\n", .{reverse_bit(0)});
+        std.debug.print("{s}\n", .{reverse_bit(256)});
         const __end = _now();
         const __end_mem: i64 = _mem();
         const __duration_us: i64 = @divTrunc(@as(i64, @intCast(__end - __start)), 1000);
@@ -65,6 +72,26 @@ fn _now() i64 {
         } else |_| {}
     }
     return @as(i64, @intCast(std.time.nanoTimestamp()));
+}
+
+fn _str(v: anytype) []const u8 {
+    if (@TypeOf(v) == f64 or @TypeOf(v) == f32) {
+        return std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{v}) catch unreachable;
+    }
+    const info = @typeInfo(@TypeOf(v));
+    if (info == .Pointer and info.Pointer.size == .Slice) {
+        var out = std.ArrayList(u8).init(std.heap.page_allocator);
+        defer out.deinit();
+        out.append('[') catch unreachable;
+        for (v, 0..) |e, i| {
+            if (i != 0) { out.append(' ') catch unreachable; }
+            const s = _str(e);
+            out.appendSlice(s) catch unreachable;
+        }
+        out.append(']') catch unreachable;
+        return out.toOwnedSlice() catch unreachable;
+    }
+    return std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{v}) catch unreachable;
 }
 
 fn _concat_string(lhs: []const u8, rhs: []const u8) []const u8 {
