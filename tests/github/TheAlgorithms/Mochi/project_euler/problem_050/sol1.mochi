@@ -1,18 +1,23 @@
 /*
-Solve Project Euler problem 50: find the prime below a ceiling that can be written
-as the sum of the most consecutive primes.
+Project Euler Problem 50
+Consecutive prime sum
 
-Algorithm:
-1. Generate all primes below the ceiling using a simple Sieve of Eratosthenes.
-   Only odd numbers are inspected after handling 2. Multiples of each odd base
-   are marked composite.  This runs in roughly O(n log log n).
-2. Build prefix sums of the primes and a map for O(1) membership tests.
-3. Determine the maximum number of consecutive primes whose sum stays below the
-   ceiling.  Then iterate candidate lengths from this maximum downward and test
-   each consecutive block using the prefix sums.  The first prime encountered is
-   the answer, ensuring the longest sequence is found.
-The search runs in roughly O(p^2) in the worst case but finishes quickly for the
-required ceiling.
+Given a ceiling, find the prime below that ceiling which can be expressed as
+the sum of the most consecutive primes.  For example 41 = 2 + 3 + 5 + 7 + 11 + 13
+is the longest sum of consecutive primes that produces a prime below one hundred.
+
+Algorithm
+1. Generate all prime numbers below the ceiling using the Sieve of Eratosthenes.
+   The sieve runs in O(n log log n) time.
+2. Build a prefix sum array of the primes and also a map for O(1) prime lookups.
+3. Determine the maximum number of consecutive primes whose sum is still below
+   the ceiling using the prefix array.
+4. Test all ranges of that length in decreasing order until the first prime sum
+   is found.  The first found is the answer because lengths are tested from
+   largest to smallest.
+
+The overall running time is dominated by the nested search over prime prefixes
+but finishes quickly for a ceiling of one million.
 */
 
 fun prime_sieve(limit: int): list<int> {
@@ -48,29 +53,25 @@ fun prime_sieve(limit: int): list<int> {
   return primes
 }
 
-fun list_to_map(lst: list<int>): map<int, bool> {
-  var m: map<int, bool> = {}
-  var i = 0
-  while i < len(lst) {
-    m[lst[i]] = true
-    i = i + 1
-  }
-  return m
-}
-
 fun solution(ceiling: int): int {
   let primes = prime_sieve(ceiling)
-  let prime_map = list_to_map(primes)
+
+  var prime_map: map<int, bool> = {}
+  var i = 0
+  while i < len(primes) {
+    prime_map[primes[i]] = true
+    i = i + 1
+  }
 
   var prefix: list<int> = [0]
-  var i = 0
+  i = 0
   while i < len(primes) {
     prefix = append(prefix, prefix[i] + primes[i])
     i = i + 1
   }
 
   var max_len = 0
-  while max_len < len(primes) && prefix[max_len] < ceiling {
+  while max_len < len(prefix) && prefix[max_len] < ceiling {
     max_len = max_len + 1
   }
 
@@ -78,12 +79,12 @@ fun solution(ceiling: int): int {
   while L > 0 {
     var start = 0
     while start + L <= len(primes) {
-      let sum = prefix[start + L] - prefix[start]
-      if sum >= ceiling {
+      let s = prefix[start + L] - prefix[start]
+      if s >= ceiling {
         break
       }
-      if prime_map[sum] {
-        return sum
+      if prime_map[s] {
+        return s
       }
       start = start + 1
     }
@@ -94,3 +95,4 @@ fun solution(ceiling: int): int {
 
 let ans = solution(1000000)
 print("solution() = " + str(ans))
+
