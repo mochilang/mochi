@@ -1,0 +1,11 @@
+run: exit status 1
+[0m[1m[31merror[0m: Uncaught (in promise) TypeError: Cannot convert undefined or null to object
+  for (const v of Object.keys(tree[start])) {
+[0m[31m                         ^[0m
+    at [0m[1m[3mObject.keys[0m ([0m[36m<anonymous>[0m)
+    at [0m[1m[3mdfs[0m ([0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/graphs/even_tree.ts[0m:[0m[33m8[0m:[0m[33m26[0m)
+    at [0m[1m[3mdfs[0m ([0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/graphs/even_tree.ts[0m:[0m[33m10[0m:[0m[33m27[0m)
+    at [0m[1m[3meven_tree[0m ([0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/graphs/even_tree.ts[0m:[0m[33m22[0m:[0m[33m23[0m)
+    at [0m[1m[3mmain[0m ([0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/graphs/even_tree.ts[0m:[0m[33m41[0m:[0m[33m25[0m)
+    at [0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/graphs/even_tree.ts[0m:[0m[33m100[0m:[0m[33m3[0m
+    at [0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/graphs/even_tree.ts[0m:[0m[33m112[0m:[0m[33m2[0m

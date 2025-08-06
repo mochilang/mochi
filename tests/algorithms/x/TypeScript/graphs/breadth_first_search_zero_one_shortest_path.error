@@ -1,0 +1,8 @@
+type: error[T008]: type mismatch: expected AdjacencyList, got [[Edge]]
+  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/graphs/breadth_first_search_zero_one_shortest_path.mochi:36:14
+
+ 36 |   al.graph = g
+    |              ^
+
+help:
+  Change the value to match the expected type.

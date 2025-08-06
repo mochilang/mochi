@@ -1,0 +1,8 @@
+type: error[T008]: type mismatch: expected Graph, got {string: string}
+  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/graphs/breadth_first_search_shortest_path.mochi:35:14
+
+ 35 |   g.parent = parent
+    |              ^
+
+help:
+  Change the value to match the expected type.

@@ -1,0 +1,8 @@
+type: error[T008]: type mismatch: expected Dinic, got [[[int]]]
+  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/graphs/dinic.mochi:69:11
+
+ 69 |   g.adj = adj
+    |           ^
+
+help:
+  Change the value to match the expected type.

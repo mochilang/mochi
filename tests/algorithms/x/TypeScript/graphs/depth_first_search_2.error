@@ -1,0 +1,8 @@
+type: error[T008]: type mismatch: expected Graph, got {int: [int]}
+  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/graphs/depth_first_search_2.mochi:30:14
+
+ 30 |   g.vertex = v
+    |              ^
+
+help:
+  Change the value to match the expected type.

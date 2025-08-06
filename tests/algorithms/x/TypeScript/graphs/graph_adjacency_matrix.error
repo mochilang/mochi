@@ -1,0 +1,8 @@
+type: error[T008]: type mismatch: expected Graph, got [[int]]
+  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/graphs/graph_adjacency_matrix.mochi:55:18
+
+ 55 |   g.adj_matrix = matrix
+    |                  ^
+
+help:
+  Change the value to match the expected type.

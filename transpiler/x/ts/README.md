@@ -110,4 +110,4 @@ Generated sources for the golden tests live under `tests/transpiler/x/ts`.
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
 
-_Last updated: 2025-08-04 19:36 +0700_
+_Last updated: 2025-08-06 23:14 +0700_

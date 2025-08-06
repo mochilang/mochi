@@ -1,0 +1,9 @@
+run: exit status 1
+[0m[1m[31merror[0m: Uncaught (in promise) TypeError: Cannot convert undefined or null to object
+    for (const e of Object.keys(graph[u])) {
+[0m[31m                           ^[0m
+    at [0m[1m[3mObject.keys[0m ([0m[36m<anonymous>[0m)
+    at [0m[1m[3mprim[0m ([0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/graphs/prim.ts[0m:[0m[33m43[0m:[0m[33m28[0m)
+    at [0m[1m[3mtest_vector[0m ([0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/graphs/prim.ts[0m:[0m[33m146[0m:[0m[33m25[0m)
+    at [0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/graphs/prim.ts[0m:[0m[33m208[0m:[0m[33m3[0m
+    at [0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/graphs/prim.ts[0m:[0m[33m220[0m:[0m[33m2[0m

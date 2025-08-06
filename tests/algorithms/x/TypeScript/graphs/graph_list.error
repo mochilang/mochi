@@ -1,0 +1,8 @@
+type: error[T008]: type mismatch: expected GraphAdjacencyList, got {string: [string]}
+  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/graphs/graph_list.mochi:63:16
+
+ 63 |   g.adj_list = adj
+    |                ^
+
+help:
+  Change the value to match the expected type.

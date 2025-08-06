@@ -348,6 +348,8 @@ type MapEntry struct {
 type IndexExpr struct {
 	Target Expr
 	Index  Expr
+	// NoNeg disables negative index rewriting for map/object access.
+	NoNeg bool
 }
 
 // SliceExpr represents a[start:end] slicing.
@@ -815,14 +817,18 @@ func (i *IndexExpr) emit(w io.Writer) {
 	i.Target.emit(w)
 	io.WriteString(w, "[")
 	if i.Index != nil {
-		io.WriteString(w, "(")
-		i.Index.emit(w)
-		io.WriteString(w, ") < 0 ? ")
-		i.Target.emit(w)
-		io.WriteString(w, ".length + (")
-		i.Index.emit(w)
-		io.WriteString(w, ") : ")
-		i.Index.emit(w)
+		if i.NoNeg {
+			i.Index.emit(w)
+		} else {
+			io.WriteString(w, "(")
+			i.Index.emit(w)
+			io.WriteString(w, ") < 0 ? ")
+			i.Target.emit(w)
+			io.WriteString(w, ".length + (")
+			i.Index.emit(w)
+			io.WriteString(w, ") : ")
+			i.Index.emit(w)
+		}
 	}
 	io.WriteString(w, "]")
 }
@@ -1786,11 +1792,20 @@ func (f *ForInStmt) emit(w io.Writer) {
 	io.WriteString(w, safeName(f.Name))
 	if f.Keys {
 		io.WriteString(w, " in ")
+		if f.Iterable != nil {
+			f.Iterable.emit(w)
+		}
 	} else {
-		io.WriteString(w, " of ")
-	}
-	if f.Iterable != nil {
-		f.Iterable.emit(w)
+		if idx, ok := f.Iterable.(*IndexExpr); ok && idx.NoNeg {
+			io.WriteString(w, " of Object.keys(")
+			idx.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			io.WriteString(w, " of ")
+			if f.Iterable != nil {
+				f.Iterable.emit(w)
+			}
+		}
 	}
 	io.WriteString(w, ") {\n")
 	for _, st := range f.Body {
@@ -2729,6 +2744,9 @@ func convertForStmt(f *parser.ForStmt, env *types.Env) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
+	if idx, ok := iterable.(*IndexExpr); ok && idx.NoNeg {
+		iterable = &CallExpr{Func: "Object.keys", Args: []Expr{iterable}}
+	}
 	var elemType types.Type
 	keys := false
 	if env != nil {
@@ -3598,7 +3616,7 @@ func convertPostfix(p *parser.PostfixExpr) (expr Expr, err error) {
 				} else {
 					_ = keyStr // avoid unused variable warnings
 				}
-				expr = &IndexExpr{Target: expr, Index: idx}
+				expr = &IndexExpr{Target: expr, Index: idx, NoNeg: isMapExpr(partial) || isStructExpr(partial)}
 			}
 		case op.Call != nil:
 			args := make([]Expr, len(op.Call.Args))
