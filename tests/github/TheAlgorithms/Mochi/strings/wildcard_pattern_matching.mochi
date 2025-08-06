@@ -1,0 +1,101 @@
+/*
+Wildcard Pattern Matching
+-------------------------
+Matches an input string against a pattern containing two special
+characters:
+  '.' - matches any single character
+  '*' - matches zero or more of the preceding character
+
+This implementation builds a dynamic programming table where dp[i][j]
+indicates whether the first i characters of the input match the first
+j characters of the pattern.  The table is filled using a bottom-up
+approach considering the rules for '.' and '*'.  The algorithm runs in
+O(n*m) time where n is the length of the string and m is the length of
+the pattern.
+*/
+
+fun make_matrix_bool(rows: int, cols: int, init: bool): list<list<bool>> {
+  var matrix: list<list<bool>> = []
+  for _ in 0..rows {
+    var row: list<bool> = []
+    for _2 in 0..cols {
+      row = append(row, init)
+    }
+    matrix = append(matrix, row)
+  }
+  return matrix
+}
+
+fun match_pattern(input_string: string, pattern: string): bool {
+  let len_string = len(input_string) + 1
+  let len_pattern = len(pattern) + 1
+  var dp = make_matrix_bool(len_string, len_pattern, false)
+
+  var row0 = dp[0]
+  row0[0] = true
+  dp[0] = row0
+
+  var j = 1
+  while j < len_pattern {
+    row0 = dp[0]
+    if substring(pattern, j - 1, j) == "*" {
+      row0[j] = row0[j - 2]
+    } else {
+      row0[j] = false
+    }
+    dp[0] = row0
+    j = j + 1
+  }
+
+  var i = 1
+  while i < len_string {
+    var row = dp[i]
+    var j2 = 1
+    while j2 < len_pattern {
+      let s_char = substring(input_string, i - 1, i)
+      let p_char = substring(pattern, j2 - 1, j2)
+      if s_char == p_char || p_char == "." {
+        row[j2] = dp[i - 1][j2 - 1]
+      } else if p_char == "*" {
+        var val = dp[i][j2 - 2]
+        let prev_p = substring(pattern, j2 - 2, j2 - 1)
+        if !val && (prev_p == s_char || prev_p == ".") {
+          val = dp[i - 1][j2]
+        }
+        row[j2] = val
+      } else {
+        row[j2] = false
+      }
+      j2 = j2 + 1
+    }
+    dp[i] = row
+    i = i + 1
+  }
+  return dp[len_string - 1][len_pattern - 1]
+}
+
+fun main() {
+  if !match_pattern("aab", "c*a*b") { panic("case1 failed") }
+  if match_pattern("dabc", "*abc") { panic("case2 failed") }
+  if match_pattern("aaa", "aa") { panic("case3 failed") }
+  if !match_pattern("aaa", "a.a") { panic("case4 failed") }
+  if match_pattern("aaab", "aa*") { panic("case5 failed") }
+  if !match_pattern("aaab", ".*") { panic("case6 failed") }
+  if match_pattern("a", "bbbb") { panic("case7 failed") }
+  if match_pattern("", "bbbb") { panic("case8 failed") }
+  if match_pattern("a", "") { panic("case9 failed") }
+  if !match_pattern("", "") { panic("case10 failed") }
+
+  print(str(match_pattern("aab", "c*a*b")))
+  print(str(match_pattern("dabc", "*abc")))
+  print(str(match_pattern("aaa", "aa")))
+  print(str(match_pattern("aaa", "a.a")))
+  print(str(match_pattern("aaab", "aa*")))
+  print(str(match_pattern("aaab", ".*")))
+  print(str(match_pattern("a", "bbbb")))
+  print(str(match_pattern("", "bbbb")))
+  print(str(match_pattern("a", "")))
+  print(str(match_pattern("", "")))
+}
+
+main()
