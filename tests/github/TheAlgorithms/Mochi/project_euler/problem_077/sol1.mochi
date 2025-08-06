@@ -1,0 +1,89 @@
+/*
+Project Euler Problem 77: first integer that can be written as the sum of primes
+in over a given number of ways.
+
+Primes below 100 are generated with the Sieve of Eratosthenes.  The function
+`partition` returns all unique prime partitions of a number.  Each partition is
+represented by the product of its prime summands, ensuring that permutations of
+the same primes map to the same product.  Results are memoized in a global map
+to avoid redundant recursion.
+
+`solution` iterates through integers starting at 1 and uses `partition` to count
+prime partitions.  The first integer whose count exceeds the supplied threshold
+is returned.  The program runs without any foreign function interface and is
+compatible with `runtime/vm`.
+*/
+
+let NUM_PRIMES: int = 100
+
+fun generate_primes(limit: int): list<int> {
+  var is_prime: list<bool> = []
+  var i = 0
+  while i <= limit {
+    is_prime = append(is_prime, true)
+    i = i + 1
+  }
+  is_prime[0] = false
+  is_prime[1] = false
+  i = 2
+  while i * i <= limit {
+    if is_prime[i] {
+      var j = i * i
+      while j <= limit {
+        is_prime[j] = false
+        j = j + i
+      }
+    }
+    i = i + 1
+  }
+  var primes: list<int> = []
+  i = 2
+  while i <= limit {
+    if is_prime[i] { primes = append(primes, i) }
+    i = i + 1
+  }
+  return primes
+}
+
+let primes: list<int> = generate_primes(NUM_PRIMES)
+
+fun contains(xs: list<int>, value: int): bool {
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == value { return true }
+    i = i + 1
+  }
+  return false
+}
+
+var partition_cache: map<int, list<int>> = {}
+
+fun partition(n: int): list<int> {
+  if n < 0 { return [] }
+  if n == 0 { return [1] }
+  if n in partition_cache { return partition_cache[n] }
+  var ret: list<int> = []
+  for prime in primes {
+    if prime > n { continue }
+    let subs = partition(n - prime)
+    for sub in subs {
+      let prod = sub * prime
+      if !contains(ret, prod) { ret = append(ret, prod) }
+    }
+  }
+  partition_cache[n] = ret
+  return ret
+}
+
+fun solution(threshold: int): int {
+  var number_to_partition = 1
+  while number_to_partition < NUM_PRIMES {
+    let parts = partition(number_to_partition)
+    if len(parts) > threshold { return number_to_partition }
+    number_to_partition = number_to_partition + 1
+  }
+  return 0
+}
+
+let result = solution(5000)
+print("solution() = " + str(result))
