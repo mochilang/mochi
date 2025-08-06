@@ -46,6 +46,7 @@ var useFetch bool
 var useLookupHost bool
 var useStr bool
 var useLen bool
+var usePanic bool
 var funcDepth int
 var returnOutsideFunc bool
 
@@ -2053,6 +2054,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	useLookupHost = false
 	useStr = false
 	useLen = false
+	usePanic = false
 	funcDepth = 0
 	returnOutsideFunc = false
 	defer func() {
@@ -2074,6 +2076,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		useLookupHost = false
 		useStr = false
 		useLen = false
+		usePanic = false
 		funcDepth = 0
 		returnOutsideFunc = false
 	}()
@@ -2277,6 +2280,9 @@ function sha256(bs: number[]): number[] {
   }
   return String(x);
 }`})
+	}
+	if usePanic {
+		prelude = append(prelude, &RawStmt{Code: `function panic(msg: any): never { throw new Error(String(msg)); }`})
 	}
 	if useHas {
 		prelude = append(prelude, &RawStmt{Code: `function _has(obj: any, key: any): boolean {
@@ -3992,6 +3998,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			useNumDenom = true
 			return &CallExpr{Func: "denom", Args: args}, nil
+		case "panic":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("panic expects one argument")
+			}
+			usePanic = true
+			return &CallExpr{Func: "panic", Args: args}, nil
 		default:
 			if fn, ok := transpileEnv.GetFunc(p.Call.Func); ok {
 				if len(args) < len(fn.Params) {
