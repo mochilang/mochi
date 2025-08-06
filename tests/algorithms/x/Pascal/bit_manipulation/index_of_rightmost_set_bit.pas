@@ -42,49 +42,35 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  a: integer;
-  b: integer;
-function binary_or(a: integer; b: integer): string; forward;
-function binary_or(a: integer; b: integer): string;
+  number: integer;
+function index_of_rightmost_set_bit(number: integer): integer; forward;
+function index_of_rightmost_set_bit(number: integer): integer;
 var
-  binary_or_res: string;
-  binary_or_x: integer;
-  binary_or_y: integer;
-  binary_or_bit_a: integer;
-  binary_or_bit_b: integer;
+  index_of_rightmost_set_bit_n: integer;
+  index_of_rightmost_set_bit_index: integer;
 begin
-  if (a < 0) or (b < 0) then begin
-  exit('ValueError');
+  if number < 0 then begin
+  panic('Input must be a non-negative integer');
 end;
-  binary_or_res := '';
-  binary_or_x := a;
-  binary_or_y := b;
-  while (binary_or_x > 0) or (binary_or_y > 0) do begin
-  binary_or_bit_a := binary_or_x mod 2;
-  binary_or_bit_b := binary_or_y mod 2;
-  if (binary_or_bit_a = 1) or (binary_or_bit_b = 1) then begin
-  binary_or_res := '1' + binary_or_res;
-end else begin
-  binary_or_res := '0' + binary_or_res;
+  if number = 0 then begin
+  exit(-1);
 end;
-  binary_or_x := binary_or_x div 2;
-  binary_or_y := binary_or_y div 2;
+  index_of_rightmost_set_bit_n := number;
+  index_of_rightmost_set_bit_index := 0;
+  while (index_of_rightmost_set_bit_n mod 2) = 0 do begin
+  index_of_rightmost_set_bit_n := index_of_rightmost_set_bit_n div 2;
+  index_of_rightmost_set_bit_index := index_of_rightmost_set_bit_index + 1;
 end;
-  if binary_or_res = '' then begin
-  binary_or_res := '0';
-end;
-  exit('0b' + binary_or_res);
+  exit(index_of_rightmost_set_bit_index);
 end;
 begin
   init_now();
   bench_mem_0 := _mem();
   bench_start_0 := _bench_now();
-  writeln(binary_or(25, 32));
-  writeln(binary_or(37, 50));
-  writeln(binary_or(21, 30));
-  writeln(binary_or(58, 73));
-  writeln(binary_or(0, 255));
-  writeln(binary_or(0, 256));
+  writeln(IntToStr(index_of_rightmost_set_bit(0)));
+  writeln(IntToStr(index_of_rightmost_set_bit(5)));
+  writeln(IntToStr(index_of_rightmost_set_bit(36)));
+  writeln(IntToStr(index_of_rightmost_set_bit(8)));
   Sleep(1);
   bench_memdiff_0 := _mem() - bench_mem_0;
   bench_dur_0 := (_bench_now() - bench_start_0) div 1000;

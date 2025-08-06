@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-06 21:45 GMT+7
+Last updated: 2025-08-06 22:08 GMT+7
 
-## Algorithms Golden Test Checklist (19/1077)
+## Algorithms Golden Test Checklist (58/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -25,47 +25,47 @@ Last updated: 2025-08-06 21:45 GMT+7
 | 16 | backtracking/sum_of_subsets | ✓ | 2.0µs | 0B |
 | 17 | backtracking/word_break | ✓ | 3.0µs | 1.44KB |
 | 18 | backtracking/word_ladder | ✓ | 2.0µs | 0B |
-| 19 | backtracking/word_search | error |  |  |
-| 20 | bit_manipulation/binary_and_operator |   |  |  |
-| 21 | bit_manipulation/binary_coded_decimal |   |  |  |
-| 22 | bit_manipulation/binary_count_setbits |   |  |  |
-| 23 | bit_manipulation/binary_count_trailing_zeros |   |  |  |
+| 19 | backtracking/word_search |   |  |  |
+| 20 | bit_manipulation/binary_and_operator | ✓ | 1.0µs | 0B |
+| 21 | bit_manipulation/binary_coded_decimal | ✓ | 1.0µs | 0B |
+| 22 | bit_manipulation/binary_count_setbits | ✓ | 1.0µs | 64B |
+| 23 | bit_manipulation/binary_count_trailing_zeros | ✓ | 1.0µs | 64B |
 | 24 | bit_manipulation/binary_or_operator | ✓ | 1.0µs | 0B |
-| 25 | bit_manipulation/binary_shifts |   |  |  |
-| 26 | bit_manipulation/binary_twos_complement |   |  |  |
-| 27 | bit_manipulation/binary_xor_operator |   |  |  |
-| 28 | bit_manipulation/bitwise_addition_recursive |   |  |  |
-| 29 | bit_manipulation/count_1s_brian_kernighan_method |   |  |  |
-| 30 | bit_manipulation/count_number_of_one_bits |   |  |  |
-| 31 | bit_manipulation/excess_3_code |   |  |  |
-| 32 | bit_manipulation/find_previous_power_of_two |   |  |  |
-| 33 | bit_manipulation/find_unique_number |   |  |  |
-| 34 | bit_manipulation/gray_code_sequence |   |  |  |
-| 35 | bit_manipulation/highest_set_bit |   |  |  |
-| 36 | bit_manipulation/index_of_rightmost_set_bit |   |  |  |
-| 37 | bit_manipulation/is_even |   |  |  |
-| 38 | bit_manipulation/is_power_of_two |   |  |  |
-| 39 | bit_manipulation/largest_pow_of_two_le_num |   |  |  |
-| 40 | bit_manipulation/missing_number |   |  |  |
-| 41 | bit_manipulation/numbers_different_signs |   |  |  |
-| 42 | bit_manipulation/power_of_4 |   |  |  |
-| 43 | bit_manipulation/reverse_bits |   |  |  |
-| 44 | bit_manipulation/single_bit_manipulation_operations |   |  |  |
-| 45 | bit_manipulation/swap_all_odd_and_even_bits |   |  |  |
-| 46 | blockchain/diophantine_equation |   |  |  |
-| 47 | boolean_algebra/and_gate |   |  |  |
-| 48 | boolean_algebra/imply_gate |   |  |  |
-| 49 | boolean_algebra/karnaugh_map_simplification |   |  |  |
-| 50 | boolean_algebra/multiplexer |   |  |  |
-| 51 | boolean_algebra/nand_gate |   |  |  |
-| 52 | boolean_algebra/nimply_gate |   |  |  |
-| 53 | boolean_algebra/nor_gate |   |  |  |
-| 54 | boolean_algebra/not_gate |   |  |  |
-| 55 | boolean_algebra/or_gate |   |  |  |
-| 56 | boolean_algebra/quine_mc_cluskey |   |  |  |
-| 57 | boolean_algebra/xnor_gate |   |  |  |
-| 58 | boolean_algebra/xor_gate |   |  |  |
-| 59 | cellular_automata/conways_game_of_life |   |  |  |
+| 25 | bit_manipulation/binary_shifts | ✓ | 1.0µs | 0B |
+| 26 | bit_manipulation/binary_twos_complement | ✓ | 2.0µs | 0B |
+| 27 | bit_manipulation/binary_xor_operator | ✓ | 2.0µs | 0B |
+| 28 | bit_manipulation/bitwise_addition_recursive | ✓ | 2.0µs | 64B |
+| 29 | bit_manipulation/count_1s_brian_kernighan_method | ✓ | 1.0µs | 64B |
+| 30 | bit_manipulation/count_number_of_one_bits | ✓ | 1.0µs | 0B |
+| 31 | bit_manipulation/excess_3_code | ✓ | 1.0µs | 0B |
+| 32 | bit_manipulation/find_previous_power_of_two | ✓ | 2.0µs | 0B |
+| 33 | bit_manipulation/find_unique_number | ✓ | 2.0µs | 96B |
+| 34 | bit_manipulation/gray_code_sequence | ✓ | 1.0µs | 160B |
+| 35 | bit_manipulation/highest_set_bit | ✓ | 1.0µs | 64B |
+| 36 | bit_manipulation/index_of_rightmost_set_bit | ✓ | 2.0µs | 64B |
+| 37 | bit_manipulation/is_even | ✓ | 2.0µs | 128B |
+| 38 | bit_manipulation/is_power_of_two | ✓ | 1.0µs | 0B |
+| 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 1.0µs | 64B |
+| 40 | bit_manipulation/missing_number | ✓ | 1.0µs | 64B |
+| 41 | bit_manipulation/numbers_different_signs | ✓ | 1.0µs | 128B |
+| 42 | bit_manipulation/power_of_4 | ✓ | 1.0µs | 128B |
+| 43 | bit_manipulation/reverse_bits | ✓ | 1.0µs | 0B |
+| 44 | bit_manipulation/single_bit_manipulation_operations | ✓ | 2.0µs | 128B |
+| 45 | bit_manipulation/swap_all_odd_and_even_bits | ✓ | 1.0µs | 0B |
+| 46 | blockchain/diophantine_equation | ✓ | 1.0µs | 384B |
+| 47 | boolean_algebra/and_gate | ✓ | 1.0µs | 64B |
+| 48 | boolean_algebra/imply_gate | ✓ | 1.0µs | 0B |
+| 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 1.0µs | 128B |
+| 50 | boolean_algebra/multiplexer | ✓ | 1.0µs | 0B |
+| 51 | boolean_algebra/nand_gate | ✓ | 1.0µs | 0B |
+| 52 | boolean_algebra/nimply_gate | ✓ | 1.0µs | 0B |
+| 53 | boolean_algebra/nor_gate | ✓ | 1.0µs | 0B |
+| 54 | boolean_algebra/not_gate | ✓ | 1.0µs | 0B |
+| 55 | boolean_algebra/or_gate | ✓ | 2.0µs | 0B |
+| 56 | boolean_algebra/quine_mc_cluskey | ✓ | 1.0µs | 0B |
+| 57 | boolean_algebra/xnor_gate | ✓ | 1.0µs | 0B |
+| 58 | boolean_algebra/xor_gate | ✓ | 1.0µs | 0B |
+| 59 | cellular_automata/conways_game_of_life | ✓ | 1.0µs | 864B |
 | 60 | cellular_automata/game_of_life |   |  |  |
 | 61 | cellular_automata/langtons_ant |   |  |  |
 | 62 | cellular_automata/nagel_schrekenberg |   |  |  |

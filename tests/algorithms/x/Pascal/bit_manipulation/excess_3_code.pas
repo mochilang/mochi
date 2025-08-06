@@ -42,49 +42,46 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  a: integer;
-  b: integer;
-function binary_or(a: integer; b: integer): string; forward;
-function binary_or(a: integer; b: integer): string;
+  number: integer;
+function excess_3_code(number: integer): string; forward;
+procedure main(); forward;
+function excess_3_code(number: integer): string;
 var
-  binary_or_res: string;
-  binary_or_x: integer;
-  binary_or_y: integer;
-  binary_or_bit_a: integer;
-  binary_or_bit_b: integer;
+  excess_3_code_n: integer;
+  excess_3_code_mapping: array of string;
+  excess_3_code_res: string;
+  excess_3_code_digit: integer;
 begin
-  if (a < 0) or (b < 0) then begin
-  exit('ValueError');
+  excess_3_code_n := number;
+  if excess_3_code_n < 0 then begin
+  excess_3_code_n := 0;
 end;
-  binary_or_res := '';
-  binary_or_x := a;
-  binary_or_y := b;
-  while (binary_or_x > 0) or (binary_or_y > 0) do begin
-  binary_or_bit_a := binary_or_x mod 2;
-  binary_or_bit_b := binary_or_y mod 2;
-  if (binary_or_bit_a = 1) or (binary_or_bit_b = 1) then begin
-  binary_or_res := '1' + binary_or_res;
+  excess_3_code_mapping := ['0011', '0100', '0101', '0110', '0111', '1000', '1001', '1010', '1011', '1100'];
+  excess_3_code_res := '';
+  if excess_3_code_n = 0 then begin
+  excess_3_code_res := excess_3_code_mapping[0];
 end else begin
-  binary_or_res := '0' + binary_or_res;
+  while excess_3_code_n > 0 do begin
+  excess_3_code_digit := excess_3_code_n mod 10;
+  excess_3_code_res := excess_3_code_mapping[excess_3_code_digit] + excess_3_code_res;
+  excess_3_code_n := excess_3_code_n div 10;
 end;
-  binary_or_x := binary_or_x div 2;
-  binary_or_y := binary_or_y div 2;
 end;
-  if binary_or_res = '' then begin
-  binary_or_res := '0';
+  exit('0b' + excess_3_code_res);
 end;
-  exit('0b' + binary_or_res);
+procedure main();
+begin
+  writeln(excess_3_code(0));
+  writeln(excess_3_code(3));
+  writeln(excess_3_code(2));
+  writeln(excess_3_code(20));
+  writeln(excess_3_code(120));
 end;
 begin
   init_now();
   bench_mem_0 := _mem();
   bench_start_0 := _bench_now();
-  writeln(binary_or(25, 32));
-  writeln(binary_or(37, 50));
-  writeln(binary_or(21, 30));
-  writeln(binary_or(58, 73));
-  writeln(binary_or(0, 255));
-  writeln(binary_or(0, 256));
+  main();
   Sleep(1);
   bench_memdiff_0 := _mem() - bench_mem_0;
   bench_dur_0 := (_bench_now() - bench_start_0) div 1000;

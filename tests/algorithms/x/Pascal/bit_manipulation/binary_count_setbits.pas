@@ -42,49 +42,33 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  a: integer;
-  b: integer;
-function binary_or(a: integer; b: integer): string; forward;
-function binary_or(a: integer; b: integer): string;
+  n: integer;
+function binary_count_setbits(n: integer): integer; forward;
+function binary_count_setbits(n: integer): integer;
 var
-  binary_or_res: string;
-  binary_or_x: integer;
-  binary_or_y: integer;
-  binary_or_bit_a: integer;
-  binary_or_bit_b: integer;
+  binary_count_setbits_count: integer;
+  binary_count_setbits_value: integer;
 begin
-  if (a < 0) or (b < 0) then begin
-  exit('ValueError');
+  if n < 0 then begin
+  panic('Input value must be a non-negative integer');
 end;
-  binary_or_res := '';
-  binary_or_x := a;
-  binary_or_y := b;
-  while (binary_or_x > 0) or (binary_or_y > 0) do begin
-  binary_or_bit_a := binary_or_x mod 2;
-  binary_or_bit_b := binary_or_y mod 2;
-  if (binary_or_bit_a = 1) or (binary_or_bit_b = 1) then begin
-  binary_or_res := '1' + binary_or_res;
-end else begin
-  binary_or_res := '0' + binary_or_res;
+  binary_count_setbits_count := 0;
+  binary_count_setbits_value := n;
+  while binary_count_setbits_value > 0 do begin
+  binary_count_setbits_count := binary_count_setbits_count + (binary_count_setbits_value mod 2);
+  binary_count_setbits_value := binary_count_setbits_value div 2;
 end;
-  binary_or_x := binary_or_x div 2;
-  binary_or_y := binary_or_y div 2;
-end;
-  if binary_or_res = '' then begin
-  binary_or_res := '0';
-end;
-  exit('0b' + binary_or_res);
+  exit(binary_count_setbits_count);
 end;
 begin
   init_now();
   bench_mem_0 := _mem();
   bench_start_0 := _bench_now();
-  writeln(binary_or(25, 32));
-  writeln(binary_or(37, 50));
-  writeln(binary_or(21, 30));
-  writeln(binary_or(58, 73));
-  writeln(binary_or(0, 255));
-  writeln(binary_or(0, 256));
+  writeln(IntToStr(binary_count_setbits(25)));
+  writeln(IntToStr(binary_count_setbits(36)));
+  writeln(IntToStr(binary_count_setbits(16)));
+  writeln(IntToStr(binary_count_setbits(58)));
+  writeln(IntToStr(binary_count_setbits(0)));
   Sleep(1);
   bench_memdiff_0 := _mem() - bench_mem_0;
   bench_dur_0 := (_bench_now() - bench_start_0) div 1000;
