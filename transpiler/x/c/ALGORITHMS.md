@@ -2,20 +2,20 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (10/1077) - Last updated 2025-08-06 16:21 +0700:
+Checklist of programs that currently transpile and run (12/1077) - Last updated 2025-08-06 16:42 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
-| 2 | backtracking/all_permutations |  |  |  |
-| 3 | backtracking/all_subsequences |  |  |  |
-| 4 | backtracking/coloring | ✓ | 328us | 1.6 MB |
-| 5 | backtracking/combination_sum | ✓ | 657us | 1.5 MB |
-| 6 | backtracking/crossword_puzzle_solver | ✓ | 811us | 1.5 MB |
+| 2 | backtracking/all_permutations | ✓ | 919us | 1.6 MB |
+| 3 | backtracking/all_subsequences | ✓ | 731us | 1.5 MB |
+| 4 | backtracking/coloring | ✓ | 918us | 1.5 MB |
+| 5 | backtracking/combination_sum | ✓ | 697us | 1.4 MB |
+| 6 | backtracking/crossword_puzzle_solver | ✓ | 858us | 1.5 MB |
 | 7 | backtracking/hamiltonian_cycle | ✓ |  |  |
-| 8 | backtracking/knight_tour | ✓ | 399us | 1.4 MB |
-| 9 | backtracking/match_word_pattern | ✓ | 916us | 1.5 MB |
-| 10 | backtracking/minimax | ✓ | 423us | 1.5 MB |
-| 11 | backtracking/n_queens | ✓ | 300us | 1.4 MB |
+| 8 | backtracking/knight_tour | ✓ | 477us | 1.5 MB |
+| 9 | backtracking/match_word_pattern | ✓ | 957us | 1.6 MB |
+| 10 | backtracking/minimax | ✓ | 514us | 1.5 MB |
+| 11 | backtracking/n_queens | ✓ | 3.43ms | 1.5 MB |
 | 12 | backtracking/n_queens_math |  |  |  |
 | 13 | backtracking/power_sum | ✓ | 488us | 1.5 MB |
 | 14 | backtracking/rat_in_maze |  |  |  |
