@@ -850,7 +850,8 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		if target == nil || target.Target == nil || target.Target.Selector == nil {
 			return errCannotAssign(s.Assign.Pos, nil, "", nil)
 		}
-		name := target.Target.Selector.Root
+		sel := target.Target.Selector
+		name := sel.Root
 		lhsType, err := env.GetVar(name)
 		if err != nil {
 			return errAssignUndeclared(s.Assign.Pos, name)
@@ -861,6 +862,26 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		}
 		if !mutable {
 			return errAssignImmutableVar(s.Assign.Pos, name)
+		}
+		for _, field := range sel.Tail {
+			switch lt := lhsType.(type) {
+			case StructType:
+				ft, ok := lt.Fields[field]
+				if !ok {
+					return errUnknownField(s.Assign.Pos, field, lt)
+				}
+				lhsType = ft
+			case MapType:
+				if unify(lt.Key, StringType{}, nil) {
+					lhsType = lt.Value
+				} else {
+					return errNotStruct(s.Assign.Pos, lt)
+				}
+			case AnyType:
+				lhsType = AnyType{}
+			default:
+				return errNotStruct(s.Assign.Pos, lt)
+			}
 		}
 		for _, op := range target.Ops {
 			if op.Index != nil {
@@ -967,7 +988,7 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		if !unify(lhsType, rhsType, nil) {
 			return errCannotAssign(s.Assign.Pos, rhsType, name, lhsType)
 		}
-		if len(target.Ops) == 0 {
+		if len(sel.Tail) == 0 && len(target.Ops) == 0 {
 			if ContainsAny(rhsType) {
 				if _, ok := lhsType.(AnyType); ok {
 					env.SetVar(name, rhsType, true)

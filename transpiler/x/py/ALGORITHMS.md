@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Python`.
-Last updated: 2025-08-06 22:52 GMT+7
+Last updated: 2025-08-06 23:27 GMT+7
 
 ## Algorithms Golden Test Checklist (195/1077)
 | Index | Name | Status | Duration | Memory |
@@ -211,9 +211,9 @@ Last updated: 2025-08-06 22:52 GMT+7
 | 202 | data_structures/disjoint_set/disjoint_set | ✓ | 1.0ms | 13.59MB |
 | 203 | data_structures/hashing/bloom_filter | ✓ | 1.0ms | 13.73MB |
 | 204 | data_structures/hashing/double_hash | ✓ | 28.0µs | 13.03MB |
-| 205 | data_structures/hashing/hash_map | ✓ | 1.0ms | 14.10MB |
+| 205 | data_structures/hashing/hash_map | error | 1.0ms | 14.10MB |
 | 206 | data_structures/hashing/hash_table | ✓ | 35.0µs | 13.72MB |
-| 207 | data_structures/hashing/hash_table_with_linked_list |   |  |  |
+| 207 | data_structures/hashing/hash_table_with_linked_list | ✓ | 48.0µs | 13.49MB |
 | 208 | data_structures/hashing/number_theory/prime_numbers |   |  |  |
 | 209 | data_structures/hashing/quadratic_probing |   |  |  |
 | 210 | data_structures/hashing/tests/test_hash_map |   |  |  |

@@ -2269,7 +2269,7 @@ func inferTypeFromExpr(e *parser.Expr) types.Type {
 	if len(e.Binary.Right) > 0 {
 		lt := inferTypeFromExpr(exprFromUnary(e.Binary.Left))
 		for _, r := range e.Binary.Right {
-			rt := inferTypeFromExpr(exprFromPostfix(r.Right))
+			rt := inferTypeFromExpr(exprFromUnary(r.Right))
 			switch r.Op {
 			case "&&", "||", "==", "!=", "<", "<=", ">", ">=", "in":
 				lt = types.BoolType{}
@@ -3470,65 +3470,29 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 			if err != nil {
 				return nil, err
 			}
-			if len(st.Assign.Index) >= 1 && len(st.Assign.Field) == 0 {
-				target := Expr(&Name{Name: st.Assign.Name})
-				for i := 0; i < len(st.Assign.Index)-1; i++ {
-					if st.Assign.Index[i].Colon != nil || st.Assign.Index[i].Colon2 != nil {
-						return nil, fmt.Errorf("unsupported assignment")
-					}
-					idx, err := convertExpr(st.Assign.Index[i].Start)
-					if err != nil {
-						return nil, err
-					}
-					target = &IndexExpr{Target: target, Index: idx}
-				}
-				last := st.Assign.Index[len(st.Assign.Index)-1]
-				if last.Colon != nil || last.Colon2 != nil {
+			targetExpr, err := convertPostfix(st.Assign.Target)
+			if err != nil {
+				return nil, err
+			}
+			switch t := targetExpr.(type) {
+			case *Name:
+				if len(st.Assign.Target.Ops) == 0 {
+					p.Stmts = append(p.Stmts, &AssignStmt{Name: t.Name, Expr: val})
+				} else {
 					return nil, fmt.Errorf("unsupported assignment")
 				}
-				idx, err := convertExpr(last.Start)
-				if err != nil {
-					return nil, err
-				}
-				p.Stmts = append(p.Stmts, &IndexAssignStmt{Target: target, Index: idx, Value: val})
-				usesSetIndex = true
-			} else if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
-				p.Stmts = append(p.Stmts, &AssignStmt{Name: st.Assign.Name, Expr: val})
-			} else if len(st.Assign.Index) == 0 && len(st.Assign.Field) > 0 {
-				target := Expr(&Name{Name: st.Assign.Name})
-				mapIndex := true
-				if currentEnv != nil {
-					if t, err := currentEnv.GetVar(st.Assign.Name); err == nil {
-						switch t.(type) {
-						case types.StructType:
-							mapIndex = false
-						case types.MapType:
-							mapIndex = true
-						default:
-							mapIndex = false
-						}
-					} else {
-						for _, stt := range currentEnv.Structs() {
-							if _, ok := stt.Fields[st.Assign.Field[0].Name]; ok {
-								mapIndex = false
-								break
-							}
-						}
-					}
-				}
-				for i := 0; i < len(st.Assign.Field)-1; i++ {
-					target = &FieldExpr{Target: target, Name: st.Assign.Field[i].Name, MapIndex: mapIndex}
-					mapIndex = true
-				}
-				field := st.Assign.Field[len(st.Assign.Field)-1].Name
-				if mapIndex {
-					idx := &StringLit{Value: field}
-					p.Stmts = append(p.Stmts, &IndexAssignStmt{Target: target, Index: idx, Value: val})
+			case *FieldExpr:
+				if t.MapIndex {
+					idx := &StringLit{Value: t.Name}
+					p.Stmts = append(p.Stmts, &IndexAssignStmt{Target: t.Target, Index: idx, Value: val})
 					usesSetIndex = true
 				} else {
-					p.Stmts = append(p.Stmts, &FieldAssignStmt{Target: target, Field: field, Value: val})
+					p.Stmts = append(p.Stmts, &FieldAssignStmt{Target: t.Target, Field: t.Name, Value: val})
 				}
-			} else {
+			case *IndexExpr:
+				p.Stmts = append(p.Stmts, &IndexAssignStmt{Target: t.Target, Index: t.Index, Value: val})
+				usesSetIndex = true
+			default:
 				return nil, fmt.Errorf("unsupported assignment")
 			}
 		case st.Update != nil:
@@ -3949,58 +3913,29 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			if len(s.Assign.Index) >= 1 && len(s.Assign.Field) == 0 {
-				target := Expr(&Name{Name: s.Assign.Name})
-				for i := 0; i < len(s.Assign.Index)-1; i++ {
-					if s.Assign.Index[i].Colon != nil || s.Assign.Index[i].Colon2 != nil {
-						return nil, fmt.Errorf("unsupported assignment")
-					}
-					idx, err := convertExpr(s.Assign.Index[i].Start)
-					if err != nil {
-						return nil, err
-					}
-					target = &IndexExpr{Target: target, Index: idx}
-				}
-				last := s.Assign.Index[len(s.Assign.Index)-1]
-				if last.Colon != nil || last.Colon2 != nil {
+			targetExpr, err := convertPostfix(s.Assign.Target)
+			if err != nil {
+				return nil, err
+			}
+			switch t := targetExpr.(type) {
+			case *Name:
+				if len(s.Assign.Target.Ops) == 0 {
+					out = append(out, &AssignStmt{Name: t.Name, Expr: val})
+				} else {
 					return nil, fmt.Errorf("unsupported assignment")
 				}
-				idx, err := convertExpr(last.Start)
-				if err != nil {
-					return nil, err
-				}
-				out = append(out, &IndexAssignStmt{Target: target, Index: idx, Value: val})
-				usesSetIndex = true
-			} else if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
-				out = append(out, &AssignStmt{Name: s.Assign.Name, Expr: val})
-			} else if len(s.Assign.Index) == 0 && len(s.Assign.Field) > 0 {
-				target := Expr(&Name{Name: s.Assign.Name})
-				mapIndex := true
-				if env != nil {
-					if t, err := env.GetVar(s.Assign.Name); err == nil {
-						switch t.(type) {
-						case types.StructType:
-							mapIndex = false
-						case types.MapType:
-							mapIndex = true
-						default:
-							mapIndex = false
-						}
-					}
-				}
-				for i := 0; i < len(s.Assign.Field)-1; i++ {
-					target = &FieldExpr{Target: target, Name: s.Assign.Field[i].Name, MapIndex: mapIndex}
-					mapIndex = true
-				}
-				field := s.Assign.Field[len(s.Assign.Field)-1].Name
-				if mapIndex {
-					idx := &StringLit{Value: field}
-					out = append(out, &IndexAssignStmt{Target: target, Index: idx, Value: val})
+			case *FieldExpr:
+				if t.MapIndex {
+					idx := &StringLit{Value: t.Name}
+					out = append(out, &IndexAssignStmt{Target: t.Target, Index: idx, Value: val})
 					usesSetIndex = true
 				} else {
-					out = append(out, &FieldAssignStmt{Target: target, Field: field, Value: val})
+					out = append(out, &FieldAssignStmt{Target: t.Target, Field: t.Name, Value: val})
 				}
-			} else {
+			case *IndexExpr:
+				out = append(out, &IndexAssignStmt{Target: t.Target, Index: t.Index, Value: val})
+				usesSetIndex = true
+			default:
 				return nil, fmt.Errorf("unsupported assignment")
 			}
 		case s.Update != nil:
@@ -4427,7 +4362,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	}
 	operands = append(operands, first)
 	for _, p := range b.Right {
-		o, err := convertPostfix(p.Right)
+		o, err := convertUnary(p.Right)
 		if err != nil {
 			return nil, err
 		}
@@ -4440,7 +4375,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	}
 
 	if len(ops) == 1 && ops[0] == "/" {
-		if isSumUnary(b.Left) && isSumPostfix(b.Right[0].Right) {
+		if isSumUnary(b.Left) && isSumUnary(b.Right[0].Right) {
 			ops[0] = "//"
 		}
 	}
@@ -4824,31 +4759,31 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			args = append(args, ae)
 		}
-               hasFunc := false
-               if currentEnv != nil {
-                       if fn, ok := currentEnv.GetFunc(p.Call.Func); ok {
-                               hasFunc = true
-                               if len(args) < len(fn.Params) {
-                                       rem := fn.Params[len(args):]
-                                       var names []string
-                                       var extra []Expr
-                                       for _, p := range rem {
-                                               names = append(names, p.Name)
-                                               extra = append(extra, &Name{Name: p.Name})
-                                       }
-                                       call := &CallExpr{Func: &Name{Name: p.Call.Func}, Args: append(args, extra...)}
-                                       return &LambdaExpr{Params: names, Expr: call}, nil
-                               }
-                       }
-                       if t, err := currentEnv.GetVar("self"); err == nil {
-                               if st, ok := t.(types.StructType); ok {
-                                       if _, ok := st.Methods[p.Call.Func]; ok {
-                                               return &CallExpr{Func: &FieldExpr{Target: &Name{Name: "self"}, Name: p.Call.Func}, Args: args}, nil
-                                       }
-                               }
-                       }
-               }
-               switch p.Call.Func {
+		hasFunc := false
+		if currentEnv != nil {
+			if fn, ok := currentEnv.GetFunc(p.Call.Func); ok {
+				hasFunc = true
+				if len(args) < len(fn.Params) {
+					rem := fn.Params[len(args):]
+					var names []string
+					var extra []Expr
+					for _, p := range rem {
+						names = append(names, p.Name)
+						extra = append(extra, &Name{Name: p.Name})
+					}
+					call := &CallExpr{Func: &Name{Name: p.Call.Func}, Args: append(args, extra...)}
+					return &LambdaExpr{Params: names, Expr: call}, nil
+				}
+			}
+			if t, err := currentEnv.GetVar("self"); err == nil {
+				if st, ok := t.(types.StructType); ok {
+					if _, ok := st.Methods[p.Call.Func]; ok {
+						return &CallExpr{Func: &FieldExpr{Target: &Name{Name: "self"}, Name: p.Call.Func}, Args: args}, nil
+					}
+				}
+			}
+		}
+		switch p.Call.Func {
 		case "print":
 			outArgs := make([]Expr, len(args))
 			for i, a := range args {
@@ -4912,16 +4847,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 1 {
 				return &CallExpr{Func: &Name{Name: "len"}, Args: args}, nil
 			}
-               case "values":
-                       if !hasFunc && len(args) == 1 {
-                               call := &CallExpr{Func: &FieldExpr{Target: args[0], Name: "values"}, Args: nil}
-                               return &CallExpr{Func: &Name{Name: "list"}, Args: []Expr{call}}, nil
-                       }
-               case "keys":
-                       if !hasFunc && len(args) == 1 {
-                               call := &CallExpr{Func: &FieldExpr{Target: args[0], Name: "keys"}, Args: nil}
-                               return &CallExpr{Func: &Name{Name: "list"}, Args: []Expr{call}}, nil
-                       }
+		case "values":
+			if !hasFunc && len(args) == 1 {
+				call := &CallExpr{Func: &FieldExpr{Target: args[0], Name: "values"}, Args: nil}
+				return &CallExpr{Func: &Name{Name: "list"}, Args: []Expr{call}}, nil
+			}
+		case "keys":
+			if !hasFunc && len(args) == 1 {
+				call := &CallExpr{Func: &FieldExpr{Target: args[0], Name: "keys"}, Args: nil}
+				return &CallExpr{Func: &Name{Name: "list"}, Args: []Expr{call}}, nil
+			}
 		case "min", "max":
 			if len(args) == 1 {
 				return &CallExpr{Func: &Name{Name: p.Call.Func}, Args: args}, nil
