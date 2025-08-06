@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-06 17:50 GMT+7
+Last updated: 2025-08-06 20:52 GMT+7
 
-## Algorithms Golden Test Checklist (30/1077)
+## Algorithms Golden Test Checklist (31/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -37,7 +37,7 @@ Last updated: 2025-08-06 17:50 GMT+7
 | 28 | bit_manipulation/bitwise_addition_recursive | ✓ | 2.0ms | 16.45KB |
 | 29 | bit_manipulation/count_1s_brian_kernighan_method | ✓ | 1.0ms | 16.53KB |
 | 30 | bit_manipulation/count_number_of_one_bits | ✓ | 2.0ms | 16.80KB |
-| 31 | bit_manipulation/excess_3_code |   |  |  |
+| 31 | bit_manipulation/excess_3_code | ✓ | 2.0ms | 13.65KB |
 | 32 | bit_manipulation/find_previous_power_of_two |   |  |  |
 | 33 | bit_manipulation/find_unique_number |   |  |  |
 | 34 | bit_manipulation/gray_code_sequence |   |  |  |
