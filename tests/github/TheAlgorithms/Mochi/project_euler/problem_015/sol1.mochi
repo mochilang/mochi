@@ -1,0 +1,32 @@
+/*
+Project Euler Problem 15: Lattice Paths
+---------------------------------------
+Starting at the top-left corner of an n x n grid and moving only right or
+ down one square at a time, the number of unique paths to the bottom-right
+ corner equals the central binomial coefficient C(2n, n). This implementation
+ computes factorials iteratively and uses the combination formula. It relies
+ solely on Mochi primitives and avoids the `any` type or foreign interfaces so
+ it runs on runtime/vm.
+*/
+
+fun factorial(n: int): int {
+  var result = 1
+  var i = 2
+  while i <= n {
+    result = result * i
+    i = i + 1
+  }
+  return result
+}
+
+fun solution(n: int): int {
+  let total = 2 * n
+  let k = total / 2
+  return factorial(total) / (factorial(k) * factorial(total - k))
+}
+
+print(str(solution(25)))
+print(str(solution(23)))
+print(str(solution(20)))
+print(str(solution(15)))
+print(str(solution(1)))
