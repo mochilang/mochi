@@ -1040,7 +1040,13 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 		} else if _, ok := structTypes[typ]; ok {
 			// structs default to zero initialization without explicit value
 		} else {
-			io.WriteString(w, " = 0")
+			if typ == "MapSS" || typ == "MapSL" || typ == "MapSI" {
+				io.WriteString(w, " = (")
+				io.WriteString(w, typ)
+				io.WriteString(w, "){0}")
+			} else {
+				io.WriteString(w, " = 0")
+			}
 		}
 	}
 	io.WriteString(w, ";\n")
@@ -1291,7 +1297,11 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 		}
 		typ := funcReturnTypes[call.Func]
 		if vt, ok := varTypes[a.Name]; ok && vt != "" {
-			typ = strings.ReplaceAll(vt, "*", "[]")
+			if strings.Contains(vt, "char*") {
+				typ = vt
+			} else {
+				typ = strings.ReplaceAll(vt, "*", "[]")
+			}
 		}
 		if strings.HasSuffix(typ, "[]") {
 			writeIndent(w, indent)
@@ -4293,11 +4303,11 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			}
 			fmt.Fprintf(&buf, "size_t %s_len = %d;\n", s.Let.Name, len(m.Items))
 			if strings.HasSuffix(valT, "[]") {
-				fmt.Fprintf(&buf, "MapSL %s = { %s_keys, %s_vals, %s_lens, %s_len };\n", s.Let.Name, s.Let.Name, s.Let.Name, s.Let.Name, s.Let.Name)
+				fmt.Fprintf(&buf, "MapSL %s = { %s_keys, %s_vals, %s_lens, %d };\n", s.Let.Name, s.Let.Name, s.Let.Name, s.Let.Name, len(m.Items))
 			} else if valT == "const char*" {
-				fmt.Fprintf(&buf, "MapSS %s = { %s_keys, %s_vals, %s_len };\n", s.Let.Name, s.Let.Name, s.Let.Name, s.Let.Name)
+				fmt.Fprintf(&buf, "MapSS %s = { %s_keys, %s_vals, %d };\n", s.Let.Name, s.Let.Name, s.Let.Name, len(m.Items))
 			} else if valT == "int" && keyT == "const char*" {
-				fmt.Fprintf(&buf, "MapSI %s = { %s_keys, %s_vals, %s_len };\n", s.Let.Name, s.Let.Name, s.Let.Name, s.Let.Name)
+				fmt.Fprintf(&buf, "MapSI %s = { %s_keys, %s_vals, %d };\n", s.Let.Name, s.Let.Name, s.Let.Name, len(m.Items))
 			}
 			return &RawStmt{Code: buf.String()}, nil
 		}
@@ -4498,11 +4508,11 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			}
 			fmt.Fprintf(&buf, "size_t %s_len = %d;\n", s.Var.Name, len(m.Items))
 			if strings.HasSuffix(valT, "[]") {
-				fmt.Fprintf(&buf, "MapSL %s = { %s_keys, %s_vals, %s_lens, %s_len };\n", s.Var.Name, s.Var.Name, s.Var.Name, s.Var.Name, s.Var.Name)
+				fmt.Fprintf(&buf, "MapSL %s = { %s_keys, %s_vals, %s_lens, %d };\n", s.Var.Name, s.Var.Name, s.Var.Name, s.Var.Name, len(m.Items))
 			} else if valT == "const char*" {
-				fmt.Fprintf(&buf, "MapSS %s = { %s_keys, %s_vals, %s_len };\n", s.Var.Name, s.Var.Name, s.Var.Name, s.Var.Name)
+				fmt.Fprintf(&buf, "MapSS %s = { %s_keys, %s_vals, %d };\n", s.Var.Name, s.Var.Name, s.Var.Name, len(m.Items))
 			} else if valT == "int" && keyT == "const char*" {
-				fmt.Fprintf(&buf, "MapSI %s = { %s_keys, %s_vals, %s_len };\n", s.Var.Name, s.Var.Name, s.Var.Name, s.Var.Name)
+				fmt.Fprintf(&buf, "MapSI %s = { %s_keys, %s_vals, %d };\n", s.Var.Name, s.Var.Name, s.Var.Name, len(m.Items))
 			}
 			return &RawStmt{Code: buf.String()}, nil
 		}
