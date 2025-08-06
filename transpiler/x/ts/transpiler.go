@@ -2476,20 +2476,14 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		target := Expr(&NameRef{Name: s.Assign.Name})
-		if len(s.Assign.Index) > 0 {
-			target, err = applyIndexOps(target, s.Assign.Index)
-			if err != nil {
-				return nil, err
-			}
+		targetExpr, err := convertPostfix(s.Assign.Target)
+		if err != nil {
+			return nil, err
 		}
-		for _, f := range s.Assign.Field {
-			target = &IndexExpr{Target: target, Index: &StringLit{Value: f.Name}}
+		if nr, ok := targetExpr.(*NameRef); ok && len(s.Assign.Target.Ops) == 0 {
+			return &AssignStmt{Name: nr.Name, Expr: val}, nil
 		}
-		if len(s.Assign.Index) > 0 || len(s.Assign.Field) > 0 {
-			return &IndexAssignStmt{Target: target, Value: val}, nil
-		}
-		return &AssignStmt{Name: s.Assign.Name, Expr: val}, nil
+		return &IndexAssignStmt{Target: targetExpr, Value: val}, nil
 	case s.Type != nil:
 		alias, err := convertTypeDecl(s.Type)
 		if err != nil {
@@ -3301,7 +3295,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		typesArr = append(typesArr, types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: b.Left}}, nil))
 	}
 	for _, r := range b.Right {
-		o, err := convertPostfix(r.Right)
+		o, err := convertUnary(r.Right)
 		if err != nil {
 			return nil, err
 		}
@@ -3309,9 +3303,9 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		ops = append(ops, r.Op)
 		opnodes = append(opnodes, r)
 		if transpileEnv != nil {
-			typesArr = append(typesArr, types.CheckExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: r.Right}}}, transpileEnv))
+			typesArr = append(typesArr, types.CheckExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: r.Right}}, transpileEnv))
 		} else {
-			typesArr = append(typesArr, types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: r.Right}}}, nil))
+			typesArr = append(typesArr, types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: r.Right}}, nil))
 		}
 	}
 
@@ -3386,14 +3380,14 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 			break
 		case "in":
 			isMap := false
-			if typ := postfixExprType(opnodes[i].Right); typ != nil {
+			if typ := postfixExprType(opnodes[i].Right.Value); typ != nil {
 				switch typ.(type) {
 				case types.MapType, types.StructType:
 					isMap = true
 				}
 			}
 			if !isMap && transpileEnv != nil {
-				if id := opnodes[i].Right.Target.Selector; id != nil {
+				if id := opnodes[i].Right.Value.Target.Selector; id != nil {
 					if t, err := transpileEnv.GetVar(id.Root); err == nil {
 						if _, ok := t.(types.MapType); ok {
 							isMap = true
@@ -3401,7 +3395,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 					}
 				}
 			}
-			if !isMap && isMapExpr(opnodes[i].Right) {
+			if !isMap && isMapExpr(opnodes[i].Right.Value) {
 				isMap = true
 			}
 			if isMap {

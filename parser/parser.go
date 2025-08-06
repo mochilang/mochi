@@ -221,11 +221,9 @@ type VarStmt struct {
 }
 
 type AssignStmt struct {
-	Pos   lexer.Position `json:"pos,omitempty" parser:""`
-	Name  string         `json:"name,omitempty" parser:"@Ident"`
-	Index []*IndexOp     `json:"index,omitempty" parser:"@@*"`
-	Field []*FieldOp     `json:"field,omitempty" parser:"@@*"`
-	Value *Expr          `json:"value,omitempty" parser:"'=' @@"`
+	Pos    lexer.Position `json:"pos,omitempty" parser:""`
+	Target *PostfixExpr   `json:"target,omitempty" parser:"@@"`
+	Value  *Expr          `json:"value,omitempty" parser:"'=' @@"`
 }
 
 type FunStmt struct {
@@ -364,7 +362,7 @@ type BinaryOp struct {
 	Pos   lexer.Position `json:"pos,omitempty" parser:""`
 	Op    string         `json:"op,omitempty" parser:"@('==' | '!=' | '<' | '<=' | '>' | '>=' | '+' | '-' | '*' | '/' | '%' | 'in' | '&&' | '||' | 'union' | 'except' | 'intersect')"`
 	All   bool           `json:"all,omitempty" parser:"[ @'all' ]"`
-	Right *PostfixExpr   `json:"right,omitempty" parser:"@@"`
+	Right *Unary         `json:"right,omitempty" parser:"@@"`
 }
 
 type Unary struct {

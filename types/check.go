@@ -846,19 +846,25 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		return nil
 
 	case s.Assign != nil:
-		lhsType, err := env.GetVar(s.Assign.Name)
-		if err != nil {
-			return errAssignUndeclared(s.Assign.Pos, s.Assign.Name)
+		target := s.Assign.Target
+		if target == nil || target.Target == nil || target.Target.Selector == nil {
+			return errCannotAssign(s.Assign.Pos, nil, "", nil)
 		}
-		mutable, err := env.IsMutable(s.Assign.Name)
+		name := target.Target.Selector.Root
+		lhsType, err := env.GetVar(name)
 		if err != nil {
-			return errAssignUndeclared(s.Assign.Pos, s.Assign.Name)
+			return errAssignUndeclared(s.Assign.Pos, name)
+		}
+		mutable, err := env.IsMutable(name)
+		if err != nil {
+			return errAssignUndeclared(s.Assign.Pos, name)
 		}
 		if !mutable {
-			return errAssignImmutableVar(s.Assign.Pos, s.Assign.Name)
+			return errAssignImmutableVar(s.Assign.Pos, name)
 		}
-		if len(s.Assign.Index) > 0 {
-			for _, idx := range s.Assign.Index {
+		for _, op := range target.Ops {
+			if op.Index != nil {
+				idx := op.Index
 				switch lt := lhsType.(type) {
 				case MapType:
 					if idx.Colon != nil {
@@ -927,18 +933,12 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 							return errIndexNotInteger(idx.Pos)
 						}
 					}
-					if idx.Colon != nil {
-						lhsType = StringType{}
-					} else {
-						lhsType = StringType{}
-					}
+					lhsType = StringType{}
 				default:
 					return errNotIndexable(s.Assign.Pos, lhsType)
 				}
-			}
-		}
-		if len(s.Assign.Field) > 0 {
-			for _, fop := range s.Assign.Field {
+			} else if op.Field != nil {
+				fop := op.Field
 				field := fop.Name
 				switch lt := lhsType.(type) {
 				case StructType:
@@ -965,15 +965,15 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 			return err
 		}
 		if !unify(lhsType, rhsType, nil) {
-			return errCannotAssign(s.Assign.Pos, rhsType, s.Assign.Name, lhsType)
+			return errCannotAssign(s.Assign.Pos, rhsType, name, lhsType)
 		}
-		if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
+		if len(target.Ops) == 0 {
 			if ContainsAny(rhsType) {
 				if _, ok := lhsType.(AnyType); ok {
-					env.SetVar(s.Assign.Name, rhsType, true)
+					env.SetVar(name, rhsType, true)
 				}
 			} else {
-				env.SetVar(s.Assign.Name, rhsType, true)
+				env.SetVar(name, rhsType, true)
 			}
 		}
 		return nil
@@ -1381,7 +1381,7 @@ func checkBinaryExpr(b *parser.BinaryExpr, env *Env, expected Type) (Type, error
 	operators := []token{}
 
 	for _, part := range b.Right {
-		typ, err := checkPostfix(part.Right, env, nil)
+		typ, err := checkUnary(part.Right, env, nil)
 		if err != nil {
 			return nil, err
 		}
