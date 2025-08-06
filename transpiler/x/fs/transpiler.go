@@ -3547,7 +3547,12 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		mutatedVars[st.Assign.Name] = true
+		cur := varTypes[st.Assign.Name]
 		t := inferType(e)
+		if cur == "int" && t == "int64" {
+			e = &CastExpr{Expr: e, Type: "int"}
+			t = "int"
+		}
 		if t == "array" {
 			if app, ok := e.(*AppendExpr); ok {
 				if et := inferType(app.Elem); et != "" && et != "obj" {
@@ -3559,7 +3564,6 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		if t != "" {
-			cur := varTypes[st.Assign.Name]
 			if cur == "" || cur == "array" || cur == "map" {
 				varTypes[st.Assign.Name] = t
 				cur = t
