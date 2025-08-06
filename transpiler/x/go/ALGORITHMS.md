@@ -1,15 +1,15 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 11/1077
-Last updated: 2025-08-06 16:21 +0700
+Completed programs: 41/1077
+Last updated: 2025-08-06 16:44 +0700
 
 Checklist:
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 993.0µs | 2.14KB |
-| 2 | backtracking/all_permutations | ✓ | 759.0µs | 5.80KB |
-| 3 | backtracking/all_subsequences | ✓ | 691.0µs | 4.94KB |
+| 1 | backtracking/all_combinations | ✓ | 845.0µs | 2.14KB |
+| 2 | backtracking/all_permutations | ✓ | 628.0µs | 5.87KB |
+| 3 | backtracking/all_subsequences | ✓ | 603.0µs | 4.94KB |
 | 4 | backtracking/coloring | ✓ | 904.0µs | 3.62KB |
 | 5 | backtracking/combination_sum | ✓ | 607.0µs | 1.88KB |
 | 6 | backtracking/crossword_puzzle_solver | ✓ | 1.0ms | 3.52KB |
@@ -18,36 +18,36 @@ Checklist:
 | 9 | backtracking/match_word_pattern | ✓ | 724.0µs | 11.91KB |
 | 10 | backtracking/minimax | ✓ | 496.0µs | 1000B |
 | 11 | backtracking/n_queens | ✓ | 540.0µs | 1.73KB |
-| 12 | backtracking/n_queens_math |   |  |  |
-| 13 | backtracking/power_sum |   |  |  |
-| 14 | backtracking/rat_in_maze |   |  |  |
-| 15 | backtracking/sudoku |   |  |  |
-| 16 | backtracking/sum_of_subsets |   |  |  |
-| 17 | backtracking/word_break |   |  |  |
-| 18 | backtracking/word_ladder |   |  |  |
-| 19 | backtracking/word_search |   |  |  |
-| 20 | bit_manipulation/binary_and_operator |   |  |  |
-| 21 | bit_manipulation/binary_coded_decimal |   |  |  |
-| 22 | bit_manipulation/binary_count_setbits |   |  |  |
-| 23 | bit_manipulation/binary_count_trailing_zeros |   |  |  |
-| 24 | bit_manipulation/binary_or_operator |   |  |  |
-| 25 | bit_manipulation/binary_shifts |   |  |  |
-| 26 | bit_manipulation/binary_twos_complement |   |  |  |
-| 27 | bit_manipulation/binary_xor_operator |   |  |  |
-| 28 | bit_manipulation/bitwise_addition_recursive |   |  |  |
-| 29 | bit_manipulation/count_1s_brian_kernighan_method |   |  |  |
-| 30 | bit_manipulation/count_number_of_one_bits |   |  |  |
-| 31 | bit_manipulation/excess_3_code |   |  |  |
-| 32 | bit_manipulation/find_previous_power_of_two |   |  |  |
-| 33 | bit_manipulation/find_unique_number |   |  |  |
-| 34 | bit_manipulation/gray_code_sequence |   |  |  |
-| 35 | bit_manipulation/highest_set_bit |   |  |  |
-| 36 | bit_manipulation/index_of_rightmost_set_bit |   |  |  |
-| 37 | bit_manipulation/is_even |   |  |  |
-| 38 | bit_manipulation/is_power_of_two |   |  |  |
-| 39 | bit_manipulation/largest_pow_of_two_le_num |   |  |  |
-| 40 | bit_manipulation/missing_number |   |  |  |
-| 41 | bit_manipulation/numbers_different_signs |   |  |  |
+| 12 | backtracking/n_queens_math | ✓ | 464.0µs | 2.51KB |
+| 13 | backtracking/power_sum | ✓ | 695.0µs | 936B |
+| 14 | backtracking/rat_in_maze | ✓ | 864.0µs | 2.77KB |
+| 15 | backtracking/sudoku | ✓ | 1.0ms | 20.20KB |
+| 16 | backtracking/sum_of_subsets | ✓ | 690.0µs | 4.83KB |
+| 17 | backtracking/word_break | ✓ | 439.0µs | 1000B |
+| 18 | backtracking/word_ladder | ✓ | 1.0ms | 9.48KB |
+| 19 | backtracking/word_search | ✓ | 452.0µs | 1.59KB |
+| 20 | bit_manipulation/binary_and_operator | ✓ | 530.0µs | 1.65KB |
+| 21 | bit_manipulation/binary_coded_decimal | ✓ | 336.0µs | 1.24KB |
+| 22 | bit_manipulation/binary_count_setbits | ✓ | 528.0µs | 1016B |
+| 23 | bit_manipulation/binary_count_trailing_zeros | ✓ | 525.0µs | 1.02KB |
+| 24 | bit_manipulation/binary_or_operator | ✓ | 424.0µs | 1.29KB |
+| 25 | bit_manipulation/binary_shifts | ✓ | 764.0µs | 1.13KB |
+| 26 | bit_manipulation/binary_twos_complement | ✓ | 530.0µs | 1.15KB |
+| 27 | bit_manipulation/binary_xor_operator | ✓ | 679.0µs | 1.66KB |
+| 28 | bit_manipulation/bitwise_addition_recursive | ✓ | 295.0µs | 984B |
+| 29 | bit_manipulation/count_1s_brian_kernighan_method | ✓ | 836.0µs | 1.01KB |
+| 30 | bit_manipulation/count_number_of_one_bits | ✓ | 516.0µs | 1.10KB |
+| 31 | bit_manipulation/excess_3_code | ✓ | 521.0µs | 1.09KB |
+| 32 | bit_manipulation/find_previous_power_of_two | ✓ | 565.0µs | 1.73KB |
+| 33 | bit_manipulation/find_unique_number | ✓ | 517.0µs | 984B |
+| 34 | bit_manipulation/gray_code_sequence | ✓ | 789.0µs | 1.55KB |
+| 35 | bit_manipulation/highest_set_bit | ✓ | 840.0µs | 1016B |
+| 36 | bit_manipulation/index_of_rightmost_set_bit | ✓ | 671.0µs | 1016B |
+| 37 | bit_manipulation/is_even | ✓ | 460.0µs | 1.05KB |
+| 38 | bit_manipulation/is_power_of_two | ✓ | 651.0µs | 1016B |
+| 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 436.0µs | 1.05KB |
+| 40 | bit_manipulation/missing_number | ✓ | 312.0µs | 936B |
+| 41 | bit_manipulation/numbers_different_signs | ✓ | 504.0µs | 1.05KB |
 | 42 | bit_manipulation/power_of_4 |   |  |  |
 | 43 | bit_manipulation/reverse_bits |   |  |  |
 | 44 | bit_manipulation/single_bit_manipulation_operations |   |  |  |
