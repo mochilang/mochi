@@ -6,6 +6,7 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -112,7 +113,7 @@ func TestRubyTranspiler_Algorithms_Golden(t *testing.T) {
 			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 				cmd.Stdin = bytes.NewReader(data)
 			}
-			want, _ := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".out")
+			want, _ := os.ReadFile(outPath)
 			want = bytes.TrimSpace(want)
 
 			out, err := cmd.CombinedOutput()
@@ -134,12 +135,13 @@ func TestRubyTranspiler_Algorithms_Golden(t *testing.T) {
 			if benchData != nil {
 				_ = os.WriteFile(benchPath, benchData, 0o644)
 			}
-			if want != nil && len(want) > 0 {
-				if gotOut, err := os.ReadFile(outPath); err == nil {
-					gotOut = bytes.TrimSpace(gotOut)
-					if !bytes.Equal(gotOut, want) {
-						t.Errorf("output mismatch\nGot: %s\nWant: %s", gotOut, want)
-					}
+			if updating() || len(want) == 0 {
+				return
+			}
+			if gotOut, err := os.ReadFile(outPath); err == nil {
+				gotOut = bytes.TrimSpace(gotOut)
+				if !bytes.Equal(gotOut, want) {
+					t.Errorf("output mismatch\nGot: %s\nWant: %s", gotOut, want)
 				}
 			}
 		})
@@ -228,4 +230,17 @@ func formatBytes(b int64) string {
 		exp++
 	}
 	return fmt.Sprintf("%.1f %cB", float64(b)/float64(div), "KMGTPE"[exp])
+}
+
+func updating() bool {
+	f := flag.Lookup("update")
+	if f == nil {
+		return false
+	}
+	if getter, ok := f.Value.(interface{ Get() any }); ok {
+		if v, ok2 := getter.Get().(bool); ok2 {
+			return v
+		}
+	}
+	return false
 }
