@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 153/1077
-Last updated: 2025-08-06 21:40 +0700
+Completed programs: 162/1077
+Last updated: 2025-08-06 22:05 +0700
 
 Checklist:
 
@@ -168,15 +168,15 @@ Checklist:
 | 159 | data_structures/arrays/equilibrium_index_in_array | ✓ | 498.0µs | 1.13KB |
 | 160 | data_structures/arrays/find_triplets_with_0_sum | ✓ | 806.0µs | 4.24KB |
 | 161 | data_structures/arrays/index_2d_array_in_1d | ✓ | 607.0µs | 1.40KB |
-| 162 | data_structures/arrays/kth_largest_element |   |  |  |
-| 163 | data_structures/arrays/median_two_array |   |  |  |
-| 164 | data_structures/arrays/monotonic_array |   |  |  |
-| 165 | data_structures/arrays/pairs_with_given_sum |   |  |  |
-| 166 | data_structures/arrays/permutations |   |  |  |
-| 167 | data_structures/arrays/prefix_sum |   |  |  |
-| 168 | data_structures/arrays/product_sum |   |  |  |
-| 169 | data_structures/arrays/sparse_table |   |  |  |
-| 170 | data_structures/arrays/sudoku_solver |   |  |  |
+| 162 | data_structures/arrays/kth_largest_element | ✓ | 406.0µs | 1.10KB |
+| 163 | data_structures/arrays/median_two_array | ✓ | 570.0µs | 1.34KB |
+| 164 | data_structures/arrays/monotonic_array | ✓ | 597.0µs | 1000B |
+| 165 | data_structures/arrays/pairs_with_given_sum | ✓ | 501.0µs | 936B |
+| 166 | data_structures/arrays/permutations | ✓ | 827.0µs | 4.29KB |
+| 167 | data_structures/arrays/prefix_sum | ✓ | 472.0µs | 1.45KB |
+| 168 | data_structures/arrays/product_sum | ✓ | 568.0µs | 1.23KB |
+| 169 | data_structures/arrays/sparse_table | ✓ | 713.0µs | 2.27KB |
+| 170 | data_structures/arrays/sudoku_solver | ✓ | 1.0ms | 38.34KB |
 | 171 | data_structures/binary_tree/avl_tree |   |  |  |
 | 172 | data_structures/binary_tree/basic_binary_tree |   |  |  |
 | 173 | data_structures/binary_tree/binary_search_tree |   |  |  |
