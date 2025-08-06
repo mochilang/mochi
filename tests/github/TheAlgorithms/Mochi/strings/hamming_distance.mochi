@@ -1,0 +1,28 @@
+/*
+Compute the Hamming distance between two strings of equal length.
+
+The Hamming distance is the number of positions at which the corresponding
+characters are different. If the input strings have different lengths the
+function panics to mirror the Python implementation.
+
+Time complexity: O(n) for strings of length n. Uses O(1) extra space.
+*/
+
+fun hamming_distance(a: string, b: string): int {
+  if len(a) != len(b) {
+    panic("String lengths must match!")
+  }
+  var i: int = 0
+  var count: int = 0
+  while i < len(a) {
+    if a[i] != b[i] {
+      count = count + 1
+    }
+    i = i + 1
+  }
+  return count
+}
+
+print(str(hamming_distance("python", "python")))
+print(str(hamming_distance("karolin", "kathrin")))
+print(str(hamming_distance("00000", "11111")))
