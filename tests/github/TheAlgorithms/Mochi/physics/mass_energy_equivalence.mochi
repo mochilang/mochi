@@ -1,0 +1,45 @@
+/*
+Mass–Energy Equivalence
+-----------------------
+This program reimplements TheAlgorithms' Python version of
+`physics/mass_energy_equivalence.py` using pure Mochi so it can run
+on `runtime/vm` without foreign interfaces.  The mass–energy
+equivalence principle from Einstein states that mass (m) and energy (E)
+are related by the speed of light in vacuum (c) squared:
+
+    E = m * c^2
+    m = E / c^2
+
+The code below defines two functions:
+1. `energy_from_mass(mass)`  – converts a mass in kilograms to its
+   energy equivalent in joules.
+2. `mass_from_energy(energy)` – converts an energy in joules to its
+   mass equivalent in kilograms.
+
+Both functions perform simple input validation to reject negative
+values.  Constants are expressed explicitly to avoid any FFI.
+Sample computations at the bottom mirror the Python doctest examples.
+*/
+
+let C: float = 299792458.0
+
+fun energy_from_mass(mass: float): float {
+  if mass < 0.0 {
+    panic("Mass can't be negative.")
+  }
+  return mass * C * C
+}
+
+fun mass_from_energy(energy: float): float {
+  if energy < 0.0 {
+    panic("Energy can't be negative.")
+  }
+  return energy / (C * C)
+}
+
+print(str(energy_from_mass(124.56)))
+print(str(energy_from_mass(320.0)))
+print(str(energy_from_mass(0.0)))
+print(str(mass_from_energy(124.56)))
+print(str(mass_from_energy(320.0)))
+print(str(mass_from_energy(0.0)))
