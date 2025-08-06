@@ -1,0 +1,37 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden437_karger626495753/001/Main.java:65: error: array required, but Object found
+            Object u = nodes[rand_int(String.valueOf(nodes).length())];
+                            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden437_karger626495753/001/Main.java:73: error: bad operand types for binary operator '!='
+                if (n != ((Number)(u)).intValue() && !(n.equals(v)) && contains(((String[])(uv_neighbors)), n) == false) {
+                      ^
+  first type:  String
+  second type: int
+/tmp/TestJavaTranspiler_Algorithms_Golden437_karger626495753/001/Main.java:81: error: bad operand types for binary operator '!='
+                if (n_1 != ((Number)(u)).intValue() && !(n_1.equals(v)) && contains(((String[])(uv_neighbors)), n_1) == false) {
+                        ^
+  first type:  String
+  second type: int
+/tmp/TestJavaTranspiler_Algorithms_Golden437_karger626495753/001/Main.java:112: error: no suitable method found for stream(Object)
+            nodes = java.util.stream.Stream.concat(java.util.Arrays.stream(nodes), java.util.stream.Stream.of(uv)).toArray(String[]::new);
+                                                                   ^
+    method Arrays.<T#1>stream(T#1[]) is not applicable
+      (cannot infer type-variable(s) T#1
+        (argument mismatch; Object cannot be converted to T#1[]))
+    method Arrays.<T#2>stream(T#2[],int,int) is not applicable
+      (cannot infer type-variable(s) T#2
+        (actual and formal argument lists differ in length))
+    method Arrays.stream(int[]) is not applicable
+      (argument mismatch; Object cannot be converted to int[])
+    method Arrays.stream(long[]) is not applicable
+      (argument mismatch; Object cannot be converted to long[])
+    method Arrays.stream(double[]) is not applicable
+      (argument mismatch; Object cannot be converted to double[])
+  where T#1,T#2 are type-variables:
+    T#1 extends Object declared in method <T#1>stream(T#1[])
+    T#2 extends Object declared in method <T#2>stream(T#2[],int,int)
+/tmp/TestJavaTranspiler_Algorithms_Golden437_karger626495753/001/Main.java:117: error: array required, but Object found
+            Object n_2 = nodes[j];
+                              ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+5 errors

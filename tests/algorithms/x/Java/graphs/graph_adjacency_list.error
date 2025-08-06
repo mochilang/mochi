@@ -1,0 +1,8 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden429_graph_adjacency_list1767100233/001/Main.java:65: error: incompatible types: String cannot be converted to Number
+            if (((Number)(k)).intValue() != key) {
+                         ^
+/tmp/TestJavaTranspiler_Algorithms_Golden429_graph_adjacency_list1767100233/001/Main.java:118: error: incompatible types: String cannot be converted to Number
+            if (((Number)(k)).intValue() != v) {
+                         ^
+2 errors

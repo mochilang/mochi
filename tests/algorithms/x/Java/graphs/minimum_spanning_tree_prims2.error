@@ -1,0 +1,5 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden446_minimum_spanning_tree_prims23588932195/001/Main.java:72: error: incompatible types: String cannot be converted to Number
+                    if (queue[k].node == ((Number)(neighbour)).intValue()) {
+                                                  ^
+1 error

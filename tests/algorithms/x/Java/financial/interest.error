@@ -1,0 +1,29 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden374_interest1300311454/001/Main.java:20: error: unreachable statement
+            return 0.0;
+            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden374_interest1300311454/001/Main.java:24: error: unreachable statement
+            return 0.0;
+            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden374_interest1300311454/001/Main.java:28: error: unreachable statement
+            return 0.0;
+            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden374_interest1300311454/001/Main.java:36: error: unreachable statement
+            return 0.0;
+            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden374_interest1300311454/001/Main.java:40: error: unreachable statement
+            return 0.0;
+            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden374_interest1300311454/001/Main.java:44: error: unreachable statement
+            return 0.0;
+            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden374_interest1300311454/001/Main.java:52: error: unreachable statement
+            return 0.0;
+            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden374_interest1300311454/001/Main.java:56: error: unreachable statement
+            return 0.0;
+            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden374_interest1300311454/001/Main.java:60: error: unreachable statement
+            return 0.0;
+            ^
+9 errors

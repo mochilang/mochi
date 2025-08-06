@@ -1,0 +1,5 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden407_breadth_first_search_shortest_path_24281232444/001/Main.java:17: error: incompatible types: String cannot be converted to Number
+            if (((Number)(k)).intValue() == key) {
+                         ^
+1 error

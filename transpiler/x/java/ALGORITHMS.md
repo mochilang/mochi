@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-06 22:21 GMT+7
+Last updated: 2025-08-06 23:00 GMT+7
 
-## Algorithms Golden Test Checklist (223/1077)
+## Algorithms Golden Test Checklist (382/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -267,206 +267,206 @@ Last updated: 2025-08-06 22:21 GMT+7
 | 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 46.0ms | 96.02KB |
 | 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 25.0ms | 46.48KB |
 | 260 | data_structures/stacks/stock_span_problem | ✓ | 25.0ms | 46.12KB |
-| 261 | data_structures/suffix_tree/example/example_usage |   |  |  |
-| 262 | data_structures/suffix_tree/suffix_tree |   |  |  |
-| 263 | data_structures/suffix_tree/suffix_tree_node |   |  |  |
-| 264 | data_structures/suffix_tree/tests/test_suffix_tree |   |  |  |
-| 265 | data_structures/trie/radix_tree |   |  |  |
-| 266 | data_structures/trie/trie |   |  |  |
-| 267 | digital_image_processing/change_brightness |   |  |  |
-| 268 | digital_image_processing/change_contrast |   |  |  |
-| 269 | digital_image_processing/convert_to_negative |   |  |  |
-| 270 | digital_image_processing/dithering/burkes |   |  |  |
-| 271 | digital_image_processing/edge_detection/canny |   |  |  |
-| 272 | digital_image_processing/filters/bilateral_filter |   |  |  |
-| 273 | digital_image_processing/filters/convolve |   |  |  |
-| 274 | digital_image_processing/filters/gabor_filter |   |  |  |
-| 275 | digital_image_processing/filters/gaussian_filter |   |  |  |
-| 276 | digital_image_processing/filters/laplacian_filter |   |  |  |
-| 277 | digital_image_processing/filters/local_binary_pattern |   |  |  |
-| 278 | digital_image_processing/filters/median_filter |   |  |  |
-| 279 | digital_image_processing/filters/sobel_filter |   |  |  |
-| 280 | digital_image_processing/histogram_equalization/histogram_stretch |   |  |  |
-| 281 | digital_image_processing/index_calculation |   |  |  |
-| 282 | digital_image_processing/morphological_operations/dilation_operation |   |  |  |
-| 283 | digital_image_processing/morphological_operations/erosion_operation |   |  |  |
-| 284 | digital_image_processing/resize/resize |   |  |  |
-| 285 | digital_image_processing/rotation/rotation |   |  |  |
-| 286 | digital_image_processing/sepia |   |  |  |
-| 287 | digital_image_processing/test_digital_image_processing |   |  |  |
-| 288 | divide_and_conquer/closest_pair_of_points |   |  |  |
-| 289 | divide_and_conquer/convex_hull |   |  |  |
-| 290 | divide_and_conquer/heaps_algorithm |   |  |  |
-| 291 | divide_and_conquer/heaps_algorithm_iterative |   |  |  |
-| 292 | divide_and_conquer/inversions |   |  |  |
-| 293 | divide_and_conquer/kth_order_statistic |   |  |  |
-| 294 | divide_and_conquer/max_difference_pair |   |  |  |
-| 295 | divide_and_conquer/max_subarray |   |  |  |
-| 296 | divide_and_conquer/mergesort |   |  |  |
-| 297 | divide_and_conquer/peak |   |  |  |
-| 298 | divide_and_conquer/power |   |  |  |
-| 299 | divide_and_conquer/strassen_matrix_multiplication |   |  |  |
-| 300 | docs/conf |   |  |  |
-| 301 | dynamic_programming/abbreviation |   |  |  |
-| 302 | dynamic_programming/all_construct |   |  |  |
-| 303 | dynamic_programming/bitmask |   |  |  |
-| 304 | dynamic_programming/catalan_numbers |   |  |  |
-| 305 | dynamic_programming/climbing_stairs |   |  |  |
-| 306 | dynamic_programming/combination_sum_iv |   |  |  |
-| 307 | dynamic_programming/edit_distance |   |  |  |
-| 308 | dynamic_programming/factorial |   |  |  |
-| 309 | dynamic_programming/fast_fibonacci |   |  |  |
-| 310 | dynamic_programming/fibonacci |   |  |  |
-| 311 | dynamic_programming/fizz_buzz |   |  |  |
-| 312 | dynamic_programming/floyd_warshall |   |  |  |
-| 313 | dynamic_programming/integer_partition |   |  |  |
-| 314 | dynamic_programming/iterating_through_submasks |   |  |  |
-| 315 | dynamic_programming/k_means_clustering_tensorflow |   |  |  |
-| 316 | dynamic_programming/knapsack |   |  |  |
-| 317 | dynamic_programming/largest_divisible_subset |   |  |  |
-| 318 | dynamic_programming/longest_common_subsequence |   |  |  |
-| 319 | dynamic_programming/longest_common_substring |   |  |  |
-| 320 | dynamic_programming/longest_increasing_subsequence |   |  |  |
-| 321 | dynamic_programming/longest_increasing_subsequence_iterative |   |  |  |
-| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn |   |  |  |
-| 323 | dynamic_programming/longest_palindromic_subsequence |   |  |  |
-| 324 | dynamic_programming/matrix_chain_multiplication |   |  |  |
-| 325 | dynamic_programming/matrix_chain_order |   |  |  |
-| 326 | dynamic_programming/max_non_adjacent_sum |   |  |  |
-| 327 | dynamic_programming/max_product_subarray |   |  |  |
-| 328 | dynamic_programming/max_subarray_sum |   |  |  |
-| 329 | dynamic_programming/min_distance_up_bottom |   |  |  |
-| 330 | dynamic_programming/minimum_coin_change |   |  |  |
-| 331 | dynamic_programming/minimum_cost_path |   |  |  |
-| 332 | dynamic_programming/minimum_partition |   |  |  |
-| 333 | dynamic_programming/minimum_size_subarray_sum |   |  |  |
-| 334 | dynamic_programming/minimum_squares_to_represent_a_number |   |  |  |
-| 335 | dynamic_programming/minimum_steps_to_one |   |  |  |
-| 336 | dynamic_programming/minimum_tickets_cost |   |  |  |
-| 337 | dynamic_programming/optimal_binary_search_tree |   |  |  |
-| 338 | dynamic_programming/palindrome_partitioning |   |  |  |
-| 339 | dynamic_programming/range_sum_query |   |  |  |
-| 340 | dynamic_programming/regex_match |   |  |  |
-| 341 | dynamic_programming/rod_cutting |   |  |  |
-| 342 | dynamic_programming/smith_waterman |   |  |  |
-| 343 | dynamic_programming/subset_generation |   |  |  |
-| 344 | dynamic_programming/sum_of_subset |   |  |  |
-| 345 | dynamic_programming/trapped_water |   |  |  |
-| 346 | dynamic_programming/tribonacci |   |  |  |
-| 347 | dynamic_programming/viterbi |   |  |  |
-| 348 | dynamic_programming/wildcard_matching |   |  |  |
-| 349 | dynamic_programming/word_break |   |  |  |
-| 350 | electronics/apparent_power |   |  |  |
-| 351 | electronics/builtin_voltage |   |  |  |
-| 352 | electronics/capacitor_equivalence |   |  |  |
-| 353 | electronics/carrier_concentration |   |  |  |
-| 354 | electronics/charging_capacitor |   |  |  |
-| 355 | electronics/charging_inductor |   |  |  |
-| 356 | electronics/circular_convolution |   |  |  |
-| 357 | electronics/coulombs_law |   |  |  |
-| 358 | electronics/electric_conductivity |   |  |  |
-| 359 | electronics/electric_power |   |  |  |
-| 360 | electronics/electrical_impedance |   |  |  |
-| 361 | electronics/ic_555_timer |   |  |  |
-| 362 | electronics/ind_reactance |   |  |  |
-| 363 | electronics/ohms_law |   |  |  |
-| 364 | electronics/real_and_reactive_power |   |  |  |
-| 365 | electronics/resistor_color_code |   |  |  |
-| 366 | electronics/resistor_equivalence |   |  |  |
-| 367 | electronics/resonant_frequency |   |  |  |
-| 368 | electronics/wheatstone_bridge |   |  |  |
-| 369 | file_transfer/receive_file |   |  |  |
-| 370 | file_transfer/send_file |   |  |  |
-| 371 | file_transfer/tests/test_send_file |   |  |  |
-| 372 | financial/equated_monthly_installments |   |  |  |
-| 373 | financial/exponential_moving_average |   |  |  |
-| 374 | financial/interest |   |  |  |
-| 375 | financial/present_value |   |  |  |
-| 376 | financial/price_plus_tax |   |  |  |
-| 377 | financial/simple_moving_average |   |  |  |
-| 378 | financial/straight_line_depreciation |   |  |  |
-| 379 | financial/time_and_half_pay |   |  |  |
-| 380 | fractals/julia_sets |   |  |  |
-| 381 | fractals/koch_snowflake |   |  |  |
-| 382 | fractals/mandelbrot |   |  |  |
-| 383 | fractals/sierpinski_triangle |   |  |  |
-| 384 | fractals/vicsek |   |  |  |
-| 385 | fuzzy_logic/fuzzy_operations |   |  |  |
-| 386 | genetic_algorithm/basic_string |   |  |  |
-| 387 | geodesy/haversine_distance |   |  |  |
-| 388 | geodesy/lamberts_ellipsoidal_distance |   |  |  |
-| 389 | geometry/geometry |   |  |  |
-| 390 | graphics/bezier_curve |   |  |  |
-| 391 | graphics/butterfly_pattern |   |  |  |
-| 392 | graphics/digital_differential_analyzer_line |   |  |  |
-| 393 | graphics/vector3_for_2d_rendering |   |  |  |
-| 394 | graphs/a_star |   |  |  |
-| 395 | graphs/ant_colony_optimization_algorithms |   |  |  |
-| 396 | graphs/articulation_points |   |  |  |
-| 397 | graphs/basic_graphs |   |  |  |
-| 398 | graphs/bellman_ford |   |  |  |
-| 399 | graphs/bi_directional_dijkstra |   |  |  |
-| 400 | graphs/bidirectional_a_star |   |  |  |
-| 401 | graphs/bidirectional_breadth_first_search |   |  |  |
-| 402 | graphs/bidirectional_search |   |  |  |
-| 403 | graphs/boruvka |   |  |  |
-| 404 | graphs/breadth_first_search |   |  |  |
-| 405 | graphs/breadth_first_search_2 |   |  |  |
-| 406 | graphs/breadth_first_search_shortest_path |   |  |  |
-| 407 | graphs/breadth_first_search_shortest_path_2 |   |  |  |
-| 408 | graphs/breadth_first_search_zero_one_shortest_path |   |  |  |
-| 409 | graphs/check_bipatrite |   |  |  |
-| 410 | graphs/check_cycle |   |  |  |
-| 411 | graphs/connected_components |   |  |  |
-| 412 | graphs/deep_clone_graph |   |  |  |
-| 413 | graphs/depth_first_search |   |  |  |
-| 414 | graphs/depth_first_search_2 |   |  |  |
-| 415 | graphs/dijkstra |   |  |  |
-| 416 | graphs/dijkstra_2 |   |  |  |
-| 417 | graphs/dijkstra_algorithm |   |  |  |
-| 418 | graphs/dijkstra_alternate |   |  |  |
-| 419 | graphs/dijkstra_binary_grid |   |  |  |
-| 420 | graphs/dinic |   |  |  |
-| 421 | graphs/directed_and_undirected_weighted_graph |   |  |  |
-| 422 | graphs/edmonds_karp_multiple_source_and_sink |   |  |  |
-| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph |   |  |  |
-| 424 | graphs/even_tree |   |  |  |
-| 425 | graphs/finding_bridges |   |  |  |
-| 426 | graphs/frequent_pattern_graph_miner |   |  |  |
-| 427 | graphs/g_topological_sort |   |  |  |
-| 428 | graphs/gale_shapley_bigraph |   |  |  |
-| 429 | graphs/graph_adjacency_list |   |  |  |
-| 430 | graphs/graph_adjacency_matrix |   |  |  |
-| 431 | graphs/graph_list |   |  |  |
-| 432 | graphs/graphs_floyd_warshall |   |  |  |
-| 433 | graphs/greedy_best_first |   |  |  |
-| 434 | graphs/greedy_min_vertex_cover |   |  |  |
-| 435 | graphs/kahns_algorithm_long |   |  |  |
-| 436 | graphs/kahns_algorithm_topo |   |  |  |
-| 437 | graphs/karger |   |  |  |
-| 438 | graphs/lanczos_eigenvectors |   |  |  |
-| 439 | graphs/markov_chain |   |  |  |
-| 440 | graphs/matching_min_vertex_cover |   |  |  |
-| 441 | graphs/minimum_path_sum |   |  |  |
-| 442 | graphs/minimum_spanning_tree_boruvka |   |  |  |
-| 443 | graphs/minimum_spanning_tree_kruskal |   |  |  |
-| 444 | graphs/minimum_spanning_tree_kruskal2 |   |  |  |
-| 445 | graphs/minimum_spanning_tree_prims |   |  |  |
-| 446 | graphs/minimum_spanning_tree_prims2 |   |  |  |
-| 447 | graphs/multi_heuristic_astar |   |  |  |
-| 448 | graphs/page_rank |   |  |  |
-| 449 | graphs/prim |   |  |  |
-| 450 | graphs/random_graph_generator |   |  |  |
-| 451 | graphs/scc_kosaraju |   |  |  |
-| 452 | graphs/strongly_connected_components |   |  |  |
-| 453 | graphs/tarjans_scc |   |  |  |
-| 454 | graphs/tests/test_min_spanning_tree_kruskal |   |  |  |
-| 455 | graphs/tests/test_min_spanning_tree_prim |   |  |  |
-| 456 | greedy_methods/best_time_to_buy_and_sell_stock |   |  |  |
-| 457 | greedy_methods/fractional_cover_problem |   |  |  |
-| 458 | greedy_methods/fractional_knapsack |   |  |  |
-| 459 | greedy_methods/fractional_knapsack_2 |   |  |  |
-| 460 | greedy_methods/gas_station |   |  |  |
+| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 31.0ms | 78.19KB |
+| 262 | data_structures/suffix_tree/suffix_tree | error |  |  |
+| 263 | data_structures/suffix_tree/suffix_tree_node | error |  |  |
+| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 18.0ms | 1.42KB |
+| 265 | data_structures/trie/radix_tree | error |  |  |
+| 266 | data_structures/trie/trie | ✓ | 31.0ms | 59.47KB |
+| 267 | digital_image_processing/change_brightness | ✓ | 24.0ms | 46.16KB |
+| 268 | digital_image_processing/change_contrast | ✓ | 36.0ms | 93.01KB |
+| 269 | digital_image_processing/convert_to_negative | ✓ | 13.0ms | 888B |
+| 270 | digital_image_processing/dithering/burkes | ✓ | 29.0ms | 54.75KB |
+| 271 | digital_image_processing/edge_detection/canny | error |  |  |
+| 272 | digital_image_processing/filters/bilateral_filter | error |  |  |
+| 273 | digital_image_processing/filters/convolve | error |  |  |
+| 274 | digital_image_processing/filters/gabor_filter | ✓ | 26.0ms | 57.08KB |
+| 275 | digital_image_processing/filters/gaussian_filter | ✓ | 27.0ms | 49.28KB |
+| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 26.0ms | 55.21KB |
+| 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 22.0ms | 38.38KB |
+| 278 | digital_image_processing/filters/median_filter | ✓ | 29.0ms | 46.04KB |
+| 279 | digital_image_processing/filters/sobel_filter | error |  |  |
+| 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 28.0ms | 46.23KB |
+| 281 | digital_image_processing/index_calculation | ✓ | 22.0ms | 47.74KB |
+| 282 | digital_image_processing/morphological_operations/dilation_operation | error |  |  |
+| 283 | digital_image_processing/morphological_operations/erosion_operation | ✓ | 27.0ms | 57.82KB |
+| 284 | digital_image_processing/resize/resize | ✓ | 40.0ms | 46.53KB |
+| 285 | digital_image_processing/rotation/rotation | error |  |  |
+| 286 | digital_image_processing/sepia | ✓ | 13.0ms | 840B |
+| 287 | digital_image_processing/test_digital_image_processing | ✓ | 28.0ms | 57.13KB |
+| 288 | divide_and_conquer/closest_pair_of_points | error |  |  |
+| 289 | divide_and_conquer/convex_hull | ✓ | 14.0ms | 0B |
+| 290 | divide_and_conquer/heaps_algorithm | ✓ | 14.0ms | 656B |
+| 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 25.0ms | 46.24KB |
+| 292 | divide_and_conquer/inversions | error |  |  |
+| 293 | divide_and_conquer/kth_order_statistic | ✓ | 30.0ms | 46.25KB |
+| 294 | divide_and_conquer/max_difference_pair | ✓ | 14.0ms | 656B |
+| 295 | divide_and_conquer/max_subarray | ✓ | 43.0ms | 94.39KB |
+| 296 | divide_and_conquer/mergesort | ✓ | 25.0ms | 46.14KB |
+| 297 | divide_and_conquer/peak | ✓ | 14.0ms | 664B |
+| 298 | divide_and_conquer/power | ✓ | 14.0ms | 10.55KB |
+| 299 | divide_and_conquer/strassen_matrix_multiplication | error |  |  |
+| 300 | docs/conf | ✓ | 24.0ms | 32.95KB |
+| 301 | dynamic_programming/abbreviation | ✓ | 16.0ms | 1.13KB |
+| 302 | dynamic_programming/all_construct | error |  |  |
+| 303 | dynamic_programming/bitmask | ✓ | 28.0ms | 57.40KB |
+| 304 | dynamic_programming/catalan_numbers | error |  |  |
+| 305 | dynamic_programming/climbing_stairs | ✓ | 13.0ms | 448B |
+| 306 | dynamic_programming/combination_sum_iv | ✓ | 27.0ms | 46.25KB |
+| 307 | dynamic_programming/edit_distance | ✓ | 29.0ms | 46.36KB |
+| 308 | dynamic_programming/factorial | ✓ | 27.0ms | 46.40KB |
+| 309 | dynamic_programming/fast_fibonacci | ✓ | 15.0ms | 1.09KB |
+| 310 | dynamic_programming/fibonacci | ✓ | 25.0ms | 46.84KB |
+| 311 | dynamic_programming/fizz_buzz | ✓ | 21.0ms | 38.66KB |
+| 312 | dynamic_programming/floyd_warshall | ✓ | 24.0ms | 46.84KB |
+| 313 | dynamic_programming/integer_partition | ✓ | 56.0ms | 46.03KB |
+| 314 | dynamic_programming/iterating_through_submasks | ✓ | 30.0ms | 46.24KB |
+| 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 28.0ms | 59.14KB |
+| 316 | dynamic_programming/knapsack | error |  |  |
+| 317 | dynamic_programming/largest_divisible_subset | ✓ | 34.0ms | 92.94KB |
+| 318 | dynamic_programming/longest_common_subsequence | ✓ | 37.0ms | 94.22KB |
+| 319 | dynamic_programming/longest_common_substring | ✓ | 28.0ms | 46.24KB |
+| 320 | dynamic_programming/longest_increasing_subsequence | error |  |  |
+| 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 25.0ms | 46.14KB |
+| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | ✓ | 28.0ms | 46.04KB |
+| 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 29.0ms | 51.66KB |
+| 324 | dynamic_programming/matrix_chain_multiplication | ✓ | 14.0ms | 0B |
+| 325 | dynamic_programming/matrix_chain_order | ✓ | 40.0ms | 95.34KB |
+| 326 | dynamic_programming/max_non_adjacent_sum | ✓ | 23.0ms | 664B |
+| 327 | dynamic_programming/max_product_subarray | ✓ | 13.0ms | 448B |
+| 328 | dynamic_programming/max_subarray_sum | ✓ | 16.0ms | 10.56KB |
+| 329 | dynamic_programming/min_distance_up_bottom | ✓ | 34.0ms | 46.48KB |
+| 330 | dynamic_programming/minimum_coin_change | ✓ | 27.0ms | 46.04KB |
+| 331 | dynamic_programming/minimum_cost_path | ✓ | 17.0ms | 864B |
+| 332 | dynamic_programming/minimum_partition | ✓ | 16.0ms | 992B |
+| 333 | dynamic_programming/minimum_size_subarray_sum | ✓ | 14.0ms | 664B |
+| 334 | dynamic_programming/minimum_squares_to_represent_a_number | ✓ | 27.0ms | 46.04KB |
+| 335 | dynamic_programming/minimum_steps_to_one | ✓ | 31.0ms | 46.25KB |
+| 336 | dynamic_programming/minimum_tickets_cost | ✓ | 32.0ms | 46.25KB |
+| 337 | dynamic_programming/optimal_binary_search_tree | ✓ | 45.0ms | 104.84KB |
+| 338 | dynamic_programming/palindrome_partitioning | ✓ | 26.0ms | 46.41KB |
+| 339 | dynamic_programming/range_sum_query | ✓ | 32.0ms | 46.87KB |
+| 340 | dynamic_programming/regex_match | ✓ | 14.0ms | 1.18KB |
+| 341 | dynamic_programming/rod_cutting | ✓ | 25.0ms | 46.09KB |
+| 342 | dynamic_programming/smith_waterman | ✓ | 43.0ms | 95.88KB |
+| 343 | dynamic_programming/subset_generation | ✓ | 30.0ms | 46.47KB |
+| 344 | dynamic_programming/sum_of_subset | ✓ | 14.0ms | 776B |
+| 345 | dynamic_programming/trapped_water | ✓ | 29.0ms | 46.25KB |
+| 346 | dynamic_programming/tribonacci | ✓ | 28.0ms | 46.09KB |
+| 347 | dynamic_programming/viterbi | ✓ | 43.0ms | 96.02KB |
+| 348 | dynamic_programming/wildcard_matching | ✓ | 14.0ms | 1.09KB |
+| 349 | dynamic_programming/word_break | ✓ | 25.0ms | 1.43KB |
+| 350 | electronics/apparent_power | ✓ | 15.0ms | 0B |
+| 351 | electronics/builtin_voltage | ✓ | 16.0ms | 10.45KB |
+| 352 | electronics/capacitor_equivalence | error |  |  |
+| 353 | electronics/carrier_concentration | ✓ | 35.0ms | 88.53KB |
+| 354 | electronics/charging_capacitor | ✓ | 16.0ms | 10.36KB |
+| 355 | electronics/charging_inductor | ✓ | 18.0ms | 10.25KB |
+| 356 | electronics/circular_convolution | ✓ | 27.0ms | 57.16KB |
+| 357 | electronics/coulombs_law | ✓ | 36.0ms | 88.13KB |
+| 358 | electronics/electric_conductivity | ✓ | 35.0ms | 88.51KB |
+| 359 | electronics/electric_power | error |  |  |
+| 360 | electronics/electrical_impedance | ✓ | 14.0ms | 10.73KB |
+| 361 | electronics/ic_555_timer | ✓ | 16.0ms | 10.25KB |
+| 362 | electronics/ind_reactance | ✓ | 19.0ms | 10.73KB |
+| 363 | electronics/ohms_law | ✓ | 29.0ms | 79.68KB |
+| 364 | electronics/real_and_reactive_power | ✓ | 15.0ms | 10.45KB |
+| 365 | electronics/resistor_color_code | ✓ | 14.0ms | 3.65KB |
+| 366 | electronics/resistor_equivalence | ✓ | 21.0ms | 47.55KB |
+| 367 | electronics/resonant_frequency | ✓ | 14.0ms | 10.25KB |
+| 368 | electronics/wheatstone_bridge | ✓ | 16.0ms | 10.25KB |
+| 369 | file_transfer/receive_file | ✓ | 21.0ms | 33.11KB |
+| 370 | file_transfer/send_file | ✓ | 15.0ms | 536B |
+| 371 | file_transfer/tests/test_send_file | ✓ | 15.0ms | 1.50KB |
+| 372 | financial/equated_monthly_installments | ✓ | 14.0ms | 10.45KB |
+| 373 | financial/exponential_moving_average | ✓ | 25.0ms | 56.96KB |
+| 374 | financial/interest | error |  |  |
+| 375 | financial/present_value | ✓ | 16.0ms | 10.35KB |
+| 376 | financial/price_plus_tax | ✓ | 26.0ms | 47.62KB |
+| 377 | financial/simple_moving_average | ✓ | 40.0ms | 112.99KB |
+| 378 | financial/straight_line_depreciation | ✓ | 28.0ms | 56.82KB |
+| 379 | financial/time_and_half_pay | ✓ | 15.0ms | 10.45KB |
+| 380 | fractals/julia_sets | ✓ | 32.0ms | 49.43KB |
+| 381 | fractals/koch_snowflake | ✓ | 40.0ms | 106.91KB |
+| 382 | fractals/mandelbrot | ✓ | 43.0ms | 105.20KB |
+| 383 | fractals/sierpinski_triangle | ✓ | 44.0ms | 96.85KB |
+| 384 | fractals/vicsek | ✓ | 40.0ms | 102.07KB |
+| 385 | fuzzy_logic/fuzzy_operations | ✓ | 41.0ms | 112.32KB |
+| 386 | genetic_algorithm/basic_string | ✓ | 20.0ms | 33.84KB |
+| 387 | geodesy/haversine_distance | ✓ | 16.0ms | 10.52KB |
+| 388 | geodesy/lamberts_ellipsoidal_distance | ✓ | 16.0ms | 10.25KB |
+| 389 | geometry/geometry | ✓ | 25.0ms | 57.57KB |
+| 390 | graphics/bezier_curve | ✓ | 27.0ms | 57.02KB |
+| 391 | graphics/butterfly_pattern | ✓ | 43.0ms | 103.18KB |
+| 392 | graphics/digital_differential_analyzer_line | ✓ | 33.0ms | 69.52KB |
+| 393 | graphics/vector3_for_2d_rendering | error |  |  |
+| 394 | graphs/a_star | ✓ | 29.0ms | 46.57KB |
+| 395 | graphs/ant_colony_optimization_algorithms | ✓ | 70.0ms | 68.09KB |
+| 396 | graphs/articulation_points | ✓ | 25.0ms | 46.04KB |
+| 397 | graphs/basic_graphs | ✓ | 32.0ms | 64.39KB |
+| 398 | graphs/bellman_ford | error |  |  |
+| 399 | graphs/bi_directional_dijkstra | ✓ | 30.0ms | 50.07KB |
+| 400 | graphs/bidirectional_a_star | ✓ | 54.0ms | 119.01KB |
+| 401 | graphs/bidirectional_breadth_first_search | ✓ | 55.0ms | 122.15KB |
+| 402 | graphs/bidirectional_search | ✓ | 46.0ms | 113.06KB |
+| 403 | graphs/boruvka | error |  |  |
+| 404 | graphs/breadth_first_search | ✓ | 31.0ms | 55.75KB |
+| 405 | graphs/breadth_first_search_2 | ✓ | 28.0ms | 53.22KB |
+| 406 | graphs/breadth_first_search_shortest_path | ✓ | 39.0ms | 94.30KB |
+| 407 | graphs/breadth_first_search_shortest_path_2 | error |  |  |
+| 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ | 29.0ms | 48.99KB |
+| 409 | graphs/check_bipatrite | ✓ | 26.0ms | 47.28KB |
+| 410 | graphs/check_cycle | ✓ | 14.0ms | 1.03KB |
+| 411 | graphs/connected_components | error |  |  |
+| 412 | graphs/deep_clone_graph | error |  |  |
+| 413 | graphs/depth_first_search | ✓ | 27.0ms | 48.10KB |
+| 414 | graphs/depth_first_search_2 | ✓ | 44.0ms | 96.26KB |
+| 415 | graphs/dijkstra | error |  |  |
+| 416 | graphs/dijkstra_2 | ✓ | 38.0ms | 93.77KB |
+| 417 | graphs/dijkstra_algorithm | ✓ | 25.0ms | 47.24KB |
+| 418 | graphs/dijkstra_alternate | ✓ | 39.0ms | 93.51KB |
+| 419 | graphs/dijkstra_binary_grid | error |  |  |
+| 420 | graphs/dinic | ✓ | 34.0ms | 48.16KB |
+| 421 | graphs/directed_and_undirected_weighted_graph | ✓ | 29.0ms | 47.48KB |
+| 422 | graphs/edmonds_karp_multiple_source_and_sink | error |  |  |
+| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 30.0ms | 49.15KB |
+| 424 | graphs/even_tree | ✓ | 26.0ms | 47.36KB |
+| 425 | graphs/finding_bridges | error |  |  |
+| 426 | graphs/frequent_pattern_graph_miner | error |  |  |
+| 427 | graphs/g_topological_sort | ✓ | 39.0ms | 95.77KB |
+| 428 | graphs/gale_shapley_bigraph | ✓ | 28.0ms | 46.45KB |
+| 429 | graphs/graph_adjacency_list | error |  |  |
+| 430 | graphs/graph_adjacency_matrix | error |  |  |
+| 431 | graphs/graph_list | ✓ | 28.0ms | 47.80KB |
+| 432 | graphs/graphs_floyd_warshall | error |  |  |
+| 433 | graphs/greedy_best_first | ✓ | 42.0ms | 89.09KB |
+| 434 | graphs/greedy_min_vertex_cover | ✓ | 25.0ms | 47.14KB |
+| 435 | graphs/kahns_algorithm_long | ✓ | 28.0ms | 46.27KB |
+| 436 | graphs/kahns_algorithm_topo | error |  |  |
+| 437 | graphs/karger | error |  |  |
+| 438 | graphs/lanczos_eigenvectors | error |  |  |
+| 439 | graphs/markov_chain | ✓ | 46.0ms | 99.75KB |
+| 440 | graphs/matching_min_vertex_cover | ✓ | 26.0ms | 47.05KB |
+| 441 | graphs/minimum_path_sum | ✓ | 20.0ms | 1.01KB |
+| 442 | graphs/minimum_spanning_tree_boruvka | ✓ | 38.0ms | 101.68KB |
+| 443 | graphs/minimum_spanning_tree_kruskal | ✓ | 42.0ms | 105.02KB |
+| 444 | graphs/minimum_spanning_tree_kruskal2 | ✓ | 40.0ms | 102.56KB |
+| 445 | graphs/minimum_spanning_tree_prims | ✓ | 42.0ms | 105.41KB |
+| 446 | graphs/minimum_spanning_tree_prims2 | error |  |  |
+| 447 | graphs/multi_heuristic_astar | ✓ | 43.0ms | 94.27KB |
+| 448 | graphs/page_rank | ✓ | 44.0ms | 119.35KB |
+| 449 | graphs/prim | ✓ | 44.0ms | 93.11KB |
+| 450 | graphs/random_graph_generator | ✓ | 29.0ms | 46.52KB |
+| 451 | graphs/scc_kosaraju | ✓ | 24.0ms | 46.15KB |
+| 452 | graphs/strongly_connected_components | error |  |  |
+| 453 | graphs/tarjans_scc | error |  |  |
+| 454 | graphs/tests/test_min_spanning_tree_kruskal | ✓ | 24.0ms | 46.30KB |
+| 455 | graphs/tests/test_min_spanning_tree_prim | ✓ | 38.0ms | 95.47KB |
+| 456 | greedy_methods/best_time_to_buy_and_sell_stock | ✓ | 14.0ms | 448B |
+| 457 | greedy_methods/fractional_cover_problem | error |  |  |
+| 458 | greedy_methods/fractional_knapsack | ✓ | 30.0ms | 58.63KB |
+| 459 | greedy_methods/fractional_knapsack_2 | ✓ | 31.0ms | 82.90KB |
+| 460 | greedy_methods/gas_station | error |  |  |
 | 461 | greedy_methods/minimum_coin_change |   |  |  |
 | 462 | greedy_methods/minimum_waiting_time |   |  |  |
 | 463 | greedy_methods/optimal_merge_pattern |   |  |  |

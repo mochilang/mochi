@@ -1,0 +1,22 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden411_connected_components3017686817/001/Main.java:10: error: method concat in class Main cannot be applied to given types;
+                connected_verts = ((int[])(concat(connected_verts, dfs(graph, neighbour, ((boolean[])(visited))))));
+                                           ^
+  required: T[],T[]
+  found:    int[],int[]
+  reason: inference variable T has incompatible bounds
+    equality constraints: int
+    upper bounds: Object
+  where T is a type-variable:
+    T extends Object declared in method <T>concat(T[],T[])
+/tmp/TestJavaTranspiler_Algorithms_Golden411_connected_components3017686817/001/Main.java:13: error: method concat in class Main cannot be applied to given types;
+        return concat(new int[]{vert}, connected_verts);
+               ^
+  required: T[],T[]
+  found:    int[],int[]
+  reason: inference variable T has incompatible bounds
+    equality constraints: int
+    upper bounds: Object
+  where T is a type-variable:
+    T extends Object declared in method <T>concat(T[],T[])
+2 errors

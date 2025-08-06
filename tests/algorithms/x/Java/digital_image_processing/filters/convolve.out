@@ -1,0 +1,4 @@
+Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index -1 out of bounds for length 5
+	at Main.pad_edge(Main.java:35)
+	at Main.img_convolve(Main.java:101)
+	at Main.main(Main.java:141)

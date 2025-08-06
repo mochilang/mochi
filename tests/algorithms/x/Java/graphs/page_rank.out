@@ -1,0 +1,10 @@
+======= Nodes =======
+{'name': 'A', 'inbound': [Ljava.lang.String;@764c12b6, 'outbound': [Ljava.lang.String;@c387f44}
+{'name': 'B', 'inbound': [Ljava.lang.String;@73d16e93, 'outbound': [Ljava.lang.String;@659e0bfd}
+{'name': 'C', 'inbound': [Ljava.lang.String;@2a139a55, 'outbound': [Ljava.lang.String;@15db9742}
+======= Iteration 1 =======
+{A=1.0, B=0.575, C=1.06375}
+======= Iteration 2 =======
+{A=1.0541874999999998, B=0.5980296875, C=1.106354921875}
+======= Iteration 3 =======
+{A=1.09040168359375, B=0.6134207155273438, C=1.134828323725586}

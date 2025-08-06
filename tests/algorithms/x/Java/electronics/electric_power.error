@@ -1,0 +1,7 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden359_electric_power2881445764/001/Main.java:40: error: cannot find symbol
+        return ((Number)(floor(x * m + 0.5))).intValue() / m;
+                         ^
+  symbol:   method floor(double)
+  location: class Main
+1 error

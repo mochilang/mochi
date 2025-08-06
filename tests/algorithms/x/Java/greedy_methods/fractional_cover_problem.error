@@ -1,0 +1,7 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden457_fractional_cover_problem185940141/001/Main.java:33: error: array required, but List<Item> found
+            Item item = sorted[idx];
+                              ^
+Note: /tmp/TestJavaTranspiler_Algorithms_Golden457_fractional_cover_problem185940141/001/Main.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+1 error
