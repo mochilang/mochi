@@ -1,0 +1,224 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden199_data_structures_binary_tree_treap2621585601/001/main.swift:240:40: warning: conditional cast from 'Int' to 'Int' always succeeds
+238 |             return SplitResult(left: NIL, right: NIL)
+239 |         }
+240 |         if (value < (node_values[root] as? Int ?? 0)) {
+    |                                        `- warning: conditional cast from 'Int' to 'Int' always succeeds
+241 |             let res = _split((node_lefts[root] as? Int ?? 0), value)
+242 |             node_lefts = _set(node_lefts, root, Int(res.right))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden199_data_structures_binary_tree_treap2621585601/001/main.swift:241:63: error: cannot convert value of type 'Int' to expected argument type 'String'
+239 |         }
+240 |         if (value < (node_values[root] as? Int ?? 0)) {
+241 |             let res = _split((node_lefts[root] as? Int ?? 0), value)
+    |                                                               `- error: cannot convert value of type 'Int' to expected argument type 'String'
+242 |             node_lefts = _set(node_lefts, root, Int(res.right))
+243 |             return SplitResult(left: res.left, right: root)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden199_data_structures_binary_tree_treap2621585601/001/main.swift:241:56: error: cannot convert value of type 'Int' to expected argument type 'String'
+239 |         }
+240 |         if (value < (node_values[root] as? Int ?? 0)) {
+241 |             let res = _split((node_lefts[root] as? Int ?? 0), value)
+    |                                                        `- error: cannot convert value of type 'Int' to expected argument type 'String'
+242 |             node_lefts = _set(node_lefts, root, Int(res.right))
+243 |             return SplitResult(left: res.left, right: root)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden199_data_structures_binary_tree_treap2621585601/001/main.swift:241:48: warning: conditional cast from 'Int' to 'Int' always succeeds
+239 |         }
+240 |         if (value < (node_values[root] as? Int ?? 0)) {
+241 |             let res = _split((node_lefts[root] as? Int ?? 0), value)
+    |                                                `- warning: conditional cast from 'Int' to 'Int' always succeeds
+242 |             node_lefts = _set(node_lefts, root, Int(res.right))
+243 |             return SplitResult(left: res.left, right: root)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden199_data_structures_binary_tree_treap2621585601/001/main.swift:245:60: error: cannot convert value of type 'Int' to expected argument type 'String'
+243 |             return SplitResult(left: res.left, right: root)
+244 |         }
+245 |         let res = _split((node_rights[root] as? Int ?? 0), value)
+    |                                                            `- error: cannot convert value of type 'Int' to expected argument type 'String'
+246 |         node_rights = _set(node_rights, root, Int(res.left))
+247 |         return SplitResult(left: root, right: res.right)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden199_data_structures_binary_tree_treap2621585601/001/main.swift:245:53: error: cannot convert value of type 'Int' to expected argument type 'String'
+243 |             return SplitResult(left: res.left, right: root)
+244 |         }
+245 |         let res = _split((node_rights[root] as? Int ?? 0), value)
+    |                                                     `- error: cannot convert value of type 'Int' to expected argument type 'String'
+246 |         node_rights = _set(node_rights, root, Int(res.left))
+247 |         return SplitResult(left: root, right: res.right)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden199_data_structures_binary_tree_treap2621585601/001/main.swift:245:45: warning: conditional cast from 'Int' to 'Int' always succeeds
+243 |             return SplitResult(left: res.left, right: root)
+244 |         }
+245 |         let res = _split((node_rights[root] as? Int ?? 0), value)
+    |                                             `- warning: conditional cast from 'Int' to 'Int' always succeeds
+246 |         node_rights = _set(node_rights, root, Int(res.left))
+247 |         return SplitResult(left: root, right: res.right)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden199_data_structures_binary_tree_treap2621585601/001/main.swift:257:80: warning: conditional cast from 'Int' to 'Int' always succeeds
+255 |         }
+256 |         if (Double(node_priors[left]) < Double(node_priors[right])) {
+257 |             node_rights = _set(node_rights, left, Int(merge((node_rights[left] as? Int ?? 0), right)))
+    |                                                                                `- warning: conditional cast from 'Int' to 'Int' always succeeds
+258 |             return left
+259 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden199_data_structures_binary_tree_treap2621585601/001/main.swift:260:81: warning: conditional cast from 'Int' to 'Int' always succeeds
+258 |             return left
+259 |         }
+260 |         node_lefts = _set(node_lefts, right, Int(merge(left, (node_lefts[right] as? Int ?? 0))))
+    |                                                                                 `- warning: conditional cast from 'Int' to 'Int' always succeeds
+261 |         return right
+262 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden199_data_structures_binary_tree_treap2621585601/001/main.swift:265:26: error: cannot convert value of type 'Int' to expected argument type 'String'
+263 |     func insert(_ root: Int, _ value: Int) -> Int {
+264 |         let node = Int(new_node(value))
+265 |         let res = _split(root, value)
+    |                          `- error: cannot convert value of type 'Int' to expected argument type 'String'
+266 |         return Int(merge(Int(merge(res.left, node)), res.right))
+267 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden199_data_structures_binary_tree_treap2621585601/001/main.swift:265:32: error: cannot convert value of type 'Int' to expected argument type 'String'
+263 |     func insert(_ root: Int, _ value: Int) -> Int {
+264 |         let node = Int(new_node(value))
+265 |         let res = _split(root, value)
+    |                                `- error: cannot convert value of type 'Int' to expected argument type 'String'
+266 |         return Int(merge(Int(merge(res.left, node)), res.right))
+267 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden199_data_structures_binary_tree_treap2621585601/001/main.swift:269:27: error: cannot convert value of type 'Int' to expected argument type 'String'
+267 |     }
+268 |     func erase(_ root: Int, _ value: Int) -> Int {
+269 |         let res1 = _split(root, (value &- 1))
+    |                           `- error: cannot convert value of type 'Int' to expected argument type 'String'
+270 |         let res2 = _split(res1.right, value)
+271 |         return Int(merge(res1.left, res2.right))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden199_data_structures_binary_tree_treap2621585601/001/main.swift:269:40: error: cannot convert value of type 'Int' to expected argument type 'String'
+267 |     }
+268 |     func erase(_ root: Int, _ value: Int) -> Int {
+269 |         let res1 = _split(root, (value &- 1))
+    |                                        `- error: cannot convert value of type 'Int' to expected argument type 'String'
+270 |         let res2 = _split(res1.right, value)
+271 |         return Int(merge(res1.left, res2.right))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden199_data_structures_binary_tree_treap2621585601/001/main.swift:270:39: error: cannot convert value of type 'Int' to expected argument type 'String'
+268 |     func erase(_ root: Int, _ value: Int) -> Int {
+269 |         let res1 = _split(root, (value &- 1))
+270 |         let res2 = _split(res1.right, value)
+    |                                       `- error: cannot convert value of type 'Int' to expected argument type 'String'
+271 |         return Int(merge(res1.left, res2.right))
+272 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden199_data_structures_binary_tree_treap2621585601/001/main.swift:277:55: warning: conditional cast from 'Int' to 'Int' always succeeds
+275 |             return acc
+276 |         }
+277 |         let left_acc: [Int] = (inorder((node_lefts[i] as? Int ?? 0), (acc as! [Int])) as! [Int])
+    |                                                       `- warning: conditional cast from 'Int' to 'Int' always succeeds
+278 |         let with_node: [Int] = (_append(left_acc, (node_values[i] as? Int ?? 0)) as! [Int])
+279 |         return (inorder((node_rights[i] as? Int ?? 0), (with_node as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden199_data_structures_binary_tree_treap2621585601/001/main.swift:277:75: warning: forced cast of '[Int]' to same type has no effect
+275 |             return acc
+276 |         }
+277 |         let left_acc: [Int] = (inorder((node_lefts[i] as? Int ?? 0), (acc as! [Int])) as! [Int])
+    |                                                                           `- warning: forced cast of '[Int]' to same type has no effect
+278 |         let with_node: [Int] = (_append(left_acc, (node_values[i] as? Int ?? 0)) as! [Int])
+279 |         return (inorder((node_rights[i] as? Int ?? 0), (with_node as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden199_data_structures_binary_tree_treap2621585601/001/main.swift:277:87: warning: forced cast of '[Int]' to same type has no effect
+275 |             return acc
+276 |         }
+277 |         let left_acc: [Int] = (inorder((node_lefts[i] as? Int ?? 0), (acc as! [Int])) as! [Int])
+    |                                                                                       `- warning: forced cast of '[Int]' to same type has no effect
+278 |         let with_node: [Int] = (_append(left_acc, (node_values[i] as? Int ?? 0)) as! [Int])
+279 |         return (inorder((node_rights[i] as? Int ?? 0), (with_node as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden199_data_structures_binary_tree_treap2621585601/001/main.swift:278:67: warning: conditional cast from 'Int' to 'Int' always succeeds
+276 |         }
+277 |         let left_acc: [Int] = (inorder((node_lefts[i] as? Int ?? 0), (acc as! [Int])) as! [Int])
+278 |         let with_node: [Int] = (_append(left_acc, (node_values[i] as? Int ?? 0)) as! [Int])
+    |                                                                   `- warning: conditional cast from 'Int' to 'Int' always succeeds
+279 |         return (inorder((node_rights[i] as? Int ?? 0), (with_node as! [Int])) as! [Int])
+280 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden199_data_structures_binary_tree_treap2621585601/001/main.swift:279:41: warning: conditional cast from 'Int' to 'Int' always succeeds
+277 |         let left_acc: [Int] = (inorder((node_lefts[i] as? Int ?? 0), (acc as! [Int])) as! [Int])
+278 |         let with_node: [Int] = (_append(left_acc, (node_values[i] as? Int ?? 0)) as! [Int])
+279 |         return (inorder((node_rights[i] as? Int ?? 0), (with_node as! [Int])) as! [Int])
+    |                                         `- warning: conditional cast from 'Int' to 'Int' always succeeds
+280 |     }
+281 |     func main() {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden199_data_structures_binary_tree_treap2621585601/001/main.swift:279:67: warning: forced cast of '[Int]' to same type has no effect
+277 |         let left_acc: [Int] = (inorder((node_lefts[i] as? Int ?? 0), (acc as! [Int])) as! [Int])
+278 |         let with_node: [Int] = (_append(left_acc, (node_values[i] as? Int ?? 0)) as! [Int])
+279 |         return (inorder((node_rights[i] as? Int ?? 0), (with_node as! [Int])) as! [Int])
+    |                                                                   `- warning: forced cast of '[Int]' to same type has no effect
+280 |     }
+281 |     func main() {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden199_data_structures_binary_tree_treap2621585601/001/main.swift:279:79: warning: forced cast of '[Int]' to same type has no effect
+277 |         let left_acc: [Int] = (inorder((node_lefts[i] as? Int ?? 0), (acc as! [Int])) as! [Int])
+278 |         let with_node: [Int] = (_append(left_acc, (node_values[i] as? Int ?? 0)) as! [Int])
+279 |         return (inorder((node_rights[i] as? Int ?? 0), (with_node as! [Int])) as! [Int])
+    |                                                                               `- warning: forced cast of '[Int]' to same type has no effect
+280 |     }
+281 |     func main() {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden199_data_structures_binary_tree_treap2621585601/001/main.swift:284:55: warning: forced cast of '[Int]' to same type has no effect
+282 |         var root: Int = NIL
+283 |         root = Int(insert(root, 1))
+284 |         print(_p("[" + (inorder(root, ([] as! [Int])) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+    |                                                       `- warning: forced cast of '[Int]' to same type has no effect
+285 |         root = Int(insert(root, 3))
+286 |         root = Int(insert(root, 5))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden199_data_structures_binary_tree_treap2621585601/001/main.swift:293:55: warning: forced cast of '[Int]' to same type has no effect
+291 |         root = Int(insert(root, 4))
+292 |         root = Int(insert(root, 0))
+293 |         print(_p("[" + (inorder(root, ([] as! [Int])) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+    |                                                       `- warning: forced cast of '[Int]' to same type has no effect
+294 |         root = Int(insert(root, 4))
+295 |         root = Int(insert(root, 4))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden199_data_structures_binary_tree_treap2621585601/001/main.swift:297:55: warning: forced cast of '[Int]' to same type has no effect
+295 |         root = Int(insert(root, 4))
+296 |         root = Int(insert(root, 4))
+297 |         print(_p("[" + (inorder(root, ([] as! [Int])) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+    |                                                       `- warning: forced cast of '[Int]' to same type has no effect
+298 |         root = Int(erase(root, 0))
+299 |         print(_p("[" + (inorder(root, ([] as! [Int])) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden199_data_structures_binary_tree_treap2621585601/001/main.swift:299:55: warning: forced cast of '[Int]' to same type has no effect
+297 |         print(_p("[" + (inorder(root, ([] as! [Int])) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+298 |         root = Int(erase(root, 0))
+299 |         print(_p("[" + (inorder(root, ([] as! [Int])) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+    |                                                       `- warning: forced cast of '[Int]' to same type has no effect
+300 |         root = Int(erase(root, 4))
+301 |         print(_p("[" + (inorder(root, ([] as! [Int])) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden199_data_structures_binary_tree_treap2621585601/001/main.swift:301:55: warning: forced cast of '[Int]' to same type has no effect
+299 |         print(_p("[" + (inorder(root, ([] as! [Int])) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+300 |         root = Int(erase(root, 4))
+301 |         print(_p("[" + (inorder(root, ([] as! [Int])) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+    |                                                       `- warning: forced cast of '[Int]' to same type has no effect
+302 |     }
+303 |     _ = main()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden199_data_structures_binary_tree_treap2621585601/001/main.swift:303:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+301 |         print(_p("[" + (inorder(root, ([] as! [Int])) as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+302 |     }
+303 |     _ = main()
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+304 |     let _benchEnd = _now()
+305 |     let _benchMemEnd = _mem()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden199_data_structures_binary_tree_treap2621585601/001/main.swift:126:17: warning: variable 'a' was never mutated; consider changing to 'let' constant
+124 |         var result: [UInt32] = []
+125 |         for i in 0..<lhs.digits.count {
+126 |             var a = Int64(lhs.digits[i]) - borrow
+    |                 `- warning: variable 'a' was never mutated; consider changing to 'let' constant
+127 |             let b = i < rhs.digits.count ? Int64(rhs.digits[i]) : 0
+128 |             var diff = a - b

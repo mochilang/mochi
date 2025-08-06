@@ -41,6 +41,7 @@ var usesLen bool
 var usesSplit bool
 var usesFetch bool
 var usesJSON bool
+var usesExists bool
 var fetchStructs map[string]bool
 var funcMutParams map[string][]bool
 var funcInOutParams map[string][]bool
@@ -85,6 +86,7 @@ type Program struct {
 	UseSplit      bool
 	UseFetch      bool
 	UseJSON       bool
+	UseExists     bool
 	FetchStructs  map[string]bool
 }
 
@@ -1246,6 +1248,12 @@ func (c *CastExpr) emit(w io.Writer) {
 				fmt.Fprint(w, " as! Int)")
 				return
 			}
+			if _, ok := c.Expr.(*NameExpr); ok {
+				fmt.Fprint(w, "(")
+				c.Expr.emit(w)
+				fmt.Fprint(w, " as! Int)")
+				return
+			}
 			if force {
 				// Use Int(...) constructor for most expressions to prevent
 				// runtime crashes when the underlying value is a Double.
@@ -2056,6 +2064,14 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return out\n")
 		buf.WriteString("}\n")
 	}
+	if p.UseExists {
+		buf.WriteString("func _exists(_ v: Any?) -> Bool {\n")
+		buf.WriteString("    guard let val = v else { return false }\n")
+		buf.WriteString("    if let a = val as? [Any] { return !a.isEmpty }\n")
+		buf.WriteString("    if let m = val as? [AnyHashable: Any] { return !m.isEmpty }\n")
+		buf.WriteString("    if let s = val as? String { return !s.isEmpty }\n")
+		buf.WriteString("    return false\n}\n")
+	}
 	if p.UseLen {
 		buf.WriteString("func _len(_ v: Any) -> Int {\n")
 		buf.WriteString("    if let s = v as? String { return Array(s).count }\n")
@@ -2247,6 +2263,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	usesSplit = false
 	usesFetch = false
 	usesJSON = false
+	usesExists = false
 	fetchStructs = map[string]bool{}
 	funcMutParams = map[string][]bool{}
 	funcInOutParams = map[string][]bool{}
@@ -2288,6 +2305,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	p.UseSplit = usesSplit
 	p.UseFetch = usesFetch
 	p.UseJSON = usesJSON
+	p.UseExists = usesExists
 	p.FetchStructs = fetchStructs
 	return p, nil
 }
@@ -4523,17 +4541,6 @@ func convertMatchExpr(env *types.Env, me *parser.MatchExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	typ := "Any"
-	if len(me.Cases) > 0 {
-		t0 := types.ExprType(me.Cases[0].Result, env)
-		typ = swiftTypeOf(t0)
-		for _, c := range me.Cases[1:] {
-			if !types.EqualTypes(t0, types.ExprType(c.Result, env)) {
-				typ = "Any"
-				break
-			}
-		}
-	}
 	if len(me.Cases) > 0 {
 		var firstVar string
 		if name, ok := identName(me.Cases[0].Pattern); ok {
@@ -4542,8 +4549,10 @@ func convertMatchExpr(env *types.Env, me *parser.MatchExpr) (Expr, error) {
 			firstVar = call.Func
 		}
 		if firstVar != "" {
-			if _, ok := env.FindUnionByVariant(firstVar); ok {
+			if ut, ok := env.FindUnionByVariant(firstVar); ok {
 				cases := make([]UnionMatchCase, len(me.Cases))
+				typ := "Any"
+				var t0 types.Type
 				for i, c := range me.Cases {
 					var variant string
 					var bindings []string
@@ -4560,11 +4569,29 @@ func convertMatchExpr(env *types.Env, me *parser.MatchExpr) (Expr, error) {
 					} else {
 						variant = "_"
 					}
-					body, err := convertExpr(env, c.Result)
+					child := types.NewEnv(env)
+					if st, ok := ut.Variants[variant]; ok {
+						for j, b := range bindings {
+							if b == "" {
+								continue
+							}
+							if j < len(st.Order) {
+								fname := st.Order[j]
+								child.SetVar(b, st.Fields[fname], true)
+							}
+						}
+					}
+					body, err := convertExpr(child, c.Result)
 					if err != nil {
 						return nil, err
 					}
 					cases[i] = UnionMatchCase{Variant: variant, Bindings: bindings, Body: body}
+					if i == 0 {
+						t0 = types.ExprType(c.Result, child)
+						typ = swiftTypeOf(t0)
+					} else if typ != "Any" && !types.EqualTypes(t0, types.ExprType(c.Result, child)) {
+						typ = "Any"
+					}
 				}
 				return &UnionMatchExpr{Target: target, Cases: cases, Type: typ}, nil
 			}
@@ -4941,6 +4968,14 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			}
 			usesAppend = true
 			return &CallExpr{Func: "_append", Args: []Expr{left, right}}, nil
+		}
+		if pr.Call.Func == "exists" && len(pr.Call.Args) == 1 {
+			arg, err := convertExpr(env, pr.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			usesExists = true
+			return &CallExpr{Func: "_exists", Args: []Expr{arg}}, nil
 		}
 		if pr.Call.Func == "json" && len(pr.Call.Args) == 1 {
 			arg, err := convertExpr(env, pr.Call.Args[0])

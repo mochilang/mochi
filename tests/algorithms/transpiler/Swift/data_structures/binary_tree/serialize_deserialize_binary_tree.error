@@ -1,0 +1,266 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden197_data_structures_binary_tree_serialize_deserialize_binary_tree509198258/001/main.swift:68:15: error: enum element with associated values must have at least one associated value
+ 66 | }
+ 67 | indirect enum TreeNode {
+ 68 |     case Empty()
+    |               |- error: enum element with associated values must have at least one associated value
+    |               |- note: did you mean to remove the empty associated value list?
+    |               `- note: did you mean to explicitly add a 'Void' associated value?
+ 69 |     case Node(left: TreeNode, value: Int, right: TreeNode)
+ 70 | }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden197_data_structures_binary_tree_serialize_deserialize_binary_tree509198258/001/main.swift:71:8: error: type 'BuildResult' does not conform to protocol 'Decodable'
+ 69 |     case Node(left: TreeNode, value: Int, right: TreeNode)
+ 70 | }
+ 71 | struct BuildResult: Codable {
+    |        `- error: type 'BuildResult' does not conform to protocol 'Decodable'
+ 72 |     var node: TreeNode
+    |         `- note: cannot automatically synthesize 'Decodable' because 'TreeNode' does not conform to 'Decodable'
+ 73 |     var next: Int
+ 74 |     init() {
+
+Swift.Decodable.init:2:1: note: protocol requires initializer 'init(from:)' with type 'Decodable'
+1 | protocol Decodable {
+2 | init(from decoder: any Decoder) throws}
+  | `- note: protocol requires initializer 'init(from:)' with type 'Decodable'
+3 | 
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden197_data_structures_binary_tree_serialize_deserialize_binary_tree509198258/001/main.swift:71:8: error: type 'BuildResult' does not conform to protocol 'Encodable'
+ 69 |     case Node(left: TreeNode, value: Int, right: TreeNode)
+ 70 | }
+ 71 | struct BuildResult: Codable {
+    |        `- error: type 'BuildResult' does not conform to protocol 'Encodable'
+ 72 |     var node: TreeNode
+    |         `- note: cannot automatically synthesize 'Encodable' because 'TreeNode' does not conform to 'Encodable'
+ 73 |     var next: Int
+ 74 |     init() {
+
+Swift.Encodable.encode:2:6: note: protocol requires function 'encode(to:)' with type 'Encodable'
+1 | protocol Encodable {
+2 | func encode(to encoder: any Encoder) throws}
+  |      `- note: protocol requires function 'encode(to:)' with type 'Encodable'
+3 | 
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden197_data_structures_binary_tree_serialize_deserialize_binary_tree509198258/001/main.swift:90:76: warning: forced cast of 'String' to same type has no effect
+ 88 |         var i: Int = 0
+ 89 |         while (i < Int(((digits).count))) {
+ 90 |             if (String(describing: String(Array(String(describing: (digits as! String)))[i..<(i &+ 1)])) == ch) {
+    |                                                                            `- warning: forced cast of 'String' to same type has no effect
+ 91 |                 return i
+ 92 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden197_data_structures_binary_tree_serialize_deserialize_binary_tree509198258/001/main.swift:100:94: warning: forced cast of 'String' to same type has no effect
+ 98 |         var i: Int = 0
+ 99 |         var sign: Int = 1
+100 |         if ((Int(((s).count)) > 0) && (String(describing: String(Array(String(describing: (s as! String)))[0..<1])) == "-")) {
+    |                                                                                              `- warning: forced cast of 'String' to same type has no effect
+101 |             sign = Int(-1)
+102 |             i = 1
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden197_data_structures_binary_tree_serialize_deserialize_binary_tree509198258/001/main.swift:106:76: warning: forced cast of 'String' to same type has no effect
+104 |         var num: Int = 0
+105 |         while (i < Int(((s).count))) {
+106 |             let ch = String(describing: String(Array(String(describing: (s as! String)))[i..<(i &+ 1)]))
+    |                                                                            `- warning: forced cast of 'String' to same type has no effect
+107 |             num = Int(((num &* 10) &+ Int(digit((ch as! String)))))
+108 |             i = Int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden197_data_structures_binary_tree_serialize_deserialize_binary_tree509198258/001/main.swift:107:53: warning: forced cast of 'String' to same type has no effect
+105 |         while (i < Int(((s).count))) {
+106 |             let ch = String(describing: String(Array(String(describing: (s as! String)))[i..<(i &+ 1)]))
+107 |             num = Int(((num &* 10) &+ Int(digit((ch as! String)))))
+    |                                                     `- warning: forced cast of 'String' to same type has no effect
+108 |             i = Int((i &+ 1))
+109 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden197_data_structures_binary_tree_serialize_deserialize_binary_tree509198258/001/main.swift:117:76: warning: forced cast of 'String' to same type has no effect
+115 |         var i: Int = 0
+116 |         while (i < Int(((s).count))) {
+117 |             let ch = String(describing: String(Array(String(describing: (s as! String)))[i..<(i &+ 1)]))
+    |                                                                            `- warning: forced cast of 'String' to same type has no effect
+118 |             if (ch == sep) {
+119 |                 res = (_append(res, current) as! [String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden197_data_structures_binary_tree_serialize_deserialize_binary_tree509198258/001/main.swift:122:43: warning: forced cast of 'String' to same type has no effect
+120 |                 current = ""
+121 |             } else {
+122 |                 current = ((current + ch) as! String)
+    |                                           `- warning: forced cast of 'String' to same type has no effect
+123 |             }
+124 |             i = Int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden197_data_structures_binary_tree_serialize_deserialize_binary_tree509198258/001/main.swift:132:18: warning: 'let' pattern has no effect; sub-pattern didn't bind any variables
+130 |         return String(describing: { () -> String in
+131 |         switch node {
+132 |             case let .Empty():
+    |                  `- warning: 'let' pattern has no effect; sub-pattern didn't bind any variables
+133 |             return "null"
+134 |             case let .Node(l, v, r):
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden197_data_structures_binary_tree_serialize_deserialize_binary_tree509198258/001/main.swift:135:87: warning: forced cast of 'TreeNode' to same type has no effect
+133 |             return "null"
+134 |             case let .Node(l, v, r):
+135 |             return ((((String(describing: v) + ",") + String(describing: serialize((l as! TreeNode)))) + ",") + String(describing: serialize((r as! TreeNode))))
+    |                                                                                       `- warning: forced cast of 'TreeNode' to same type has no effect
+136 |             default:
+137 |             var z: String
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden197_data_structures_binary_tree_serialize_deserialize_binary_tree509198258/001/main.swift:135:145: warning: forced cast of 'TreeNode' to same type has no effect
+133 |             return "null"
+134 |             case let .Node(l, v, r):
+135 |             return ((((String(describing: v) + ",") + String(describing: serialize((l as! TreeNode)))) + ",") + String(describing: serialize((r as! TreeNode))))
+    |                                                                                                                                                 `- warning: forced cast of 'TreeNode' to same type has no effect
+136 |             default:
+137 |             var z: String
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden197_data_structures_binary_tree_serialize_deserialize_binary_tree509198258/001/main.swift:143:29: warning: forced cast of 'String' to same type has no effect
+141 | }
+142 | func build(_ nodes: [String], _ idx: Int) -> BuildResult {
+143 |     let value = (nodes[idx] as! String)
+    |                             `- warning: forced cast of 'String' to same type has no effect
+144 |     if (value == "null") {
+145 |         return BuildResult(node: TreeNode.Empty(), next: (idx &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden197_data_structures_binary_tree_serialize_deserialize_binary_tree509198258/001/main.swift:71:8: error: type 'BuildResult' does not conform to protocol 'Decodable'
+ 69 |     case Node(left: TreeNode, value: Int, right: TreeNode)
+ 70 | }
+ 71 | struct BuildResult: Codable {
+    |        `- error: type 'BuildResult' does not conform to protocol 'Decodable'
+ 72 |     var node: TreeNode
+    |         `- note: cannot automatically synthesize 'Decodable' because 'TreeNode' does not conform to 'Decodable'
+ 73 |     var next: Int
+ 74 |     init() {
+
+Swift.Decodable.init:2:1: note: protocol requires initializer 'init(from:)' with type 'Decodable'
+1 | protocol Decodable {
+2 | init(from decoder: any Decoder) throws}
+  | `- note: protocol requires initializer 'init(from:)' with type 'Decodable'
+3 | 
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden197_data_structures_binary_tree_serialize_deserialize_binary_tree509198258/001/main.swift:147:33: warning: forced cast of '[String]' to same type has no effect
+145 |         return BuildResult(node: TreeNode.Empty(), next: (idx &+ 1))
+146 |     }
+147 |     let left_res = build((nodes as! [String]), (idx &+ 1))
+    |                                 `- warning: forced cast of '[String]' to same type has no effect
+148 |     let right_res = build((nodes as! [String]), left_res.next)
+149 |     let node = TreeNode.Node(left: left_res.node, value: Int(to_int((value as! String))), right: right_res.node)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden197_data_structures_binary_tree_serialize_deserialize_binary_tree509198258/001/main.swift:148:34: warning: forced cast of '[String]' to same type has no effect
+146 |     }
+147 |     let left_res = build((nodes as! [String]), (idx &+ 1))
+148 |     let right_res = build((nodes as! [String]), left_res.next)
+    |                                  `- warning: forced cast of '[String]' to same type has no effect
+149 |     let node = TreeNode.Node(left: left_res.node, value: Int(to_int((value as! String))), right: right_res.node)
+150 |     return BuildResult(node: node, next: right_res.next)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden197_data_structures_binary_tree_serialize_deserialize_binary_tree509198258/001/main.swift:149:76: warning: forced cast of 'String' to same type has no effect
+147 |     let left_res = build((nodes as! [String]), (idx &+ 1))
+148 |     let right_res = build((nodes as! [String]), left_res.next)
+149 |     let node = TreeNode.Node(left: left_res.node, value: Int(to_int((value as! String))), right: right_res.node)
+    |                                                                            `- warning: forced cast of 'String' to same type has no effect
+150 |     return BuildResult(node: node, next: right_res.next)
+151 | }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden197_data_structures_binary_tree_serialize_deserialize_binary_tree509198258/001/main.swift:153:46: warning: forced cast of '[String]' to same type has no effect
+151 | }
+152 | func deserialize(_ data: String) -> TreeNode {
+153 |     let nodes: [String] = (_split(data, ",") as! [String])
+    |                                              `- warning: forced cast of '[String]' to same type has no effect
+154 |     let res = build((nodes as! [String]), 0)
+155 |     return res.node
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden197_data_structures_binary_tree_serialize_deserialize_binary_tree509198258/001/main.swift:154:28: warning: forced cast of '[String]' to same type has no effect
+152 | func deserialize(_ data: String) -> TreeNode {
+153 |     let nodes: [String] = (_split(data, ",") as! [String])
+154 |     let res = build((nodes as! [String]), 0)
+    |                            `- warning: forced cast of '[String]' to same type has no effect
+155 |     return res.node
+156 | }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden197_data_structures_binary_tree_serialize_deserialize_binary_tree509198258/001/main.swift:158:46: error: argument 'left' must precede argument 'value'
+156 | }
+157 | func five_tree() -> TreeNode {
+158 |     let left_child = TreeNode.Node(value: 2, left: TreeNode.Empty(), right: TreeNode.Empty())
+    |                                              `- error: argument 'left' must precede argument 'value'
+159 |     let right_left = TreeNode.Node(value: 4, left: TreeNode.Empty(), right: TreeNode.Empty())
+160 |     let right_right = TreeNode.Node(value: 5, left: TreeNode.Empty(), right: TreeNode.Empty())
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden197_data_structures_binary_tree_serialize_deserialize_binary_tree509198258/001/main.swift:159:46: error: argument 'left' must precede argument 'value'
+157 | func five_tree() -> TreeNode {
+158 |     let left_child = TreeNode.Node(value: 2, left: TreeNode.Empty(), right: TreeNode.Empty())
+159 |     let right_left = TreeNode.Node(value: 4, left: TreeNode.Empty(), right: TreeNode.Empty())
+    |                                              `- error: argument 'left' must precede argument 'value'
+160 |     let right_right = TreeNode.Node(value: 5, left: TreeNode.Empty(), right: TreeNode.Empty())
+161 |     let right_child = TreeNode.Node(value: 3, left: right_left, right: right_right)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden197_data_structures_binary_tree_serialize_deserialize_binary_tree509198258/001/main.swift:160:47: error: argument 'left' must precede argument 'value'
+158 |     let left_child = TreeNode.Node(value: 2, left: TreeNode.Empty(), right: TreeNode.Empty())
+159 |     let right_left = TreeNode.Node(value: 4, left: TreeNode.Empty(), right: TreeNode.Empty())
+160 |     let right_right = TreeNode.Node(value: 5, left: TreeNode.Empty(), right: TreeNode.Empty())
+    |                                               `- error: argument 'left' must precede argument 'value'
+161 |     let right_child = TreeNode.Node(value: 3, left: right_left, right: right_right)
+162 |     return (TreeNode.Node(value: 1, left: left_child, right: right_child) as! TreeNode)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden197_data_structures_binary_tree_serialize_deserialize_binary_tree509198258/001/main.swift:161:47: error: argument 'left' must precede argument 'value'
+159 |     let right_left = TreeNode.Node(value: 4, left: TreeNode.Empty(), right: TreeNode.Empty())
+160 |     let right_right = TreeNode.Node(value: 5, left: TreeNode.Empty(), right: TreeNode.Empty())
+161 |     let right_child = TreeNode.Node(value: 3, left: right_left, right: right_right)
+    |                                               `- error: argument 'left' must precede argument 'value'
+162 |     return (TreeNode.Node(value: 1, left: left_child, right: right_child) as! TreeNode)
+163 | }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden197_data_structures_binary_tree_serialize_deserialize_binary_tree509198258/001/main.swift:162:37: error: argument 'left' must precede argument 'value'
+160 |     let right_right = TreeNode.Node(value: 5, left: TreeNode.Empty(), right: TreeNode.Empty())
+161 |     let right_child = TreeNode.Node(value: 3, left: right_left, right: right_right)
+162 |     return (TreeNode.Node(value: 1, left: left_child, right: right_child) as! TreeNode)
+    |                                     `- error: argument 'left' must precede argument 'value'
+163 | }
+164 | func main() {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden197_data_structures_binary_tree_serialize_deserialize_binary_tree509198258/001/main.swift:162:75: warning: forced cast of 'TreeNode' to same type has no effect
+160 |     let right_right = TreeNode.Node(value: 5, left: TreeNode.Empty(), right: TreeNode.Empty())
+161 |     let right_child = TreeNode.Node(value: 3, left: right_left, right: right_right)
+162 |     return (TreeNode.Node(value: 1, left: left_child, right: right_child) as! TreeNode)
+    |                                                                           `- warning: forced cast of 'TreeNode' to same type has no effect
+163 | }
+164 | func main() {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden197_data_structures_binary_tree_serialize_deserialize_binary_tree509198258/001/main.swift:166:53: warning: forced cast of 'TreeNode' to same type has no effect
+164 | func main() {
+165 |     let root = five_tree()
+166 |     let serial = String(describing: serialize((root as! TreeNode)))
+    |                                                     `- warning: forced cast of 'TreeNode' to same type has no effect
+167 |     print(_p(serial))
+168 |     let rebuilt = deserialize((serial as! String))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden197_data_structures_binary_tree_serialize_deserialize_binary_tree509198258/001/main.swift:168:39: warning: forced cast of 'String' to same type has no effect
+166 |     let serial = String(describing: serialize((root as! TreeNode)))
+167 |     print(_p(serial))
+168 |     let rebuilt = deserialize((serial as! String))
+    |                                       `- warning: forced cast of 'String' to same type has no effect
+169 |     let serial2 = String(describing: serialize((rebuilt as! TreeNode)))
+170 |     print(_p(serial2))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden197_data_structures_binary_tree_serialize_deserialize_binary_tree509198258/001/main.swift:169:57: warning: forced cast of 'TreeNode' to same type has no effect
+167 |     print(_p(serial))
+168 |     let rebuilt = deserialize((serial as! String))
+169 |     let serial2 = String(describing: serialize((rebuilt as! TreeNode)))
+    |                                                         `- warning: forced cast of 'TreeNode' to same type has no effect
+170 |     print(_p(serial2))
+171 |     print(_p(((serial == serial2) ? 1 : 0)))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden197_data_structures_binary_tree_serialize_deserialize_binary_tree509198258/001/main.swift:173:1: warning: using '_' to ignore the result of a Void-returning function is redundant
+171 |     print(_p(((serial == serial2) ? 1 : 0)))
+172 | }
+173 | _ = main()
+    | `- warning: using '_' to ignore the result of a Void-returning function is redundant
+174 | let _benchEnd = _now()
+175 | let _benchMemEnd = _mem()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden197_data_structures_binary_tree_serialize_deserialize_binary_tree509198258/001/main.swift:75:21: error: 'TreeNode' cannot be constructed because it has no accessible initializers
+ 73 |     var next: Int
+ 74 |     init() {
+ 75 |         self.node = TreeNode()
+    |                     `- error: 'TreeNode' cannot be constructed because it has no accessible initializers
+ 76 |         self.next = 0
+ 77 |     }

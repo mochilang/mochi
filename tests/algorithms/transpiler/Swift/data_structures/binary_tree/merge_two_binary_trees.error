@@ -1,0 +1,234 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden190_data_structures_binary_tree_merge_two_binary_trees1665648943/001/main.swift:59:14: error: enum element with associated values must have at least one associated value
+ 57 | }
+ 58 | indirect enum Tree {
+ 59 |     case Leaf()
+    |              |- error: enum element with associated values must have at least one associated value
+    |              |- note: did you mean to remove the empty associated value list?
+    |              `- note: did you mean to explicitly add a 'Void' associated value?
+ 60 |     case Node(left: Tree, value: Int, right: Tree)
+ 61 | }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden190_data_structures_binary_tree_merge_two_binary_trees1665648943/001/main.swift:68:18: warning: 'let' pattern has no effect; sub-pattern didn't bind any variables
+ 66 |         return { () -> Tree in
+ 67 |         switch t1 {
+ 68 |             case let .Leaf():
+    |                  `- warning: 'let' pattern has no effect; sub-pattern didn't bind any variables
+ 69 |             return t2
+ 70 |             case let .Node(l1, v1, r1):
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden190_data_structures_binary_tree_merge_two_binary_trees1665648943/001/main.swift:73:22: warning: 'let' pattern has no effect; sub-pattern didn't bind any variables
+ 71 |             return { () -> Tree in
+ 72 |             switch t2 {
+ 73 |                 case let .Leaf():
+    |                      `- warning: 'let' pattern has no effect; sub-pattern didn't bind any variables
+ 74 |                 return t1
+ 75 |                 case let .Node(l2, v2, r2):
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden190_data_structures_binary_tree_merge_two_binary_trees1665648943/001/main.swift:76:67: warning: forced cast of 'Tree' to same type has no effect
+ 74 |                 return t1
+ 75 |                 case let .Node(l2, v2, r2):
+ 76 |                 return Tree.Node(left: merge_two_binary_trees((l1 as! Tree), (l2 as! Tree)), value: (v1 &+ v2), right: merge_two_binary_trees((r1 as! Tree), (r2 as! Tree)))
+    |                                                                   `- warning: forced cast of 'Tree' to same type has no effect
+ 77 |                 default:
+ 78 |                 var z: Tree
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden190_data_structures_binary_tree_merge_two_binary_trees1665648943/001/main.swift:76:82: warning: forced cast of 'Tree' to same type has no effect
+ 74 |                 return t1
+ 75 |                 case let .Node(l2, v2, r2):
+ 76 |                 return Tree.Node(left: merge_two_binary_trees((l1 as! Tree), (l2 as! Tree)), value: (v1 &+ v2), right: merge_two_binary_trees((r1 as! Tree), (r2 as! Tree)))
+    |                                                                                  `- warning: forced cast of 'Tree' to same type has no effect
+ 77 |                 default:
+ 78 |                 var z: Tree
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden190_data_structures_binary_tree_merge_two_binary_trees1665648943/001/main.swift:76:147: warning: forced cast of 'Tree' to same type has no effect
+ 74 |                 return t1
+ 75 |                 case let .Node(l2, v2, r2):
+ 76 |                 return Tree.Node(left: merge_two_binary_trees((l1 as! Tree), (l2 as! Tree)), value: (v1 &+ v2), right: merge_two_binary_trees((r1 as! Tree), (r2 as! Tree)))
+    |                                                                                                                                                   `- warning: forced cast of 'Tree' to same type has no effect
+ 77 |                 default:
+ 78 |                 var z: Tree
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden190_data_structures_binary_tree_merge_two_binary_trees1665648943/001/main.swift:76:162: warning: forced cast of 'Tree' to same type has no effect
+ 74 |                 return t1
+ 75 |                 case let .Node(l2, v2, r2):
+ 76 |                 return Tree.Node(left: merge_two_binary_trees((l1 as! Tree), (l2 as! Tree)), value: (v1 &+ v2), right: merge_two_binary_trees((r1 as! Tree), (r2 as! Tree)))
+    |                                                                                                                                                                  `- warning: forced cast of 'Tree' to same type has no effect
+ 77 |                 default:
+ 78 |                 var z: Tree
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden190_data_structures_binary_tree_merge_two_binary_trees1665648943/001/main.swift:91:14: warning: 'let' pattern has no effect; sub-pattern didn't bind any variables
+ 89 |     return ({ () -> Bool in
+ 90 |     switch t {
+ 91 |         case let .Leaf():
+    |              `- warning: 'let' pattern has no effect; sub-pattern didn't bind any variables
+ 92 |         return true
+ 93 |         case let ._():
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden190_data_structures_binary_tree_merge_two_binary_trees1665648943/001/main.swift:93:14: warning: 'let' pattern has no effect; sub-pattern didn't bind any variables
+ 91 |         case let .Leaf():
+ 92 |         return true
+ 93 |         case let ._():
+    |              `- warning: 'let' pattern has no effect; sub-pattern didn't bind any variables
+ 94 |         return false
+ 95 |         default:
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden190_data_structures_binary_tree_merge_two_binary_trees1665648943/001/main.swift:93:19: error: type 'Tree' has no member '_'
+ 91 |         case let .Leaf():
+ 92 |         return true
+ 93 |         case let ._():
+    |                   `- error: type 'Tree' has no member '_'
+ 94 |         return false
+ 95 |         default:
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden190_data_structures_binary_tree_merge_two_binary_trees1665648943/001/main.swift:99:5: warning: forced cast of 'Bool' to same type has no effect
+ 97 |         return z
+ 98 |     }
+ 99 | }() as! Bool)
+    |     `- warning: forced cast of 'Bool' to same type has no effect
+100 | }
+101 | func get_left(_ t: Tree) -> Tree {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden190_data_structures_binary_tree_merge_two_binary_trees1665648943/001/main.swift:106:14: warning: 'let' pattern has no effect; sub-pattern didn't bind any variables
+104 |         case let .Node(l, _, _):
+105 |         return l
+106 |         case let ._():
+    |              `- warning: 'let' pattern has no effect; sub-pattern didn't bind any variables
+107 |         return Tree.Leaf()
+108 |         default:
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden190_data_structures_binary_tree_merge_two_binary_trees1665648943/001/main.swift:106:19: error: type 'Tree' has no member '_'
+104 |         case let .Node(l, _, _):
+105 |         return l
+106 |         case let ._():
+    |                   `- error: type 'Tree' has no member '_'
+107 |         return Tree.Leaf()
+108 |         default:
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden190_data_structures_binary_tree_merge_two_binary_trees1665648943/001/main.swift:119:14: warning: 'let' pattern has no effect; sub-pattern didn't bind any variables
+117 |         case let .Node(_, _, r):
+118 |         return r
+119 |         case let ._():
+    |              `- warning: 'let' pattern has no effect; sub-pattern didn't bind any variables
+120 |         return Tree.Leaf()
+121 |         default:
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden190_data_structures_binary_tree_merge_two_binary_trees1665648943/001/main.swift:119:19: error: type 'Tree' has no member '_'
+117 |         case let .Node(_, _, r):
+118 |         return r
+119 |         case let ._():
+    |                   `- error: type 'Tree' has no member '_'
+120 |         return Tree.Leaf()
+121 |         default:
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden190_data_structures_binary_tree_merge_two_binary_trees1665648943/001/main.swift:132:14: warning: 'let' pattern has no effect; sub-pattern didn't bind any variables
+130 |         case let .Node(_, v, _):
+131 |         return v
+132 |         case let ._():
+    |              `- warning: 'let' pattern has no effect; sub-pattern didn't bind any variables
+133 |         return 0
+134 |         default:
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden190_data_structures_binary_tree_merge_two_binary_trees1665648943/001/main.swift:132:19: error: type 'Tree' has no member '_'
+130 |         case let .Node(_, v, _):
+131 |         return v
+132 |         case let ._():
+    |                   `- error: type 'Tree' has no member '_'
+133 |         return 0
+134 |         default:
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden190_data_structures_binary_tree_merge_two_binary_trees1665648943/001/main.swift:140:35: error: cannot find type 'unit' in scope
+138 | }())
+139 | }
+140 | func print_preorder(_ t: Tree) -> unit {
+    |                                   `- error: cannot find type 'unit' in scope
+141 |     if (!is_leaf((t as! Tree))) {
+142 |         let v = Int(get_value((t as! Tree)))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden190_data_structures_binary_tree_merge_two_binary_trees1665648943/001/main.swift:141:21: warning: forced cast of 'Tree' to same type has no effect
+139 | }
+140 | func print_preorder(_ t: Tree) -> unit {
+141 |     if (!is_leaf((t as! Tree))) {
+    |                     `- warning: forced cast of 'Tree' to same type has no effect
+142 |         let v = Int(get_value((t as! Tree)))
+143 |         let l = get_left((t as! Tree))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden190_data_structures_binary_tree_merge_two_binary_trees1665648943/001/main.swift:142:34: warning: forced cast of 'Tree' to same type has no effect
+140 | func print_preorder(_ t: Tree) -> unit {
+141 |     if (!is_leaf((t as! Tree))) {
+142 |         let v = Int(get_value((t as! Tree)))
+    |                                  `- warning: forced cast of 'Tree' to same type has no effect
+143 |         let l = get_left((t as! Tree))
+144 |         let r = get_right((t as! Tree))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden190_data_structures_binary_tree_merge_two_binary_trees1665648943/001/main.swift:143:29: warning: forced cast of 'Tree' to same type has no effect
+141 |     if (!is_leaf((t as! Tree))) {
+142 |         let v = Int(get_value((t as! Tree)))
+143 |         let l = get_left((t as! Tree))
+    |                             `- warning: forced cast of 'Tree' to same type has no effect
+144 |         let r = get_right((t as! Tree))
+145 |         print(_p(v))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden190_data_structures_binary_tree_merge_two_binary_trees1665648943/001/main.swift:144:30: warning: forced cast of 'Tree' to same type has no effect
+142 |         let v = Int(get_value((t as! Tree)))
+143 |         let l = get_left((t as! Tree))
+144 |         let r = get_right((t as! Tree))
+    |                              `- warning: forced cast of 'Tree' to same type has no effect
+145 |         print(_p(v))
+146 |         _ = print_preorder((l as! Tree))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden190_data_structures_binary_tree_merge_two_binary_trees1665648943/001/main.swift:146:31: warning: forced cast of 'Tree' to same type has no effect
+144 |         let r = get_right((t as! Tree))
+145 |         print(_p(v))
+146 |         _ = print_preorder((l as! Tree))
+    |                               `- warning: forced cast of 'Tree' to same type has no effect
+147 |         _ = print_preorder((r as! Tree))
+148 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden190_data_structures_binary_tree_merge_two_binary_trees1665648943/001/main.swift:147:31: warning: forced cast of 'Tree' to same type has no effect
+145 |         print(_p(v))
+146 |         _ = print_preorder((l as! Tree))
+147 |         _ = print_preorder((r as! Tree))
+    |                               `- warning: forced cast of 'Tree' to same type has no effect
+148 |     }
+149 | }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden190_data_structures_binary_tree_merge_two_binary_trees1665648943/001/main.swift:153:27: warning: forced cast of 'Tree' to same type has no effect
+151 | let tree2 = Tree.Node(left: Tree.Node(left: Tree.Leaf(), value: 4, right: Tree.Node(left: Tree.Leaf(), value: 9, right: Tree.Leaf())), value: 2, right: Tree.Node(left: Tree.Leaf(), value: 6, right: Tree.Node(left: Tree.Leaf(), value: 5, right: Tree.Leaf())))
+152 | print(_p("Tree1 is:"))
+153 | _ = print_preorder((tree1 as! Tree))
+    |                           `- warning: forced cast of 'Tree' to same type has no effect
+154 | print(_p("Tree2 is:"))
+155 | _ = print_preorder((tree2 as! Tree))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden190_data_structures_binary_tree_merge_two_binary_trees1665648943/001/main.swift:155:27: warning: forced cast of 'Tree' to same type has no effect
+153 | _ = print_preorder((tree1 as! Tree))
+154 | print(_p("Tree2 is:"))
+155 | _ = print_preorder((tree2 as! Tree))
+    |                           `- warning: forced cast of 'Tree' to same type has no effect
+156 | let merged_tree = merge_two_binary_trees((tree1 as! Tree), (tree2 as! Tree))
+157 | print(_p("Merged Tree is:"))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden190_data_structures_binary_tree_merge_two_binary_trees1665648943/001/main.swift:156:49: warning: forced cast of 'Tree' to same type has no effect
+154 | print(_p("Tree2 is:"))
+155 | _ = print_preorder((tree2 as! Tree))
+156 | let merged_tree = merge_two_binary_trees((tree1 as! Tree), (tree2 as! Tree))
+    |                                                 `- warning: forced cast of 'Tree' to same type has no effect
+157 | print(_p("Merged Tree is:"))
+158 | _ = print_preorder((merged_tree as! Tree))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden190_data_structures_binary_tree_merge_two_binary_trees1665648943/001/main.swift:156:67: warning: forced cast of 'Tree' to same type has no effect
+154 | print(_p("Tree2 is:"))
+155 | _ = print_preorder((tree2 as! Tree))
+156 | let merged_tree = merge_two_binary_trees((tree1 as! Tree), (tree2 as! Tree))
+    |                                                                   `- warning: forced cast of 'Tree' to same type has no effect
+157 | print(_p("Merged Tree is:"))
+158 | _ = print_preorder((merged_tree as! Tree))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden190_data_structures_binary_tree_merge_two_binary_trees1665648943/001/main.swift:158:33: warning: forced cast of 'Tree' to same type has no effect
+156 | let merged_tree = merge_two_binary_trees((tree1 as! Tree), (tree2 as! Tree))
+157 | print(_p("Merged Tree is:"))
+158 | _ = print_preorder((merged_tree as! Tree))
+    |                                 `- warning: forced cast of 'Tree' to same type has no effect
+159 | let _benchEnd = _now()
+160 | let _benchMemEnd = _mem()

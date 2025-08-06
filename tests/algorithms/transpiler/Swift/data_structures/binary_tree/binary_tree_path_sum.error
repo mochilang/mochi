@@ -1,0 +1,418 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:59:15: error: enum element with associated values must have at least one associated value
+ 57 | }
+ 58 | indirect enum Tree {
+ 59 |     case Empty()
+    |               |- error: enum element with associated values must have at least one associated value
+    |               |- note: did you mean to remove the empty associated value list?
+    |               `- note: did you mean to explicitly add a 'Void' associated value?
+ 60 |     case Node(left: Tree, value: Int, right: Tree)
+ 61 | }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:68:18: warning: 'let' pattern has no effect; sub-pattern didn't bind any variables
+ 66 |         return Int({ () -> Int in
+ 67 |         switch node {
+ 68 |             case let .Empty():
+    |                  `- warning: 'let' pattern has no effect; sub-pattern didn't bind any variables
+ 69 |             return 0
+ 70 |             case let .Node(l, v, r):
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:71:78: warning: forced cast of 'Tree' to same type has no effect
+ 69 |             return 0
+ 70 |             case let .Node(l, v, r):
+ 71 |             return ((Int((((current &+ v) == target) ? 1 : 0)) &+ Int(dfs((l as! Tree), target, (current &+ v)))) &+ Int(dfs((r as! Tree), target, (current &+ v))))
+    |                                                                              `- warning: forced cast of 'Tree' to same type has no effect
+ 72 |             default:
+ 73 |             var z: Int
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:71:129: warning: forced cast of 'Tree' to same type has no effect
+ 69 |             return 0
+ 70 |             case let .Node(l, v, r):
+ 71 |             return ((Int((((current &+ v) == target) ? 1 : 0)) &+ Int(dfs((l as! Tree), target, (current &+ v)))) &+ Int(dfs((r as! Tree), target, (current &+ v))))
+    |                                                                                                                                 `- warning: forced cast of 'Tree' to same type has no effect
+ 72 |             default:
+ 73 |             var z: Int
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:81:14: warning: 'let' pattern has no effect; sub-pattern didn't bind any variables
+ 79 |     return Int({ () -> Int in
+ 80 |     switch node {
+ 81 |         case let .Empty():
+    |              `- warning: 'let' pattern has no effect; sub-pattern didn't bind any variables
+ 82 |         return 0
+ 83 |         case let .Node(l, v, r):
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:84:32: warning: forced cast of 'Tree' to same type has no effect
+ 82 |         return 0
+ 83 |         case let .Node(l, v, r):
+ 84 |         return ((Int(dfs((node as! Tree), target, 0)) &+ Int(path_sum((l as! Tree), target))) &+ Int(path_sum((r as! Tree), target)))
+    |                                `- warning: forced cast of 'Tree' to same type has no effect
+ 85 |         default:
+ 86 |         var z: Int
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:84:74: warning: forced cast of 'Tree' to same type has no effect
+ 82 |         return 0
+ 83 |         case let .Node(l, v, r):
+ 84 |         return ((Int(dfs((node as! Tree), target, 0)) &+ Int(path_sum((l as! Tree), target))) &+ Int(path_sum((r as! Tree), target)))
+    |                                                                          `- warning: forced cast of 'Tree' to same type has no effect
+ 85 |         default:
+ 86 |         var z: Int
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:84:114: warning: forced cast of 'Tree' to same type has no effect
+ 82 |         return 0
+ 83 |         case let .Node(l, v, r):
+ 84 |         return ((Int(dfs((node as! Tree), target, 0)) &+ Int(path_sum((l as! Tree), target))) &+ Int(path_sum((r as! Tree), target)))
+    |                                                                                                                  `- warning: forced cast of 'Tree' to same type has no effect
+ 85 |         default:
+ 86 |         var z: Int
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:92:118: error: cannot find 'Empty' in scope
+ 90 | }
+ 91 | func sample_tree_one() -> Tree {
+ 92 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 11, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                      `- error: cannot find 'Empty' in scope
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:92:132: error: cannot find 'Empty' in scope
+ 90 | }
+ 91 | func sample_tree_one() -> Tree {
+ 92 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 11, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                                    `- error: cannot find 'Empty' in scope
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:92:174: error: cannot find 'Empty' in scope
+ 90 | }
+ 91 | func sample_tree_one() -> Tree {
+ 92 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 11, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                                                                              `- error: cannot find 'Empty' in scope
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:92:188: error: cannot find 'Empty' in scope
+ 90 | }
+ 91 | func sample_tree_one() -> Tree {
+ 92 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 11, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                                                                                            `- error: cannot find 'Empty' in scope
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:92:230: error: cannot find 'Empty' in scope
+ 90 | }
+ 91 | func sample_tree_one() -> Tree {
+ 92 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 11, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                                                                                                                                      `- error: cannot find 'Empty' in scope
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:92:270: error: cannot find 'Empty' in scope
+ 90 | }
+ 91 | func sample_tree_one() -> Tree {
+ 92 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 11, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                                                                                                                                                                              `- error: cannot find 'Empty' in scope
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:92:284: error: cannot find 'Empty' in scope
+ 90 | }
+ 91 | func sample_tree_one() -> Tree {
+ 92 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 11, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                                                                                                                                                                                            `- error: cannot find 'Empty' in scope
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:92:328: error: cannot find 'Empty' in scope
+ 90 | }
+ 91 | func sample_tree_one() -> Tree {
+ 92 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 11, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                                                                                                                                                                                                                                        `- error: cannot find 'Empty' in scope
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:92:369: error: cannot find 'Empty' in scope
+ 90 | }
+ 91 | func sample_tree_one() -> Tree {
+ 92 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 11, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                                                                                                                                                                                                                                                                                 `- error: cannot find 'Empty' in scope
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:92:383: error: cannot find 'Empty' in scope
+ 90 | }
+ 91 | func sample_tree_one() -> Tree {
+ 92 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 11, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                                                                                                                                                                                                                                                                                               `- error: cannot find 'Empty' in scope
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:92:34: error: argument 'left' must precede argument 'value'
+ 90 | }
+ 91 | func sample_tree_one() -> Tree {
+ 92 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 11, left: Empty, right: Empty))) as! Tree)
+    |                                  `- error: argument 'left' must precede argument 'value'
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:92:60: error: argument 'left' must precede argument 'value'
+ 90 | }
+ 91 | func sample_tree_one() -> Tree {
+ 92 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 11, left: Empty, right: Empty))) as! Tree)
+    |                                                            `- error: argument 'left' must precede argument 'value'
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:92:86: error: argument 'left' must precede argument 'value'
+ 90 | }
+ 91 | func sample_tree_one() -> Tree {
+ 92 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 11, left: Empty, right: Empty))) as! Tree)
+    |                                                                                      `- error: argument 'left' must precede argument 'value'
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:92:112: error: argument 'left' must precede argument 'value'
+ 90 | }
+ 91 | func sample_tree_one() -> Tree {
+ 92 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 11, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                `- error: argument 'left' must precede argument 'value'
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:92:168: error: argument 'left' must precede argument 'value'
+ 90 | }
+ 91 | func sample_tree_one() -> Tree {
+ 92 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 11, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                                                                        `- error: argument 'left' must precede argument 'value'
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:92:224: error: argument 'left' must precede argument 'value'
+ 90 | }
+ 91 | func sample_tree_one() -> Tree {
+ 92 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 11, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                                                                                                                                `- error: argument 'left' must precede argument 'value'
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:92:264: error: argument 'left' must precede argument 'value'
+ 90 | }
+ 91 | func sample_tree_one() -> Tree {
+ 92 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 11, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                                                                                                                                                                        `- error: argument 'left' must precede argument 'value'
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:92:322: error: argument 'left' must precede argument 'value'
+ 90 | }
+ 91 | func sample_tree_one() -> Tree {
+ 92 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 11, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                                                                                                                                                                                                                                  `- error: argument 'left' must precede argument 'value'
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:92:363: error: argument 'left' must precede argument 'value'
+ 90 | }
+ 91 | func sample_tree_one() -> Tree {
+ 92 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 11, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                                                                                                                                                                                                                                                                           `- error: argument 'left' must precede argument 'value'
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:92:392: warning: forced cast of 'Tree' to same type has no effect
+ 90 | }
+ 91 | func sample_tree_one() -> Tree {
+ 92 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 11, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                                                                                                                                                                                                                                                                                                        `- warning: forced cast of 'Tree' to same type has no effect
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:95:118: error: cannot find 'Empty' in scope
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+ 95 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 10, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                      `- error: cannot find 'Empty' in scope
+ 96 | }
+ 97 | func main() {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:95:132: error: cannot find 'Empty' in scope
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+ 95 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 10, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                                    `- error: cannot find 'Empty' in scope
+ 96 | }
+ 97 | func main() {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:95:174: error: cannot find 'Empty' in scope
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+ 95 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 10, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                                                                              `- error: cannot find 'Empty' in scope
+ 96 | }
+ 97 | func main() {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:95:188: error: cannot find 'Empty' in scope
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+ 95 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 10, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                                                                                            `- error: cannot find 'Empty' in scope
+ 96 | }
+ 97 | func main() {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:95:230: error: cannot find 'Empty' in scope
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+ 95 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 10, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                                                                                                                                      `- error: cannot find 'Empty' in scope
+ 96 | }
+ 97 | func main() {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:95:270: error: cannot find 'Empty' in scope
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+ 95 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 10, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                                                                                                                                                                              `- error: cannot find 'Empty' in scope
+ 96 | }
+ 97 | func main() {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:95:284: error: cannot find 'Empty' in scope
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+ 95 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 10, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                                                                                                                                                                                            `- error: cannot find 'Empty' in scope
+ 96 | }
+ 97 | func main() {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:95:328: error: cannot find 'Empty' in scope
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+ 95 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 10, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                                                                                                                                                                                                                                        `- error: cannot find 'Empty' in scope
+ 96 | }
+ 97 | func main() {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:95:369: error: cannot find 'Empty' in scope
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+ 95 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 10, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                                                                                                                                                                                                                                                                                 `- error: cannot find 'Empty' in scope
+ 96 | }
+ 97 | func main() {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:95:383: error: cannot find 'Empty' in scope
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+ 95 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 10, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                                                                                                                                                                                                                                                                                               `- error: cannot find 'Empty' in scope
+ 96 | }
+ 97 | func main() {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:95:34: error: argument 'left' must precede argument 'value'
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+ 95 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 10, left: Empty, right: Empty))) as! Tree)
+    |                                  `- error: argument 'left' must precede argument 'value'
+ 96 | }
+ 97 | func main() {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:95:60: error: argument 'left' must precede argument 'value'
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+ 95 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 10, left: Empty, right: Empty))) as! Tree)
+    |                                                            `- error: argument 'left' must precede argument 'value'
+ 96 | }
+ 97 | func main() {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:95:86: error: argument 'left' must precede argument 'value'
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+ 95 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 10, left: Empty, right: Empty))) as! Tree)
+    |                                                                                      `- error: argument 'left' must precede argument 'value'
+ 96 | }
+ 97 | func main() {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:95:112: error: argument 'left' must precede argument 'value'
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+ 95 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 10, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                `- error: argument 'left' must precede argument 'value'
+ 96 | }
+ 97 | func main() {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:95:168: error: argument 'left' must precede argument 'value'
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+ 95 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 10, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                                                                        `- error: argument 'left' must precede argument 'value'
+ 96 | }
+ 97 | func main() {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:95:224: error: argument 'left' must precede argument 'value'
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+ 95 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 10, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                                                                                                                                `- error: argument 'left' must precede argument 'value'
+ 96 | }
+ 97 | func main() {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:95:264: error: argument 'left' must precede argument 'value'
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+ 95 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 10, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                                                                                                                                                                        `- error: argument 'left' must precede argument 'value'
+ 96 | }
+ 97 | func main() {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:95:322: error: argument 'left' must precede argument 'value'
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+ 95 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 10, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                                                                                                                                                                                                                                  `- error: argument 'left' must precede argument 'value'
+ 96 | }
+ 97 | func main() {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:95:363: error: argument 'left' must precede argument 'value'
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+ 95 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 10, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                                                                                                                                                                                                                                                                           `- error: argument 'left' must precede argument 'value'
+ 96 | }
+ 97 | func main() {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:95:392: warning: forced cast of 'Tree' to same type has no effect
+ 93 | }
+ 94 | func sample_tree_two() -> Tree {
+ 95 |     return (Tree.Node(value: 10, left: Tree.Node(value: 5, left: Tree.Node(value: 3, left: Tree.Node(value: 3, left: Empty, right: Empty), right: Tree.Node(value: -2, left: Empty, right: Empty)), right: Tree.Node(value: 2, left: Empty, right: Tree.Node(value: 1, left: Empty, right: Empty))), right: Tree.Node(value: -3, left: Empty, right: Tree.Node(value: 10, left: Empty, right: Empty))) as! Tree)
+    |                                                                                                                                                                                                                                                                                                                                                                                                        `- warning: forced cast of 'Tree' to same type has no effect
+ 96 | }
+ 97 | func main() {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:99:34: warning: forced cast of 'Tree' to same type has no effect
+ 97 | func main() {
+ 98 |     let tree1 = sample_tree_one()
+ 99 |     print(_p(Int(path_sum((tree1 as! Tree), 8))))
+    |                                  `- warning: forced cast of 'Tree' to same type has no effect
+100 |     print(_p(Int(path_sum((tree1 as! Tree), 7))))
+101 |     let tree2 = sample_tree_two()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:100:34: warning: forced cast of 'Tree' to same type has no effect
+ 98 |     let tree1 = sample_tree_one()
+ 99 |     print(_p(Int(path_sum((tree1 as! Tree), 8))))
+100 |     print(_p(Int(path_sum((tree1 as! Tree), 7))))
+    |                                  `- warning: forced cast of 'Tree' to same type has no effect
+101 |     let tree2 = sample_tree_two()
+102 |     print(_p(Int(path_sum((tree2 as! Tree), 8))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:102:34: warning: forced cast of 'Tree' to same type has no effect
+100 |     print(_p(Int(path_sum((tree1 as! Tree), 7))))
+101 |     let tree2 = sample_tree_two()
+102 |     print(_p(Int(path_sum((tree2 as! Tree), 8))))
+    |                                  `- warning: forced cast of 'Tree' to same type has no effect
+103 | }
+104 | _ = main()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden177_data_structures_binary_tree_binary_tree_path_sum1022829441/001/main.swift:104:1: warning: using '_' to ignore the result of a Void-returning function is redundant
+102 |     print(_p(Int(path_sum((tree2 as! Tree), 8))))
+103 | }
+104 | _ = main()
+    | `- warning: using '_' to ignore the result of a Void-returning function is redundant
+105 | let _benchEnd = _now()
+106 | let _benchMemEnd = _mem()
