@@ -1,0 +1,81 @@
+/*
+Project Euler Problem 74: Digit Factorial Chains
+
+Repeatedly replace a number with the sum of the factorials of its digits.
+Every starting number eventually falls into a loop.  For all starting
+numbers below a given limit we count how many generate a chain containing
+exactly a specified number of non-repeating terms.
+
+Algorithm:
+1. Precompute factorials for digits 0-9.
+2. For each starting number, build the chain by computing the digit
+   factorial sum until a repeated value or cached chain length is found.
+3. Cache chain lengths to avoid recomputation for future starts.
+4. Increment the counter when the chain length matches the target.
+
+The complexity is roughly O(limit * chain_length) with caching reducing
+repeated work.  Space complexity is O(limit) for the cache.
+*/
+
+let digit_factorials: list<int> = [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880]
+
+fun digit_factorial_sum(number: int): int {
+  if number < 0 {
+    panic("Parameter number must be greater than or equal to 0")
+  }
+  var n = number
+  if n == 0 {
+    return digit_factorials[0]
+  }
+  var total = 0
+  while n > 0 {
+    let digit = n % 10
+    total = total + digit_factorials[digit]
+    n = n / 10
+  }
+  return total
+}
+
+fun contains(xs: list<int>, x: int): bool {
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == x {
+      return true
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun solution(chain_length: int, number_limit: int): int {
+  if chain_length <= 0 || number_limit <= 0 {
+    panic("Parameters chain_length and number_limit must be greater than 0")
+  }
+  var count = 0
+  var cache: map<int, int> = {}
+  var start = 1
+  while start < number_limit {
+    var chain: list<int> = []
+    var elem = start
+    while cache[elem] == 0 && contains(chain, elem) == false && len(chain) <= chain_length {
+      chain = append(chain, elem)
+      elem = digit_factorial_sum(elem)
+    }
+    var length = len(chain)
+    if cache[elem] != 0 {
+      length = length + cache[elem]
+    }
+    var i = 0
+    while i < len(chain) {
+      cache[chain[i]] = length - i
+      i = i + 1
+    }
+    if length == chain_length {
+      count = count + 1
+    }
+    start = start + 1
+  }
+  return count
+}
+
+print(str(solution(60, 1000000)))
