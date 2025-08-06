@@ -1,0 +1,87 @@
+/*
+Interpolation Search in a Sorted Array
+--------------------------------------
+This algorithm locates a target value within an ascending sorted list of
+integers.  Unlike binary search which always probes the middle, interpolation
+search estimates the likely position of the target based on the values at the
+current bounds using linear interpolation.  For uniformly distributed data,
+this can reduce the number of probes to O(log log n) on average.  In the worst
+case it degrades to O(n).
+
+The iterative version repeatedly narrows the search range while the recursive
+version calls itself on the appropriate subrange.  Both return the index of the
+item if found or -1 otherwise and use only basic Mochi features so the program
+can run on the runtime/vm without foreign interfaces.
+*/
+
+fun interpolation_search(arr: list<int>, item: int): int {
+  var left = 0
+  var right = len(arr) - 1
+  while left <= right {
+    if arr[left] == arr[right] {
+      if arr[left] == item {
+        return left
+      }
+      return -1
+    }
+    let point = left + ((item - arr[left]) * (right - left)) / (arr[right] - arr[left])
+    if point < 0 || point >= len(arr) {
+      return -1
+    }
+    let current = arr[point]
+    if current == item {
+      return point
+    }
+    if point < left {
+      right = left
+      left = point
+    } else if point > right {
+      left = right
+      right = point
+    } else if item < current {
+      right = point - 1
+    } else {
+      left = point + 1
+    }
+  }
+  return -1
+}
+
+fun interpolation_search_recursive(arr: list<int>, item: int, left: int, right: int): int {
+  if left > right {
+    return -1
+  }
+  if arr[left] == arr[right] {
+    if arr[left] == item {
+      return left
+    }
+    return -1
+  }
+  let point = left + ((item - arr[left]) * (right - left)) / (arr[right] - arr[left])
+  if point < 0 || point >= len(arr) {
+    return -1
+  }
+  if arr[point] == item {
+    return point
+  }
+  if point < left {
+    return interpolation_search_recursive(arr, item, point, left)
+  }
+  if point > right {
+    return interpolation_search_recursive(arr, item, right, left)
+  }
+  if arr[point] > item {
+    return interpolation_search_recursive(arr, item, left, point - 1)
+  }
+  return interpolation_search_recursive(arr, item, point + 1, right)
+}
+
+fun interpolation_search_by_recursion(arr: list<int>, item: int): int {
+  return interpolation_search_recursive(arr, item, 0, len(arr) - 1)
+}
+
+print(str(interpolation_search([1, 2, 3, 4, 5], 2)))
+print(str(interpolation_search([1, 2, 3, 4, 5], 6)))
+print(str(interpolation_search_by_recursion([0, 5, 7, 10, 15], 5)))
+print(str(interpolation_search_by_recursion([0, 5, 7, 10, 15], 100)))
+print(str(interpolation_search_by_recursion([5, 5, 5, 5, 5], 3)))
