@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Scheme code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Scheme`.
-Last updated: 2025-08-06 22:47 GMT+7
+Last updated: 2025-08-06 23:29 GMT+7
 
-## Algorithms Golden Test Checklist (90/1077)
+## Algorithms Golden Test Checklist (140/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 0s | 12.4 MB |
@@ -101,57 +101,57 @@ Last updated: 2025-08-06 22:47 GMT+7
 | 92 | ciphers/permutation_cipher | ✓ | 0s | 13.4 MB |
 | 93 | ciphers/playfair_cipher |   |  |  |
 | 94 | ciphers/polybius | ✓ | 2ms | 13.2 MB |
-| 95 | ciphers/porta_cipher |   |  |  |
-| 96 | ciphers/rabin_miller |   |  |  |
-| 97 | ciphers/rail_fence_cipher |   |  |  |
-| 98 | ciphers/rot13 |   |  |  |
-| 99 | ciphers/rsa_cipher |   |  |  |
-| 100 | ciphers/rsa_factorization |   |  |  |
-| 101 | ciphers/rsa_key_generator |   |  |  |
-| 102 | ciphers/running_key_cipher |   |  |  |
-| 103 | ciphers/shuffled_shift_cipher |   |  |  |
-| 104 | ciphers/simple_keyword_cypher |   |  |  |
-| 105 | ciphers/simple_substitution_cipher |   |  |  |
-| 106 | ciphers/transposition_cipher |   |  |  |
-| 107 | ciphers/transposition_cipher_encrypt_decrypt_file |   |  |  |
-| 108 | ciphers/trifid_cipher |   |  |  |
-| 109 | ciphers/vernam_cipher |   |  |  |
-| 110 | ciphers/vigenere_cipher |   |  |  |
-| 111 | ciphers/xor_cipher |   |  |  |
-| 112 | computer_vision/cnn_classification |   |  |  |
-| 113 | computer_vision/flip_augmentation |   |  |  |
-| 114 | computer_vision/haralick_descriptors |   |  |  |
-| 115 | computer_vision/harris_corner |   |  |  |
-| 116 | computer_vision/horn_schunck |   |  |  |
-| 117 | computer_vision/intensity_based_segmentation |   |  |  |
-| 118 | computer_vision/mean_threshold |   |  |  |
-| 119 | computer_vision/mosaic_augmentation |   |  |  |
-| 120 | computer_vision/pooling_functions |   |  |  |
-| 121 | conversions/astronomical_length_scale_conversion |   |  |  |
-| 122 | conversions/binary_to_decimal |   |  |  |
-| 123 | conversions/binary_to_hexadecimal |   |  |  |
-| 124 | conversions/binary_to_octal |   |  |  |
-| 125 | conversions/convert_number_to_words |   |  |  |
-| 126 | conversions/decimal_to_any |   |  |  |
-| 127 | conversions/decimal_to_binary |   |  |  |
-| 128 | conversions/decimal_to_hexadecimal |   |  |  |
-| 129 | conversions/decimal_to_octal |   |  |  |
-| 130 | conversions/energy_conversions |   |  |  |
-| 131 | conversions/excel_title_to_column |   |  |  |
-| 132 | conversions/hex_to_bin |   |  |  |
-| 133 | conversions/hexadecimal_to_decimal |   |  |  |
-| 134 | conversions/ipv4_conversion |   |  |  |
-| 135 | conversions/length_conversion |   |  |  |
-| 136 | conversions/molecular_chemistry |   |  |  |
-| 137 | conversions/octal_to_binary |   |  |  |
-| 138 | conversions/octal_to_decimal |   |  |  |
-| 139 | conversions/octal_to_hexadecimal |   |  |  |
-| 140 | conversions/prefix_conversions |   |  |  |
-| 141 | conversions/prefix_conversions_string |   |  |  |
-| 142 | conversions/pressure_conversions |   |  |  |
+| 95 | ciphers/porta_cipher | ✓ | 11ms | 13.5 MB |
+| 96 | ciphers/rabin_miller | ✓ | 5ms | 14.1 MB |
+| 97 | ciphers/rail_fence_cipher | ✓ | 4ms | 13.7 MB |
+| 98 | ciphers/rot13 | ✓ | 52ms | 12.5 MB |
+| 99 | ciphers/rsa_cipher | ✓ | 4ms | 14.2 MB |
+| 100 | ciphers/rsa_factorization | ✓ | 7ms | 12.6 MB |
+| 101 | ciphers/rsa_key_generator | ✓ | 2ms | 13.9 MB |
+| 102 | ciphers/running_key_cipher | ✓ | 30ms | 13.8 MB |
+| 103 | ciphers/shuffled_shift_cipher | ✓ | 28ms | 13.9 MB |
+| 104 | ciphers/simple_keyword_cypher | ✓ | 21ms | 14.0 MB |
+| 105 | ciphers/simple_substitution_cipher | ✓ | 33ms | 14.6 MB |
+| 106 | ciphers/transposition_cipher | ✓ | 1ms | 13.6 MB |
+| 107 | ciphers/transposition_cipher_encrypt_decrypt_file | ✓ | 1ms | 12.8 MB |
+| 108 | ciphers/trifid_cipher | ✓ | 17ms | 14.0 MB |
+| 109 | ciphers/vernam_cipher | ✓ | 2ms | 13.3 MB |
+| 110 | ciphers/vigenere_cipher | ✓ | 34ms | 13.5 MB |
+| 111 | ciphers/xor_cipher | ✓ | 24ms | 13.5 MB |
+| 112 | computer_vision/cnn_classification | ✓ | 4ms | 14.5 MB |
+| 113 | computer_vision/flip_augmentation | ✓ | 3ms | 13.7 MB |
+| 114 | computer_vision/haralick_descriptors | ✓ | 3ms | 13.7 MB |
+| 115 | computer_vision/harris_corner | ✓ | 1ms | 14.5 MB |
+| 116 | computer_vision/horn_schunck | ✓ | 43ms | 16.6 MB |
+| 117 | computer_vision/intensity_based_segmentation | ✓ | 0s | 12.6 MB |
+| 118 | computer_vision/mean_threshold | ✓ | 1ms | 12.6 MB |
+| 119 | computer_vision/mosaic_augmentation | ✓ | 123ms | 16.7 MB |
+| 120 | computer_vision/pooling_functions | ✓ | 3ms | 13.9 MB |
+| 121 | conversions/astronomical_length_scale_conversion | ✓ | 4ms | 13.7 MB |
+| 122 | conversions/binary_to_decimal | ✓ | 1ms | 13.4 MB |
+| 123 | conversions/binary_to_hexadecimal | ✓ | 2ms | 13.5 MB |
+| 124 | conversions/binary_to_octal | ✓ | 1ms | 13.0 MB |
+| 125 | conversions/convert_number_to_words | ✓ | 2ms | 14.3 MB |
+| 126 | conversions/decimal_to_any | ✓ | 0s | 12.8 MB |
+| 127 | conversions/decimal_to_binary | ✓ | 1ms | 13.1 MB |
+| 128 | conversions/decimal_to_hexadecimal | ✓ | 0s | 12.5 MB |
+| 129 | conversions/decimal_to_octal | ✓ | 1ms | 12.4 MB |
+| 130 | conversions/energy_conversions | ✓ | 0s | 13.2 MB |
+| 131 | conversions/excel_title_to_column | ✓ | 0s | 12.4 MB |
+| 132 | conversions/hex_to_bin | ✓ | 6ms | 14.1 MB |
+| 133 | conversions/hexadecimal_to_decimal | ✓ | 1ms | 14.0 MB |
+| 134 | conversions/ipv4_conversion | ✓ | 7ms | 13.7 MB |
+| 135 | conversions/length_conversion | ✓ | 4ms | 13.9 MB |
+| 136 | conversions/molecular_chemistry | ✓ | 0s | 12.5 MB |
+| 137 | conversions/octal_to_binary | ✓ | 1ms | 12.4 MB |
+| 138 | conversions/octal_to_decimal | ✓ | 1ms | 13.7 MB |
+| 139 | conversions/octal_to_hexadecimal | ✓ | 1ms | 13.0 MB |
+| 140 | conversions/prefix_conversions | ✓ | 3ms | 13.7 MB |
+| 141 | conversions/prefix_conversions_string | ✓ | 2ms | 13.7 MB |
+| 142 | conversions/pressure_conversions | ✓ | 1ms | 13.2 MB |
 | 143 | conversions/rectangular_to_polar |   |  |  |
-| 144 | conversions/rgb_cmyk_conversion |   |  |  |
-| 145 | conversions/rgb_hsv_conversion |   |  |  |
+| 144 | conversions/rgb_cmyk_conversion | ✓ | 1ms | 13.3 MB |
+| 145 | conversions/rgb_hsv_conversion | ✓ | 1ms | 14.2 MB |
 | 146 | conversions/roman_numerals |   |  |  |
 | 147 | conversions/speed_conversions |   |  |  |
 | 148 | conversions/temperature_conversions |   |  |  |
