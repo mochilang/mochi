@@ -1,0 +1,50 @@
+/*
+Double Linear Search
+--------------------
+The double linear search algorithm scans an array from both ends
+simultaneously to locate a target value. Two indices start at the
+beginning and end of the list and move toward each other. On each
+iteration, the algorithm compares the elements at these indices to the
+search item. If the value is found on either side, its index is
+returned immediately. If the indices cross without a match, the search
+fails and -1 is returned.
+
+This approach can cut the number of iterations roughly in half compared
+to a traditional linear search when the searched value is near either
+end of the list. The implementation below avoids any foreign function
+interfaces and uses Mochi's standard library only, making it suitable
+for execution on runtime/vm.
+*/
+
+fun double_linear_search(array: list<int>, search_item: int): int {
+  var start_ind: int = 0
+  var end_ind: int = len(array) - 1
+  while start_ind <= end_ind {
+    if array[start_ind] == search_item {
+      return start_ind
+    }
+    if array[end_ind] == search_item {
+      return end_ind
+    }
+    start_ind = start_ind + 1
+    end_ind = end_ind - 1
+  }
+  return -1
+}
+
+fun main() {
+  let data: list<int> = build_range(100)
+  print(str(double_linear_search(data, 40)))
+}
+
+fun build_range(n: int): list<int> {
+  var res: list<int> = []
+  var i: int = 0
+  while i < n {
+    res = append(res, i)
+    i = i + 1
+  }
+  return res
+}
+
+main()
