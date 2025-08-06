@@ -130,6 +130,7 @@ var (
 	convInFunc        bool
 	methodDefs        []Stmt
 	structMethods     map[string]map[string]bool
+	targetMapValType  string
 )
 
 // GetStructOrder returns the generated struct names (for testing).
@@ -628,7 +629,8 @@ func (s *VarStmt) emit(w io.Writer) error {
 			iex.NoSuffix = strings.HasSuffix(typ, "?")
 			defer func() { iex.NoBang = oldBang; iex.NoSuffix = oldSuf }()
 		}
-		if typ == "BigInt" && inferType(s.Value) == "int" {
+		valType := inferType(s.Value)
+		if typ == "BigInt" && valType == "int" {
 			if lit, ok := s.Value.(*IntLit); ok {
 				_, err := fmt.Fprintf(w, " = BigInt.from(%d)", lit.Value)
 				return err
@@ -641,6 +643,24 @@ func (s *VarStmt) emit(w io.Writer) error {
 			}
 			_, err := io.WriteString(w, ")")
 			return err
+		}
+		if typ == "int" && valType == "BigInt" {
+			if _, err := io.WriteString(w, " = ("); err != nil {
+				return err
+			}
+			if err := s.Value.emit(w); err != nil {
+				return err
+			}
+			_, err := io.WriteString(w, ").toInt()")
+			return err
+		}
+		if strings.HasPrefix(baseType, "Map<") {
+			kv := strings.TrimSuffix(strings.TrimPrefix(baseType, "Map<"), ">")
+			parts := strings.SplitN(kv, ",", 2)
+			if len(parts) == 2 {
+				targetMapValType = strings.TrimSpace(parts[1])
+				defer func() { targetMapValType = "" }()
+			}
 		}
 		if _, err := io.WriteString(w, " = "); err != nil {
 			return err
@@ -710,8 +730,15 @@ func (s *AssignStmt) emit(w io.Writer) error {
 			if _, err := io.WriteString(w, ".add("); err != nil {
 				return err
 			}
-			if _, err := io.WriteString(w, zeroValue(elem)); err != nil {
-				return err
+			zv := zeroValue(elem)
+			if zv == "null" {
+				if _, err := io.WriteString(w, "null as dynamic"); err != nil {
+					return err
+				}
+			} else {
+				if _, err := io.WriteString(w, zv); err != nil {
+					return err
+				}
 			}
 			if _, err := io.WriteString(w, "); } "); err != nil {
 				return err
@@ -825,9 +852,12 @@ func (s *LetStmt) emit(w io.Writer) error {
 	nextStructHint = s.Name
 	typ := s.Type
 	if typ == "" {
-		// Use dynamic for implicitly typed variables so that later
-		// assignments of differing types do not cause runtime errors.
 		typ = "dynamic"
+		if s.Value != nil {
+			if vt := inferType(s.Value); vt != "" && vt != "dynamic" {
+				typ = vt
+			}
+		}
 	}
 	if s.Value == nil {
 		nextStructHint = ""
@@ -838,12 +868,6 @@ func (s *LetStmt) emit(w io.Writer) error {
 		}
 		_, err := io.WriteString(w, decl)
 		return err
-	}
-	if inFunc && s.Type == "" {
-		valType := inferType(s.Value)
-		if valType != "" && valType != "dynamic" {
-			typ = valType
-		}
 	}
 	if _, ok := s.Value.(*IndexExpr); ok && strings.HasSuffix(typ, "?") {
 		typ = strings.TrimSuffix(typ, "?")
@@ -890,6 +914,15 @@ func (s *LetStmt) emit(w io.Writer) error {
 		}
 		_, err := io.WriteString(w, ").toInt()")
 		return err
+	}
+	baseType := strings.TrimSuffix(typ, "?")
+	if strings.HasPrefix(baseType, "Map<") {
+		kv := strings.TrimSuffix(strings.TrimPrefix(baseType, "Map<"), ">")
+		parts := strings.SplitN(kv, ",", 2)
+		if len(parts) == 2 {
+			targetMapValType = strings.TrimSpace(parts[1])
+			defer func() { targetMapValType = "" }()
+		}
 	}
 	return s.Value.emit(w)
 }
@@ -1975,6 +2008,11 @@ func (m *MapLit) emit(w io.Writer) error {
 		} else {
 			if err := e.Value.emit(w); err != nil {
 				return err
+			}
+			if targetMapValType == "int" && inferType(e.Value) == "BigInt" {
+				if _, err := io.WriteString(w, ".toInt()"); err != nil {
+					return err
+				}
 			}
 		}
 	}

@@ -1,0 +1,10 @@
+run: exit status 255
+Unhandled exception:
+type 'int' is not a subtype of type 'double' in type cast
+#0      random (file:///workspace/mochi/tests/algorithms/x/Dart/data_structures/kd_tree/example/hypercube_points.dart:46:18)
+#1      hypercube_points (file:///workspace/mochi/tests/algorithms/x/Dart/data_structures/kd_tree/example/hypercube_points.dart:56:37)
+#2      pts (file:///workspace/mochi/tests/algorithms/x/Dart/data_structures/kd_tree/example/hypercube_points.dart:66:26)
+#3      pts (file:///workspace/mochi/tests/algorithms/x/Dart/data_structures/kd_tree/example/hypercube_points.dart)
+#4      main (file:///workspace/mochi/tests/algorithms/x/Dart/data_structures/kd_tree/example/hypercube_points.dart:74:15)
+#5      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#6      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

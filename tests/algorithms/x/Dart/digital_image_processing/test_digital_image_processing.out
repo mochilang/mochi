@@ -1,0 +1,3 @@
+../../../tests/algorithms/x/Dart/digital_image_processing/test_digital_image_processing.dart:109:30: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    row = [...row, int.parse(acc)];
+                             ^

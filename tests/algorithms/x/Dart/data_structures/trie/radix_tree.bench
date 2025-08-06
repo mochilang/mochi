@@ -1,0 +1,32 @@
+../../../tests/algorithms/x/Dart/data_structures/trie/radix_tree.dart:98:45: Error: The value 'null' can't be assigned to the parameter type 'RadixNode' because 'RadixNode' is not nullable.
+ - 'RadixNode' is from '../../../tests/algorithms/x/Dart/data_structures/trie/radix_tree.dart'.
+    while (nodes.length <= idx) { nodes.add(null); } nodes[idx] = node;
+                                            ^
+../../../tests/algorithms/x/Dart/data_structures/trie/radix_tree.dart:109:45: Error: The value 'null' can't be assigned to the parameter type 'RadixNode' because 'RadixNode' is not nullable.
+ - 'RadixNode' is from '../../../tests/algorithms/x/Dart/data_structures/trie/radix_tree.dart'.
+    while (nodes.length <= idx) { nodes.add(null); } nodes[idx] = node;
+                                            ^
+../../../tests/algorithms/x/Dart/data_structures/trie/radix_tree.dart:121:49: Error: The value 'null' can't be assigned to the parameter type 'RadixNode' because 'RadixNode' is not nullable.
+ - 'RadixNode' is from '../../../tests/algorithms/x/Dart/data_structures/trie/radix_tree.dart'.
+  while (nodes.length <= child_idx) { nodes.add(null); } nodes[child_idx] = child;
+                                                ^
+../../../tests/algorithms/x/Dart/data_structures/trie/radix_tree.dart:134:43: Error: The value 'null' can't be assigned to the parameter type 'RadixNode' because 'RadixNode' is not nullable.
+ - 'RadixNode' is from '../../../tests/algorithms/x/Dart/data_structures/trie/radix_tree.dart'.
+  while (nodes.length <= idx) { nodes.add(null); } nodes[idx] = node;
+                                          ^
+../../../tests/algorithms/x/Dart/data_structures/trie/radix_tree.dart:205:45: Error: The value 'null' can't be assigned to the parameter type 'RadixNode' because 'RadixNode' is not nullable.
+ - 'RadixNode' is from '../../../tests/algorithms/x/Dart/data_structures/trie/radix_tree.dart'.
+    while (nodes.length <= idx) { nodes.add(null); } nodes[idx] = node;
+                                            ^
+../../../tests/algorithms/x/Dart/data_structures/trie/radix_tree.dart:217:45: Error: The value 'null' can't be assigned to the parameter type 'RadixNode' because 'RadixNode' is not nullable.
+ - 'RadixNode' is from '../../../tests/algorithms/x/Dart/data_structures/trie/radix_tree.dart'.
+    while (nodes.length <= idx) { nodes.add(null); } nodes[idx] = node;
+                                            ^
+../../../tests/algorithms/x/Dart/data_structures/trie/radix_tree.dart:223:51: Error: The value 'null' can't be assigned to the parameter type 'RadixNode' because 'RadixNode' is not nullable.
+ - 'RadixNode' is from '../../../tests/algorithms/x/Dart/data_structures/trie/radix_tree.dart'.
+    while (nodes.length <= child_idx) { nodes.add(null); } nodes[child_idx] = child;
+                                                  ^
+../../../tests/algorithms/x/Dart/data_structures/trie/radix_tree.dart:235:51: Error: The value 'null' can't be assigned to the parameter type 'RadixNode' because 'RadixNode' is not nullable.
+ - 'RadixNode' is from '../../../tests/algorithms/x/Dart/data_structures/trie/radix_tree.dart'.
+    while (nodes.length <= child_idx) { nodes.add(null); } nodes[child_idx] = child;
+                                                  ^

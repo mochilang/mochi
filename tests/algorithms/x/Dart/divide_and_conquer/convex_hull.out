@@ -1,0 +1,38 @@
+../../../tests/algorithms/x/Dart/divide_and_conquer/convex_hull.dart:36:39: Error: The value 'null' can't be assigned to the parameter type 'Point' because 'Point' is not nullable.
+ - 'Point' is from '../../../tests/algorithms/x/Dart/divide_and_conquer/convex_hull.dart'.
+    while (arr.length <= j) { arr.add(null); } arr[j] = q;
+                                      ^
+../../../tests/algorithms/x/Dart/divide_and_conquer/convex_hull.dart:37:43: Error: The value 'null' can't be assigned to the parameter type 'Point' because 'Point' is not nullable.
+ - 'Point' is from '../../../tests/algorithms/x/Dart/divide_and_conquer/convex_hull.dart'.
+    while (arr.length <= j + 1) { arr.add(null); } arr[j + 1] = p;
+                                          ^
+../../../tests/algorithms/x/Dart/divide_and_conquer/convex_hull.dart:51:21: Error: The argument type 'List<Point>' can't be assigned to the parameter type 'String'.
+ - 'List' is from 'dart:core'.
+ - 'Point' is from '../../../tests/algorithms/x/Dart/divide_and_conquer/convex_hull.dart'.
+    lower = _substr(lower, 0, lower.length - 1);
+                    ^
+../../../tests/algorithms/x/Dart/divide_and_conquer/convex_hull.dart:51:13: Error: A value of type 'String' can't be assigned to a variable of type 'List<Point>'.
+ - 'List' is from 'dart:core'.
+ - 'Point' is from '../../../tests/algorithms/x/Dart/divide_and_conquer/convex_hull.dart'.
+    lower = _substr(lower, 0, lower.length - 1);
+            ^
+../../../tests/algorithms/x/Dart/divide_and_conquer/convex_hull.dart:60:21: Error: The argument type 'List<Point>' can't be assigned to the parameter type 'String'.
+ - 'List' is from 'dart:core'.
+ - 'Point' is from '../../../tests/algorithms/x/Dart/divide_and_conquer/convex_hull.dart'.
+    upper = _substr(upper, 0, upper.length - 1);
+                    ^
+../../../tests/algorithms/x/Dart/divide_and_conquer/convex_hull.dart:60:13: Error: A value of type 'String' can't be assigned to a variable of type 'List<Point>'.
+ - 'List' is from 'dart:core'.
+ - 'Point' is from '../../../tests/algorithms/x/Dart/divide_and_conquer/convex_hull.dart'.
+    upper = _substr(upper, 0, upper.length - 1);
+            ^
+../../../tests/algorithms/x/Dart/divide_and_conquer/convex_hull.dart:65:30: Error: The argument type 'List<Point>' can't be assigned to the parameter type 'String'.
+ - 'List' is from 'dart:core'.
+ - 'Point' is from '../../../tests/algorithms/x/Dart/divide_and_conquer/convex_hull.dart'.
+  List<Point> hull = _substr(lower, 0, lower.length - 1);
+                             ^
+../../../tests/algorithms/x/Dart/divide_and_conquer/convex_hull.dart:65:22: Error: A value of type 'String' can't be assigned to a variable of type 'List<Point>'.
+ - 'List' is from 'dart:core'.
+ - 'Point' is from '../../../tests/algorithms/x/Dart/divide_and_conquer/convex_hull.dart'.
+  List<Point> hull = _substr(lower, 0, lower.length - 1);
+                     ^

@@ -1,0 +1,4 @@
+../../../tests/algorithms/x/Dart/data_structures/linked_list/floyds_cycle_detection.dart:47:107: Error: The argument type 'BigInt' can't be assigned to the parameter type 'int'.
+ - 'BigInt' is from 'dart:core'.
+  return LinkedList(next: ([] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList(), head: NULL);
+                                                                                                          ^

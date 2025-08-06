@@ -1,0 +1,13 @@
+run: exit status 254
+../../../tests/algorithms/x/Dart/data_structures/linked_list/middle_element_of_linked_list.dart:40:3: Error: Expected 0 type arguments.
+  List<int> data;
+  ^^^^
+../../../tests/algorithms/x/Dart/data_structures/linked_list/middle_element_of_linked_list.dart:49:3: Error: Expected 0 type arguments.
+  List<int> res = [value];
+  ^^^^
+../../../tests/algorithms/x/Dart/data_structures/linked_list/middle_element_of_linked_list.dart:52:15: Error: An expression whose value can be 'null' must be null-checked before it can be dereferenced.
+    res = [...res, lst.data[i]];
+              ^
+../../../tests/algorithms/x/Dart/data_structures/linked_list/middle_element_of_linked_list.dart:52:15: Error: Unexpected type 'invalid-type' of a spread.  Expected 'dynamic' or an Iterable.
+    res = [...res, lst.data[i]];
+              ^

@@ -1,0 +1,24 @@
+Priority 0: [10, 100, 128]
+Priority 1: [70, 7, 64]
+Priority 2: [1, 5, 4]
+10
+100
+128
+70
+7
+Priority 0: []
+Priority 1: [64]
+Priority 2: [1, 5, 4]
+64
+1
+5
+4
+Unhandled exception:
+Exception: All queues are empty
+#0      fpq_dequeue (file:///workspace/mochi/tests/algorithms/x/Dart/data_structures/queues/priority_queue_using_list.dart:80:3)
+#1      fixed_priority_queue (file:///workspace/mochi/tests/algorithms/x/Dart/data_structures/queues/priority_queue_using_list.dart:199:9)
+#2      _main (file:///workspace/mochi/tests/algorithms/x/Dart/data_structures/queues/priority_queue_using_list.dart:250:3)
+#3      _start (file:///workspace/mochi/tests/algorithms/x/Dart/data_structures/queues/priority_queue_using_list.dart:255:3)
+#4      main (file:///workspace/mochi/tests/algorithms/x/Dart/data_structures/queues/priority_queue_using_list.dart:258:16)
+#5      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#6      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

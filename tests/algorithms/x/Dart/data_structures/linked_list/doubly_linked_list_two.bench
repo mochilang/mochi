@@ -1,0 +1,46 @@
+../../../tests/algorithms/x/Dart/data_structures/linked_list/doubly_linked_list_two.dart:80:47: Error: The value 'null' can't be assigned to the parameter type 'Node' because 'Node' is not nullable.
+ - 'Node' is from '../../../tests/algorithms/x/Dart/data_structures/linked_list/doubly_linked_list_two.dart'.
+  while (nodes.length <= new_idx) { nodes.add(null); } nodes[new_idx] = new_node;
+                                              ^
+../../../tests/algorithms/x/Dart/data_structures/linked_list/doubly_linked_list_two.dart:86:43: Error: The value 'null' can't be assigned to the parameter type 'Node' because 'Node' is not nullable.
+ - 'Node' is from '../../../tests/algorithms/x/Dart/data_structures/linked_list/doubly_linked_list_two.dart'.
+    while (nodes.length <= p) { nodes.add(null); } nodes[p] = prev_node;
+                                          ^
+../../../tests/algorithms/x/Dart/data_structures/linked_list/doubly_linked_list_two.dart:89:43: Error: The value 'null' can't be assigned to the parameter type 'Node' because 'Node' is not nullable.
+ - 'Node' is from '../../../tests/algorithms/x/Dart/data_structures/linked_list/doubly_linked_list_two.dart'.
+  while (nodes.length <= idx) { nodes.add(null); } nodes[idx] = node;
+                                          ^
+../../../tests/algorithms/x/Dart/data_structures/linked_list/doubly_linked_list_two.dart:100:47: Error: The value 'null' can't be assigned to the parameter type 'Node' because 'Node' is not nullable.
+ - 'Node' is from '../../../tests/algorithms/x/Dart/data_structures/linked_list/doubly_linked_list_two.dart'.
+  while (nodes.length <= new_idx) { nodes.add(null); } nodes[new_idx] = new_node;
+                                              ^
+../../../tests/algorithms/x/Dart/data_structures/linked_list/doubly_linked_list_two.dart:106:45: Error: The value 'null' can't be assigned to the parameter type 'Node' because 'Node' is not nullable.
+ - 'Node' is from '../../../tests/algorithms/x/Dart/data_structures/linked_list/doubly_linked_list_two.dart'.
+    while (nodes.length <= nxt) { nodes.add(null); } nodes[nxt] = next_node;
+                                            ^
+../../../tests/algorithms/x/Dart/data_structures/linked_list/doubly_linked_list_two.dart:109:43: Error: The value 'null' can't be assigned to the parameter type 'Node' because 'Node' is not nullable.
+ - 'Node' is from '../../../tests/algorithms/x/Dart/data_structures/linked_list/doubly_linked_list_two.dart'.
+  while (nodes.length <= idx) { nodes.add(null); } nodes[idx] = node;
+                                          ^
+../../../tests/algorithms/x/Dart/data_structures/linked_list/doubly_linked_list_two.dart:183:45: Error: The value 'null' can't be assigned to the parameter type 'Node' because 'Node' is not nullable.
+ - 'Node' is from '../../../tests/algorithms/x/Dart/data_structures/linked_list/doubly_linked_list_two.dart'.
+    while (nodes.length <= nxt) { nodes.add(null); } nodes[nxt] = nxt_node;
+                                            ^
+../../../tests/algorithms/x/Dart/data_structures/linked_list/doubly_linked_list_two.dart:188:43: Error: The value 'null' can't be assigned to the parameter type 'Node' because 'Node' is not nullable.
+ - 'Node' is from '../../../tests/algorithms/x/Dart/data_structures/linked_list/doubly_linked_list_two.dart'.
+    while (nodes.length <= p) { nodes.add(null); } nodes[p] = prev_node;
+                                          ^
+../../../tests/algorithms/x/Dart/data_structures/linked_list/doubly_linked_list_two.dart:192:43: Error: The value 'null' can't be assigned to the parameter type 'Node' because 'Node' is not nullable.
+ - 'Node' is from '../../../tests/algorithms/x/Dart/data_structures/linked_list/doubly_linked_list_two.dart'.
+  while (nodes.length <= idx) { nodes.add(null); } nodes[idx] = node;
+                                          ^
+../../../tests/algorithms/x/Dart/data_structures/linked_list/doubly_linked_list_two.dart:271:13: Error: The method 'contains' isn't defined for the class 'LinkedList'.
+ - 'LinkedList' is from '../../../tests/algorithms/x/Dart/data_structures/linked_list/doubly_linked_list_two.dart'.
+Try correcting the name to the name of an existing method, or defining a method named 'contains'.
+  print((ll.contains(10)).toString());
+            ^^^^^^^^
+../../../tests/algorithms/x/Dart/data_structures/linked_list/doubly_linked_list_two.dart:273:13: Error: The method 'contains' isn't defined for the class 'LinkedList'.
+ - 'LinkedList' is from '../../../tests/algorithms/x/Dart/data_structures/linked_list/doubly_linked_list_two.dart'.
+Try correcting the name to the name of an existing method, or defining a method named 'contains'.
+  print((ll.contains(10)).toString());
+            ^^^^^^^^
