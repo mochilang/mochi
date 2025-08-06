@@ -1,0 +1,41 @@
+/*
+Digit Fifth Powers (Project Euler Problem 30)
+--------------------------------------------
+Find the sum of all numbers that can be written as the sum of fifth powers of their digits.
+The search space is limited to 4- to 6-digit numbers because 9^5 = 59049;
+any 7-digit number's digit-fifth-power sum is at most 6 * 59049 = 354294 < 1,000,000.
+Algorithm:
+1. Precompute fifth powers for digits 0 through 9.
+2. For each number from 1000 up to 999999:
+   - Add the precomputed fifth power for each digit using integer arithmetic.
+   - If the sum equals the original number, accumulate it into the total.
+3. Print the total sum.
+This implementation uses only Mochi built-ins and avoids the `any` type so it runs on runtime/vm.
+*/
+
+let DIGITS_FIFTH_POWER: list<int> = [0, 1, 32, 243, 1024, 3125, 7776, 16807, 32768, 59049]
+
+fun digits_fifth_powers_sum(number: int): int {
+  var total = 0
+  var n = number
+  while n > 0 {
+    let digit = n % 10
+    total = total + DIGITS_FIFTH_POWER[digit]
+    n = n / 10
+  }
+  return total
+}
+
+fun solution(): int {
+  var total = 0
+  var num = 1000
+  while num < 1000000 {
+    if num == digits_fifth_powers_sum(num) {
+      total = total + num
+    }
+    num = num + 1
+  }
+  return total
+}
+
+print(solution())
