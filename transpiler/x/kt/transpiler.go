@@ -604,6 +604,11 @@ func (c *CallExpr) emit(w io.Writer) {
 	io.WriteString(w, ")")
 }
 
+// RawExpr emits raw Kotlin code.
+type RawExpr struct{ Code string }
+
+func (r *RawExpr) emit(w io.Writer) { io.WriteString(w, r.Code) }
+
 // InvokeExpr calls a function value stored in an expression.
 type InvokeExpr struct {
 	Callee Expr
@@ -2620,6 +2625,8 @@ func kotlinType(t *parser.TypeRef) string {
 			return "BigInteger"
 		case "any":
 			return "Any?"
+		case "void":
+			return "Unit"
 		default:
 			return *t.Simple
 		}
@@ -2681,6 +2688,8 @@ func kotlinTypeFromType(t types.Type) string {
 		useHelper("importBigInt")
 		useHelper("bigRatHelpers")
 		return "BigRat"
+	case types.VoidType, *types.VoidType:
+		return "Unit"
 	case types.AnyType, *types.AnyType:
 		return "Any?"
 	case types.ListType:
@@ -3806,6 +3815,29 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				}
 			}
 		case s.Var != nil:
+			if s.Var.Value == nil {
+				typ := kotlinType(s.Var.Type)
+				var expr Expr
+				if s.Var.Type != nil {
+					if tt := types.ResolveTypeRef(s.Var.Type, env); tt != nil {
+						typ = kotlinTypeFromType(tt)
+						expr = &RawExpr{Code: kotlinZeroValue(tt)}
+						if env != nil {
+							env.SetVar(s.Var.Name, tt, true)
+						}
+					}
+				}
+				if expr == nil {
+					expr = &NullLit{}
+					if typ == "" {
+						typ = "Any?"
+					} else if !strings.HasSuffix(typ, "?") {
+						typ += "?"
+					}
+				}
+				out = append(out, &VarStmt{Name: s.Var.Name, Type: typ, Value: expr})
+				continue
+			}
 			v, err := convertExpr(env, s.Var.Value)
 			if err != nil {
 				return nil, err
