@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-06 22:23 +0700
+Last updated: 2025-08-06 23:15 +0700
 
-## Program Checklist (54/1077)
+## Program Checklist (56/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.114ms | 512.0 KB |
@@ -107,8 +107,8 @@ Last updated: 2025-08-06 22:23 +0700
 | 98 | ciphers/rot13 |   |  |  |
 | 99 | ciphers/rsa_cipher |   |  |  |
 | 100 | ciphers/rsa_factorization |   |  |  |
-| 101 | ciphers/rsa_key_generator |   |  |  |
-| 102 | ciphers/running_key_cipher |   |  |  |
+| 101 | ciphers/rsa_key_generator | ✓ | 563µs | 256.0 KB |
+| 102 | ciphers/running_key_cipher | ✓ | 1.993ms | 640.0 KB |
 | 103 | ciphers/shuffled_shift_cipher |   |  |  |
 | 104 | ciphers/simple_keyword_cypher |   |  |  |
 | 105 | ciphers/simple_substitution_cipher |   |  |  |

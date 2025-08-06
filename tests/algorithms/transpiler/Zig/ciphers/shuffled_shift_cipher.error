@@ -1,0 +1,18 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/ciphers/shuffled_shift_cipher.zig:176:65: error: expected type '[]const u8', found '[][]const u8'
+/workspace/mochi/tests/algorithms/transpiler/Zig/ciphers/shuffled_shift_cipher.zig:176:65: note: pointer type child '[]const u8' cannot cast into pointer type child 'u8'
+/workspace/mochi/tests/algorithms/transpiler/Zig/ciphers/shuffled_shift_cipher.zig:243:41: note: parameter type declared here
+/workspace/mochi/tests/algorithms/transpiler/Zig/ciphers/shuffled_shift_cipher.zig:193:53: error: expected type '[]const u8', found '[][]const u8'
+/workspace/mochi/tests/algorithms/transpiler/Zig/ciphers/shuffled_shift_cipher.zig:193:53: note: pointer type child '[]const u8' cannot cast into pointer type child 'u8'
+/workspace/mochi/tests/algorithms/transpiler/Zig/ciphers/shuffled_shift_cipher.zig:243:41: note: parameter type declared here
+/workspace/mochi/tests/algorithms/transpiler/Zig/ciphers/shuffled_shift_cipher.zig:108:40: error: expected type '[]const i64', found '[][]const u8'
+/workspace/mochi/tests/algorithms/transpiler/Zig/ciphers/shuffled_shift_cipher.zig:108:40: note: pointer type child '[]const u8' cannot cast into pointer type child 'i64'
+/usr/local/zig/lib/std/mem.zig:1172:47: note: parameter type declared here
+/workspace/mochi/tests/algorithms/transpiler/Zig/ciphers/shuffled_shift_cipher.zig:125:181: error: expected type '[]const u8', found '[][]const u8'
+/workspace/mochi/tests/algorithms/transpiler/Zig/ciphers/shuffled_shift_cipher.zig:125:181: note: pointer type child '[]const u8' cannot cast into pointer type child 'u8'
+/workspace/mochi/tests/algorithms/transpiler/Zig/ciphers/shuffled_shift_cipher.zig:17:12: note: parameter type declared here
+/workspace/mochi/tests/algorithms/transpiler/Zig/ciphers/shuffled_shift_cipher.zig:160:32: error: expected type '[]const u8', found '[][]const u8'
+/workspace/mochi/tests/algorithms/transpiler/Zig/ciphers/shuffled_shift_cipher.zig:160:32: note: pointer type child '[]const u8' cannot cast into pointer type child 'u8'
+/usr/local/zig/lib/std/mem.zig:645:33: note: parameter type declared here
+/workspace/mochi/tests/algorithms/transpiler/Zig/ciphers/shuffled_shift_cipher.zig:73:37: error: expected type '[]const u8', found '[][]const u8'
+/workspace/mochi/tests/algorithms/transpiler/Zig/ciphers/shuffled_shift_cipher.zig:73:37: note: pointer type child '[]const u8' cannot cast into pointer type child 'u8'
