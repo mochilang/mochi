@@ -1,0 +1,71 @@
+/*
+Simple one-neuron feedforward network with sigmoid activation.
+
+The model has a single weight and computes
+layer_1 = sigmoid(INITIAL_VALUE * weight).
+To match a target value (expected), training performs
+`number_propagations` iterations of gradient descent:
+    layer_1_error = (expected/100) - layer_1
+    layer_1_delta = layer_1_error * sigmoid_derivative(layer_1)
+    weight += INITIAL_VALUE * layer_1_delta
+The weight is initialised randomly using a deterministic
+linear congruential generator so results are reproducible.
+The function returns the final layer output scaled by 100.
+*/
+
+var seed: int = 1
+fun rand(): int {
+  seed = (seed * 1103515245 + 12345) % 2147483648
+  return seed
+}
+
+fun randint(low: int, high: int): int {
+  return (rand() % (high - low + 1)) + low
+}
+
+fun expApprox(x: float): float {
+  var y: float = x
+  var is_neg: bool = false
+  if x < 0.0 {
+    is_neg = true
+    y = -x
+  }
+  var term: float = 1.0
+  var sum: float = 1.0
+  var n: int = 1
+  while n < 30 {
+    term = term * y / (n as float)
+    sum = sum + term
+    n = n + 1
+  }
+  if is_neg { return 1.0 / sum }
+  return sum
+}
+
+fun sigmoid(x: float): float {
+  return 1.0 / (1.0 + expApprox(-x))
+}
+
+fun sigmoid_derivative(sig_val: float): float {
+  return sig_val * (1.0 - sig_val)
+}
+
+let INITIAL_VALUE: float = 0.02
+
+fun forward_propagation(expected: int, number_propagations: int): float {
+  var weight: float = 2.0 * (randint(1, 100) as float) - 1.0
+  var layer_1: float = 0.0
+  var i: int = 0
+  while i < number_propagations {
+    layer_1 = sigmoid(INITIAL_VALUE * weight)
+    let layer_1_error: float = (expected as float / 100.0) - layer_1
+    let layer_1_delta: float = layer_1_error * sigmoid_derivative(layer_1)
+    weight = weight + INITIAL_VALUE * layer_1_delta
+    i = i + 1
+  }
+  return layer_1 * 100.0
+}
+
+seed = 1
+let result = forward_propagation(32, 450000)
+print(result)
