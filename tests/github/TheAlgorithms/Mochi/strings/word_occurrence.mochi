@@ -1,0 +1,51 @@
+/*
+Word Occurrence Counter
+
+Counts how many times each distinct word appears in a sentence. Words are
+separated by spaces and sequences of spaces are treated as a single
+separator. The algorithm scans the sentence character by character, builds
+the current word, and on each separator updates a map<string, int> with the
+word's count. This runs in O(n) time for n characters and uses only core
+Mochi features so it can execute on the runtime/vm without any FFI or the
+"any" type.
+*/
+
+fun word_occurrence(sentence: string): map<string, int> {
+  var occurrence: map<string, int> = {}
+  var word = ""
+  var i = 0
+  while i < len(sentence) {
+    let ch = substring(sentence, i, i + 1)
+    if ch == " " {
+      if word != "" {
+        if word in occurrence {
+          occurrence[word] = occurrence[word] + 1
+        } else {
+          occurrence[word] = 1
+        }
+        word = ""
+      }
+    } else {
+      word = word + ch
+    }
+    i = i + 1
+  }
+  if word != "" {
+    if word in occurrence {
+      occurrence[word] = occurrence[word] + 1
+    } else {
+      occurrence[word] = 1
+    }
+  }
+  return occurrence
+}
+
+fun main() {
+  let result = word_occurrence("INPUT STRING")
+  for w in result {
+    print(w + ": " + str(result[w]))
+  }
+}
+
+main()
+
