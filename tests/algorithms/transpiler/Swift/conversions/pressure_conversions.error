@@ -1,0 +1,50 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden142_conversions_pressure_conversions116856723/001/main.swift:79:78: warning: cast from 'String' to unrelated type '[Any?]' always fails
+ 77 |     func pressure_conversion(_ value: Double, _ from_type: String, _ to_type: String) -> Double {
+ 78 |         if (!(PRESSURE_CONVERSION[from_type] != nil)) {
+ 79 |             let keys = ((_keys(PRESSURE_CONVERSION)).joined(separator: ", ") as! [Any?])
+    |                                                                              `- warning: cast from 'String' to unrelated type '[Any?]' always fails
+ 80 |             _ = fatalError(((("Invalid 'from_type' value: '" + from_type) + "'  Supported values are:\n") + keys))
+ 81 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden142_conversions_pressure_conversions116856723/001/main.swift:80:109: error: cannot convert value of type '[Any?]' to expected argument type '[String.Element]' (aka 'Array<Character>')
+ 78 |         if (!(PRESSURE_CONVERSION[from_type] != nil)) {
+ 79 |             let keys = ((_keys(PRESSURE_CONVERSION)).joined(separator: ", ") as! [Any?])
+ 80 |             _ = fatalError(((("Invalid 'from_type' value: '" + from_type) + "'  Supported values are:\n") + keys))
+    |                                                                                                             |- error: cannot convert value of type '[Any?]' to expected argument type '[String.Element]' (aka 'Array<Character>')
+    |                                                                                                             `- note: arguments to generic parameter 'Element' ('Any?' and 'String.Element' (aka 'Character')) are expected to be equal
+ 81 |         }
+ 82 |         if (!(PRESSURE_CONVERSION[to_type] != nil)) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden142_conversions_pressure_conversions116856723/001/main.swift:83:78: warning: cast from 'String' to unrelated type '[Any?]' always fails
+ 81 |         }
+ 82 |         if (!(PRESSURE_CONVERSION[to_type] != nil)) {
+ 83 |             let keys = ((_keys(PRESSURE_CONVERSION)).joined(separator: ", ") as! [Any?])
+    |                                                                              `- warning: cast from 'String' to unrelated type '[Any?]' always fails
+ 84 |             _ = fatalError(((("Invalid 'to_type' value: '" + to_type) + ".  Supported values are:\n") + keys))
+ 85 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden142_conversions_pressure_conversions116856723/001/main.swift:84:105: error: cannot convert value of type '[Any?]' to expected argument type '[String.Element]' (aka 'Array<Character>')
+ 82 |         if (!(PRESSURE_CONVERSION[to_type] != nil)) {
+ 83 |             let keys = ((_keys(PRESSURE_CONVERSION)).joined(separator: ", ") as! [Any?])
+ 84 |             _ = fatalError(((("Invalid 'to_type' value: '" + to_type) + ".  Supported values are:\n") + keys))
+    |                                                                                                         |- error: cannot convert value of type '[Any?]' to expected argument type '[String.Element]' (aka 'Array<Character>')
+    |                                                                                                         `- note: arguments to generic parameter 'Element' ('Any?' and 'String.Element' (aka 'Character')) are expected to be equal
+ 85 |         }
+ 86 |         let from = (PRESSURE_CONVERSION[String(String(describing: from_type))] as! FromTo)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden142_conversions_pressure_conversions116856723/001/main.swift:86:80: warning: forced cast from 'FromTo?' to 'FromTo' only unwraps optionals; did you mean to use '!'?
+ 84 |             _ = fatalError(((("Invalid 'to_type' value: '" + to_type) + ".  Supported values are:\n") + keys))
+ 85 |         }
+ 86 |         let from = (PRESSURE_CONVERSION[String(String(describing: from_type))] as! FromTo)
+    |                                                                                `- warning: forced cast from 'FromTo?' to 'FromTo' only unwraps optionals; did you mean to use '!'?
+ 87 |         let to = (PRESSURE_CONVERSION[String(String(describing: to_type))] as! FromTo)
+ 88 |         return ((value * from.from_factor) * to.to_factor)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden142_conversions_pressure_conversions116856723/001/main.swift:87:76: warning: forced cast from 'FromTo?' to 'FromTo' only unwraps optionals; did you mean to use '!'?
+ 85 |         }
+ 86 |         let from = (PRESSURE_CONVERSION[String(String(describing: from_type))] as! FromTo)
+ 87 |         let to = (PRESSURE_CONVERSION[String(String(describing: to_type))] as! FromTo)
+    |                                                                            `- warning: forced cast from 'FromTo?' to 'FromTo' only unwraps optionals; did you mean to use '!'?
+ 88 |         return ((value * from.from_factor) * to.to_factor)
+ 89 |     }

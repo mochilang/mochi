@@ -2468,17 +2468,56 @@ func rootNamePostfix(pe *parser.PostfixExpr) string {
 	return ""
 }
 
+// isJoinExpr reports whether the given expression contains a `.join()` call.
+// The Mochi type checker does not currently propagate the return type of
+// `join`, which can lead the transpiler to treat the result as a list and insert
+// invalid casts. Scanning the parsed expression allows the transpiler to treat
+// such expressions as strings.
+// isJoinExpr reports whether the given expression contains a `.join()` call.
+// It walks the parsed expression tree to find a field access named "join"
+// followed by a call.
 func isJoinExpr(e *parser.Expr) bool {
 	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
 		return false
 	}
-	pe := e.Binary.Left.Value
-	for i := 0; i < len(pe.Ops)-1; i++ {
-		if pe.Ops[i].Field != nil && pe.Ops[i].Field.Name == "join" && pe.Ops[i+1].Call != nil {
+	if hasJoinOp(e.Binary.Left.Value) {
+		return true
+	}
+	for _, op := range e.Binary.Right {
+		if op.Right != nil && hasJoinOp(op.Right) {
 			return true
 		}
 	}
 	return false
+}
+
+func hasJoinOp(p *parser.PostfixExpr) bool {
+	if p == nil {
+		return false
+	}
+	for i := 0; i < len(p.Ops)-1; i++ {
+		if p.Ops[i].Field != nil && p.Ops[i].Field.Name == "join" && p.Ops[i+1].Call != nil {
+			return true
+		}
+	}
+	if p.Target != nil && p.Target.Group != nil {
+		return isJoinExpr(p.Target.Group)
+	}
+	return false
+}
+
+// isJoinExprConverted reports whether the converted expression ultimately
+// originates from a `.join` call. It unwraps any casts that may have been
+// inserted around the join.
+func isJoinExprConverted(e Expr) bool {
+	switch v := e.(type) {
+	case *JoinExpr:
+		return true
+	case *CastExpr:
+		return isJoinExprConverted(v.Expr)
+	default:
+		return false
+	}
 }
 
 func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
@@ -2596,7 +2635,7 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 				typ = toSwiftType(st.Let.Type)
 			} else if env != nil {
 				t := types.TypeOfExpr(st.Let.Value, env)
-				if isJoinExpr(st.Let.Value) {
+				if isJoinExprConverted(ex) {
 					t = types.StringType{}
 				}
 				typ = swiftTypeOf(t)
@@ -2615,7 +2654,7 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 			if st.Let.Type != nil {
 				varT = types.ResolveTypeRef(st.Let.Type, env)
 			} else if st.Let.Value != nil {
-				if isJoinExpr(st.Let.Value) {
+				if isJoinExprConverted(ex) {
 					varT = types.StringType{}
 				} else {
 					varT = types.TypeOfExpr(st.Let.Value, env)
@@ -2625,7 +2664,7 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 			swiftT := swiftTypeOf(varT)
 			if st.Let.Value != nil && swiftT != "Any" {
 				srcT := types.TypeOfExpr(st.Let.Value, env)
-				if isJoinExpr(st.Let.Value) {
+				if isJoinExprConverted(ex) {
 					srcT = types.StringType{}
 				}
 				srcSwiftT := swiftTypeOf(srcT)
