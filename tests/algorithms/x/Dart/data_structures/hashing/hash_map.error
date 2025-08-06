@@ -1,0 +1,13 @@
+run: exit status 254
+../../../tests/algorithms/x/Dart/data_structures/hashing/hash_map.dart:62:49: Error: The value 'null' can't be assigned to the parameter type 'Bucket' because 'Bucket' is not nullable.
+ - 'Bucket' is from '../../../tests/algorithms/x/Dart/data_structures/hashing/hash_map.dart'.
+    while (buckets.length <= ind) { buckets.add(null); } buckets[ind] = Bucket(state: 1, key: key, val: val);
+                                                ^
+../../../tests/algorithms/x/Dart/data_structures/hashing/hash_map.dart:68:49: Error: The value 'null' can't be assigned to the parameter type 'Bucket' because 'Bucket' is not nullable.
+ - 'Bucket' is from '../../../tests/algorithms/x/Dart/data_structures/hashing/hash_map.dart'.
+    while (buckets.length <= ind) { buckets.add(null); } buckets[ind] = Bucket(state: 1, key: key, val: val);
+                                                ^
+../../../tests/algorithms/x/Dart/data_structures/hashing/hash_map.dart:158:49: Error: The value 'null' can't be assigned to the parameter type 'Bucket' because 'Bucket' is not nullable.
+ - 'Bucket' is from '../../../tests/algorithms/x/Dart/data_structures/hashing/hash_map.dart'.
+    while (buckets.length <= ind) { buckets.add(null); } buckets[ind] = Bucket(state: 2, key: 0, val: 0);
+                                                ^

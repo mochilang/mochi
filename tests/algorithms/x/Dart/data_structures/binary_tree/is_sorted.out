@@ -1,0 +1,48 @@
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:66:52: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+ - 'BigInt' is from 'dart:core'.
+Tree tree1 = Tree(data: [2.1, 2.0, 2.2], left: [1, NONE, NONE], right: [2, NONE, NONE]);
+                                                   ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:66:58: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+ - 'BigInt' is from 'dart:core'.
+Tree tree1 = Tree(data: [2.1, 2.0, 2.2], left: [1, NONE, NONE], right: [2, NONE, NONE]);
+                                                         ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:66:76: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+ - 'BigInt' is from 'dart:core'.
+Tree tree1 = Tree(data: [2.1, 2.0, 2.2], left: [1, NONE, NONE], right: [2, NONE, NONE]);
+                                                                           ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:66:82: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+ - 'BigInt' is from 'dart:core'.
+Tree tree1 = Tree(data: [2.1, 2.0, 2.2], left: [1, NONE, NONE], right: [2, NONE, NONE]);
+                                                                                 ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:67:52: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+ - 'BigInt' is from 'dart:core'.
+Tree tree2 = Tree(data: [2.1, 2.0, 2.0], left: [1, NONE, NONE], right: [2, NONE, NONE]);
+                                                   ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:67:58: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+ - 'BigInt' is from 'dart:core'.
+Tree tree2 = Tree(data: [2.1, 2.0, 2.0], left: [1, NONE, NONE], right: [2, NONE, NONE]);
+                                                         ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:67:76: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+ - 'BigInt' is from 'dart:core'.
+Tree tree2 = Tree(data: [2.1, 2.0, 2.0], left: [1, NONE, NONE], right: [2, NONE, NONE]);
+                                                                           ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:67:82: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+ - 'BigInt' is from 'dart:core'.
+Tree tree2 = Tree(data: [2.1, 2.0, 2.0], left: [1, NONE, NONE], right: [2, NONE, NONE]);
+                                                                                 ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:68:52: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+ - 'BigInt' is from 'dart:core'.
+Tree tree3 = Tree(data: [2.1, 2.0, 2.1], left: [1, NONE, NONE], right: [2, NONE, NONE]);
+                                                   ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:68:58: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+ - 'BigInt' is from 'dart:core'.
+Tree tree3 = Tree(data: [2.1, 2.0, 2.1], left: [1, NONE, NONE], right: [2, NONE, NONE]);
+                                                         ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:68:76: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+ - 'BigInt' is from 'dart:core'.
+Tree tree3 = Tree(data: [2.1, 2.0, 2.1], left: [1, NONE, NONE], right: [2, NONE, NONE]);
+                                                                           ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/is_sorted.dart:68:82: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+ - 'BigInt' is from 'dart:core'.
+Tree tree3 = Tree(data: [2.1, 2.0, 2.1], left: [1, NONE, NONE], right: [2, NONE, NONE]);
+                                                                                 ^

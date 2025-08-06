@@ -1,0 +1,8 @@
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/inorder_tree_traversal_2022.dart:46:49: Error: The value 'null' can't be assigned to the parameter type 'Node' because 'Node' is not nullable.
+ - 'Node' is from '../../../tests/algorithms/x/Dart/data_structures/binary_tree/inorder_tree_traversal_2022.dart'.
+    while (nodes.length <= current) { nodes.add(null); } nodes[current] = node;
+                                                ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/inorder_tree_traversal_2022.dart:54:49: Error: The value 'null' can't be assigned to the parameter type 'Node' because 'Node' is not nullable.
+ - 'Node' is from '../../../tests/algorithms/x/Dart/data_structures/binary_tree/inorder_tree_traversal_2022.dart'.
+    while (nodes.length <= current) { nodes.add(null); } nodes[current] = node;
+                                                ^

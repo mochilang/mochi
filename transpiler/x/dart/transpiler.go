@@ -4262,7 +4262,7 @@ func Emit(w io.Writer, p *Program) error {
 		return err
 	}
 	if useRepeat {
-		if _, err := io.WriteString(w, "String _repeat(String s, int n) => List.filled(n, s).join();\n\n"); err != nil {
+		if _, err := io.WriteString(w, "String _repeat(String s, int n) => n <= 0 ? '' : List.filled(n, s).join();\n\n"); err != nil {
 			return err
 		}
 	}

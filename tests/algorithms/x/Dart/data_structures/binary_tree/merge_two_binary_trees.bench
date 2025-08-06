@@ -1,0 +1,28 @@
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/merge_two_binary_trees.dart:70:1: Error: Type 'Node' not found.
+Node tree1 = {"__name": "Node", "left": {"__name": "Node", "left": {"__name": "Node", "left": {"__name": "Leaf"}, "value": 4, "right": {"__name": "Leaf"}}, "value": 2, "right": {"__name": "Leaf"}}, "value": 1, "right": {"__name": "Node", "left": {"__name": "Leaf"}, "value": 3, "right": {"__name": "Leaf"}}};
+^^^^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/merge_two_binary_trees.dart:71:1: Error: Type 'Node' not found.
+Node tree2 = {"__name": "Node", "left": {"__name": "Node", "left": {"__name": "Leaf"}, "value": 4, "right": {"__name": "Node", "left": {"__name": "Leaf"}, "value": 9, "right": {"__name": "Leaf"}}}, "value": 2, "right": {"__name": "Node", "left": {"__name": "Leaf"}, "value": 6, "right": {"__name": "Node", "left": {"__name": "Leaf"}, "value": 5, "right": {"__name": "Leaf"}}}};
+^^^^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/merge_two_binary_trees.dart:44:48: Error: Undefined name '__'.
+  return (t["__name"] == "Leaf" ? true : (t == __ ? false : ""));
+                                               ^^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/merge_two_binary_trees.dart:44:33: Error: A value of type 'Object' can't be returned from a function with return type 'bool'.
+ - 'Object' is from 'dart:core'.
+  return (t["__name"] == "Leaf" ? true : (t == __ ? false : ""));
+                                ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/merge_two_binary_trees.dart:48:53: Error: Undefined name '__'.
+  return (t["__name"] == "Node" ? t["left"] : (t == __ ? {"__name": "Leaf"} : ""));
+                                                    ^^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/merge_two_binary_trees.dart:52:54: Error: Undefined name '__'.
+  return (t["__name"] == "Node" ? t["right"] : (t == __ ? {"__name": "Leaf"} : ""));
+                                                     ^^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/merge_two_binary_trees.dart:56:54: Error: Undefined name '__'.
+  return (t["__name"] == "Node" ? t["value"] : (t == __ ? 0 : ""));
+                                                     ^^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/merge_two_binary_trees.dart:70:1: Error: 'Node' isn't a type.
+Node tree1 = {"__name": "Node", "left": {"__name": "Node", "left": {"__name": "Node", "left": {"__name": "Leaf"}, "value": 4, "right": {"__name": "Leaf"}}, "value": 2, "right": {"__name": "Leaf"}}, "value": 1, "right": {"__name": "Node", "left": {"__name": "Leaf"}, "value": 3, "right": {"__name": "Leaf"}}};
+^^^^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/merge_two_binary_trees.dart:71:1: Error: 'Node' isn't a type.
+Node tree2 = {"__name": "Node", "left": {"__name": "Node", "left": {"__name": "Leaf"}, "value": 4, "right": {"__name": "Node", "left": {"__name": "Leaf"}, "value": 9, "right": {"__name": "Leaf"}}}, "value": 2, "right": {"__name": "Node", "left": {"__name": "Leaf"}, "value": 6, "right": {"__name": "Node", "left": {"__name": "Leaf"}, "value": 5, "right": {"__name": "Leaf"}}}};
+^^^^

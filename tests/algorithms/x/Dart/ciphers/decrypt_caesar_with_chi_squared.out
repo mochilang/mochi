@@ -1,0 +1,8 @@
+Unhandled exception:
+type 'int' is not a subtype of type 'double' in type cast
+#0      decrypt_caesar_with_chi_squared (file:///workspace/mochi/tests/algorithms/x/Dart/ciphers/decrypt_caesar_with_chi_squared.dart:100:23)
+#1      r1 (file:///workspace/mochi/tests/algorithms/x/Dart/ciphers/decrypt_caesar_with_chi_squared.dart:117:13)
+#2      r1 (file:///workspace/mochi/tests/algorithms/x/Dart/ciphers/decrypt_caesar_with_chi_squared.dart)
+#3      main (file:///workspace/mochi/tests/algorithms/x/Dart/ciphers/decrypt_caesar_with_chi_squared.dart:121:10)
+#4      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#5      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

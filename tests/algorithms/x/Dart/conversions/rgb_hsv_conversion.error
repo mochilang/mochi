@@ -1,0 +1,10 @@
+run: exit status 255
+Unhandled exception:
+type 'double' is not a subtype of type 'int' in type cast
+#0      fmod (file:///workspace/mochi/tests/algorithms/x/Dart/conversions/rgb_hsv_conversion.dart:24:25)
+#1      hsv_to_rgb (file:///workspace/mochi/tests/algorithms/x/Dart/conversions/rgb_hsv_conversion.dart:71:58)
+#2      rgb (file:///workspace/mochi/tests/algorithms/x/Dart/conversions/rgb_hsv_conversion.dart:157:17)
+#3      rgb (file:///workspace/mochi/tests/algorithms/x/Dart/conversions/rgb_hsv_conversion.dart)
+#4      main (file:///workspace/mochi/tests/algorithms/x/Dart/conversions/rgb_hsv_conversion.dart:160:10)
+#5      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#6      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

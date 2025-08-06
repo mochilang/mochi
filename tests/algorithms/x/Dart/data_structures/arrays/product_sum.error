@@ -1,0 +1,4 @@
+run: exit status 254
+../../../tests/algorithms/x/Dart/data_structures/arrays/product_sum.dart:21:9: Error: Method not found: 'exists'.
+    if (exists(el)) {
+        ^^^^^^

@@ -1,0 +1,8 @@
+../../../tests/algorithms/x/Dart/conversions/binary_to_hexadecimal.dart:98:11: Error: The method 'sublist' isn't defined for the class 'String'.
+Try correcting the name to the name of an existing method, or defining a method named 'sublist'.
+    s = s.sublist(1, s.length);
+          ^^^^^^^
+../../../tests/algorithms/x/Dart/conversions/binary_to_hexadecimal.dart:115:23: Error: The method 'sublist' isn't defined for the class 'String'.
+Try correcting the name to the name of an existing method, or defining a method named 'sublist'.
+    dynamic chunk = s.sublist(j, j + 4);
+                      ^^^^^^^
