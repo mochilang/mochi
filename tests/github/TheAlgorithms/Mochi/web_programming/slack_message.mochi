@@ -1,0 +1,27 @@
+/*
+Slack Message via Webhook
+
+This program demonstrates how to send a message to a Slack channel using
+an incoming webhook.  The message text is wrapped in a JSON object and
+sent via an HTTP POST request.  If the server does not respond with the
+string "ok" then an error is raised, mirroring Slack's webhook behaviour.
+*/
+
+fun send_slack_message(message_body: string, slack_url: string): string {
+  let headers = {
+    "Content-Type": "application/json"
+  }
+  let response: string = fetch slack_url as string with {
+    method: "POST",
+    headers: headers,
+    body: { text: message_body }
+  }
+  if response != "ok" {
+    error("Request to slack returned an error: " + response)
+  }
+  return response
+}
+
+let url = "https://httpbin.org/post"
+send_slack_message("Hello from Mochi", url)
+print("Message sent")
