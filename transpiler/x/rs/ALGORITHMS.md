@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-06 23:15 GMT+7
+Last updated: 2025-08-07 00:25 GMT+7
 
-## Algorithms Golden Test Checklist (136/1077)
+## Algorithms Golden Test Checklist (146/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -148,16 +148,16 @@ Last updated: 2025-08-06 23:15 GMT+7
 | 139 | conversions/octal_to_hexadecimal | ✓ | 36µs | 2.0 MB |
 | 140 | conversions/prefix_conversions | ✓ | 163µs | 2.1 MB |
 | 141 | conversions/prefix_conversions_string |   |  |  |
-| 142 | conversions/pressure_conversions |   |  |  |
-| 143 | conversions/rectangular_to_polar |   |  |  |
-| 144 | conversions/rgb_cmyk_conversion |   |  |  |
-| 145 | conversions/rgb_hsv_conversion |   |  |  |
-| 146 | conversions/roman_numerals |   |  |  |
-| 147 | conversions/speed_conversions |   |  |  |
-| 148 | conversions/temperature_conversions |   |  |  |
-| 149 | conversions/time_conversions |   |  |  |
-| 150 | conversions/volume_conversions |   |  |  |
-| 151 | conversions/weight_conversion |   |  |  |
+| 142 | conversions/pressure_conversions | ✓ | 100µs | 2.2 MB |
+| 143 | conversions/rectangular_to_polar | ✓ | 135µs | 2.1 MB |
+| 144 | conversions/rgb_cmyk_conversion | ✓ | 70µs | 2.0 MB |
+| 145 | conversions/rgb_hsv_conversion | ✓ | 68µs | 2.0 MB |
+| 146 | conversions/roman_numerals | ✓ |  | 1.9 MB |
+| 147 | conversions/speed_conversions | ✓ | 59µs | 2.1 MB |
+| 148 | conversions/temperature_conversions | ✓ | 61µs | 1.9 MB |
+| 149 | conversions/time_conversions | ✓ | 100µs | 2.1 MB |
+| 150 | conversions/volume_conversions | ✓ | 71µs | 2.1 MB |
+| 151 | conversions/weight_conversion | ✓ | 105µs | 2.1 MB |
 | 152 | data_compression/burrows_wheeler |   |  |  |
 | 153 | data_compression/huffman |   |  |  |
 | 154 | data_compression/lempel_ziv |   |  |  |
