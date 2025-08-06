@@ -1,0 +1,67 @@
+/*
+Doppler Frequency Calculation
+-----------------------------
+
+This module computes the observed frequency of a wave when the source or
+observer are moving relative to each other, known as the Doppler effect.
+For a wave with original frequency f0 traveling at velocity v, the observed
+frequency f is:
+
+    f = (f0 * (v + v0)) / (v - vs)
+
+where v0 is the velocity of the observer (positive if moving toward the
+source) and vs is the velocity of the source (positive if moving toward the
+observer).
+
+The function validates that v != vs to avoid division by zero and ensures the
+resulting frequency is positive.  The implementation mirrors the Python version
+from TheAlgorithms repository and is written in pure Mochi for runtime/vm.
+*/
+
+fun doppler_effect(org_freq: float, wave_vel: float, obs_vel: float, src_vel: float): float {
+  if wave_vel == src_vel {
+    panic("division by zero implies vs=v and observer in front of the source")
+  }
+  let doppler_freq = (org_freq * (wave_vel + obs_vel)) / (wave_vel - src_vel)
+  if doppler_freq <= 0.0 {
+    panic("non-positive frequency implies vs>v or v0>v (in the opposite direction)")
+  }
+  return doppler_freq
+}
+
+fun absf(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun almost_equal(a: float, b: float, tol: float): bool {
+  return absf(a - b) <= tol
+}
+
+fun test_doppler_effect() {
+  if !almost_equal(doppler_effect(100.0, 330.0, 10.0, 0.0), 103.03030303030303, 0.0000001) {
+    panic("test 1 failed")
+  }
+  if !almost_equal(doppler_effect(100.0, 330.0, -10.0, 0.0), 96.96969696969697, 0.0000001) {
+    panic("test 2 failed")
+  }
+  if !almost_equal(doppler_effect(100.0, 330.0, 0.0, 10.0), 103.125, 0.0000001) {
+    panic("test 3 failed")
+  }
+  if !almost_equal(doppler_effect(100.0, 330.0, 0.0, -10.0), 97.05882352941177, 0.0000001) {
+    panic("test 4 failed")
+  }
+  if !almost_equal(doppler_effect(100.0, 330.0, 10.0, 10.0), 106.25, 0.0000001) {
+    panic("test 5 failed")
+  }
+  if !almost_equal(doppler_effect(100.0, 330.0, -10.0, -10.0), 94.11764705882354, 0.0000001) {
+    panic("test 6 failed")
+  }
+}
+
+fun main() {
+  test_doppler_effect()
+  print(doppler_effect(100.0, 330.0, 10.0, 0.0))
+}
+
+main()
