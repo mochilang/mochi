@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-06 22:36 GMT+7
+Last updated: 2025-08-06 22:55 GMT+7
 
-## Algorithms Golden Test Checklist (197/1077)
+## Algorithms Golden Test Checklist (198/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -138,7 +138,7 @@ Last updated: 2025-08-06 22:36 GMT+7
 | 129 | conversions/decimal_to_octal | ✓ | 2.0ms | 16.73KB |
 | 130 | conversions/energy_conversions | ✓ | 2.0ms | 14.88KB |
 | 131 | conversions/excel_title_to_column | ✓ | 2.0ms | 17.30KB |
-| 132 | conversions/hex_to_bin | ✓ | 2.0ms | 22.13KB |
+| 132 | conversions/hex_to_bin | ✓ | 3.0ms | 22.13KB |
 | 133 | conversions/hexadecimal_to_decimal | ✓ | 2.0ms | 18.20KB |
 | 134 | conversions/ipv4_conversion | ✓ | 4.0ms | 30.16KB |
 | 135 | conversions/length_conversion | ✓ | 3.0ms | 15.19KB |
@@ -174,7 +174,7 @@ Last updated: 2025-08-06 22:36 GMT+7
 | 165 | data_structures/arrays/pairs_with_given_sum | ✓ | 2.0ms | 16.88KB |
 | 166 | data_structures/arrays/permutations | ✓ | 2.0ms | 33.47KB |
 | 167 | data_structures/arrays/prefix_sum | ✓ | 2.0ms | 19.08KB |
-| 168 | data_structures/arrays/product_sum | ✓ | 10.0ms | 1.14MB |
+| 168 | data_structures/arrays/product_sum | ✓ | 13.0ms | 1.14MB |
 | 169 | data_structures/arrays/sparse_table | ✓ | 1.0ms | 23.04KB |
 | 170 | data_structures/arrays/sudoku_solver | ✓ | 1.0ms | 54.79KB |
 | 171 | data_structures/binary_tree/avl_tree | ✓ | 2.0ms | 18.31KB |
@@ -227,7 +227,7 @@ Last updated: 2025-08-06 22:36 GMT+7
 | 218 | data_structures/kd_tree/example/example_usage | error |  |  |
 | 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 2.0ms | 16.59KB |
 | 220 | data_structures/kd_tree/kd_node | ✓ | 2.0ms | 18.66KB |
-| 221 | data_structures/kd_tree/nearest_neighbour_search |   |  |  |
+| 221 | data_structures/kd_tree/nearest_neighbour_search | ✓ | 2.0ms | 19.65KB |
 | 222 | data_structures/kd_tree/tests/test_kdtree |   |  |  |
 | 223 | data_structures/linked_list/circular_linked_list |   |  |  |
 | 224 | data_structures/linked_list/deque_doubly |   |  |  |
