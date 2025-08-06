@@ -1,0 +1,64 @@
+/*
+Project Euler Solution Validator
+--------------------------------
+This Mochi program mirrors the logic of TheAlgorithms/Python
+`scripts/validate_solutions.py`. It demonstrates how a Project Euler
+solution can be verified by comparing the SHA-256 hash of the solution's
+output with the known correct hash.
+
+Algorithm:
+1. Compute the solution to Project Euler problem 1: sum all integers
+   below 1000 that are multiples of 3 or 5.
+2. Convert the numeric answer to a string and hash it using the built-in
+   `sha256` function.
+3. Encode the hash as hexadecimal for comparison.
+4. Check the computed hash against the expected value and report success
+   or failure.
+
+This implementation is pure Mochi (no FFI) and is runnable with
+`runtime/vm`.
+*/
+
+let HEX = "0123456789abcdef"
+
+fun byte_to_hex(b: int): string {
+  let hi = b / 16
+  let lo = b % 16
+  return HEX[hi] + HEX[lo]
+}
+
+fun bytes_to_hex(bs: list<int>): string {
+  var res = ""
+  var i = 0
+  while i < len(bs) {
+    res = res + byte_to_hex(bs[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun sha256_hex(s: string): string {
+  return bytes_to_hex(sha256(s))
+}
+
+fun solution_001(): string {
+  var total = 0
+  var n = 0
+  while n < 1000 {
+    if n % 3 == 0 || n % 5 == 0 {
+      total = total + n
+    }
+    n = n + 1
+  }
+  return str(total)
+}
+
+let expected = sha256_hex("233168")
+let answer = solution_001()
+let computed = sha256_hex(answer)
+
+if computed == expected {
+  print("Problem 001 passed")
+} else {
+  print("Problem 001 failed: " + computed + " != " + expected)
+}
