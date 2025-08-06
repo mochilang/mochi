@@ -1,0 +1,33 @@
+/*
+Leaky Rectified Linear Unit Activation Function
+
+Leaky ReLU is a variant of the rectified linear unit used in neural networks to avoid
+zero gradients for negative inputs. For each element x in the input vector, the
+function returns x when x > 0 and alpha * x otherwise, where alpha is a small
+positive constant. This preserves a small gradient for inactive neurons, mitigating
+the "dying ReLU" problem. The algorithm iterates through the vector once, giving
+O(n) time complexity for an input of length n.
+*/
+
+fun leaky_rectified_linear_unit(vector: list<float>, alpha: float): list<float> {
+  var result: list<float> = []
+  var i: int = 0
+  while i < len(vector) {
+    let x = vector[i]
+    if x > 0.0 {
+      result = append(result, x)
+    } else {
+      result = append(result, alpha * x)
+    }
+    i = i + 1
+  }
+  return result
+}
+
+let vector1: list<float> = [2.3, 0.6, -2.0, -3.8]
+let result1 = leaky_rectified_linear_unit(vector1, 0.3)
+print(str(result1))
+
+let vector2: list<float> = [-9.2, -0.3, 0.45, -4.56]
+let result2 = leaky_rectified_linear_unit(vector2, 0.067)
+print(str(result2))
