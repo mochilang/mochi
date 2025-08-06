@@ -1,0 +1,87 @@
+/*
+Project Euler Problem 45 - Triangular, Pentagonal, Hexagonal Numbers
+-------------------------------------------------------------------
+We seek the next number after 40755 that is simultaneously triangular,
+pentagonal and hexagonal. Since every triangular number T(2n-1) is also
+hexagonal H(n), it suffices to generate hexagonal numbers and test each
+for the pentagonal property.
+
+Algorithms:
+1. hexagonal_num(n) computes H(n) = n * (2 * n - 1).
+2. is_pentagonal(x) tests if x is pentagonal using the inverse formula
+   for P(n): n = (1 + sqrt(1 + 24*x)) / 6. If this n is integral then x
+   is pentagonal.
+3. solution(start) iterates hexagonal numbers beginning at index `start`
+   (144 by default) until one passes the pentagonal test.
+
+The helper functions include a Newton-iteration sqrt and explicit
+integer-to-float conversion so the program can run without foreign
+interfaces. The search runs in O(k) time where k is the number of
+candidates examined.
+*/
+
+fun to_float(x: int): float {
+  return x * 1.0
+}
+
+fun sqrt(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess: float = x
+  var i: int = 0
+  while i < 10 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun floor(x: float): int {
+  var n: int = 0
+  var y: float = x
+  while y >= 1.0 {
+    y = y - 1.0
+    n = n + 1
+  }
+  return n
+}
+
+fun hexagonal_num(n: int): int {
+  return n * (2 * n - 1)
+}
+
+fun is_pentagonal(n: int): bool {
+  let root: float = sqrt(1.0 + 24.0 * to_float(n))
+  let val: float = (1.0 + root) / 6.0
+  return val == to_float(floor(val))
+}
+
+fun solution(start: int): int {
+  var idx: int = start
+  var num: int = hexagonal_num(idx)
+  while !is_pentagonal(num) {
+    idx = idx + 1
+    num = hexagonal_num(idx)
+  }
+  return num
+}
+
+fun test_hexagonal_num() {
+  if hexagonal_num(143) != 40755 { panic("hexagonal_num(143) failed") }
+  if hexagonal_num(21) != 861 { panic("hexagonal_num(21) failed") }
+  if hexagonal_num(10) != 190 { panic("hexagonal_num(10) failed") }
+}
+
+fun test_is_pentagonal() {
+  if !is_pentagonal(330) { panic("330 should be pentagonal") }
+  if is_pentagonal(7683) { panic("7683 should not be pentagonal") }
+  if !is_pentagonal(2380) { panic("2380 should be pentagonal") }
+}
+
+fun test_solution() {
+  if solution(144) != 1533776805 { panic("solution failed") }
+}
+
+test_hexagonal_num()
+test_is_pentagonal()
+test_solution()
+print(str(solution(144)) + " = ")
