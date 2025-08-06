@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-06 16:32 GMT+7
+Last updated: 2025-08-06 16:42 GMT+7
 
-## Algorithms Golden Test Checklist (12/1077)
+## Algorithms Golden Test Checklist (22/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 117µs | 38.8 KB |
@@ -19,16 +19,16 @@ Last updated: 2025-08-06 16:32 GMT+7
 | 10 | backtracking/minimax | ✓ | 105µs | 38.5 KB |
 | 11 | backtracking/n_queens | ✓ | 126µs | 36.9 KB |
 | 12 | backtracking/n_queens_math | ✓ | 131µs | 38.1 KB |
-| 13 | backtracking/power_sum |   |  |  |
-| 14 | backtracking/rat_in_maze |   |  |  |
-| 15 | backtracking/sudoku |   |  |  |
-| 16 | backtracking/sum_of_subsets |   |  |  |
-| 17 | backtracking/word_break |   |  |  |
-| 18 | backtracking/word_ladder |   |  |  |
-| 19 | backtracking/word_search |   |  |  |
-| 20 | bit_manipulation/binary_and_operator |   |  |  |
-| 21 | bit_manipulation/binary_coded_decimal |   |  |  |
-| 22 | bit_manipulation/binary_count_setbits |   |  |  |
+| 13 | backtracking/power_sum | ✓ | 49µs | 38.5 KB |
+| 14 | backtracking/rat_in_maze | ✓ | 564µs | 40.1 KB |
+| 15 | backtracking/sudoku | ✓ | 2.282ms | 71.3 KB |
+| 16 | backtracking/sum_of_subsets | ✓ | 94µs | 35.8 KB |
+| 17 | backtracking/word_break | ✓ | 83µs | 39.2 KB |
+| 18 | backtracking/word_ladder | ✓ | 555µs | 35.6 KB |
+| 19 | backtracking/word_search | ✓ | 298µs | 36.7 KB |
+| 20 | bit_manipulation/binary_and_operator | ✓ | 83µs | 36.1 KB |
+| 21 | bit_manipulation/binary_coded_decimal | ✓ | 74µs | 36.0 KB |
+| 22 | bit_manipulation/binary_count_setbits | ✓ | 64µs | 35.8 KB |
 | 23 | bit_manipulation/binary_count_trailing_zeros |   |  |  |
 | 24 | bit_manipulation/binary_or_operator |   |  |  |
 | 25 | bit_manipulation/binary_shifts |   |  |  |
