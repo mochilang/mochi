@@ -1,0 +1,10 @@
+run: exit status 70
+ERROR on line 287 of file /workspace/mochi/tests/algorithms/x/Scheme/data_structures/binary_tree/binary_tree_path_sum.scm: undefined variable: Empty
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 280 of file /usr/share/chibi/init-7.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 680 of file /workspace/mochi/tests/algorithms/x/Scheme/data_structures/binary_tree/binary_tree_path_sum.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+Searching for modules exporting Empty ...
+... none found.

@@ -851,13 +851,17 @@ func convertStmt(st *parser.Statement) (Node, error) {
 		if err != nil {
 			return nil, err
 		}
-		pf := st.Assign.Target
-		if pf == nil {
-			return nil, fmt.Errorf("assign target missing")
+		// Handle simple variable assignment.
+		if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
+			return &List{Elems: []Node{Symbol("set!"), Symbol(st.Assign.Name), val}}, nil
 		}
-		if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 0 && len(pf.Ops) == 0 {
-			name := pf.Target.Selector.Root
-			return &List{Elems: []Node{Symbol("set!"), Symbol(name), val}}, nil
+		// Build a postfix expression from name/index/field for complex targets.
+		pf := &parser.PostfixExpr{Target: &parser.Primary{Selector: &parser.SelectorExpr{Root: st.Assign.Name}}}
+		for _, idx := range st.Assign.Index {
+			pf.Ops = append(pf.Ops, &parser.PostfixOp{Index: idx})
+		}
+		for _, f := range st.Assign.Field {
+			pf.Ops = append(pf.Ops, &parser.PostfixOp{Field: f})
 		}
 		var target Node
 		var typ types.Type = types.AnyType{}
@@ -1196,11 +1200,11 @@ func convertParserExpr(e *parser.Expr) (Node, error) {
 	ops := []string{}
 
 	for _, part := range e.Binary.Right {
-		right, err := convertParserUnary(part.Right)
+		right, err := convertParserPostfix(part.Right)
 		if err != nil {
 			return nil, err
 		}
-		rightType := types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: part.Right}}, currentEnv)
+		rightType := types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: part.Right}}}, currentEnv)
 
 		for len(ops) > 0 && precedence(ops[len(ops)-1]) >= precedence(part.Op) {
 			r := exprs[len(exprs)-1]

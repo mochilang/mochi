@@ -1,0 +1,812 @@
+;; Generated on 2025-08-06 23:57 +0700
+(import (scheme base))
+(import (scheme time))
+(import (chibi string))
+(import (only (scheme char) string-upcase string-downcase))
+(import (srfi 69))
+(import (srfi 1))
+(define _list list)
+(import (chibi time))
+(define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))
+(import (chibi json))
+(define (to-str x)
+  (cond ((pair? x)
+         (string-append "[" (string-join (map to-str x) ", ") "]"))
+        ((hash-table? x)
+         (let* ((ks (hash-table-keys x))
+                (pairs (map (lambda (k)
+                              (string-append (to-str k) ": " (to-str (hash-table-ref x k))))
+                            ks)))
+           (string-append "{" (string-join pairs ", ") "}")))
+        ((null? x) "[]")
+        ((string? x) (let ((out (open-output-string))) (json-write x out) (get-output-string out)))
+        ((boolean? x) (if x "true" "false"))
+        (else (number->string x))))
+(define (to-str-space x)
+  (cond ((pair? x)
+         (string-append "[" (string-join (map to-str-space x) " ") "]"))
+        ((string? x) x)
+        (else (to-str x))))
+(define (upper s) (string-upcase s))
+(define (lower s) (string-downcase s))
+(define (fmod a b) (- a (* (floor (/ a b)) b)))
+(define (_mod a b) (if (and (integer? a) (integer? b)) (modulo a b) (fmod a b)))
+(define (_div a b) (if (and (integer? a) (integer? b)) (quotient a b) (/ a b)))
+(define (_gt a b) (cond ((and (number? a) (number? b)) (> a b)) ((and (string? a) (string? b)) (string>? a b)) (else (> a b))))
+(define (_lt a b) (cond ((and (number? a) (number? b)) (< a b)) ((and (string? a) (string? b)) (string<? a b)) (else (< a b))))
+(define (_ge a b) (cond ((and (number? a) (number? b)) (>= a b)) ((and (string? a) (string? b)) (string>=? a b)) (else (>= a b))))
+(define (_le a b) (cond ((and (number? a) (number? b)) (<= a b)) ((and (string? a) (string? b)) (string<=? a b)) (else (<= a b))))
+(define (_add a b)
+  (cond ((and (number? a) (number? b)) (+ a b))
+        ((string? a) (string-append a (to-str b)))
+        ((string? b) (string-append (to-str a) b))
+        ((and (list? a) (list? b)) (append a b))
+        (else (+ a b))))
+(define (indexOf s sub) (let ((cur (string-contains s sub)))   (if cur (string-cursor->index s cur) -1)))
+(define (_display . args) (apply display args))
+(define (padStart s width pad)
+  (let loop ((out s))
+    (if (< (string-length out) width)
+        (loop (string-append pad out))
+        out)))
+(define (_substring s start end)
+  (let* ((len (string-length s))
+         (s0 (max 0 (min len start)))
+         (e0 (max s0 (min len end))))
+    (substring s s0 e0)))
+(define (_repeat s n)
+  (let loop ((i 0) (out ""))
+    (if (< i n)
+        (loop (+ i 1) (string-append out s))
+        out)))
+(define (slice seq start end)
+  (let* ((len (if (string? seq) (string-length seq) (length seq)))
+         (s (if (< start 0) (+ len start) start))
+         (e (if (< end 0) (+ len end) end)))
+    (set! s (max 0 (min len s)))
+    (set! e (max 0 (min len e)))
+    (when (< e s) (set! e s))
+    (if (string? seq)
+        (_substring seq s e)
+        (take (drop seq s) (- e s)))))
+(define (_parseIntStr s base)
+  (let* ((b (if (number? base) base 10))
+         (n (string->number (if (list? s) (list->string s) s) b)))
+    (if n (inexact->exact (truncate n)) 0)))
+(define (_split s sep)
+  (let* ((str (if (string? s) s (list->string s)))
+         (del (cond ((char? sep) sep)
+                     ((string? sep) (if (= (string-length sep) 1)
+                                       (string-ref sep 0)
+                                       sep))
+                     (else sep))))
+    (cond
+     ((and (string? del) (string=? del ""))
+      (map string (string->list str)))
+     ((char? del)
+      (string-split str del))
+     (else
+        (let loop ((r str) (acc '()))
+          (let ((cur (string-contains r del)))
+            (if cur
+                (let ((idx (string-cursor->index r cur)))
+                  (loop (_substring r (+ idx (string-length del)) (string-length r))
+                        (cons (_substring r 0 idx) acc)))
+                (reverse (cons r acc)))))))))
+(define (_len x)
+  (cond ((string? x) (string-length x))
+        ((hash-table? x) (hash-table-size x))
+        (else (length x))))
+(
+  let (
+    (
+      start7 (
+        current-jiffy
+      )
+    )
+     (
+      jps10 (
+        jiffies-per-second
+      )
+    )
+  )
+   (
+    begin (
+      define (
+        count_nodes nodes idx
+      )
+       (
+        call/cc (
+          lambda (
+            ret1
+          )
+           (
+            begin (
+              if (
+                equal? idx 0
+              )
+               (
+                begin (
+                  ret1 0
+                )
+              )
+               (
+                quote (
+                  
+                )
+              )
+            )
+             (
+              let (
+                (
+                  node (
+                    list-ref nodes idx
+                  )
+                )
+              )
+               (
+                begin (
+                  ret1 (
+                    _add (
+                      _add (
+                        count_nodes nodes (
+                          hash-table-ref node "left"
+                        )
+                      )
+                       (
+                        count_nodes nodes (
+                          hash-table-ref node "right"
+                        )
+                      )
+                    )
+                     1
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+     (
+      define (
+        count_coins nodes idx
+      )
+       (
+        call/cc (
+          lambda (
+            ret2
+          )
+           (
+            begin (
+              if (
+                equal? idx 0
+              )
+               (
+                begin (
+                  ret2 0
+                )
+              )
+               (
+                quote (
+                  
+                )
+              )
+            )
+             (
+              let (
+                (
+                  node (
+                    list-ref nodes idx
+                  )
+                )
+              )
+               (
+                begin (
+                  ret2 (
+                    _add (
+                      _add (
+                        count_coins nodes (
+                          hash-table-ref node "left"
+                        )
+                      )
+                       (
+                        count_coins nodes (
+                          hash-table-ref node "right"
+                        )
+                      )
+                    )
+                     (
+                      hash-table-ref node "data"
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+     (
+      let (
+        (
+          total_moves 0
+        )
+      )
+       (
+        begin (
+          define (
+            iabs x
+          )
+           (
+            call/cc (
+              lambda (
+                ret3
+              )
+               (
+                begin (
+                  if (
+                    < x 0
+                  )
+                   (
+                    begin (
+                      ret3 (
+                        - x
+                      )
+                    )
+                  )
+                   (
+                    quote (
+                      
+                    )
+                  )
+                )
+                 (
+                  ret3 x
+                )
+              )
+            )
+          )
+        )
+         (
+          define (
+            dfs nodes idx
+          )
+           (
+            call/cc (
+              lambda (
+                ret4
+              )
+               (
+                begin (
+                  if (
+                    equal? idx 0
+                  )
+                   (
+                    begin (
+                      ret4 0
+                    )
+                  )
+                   (
+                    quote (
+                      
+                    )
+                  )
+                )
+                 (
+                  let (
+                    (
+                      node (
+                        list-ref nodes idx
+                      )
+                    )
+                  )
+                   (
+                    begin (
+                      let (
+                        (
+                          left_excess (
+                            dfs nodes (
+                              hash-table-ref node "left"
+                            )
+                          )
+                        )
+                      )
+                       (
+                        begin (
+                          let (
+                            (
+                              right_excess (
+                                dfs nodes (
+                                  hash-table-ref node "right"
+                                )
+                              )
+                            )
+                          )
+                           (
+                            begin (
+                              let (
+                                (
+                                  abs_left (
+                                    iabs left_excess
+                                  )
+                                )
+                              )
+                               (
+                                begin (
+                                  let (
+                                    (
+                                      abs_right (
+                                        iabs right_excess
+                                      )
+                                    )
+                                  )
+                                   (
+                                    begin (
+                                      set! total_moves (
+                                        + (
+                                          + total_moves abs_left
+                                        )
+                                         abs_right
+                                      )
+                                    )
+                                     (
+                                      ret4 (
+                                        - (
+                                          + (
+                                            + (
+                                              hash-table-ref node "data"
+                                            )
+                                             left_excess
+                                          )
+                                           right_excess
+                                        )
+                                         1
+                                      )
+                                    )
+                                  )
+                                )
+                              )
+                            )
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+         (
+          define (
+            distribute_coins nodes root
+          )
+           (
+            call/cc (
+              lambda (
+                ret5
+              )
+               (
+                begin (
+                  if (
+                    equal? root 0
+                  )
+                   (
+                    begin (
+                      ret5 0
+                    )
+                  )
+                   (
+                    quote (
+                      
+                    )
+                  )
+                )
+                 (
+                  if (
+                    not (
+                      equal? (
+                        count_nodes nodes root
+                      )
+                       (
+                        count_coins nodes root
+                      )
+                    )
+                  )
+                   (
+                    begin (
+                      panic "The nodes number should be same as the number of coins"
+                    )
+                  )
+                   (
+                    quote (
+                      
+                    )
+                  )
+                )
+                 (
+                  set! total_moves 0
+                )
+                 (
+                  dfs nodes root
+                )
+                 (
+                  ret5 total_moves
+                )
+              )
+            )
+          )
+        )
+         (
+          define (
+            main
+          )
+           (
+            call/cc (
+              lambda (
+                ret6
+              )
+               (
+                let (
+                  (
+                    example1 (
+                      _list (
+                        alist->hash-table (
+                          _list (
+                            cons "data" 0
+                          )
+                           (
+                            cons "left" 0
+                          )
+                           (
+                            cons "right" 0
+                          )
+                        )
+                      )
+                       (
+                        alist->hash-table (
+                          _list (
+                            cons "data" 3
+                          )
+                           (
+                            cons "left" 2
+                          )
+                           (
+                            cons "right" 3
+                          )
+                        )
+                      )
+                       (
+                        alist->hash-table (
+                          _list (
+                            cons "data" 0
+                          )
+                           (
+                            cons "left" 0
+                          )
+                           (
+                            cons "right" 0
+                          )
+                        )
+                      )
+                       (
+                        alist->hash-table (
+                          _list (
+                            cons "data" 0
+                          )
+                           (
+                            cons "left" 0
+                          )
+                           (
+                            cons "right" 0
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+                 (
+                  begin (
+                    let (
+                      (
+                        example2 (
+                          _list (
+                            alist->hash-table (
+                              _list (
+                                cons "data" 0
+                              )
+                               (
+                                cons "left" 0
+                              )
+                               (
+                                cons "right" 0
+                              )
+                            )
+                          )
+                           (
+                            alist->hash-table (
+                              _list (
+                                cons "data" 0
+                              )
+                               (
+                                cons "left" 2
+                              )
+                               (
+                                cons "right" 3
+                              )
+                            )
+                          )
+                           (
+                            alist->hash-table (
+                              _list (
+                                cons "data" 3
+                              )
+                               (
+                                cons "left" 0
+                              )
+                               (
+                                cons "right" 0
+                              )
+                            )
+                          )
+                           (
+                            alist->hash-table (
+                              _list (
+                                cons "data" 0
+                              )
+                               (
+                                cons "left" 0
+                              )
+                               (
+                                cons "right" 0
+                              )
+                            )
+                          )
+                        )
+                      )
+                    )
+                     (
+                      begin (
+                        let (
+                          (
+                            example3 (
+                              _list (
+                                alist->hash-table (
+                                  _list (
+                                    cons "data" 0
+                                  )
+                                   (
+                                    cons "left" 0
+                                  )
+                                   (
+                                    cons "right" 0
+                                  )
+                                )
+                              )
+                               (
+                                alist->hash-table (
+                                  _list (
+                                    cons "data" 0
+                                  )
+                                   (
+                                    cons "left" 2
+                                  )
+                                   (
+                                    cons "right" 3
+                                  )
+                                )
+                              )
+                               (
+                                alist->hash-table (
+                                  _list (
+                                    cons "data" 0
+                                  )
+                                   (
+                                    cons "left" 0
+                                  )
+                                   (
+                                    cons "right" 0
+                                  )
+                                )
+                              )
+                               (
+                                alist->hash-table (
+                                  _list (
+                                    cons "data" 3
+                                  )
+                                   (
+                                    cons "left" 0
+                                  )
+                                   (
+                                    cons "right" 0
+                                  )
+                                )
+                              )
+                            )
+                          )
+                        )
+                         (
+                          begin (
+                            _display (
+                              if (
+                                string? (
+                                  distribute_coins example1 1
+                                )
+                              )
+                               (
+                                distribute_coins example1 1
+                              )
+                               (
+                                to-str (
+                                  distribute_coins example1 1
+                                )
+                              )
+                            )
+                          )
+                           (
+                            newline
+                          )
+                           (
+                            _display (
+                              if (
+                                string? (
+                                  distribute_coins example2 1
+                                )
+                              )
+                               (
+                                distribute_coins example2 1
+                              )
+                               (
+                                to-str (
+                                  distribute_coins example2 1
+                                )
+                              )
+                            )
+                          )
+                           (
+                            newline
+                          )
+                           (
+                            _display (
+                              if (
+                                string? (
+                                  distribute_coins example3 1
+                                )
+                              )
+                               (
+                                distribute_coins example3 1
+                              )
+                               (
+                                to-str (
+                                  distribute_coins example3 1
+                                )
+                              )
+                            )
+                          )
+                           (
+                            newline
+                          )
+                           (
+                            _display (
+                              if (
+                                string? (
+                                  distribute_coins (
+                                    _list (
+                                      alist->hash-table (
+                                        _list (
+                                          cons "data" 0
+                                        )
+                                         (
+                                          cons "left" 0
+                                        )
+                                         (
+                                          cons "right" 0
+                                        )
+                                      )
+                                    )
+                                  )
+                                   0
+                                )
+                              )
+                               (
+                                distribute_coins (
+                                  _list (
+                                    alist->hash-table (
+                                      _list (
+                                        cons "data" 0
+                                      )
+                                       (
+                                        cons "left" 0
+                                      )
+                                       (
+                                        cons "right" 0
+                                      )
+                                    )
+                                  )
+                                )
+                                 0
+                              )
+                               (
+                                to-str (
+                                  distribute_coins (
+                                    _list (
+                                      alist->hash-table (
+                                        _list (
+                                          cons "data" 0
+                                        )
+                                         (
+                                          cons "left" 0
+                                        )
+                                         (
+                                          cons "right" 0
+                                        )
+                                      )
+                                    )
+                                  )
+                                   0
+                                )
+                              )
+                            )
+                          )
+                           (
+                            newline
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+         (
+          main
+        )
+      )
+    )
+     (
+      let (
+        (
+          end8 (
+            current-jiffy
+          )
+        )
+      )
+       (
+        let (
+          (
+            dur9 (
+              quotient (
+                * (
+                  - end8 start7
+                )
+                 1000000
+              )
+               jps10
+            )
+          )
+        )
+         (
+          begin (
+            _display (
+              string-append "{\n  \"duration_us\": " (
+                number->string dur9
+              )
+               ",\n  \"memory_bytes\": " (
+                number->string (
+                  _mem
+                )
+              )
+               ",\n  \"name\": \"main\"\n}"
+            )
+          )
+           (
+            newline
+          )
+        )
+      )
+    )
+  )
+)
