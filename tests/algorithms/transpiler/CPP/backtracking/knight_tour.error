@@ -1,0 +1,14 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/transpiler/CPP/backtracking/knight_tour.cpp:80:215: warning: multi-character character constant [-Wmultichar]
+   80 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/backtracking/knight_tour.cpp:80:251: warning: multi-character character constant [-Wmultichar]
+   80 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/backtracking/knight_tour.cpp: In function ‘std::vector<std::vector<long int> > open_knight_tour(int64_t)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/backtracking/knight_tour.cpp:179:53: error: cannot bind non-const lvalue reference of type ‘std::vector<long int>&’ to an rvalue of type ‘std::vector<long int>’
+  179 |             if (open_knight_tour_helper(board, std::vector<int64_t>{i, j}, int64_t(1))) {
+      |                                                     ^~~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/backtracking/knight_tour.cpp:147:94: note:   initializing argument 2 of ‘bool open_knight_tour_helper(std::vector<std::vector<long int> >&, std::vector<long int>&, int64_t)’
+  147 | bool open_knight_tour_helper(std::vector<std::vector<int64_t>>& board, std::vector<int64_t>& pos, int64_t curr) {
+      |                                                                        ~~~~~~~~~~~~~~~~~~~~~~^~~
