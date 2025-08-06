@@ -47,6 +47,7 @@ var usesSubprocess bool
 var useFetch bool
 var fetchStructs map[string]bool
 var useMD5 bool
+var inStr bool
 var reserved = map[string]bool{
 	"this":   true,
 	"new":    true,
@@ -839,10 +840,10 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "    else if(val.type() == typeid(int64_t)) os << std::any_cast<int64_t>(val);")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(double)) os << std::any_cast<double>(val);")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(bool)) os << (std::any_cast<bool>(val) ? \"true\" : \"false\");")
-		fmt.Fprintln(w, "    else if(val.type() == typeid(std::string)) os << std::any_cast<std::string>(val);")
+		fmt.Fprintln(w, "    else if(val.type() == typeid(std::string)) os << std::quoted(std::any_cast<std::string>(val));")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<int64_t>)) { const auto& v = std::any_cast<const std::vector<int64_t>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ' '; os << v[i]; } os << ']'; }")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<std::vector<int64_t>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int64_t>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ' '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ' '; os << v[j]; } os << ']'; } os << ']'; }")
-		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<std::string>)) { const auto& v = std::any_cast<const std::vector<std::string>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ' '; os << v[i]; } os << ']'; }")
+		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<std::string>)) { const auto& v = std::any_cast<const std::vector<std::string>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ' '; os << std::quoted(v[i]); } os << ']'; }")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<std::any>)) { const auto& v = std::any_cast<const std::vector<std::any>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ' '; any_to_stream(os, v[i]); } os << ']'; }")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }")
 		fmt.Fprintln(w, "    else os << \"<any>\";")
@@ -1033,18 +1034,22 @@ func (p *Program) write(w io.Writer) {
 			typ := p.Type
 			if strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") {
 				if p.ByVal {
-					io.WriteString(w, typ)
+					io.WriteString(w, typ+"&")
 				} else {
 					io.WriteString(w, "const "+typ+"&")
 				}
 			} else if isStructType(typ) {
 				if p.ByVal {
-					io.WriteString(w, typ)
+					io.WriteString(w, typ+"&")
 				} else {
 					io.WriteString(w, "const "+typ+"&")
 				}
 			} else {
-				io.WriteString(w, typ)
+				if p.ByVal {
+					io.WriteString(w, typ+"&")
+				} else {
+					io.WriteString(w, typ)
+				}
 			}
 			io.WriteString(w, " ")
 			io.WriteString(w, safeName(p.Name))
@@ -1110,25 +1115,29 @@ func (f *Func) emit(w io.Writer) {
 			io.WriteString(w, "auto ")
 		} else if typ == "auto" {
 			if p.ByVal {
-				io.WriteString(w, "auto ")
+				io.WriteString(w, "auto& ")
 			} else {
 				io.WriteString(w, "auto&& ")
 			}
 		} else {
 			if strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") {
 				if p.ByVal {
-					io.WriteString(w, typ+" ")
+					io.WriteString(w, typ+"& ")
 				} else {
 					io.WriteString(w, "const "+typ+"& ")
 				}
 			} else if isStructType(typ) {
 				if p.ByVal {
-					io.WriteString(w, typ+" ")
+					io.WriteString(w, typ+"& ")
 				} else {
 					io.WriteString(w, "const "+typ+"& ")
 				}
 			} else {
-				io.WriteString(w, typ+" ")
+				if p.ByVal {
+					io.WriteString(w, typ+"& ")
+				} else {
+					io.WriteString(w, typ+" ")
+				}
 			}
 		}
 		io.WriteString(w, safeName(p.Name))
@@ -1184,13 +1193,20 @@ func emitToStream(w io.Writer, stream string, e Expr, indent int) {
 		io.WriteString(w, ind+"{")
 		io.WriteString(w, " auto __tmp = ")
 		e.emit(w)
-		io.WriteString(w, "; "+stream+" << \"[\"; for(size_t i=0;i<__tmp.size();++i){ if(i>0) "+stream+" << ' '; ")
+		io.WriteString(w, "; "+stream+" << \"[\"; for(size_t i=0;i<__tmp.size();++i){ if(i>0) "+stream+" << ")
+		if inStr {
+			io.WriteString(w, "' '; ")
+		} else {
+			io.WriteString(w, "\", \"; ")
+		}
 		if strings.HasPrefix(elem, "std::vector<") || strings.HasPrefix(elem, "std::map<") || strings.HasPrefix(elem, "std::optional<") {
 			io.WriteString(w, "{ std::ostringstream __ss; ")
 			emitToStream(w, "__ss", &IndexExpr{Target: &VarRef{Name: "__tmp"}, Index: &VarRef{Name: "i"}}, indent)
 			io.WriteString(w, " "+stream+" << __ss.str(); }")
 		} else if elem == "std::any" {
 			io.WriteString(w, "any_to_stream("+stream+", __tmp[i])")
+		} else if elem == "std::string" {
+			io.WriteString(w, stream+" << std::quoted(__tmp[i])")
 		} else {
 			io.WriteString(w, stream+" << __tmp[i]")
 		}
@@ -1748,7 +1764,9 @@ func (s *StrExpr) emit(w io.Writer) {
 		typ := exprType(s.Value)
 		switch {
 		case strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") || strings.HasPrefix(typ, "std::optional<"):
+			inStr = true
 			emitToStream(w, "ss", s.Value, 0)
+			inStr = false
 		case typ == "std::any" || typ == "auto":
 			io.WriteString(w, "any_to_stream(ss, ")
 			s.Value.emit(w)
@@ -5404,6 +5422,18 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			args = append(args, ce)
+		}
+		if paramNames != nil {
+			for _, a := range args {
+				if vr, ok := a.(*VarRef); ok {
+					if paramNames[vr.Name] {
+						t := exprType(vr)
+						if strings.HasPrefix(t, "std::vector<") || strings.HasPrefix(t, "std::map<") || isStructType(t) {
+							mutatedParams[vr.Name] = true
+						}
+					}
+				}
+			}
 		}
 		if currentEnv != nil {
 			if fn, ok := currentEnv.GetFunc(p.Call.Func); ok {
