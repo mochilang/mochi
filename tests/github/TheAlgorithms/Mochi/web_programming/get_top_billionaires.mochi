@@ -1,0 +1,80 @@
+/*
+Retrieve the top real-time billionaires from Forbes using Mochi's built-in HTTP
+fetch. The Forbes API returns a JSON structure where `personList.personsLists`
+contains entries with each person's name, source of wealth, country,
+gender, birth date (milliseconds since Unix epoch), and net worth in millions
+of dollars.  This program performs the following steps:
+
+1. Fetch the JSON document from the public Forbes endpoint.
+2. Decode the JSON into strongly typed Mochi records.
+3. Compute each person's age in years using a fixed reference date
+   (2024‑01‑12 UTC) and the birth date timestamp.
+4. Convert final worth into billions of dollars with one decimal place.
+5. Print a simple text table summarizing the top individuals.
+
+The algorithm demonstrates HTTP fetching, JSON decoding, basic numerical
+processing, and string formatting without any foreign function interfaces.
+*/
+
+let LIMIT: int = 10
+let TODAY_MS: float = 1705017600000.0
+let API_URL: string = "https://www.forbes.com/forbesapi/person/rtb/0/position/true.json?fields=personName,gender,source,countryOfCitizenship,birthDate,finalWorth&limit=" + str(LIMIT)
+
+type Person {
+  finalWorth: float
+  personName: string
+  source: string
+  countryOfCitizenship: string
+  gender: string
+  birthDate: float
+}
+
+type PersonsWrapper {
+  personsLists: list<Person>
+  count: int
+}
+
+type Response {
+  personList: PersonsWrapper
+}
+
+fun round1(value: float): float {
+  if value >= 0.0 {
+    let scaled = (value * 10.0 + 0.5) as int
+    return (scaled as float) / 10.0
+  }
+  let scaled = (value * 10.0 - 0.5) as int
+  return (scaled as float) / 10.0
+}
+
+fun years_old(birth_ms: float, today_ms: float): int {
+  let ms_per_year = 31557600000.0
+  return ((today_ms - birth_ms) / ms_per_year) as int
+}
+
+fun get_forbes_real_time_billionaires(): list<map<string, string>> {
+  let response: Response = fetch API_URL
+  var out: list<map<string, string>> = []
+  for person in response.personList.personsLists {
+    let worth_billion = round1(person.finalWorth / 1000.0)
+    let age_years = years_old(person.birthDate, TODAY_MS)
+    let entry: map<string, string> = {
+      "Name": person.personName,
+      "Source": person.source,
+      "Country": person.countryOfCitizenship,
+      "Gender": person.gender,
+      "Worth ($)": str(worth_billion) + " Billion",
+      "Age": str(age_years)
+    }
+    out = append(out, entry)
+  }
+  return out
+}
+
+fun display_billionaires(list: list<map<string, string>>) {
+  for b in list {
+    print(b["Name"] + " | " + b["Source"] + " | " + b["Country"] + " | " + b["Gender"] + " | " + b["Worth ($)"] + " | " + b["Age"])
+  }
+}
+
+display_billionaires(get_forbes_real_time_billionaires())
