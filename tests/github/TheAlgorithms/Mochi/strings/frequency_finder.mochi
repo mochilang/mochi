@@ -1,0 +1,133 @@
+/*
+Frequency Finder and English Frequency Match Score
+--------------------------------------------------
+This program analyzes a message to determine the frequency ordering of letters
+and how closely that ordering matches typical English letter frequencies.
+
+1. get_letter_count(message) counts occurrences of each alphabet letter,
+   ignoring any non-letter characters.
+2. get_frequency_order(message) sorts letters by descending frequency and
+   breaks ties using the standard ETAOIN order.
+3. english_freq_match_score(message) compares the six most and least common
+   letters of the message to the canonical ETAOIN ordering and returns how many
+   letters match in these positions.
+
+The functions avoid foreign interfaces and are compatible with runtime/vm.
+*/
+
+let ETAOIN = "ETAOINSHRDLCUMWFGYPBVKJXQZ"
+let LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+fun etaoin_index(letter: string): int {
+  var i = 0
+  while i < len(ETAOIN) {
+    if substring(ETAOIN, i, i + 1) == letter {
+      return i
+    }
+    i = i + 1
+  }
+  return len(ETAOIN)
+}
+
+fun get_letter_count(message: string): map<string, int> {
+  var letter_count: map<string, int> = {}
+  var i = 0
+  while i < len(LETTERS) {
+    let c = substring(LETTERS, i, i + 1)
+    letter_count[c] = 0
+    i = i + 1
+  }
+  let msg = upper(message)
+  var j = 0
+  while j < len(msg) {
+    let ch = substring(msg, j, j + 1)
+    if ch in LETTERS {
+      letter_count[ch] = letter_count[ch] + 1
+    }
+    j = j + 1
+  }
+  return letter_count
+}
+
+fun get_frequency_order(message: string): string {
+  let letter_to_freq = get_letter_count(message)
+  var max_freq = 0
+  var i = 0
+  while i < len(LETTERS) {
+    let letter = substring(LETTERS, i, i + 1)
+    let f = letter_to_freq[letter]
+    if f > max_freq {
+      max_freq = f
+    }
+    i = i + 1
+  }
+  var result = ""
+  var freq = max_freq
+  while freq >= 0 {
+    var group: list<string> = []
+    var j = 0
+    while j < len(LETTERS) {
+      let letter = substring(LETTERS, j, j + 1)
+      if letter_to_freq[letter] == freq {
+        group = append(group, letter)
+      }
+      j = j + 1
+    }
+    var g_len = len(group)
+    var a = 0
+    while a < g_len {
+      var b = 0
+      while b < g_len - a - 1 {
+        let g1 = group[b]
+        let g2 = group[b + 1]
+        let idx1 = etaoin_index(g1)
+        let idx2 = etaoin_index(g2)
+        if idx1 < idx2 {
+          let tmp = group[b]
+          group[b] = group[b + 1]
+          group[b + 1] = tmp
+        }
+        b = b + 1
+      }
+      a = a + 1
+    }
+    var g = 0
+    while g < len(group) {
+      result = result + group[g]
+      g = g + 1
+    }
+    freq = freq - 1
+  }
+  return result
+}
+
+fun english_freq_match_score(message: string): int {
+  let freq_order = get_frequency_order(message)
+  let top = substring(freq_order, 0, 6)
+  let bottom = substring(freq_order, len(freq_order) - 6, len(freq_order))
+  var score = 0
+  var i = 0
+  while i < 6 {
+    let c = substring(ETAOIN, i, i + 1)
+    if c in top {
+      score = score + 1
+    }
+    i = i + 1
+  }
+  var j = len(ETAOIN) - 6
+  while j < len(ETAOIN) {
+    let c = substring(ETAOIN, j, j + 1)
+    if c in bottom {
+      score = score + 1
+    }
+    j = j + 1
+  }
+  return score
+}
+
+fun main() {
+  print(get_frequency_order("Hello World"))
+  print(english_freq_match_score("Hello World"))
+}
+
+main()
