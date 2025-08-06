@@ -1,0 +1,6 @@
+Fatal error: Uncaught TypeError: array_slice(): Argument #1 ($array) must be of type array, string given in /workspace/mochi/tests/algorithms/x/PHP/conversions/binary_to_hexadecimal.php:92
+Stack trace:
+#0 /workspace/mochi/tests/algorithms/x/PHP/conversions/binary_to_hexadecimal.php(92): array_slice('0000101011111', 0, 4)
+#1 /workspace/mochi/tests/algorithms/x/PHP/conversions/binary_to_hexadecimal.php(102): bin_to_hexadecimal('101011111')
+#2 {main}
+  thrown in /workspace/mochi/tests/algorithms/x/PHP/conversions/binary_to_hexadecimal.php on line 92

@@ -305,9 +305,10 @@ var phpReserved = map[string]struct{}{
 	"chr":         {},
 	"key":         {},
 	"exp":         {},
-	"hypot":       {},
-	"floor":       {},
+        "hypot":       {},
+        "floor":       {},
         "round":       {},
+       "fmod":        {},
         "parseIntStr": {},
         "repeat":      {},
         "rand":        {},
@@ -2735,12 +2736,18 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				return nil, fmt.Errorf("padStart expects 2 args")
 			}
 			return &CallExpr{Func: "str_pad", Args: []Expr{e, args[0], args[1], &Name{Value: "STR_PAD_LEFT"}}}, nil
-		case "keys":
-			if len(args) != 0 {
-				return nil, fmt.Errorf("keys expects no args")
-			}
-			return &CallExpr{Func: "array_keys", Args: []Expr{e}}, nil
-		case "get":
+               case "keys":
+                       if len(args) == 0 {
+                               return &CallExpr{Func: "array_keys", Args: []Expr{e}}, nil
+                       }
+                       if len(args) == 1 {
+                               if v, ok := e.(*Var); ok && v.Name == "Object" {
+                                       return &CallExpr{Func: "array_keys", Args: args}, nil
+                               }
+                               return nil, fmt.Errorf("keys expects no args")
+                       }
+                       return nil, fmt.Errorf("keys expects at most 1 arg")
+               case "get":
 			if len(args) == 1 {
 				return &CondExpr{Cond: &CallExpr{Func: "array_key_exists", Args: []Expr{args[0], e}}, Then: &IndexExpr{X: e, Index: args[0]}, Else: &NullLit{}}, nil
 			}
