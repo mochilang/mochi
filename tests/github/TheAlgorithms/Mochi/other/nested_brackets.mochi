@@ -1,0 +1,69 @@
+/*
+Determine whether a string of brackets is properly nested.
+
+A sequence is properly nested if it is empty, of the form (U), [U] or {U}
+where U is itself properly nested, or if it is the concatenation of two
+properly nested strings.  The algorithm uses a stack to store opening
+brackets.  When a closing bracket appears, it must match the latest opening
+bracket on the stack; otherwise the string is unbalanced.  Non-bracket
+characters are ignored.  After processing all characters, the stack must be
+empty for the string to be balanced.
+
+Time complexity: O(n) for n characters.
+Space complexity: O(n) in the worst case for the stack.
+*/
+
+let OPEN_TO_CLOSED: map<string, string> = {"(": ")", "[": "]", "{": "}"}
+
+fun slice_without_last(xs: list<string>): list<string> {
+  var res: list<string> = []
+  var i = 0
+  while i < len(xs) - 1 {
+    res = append(res, xs[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun is_balanced(s: string): bool {
+  var stack: list<string> = []
+  var i = 0
+  while i < len(s) {
+    let symbol = substring(s, i, i + 1)
+    if symbol in OPEN_TO_CLOSED {
+      stack = append(stack, symbol)
+    } else if symbol == ")" || symbol == "]" || symbol == "}" {
+      if len(stack) == 0 {
+        return false
+      }
+      let top = stack[len(stack) - 1]
+      if OPEN_TO_CLOSED[top] != symbol {
+        return false
+      }
+      stack = slice_without_last(stack)
+    }
+    i = i + 1
+  }
+  return len(stack) == 0
+}
+
+fun main() {
+  print(is_balanced(""))
+  print(is_balanced("()"))
+  print(is_balanced("[]"))
+  print(is_balanced("{}"))
+  print(is_balanced("()[]{}"))
+  print(is_balanced("(())"))
+  print(is_balanced("[["))
+  print(is_balanced("([{}])"))
+  print(is_balanced("(()[)]"))
+  print(is_balanced("([)]"))
+  print(is_balanced("[[()]]"))
+  print(is_balanced("(()(()))"))
+  print(is_balanced("]"))
+  print(is_balanced("Life is a bowl of cherries."))
+  print(is_balanced("Life is a bowl of che{}ies."))
+  print(is_balanced("Life is a bowl of che}{ies."))
+}
+
+main()
