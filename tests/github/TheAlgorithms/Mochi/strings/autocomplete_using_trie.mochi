@@ -1,0 +1,27 @@
+/*
+Autocomplete Using Trie
+
+Given a list of words this program returns all words that start with a
+specified prefix.  While the Python version uses an explicit trie data
+structure, this Mochi adaptation performs the equivalent prefix lookup by
+scanning the list and collecting matching words.  The behaviour is the same:
+only words sharing the prefix are returned, each with a trailing space to match
+the original output.
+*/
+
+let words: list<string> = ["depart", "detergent", "daring", "dog", "deer", "deal"]
+
+fun autocomplete_using_trie(prefix: string): list<string> {
+  var result: list<string> = []
+  var i = 0
+  while i < len(words) {
+    let w = words[i]
+    if w[0:len(prefix)] == prefix {
+      result = append(result, w + " ")
+    }
+    i = i + 1
+  }
+  return result
+}
+
+print(str(autocomplete_using_trie("de")))
