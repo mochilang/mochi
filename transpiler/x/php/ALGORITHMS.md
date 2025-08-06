@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-06 16:42 GMT+7
+Last updated: 2025-08-06 20:46 GMT+7
 
-## Algorithms Golden Test Checklist (22/1077)
+## Algorithms Golden Test Checklist (85/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 117µs | 38.8 KB |
@@ -29,69 +29,69 @@ Last updated: 2025-08-06 16:42 GMT+7
 | 20 | bit_manipulation/binary_and_operator | ✓ | 83µs | 36.1 KB |
 | 21 | bit_manipulation/binary_coded_decimal | ✓ | 74µs | 36.0 KB |
 | 22 | bit_manipulation/binary_count_setbits | ✓ | 64µs | 35.8 KB |
-| 23 | bit_manipulation/binary_count_trailing_zeros |   |  |  |
-| 24 | bit_manipulation/binary_or_operator |   |  |  |
-| 25 | bit_manipulation/binary_shifts |   |  |  |
-| 26 | bit_manipulation/binary_twos_complement |   |  |  |
-| 27 | bit_manipulation/binary_xor_operator |   |  |  |
-| 28 | bit_manipulation/bitwise_addition_recursive |   |  |  |
-| 29 | bit_manipulation/count_1s_brian_kernighan_method |   |  |  |
-| 30 | bit_manipulation/count_number_of_one_bits |   |  |  |
-| 31 | bit_manipulation/excess_3_code |   |  |  |
-| 32 | bit_manipulation/find_previous_power_of_two |   |  |  |
-| 33 | bit_manipulation/find_unique_number |   |  |  |
-| 34 | bit_manipulation/gray_code_sequence |   |  |  |
-| 35 | bit_manipulation/highest_set_bit |   |  |  |
-| 36 | bit_manipulation/index_of_rightmost_set_bit |   |  |  |
-| 37 | bit_manipulation/is_even |   |  |  |
-| 38 | bit_manipulation/is_power_of_two |   |  |  |
-| 39 | bit_manipulation/largest_pow_of_two_le_num |   |  |  |
-| 40 | bit_manipulation/missing_number |   |  |  |
-| 41 | bit_manipulation/numbers_different_signs |   |  |  |
-| 42 | bit_manipulation/power_of_4 |   |  |  |
-| 43 | bit_manipulation/reverse_bits |   |  |  |
-| 44 | bit_manipulation/single_bit_manipulation_operations |   |  |  |
-| 45 | bit_manipulation/swap_all_odd_and_even_bits |   |  |  |
-| 46 | blockchain/diophantine_equation |   |  |  |
-| 47 | boolean_algebra/and_gate |   |  |  |
-| 48 | boolean_algebra/imply_gate |   |  |  |
-| 49 | boolean_algebra/karnaugh_map_simplification |   |  |  |
-| 50 | boolean_algebra/multiplexer |   |  |  |
-| 51 | boolean_algebra/nand_gate |   |  |  |
-| 52 | boolean_algebra/nimply_gate |   |  |  |
-| 53 | boolean_algebra/nor_gate |   |  |  |
-| 54 | boolean_algebra/not_gate |   |  |  |
-| 55 | boolean_algebra/or_gate |   |  |  |
-| 56 | boolean_algebra/quine_mc_cluskey |   |  |  |
-| 57 | boolean_algebra/xnor_gate |   |  |  |
-| 58 | boolean_algebra/xor_gate |   |  |  |
-| 59 | cellular_automata/conways_game_of_life |   |  |  |
-| 60 | cellular_automata/game_of_life |   |  |  |
-| 61 | cellular_automata/langtons_ant |   |  |  |
-| 62 | cellular_automata/nagel_schrekenberg |   |  |  |
-| 63 | cellular_automata/one_dimensional |   |  |  |
-| 64 | cellular_automata/wa_tor |   |  |  |
-| 65 | ciphers/a1z26 |   |  |  |
-| 66 | ciphers/affine_cipher |   |  |  |
-| 67 | ciphers/atbash |   |  |  |
-| 68 | ciphers/autokey |   |  |  |
-| 69 | ciphers/baconian_cipher |   |  |  |
-| 70 | ciphers/base16 |   |  |  |
-| 71 | ciphers/base32 |   |  |  |
-| 72 | ciphers/base64_cipher |   |  |  |
-| 73 | ciphers/base85 |   |  |  |
-| 74 | ciphers/beaufort_cipher |   |  |  |
-| 75 | ciphers/bifid |   |  |  |
-| 76 | ciphers/brute_force_caesar_cipher |   |  |  |
-| 77 | ciphers/caesar_cipher |   |  |  |
-| 78 | ciphers/cryptomath_module |   |  |  |
-| 79 | ciphers/decrypt_caesar_with_chi_squared |   |  |  |
-| 80 | ciphers/deterministic_miller_rabin |   |  |  |
-| 81 | ciphers/diffie |   |  |  |
-| 82 | ciphers/diffie_hellman |   |  |  |
-| 83 | ciphers/elgamal_key_generator |   |  |  |
-| 84 | ciphers/enigma_machine2 |   |  |  |
-| 85 | ciphers/fractionated_morse_cipher |   |  |  |
+| 23 | bit_manipulation/binary_count_trailing_zeros | ✓ | 52µs | 35.9 KB |
+| 24 | bit_manipulation/binary_or_operator | ✓ | 77µs | 35.2 KB |
+| 25 | bit_manipulation/binary_shifts | ✓ | 95µs | 40.4 KB |
+| 26 | bit_manipulation/binary_twos_complement | ✓ | 65µs | 39.7 KB |
+| 27 | bit_manipulation/binary_xor_operator | ✓ | 208µs | 36.2 KB |
+| 28 | bit_manipulation/bitwise_addition_recursive | ✓ | 80µs | 39.5 KB |
+| 29 | bit_manipulation/count_1s_brian_kernighan_method | ✓ | 47µs | 35.4 KB |
+| 30 | bit_manipulation/count_number_of_one_bits | ✓ | 130µs | 36.9 KB |
+| 31 | bit_manipulation/excess_3_code | ✓ | 69µs | 36.5 KB |
+| 32 | bit_manipulation/find_previous_power_of_two | ✓ | 3.687ms | 36.5 KB |
+| 33 | bit_manipulation/find_unique_number | ✓ | 79µs | 39.4 KB |
+| 34 | bit_manipulation/gray_code_sequence | ✓ | 263µs | 38.8 KB |
+| 35 | bit_manipulation/highest_set_bit | ✓ | 212µs | 35.8 KB |
+| 36 | bit_manipulation/index_of_rightmost_set_bit | ✓ | 51µs | 39.5 KB |
+| 37 | bit_manipulation/is_even | ✓ | 41µs | 35.4 KB |
+| 38 | bit_manipulation/is_power_of_two | ✓ | 1µs | 35.8 KB |
+| 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 108µs | 35.9 KB |
+| 40 | bit_manipulation/missing_number | ✓ | 68µs | 39.6 KB |
+| 41 | bit_manipulation/numbers_different_signs | ✓ | 59µs | 35.6 KB |
+| 42 | bit_manipulation/power_of_4 | ✓ | 48µs | 35.7 KB |
+| 43 | bit_manipulation/reverse_bits | ✓ | 149µs | 35.8 KB |
+| 44 | bit_manipulation/single_bit_manipulation_operations | ✓ | 90µs | 35.4 KB |
+| 45 | bit_manipulation/swap_all_odd_and_even_bits | ✓ | 986µs | 37.4 KB |
+| 46 | blockchain/diophantine_equation | ✓ | 176µs | 36.1 KB |
+| 47 | boolean_algebra/and_gate | ✓ | 64µs | 35.1 KB |
+| 48 | boolean_algebra/imply_gate | ✓ | 42µs | 34.6 KB |
+| 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 138µs | 40.1 KB |
+| 50 | boolean_algebra/multiplexer | ✓ | 43µs | 34.6 KB |
+| 51 | boolean_algebra/nand_gate | ✓ | 45µs | 34.6 KB |
+| 52 | boolean_algebra/nimply_gate | ✓ | 62µs | 34.6 KB |
+| 53 | boolean_algebra/nor_gate | ✓ | 59µs | 36.3 KB |
+| 54 | boolean_algebra/not_gate | ✓ | 153µs | 38.1 KB |
+| 55 | boolean_algebra/or_gate | ✓ | 70µs | 34.6 KB |
+| 56 | boolean_algebra/quine_mc_cluskey | ✓ | 182µs | 69.2 KB |
+| 57 | boolean_algebra/xnor_gate | ✓ | 121µs | 34.6 KB |
+| 58 | boolean_algebra/xor_gate | ✓ | 49µs | 34.6 KB |
+| 59 | cellular_automata/conways_game_of_life | ✓ | 164µs | 36.2 KB |
+| 60 | cellular_automata/game_of_life | ✓ | 198µs | 39.0 KB |
+| 61 | cellular_automata/langtons_ant | ✓ | 1µs | 35.9 KB |
+| 62 | cellular_automata/nagel_schrekenberg | ✓ | 135µs | 35.3 KB |
+| 63 | cellular_automata/one_dimensional | ✓ | 179µs | 38.9 KB |
+| 64 | cellular_automata/wa_tor | ✓ | 724µs | 68.6 KB |
+| 65 | ciphers/a1z26 | ✓ | 79µs | 37.3 KB |
+| 66 | ciphers/affine_cipher | ✓ | 476µs | 70.5 KB |
+| 67 | ciphers/atbash | ✓ | 80µs | 38.8 KB |
+| 68 | ciphers/autokey | ✓ | 245µs | 39.9 KB |
+| 69 | ciphers/baconian_cipher | ✓ | 147µs | 39.1 KB |
+| 70 | ciphers/base16 | ✓ | 179µs | 36.5 KB |
+| 71 | ciphers/base32 | ✓ | 783µs | 70.0 KB |
+| 72 | ciphers/base64_cipher | ✓ | 274µs | 72.3 KB |
+| 73 | ciphers/base85 | ✓ | 444µs | 69.7 KB |
+| 74 | ciphers/beaufort_cipher | ✓ | 85µs | 38.9 KB |
+| 75 | ciphers/bifid | ✓ | 195µs | 39.6 KB |
+| 76 | ciphers/brute_force_caesar_cipher | ✓ | 473µs | 35.0 KB |
+| 77 | ciphers/caesar_cipher | ✓ | 1.707ms | 36.2 KB |
+| 78 | ciphers/cryptomath_module | ✓ | 74µs | 35.8 KB |
+| 79 | ciphers/decrypt_caesar_with_chi_squared | ✓ | 4.05ms | 36.7 KB |
+| 80 | ciphers/deterministic_miller_rabin | ✓ | 356µs | 38.8 KB |
+| 81 | ciphers/diffie | ✓ | 174µs | 36.7 KB |
+| 82 | ciphers/diffie_hellman | ✓ | 92µs | 35.3 KB |
+| 83 | ciphers/elgamal_key_generator | ✓ | 180µs | 68.9 KB |
+| 84 | ciphers/enigma_machine2 | ✓ | 930µs | 76.4 KB |
+| 85 | ciphers/fractionated_morse_cipher | ✓ | 213µs | 72.0 KB |
 | 86 | ciphers/gronsfeld_cipher |   |  |  |
 | 87 | ciphers/hill_cipher |   |  |  |
 | 88 | ciphers/mixed_keyword_cypher |   |  |  |

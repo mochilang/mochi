@@ -1,0 +1,10 @@
+Deprecated: Implicit conversion from float 6.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/bit_manipulation/single_bit_manipulation_operations.php on line 30
+15
+16
+
+Deprecated: Implicit conversion from float 2.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/bit_manipulation/single_bit_manipulation_operations.php on line 30
+7
+
+Deprecated: Implicit conversion from float 1.25 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/bit_manipulation/single_bit_manipulation_operations.php on line 30
+true
+1

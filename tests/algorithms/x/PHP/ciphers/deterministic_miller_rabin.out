@@ -1,0 +1,40 @@
+false
+true
+false
+true
+false
+true
+
+Deprecated: Implicit conversion from float 9.310249046180346E+18 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/ciphers/deterministic_miller_rabin.php on line 35
+
+Deprecated: Implicit conversion from float 9.372424847774173E+18 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/ciphers/deterministic_miller_rabin.php on line 35
+false
+
+Deprecated: Implicit conversion from float 9.26457569850501E+18 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/ciphers/deterministic_miller_rabin.php on line 35
+false
+
+Deprecated: Implicit conversion from float 1.8446744073709552E+19 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/ciphers/deterministic_miller_rabin.php on line 35
+false
+
+Deprecated: Implicit conversion from float 1.8446744073709552E+19 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/ciphers/deterministic_miller_rabin.php on line 35
+false
+
+Deprecated: Implicit conversion from float 1.8446744073709552E+19 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/ciphers/deterministic_miller_rabin.php on line 35
+false
+
+Deprecated: Implicit conversion from float 1.8446744073709552E+19 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/ciphers/deterministic_miller_rabin.php on line 35
+false
+
+Deprecated: Implicit conversion from float 1.8446744073709552E+19 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/ciphers/deterministic_miller_rabin.php on line 35
+false
+
+Deprecated: Implicit conversion from float 1.8446744073709552E+19 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/ciphers/deterministic_miller_rabin.php on line 35
+false
+
+Deprecated: Implicit conversion from float 9.223372036854776E+18 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/ciphers/deterministic_miller_rabin.php on line 33
+
+Deprecated: Implicit conversion from float 1.8446744073709552E+19 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/ciphers/deterministic_miller_rabin.php on line 35
+false
+
+Deprecated: Implicit conversion from float 1.8446744073709552E+19 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/ciphers/deterministic_miller_rabin.php on line 35
+false
