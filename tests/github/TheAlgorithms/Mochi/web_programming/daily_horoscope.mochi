@@ -1,0 +1,60 @@
+/*
+Daily horoscope retrieval.
+
+The original Python algorithm fetches the daily horoscope from
+Horoscope.com for a given zodiac sign (1–12) and day ("yesterday",
+"today", or "tomorrow").  It builds a URL like
+"https://www.horoscope.com/us/horoscopes/general/horoscope-general-daily-{day}.aspx?sign={sign}".
+The page is downloaded with an HTTP client and parsed with
+BeautifulSoup to extract the text inside the <div class="main-horoscope">.
+
+In this pure Mochi version, networking and HTML parsing are omitted to
+stay compatible with runtime/vm.  Instead, the function performs a
+constant‑time lookup of canned messages for each sign and day.
+
+Algorithm:
+1. Validate the zodiac sign and requested day.
+2. Map the sign number to its name (Aries .. Pisces).
+3. Map the day to a pre-defined message (yesterday, today, tomorrow).
+4. Return the combined "Name: message" string.
+
+Both time and space complexity are O(1).
+*/
+
+let days: list<string> = ["yesterday", "today", "tomorrow"]
+let zodiac_names: list<string> = [
+  "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
+  "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
+]
+let day_messages: list<string> = [
+  "Reflect on what has passed and learn from it.",
+  "Focus on the present and take decisive action.",
+  "Prepare for future opportunities with optimism."
+]
+
+fun horoscope(zodiac_sign: int, day: string): string {
+  var day_index = 0 - 1
+  var i = 0
+  while i < len(days) {
+    if day == days[i] {
+      day_index = i
+      break
+    }
+    i = i + 1
+  }
+  var sign_index = zodiac_sign - 1
+  if day_index == 0 - 1 {
+    return "Invalid zodiac sign or day"
+  }
+  if sign_index < 0 || sign_index >= len(zodiac_names) {
+    return "Invalid zodiac sign or day"
+  }
+  return zodiac_names[sign_index] + ": " + day_messages[day_index]
+}
+
+fun main() {
+  let result = horoscope(1, "today")
+  print(result)
+}
+
+main()
