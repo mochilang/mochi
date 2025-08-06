@@ -1451,8 +1451,9 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 			io.WriteString(w, name)
 			io.WriteString(w, " ")
 			indices[0].emit(w)
-			io.WriteString(w, " ")
+			io.WriteString(w, " (")
 			s.Value.emit(w)
+			io.WriteString(w, ")")
 			return
 		}
 		if strings.Contains(t, "array") || t == "" || strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") {
