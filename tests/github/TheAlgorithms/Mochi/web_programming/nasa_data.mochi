@@ -1,0 +1,59 @@
+/*
+Fetch NASA data over HTTP.
+- `get_apod_data` requests the Astronomy Picture of the Day (APOD) metadata
+  using an API key and decodes the JSON response.
+- `save_apod` returns the APOD metadata. Image downloading is omitted to keep
+  the example simple.
+- `get_archive_data` searches NASA's image archive for a query term and
+  decodes only the fields needed for this example.
+The main routine demonstrates these functions by printing the APOD title and
+  the description of the first search result for "apollo 2011".
+*/
+
+type ApodData {
+  url: string,
+  title: string,
+}
+
+type ArchiveItemData {
+  description: string,
+}
+
+type ArchiveItem {
+  data: list<ArchiveItemData>,
+}
+
+type ArchiveCollection {
+  items: list<ArchiveItem>,
+}
+
+type ArchiveResult {
+  collection: ArchiveCollection,
+}
+
+fun get_apod_data(api_key: string): ApodData {
+  let data: ApodData = fetch "https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY"
+  return data
+}
+
+fun save_apod(api_key: string): ApodData {
+  let apod = get_apod_data(api_key)
+  return apod
+}
+
+fun get_archive_data(query: string): ArchiveResult {
+  let data: ArchiveResult = fetch "https://images-api.nasa.gov/search?q=apollo%202011"
+  return data
+}
+
+fun main() {
+  let apod = save_apod("DEMO_KEY")
+  print(apod.title)
+  let archive = get_archive_data("apollo 2011")
+  let items = archive.collection.items
+  let first_item = first(items)
+  let first_data = first(first_item.data)
+  print(first_data.description)
+}
+
+main()
