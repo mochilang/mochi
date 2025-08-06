@@ -1,0 +1,104 @@
+/*
+Scrape job titles and company names from sample Indeed HTML.
+----------------------------------------------------------------
+Given a location, the algorithm simulates querying Indeed for
+"mobile app development" jobs. Because Mochi's `fetch` builtin
+focuses on JSON, we embed a representative HTML snippet directly
+in the program. Each job posting appears inside a
+`data-tn-component="organicJob"` block containing an anchor with
+`data-tn-element="jobTitle"` for the position and a span with
+class `company` for the employer. We split the HTML by those
+markers and extract the text between tags to build a list of jobs.
+This demonstrates basic string parsing without a full HTML parser.
+*/
+
+type Job {
+  title: string
+  company: string
+}
+
+let SAMPLE_HTML = "<div data-tn-component=\"organicJob\"><a data-tn-element=\"jobTitle\">Android Developer</a><span class=\"company\">ABC Corp</span></div><div data-tn-component=\"organicJob\"><a data-tn-element=\"jobTitle\">iOS Engineer</a><span class=\"company\">XYZ Ltd</span></div>"
+
+fun indexOf(s: string, sub: string, start: int): int {
+  let n = len(s)
+  let m = len(sub)
+  var i = start
+  while i <= n - m {
+    var j = 0
+    var ok = true
+    while j < m {
+      if substring(s, i + j, i + j + 1) != substring(sub, j, j + 1) {
+        ok = false
+        break
+      }
+      j = j + 1
+    }
+    if ok {
+      return i
+    }
+    i = i + 1
+  }
+  return (0 - 1)
+}
+
+fun splitBy(s: string, sep: string): list<string> {
+  var res: list<string> = []
+  var start = 0
+  let sepLen = len(sep)
+  var idx = indexOf(s, sep, 0)
+  while idx != (0 - 1) {
+    res = append(res, substring(s, start, idx))
+    start = idx + sepLen
+    idx = indexOf(s, sep, start)
+  }
+  res = append(res, substring(s, start, len(s)))
+  return res
+}
+
+fun between(s: string, startTag: string, endTag: string): string {
+  var startIdx = indexOf(s, startTag, 0)
+  if startIdx == (0 - 1) { return "" }
+  startIdx = startIdx + len(startTag)
+  let endIdx = indexOf(s, endTag, startIdx)
+  if endIdx == (0 - 1) { return "" }
+  return substring(s, startIdx, endIdx)
+}
+
+fun intToString(n: int): string {
+  if n == 0 { return "0" }
+  var num = n
+  var digits = ""
+  while num > 0 {
+    let d = num % 10
+    digits = substring("0123456789", d, d + 1) + digits
+    num = num / 10
+  }
+  return digits
+}
+
+fun fetch_jobs(location: string): list<Job> {
+  let blocks = splitBy(SAMPLE_HTML, "data-tn-component=\"organicJob\"")
+  var jobs: list<Job> = []
+  var i = 1
+  while i < len(blocks) {
+    let block = blocks[i]
+    let title = between(block, "data-tn-element=\"jobTitle\">", "</a>")
+    let company = between(block, "class=\"company\">", "</span>")
+    jobs = append(jobs, Job { title: title, company: company })
+    i = i + 1
+  }
+  return jobs
+}
+
+fun main() {
+  let jobs = fetch_jobs("Bangalore")
+  var i = 0
+  while i < len(jobs) {
+    let j = jobs[i]
+    let idx = i + 1
+    print("Job " + intToString(idx) + " is " + j.title + " at " + j.company)
+    i = i + 1
+  }
+}
+
+main()
