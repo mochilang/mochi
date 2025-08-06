@@ -1,0 +1,211 @@
+/*
+Extract email addresses from linked web pages.
+
+Given a starting URL on a particular domain, parse the HTML of that page to
+collect all links.  The linked pages are then searched for strings of the
+form username@domain where "username" contains only letters or digits and
+the domain matches the starting URL.  Results are deduplicated and returned
+in alphabetical order.
+
+This Mochi implementation mirrors the logic of the Python reference but
+operates purely on in-memory HTML strings instead of performing network
+requests.  It demonstrates manual string parsing, set-like behaviour using
+lists, and a simple bubble sort.
+*/
+
+type Page {
+  url: string,
+  html: string,
+}
+
+fun index_of(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if s[i] == ch { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun index_of_substring(s: string, sub: string): int {
+  let n = len(s)
+  let m = len(sub)
+  if m == 0 { return 0 }
+  var i = 0
+  while i <= n - m {
+    var j = 0
+    var is_match = true
+    while j < m {
+      if s[i + j] != sub[j] {
+        is_match = false
+        break
+      }
+      j = j + 1
+    }
+    if is_match { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var last = 0
+  var i = 0
+  while i < len(s) {
+    let ch = s[i]
+    if ch == sep {
+      parts = append(parts, substring(s, last, i))
+      last = i + 1
+    }
+    if i + 1 == len(s) {
+      parts = append(parts, substring(s, last, i + 1))
+    }
+    i = i + 1
+  }
+  return parts
+}
+
+fun get_sub_domain_name(url: string): string {
+  let proto_pos = index_of_substring(url, "://")
+  var start = 0
+  if proto_pos >= 0 { start = proto_pos + 3 }
+  var i = start
+  while i < len(url) {
+    if url[i] == "/" { break }
+    i = i + 1
+  }
+  return substring(url, start, i)
+}
+
+fun get_domain_name(url: string): string {
+  let sub = get_sub_domain_name(url)
+  let parts = split(sub, ".")
+  if len(parts) >= 2 {
+    return parts[len(parts)-2] + "." + parts[len(parts)-1]
+  }
+  return sub
+}
+
+fun is_alnum(ch: string): bool {
+  let chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+  return index_of(chars, ch) >= 0
+}
+
+fun contains(xs: list<string>, x: string): bool {
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == x { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun bubble_sort(xs: list<string>): list<string> {
+  var arr = xs
+  var n = len(arr)
+  var i = 0
+  while i < n {
+    var j = 0
+    while j + 1 < n - i {
+      if arr[j] > arr[j + 1] {
+        let tmp = arr[j]
+        arr[j] = arr[j + 1]
+        arr[j + 1] = tmp
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun extract_links(domain: string, html: string): list<string> {
+  var links: list<string> = []
+  var pos = index_of_substring(html, "href=")
+  while pos >= 0 {
+    let start_quote = index_of(substring(html, pos + 5, len(html)), "\"")
+    if start_quote < 0 { break }
+    let rest = pos + 5 + start_quote + 1
+    let end_quote = index_of(substring(html, rest, len(html)), "\"")
+    if end_quote < 0 { break }
+    let link = substring(html, rest, rest + end_quote)
+    if !contains(links, link) {
+      var absolute = link
+      if !(index_of_substring(link, "http://") == 0 || index_of_substring(link, "https://") == 0) {
+        if index_of_substring(link, "/") == 0 {
+          absolute = "https://" + domain + link
+        } else {
+          absolute = "https://" + domain + "/" + link
+        }
+      }
+      links = append(links, absolute)
+    }
+    pos = index_of_substring(substring(html, rest + end_quote, len(html)), "href=")
+    if pos >= 0 { pos = pos + rest + end_quote }
+  }
+  return links
+}
+
+fun extract_emails(domain: string, text: string): list<string> {
+  var emails: list<string> = []
+  var i = 0
+  while i < len(text) {
+    if text[i] == "@" {
+      if substring(text, i + 1, i + 1 + len(domain)) == domain {
+        var j = i - 1
+        while j >= 0 && is_alnum(text[j]) { j = j - 1 }
+        let local = substring(text, j + 1, i)
+        if len(local) > 0 {
+          let email = local + "@" + domain
+          if !contains(emails, email) { emails = append(emails, email) }
+        }
+      }
+    }
+    i = i + 1
+  }
+  return emails
+}
+
+fun find_page(pages: list<Page>, url: string): string {
+  var i = 0
+  while i < len(pages) {
+    let p = pages[i]
+    if p.url == url { return p.html }
+    i = i + 1
+  }
+  return ""
+}
+
+fun emails_from_url(url: string, pages: list<Page>): list<string> {
+  let domain = get_domain_name(url)
+  let base_html = find_page(pages, url)
+  let links = extract_links(domain, base_html)
+  var found: list<string> = []
+  var i = 0
+  while i < len(links) {
+    let html = find_page(pages, links[i])
+    let emails = extract_emails(domain, html)
+    var j = 0
+    while j < len(emails) {
+      if !contains(found, emails[j]) { found = append(found, emails[j]) }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  let sorted = bubble_sort(found)
+  return sorted
+}
+
+let pages = [
+  Page{url: "https://example.com", html: "<html><body><a href=\"/contact\">Contact</a></body></html>"},
+  Page{url: "https://example.com/contact", html: "<html>Contact us at info@example.com or support@example.com</html>"},
+]
+
+let emails = emails_from_url("https://example.com", pages)
+print(str(len(emails)) + " emails found:")
+var k = 0
+while k < len(emails) {
+  print(emails[k])
+  k = k + 1
+}
