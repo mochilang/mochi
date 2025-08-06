@@ -72,6 +72,8 @@ func sanitizeName(name string) string {
 		return "lower_"
 	case "upper":
 		return "upper_"
+	case "slice":
+		return "slice_"
 	default:
 		return name
 	}
@@ -1386,7 +1388,7 @@ func header() string {
 	hdr += "(define (now)\n  (if nowSeed\n      (begin (set! nowSeed (modulo (+ (* nowSeed 1664525) 1013904223) 2147483647)) nowSeed)\n      (inexact->exact (floor (* (current-inexact-milliseconds) 1000)))))\n"
 	hdr += "(define (int x)\n  (cond\n    [(number? x) (inexact->exact (truncate x))]\n    [(string? x) (let ([n (string->number x)]) (if n (inexact->exact (truncate n)) 0))]\n    [else 0]))\n"
 	hdr += "(define (float x)\n  (cond\n    [(number? x) (exact->inexact x)]\n    [(string? x) (let ([n (string->number x)]) (if n (exact->inexact n) 0.0))]\n    [else 0.0]))\n"
-	hdr += "(define (input) (read-line))\n"
+	hdr += "(define (input) (let ([ln (read-line)]) (if (eof-object? ln) \"\" ln)))\n"
 	hdr += "(define (upper s) (string-upcase s))\n"
 	hdr += "(define (lower s) (string-downcase s))\n"
 	hdr += "(define (sublist lst start end)\n  (if (string? lst)\n      (substring lst start end)\n      (take (drop lst start) (- end start))))\n\n"
