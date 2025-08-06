@@ -2965,7 +2965,7 @@ func mapOp(op string) string {
 
 func builtinFunc(name string) bool {
 	switch name {
-	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "keys", "exists", "contains", "sha256", "json", "now", "input", "int", "abs", "upper", "lower", "indexOf", "parseIntStr", "indexof", "parseintstr", "repeat", "padstart", "bigrat", "num", "denom", "split":
+	case "print", "append", "avg", "count", "len", "concat", "str", "sum", "min", "max", "values", "keys", "exists", "contains", "sha256", "json", "now", "input", "int", "abs", "upper", "lower", "indexOf", "parseIntStr", "indexof", "parseintstr", "repeat", "padstart", "bigrat", "num", "denom", "split":
 		return true
 	default:
 		return false
@@ -4877,10 +4877,6 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			}
 			return call, nil
 		}
-		if builtinFunc(p.Selector.Root) {
-			name := sanitizeFuncName(p.Selector.Root)
-			return &NameRef{Name: name}, nil
-		}
 		if t, err := env.GetVar(p.Selector.Root); err == nil {
 			if ft, ok := t.(types.FuncType); ok && !ctx.isGlobal(p.Selector.Root) && ctx.alias[p.Selector.Root] == "" {
 				if fn, ok := env.GetFunc(p.Selector.Root); ok {
@@ -4897,6 +4893,10 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 				nr.IsString = true
 			}
 			return nr, nil
+		}
+		if builtinFunc(p.Selector.Root) {
+			name := sanitizeFuncName(p.Selector.Root)
+			return &NameRef{Name: name}, nil
 		}
 		if fn, ok := env.GetFunc(p.Selector.Root); ok {
 			name := sanitizeFuncName(fn.Name)
@@ -5056,6 +5056,9 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			} else {
 				ce.Func = "length"
 			}
+			return ce, nil
+		} else if ce.Func == "concat" && len(ce.Args) == 2 {
+			ce.Func = "lists:append"
 			return ce, nil
 		} else if ce.Func == "values" && len(ce.Args) == 1 {
 			ce.Func = "maps:values"

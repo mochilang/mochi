@@ -1,0 +1,10 @@
+/workspace/mochi/tests/algorithms/x/Erlang/bit_manipulation/binary_and_operator.erl:112:41: Warning: variable 'Max_len_3' exported from 'case' (line 89, column 9)
+%  112| {A, A_bin, A_pad, B, B_bin, B_pad, I_2, Max_len_3, Res_8} = Fun_3(A, A_bin, A_pad, B, B_bin, B_pad, I, Max_len_3, Res_5),
+%     |                                         ^
+
+"0b000000"
+"0b000000"
+"0b00000"
+"0b0000000"
+"0b00000000"
+"0b000000000"

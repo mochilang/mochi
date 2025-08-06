@@ -1,0 +1,9 @@
+/workspace/mochi/tests/algorithms/x/Erlang/backtracking/rat_in_maze.erl:56:43: Warning: the result of evaluating operator '++'/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%   56|             Sol_2 = lists:sublist(Sol, I) ++ [Tmp_2] ++ lists:nthtail(I + 1, Sol),
+%     |                                           ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/backtracking/rat_in_maze.erl:77:45: Warning: the result of evaluating operator '++'/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%   77|             Sol_5 = lists:sublist(Sol_4, I) ++ [Tmp_7] ++ lists:nthtail(I + 1, Sol_4),
+%     |                                             ^
+
+[[1 1 1 1 1] [1 1 1 1 1] [1 1 1 1 1] [1 1 1 1 1] [1 1 1 1 1]]
