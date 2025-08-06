@@ -2945,26 +2945,28 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		name := p.Call.Func
 		callName := name
+		isBuiltin := false
+		if _, b := builtinNames[name]; b {
+			isBuiltin = true
+		}
 		if transpileEnv != nil {
 			if _, ok := transpileEnv.FindUnionByVariant(name); ok {
-				// union constructors behave like global functions
-			} else if _, builtin := builtinNames[name]; !builtin {
+				isBuiltin = false
+			} else if fn, defined := transpileEnv.GetFunc(name); defined && fn != nil {
+				// user-defined function overrides builtin
+				isBuiltin = false
+				if closureNames[name] {
+					callName = "$" + name
+				}
+			} else if !isBuiltin {
 				if closureNames[name] {
 					callName = "$" + name
 				}
 			}
 		}
-		if callName == name {
+		if !isBuiltin && callName == name {
 			if _, glob := globalSet[name]; !glob {
-				if _, builtin := builtinNames[name]; builtin {
-					// keep builtin function name
-				} else if transpileEnv != nil {
-					if _, ok := transpileEnv.FindUnionByVariant(name); !ok {
-						callName = "$" + name
-					}
-				} else {
-					callName = "$" + name
-				}
+				callName = "$" + name
 			}
 		}
 		if newName, ok := renameMap[name]; ok {
@@ -3039,7 +3041,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				usesIndexOf = true
 				return &CallExpr{Func: "_indexof", Args: args}, nil
 			}
-		} else if name == "contains" {
+		} else if name == "contains" && isBuiltin {
 			if len(args) != 2 {
 				return nil, fmt.Errorf("contains expects 2 args")
 			}
