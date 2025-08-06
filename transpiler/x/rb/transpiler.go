@@ -1978,9 +1978,16 @@ func (mg *MapGetExpr) emit(e *emitter) {
 type FieldExpr struct {
 	Target Expr
 	Name   string
+	Struct bool
 }
 
 func (f *FieldExpr) emit(e *emitter) {
+	if f.Struct {
+		f.Target.emit(e)
+		io.WriteString(e.w, ".")
+		io.WriteString(e.w, f.Name)
+		return
+	}
 	// Heuristic: identifiers starting with a lowercase letter or '$'
 	// represent map/dictionary values, so access them using string keys
 	// instead of Ruby's attribute syntax. This avoids generating
@@ -2546,7 +2553,7 @@ func fieldAccess(expr Expr, t types.Type, name string) (Expr, types.Type) {
 			return &IndexExpr{Target: expr, Index: &StringLit{Value: name}}, ty.Fields[name]
 		}
 		if ft, ok := ty.Fields[name]; ok {
-			return &FieldExpr{Target: expr, Name: fieldName(name)}, ft
+			return &FieldExpr{Target: expr, Name: fieldName(name), Struct: true}, ft
 		}
 	case types.MapType:
 		return &IndexExpr{Target: expr, Index: &StringLit{Value: name}}, ty.Value
@@ -2555,7 +2562,7 @@ func fieldAccess(expr Expr, t types.Type, name string) (Expr, types.Type) {
 		if vt, err := currentEnv.GetVar(id.Name); err == nil {
 			if st, ok := vt.(types.StructType); ok {
 				if ft, ok := st.Fields[name]; ok {
-					return &FieldExpr{Target: expr, Name: fieldName(name)}, ft
+					return &FieldExpr{Target: expr, Name: fieldName(name), Struct: true}, ft
 				}
 			}
 		}
@@ -3365,7 +3372,7 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 							if j < len(st.Order) {
 								field := st.Order[j]
 								lam := &LambdaExpr{Params: []string{identName(name)}, Expr: exprCase}
-								exprCase = &MethodCallExpr{Target: lam, Method: "call", Args: []Expr{&FieldExpr{Target: target, Name: field}}}
+								exprCase = &MethodCallExpr{Target: lam, Method: "call", Args: []Expr{&FieldExpr{Target: target, Name: field, Struct: true}}}
 							}
 						}
 					}
@@ -3822,7 +3829,7 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				if st, ok := curType.(types.StructType); ok && isValidIdent(sl.Value) {
 					name := fieldName(sl.Value)
 					if ft, ok := st.Fields[sl.Value]; ok {
-						expr = &FieldExpr{Target: expr, Name: name}
+						expr = &FieldExpr{Target: expr, Name: name, Struct: true}
 						curType = ft
 						continue
 					}
@@ -3965,6 +3972,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		case "print":
 			return convertPrintCall(args, p.Call.Args)
 		case "len", "count":
+			if currentEnv != nil {
+				if _, ok := currentEnv.GetFunc(name); ok {
+					return &CallExpr{Func: name, Args: args}, nil
+				}
+			}
 			if len(args) != 1 {
 				return nil, fmt.Errorf("len/count takes one arg")
 			}
@@ -4015,6 +4027,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		case "keys":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("keys takes one arg")
+			}
+			if currentEnv != nil {
+				if _, ok := currentEnv.GetFunc(name); ok {
+					return &CallExpr{Func: name, Args: args}, nil
+				}
 			}
 			return &MethodCallExpr{Target: args[0], Method: "keys"}, nil
 		case "exists":
@@ -4077,6 +4094,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		case "split":
 			if len(args) != 2 {
 				return nil, fmt.Errorf("split expects 2 args")
+			}
+			if currentEnv != nil {
+				if _, ok := currentEnv.GetFunc(name); ok {
+					return &CallExpr{Func: name, Args: args}, nil
+				}
 			}
 			usesSplit = true
 			return &CallExpr{Func: "_split", Args: args}, nil
