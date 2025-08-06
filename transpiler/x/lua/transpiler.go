@@ -511,6 +511,9 @@ func (c *CallExpr) emit(w io.Writer) {
 			}
 			if s, ok := a.(*StringLit); ok {
 				fmtBuf.WriteString(s.Value)
+			} else if isListExpr(a) || isMapExpr(a) {
+				fmtBuf.WriteString("%s")
+				exprs = append(exprs, &CallExpr{Func: "repr", Args: []Expr{a}})
 			} else if isIntExpr(a) || isBoolExpr(a) {
 				fmtBuf.WriteString("%d")
 				if isBoolExpr(a) && !isIntExpr(a) {
@@ -520,7 +523,11 @@ func (c *CallExpr) emit(w io.Writer) {
 				}
 			} else {
 				fmtBuf.WriteString("%s")
-				exprs = append(exprs, a)
+				exprs = append(exprs, &IfExpr{
+					Cond: &BinaryExpr{Left: &CallExpr{Func: "type", Args: []Expr{a}}, Op: "==", Right: &StringLit{Value: "table"}},
+					Then: &CallExpr{Func: "repr", Args: []Expr{a}},
+					Else: a,
+				})
 			}
 		}
 
@@ -676,6 +683,16 @@ func (c *CallExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 	case "append":
 		io.WriteString(w, "(function(lst, item)\n  local res = {table.unpack(lst)}\n  table.insert(res, item)\n  return res\nend)(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ", ")
+		if len(c.Args) > 1 {
+			c.Args[1].emit(w)
+		}
+		io.WriteString(w, ")")
+	case "concat":
+		io.WriteString(w, "(function(a, b)\n  local res = {table.unpack(a)}\n  for _, v in ipairs(b) do\n    res[#res+1] = v\n  end\n  return res\nend)(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		}
