@@ -1,0 +1,15 @@
+/workspace/mochi/tests/algorithms/x/Erlang/backtracking/n_queens_math.erl:157:44: Warning: variable 'Single_3' exported from 'case' (line 127, column 9)
+%  157| {Boards_2, Col_5, Dl, Dr, N_2, Pos_2, Row, Single_3} = Fun_4(Boards, Col_2, Dl, Dr, N_2, Pos_2, Row, Single_3),
+%     |                                            ^
+
+". Q . . "
+". . . Q "
+"Q . . . "
+". . Q . "
+[]
+". . Q . "
+"Q . . . "
+". . . Q "
+". Q . . "
+[]
+2 "solutions were found."

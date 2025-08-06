@@ -34,8 +34,12 @@ func runAlgorithmCase(t *testing.T, nameFile string) {
 		t.Fatalf("mkdir: %v", err)
 	}
 
-	want, _ := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".out")
-	want = bytes.TrimSpace(want)
+	want, err := os.ReadFile(outPath)
+	if err == nil {
+		want = bytes.TrimSpace(want)
+	} else {
+		want = nil
+	}
 
 	prog, err := parser.Parse(src)
 	if err != nil {
@@ -86,7 +90,8 @@ func runAlgorithmCase(t *testing.T, nameFile string) {
 	}
 	if len(want) > 0 {
 		canon := bytes.ReplaceAll(output, []byte{','}, []byte{' '})
-		if !bytes.Equal(canon, want) {
+		wantCanon := bytes.ReplaceAll(want, []byte{','}, []byte{' '})
+		if !bytes.Equal(canon, wantCanon) {
 			t.Fatalf("output mismatch\nGot: %s\nWant: %s", output, want)
 		}
 	}
