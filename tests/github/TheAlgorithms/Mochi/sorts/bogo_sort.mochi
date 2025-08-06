@@ -1,0 +1,62 @@
+/*
+Bogo Sort Algorithm
+--------------------
+
+Bogo sort repeatedly generates random permutations of a list until the
+list happens to be sorted.  Because it relies purely on chance its
+expected running time is unbounded; for a list of length *n* the average
+number of permutations tried is on the order of (n!).  It is therefore
+mainly used as a pedagogical example of an inefficient algorithm rather
+than for practical sorting.
+
+This implementation uses a simple linear congruential generator (LCG) to
+provide pseudo-random numbers so the program stays in pure Mochi.  The
+`shuffle` function performs an in-place Fisher–Yates shuffle using the
+LCG and `bogo_sort` keeps shuffling the list until it is sorted in
+ascending order.
+*/
+
+var seed = 1
+
+fun rand(): int {
+  seed = (seed * 1103515245 + 12345) % 2147483648
+  return seed
+}
+
+fun rand_range(max: int): int {
+  return rand() % max
+}
+
+fun shuffle(list_int: list<int>): list<int> {
+  var i = len(list_int) - 1
+  while i > 0 {
+    let j = rand_range(i + 1)
+    let tmp = list_int[i]
+    list_int[i] = list_int[j]
+    list_int[j] = tmp
+    i = i - 1
+  }
+  return list_int
+}
+
+fun is_sorted(list_int: list<int>): bool {
+  var i = 0
+  while i < len(list_int) - 1 {
+    if list_int[i] > list_int[i + 1] {
+      return false
+    }
+    i = i + 1
+  }
+  return true
+}
+
+fun bogo_sort(list_int: list<int>): list<int> {
+  var res = list_int
+  while !is_sorted(res) {
+    res = shuffle(res)
+  }
+  return res
+}
+
+let data = [3, 2, 1]
+print(str(bogo_sort(data)))
