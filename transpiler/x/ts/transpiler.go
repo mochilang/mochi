@@ -67,6 +67,7 @@ var reserved = map[string]bool{
 }
 
 func safeName(name string) string {
+	name = strings.TrimSpace(name)
 	if reserved[name] {
 		return "_" + name
 	}
@@ -2282,7 +2283,7 @@ function sha256(bs: number[]): number[] {
 }`})
 	}
 	if usePanic {
-		prelude = append(prelude, &RawStmt{Code: `function panic(msg: any): never { throw new Error(String(msg)); }`})
+		prelude = append(prelude, &RawStmt{Code: `function _panic(msg: any): never { throw new Error(String(msg)); }`})
 	}
 	if useHas {
 		prelude = append(prelude, &RawStmt{Code: `function _has(obj: any, key: any): boolean {
@@ -3999,11 +4000,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			useNumDenom = true
 			return &CallExpr{Func: "denom", Args: args}, nil
 		case "panic":
+			if _, ok := transpileEnv.GetFunc("panic"); ok {
+				// user-defined panic function; treat like normal call
+				return &CallExpr{Func: "panic", Args: args}, nil
+			}
 			if len(args) != 1 {
 				return nil, fmt.Errorf("panic expects one argument")
 			}
 			usePanic = true
-			return &CallExpr{Func: "panic", Args: args}, nil
+			return &CallExpr{Func: "_panic", Args: args}, nil
 		default:
 			if fn, ok := transpileEnv.GetFunc(p.Call.Func); ok {
 				if len(args) < len(fn.Params) {
