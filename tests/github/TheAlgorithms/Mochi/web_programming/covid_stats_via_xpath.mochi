@@ -1,0 +1,86 @@
+/*
+Fetch global COVID-19 statistics using XPath-like parsing.
+
+The original Python version downloads the worldometers page and applies the
+XPath expression `//div[@class="maincounter-number"]/span/text()` to extract
+the total number of cases, deaths and recoveries.  To keep this example
+self‑contained and runnable on the Mochi VM without external libraries,
+this reimplementation operates on a provided HTML string.  It searches for
+`<span>` elements inside divs with class `maincounter-number` and converts
+their text content into integers to produce a `CovidData` record.
+*/
+
+type CovidData {
+  cases: int
+  deaths: int
+  recovered: int
+}
+
+fun parse_int(s: string): int {
+  var value = 0
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i + 1)
+    if ch == "," {
+      i = i + 1
+      continue
+    }
+    value = value * 10 + (ch as int)
+    i = i + 1
+  }
+  return value
+}
+
+fun find(haystack: string, needle: string, start: int): int {
+  let nlen = len(needle)
+  var i = start
+  while i <= len(haystack) - nlen {
+    var j = 0
+    var matched = true
+    while j < nlen {
+      if substring(haystack, i + j, i + j + 1) != substring(needle, j, j + 1) {
+        matched = false
+        break
+      }
+      j = j + 1
+    }
+    if matched { return i }
+    i = i + 1
+  }
+  return 0 - 1
+}
+
+fun extract_numbers(html: string): list<int> {
+  var nums: list<int> = []
+  var pos = 0
+  let start_tag = "<span>"
+  let end_tag = "</span>"
+  while true {
+    let s = find(html, start_tag, pos)
+    if s == 0 - 1 { break }
+    let content_start = s + len(start_tag)
+    let e = find(html, end_tag, content_start)
+    if e == 0 - 1 { break }
+    let num_str = substring(html, content_start, e)
+    nums = append(nums, parse_int(num_str))
+    pos = e + len(end_tag)
+  }
+  return nums
+}
+
+fun covid_stats(html: string): CovidData {
+  let nums = extract_numbers(html)
+  return CovidData { cases: nums[0], deaths: nums[1], recovered: nums[2] }
+}
+
+fun main() {
+  let sample_html = "<div class=\"maincounter-number\"><span>123456</span></div>" +
+                    "<div class=\"maincounter-number\"><span>7890</span></div>" +
+                    "<div class=\"maincounter-number\"><span>101112</span></div>"
+  let stats = covid_stats(sample_html)
+  print("Total COVID-19 cases in the world: " + str(stats.cases))
+  print("Total deaths due to COVID-19 in the world: " + str(stats.deaths))
+  print("Total COVID-19 patients recovered in the world: " + str(stats.recovered))
+}
+
+main()
