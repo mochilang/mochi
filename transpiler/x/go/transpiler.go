@@ -2158,6 +2158,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	assignAnyVars = map[string]bool{}
 	topEnv = env
 	extraDecls = nil
+	testHeaderVarAdded = false
 	structCount = 0
 	mainFuncName = ""
 	fieldTypeGuess = map[string]string{}

@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
 Completed programs: 41/1077
-Last updated: 2025-08-06 17:33 +0700
+Last updated: 2025-08-06 20:30 +0700
 
 Checklist:
 
@@ -44,7 +44,7 @@ Checklist:
 | 35 | bit_manipulation/highest_set_bit | ✓ | 840.0µs | 1016B |
 | 36 | bit_manipulation/index_of_rightmost_set_bit | ✓ | 671.0µs | 1016B |
 | 37 | bit_manipulation/is_even | ✓ | 460.0µs | 1.05KB |
-| 38 | bit_manipulation/is_power_of_two | ✓ | 651.0µs | 1016B |
+| 38 | bit_manipulation/is_power_of_two | ✓ | 246.0µs | 1016B |
 | 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 436.0µs | 1.05KB |
 | 40 | bit_manipulation/missing_number | ✓ | 312.0µs | 936B |
 | 41 | bit_manipulation/numbers_different_signs | ✓ | 504.0µs | 1.05KB |
