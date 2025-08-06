@@ -34,32 +34,31 @@ fn _mem() -> i64 {
     }
     0
 }
+static mut g_seq: Vec<String> = Vec::new();
+static mut g_seq2: Vec<String> = Vec::new();
 fn main() {
-        let _start: i64 = _now();
-    fn create_all_state(mut increment: i64, mut total: i64, mut level: i64, current: &mut Vec<i64>, mut result: Vec<Vec<i64>>) -> Vec<Vec<i64>> {
-    if (level == 0) {
-        return { let mut _v = result.clone(); _v.push(current.clone()); _v }
+    unsafe {
+        g_seq = vec![1.to_string(), 2.to_string(), 3.to_string()];
+        g_seq2 = vec![String::from("A").clone(), String::from("B").clone(), String::from("C").clone()];
+                let _start: i64 = _now();
+        unsafe fn create_state_space_tree(sequence: &mut Vec<String>, current: &mut Vec<String>, mut index: i64) {
+    if (index == (sequence.len() as i64)) {
+        println!("{:?}", current);
+        return
     }
-    let mut i: i64 = increment;
-    while (i <= ((total - level) + 1)) {
-        let mut next_current: Vec<i64> = { let mut _v = current.clone(); _v.push(i); _v };
-        result = create_all_state((i + 1), total, (level - 1), &mut next_current, result.clone());
-        i = (i + 1);
-    }
-    return result
+    create_state_space_tree(sequence, current, (index + 1));
+    let mut with_elem: Vec<String> = { let mut _v = current.clone(); _v.push(sequence[index as usize].clone()); _v };
+    create_state_space_tree(sequence, &mut with_elem, (index + 1));
 };
-    fn generate_all_combinations(mut n: i64, mut k: i64) -> Vec<Vec<i64>> {
-    if ((k < 0) || (n < 0)) {
-        return vec![]
-    }
-    let mut result: Vec<Vec<i64>> = vec![];
-    return create_all_state(1, n, k, &mut vec![], result.clone())
+        unsafe fn generate_all_subsequences(sequence: &mut Vec<String>) {
+    create_state_space_tree(sequence, &mut vec![], 0);
 };
-    println!("{}", format!("{:?}", generate_all_combinations(4, 2)));
-    println!("{}", format!("{:?}", generate_all_combinations(3, 1)));
-    let _end: i64 = _now();
-    let duration_us: i64 = ((_end - _start) / 1000);
-    let memory_bytes: i64 = _mem();
-    println!("{{\n  \"duration_us\": {},\n  \"memory_bytes\": {},\n  \"name\": \"{}\"\n}}", duration_us, memory_bytes, "main");
+        generate_all_subsequences(&mut g_seq);
+        generate_all_subsequences(&mut g_seq2);
+        let _end: i64 = _now();
+        let duration_us: i64 = ((_end - _start) / 1000);
+        let memory_bytes: i64 = _mem();
+        println!("{{\n  \"duration_us\": {},\n  \"memory_bytes\": {},\n  \"name\": \"{}\"\n}}", duration_us, memory_bytes, "main");
 
+    }
 }
