@@ -2260,6 +2260,22 @@ func precedence(op string) int {
 	}
 }
 
+func simplifyBoolComparison(expr Expr, op, boolName string) Expr {
+	switch op {
+	case "==":
+		if boolName == "#t" {
+			return expr
+		}
+		return &UnaryExpr{Op: "!", Expr: expr}
+	case "!=":
+		if boolName == "#t" {
+			return &UnaryExpr{Op: "!", Expr: expr}
+		}
+		return expr
+	}
+	return &BinaryExpr{Op: op, Left: expr, Right: &Name{Name: boolName}}
+}
+
 func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 	left, err := convertUnary(b.Left, env)
 	if err != nil {
@@ -2315,6 +2331,14 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 						exprs[len(exprs)-1] = currLeft
 					}
 				}
+			}
+			if n, ok := right.(*Name); ok && (n.Name == "#t" || n.Name == "#f") {
+				exprs[len(exprs)-1] = simplifyBoolComparison(currLeft, op, n.Name)
+				continue
+			}
+			if n, ok := currLeft.(*Name); ok && (n.Name == "#t" || n.Name == "#f") {
+				exprs[len(exprs)-1] = simplifyBoolComparison(right, op, n.Name)
+				continue
 			}
 		}
 		if op == "+" {
