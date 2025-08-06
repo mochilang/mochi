@@ -1,0 +1,44 @@
+/*
+Sort a list using the odd-even transposition algorithm, also known as brick sort.
+
+The classic "parallel" version assigns each position in the list to a separate
+worker. During each phase, all workers simultaneously compare their value with
+an adjacent neighbor and swap when out of order. Even phases compare pairs
+(0,1), (2,3), ... while odd phases compare (1,2), (3,4), ... . After at most n
+phases for a list of length n the list becomes sorted.
+
+This Mochi implementation simulates the same logic sequentially. It alternates
+between even and odd phases and performs independent swaps within each phase.
+The algorithm runs in O(n^2) time and uses O(1) auxiliary space.
+*/
+
+fun odd_even_transposition(xs: list<int>): list<int> {
+  var arr = xs
+  let n = len(arr)
+  var phase = 0
+  while phase < n {
+    var start = if phase % 2 == 0 { 0 } else { 1 }
+    var i = start
+    while i + 1 < n {
+      if arr[i] > arr[i + 1] {
+        let tmp = arr[i]
+        arr[i] = arr[i + 1]
+        arr[i + 1] = tmp
+      }
+      i = i + 2
+    }
+    phase = phase + 1
+  }
+  return arr
+}
+
+fun main() {
+  var data: list<int> = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+  print("Initial List")
+  print(str(data))
+  let sorted = odd_even_transposition(data)
+  print("Sorted List")
+  print(str(sorted))
+}
+
+main()
