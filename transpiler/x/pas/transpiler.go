@@ -77,7 +77,7 @@ func declareName(name string) string {
 	}
 	newName := name
 	switch name {
-	case "label", "xor", "and", "or", "div", "mod", "type", "set", "result":
+	case "label", "xor", "and", "or", "div", "mod", "type", "set", "result", "repeat":
 		// Avoid Pascal reserved keywords
 		newName = name + "_"
 	}
@@ -193,6 +193,7 @@ type Program struct {
 	UseBigRat          bool
 	UseSHA256          bool
 	NeedPadStart       bool
+	NeedJSON           bool
 	Maps               []MapLitDef
 	VarTypes           map[string]string
 }
@@ -528,6 +529,43 @@ type CallExpr struct {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
+	if c.Name == "concat" && len(c.Args) == 2 {
+		if ce1, ok1 := c.Args[0].(*CallExpr); ok1 && ce1.Name == "IntArray" && len(ce1.Args) == 1 {
+			if ll1, ok2 := ce1.Args[0].(*ListLit); ok2 && len(ll1.Elems) == 0 {
+				if ce2, ok3 := c.Args[1].(*CallExpr); ok3 && ce2.Name == "IntArray" && len(ce2.Args) == 1 {
+					io.WriteString(w, "IntArray(")
+					ce2.Args[0].emit(w)
+					io.WriteString(w, ")")
+					return
+				}
+				if l2, ok4 := c.Args[1].(*ListLit); ok4 {
+					io.WriteString(w, "IntArray(")
+					l2.emit(w)
+					io.WriteString(w, ")")
+					return
+				}
+			}
+		}
+		if l, ok := c.Args[1].(*ListLit); ok {
+			t := resolveAlias(inferType(c.Args[0]))
+			fmt.Fprintf(w, "%s(", c.Name)
+			c.Args[0].emit(w)
+			io.WriteString(w, ", ")
+			if strings.HasPrefix(t, "array of integer") {
+				io.WriteString(w, "IntArray(")
+				l.emit(w)
+				io.WriteString(w, ")")
+			} else if strings.HasPrefix(t, "array of string") {
+				io.WriteString(w, "StrArray(")
+				l.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				l.emit(w)
+			}
+			io.WriteString(w, ")")
+			return
+		}
+	}
 	fmt.Fprintf(w, "%s(", c.Name)
 	for i, a := range c.Args {
 		if i > 0 {
@@ -1248,6 +1286,11 @@ func (p *Program) Emit() []byte {
 	if p.UseInput {
 		buf.WriteString("function _input(): string;\nvar s: string;\nbegin\n  if EOF(Input) then s := '' else ReadLn(s);\n  _input := s;\nend;\n")
 	}
+	buf.WriteString("procedure panic(msg: string);\nbegin\n  writeln(msg);\n  halt(1);\nend;\n")
+	if p.NeedJSON {
+		buf.WriteString("procedure json_intarray(xs: IntArray);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(',');\n  end;\n  write(']');\nend;\n")
+		buf.WriteString("procedure json(xs: IntArrayArray);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    if i > 0 then write(',');\n    json_intarray(xs[i]);\n  end;\n  writeln(']');\nend;\n")
+	}
 	if p.UseSHA256 {
 		buf.WriteString("function _sha256(bs: IntArray): IntArray;\nvar tmp, outFile, hex: string; f: file; t: Text; i: integer; res: IntArray;\nbegin\n  tmp := GetTempFileName('', 'mochi_sha256');\n  Assign(f, tmp);\n  Rewrite(f,1);\n  for i := 0 to Length(bs)-1 do\n    BlockWrite(f, bs[i],1);\n  Close(f);\n  outFile := tmp + '.hash';\n  fpSystem(PChar(AnsiString('sha256sum ' + tmp + ' > ' + outFile)));\n  Assign(t, outFile);\n  Reset(t);\n  ReadLn(t, hex);\n  Close(t);\n  DeleteFile(tmp);\n  DeleteFile(outFile);\n  hex := Trim(hex);\n  SetLength(res, 32);\n  for i := 0 to 31 do\n    res[i] := StrToInt('$'+Copy(hex, i*2+1,2));\n  _sha256 := res;\nend;\n")
 	}
@@ -1441,7 +1484,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 		if st.Fun != nil {
 			name := st.Fun.Name
 			switch name {
-			case "xor", "and", "or", "div", "mod", "type":
+			case "xor", "and", "or", "div", "mod", "type", "repeat":
 				name = name + "_"
 			}
 			funcNames[name] = struct{}{}
@@ -2556,7 +2599,7 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 			fn := st.Fun
 			name := fn.Name
 			switch name {
-			case "xor", "and", "or", "div", "mod", "type", "set", "label":
+			case "xor", "and", "or", "div", "mod", "type", "set", "label", "repeat":
 				name = name + "_"
 			}
 			if name != fn.Name {
@@ -4132,7 +4175,12 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 				if mapped, ok := nameMap[name]; ok {
 					name = mapped
 				}
-				if name == "indexOf" && len(args) == 2 {
+				if name == "json" && len(args) == 1 {
+					currProg.NeedJSON = true
+					_ = currProg.addArrayAlias("integer")
+					_ = currProg.addArrayAlias("IntArray")
+					expr = &CallExpr{Name: name, Args: args}
+				} else if name == "indexOf" && len(args) == 2 {
 					currProg.NeedIndexOf = true
 					expr = &CallExpr{Name: name, Args: args}
 				} else if name == "parseIntStr" && len(args) == 1 {
@@ -4140,7 +4188,9 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 					name = "StrToInt"
 					expr = &CallExpr{Name: name, Args: args}
 				} else if name == "contains" && len(args) == 2 {
-					if inferType(args[0]) == "string" || inferType(args[1]) == "string" {
+					if _, ok := funcNames[name]; ok {
+						expr = &CallExpr{Name: name, Args: args}
+					} else if inferType(args[0]) == "string" || inferType(args[1]) == "string" {
 						expr = &ContainsExpr{Collection: args[0], Value: args[1], Kind: "string"}
 					} else {
 						currProg.NeedContains = true
@@ -4378,26 +4428,27 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			return &CastExpr{Expr: args[0], Type: "int"}, nil
 		} else if name == "str" && len(args) == 1 {
 			t := inferType(args[0])
-			if strings.HasPrefix(t, "array of string") {
+			rt := resolveAlias(t)
+			if strings.HasPrefix(t, "array of string") || strings.HasPrefix(rt, "array of string") {
 				currProg.NeedListStr = true
 				return &CallExpr{Name: "list_to_str", Args: args}, nil
 			}
-			if strings.HasPrefix(t, "array of real") {
+			if strings.HasPrefix(t, "array of real") || strings.HasPrefix(rt, "array of real") {
 				currProg.NeedListStrReal = true
 				currProg.UseSysUtils = true
 				return &CallExpr{Name: "list_real_to_str", Args: args}, nil
 			}
-			if strings.HasPrefix(t, "array of array of ") || strings.HasPrefix(t, "array of IntArray") || strings.HasSuffix(t, "IntArrayArray") {
+			if strings.HasPrefix(t, "array of array of ") || strings.HasPrefix(t, "array of IntArray") || strings.HasSuffix(t, "IntArrayArray") || strings.HasPrefix(rt, "array of array of ") {
 				currProg.NeedListStr2 = true
 				return &CallExpr{Name: "list_list_int_to_str", Args: args}, nil
 			}
-			if strings.HasPrefix(t, "array of Variant") {
+			if strings.HasPrefix(t, "array of Variant") || strings.HasPrefix(rt, "array of Variant") {
 				currProg.NeedListStrVariant = true
 				currProg.UseSysUtils = true
 				currProg.UseVariants = true
 				return &CallExpr{Name: "list_variant_to_str", Args: args}, nil
 			}
-			if strings.HasPrefix(t, "array of ") || isArrayAlias(t) {
+			if strings.HasPrefix(t, "array of ") || isArrayAlias(t) || strings.HasPrefix(rt, "array of ") {
 				currProg.NeedListStr2 = true
 				return &CallExpr{Name: "list_int_to_str", Args: args}, nil
 			}
@@ -4502,6 +4553,9 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		} else if name == "float" && len(args) == 1 {
 			return &CallExpr{Name: "Double", Args: args}, nil
 		} else if name == "contains" && len(args) == 2 {
+			if _, ok := funcNames[name]; ok {
+				return &CallExpr{Name: name, Args: args}, nil
+			}
 			if inferType(args[0]) == "string" || inferType(args[1]) == "string" {
 				return &ContainsExpr{Collection: args[0], Value: args[1], Kind: "string"}, nil
 			}
