@@ -1,0 +1,33 @@
+/*
+Exchange Sort
+-------------
+Exchange sort is a simple quadratic sorting algorithm that repeatedly
+compares each pair of elements and swaps them when out of order. For a
+list of length n it makes roughly n*(n-1)/2 comparisons and runs in
+O(n^2) time with O(1) extra space. This implementation operates in
+place on a list of integers.
+*/
+
+fun exchange_sort(numbers: list<int>): list<int> {
+  let n = len(numbers)
+  var i = 0
+  while i < n {
+    var j = i + 1
+    while j < n {
+      if numbers[j] < numbers[i] {
+        let temp = numbers[i]
+        numbers[i] = numbers[j]
+        numbers[j] = temp
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return numbers
+}
+
+print(str(exchange_sort([5, 4, 3, 2, 1])))
+print(str(exchange_sort([-1, -2, -3])))
+print(str(exchange_sort([1, 2, 3, 4, 5])))
+print(str(exchange_sort([0, 10, -2, 5, 3])))
+print(str(exchange_sort([] as list<int>)))
