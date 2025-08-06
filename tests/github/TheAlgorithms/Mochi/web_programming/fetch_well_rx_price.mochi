@@ -1,0 +1,83 @@
+/*
+Fetch WellRx Price List
+
+This program mirrors the Python script `web_programming/fetch_well_rx_price.py`.
+Given a prescription drug name and a ZIP code, it retrieves a list of
+pharmacies and their prices from a WellRx results page.  Network access is
+not used; instead a small sample of HTML is embedded and parsed.  The parser
+searches for `<div class="grid-x pharmCard">` sections, extracting the
+pharmacy name from `<p class="list-title">` and the price from
+`<span class="price price-large">`.  It returns a list of maps where each map
+contains `pharmacy_name` and `price` keys.  The code avoids FFI and the `any`
+type so it can run on the `runtime/vm`.
+*/
+
+let SAMPLE_HTML = "<div class=\"grid-x pharmCard\"><p class=\"list-title\">Pharmacy A</p><span class=\"price price-large\">$10.00</span></div><div class=\"grid-x pharmCard\"><p class=\"list-title\">Pharmacy B</p><span class=\"price price-large\">$12.50</span></div>"
+
+fun find_substring(s: string, sub: string, from: int): int {
+  var i = from
+  while i <= len(s) - len(sub) {
+    var j = 0
+    while j < len(sub) && substring(s, i + j, i + j + 1) == substring(sub, j, j + 1) {
+      j = j + 1
+    }
+    if j == len(sub) {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun fetch_pharmacy_and_price_list(drug_name: string, zip_code: string): list<map<string,string>> {
+  if drug_name == "" || zip_code == "" {
+    return null
+  }
+  var results: list<map<string,string>> = []
+  var pos = 0
+  let block_tag = "<div class=\"grid-x pharmCard\">"
+  let name_tag = "<p class=\"list-title\">"
+  let price_tag = "<span class=\"price price-large\">"
+  while true {
+    let div_idx = find_substring(SAMPLE_HTML, block_tag, pos)
+    if div_idx < 0 {
+      break
+    }
+    let name_start = find_substring(SAMPLE_HTML, name_tag, div_idx)
+    if name_start < 0 {
+      break
+    }
+    name_start = name_start + len(name_tag)
+    let name_end = find_substring(SAMPLE_HTML, "</p>", name_start)
+    if name_end < 0 {
+      break
+    }
+    let name = substring(SAMPLE_HTML, name_start, name_end)
+    let price_start = find_substring(SAMPLE_HTML, price_tag, name_end)
+    if price_start < 0 {
+      break
+    }
+    price_start = price_start + len(price_tag)
+    let price_end = find_substring(SAMPLE_HTML, "</span>", price_start)
+    if price_end < 0 {
+      break
+    }
+    let price = substring(SAMPLE_HTML, price_start, price_end)
+    results = append(results, {"pharmacy_name": name, "price": price})
+    pos = price_end
+  }
+  return results
+}
+
+let pharmacy_price_list = fetch_pharmacy_and_price_list("aspirin", "30303")
+if pharmacy_price_list != null {
+  var i = 0
+  while i < len(pharmacy_price_list) {
+    let entry = pharmacy_price_list[i]
+    print("Pharmacy: " + entry["pharmacy_name"] + " Price: " + entry["price"])
+    i = i + 1
+  }
+} else {
+  print("No results found")
+}
+
