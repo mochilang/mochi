@@ -402,7 +402,19 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 		}
 		return
 	}
-	if typ == "int" || typ == "double" || typ == "float" || typ == "float64" {
+        if typ == "Object[]" {
+                if ll, ok := e.(*ListLit); ok {
+                        // Force list literals to use Object[] directly instead of
+                        // emitting a primitive array and casting, which would not
+                        // compile.
+                        saved := ll.ElemType
+                        ll.ElemType = "Object"
+                        ll.emit(w)
+                        ll.ElemType = saved
+                        return
+                }
+        }
+        if typ == "int" || typ == "double" || typ == "float" || typ == "float64" {
 		it := inferType(e)
 		if typ == "int" && it == "java.math.BigInteger" {
 			fmt.Fprint(w, "((java.math.BigInteger)(")
@@ -1589,12 +1601,23 @@ func (s *VarStmt) emit(w io.Writer, indent string) {
 		}
 		return
 	}
-	fmt.Fprint(w, jt+" "+sanitize(s.Name))
-	if s.Expr != nil {
-		fmt.Fprint(w, " = ")
-		emitCastExpr(w, s.Expr, typ)
-	}
-	fmt.Fprint(w, ";\n")
+        fmt.Fprint(w, jt+" "+sanitize(s.Name))
+        if s.Expr != nil {
+                fmt.Fprint(w, " = ")
+                emitCastExpr(w, s.Expr, jt)
+        } else {
+                // Ensure locals have an initial value so Java does not complain
+                // about "variable might not have been initialized". For array
+                // types, allocate an empty array of the appropriate dimension.
+                if strings.HasSuffix(jt, "[]") {
+                        dims := strings.Count(jt, "[]")
+                        base := strings.TrimSuffix(jt, strings.Repeat("[]", dims))
+                        fmt.Fprintf(w, " = new %s[0]%s", base, strings.Repeat("[]", dims-1))
+                } else {
+                        fmt.Fprint(w, " = "+defaultValue(jt))
+                }
+        }
+        fmt.Fprint(w, ";\n")
 	if varDecls != nil {
 		varDecls[s.Name] = s
 	}
@@ -1950,7 +1973,14 @@ func (l *ListLit) emit(w io.Writer) {
 			arrType = jt
 		}
 	}
-	if arrType == "Object" {
+        // When the element type is explicitly declared as Object (e.g. list<any>)
+        // we should keep the array as Object[] even if all literal elements share
+        // the same primitive type. The previous implementation would inspect the
+        // literal values and narrow the array type which produced code such as
+        // `new int[]{...}` cast to Object[], leading to `int[] cannot be converted
+        // to Object[]` compilation errors. Only attempt to refine the type when
+        // the element type was not explicitly provided.
+        if arrType == "Object" && l.ElemType == "" {
 		t := ""
 		same := true
 		for _, el := range l.Elems {
