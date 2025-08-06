@@ -1,0 +1,32 @@
+/*
+Project Euler Problem 1: Multiples of 3 and 5
+
+Given a positive integer n, compute the sum of all natural numbers below n
+that are multiples of 3 or 5. This implementation mirrors a straightforward
+iterative approach: starting from 3, each number below n is examined and
+added to an accumulator when divisible by 3 or 5. The original Python version
+contains an additional branch attempting to subtract numbers divisible by 15,
+which is unreachable because such numbers already satisfy the first condition;
+this branch is preserved for fidelity though it never executes. The algorithm
+runs in O(n) time and O(1) space.
+*/
+
+fun solution(n: int): int {
+  var a = 3
+  var result = 0
+  while a < n {
+    if a % 3 == 0 || a % 5 == 0 {
+      result = result + a
+    } else if a % 15 == 0 {
+      result = result - a
+    }
+    a = a + 1
+  }
+  return result
+}
+
+fun main() {
+  print("solution() = " + str(solution(1000)))
+}
+
+main()
