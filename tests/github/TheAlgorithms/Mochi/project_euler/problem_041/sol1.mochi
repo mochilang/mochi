@@ -1,0 +1,86 @@
+/*
+Find the largest n-digit pandigital prime.
+
+An n-digit number is pandigital if it uses each digit 1..n exactly once.
+Project Euler Problem 41 asks for the largest such prime.  Because a
+pandigital number with n > 7 digits has digit sum divisible by 3, the
+search can be limited to n <= 7.  This implementation generates all
+permutations of the digits 1..n, forms each as an integer, and tests
+primality using an optimized 6k ± 1 trial division.  The maximum prime
+found is returned or 0 if none exist.  Time complexity is O(n! * sqrt(p))
+where p is the size of candidate primes.
+*/
+
+fun is_prime(number: int): bool {
+  if (1 < number) && (number < 4) {
+    return true
+  } else if (number < 2) || (number % 2 == 0) || (number % 3 == 0) {
+    return false
+  }
+  var i = 5
+  while i * i <= number {
+    if (number % i == 0) || (number % (i + 2) == 0) {
+      return false
+    }
+    i = i + 6
+  }
+  return true
+}
+
+fun remove_at(xs: list<int>, index: int): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < len(xs) {
+    if i != index {
+      res = append(res, xs[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun collect_primes(nums: list<int>, current: int, primes: list<int>): list<int> {
+  if len(nums) == 0 {
+    if is_prime(current) {
+      primes = append(primes, current)
+    }
+    return primes
+  }
+  var i = 0
+  var res = primes
+  while i < len(nums) {
+    let digit = nums[i]
+    let remaining = remove_at(nums, i)
+    res = collect_primes(remaining, current * 10 + digit, res)
+    i = i + 1
+  }
+  return res
+}
+
+fun max_list(nums: list<int>): int {
+  var m = 0
+  var i = 0
+  while i < len(nums) {
+    if nums[i] > m {
+      m = nums[i]
+    }
+    i = i + 1
+  }
+  return m
+}
+
+fun solution(n: int): int {
+  var digits: list<int> = []
+  var i = 1
+  while i <= n {
+    digits = append(digits, i)
+    i = i + 1
+  }
+  let primes = collect_primes(digits, 0, [] as list<int>)
+  if len(primes) == 0 {
+    return 0
+  }
+  return max_list(primes)
+}
+
+print("solution() = " + str(solution(7)))
