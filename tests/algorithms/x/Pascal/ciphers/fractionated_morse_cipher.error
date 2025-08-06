@@ -1,0 +1,184 @@
+compile: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/algorithms/x/Pascal/ciphers/fractionated_morse_cipher.pas
+fgl.pp(1668,8) Note: Call to subroutine "function TFPGMap<System.ShortString,System.ShortString>.IndexOf(const AKey:ShortString):LongInt;" marked as inline is not inlined
+fractionated_morse_cipher.pas(60,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(60,41) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(60,41) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(61,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(61,43) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(61,43) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(62,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(62,43) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(62,43) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(63,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(63,42) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(63,42) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(64,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(64,40) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(64,40) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(65,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(65,43) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(65,43) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(66,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(66,42) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(66,42) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(67,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(67,43) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(67,43) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(68,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(68,41) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(68,41) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(69,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(69,43) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(69,43) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(70,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(70,42) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(70,42) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(71,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(71,43) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(71,43) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(72,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(72,41) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(72,41) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(73,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(73,41) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(73,41) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(74,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(74,42) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(74,42) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(75,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(75,43) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(75,43) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(76,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(76,43) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(76,43) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(77,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(77,42) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(77,42) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(78,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(78,42) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(78,42) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(79,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(79,40) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(79,40) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(80,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(80,42) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(80,42) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(81,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(81,43) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(81,43) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(82,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(82,42) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(82,42) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(83,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(83,43) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(83,43) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(84,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(84,43) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(84,43) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(85,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(85,43) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(85,43) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(86,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(86,39) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(86,39) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(91,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(91,41) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(91,41) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(92,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(92,43) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(92,43) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(93,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(93,43) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(93,43) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(94,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(94,42) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(94,42) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(95,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(95,40) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(95,40) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(96,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(96,43) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(96,43) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(97,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(97,42) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(97,42) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(98,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(98,43) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(98,43) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(99,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(99,41) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(99,41) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(100,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(100,43) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(100,43) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(101,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(101,42) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(101,42) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(102,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(102,43) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(102,43) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(103,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(103,41) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(103,41) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(104,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(104,41) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(104,41) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(105,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(105,42) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(105,42) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(106,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(106,43) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(106,43) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(107,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(107,43) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(107,43) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(108,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(108,42) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(108,42) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(109,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(109,42) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(109,42) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(110,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(110,40) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(110,40) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(111,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(111,42) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(111,42) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(112,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(112,43) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(112,43) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(113,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(113,42) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(113,42) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(114,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(114,43) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(114,43) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(115,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(115,43) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(115,43) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(116,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(116,43) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(116,43) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(117,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(117,39) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(117,39) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(131,21) Note: Call to subroutine "function TFPGMap<System.ShortString,System.ShortString>.IndexOf(const AKey:ShortString):LongInt;" marked as inline is not inlined
+fractionated_morse_cipher.pas(132,40) Note: Call to subroutine "function TFPGMap<System.ShortString,System.ShortString>.GetKeyData(const AKey:ShortString):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(181,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(181,118) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(181,118) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(184,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.ShortString>.AddOrSetData(const AKey:ShortString;const AData:ShortString);" marked as inline is not inlined
+fractionated_morse_cipher.pas(184,64) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(184,64) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+fractionated_morse_cipher.pas(189,107) Note: Call to subroutine "function TFPGMap<System.ShortString,System.ShortString>.GetKeyData(const AKey:ShortString):ShortString;" marked as inline is not inlined
+fractionated_morse_cipher.pas(246,76) Error: Identifier not found "StrArray"
+fractionated_morse_cipher.pas(246,37) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of {Dynamic} Array Of ShortString", expected "{Open} Array Of Pointer"
+fractionated_morse_cipher.pas(253,76) Error: Identifier not found "StrArray"
+fractionated_morse_cipher.pas(253,37) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of {Dynamic} Array Of ShortString", expected "{Open} Array Of Pointer"
+fractionated_morse_cipher.pas(305) Fatal: There were 4 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

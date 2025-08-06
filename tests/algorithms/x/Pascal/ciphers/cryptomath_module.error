@@ -1,0 +1,9 @@
+compile: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/algorithms/x/Pascal/ciphers/cryptomath_module.pas
+cryptomath_module.pas(80,90) Error: Incompatible type for arg no. 1: Got "AnsiString", expected "TRuntimeError"
+cryptomath_module.pas(122) Fatal: There were 1 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

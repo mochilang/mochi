@@ -1,0 +1,12 @@
+compile: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/algorithms/x/Pascal/ciphers/hill_cipher.pas
+hill_cipher.pas(169,52) Error: Identifier not found "StrArray"
+hill_cipher.pas(169,25) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of {Dynamic} Array Of ShortString", expected "{Open} Array Of Pointer"
+hill_cipher.pas(178,52) Error: Identifier not found "StrArray"
+hill_cipher.pas(178,25) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of {Dynamic} Array Of ShortString", expected "{Open} Array Of Pointer"
+hill_cipher.pas(498) Fatal: There were 4 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

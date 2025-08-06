@@ -1,0 +1,13 @@
+compile: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/algorithms/x/Pascal/ciphers/rail_fence_cipher.pas
+fgl.pp(1668,8) Note: Call to subroutine "function TFPGMap<System.LongInt,System.ShortString>.IndexOf(const AKey:LongInt):LongInt;" marked as inline is not inlined
+rail_fence_cipher.pas(129,44) Error: Identifier not found "IntArray"
+rail_fence_cipher.pas(129,21) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of {Dynamic} Array Of LongInt", expected "{Open} Array Of Pointer"
+rail_fence_cipher.pas(161,46) Error: Identifier not found "IntArray"
+rail_fence_cipher.pas(161,22) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of {Dynamic} Array Of LongInt", expected "{Open} Array Of Pointer"
+rail_fence_cipher.pas(207) Fatal: There were 4 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode
