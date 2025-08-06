@@ -2913,11 +2913,14 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 	if needDC || (currentImports != nil && currentImports["dataclasses"]) {
 		imports = append(imports, "from __future__ import annotations")
 		imports = append(imports, "from dataclasses import dataclass")
-		typing := "List, Dict"
-		if usesCallable {
-			typing += ", Callable"
-		}
-		imports = append(imports, "from typing import "+typing)
+               typing := "List, Dict"
+               if usesCallable {
+                       typing += ", Callable"
+               }
+               if usesFetch {
+                       typing += ", Any"
+               }
+               imports = append(imports, "from typing import "+typing)
 	}
 	sort.Strings(imports)
 	for _, line := range imports {
