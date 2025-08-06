@@ -1,0 +1,46 @@
+/*
+Self Powers (Project Euler Problem 48)
+-------------------------------------
+Find the last ten digits of the series:
+    1^1 + 2^2 + 3^3 + ... + 1000^1000
+
+Computing the exact sum requires huge integers. Instead, each term
+and the running total are reduced modulo 10^10 so values fit into
+regular integers. For each i from 1 to 1000 we compute i^i mod 10^10
+using fast modular exponentiation, accumulate the sum modulo 10^10,
+and finally format the result as a 10-digit string with leading zeros.
+
+Time Complexity: O(n log m) where n=1000 and m=10^10
+Space Complexity: O(1)
+*/
+
+fun pow_mod(base: int, exponent: int, modulus: int): int {
+  var result = 1
+  var b = base % modulus
+  var e = exponent
+  while e > 0 {
+    if e % 2 == 1 {
+      result = (result * b) % modulus
+    }
+    b = (b * b) % modulus
+    e = e / 2
+  }
+  return result
+}
+
+fun solution(): string {
+  let modulus = 10000000000
+  var total = 0
+  var i = 1
+  while i <= 1000 {
+    total = (total + pow_mod(i, i, modulus)) % modulus
+    i = i + 1
+  }
+  var s = str(total)
+  while len(s) < 10 {
+    s = "0" + s
+  }
+  return s
+}
+
+print(solution())
