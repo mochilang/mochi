@@ -1,0 +1,60 @@
+/*
+Retrieve the top stories from Hacker News.
+
+This port of the Python implementation queries the public
+Hacker News Firebase API. It first fetches the list of top
+story IDs, then retrieves each story's metadata. For every
+story we keep only the title and URL, falling back to the
+Hacker News item page when an external link is missing.
+
+The helper `hackernews_top_stories_as_markdown` assembles the
+stories into a Markdown bullet list. All network requests are
+performed with the VM's `fetch` builtin and the algorithm runs
+in O(n) time for n requested stories.
+*/
+
+type Story {
+  title: string,
+  url: string,
+}
+
+fun get_hackernews_story(story_id: int): Story {
+  let url: string = "https://hacker-news.firebaseio.com/v0/item/" + str(story_id) + ".json?print=pretty"
+  var story: Story = (fetch url) as Story
+  if story.url == "" {
+    story.url = "https://news.ycombinator.com/item?id=" + str(story_id)
+  }
+  return story
+}
+
+fun hackernews_top_stories(max_stories: int): list<Story> {
+  let url: string = "https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty"
+  var ids: list<int> = (fetch url) as list<int>
+  ids = ids[0:max_stories]
+  var stories: list<Story> = []
+  var i = 0
+  while i < len(ids) {
+    stories = append(stories, get_hackernews_story(ids[i]))
+    i = i + 1
+  }
+  return stories
+}
+
+fun hackernews_top_stories_as_markdown(max_stories: int): string {
+  let stories = hackernews_top_stories(max_stories)
+  var output = ""
+  var i = 0
+  while i < len(stories) {
+    let s = stories[i]
+    let line = "* [" + s.title + "](" + s.url + ")"
+    if i == 0 {
+      output = line
+    } else {
+      output = output + "\n" + line
+    }
+    i = i + 1
+  }
+  return output
+}
+
+print(hackernews_top_stories_as_markdown(5))
