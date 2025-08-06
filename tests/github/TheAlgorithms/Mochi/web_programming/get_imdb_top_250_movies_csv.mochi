@@ -1,0 +1,35 @@
+/*
+Problem: Generate a CSV of IMDb's Top 250 movies.
+
+The original Python implementation downloads the IMDb Top 250 web page,
+parses the HTML with BeautifulSoup to extract each movie title and its
+rating, and writes the data to "IMDb_Top_250_Movies.csv".
+
+This pure Mochi version avoids external dependencies and network
+requests.  Instead it uses a small, static subset of the data to
+illustrate the same data processing steps:
+
+1. `get_imdb_top_250_movies` returns a map from movie titles to ratings.
+2. `write_movies` prints the CSV header followed by "title,rating" lines.
+   Output can be redirected to a file to recreate the CSV.
+*/
+
+fun get_imdb_top_250_movies(url: string): map<string, float> {
+  let movies: map<string, float> = {
+    "The Shawshank Redemption": 9.2,
+    "The Godfather": 9.2,
+    "The Dark Knight": 9.0
+  }
+  return movies
+}
+
+fun write_movies(filename: string): void {
+  let movies = get_imdb_top_250_movies("")
+  print("Movie title,IMDb rating")
+  for title in movies {
+    let rating = movies[title]
+    print(title + "," + str(rating))
+  }
+}
+
+write_movies("IMDb_Top_250_Movies.csv")
