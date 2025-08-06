@@ -1,0 +1,264 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/baconian_cipher.rs:50:2
+   |
+50 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/baconian_cipher.rs:56:11
+   |
+56 |     while (i < (s.len() as i64)) {
+   |           ^                    ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+56 -     while (i < (s.len() as i64)) {
+56 +     while i < (s.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/baconian_cipher.rs:58:12
+   |
+58 |         if (ch.as_str() == " ") {
+   |            ^                  ^
+   |
+help: remove these parentheses
+   |
+58 -         if (ch.as_str() == " ") {
+58 +         if ch.as_str() == " " {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/baconian_cipher.rs:64:13
+   |
+64 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+64 -         i = (i + 1);
+64 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/baconian_cipher.rs:73:11
+   |
+73 |     while (i < (w.len() as i64)) {
+   |           ^                    ^
+   |
+help: remove these parentheses
+   |
+73 -     while (i < (w.len() as i64)) {
+73 +     while i < (w.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/baconian_cipher.rs:80:13
+   |
+80 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+80 -         i = (i + 1);
+80 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/baconian_cipher.rs:86:11
+   |
+86 |     while (i < (coded.len() as i64)) {
+   |           ^                        ^
+   |
+help: remove these parentheses
+   |
+86 -     while (i < (coded.len() as i64)) {
+86 +     while i < (coded.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/baconian_cipher.rs:88:12
+   |
+88 |         if (((ch.as_str() != "A") && (ch.as_str() != "B")) && (ch.as_str() != " ")) {
+   |            ^                                                                      ^
+   |
+help: remove these parentheses
+   |
+88 -         if (((ch.as_str() != "A") && (ch.as_str() != "B")) && (ch.as_str() != " ")) {
+88 +         if ((ch.as_str() != "A") && (ch.as_str() != "B")) && (ch.as_str() != " ") {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/baconian_cipher.rs:91:13
+   |
+91 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+91 -         i = (i + 1);
+91 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/baconian_cipher.rs:96:11
+   |
+96 |     while (w < (words.len() as i64)) {
+   |           ^                        ^
+   |
+help: remove these parentheses
+   |
+96 -     while (w < (words.len() as i64)) {
+96 +     while w < (words.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/baconian_cipher.rs:99:15
+   |
+99 |         while (j < (word.len() as i64)) {
+   |               ^                       ^
+   |
+help: remove these parentheses
+   |
+99 -         while (j < (word.len() as i64)) {
+99 +         while j < (word.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/baconian_cipher.rs:102:17
+    |
+102 |             j = (j + 5);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+102 -             j = (j + 5);
+102 +             j = j + 5;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/baconian_cipher.rs:104:12
+    |
+104 |         if (w < ((words.len() as i64) - 1)) {
+    |            ^                              ^
+    |
+help: remove these parentheses
+    |
+104 -         if (w < ((words.len() as i64) - 1)) {
+104 +         if w < ((words.len() as i64) - 1) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/baconian_cipher.rs:107:13
+    |
+107 |         w = (w + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+107 -         w = (w + 1);
+107 +         w = w + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/baconian_cipher.rs:116:32
+    |
+116 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+116 -         let duration_us: i64 = ((_end - _start) / 1000);
+116 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/baconian_cipher.rs:47:68
+   |
+47 |         m.insert(g_encode_map.lock().unwrap()[k.as_str()].clone(), k);
+   |           ------                                                   ^- help: try using a conversion method: `.to_string()`
+   |           |                                                        |
+   |           arguments to this method are incorrect                   expected `String`, found `&String`
+   |
+help: the return type of this call is `&String` due to the type of the argument passed
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/baconian_cipher.rs:47:9
+   |
+47 |         m.insert(g_encode_map.lock().unwrap()[k.as_str()].clone(), k);
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-^
+   |                                                                    |
+   |                                                                    this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/baconian_cipher.rs:57:13
+   |
+57 |         let mut ch: String = { let tmp = &s; tmp.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>() }.clone();
+   |             ----^^
+   |             |
+   |             help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/baconian_cipher.rs:70:9
+   |
+70 |     let mut w: String = (word.to_lowercase()).clone();
+   |         ----^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/baconian_cipher.rs:74:13
+   |
+74 |         let mut ch: String = { let tmp = &w; tmp.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>() }.clone();
+   |             ----^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/baconian_cipher.rs:87:13
+   |
+87 |         let mut ch: String = { let tmp = &coded; tmp.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>() }.clone();
+   |             ----^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/baconian_cipher.rs:93:9
+   |
+93 |     let mut words: Vec<String> = split_spaces(&coded);
+   |         ----^^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/baconian_cipher.rs:97:13
+   |
+97 |         let mut word: String = words[w as usize].clone().clone();
+   |             ----^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/baconian_cipher.rs:100:17
+    |
+100 | ...   let mut segment: String = { let tmp = &word; tmp.chars().skip(j as usize).take(((j + 5) - j) as usize).collect::<String>() }.clone();
+    |           ----^^^^^^^
+    |           |
+    |           help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/baconian_cipher.rs:51:13
+   |
+51 |         let mut decode_map: HashMap<String, String> = make_decode_map();
+   |             ----^^^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+
+error: aborting due to 1 previous error; 23 warnings emitted
+
+For more information about this error, try `rustc --explain E0308`.

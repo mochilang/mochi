@@ -1,0 +1,463 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:70:2
+   |
+70 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:73:2
+   |
+73 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:83:2
+   |
+83 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:94:2
+   |
+94 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:156:2
+    |
+156 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:76:11
+   |
+76 |     while (i < (xs.len() as i64)) {
+   |           ^                     ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+76 -     while (i < (xs.len() as i64)) {
+76 +     while i < (xs.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:77:12
+   |
+77 |         if (xs[i as usize].clone() == ch) {
+   |            ^                            ^
+   |
+help: remove these parentheses
+   |
+77 -         if (xs[i as usize].clone() == ch) {
+77 +         if xs[i as usize].clone() == ch {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:80:13
+   |
+80 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+80 -         i = (i + 1);
+80 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:87:11
+   |
+87 |     while (i < (s.len() as i64)) {
+   |           ^                    ^
+   |
+help: remove these parentheses
+   |
+87 -     while (i < (s.len() as i64)) {
+87 +     while i < (s.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:89:21
+   |
+89 |             count = (count + 1);
+   |                     ^         ^
+   |
+help: remove these parentheses
+   |
+89 -             count = (count + 1);
+89 +             count = count + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:91:13
+   |
+91 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+91 -         i = (i + 1);
+91 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:97:8
+   |
+97 |     if ((alphabet_letters.len() as i64) == 0) {
+   |        ^                                    ^
+   |
+help: remove these parentheses
+   |
+97 -     if ((alphabet_letters.len() as i64) == 0) {
+97 +     if (alphabet_letters.len() as i64) == 0 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:101:8
+    |
+101 |     if ((frequencies.len() as i64) == 0) {
+    |        ^                               ^
+    |
+help: remove these parentheses
+    |
+101 -     if ((frequencies.len() as i64) == 0) {
+101 +     if (frequencies.len() as i64) == 0 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:105:22
+    |
+105 |         ciphertext = (ciphertext.to_lowercase());
+    |                      ^                         ^
+    |
+help: remove these parentheses
+    |
+105 -         ciphertext = (ciphertext.to_lowercase());
+105 +         ciphertext = ciphertext.to_lowercase();
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:111:11
+    |
+111 |     while (shift < (alphabet_letters.len() as i64)) {
+    |           ^                                       ^
+    |
+help: remove these parentheses
+    |
+111 -     while (shift < (alphabet_letters.len() as i64)) {
+111 +     while shift < (alphabet_letters.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:114:15
+    |
+114 |         while (i < (ciphertext.len() as i64)) {
+    |               ^                             ^
+    |
+help: remove these parentheses
+    |
+114 -         while (i < (ciphertext.len() as i64)) {
+114 +         while i < (ciphertext.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:117:16
+    |
+117 |             if (idx >= 0) {
+    |                ^        ^
+    |
+help: remove these parentheses
+    |
+117 -             if (idx >= 0) {
+117 +             if idx >= 0 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:118:29
+    |
+118 |                 let mut m = (alphabet_letters.len() as i64);
+    |                             ^                             ^
+    |
+help: remove these parentheses
+    |
+118 -                 let mut m = (alphabet_letters.len() as i64);
+118 +                 let mut m = alphabet_letters.len() as i64;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:119:40
+    |
+119 |                 let mut new_idx: i64 = ((idx - shift) % m);
+    |                                        ^                 ^
+    |
+help: remove these parentheses
+    |
+119 -                 let mut new_idx: i64 = ((idx - shift) % m);
+119 +                 let mut new_idx: i64 = (idx - shift) % m;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:120:20
+    |
+120 |                 if (new_idx < 0) {
+    |                    ^           ^
+    |
+help: remove these parentheses
+    |
+120 -                 if (new_idx < 0) {
+120 +                 if new_idx < 0 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:121:31
+    |
+121 |                     new_idx = (new_idx + m);
+    |                               ^           ^
+    |
+help: remove these parentheses
+    |
+121 -                     new_idx = (new_idx + m);
+121 +                     new_idx = new_idx + m;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:124:20
+    |
+124 |                 if (case_sensitive && (ch.as_str() != (ch.to_lowercase()).as_str())) {
+    |                    ^                                                               ^
+    |
+help: remove these parentheses
+    |
+124 -                 if (case_sensitive && (ch.as_str() != (ch.to_lowercase()).as_str())) {
+124 +                 if case_sensitive && (ch.as_str() != (ch.to_lowercase()).as_str()) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:132:17
+    |
+132 |             i = (i + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+132 -             i = (i + 1);
+132 +             i = i + 1;
+    |
+
+warning: unnecessary parentheses around block return value
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:135:55
+    |
+135 |         let mut lowered: String = if case_sensitive { (decrypted.to_lowercase()) } else { decrypted }.clone();
+    |                                                       ^                        ^
+    |
+help: remove these parentheses
+    |
+135 -         let mut lowered: String = if case_sensitive { (decrypted.to_lowercase()) } else { decrypted }.clone();
+135 +         let mut lowered: String = if case_sensitive { decrypted.to_lowercase() } else { decrypted }.clone();
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:137:15
+    |
+137 |         while (j < (alphabet_letters.len() as i64)) {
+    |               ^                                   ^
+    |
+help: remove these parentheses
+    |
+137 -         while (j < (alphabet_letters.len() as i64)) {
+137 +         while j < (alphabet_letters.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:140:16
+    |
+140 |             if (occ > 0) {
+    |                ^       ^
+    |
+help: remove these parentheses
+    |
+140 -             if (occ > 0) {
+140 +             if occ > 0 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:141:37
+    |
+141 |                 let mut occf: f64 = (occ as f64);
+    |                                     ^          ^
+    |
+help: remove these parentheses
+    |
+141 -                 let mut occf: f64 = (occ as f64);
+141 +                 let mut occf: f64 = occ as f64;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:142:41
+    |
+142 |                 let mut expected: f64 = (frequencies.get(letter.as_str()).cloned().unwrap_or_default() * occf);
+    |                                         ^                                                                    ^
+    |
+help: remove these parentheses
+    |
+142 -                 let mut expected: f64 = (frequencies.get(letter.as_str()).cloned().unwrap_or_default() * occf);
+142 +                 let mut expected: f64 = frequencies.get(letter.as_str()).cloned().unwrap_or_default() * occf;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:143:37
+    |
+143 |                 let mut diff: f64 = (occf - expected);
+    |                                     ^               ^
+    |
+help: remove these parentheses
+    |
+143 -                 let mut diff: f64 = (occf - expected);
+143 +                 let mut diff: f64 = occf - expected;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:144:23
+    |
+144 |                 chi = (chi + (((diff * diff) / expected) * occf));
+    |                       ^                                         ^
+    |
+help: remove these parentheses
+    |
+144 -                 chi = (chi + (((diff * diff) / expected) * occf));
+144 +                 chi = chi + (((diff * diff) / expected) * occf);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:146:17
+    |
+146 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+146 -             j = (j + 1);
+146 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:148:12
+    |
+148 |         if ((shift == 0) || (chi < best_chi)) {
+    |            ^                                ^
+    |
+help: remove these parentheses
+    |
+148 -         if ((shift == 0) || (chi < best_chi)) {
+148 +         if (shift == 0) || (chi < best_chi) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:153:17
+    |
+153 |         shift = (shift + 1);
+    |                 ^         ^
+    |
+help: remove these parentheses
+    |
+153 -         shift = (shift + 1);
+153 +         shift = shift + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:164:28
+    |
+164 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+164 -     let duration_us: i64 = ((_end - _start) / 1000);
+164 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:157:145
+    |
+157 | ... = decrypt_caesar_with_chi_squared(String::from("dof pz aol jhlzhy jpwoly zv wvwbshy? pa pz avv lhzf av jyhjr!"), vec![], &Map {}, fal...
+    |       ------------------------------- arguments to this function are incorrect                                               ^^^^^^^ expected `&HashMap<String, f64>`, found `&Map`
+    |
+    = note: expected reference `&HashMap<String, f64>`
+               found reference `&Map`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:95:8
+    |
+95  | ...fn decrypt_caesar_with_chi_squared(mut ciphertext: String, mut cipher_alphabet: Vec<String>, frequencies_dict: &HashMap<String, f64>, m...
+    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                                                           ---------------------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:159:96
+    |
+159 |     let mut r2: Result = decrypt_caesar_with_chi_squared(String::from("crybd cdbsxq"), vec![], &Map {}, false);
+    |                          -------------------------------                                       ^^^^^^^ expected `&HashMap<String, f64>`, found `&Map`
+    |                          |
+    |                          arguments to this function are incorrect
+    |
+    = note: expected reference `&HashMap<String, f64>`
+               found reference `&Map`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:95:8
+    |
+95  | ...fn decrypt_caesar_with_chi_squared(mut ciphertext: String, mut cipher_alphabet: Vec<String>, frequencies_dict: &HashMap<String, f64>, m...
+    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                                                           ---------------------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:161:96
+    |
+161 |     let mut r3: Result = decrypt_caesar_with_chi_squared(String::from("Crybd Cdbsxq"), vec![], &Map {}, true);
+    |                          -------------------------------                                       ^^^^^^^ expected `&HashMap<String, f64>`, found `&Map`
+    |                          |
+    |                          arguments to this function are incorrect
+    |
+    = note: expected reference `&HashMap<String, f64>`
+               found reference `&Map`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:95:8
+    |
+95  | ...fn decrypt_caesar_with_chi_squared(mut ciphertext: String, mut cipher_alphabet: Vec<String>, frequencies_dict: &HashMap<String, f64>, m...
+    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                                                           ---------------------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:100:49
+    |
+100 |     let mut frequencies: HashMap<String, f64> = frequencies_dict;
+    |                          --------------------   ^^^^^^^^^^^^^^^^ expected `HashMap<String, f64>`, found `&HashMap<String, f64>`
+    |                          |
+    |                          expected due to this
+    |
+    = note: expected struct `HashMap<_, _>`
+            found reference `&HashMap<_, _>`
+help: consider using clone here
+    |
+100 |     let mut frequencies: HashMap<String, f64> = frequencies_dict.clone();
+    |                                                                 ++++++++
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:74:17
+   |
+74 |     fn index_of(mut xs: Vec<String>, ch: &str) -> i64 {
+   |                 ----^^
+   |                 |
+   |                 help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/ciphers/decrypt_caesar_with_chi_squared.rs:84:19
+   |
+84 |     fn count_char(mut s: String, ch: &str) -> i64 {
+   |                   ----^
+   |                   |
+   |                   help: remove this `mut`
+
+error: aborting due to 4 previous errors; 36 warnings emitted
+
+For more information about this error, try `rustc --explain E0308`.

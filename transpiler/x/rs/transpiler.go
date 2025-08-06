@@ -104,23 +104,23 @@ func isConstExpr(e Expr) bool {
 	if e == nil {
 		return true
 	}
-       switch v := e.(type) {
-       case *StringLit, *NumberLit, *BoolLit, *NullLit:
-               return true
-       case *StringCastExpr:
-               return isConstExpr(v.Expr)
-       case *IntCastExpr:
-               return isConstExpr(v.Expr)
-       case *UnaryExpr:
-               if v.Op == "-" || v.Op == "+" {
-                       return isConstExpr(v.Expr)
-               }
-               return false
-       case *ListLit:
-               for _, el := range v.Elems {
-                       if !isConstExpr(el) {
-                               return false
-                       }
+	switch v := e.(type) {
+	case *StringLit, *NumberLit, *BoolLit, *NullLit:
+		return true
+	case *StringCastExpr:
+		return isConstExpr(v.Expr)
+	case *IntCastExpr:
+		return isConstExpr(v.Expr)
+	case *UnaryExpr:
+		if v.Op == "-" || v.Op == "+" {
+			return isConstExpr(v.Expr)
+		}
+		return false
+	case *ListLit:
+		for _, el := range v.Elems {
+			if !isConstExpr(el) {
+				return false
+			}
 		}
 		return true
 	case *MapLit:
@@ -284,7 +284,7 @@ func (c *CallExpr) emit(w io.Writer) {
 		(&PadStartExpr{Str: c.Args[0], Width: c.Args[1], Pad: c.Args[2]}).emit(w)
 		return
 	}
-	if c.Func == "panic" {
+	if c.Func == "panic" || c.Func == "error" {
 		io.WriteString(w, "panic!(")
 		for i, a := range c.Args {
 			if i > 0 {
@@ -304,6 +304,24 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		if hasPts && i < len(pts) {
 			pt := pts[i]
+			if strings.Contains(pt, "HashMap<") {
+				if ml, ok := a.(*MapLit); ok && len(ml.Items) == 0 {
+					if strings.HasPrefix(pt, "&") {
+						io.WriteString(w, "&HashMap::new()")
+					} else {
+						io.WriteString(w, "HashMap::new()")
+					}
+					continue
+				}
+				if sl, ok := a.(*StructLit); ok && sl.Name == "Map" && len(sl.Fields) == 0 {
+					if strings.HasPrefix(pt, "&") {
+						io.WriteString(w, "&HashMap::new()")
+					} else {
+						io.WriteString(w, "HashMap::new()")
+					}
+					continue
+				}
+			}
 			if strings.HasPrefix(pt, "&mut ") {
 				if nr, ok := a.(*NameRef); ok {
 					if cpt, ok2 := currentParamTypes[nr.Name]; ok2 && strings.HasPrefix(cpt, "&") {
@@ -1669,8 +1687,13 @@ func (n *NameRef) emit(w io.Writer) {
 			typ = varTypes[n.Name]
 		}
 		if globalVars[n.Name] && !indexLHS && typ != "" && typ != "i64" && typ != "bool" && typ != "f64" && typ != "String" && !strings.HasPrefix(typ, "&") {
-			io.WriteString(w, name)
-			io.WriteString(w, ".clone()")
+			if strings.HasPrefix(typ, "HashMap<") {
+				io.WriteString(w, name)
+				io.WriteString(w, ".lock().unwrap().clone()")
+			} else {
+				io.WriteString(w, name)
+				io.WriteString(w, ".clone()")
+			}
 			return
 		}
 	}
@@ -2114,7 +2137,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 				}
 				io.WriteString(w, name)
 				io.WriteString(w, ".lock().unwrap().contains_key(")
-				if t := inferType(b.Left); t == "&str" || t == "String" {
+				if t := inferType(b.Left); strings.HasPrefix(t, "&") {
 					b.Left.emit(w)
 				} else {
 					io.WriteString(w, "&")
@@ -2124,7 +2147,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			} else {
 				b.Right.emit(w)
 				io.WriteString(w, ".contains_key(")
-				if t := inferType(b.Left); t == "&str" || t == "String" {
+				if t := inferType(b.Left); strings.HasPrefix(t, "&") {
 					b.Left.emit(w)
 				} else {
 					io.WriteString(w, "&")
@@ -2137,7 +2160,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		if nr, ok := b.Right.(*NameRef); ok && mapVars[nr.Name] {
 			b.Right.emit(w)
 			io.WriteString(w, ".contains_key(")
-			if t := inferType(b.Left); t == "&str" || t == "String" {
+			if t := inferType(b.Left); strings.HasPrefix(t, "&") {
 				b.Left.emit(w)
 			} else {
 				io.WriteString(w, "&")
@@ -3395,7 +3418,7 @@ func compileWhileStmt(n *parser.WhileStmt) (Stmt, error) {
 }
 
 func compileForStmt(n *parser.ForStmt) (Stmt, error) {
-	localVarStack = append(localVarStack, map[string]bool{})
+	localVarStack = append(localVarStack, map[string]bool{n.Name: true})
 	defer func() { localVarStack = localVarStack[:len(localVarStack)-1] }()
 	iter, err := compileExpr(n.Source)
 	if nr, ok := iter.(*NameRef); ok && groupVars[nr.Name] {
@@ -3422,13 +3445,17 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 		parts := strings.TrimPrefix(itType, "HashMap<")
 		if idx := strings.Index(parts, ","); idx > 0 {
 			kt := strings.TrimSpace(parts[:idx])
-			iter = &MethodCallExpr{Receiver: iter, Name: "keys"}
+			iter = &MethodCallExpr{Receiver: &MethodCallExpr{Receiver: iter, Name: "keys"}, Name: "cloned"}
 			if kt == "String" || kt == "&str" {
 				varTypes[n.Name] = "String"
 				stringVars[n.Name] = true
 			} else {
 				varTypes[n.Name] = kt
 			}
+		} else if itType == "String" || itType == "&str" {
+			iter = &MethodCallExpr{Receiver: iter, Name: "chars"}
+			varTypes[n.Name] = "String"
+			stringVars[n.Name] = true
 		}
 	}
 	var end Expr
@@ -3457,7 +3484,7 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 			parts := strings.TrimPrefix(itType, "HashMap<")
 			if idx := strings.Index(parts, ","); idx > 0 {
 				kt := strings.TrimSpace(parts[:idx])
-				iter = &MethodCallExpr{Receiver: iter, Name: "keys"}
+				iter = &MethodCallExpr{Receiver: &MethodCallExpr{Receiver: iter, Name: "keys"}, Name: "cloned"}
 				if kt == "String" || kt == "&str" {
 					varTypes[n.Name] = "String"
 					stringVars[n.Name] = true
@@ -3465,6 +3492,10 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 					varTypes[n.Name] = kt
 				}
 			}
+		} else if itType == "String" || itType == "&str" {
+			iter = &MethodCallExpr{Receiver: iter, Name: "chars"}
+			varTypes[n.Name] = "String"
+			stringVars[n.Name] = true
 		} else {
 			varTypes[n.Name] = "i64"
 		}
@@ -3491,9 +3522,16 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 			} else {
 				varTypes[n.Name] = typ
 			}
+		} else if itType == "String" || itType == "&str" {
+			varTypes[n.Name] = "String"
+			stringVars[n.Name] = true
 		} else {
 			varTypes[n.Name] = "i64"
 		}
+	}
+	if itType == "String" || itType == "&str" {
+		decl := &VarDecl{Name: n.Name, Expr: &MethodCallExpr{Receiver: &NameRef{Name: n.Name}, Name: "to_string"}}
+		body = append([]Stmt{decl}, body...)
 	}
 	return &ForStmt{Var: n.Name, Iter: iter, End: end, Body: body, ByRef: byRef, IterType: itType}, nil
 }
