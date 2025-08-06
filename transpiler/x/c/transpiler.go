@@ -457,6 +457,27 @@ type BenchStmt struct {
 
 func (c *CallStmt) emit(w io.Writer, indent int) {
 	if c.Func == "print" && len(c.Args) == 1 {
+		t := inferExprType(currentEnv, c.Args[0])
+		if strings.HasSuffix(t, "[]") {
+			base := strings.TrimSuffix(t, "[]")
+			writeIndent(w, indent)
+			if base == "const char*" {
+				needStrListStr = true
+				io.WriteString(w, "puts(str_list_str(")
+				c.Args[0].emitExpr(w)
+				io.WriteString(w, ", ")
+				emitLenExpr(w, c.Args[0])
+				io.WriteString(w, "));\n")
+			} else {
+				needStrListInt = true
+				io.WriteString(w, "puts(str_list_int(")
+				c.Args[0].emitExpr(w)
+				io.WriteString(w, ", ")
+				emitLenExpr(w, c.Args[0])
+				io.WriteString(w, "));\n")
+			}
+			return
+		}
 		writeIndent(w, indent)
 		if c.Type == "string" {
 			if lit, ok := c.Args[0].(*StringLit); ok {
@@ -825,7 +846,17 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 					if i > 0 {
 						io.WriteString(w, ", ")
 					}
-					e.emitExpr(w)
+					if base == "const char*" {
+						if inferExprType(currentEnv, e) == "const char*" {
+							e.emitExpr(w)
+						} else if lit, ok2 := e.(*IntLit); ok2 {
+							fmt.Fprintf(w, "\"%d\"", lit.Value)
+						} else {
+							e.emitExpr(w)
+						}
+					} else {
+						e.emitExpr(w)
+					}
 				}
 				io.WriteString(w, "};\n")
 				writeIndent(w, indent)
@@ -848,12 +879,24 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 					case "const char*":
 						needListAppendStr = true
 						fmt.Fprintf(w, "%s = list_append_str(%s, &%s_len, ", d.Name, d.Name, d.Name)
+						if inferExprType(currentEnv, e) == "const char*" {
+							e.emitExpr(w)
+						} else {
+							needStrInt = true
+							io.WriteString(w, "str_int(")
+							e.emitExpr(w)
+							io.WriteString(w, ")")
+						}
+						io.WriteString(w, ");\n")
+						continue
 					default:
 						needListAppendInt = true
 						fmt.Fprintf(w, "%s = list_append_int(%s, &%s_len, ", d.Name, d.Name, d.Name)
 					}
-					e.emitExpr(w)
-					io.WriteString(w, ");\n")
+					if base != "const char*" {
+						e.emitExpr(w)
+						io.WriteString(w, ");\n")
+					}
 				}
 			}
 			return
@@ -2654,7 +2697,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("}\n\n")
 	}
 	if needStrBool {
-		buf.WriteString("static char* str_bool(int v) {\n")
+		buf.WriteString("static char* str_bool(long long v) {\n")
 		buf.WriteString("    return strdup(v ? \"true\" : \"false\");\n")
 		buf.WriteString("}\n\n")
 	}
@@ -7023,7 +7066,9 @@ func cTypeFromMochiType(t types.Type) string {
 		needGMP = true
 		return "bigrat"
 	case types.BoolType:
-		return "int"
+		return "long long"
+	case types.AnyType:
+		return "const char*"
 	case types.StructType:
 		return tt.Name
 	case types.ListType:
