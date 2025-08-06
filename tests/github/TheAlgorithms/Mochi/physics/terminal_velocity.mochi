@@ -1,0 +1,44 @@
+/*
+Compute the terminal velocity of an object falling through a fluid.
+
+Terminal velocity is the constant speed reached when the downward
+force of gravity is balanced by drag and buoyant forces, resulting in
+zero net acceleration.  It is given by
+
+  Vt = sqrt((2 * m * g) / (rho * A * Cd))
+
+where
+  m  - mass of the object in kilograms (kg)
+  rho - density of the fluid in kilograms per cubic meter (kg/m^3)
+  A  - projected area of the object in square meters (m^2)
+  Cd - dimensionless drag coefficient
+
+All parameters must be positive; otherwise the function panics.
+*/
+
+let G: float = 9.80665
+
+fun sqrt(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess = x
+  var i = 0
+  while i < 10 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun terminal_velocity(mass: float, density: float, area: float, drag_coefficient: float): float {
+  if mass <= 0.0 || density <= 0.0 || area <= 0.0 || drag_coefficient <= 0.0 {
+    panic("mass, density, area and the drag coefficient all need to be positive")
+  }
+  let numerator = 2.0 * mass * G
+  let denominator = density * area * drag_coefficient
+  let result = sqrt(numerator / denominator)
+  return result
+}
+
+print(str(terminal_velocity(1.0, 25.0, 0.6, 0.77)))
+print(str(terminal_velocity(2.0, 100.0, 0.45, 0.23)))
+print(str(terminal_velocity(5.0, 50.0, 0.2, 0.5)))
