@@ -1,0 +1,62 @@
+/*
+Project Euler Problem 27: Quadratic primes.
+
+Euler found that the quadratic expression n^2 + n + 41 produces 40 primes for consecutive values of n starting from 0.
+This script searches for coefficients a and b, with |a| < 1000 and |b| < 1000, such that the quadratic
+expression n^2 + a*n + b yields the maximum number of consecutive primes starting from n = 0.
+
+Algorithm steps:
+1. Use a primality test based on checking divisibility by numbers of the form 6k ± 1.
+2. Iterate over candidate coefficients a in the range [-999, 999] and b in [2, 999].
+   Only prime values of b need to be considered because the expression for n = 0 equals b.
+3. For each pair (a, b), count how many consecutive n starting from 0 make the expression prime.
+4. Track the pair that produces the longest run and return the product a * b.
+
+Time complexity: roughly O(a_limit * b_limit * sqrt(n)) for primality checks.
+*/
+
+fun is_prime(number: int): bool {
+  if 1 < number && number < 4 {
+    return true
+  } else if number < 2 || number % 2 == 0 || number % 3 == 0 {
+    return false
+  }
+  var i: int = 5
+  while i * i <= number {
+    if number % i == 0 || number % (i + 2) == 0 {
+      return false
+    }
+    i = i + 6
+  }
+  return true
+}
+
+fun solution(a_limit: int, b_limit: int): int {
+  var longest_len: int = 0
+  var longest_a: int = 0
+  var longest_b: int = 0
+  var a: int = (-1 * a_limit) + 1
+  while a < a_limit {
+    var b: int = 2
+    while b < b_limit {
+      if is_prime(b) {
+        var count: int = 0
+        var n: int = 0
+        while is_prime(n * n + a * n + b) {
+          count = count + 1
+          n = n + 1
+        }
+        if count > longest_len {
+          longest_len = count
+          longest_a = a
+          longest_b = b
+        }
+      }
+      b = b + 1
+    }
+    a = a + 1
+  }
+  return longest_a * longest_b
+}
+
+print(str(solution(1000, 1000)))
