@@ -1391,7 +1391,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    var data = std.heap.page_allocator.alloc(u8, bs.len) catch unreachable;\n")
 		buf.WriteString("    defer std.heap.page_allocator.free(data);\n")
 		buf.WriteString("    var i: usize = 0;\n")
-		buf.WriteString("    while (i < bs.len) { data[i] = @intCast(bs[i]); i += 1; }\n")
+		buf.WriteString("    while (i < bs.len) { data[i] = @as(u8, @intCast(bs[i])); i += 1; }\n")
 		buf.WriteString("    var digest: [32]u8 = undefined;\n")
 		buf.WriteString("    std.crypto.hash.sha2.Sha256.hash(data, &digest, .{});\n")
 		buf.WriteString("    var out = std.heap.page_allocator.alloc(i64, 32) catch unreachable;\n")
@@ -2038,16 +2038,16 @@ func (i *IndexExpr) emit(w io.Writer) {
 	t := zigTypeFromExpr(i.Target)
 	if t == "[]const u8" {
 		i.Target.emit(w)
-		io.WriteString(w, "[@intCast(")
+		io.WriteString(w, "[@as(usize, @intCast(")
 		i.Index.emit(w)
-		io.WriteString(w, ")..@intCast(")
+		io.WriteString(w, "))..@as(usize, @intCast(")
 		i.Index.emit(w)
-		io.WriteString(w, ") + 1]")
+		io.WriteString(w, ")) + 1]")
 	} else {
 		i.Target.emit(w)
-		io.WriteString(w, "[@intCast(")
+		io.WriteString(w, "[@as(usize, @intCast(")
 		i.Index.emit(w)
-		io.WriteString(w, ")]")
+		io.WriteString(w, "))]")
 	}
 }
 
@@ -2055,17 +2055,17 @@ func (sli *SliceExpr) emit(w io.Writer) {
 	sli.Target.emit(w)
 	io.WriteString(w, "[")
 	if sli.Start != nil {
-		io.WriteString(w, "@intCast(usize, ")
+		io.WriteString(w, "@as(usize, @intCast(")
 		sli.Start.emit(w)
-		io.WriteString(w, ")")
+		io.WriteString(w, "))")
 	} else {
 		io.WriteString(w, "0")
 	}
 	io.WriteString(w, "..")
 	if sli.End != nil {
-		io.WriteString(w, "@intCast(usize, ")
+		io.WriteString(w, "@as(usize, @intCast(")
 		sli.End.emit(w)
-		io.WriteString(w, ")")
+		io.WriteString(w, "))")
 	}
 	io.WriteString(w, "]")
 }
@@ -2208,11 +2208,11 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, " {\n")
 		}
 	} else {
-		io.WriteString(w, "for (")
+		io.WriteString(w, "for (@as(usize, @intCast(")
 		f.Start.emit(w)
-		io.WriteString(w, "..")
+		io.WriteString(w, "))..@as(usize, @intCast(")
 		f.End.emit(w)
-		io.WriteString(w, ") |")
+		io.WriteString(w, "))) |")
 		if used {
 			io.WriteString(w, tmp)
 			io.WriteString(w, "| {\n")
