@@ -1,0 +1,366 @@
+/*
+Convolution Neural Network (CNN) Example
+---------------------------------------
+
+This Mochi program mirrors the structure of the reference Python
+implementation of a convolutional neural network used for handwriting
+recognition.  The network contains a single convolution layer followed by
+average pooling and two fully connected layers trained with gradient
+descent.  All tensor operations are implemented manually using typed lists
+so the code remains pure Mochi without FFI or "any" types.
+
+The example trains on a tiny synthetic 4x4 image.  Two 2x2 convolution
+kernels with stride 2 extract simple features which are pooled and fed into
+a hidden layer of two units and an output layer of two units.  After several
+training epochs the network is able to match the target output.
+*/
+
+type CNN {
+  conv_kernels: list<list<list<float>>>,
+  conv_bias: list<float>,
+  conv_step: int,
+  pool_size: int,
+  w_hidden: list<list<float>>,  // input_size x hidden_size
+  w_out: list<list<float>>,     // hidden_size x output_size
+  b_hidden: list<float>,
+  b_out: list<float>,
+  rate_weight: float,
+  rate_bias: float,
+}
+
+var seed = 1
+fun random(): float {
+  seed = (seed * 13 + 7) % 100
+  return (seed as float) / 100.0
+}
+
+fun sigmoid(x: float): float {
+  return 1.0 / (1.0 + exp(-x))
+}
+
+fun to_float(x: int): float {
+  return x * 1.0
+}
+
+fun exp(x: float): float {
+  var term = 1.0
+  var sum = 1.0
+  var n = 1
+  while n < 20 {
+    term = term * x / to_float(n)
+    sum = sum + term
+    n = n + 1
+  }
+  return sum
+}
+
+fun convolve(data: list<list<float>>, kernel: list<list<float>>, step: int, bias: float): list<list<float>> {
+  let size_data = len(data)
+  let size_kernel = len(kernel)
+  var out: list<list<float>> = []
+  var i: int = 0
+  while i <= size_data - size_kernel {
+    var row: list<float> = []
+    var j: int = 0
+    while j <= size_data - size_kernel {
+      var sum: float = 0.0
+      var a: int = 0
+      while a < size_kernel {
+        var b: int = 0
+        while b < size_kernel {
+          sum = sum + data[i + a][j + b] * kernel[a][b]
+          b = b + 1
+        }
+        a = a + 1
+      }
+      row = append(row, sigmoid(sum - bias))
+      j = j + step
+    }
+    out = append(out, row)
+    i = i + step
+  }
+  return out
+}
+
+fun average_pool(map: list<list<float>>, size: int): list<list<float>> {
+  var out: list<list<float>> = []
+  var i: int = 0
+  while i < len(map) {
+    var row: list<float> = []
+    var j: int = 0
+    while j < len(map[i]) {
+      var sum: float = 0.0
+      var a: int = 0
+      while a < size {
+        var b: int = 0
+        while b < size {
+          sum = sum + map[i + a][j + b]
+          b = b + 1
+        }
+        a = a + 1
+      }
+      row = append(row, sum / ((size * size) as float))
+      j = j + size
+    }
+    out = append(out, row)
+    i = i + size
+  }
+  return out
+}
+
+fun flatten(maps: list<list<list<float>>>): list<float> {
+  var out: list<float> = []
+  var i: int = 0
+  while i < len(maps) {
+    var j: int = 0
+    while j < len(maps[i]) {
+      var k: int = 0
+      while k < len(maps[i][j]) {
+        out = append(out, maps[i][j][k])
+        k = k + 1
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return out
+}
+
+fun vec_mul_mat(v: list<float>, m: list<list<float>>): list<float> {
+  var cols: int = len(m[0])
+  var res: list<float> = []
+  var j: int = 0
+  while j < cols {
+    var sum: float = 0.0
+    var i: int = 0
+    while i < len(v) {
+      sum = sum + v[i] * m[i][j]
+      i = i + 1
+    }
+    res = append(res, sum)
+    j = j + 1
+  }
+  return res
+}
+
+fun matT_vec_mul(m: list<list<float>>, v: list<float>): list<float> {
+  var res: list<float> = []
+  var i: int = 0
+  while i < len(m) {
+    var sum: float = 0.0
+    var j: int = 0
+    while j < len(m[i]) {
+      sum = sum + m[i][j] * v[j]
+      j = j + 1
+    }
+    res = append(res, sum)
+    i = i + 1
+  }
+  return res
+}
+
+fun vec_add(a: list<float>, b: list<float>): list<float> {
+  var res: list<float> = []
+  var i: int = 0
+  while i < len(a) {
+    res = append(res, a[i] + b[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun vec_sub(a: list<float>, b: list<float>): list<float> {
+  var res: list<float> = []
+  var i: int = 0
+  while i < len(a) {
+    res = append(res, a[i] - b[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun vec_mul(a: list<float>, b: list<float>): list<float> {
+  var res: list<float> = []
+  var i: int = 0
+  while i < len(a) {
+    res = append(res, a[i] * b[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun vec_map_sig(v: list<float>): list<float> {
+  var res: list<float> = []
+  var i: int = 0
+  while i < len(v) {
+    res = append(res, sigmoid(v[i]))
+    i = i + 1
+  }
+  return res
+}
+
+type TrainSample { image: list<list<float>>, target: list<float> }
+
+fun new_cnn(): CNN {
+  // Two 2x2 convolution kernels
+  let k1 = [[1.0, 0.0], [0.0, 1.0]]
+  let k2 = [[0.0, 1.0], [1.0, 0.0]]
+  let conv_kernels = [k1, k2]
+  let conv_bias = [0.0, 0.0]
+  let conv_step = 2
+  let pool_size = 2
+  let input_size = 2  // after conv+pool we get 2 values
+  let hidden_size = 2
+  let output_size = 2
+  var w_hidden: list<list<float>> = []
+  var i: int = 0
+  while i < input_size {
+    var row: list<float> = []
+    var j: int = 0
+    while j < hidden_size {
+      row = append(row, random() - 0.5)
+      j = j + 1
+    }
+    w_hidden = append(w_hidden, row)
+    i = i + 1
+  }
+  var w_out: list<list<float>> = []
+  i = 0
+  while i < hidden_size {
+    var row: list<float> = []
+    var j: int = 0
+    while j < output_size {
+      row = append(row, random() - 0.5)
+      j = j + 1
+    }
+    w_out = append(w_out, row)
+    i = i + 1
+  }
+  let b_hidden = [0.0, 0.0]
+  let b_out = [0.0, 0.0]
+  return CNN {
+    conv_kernels: conv_kernels,
+    conv_bias: conv_bias,
+    conv_step: conv_step,
+    pool_size: pool_size,
+    w_hidden: w_hidden,
+    w_out: w_out,
+    b_hidden: b_hidden,
+    b_out: b_out,
+    rate_weight: 0.2,
+    rate_bias: 0.2,
+  }
+}
+
+fun forward(cnn: CNN, data: list<list<float>>): list<float> {
+  var maps: list<list<list<float>>> = []
+  var i: int = 0
+  while i < len(cnn.conv_kernels) {
+    let conv_map = convolve(data, cnn.conv_kernels[i], cnn.conv_step, cnn.conv_bias[i])
+    let pooled = average_pool(conv_map, cnn.pool_size)
+    maps = append(maps, pooled)
+    i = i + 1
+  }
+  let flat = flatten(maps)
+  let hidden_net = vec_add(vec_mul_mat(flat, cnn.w_hidden), cnn.b_hidden)
+  let hidden_out = vec_map_sig(hidden_net)
+  let out_net = vec_add(vec_mul_mat(hidden_out, cnn.w_out), cnn.b_out)
+  let out = vec_map_sig(out_net)
+  return out
+}
+
+fun train(cnn: CNN, samples: list<TrainSample>, epochs: int): CNN {
+  var w_out = cnn.w_out
+  var b_out = cnn.b_out
+  var w_hidden = cnn.w_hidden
+  var b_hidden = cnn.b_hidden
+  var e: int = 0
+  while e < epochs {
+    var s: int = 0
+    while s < len(samples) {
+      let data = samples[s].image
+      let target = samples[s].target
+      var maps: list<list<list<float>>> = []
+      var i: int = 0
+      while i < len(cnn.conv_kernels) {
+        let conv_map = convolve(data, cnn.conv_kernels[i], cnn.conv_step, cnn.conv_bias[i])
+        let pooled = average_pool(conv_map, cnn.pool_size)
+        maps = append(maps, pooled)
+        i = i + 1
+      }
+      let flat = flatten(maps)
+      let hidden_net = vec_add(vec_mul_mat(flat, w_hidden), b_hidden)
+      let hidden_out = vec_map_sig(hidden_net)
+      let out_net = vec_add(vec_mul_mat(hidden_out, w_out), b_out)
+      let out = vec_map_sig(out_net)
+
+      let error_out = vec_sub(target, out)
+      let pd_out = vec_mul(error_out, vec_mul(out, vec_sub([1.0,1.0], out)))
+      let error_hidden = matT_vec_mul(w_out, pd_out)
+      let pd_hidden = vec_mul(error_hidden, vec_mul(hidden_out, vec_sub([1.0,1.0], hidden_out)))
+
+      // update weights w_out
+      var j: int = 0
+      while j < len(w_out) {
+        var k: int = 0
+        while k < len(w_out[j]) {
+          w_out[j][k] = w_out[j][k] + cnn.rate_weight * hidden_out[j] * pd_out[k]
+          k = k + 1
+        }
+        j = j + 1
+      }
+      // update biases output
+      j = 0
+      while j < len(b_out) {
+        b_out[j] = b_out[j] - cnn.rate_bias * pd_out[j]
+        j = j + 1
+      }
+      // update weights w_hidden
+      var i_h: int = 0
+      while i_h < len(w_hidden) {
+        var j_h: int = 0
+        while j_h < len(w_hidden[i_h]) {
+          w_hidden[i_h][j_h] = w_hidden[i_h][j_h] + cnn.rate_weight * flat[i_h] * pd_hidden[j_h]
+          j_h = j_h + 1
+        }
+        i_h = i_h + 1
+      }
+      // update biases hidden
+      j = 0
+      while j < len(b_hidden) {
+        b_hidden[j] = b_hidden[j] - cnn.rate_bias * pd_hidden[j]
+        j = j + 1
+      }
+      s = s + 1
+    }
+    e = e + 1
+  }
+  return CNN {
+    conv_kernels: cnn.conv_kernels,
+    conv_bias: cnn.conv_bias,
+    conv_step: cnn.conv_step,
+    pool_size: cnn.pool_size,
+    w_hidden: w_hidden,
+    w_out: w_out,
+    b_hidden: b_hidden,
+    b_out: b_out,
+    rate_weight: cnn.rate_weight,
+    rate_bias: cnn.rate_bias,
+  }
+}
+
+fun main(): void {
+  let cnn = new_cnn()
+  let image = [
+    [1.0,0.0,1.0,0.0],
+    [0.0,1.0,0.0,1.0],
+    [1.0,0.0,1.0,0.0],
+    [0.0,1.0,0.0,1.0]
+  ]
+  let sample = TrainSample { image: image, target: [1.0, 0.0] }
+  print("Before training:", forward(cnn, image))
+  let trained = train(cnn, [sample], 50)
+  print("After training:", forward(trained, image))
+}
+
+main()
