@@ -1792,59 +1792,68 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		if len(st.Assign.Index) == 1 && st.Assign.Index[0].Colon == nil {
-			idxExpr, err := convertExpr(st.Assign.Index[0].Start, env)
+		pf := st.Assign.Target
+		if pf == nil || pf.Target == nil || pf.Target.Selector == nil {
+			return nil, fmt.Errorf("unsupported assignment")
+		}
+		name := pf.Target.Selector.Root
+		ops := pf.Ops
+		if len(ops) == 0 {
+			if _, err2 := env.GetVar(name); err2 != nil && env != nil {
+				typ := types.TypeOfExprBasic(st.Assign.Value, env)
+				env.SetVar(name, typ, true)
+				return &LetStmt{Name: name, Expr: e, Type: typ}, nil
+			}
+			return &AssignStmt{Name: name, Expr: e}, nil
+		}
+		if len(ops) == 1 && ops[0].Index != nil && ops[0].Index.Colon == nil {
+			idxExpr, err := convertExpr(ops[0].Index.Start, env)
 			if err != nil {
 				return nil, err
 			}
-			if t, err2 := env.GetVar(st.Assign.Name); err2 == nil {
+			if t, err2 := env.GetVar(name); err2 == nil {
 				if _, ok := t.(types.MapType); ok {
-					return &MapAssignStmt{Name: st.Assign.Name, Key: idxExpr, Expr: e}, nil
+					return &MapAssignStmt{Name: name, Key: idxExpr, Expr: e}, nil
 				}
 				if _, ok := t.(types.AnyType); ok {
-					idxType := types.TypeOfExprBasic(st.Assign.Index[0].Start, env)
+					idxType := types.TypeOfExprBasic(ops[0].Index.Start, env)
 					if _, ok := idxType.(types.StringType); ok {
-						return &MapAssignStmt{Name: st.Assign.Name, Key: idxExpr, Expr: e}, nil
+						return &MapAssignStmt{Name: name, Key: idxExpr, Expr: e}, nil
 					}
 				}
 			}
-			return &ListAssignStmt{Name: st.Assign.Name, Index: idxExpr, Expr: e}, nil
+			return &ListAssignStmt{Name: name, Index: idxExpr, Expr: e}, nil
 		}
-		if len(st.Assign.Index) == 2 && st.Assign.Index[0].Colon == nil && st.Assign.Index[1].Colon == nil {
-			idx1, err := convertExpr(st.Assign.Index[0].Start, env)
+		if len(ops) == 2 && ops[0].Index != nil && ops[1].Index != nil && ops[0].Index.Colon == nil && ops[1].Index.Colon == nil {
+			idx1, err := convertExpr(ops[0].Index.Start, env)
 			if err != nil {
 				return nil, err
 			}
-			idx2, err := convertExpr(st.Assign.Index[1].Start, env)
+			idx2, err := convertExpr(ops[1].Index.Start, env)
 			if err != nil {
 				return nil, err
 			}
-			if t, err2 := env.GetVar(st.Assign.Name); err2 == nil {
+			if t, err2 := env.GetVar(name); err2 == nil {
 				switch vt := t.(type) {
 				case types.MapType:
 					if _, ok := vt.Value.(types.MapType); ok {
-						return &DoubleMapAssignStmt{Name: st.Assign.Name, Key1: idx1, Key2: idx2, Expr: e}, nil
+						return &DoubleMapAssignStmt{Name: name, Key1: idx1, Key2: idx2, Expr: e}, nil
 					}
 				case types.ListType:
 					if _, ok := vt.Elem.(types.MapType); ok {
-						if _, ok := types.TypeOfExprBasic(st.Assign.Index[1].Start, env).(types.StringType); ok {
-							return &ListMapAssignStmt{Name: st.Assign.Name, Index: idx1, Key: idx2, Expr: e}, nil
+						if _, ok := types.TypeOfExprBasic(ops[1].Index.Start, env).(types.StringType); ok {
+							return &ListMapAssignStmt{Name: name, Index: idx1, Key: idx2, Expr: e}, nil
 						}
 					}
 				}
 			}
-			return &DoubleListAssignStmt{Name: st.Assign.Name, Index1: idx1, Index2: idx2, Expr: e}, nil
+			return &DoubleListAssignStmt{Name: name, Index1: idx1, Index2: idx2, Expr: e}, nil
 		}
-		if len(st.Assign.Field) == 1 && len(st.Assign.Index) == 0 {
-			key := &StringLit{Value: st.Assign.Field[0].Name}
-			return &MapAssignStmt{Name: st.Assign.Name, Key: key, Expr: e}, nil
+		if len(ops) == 1 && ops[0].Field != nil {
+			key := &StringLit{Value: ops[0].Field.Name}
+			return &MapAssignStmt{Name: name, Key: key, Expr: e}, nil
 		}
-		if _, err2 := env.GetVar(st.Assign.Name); err2 != nil && env != nil {
-			typ := types.TypeOfExprBasic(st.Assign.Value, env)
-			env.SetVar(st.Assign.Name, typ, true)
-			return &LetStmt{Name: st.Assign.Name, Expr: e, Type: typ}, nil
-		}
-		return &AssignStmt{Name: st.Assign.Name, Expr: e}, nil
+		return nil, fmt.Errorf("unsupported assignment form")
 	case st.Return != nil:
 		var e Expr
 		var err error
@@ -2306,7 +2315,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 	ops := []string{}
 	leftType := types.TypeOfUnary(b.Left, env)
 	for _, part := range b.Right {
-		right, err := convertPostfix(part.Right, env)
+		right, err := convertUnary(part.Right, env)
 		if err != nil {
 			return nil, err
 		}
@@ -2325,14 +2334,14 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 		}
 		currLeft := exprs[len(exprs)-1]
 		if op == "==" || op == "!=" {
-			if (types.IsStringType(leftType) || types.IsStringPostfix(part.Right, env)) && !isBoolExpr(currLeft) && !isBoolExpr(right) {
+			if (types.IsStringType(leftType) || types.IsStringUnary(part.Right, env)) && !isBoolExpr(currLeft) && !isBoolExpr(right) {
 				if op == "==" {
 					op = "string=?"
 				} else {
 					op = "string!="
 				}
 				leftIsStr := types.IsStringType(leftType)
-				rightIsStr := types.IsStringPostfix(part.Right, env)
+				rightIsStr := types.IsStringUnary(part.Right, env)
 				if leftIsStr && !rightIsStr {
 					if n, ok := right.(*Name); ok {
 						if n.Name == "#t" {
@@ -2374,7 +2383,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 			}
 			stringRight := false
 			listRight := false
-			if t := types.TypeOfPostfixBasic(&parser.Unary{Value: part.Right}, env); t != nil {
+			if t := types.TypeOfPostfixBasic(part.Right, env); t != nil {
 				if _, ok := t.(types.StringType); ok {
 					stringRight = true
 				} else if _, ok := t.(types.ListType); ok {
@@ -2418,7 +2427,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 		}
 		if op == "/" {
 			ltInt := exprIsInt(currLeft, env) || heuristicInt(currLeft, env)
-			rt := types.TypeOfPostfix(part.Right, env)
+			rt := types.TypeOfUnary(part.Right, env)
 			rtInt := types.IsIntType(rt) || types.IsInt64Type(rt) || types.IsBigIntType(rt)
 			if types.IsFloatType(leftType) || types.IsFloatType(rt) {
 				op = "/"
@@ -2428,7 +2437,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 				op = "quotient"
 			} else {
 				lt := leftType
-				if literalIntPostfix(part.Right) && !types.IsFloatType(lt) {
+				if literalIntPostfix(part.Right.Value) && !types.IsFloatType(lt) {
 					op = "quotient"
 				} else if (types.IsIntType(lt) || types.IsInt64Type(lt) || types.IsBigIntType(lt)) && rtInt {
 					op = "quotient"
@@ -2438,22 +2447,22 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 			}
 		}
 		if op == "in" {
-			isStr := types.IsStringPostfix(part.Right, env)
-			isMap := types.IsMapPostfix(part.Right, env)
+			isStr := types.IsStringUnary(part.Right, env)
+			isMap := types.IsMapUnary(part.Right, env)
 			if !isMap {
-				if call := part.Right.Target.Call; call != nil {
+				if call := part.Right.Value.Target.Call; call != nil {
 					if call.Func == "hash-ref" || call.Func == "hash-keys" {
 						isMap = true
 					}
 				}
 			}
-			if !isMap && len(part.Right.Ops) == 1 && part.Right.Ops[0].Field != nil {
-				if types.IsMapPrimary(part.Right.Target, env) {
+			if !isMap && len(part.Right.Value.Ops) == 1 && part.Right.Value.Ops[0].Field != nil {
+				if types.IsMapPrimary(part.Right.Value.Target, env) {
 					isMap = true
 				}
 			}
 			if !isMap {
-				if types.IsMapType(types.TypeOfPostfix(part.Right, env)) {
+				if types.IsMapType(types.TypeOfUnary(part.Right, env)) {
 					isMap = true
 				}
 			}
@@ -2472,7 +2481,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 				leftIsString = true
 			}
 			rightIsString := false
-			if _, ok := types.TypeOfPostfix(part.Right, env).(types.StringType); ok {
+			if _, ok := types.TypeOfUnary(part.Right, env).(types.StringType); ok {
 				rightIsString = true
 			}
 			if leftIsString || rightIsString {
@@ -2490,7 +2499,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 		}
 		if op == "%" {
 			lt := leftType
-			rt := types.TypeOfPostfix(part.Right, env)
+			rt := types.TypeOfUnary(part.Right, env)
 			if types.IsFloatType(lt) || types.IsFloatType(rt) {
 				left := exprs[len(exprs)-1]
 				exprs[len(exprs)-1] = &BinaryExpr{Op: "fmod", Left: left, Right: right}
