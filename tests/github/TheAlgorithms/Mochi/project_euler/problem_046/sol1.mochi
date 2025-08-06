@@ -1,0 +1,69 @@
+/*
+Project Euler Problem 46 - Goldbach's other conjecture
+------------------------------------------------------
+Christian Goldbach conjectured that every odd composite number can be
+written as the sum of a prime and twice a square. This program searches
+for counterexamples by iterating through odd composite numbers and testing
+whether each can be expressed as prime + 2 * i^2. Primality is checked
+using trial division with the 6k ± 1 optimization. The first odd composite
+that fails to meet the conjecture is 5777.
+*/
+
+fun int_sqrt(n: int): int {
+  var r = 0
+  while (r + 1) * (r + 1) <= n {
+    r = r + 1
+  }
+  return r
+}
+
+fun is_prime(number: int): bool {
+  if 1 < number && number < 4 {
+    return true
+  }
+  if number < 2 || number % 2 == 0 || number % 3 == 0 {
+    return false
+  }
+  var i = 5
+  let limit = int_sqrt(number)
+  while i <= limit {
+    if number % i == 0 || number % (i + 2) == 0 {
+      return false
+    }
+    i = i + 6
+  }
+  return true
+}
+
+fun compute_nums(n: int): list<int> {
+  if n <= 0 {
+    panic("n must be >= 0")
+  }
+  var list_nums: list<int> = []
+  var num = 3
+  while len(list_nums) < n {
+    if !is_prime(num) {
+      var i = 0
+      var found = false
+      while 2 * i * i <= num {
+        let rem = num - 2 * i * i
+        if is_prime(rem) {
+          found = true
+          break
+        }
+        i = i + 1
+      }
+      if !found {
+        list_nums = append(list_nums, num)
+      }
+    }
+    num = num + 2
+  }
+  return list_nums
+}
+
+fun solution(): int {
+  return compute_nums(1)[0]
+}
+
+print(str(solution()))
