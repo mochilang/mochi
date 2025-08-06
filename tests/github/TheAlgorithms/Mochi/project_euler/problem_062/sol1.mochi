@@ -1,0 +1,61 @@
+/*
+Project Euler Problem 62: Find the smallest cube for which exactly five permutations of its digits are cubes.
+
+The algorithm iterates over natural numbers, computes each cube, and groups bases by the sorted
+sequence of digits of the cube. Sorting digit strings allows detection of cubes that are permutations
+of one another. We store a map from the sorted digit string to the list of base numbers that produce it.
+When a list reaches the desired count (five), the cube of the smallest base in that list is returned.
+
+Digit sorting is implemented via a counting sort over the ten possible digits, avoiding any external
+libraries or the "any" type. The approach runs in O(n * d) time where d is the number of digits in the
+cubes considered.
+*/
+
+fun get_digits(num: int): string {
+  let cube = num * num * num
+  let s = str(cube)
+  var counts: list<int> = []
+  var j = 0
+  while j < 10 {
+    counts = append(counts, 0)
+    j = j + 1
+  }
+  var i = 0
+  while i < len(s) {
+    let d = int(s[i])
+    counts[d] = counts[d] + 1
+    i = i + 1
+  }
+  var result = ""
+  var d = 0
+  while d < 10 {
+    var c = counts[d]
+    while c > 0 {
+      result = result + str(d)
+      c = c - 1
+    }
+    d = d + 1
+  }
+  return result
+}
+
+fun solution(max_base: int): int {
+  var freqs: map<string, list<int>> = {}
+  var num = 0
+  while true {
+    let digits = get_digits(num)
+    var arr: list<int> = []
+    if digits in freqs {
+      arr = freqs[digits]
+    }
+    arr = append(arr, num)
+    freqs[digits] = arr
+    if len(arr) == max_base {
+      let base = arr[0]
+      return base * base * base
+    }
+    num = num + 1
+  }
+}
+
+print("solution() = " + str(solution(5)))
