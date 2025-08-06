@@ -2,51 +2,51 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Python`.
-Last updated: 2025-08-06 17:47 GMT+7
+Last updated: 2025-08-06 18:33 GMT+7
 
-## Algorithms Golden Test Checklist (21/1077)
+## Algorithms Golden Test Checklist (40/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 41.0µs | 12.81MB |
-| 2 | backtracking/all_permutations | ✓ | 235.0µs | 13.00MB |
-| 3 | backtracking/all_subsequences | ✓ | 48.0µs | 12.59MB |
-| 4 | backtracking/coloring | ✓ | 53.0µs | 12.69MB |
-| 5 | backtracking/combination_sum | ✓ | 55.0µs | 12.68MB |
-| 6 | backtracking/crossword_puzzle_solver | ✓ | 91.0µs | 13.66MB |
-| 7 | backtracking/hamiltonian_cycle | ✓ | 68.0µs | 13.50MB |
-| 8 | backtracking/knight_tour | ✓ | 22.0µs | 13.62MB |
-| 9 | backtracking/match_word_pattern | ✓ | 265.0µs | 13.12MB |
-| 10 | backtracking/minimax | ✓ | 24.0µs | 13.11MB |
-| 11 | backtracking/n_queens | ✓ | 82.0µs | 13.61MB |
-| 12 | backtracking/n_queens_math | ✓ | 69.0µs | 12.46MB |
-| 13 | backtracking/power_sum | ✓ | 46.0µs | 13.04MB |
-| 14 | backtracking/rat_in_maze | ✓ | 73.0µs | 13.23MB |
-| 15 | backtracking/sudoku | ✓ | 7.0ms | 13.86MB |
-| 16 | backtracking/sum_of_subsets | ✓ | 95.0µs | 12.41MB |
-| 17 | backtracking/word_break | ✓ | 38.0µs | 12.69MB |
-| 18 | backtracking/word_ladder | ✓ | 990.0µs | 12.89MB |
-| 19 | backtracking/word_search | ✓ | 68.0µs | 13.53MB |
-| 20 | bit_manipulation/binary_and_operator | ✓ | 82.0µs | 13.09MB |
-| 21 | bit_manipulation/binary_coded_decimal | ✓ | 122.0µs | 12.87MB |
-| 22 | bit_manipulation/binary_count_setbits |   |  |  |
-| 23 | bit_manipulation/binary_count_trailing_zeros |   |  |  |
-| 24 | bit_manipulation/binary_or_operator |   |  |  |
-| 25 | bit_manipulation/binary_shifts |   |  |  |
-| 26 | bit_manipulation/binary_twos_complement |   |  |  |
-| 27 | bit_manipulation/binary_xor_operator |   |  |  |
-| 28 | bit_manipulation/bitwise_addition_recursive |   |  |  |
-| 29 | bit_manipulation/count_1s_brian_kernighan_method |   |  |  |
-| 30 | bit_manipulation/count_number_of_one_bits |   |  |  |
-| 31 | bit_manipulation/excess_3_code |   |  |  |
-| 32 | bit_manipulation/find_previous_power_of_two |   |  |  |
-| 33 | bit_manipulation/find_unique_number |   |  |  |
-| 34 | bit_manipulation/gray_code_sequence |   |  |  |
-| 35 | bit_manipulation/highest_set_bit |   |  |  |
-| 36 | bit_manipulation/index_of_rightmost_set_bit |   |  |  |
-| 37 | bit_manipulation/is_even |   |  |  |
-| 38 | bit_manipulation/is_power_of_two |   |  |  |
-| 39 | bit_manipulation/largest_pow_of_two_le_num |   |  |  |
-| 40 | bit_manipulation/missing_number |   |  |  |
+| 1 | backtracking/all_combinations | ✓ | 54.0µs | 12.77MB |
+| 2 | backtracking/all_permutations | ✓ | 208.0µs | 12.69MB |
+| 3 | backtracking/all_subsequences | ✓ | 45.0µs | 12.23MB |
+| 4 | backtracking/coloring | ✓ | 54.0µs | 12.46MB |
+| 5 | backtracking/combination_sum | ✓ | 51.0µs | 12.73MB |
+| 6 | backtracking/crossword_puzzle_solver | ✓ | 49.0µs | 13.55MB |
+| 7 | backtracking/hamiltonian_cycle | ✓ | 77.0µs | 13.49MB |
+| 8 | backtracking/knight_tour | ✓ | 72.0µs | 13.76MB |
+| 9 | backtracking/match_word_pattern | ✓ | 249.0µs | 12.68MB |
+| 10 | backtracking/minimax | ✓ | 24.0µs | 13.34MB |
+| 11 | backtracking/n_queens | ✓ | 96.0µs | 13.33MB |
+| 12 | backtracking/n_queens_math | ✓ | 70.0µs | 12.93MB |
+| 13 | backtracking/power_sum | ✓ | 35.0µs | 12.75MB |
+| 14 | backtracking/rat_in_maze | ✓ | 55.0µs | 13.74MB |
+| 15 | backtracking/sudoku | ✓ | 10.0ms | 14.04MB |
+| 16 | backtracking/sum_of_subsets | ✓ | 104.0µs | 12.58MB |
+| 17 | backtracking/word_break | ✓ | 38.0µs | 12.53MB |
+| 18 | backtracking/word_ladder | ✓ | 1.0ms | 12.94MB |
+| 19 | backtracking/word_search | ✓ | 83.0µs | 13.42MB |
+| 20 | bit_manipulation/binary_and_operator | ✓ | 69.0µs | 12.72MB |
+| 21 | bit_manipulation/binary_coded_decimal | ✓ | 127.0µs | 12.49MB |
+| 22 | bit_manipulation/binary_count_setbits | ✓ | 32.0µs | 12.69MB |
+| 23 | bit_manipulation/binary_count_trailing_zeros | ✓ | 29.0µs | 12.93MB |
+| 24 | bit_manipulation/binary_or_operator | ✓ | 44.0µs | 12.68MB |
+| 25 | bit_manipulation/binary_shifts | ✓ | 35.0µs | 12.80MB |
+| 26 | bit_manipulation/binary_twos_complement | ✓ | 42.0µs | 12.80MB |
+| 27 | bit_manipulation/binary_xor_operator | ✓ | 68.0µs | 12.50MB |
+| 28 | bit_manipulation/bitwise_addition_recursive | ✓ | 29.0µs | 13.24MB |
+| 29 | bit_manipulation/count_1s_brian_kernighan_method | ✓ | 31.0µs | 12.55MB |
+| 30 | bit_manipulation/count_number_of_one_bits | ✓ | 74.0µs | 12.56MB |
+| 31 | bit_manipulation/excess_3_code | ✓ | 22.0µs | 12.80MB |
+| 32 | bit_manipulation/find_previous_power_of_two | ✓ | 35.0µs | 12.28MB |
+| 33 | bit_manipulation/find_unique_number | ✓ | 41.0µs | 12.86MB |
+| 34 | bit_manipulation/gray_code_sequence | ✓ | 43.0µs | 12.67MB |
+| 35 | bit_manipulation/highest_set_bit | ✓ | 23.0µs | 12.94MB |
+| 36 | bit_manipulation/index_of_rightmost_set_bit | ✓ | 25.0µs | 12.29MB |
+| 37 | bit_manipulation/is_even | ✓ | 19.0µs | 12.80MB |
+| 38 | bit_manipulation/is_power_of_two | ✓ | 7.0µs | 12.37MB |
+| 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 25.0µs | 12.36MB |
+| 40 | bit_manipulation/missing_number | ✓ | 39.0µs | 12.79MB |
 | 41 | bit_manipulation/numbers_different_signs |   |  |  |
 | 42 | bit_manipulation/power_of_4 |   |  |  |
 | 43 | bit_manipulation/reverse_bits |   |  |  |
