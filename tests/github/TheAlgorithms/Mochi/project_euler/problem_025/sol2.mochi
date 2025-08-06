@@ -1,0 +1,46 @@
+/*
+Project Euler Problem 25: Index of the first Fibonacci term with N digits
+-----------------------------------------------------------------------
+The Fibonacci sequence is defined by the recurrence relation:
+  F(n) = F(n-1) + F(n-2) with base values F(1) = 1 and F(2) = 1.
+The early terms are:
+  1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, ...
+Problem statement: Find the index of the first term in the Fibonacci
+sequence to contain a specified number of digits `n`.
+
+Algorithm:
+1. Start from a=0 and b=1 representing consecutive Fibonacci numbers.
+2. Track the current index starting at 1 for the value `b`.
+3. Repeatedly update the pair (a, b) to (b, a + b) which advances one
+   step in the sequence.
+4. After each update, increment the index. Continue until the number of
+digits in `b` reaches `n`.
+5. Return the index corresponding to the first term with at least `n`
+digits.
+
+The loop runs in O(k) time where k is the index of the first
+Fibonacci number with `n` digits. Only integer operations and string
+conversion for digit counting are used. This implementation is in pure
+Mochi without FFI.
+*/
+
+fun solution(n: int): int {
+  var a: int = 0
+  var b: int = 1
+  var index: int = 1
+  while len(str(b)) < n {
+    let temp: int = a + b
+    a = b
+    b = temp
+    index = index + 1
+  }
+  return index
+}
+
+fun main() {
+  let n: int = int(input())
+  let ans: int = solution(n)
+  print(str(ans))
+}
+
+main()
