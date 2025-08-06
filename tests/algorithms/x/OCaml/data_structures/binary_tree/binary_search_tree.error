@@ -1,0 +1,6 @@
+exit status 2
+File "/workspace/mochi/tests/algorithms/x/OCaml/data_structures/binary_tree/binary_search_tree.ml", line 77, characters 60-88:
+77 |   node := (List.mapi (fun __i __x -> if __i = 1 then insert (ref (List.nth (!node) (1))) (Obj.repr (value)) else __x) (!node));
+                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This expression has type int ref
+       but an expression was expected of type int list ref

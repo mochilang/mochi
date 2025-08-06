@@ -1,0 +1,7 @@
+exit status 2
+File "/workspace/mochi/tests/algorithms/x/OCaml/data_structures/binary_tree/avl_tree.ml", line 98, characters 389-397:
+98 |   nodes := (List.mapi (fun __i __x -> if __i = i then ((__str ("height"), Obj.repr ((my_max (Obj.repr (get_height (Obj.repr (List.assoc (__str ("left")) (List.nth (!nodes) (i)))))) (Obj.repr (get_height (Obj.repr (List.assoc (__str ("right")) (List.nth (!nodes) (i)))))) + 1))) :: List.remove_assoc (__str ("height")) (Obj.magic (List.nth (!nodes) (i)) : (string * Obj.t) list)) else __x) (!nodes));
+                                                                                                                                                                                                                                                                                                                                                                                                          ^^^^^^^^
+Error: This expression has type (string * int) list list
+       but an expression was expected of type (string * Obj.t) list list
+       Type int is not compatible with type Obj.t 

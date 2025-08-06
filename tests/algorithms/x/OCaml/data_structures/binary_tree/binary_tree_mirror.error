@@ -1,0 +1,7 @@
+exit status 2
+File "/workspace/mochi/tests/algorithms/x/OCaml/data_structures/binary_tree/binary_tree_mirror.ml", line 69, characters 48-55:
+69 |   let children = ref (List.assoc (__str (root)) (!tree)) in
+                                                     ^^^^^^^
+Error: This expression has type (int * 'a) list
+       but an expression was expected of type (string * 'b) list
+       Type int is not compatible with type string 
