@@ -1,0 +1,52 @@
+/*
+Retrieve current weather information for a location using two public web
+APIs: OpenWeatherMap and Weatherstack.
+
+Algorithm:
+1. Prepare request parameters containing the location and API key for each
+   service.
+2. For every service with an API key, perform an HTTP GET request and append
+   the decoded JSON response to a list.
+3. If no services are available or return data, raise an error.
+
+This implementation simulates the HTTP responses with placeholder data so it
+can run without network access while preserving the control flow of the
+original Python version.
+*/
+
+let OPENWEATHERMAP_API_KEY = "demo"
+let WEATHERSTACK_API_KEY = ""
+let OPENWEATHERMAP_URL_BASE = "https://api.openweathermap.org/data/2.5/weather"
+let WEATHERSTACK_URL_BASE = "http://api.weatherstack.com/current"
+
+fun http_get(url: string, params: map<string, string>): map<string, string> {
+  if "q" in params {
+    return {"location": params["q"], "temperature": "20"}
+  }
+  return {"location": params["query"], "temperature": "20"}
+}
+
+fun current_weather(location: string): list<map<string, map<string, string>>> {
+  var weather_data: list<map<string, map<string, string>>> = []
+  if OPENWEATHERMAP_API_KEY != "" {
+    let params_openweathermap: map<string, string> = {"q": location, "appid": OPENWEATHERMAP_API_KEY}
+    let response_openweathermap = http_get(OPENWEATHERMAP_URL_BASE, params_openweathermap)
+    weather_data = append(weather_data, {"OpenWeatherMap": response_openweathermap})
+  }
+  if WEATHERSTACK_API_KEY != "" {
+    let params_weatherstack: map<string, string> = {"query": location, "access_key": WEATHERSTACK_API_KEY}
+    let response_weatherstack = http_get(WEATHERSTACK_URL_BASE, params_weatherstack)
+    weather_data = append(weather_data, {"Weatherstack": response_weatherstack})
+  }
+  if len(weather_data) == 0 {
+    panic("No API keys provided or no valid data returned.")
+  }
+  return weather_data
+}
+
+fun main() {
+  let data = current_weather("New York")
+  print(str(data))
+}
+
+main()
