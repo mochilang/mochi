@@ -1,0 +1,60 @@
+/*
+Counting Summations (Project Euler Problem 76)
+
+This program counts the number of ways a positive integer m can be written
+as a sum of at least two positive integers. It uses dynamic programming to
+compute integer partitions. The table memo[n][k] stores the number of ways
+to write n using integers up to k+1. For each n and k:
+
+  memo[n][k] = memo[n][k-1]                       // exclude k+1
+  if n > k:
+    memo[n][k] += memo[n - k - 1][k]             // include k+1
+
+The answer for m is memo[m][m-1] - 1, subtracting the single term m.
+Time complexity: O(m^2).
+*/
+
+fun solution(m: int): int {
+  var memo: list<list<int>> = []
+  var i = 0
+  while i <= m {
+    var row: list<int> = []
+    var j = 0
+    while j < m {
+      row = append(row, 0)
+      j = j + 1
+    }
+    memo = append(memo, row)
+    i = i + 1
+  }
+
+  i = 0
+  while i <= m {
+    memo[i][0] = 1
+    i = i + 1
+  }
+
+  var n = 0
+  while n <= m {
+    var k = 1
+    while k < m {
+      memo[n][k] = memo[n][k] + memo[n][k - 1]
+      if n > k {
+        memo[n][k] = memo[n][k] + memo[n - k - 1][k]
+      }
+      k = k + 1
+    }
+    n = n + 1
+  }
+
+  return memo[m][m - 1] - 1
+}
+
+print(str(solution(100)))
+print(str(solution(50)))
+print(str(solution(30)))
+print(str(solution(10)))
+print(str(solution(5)))
+print(str(solution(3)))
+print(str(solution(2)))
+print(str(solution(1)))
