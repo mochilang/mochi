@@ -26,6 +26,7 @@ var nameStack []map[string]string
 var currentFunc string
 var funcNames map[string]struct{}
 var funcReturns map[string]string
+var varOwners = map[string]string{}
 var benchMain bool
 var expectedMapType string
 
@@ -97,6 +98,9 @@ func declareName(name string) string {
 		}
 	}
 	currentScope()[name] = newName
+	if currentFunc != "" {
+		varOwners[newName] = currentFunc
+	}
 	return newName
 }
 
@@ -2168,26 +2172,23 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	addMapConstructors(pr)
 	markSysUtils(pr)
 	// Move variables that belong to function bodies from the global scope
-	// into the corresponding function's local variable list. Variables
-	// defined inside a function are prefixed with the function name by
-	// sanitize(), so we can use this to determine ownership.
+	// into the corresponding function's local variable list. When declaring
+	// variables within a function, declareName records the owning function
+	// in varOwners so that we can relocate them accurately here without
+	// accidentally capturing similarly-prefixed globals.
 	if len(pr.Funs) > 0 && len(pr.Vars) > 0 {
 		var globals []VarDecl
+	nextVar:
 		for _, gv := range pr.Vars {
-			best := -1
-			bestLen := 0
-			for i := range pr.Funs {
-				prefix := pr.Funs[i].Name + "_"
-				if strings.HasPrefix(gv.Name, prefix) && len(prefix) > bestLen {
-					best = i
-					bestLen = len(prefix)
+			if owner, ok := varOwners[gv.Name]; ok {
+				for i := range pr.Funs {
+					if pr.Funs[i].Name == owner {
+						pr.Funs[i].Locals = append(pr.Funs[i].Locals, gv)
+						continue nextVar
+					}
 				}
 			}
-			if best >= 0 {
-				pr.Funs[best].Locals = append(pr.Funs[best].Locals, gv)
-			} else {
-				globals = append(globals, gv)
-			}
+			globals = append(globals, gv)
 		}
 		pr.Vars = globals
 	}
@@ -4211,9 +4212,14 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 				}
 				if name == "json" && len(args) == 1 {
 					currProg.NeedJSON = true
-					_ = currProg.addArrayAlias("integer")
-					_ = currProg.addArrayAlias("IntArray")
-					expr = &CallExpr{Name: name, Args: args}
+					arr := currProg.addArrayAlias("integer")
+					_ = currProg.addArrayAlias(arr)
+					t := inferType(args[0])
+					if strings.HasPrefix(t, "array of array") {
+						expr = &CallExpr{Name: name, Args: args}
+					} else {
+						expr = &CallExpr{Name: "json_intarray", Args: args}
+					}
 				} else if name == "indexOf" && len(args) == 2 {
 					currProg.NeedIndexOf = true
 					expr = &CallExpr{Name: name, Args: args}
@@ -4647,6 +4653,7 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		valType := "Variant"
 		varsSet := map[string]struct{}{}
 		allInts := true
+		allStrings := true
 		for _, it := range p.Map.Items {
 			val, err := convertExpr(env, it.Value)
 			if err != nil {
@@ -4665,9 +4672,14 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			if vType != "integer" {
 				allInts = false
 			}
+			if vType != "string" {
+				allStrings = false
+			}
 		}
 		if allInts {
 			valType = "integer"
+		} else if allStrings {
+			valType = "string"
 		}
 		names := make([]string, 0, len(varsSet))
 		for name := range varsSet {

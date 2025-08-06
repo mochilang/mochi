@@ -1,0 +1,16 @@
+compile: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/algorithms/x/Pascal/ciphers/onepad_cipher.pas
+fgl.pp(1668,8) Note: Call to subroutine "function TFPGMap<System.ShortString,Main.IntArray>.IndexOf(const AKey:ShortString):LongInt;" marked as inline is not inlined
+onepad_cipher.pas(126,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,Main.IntArray>.AddOrSetData(const AKey:ShortString;const AData:IntArray);" marked as inline is not inlined
+onepad_cipher.pas(126,70) Note: Call to subroutine "operator :=(const source:QWord):Variant;" marked as inline is not inlined
+onepad_cipher.pas(127,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,Main.IntArray>.AddOrSetData(const AKey:ShortString;const AData:IntArray);" marked as inline is not inlined
+onepad_cipher.pas(127,64) Note: Call to subroutine "operator :=(const source:QWord):Variant;" marked as inline is not inlined
+onepad_cipher.pas(155,16) Error: Incompatible types: got "IntArray" expected "LongInt"
+onepad_cipher.pas(161,13) Error: Incompatible types: got "IntArray" expected "LongInt"
+onepad_cipher.pas(167,30) Error: Incompatible type for arg no. 2: Got "LongInt", expected "IntArray"
+onepad_cipher.pas(176) Fatal: There were 3 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

@@ -1,0 +1,68 @@
+compile: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/algorithms/x/Pascal/ciphers/decrypt_caesar_with_chi_squared.pas
+fgl.pp(1668,8) Note: Call to subroutine "function TFPGMap<System.ShortString,System.Real>.IndexOf(const AKey:ShortString):LongInt;" marked as inline is not inlined
+fgl.pp(1668,8) Note: Call to subroutine "function TFPGMap<System.ShortString,System.LongInt>.IndexOf(const AKey:ShortString):LongInt;" marked as inline is not inlined
+fgl.pp(1668,8) Note: Call to subroutine "function TFPGMap<System.ShortString,System.Variant>.IndexOf(const AKey:ShortString):LongInt;" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(76,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(76,44) Note: Call to subroutine "operator :=(const source:Extended):Variant;" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(77,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(77,44) Note: Call to subroutine "operator :=(const source:Extended):Variant;" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(78,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(78,44) Note: Call to subroutine "operator :=(const source:Extended):Variant;" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(79,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(79,44) Note: Call to subroutine "operator :=(const source:Extended):Variant;" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(80,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(80,44) Note: Call to subroutine "operator :=(const source:Extended):Variant;" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(81,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(81,44) Note: Call to subroutine "operator :=(const source:Extended):Variant;" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(82,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(82,44) Note: Call to subroutine "operator :=(const source:Extended):Variant;" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(83,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(83,44) Note: Call to subroutine "operator :=(const source:Extended):Variant;" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(84,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(84,44) Note: Call to subroutine "operator :=(const source:Extended):Variant;" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(85,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(85,44) Note: Call to subroutine "operator :=(const source:Extended):Variant;" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(86,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(86,44) Note: Call to subroutine "operator :=(const source:Extended):Variant;" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(87,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(87,44) Note: Call to subroutine "operator :=(const source:Extended):Variant;" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(88,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(88,44) Note: Call to subroutine "operator :=(const source:Extended):Variant;" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(89,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(89,44) Note: Call to subroutine "operator :=(const source:Extended):Variant;" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(90,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(90,44) Note: Call to subroutine "operator :=(const source:Extended):Variant;" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(91,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(91,44) Note: Call to subroutine "operator :=(const source:Extended):Variant;" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(92,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(92,44) Note: Call to subroutine "operator :=(const source:Extended):Variant;" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(93,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(93,44) Note: Call to subroutine "operator :=(const source:Extended):Variant;" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(94,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(94,44) Note: Call to subroutine "operator :=(const source:Extended):Variant;" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(95,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(95,44) Note: Call to subroutine "operator :=(const source:Extended):Variant;" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(96,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(96,44) Note: Call to subroutine "operator :=(const source:Extended):Variant;" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(97,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(97,44) Note: Call to subroutine "operator :=(const source:Extended):Variant;" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(98,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(98,43) Note: Call to subroutine "operator :=(const source:Extended):Variant;" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(99,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(99,43) Note: Call to subroutine "operator :=(const source:Extended):Variant;" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(100,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(100,44) Note: Call to subroutine "operator :=(const source:Extended):Variant;" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(101,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(101,44) Note: Call to subroutine "operator :=(const source:Extended):Variant;" marked as inline is not inlined
+decrypt_caesar_with_chi_squared.pas(174,6) Error: Type mismatch
+decrypt_caesar_with_chi_squared.pas(175,50) Error: Incompatible types: got "TFPGMap<System.ShortString,System.Variant>" expected "TFPGMap<System.ShortString,System.Real>"
+decrypt_caesar_with_chi_squared.pas(234,116) Error: Incompatible type for arg no. 3: Got "TFPGMap<System.ShortString,System.LongInt>", expected "TFPGMap<System.ShortString,System.Real>"
+decrypt_caesar_with_chi_squared.pas(236,67) Error: Incompatible type for arg no. 3: Got "TFPGMap<System.ShortString,System.LongInt>", expected "TFPGMap<System.ShortString,System.Real>"
+decrypt_caesar_with_chi_squared.pas(238,67) Error: Incompatible type for arg no. 3: Got "TFPGMap<System.ShortString,System.LongInt>", expected "TFPGMap<System.ShortString,System.Real>"
+decrypt_caesar_with_chi_squared.pas(248) Fatal: There were 5 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode
