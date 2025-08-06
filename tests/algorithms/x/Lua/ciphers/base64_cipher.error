@@ -1,7 +1,0 @@
-run: exit status 1
-TW9jaGk=
-lua: ...e/mochi/tests/algorithms/x/Lua/ciphers/base64_cipher.lua:315: attempt to call a nil value
-stack traceback:
-	...e/mochi/tests/algorithms/x/Lua/ciphers/base64_cipher.lua:315: in function 'main'
-	...e/mochi/tests/algorithms/x/Lua/ciphers/base64_cipher.lua:394: in main chunk
-	[C]: in ?

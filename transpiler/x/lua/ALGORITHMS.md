@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-06 18:33 GMT+7
+Last updated: 2025-08-06 21:18 GMT+7
 
-## Algorithms Golden Test Checklist (77/1077)
+## Algorithms Golden Test Checklist (80/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 216µs | 912 B |
@@ -71,14 +71,14 @@ Last updated: 2025-08-06 18:33 GMT+7
 | 62 | cellular_automata/nagel_schrekenberg | ✓ | 294µs | 1.3 KB |
 | 63 | cellular_automata/one_dimensional | ✓ | 1.741ms | 10.4 KB |
 | 64 | cellular_automata/wa_tor | ✓ | 1.341ms | 10.7 KB |
-| 65 | ciphers/a1z26 | error |  |  |
+| 65 | ciphers/a1z26 | ✓ | 50µs | 1.1 KB |
 | 66 | ciphers/affine_cipher | ✓ | 9.146ms | 1.1 KB |
 | 67 | ciphers/atbash | ✓ | 1.163ms | 912 B |
 | 68 | ciphers/autokey | ✓ | 1.467ms | 1.0 KB |
 | 69 | ciphers/baconian_cipher | ✓ | 433µs | 2.5 KB |
 | 70 | ciphers/base16 | ✓ | 440µs | 1.3 KB |
 | 71 | ciphers/base32 | ✓ | 10.163ms | 1.2 KB |
-| 72 | ciphers/base64_cipher | error |  |  |
+| 72 | ciphers/base64_cipher | ✓ | 736µs | 1.2 KB |
 | 73 | ciphers/base85 | ✓ | 1.174ms | 1.5 KB |
 | 74 | ciphers/beaufort_cipher | ✓ | 237µs | 1.1 KB |
 | 75 | ciphers/bifid | ✓ | 2.242ms | 1.9 KB |
@@ -112,7 +112,7 @@ Last updated: 2025-08-06 18:33 GMT+7
 | 103 | ciphers/shuffled_shift_cipher |   |  |  |
 | 104 | ciphers/simple_keyword_cypher |   |  |  |
 | 105 | ciphers/simple_substitution_cipher |   |  |  |
-| 106 | ciphers/transposition_cipher |   |  |  |
+| 106 | ciphers/transposition_cipher | ✓ | 172µs | 992 B |
 | 107 | ciphers/transposition_cipher_encrypt_decrypt_file |   |  |  |
 | 108 | ciphers/trifid_cipher |   |  |  |
 | 109 | ciphers/vernam_cipher |   |  |  |
