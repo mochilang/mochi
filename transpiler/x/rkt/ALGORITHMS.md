@@ -2,19 +2,19 @@
 
 This checklist is auto-generated.
 Generated Racket code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Racket`.
-Last updated: 2025-08-06 13:44 UTC
+Last updated: 2025-08-06 14:14 UTC
 
-## Algorithms Golden Test Checklist (20/1077)
+## Algorithms Golden Test Checklist (50/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 9m31.223891s | 18.0 KB |
-| 2 | backtracking/all_permutations | ✓ | 9m31.223891s | 373.2 KB |
-| 3 | backtracking/all_subsequences | ✓ | 9m31.223891s | 21.3 KB |
-| 4 | backtracking/coloring | ✓ | 9m31.223891s | 169.3 KB |
+| 2 | backtracking/all_permutations | ✓ | 9m31.223891s | 373.3 KB |
+| 3 | backtracking/all_subsequences | ✓ | 9m31.223891s | 21.4 KB |
+| 4 | backtracking/coloring | ✓ | 9m31.223891s | 169.7 KB |
 | 5 | backtracking/combination_sum | ✓ | 9m31.223891s | 41.5 KB |
-| 6 | backtracking/crossword_puzzle_solver | ✓ | 9m31.223891s | 515.9 KB |
+| 6 | backtracking/crossword_puzzle_solver | ✓ | 9m31.223891s | 516.2 KB |
 | 7 | backtracking/hamiltonian_cycle | ✓ | 9m31.223891s | 384 B |
-| 8 | backtracking/knight_tour | ✓ | 9m31.223891s | 736 B |
+| 8 | backtracking/knight_tour | ✓ | 9m31.223891s | 5.0 KB |
 | 9 | backtracking/match_word_pattern | ✓ | 9m31.223891s | 598.7 KB |
 | 10 | backtracking/minimax | ✓ | 9m31.223891s | 10.0 KB |
 | 11 | backtracking/n_queens | ✓ | 9m31.223891s | 206.5 KB |
@@ -27,36 +27,36 @@ Last updated: 2025-08-06 13:44 UTC
 | 18 | backtracking/word_ladder | ✓ | 9m31.223891s | 1.1 MB |
 | 19 | backtracking/word_search | ✓ | 9m31.223891s | 88.7 KB |
 | 20 | bit_manipulation/binary_and_operator | ✓ | 9m31.223891s | 73.1 KB |
-| 21 | bit_manipulation/binary_coded_decimal |   |  |  |
-| 22 | bit_manipulation/binary_count_setbits |   |  |  |
-| 23 | bit_manipulation/binary_count_trailing_zeros |   |  |  |
-| 24 | bit_manipulation/binary_or_operator |   |  |  |
-| 25 | bit_manipulation/binary_shifts |   |  |  |
-| 26 | bit_manipulation/binary_twos_complement |   |  |  |
-| 27 | bit_manipulation/binary_xor_operator |   |  |  |
-| 28 | bit_manipulation/bitwise_addition_recursive |   |  |  |
-| 29 | bit_manipulation/count_1s_brian_kernighan_method |   |  |  |
-| 30 | bit_manipulation/count_number_of_one_bits |   |  |  |
-| 31 | bit_manipulation/excess_3_code |   |  |  |
-| 32 | bit_manipulation/find_previous_power_of_two |   |  |  |
-| 33 | bit_manipulation/find_unique_number |   |  |  |
-| 34 | bit_manipulation/gray_code_sequence |   |  |  |
-| 35 | bit_manipulation/highest_set_bit |   |  |  |
-| 36 | bit_manipulation/index_of_rightmost_set_bit |   |  |  |
-| 37 | bit_manipulation/is_even |   |  |  |
-| 38 | bit_manipulation/is_power_of_two |   |  |  |
-| 39 | bit_manipulation/largest_pow_of_two_le_num |   |  |  |
-| 40 | bit_manipulation/missing_number |   |  |  |
-| 41 | bit_manipulation/numbers_different_signs |   |  |  |
-| 42 | bit_manipulation/power_of_4 |   |  |  |
-| 43 | bit_manipulation/reverse_bits |   |  |  |
-| 44 | bit_manipulation/single_bit_manipulation_operations |   |  |  |
-| 45 | bit_manipulation/swap_all_odd_and_even_bits |   |  |  |
-| 46 | blockchain/diophantine_equation |   |  |  |
-| 47 | boolean_algebra/and_gate |   |  |  |
-| 48 | boolean_algebra/imply_gate |   |  |  |
-| 49 | boolean_algebra/karnaugh_map_simplification |   |  |  |
-| 50 | boolean_algebra/multiplexer |   |  |  |
+| 21 | bit_manipulation/binary_coded_decimal | ✓ | 9m31.223891s | 38.8 KB |
+| 22 | bit_manipulation/binary_count_setbits | ✓ | 9m31.223891s | 12.2 KB |
+| 23 | bit_manipulation/binary_count_trailing_zeros | ✓ | 9m31.223891s | 18.5 KB |
+| 24 | bit_manipulation/binary_or_operator | ✓ | 9m31.223891s | 21.2 KB |
+| 25 | bit_manipulation/binary_shifts | ✓ | 9m31.223891s | 25.8 KB |
+| 26 | bit_manipulation/binary_twos_complement | ✓ | 9m31.223891s | 44.6 KB |
+| 27 | bit_manipulation/binary_xor_operator | ✓ | 9m31.223891s | 73.2 KB |
+| 28 | bit_manipulation/bitwise_addition_recursive | ✓ | 9m31.223891s | 21.5 KB |
+| 29 | bit_manipulation/count_1s_brian_kernighan_method | ✓ | 9m31.223891s | 35.8 KB |
+| 30 | bit_manipulation/count_number_of_one_bits | ✓ | 9m31.223891s | 74.4 KB |
+| 31 | bit_manipulation/excess_3_code | ✓ | 9m31.223891s | 8.7 KB |
+| 32 | bit_manipulation/find_previous_power_of_two | ✓ | 9m31.223891s | 46.0 KB |
+| 33 | bit_manipulation/find_unique_number | ✓ | 9m31.223891s | 27.5 KB |
+| 34 | bit_manipulation/gray_code_sequence | ✓ | 9m31.223891s | 3.0 KB |
+| 35 | bit_manipulation/highest_set_bit | ✓ | 9m31.223891s | 9.8 KB |
+| 36 | bit_manipulation/index_of_rightmost_set_bit | ✓ | 9m31.223891s | 5.2 KB |
+| 37 | bit_manipulation/is_even | ✓ | 9m31.223891s | 3.5 KB |
+| 38 | bit_manipulation/is_power_of_two | ✓ | 9m31.223891s | 384 B |
+| 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 9m31.223891s | 18.0 KB |
+| 40 | bit_manipulation/missing_number | ✓ | 9m31.223891s | 3.2 KB |
+| 41 | bit_manipulation/numbers_different_signs | ✓ | 9m31.223891s | 3.5 KB |
+| 42 | bit_manipulation/power_of_4 | ✓ | 9m31.223891s | 5.8 KB |
+| 43 | bit_manipulation/reverse_bits | ✓ | 9m31.223891s | 160.6 KB |
+| 44 | bit_manipulation/single_bit_manipulation_operations | ✓ | 9m31.223891s | 14.4 KB |
+| 45 | bit_manipulation/swap_all_odd_and_even_bits | ✓ | 9m31.223891s |  |
+| 46 | blockchain/diophantine_equation | ✓ | 9m31.223891s | 16.1 KB |
+| 47 | boolean_algebra/and_gate | ✓ | 9m31.223891s | 7.8 KB |
+| 48 | boolean_algebra/imply_gate | ✓ | 9m31.223891s | 3.0 KB |
+| 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 9m31.223891s | 11.5 KB |
+| 50 | boolean_algebra/multiplexer | ✓ | 9m31.223891s | 3.0 KB |
 | 51 | boolean_algebra/nand_gate |   |  |  |
 | 52 | boolean_algebra/nimply_gate |   |  |  |
 | 53 | boolean_algebra/nor_gate |   |  |  |
