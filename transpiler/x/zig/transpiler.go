@@ -1033,6 +1033,9 @@ func zigTypeFromExpr(e Expr) string {
 		return "[]i64"
 	case *IndexExpr:
 		ix := e.(*IndexExpr)
+		if ix.ElemType != "" {
+			return ix.ElemType
+		}
 		t := zigTypeFromExpr(ix.Target)
 		if ix.Map {
 			if strings.HasPrefix(t, "std.StringHashMap(") {
@@ -1049,7 +1052,7 @@ func zigTypeFromExpr(e Expr) string {
 		}
 		if strings.HasPrefix(t, "[]") {
 			if t == "[]const u8" {
-				return "u8"
+				return "[]const u8"
 			}
 			return t[2:]
 		}
@@ -1126,9 +1129,10 @@ func (m *MapLit) emit(w io.Writer) {
 
 // IndexExpr represents list indexing like `xs[i]`.
 type IndexExpr struct {
-	Target Expr
-	Index  Expr
-	Map    bool
+	Target   Expr
+	Index    Expr
+	Map      bool
+	ElemType string
 }
 
 // BreakStmt exits the nearest loop.
@@ -1859,6 +1863,44 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			}
 		}
 	}
+	if b.Op == "<" || b.Op == "<=" || b.Op == ">" || b.Op == ">=" {
+		if sl, ok := b.Right.(*StringLit); ok && len(sl.Value) == 1 {
+			io.WriteString(w, "std.mem.order(u8, ")
+			b.Left.emit(w)
+			io.WriteString(w, ", ")
+			fmt.Fprintf(w, "%q", sl.Value)
+			io.WriteString(w, ")")
+			switch b.Op {
+			case "<":
+				io.WriteString(w, " == .lt")
+			case "<=":
+				io.WriteString(w, " != .gt")
+			case ">":
+				io.WriteString(w, " == .gt")
+			case ">=":
+				io.WriteString(w, " != .lt")
+			}
+			return
+		}
+		if sl, ok := b.Left.(*StringLit); ok && len(sl.Value) == 1 {
+			io.WriteString(w, "std.mem.order(u8, ")
+			fmt.Fprintf(w, "%q", sl.Value)
+			io.WriteString(w, ", ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+			switch b.Op {
+			case "<":
+				io.WriteString(w, " == .lt")
+			case "<=":
+				io.WriteString(w, " != .gt")
+			case ">":
+				io.WriteString(w, " == .gt")
+			case ">=":
+				io.WriteString(w, " != .lt")
+			}
+			return
+		}
+	}
 	lt := zigTypeFromExpr(b.Left)
 	rt := zigTypeFromExpr(b.Right)
 	if (b.Op == "==" || b.Op == "!=") && lt == "Value" && rt == "Value" {
@@ -2170,7 +2212,10 @@ func (i *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, ").?")
 		return
 	}
-	t := zigTypeFromExpr(i.Target)
+	t := i.ElemType
+	if t == "" {
+		t = zigTypeFromExpr(i.Target)
+	}
 	if t == "[]const u8" {
 		i.Target.emit(w)
 		io.WriteString(w, "[@as(usize, @intCast(")
@@ -3101,7 +3146,22 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 				case *IndexExpr:
 					imap = t.Map
 				}
-				expr = &IndexExpr{Target: expr, Index: idx, Map: imap}
+				elemType := ""
+				if !imap {
+					targetType := zigTypeFromExpr(expr)
+					if strings.HasPrefix(targetType, "[]") {
+						if targetType == "[]const u8" {
+							elemType = "[]const u8"
+						} else {
+							elemType = targetType[2:]
+						}
+					} else if strings.HasPrefix(targetType, "[") {
+						if pos := strings.Index(targetType, "]"); pos > 0 {
+							elemType = targetType[pos+1:]
+						}
+					}
+				}
+				expr = &IndexExpr{Target: expr, Index: idx, Map: imap, ElemType: elemType}
 				continue
 			}
 			if op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil {
@@ -3708,12 +3768,6 @@ func compileWhileStmt(ws *parser.WhileStmt, prog *parser.Program) (Stmt, error) 
 	body := make([]Stmt, 0, len(ws.Body))
 	pushAliasScope()
 	funDepth++
-	// track varDecls before processing the loop so we can remove
-	// any declarations that are scoped within the loop body
-	outerDecls := make(map[string]*VarDecl, len(varDecls))
-	for k, v := range varDecls {
-		outerDecls[k] = v
-	}
 	for _, s := range ws.Body {
 		st, err := compileStmt(s, prog)
 		if err != nil {
@@ -3721,12 +3775,6 @@ func compileWhileStmt(ws *parser.WhileStmt, prog *parser.Program) (Stmt, error) 
 			return nil, err
 		}
 		body = append(body, st)
-	}
-	// remove varDecls introduced inside the loop body
-	for k := range varDecls {
-		if _, ok := outerDecls[k]; !ok {
-			delete(varDecls, k)
-		}
 	}
 	funDepth--
 	popAliasScope()
@@ -3765,21 +3813,12 @@ func compileForStmt(fs *parser.ForStmt, prog *parser.Program) (Stmt, error) {
 	aliasStack[len(aliasStack)-1][fs.Name] = alias
 	namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], fs.Name)
 	varTypes[alias] = elemType
-	outerDecls := make(map[string]*VarDecl, len(varDecls))
-	for k, v := range varDecls {
-		outerDecls[k] = v
-	}
 	for _, s := range fs.Body {
 		st, err := compileStmt(s, prog)
 		if err != nil {
 			return nil, err
 		}
 		body = append(body, st)
-	}
-	for k := range varDecls {
-		if _, ok := outerDecls[k]; !ok {
-			delete(varDecls, k)
-		}
 	}
 	popAliasScope()
 	return &ForStmt{Name: alias, Start: start, End: end, Iterable: iter, Body: body, ElemType: elemType}, nil
