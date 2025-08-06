@@ -118,6 +118,7 @@ var (
 	useSubprocess     bool
 	useSubstrClamp    bool
 	useRepeat         bool
+	useStr            bool
 	useParseIntStr    bool
 	imports           []string
 	testpkgAliases    map[string]struct{}
@@ -2556,17 +2557,14 @@ func (v *ValuesExpr) emit(w io.Writer) error {
 type StrExpr struct{ Value Expr }
 
 func (s *StrExpr) emit(w io.Writer) error {
-	_, err := io.WriteString(w, "(")
-	if err != nil {
+	useStr = true
+	if _, err := io.WriteString(w, "_str("); err != nil {
 		return err
 	}
 	if err := s.Value.emit(w); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, ")"); err != nil {
-		return err
-	}
-	_, err = io.WriteString(w, ".toString()")
+	_, err := io.WriteString(w, ")")
 	return err
 }
 
@@ -4313,6 +4311,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if useStr {
+		if _, err := io.WriteString(w, "String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }\n\n"); err != nil {
+			return err
+		}
+	}
 	if useBigRat {
 		if _, err := io.WriteString(w, "class BigRat {\n  BigInt num;\n  BigInt den;\n  BigRat(this.num, [BigInt? d]) : den = d ?? BigInt.one {\n    if (den.isNegative) { num = -num; den = -den; }\n    var g = num.gcd(den);\n    num = num ~/ g;\n    den = den ~/ g;\n  }\n  BigRat add(BigRat o) => BigRat(num * o.den + o.num * den, den * o.den);\n  BigRat sub(BigRat o) => BigRat(num * o.den - o.num * den, den * o.den);\n  BigRat mul(BigRat o) => BigRat(num * o.num, den * o.den);\n  BigRat div(BigRat o) => BigRat(num * o.den, den * o.num);\n}\n\nBigRat _bigrat(dynamic n, [dynamic d]) {\n  if (n is BigRat && d == null) return BigRat(n.num, n.den);\n  BigInt numer;\n  BigInt denom = d == null ? BigInt.one : (d is BigInt ? d : BigInt.from((d as num).toInt()));\n  if (n is BigRat) { numer = n.num; denom = n.den; }\n  else if (n is BigInt) { numer = n; }\n  else if (n is int) { numer = BigInt.from(n); }\n  else if (n is num) { numer = BigInt.from(n.toInt()); }\n  else { numer = BigInt.zero; }\n  return BigRat(numer, denom);\n}\nBigInt _num(BigRat r) => r.num;\nBigInt _denom(BigRat r) => r.den;\nBigRat _add(BigRat a, BigRat b) => a.add(b);\nBigRat _sub(BigRat a, BigRat b) => a.sub(b);\nBigRat _mul(BigRat a, BigRat b) => a.mul(b);\nBigRat _div(BigRat a, BigRat b) => a.div(b);\nBigRat _neg(BigRat a) => BigRat(-a.num, a.den);\n\n"); err != nil {
 			return err
@@ -4537,6 +4540,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench, wrapMain bool) (*Pro
 	useSubprocess = false
 	useSubstrClamp = false
 	useRepeat = false
+	useStr = false
 	useParseIntStr = false
 	imports = nil
 	testpkgAliases = map[string]struct{}{}
@@ -5642,6 +5646,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
+			useStr = true
 			return &StrExpr{Value: v}, nil
 		}
 		if p.Call.Func == "count" && len(p.Call.Args) == 1 {

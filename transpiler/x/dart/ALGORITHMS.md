@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-06 23:27 GMT+7
+Last updated: 2025-08-07 00:15 GMT+7
 
-## Algorithms Golden Test Checklist (507/1077)
+## Algorithms Golden Test Checklist (508/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 11.624ms | 3.5 MB |
@@ -720,7 +720,7 @@ Last updated: 2025-08-06 23:27 GMT+7
 | 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ | 22.299ms | 5.6 MB |
 | 712 | matrix/pascal_triangle | ✓ | 10.977ms | 3.0 MB |
 | 713 | matrix/rotate_matrix | ✓ | 11.539ms | 4.5 MB |
-| 714 | matrix/searching_in_sorted_matrix |   |  |  |
+| 714 | matrix/searching_in_sorted_matrix | ✓ | 22.705ms | 10.7 MB |
 | 715 | matrix/sherman_morrison |   |  |  |
 | 716 | matrix/spiral_print |   |  |  |
 | 717 | matrix/tests/test_matrix_operation |   |  |  |
