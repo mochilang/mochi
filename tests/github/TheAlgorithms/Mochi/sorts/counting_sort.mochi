@@ -1,0 +1,144 @@
+/*
+Counting Sort
+-------------
+Counting sort is a non-comparative sorting algorithm suitable for sorting
+lists of integers when the range of input values is not significantly
+larger than the number of elements. The algorithm counts occurrences of
+each distinct value, computes prefix sums to determine positions, and then
+places elements into the output array in a stable manner.
+
+Steps:
+1. Find minimum and maximum values of the input.
+2. Allocate a counting array sized max+1-min and count each value.
+3. Transform counts into prefix sums so each position stores the number of
+   elements <= that index.
+4. Iterate the input in reverse order placing each element at its
+   correct position and decrementing its count.
+
+Time Complexity: O(n + k) where n is number of elements and
+k is the range of input values.
+This implementation also sorts strings by converting characters to their
+ASCII codes and applying counting sort.
+*/
+
+fun max_val(arr: list<int>): int {
+  var m = arr[0]
+  var i = 1
+  while i < len(arr) {
+    if arr[i] > m {
+      m = arr[i]
+    }
+    i = i + 1
+  }
+  return m
+}
+
+fun min_val(arr: list<int>): int {
+  var m = arr[0]
+  var i = 1
+  while i < len(arr) {
+    if arr[i] < m {
+      m = arr[i]
+    }
+    i = i + 1
+  }
+  return m
+}
+
+fun counting_sort(collection: list<int>): list<int> {
+  if len(collection) == 0 {
+    return []
+  }
+  let coll_len = len(collection)
+  let coll_max = max_val(collection)
+  let coll_min = min_val(collection)
+  let counting_arr_length = coll_max + 1 - coll_min
+
+  var counting_arr: list<int> = []
+  var i = 0
+  while i < counting_arr_length {
+    counting_arr = append(counting_arr, 0)
+    i = i + 1
+  }
+
+  i = 0
+  while i < coll_len {
+    let number = collection[i]
+    counting_arr[number - coll_min] = counting_arr[number - coll_min] + 1
+    i = i + 1
+  }
+
+  i = 1
+  while i < counting_arr_length {
+    counting_arr[i] = counting_arr[i] + counting_arr[i - 1]
+    i = i + 1
+  }
+
+  var ordered: list<int> = []
+  i = 0
+  while i < coll_len {
+    ordered = append(ordered, 0)
+    i = i + 1
+  }
+
+  var idx = coll_len - 1
+  while idx >= 0 {
+    let number = collection[idx]
+    let pos = counting_arr[number - coll_min] - 1
+    ordered[pos] = number
+    counting_arr[number - coll_min] = counting_arr[number - coll_min] - 1
+    idx = idx - 1
+  }
+  return ordered
+}
+
+let ascii_chars: string = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+
+fun chr(code: int): string {
+  if code == 10 { return "\n" }
+  if code == 13 { return "\r" }
+  if code == 9 { return "\t" }
+  if code >= 32 && code < 127 {
+    return ascii_chars[code - 32:code - 31]
+  }
+  return ""
+}
+
+fun ord(ch: string): int {
+  if ch == "\n" { return 10 }
+  if ch == "\r" { return 13 }
+  if ch == "\t" { return 9 }
+  var i = 0
+  while i < len(ascii_chars) {
+    if ascii_chars[i:i+1] == ch {
+      return 32 + i
+    }
+    i = i + 1
+  }
+  return 0
+}
+
+fun counting_sort_string(s: string): string {
+  var codes: list<int> = []
+  var i = 0
+  while i < len(s) {
+    codes = append(codes, ord(s[i:i+1]))
+    i = i + 1
+  }
+  let sorted_codes = counting_sort(codes)
+  var res = ""
+  i = 0
+  while i < len(sorted_codes) {
+    res = res + chr(sorted_codes[i])
+    i = i + 1
+  }
+  return res
+}
+
+let example1 = counting_sort([0, 5, 3, 2, 2])
+print(str(example1))
+let example2 = counting_sort([])
+print(str(example2))
+let example3 = counting_sort([-2, -5, -45])
+print(str(example3))
+print(counting_sort_string("thisisthestring"))
