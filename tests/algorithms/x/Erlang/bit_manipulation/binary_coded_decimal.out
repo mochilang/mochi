@@ -1,0 +1,11 @@
+/workspace/mochi/tests/algorithms/x/Erlang/bit_manipulation/binary_coded_decimal.erl:99:15: Warning: variable 'N_4' exported from 'case' (line 80, column 9)
+%   99| {Digits, I_2, N_4, Number, Out_2} = Fun_3(Digits, I, N_4, Number, Out),
+%     |               ^
+
+"0b0000"
+"0b0000"
+"0b0000"
+"0b0011"
+"0b0010"
+"0b00010010"
+"0b100110000111"
