@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const tar = require('tar');
+const { HttpsProxyAgent } = require('https-proxy-agent');
 
 const osMap = { darwin: 'Darwin', linux: 'Linux', win32: 'Windows' };
 const archMap = { x64: 'x86_64', arm64: 'arm64' };
@@ -25,7 +26,15 @@ fs.mkdirSync(destDir, { recursive: true });
 function download(url, outputPath) {
   return new Promise((resolve, reject) => {
     const file = fs.createWriteStream(outputPath);
-    https.get(url, res => {
+    const proxy =
+      process.env.HTTPS_PROXY ||
+      process.env.https_proxy ||
+      process.env.HTTP_PROXY ||
+      process.env.http_proxy ||
+      process.env.npm_config_https_proxy ||
+      process.env.npm_config_proxy;
+    const options = proxy ? { agent: new HttpsProxyAgent(proxy) } : {};
+    https.get(url, options, res => {
       if (res.statusCode !== 200) {
         reject(new Error(`Failed to download ${url}: ${res.statusCode}`));
         return;

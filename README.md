@@ -83,6 +83,10 @@ CGO_ENABLED=0 go build -o vmreport ./tools/vmreport
 
 This installs `mochi` into `~/bin` and runs the full test suite.
 
+### Installing behind a proxy
+
+If you're running `npm install` behind a corporate proxy, avoid using the deprecated `http-proxy` environment variable. Instead, set `HTTPS_PROXY`, `HTTP_PROXY`, or `npm_config_proxy`. The installer respects these variables when downloading the Mochi binary.
+
 ## Usage with Visual Studio Code
 
 There is a VS Code extension under `tools/vscode` that bundles the Mochi language syntax. Run `npm install` and `npm run package` in that folder to build `mochi.vsix` for local installation.
