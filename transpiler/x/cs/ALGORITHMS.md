@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-06 20:52 GMT+7
+Last updated: 2025-08-06 21:08 GMT+7
 
-## Algorithms Golden Test Checklist (31/1077)
+## Algorithms Golden Test Checklist (51/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -38,26 +38,26 @@ Last updated: 2025-08-06 20:52 GMT+7
 | 29 | bit_manipulation/count_1s_brian_kernighan_method | ✓ | 1.0ms | 16.53KB |
 | 30 | bit_manipulation/count_number_of_one_bits | ✓ | 2.0ms | 16.80KB |
 | 31 | bit_manipulation/excess_3_code | ✓ | 2.0ms | 13.65KB |
-| 32 | bit_manipulation/find_previous_power_of_two |   |  |  |
-| 33 | bit_manipulation/find_unique_number |   |  |  |
-| 34 | bit_manipulation/gray_code_sequence |   |  |  |
-| 35 | bit_manipulation/highest_set_bit |   |  |  |
-| 36 | bit_manipulation/index_of_rightmost_set_bit |   |  |  |
-| 37 | bit_manipulation/is_even |   |  |  |
-| 38 | bit_manipulation/is_power_of_two |   |  |  |
-| 39 | bit_manipulation/largest_pow_of_two_le_num |   |  |  |
-| 40 | bit_manipulation/missing_number |   |  |  |
-| 41 | bit_manipulation/numbers_different_signs |   |  |  |
-| 42 | bit_manipulation/power_of_4 |   |  |  |
-| 43 | bit_manipulation/reverse_bits |   |  |  |
-| 44 | bit_manipulation/single_bit_manipulation_operations |   |  |  |
-| 45 | bit_manipulation/swap_all_odd_and_even_bits |   |  |  |
-| 46 | blockchain/diophantine_equation |   |  |  |
-| 47 | boolean_algebra/and_gate |   |  |  |
-| 48 | boolean_algebra/imply_gate |   |  |  |
-| 49 | boolean_algebra/karnaugh_map_simplification |   |  |  |
-| 50 | boolean_algebra/multiplexer |   |  |  |
-| 51 | boolean_algebra/nand_gate |   |  |  |
+| 32 | bit_manipulation/find_previous_power_of_two | ✓ | 6.0ms | 20.62KB |
+| 33 | bit_manipulation/find_unique_number | ✓ | 3.0ms | 16.72KB |
+| 34 | bit_manipulation/gray_code_sequence | ✓ | 3.0ms | 20.16KB |
+| 35 | bit_manipulation/highest_set_bit | ✓ | 3.0ms | 16.53KB |
+| 36 | bit_manipulation/index_of_rightmost_set_bit | ✓ | 3.0ms | 17.36KB |
+| 37 | bit_manipulation/is_even | ✓ | 3.0ms | 13.02KB |
+| 38 | bit_manipulation/is_power_of_two | ✓ | 1.0µs | 43.78KB |
+| 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 7.0ms | 16.68KB |
+| 40 | bit_manipulation/missing_number | ✓ | 4.0ms | 16.46KB |
+| 41 | bit_manipulation/numbers_different_signs | ✓ | 3.0ms | 13.02KB |
+| 42 | bit_manipulation/power_of_4 | ✓ | 3.0ms | 12.97KB |
+| 43 | bit_manipulation/reverse_bits | ✓ | 3.0ms | 31.58KB |
+| 44 | bit_manipulation/single_bit_manipulation_operations | ✓ | 3.0ms | 16.52KB |
+| 45 | bit_manipulation/swap_all_odd_and_even_bits | ✓ | 3.0ms | 28.23KB |
+| 46 | blockchain/diophantine_equation | ✓ | 3.0ms | 21.18KB |
+| 47 | boolean_algebra/and_gate | ✓ | 5.0ms | 16.73KB |
+| 48 | boolean_algebra/imply_gate | ✓ | 10.0ms | 16.44KB |
+| 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 3.0ms | 17.34KB |
+| 50 | boolean_algebra/multiplexer | ✓ | 3.0ms | 16.44KB |
+| 51 | boolean_algebra/nand_gate | ✓ | 3.0ms | 16.44KB |
 | 52 | boolean_algebra/nimply_gate |   |  |  |
 | 53 | boolean_algebra/nor_gate |   |  |  |
 | 54 | boolean_algebra/not_gate |   |  |  |
