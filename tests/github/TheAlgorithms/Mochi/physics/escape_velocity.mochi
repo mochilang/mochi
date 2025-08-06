@@ -1,0 +1,57 @@
+/*
+Escape Velocity
+---------------
+This program computes the minimum speed needed for an object to escape the gravitational field of a celestial body without further propulsion.
+The escape velocity is determined by classical mechanics formula:
+    v = sqrt(2 * G * M / R)
+where G is the gravitational constant (6.67430e-11 m^3 kg^-1 s^-2), M is the mass of the body, and R is the radius from the center of mass.
+A Newton-Raphson routine approximates the square root and a helper rounds the result to three decimal places.
+If the radius is zero the function panics to avoid division by zero.
+*/
+
+fun pow10(n: int): float {
+  var p = 1.0
+  var k = 0
+  if n >= 0 {
+    while k < n {
+      p = p * 10.0
+      k = k + 1
+    }
+  } else {
+    let m = -n
+    while k < m {
+      p = p / 10.0
+      k = k + 1
+    }
+  }
+  return p
+}
+
+fun sqrt_newton(n: float): float {
+  if n == 0.0 { return 0.0 }
+  var x = n
+  var j = 0
+  while j < 20 {
+    x = (x + n / x) / 2.0
+    j = j + 1
+  }
+  return x
+}
+
+fun round3(x: float): float {
+  var y = x * 1000.0 + 0.5
+  var yi = y as int
+  if (yi as float) > y { yi = yi - 1 }
+  return (yi as float) / 1000.0
+}
+
+fun escape_velocity(mass: float, radius: float): float {
+  if radius == 0.0 { panic("Radius cannot be zero.") }
+  let G = 6.67430 * pow10(-11)
+  let velocity = sqrt_newton(2.0 * G * mass / radius)
+  return round3(velocity)
+}
+
+print(escape_velocity(5.972 * pow10(24), 6.371 * pow10(6)))
+print(escape_velocity(7.348 * pow10(22), 1.737 * pow10(6)))
+print(escape_velocity(1.898 * pow10(27), 6.9911 * pow10(7)))
