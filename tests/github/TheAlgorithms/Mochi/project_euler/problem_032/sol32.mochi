@@ -1,0 +1,98 @@
+/*
+Project Euler Problem 32: Pandigital products
+
+Find the sum of all products whose multiplicand/multiplier/product identity can be
+written as a 1 through 9 pandigital. A 1..9 pandigital uses each digit 1-9 exactly once.
+
+Algorithm:
+1. Generate every permutation of the digits "1".."9" using recursive backtracking.
+2. For each 9-digit permutation, split digits into two possible multiplicand/multiplier/product
+   patterns:
+   - 2-digit multiplicand, 3-digit multiplier, 4-digit product
+   - 1-digit multiplicand, 4-digit multiplier, 4-digit product
+3. Convert each split into integers and check if multiplicand * multiplier == product.
+4. Collect all unique products that satisfy either pattern and sum them.
+
+The search explores 9! permutations so it runs in O(9!) time with O(9) recursion depth.
+This implementation uses only core Mochi features so it can run on the runtime/vm without FFI.
+*/
+
+fun join_digits(xs: list<string>): string {
+  var s = ""
+  var i = 0
+  while i < len(xs) {
+    s = s + xs[i]
+    i = i + 1
+  }
+  return s
+}
+
+fun digits_to_int(xs: list<string>): int {
+  return int(join_digits(xs))
+}
+
+fun contains_int(xs: list<int>, value: int): bool {
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == value {
+      return true
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun remove_at(xs: list<string>, idx: int): list<string> {
+  var res: list<string> = []
+  var i = 0
+  while i < len(xs) {
+    if i != idx {
+      res = append(res, xs[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun is_combination_valid(comb: list<string>): bool {
+  let prod = digits_to_int(comb[5:9])
+  let mul2 = digits_to_int(comb[0:2])
+  let mul3 = digits_to_int(comb[2:5])
+  if mul2 * mul3 == prod {
+    return true
+  }
+  let mul1 = digits_to_int(comb[0:1])
+  let mul4 = digits_to_int(comb[1:5])
+  return mul1 * mul4 == prod
+}
+
+fun search(prefix: list<string>, remaining: list<string>, products: list<int>): list<int> {
+  if len(remaining) == 0 {
+    if is_combination_valid(prefix) {
+      let p = digits_to_int(prefix[5:9])
+      if !contains_int(products, p) {
+        products = append(products, p)
+      }
+    }
+    return products
+  }
+  var i = 0
+  while i < len(remaining) {
+    let next_prefix = append(prefix, remaining[i])
+    let next_remaining = remove_at(remaining, i)
+    products = search(next_prefix, next_remaining, products)
+    i = i + 1
+  }
+  return products
+}
+
+let digits: list<string> = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+var products: list<int> = []
+products = search([], digits, products)
+var total = 0
+var i = 0
+while i < len(products) {
+  total = total + products[i]
+  i = i + 1
+}
+print(str(total))
