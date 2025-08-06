@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Racket code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Racket`.
-Last updated: 2025-08-06 14:14 UTC
+Last updated: 2025-08-06 14:35 UTC
 
-## Algorithms Golden Test Checklist (50/1077)
+## Algorithms Golden Test Checklist (100/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 9m31.223891s | 18.0 KB |
@@ -57,56 +57,56 @@ Last updated: 2025-08-06 14:14 UTC
 | 48 | boolean_algebra/imply_gate | ✓ | 9m31.223891s | 3.0 KB |
 | 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 9m31.223891s | 11.5 KB |
 | 50 | boolean_algebra/multiplexer | ✓ | 9m31.223891s | 3.0 KB |
-| 51 | boolean_algebra/nand_gate |   |  |  |
-| 52 | boolean_algebra/nimply_gate |   |  |  |
-| 53 | boolean_algebra/nor_gate |   |  |  |
-| 54 | boolean_algebra/not_gate |   |  |  |
-| 55 | boolean_algebra/or_gate |   |  |  |
-| 56 | boolean_algebra/quine_mc_cluskey |   |  |  |
-| 57 | boolean_algebra/xnor_gate |   |  |  |
-| 58 | boolean_algebra/xor_gate |   |  |  |
-| 59 | cellular_automata/conways_game_of_life |   |  |  |
-| 60 | cellular_automata/game_of_life |   |  |  |
-| 61 | cellular_automata/langtons_ant |   |  |  |
-| 62 | cellular_automata/nagel_schrekenberg |   |  |  |
-| 63 | cellular_automata/one_dimensional |   |  |  |
-| 64 | cellular_automata/wa_tor |   |  |  |
-| 65 | ciphers/a1z26 |   |  |  |
-| 66 | ciphers/affine_cipher |   |  |  |
-| 67 | ciphers/atbash |   |  |  |
-| 68 | ciphers/autokey |   |  |  |
-| 69 | ciphers/baconian_cipher |   |  |  |
-| 70 | ciphers/base16 |   |  |  |
-| 71 | ciphers/base32 |   |  |  |
-| 72 | ciphers/base64_cipher |   |  |  |
-| 73 | ciphers/base85 |   |  |  |
-| 74 | ciphers/beaufort_cipher |   |  |  |
-| 75 | ciphers/bifid |   |  |  |
-| 76 | ciphers/brute_force_caesar_cipher |   |  |  |
-| 77 | ciphers/caesar_cipher |   |  |  |
-| 78 | ciphers/cryptomath_module |   |  |  |
-| 79 | ciphers/decrypt_caesar_with_chi_squared |   |  |  |
-| 80 | ciphers/deterministic_miller_rabin |   |  |  |
-| 81 | ciphers/diffie |   |  |  |
-| 82 | ciphers/diffie_hellman |   |  |  |
-| 83 | ciphers/elgamal_key_generator |   |  |  |
-| 84 | ciphers/enigma_machine2 |   |  |  |
-| 85 | ciphers/fractionated_morse_cipher |   |  |  |
-| 86 | ciphers/gronsfeld_cipher |   |  |  |
-| 87 | ciphers/hill_cipher |   |  |  |
-| 88 | ciphers/mixed_keyword_cypher |   |  |  |
-| 89 | ciphers/mono_alphabetic_ciphers |   |  |  |
-| 90 | ciphers/morse_code |   |  |  |
-| 91 | ciphers/onepad_cipher |   |  |  |
-| 92 | ciphers/permutation_cipher |   |  |  |
-| 93 | ciphers/playfair_cipher |   |  |  |
-| 94 | ciphers/polybius |   |  |  |
-| 95 | ciphers/porta_cipher |   |  |  |
-| 96 | ciphers/rabin_miller |   |  |  |
-| 97 | ciphers/rail_fence_cipher |   |  |  |
-| 98 | ciphers/rot13 |   |  |  |
-| 99 | ciphers/rsa_cipher |   |  |  |
-| 100 | ciphers/rsa_factorization |   |  |  |
+| 51 | boolean_algebra/nand_gate | ✓ | 9m31.223891s | 3.0 KB |
+| 52 | boolean_algebra/nimply_gate | ✓ | 9m31.223891s | 3.0 KB |
+| 53 | boolean_algebra/nor_gate | ✓ | 9m31.223891s | 59.5 KB |
+| 54 | boolean_algebra/not_gate | ✓ | 9m31.223891s | 1.7 KB |
+| 55 | boolean_algebra/or_gate | ✓ | 9m31.223891s | 3.2 KB |
+| 56 | boolean_algebra/quine_mc_cluskey | ✓ | 9m31.223891s | 72.4 KB |
+| 57 | boolean_algebra/xnor_gate | ✓ | 9m31.223891s | 3.0 KB |
+| 58 | boolean_algebra/xor_gate | ✓ | 9m31.223891s | 3.0 KB |
+| 59 | cellular_automata/conways_game_of_life | ✓ | 9m31.223891s | 234.3 KB |
+| 60 | cellular_automata/game_of_life | ✓ | 9m31.223891s | 930.3 KB |
+| 61 | cellular_automata/langtons_ant | ✓ | 9m31.223891s | 384 B |
+| 62 | cellular_automata/nagel_schrekenberg | ✓ | 9m31.223891s | 108.3 KB |
+| 63 | cellular_automata/one_dimensional | ✓ | 9m31.223891s | 586.2 KB |
+| 64 | cellular_automata/wa_tor | ✓ | 9m31.223891s |  |
+| 65 | ciphers/a1z26 | ✓ | 9m31.223891s | 3.4 KB |
+| 66 | ciphers/affine_cipher | ✓ | 9m31.223891s |  |
+| 67 | ciphers/atbash | ✓ | 9m31.223891s | 390.5 KB |
+| 68 | ciphers/autokey | ✓ | 9m31.223891s | 2.0 MB |
+| 69 | ciphers/baconian_cipher | ✓ | 9m31.223891s | 90.2 KB |
+| 70 | ciphers/base16 | ✓ | 9m31.223891s | 212.6 KB |
+| 71 | ciphers/base32 | ✓ | 9m31.223891s |  |
+| 72 | ciphers/base64_cipher | ✓ | 9m31.223891s | 216.0 KB |
+| 73 | ciphers/base85 | ✓ | 9m31.223891s | 429.4 KB |
+| 74 | ciphers/beaufort_cipher | ✓ | 9m31.223891s | 34.4 KB |
+| 75 | ciphers/bifid | ✓ | 9m31.223891s | 1017.1 KB |
+| 76 | ciphers/brute_force_caesar_cipher | ✓ | 9m31.223891s | 2.6 MB |
+| 77 | ciphers/caesar_cipher | ✓ | 9m31.223891s | 1.3 MB |
+| 78 | ciphers/cryptomath_module | ✓ | 9m31.223891s | 21.3 KB |
+| 79 | ciphers/decrypt_caesar_with_chi_squared | ✓ | 9m31.223891s | 4.9 KB |
+| 80 | ciphers/deterministic_miller_rabin | ✓ | 9m31.223891s | 893.8 KB |
+| 81 | ciphers/diffie | ✓ | 9m31.223891s | 110.9 KB |
+| 82 | ciphers/diffie_hellman | ✓ | 9m31.223891s | 8.2 KB |
+| 83 | ciphers/elgamal_key_generator | ✓ | 9m31.223891s | 75.8 KB |
+| 84 | ciphers/enigma_machine2 | ✓ | 9m31.223891s | 498.8 KB |
+| 85 | ciphers/fractionated_morse_cipher | ✓ | 9m31.223891s | 2.2 KB |
+| 86 | ciphers/gronsfeld_cipher | ✓ | 9m31.223891s | 1.3 MB |
+| 87 | ciphers/hill_cipher | ✓ | 9m31.223891s | 1.4 MB |
+| 88 | ciphers/mixed_keyword_cypher | ✓ | 9m31.223891s | 392.2 KB |
+| 89 | ciphers/mono_alphabetic_ciphers | ✓ | 9m31.223891s | 71.8 KB |
+| 90 | ciphers/morse_code | ✓ | 9m31.223891s | 97.5 KB |
+| 91 | ciphers/onepad_cipher | ✓ | 9m31.223891s | 7.0 KB |
+| 92 | ciphers/permutation_cipher | ✓ | 9m31.223891s | 2.2 KB |
+| 93 | ciphers/playfair_cipher | ✓ | 9m31.223891s | 166.0 KB |
+| 94 | ciphers/polybius | ✓ | 9m31.223891s | 214.8 KB |
+| 95 | ciphers/porta_cipher | ✓ | 9m31.223891s | 407.8 KB |
+| 96 | ciphers/rabin_miller | ✓ | 11m44.124012s | 102.0 KB |
+| 97 | ciphers/rail_fence_cipher | ✓ | 9m31.223891s | 41.7 KB |
+| 98 | ciphers/rot13 | ✓ | 9m31.223891s | 2.6 MB |
+| 99 | ciphers/rsa_cipher | ✓ | 9m31.223891s | 141.0 KB |
+| 100 | ciphers/rsa_factorization | ✓ | 9m31.223891s | 247.6 KB |
 | 101 | ciphers/rsa_key_generator |   |  |  |
 | 102 | ciphers/running_key_cipher |   |  |  |
 | 103 | ciphers/shuffled_shift_cipher |   |  |  |
