@@ -43,17 +43,29 @@ func FromStatement(s *parser.Statement) *Node {
 		return n
 
 	case s.Assign != nil:
-		targetNode := FromPostfixExpr(s.Assign.Target)
-		n := &Node{
+		if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
+			return &Node{
+				Kind:  "assign",
+				Value: s.Assign.Name,
+				Pos:   s.Assign.Pos,
+				Children: []*Node{
+					FromExpr(s.Assign.Value),
+				},
+			}
+		}
+		// Build target expression with fields and indexes
+		target := &parser.PostfixExpr{Target: &parser.Primary{Pos: s.Assign.Pos, Selector: &parser.SelectorExpr{Root: s.Assign.Name}}}
+		for _, f := range s.Assign.Field {
+			target.Ops = append(target.Ops, &parser.PostfixOp{Field: f})
+		}
+		for _, idx := range s.Assign.Index {
+			target.Ops = append(target.Ops, &parser.PostfixOp{Index: idx})
+		}
+		return &Node{
 			Kind:     "assign",
 			Pos:      s.Assign.Pos,
-			Children: []*Node{targetNode, FromExpr(s.Assign.Value)},
+			Children: []*Node{FromPostfixExpr(target), FromExpr(s.Assign.Value)},
 		}
-		// Preserve original variable name when assigning directly to it.
-		if sel := s.Assign.Target.Target.Selector; sel != nil && len(s.Assign.Target.Ops) == 0 {
-			n.Value = sel.Root
-		}
-		return n
 
 	case s.Fun != nil:
 		n := &Node{Kind: "fun", Value: s.Fun.Name, Pos: s.Fun.Pos}
@@ -342,7 +354,7 @@ func FromExpr(e *parser.Expr) *Node {
 			val += "_all"
 		}
 		reduce(prec(val))
-		operands = append(operands, FromUnary(op.Right))
+		operands = append(operands, FromPostfixExpr(op.Right))
 		ops = append(ops, opInfo{op: val, pos: op.Pos})
 	}
 	reduce(0)
