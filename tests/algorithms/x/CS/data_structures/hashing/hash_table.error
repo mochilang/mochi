@@ -1,0 +1,4 @@
+exit status 1
+/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_hashing_hash_table4111332436/001/Program.cs(270,49): error CS1061: 'HashTable' does not contain a definition for 'Keys' and no accessible extension method 'Keys' accepting a first argument of type 'HashTable' could be found (are you missing a using directive or an assembly reference?) [/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_hashing_hash_table4111332436/001/app.csproj]
+
+The build failed. Fix the build errors and run again.

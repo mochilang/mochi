@@ -1,0 +1,6 @@
+exit status 134
+Enter the number of nodes:
+Unhandled exception. System.FormatException: The input string '' was not in a correct format.
+   at System.Number.ThrowFormatException[TChar](ReadOnlySpan`1 value)
+   at System.Convert.ToInt64(String value)
+   at Program.Main() in /tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_binary_tree_number_of_possible_binary_trees2083194116/001/Program.cs:line 151

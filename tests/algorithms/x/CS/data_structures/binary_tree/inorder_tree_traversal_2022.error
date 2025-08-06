@@ -1,0 +1,6 @@
+exit status 134
+Unhandled exception. System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at Program.insert(TreeState state_2, Int64 value_3) in /tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_binary_tree_inorder_tree_traversal_20221149615651/001/Program.cs:line 124
+   at Program.make_tree() in /tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_binary_tree_inorder_tree_traversal_20221149615651/001/Program.cs:line 166
+   at Program.main() in /tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_binary_tree_inorder_tree_traversal_20221149615651/001/Program.cs:line 174
+   at Program.Main() in /tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_binary_tree_inorder_tree_traversal_20221149615651/001/Program.cs:line 183

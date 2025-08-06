@@ -1,0 +1,6 @@
+/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_binary_tree_diff_views_of_binary_tree3975625592/001/Program.cs(17,17): warning CS0649: Field 'Pair.idx' is never assigned to, and will always have its default value 0 [/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_binary_tree_diff_views_of_binary_tree3975625592/001/app.csproj]
+/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_binary_tree_diff_views_of_binary_tree3975625592/001/Program.cs(18,17): warning CS0649: Field 'Pair.hd' is never assigned to, and will always have its default value 0 [/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_binary_tree_diff_views_of_binary_tree3975625592/001/app.csproj]
+[3, 20, 7]
+[3, 9, 15]
+[9, 3, 20, 7]
+[9, 15, 20, 7]

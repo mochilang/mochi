@@ -3895,6 +3895,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 						conv = fmt.Sprintf("Enumerable.ToArray(%s.Select(x => Convert.ToInt64(x)))", exprString(arg))
 					case "double":
 						conv = fmt.Sprintf("Enumerable.ToArray(%s.Select(x => Convert.ToDouble(x)))", exprString(arg))
+					case "object":
+						conv = exprString(arg)
 					default:
 						conv = fmt.Sprintf("Enumerable.ToArray(%s.Cast<%s>())", exprString(arg), elem)
 					}

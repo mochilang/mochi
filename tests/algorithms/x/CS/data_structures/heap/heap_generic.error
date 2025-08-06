@@ -1,0 +1,6 @@
+exit status 1
+/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_heap_heap_generic3248670187/001/Program.cs(194,28): error CS0029: Cannot implicitly convert type 'object[]' to 'long[]' [/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_heap_heap_generic3248670187/001/app.csproj]
+/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_heap_heap_generic3248670187/001/Program.cs(228,76): error CS1503: Argument 2: cannot convert from 'object[]' to 'long[]' [/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_heap_heap_generic3248670187/001/app.csproj]
+/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_heap_heap_generic3248670187/001/Program.cs(230,33): error CS0029: Cannot implicitly convert type 'object[]' to 'long[]' [/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_heap_heap_generic3248670187/001/app.csproj]
+
+The build failed. Fix the build errors and run again.

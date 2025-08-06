@@ -1,0 +1,13 @@
+exit status 134
+/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_hashing_quadratic_probing1432042209/001/Program.cs(131,18): warning CS0472: The result of the expression is always 'true' since a value of type 'long' is never equal to 'null' of type 'long?' [/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_hashing_quadratic_probing1432042209/001/app.csproj]
+/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_hashing_quadratic_probing1432042209/001/Program.cs(142,18): warning CS0472: The result of the expression is always 'true' since a value of type 'long' is never equal to 'null' of type 'long?' [/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_hashing_quadratic_probing1432042209/001/app.csproj]
+/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_hashing_quadratic_probing1432042209/001/Program.cs(155,14): warning CS0472: The result of the expression is always 'false' since a value of type 'long' is never equal to 'null' of type 'long?' [/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_hashing_quadratic_probing1432042209/001/app.csproj]
+/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_hashing_quadratic_probing1432042209/001/Program.cs(162,52): warning CS0472: The result of the expression is always 'false' since a value of type 'long' is never equal to 'null' of type 'long?' [/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_hashing_quadratic_probing1432042209/001/app.csproj]
+/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_hashing_quadratic_probing1432042209/001/Program.cs(198,18): warning CS0472: The result of the expression is always 'true' since a value of type 'long' is never equal to 'null' of type 'long?' [/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_hashing_quadratic_probing1432042209/001/app.csproj]
+Unhandled exception. System.TypeInitializationException: The type initializer for 'Program' threw an exception.
+ ---> System.NullReferenceException: Object reference not set to an instance of an object.
+   at Program.create_hash_table(Int64 size_0) in /tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_hashing_quadratic_probing1432042209/001/Program.cs:line 117
+   at Program..cctor() in /tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_hashing_quadratic_probing1432042209/001/Program.cs:line 112
+   --- End of inner exception stack trace ---
+   at Program._now() in /tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_hashing_quadratic_probing1432042209/001/Program.cs:line 19
+   at Program.Main() in /tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_hashing_quadratic_probing1432042209/001/Program.cs:line 214

@@ -1,0 +1,6 @@
+/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_binary_tree_wavelet_tree2206145573/001/Program.cs(195,9): warning CS0162: Unreachable code detected [/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_binary_tree_wavelet_tree2206145573/001/app.csproj]
+/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_binary_tree_wavelet_tree2206145573/001/Program.cs(222,9): warning CS0162: Unreachable code detected [/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_binary_tree_wavelet_tree2206145573/001/app.csproj]
+rank_till_index 6 at 6 -> 1
+rank 6 in [3,13] -> 2
+quantile index 2 in [2,5] -> 5
+range_counting [3,7] in [1,10] -> 3
