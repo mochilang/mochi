@@ -1,0 +1,1 @@
+sum(compute_truncated_primes(11)) = 748317
