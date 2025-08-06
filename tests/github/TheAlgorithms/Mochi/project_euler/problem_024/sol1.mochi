@@ -1,0 +1,48 @@
+/*
+Lexicographic Permutation (Project Euler Problem 24)
+---------------------------------------------------
+Given the digits 0 through 9, determine the millionth permutation when
+all permutations are ordered lexicographically. Instead of generating
+all 10! permutations, the algorithm uses the factorial number system to
+select each digit directly. At each position it computes the factorial
+of the remaining digits to determine which digit should appear next,
+removing it from the working string. Complexity is O(n^2) due to
+string slicing and it runs entirely with integer arithmetic so it
+can execute on the runtime/vm without any foreign interfaces.
+*/
+
+fun factorial(n: int): int {
+  var result = 1
+  var i = 2
+  while i <= n {
+    result = result * i
+    i = i + 1
+  }
+  return result
+}
+
+fun nth_permutation(digits: string, index: int): string {
+  var chars = digits
+  var n = index
+  var res: string = ""
+  var k = len(chars)
+  while k > 0 {
+    let f = factorial(k - 1)
+    let pos = n / f
+    n = n % f
+    res = res + substring(chars, pos, pos + 1)
+    chars = substring(chars, 0, pos) + substring(chars, pos + 1, len(chars))
+    k = k - 1
+  }
+  return res
+}
+
+fun solution(): string {
+  return nth_permutation("0123456789", 999999)
+}
+
+fun main() {
+  print(solution())
+}
+
+main()
