@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 25/1077
-Last updated: 2025-08-06 20:51 +0700
+Completed programs: 65/1077
+Last updated: 2025-08-06 21:17 +0700
 
 Checklist:
 
@@ -33,46 +33,46 @@ Checklist:
 | 24 | bit_manipulation/binary_or_operator | ✓ | 43.0µs | 1.00KB |
 | 25 | bit_manipulation/binary_shifts | ✓ | 228.0µs | 1.27KB |
 | 26 | bit_manipulation/binary_twos_complement | ✓ | 152.0µs | 1.42KB |
-| 27 | bit_manipulation/binary_xor_operator |   |  |  |
-| 28 | bit_manipulation/bitwise_addition_recursive |   |  |  |
-| 29 | bit_manipulation/count_1s_brian_kernighan_method |   |  |  |
-| 30 | bit_manipulation/count_number_of_one_bits |   |  |  |
-| 31 | bit_manipulation/excess_3_code |   |  |  |
-| 32 | bit_manipulation/find_previous_power_of_two |   |  |  |
-| 33 | bit_manipulation/find_unique_number |   |  |  |
-| 34 | bit_manipulation/gray_code_sequence |   |  |  |
-| 35 | bit_manipulation/highest_set_bit |   |  |  |
-| 36 | bit_manipulation/index_of_rightmost_set_bit |   |  |  |
-| 37 | bit_manipulation/is_even |   |  |  |
-| 38 | bit_manipulation/is_power_of_two |   |  |  |
-| 39 | bit_manipulation/largest_pow_of_two_le_num |   |  |  |
-| 40 | bit_manipulation/missing_number |   |  |  |
-| 41 | bit_manipulation/numbers_different_signs |   |  |  |
-| 42 | bit_manipulation/power_of_4 |   |  |  |
-| 43 | bit_manipulation/reverse_bits |   |  |  |
-| 44 | bit_manipulation/single_bit_manipulation_operations |   |  |  |
-| 45 | bit_manipulation/swap_all_odd_and_even_bits |   |  |  |
-| 46 | blockchain/diophantine_equation |   |  |  |
-| 47 | boolean_algebra/and_gate |   |  |  |
-| 48 | boolean_algebra/imply_gate |   |  |  |
-| 49 | boolean_algebra/karnaugh_map_simplification |   |  |  |
-| 50 | boolean_algebra/multiplexer |   |  |  |
-| 51 | boolean_algebra/nand_gate |   |  |  |
-| 52 | boolean_algebra/nimply_gate |   |  |  |
-| 53 | boolean_algebra/nor_gate |   |  |  |
-| 54 | boolean_algebra/not_gate |   |  |  |
-| 55 | boolean_algebra/or_gate |   |  |  |
-| 56 | boolean_algebra/quine_mc_cluskey |   |  |  |
-| 57 | boolean_algebra/xnor_gate |   |  |  |
-| 58 | boolean_algebra/xor_gate |   |  |  |
-| 59 | cellular_automata/conways_game_of_life |   |  |  |
-| 60 | cellular_automata/game_of_life |   |  |  |
-| 61 | cellular_automata/langtons_ant |   |  |  |
-| 62 | cellular_automata/nagel_schrekenberg |   |  |  |
-| 63 | cellular_automata/one_dimensional |   |  |  |
-| 64 | cellular_automata/wa_tor |   |  |  |
-| 65 | ciphers/a1z26 |   |  |  |
-| 66 | ciphers/affine_cipher |   |  |  |
+| 27 | bit_manipulation/binary_xor_operator | ✓ | 132.0µs | 4.72KB |
+| 28 | bit_manipulation/bitwise_addition_recursive | ✓ | 174.0µs | 256B |
+| 29 | bit_manipulation/count_1s_brian_kernighan_method | ✓ | 99.0µs | 304B |
+| 30 | bit_manipulation/count_number_of_one_bits | ✓ | 143.0µs | 688B |
+| 31 | bit_manipulation/excess_3_code | ✓ | 54.0µs | 632B |
+| 32 | bit_manipulation/find_previous_power_of_two | ✓ | 126.0µs | 5.05KB |
+| 33 | bit_manipulation/find_unique_number | ✓ | 124.0µs | 448B |
+| 34 | bit_manipulation/gray_code_sequence | ✓ | 11.0ms | 2.54KB |
+| 35 | bit_manipulation/highest_set_bit | ✓ | 92.0µs | 288B |
+| 36 | bit_manipulation/index_of_rightmost_set_bit | ✓ | 112.0µs | 272B |
+| 37 | bit_manipulation/is_even | ✓ | 21.0µs | 208B |
+| 38 | bit_manipulation/is_power_of_two | ✓ | 1.0µs | 208B |
+| 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 86.0µs | 336B |
+| 40 | bit_manipulation/missing_number | ✓ | 94.0µs | 320B |
+| 41 | bit_manipulation/numbers_different_signs | ✓ | 27.0µs | 208B |
+| 42 | bit_manipulation/power_of_4 | ✓ | 18.0µs | 208B |
+| 43 | bit_manipulation/reverse_bits | ✓ | 185.0µs | 8.64KB |
+| 44 | bit_manipulation/single_bit_manipulation_operations | ✓ | 105.0µs | 272B |
+| 45 | bit_manipulation/swap_all_odd_and_even_bits | ✓ | 297.0µs | 7.30KB |
+| 46 | blockchain/diophantine_equation | ✓ | 130.0µs | 3.83KB |
+| 47 | boolean_algebra/and_gate | ✓ | 142.0µs | 472B |
+| 48 | boolean_algebra/imply_gate | ✓ | 135.0µs | 272B |
+| 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 114.0µs | 1000B |
+| 50 | boolean_algebra/multiplexer | ✓ | 121.0µs | 272B |
+| 51 | boolean_algebra/nand_gate | ✓ | 110.0µs | 272B |
+| 52 | boolean_algebra/nimply_gate | ✓ | 142.0µs | 272B |
+| 53 | boolean_algebra/nor_gate | ✓ | 146.0µs | 3.79KB |
+| 54 | boolean_algebra/not_gate | ✓ | 132.0µs | 240B |
+| 55 | boolean_algebra/or_gate | ✓ | 98.0µs | 464B |
+| 56 | boolean_algebra/quine_mc_cluskey | ✓ | 188.0µs | 5.03KB |
+| 57 | boolean_algebra/xnor_gate | ✓ | 112.0µs | 272B |
+| 58 | boolean_algebra/xor_gate | ✓ | 86.0µs | 272B |
+| 59 | cellular_automata/conways_game_of_life | ✓ | 1.0ms | 131.09KB |
+| 60 | cellular_automata/game_of_life | ✓ | 510.0µs | 51.78KB |
+| 61 | cellular_automata/langtons_ant | ✓ | 2.0µs | 208B |
+| 62 | cellular_automata/nagel_schrekenberg | ✓ | 216.0µs | 14.36KB |
+| 63 | cellular_automata/one_dimensional | ✓ | 2.0ms | 297.38KB |
+| 64 | cellular_automata/wa_tor | ✓ | 4.0ms | 699.11KB |
+| 65 | ciphers/a1z26 | ✓ | 96.0µs | 408B |
+| 66 | ciphers/affine_cipher | ✓ | 1.0ms | 144.69KB |
 | 67 | ciphers/atbash |   |  |  |
 | 68 | ciphers/autokey |   |  |  |
 | 69 | ciphers/baconian_cipher |   |  |  |
