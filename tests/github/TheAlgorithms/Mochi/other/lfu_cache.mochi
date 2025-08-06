@@ -1,0 +1,158 @@
+/*
+LFU (Least Frequently Used) cache implemented using a list of entries.
+Each entry stores a key, value, access frequency, and an order counter
+used to break ties.  On every access the frequency increases and the
+order counter is updated.  When capacity is exceeded the entry with the
+lowest frequency (and oldest order on ties) is evicted.
+
+This is a simplified equivalent of the Python implementation from
+TheAlgorithms/Python.  It avoids external libraries and is written in
+pure Mochi without any use of dynamic types.
+*/
+
+type Entry {
+  key: int,
+  val: int,
+  freq: int,
+  order: int,
+}
+
+type LFUCache {
+  entries: list<Entry>,
+  capacity: int,
+  hits: int,
+  miss: int,
+  tick: int,
+}
+
+type GetResult {
+  cache: LFUCache,
+  value: int,
+  ok: bool,
+}
+
+fun lfu_new(cap: int): LFUCache {
+  return LFUCache { entries: [], capacity: cap, hits: 0, miss: 0, tick: 0 }
+}
+
+fun find_entry(entries: list<Entry>, key: int): int {
+  var i = 0
+  while i < len(entries) {
+    let e = entries[i]
+    if e.key == key { return i }
+    i = i + 1
+  }
+  return 0 - 1
+}
+
+fun lfu_get(cache: LFUCache, key: int): GetResult {
+  let idx = find_entry(cache.entries, key)
+  if idx == 0 - 1 {
+    let new_cache = LFUCache {
+      entries: cache.entries,
+      capacity: cache.capacity,
+      hits: cache.hits,
+      miss: cache.miss + 1,
+      tick: cache.tick,
+    }
+    return GetResult { cache: new_cache, value: 0, ok: false }
+  }
+  var entries = cache.entries
+  var e = entries[idx]
+  e.freq = e.freq + 1
+  let new_tick = cache.tick + 1
+  e.order = new_tick
+  entries[idx] = e
+  let new_cache = LFUCache {
+    entries: entries,
+    capacity: cache.capacity,
+    hits: cache.hits + 1,
+    miss: cache.miss,
+    tick: new_tick,
+  }
+  return GetResult { cache: new_cache, value: e.val, ok: true }
+}
+
+fun remove_lfu(entries: list<Entry>): list<Entry> {
+  if len(entries) == 0 { return entries }
+  var min_idx = 0
+  var i = 1
+  while i < len(entries) {
+    let e = entries[i]
+    let m = entries[min_idx]
+    if e.freq < m.freq || (e.freq == m.freq && e.order < m.order) {
+      min_idx = i
+    }
+    i = i + 1
+  }
+  var res: list<Entry> = []
+  var j = 0
+  while j < len(entries) {
+    if j != min_idx { res = append(res, entries[j]) }
+    j = j + 1
+  }
+  return res
+}
+
+fun lfu_put(cache: LFUCache, key: int, value: int): LFUCache {
+  var entries = cache.entries
+  let idx = find_entry(entries, key)
+  if idx != 0 - 1 {
+    var e = entries[idx]
+    e.val = value
+    e.freq = e.freq + 1
+    let new_tick = cache.tick + 1
+    e.order = new_tick
+    entries[idx] = e
+    return LFUCache {
+      entries: entries,
+      capacity: cache.capacity,
+      hits: cache.hits,
+      miss: cache.miss,
+      tick: new_tick,
+    }
+  }
+  if len(entries) >= cache.capacity {
+    entries = remove_lfu(entries)
+  }
+  let new_tick = cache.tick + 1
+  let new_entry = Entry { key: key, val: value, freq: 1, order: new_tick }
+  entries = append(entries, new_entry)
+  return LFUCache {
+    entries: entries,
+    capacity: cache.capacity,
+    hits: cache.hits,
+    miss: cache.miss,
+    tick: new_tick,
+  }
+}
+
+fun cache_info(cache: LFUCache): string {
+  return "CacheInfo(hits=" + str(cache.hits) + ", misses=" + str(cache.miss) + ", capacity=" + str(cache.capacity) + ", current_size=" + str(len(cache.entries)) + ")"
+}
+
+fun main() {
+  var cache = lfu_new(2)
+  cache = lfu_put(cache, 1, 1)
+  cache = lfu_put(cache, 2, 2)
+  var r = lfu_get(cache, 1)
+  cache = r.cache
+  if r.ok { print(str(r.value)) } else { print("None") }
+  cache = lfu_put(cache, 3, 3)
+  r = lfu_get(cache, 2)
+  cache = r.cache
+  if r.ok { print(str(r.value)) } else { print("None") }
+  cache = lfu_put(cache, 4, 4)
+  r = lfu_get(cache, 1)
+  cache = r.cache
+  if r.ok { print(str(r.value)) } else { print("None") }
+  r = lfu_get(cache, 3)
+  cache = r.cache
+  if r.ok { print(str(r.value)) } else { print("None") }
+  r = lfu_get(cache, 4)
+  cache = r.cache
+  if r.ok { print(str(r.value)) } else { print("None") }
+  print(cache_info(cache))
+}
+
+main()
