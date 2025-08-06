@@ -1,0 +1,37 @@
+/*
+Project Euler Problem 3: Largest Prime Factor
+------------------------------------------------
+Given a positive integer n, compute its largest prime factor.
+The algorithm uses trial division:
+ 1. Start with the smallest possible factor i = 2.
+ 2. Increase i until it divides n.
+ 3. Record i as the current largest factor and divide n by i until it no
+    longer divides.
+ 4. Repeat steps 2-3 until n is reduced to 1 or 2.
+The final recorded factor is the largest prime factor of the original number.
+This implementation relies solely on pure Mochi code.
+*/
+
+fun largest_prime_factor(n: int): int {
+  if n <= 1 { return n }
+  var i: int = 2
+  var ans: int = 0
+  var m: int = n
+  if m == 2 { return 2 }
+  while m > 2 {
+    while m % i != 0 {
+      i = i + 1
+    }
+    ans = i
+    while m % i == 0 {
+      m = m / i
+    }
+    i = i + 1
+  }
+  return ans
+}
+
+json(largest_prime_factor(13195))
+json(largest_prime_factor(10))
+json(largest_prime_factor(17))
+json(largest_prime_factor(600851475143))
