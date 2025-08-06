@@ -2305,6 +2305,15 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 						}
 					}
 				}
+				if _, ok := vd.Value.(*ListLit); !ok {
+					if _, ok := vd.Value.(*MapLit); !ok {
+						if ae, ok := vd.Value.(*AssertExpr); !(ok && ae.Type == vd.Type) {
+							if strings.HasPrefix(vd.Type, "[]") || strings.HasPrefix(vd.Type, "map[") {
+								vd.Value = &AssertExpr{Expr: vd.Value, Type: vd.Type}
+							}
+						}
+					}
+				}
 			}
 		}
 	}
@@ -4387,6 +4396,11 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 				val = &AssertExpr{Expr: val, Type: ret}
 			}
 		}
+		if strings.HasPrefix(ret, "[") || strings.HasPrefix(ret, "map[") {
+			if _, ok := val.(*IndexExpr); ok {
+				val = &AssertExpr{Expr: val, Type: ret}
+			}
+		}
 	}
 	return &ReturnStmt{Value: val}, nil
 }
@@ -4720,6 +4734,12 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 					}
 					newExpr = &IntersectExpr{Left: left, Right: right, ElemType: et}
 				default:
+					if _, ok := left.(*IndexExpr); ok && isIntType(typesList[i]) {
+						left = &AssertExpr{Expr: left, Type: "int"}
+					}
+					if _, ok := right.(*IndexExpr); ok && isIntType(typesList[i+1]) {
+						right = &AssertExpr{Expr: right, Type: "int"}
+					}
 					if isBigRatType(typesList[i]) || isBigRatType(typesList[i+1]) {
 						usesBigRat = true
 						left = ensureBigRatExpr(left, typesList[i])
@@ -4766,7 +4786,9 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 										if _, ok := typesList[i+1].(types.StringType); ok {
 											usesPrint = true
 											left = &CallExpr{Func: "fmt.Sprint", Args: []Expr{left}}
-										} else if !isIntType(typesList[i+1]) {
+										} else if isIntType(typesList[i+1]) {
+											left = &AssertExpr{Expr: left, Type: "int"}
+										} else {
 											left = &CallExpr{Func: "_toFloat", Args: []Expr{left}}
 											usesFloatConv = true
 										}
@@ -4777,11 +4799,23 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 										if _, ok := typesList[i].(types.StringType); ok {
 											usesPrint = true
 											right = &CallExpr{Func: "fmt.Sprint", Args: []Expr{right}}
-										} else if !isIntType(typesList[i]) {
+										} else if isIntType(typesList[i]) {
+											right = &AssertExpr{Expr: right, Type: "int"}
+										} else {
 											right = &CallExpr{Func: "_toFloat", Args: []Expr{right}}
 											usesFloatConv = true
 										}
 									}
+								}
+							}
+							if isIntType(typesList[i]) {
+								if _, ok := left.(*IndexExpr); ok {
+									left = &AssertExpr{Expr: left, Type: "int"}
+								}
+							}
+							if isIntType(typesList[i+1]) {
+								if _, ok := right.(*IndexExpr); ok {
+									right = &AssertExpr{Expr: right, Type: "int"}
 								}
 							}
 						}
@@ -5863,6 +5897,15 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 											lit.Body[j] = &ExprStmt{Expr: rs.Value}
 										}
 									}
+								}
+							}
+						}
+						if ix, ok := args[i].(*IndexExpr); ok {
+							switch mt.(type) {
+							case types.ListType, types.MapType:
+								gt := toGoTypeFromType(mt)
+								if gt != "" && gt != "any" {
+									args[i] = &AssertExpr{Expr: ix, Type: gt}
 								}
 							}
 						}
