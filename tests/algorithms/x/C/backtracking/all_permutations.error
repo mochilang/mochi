@@ -1,0 +1,81 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_permutations.c: In function ‘str_list_int’:
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_permutations.c:24:38: warning: format ‘%d’ expects argument of type ‘int’, but argument 4 has type ‘long long int’ [-Wformat=]
+   24 |         snprintf(tmp, sizeof(tmp), "%d", arr[i]);
+      |                                     ~^   ~~~~~~
+      |                                      |      |
+      |                                      int    long long int
+      |                                     %lld
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_permutations.c: At top level:
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_permutations.c:91:32: error: excess elements in ‘char’ array initializer
+   91 | int sequence_2_init[3] = {"A", "B", "C"};
+      |                                ^~~
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_permutations.c:91:32: note: (near initialization for ‘sequence_2_init’)
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_permutations.c:91:37: error: excess elements in ‘char’ array initializer
+   91 | int sequence_2_init[3] = {"A", "B", "C"};
+      |                                     ^~~
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_permutations.c:91:37: note: (near initialization for ‘sequence_2_init’)
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_permutations.c:91:26: error: cannot initialize array of ‘int’ from a string literal with type array of ‘char’
+   91 | int sequence_2_init[3] = {"A", "B", "C"};
+      |                          ^
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_permutations.c: In function ‘repeat_bool’:
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_permutations.c:106:37: warning: passing argument 1 of ‘list_append_long_long’ from incompatible pointer type [-Wincompatible-pointer-types]
+  106 |         res = list_append_long_long(res, &res_len, 0LL);
+      |                                     ^~~
+      |                                     |
+      |                                     int *
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_permutations.c:81:52: note: expected ‘long long int *’ but argument is of type ‘int *’
+   81 | static long long* list_append_long_long(long long *arr, size_t *len, long long val) {
+      |                                         ~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_permutations.c:106:13: warning: assignment to ‘int *’ from incompatible pointer type ‘long long int *’ [-Wincompatible-pointer-types]
+  106 |         res = list_append_long_long(res, &res_len, 0LL);
+      |             ^
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_permutations.c: In function ‘set_bool’:
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_permutations.c:118:35: warning: passing argument 1 of ‘list_append_int’ from incompatible pointer type [-Wincompatible-pointer-types]
+  118 |             res = list_append_int(res, &res_len, value);
+      |                                   ^~~
+      |                                   |
+      |                                   int *
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_permutations.c:36:46: note: expected ‘long long int *’ but argument is of type ‘int *’
+   36 | static long long* list_append_int(long long *arr, size_t *len, long long val) {
+      |                                   ~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_permutations.c:118:17: warning: assignment to ‘int *’ from incompatible pointer type ‘long long int *’ [-Wincompatible-pointer-types]
+  118 |             res = list_append_int(res, &res_len, value);
+      |                 ^
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_permutations.c:120:35: warning: passing argument 1 of ‘list_append_int’ from incompatible pointer type [-Wincompatible-pointer-types]
+  120 |             res = list_append_int(res, &res_len, xs[(int)(i)]);
+      |                                   ^~~
+      |                                   |
+      |                                   int *
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_permutations.c:36:46: note: expected ‘long long int *’ but argument is of type ‘int *’
+   36 | static long long* list_append_int(long long *arr, size_t *len, long long val) {
+      |                                   ~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_permutations.c:120:17: warning: assignment to ‘int *’ from incompatible pointer type ‘long long int *’ [-Wincompatible-pointer-types]
+  120 |             res = list_append_int(res, &res_len, xs[(int)(i)]);
+      |                 ^
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_permutations.c: In function ‘create_state_space_tree’:
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_permutations.c:129:27: warning: passing argument 1 of ‘str_list_int’ from incompatible pointer type [-Wincompatible-pointer-types]
+  129 |         puts(str_list_int(current, current_len));
+      |                           ^~~~~~~
+      |                           |
+      |                           int *
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_permutations.c:17:44: note: expected ‘const long long int *’ but argument is of type ‘int *’
+   17 | static char* str_list_int(const long long *arr, size_t len) {
+      |                           ~~~~~~~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_permutations.c:130:16: warning: ‘return’ with a value, in function returning void
+  130 |         return 0;
+      |                ^
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_permutations.c:127:6: note: declared here
+  127 | void create_state_space_tree(int * sequence, size_t sequence_len, int * current, size_t current_len, long long index, int * used, size_t used_len) {
+      |      ^~~~~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_permutations.c:135:53: warning: passing argument 1 of ‘list_append_int_new’ from incompatible pointer type [-Wincompatible-pointer-types]
+  135 |             int *next_current = list_append_int_new(current, current_len, sequence[(int)(i)]);
+      |                                                     ^~~~~~~
+      |                                                     |
+      |                                                     int *
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_permutations.c:43:56: note: expected ‘const long long int *’ but argument is of type ‘int *’
+   43 | static long long* list_append_int_new(const long long *arr, size_t len, long long val) {
+      |                                       ~~~~~~~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_permutations.c:135:33: warning: initialization of ‘int *’ from incompatible pointer type ‘long long int *’ [-Wincompatible-pointer-types]
+  135 |             int *next_current = list_append_int_new(current, current_len, sequence[(int)(i)]);
+      |                                 ^~~~~~~~~~~~~~~~~~~

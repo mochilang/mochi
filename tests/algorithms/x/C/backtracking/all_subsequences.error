@@ -1,0 +1,30 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_subsequences.c:50:26: error: excess elements in ‘char’ array initializer
+   50 | int seq2_init[3] = {"A", "B", "C"};
+      |                          ^~~
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_subsequences.c:50:26: note: (near initialization for ‘seq2_init’)
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_subsequences.c:50:31: error: excess elements in ‘char’ array initializer
+   50 | int seq2_init[3] = {"A", "B", "C"};
+      |                               ^~~
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_subsequences.c:50:31: note: (near initialization for ‘seq2_init’)
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_subsequences.c:50:20: error: cannot initialize array of ‘int’ from a string literal with type array of ‘char’
+   50 | int seq2_init[3] = {"A", "B", "C"};
+      |                    ^
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_subsequences.c: In function ‘create_state_space_tree’:
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_subsequences.c:60:18: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘int *’ [-Wformat=]
+   60 |         printf("%d\n", current);
+      |                 ~^     ~~~~~~~
+      |                  |     |
+      |                  int   int *
+      |                 %ls
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_subsequences.c:64:42: warning: passing argument 1 of ‘list_append_int_new’ from incompatible pointer type [-Wincompatible-pointer-types]
+   64 |     int *with_elem = list_append_int_new(current, current_len, sequence[(int)(index)]);
+      |                                          ^~~~~~~
+      |                                          |
+      |                                          int *
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_subsequences.c:9:56: note: expected ‘const long long int *’ but argument is of type ‘int *’
+    9 | static long long* list_append_int_new(const long long *arr, size_t len, long long val) {
+      |                                       ~~~~~~~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/backtracking/all_subsequences.c:64:22: warning: initialization of ‘int *’ from incompatible pointer type ‘long long int *’ [-Wincompatible-pointer-types]
+   64 |     int *with_elem = list_append_int_new(current, current_len, sequence[(int)(index)]);
+      |                      ^~~~~~~~~~~~~~~~~~~
