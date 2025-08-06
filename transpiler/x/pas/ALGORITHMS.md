@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-06 20:45 GMT+7
+Last updated: 2025-08-06 21:07 GMT+7
 
-## Algorithms Golden Test Checklist (11/1077)
+## Algorithms Golden Test Checklist (13/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -15,7 +15,7 @@ Last updated: 2025-08-06 20:45 GMT+7
 | 6 | backtracking/crossword_puzzle_solver | ✓ | 1.0µs | 3.34KB |
 | 7 | backtracking/hamiltonian_cycle | ✓ | 1.0µs | 0B |
 | 8 | backtracking/knight_tour | ✓ | 1.0µs | 64B |
-| 9 | backtracking/match_word_pattern |   |  |  |
+| 9 | backtracking/match_word_pattern | ✓ | 1.0µs | 0B |
 | 10 | backtracking/minimax |   |  |  |
 | 11 | backtracking/n_queens | ✓ | 2.0µs | 0B |
 | 12 | backtracking/n_queens_math |   |  |  |
@@ -30,7 +30,7 @@ Last updated: 2025-08-06 20:45 GMT+7
 | 21 | bit_manipulation/binary_coded_decimal |   |  |  |
 | 22 | bit_manipulation/binary_count_setbits |   |  |  |
 | 23 | bit_manipulation/binary_count_trailing_zeros |   |  |  |
-| 24 | bit_manipulation/binary_or_operator |   |  |  |
+| 24 | bit_manipulation/binary_or_operator | ✓ | 1.0µs | 0B |
 | 25 | bit_manipulation/binary_shifts |   |  |  |
 | 26 | bit_manipulation/binary_twos_complement |   |  |  |
 | 27 | bit_manipulation/binary_xor_operator |   |  |  |
