@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (20/1077) - Last updated 2025-08-06 20:15 +0700:
+Checklist of programs that currently transpile and run (35/1077) - Last updated 2025-08-06 21:30 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -25,26 +25,26 @@ Checklist of programs that currently transpile and run (20/1077) - Last updated 
 | 18 | backtracking/word_ladder |  |  |  |
 | 19 | backtracking/word_search |  |  |  |
 | 20 | bit_manipulation/binary_and_operator |  |  |  |
-| 21 | bit_manipulation/binary_coded_decimal | ✓ | 581us | 1.6 MB |
-| 22 | bit_manipulation/binary_count_setbits | ✓ | 450us | 1.4 MB |
-| 23 | bit_manipulation/binary_count_trailing_zeros | ✓ | 341us | 1.5 MB |
-| 24 | bit_manipulation/binary_or_operator | ✓ | 528us | 1.4 MB |
-| 25 | bit_manipulation/binary_shifts |  |  |  |
-| 26 | bit_manipulation/binary_twos_complement |  |  |  |
-| 27 | bit_manipulation/binary_xor_operator | ✓ | 401us | 1.4 MB |
-| 28 | bit_manipulation/bitwise_addition_recursive |  |  |  |
-| 29 | bit_manipulation/count_1s_brian_kernighan_method |  |  |  |
-| 30 | bit_manipulation/count_number_of_one_bits |  |  |  |
-| 31 | bit_manipulation/excess_3_code |  |  |  |
-| 32 | bit_manipulation/find_previous_power_of_two |  |  |  |
-| 33 | bit_manipulation/find_unique_number |  |  |  |
-| 34 | bit_manipulation/gray_code_sequence |  |  |  |
-| 35 | bit_manipulation/highest_set_bit |  |  |  |
-| 36 | bit_manipulation/index_of_rightmost_set_bit |  |  |  |
-| 37 | bit_manipulation/is_even |  |  |  |
-| 38 | bit_manipulation/is_power_of_two |  |  |  |
-| 39 | bit_manipulation/largest_pow_of_two_le_num |  |  |  |
-| 40 | bit_manipulation/missing_number |  |  |  |
+| 21 | bit_manipulation/binary_coded_decimal | ✓ | 490us | 1.5 MB |
+| 22 | bit_manipulation/binary_count_setbits | ✓ | 231us | 1.6 MB |
+| 23 | bit_manipulation/binary_count_trailing_zeros | ✓ | 207us | 1.5 MB |
+| 24 | bit_manipulation/binary_or_operator | ✓ | 171us | 1.4 MB |
+| 25 | bit_manipulation/binary_shifts | ✓ | 425us | 1.6 MB |
+| 26 | bit_manipulation/binary_twos_complement | ✓ | 211us | 1.4 MB |
+| 27 | bit_manipulation/binary_xor_operator | ✓ | 625us | 1.5 MB |
+| 28 | bit_manipulation/bitwise_addition_recursive | ✓ | 383us | 1.5 MB |
+| 29 | bit_manipulation/count_1s_brian_kernighan_method | ✓ | 316us | 1.5 MB |
+| 30 | bit_manipulation/count_number_of_one_bits | ✓ | 284us | 1.4 MB |
+| 31 | bit_manipulation/excess_3_code | ✓ | 230us | 1.6 MB |
+| 32 | bit_manipulation/find_previous_power_of_two | ✓ | 834us | 1.5 MB |
+| 33 | bit_manipulation/find_unique_number | ✓ | 226us | 1.5 MB |
+| 34 | bit_manipulation/gray_code_sequence | ✓ | 283us | 1.5 MB |
+| 35 | bit_manipulation/highest_set_bit | ✓ | 264us | 1.5 MB |
+| 36 | bit_manipulation/index_of_rightmost_set_bit | ✓ | 299us | 1.4 MB |
+| 37 | bit_manipulation/is_even | ✓ | 397us | 1.5 MB |
+| 38 | bit_manipulation/is_power_of_two | ✓ |  |  |
+| 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 267us | 1.6 MB |
+| 40 | bit_manipulation/missing_number | ✓ | 149us | 1.4 MB |
 | 41 | bit_manipulation/numbers_different_signs |  |  |  |
 | 42 | bit_manipulation/power_of_4 |  |  |  |
 | 43 | bit_manipulation/reverse_bits |  |  |  |

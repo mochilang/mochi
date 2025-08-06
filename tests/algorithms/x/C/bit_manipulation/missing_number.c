@@ -7,14 +7,22 @@
 #include <malloc.h>
 
 
-static char* str_concat(const char *a, const char *b) {
-    size_t len1 = strlen(a);
-    size_t len2 = strlen(b);
-    char *res = malloc(len1 + len2 + 1);
-    memcpy(res, a, len1);
-    memcpy(res + len1, b, len2);
-    res[len1 + len2] = 0;
-    return res;
+static long long list_min(const long long arr[], size_t len) {
+    if (len == 0) return 0;
+    long long m = arr[0];
+    for (size_t i = 1; i < len; i++) {
+        if (arr[i] < m) m = arr[i];
+    }
+    return m;
+}
+
+static long long list_max(const long long arr[], size_t len) {
+    if (len == 0) return 0;
+    long long m = arr[0];
+    for (size_t i = 1; i < len; i++) {
+        if (arr[i] > m) m = arr[i];
+    }
+    return m;
 }
 
 #include <time.h>
@@ -54,42 +62,28 @@ static void panic(const char *msg) {
     exit(1);
 }
 
-const char* binary_or(long long a, long long b);
+long long find_missing_number(long long * nums, size_t nums_len);
 int main(void);
 
-const char* binary_or(long long a, long long b) {
-    if ((a < 0LL) || (b < 0LL)) {
-        return "ValueError";
+long long find_missing_number(long long * nums, size_t nums_len) {
+    long long low = (int)(list_min(nums, nums_len));
+    long long high = (int)(list_max(nums, nums_len));
+    long long count = (high - low) + 1LL;
+    long long expected_sum = ((low + high) * count) / 2LL;
+    long long actual_sum = 0LL;
+    long long i = 0LL;
+    size_t n = nums_len;
+    while (i < n) {
+        actual_sum = actual_sum + nums[(int)(i)];
+        i = i + 1LL;
     }
-    const char* res = "";
-    long long x = a;
-    long long y = b;
-    while ((x > 0LL) || (y > 0LL)) {
-        long long bit_a = x % 2LL;
-        long long bit_b = y % 2LL;
-        if ((bit_a == 1LL) || (bit_b == 1LL)) {
-            res = str_concat("1", res);
-        } else {
-            res = str_concat("0", res);
-        }
-        x = x / 2LL;
-        y = y / 2LL;
-    }
-    if (strcmp(res, "") == 0) {
-        res = "0";
-    }
-    return str_concat("0b", res);
+    return expected_sum - actual_sum;
 }
 
 int main(void) {
     {
         long long __start = _now();
-        puts(binary_or(25LL, 32LL));
-        puts(binary_or(37LL, 50LL));
-        puts(binary_or(21LL, 30LL));
-        puts(binary_or(58LL, 73LL));
-        puts(binary_or(0LL, 255LL));
-        puts(binary_or(0LL, 256LL));
+        printf("%d\n", find_missing_number((long long[]){ 0LL, 1LL, 3LL, 4LL }, 4));
         long long __end = _now();
         long long __dur_us = (__end - __start) / 1000;
         long long __mem_bytes = _mem();

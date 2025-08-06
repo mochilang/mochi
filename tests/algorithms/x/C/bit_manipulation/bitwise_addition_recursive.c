@@ -7,14 +7,10 @@
 #include <malloc.h>
 
 
-static char* str_concat(const char *a, const char *b) {
-    size_t len1 = strlen(a);
-    size_t len2 = strlen(b);
-    char *res = malloc(len1 + len2 + 1);
-    memcpy(res, a, len1);
-    memcpy(res + len1, b, len2);
-    res[len1 + len2] = 0;
-    return res;
+static char* str_int(long long v) {
+    char buf[32];
+    snprintf(buf, sizeof(buf), "%lld", v);
+    return strdup(buf);
 }
 
 #include <time.h>
@@ -54,42 +50,63 @@ static void panic(const char *msg) {
     exit(1);
 }
 
-const char* binary_or(long long a, long long b);
+long long bitwise_xor(long long a, long long b);
+long long bitwise_and(long long a, long long b);
+long long bitwise_addition_recursive(long long number, long long other_number);
 int main(void);
 
-const char* binary_or(long long a, long long b) {
-    if ((a < 0LL) || (b < 0LL)) {
-        return "ValueError";
-    }
-    const char* res = "";
+long long bitwise_xor(long long a, long long b) {
+    long long result = 0LL;
+    long long bit = 1LL;
     long long x = a;
     long long y = b;
     while ((x > 0LL) || (y > 0LL)) {
-        long long bit_a = x % 2LL;
-        long long bit_b = y % 2LL;
-        if ((bit_a == 1LL) || (bit_b == 1LL)) {
-            res = str_concat("1", res);
-        } else {
-            res = str_concat("0", res);
+        long long ax = x % 2LL;
+        long long by = y % 2LL;
+        if (((ax + by) % 2LL) == 1LL) {
+            result = result + bit;
         }
         x = x / 2LL;
         y = y / 2LL;
+        bit = bit * 2LL;
     }
-    if (strcmp(res, "") == 0) {
-        res = "0";
+    return result;
+}
+
+long long bitwise_and(long long a, long long b) {
+    long long result = 0LL;
+    long long bit = 1LL;
+    long long x = a;
+    long long y = b;
+    while ((x > 0LL) && (y > 0LL)) {
+        if (((x % 2LL) == 1LL) && ((y % 2LL) == 1LL)) {
+            result = result + bit;
+        }
+        x = x / 2LL;
+        y = y / 2LL;
+        bit = bit * 2LL;
     }
-    return str_concat("0b", res);
+    return result;
+}
+
+long long bitwise_addition_recursive(long long number, long long other_number) {
+    if ((number < 0LL) || (other_number < 0LL)) {
+        panic("Both arguments MUST be non-negative!");
+    }
+    long long bitwise_sum = bitwise_xor(number, other_number);
+    long long carry = bitwise_and(number, other_number);
+    if (carry == 0LL) {
+        return bitwise_sum;
+    }
+    return bitwise_addition_recursive(bitwise_sum, carry * 2LL);
 }
 
 int main(void) {
     {
         long long __start = _now();
-        puts(binary_or(25LL, 32LL));
-        puts(binary_or(37LL, 50LL));
-        puts(binary_or(21LL, 30LL));
-        puts(binary_or(58LL, 73LL));
-        puts(binary_or(0LL, 255LL));
-        puts(binary_or(0LL, 256LL));
+        puts(str_int(bitwise_addition_recursive(4LL, 5LL)));
+        puts(str_int(bitwise_addition_recursive(8LL, 9LL)));
+        puts(str_int(bitwise_addition_recursive(0LL, 4LL)));
         long long __end = _now();
         long long __dur_us = (__end - __start) / 1000;
         long long __mem_bytes = _mem();

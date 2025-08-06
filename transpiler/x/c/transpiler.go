@@ -85,6 +85,8 @@ var (
 	needListAppendStructNew map[string]bool
 	needListAppendStructPtr map[string]bool
 	needListAppendSizeT     bool
+	needListMin             bool
+	needListMax             bool
 	needSHA256              bool
 	needMD5Hex              bool
 	needNow                 bool
@@ -133,6 +135,10 @@ func emitLenExpr(w io.Writer, e Expr) {
 		if v.Func == "append" && len(v.Args) == 2 {
 			emitLenExpr(w, v.Args[0])
 			io.WriteString(w, " + 1")
+		} else if inferExprType(currentEnv, v) == "const char*" {
+			io.WriteString(w, "strlen(")
+			v.emitExpr(w)
+			io.WriteString(w, ")")
 		} else {
 			io.WriteString(w, v.Func+"_len")
 		}
@@ -207,7 +213,7 @@ func emitBigIntInt(w io.Writer, e Expr) {
 }
 
 func emitStrExpr(w io.Writer, e Expr) {
-	if exprIsString(e) {
+	if exprIsString(e) || inferExprType(currentEnv, e) == "const char*" {
 		e.emitExpr(w)
 		return
 	}
@@ -2008,6 +2014,23 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 		}
 		return
 	}
+	if (c.Func == "min" || c.Func == "max") && len(c.Args) == 1 {
+		t := inferExprType(currentEnv, c.Args[0])
+		if strings.HasSuffix(t, "[]") {
+			if c.Func == "min" {
+				needListMin = true
+				io.WriteString(w, "list_min(")
+			} else {
+				needListMax = true
+				io.WriteString(w, "list_max(")
+			}
+			c.Args[0].emitExpr(w)
+			io.WriteString(w, ", ")
+			emitLenExpr(w, c.Args[0])
+			io.WriteString(w, ")")
+			return
+		}
+	}
 	if c.Func == "len" && len(c.Args) == 1 {
 		if vr, ok := c.Args[0].(*VarRef); ok {
 			io.WriteString(w, vr.Name+"_len")
@@ -2746,6 +2769,26 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("        if (strcmp(arr[i], val) == 0) return 1;\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    return 0;\n")
+		buf.WriteString("}\n\n")
+	}
+	if needListMin {
+		buf.WriteString("static long long list_min(const long long arr[], size_t len) {\n")
+		buf.WriteString("    if (len == 0) return 0;\n")
+		buf.WriteString("    long long m = arr[0];\n")
+		buf.WriteString("    for (size_t i = 1; i < len; i++) {\n")
+		buf.WriteString("        if (arr[i] < m) m = arr[i];\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    return m;\n")
+		buf.WriteString("}\n\n")
+	}
+	if needListMax {
+		buf.WriteString("static long long list_max(const long long arr[], size_t len) {\n")
+		buf.WriteString("    if (len == 0) return 0;\n")
+		buf.WriteString("    long long m = arr[0];\n")
+		buf.WriteString("    for (size_t i = 1; i < len; i++) {\n")
+		buf.WriteString("        if (arr[i] > m) m = arr[i];\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    return m;\n")
 		buf.WriteString("}\n\n")
 	}
 	if needStrConcat {
@@ -3696,7 +3739,12 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			if err != nil {
 				return nil, err
 			}
-			funcReturnTypes[name] = strings.ReplaceAll(fun.Return, "*", "[]")
+			ret := fun.Return
+			if ret == "const char*" {
+				funcReturnTypes[name] = ret
+			} else {
+				funcReturnTypes[name] = strings.ReplaceAll(ret, "*", "[]")
+			}
 			p.Functions = append(p.Functions, fun)
 			if len(extraFuncs) > 0 {
 				p.Functions = append(p.Functions, extraFuncs...)

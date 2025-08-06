@@ -7,20 +7,29 @@
 #include <malloc.h>
 
 
-static char* str_concat(const char *a, const char *b) {
-    size_t len1 = strlen(a);
-    size_t len2 = strlen(b);
-    char *res = malloc(len1 + len2 + 1);
-    memcpy(res, a, len1);
-    memcpy(res + len1, b, len2);
-    res[len1 + len2] = 0;
-    return res;
-}
-
 static char* str_int(long long v) {
     char buf[32];
     snprintf(buf, sizeof(buf), "%lld", v);
     return strdup(buf);
+}
+
+static char* str_list_int(const long long *arr, size_t len) {
+    size_t cap = len * 32 + 2;
+    char *buf = malloc(cap);
+    size_t pos = 0;
+    buf[pos++] = '[';
+    for (size_t i = 0; i < len; i++) {
+        char tmp[32];
+        snprintf(tmp, sizeof(tmp), "%d", arr[i]);
+        size_t n = strlen(tmp);
+        if (pos + n + 2 >= cap) { cap = cap * 2 + n + 2; buf = realloc(buf, cap); }
+        memcpy(buf + pos, tmp, n);
+        pos += n;
+        if (i + 1 < len) buf[pos++] = ' ';
+    }
+    buf[pos++] = ']';
+    buf[pos] = 0;
+    return buf;
 }
 
 #include <time.h>
@@ -60,50 +69,50 @@ static void panic(const char *msg) {
     exit(1);
 }
 
-const char* to_binary4(long long n);
-const char* binary_coded_decimal(long long number);
-int main(void);
-
-const char* to_binary4(long long n) {
-    const char* result = "";
-    long long x = n;
-    while (x > 0LL) {
-        result = str_concat(str_int(x % 2LL), result);
-        x = x / 2LL;
-    }
-    while (strlen(result) < 4LL) {
-        result = str_concat("0", result);
-    }
-    return result;
+static long long* list_append_long_long(long long *arr, size_t *len, long long val) {
+    arr = realloc(arr, (*len + 1) * sizeof(long long));
+    arr[*len] = val;
+    (*len)++;
+    return arr;
 }
 
-const char* binary_coded_decimal(long long number) {
-    long long n = number;
-    if (n < 0LL) {
-        n = 0LL;
+long long find_previous_power_of_two(long long number);
+void user_main();
+int main(void);
+
+long long find_previous_power_of_two(long long number) {
+    if (number < 0LL) {
+        panic("Input must be a non-negative integer");
     }
-    const char* digits = str_int(n);
-    const char* out = "0b";
+    if (number == 0LL) {
+        return 0LL;
+    }
+    long long power = 1LL;
+    while (power <= number) {
+        power = power * 2LL;
+    }
+    if (number > 1LL) {
+        return power / 2LL;
+    } else {
+        return 1LL;
+    }
+}
+
+void user_main() {
+    long long *results = NULL;
+    size_t results_len = 0;
     long long i = 0LL;
-    while (i < strlen(digits)) {
-        const char* d = (const char[]){digits[i], 0};
-        long long d_int = (int)(d);
-        out = str_concat(out, to_binary4(d_int));
+    while (i < 18LL) {
+        results = list_append_long_long(results, &results_len, find_previous_power_of_two(i));
         i = i + 1LL;
     }
-    return out;
+    puts(str_list_int(results, results_len));
 }
 
 int main(void) {
     {
         long long __start = _now();
-        puts(binary_coded_decimal(-2LL));
-        puts(binary_coded_decimal(-1LL));
-        puts(binary_coded_decimal(0LL));
-        puts(binary_coded_decimal(3LL));
-        puts(binary_coded_decimal(2LL));
-        puts(binary_coded_decimal(12LL));
-        puts(binary_coded_decimal(987LL));
+        user_main();
         long long __end = _now();
         long long __dur_us = (__end - __start) / 1000;
         long long __mem_bytes = _mem();
