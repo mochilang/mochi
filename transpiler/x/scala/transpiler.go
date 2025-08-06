@@ -510,15 +510,21 @@ func (t *TypeDeclStmt) emit(w io.Writer) {
 }
 
 func (s *VarStmt) emit(w io.Writer) {
+	typ := s.Type
+	if ce, ok := s.Value.(*CastExpr); ok && strings.HasPrefix(ce.Type, "ArrayBuffer[") {
+		if typ == "ArrayBuffer[Any]" || typ == "" || typ == "Any" {
+			typ = ce.Type
+		}
+	}
 	fmt.Fprintf(w, "var %s", escapeName(s.Name))
-	if s.Type != "" {
-		fmt.Fprintf(w, ": %s", s.Type)
+	if typ != "" {
+		fmt.Fprintf(w, ": %s", typ)
 	}
 	if s.Value != nil {
 		fmt.Fprint(w, " = ")
 		s.Value.emit(w)
-	} else if s.Type != "" {
-		if def := defaultExpr(s.Type); def != nil {
+	} else if typ != "" {
+		if def := defaultExpr(typ); def != nil {
 			fmt.Fprint(w, " = ")
 			def.emit(w)
 		}
@@ -669,11 +675,11 @@ func (fr *ForRangeStmt) emit(w io.Writer) {
 		contVar = fmt.Sprintf("_ct%d", id)
 		fmt.Fprintf(w, "  val %s = new Breaks\n", contVar)
 	}
-	fmt.Fprintf(w, "  for (%s <- ", fr.Name)
+	fmt.Fprintf(w, "  for (%s <- (", fr.Name)
 	fr.Start.emit(w)
-	fmt.Fprint(w, " until ")
+	fmt.Fprint(w, ").toInt until (")
 	fr.End.emit(w)
-	fmt.Fprint(w, ") {\n")
+	fmt.Fprint(w, ").toInt) {\n")
 	if hasCont {
 		fmt.Fprintf(w, "    %s.breakable {\n", contVar)
 		continueStack = append(continueStack, contVar)
@@ -920,24 +926,24 @@ func (l *LenExpr) emit(w io.Writer) {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
-        if n, ok := c.Fn.(*Name); ok && n.Name == "panic" && len(c.Args) == 1 {
-                fmt.Fprint(w, "throw new RuntimeException(String.valueOf(")
-                c.Args[0].emit(w)
-                fmt.Fprint(w, "))")
-                return
-        }
-        c.Fn.emit(w)
-        if f, ok := c.Fn.(*FieldExpr); ok && f.Name == "mkString" && len(c.Args) == 0 {
-                return
-        }
-        fmt.Fprint(w, "(")
-        for i, a := range c.Args {
-                if i > 0 {
-                        fmt.Fprint(w, ", ")
-                }
-                a.emit(w)
-        }
-        fmt.Fprint(w, ")")
+	if n, ok := c.Fn.(*Name); ok && n.Name == "panic" && len(c.Args) == 1 {
+		fmt.Fprint(w, "throw new RuntimeException(String.valueOf(")
+		c.Args[0].emit(w)
+		fmt.Fprint(w, "))")
+		return
+	}
+	c.Fn.emit(w)
+	if f, ok := c.Fn.(*FieldExpr); ok && f.Name == "mkString" && len(c.Args) == 0 {
+		return
+	}
+	fmt.Fprint(w, "(")
+	for i, a := range c.Args {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		a.emit(w)
+	}
+	fmt.Fprint(w, ")")
 }
 
 type StringLit struct{ Value string }
@@ -1231,6 +1237,18 @@ type CastExpr struct {
 }
 
 func (c *CastExpr) emit(w io.Writer) {
+	if strings.HasPrefix(c.Type, "ArrayBuffer[") {
+		if ll, ok := c.Value.(*ListLit); ok {
+			elem := strings.TrimSuffix(strings.TrimPrefix(c.Type, "ArrayBuffer["), "]")
+			for i, e := range ll.Elems {
+				if inferType(e) != elem {
+					ll.Elems[i] = &CastExpr{Value: e, Type: elem}
+				}
+			}
+			ll.emit(w)
+			return
+		}
+	}
 	switch c.Type {
 	case "Int", "int":
 		if inferType(c.Value) == "Double" {
@@ -1290,7 +1308,11 @@ func (c *CastExpr) emit(w io.Writer) {
 	case "float", "Double":
 		fmt.Fprint(w, ".toString.toDouble")
 	case "string", "String":
-		fmt.Fprint(w, ".toString")
+		if n, ok := c.Value.(*Name); ok && n.Name == "null" {
+			// keep null as-is
+		} else {
+			fmt.Fprint(w, ".toString")
+		}
 	case "bool":
 		fmt.Fprint(w, ".asInstanceOf[Boolean]")
 	default:
@@ -2705,8 +2727,6 @@ func convertUnary(u *parser.Unary, env *types.Env) (Expr, error) {
 				needsBigInt = true
 				zero := &CallExpr{Fn: &Name{Name: "_bigrat"}, Args: []Expr{&IntLit{Value: 0}}}
 				expr = &BinaryExpr{Left: zero, Op: "-", Right: expr}
-			} else if typ == "BigInt" {
-				expr = &BinaryExpr{Left: &IntLit{Value: 0}, Op: "-", Right: expr}
 			} else {
 				expr = &UnaryExpr{Op: "-", Expr: expr}
 			}
@@ -3370,6 +3390,10 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 				}
 			}
 			return &AppendExpr{List: args[0], Elem: args[1]}, nil
+		}
+	case "concat":
+		if len(args) == 2 {
+			return &BinaryExpr{Left: args[0], Op: "++", Right: args[1]}, nil
 		}
 	case "contains":
 		if len(args) == 2 {
