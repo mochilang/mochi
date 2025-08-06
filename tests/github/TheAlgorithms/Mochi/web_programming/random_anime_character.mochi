@@ -1,0 +1,57 @@
+/*
+Random Anime Character
+
+This program mirrors the Python script that fetches a random anime character
+from an online catalog and saves its image.  Because the Mochi runtime lacks
+network and binary file capabilities, the implementation simulates the process
+using a small in-memory catalog and a deterministic pseudo-random number
+generator.
+
+Algorithm:
+1. Generate pseudo-random numbers with a linear congruential generator.
+2. Choose one character from a predefined list.
+3. Pretend to save the character's image (no-op) and return its information.
+4. Print the title, description and image filename just like the original
+   script.
+*/
+
+var seed: int = 123456789
+
+fun rand(): int {
+  seed = (seed * 1103515245 + 12345) % 2147483648
+  return seed
+}
+
+fun random_int(a: int, b: int): int {
+  return a + (rand() % (b - a))
+}
+
+type Character {
+  title: string,
+  description: string,
+  image_file: string
+}
+
+let characters: list<Character> = [
+  Character { title: "Naruto Uzumaki", description: "A spirited ninja of the Hidden Leaf Village.", image_file: "naruto.png" },
+  Character { title: "Sailor Moon", description: "A magical girl who fights for love and justice.", image_file: "sailor_moon.png" },
+  Character { title: "Spike Spiegel", description: "A bounty hunter with a laid-back attitude.", image_file: "spike_spiegel.png" }
+]
+
+fun save_image(_name: string): void {
+  // No-op: the original script downloads an image; here we simply simulate it.
+}
+
+fun random_anime_character(): Character {
+  let idx = random_int(0, len(characters))
+  let ch = characters[idx]
+  save_image(ch.image_file)
+  return ch
+}
+
+let c = random_anime_character()
+print(c.title)
+print("")
+print(c.description)
+print("")
+print("Image saved : " + c.image_file)
