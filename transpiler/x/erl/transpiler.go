@@ -14,8 +14,6 @@ import (
 	"strings"
 	"time"
 
-	"mochi/runtime/data"
-
 	"mochi/parser"
 	"mochi/types"
 )
@@ -3403,286 +3401,55 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 			}
 		}
 		return []Stmt{&LetStmt{Name: alias, Expr: e}}, nil
-	case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
+	case st.Assign != nil:
 		val, err := convertExpr(st.Assign.Value, env, ctx)
 		if err != nil {
 			return nil, err
 		}
-		if ctx.isGlobal(st.Assign.Name) {
-			return []Stmt{&PutStmt{Name: st.Assign.Name, Expr: val}}, nil
+		tgtExpr, err := convertPostfix(st.Assign.Target, env, ctx)
+		if err != nil {
+			return nil, err
 		}
-		if ctx.isParam(st.Assign.Name) {
-			ctx.markMutated(st.Assign.Name)
+		nr, ok := tgtExpr.(*NameRef)
+		if !ok || len(st.Assign.Target.Ops) > 0 || st.Assign.Target.Target == nil || st.Assign.Target.Target.Selector == nil || len(st.Assign.Target.Target.Selector.Tail) > 0 {
+			return nil, fmt.Errorf("complex assignment not supported")
 		}
-		alias := ctx.newAlias(st.Assign.Name)
-		// handle assignment from a function that mutates one of its arguments
+		name := nr.Name
+		if ctx.isGlobal(name) {
+			return []Stmt{&PutStmt{Name: name, Expr: val}}, nil
+		}
+		if ctx.isParam(name) {
+			ctx.markMutated(name)
+		}
+		alias := ctx.newAlias(name)
 		if ce, ok := val.(*CallExpr); ok {
 			if idx, ok := mutatedFuncs[ce.Func]; ok && idx < len(ce.Args) {
 				if nr, ok := ce.Args[idx].(*NameRef); ok {
-					name := ctx.original(nr.Name)
-					mAlias := ctx.newAlias(name)
-					ctx.markMutated(name)
-					ctx.clearConst(name)
-					ctx.alias[name] = mAlias
-					ctx.setStrFields(st.Assign.Name, stringFields(val))
-					ctx.setBoolFields(st.Assign.Name, boolFields(val, env, ctx))
-					ctx.setStringVar(st.Assign.Name, isStringExpr(val))
-					ctx.setListStrVar(st.Assign.Name, isStringListExpr(val))
-					ctx.setFloatVar(st.Assign.Name, isFloatExpr(val, env, ctx))
-					ctx.setMapVar(st.Assign.Name, isMapExpr(val, env, ctx))
-					ctx.setBoolVar(st.Assign.Name, isBoolExpr(val, env, ctx))
-					switch val.(type) {
-					case *IntLit, *FloatLit, *BoolLit, *StringLit, *AtomLit:
-						ctx.setConst(st.Assign.Name, val)
-					default:
-						ctx.clearConst(st.Assign.Name)
-					}
+					orig := ctx.original(nr.Name)
+					mAlias := ctx.newAlias(orig)
+					ctx.markMutated(orig)
+					ctx.clearConst(orig)
+					ctx.alias[orig] = mAlias
 					pat := fmt.Sprintf("{%s, %s}", alias, mAlias)
 					return []Stmt{&LetStmt{Name: pat, Expr: val}}, nil
 				}
 			}
 		}
-		ctx.setStrFields(st.Assign.Name, stringFields(val))
-		ctx.setBoolFields(st.Assign.Name, boolFields(val, env, ctx))
-		ctx.setStringVar(st.Assign.Name, isStringExpr(val))
-		ctx.setListStrVar(st.Assign.Name, isStringListExpr(val))
-		ctx.setFloatVar(st.Assign.Name, isFloatExpr(val, env, ctx))
-		ctx.setMapVar(st.Assign.Name, isMapExpr(val, env, ctx))
-		ctx.setBoolVar(st.Assign.Name, isBoolExpr(val, env, ctx))
+		ctx.setStrFields(name, stringFields(val))
+		ctx.setBoolFields(name, boolFields(val, env, ctx))
+		ctx.setStringVar(name, isStringExpr(val))
+		ctx.setListStrVar(name, isStringListExpr(val))
+		ctx.setFloatVar(name, isFloatExpr(val, env, ctx))
+		ctx.setMapVar(name, isMapExpr(val, env, ctx))
+		ctx.setBoolVar(name, isBoolExpr(val, env, ctx))
 		switch val.(type) {
 		case *IntLit, *FloatLit, *BoolLit, *StringLit, *AtomLit:
-			ctx.setConst(st.Assign.Name, val)
+			ctx.setConst(name, val)
 		default:
-			ctx.clearConst(st.Assign.Name)
+			ctx.clearConst(name)
 		}
 		return []Stmt{&LetStmt{Name: alias, Expr: val}}, nil
-	case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 1:
-		val, err := convertExpr(st.Assign.Value, env, ctx)
-		if err != nil {
-			return nil, err
-		}
-		if ctx.isGlobal(st.Assign.Name) {
-			old := ctx.newAlias(st.Assign.Name)
-			key := &StringLit{Value: st.Assign.Field[0].Name}
-			alias := ctx.newAlias(st.Assign.Name)
-			stmts := []Stmt{
-				&LetStmt{Name: old, Expr: &CallExpr{Func: "erlang:get", Args: []Expr{&AtomLit{Name: fmt.Sprintf("'%s'", st.Assign.Name)}}}},
-				&MapAssignStmt{Name: alias, Old: old, Key: key, Value: val},
-				&PutStmt{Name: st.Assign.Name, Expr: &NameRef{Name: alias}},
-			}
-			return stmts, nil
-		}
-		if ctx.isParam(st.Assign.Name) {
-			ctx.markMutated(st.Assign.Name)
-		}
-		var old string
-		if ctx.isGlobal(st.Assign.Name) {
-			old = ctx.newAlias(st.Assign.Name)
-		} else {
-			old = ctx.current(st.Assign.Name)
-		}
-		alias := ctx.newAlias(st.Assign.Name)
-		key := &StringLit{Value: st.Assign.Field[0].Name}
-		ctx.clearConst(st.Assign.Name)
-		return []Stmt{&MapAssignStmt{Name: alias, Old: old, Key: key, Value: val}}, nil
-	case st.Assign != nil && len(st.Assign.Index) == 1 && len(st.Assign.Field) == 0:
-		idx, err := convertExpr(st.Assign.Index[0].Start, env, ctx)
-		if err != nil {
-			return nil, err
-		}
-		val, err := convertExpr(st.Assign.Value, env, ctx)
-		if err != nil {
-			return nil, err
-		}
-		if ctx.isGlobal(st.Assign.Name) {
-			oldVar := ctx.newAlias(st.Assign.Name)
-			alias := ctx.newAlias(st.Assign.Name)
-			kind := "list"
-			if ctx.isMapVar(st.Assign.Name) {
-				kind = "map"
-			} else if t, err := env.GetVar(st.Assign.Name); err == nil {
-				if _, ok := t.(types.MapType); ok {
-					kind = "map"
-				}
-			}
-			stmts := []Stmt{
-				&LetStmt{Name: oldVar, Expr: &CallExpr{Func: "erlang:get", Args: []Expr{&AtomLit{Name: fmt.Sprintf("'%s'", st.Assign.Name)}}}},
-			}
-			if kind == "map" {
-				stmts = append(stmts, &MapAssignStmt{Name: alias, Old: oldVar, Key: idx, Value: val})
-			} else {
-				stmts = append(stmts, &ListAssignStmt{Name: alias, Old: oldVar, Index: idx, Value: val})
-			}
-			stmts = append(stmts, &PutStmt{Name: st.Assign.Name, Expr: &NameRef{Name: alias}})
-			return stmts, nil
-		}
-		if ctx.isParam(st.Assign.Name) {
-			ctx.markMutated(st.Assign.Name)
-		}
-		old := ctx.current(st.Assign.Name)
-		alias := ctx.newAlias(st.Assign.Name)
-		ctx.clearConst(st.Assign.Name)
-		kind := "list"
-		if ctx.isMapVar(st.Assign.Name) {
-			kind = "map"
-		} else if t, err := env.GetVar(st.Assign.Name); err == nil {
-			if _, ok := t.(types.MapType); ok {
-				kind = "map"
-			}
-		}
-		if kind == "map" {
-			return []Stmt{&MapAssignStmt{Name: alias, Old: old, Key: idx, Value: val}}, nil
-		}
-		return []Stmt{&ListAssignStmt{Name: alias, Old: old, Index: idx, Value: val}}, nil
-	case st.Assign != nil && len(st.Assign.Index) == 2 && len(st.Assign.Field) == 0:
-		var old string
-		if ctx.isGlobal(st.Assign.Name) {
-			old = ctx.newAlias(st.Assign.Name)
-		} else {
-			old = ctx.current(st.Assign.Name)
-		}
-		idx1, err := convertExpr(st.Assign.Index[0].Start, env, ctx)
-		if err != nil {
-			return nil, err
-		}
-		idx2, err := convertExpr(st.Assign.Index[1].Start, env, ctx)
-		if err != nil {
-			return nil, err
-		}
-		val, err := convertExpr(st.Assign.Value, env, ctx)
-		if err != nil {
-			return nil, err
-		}
-		alias := ctx.newAlias(st.Assign.Name)
-		ctx.clearConst(st.Assign.Name)
-		if ctx.isParam(st.Assign.Name) {
-			ctx.markMutated(st.Assign.Name)
-		}
-		tmp := ctx.newAlias("tmp")
-		tmp2 := ctx.newAlias("tmp")
-		kind := "list"
-		if ctx.isMapVar(st.Assign.Name) {
-			kind = "map"
-		} else if t, err := env.GetVar(st.Assign.Name); err == nil {
-			if _, ok := t.(types.MapType); ok {
-				kind = "map"
-			}
-		}
-		kind2 := "list"
-		if _, ok := idx2.(*StringLit); ok {
-			kind2 = "map"
-		} else if nr, ok := idx2.(*NameRef); ok {
-			if nr.IsString || ctx.isStringVar(ctx.original(nr.Name)) {
-				kind2 = "map"
-			}
-		}
-		var stmts []Stmt
-		// extract inner value
-		inner := &IndexExpr{Target: &NameRef{Name: old}, Index: idx1, Kind: kind}
-		stmts = append(stmts, &LetStmt{Name: tmp, Expr: inner})
-		// update inner
-		if kind2 == "map" {
-			stmts = append(stmts, &MapAssignStmt{Name: tmp2, Old: tmp, Key: idx2, Value: val})
-		} else {
-			stmts = append(stmts, &ListAssignStmt{Name: tmp2, Old: tmp, Index: idx2, Value: val})
-		}
-		// assign back
-		if kind == "map" {
-			stmts = append(stmts, &MapAssignStmt{Name: alias, Old: old, Key: idx1, Value: &NameRef{Name: tmp2}})
-		} else {
-			stmts = append(stmts, &ListAssignStmt{Name: alias, Old: old, Index: idx1, Value: &NameRef{Name: tmp2}})
-		}
-		if ctx.isGlobal(st.Assign.Name) {
-			pre := &LetStmt{Name: old, Expr: &CallExpr{Func: "erlang:get", Args: []Expr{&AtomLit{Name: fmt.Sprintf("'%s'", st.Assign.Name)}}}}
-			stmts = append([]Stmt{pre}, stmts...)
-			stmts = append(stmts, &PutStmt{Name: st.Assign.Name, Expr: &NameRef{Name: alias}})
-			return stmts, nil
-		}
-		return stmts, nil
-	case st.Assign != nil && len(st.Assign.Index) == 3 && len(st.Assign.Field) == 0:
-		var old string
-		if ctx.isGlobal(st.Assign.Name) {
-			old = ctx.newAlias(st.Assign.Name)
-		} else {
-			old = ctx.current(st.Assign.Name)
-		}
-		idx1, err := convertExpr(st.Assign.Index[0].Start, env, ctx)
-		if err != nil {
-			return nil, err
-		}
-		idx2, err := convertExpr(st.Assign.Index[1].Start, env, ctx)
-		if err != nil {
-			return nil, err
-		}
-		idx3, err := convertExpr(st.Assign.Index[2].Start, env, ctx)
-		if err != nil {
-			return nil, err
-		}
-		val, err := convertExpr(st.Assign.Value, env, ctx)
-		if err != nil {
-			return nil, err
-		}
-		alias := ctx.newAlias(st.Assign.Name)
-		ctx.clearConst(st.Assign.Name)
-		if ctx.isParam(st.Assign.Name) {
-			ctx.markMutated(st.Assign.Name)
-		}
-		tmp := ctx.newAlias("tmp")
-		tmp2 := ctx.newAlias("tmp")
-		tmp2b := ctx.newAlias("tmp")
-		tmp3 := ctx.newAlias("tmp")
-		kind := "list"
-		if ctx.isMapVar(st.Assign.Name) {
-			kind = "map"
-		} else if t, err := env.GetVar(st.Assign.Name); err == nil {
-			if _, ok := t.(types.MapType); ok {
-				kind = "map"
-			}
-		}
-		kind2 := "list"
-		if _, ok := idx2.(*StringLit); ok {
-			kind2 = "map"
-		} else if nr, ok := idx2.(*NameRef); ok {
-			if nr.IsString || ctx.isStringVar(ctx.original(nr.Name)) {
-				kind2 = "map"
-			}
-		}
-		kind3 := "list"
-		if _, ok := idx3.(*StringLit); ok {
-			kind3 = "map"
-		}
-		var stmts []Stmt
-		// level 1
-		inner1 := &IndexExpr{Target: &NameRef{Name: old}, Index: idx1, Kind: kind}
-		stmts = append(stmts, &LetStmt{Name: tmp, Expr: inner1})
-		// level 2
-		inner2 := &IndexExpr{Target: &NameRef{Name: tmp}, Index: idx2, Kind: kind2}
-		stmts = append(stmts, &LetStmt{Name: tmp2, Expr: inner2})
-		// update innermost
-		if kind3 == "map" {
-			stmts = append(stmts, &MapAssignStmt{Name: tmp3, Old: tmp2, Key: idx3, Value: val})
-		} else {
-			stmts = append(stmts, &ListAssignStmt{Name: tmp3, Old: tmp2, Index: idx3, Value: val})
-		}
-		// assign back level2
-		if kind2 == "map" {
-			stmts = append(stmts, &MapAssignStmt{Name: tmp2b, Old: tmp, Key: idx2, Value: &NameRef{Name: tmp3}})
-		} else {
-			stmts = append(stmts, &ListAssignStmt{Name: tmp2b, Old: tmp, Index: idx2, Value: &NameRef{Name: tmp3}})
-		}
-		// assign back level1
-		if kind == "map" {
-			stmts = append(stmts, &MapAssignStmt{Name: alias, Old: old, Key: idx1, Value: &NameRef{Name: tmp2b}})
-		} else {
-			stmts = append(stmts, &ListAssignStmt{Name: alias, Old: old, Index: idx1, Value: &NameRef{Name: tmp2b}})
-		}
-		if ctx.isGlobal(st.Assign.Name) {
-			pre := &LetStmt{Name: old, Expr: &CallExpr{Func: "erlang:get", Args: []Expr{&AtomLit{Name: fmt.Sprintf("'%s'", st.Assign.Name)}}}}
-			stmts = append([]Stmt{pre}, stmts...)
-			stmts = append(stmts, &PutStmt{Name: st.Assign.Name, Expr: &NameRef{Name: alias}})
-			return stmts, nil
-		}
-		return stmts, nil
+	/* legacy assignment cases removed */
 	case st.Update != nil:
 		u, err := convertUpdateStmt(st.Update, env, ctx)
 		if err != nil {
