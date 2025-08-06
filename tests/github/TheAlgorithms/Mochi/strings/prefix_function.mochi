@@ -1,0 +1,98 @@
+/*
+Prefix Function for Strings (KMP)
+--------------------------------
+The prefix function for a string computes, for each position, the length of
+the longest proper prefix which is also a suffix of the substring ending at
+that position. This is the core of the Knuth-Morris-Pratt string matching
+algorithm. Knowing these lengths allows efficient skips when searching for
+patterns.
+
+Algorithm:
+1. Create a list `pi` of zeros with the same length as the input string.
+2. For each index `i` from 1 to n-1:
+   a. Let `j` be `pi[i-1]` (length of previous longest prefix).
+   b. While `j > 0` and `s[i] != s[j]`, shorten the candidate prefix by
+      setting `j = pi[j-1]`.
+   c. If the characters match, increment `j`.
+   d. Assign `pi[i] = j`.
+3. `longest_prefix` returns the maximum value in `pi`, representing the
+   longest prefix that is also a suffix of the whole string.
+
+Both operations run in O(n) time, where n is the string length.
+*/
+
+fun prefix_function(s: string): list<int> {
+  var pi: list<int> = []
+  var i = 0
+  while i < len(s) {
+    pi = append(pi, 0)
+    i = i + 1
+  }
+  i = 1
+  while i < len(s) {
+    var j = pi[i - 1]
+    while j > 0 && s[i] != s[j] {
+      j = pi[j - 1]
+    }
+    if s[i] == s[j] {
+      j = j + 1
+    }
+    pi[i] = j
+    i = i + 1
+  }
+  return pi
+}
+
+fun longest_prefix(s: string): int {
+  let pi = prefix_function(s)
+  var max_val = 0
+  var i = 0
+  while i < len(pi) {
+    if pi[i] > max_val {
+      max_val = pi[i]
+    }
+    i = i + 1
+  }
+  return max_val
+}
+
+fun list_eq_int(a: list<int>, b: list<int>): bool {
+  if len(a) != len(b) { return false }
+  var i = 0
+  while i < len(a) {
+    if a[i] != b[i] { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun test_prefix_function() {
+  let s1 = "aabcdaabc"
+  let expected1: list<int> = [0, 1, 0, 0, 0, 1, 2, 3, 4]
+  let r1 = prefix_function(s1)
+  if !list_eq_int(r1, expected1) { panic("prefix_function aabcdaabc failed") }
+
+  let s2 = "asdasdad"
+  let expected2: list<int> = [0, 0, 0, 1, 2, 3, 4, 0]
+  let r2 = prefix_function(s2)
+  if !list_eq_int(r2, expected2) { panic("prefix_function asdasdad failed") }
+}
+
+fun test_longest_prefix() {
+  if longest_prefix("aabcdaabc") != 4 { panic("longest_prefix example1 failed") }
+  if longest_prefix("asdasdad") != 4 { panic("longest_prefix example2 failed") }
+  if longest_prefix("abcab") != 2 { panic("longest_prefix example3 failed") }
+}
+
+fun main() {
+  test_prefix_function()
+  test_longest_prefix()
+  let r1 = prefix_function("aabcdaabc")
+  let r2 = prefix_function("asdasdad")
+  print(str(r1))
+  print(str(r2))
+  print(str(longest_prefix("aabcdaabc")))
+  print(str(longest_prefix("abcab")))
+}
+
+main()
