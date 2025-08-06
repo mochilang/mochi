@@ -1,0 +1,126 @@
+/*
+Find groups of anagrams in a word list.
+
+This program reads words from "words.txt", computes a signature for each
+word by sorting its letters, and groups words sharing the same signature.
+An anagram of a word is any other word composed of the same letters in a
+different order. The algorithm proceeds as follows:
+1. Read and normalize the list of words.
+2. Sort the letters of each word to form a key (the signature).
+3. Build a map from each signature to the list of words having that
+   signature.
+4. For every word that has more than one entry in its anagram list,
+   print the word followed by its anagrams.
+
+The character sorting and list sorting are implemented with insertion
+sort, keeping the implementation in pure Mochi without external
+libraries and avoiding the use of the "any" type.
+*/
+
+fun split(s: string, sep: string): list<string> {
+  var res: list<string> = []
+  var current = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == sep {
+      res = append(res, current)
+      current = ""
+    } else {
+      current = current + ch
+    }
+    i = i + 1
+  }
+  res = append(res, current)
+  return res
+}
+
+fun insertion_sort(arr: list<string>): list<string> {
+  var a = arr
+  var i = 1
+  while i < len(a) {
+    let key = a[i]
+    var j = i - 1
+    while j >= 0 && a[j] > key {
+      a[j + 1] = a[j]
+      j = j - 1
+    }
+    a[j + 1] = key
+    i = i + 1
+  }
+  return a
+}
+
+fun sort_chars(word: string): string {
+  var chars: list<string> = []
+  var i = 0
+  while i < len(word) {
+    chars = append(chars, word[i:i+1])
+    i = i + 1
+  }
+  chars = insertion_sort(chars)
+  var res = ""
+  i = 0
+  while i < len(chars) {
+    res = res + chars[i]
+    i = i + 1
+  }
+  return res
+}
+
+fun unique_sorted(words: list<string>): list<string> {
+  var seen: map<string, bool> = {}
+  var res: list<string> = []
+  for w in words {
+    if w != "" && !(w in seen) {
+      res = append(res, w)
+      seen[w] = true
+    }
+  }
+  res = insertion_sort(res)
+  return res
+}
+
+var word_by_signature: map<string, list<string>> = {}
+
+fun build_map(words: list<string>) {
+  for w in words {
+    let sig = sort_chars(w)
+    var arr: list<string> = []
+    if sig in word_by_signature {
+      arr = word_by_signature[sig]
+    }
+    arr = append(arr, w)
+    word_by_signature[sig] = arr
+  }
+}
+
+fun anagram(my_word: string): list<string> {
+  let sig = sort_chars(my_word)
+  if sig in word_by_signature {
+    return word_by_signature[sig]
+  }
+  return []
+}
+
+fun main() {
+  let text = read_file("words.txt")
+  let lines = split(text, "\n")
+  let words = unique_sorted(lines)
+  build_map(words)
+  for w in words {
+    let anas = anagram(w)
+    if len(anas) > 1 {
+      var line = w + ":"
+      var i = 0
+      while i < len(anas) {
+        if i > 0 { line = line + "," }
+        line = line + anas[i]
+        i = i + 1
+      }
+      print(line)
+    }
+  }
+}
+
+main()

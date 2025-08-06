@@ -1,0 +1,10 @@
+cat
+act
+tac
+dog
+god
+bird
+drib
+sett
+test
+stet
