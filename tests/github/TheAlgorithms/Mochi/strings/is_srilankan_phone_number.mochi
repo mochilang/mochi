@@ -1,0 +1,83 @@
+/*
+Validate Sri Lankan mobile phone numbers
+
+This function checks whether a given string represents a valid
+Sri Lankan mobile phone number. Accepted formats may begin with
+one of the following prefixes:
+
+  - "0"
+  - "94"
+  - "+94"
+  - "0094"
+
+After the prefix, the number must start with '7' followed by a
+network digit in {0,1,2,4,5,6,7,8}. An optional separator (space or
+dash) may appear before the final seven digits. No other characters
+are permitted.
+*/
+
+fun starts_with(s: string, prefix: string): bool {
+  if len(s) < len(prefix) {
+    return false
+  }
+  return substring(s, 0, len(prefix)) == prefix
+}
+
+fun all_digits(s: string): bool {
+  var i = 0
+  while i < len(s) {
+    let c = s[i]
+    if c < "0" || c > "9" {
+      return false
+    }
+    i = i + 1
+  }
+  return true
+}
+
+fun is_sri_lankan_phone_number(phone: string): bool {
+  var p = phone
+  if starts_with(p, "+94") {
+    p = substring(p, 3, len(p))
+  } else if starts_with(p, "0094") {
+    p = substring(p, 4, len(p))
+  } else if starts_with(p, "94") {
+    p = substring(p, 2, len(p))
+  } else if starts_with(p, "0") {
+    p = substring(p, 1, len(p))
+  } else {
+    return false
+  }
+
+  if len(p) != 9 && len(p) != 10 {
+    return false
+  }
+  if p[0] != "7" {
+    return false
+  }
+
+  let second = p[1]
+  let allowed = ["0", "1", "2", "4", "5", "6", "7", "8"]
+  if !(second in allowed) {
+    return false
+  }
+
+  var idx = 2
+  if len(p) == 10 {
+    let sep = p[2]
+    if sep != "-" && sep != " " {
+      return false
+    }
+    idx = 3
+  }
+
+  if len(p) - idx != 7 {
+    return false
+  }
+
+  let rest = substring(p, idx, len(p))
+  return all_digits(rest)
+}
+
+let phone = "0094702343221"
+print(str(is_sri_lankan_phone_number(phone)))
