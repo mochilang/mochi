@@ -1,0 +1,89 @@
+/*
+Lorentz Transformation of a Four-Vector
+
+This program computes the Lorentz boost for motion along the x-axis.
+Given a velocity v, the boost transforms a four-vector [t, x, y, z]
+(where the time component is multiplied by the speed of light c) using
+matrix multiplication with
+
+| gamma  -gamma*beta  0  0 |
+| -gamma*beta  gamma  0  0 |
+| 0      0            1  0 |
+| 0      0            0  1 |
+
+where beta = v/c and gamma = 1/sqrt(1 - beta^2).  The algorithm first
+computes beta and gamma, builds the transformation matrix, then multiplies
+it with the event vector.  All steps run in constant time.
+
+This is a Mochi translation of the corresponding Python implementation
+from TheAlgorithms repository.
+*/
+
+let c = 299792458.0
+
+fun sqrtApprox(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess = x / 2.0
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun beta(velocity: float): float {
+  if velocity > c {
+    panic("Speed must not exceed light speed 299,792,458 [m/s]!")
+  }
+  if velocity < 1.0 {
+    panic("Speed must be greater than or equal to 1!")
+  }
+  return velocity / c
+}
+
+fun gamma(velocity: float): float {
+  let b = beta(velocity)
+  return 1.0 / sqrtApprox(1.0 - b * b)
+}
+
+fun transformation_matrix(velocity: float): list<list<float>> {
+  let g = gamma(velocity)
+  let b = beta(velocity)
+  return [
+    [g, -g * b, 0.0, 0.0],
+    [-g * b, g, 0.0, 0.0],
+    [0.0, 0.0, 1.0, 0.0],
+    [0.0, 0.0, 0.0, 1.0]
+  ]
+}
+
+fun mat_vec_mul(mat: list<list<float>>, vec: list<float>): list<float> {
+  var res: list<float> = []
+  var i = 0
+  while i < 4 {
+    let row = mat[i]
+    let value = row[0]*vec[0] + row[1]*vec[1] + row[2]*vec[2] + row[3]*vec[3]
+    res = res + [value]
+    i = i + 1
+  }
+  return res
+}
+
+fun transform(velocity: float, event: list<float>): list<float> {
+  let g = gamma(velocity)
+  let b = beta(velocity)
+  let ct = event[0] * c
+  let x = event[1]
+  return [g*ct - g*b*x, -g*b*ct + g*x, event[2], event[3]]
+}
+
+print(str(beta(c)))
+print(str(beta(199792458.0)))
+print(str(beta(100000.0)))
+print(str(gamma(4.0)))
+print(str(gamma(100000.0)))
+print(str(gamma(30000000.0)))
+print(str(transformation_matrix(29979245.0)))
+let v = transform(29979245.0, [1.0, 2.0, 3.0, 4.0])
+print(str(v))
