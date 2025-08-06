@@ -39,7 +39,7 @@ fun square_distance(a: list<float>, b: list<float>): float {
 }
 
 fun search(nodes: list<KDNode>, index: int, query_point: list<float>, depth: int, best: SearchResult): SearchResult {
-  if index == -1 {
+  if index == (-1) {
     return best
   }
   var result = best
@@ -68,7 +68,7 @@ fun search(nodes: list<KDNode>, index: int, query_point: list<float>, depth: int
 }
 
 fun nearest_neighbour_search(nodes: list<KDNode>, root: int, query_point: list<float>): SearchResult {
-  let initial = SearchResult { point: [], distance: 1.0e30, nodes_visited: 0 }
+  let initial = SearchResult { point: [], distance: 1000000000000000000000000000000.0, nodes_visited: 0 }
   return search(nodes, root, query_point, 0, initial)
 }
 

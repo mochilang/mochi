@@ -4087,17 +4087,23 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		return convertImportStmt(st.Import)
 	case st.Type != nil:
 		ms := &MultiStmt{}
-		var fields []string
-		methods := map[string]types.Method{}
-		if st.Type.Members != nil {
-			for _, m := range st.Type.Members {
-				if m.Field != nil {
-					fields = append(fields, m.Field.Name)
-				}
-			}
-			// predeclare methods so they are available during translation
-			for _, m := range st.Type.Members {
-				if m.Method != nil {
+               var fields []string
+               fieldTypes := map[string]types.Type{}
+               methods := map[string]types.Method{}
+               if st.Type.Members != nil {
+                       for _, m := range st.Type.Members {
+                               if m.Field != nil {
+                                       fields = append(fields, m.Field.Name)
+                                       var ft types.Type = types.AnyType{}
+                                       if m.Field.Type != nil {
+                                               ft = types.ResolveTypeRef(m.Field.Type, currentEnv)
+                                       }
+                                       fieldTypes[m.Field.Name] = ft
+                               }
+                       }
+                       // predeclare methods so they are available during translation
+                       for _, m := range st.Type.Members {
+                               if m.Method != nil {
 					params := []types.Type{types.StructType{Name: st.Type.Name}}
 					for _, p := range m.Method.Params {
 						if p.Type != nil {
@@ -4115,8 +4121,8 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 					currentEnv.SetVar(m.Method.Name, ft, true)
 				}
 			}
-			stInfo := types.StructType{Name: st.Type.Name, Methods: methods}
-			currentEnv.SetStruct(st.Type.Name, stInfo)
+                       stInfo := types.StructType{Name: st.Type.Name, Fields: fieldTypes, Order: fields, Methods: methods}
+                       currentEnv.SetStruct(st.Type.Name, stInfo)
 			for _, m := range st.Type.Members {
 				if m.Method != nil {
 					fn, err := convertMethodStmt(m.Method, st.Type.Name, fields)

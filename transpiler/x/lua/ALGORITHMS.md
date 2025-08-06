@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-06 22:04 GMT+7
+Last updated: 2025-08-06 22:29 GMT+7
 
-## Algorithms Golden Test Checklist (209/1077)
+## Algorithms Golden Test Checklist (210/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 216µs | 912 B |
@@ -227,7 +227,7 @@ Last updated: 2025-08-06 22:04 GMT+7
 | 218 | data_structures/kd_tree/example/example_usage | error |  |  |
 | 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 110µs | 1.3 KB |
 | 220 | data_structures/kd_tree/kd_node | ✓ | 70µs | 1.5 KB |
-| 221 | data_structures/kd_tree/nearest_neighbour_search |   |  |  |
+| 221 | data_structures/kd_tree/nearest_neighbour_search | ✓ | 172µs | 4.6 KB |
 | 222 | data_structures/kd_tree/tests/test_kdtree |   |  |  |
 | 223 | data_structures/linked_list/circular_linked_list |   |  |  |
 | 224 | data_structures/linked_list/deque_doubly |   |  |  |
