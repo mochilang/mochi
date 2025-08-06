@@ -1,18 +1,18 @@
 # OCaml Algorithms Transpiler Output
 
 Completed programs: 13/1077
-Last updated: 2025-08-06 16:21 +0700
+Last updated: 2025-08-06 20:30 +0700
 
 Checklist:
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 228.0µs | 3.41KB |
-| 2 | backtracking/all_permutations | ✓ | 848.0µs | 45.37KB |
-| 3 | backtracking/all_subsequences | ✓ | 296.0µs | 6.55KB |
-| 4 | backtracking/coloring | ✓ | 235.0µs | 6.92KB |
-| 5 | backtracking/combination_sum | ✓ | 180.0µs | 3.63KB |
-| 6 | backtracking/crossword_puzzle_solver | ✓ | 1.0ms | 176.77KB |
+| 1 | backtracking/all_combinations | ✓ | 171.0µs | 2.72KB |
+| 2 | backtracking/all_permutations | ✓ | 411.0µs | 40.45KB |
+| 3 | backtracking/all_subsequences | ✓ | 164.0µs | 7.16KB |
+| 4 | backtracking/coloring | ✓ | 194.0µs | 6.92KB |
+| 5 | backtracking/combination_sum | ✓ | 120.0µs | 3.63KB |
+| 6 | backtracking/crossword_puzzle_solver | ✓ | 862.0µs | 176.77KB |
 | 7 | backtracking/hamiltonian_cycle | ✓ | 2.0µs | 208B |
 | 8 | backtracking/knight_tour | ✓ | 139.0µs | 272B |
 | 9 | backtracking/match_word_pattern |   |  |  |
