@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode"
 
 	"mochi/parser"
 	"mochi/types"
@@ -59,6 +60,8 @@ type Program struct {
 	UseSafeIndex   bool
 	UseStr         bool
 	UseRepr        bool
+	UseArraySet    bool
+	UseJSON        bool
 }
 
 // varTypes holds the inferred type for each variable defined during
@@ -92,6 +95,8 @@ var (
 	usesSafeIndex  bool
 	usesStr        bool
 	usesRepr       bool
+	usesArraySet   bool
+	usesJSON       bool
 )
 
 // SetBenchMain configures whether the generated main function is wrapped in a
@@ -165,6 +170,25 @@ const helperDictCreate = `let _dictCreate<'K,'V when 'K : equality> (pairs:('K *
 
 const helperIndex = `let _idx (arr:'a array) (i:int) : 'a =
     if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>`
+
+const helperArraySet = `let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
+    let mutable a = arr
+    if i >= a.Length then
+        let na = Array.zeroCreate<'a> (i + 1)
+        Array.blit a 0 na 0 a.Length
+        a <- na
+    a.[i] <- v
+    a`
+
+const helperJSON = `let json (arr:int array array) =
+    printf "[\n"
+    for i in 0 .. arr.Length - 1 do
+        let line = String.concat ", " (Array.map string arr.[i] |> Array.toList)
+        if i < arr.Length - 1 then
+            printfn "  [%s]," line
+        else
+            printfn "  [%s]" line
+    printfn "]"`
 
 const helperStr = `let rec _str v =
     let s = sprintf "%A" v
@@ -1418,9 +1442,21 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 	}
 	if id, ok := target.(*IdentExpr); ok {
 		t := inferType(id)
+		name := fsIdent(id.Name)
+		if strings.Contains(t, "array") && len(indices) == 1 {
+			usesArraySet = true
+			writeIndent(w)
+			io.WriteString(w, name)
+			io.WriteString(w, " <- _arrset ")
+			io.WriteString(w, name)
+			io.WriteString(w, " ")
+			indices[0].emit(w)
+			io.WriteString(w, " ")
+			s.Value.emit(w)
+			return
+		}
 		if strings.Contains(t, "array") || t == "" || strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") {
 			writeIndent(w)
-			name := fsIdent(id.Name)
 			io.WriteString(w, name)
 			for _, ix := range indices {
 				io.WriteString(w, ".[")
@@ -1617,7 +1653,16 @@ func (s *LetStmt) emit(w io.Writer) {
 	if s.Expr != nil {
 		s.Expr.emit(w)
 	} else {
-		io.WriteString(w, "0")
+		if strings.HasSuffix(s.Type, " array") {
+			base := strings.TrimSuffix(s.Type, " array")
+			io.WriteString(w, "Array.empty<")
+			io.WriteString(w, base)
+			io.WriteString(w, ">")
+		} else if s.Type == "string" {
+			io.WriteString(w, "\"\"")
+		} else {
+			io.WriteString(w, "0")
+		}
 	}
 }
 
@@ -2250,7 +2295,8 @@ func (c *CallExpr) emit(w io.Writer) {
 		io.WriteString(w, "()")
 		return
 	}
-	if strings.Contains(name, ".") && !strings.Contains(name, " ") {
+	lastDot := strings.LastIndex(name, ".")
+	if lastDot != -1 && lastDot+1 < len(name) && unicode.IsUpper(rune(name[lastDot+1])) && !strings.Contains(name, " ") {
 		io.WriteString(w, "(")
 		for i, a := range c.Args {
 			if i > 0 {
@@ -2939,6 +2985,14 @@ func Emit(prog *Program) []byte {
 		buf.WriteString(helperIndex)
 		buf.WriteString("\n")
 	}
+	if prog.UseArraySet {
+		buf.WriteString(helperArraySet)
+		buf.WriteString("\n")
+	}
+	if prog.UseJSON {
+		buf.WriteString(helperJSON)
+		buf.WriteString("\n")
+	}
 	if prog.UseStr {
 		buf.WriteString(helperStr)
 		buf.WriteString("\n")
@@ -3048,6 +3102,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesSafeIndex = false
 	usesStr = false
 	usesRepr = false
+	usesArraySet = false
+	usesJSON = false
 	currentReturn = ""
 	funcDepth = 0
 	p := &Program{}
@@ -3115,6 +3171,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	p.UseSafeIndex = usesSafeIndex
 	p.UseStr = usesStr
 	p.UseRepr = usesRepr
+	p.UseArraySet = usesArraySet
+	p.UseJSON = usesJSON
 	return p, nil
 }
 
@@ -3539,6 +3597,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				return nil, err
 			}
 			if t := varTypes[st.Assign.Name]; strings.HasSuffix(t, " array") || strings.HasSuffix(t, " list") || strings.HasPrefix(t, "list<") || t == "array" {
+				if strings.HasSuffix(t, " array") && len(st.Assign.Index) == 1 {
+					usesArraySet = true
+				}
 				// array or list assignment
 				// handled by IndexAssignStmt below
 			} else if t := varTypes[st.Assign.Name]; strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") {
@@ -4140,6 +4201,17 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				}
 			}
 			return &AppendExpr{List: listArg, Elem: elemArg}, nil
+		case "concat":
+			if len(args) != 2 {
+				return nil, fmt.Errorf("concat expects 2 args")
+			}
+			return &CallExpr{Func: "Array.append", Args: args}, nil
+		case "json":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("json expects 1 arg")
+			}
+			usesJSON = true
+			return &CallExpr{Func: "json", Args: args}, nil
 		case "now":
 			if len(args) == 0 {
 				usesNow = true
