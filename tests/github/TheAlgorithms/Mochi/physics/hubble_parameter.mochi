@@ -1,0 +1,78 @@
+/*
+Hubble Parameter Computation
+----------------------------
+
+This program implements the cosmological Hubble parameter H(z)
+calculation used in ΛCDM models. The Hubble parameter describes the
+expansion rate of the universe at a given redshift z:
+
+  H(z) = H0 * sqrt(Ω_r (1+z)^4 + Ω_m (1+z)^3 + Ω_k (1+z)^2 + Ω_Λ)
+
+where:
+  - H0 is the present-day Hubble constant.
+  - Ω_r, Ω_m, and Ω_Λ are the normalized radiation, matter, and
+    dark‑energy densities.
+  - Ω_k = 1 − (Ω_m + Ω_r + Ω_Λ) is the curvature parameter.
+
+The function validates that all input parameters are non‑negative and
+that the density parameters do not exceed unity. The implementation uses
+only basic Mochi features so it can run on the runtime/vm without any
+foreign interfaces.
+
+A small test verifies the routine against a known case and the main
+function prints the present-day value for demonstration.
+*/
+
+fun pow(base: float, exp: int): float {
+  var result = 1.0
+  var i = 0
+  while i < exp {
+    result = result * base
+    i = i + 1
+  }
+  return result
+}
+
+fun sqrt_approx(x: float): float {
+  if x == 0.0 { return 0.0 }
+  var guess = x / 2.0
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun hubble_parameter(hubble_constant: float, radiation_density: float, matter_density: float, dark_energy: float, redshift: float): float {
+  let parameters: list<float> = [redshift, radiation_density, matter_density, dark_energy]
+  var i = 0
+  while i < len(parameters) {
+    if parameters[i] < 0.0 { panic("All input parameters must be positive") }
+    i = i + 1
+  }
+  i = 1
+  while i < 4 {
+    if parameters[i] > 1.0 { panic("Relative densities cannot be greater than one") }
+    i = i + 1
+  }
+  let curvature = 1.0 - (matter_density + radiation_density + dark_energy)
+  let zp1 = redshift + 1.0
+  let e2 = radiation_density * pow(zp1, 4) +
+           matter_density * pow(zp1, 3) +
+           curvature * pow(zp1, 2) +
+           dark_energy
+  return hubble_constant * sqrt_approx(e2)
+}
+
+fun test_hubble_parameter() {
+  let h = hubble_parameter(68.3, 0.0001, 0.3, 0.7, 0.0)
+  if h < 68.2999 || h > 68.3001 { panic("hubble_parameter test failed") }
+}
+
+fun main() {
+  test_hubble_parameter()
+  print(hubble_parameter(68.3, 0.0001, 0.3, 0.7, 0.0))
+}
+
+main()
