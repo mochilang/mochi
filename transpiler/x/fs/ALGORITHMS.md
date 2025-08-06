@@ -1,36 +1,36 @@
 # F# Algorithms Transpiler Output
 
-Completed programs: 10/1077
-Last updated: 2025-08-06 16:21 +0700
+Completed programs: 21/1077
+Last updated: 2025-08-06 20:48 +0700
 
 Checklist:
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 571.223ms | 55.3 KB |
-| 2 | backtracking/all_permutations | ✓ | 571.223ms | 55.5 KB |
-| 3 | backtracking/all_subsequences | ✓ | 571.223ms | 67.6 KB |
+| 1 | backtracking/all_combinations | ✓ | 571.223ms | 59.4 KB |
+| 2 | backtracking/all_permutations | ✓ | 571.223ms | 59.6 KB |
+| 3 | backtracking/all_subsequences | ✓ | 571.223ms | 55.6 KB |
 | 4 | backtracking/coloring | ✓ | 571.223ms | 58.4 KB |
-| 5 | backtracking/combination_sum | ✓ | 571.223ms | 59.4 KB |
-| 6 | backtracking/crossword_puzzle_solver | ✓ | 571.223ms | 55.5 KB |
+| 5 | backtracking/combination_sum | ✓ | 571.223ms | 55.4 KB |
+| 6 | backtracking/crossword_puzzle_solver | ✓ | 571.223ms | 59.6 KB |
 | 7 | backtracking/hamiltonian_cycle |   |  |  |
-| 8 | backtracking/knight_tour | ✓ | 571.223ms | 32.2 KB |
-| 9 | backtracking/match_word_pattern | ✓ | 571.223ms | 39.1 KB |
-| 10 | backtracking/minimax | ✓ | 571.223ms | 54.8 KB |
-| 11 | backtracking/n_queens | ✓ | 571.223ms | 62.8 KB |
+| 8 | backtracking/knight_tour | ✓ | 571.223ms | 36.2 KB |
+| 9 | backtracking/match_word_pattern | ✓ | 571.223ms | 35.3 KB |
+| 10 | backtracking/minimax | ✓ | 571.223ms | 65.0 KB |
+| 11 | backtracking/n_queens | ✓ | 571.223ms | 55.3 KB |
 | 12 | backtracking/n_queens_math |   |  |  |
-| 13 | backtracking/power_sum |   |  |  |
-| 14 | backtracking/rat_in_maze |   |  |  |
-| 15 | backtracking/sudoku |   |  |  |
+| 13 | backtracking/power_sum | ✓ | 571.223ms | 32.1 KB |
+| 14 | backtracking/rat_in_maze | ✓ | 571.223ms | 55.6 KB |
+| 15 | backtracking/sudoku | ✓ | 571.223ms | 58.8 KB |
 | 16 | backtracking/sum_of_subsets |   |  |  |
-| 17 | backtracking/word_break |   |  |  |
-| 18 | backtracking/word_ladder |   |  |  |
-| 19 | backtracking/word_search |   |  |  |
-| 20 | bit_manipulation/binary_and_operator |   |  |  |
-| 21 | bit_manipulation/binary_coded_decimal |   |  |  |
-| 22 | bit_manipulation/binary_count_setbits |   |  |  |
-| 23 | bit_manipulation/binary_count_trailing_zeros |   |  |  |
-| 24 | bit_manipulation/binary_or_operator |   |  |  |
+| 17 | backtracking/word_break | ✓ | 571.223ms | 59.6 KB |
+| 18 | backtracking/word_ladder | ✓ | 571.223ms | 55.7 KB |
+| 19 | backtracking/word_search | ✓ | 571.223ms | 31.3 KB |
+| 20 | bit_manipulation/binary_and_operator | ✓ | 571.223ms | 63.2 KB |
+| 21 | bit_manipulation/binary_coded_decimal | ✓ | 571.223ms | 63.6 KB |
+| 22 | bit_manipulation/binary_count_setbits | ✓ | 571.223ms | 55.2 KB |
+| 23 | bit_manipulation/binary_count_trailing_zeros | ✓ | 571.223ms | 63.1 KB |
+| 24 | bit_manipulation/binary_or_operator | ✓ | 571.223ms | 35.5 KB |
 | 25 | bit_manipulation/binary_shifts |   |  |  |
 | 26 | bit_manipulation/binary_twos_complement |   |  |  |
 | 27 | bit_manipulation/binary_xor_operator |   |  |  |
