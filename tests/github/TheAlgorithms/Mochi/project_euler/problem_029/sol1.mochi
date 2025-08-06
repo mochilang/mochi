@@ -1,0 +1,45 @@
+/*
+Distinct Powers (Project Euler Problem 29)
+-----------------------------------------
+Given positive integers a and b with 2 <= a <= n and 2 <= b <= n,
+consider all integers of the form a^b. For example, when n = 5
+we obtain the fifteen values:
+4, 8, 9, 16, 25, 27, 32, 64, 81, 125, 243, 256, 625, 1024, 3125.
+Counting the distinct terms for n = 100 yields 9183.
+This program counts the number of unique a^b values by storing
+results in a list and checking membership to avoid duplicates.
+It uses a simple integer exponentiation routine to compute
+powers without floating point.
+*/
+
+fun int_pow(base: int, exp: int): int {
+  var result = 1
+  var i = 0
+  while i < exp {
+    result = result * base
+    i = i + 1
+  }
+  return result
+}
+
+fun solution(n: int): int {
+  var powers: list<int> = []
+  let limit = n + 1
+  for a in 2..limit {
+    for b in 2..limit {
+      let p = int_pow(a, b)
+      if !(p in powers) {
+        powers = append(powers, p)
+      }
+    }
+  }
+  return len(powers)
+}
+
+fun main() {
+  let n = int(input())
+  print("Number of terms ", solution(n))
+}
+
+main()
+
