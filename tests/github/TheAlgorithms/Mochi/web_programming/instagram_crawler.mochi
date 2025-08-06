@@ -1,0 +1,116 @@
+/*
+Instagram user information extraction.
+
+This program mirrors the behaviour of TheAlgorithms/Python
+`web_programming/instagram_crawler.py` in a simplified form.  Given a
+string containing JSON data embedded in an Instagram page, it extracts
+profile details such as the username, biography, follower counts and
+verification status.  The extraction is implemented purely in Mochi
+using basic string parsing helpers and avoids the use of FFI or the
+`any` type.  The sample JSON is embedded so the program can run without
+network access and demonstrates the parsing logic.
+*/
+
+type EdgeCount { count: int }
+
+type UserData {
+  username: string,
+  full_name: string,
+  biography: string,
+  business_email: string,
+  external_url: string,
+  edge_followed_by: EdgeCount,
+  edge_follow: EdgeCount,
+  edge_owner_to_timeline_media: EdgeCount,
+  profile_pic_url_hd: string,
+  is_verified: bool,
+  is_private: bool
+}
+
+fun index_of(s: string, sub: string): int {
+  var i = 0
+  while i <= len(s) - len(sub) {
+    if substring(s, i, i + len(sub)) == sub {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun parse_int(s: string): int {
+  var value = 0
+  var i = 0
+  while i < len(s) {
+    value = value * 10 + (s[i] as int)
+    i = i + 1
+  }
+  return value
+}
+
+fun extract_string(text: string, key: string): string {
+  let pattern = "\"" + key + "\":\""
+  let start = index_of(text, pattern) + len(pattern)
+  var end = start
+  while end < len(text) && substring(text, end, end + 1) != "\"" {
+    end = end + 1
+  }
+  return substring(text, start, end)
+}
+
+fun extract_int(text: string, key: string): int {
+  let pattern = "\"" + key + "\":{\"count\":"
+  let start = index_of(text, pattern) + len(pattern)
+  var end = start
+  while end < len(text) {
+    let ch = text[end]
+    if ch < "0" || ch > "9" {
+      break
+    }
+    end = end + 1
+  }
+  let digits = substring(text, start, end)
+  let num = parse_int(digits)
+  return num
+}
+
+fun extract_bool(text: string, key: string): bool {
+  let pattern = "\"" + key + "\":"
+  let start = index_of(text, pattern) + len(pattern)
+  let val = substring(text, start, start + 5)
+  let first = val[0]
+  if first == "t" {
+    return true
+  }
+  return false
+}
+
+fun extract_user_profile(script: string): UserData {
+  return UserData {
+    username: extract_string(script, "username"),
+    full_name: extract_string(script, "full_name"),
+    biography: extract_string(script, "biography"),
+    business_email: extract_string(script, "business_email"),
+    external_url: extract_string(script, "external_url"),
+    edge_followed_by: EdgeCount { count: extract_int(script, "edge_followed_by") },
+    edge_follow: EdgeCount { count: extract_int(script, "edge_follow") },
+    edge_owner_to_timeline_media: EdgeCount { count: extract_int(script, "edge_owner_to_timeline_media") },
+    profile_pic_url_hd: extract_string(script, "profile_pic_url_hd"),
+    is_verified: extract_bool(script, "is_verified"),
+    is_private: extract_bool(script, "is_private")
+  }
+}
+
+let sample_script = "{\"entry_data\":{\"ProfilePage\":[{\"graphql\":{\"user\":{\"username\":\"github\",\"full_name\":\"GitHub\",\"biography\":\"Built for developers.\",\"business_email\":\"support@github.com\",\"external_url\":\"https://github.com/readme\",\"edge_followed_by\":{\"count\":120000},\"edge_follow\":{\"count\":16},\"edge_owner_to_timeline_media\":{\"count\":150},\"profile_pic_url_hd\":\"https://instagram.com/pic.jpg\",\"is_verified\":true,\"is_private\":false}}}]}}"
+
+let user = extract_user_profile(sample_script)
+
+print(user.full_name + " (" + user.username + ") is " + user.biography)
+print("number_of_posts = " + str(user.edge_owner_to_timeline_media.count))
+print("number_of_followers = " + str(user.edge_followed_by.count))
+print("number_of_followings = " + str(user.edge_follow.count))
+print("email = " + user.business_email)
+print("website = " + user.external_url)
+print("profile_picture_url = " + user.profile_pic_url_hd)
+print("is_verified = " + str(user.is_verified))
+print("is_private = " + str(user.is_private))
