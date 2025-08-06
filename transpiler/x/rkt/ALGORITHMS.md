@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Racket code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Racket`.
-Last updated: 2025-08-06 14:55 UTC
+Last updated: 2025-08-06 15:24 UTC
 
-## Algorithms Golden Test Checklist (103/1077)
+## Algorithms Golden Test Checklist (110/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 9m31.223891s | 18.0 KB |
@@ -110,13 +110,13 @@ Last updated: 2025-08-06 14:55 UTC
 | 101 | ciphers/rsa_key_generator | ✓ | 9m31.223891s | 1.5 KB |
 | 102 | ciphers/running_key_cipher | ✓ | 9m31.223891s | 93.1 KB |
 | 103 | ciphers/shuffled_shift_cipher | ✓ | 9m31.223891s | 1.1 MB |
-| 104 | ciphers/simple_keyword_cypher |   |  |  |
-| 105 | ciphers/simple_substitution_cipher |   |  |  |
-| 106 | ciphers/transposition_cipher |   |  |  |
-| 107 | ciphers/transposition_cipher_encrypt_decrypt_file |   |  |  |
-| 108 | ciphers/trifid_cipher |   |  |  |
-| 109 | ciphers/vernam_cipher |   |  |  |
-| 110 | ciphers/vigenere_cipher |   |  |  |
+| 104 | ciphers/simple_keyword_cypher | ✓ | 9m31.223891s | 232.2 KB |
+| 105 | ciphers/simple_substitution_cipher | ✓ | 9m31.223891s | 678.5 KB |
+| 106 | ciphers/transposition_cipher | ✓ | 9m31.223891s | 13.0 KB |
+| 107 | ciphers/transposition_cipher_encrypt_decrypt_file | ✓ | 9m31.223891s | 576 B |
+| 108 | ciphers/trifid_cipher | ✓ | 9m31.223891s | 944.2 KB |
+| 109 | ciphers/vernam_cipher | ✓ | 9m31.223891s | 848 B |
+| 110 | ciphers/vigenere_cipher | ✓ | 9m31.223891s | 2.1 MB |
 | 111 | ciphers/xor_cipher |   |  |  |
 | 112 | computer_vision/cnn_classification |   |  |  |
 | 113 | computer_vision/flip_augmentation |   |  |  |
