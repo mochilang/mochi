@@ -1,0 +1,118 @@
+/*
+External sort is used for sorting data sets too large to fit into memory.
+It works by reading the data in fixed-size blocks that fit in memory,
+individually sorting each block, writing the sorted blocks to temporary
+storage, and finally merging these sorted blocks using an n-way merge.
+
+This Mochi implementation mirrors the approach but operates on in-memory
+lists for demonstration: it splits the input list into blocks, sorts each
+block using merge sort, then repeatedly selects the minimum front element
+from the blocks to produce a fully sorted output.
+*/
+
+fun subarray(xs: list<int>, start: int, end: int): list<int> {
+  var result: list<int> = []
+  var k = start
+  while k < end {
+    result = append(result, xs[k])
+    k = k + 1
+  }
+  return result
+}
+
+fun merge(left_half: list<int>, right_half: list<int>): list<int> {
+  var result: list<int> = []
+  var i = 0
+  var j = 0
+  while i < len(left_half) && j < len(right_half) {
+    if left_half[i] < right_half[j] {
+      result = append(result, left_half[i])
+      i = i + 1
+    } else {
+      result = append(result, right_half[j])
+      j = j + 1
+    }
+  }
+  while i < len(left_half) {
+    result = append(result, left_half[i])
+    i = i + 1
+  }
+  while j < len(right_half) {
+    result = append(result, right_half[j])
+    j = j + 1
+  }
+  return result
+}
+
+fun merge_sort(array: list<int>): list<int> {
+  if len(array) <= 1 {
+    return array
+  }
+  let middle = len(array) / 2
+  let left_half = subarray(array, 0, middle)
+  let right_half = subarray(array, middle, len(array))
+  let sorted_left = merge_sort(left_half)
+  let sorted_right = merge_sort(right_half)
+  return merge(sorted_left, sorted_right)
+}
+
+fun split_into_blocks(data: list<int>, block_size: int): list<list<int>> {
+  var blocks: list<list<int>> = []
+  var i = 0
+  while i < len(data) {
+    let end = if i + block_size < len(data) { i + block_size } else { len(data) }
+    let block = subarray(data, i, end)
+    let sorted_block = merge_sort(block)
+    blocks = append(blocks, sorted_block)
+    i = end
+  }
+  return blocks
+}
+
+fun merge_blocks(blocks: list<list<int>>): list<int> {
+  let num_blocks = len(blocks)
+  var indices: list<int> = []
+  var i = 0
+  while i < num_blocks {
+    indices = append(indices, 0)
+    i = i + 1
+  }
+  var result: list<int> = []
+  var done = false
+  while !done {
+    done = true
+    var min_val = 0
+    var min_block = 0 - 1
+    var j = 0
+    while j < num_blocks {
+      let idx = indices[j]
+      if idx < len(blocks[j]) {
+        let val = blocks[j][idx]
+        if min_block == (0 - 1) || val < min_val {
+          min_val = val
+          min_block = j
+        }
+        done = false
+      }
+      j = j + 1
+    }
+    if !done {
+      result = append(result, min_val)
+      indices[min_block] = indices[min_block] + 1
+    }
+  }
+  return result
+}
+
+fun external_sort(data: list<int>, block_size: int): list<int> {
+  let blocks = split_into_blocks(data, block_size)
+  return merge_blocks(blocks)
+}
+
+fun main() {
+  let data = [7, 1, 5, 3, 9, 2, 6, 4, 8, 0]
+  let sorted_data = external_sort(data, 3)
+  print(sorted_data)
+}
+
+main()
