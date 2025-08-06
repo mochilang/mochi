@@ -1,0 +1,57 @@
+/*
+Retrieve the latest stock price for a given ticker symbol using
+pre-recorded HTML fragments similar to Yahoo Finance pages.
+
+Each fragment contains a span element with the attribute
+`data-testid="qsp-price"` whose content represents the current price.  The
+`stock_price` function searches the HTML fragment for this span and returns
+its text content. If the span is missing, a message is returned indicating
+the price could not be found.
+
+Although real implementations would fetch live pages over HTTP and parse
+them, this example focuses on the core string searching algorithm for
+extracting the price from HTML.
+
+Time complexity: O(n * m) where n is the length of the HTML string and m is
+the length of the search patterns.
+*/
+
+fun find(text: string, pattern: string, start: int): int {
+  var i = start
+  let limit = len(text) - len(pattern)
+  while i <= limit {
+    if substring(text, i, i + len(pattern)) == pattern {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun stock_price(symbol: string): string {
+  let pages: map<string, string> = {
+    "AAPL": "<span data-testid=\"qsp-price\">228.43</span>",
+    "AMZN": "<span data-testid=\"qsp-price\">201.85</span>",
+    "IBM":  "<span data-testid=\"qsp-price\">210.30</span>",
+    "GOOG": "<span data-testid=\"qsp-price\">177.86</span>",
+    "MSFT": "<span data-testid=\"qsp-price\">414.82</span>",
+    "ORCL": "<span data-testid=\"qsp-price\">188.87</span>"
+  }
+  if symbol in pages {
+    let html = pages[symbol]
+    let marker = "<span data-testid=\"qsp-price\">"
+    let start_idx = find(html, marker, 0)
+    if start_idx != (-1) {
+      let price_start = start_idx + len(marker)
+      let end_idx = find(html, "</span>", price_start)
+        if end_idx != (-1) {
+        return substring(html, price_start, end_idx)
+      }
+    }
+  }
+  return "No <fin-streamer> tag with the specified data-testid attribute found."
+}
+
+for symbol in ["AAPL", "AMZN", "IBM", "GOOG", "MSFT", "ORCL"] {
+  print("Current " + symbol + " stock price is " + stock_price(symbol))
+}
