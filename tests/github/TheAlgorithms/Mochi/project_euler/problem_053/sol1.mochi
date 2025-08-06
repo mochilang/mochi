@@ -1,0 +1,48 @@
+/*
+Project Euler Problem 53: Combinatoric selections
+
+Count how many binomial coefficients nCr for 1 \u2264 n \u2264 100 exceed one million.
+Rather than computing factorials, which would grow very large, we compute each
+combination iteratively using the multiplicative formula:
+
+  C(n, r) = product_{k=1..r} (n - r + k) / k
+
+At each step we stop early once the intermediate result is greater than the
+limit, avoiding big integer arithmetic. The overall complexity is O(n^2) since
+for each n we examine all r from 1 to n.
+*/
+
+fun combination_exceeds(n: int, r: int, limit: int): bool {
+  var r2 = r
+  if r2 > n - r2 {
+    r2 = n - r2
+  }
+  var result = 1
+  var k = 1
+  while k <= r2 {
+    result = result * (n - r2 + k) / k
+    if result > limit {
+      return true
+    }
+    k = k + 1
+  }
+  return result > limit
+}
+
+fun count_exceeding(limit: int): int {
+  var total = 0
+  var n = 1
+  while n <= 100 {
+    var r = 1
+    while r <= n {
+      if combination_exceeds(n, r, limit) {
+        total = total + 1
+      }
+      r = r + 1
+    }
+    n = n + 1
+  }
+  return total
+}
+
+print(str(count_exceeding(1000000)))
