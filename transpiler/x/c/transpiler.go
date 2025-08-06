@@ -721,9 +721,11 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 	}
 	writeIndent(w, indent)
 	if strings.HasSuffix(typ, "[][]") {
-		base := strings.TrimSuffix(typ, "[][]")
+		dims := strings.Count(typ, "[]")
+		base := strings.TrimSuffix(typ, strings.Repeat("[]", dims))
+		stars := strings.Repeat("*", dims)
 		if call, ok := d.Value.(*CallExpr); ok {
-			fmt.Fprintf(w, "%s **%s = ", base, d.Name)
+			fmt.Fprintf(w, "%s %s%s = ", base, stars, d.Name)
 			d.Value.emitExpr(w)
 			io.WriteString(w, ";\n")
 			writeIndent(w, indent)
@@ -735,7 +737,7 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 			return
 		}
 		if vr, ok := d.Value.(*VarRef); ok {
-			fmt.Fprintf(w, "%s **%s = %s;\n", base, d.Name, vr.Name)
+			fmt.Fprintf(w, "%s %s%s = %s;\n", base, stars, d.Name, vr.Name)
 			writeIndent(w, indent)
 			fmt.Fprintf(w, "size_t %s_len = %s_len;\n", d.Name, vr.Name)
 			writeIndent(w, indent)
@@ -745,7 +747,7 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 			return
 		}
 		if fe, ok := d.Value.(*FieldExpr); ok {
-			fmt.Fprintf(w, "%s **%s = ", base, d.Name)
+			fmt.Fprintf(w, "%s %s%s = ", base, stars, d.Name)
 			d.Value.emitExpr(w)
 			io.WriteString(w, ";\n")
 			writeIndent(w, indent)
@@ -778,7 +780,7 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 							writeIndent(w, indent)
 						}
 					}
-					fmt.Fprintf(w, "%s *%s_init[%d] = {", base, d.Name, len(lst.Elems))
+					fmt.Fprintf(w, "%s %s%s_init[%d] = {", base, strings.Repeat("*", dims-1), d.Name, len(lst.Elems))
 					for i := range lst.Elems {
 						if i > 0 {
 							io.WriteString(w, ", ")
@@ -787,7 +789,7 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 					}
 					io.WriteString(w, "};\n")
 					writeIndent(w, indent)
-					fmt.Fprintf(w, "%s **%s = %s_init;\n", base, d.Name, d.Name)
+					fmt.Fprintf(w, "%s %s%s = %s_init;\n", base, stars, d.Name, d.Name)
 					writeIndent(w, indent)
 					fmt.Fprintf(w, "size_t %s_len = %d;\n", d.Name, len(lst.Elems))
 					writeIndent(w, indent)
@@ -810,7 +812,7 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 					return
 				}
 			}
-			fmt.Fprintf(w, "%s **%s = NULL;\n", base, d.Name)
+			fmt.Fprintf(w, "%s %s%s = NULL;\n", base, stars, d.Name)
 			writeIndent(w, indent)
 			fmt.Fprintf(w, "size_t %s_len = 0;\n", d.Name)
 			writeIndent(w, indent)
@@ -820,7 +822,7 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 			return
 		}
 		if _, ok := d.Value.(*IndexExpr); ok {
-			fmt.Fprintf(w, "%s **%s = ", base, d.Name)
+			fmt.Fprintf(w, "%s %s%s = ", base, stars, d.Name)
 			d.Value.emitExpr(w)
 			io.WriteString(w, ";\n")
 			writeIndent(w, indent)
@@ -829,7 +831,7 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, ";\n")
 			return
 		}
-		fmt.Fprintf(w, "%s **%s = NULL;\n", base, d.Name)
+		fmt.Fprintf(w, "%s %s%s = NULL;\n", base, stars, d.Name)
 		writeIndent(w, indent)
 		fmt.Fprintf(w, "size_t %s_len = 0;\n", d.Name)
 		writeIndent(w, indent)
@@ -1503,10 +1505,9 @@ func (l *ListLit) emitExpr(w io.Writer) {
 	} else if exprIsFloat(l.Elems[0]) {
 		elemType = "double"
 	}
-	outType := elemType
-	if strings.HasSuffix(elemType, "[]") {
-		outType = strings.TrimSuffix(elemType, "[]") + "*"
-	}
+	dims := strings.Count(elemType, "[]")
+	base := strings.TrimSuffix(elemType, strings.Repeat("[]", dims))
+	outType := base + strings.Repeat("*", dims)
 	fmt.Fprintf(w, "(%s[]){ ", outType)
 	for i, e := range l.Elems {
 		if i > 0 {
