@@ -1,0 +1,118 @@
+/*
+Text Justification
+
+Given a string and a maximum line width, format the text so each line
+contains exactly max_width characters and is fully justified. Words are
+pushed to the left and right by distributing spaces evenly between them.
+Extra spaces are placed on the left gaps.
+
+Algorithm:
+1. Split the input text into words.
+2. Repeatedly add words to a line until adding another would exceed max_width.
+3. For each completed line, distribute spaces between words so that the line
+   reaches max_width characters. If the line contains only one word, pad
+   with spaces on the right.
+4. The final line is left-justified: words separated by a single space, and
+   the remainder of the width filled with trailing spaces.
+5. Return the list of justified lines.
+
+The implementation avoids FFI, uses only Mochi primitives, and avoids the
+`any` type.
+*/
+
+fun repeat_str(s: string, count: int): string {
+  var res: string = ""
+  var i: int = 0
+  while i < count {
+    res = res + s
+    i = i + 1
+  }
+  return res
+}
+
+fun split_words(s: string): list<string> {
+  var res: list<string> = []
+  var current: string = ""
+  var i: int = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      if current != "" {
+        res = append(res, current)
+        current = ""
+      }
+    } else {
+      current = current + ch
+    }
+    i = i + 1
+  }
+  if current != "" {
+    res = append(res, current)
+  }
+  return res
+}
+
+fun justify_line(line: list<string>, width: int, max_width: int): string {
+  let overall_spaces_count: int = max_width - width
+  let words_count: int = len(line)
+  if words_count == 1 {
+    return line[0] + repeat_str(" ", overall_spaces_count)
+  }
+  let spaces_to_insert_between_words: int = words_count - 1
+  var num_spaces_between_words_list: list<int> = []
+  let base: int = overall_spaces_count / spaces_to_insert_between_words
+  let extra: int = overall_spaces_count % spaces_to_insert_between_words
+  var i: int = 0
+  while i < spaces_to_insert_between_words {
+    var spaces: int = base
+    if i < extra {
+      spaces = spaces + 1
+    }
+    num_spaces_between_words_list = append(num_spaces_between_words_list, spaces)
+    i = i + 1
+  }
+  var aligned: string = ""
+  i = 0
+  while i < spaces_to_insert_between_words {
+    aligned = aligned + line[i] + repeat_str(" ", num_spaces_between_words_list[i])
+    i = i + 1
+  }
+  aligned = aligned + line[spaces_to_insert_between_words]
+  return aligned
+}
+
+fun text_justification(word: string, max_width: int): list<string> {
+  let words = split_words(word)
+  var answer: list<string> = []
+  var line: list<string> = []
+  var width: int = 0
+  var idx: int = 0
+  while idx < len(words) {
+    let w = words[idx]
+    if width + len(w) + len(line) <= max_width {
+      line = append(line, w)
+      width = width + len(w)
+    } else {
+      answer = append(answer, justify_line(line, width, max_width))
+      line = [w]
+      width = len(w)
+    }
+    idx = idx + 1
+  }
+  let remaining_spaces: int = max_width - width - len(line)
+  var last_line: string = ""
+  var j: int = 0
+  while j < len(line) {
+    if j > 0 {
+      last_line = last_line + " "
+    }
+    last_line = last_line + line[j]
+    j = j + 1
+  }
+  last_line = last_line + repeat_str(" ", remaining_spaces + 1)
+  answer = append(answer, last_line)
+  return answer
+}
+
+print(str(text_justification("This is an example of text justification.", 16)))
+print(str(text_justification("Two roads diverged in a yellow wood", 16)))
