@@ -473,8 +473,15 @@ func (f *ForInStmt) emit(w io.Writer) {
 		fmt.Fprintf(w, ".Substring((int)(%s), 1);\n", idx)
 	} else {
 		elem := "var"
-		if t := typeOfExpr(f.Iterable); strings.HasSuffix(t, "[]") {
+		t := typeOfExpr(f.Iterable)
+		if strings.HasSuffix(t, "[]") {
 			elem = strings.TrimSuffix(t, "[]")
+		} else if isMapExpr(f.Iterable) && strings.HasPrefix(t, "Dictionary<") {
+			inside := strings.TrimPrefix(strings.TrimSuffix(t, ">"), "Dictionary<")
+			parts := strings.Split(inside, ",")
+			if len(parts) == 2 {
+				elem = strings.TrimSpace(parts[0])
+			}
 		}
 		fmt.Fprintf(w, "foreach (%s %s in ", elem, v)
 		if isMapExpr(f.Iterable) {
@@ -1913,6 +1920,15 @@ func typeOfExpr(e Expr) string {
 			return t
 		}
 	case *CallExpr:
+		if ex.Func == "keys" && len(ex.Args) == 1 {
+			t := typeOfExpr(ex.Args[0])
+			if strings.HasPrefix(t, "Dictionary<") {
+				parts := strings.TrimPrefix(strings.TrimSuffix(t, ">"), "Dictionary<")
+				key := strings.Split(parts, ",")[0]
+				return fmt.Sprintf("%s[]", strings.TrimSpace(key))
+			}
+			return "object[]"
+		}
 		if ret, ok := funRets[ex.Func]; ok {
 			return ret
 		}
@@ -2044,10 +2060,10 @@ func listType(l *ListLit) string {
 			}
 		}
 		if t == "object[]" || t == "object" || t == "" {
-			if elemType != "" {
-				elemType = ""
-				break
+			if elemType == "" {
+				continue
 			}
+			// ignore empty/unknown elements once type determined
 			continue
 		}
 		if elemType == "" {
@@ -2320,9 +2336,15 @@ func (a *AppendExpr) emit(w io.Writer) {
 	fmt.Fprintf(w, "(Enumerable.ToArray(Enumerable.Append<%s>(", elem)
 	a.List.emit(w)
 	fmt.Fprint(w, ", ")
-	if typeOfExpr(a.Item) == "object" && elem != "object" {
-		fmt.Fprintf(w, "(%s)", elem)
-		a.Item.emit(w)
+	tItem := typeOfExpr(a.Item)
+	if (tItem == "object" || tItem == "object[]") && elem != "object" {
+		if lit, ok := a.Item.(*ListLit); ok && len(lit.Elems) == 0 {
+			lit.ElemType = elem
+			a.Item.emit(w)
+		} else {
+			fmt.Fprintf(w, "(%s)", elem)
+			a.Item.emit(w)
+		}
 	} else {
 		a.Item.emit(w)
 	}
@@ -2552,7 +2574,7 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 	}
 	operands = append(operands, first)
 	for _, p := range e.Binary.Right {
-		r, err := compileUnary(p.Right)
+		r, err := compilePostfix(p.Right)
 		if err != nil {
 			return nil, err
 		}
@@ -2910,9 +2932,23 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 		}
 		if mp, ok := val.(*MapLit); ok {
-			if len(mp.Items) == 0 && s.Let.Type != nil && s.Let.Type.Generic != nil && s.Let.Type.Generic.Name == "map" && len(s.Let.Type.Generic.Args) == 2 {
+			if s.Let.Type != nil && s.Let.Type.Generic != nil && s.Let.Type.Generic.Name == "map" && len(s.Let.Type.Generic.Args) == 2 {
 				mp.KeyType = csType(s.Let.Type.Generic.Args[0])
 				mp.ValType = csType(s.Let.Type.Generic.Args[1])
+				for _, it := range mp.Items {
+					if l, ok := it.Value.(*ListLit); ok && len(l.Elems) == 0 {
+						l.ElemType = mp.ValType
+					} else if m2, ok := it.Value.(*MapLit); ok && len(m2.Items) == 0 {
+						if strings.HasPrefix(mp.ValType, "Dictionary<") {
+							inside := strings.TrimPrefix(strings.TrimSuffix(mp.ValType, ">"), "Dictionary<")
+							parts := strings.Split(inside, ",")
+							if len(parts) == 2 {
+								m2.KeyType = strings.TrimSpace(parts[0])
+								m2.ValType = strings.TrimSpace(parts[1])
+							}
+						}
+					}
+				}
 			} else if len(mp.Items) > 2 && false {
 				if res, changed := inferStructMap(s.Let.Name, prog, mp); changed {
 					val = res
@@ -3008,6 +3044,20 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			if s.Var.Type != nil && s.Var.Type.Generic != nil && s.Var.Type.Generic.Name == "map" && len(s.Var.Type.Generic.Args) == 2 {
 				mp.KeyType = csType(s.Var.Type.Generic.Args[0])
 				mp.ValType = csType(s.Var.Type.Generic.Args[1])
+				for _, it := range mp.Items {
+					if l, ok := it.Value.(*ListLit); ok && len(l.Elems) == 0 {
+						l.ElemType = mp.ValType
+					} else if m2, ok := it.Value.(*MapLit); ok && len(m2.Items) == 0 {
+						if strings.HasPrefix(mp.ValType, "Dictionary<") {
+							inside := strings.TrimPrefix(strings.TrimSuffix(mp.ValType, ">"), "Dictionary<")
+							parts := strings.Split(inside, ",")
+							if len(parts) == 2 {
+								m2.KeyType = strings.TrimSpace(parts[0])
+								m2.ValType = strings.TrimSpace(parts[1])
+							}
+						}
+					}
+				}
 			}
 			_ = mp // keep as dictionary for mutable vars
 		}
@@ -3081,7 +3131,17 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		targetExpr, err := compilePostfix(s.Assign.Target)
+		// Construct a PostfixExpr representing the assignment target
+		tgt := &parser.PostfixExpr{
+			Target: &parser.Primary{Selector: &parser.SelectorExpr{Root: s.Assign.Name}},
+		}
+		for _, idx := range s.Assign.Index {
+			tgt.Ops = append(tgt.Ops, &parser.PostfixOp{Index: idx})
+		}
+		for _, fld := range s.Assign.Field {
+			tgt.Ops = append(tgt.Ops, &parser.PostfixOp{Field: fld})
+		}
+		targetExpr, err := compilePostfix(tgt)
 		if err != nil {
 			return nil, err
 		}
@@ -3104,6 +3164,15 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			mutatedVars[name] = true
 			return &AssignStmt{Name: name, Value: val}, nil
 		case *IndexExpr:
+			if l, ok := val.(*ListLit); ok && len(l.Elems) == 0 {
+				if tt := typeOfExpr(t.Target); strings.HasPrefix(tt, "Dictionary<") {
+					inside := strings.TrimPrefix(strings.TrimSuffix(tt, ">"), "Dictionary<")
+					parts := strings.Split(inside, ",")
+					if len(parts) == 2 {
+						l.ElemType = strings.TrimSpace(parts[1])
+					}
+				}
+			}
 			return &AssignIndexStmt{Target: t.Target, Index: t.Index, Value: val}, nil
 		case *FieldExpr:
 			return &AssignFieldStmt{Target: t.Target, Name: t.Name, Value: val}, nil
@@ -3442,6 +3511,12 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		stmt := &ForInStmt{Var: alias, Iterable: iterable, Body: body}
 		if t := typeOfExpr(iterable); strings.HasSuffix(t, "[]") {
 			varTypes[alias] = strings.TrimSuffix(t, "[]")
+		} else if isMapExpr(iterable) && strings.HasPrefix(t, "Dictionary<") {
+			inside := strings.TrimPrefix(strings.TrimSuffix(t, ">"), "Dictionary<")
+			parts := strings.Split(inside, ",")
+			if len(parts) == 2 {
+				varTypes[alias] = strings.TrimSpace(parts[0])
+			}
 		}
 		if savedVar == "" {
 			delete(varTypes, s.For.Name)
@@ -3836,6 +3911,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 1 {
 				return &CallExpr{Func: "Math.Abs", Args: []Expr{args[0]}}, nil
 			}
+		case "floor":
+			if len(args) == 1 {
+				return &CallExpr{Func: "Math.Floor", Args: []Expr{args[0]}}, nil
+			}
 		case "len":
 			if len(args) == 1 {
 				usesLen = true
@@ -3848,6 +3927,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 		case "str":
 			if len(args) == 1 {
+				usesFmt = true
 				return &StrExpr{Arg: args[0]}, nil
 			}
 		case "int":
