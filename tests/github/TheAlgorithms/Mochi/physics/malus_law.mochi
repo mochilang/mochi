@@ -1,0 +1,77 @@
+/*
+Malus's Law for Polarized Light
+--------------------------------
+This module computes the transmitted light intensity after a polarizer
+according to Malus's law:
+
+  I = I0 * cos^2(theta)
+
+where I0 is the initial intensity and theta is the angle between the light's
+polarization direction and the axis of the polarizer. The function validates
+input ranges and uses a polynomial approximation of cosine so it can run on
+the pure Mochi runtime without foreign function interfaces.
+*/
+
+let PI: float = 3.141592653589793
+let TWO_PI: float = 6.283185307179586
+
+fun _mod(x: float, m: float): float {
+  return x - (int(x / m) as float) * m
+}
+
+fun cos(x: float): float {
+  let y = _mod(x + PI, TWO_PI) - PI
+  let y2 = y * y
+  let y4 = y2 * y2
+  let y6 = y4 * y2
+  return 1.0 - y2/2.0 + y4/24.0 - y6/720.0
+}
+
+fun radians(deg: float): float {
+  return deg * PI / 180.0
+}
+
+fun abs_val(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun malus_law(initial_intensity: float, angle: float): float {
+  if initial_intensity < 0.0 {
+    panic("The value of intensity cannot be negative")
+  }
+  if angle < 0.0 || angle > 360.0 {
+    panic("In Malus Law, the angle is in the range 0-360 degrees")
+  }
+  let theta = radians(angle)
+  let c = cos(theta)
+  return initial_intensity * (c * c)
+}
+
+fun test_malus_law() {
+  if abs_val(malus_law(10.0, 45.0) - 5.0) > 0.01 {
+    panic("malus_law test1 failed")
+  }
+  if abs_val(malus_law(100.0, 60.0) - 25.0) > 0.01 {
+    panic("malus_law test2 failed")
+  }
+  if abs_val(malus_law(50.0, 150.0) - 37.5) > 0.01 {
+    panic("malus_law test3 failed")
+  }
+  if abs_val(malus_law(75.0, 270.0) - 0.0) > 0.01 {
+    panic("malus_law test4 failed")
+  }
+  if abs_val(malus_law(100.0, 180.0) - 100.0) > 0.01 {
+    panic("malus_law test5 failed")
+  }
+  if abs_val(malus_law(100.0, 360.0) - 100.0) > 0.01 {
+    panic("malus_law test6 failed")
+  }
+}
+
+fun main() {
+  test_malus_law()
+  print(str(malus_law(100.0, 60.0)))
+}
+
+main()
