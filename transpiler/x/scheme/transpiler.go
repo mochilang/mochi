@@ -321,7 +321,7 @@ func header() []byte {
 	}
 	prelude += `(define (to-str x)
   (cond ((pair? x)
-         (string-append "[" (string-join (map to-str x) ", ") "]"))
+         (string-append "[" (string-join (map to-str x) " ") "]"))
         ((hash-table? x)
          (let* ((ks (hash-table-keys x))
                 (pairs (map (lambda (k)
