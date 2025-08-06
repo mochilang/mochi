@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-06 20:58 +0700
+Last updated: 2025-08-06 21:31 +0700
 
-## Program Checklist (33/1077)
+## Program Checklist (48/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.114ms | 512.0 KB |
@@ -37,24 +37,24 @@ Last updated: 2025-08-06 20:58 +0700
 | 28 | bit_manipulation/bitwise_addition_recursive | ✓ | 707µs | 128.0 KB |
 | 29 | bit_manipulation/count_1s_brian_kernighan_method | ✓ | 597µs | 256.0 KB |
 | 30 | bit_manipulation/count_number_of_one_bits | ✓ | 910µs | 256.0 KB |
-| 31 | bit_manipulation/excess_3_code |   |  |  |
-| 32 | bit_manipulation/find_previous_power_of_two | ✓ | 1.449ms | 384.0 KB |
-| 33 | bit_manipulation/find_unique_number | ✓ | 703µs | 256.0 KB |
-| 34 | bit_manipulation/gray_code_sequence | ✓ | 1.663ms | 384.0 KB |
-| 35 | bit_manipulation/highest_set_bit |   |  |  |
-| 36 | bit_manipulation/index_of_rightmost_set_bit |   |  |  |
-| 37 | bit_manipulation/is_even |   |  |  |
-| 38 | bit_manipulation/is_power_of_two |   |  |  |
-| 39 | bit_manipulation/largest_pow_of_two_le_num |   |  |  |
-| 40 | bit_manipulation/missing_number |   |  |  |
-| 41 | bit_manipulation/numbers_different_signs |   |  |  |
-| 42 | bit_manipulation/power_of_4 |   |  |  |
-| 43 | bit_manipulation/reverse_bits |   |  |  |
-| 44 | bit_manipulation/single_bit_manipulation_operations |   |  |  |
-| 45 | bit_manipulation/swap_all_odd_and_even_bits |   |  |  |
-| 46 | blockchain/diophantine_equation |   |  |  |
-| 47 | boolean_algebra/and_gate |   |  |  |
-| 48 | boolean_algebra/imply_gate |   |  |  |
+| 31 | bit_manipulation/excess_3_code | ✓ | 801µs | 256.0 KB |
+| 32 | bit_manipulation/find_previous_power_of_two | ✓ | 1.332ms | 256.0 KB |
+| 33 | bit_manipulation/find_unique_number | ✓ | 704µs | 256.0 KB |
+| 34 | bit_manipulation/gray_code_sequence | ✓ | 1.24ms | 384.0 KB |
+| 35 | bit_manipulation/highest_set_bit | ✓ | 499µs | 256.0 KB |
+| 36 | bit_manipulation/index_of_rightmost_set_bit | ✓ | 670µs | 256.0 KB |
+| 37 | bit_manipulation/is_even | ✓ | 737µs | 256.0 KB |
+| 38 | bit_manipulation/is_power_of_two | ✓ | 263µs |  |
+| 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 596µs | 384.0 KB |
+| 40 | bit_manipulation/missing_number | ✓ | 517µs |  |
+| 41 | bit_manipulation/numbers_different_signs | ✓ | 616µs | 384.0 KB |
+| 42 | bit_manipulation/power_of_4 | ✓ | 559µs | 256.0 KB |
+| 43 | bit_manipulation/reverse_bits | ✓ | 8.205ms | 1.8 MB |
+| 44 | bit_manipulation/single_bit_manipulation_operations | ✓ | 506µs | 256.0 KB |
+| 45 | bit_manipulation/swap_all_odd_and_even_bits | ✓ | 8.112ms | 1.6 MB |
+| 46 | blockchain/diophantine_equation | ✓ | 1.623ms | 384.0 KB |
+| 47 | boolean_algebra/and_gate | ✓ | 827µs | 256.0 KB |
+| 48 | boolean_algebra/imply_gate | ✓ | 558µs | 384.0 KB |
 | 49 | boolean_algebra/karnaugh_map_simplification |   |  |  |
 | 50 | boolean_algebra/multiplexer |   |  |  |
 | 51 | boolean_algebra/nand_gate |   |  |  |

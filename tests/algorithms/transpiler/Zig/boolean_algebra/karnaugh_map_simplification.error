@@ -1,0 +1,2 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/boolean_algebra/karnaugh_map_simplification.zig:69:387: error: expected type 'i64', found '[][]i64'

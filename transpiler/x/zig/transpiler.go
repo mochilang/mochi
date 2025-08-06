@@ -851,11 +851,20 @@ func zigTypeFromExpr(e Expr) string {
 		return "f64"
 	case *IntLit:
 		return "i64"
-	case *VarRef:
-		if t, ok := varTypes[e.(*VarRef).Name]; ok && t != "" {
-			return t
-		}
-		return "i64"
+       case *VarRef:
+               name := e.(*VarRef).Name
+               if t, ok := varTypes[name]; ok && t != "" {
+                       return t
+               }
+               if vd, ok := varDecls[name]; ok {
+                       if vd.Type != "" {
+                               return vd.Type
+                       }
+                       if vd.Value != nil {
+                               return zigTypeFromExpr(vd.Value)
+                       }
+               }
+               return "i64"
 	case *CopySliceExpr:
 		ce := e.(*CopySliceExpr)
 		if ce.Elem != "" {
@@ -4263,24 +4272,28 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		}
 		varDecls[s.Let.Name] = vd
 		varDecls[alias] = vd
-		if lst, ok := expr.(*ListLit); ok {
-			if funDepth == 0 && inferListStruct(s.Let.Name, lst) != "" {
-				vd.Type = fmt.Sprintf("[%d]%s", len(lst.Elems), lst.ElemType)
-				varTypes[s.Let.Name] = "[]" + lst.ElemType
-			} else if funDepth == 0 && len(lst.Elems) > 0 && vd.Type == "" {
-				elem := lst.ElemType
-				if elem == "" {
-					elem = "i64"
-				}
-				vd.Type = fmt.Sprintf("[%d]%s", len(lst.Elems), elem)
-				lst.ElemType = ""
-				varTypes[s.Let.Name] = vd.Type
-			} else if lst.ElemType == "" && vd.Type != "" && strings.HasPrefix(vd.Type, "[]") {
-				lst.ElemType = vd.Type[2:]
-			} else if vd.Type == "[]Value" {
-				lst.ElemType = "Value"
-			}
-		}
+               if lst, ok := expr.(*ListLit); ok {
+                       if funDepth == 0 && inferListStruct(s.Let.Name, lst) != "" {
+                               vd.Type = fmt.Sprintf("[%d]%s", len(lst.Elems), lst.ElemType)
+                               varTypes[s.Let.Name] = "[]" + lst.ElemType
+                       } else if funDepth == 0 && len(lst.Elems) > 0 && vd.Type == "" {
+                               elem := lst.ElemType
+                               if elem == "" {
+                                       elem = "i64"
+                               }
+                               if strings.HasPrefix(elem, "[]") {
+                                       vd.Type = "[]" + elem
+                               } else {
+                                       vd.Type = fmt.Sprintf("[%d]%s", len(lst.Elems), elem)
+                                       lst.ElemType = ""
+                               }
+                               varTypes[s.Let.Name] = vd.Type
+                       } else if lst.ElemType == "" && vd.Type != "" && strings.HasPrefix(vd.Type, "[]") {
+                               lst.ElemType = vd.Type[2:]
+                       } else if vd.Type == "[]Value" {
+                               lst.ElemType = "Value"
+                       }
+               }
 		if ml, ok := expr.(*MapLit); ok {
 			if ml.StructName != "" {
 				vd.Type = ml.StructName
@@ -4372,19 +4385,23 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 			if funDepth == 0 && inferListStruct(s.Var.Name, lst) != "" {
 				vd.Type = fmt.Sprintf("[%d]%s", len(lst.Elems), lst.ElemType)
 				varTypes[s.Var.Name] = "[]" + lst.ElemType
-			} else if funDepth == 0 && len(lst.Elems) > 0 && vd.Type == "" {
-				elem := lst.ElemType
-				if elem == "" {
-					elem = "i64"
-				}
-				vd.Type = fmt.Sprintf("[%d]%s", len(lst.Elems), elem)
-				lst.ElemType = ""
-				varTypes[s.Var.Name] = vd.Type
-			} else if lst.ElemType == "" && vd.Type != "" && strings.HasPrefix(vd.Type, "[]") {
-				lst.ElemType = vd.Type[2:]
-			} else if vd.Type == "[]Value" {
-				lst.ElemType = "Value"
-			}
+               } else if funDepth == 0 && len(lst.Elems) > 0 && vd.Type == "" {
+                       elem := lst.ElemType
+                       if elem == "" {
+                               elem = "i64"
+                       }
+                       if strings.HasPrefix(elem, "[]") {
+                               vd.Type = "[]" + elem
+                       } else {
+                               vd.Type = fmt.Sprintf("[%d]%s", len(lst.Elems), elem)
+                               lst.ElemType = ""
+                       }
+                       varTypes[s.Var.Name] = vd.Type
+               } else if lst.ElemType == "" && vd.Type != "" && strings.HasPrefix(vd.Type, "[]") {
+                       lst.ElemType = vd.Type[2:]
+               } else if vd.Type == "[]Value" {
+                       lst.ElemType = "Value"
+               }
 		}
 		if ml, ok := expr.(*MapLit); ok {
 			if ml.StructName != "" {
