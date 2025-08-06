@@ -2,21 +2,21 @@
 
 This checklist is auto-generated.
 Generated Racket code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Racket`.
-Last updated: 2025-08-06 09:05 UTC
+Last updated: 2025-08-06 09:36 UTC
 
-## Algorithms Golden Test Checklist (1/1077)
+## Algorithms Golden Test Checklist (10/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 9m31.223891s | 18.0 KB |
-| 2 | backtracking/all_permutations |   |  |  |
-| 3 | backtracking/all_subsequences |   |  |  |
-| 4 | backtracking/coloring |   |  |  |
-| 5 | backtracking/combination_sum |   |  |  |
-| 6 | backtracking/crossword_puzzle_solver |   |  |  |
-| 7 | backtracking/hamiltonian_cycle |   |  |  |
-| 8 | backtracking/knight_tour |   |  |  |
-| 9 | backtracking/match_word_pattern |   |  |  |
-| 10 | backtracking/minimax |   |  |  |
+| 2 | backtracking/all_permutations | ✓ | 9m31.223891s | 373.3 KB |
+| 3 | backtracking/all_subsequences | ✓ | 9m31.223891s | 21.4 KB |
+| 4 | backtracking/coloring | ✓ | 9m31.223891s | 169.7 KB |
+| 5 | backtracking/combination_sum | ✓ | 9m31.223891s | 41.5 KB |
+| 6 | backtracking/crossword_puzzle_solver | ✓ | 9m31.223891s | 516.2 KB |
+| 7 | backtracking/hamiltonian_cycle | ✓ | 9m31.223891s | 384 B |
+| 8 | backtracking/knight_tour | ✓ | 9m31.223891s | 5.0 KB |
+| 9 | backtracking/match_word_pattern | ✓ | 9m31.223891s | 598.7 KB |
+| 10 | backtracking/minimax | ✓ | 9m31.223891s | 10.0 KB |
 | 11 | backtracking/n_queens |   |  |  |
 | 12 | backtracking/n_queens_math |   |  |  |
 | 13 | backtracking/power_sum |   |  |  |
