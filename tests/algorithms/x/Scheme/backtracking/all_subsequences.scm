@@ -98,12 +98,12 @@
 (
   let (
     (
-      start5 (
+      start3 (
         current-jiffy
       )
     )
      (
-      jps8 (
+      jps6 (
         jiffies-per-second
       )
     )
@@ -111,7 +111,7 @@
    (
     begin (
       define (
-        create_all_state increment total level current result
+        create_state_space_tree sequence current index
       )
        (
         call/cc (
@@ -121,13 +121,28 @@
            (
             begin (
               if (
-                equal? level 0
+                equal? index (
+                  _len sequence
+                )
               )
                (
                 begin (
+                  _display (
+                    if (
+                      string? current
+                    )
+                     current (
+                      to-str current
+                    )
+                  )
+                )
+                 (
+                  newline
+                )
+                 (
                   ret1 (
-                    append result (
-                      _list current
+                    quote (
+                      
                     )
                   )
                 )
@@ -139,84 +154,27 @@
               )
             )
              (
+              create_state_space_tree sequence current (
+                + index 1
+              )
+            )
+             (
               let (
                 (
-                  i increment
-                )
-              )
-               (
-                begin (
-                  call/cc (
-                    lambda (
-                      break3
-                    )
-                     (
-                      letrec (
-                        (
-                          loop2 (
-                            lambda (
-                              
-                            )
-                             (
-                              if (
-                                <= i (
-                                  + (
-                                    - total level
-                                  )
-                                   1
-                                )
-                              )
-                               (
-                                begin (
-                                  let (
-                                    (
-                                      next_current (
-                                        append current (
-                                          _list i
-                                        )
-                                      )
-                                    )
-                                  )
-                                   (
-                                    begin (
-                                      set! result (
-                                        create_all_state (
-                                          + i 1
-                                        )
-                                         total (
-                                          - level 1
-                                        )
-                                         next_current result
-                                      )
-                                    )
-                                     (
-                                      set! i (
-                                        + i 1
-                                      )
-                                    )
-                                  )
-                                )
-                                 (
-                                  loop2
-                                )
-                              )
-                               (
-                                quote (
-                                  
-                                )
-                              )
-                            )
-                          )
-                        )
-                      )
-                       (
-                        loop2
+                  with_elem (
+                    append current (
+                      _list (
+                        list-ref sequence index
                       )
                     )
                   )
                 )
-                 (
-                  ret1 result
+              )
+               (
+                begin (
+                  create_state_space_tree sequence with_elem (
+                    + index 1
+                  )
                 )
               )
             )
@@ -226,115 +184,54 @@
     )
      (
       define (
-        generate_all_combinations n k
+        generate_all_subsequences sequence
       )
        (
         call/cc (
           lambda (
-            ret4
+            ret2
           )
            (
-            begin (
-              if (
-                or (
-                  < k 0
-                )
-                 (
-                  < n 0
-                )
-              )
-               (
-                begin (
-                  ret4 (
-                    _list
-                  )
-                )
-              )
-               (
-                quote (
-                  
-                )
-              )
+            create_state_space_tree sequence (
+              _list
             )
-             (
-              let (
-                (
-                  result (
-                    _list
-                  )
-                )
-              )
-               (
-                begin (
-                  ret4 (
-                    create_all_state 1 n k (
-                      _list
-                    )
-                     result
-                  )
-                )
-              )
-            )
+             0
           )
         )
       )
-    )
-     (
-      _display (
-        if (
-          string? (
-            to-str-space (
-              generate_all_combinations 4 2
-            )
-          )
-        )
-         (
-          to-str-space (
-            generate_all_combinations 4 2
-          )
-        )
-         (
-          to-str (
-            to-str-space (
-              generate_all_combinations 4 2
-            )
-          )
-        )
-      )
-    )
-     (
-      newline
-    )
-     (
-      _display (
-        if (
-          string? (
-            to-str-space (
-              generate_all_combinations 3 1
-            )
-          )
-        )
-         (
-          to-str-space (
-            generate_all_combinations 3 1
-          )
-        )
-         (
-          to-str (
-            to-str-space (
-              generate_all_combinations 3 1
-            )
-          )
-        )
-      )
-    )
-     (
-      newline
     )
      (
       let (
         (
-          end6 (
+          seq (
+            _list 1 2 3
+          )
+        )
+      )
+       (
+        begin (
+          generate_all_subsequences seq
+        )
+         (
+          let (
+            (
+              seq2 (
+                _list "A" "B" "C"
+              )
+            )
+          )
+           (
+            begin (
+              generate_all_subsequences seq2
+            )
+          )
+        )
+      )
+    )
+     (
+      let (
+        (
+          end4 (
             current-jiffy
           )
         )
@@ -342,14 +239,14 @@
        (
         let (
           (
-            dur7 (
+            dur5 (
               quotient (
                 * (
-                  - end6 start5
+                  - end4 start3
                 )
                  1000000
               )
-               jps8
+               jps6
             )
           )
         )
@@ -357,7 +254,7 @@
           begin (
             _display (
               string-append "{\n  \"duration_us\": " (
-                number->string dur7
+                number->string dur5
               )
                ",\n  \"memory_bytes\": " (
                 number->string (

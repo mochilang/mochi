@@ -321,17 +321,22 @@ func header() []byte {
 	}
 	prelude += `(define (to-str x)
   (cond ((pair? x)
-         (string-append "[" (string-join (map to-str x) " ") "]"))
+         (string-append "[" (string-join (map to-str x) ", ") "]"))
         ((hash-table? x)
          (let* ((ks (hash-table-keys x))
                 (pairs (map (lambda (k)
-                              (string-append (to-str k) ":" (to-str (hash-table-ref x k))))
+                              (string-append (to-str k) ": " (to-str (hash-table-ref x k))))
                             ks)))
            (string-append "{" (string-join pairs ", ") "}")))
-        ((null? x) "")
+        ((null? x) "[]")
+        ((string? x) (let ((out (open-output-string))) (json-write x out) (get-output-string out)))
+        ((boolean? x) (if x "true" "false"))
+        (else (number->string x))))
+(define (to-str-space x)
+  (cond ((pair? x)
+         (string-append "[" (string-join (map to-str-space x) " ") "]"))
         ((string? x) x)
-        ((boolean? x) (if x "1" "0"))
-        (else (number->string x))))`
+        (else (to-str x))))`
 	prelude += "\n(define (upper s) (string-upcase s))"
 	prelude += "\n(define (lower s) (string-downcase s))"
 	prelude += "\n(define (fmod a b) (- a (* (floor (/ a b)) b)))"
@@ -757,10 +762,12 @@ func convertStmt(st *parser.Statement) (Node, error) {
 			case "print":
 				forms := []Node{Symbol("begin")}
 				for i, a := range args {
-					if _, ok := types.ExprType(call.Args[i], currentEnv).(types.BoolType); ok {
+					t := types.ExprType(call.Args[i], currentEnv)
+					if _, ok := t.(types.BoolType); ok {
 						a = &List{Elems: []Node{Symbol("if"), a, BoolLit(true), BoolLit(false)}}
 					}
-					forms = append(forms, &List{Elems: []Node{Symbol("_display"), &List{Elems: []Node{Symbol("to-str"), a}}}})
+					disp := &List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("string?"), a}}, a, &List{Elems: []Node{Symbol("to-str"), a}}}}
+					forms = append(forms, &List{Elems: []Node{Symbol("_display"), disp}})
 					if i < len(args)-1 {
 						forms = append(forms, &List{Elems: []Node{Symbol("_display"), StringLit(" ")}})
 					}
@@ -967,6 +974,9 @@ func convertStmt(st *parser.Statement) (Node, error) {
 			&List{Elems: []Node{&List{Elems: []Node{Symbol(startSym), &List{Elems: []Node{Symbol("now")}}}}}},
 			&List{Elems: append([]Node{Symbol("begin")}, inner...)},
 		}}, nil
+	case st.Test != nil:
+		// Ignore test blocks during transpilation
+		return nil, nil
 	case st.Type != nil:
 		fields := map[string]struct{}{}
 		for _, m := range st.Type.Members {
@@ -2893,7 +2903,8 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 				if _, ok := types.ExprType(call.Args[i], currentEnv).(types.BoolType); ok {
 					a = &List{Elems: []Node{Symbol("if"), a, BoolLit(true), BoolLit(false)}}
 				}
-				forms = append(forms, &List{Elems: []Node{Symbol("_display"), &List{Elems: []Node{Symbol("to-str"), a}}}})
+				disp := &List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("string?"), a}}, a, &List{Elems: []Node{Symbol("to-str"), a}}}}
+				forms = append(forms, &List{Elems: []Node{Symbol("_display"), disp}})
 				if i < len(args)-1 {
 					forms = append(forms, &List{Elems: []Node{Symbol("_display"), StringLit(" ")}})
 				}
@@ -2968,7 +2979,7 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("str expects 1 arg")
 			}
-			return &List{Elems: []Node{Symbol("to-str"), args[0]}}, nil
+			return &List{Elems: []Node{Symbol("to-str-space"), args[0]}}, nil
 		case "parseIntStr":
 			if len(args) == 1 {
 				args = append(args, IntLit(10))

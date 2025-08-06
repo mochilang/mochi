@@ -2,22 +2,22 @@
 
 This checklist is auto-generated.
 Generated Scheme code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Scheme`.
-Last updated: 2025-08-06 16:11 GMT+7
+Last updated: 2025-08-06 16:38 GMT+7
 
-## Algorithms Golden Test Checklist (1/1077)
+## Algorithms Golden Test Checklist (11/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 0s | 12.7 MB |
-| 2 | backtracking/all_permutations |   |  |  |
-| 3 | backtracking/all_subsequences |   |  |  |
-| 4 | backtracking/coloring |   |  |  |
-| 5 | backtracking/combination_sum |   |  |  |
-| 6 | backtracking/crossword_puzzle_solver |   |  |  |
-| 7 | backtracking/hamiltonian_cycle |   |  |  |
-| 8 | backtracking/knight_tour |   |  |  |
-| 9 | backtracking/match_word_pattern |   |  |  |
-| 10 | backtracking/minimax |   |  |  |
-| 11 | backtracking/n_queens |   |  |  |
+| 1 | backtracking/all_combinations | ✓ | 0s | 12.4 MB |
+| 2 | backtracking/all_permutations | ✓ | 2ms | 12.6 MB |
+| 3 | backtracking/all_subsequences | ✓ | 0s | 13.0 MB |
+| 4 | backtracking/coloring | ✓ | 1ms | 12.6 MB |
+| 5 | backtracking/combination_sum | ✓ | 1ms | 12.4 MB |
+| 6 | backtracking/crossword_puzzle_solver | ✓ | 1ms | 13.4 MB |
+| 7 | backtracking/hamiltonian_cycle | ✓ | 0s | 13.5 MB |
+| 8 | backtracking/knight_tour | ✓ | 0s | 13.4 MB |
+| 9 | backtracking/match_word_pattern | ✓ | 9ms | 13.1 MB |
+| 10 | backtracking/minimax | ✓ | 1ms | 12.6 MB |
+| 11 | backtracking/n_queens | ✓ | 1ms | 13.7 MB |
 | 12 | backtracking/n_queens_math |   |  |  |
 | 13 | backtracking/power_sum |   |  |  |
 | 14 | backtracking/rat_in_maze |   |  |  |
