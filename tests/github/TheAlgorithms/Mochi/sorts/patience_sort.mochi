@@ -1,0 +1,113 @@
+/*
+Sort a list of integers using patience sorting.
+
+The algorithm simulates the patience card game. For each element we find the
+leftmost stack whose top card is greater than or equal to the element using a
+binary search. If such a stack exists the element is placed on top; otherwise a
+new stack is created. After processing all elements, each stack is reversed so
+it becomes an ascending sequence. A k-way merge across the stacks then produces
+ the final sorted list.
+
+This approach runs in O(n log n) time for n elements with O(n) extra space.
+*/
+
+fun bisect_left(stacks: list<list<int>>, value: int): int {
+  var low = 0
+  var high = len(stacks)
+  while low < high {
+    let mid = (low + high) / 2
+    let stack = stacks[mid]
+    let top_idx = len(stack) - 1
+    let top = stack[top_idx]
+    if top < value {
+      low = mid + 1
+    } else {
+      high = mid
+    }
+  }
+  return low
+}
+
+fun reverse_list(src: list<int>): list<int> {
+  var res: list<int> = []
+  var i = len(src) - 1
+  while i >= 0 {
+    res = append(res, src[i])
+    i = i - 1
+  }
+  return res
+}
+
+fun patience_sort(collection: list<int>): list<int> {
+  var stacks: list<list<int>> = []
+  var i = 0
+  while i < len(collection) {
+    let element = collection[i]
+    let idx = bisect_left(stacks, element)
+    if idx != len(stacks) {
+      let stack = stacks[idx]
+      stacks[idx] = append(stack, element)
+    } else {
+      var new_stack: list<int> = [element]
+      stacks = append(stacks, new_stack)
+    }
+    i = i + 1
+  }
+
+  i = 0
+  while i < len(stacks) {
+    stacks[i] = reverse_list(stacks[i])
+    i = i + 1
+  }
+
+  var indices: list<int> = []
+  i = 0
+  while i < len(stacks) {
+    indices = append(indices, 0)
+    i = i + 1
+  }
+
+  var total = 0
+  i = 0
+  while i < len(stacks) {
+    total = total + len(stacks[i])
+    i = i + 1
+  }
+
+  var result: list<int> = []
+  var count = 0
+  while count < total {
+    var min_val = 0
+    var min_stack = -1
+    var j = 0
+    while j < len(stacks) {
+      let idx = indices[j]
+      if idx < len(stacks[j]) {
+        let val = stacks[j][idx]
+        if min_stack < 0 {
+          min_val = val
+          min_stack = j
+        } else if val < min_val {
+          min_val = val
+          min_stack = j
+        }
+      }
+      j = j + 1
+    }
+    result = append(result, min_val)
+    indices[min_stack] = indices[min_stack] + 1
+    count = count + 1
+  }
+
+  i = 0
+  while i < len(result) {
+    collection[i] = result[i]
+    i = i + 1
+  }
+  return collection
+}
+
+print(str(patience_sort([1, 9, 5, 21, 17, 6])))
+print(str(patience_sort([])))
+print(str(patience_sort([-3, -17, -48])))
+
