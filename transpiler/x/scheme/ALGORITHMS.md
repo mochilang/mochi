@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Scheme code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Scheme`.
-Last updated: 2025-08-06 22:18 GMT+7
+Last updated: 2025-08-06 22:47 GMT+7
 
-## Algorithms Golden Test Checklist (89/1077)
+## Algorithms Golden Test Checklist (90/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 0s | 12.4 MB |
@@ -100,7 +100,7 @@ Last updated: 2025-08-06 22:18 GMT+7
 | 91 | ciphers/onepad_cipher | ✓ | 2ms | 12.9 MB |
 | 92 | ciphers/permutation_cipher | ✓ | 0s | 13.4 MB |
 | 93 | ciphers/playfair_cipher |   |  |  |
-| 94 | ciphers/polybius |   |  |  |
+| 94 | ciphers/polybius | ✓ | 2ms | 13.2 MB |
 | 95 | ciphers/porta_cipher |   |  |  |
 | 96 | ciphers/rabin_miller |   |  |  |
 | 97 | ciphers/rail_fence_cipher |   |  |  |
