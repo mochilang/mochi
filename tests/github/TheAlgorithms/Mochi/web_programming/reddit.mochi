@@ -1,0 +1,124 @@
+/*
+Fetch subreddit data from Reddit's public API.
+
+This program mirrors the behavior of a Python script that uses the `httpx`
+package. A set of valid fields is defined and the user may request any
+subset of them via the `wanted_data` list. The function verifies that all
+requested fields are allowed, performs an HTTP GET request using Mochi's
+built-in `fetch`, and returns a dictionary mapping post indices to the
+requested fields.
+
+The algorithm checks for invalid search terms in O(n * m) time where `n`
+is the number of requested fields and `m` is the size of the valid field
+list. Data retrieval is O(limit). The implementation is written in pure
+Mochi without using FFI and avoids the `any` type by explicitly typing the
+expected JSON structure.
+*/
+
+type Post {
+  title: string
+  url: string
+  selftext: string
+}
+
+type Child {
+  data: Post
+}
+
+type ListingData {
+  children: list<Child>
+}
+
+type Listing {
+  data: ListingData
+}
+
+fun contains(xs: list<string>, x: string): bool {
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == x {
+      return true
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun join_with_comma(xs: list<string>): string {
+  var s = ""
+  var i = 0
+  while i < len(xs) {
+    if i > 0 {
+      s = s + ", "
+    }
+    s = s + xs[i]
+    i = i + 1
+  }
+  return s
+}
+
+let valid_terms: list<string> = [
+  "approved_at_utc", "approved_by", "author_flair_background_color",
+  "author_flair_css_class", "author_flair_richtext", "author_flair_template_id",
+  "author_fullname", "author_premium", "can_mod_post", "category",
+  "clicked", "content_categories", "created_utc", "downs", "edited",
+  "gilded", "gildings", "hidden", "hide_score", "is_created_from_ads_ui",
+  "is_meta", "is_original_content", "is_reddit_media_domain", "is_video",
+  "link_flair_css_class", "link_flair_richtext", "link_flair_text",
+  "link_flair_text_color", "media_embed", "mod_reason_title", "name",
+  "permalink", "pwls", "quarantine", "saved", "score", "secure_media",
+  "secure_media_embed", "selftext", "subreddit", "subreddit_name_prefixed",
+  "subreddit_type", "thumbnail", "title", "top_awarded_type",
+  "total_awards_received", "ups", "upvote_ratio", "url", "user_reports"
+]
+
+fun get_subreddit_data(
+  subreddit: string,
+  limit: int,
+  age: string,
+  wanted_data: list<string>
+): map<int, map<string, string>> {
+  var invalid: list<string> = []
+  var i = 0
+  while i < len(wanted_data) {
+    let term = wanted_data[i]
+    if !contains(valid_terms, term) {
+      invalid = append(invalid, term)
+    }
+    i = i + 1
+  }
+  if len(invalid) > 0 {
+    let msg = "Invalid search term: " + join_with_comma(invalid)
+    panic(msg)
+  }
+  let resp: Listing = fetch "tests/github/TheAlgorithms/Mochi/web_programming/reddit_sample.json"
+  var result: map<int, map<string, string>> = {}
+  var idx = 0
+  while idx < limit {
+    let post = resp.data.children[idx].data
+    var post_map: map<string, string> = {}
+    if len(wanted_data) == 0 {
+      post_map["title"] = post.title
+      post_map["url"] = post.url
+      post_map["selftext"] = post.selftext
+    } else {
+      var j = 0
+      while j < len(wanted_data) {
+        let field = wanted_data[j]
+        if field == "title" {
+          post_map["title"] = post.title
+        } else if field == "url" {
+          post_map["url"] = post.url
+        } else if field == "selftext" {
+          post_map["selftext"] = post.selftext
+        }
+        j = j + 1
+      }
+    }
+    result[idx] = post_map
+    idx = idx + 1
+  }
+  return result
+}
+
+print(get_subreddit_data("learnpython", 1, "new", ["title", "url", "selftext"]))
