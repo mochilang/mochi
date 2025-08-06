@@ -1,0 +1,46 @@
+/*
+Project Euler Problem 7: 10001st prime
+
+Given positive integer n, find the nth prime number.
+This implementation tests primality using the 6k ± 1 optimization:
+1. eliminate numbers <2 and divisible by 2 or 3.
+2. check divisibility only for candidates of form 6k ± 1 up to sqrt(n),
+   implemented via i*i <= n to avoid floating point operations.
+
+The solution iterates numbers starting from 2, collecting primes until
+n primes are found and returning the last one.
+*/
+
+fun is_prime(number: int): bool {
+  if number > 1 && number < 4 {
+    return true
+  } else if number < 2 || number % 2 == 0 || number % 3 == 0 {
+    return false
+  }
+  var i = 5
+  while i * i <= number {
+    if number % i == 0 || number % (i + 2) == 0 {
+      return false
+    }
+    i = i + 6
+  }
+  return true
+}
+
+fun solution(nth: int): int {
+  if nth <= 0 {
+    error("Parameter nth must be greater than or equal to one.")
+  }
+  var primes: list<int> = []
+  var num = 2
+  while len(primes) < nth {
+    if is_prime(num) {
+      primes = append(primes, num)
+    }
+    num = num + 1
+  }
+  return primes[len(primes) - 1]
+}
+
+let ans = solution(10001)
+print("solution(10001) = " + str(ans))
