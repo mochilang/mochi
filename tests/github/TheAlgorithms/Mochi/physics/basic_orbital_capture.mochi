@@ -1,0 +1,81 @@
+/*
+Orbital Capture Radius and Cross Section
+---------------------------------------
+This module computes the effective gravitational capture radius (R_capture)
+and cross-sectional area (sigma) for a target body of mass M and radius R
+when approached by a projectile with velocity v. Using conservation of
+energy and angular momentum, the capture radius is:
+
+  R_capture = R * sqrt(1 + v_escape^2 / v^2)
+
+where v_escape = sqrt(2GM/R). Any projectile passing within this radius
+will collide with the body. The effective capture area is:
+
+  sigma = pi * R_capture^2
+
+Both functions validate inputs and panic on negative mass or radius or
+velocities exceeding the speed of light. All computations are implemented
+in pure Mochi using Newton's method for square roots and simple rounding.
+*/
+
+let G: float = 0.000000000066743
+let C: float = 299792458.0
+let PI: float = 3.141592653589793
+
+fun pow10(n: int): float {
+  var result = 1.0
+  var i = 0
+  while i < n {
+    result = result * 10.0
+    i = i + 1
+  }
+  return result
+}
+
+fun sqrt(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess = x
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun abs(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun capture_radii(target_body_radius: float, target_body_mass: float, projectile_velocity: float): float {
+  if target_body_mass < 0.0 { panic("Mass cannot be less than 0") }
+  if target_body_radius < 0.0 { panic("Radius cannot be less than 0") }
+  if projectile_velocity > C { panic("Cannot go beyond speed of light") }
+  let escape_velocity_squared = (2.0 * G * target_body_mass) / target_body_radius
+  let denom = projectile_velocity * projectile_velocity
+  let capture_radius = target_body_radius * sqrt(1.0 + escape_velocity_squared / denom)
+  return capture_radius
+}
+
+fun capture_area(capture_radius: float): float {
+  if capture_radius < 0.0 { panic("Cannot have a capture radius less than 0") }
+  let sigma = PI * capture_radius * capture_radius
+  return sigma
+}
+
+fun run_tests() {
+  let r = capture_radii(6.957 * pow10(8), 1.99 * pow10(30), 25000.0)
+  if abs(r - 1.720959069143714 * pow10(10)) > 1.0 { panic("capture_radii failed") }
+  let a = capture_area(r)
+  if abs(a - 9.304455331801811 * pow10(20)) > 1.0 { panic("capture_area failed") }
+}
+
+fun main() {
+  run_tests()
+  let r = capture_radii(6.957 * pow10(8), 1.99 * pow10(30), 25000.0)
+  print(str(r))
+  print(str(capture_area(r)))
+}
+
+main()
