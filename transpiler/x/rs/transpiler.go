@@ -286,11 +286,26 @@ func (c *CallExpr) emit(w io.Writer) {
 	}
 	if c.Func == "panic" || c.Func == "error" {
 		io.WriteString(w, "panic!(")
-		for i, a := range c.Args {
-			if i > 0 {
-				io.WriteString(w, ", ")
+		if len(c.Args) == 1 {
+			if _, ok := c.Args[0].(*StringLit); ok {
+				c.Args[0].emit(w)
+			} else {
+				io.WriteString(w, "\"{}\", ")
+				c.Args[0].emit(w)
 			}
-			a.emit(w)
+		} else if len(c.Args) > 1 {
+			io.WriteString(w, "\"")
+			for i := range c.Args {
+				if i > 0 {
+					io.WriteString(w, " ")
+				}
+				io.WriteString(w, "{}")
+			}
+			io.WriteString(w, "\"")
+			for _, a := range c.Args {
+				io.WriteString(w, ", ")
+				a.emit(w)
+			}
 		}
 		io.WriteString(w, ")")
 		return
