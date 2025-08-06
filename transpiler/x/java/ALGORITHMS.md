@@ -2,21 +2,21 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-06 16:06 GMT+7
+Last updated: 2025-08-06 16:36 GMT+7
 
-## Algorithms Golden Test Checklist (1/1077)
+## Algorithms Golden Test Checklist (10/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 42.0ms | 46.14KB |
-| 2 | backtracking/all_permutations |   |  |  |
-| 3 | backtracking/all_subsequences |   |  |  |
-| 4 | backtracking/coloring |   |  |  |
-| 5 | backtracking/combination_sum |   |  |  |
-| 6 | backtracking/crossword_puzzle_solver |   |  |  |
-| 7 | backtracking/hamiltonian_cycle |   |  |  |
-| 8 | backtracking/knight_tour |   |  |  |
-| 9 | backtracking/match_word_pattern |   |  |  |
-| 10 | backtracking/minimax |   |  |  |
+| 1 | backtracking/all_combinations | ✓ | 28.0ms | 46.14KB |
+| 2 | backtracking/all_permutations | ✓ | 33.0ms | 45.75KB |
+| 3 | backtracking/all_subsequences | ✓ | 26.0ms | 45.54KB |
+| 4 | backtracking/coloring | ✓ | 29.0ms | 46.43KB |
+| 5 | backtracking/combination_sum | ✓ | 32.0ms | 46.14KB |
+| 6 | backtracking/crossword_puzzle_solver | ✓ | 14.0ms | 1.40KB |
+| 7 | backtracking/hamiltonian_cycle | ✓ | 16.0ms | 0B |
+| 8 | backtracking/knight_tour | ✓ | 30.0ms | 46.20KB |
+| 9 | backtracking/match_word_pattern | ✓ | 15.0ms | 760B |
+| 10 | backtracking/minimax | ✓ | 24.0ms | 37.65KB |
 | 11 | backtracking/n_queens |   |  |  |
 | 12 | backtracking/n_queens_math |   |  |  |
 | 13 | backtracking/power_sum |   |  |  |
