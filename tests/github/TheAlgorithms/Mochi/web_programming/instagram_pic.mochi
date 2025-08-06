@@ -1,0 +1,53 @@
+/*
+Instagram Picture URL Extraction
+
+The original Python algorithm downloads an Instagram page, searches
+for the `<meta property="og:image">` tag that stores the preview image,
+retrieves the image URL, and saves the image to a timestamped file.
+
+This Mochi version focuses on the HTML parsing logic without performing
+network requests or file I/O.  Given the HTML source of a page, it scans
+for the first meta tag with `property="og:image"` and extracts the value of
+the `content` attribute.  If the tag or attribute is missing, an
+informative message is returned.  The search is implemented with a
+simple O(n * m) substring scan.
+*/
+
+fun find_from(s: string, pattern: string, start: int): int {
+  let n: int = len(s)
+  let m: int = len(pattern)
+  var i: int = start
+  while i <= n - m {
+    if substring(s, i, i + m) == pattern {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun download_image(html: string): string {
+  let tag: string = "<meta property=\"og:image\""
+  let idx_tag: int = find_from(html, tag, 0)
+  if idx_tag == -1 {
+    return "No meta tag with property 'og:image' was found."
+  }
+  let key: string = "content=\""
+  let idx_content: int = find_from(html, key, idx_tag)
+  if idx_content == -1 {
+    return "Image URL not found in meta tag."
+  }
+  let start: int = idx_content + len(key)
+  var end: int = start
+  while end < len(html) and substring(html, end, end + 1) != "\"" {
+    end = end + 1
+  }
+  if end >= len(html) {
+    return "Image URL not found in meta tag."
+  }
+  let image_url: string = substring(html, start, end)
+  return "Image URL: " + image_url
+}
+
+let sample_html: string = "<html><head><meta property=\"og:image\" content=\"https://example.com/pic.jpg\"/></head></html>"
+print(download_image(sample_html))
