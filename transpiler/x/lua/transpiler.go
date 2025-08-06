@@ -1504,18 +1504,15 @@ func isTrueCond(e Expr) bool {
 }
 
 func isIntExpr(e Expr) bool {
+	if t := exprType(e); t != nil {
+		switch t.(type) {
+		case types.IntType, types.BigIntType:
+			return true
+		}
+	}
 	switch ex := e.(type) {
 	case *IntLit:
 		return true
-	case *Ident:
-		if currentEnv != nil {
-			if t, err := currentEnv.GetVar(ex.Name); err == nil {
-				switch t.(type) {
-				case types.IntType, types.BigIntType:
-					return true
-				}
-			}
-		}
 	case *CallExpr:
 		if ex.Func == "len" || ex.Func == "count" {
 			return true
@@ -1525,40 +1522,24 @@ func isIntExpr(e Expr) bool {
 		case "+", "-", "*", "/", "%":
 			return isIntExpr(ex.Left) && isIntExpr(ex.Right)
 		}
-	case *IndexExpr:
-		if t := exprType(ex); t != nil {
-			switch t.(type) {
-			case types.IntType, types.BigIntType:
-				return true
-			}
-		}
 	}
 	return false
 }
 
 func isFloatExpr(e Expr) bool {
+	if t := exprType(e); t != nil {
+		switch t.(type) {
+		case types.FloatType, types.BigRatType:
+			return true
+		}
+	}
 	switch ex := e.(type) {
 	case *FloatLit:
 		return true
-	case *Ident:
-		if currentEnv != nil {
-			if t, err := currentEnv.GetVar(ex.Name); err == nil {
-				if _, ok := t.(types.FloatType); ok {
-					return true
-				}
-				if _, ok := t.(types.BigRatType); ok {
-					return true
-				}
-			}
-		}
 	case *BinaryExpr:
 		switch ex.Op {
 		case "+", "-", "*", "/", "%":
 			return isFloatExpr(ex.Left) || isFloatExpr(ex.Right)
-		}
-	case *IndexExpr:
-		if _, ok := exprType(ex).(types.FloatType); ok {
-			return true
 		}
 	}
 	return false

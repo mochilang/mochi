@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-06 16:35 GMT+7
+Last updated: 2025-08-06 16:48 GMT+7
 
-## Algorithms Golden Test Checklist (20/1077)
+## Algorithms Golden Test Checklist (50/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 216µs | 912 B |
@@ -27,36 +27,36 @@ Last updated: 2025-08-06 16:35 GMT+7
 | 18 | backtracking/word_ladder | ✓ | 6.646ms | 2.6 KB |
 | 19 | backtracking/word_search | ✓ | 273µs | 2.7 KB |
 | 20 | bit_manipulation/binary_and_operator | ✓ | 258µs | 952 B |
-| 21 | bit_manipulation/binary_coded_decimal |   |  |  |
-| 22 | bit_manipulation/binary_count_setbits |   |  |  |
-| 23 | bit_manipulation/binary_count_trailing_zeros |   |  |  |
-| 24 | bit_manipulation/binary_or_operator |   |  |  |
-| 25 | bit_manipulation/binary_shifts |   |  |  |
-| 26 | bit_manipulation/binary_twos_complement |   |  |  |
-| 27 | bit_manipulation/binary_xor_operator |   |  |  |
-| 28 | bit_manipulation/bitwise_addition_recursive |   |  |  |
-| 29 | bit_manipulation/count_1s_brian_kernighan_method |   |  |  |
-| 30 | bit_manipulation/count_number_of_one_bits |   |  |  |
-| 31 | bit_manipulation/excess_3_code |   |  |  |
-| 32 | bit_manipulation/find_previous_power_of_two |   |  |  |
-| 33 | bit_manipulation/find_unique_number |   |  |  |
-| 34 | bit_manipulation/gray_code_sequence |   |  |  |
-| 35 | bit_manipulation/highest_set_bit |   |  |  |
-| 36 | bit_manipulation/index_of_rightmost_set_bit |   |  |  |
-| 37 | bit_manipulation/is_even |   |  |  |
-| 38 | bit_manipulation/is_power_of_two |   |  |  |
-| 39 | bit_manipulation/largest_pow_of_two_le_num |   |  |  |
-| 40 | bit_manipulation/missing_number |   |  |  |
-| 41 | bit_manipulation/numbers_different_signs |   |  |  |
-| 42 | bit_manipulation/power_of_4 |   |  |  |
-| 43 | bit_manipulation/reverse_bits |   |  |  |
-| 44 | bit_manipulation/single_bit_manipulation_operations |   |  |  |
-| 45 | bit_manipulation/swap_all_odd_and_even_bits |   |  |  |
-| 46 | blockchain/diophantine_equation |   |  |  |
-| 47 | boolean_algebra/and_gate |   |  |  |
-| 48 | boolean_algebra/imply_gate |   |  |  |
-| 49 | boolean_algebra/karnaugh_map_simplification |   |  |  |
-| 50 | boolean_algebra/multiplexer |   |  |  |
+| 21 | bit_manipulation/binary_coded_decimal | ✓ | 135µs | 912 B |
+| 22 | bit_manipulation/binary_count_setbits | ✓ | 105µs | 40 B |
+| 23 | bit_manipulation/binary_count_trailing_zeros | ✓ | 83µs | 40 B |
+| 24 | bit_manipulation/binary_or_operator | ✓ | 34µs | 32 B |
+| 25 | bit_manipulation/binary_shifts | ✓ | 125µs | 1.2 KB |
+| 26 | bit_manipulation/binary_twos_complement | ✓ | 144µs | 912 B |
+| 27 | bit_manipulation/binary_xor_operator | ✓ | 245µs | 952 B |
+| 28 | bit_manipulation/bitwise_addition_recursive | ✓ | 91µs | 168 B |
+| 29 | bit_manipulation/count_1s_brian_kernighan_method | ✓ | 99µs | 136 B |
+| 30 | bit_manipulation/count_number_of_one_bits | ✓ | 133µs | 992 B |
+| 31 | bit_manipulation/excess_3_code | ✓ | 27µs | 136 B |
+| 32 | bit_manipulation/find_previous_power_of_two | ✓ | 145µs | 912 B |
+| 33 | bit_manipulation/find_unique_number | ✓ | 143µs | 848 B |
+| 34 | bit_manipulation/gray_code_sequence | ✓ | 171µs | 1.3 KB |
+| 35 | bit_manipulation/highest_set_bit | ✓ | 76µs | 40 B |
+| 36 | bit_manipulation/index_of_rightmost_set_bit | ✓ | 67µs | 40 B |
+| 37 | bit_manipulation/is_even | ✓ | 40µs | 32 B |
+| 38 | bit_manipulation/is_power_of_two | ✓ | 2µs | 40 B |
+| 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 129µs | 32 B |
+| 40 | bit_manipulation/missing_number | ✓ | 76µs | 808 B |
+| 41 | bit_manipulation/numbers_different_signs | ✓ | 23µs | 32 B |
+| 42 | bit_manipulation/power_of_4 | ✓ | 27µs | 32 B |
+| 43 | bit_manipulation/reverse_bits | ✓ | 159µs | 784 B |
+| 44 | bit_manipulation/single_bit_manipulation_operations | ✓ | 134µs | 360 B |
+| 45 | bit_manipulation/swap_all_odd_and_even_bits | ✓ | 743µs | 1.1 KB |
+| 46 | blockchain/diophantine_equation | ✓ | 201µs | 1.6 KB |
+| 47 | boolean_algebra/and_gate | ✓ | 82µs | 840 B |
+| 48 | boolean_algebra/imply_gate | ✓ | 107µs | 32 B |
+| 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 195µs | 1.2 KB |
+| 50 | boolean_algebra/multiplexer | ✓ | 95µs | 40 B |
 | 51 | boolean_algebra/nand_gate |   |  |  |
 | 52 | boolean_algebra/nimply_gate |   |  |  |
 | 53 | boolean_algebra/nor_gate |   |  |  |
