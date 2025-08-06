@@ -1,0 +1,8 @@
+Unhandled exception:
+type 'int' is not a subtype of type 'double' in type cast
+#0      gabor_filter_kernel (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/filters/gabor_filter.dart:72:31)
+#1      kernel (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/filters/gabor_filter.dart:90:29)
+#2      kernel (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/filters/gabor_filter.dart)
+#3      main (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/filters/gabor_filter.dart:92:15)
+#4      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#5      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

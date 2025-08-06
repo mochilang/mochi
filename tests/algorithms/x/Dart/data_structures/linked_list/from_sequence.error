@@ -1,0 +1,9 @@
+run: exit status 254
+../../../tests/algorithms/x/Dart/data_structures/linked_list/from_sequence.dart:52:52: Error: The argument type 'BigInt' can't be assigned to the parameter type 'int'.
+ - 'BigInt' is from 'dart:core'.
+  nodes = [...nodes, Node(data: elements[0], next: NIL)];
+                                                   ^
+../../../tests/algorithms/x/Dart/data_structures/linked_list/from_sequence.dart:57:54: Error: The argument type 'BigInt' can't be assigned to the parameter type 'int'.
+ - 'BigInt' is from 'dart:core'.
+    nodes = [...nodes, Node(data: elements[i], next: NIL)];
+                                                     ^

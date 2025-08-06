@@ -1,0 +1,16 @@
+../../../tests/algorithms/x/Dart/data_structures/linked_list/deque_doubly.dart:97:44: Error: The value 'null' can't be assigned to the parameter type 'Node' because 'Node' is not nullable.
+ - 'Node' is from '../../../tests/algorithms/x/Dart/data_structures/linked_list/deque_doubly.dart'.
+  while (nodes.length <= pred) { nodes.add(null); } nodes[pred] = pred_node;
+                                           ^
+../../../tests/algorithms/x/Dart/data_structures/linked_list/deque_doubly.dart:100:44: Error: The value 'null' can't be assigned to the parameter type 'Node' because 'Node' is not nullable.
+ - 'Node' is from '../../../tests/algorithms/x/Dart/data_structures/linked_list/deque_doubly.dart'.
+  while (nodes.length <= succ) { nodes.add(null); } nodes[succ] = succ_node;
+                                           ^
+../../../tests/algorithms/x/Dart/data_structures/linked_list/deque_doubly.dart:113:44: Error: The value 'null' can't be assigned to the parameter type 'Node' because 'Node' is not nullable.
+ - 'Node' is from '../../../tests/algorithms/x/Dart/data_structures/linked_list/deque_doubly.dart'.
+  while (nodes.length <= pred) { nodes.add(null); } nodes[pred] = pred_node;
+                                           ^
+../../../tests/algorithms/x/Dart/data_structures/linked_list/deque_doubly.dart:116:44: Error: The value 'null' can't be assigned to the parameter type 'Node' because 'Node' is not nullable.
+ - 'Node' is from '../../../tests/algorithms/x/Dart/data_structures/linked_list/deque_doubly.dart'.
+  while (nodes.length <= succ) { nodes.add(null); } nodes[succ] = succ_node;
+                                           ^

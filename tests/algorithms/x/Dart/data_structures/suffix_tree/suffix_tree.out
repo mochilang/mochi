@@ -1,0 +1,8 @@
+../../../tests/algorithms/x/Dart/data_structures/suffix_tree/suffix_tree.dart:57:50: Error: The value 'null' can't be assigned to the parameter type 'Node' because 'Node' is not nullable.
+ - 'Node' is from '../../../tests/algorithms/x/Dart/data_structures/suffix_tree/suffix_tree.dart'.
+    while (nodes.length <= node_idx) { nodes.add(null); } nodes[node_idx] = node;
+                                                 ^
+../../../tests/algorithms/x/Dart/data_structures/suffix_tree/suffix_tree.dart:65:48: Error: The value 'null' can't be assigned to the parameter type 'Node' because 'Node' is not nullable.
+ - 'Node' is from '../../../tests/algorithms/x/Dart/data_structures/suffix_tree/suffix_tree.dart'.
+  while (nodes.length <= node_idx) { nodes.add(null); } nodes[node_idx] = node;
+                                               ^

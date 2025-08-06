@@ -1,0 +1,11 @@
+case1 true
+Unhandled exception:
+type 'int' is not a subtype of type 'double' in type cast
+#0      rand_float (file:///workspace/mochi/tests/algorithms/x/Dart/data_structures/kd_tree/tests/test_kdtree.dart:20:16)
+#1      hypercube_points (file:///workspace/mochi/tests/algorithms/x/Dart/data_structures/kd_tree/tests/test_kdtree.dart:30:28)
+#2      test_build_cases (file:///workspace/mochi/tests/algorithms/x/Dart/data_structures/kd_tree/tests/test_kdtree.dart:83:29)
+#3      _main (file:///workspace/mochi/tests/algorithms/x/Dart/data_structures/kd_tree/tests/test_kdtree.dart:125:3)
+#4      _start (file:///workspace/mochi/tests/algorithms/x/Dart/data_structures/kd_tree/tests/test_kdtree.dart:131:3)
+#5      main (file:///workspace/mochi/tests/algorithms/x/Dart/data_structures/kd_tree/tests/test_kdtree.dart:134:16)
+#6      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#7      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

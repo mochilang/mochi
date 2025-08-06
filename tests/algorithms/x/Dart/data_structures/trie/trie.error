@@ -1,0 +1,21 @@
+run: exit status 254
+../../../tests/algorithms/x/Dart/data_structures/trie/trie.dart:82:46: Error: The value 'null' can't be assigned to the parameter type 'Node' because 'Node' is not nullable.
+ - 'Node' is from '../../../tests/algorithms/x/Dart/data_structures/trie/trie.dart'.
+    while (nodes.length <= curr) { nodes.add(null); } nodes[curr] = node;
+                                             ^
+../../../tests/algorithms/x/Dart/data_structures/trie/trie.dart:89:44: Error: The value 'null' can't be assigned to the parameter type 'Node' because 'Node' is not nullable.
+ - 'Node' is from '../../../tests/algorithms/x/Dart/data_structures/trie/trie.dart'.
+  while (nodes.length <= curr) { nodes.add(null); } nodes[curr] = node;
+                                           ^
+../../../tests/algorithms/x/Dart/data_structures/trie/trie.dart:125:45: Error: The value 'null' can't be assigned to the parameter type 'Node' because 'Node' is not nullable.
+ - 'Node' is from '../../../tests/algorithms/x/Dart/data_structures/trie/trie.dart'.
+    while (nodes.length <= idx) { nodes.add(null); } nodes[idx] = node;
+                                            ^
+../../../tests/algorithms/x/Dart/data_structures/trie/trie.dart:140:45: Error: The value 'null' can't be assigned to the parameter type 'Node' because 'Node' is not nullable.
+ - 'Node' is from '../../../tests/algorithms/x/Dart/data_structures/trie/trie.dart'.
+    while (nodes.length <= idx) { nodes.add(null); } nodes[idx] = node;
+                                            ^
+../../../tests/algorithms/x/Dart/data_structures/trie/trie.dart:143:43: Error: The value 'null' can't be assigned to the parameter type 'Node' because 'Node' is not nullable.
+ - 'Node' is from '../../../tests/algorithms/x/Dart/data_structures/trie/trie.dart'.
+  while (nodes.length <= idx) { nodes.add(null); } nodes[idx] = node;
+                                          ^
