@@ -1,0 +1,41 @@
+/*
+Shrink Shell Sort
+-----------------
+Shell sort generalizes insertion sort by allowing exchanges of elements far apart.
+This "shrink" variant starts with a gap equal to the list length and multiplies
+it by 10/13 (~1/1.3) each pass. For each gap, the algorithm performs gapped
+insertion sort: it compares elements separated by the gap and shifts larger
+items forward. The gap sequence ending in 1 ensures the final pass is a
+traditional insertion sort, yielding a fully sorted list. The shrinking gap
+reduces the number of comparisons and moves needed compared to plain insertion
+sort.
+*/
+
+fun shell_sort(collection: list<int>): list<int> {
+  var gap: int = len(collection)
+  let ten: int = 10
+  let thirteen: int = 13
+  while gap > 1 {
+    gap = gap * ten / thirteen
+    var i: int = gap
+    while i < len(collection) {
+      let temp: int = collection[i]
+      var j: int = i
+      while j >= gap && collection[j - gap] > temp {
+        collection[j] = collection[j - gap]
+        j = j - gap
+      }
+      collection[j] = temp
+      i = i + 1
+    }
+  }
+  return collection
+}
+
+fun main() {
+  print(str(shell_sort([3, 2, 1])))
+  print(str(shell_sort([])))
+  print(str(shell_sort([1])))
+}
+
+main()
