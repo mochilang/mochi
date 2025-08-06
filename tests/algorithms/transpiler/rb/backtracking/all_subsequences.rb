@@ -52,27 +52,22 @@ end
 
 start_mem = _mem()
 start = _now()
-  def create_all_state(increment, total, level, current, result)
-    if level == 0
-      return (result + [current])
+  def create_state_space_tree(sequence, current, index)
+    if index == sequence.length
+      puts(((x = current); x.is_a?(Array) ? ("[" + x.map{ |x| if x.is_a?(String) then '\'' + x + '\'' elsif x.respond_to?(:to_h) then '{' + x.to_h.map{ |k,v| "'#{k}': #{v.is_a?(String) ? '\'' + v + '\'' : v.to_s}" }.join(', ') + '}' else x.to_s end }.join(', ') + "]") : x.to_s))
+      return
     end
-    i = increment
-    while i <= _add(total - level, 1)
-      next_current = (current + [i])
-      result = create_all_state(_add(i, 1), total, level - 1, next_current, result)
-      i = _add(i, 1)
-    end
-    return result
+    create_state_space_tree(sequence, current, _add(index, 1))
+    with_elem = (current + [sequence[index]])
+    create_state_space_tree(sequence, with_elem, _add(index, 1))
   end
-  def generate_all_combinations(n, k)
-    if k < 0 || n < 0
-      return []
-    end
-    result = []
-    return create_all_state(1, n, k, [], result)
+  def generate_all_subsequences(sequence)
+    create_state_space_tree(sequence, [], 0)
   end
-  puts((generate_all_combinations(4, 2)).to_s)
-  puts((generate_all_combinations(3, 1)).to_s)
+  $seq = [1, 2, 3]
+  generate_all_subsequences($seq)
+  $seq2 = ["A", "B", "C"]
+  generate_all_subsequences($seq2)
 end_time = _now()
 end_mem = _mem()
 result = {"duration_us" => ((end_time - start) / 1000), "memory_bytes" => (end_mem - start_mem), "name" => "main"}

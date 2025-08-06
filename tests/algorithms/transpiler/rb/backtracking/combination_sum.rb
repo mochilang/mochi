@@ -52,27 +52,28 @@ end
 
 start_mem = _mem()
 start = _now()
-  def create_all_state(increment, total, level, current, result)
-    if level == 0
-      return (result + [current])
+  def backtrack(candidates, start, target, path, result)
+    if target == 0
+      return (result + [path])
     end
-    i = increment
-    while i <= _add(total - level, 1)
-      next_current = (current + [i])
-      result = create_all_state(_add(i, 1), total, level - 1, next_current, result)
+    i = start
+    while i < candidates.length
+      value = candidates[i]
+      if value <= target
+        new_path = (path + [value])
+        result = backtrack(candidates, i, target - value, new_path, result)
+      end
       i = _add(i, 1)
     end
     return result
   end
-  def generate_all_combinations(n, k)
-    if k < 0 || n < 0
-      return []
-    end
+  def combination_sum(candidates, target)
+    path = []
     result = []
-    return create_all_state(1, n, k, [], result)
+    return backtrack(candidates, 0, target, path, result)
   end
-  puts((generate_all_combinations(4, 2)).to_s)
-  puts((generate_all_combinations(3, 1)).to_s)
+  puts(((x = combination_sum([2, 3, 5], 8)); x.is_a?(Array) ? ("[" + x.map{ |x| if x.is_a?(Hash) then '{' + x.to_h.map{ |k,v| "#{k}: #{v.is_a?(String) ? v : v.to_s}" }.join(', ') + '}' else x.to_s end }.join(' ') + "]") : x.to_s))
+  puts(((x = combination_sum([2, 3, 6, 7], 7)); x.is_a?(Array) ? ("[" + x.map{ |x| if x.is_a?(Hash) then '{' + x.to_h.map{ |k,v| "#{k}: #{v.is_a?(String) ? v : v.to_s}" }.join(', ') + '}' else x.to_s end }.join(' ') + "]") : x.to_s))
 end_time = _now()
 end_mem = _mem()
 result = {"duration_us" => ((end_time - start) / 1000), "memory_bytes" => (end_mem - start_mem), "name" => "main"}

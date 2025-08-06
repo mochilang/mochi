@@ -1,23 +1,23 @@
 # Ruby Algorithms Transpiler Output
 
-Completed programs: 1/1077
-Last updated: 2025-08-06 15:56 +0700
+Completed programs: 10/1077
+Last updated: 2025-08-06 09:34 +0000
 
 Checklist:
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1ms | 11.9 KB |
-| 2 | backtracking/all_permutations |   |  |  |
-| 3 | backtracking/all_subsequences |   |  |  |
-| 4 | backtracking/coloring |   |  |  |
-| 5 | backtracking/combination_sum |   |  |  |
-| 6 | backtracking/crossword_puzzle_solver |   |  |  |
+| 2 | backtracking/all_permutations | ✓ | 1ms | 59.0 KB |
+| 3 | backtracking/all_subsequences | ✓ | 1ms | 16.8 KB |
+| 4 | backtracking/coloring | ✓ | 1ms | 11.0 KB |
+| 5 | backtracking/combination_sum | ✓ | 1ms | 12.7 KB |
+| 6 | backtracking/crossword_puzzle_solver | ✓ | 1ms | 14.2 KB |
 | 7 | backtracking/hamiltonian_cycle |   |  |  |
-| 8 | backtracking/knight_tour |   |  |  |
-| 9 | backtracking/match_word_pattern |   |  |  |
-| 10 | backtracking/minimax |   |  |  |
-| 11 | backtracking/n_queens |   |  |  |
+| 8 | backtracking/knight_tour | ✓ | 1ms | 9.7 KB |
+| 9 | backtracking/match_word_pattern | ✓ | 1ms | 66.5 KB |
+| 10 | backtracking/minimax | ✓ | 1ms | 9.1 KB |
+| 11 | backtracking/n_queens | ✓ | 1ms | 14.0 KB |
 | 12 | backtracking/n_queens_math |   |  |  |
 | 13 | backtracking/power_sum |   |  |  |
 | 14 | backtracking/rat_in_maze |   |  |  |
