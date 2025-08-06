@@ -1,0 +1,142 @@
+/*
+Email Address Validation
+-----------------------
+This program checks if a given string is a valid email address based on
+simplified rules similar to those used in the Python implementation from
+TheAlgorithms.
+
+Rules applied:
+1. The address must contain exactly one '@' separating local part and domain.
+2. The local part must be at most 64 characters and the domain at most 255.
+3. Local part characters are restricted to letters, digits and
+   " .(!#$%&'*+-/=?^_`{|}~)". Placement of '.' is limited: it cannot
+   appear at the start or end and cannot appear consecutively.
+4. Domain characters are restricted to letters, digits and '.-'. It cannot
+   start with '-' or end with '.', and '.' cannot appear at the start, end,
+   or consecutively.
+The algorithm avoids any foreign function interfaces and uses only
+pure Mochi constructs.
+*/
+
+let MAX_LOCAL_PART_OCTETS = 64
+let MAX_DOMAIN_OCTETS = 255
+let ASCII_LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+let DIGITS = "0123456789"
+let LOCAL_EXTRA = ".(!#$%&'*+-/=?^_`{|}~)"
+let DOMAIN_EXTRA = ".-"
+
+fun count_char(s: string, target: string): int {
+  var cnt = 0
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i + 1) == target {
+      cnt = cnt + 1
+    }
+    i = i + 1
+  }
+  return cnt
+}
+
+fun char_in(c: string, allowed: string): bool {
+  var i = 0
+  while i < len(allowed) {
+    if substring(allowed, i, i + 1) == c {
+      return true
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun starts_with_char(s: string, c: string): bool {
+  return len(s) > 0 && substring(s, 0, 1) == c
+}
+
+fun ends_with_char(s: string, c: string): bool {
+  return len(s) > 0 && substring(s, len(s) - 1, len(s)) == c
+}
+
+fun contains_double_dot(s: string): bool {
+  if len(s) < 2 { return false }
+  var i = 0
+  while i < len(s) - 1 {
+    if substring(s, i, i + 2) == ".." {
+      return true
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun is_valid_email_address(email: string): bool {
+  if count_char(email, "@") != 1 { return false }
+  var at_idx = 0
+  var i = 0
+  while i < len(email) {
+    if substring(email, i, i + 1) == "@" {
+      at_idx = i
+      break
+    }
+    i = i + 1
+  }
+  let local_part = substring(email, 0, at_idx)
+  let domain = substring(email, at_idx + 1, len(email))
+  if len(local_part) > MAX_LOCAL_PART_OCTETS || len(domain) > MAX_DOMAIN_OCTETS {
+    return false
+  }
+  var i = 0
+  while i < len(local_part) {
+    let ch = substring(local_part, i, i + 1)
+    if !char_in(ch, ASCII_LETTERS + DIGITS + LOCAL_EXTRA) {
+      return false
+    }
+    i = i + 1
+  }
+  if starts_with_char(local_part, ".") || ends_with_char(local_part, ".") || contains_double_dot(local_part) {
+    return false
+  }
+  i = 0
+  while i < len(domain) {
+    let ch = substring(domain, i, i + 1)
+    if !char_in(ch, ASCII_LETTERS + DIGITS + DOMAIN_EXTRA) {
+      return false
+    }
+    i = i + 1
+  }
+  if starts_with_char(domain, "-") || ends_with_char(domain, ".") {
+    return false
+  }
+  if starts_with_char(domain, ".") || ends_with_char(domain, ".") || contains_double_dot(domain) {
+    return false
+  }
+  return true
+}
+
+let email_tests: list<string> = [
+  "simple@example.com",
+  "very.common@example.com",
+  "disposable.style.email.with+symbol@example.com",
+  "other-email-with-hyphen@and.subdomains.example.com",
+  "fully-qualified-domain@example.com",
+  "user.name+tag+sorting@example.com",
+  "x@example.com",
+  "example-indeed@strange-example.com",
+  "test/test@test.com",
+  "123456789012345678901234567890123456789012345678901234567890123@example.com",
+  "admin@mailserver1",
+  "example@s.example",
+  "Abc.example.com",
+  "A@b@c@example.com",
+  "abc@example..com",
+  "a(c)d,e:f;g<h>i[j\\k]l@example.com",
+  "12345678901234567890123456789012345678901234567890123456789012345@example.com",
+  "i.like.underscores@but_its_not_allowed_in_this_part",
+  ""
+]
+
+var idx = 0
+while idx < len(email_tests) {
+  let email = email_tests[idx]
+  print(str(is_valid_email_address(email)))
+  idx = idx + 1
+}
