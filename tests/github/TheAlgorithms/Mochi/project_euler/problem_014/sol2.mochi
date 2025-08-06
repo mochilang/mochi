@@ -1,0 +1,56 @@
+/*
+Project Euler Problem 14: Longest Collatz sequence.
+
+Given a starting number n, the next term is obtained as:
+- n / 2 if n is even
+- 3 * n + 1 if n is odd
+
+The sequence is conjectured to reach 1 for all positive integers.
+This program finds the starting number below a given limit that produces
+the longest Collatz chain. It uses memoization in a map<int,int> to store
+already-computed sequence lengths. Each number's length is computed
+recursively by referencing cached results, yielding an efficient
+solution compared to naive simulation.
+*/
+
+var collatz_cache: map<int, int> = {1: 1}
+
+fun collatz_length(n: int): int {
+  var num: int = n
+  var sequence: list<int> = []
+  while !(num in collatz_cache) {
+    sequence = append(sequence, num)
+    if num % 2 == 0 {
+      num = (num / 2) as int
+    } else {
+      num = 3 * num + 1
+    }
+  }
+  var length: int = collatz_cache[num]
+  var i = len(sequence) - 1
+  while i >= 0 {
+    length = length + 1
+    collatz_cache[sequence[i]] = length
+    i = i - 1
+  }
+  return length
+}
+
+fun solution(limit: int): int {
+  var max_len: int = 0
+  var max_start: int = 1
+  var i: int = 1
+  while i < limit {
+    let length = collatz_length(i)
+    if length > max_len {
+      max_len = length
+      max_start = i
+    }
+    i = i + 1
+  }
+  return max_start
+}
+
+let input_str: string = input()
+let limit: int = int(input_str)
+print(solution(limit))
