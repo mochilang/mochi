@@ -1,0 +1,35 @@
+/*
+String Join
+-----------
+Join a list of strings using a separator. The algorithm appends each string
+from the input list to a result, inserting the separator between consecutive
+strings. The last element is appended without a trailing separator.
+
+Time complexity: O(n) for n strings.
+Space complexity: O(1) extra space besides the output.
+*/
+
+fun join(separator: string, separated: list<string>): string {
+  var joined = ""
+  let last_index: int = len(separated) - 1
+  var i = 0
+  while i < len(separated) {
+    joined = joined + separated[i]
+    if i < last_index {
+      joined = joined + separator
+    }
+    i = i + 1
+  }
+  return joined
+}
+
+fun main() {
+  print(join("", ["a", "b", "c", "d"]))
+  print(join("#", ["a", "b", "c", "d"]))
+  print(join("#", ["a"]))
+  print(join(" ", ["You", "are", "amazing!"]))
+  print(join(",", ["", "", ""]))
+  print(join("-", ["apple", "banana", "cherry"]))
+}
+
+main()
