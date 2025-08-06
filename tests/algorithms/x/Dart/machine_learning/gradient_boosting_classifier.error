@@ -1,0 +1,15 @@
+run: exit status 255
+Unhandled exception:
+type 'int' is not a subtype of type 'double' in type cast
+#0      exp_approx (file:///workspace/mochi/tests/algorithms/x/Dart/machine_learning/gradient_boosting_classifier.dart:52:26)
+#1      gradient (file:///workspace/mochi/tests/algorithms/x/Dart/machine_learning/gradient_boosting_classifier.dart:73:22)
+#2      fit (file:///workspace/mochi/tests/algorithms/x/Dart/machine_learning/gradient_boosting_classifier.dart:181:25)
+#3      models (file:///workspace/mochi/tests/algorithms/x/Dart/machine_learning/gradient_boosting_classifier.dart:210:22)
+#4      models (file:///workspace/mochi/tests/algorithms/x/Dart/machine_learning/gradient_boosting_classifier.dart)
+#5      predictions (file:///workspace/mochi/tests/algorithms/x/Dart/machine_learning/gradient_boosting_classifier.dart:211:36)
+#6      predictions (file:///workspace/mochi/tests/algorithms/x/Dart/machine_learning/gradient_boosting_classifier.dart)
+#7      acc (file:///workspace/mochi/tests/algorithms/x/Dart/machine_learning/gradient_boosting_classifier.dart:212:23)
+#8      acc (file:///workspace/mochi/tests/algorithms/x/Dart/machine_learning/gradient_boosting_classifier.dart)
+#9      main (file:///workspace/mochi/tests/algorithms/x/Dart/machine_learning/gradient_boosting_classifier.dart:220:25)
+#10     _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#11     _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

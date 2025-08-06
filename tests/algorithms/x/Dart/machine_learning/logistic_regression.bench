@@ -1,0 +1,10 @@
+Unhandled exception:
+type 'int' is not a subtype of type 'double' in type cast
+#0      expApprox (file:///workspace/mochi/tests/algorithms/x/Dart/machine_learning/logistic_regression.dart:50:26)
+#1      sigmoid (file:///workspace/mochi/tests/algorithms/x/Dart/machine_learning/logistic_regression.dart:61:23)
+#2      logistic_reg (file:///workspace/mochi/tests/algorithms/x/Dart/machine_learning/logistic_regression.dart:94:16)
+#3      theta (file:///workspace/mochi/tests/algorithms/x/Dart/machine_learning/logistic_regression.dart:116:22)
+#4      theta (file:///workspace/mochi/tests/algorithms/x/Dart/machine_learning/logistic_regression.dart)
+#5      main (file:///workspace/mochi/tests/algorithms/x/Dart/machine_learning/logistic_regression.dart:124:23)
+#6      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#7      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

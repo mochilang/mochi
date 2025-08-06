@@ -1,0 +1,4 @@
+run: exit status 254
+../../../tests/algorithms/x/Dart/graphs/bidirectional_search.dart:75:25: Error: A value of type 'bool?' can't be assigned to a variable of type 'bool' because 'bool?' is nullable and 'bool' isn't.
+    if (opposite_visited[neighbor]) {
+                        ^

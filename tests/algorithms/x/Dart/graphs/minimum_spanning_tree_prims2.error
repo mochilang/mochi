@@ -1,0 +1,19 @@
+run: exit status 254
+../../../tests/algorithms/x/Dart/graphs/minimum_spanning_tree_prims2.dart:84:38: Error: Property 'keys' cannot be accessed on 'Map<String, int>?' because it is potentially null.
+ - 'Map' is from 'dart:core'.
+Try accessing using ?. instead.
+  for (var neighbour in graph[start].keys) {
+                                     ^^^^
+../../../tests/algorithms/x/Dart/graphs/minimum_spanning_tree_prims2.dart:85:29: Error: Operator '[]' cannot be called on 'Map<String, int>?' because it is potentially null.
+ - 'Map' is from 'dart:core'.
+    dynamic w = graph[start][neighbour]!;
+                            ^
+../../../tests/algorithms/x/Dart/graphs/minimum_spanning_tree_prims2.dart:119:39: Error: Property 'keys' cannot be accessed on 'Map<String, int>?' because it is potentially null.
+ - 'Map' is from 'dart:core'.
+Try accessing using ?. instead.
+    for (var neighbour in graph[node].keys) {
+                                      ^^^^
+../../../tests/algorithms/x/Dart/graphs/minimum_spanning_tree_prims2.dart:120:28: Error: Operator '[]' cannot be called on 'Map<String, int>?' because it is potentially null.
+ - 'Map' is from 'dart:core'.
+    dynamic w = graph[node][neighbour]!;
+                           ^

@@ -1,0 +1,46 @@
+run: exit status 254
+../../../tests/algorithms/x/Dart/graphs/dijkstra.dart:93:24: Error: Property 'keys' cannot be accessed on 'Map<String, int>?' because it is potentially null.
+ - 'Map' is from 'dart:core'.
+Try accessing using ?. instead.
+    for (var v in G[u].keys) {
+                       ^^^^
+../../../tests/algorithms/x/Dart/graphs/dijkstra.dart:97:32: Error: Operator '[]' cannot be called on 'Map<String, int>?' because it is potentially null.
+ - 'Map' is from 'dart:core'.
+    num next_cost = cost + G[u][v];
+                               ^
+../../../tests/algorithms/x/Dart/graphs/dijkstra.dart:97:32: Error: A value of type 'int?' can't be assigned to a variable of type 'num' because 'int?' is nullable and 'num' isn't.
+    num next_cost = cost + G[u][v];
+                               ^
+../../../tests/algorithms/x/Dart/graphs/dijkstra.dart:98:46: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    heap = [...heap, NodeCost(node: v, cost: next_cost)];
+                                             ^
+../../../tests/algorithms/x/Dart/graphs/dijkstra.dart:131:27: Error: Property 'keys' cannot be accessed on 'Map<String, int>?' because it is potentially null.
+ - 'Map' is from 'dart:core'.
+Try accessing using ?. instead.
+    for (var v2 in G2[u2].keys) {
+                          ^^^^
+../../../tests/algorithms/x/Dart/graphs/dijkstra.dart:135:36: Error: Operator '[]' cannot be called on 'Map<String, int>?' because it is potentially null.
+ - 'Map' is from 'dart:core'.
+    num next_cost2 = cost2 + G2[u2][v2];
+                                   ^
+../../../tests/algorithms/x/Dart/graphs/dijkstra.dart:135:36: Error: A value of type 'int?' can't be assigned to a variable of type 'num' because 'int?' is nullable and 'num' isn't.
+    num next_cost2 = cost2 + G2[u2][v2];
+                                   ^
+../../../tests/algorithms/x/Dart/graphs/dijkstra.dart:136:49: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    heap2 = [...heap2, NodeCost(node: v2, cost: next_cost2)];
+                                                ^
+../../../tests/algorithms/x/Dart/graphs/dijkstra.dart:169:27: Error: Property 'keys' cannot be accessed on 'Map<String, int>?' because it is potentially null.
+ - 'Map' is from 'dart:core'.
+Try accessing using ?. instead.
+    for (var v3 in G3[u3].keys) {
+                          ^^^^
+../../../tests/algorithms/x/Dart/graphs/dijkstra.dart:173:36: Error: Operator '[]' cannot be called on 'Map<String, int>?' because it is potentially null.
+ - 'Map' is from 'dart:core'.
+    num next_cost3 = cost3 + G3[u3][v3];
+                                   ^
+../../../tests/algorithms/x/Dart/graphs/dijkstra.dart:173:36: Error: A value of type 'int?' can't be assigned to a variable of type 'num' because 'int?' is nullable and 'num' isn't.
+    num next_cost3 = cost3 + G3[u3][v3];
+                                   ^
+../../../tests/algorithms/x/Dart/graphs/dijkstra.dart:174:49: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    heap3 = [...heap3, NodeCost(node: v3, cost: next_cost3)];
+                                                ^

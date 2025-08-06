@@ -1,0 +1,4 @@
+run: exit status 254
+../../../tests/algorithms/x/Dart/machine_learning/k_nearest_neighbours.dart:113:5: Error: Undefined name 'e18'.
+    e18;
+    ^^^

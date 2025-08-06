@@ -1,0 +1,9 @@
+run: exit status 255
+Unhandled exception:
+type 'int' is not a subtype of type 'double' in type cast
+#0      sin_taylor (file:///workspace/mochi/tests/algorithms/x/Dart/geodesy/haversine_distance.dart:52:26)
+#1      tan_approx (file:///workspace/mochi/tests/algorithms/x/Dart/geodesy/haversine_distance.dart:76:10)
+#2      haversine_distance (file:///workspace/mochi/tests/algorithms/x/Dart/geodesy/haversine_distance.dart:127:50)
+#3      main (file:///workspace/mochi/tests/algorithms/x/Dart/geodesy/haversine_distance.dart:148:10)
+#4      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#5      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

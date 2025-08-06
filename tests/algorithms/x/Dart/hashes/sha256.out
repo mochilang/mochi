@@ -1,0 +1,8 @@
+../../../tests/algorithms/x/Dart/hashes/sha256.dart:53:30: Error: The argument type 'String' can't be assigned to the parameter type 'List<int>'.
+ - 'List' is from 'dart:core'.
+  print(bytes_to_hex(_sha256("Python")));
+                             ^
+../../../tests/algorithms/x/Dart/hashes/sha256.dart:54:30: Error: The argument type 'String' can't be assigned to the parameter type 'List<int>'.
+ - 'List' is from 'dart:core'.
+  print(bytes_to_hex(_sha256("hello world")));
+                             ^

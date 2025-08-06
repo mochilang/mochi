@@ -1,0 +1,17 @@
+run: exit status 254
+../../../tests/algorithms/x/Dart/graphs/prim.dart:44:16: Error: An expression whose value can be 'null' must be null-checked before it can be dereferenced.
+  g[u] = ([...g[u], [v, w]] as List).map((e) => (e as List<int>)).toList();
+               ^
+../../../tests/algorithms/x/Dart/graphs/prim.dart:45:16: Error: An expression whose value can be 'null' must be null-checked before it can be dereferenced.
+  g[v] = ([...g[v], [u, w]] as List).map((e) => (e as List<int>)).toList();
+               ^
+../../../tests/algorithms/x/Dart/graphs/prim.dart:81:24: Error: The type 'List<List<int>>?' used in the 'for' loop must implement 'Iterable<dynamic>' because 'List<List<int>>?' is nullable and 'Iterable<dynamic>' isn't.
+ - 'List' is from 'dart:core'.
+ - 'Iterable' is from 'dart:core'.
+    for (var e in graph[u]) {
+                       ^
+../../../tests/algorithms/x/Dart/graphs/prim.dart:143:24: Error: The type 'List<List<int>>?' used in the 'for' loop must implement 'Iterable<dynamic>' because 'List<List<int>>?' is nullable and 'Iterable<dynamic>' isn't.
+ - 'List' is from 'dart:core'.
+ - 'Iterable' is from 'dart:core'.
+    for (var e in graph[u]) {
+                       ^

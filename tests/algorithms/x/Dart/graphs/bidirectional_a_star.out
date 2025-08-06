@@ -1,0 +1,9 @@
+Unhandled exception:
+type 'int' is not a subtype of type 'double' in type cast
+#0      heuristic (file:///workspace/mochi/tests/algorithms/x/Dart/graphs/bidirectional_a_star.dart:60:19)
+#1      astar (file:///workspace/mochi/tests/algorithms/x/Dart/graphs/bidirectional_a_star.dart:168:15)
+#2      path1 (file:///workspace/mochi/tests/algorithms/x/Dart/graphs/bidirectional_a_star.dart:296:19)
+#3      path1 (file:///workspace/mochi/tests/algorithms/x/Dart/graphs/bidirectional_a_star.dart)
+#4      main (file:///workspace/mochi/tests/algorithms/x/Dart/graphs/bidirectional_a_star.dart:299:24)
+#5      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#6      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

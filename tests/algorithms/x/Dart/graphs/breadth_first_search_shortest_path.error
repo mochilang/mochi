@@ -1,0 +1,6 @@
+run: exit status 254
+../../../tests/algorithms/x/Dart/graphs/breadth_first_search_shortest_path.dart:57:28: Error: The type 'List<String>?' used in the 'for' loop must implement 'Iterable<dynamic>' because 'List<String>?' is nullable and 'Iterable<dynamic>' isn't.
+ - 'List' is from 'dart:core'.
+ - 'Iterable' is from 'dart:core'.
+    for (var adj in g.graph[vertex]) {
+                           ^

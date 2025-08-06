@@ -1,0 +1,36 @@
+run: exit status 254
+../../../tests/algorithms/x/Dart/graphs/basic_graphs.dart:48:20: Error: The type 'List<int>?' used in the 'for' loop must implement 'Iterable<dynamic>' because 'List<int>?' is nullable and 'Iterable<dynamic>' isn't.
+ - 'List' is from 'dart:core'.
+ - 'Iterable' is from 'dart:core'.
+    for (var v in g[u]) {
+                   ^
+../../../tests/algorithms/x/Dart/graphs/basic_graphs.dart:72:20: Error: The type 'List<int>?' used in the 'for' loop must implement 'Iterable<dynamic>' because 'List<int>?' is nullable and 'Iterable<dynamic>' isn't.
+ - 'List' is from 'dart:core'.
+ - 'Iterable' is from 'dart:core'.
+    for (var v in g[u]) {
+                   ^
+../../../tests/algorithms/x/Dart/graphs/basic_graphs.dart:121:20: Error: The type 'List<List<int>>?' used in the 'for' loop must implement 'Iterable<dynamic>' because 'List<List<int>>?' is nullable and 'Iterable<dynamic>' isn't.
+ - 'List' is from 'dart:core'.
+ - 'Iterable' is from 'dart:core'.
+    for (var e in g[u]) {
+                   ^
+../../../tests/algorithms/x/Dart/graphs/basic_graphs.dart:155:20: Error: The type 'List<int>?' used in the 'for' loop must implement 'Iterable<dynamic>' because 'List<int>?' is nullable and 'Iterable<dynamic>' isn't.
+ - 'List' is from 'dart:core'.
+ - 'Iterable' is from 'dart:core'.
+    for (var v in g[node]) {
+                   ^
+../../../tests/algorithms/x/Dart/graphs/basic_graphs.dart:172:20: Error: The type 'List<int>?' used in the 'for' loop must implement 'Iterable<dynamic>' because 'List<int>?' is nullable and 'Iterable<dynamic>' isn't.
+ - 'List' is from 'dart:core'.
+ - 'Iterable' is from 'dart:core'.
+    for (var w in g[v]) {
+                   ^
+../../../tests/algorithms/x/Dart/graphs/basic_graphs.dart:234:20: Error: The type 'List<List<int>>?' used in the 'for' loop must implement 'Iterable<dynamic>' because 'List<List<int>>?' is nullable and 'Iterable<dynamic>' isn't.
+ - 'List' is from 'dart:core'.
+ - 'Iterable' is from 'dart:core'.
+    for (var e in g[u]) {
+                   ^
+../../../tests/algorithms/x/Dart/graphs/basic_graphs.dart:310:17: Error: Property 'length' cannot be accessed on 'List<int>?' because it is potentially null.
+ - 'List' is from 'dart:core'.
+Try accessing using ?. instead.
+    if (g[node].length == 0) {
+                ^^^^^^

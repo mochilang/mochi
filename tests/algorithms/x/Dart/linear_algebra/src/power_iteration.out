@@ -1,0 +1,3 @@
+../../../tests/algorithms/x/Dart/linear_algebra/src/power_iteration.dart:96:40: Error: A value of type 'int' can't be assigned to a variable of type 'double'.
+    err = (lambda - lambda_prev).abs() ~/ denom;
+                                       ^

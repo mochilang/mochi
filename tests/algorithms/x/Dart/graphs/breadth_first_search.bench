@@ -1,0 +1,3 @@
+../../../tests/algorithms/x/Dart/graphs/breadth_first_search.dart:41:29: Error: An expression whose value can be 'null' must be null-checked before it can be dereferenced.
+    graph[from] = ([...graph[from], to] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
+                            ^

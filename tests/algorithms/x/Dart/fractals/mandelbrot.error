@@ -1,0 +1,9 @@
+run: exit status 255
+Unhandled exception:
+type 'int' is not a subtype of type 'double' in type cast
+#0      get_image (file:///workspace/mochi/tests/algorithms/x/Dart/fractals/mandelbrot.dart:130:54)
+#1      img1 (file:///workspace/mochi/tests/algorithms/x/Dart/fractals/mandelbrot.dart:158:24)
+#2      img1 (file:///workspace/mochi/tests/algorithms/x/Dart/fractals/mandelbrot.dart)
+#3      main (file:///workspace/mochi/tests/algorithms/x/Dart/fractals/mandelbrot.dart:167:23)
+#4      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#5      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

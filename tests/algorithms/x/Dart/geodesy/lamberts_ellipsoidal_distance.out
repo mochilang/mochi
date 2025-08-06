@@ -1,0 +1,7 @@
+Unhandled exception:
+type 'int' is not a subtype of type 'double' in type cast
+#0      cos_approx (file:///workspace/mochi/tests/algorithms/x/Dart/geodesy/lamberts_ellipsoidal_distance.dart:41:26)
+#1      lamberts_ellipsoidal_distance (file:///workspace/mochi/tests/algorithms/x/Dart/geodesy/lamberts_ellipsoidal_distance.dart:68:36)
+#2      main (file:///workspace/mochi/tests/algorithms/x/Dart/geodesy/lamberts_ellipsoidal_distance.dart:74:9)
+#3      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#4      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)
