@@ -717,9 +717,15 @@ type PrintStmt struct{ Exprs []Expr }
 
 func (p *PrintStmt) emit(w io.Writer) {
 	for _, e := range p.Exprs {
-		io.WriteString(w, "  print_endline (")
-		e.emitPrint(w)
-		io.WriteString(w, ");\n")
+		if sl, ok := e.(*StringLit); ok && strings.HasSuffix(sl.Value, "\n") {
+			io.WriteString(w, "  print_string ")
+			e.emitPrint(w)
+			io.WriteString(w, ";\n")
+		} else {
+			io.WriteString(w, "  print_endline (")
+			e.emitPrint(w)
+			io.WriteString(w, ");\n")
+		}
 	}
 }
 
@@ -3149,13 +3155,13 @@ let rec __show v =
   else
     match tag r with
     | 0 -> __show_list (Obj.magic v)
-    | 252 -> Printf.sprintf "%S" (magic v : string)
+    | 252 -> Printf.sprintf "'%s'" (String.escaped (magic v : string))
     | 253 -> string_of_float (magic v)
     | _ -> "<value>"
 and __show_list l =
   match l with
   | [] -> "[]"
-  | _ -> "[" ^ String.concat ", " (List.map __show l) ^ "]"
+  | _ -> "[" ^ String.concat " " (List.map __show l) ^ "]"
 and __str v =
   let open Obj in
   let r = repr v in
