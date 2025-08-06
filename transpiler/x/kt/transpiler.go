@@ -1209,7 +1209,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	numOp := (b.Op == "+" || b.Op == "-" || b.Op == "*" || b.Op == "/" || b.Op == "%") && !listOp
 	cmpOp := b.Op == ">" || b.Op == "<" || b.Op == ">=" || b.Op == "<=" || b.Op == "in"
 	boolOp := b.Op == "&&" || b.Op == "||"
-	bigOp := leftType == "BigInteger" || rightType == "BigInteger"
+	bigOp := leftType == "BigInteger" && rightType == "BigInteger"
 	ratOp := leftType == "BigRat" || rightType == "BigRat"
 	cast := func(e Expr, typ string) {
 		if typ == "Double" {
@@ -3748,6 +3748,14 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				}
 				if typ == "MutableMap<Any, Any>" {
 					typ = "MutableMap<String, Any>"
+				}
+				if strings.Contains(typ, "BigInteger") {
+					if gt := guessType(v); gt != "" && !strings.Contains(gt, "BigInteger") {
+						typ = gt
+					}
+					if strings.Contains(typ, "BigInteger") {
+						typ = ""
+					}
 				}
 				if strings.Contains(typ, "Any?") && guessType(v) != typ {
 					typ = ""
