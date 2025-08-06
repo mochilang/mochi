@@ -1,0 +1,46 @@
+/*
+Project Euler Problem 78 - Coin partitions.
+
+We seek the smallest integer n such that the partition function p(n)
+is divisible by a given modulus.  The partition numbers are generated
+iteratively using the generalized pentagonal number theorem:
+
+  p(n) = \sum_{k=1}^{\infty} (-1)^{k+1} 
+         [p(n - k(3k-1)/2) + p(n - k(3k+1)/2)]
+
+By computing values modulo the target number, the search terminates
+once a partition equals zero.
+*/
+
+fun solution(number: int): int {
+  var partitions: list<int> = [1]
+  var i = len(partitions)
+  while true {
+    var item = 0
+    var j = 1
+    while true {
+      let sign = if j % 2 == 0 { -1 } else { 1 }
+      var index = (j * j * 3 - j) / 2
+      if index > i { break }
+      item = item + partitions[i - index] * sign
+      item = item % number
+      index = index + j
+      if index > i { break }
+      item = item + partitions[i - index] * sign
+      item = item % number
+      j = j + 1
+    }
+    if item == 0 { return i }
+    partitions = append(partitions, item)
+    i = i + 1
+  }
+  return 0
+}
+
+fun main() {
+  print(str(solution(1)))
+  print(str(solution(9)))
+  print(str(solution(1000000)))
+}
+
+main()
