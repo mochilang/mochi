@@ -1,0 +1,54 @@
+/*
+Jump Search Algorithm
+--------------------
+This algorithm locates a target value within a sorted array by jumping ahead a
+fixed block size instead of inspecting every element. The optimal step is the
+square root of the collection length. Blocks are skipped until a value greater
+than or equal to the target is found, then a linear scan within that block
+determines the exact index. If the target is absent, the search returns -1.
+
+This pure Mochi implementation mirrors the reference Python version from The
+Algorithms project and avoids any foreign function interface so it can run on
+the `runtime/vm`.
+*/
+
+fun int_sqrt(n: int): int {
+  var x = 0
+  while (x + 1) * (x + 1) <= n {
+    x = x + 1
+  }
+  return x
+}
+
+fun jump_search(arr: list<int>, item: int): int {
+  let arr_size = len(arr)
+  let block_size = int_sqrt(arr_size)
+  var prev = 0
+  var step = block_size
+  while step < arr_size && arr[step - 1] < item {
+    prev = step
+    step = step + block_size
+    if prev >= arr_size {
+      return -1
+    }
+  }
+  while prev < arr_size && arr[prev] < item {
+    prev = prev + 1
+    if prev == step {
+      return -1
+    }
+  }
+  if prev < arr_size && arr[prev] == item {
+    return prev
+  }
+  return -1
+}
+
+fun main() {
+  print(str(jump_search([0, 1, 2, 3, 4, 5], 3)))
+  print(str(jump_search([-5, -2, -1], -1)))
+  print(str(jump_search([0, 5, 10, 20], 8)))
+  print(str(jump_search([0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610], 55)))
+}
+
+main()
