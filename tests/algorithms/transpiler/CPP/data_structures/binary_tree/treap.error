@@ -1,0 +1,40 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/treap.cpp:86:215: warning: multi-character character constant [-Wmultichar]
+   86 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/treap.cpp:86:251: warning: multi-character character constant [-Wmultichar]
+   86 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/treap.cpp: In function ‘SplitResult split(int64_t, int64_t)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/treap.cpp:168:33: error: invalid initialization of reference of type ‘const std::string&’ {aka ‘const std::__cxx11::basic_string<char>&’} from expression of type ‘__gnu_cxx::__alloc_traits<std::allocator<long int>, long int>::value_type’ {aka ‘long int’}
+  168 |         SplitResult res = _split(node_lefts[root], value);
+      |                           ~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/treap.cpp:70:59: note: in passing argument 1 of ‘std::vector<std::__cxx11::basic_string<char> > _split(const std::string&, const std::string&)’
+   70 | static std::vector<std::string> _split(const std::string& s, const std::string& sep) {
+      |                                        ~~~~~~~~~~~~~~~~~~~^
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/treap.cpp:172:29: error: invalid initialization of reference of type ‘const std::string&’ {aka ‘const std::__cxx11::basic_string<char>&’} from expression of type ‘__gnu_cxx::__alloc_traits<std::allocator<long int>, long int>::value_type’ {aka ‘long int’}
+  172 |     SplitResult res = _split(node_rights[root], value);
+      |                       ~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/treap.cpp:70:59: note: in passing argument 1 of ‘std::vector<std::__cxx11::basic_string<char> > _split(const std::string&, const std::string&)’
+   70 | static std::vector<std::string> _split(const std::string& s, const std::string& sep) {
+      |                                        ~~~~~~~~~~~~~~~~~~~^
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/treap.cpp: In function ‘int64_t insert(int64_t, int64_t)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/treap.cpp:194:30: error: invalid initialization of reference of type ‘const std::string&’ {aka ‘const std::__cxx11::basic_string<char>&’} from expression of type ‘int64_t’ {aka ‘long int’}
+  194 |     SplitResult res = _split(root, value);
+      |                              ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/treap.cpp:70:59: note: in passing argument 1 of ‘std::vector<std::__cxx11::basic_string<char> > _split(const std::string&, const std::string&)’
+   70 | static std::vector<std::string> _split(const std::string& s, const std::string& sep) {
+      |                                        ~~~~~~~~~~~~~~~~~~~^
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/treap.cpp: In function ‘int64_t erase(int64_t, int64_t)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/treap.cpp:199:31: error: invalid initialization of reference of type ‘const std::string&’ {aka ‘const std::__cxx11::basic_string<char>&’} from expression of type ‘int64_t’ {aka ‘long int’}
+  199 |     SplitResult res1 = _split(root, (value - int64_t(1)));
+      |                               ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/treap.cpp:70:59: note: in passing argument 1 of ‘std::vector<std::__cxx11::basic_string<char> > _split(const std::string&, const std::string&)’
+   70 | static std::vector<std::string> _split(const std::string& s, const std::string& sep) {
+      |                                        ~~~~~~~~~~~~~~~~~~~^
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/treap.cpp:200:36: error: invalid initialization of reference of type ‘const std::string&’ {aka ‘const std::__cxx11::basic_string<char>&’} from expression of type ‘int64_t’ {aka ‘long int’}
+  200 |     SplitResult res2 = _split(res1.right, value);
+      |                               ~~~~~^~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/treap.cpp:70:59: note: in passing argument 1 of ‘std::vector<std::__cxx11::basic_string<char> > _split(const std::string&, const std::string&)’
+   70 | static std::vector<std::string> _split(const std::string& s, const std::string& sep) {
+      |                                        ~~~~~~~~~~~~~~~~~~~^

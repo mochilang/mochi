@@ -357,6 +357,13 @@ type CastExpr struct {
 	Type  string
 }
 
+func newCastExpr(val Expr, typ string) *CastExpr {
+	if typ == "std::vector<std::any>" {
+		useAnyVec = true
+	}
+	return &CastExpr{Value: val, Type: typ}
+}
+
 type SubstringExpr struct {
 	Value Expr
 	Start Expr
@@ -4465,7 +4472,7 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			} else if _, ok := val.(*NullLit); ok && currentReturnType == "std::string" {
 				val = &StringLit{Value: ""}
 			} else if exprType(val) == "std::any" && currentReturnType != "" && currentReturnType != "std::any" {
-				val = &CastExpr{Value: val, Type: currentReturnType}
+				val = newCastExpr(val, currentReturnType)
 			}
 		}
 		if val == nil && currentReturnType == "int" {
@@ -4615,20 +4622,20 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 							if !(lt == "std::string" || rt == "std::string") {
 								if !(strings.Contains(lt, "any") && strings.Contains(rt, "any")) {
 									if strings.Contains(lt, "any") {
-										l = &CastExpr{Value: l, Type: "double"}
+										l = newCastExpr(l, "double")
 									}
 									if strings.Contains(rt, "any") {
-										r = &CastExpr{Value: r, Type: "double"}
+										r = newCastExpr(r, "double")
 									}
 								}
 							}
 						} else {
 							if !(strings.Contains(lt, "any") && strings.Contains(rt, "any")) {
 								if strings.Contains(lt, "any") {
-									l = &CastExpr{Value: l, Type: "double"}
+									l = newCastExpr(l, "double")
 								}
 								if strings.Contains(rt, "any") {
-									r = &CastExpr{Value: r, Type: "double"}
+									r = newCastExpr(r, "double")
 								}
 							}
 						}
@@ -4905,10 +4912,10 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				}
 			}
 			typ := cppType(name)
-			expr = &CastExpr{Value: expr, Type: typ}
+			expr = newCastExpr(expr, typ)
 		case op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Generic != nil:
 			typ := cppType(typeRefString(op.Cast.Type))
-			expr = &CastExpr{Value: expr, Type: typ}
+			expr = newCastExpr(expr, typ)
 			if typ == "std::vector<std::any>" {
 				useAnyVec = true
 			}
@@ -5429,7 +5436,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					usesParseIntStr = true
 					return &CallExpr{Name: "_parse_int_str", Args: []Expr{arg, &IntLit{Value: 10}}}, nil
 				}
-				return &CastExpr{Value: arg, Type: "int64_t"}, nil
+				return newCastExpr(arg, "int64_t"), nil
 			}
 		case "float":
 			if len(p.Call.Args) == 1 {
@@ -5437,7 +5444,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				if err != nil {
 					return nil, err
 				}
-				return &CastExpr{Value: arg, Type: "double"}, nil
+				return newCastExpr(arg, "double"), nil
 			}
 		case "bigrat":
 			if len(p.Call.Args) == 1 {
@@ -5542,7 +5549,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 						}
 						at := exprType(arg)
 						if at != ptyp && ptyp != "auto" {
-							args[i] = &CastExpr{Value: arg, Type: ptyp}
+							args[i] = newCastExpr(arg, ptyp)
 						}
 					}
 				}

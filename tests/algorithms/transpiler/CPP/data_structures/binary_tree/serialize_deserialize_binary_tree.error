@@ -1,0 +1,142 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:87:215: warning: multi-character character constant [-Wmultichar]
+   87 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:87:251: warning: multi-character character constant [-Wmultichar]
+   87 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp: In function ‘BuildResult build(const std::vector<std::__cxx11::basic_string<char> >&, int64_t)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:245:36: error: could not convert ‘Empty()’ from ‘Empty’ to ‘std::shared_ptr<TreeNode>’
+  245 |         return BuildResult{.node = Empty{}, .next = (idx + int64_t(1))};
+      |                                    ^~~~~~~
+      |                                    |
+      |                                    Empty
+In file included from /usr/include/c++/13/bits/char_traits.h:57,
+                 from /usr/include/c++/13/ios:42,
+                 from /usr/include/c++/13/ostream:40,
+                 from /usr/include/c++/13/iostream:41,
+                 from /workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:2:
+/usr/include/c++/13/bits/stl_construct.h: In instantiation of ‘constexpr void std::_Construct(_Tp*, _Args&& ...) [with _Tp = Node; _Args = {long int, Empty, Empty}]’:
+/usr/include/c++/13/bits/alloc_traits.h:661:19:   required from ‘static constexpr void std::allocator_traits<std::allocator<void> >::construct(allocator_type&, _Up*, _Args&& ...) [with _Up = Node; _Args = {long int, Empty, Empty}; allocator_type = std::allocator<void>]’
+/usr/include/c++/13/bits/shared_ptr_base.h:604:39:   required from ‘std::_Sp_counted_ptr_inplace<_Tp, _Alloc, _Lp>::_Sp_counted_ptr_inplace(_Alloc, _Args&& ...) [with _Args = {long int, Empty, Empty}; _Tp = Node; _Alloc = std::allocator<void>; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]’
+/usr/include/c++/13/bits/shared_ptr_base.h:971:16:   required from ‘std::__shared_count<_Lp>::__shared_count(_Tp*&, std::_Sp_alloc_shared_tag<_Alloc>, _Args&& ...) [with _Tp = Node; _Alloc = std::allocator<void>; _Args = {long int, Empty, Empty}; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]’
+/usr/include/c++/13/bits/shared_ptr_base.h:1712:14:   required from ‘std::__shared_ptr<_Tp, _Lp>::__shared_ptr(std::_Sp_alloc_shared_tag<_Tp>, _Args&& ...) [with _Alloc = std::allocator<void>; _Args = {long int, Empty, Empty}; _Tp = Node; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]’
+/usr/include/c++/13/bits/shared_ptr.h:464:59:   required from ‘std::shared_ptr<_Tp>::shared_ptr(std::_Sp_alloc_shared_tag<_Tp>, _Args&& ...) [with _Alloc = std::allocator<void>; _Args = {long int, Empty, Empty}; _Tp = Node]’
+/usr/include/c++/13/bits/shared_ptr.h:1009:14:   required from ‘std::shared_ptr<std::_NonArray<_Tp> > std::make_shared(_Args&& ...) [with _Tp = Node; _Args = {long int, Empty, Empty}; _NonArray<_Tp> = Node]’
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:260:66:   required from here
+/usr/include/c++/13/bits/stl_construct.h:115:28: error: no matching function for call to ‘construct_at(Node*&, long int, Empty, Empty)’
+  115 |           std::construct_at(__p, std::forward<_Args>(__args)...);
+      |           ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_construct.h:94:5: note: candidate: ‘template<class _Tp, class ... _Args> constexpr decltype (::new(void*(0)) _Tp) std::construct_at(_Tp*, _Args&& ...)’
+   94 |     construct_at(_Tp* __location, _Args&&... __args)
+      |     ^~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_construct.h:94:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_construct.h: In substitution of ‘template<class _Tp, class ... _Args> constexpr decltype (::new(void*(0)) _Tp) std::construct_at(_Tp*, _Args&& ...) [with _Tp = Node; _Args = {long int, Empty, Empty}]’:
+/usr/include/c++/13/bits/stl_construct.h:115:21:   required from ‘constexpr void std::_Construct(_Tp*, _Args&& ...) [with _Tp = Node; _Args = {long int, Empty, Empty}]’
+/usr/include/c++/13/bits/alloc_traits.h:661:19:   required from ‘static constexpr void std::allocator_traits<std::allocator<void> >::construct(allocator_type&, _Up*, _Args&& ...) [with _Up = Node; _Args = {long int, Empty, Empty}; allocator_type = std::allocator<void>]’
+/usr/include/c++/13/bits/shared_ptr_base.h:604:39:   required from ‘std::_Sp_counted_ptr_inplace<_Tp, _Alloc, _Lp>::_Sp_counted_ptr_inplace(_Alloc, _Args&& ...) [with _Args = {long int, Empty, Empty}; _Tp = Node; _Alloc = std::allocator<void>; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]’
+/usr/include/c++/13/bits/shared_ptr_base.h:971:16:   required from ‘std::__shared_count<_Lp>::__shared_count(_Tp*&, std::_Sp_alloc_shared_tag<_Alloc>, _Args&& ...) [with _Tp = Node; _Alloc = std::allocator<void>; _Args = {long int, Empty, Empty}; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]’
+/usr/include/c++/13/bits/shared_ptr_base.h:1712:14:   required from ‘std::__shared_ptr<_Tp, _Lp>::__shared_ptr(std::_Sp_alloc_shared_tag<_Tp>, _Args&& ...) [with _Alloc = std::allocator<void>; _Args = {long int, Empty, Empty}; _Tp = Node; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]’
+/usr/include/c++/13/bits/shared_ptr.h:464:59:   required from ‘std::shared_ptr<_Tp>::shared_ptr(std::_Sp_alloc_shared_tag<_Tp>, _Args&& ...) [with _Alloc = std::allocator<void>; _Args = {long int, Empty, Empty}; _Tp = Node]’
+/usr/include/c++/13/bits/shared_ptr.h:1009:14:   required from ‘std::shared_ptr<std::_NonArray<_Tp> > std::make_shared(_Args&& ...) [with _Tp = Node; _Args = {long int, Empty, Empty}; _NonArray<_Tp> = Node]’
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:260:66:   required from here
+/usr/include/c++/13/bits/stl_construct.h:96:17: error: no matching function for call to ‘Node::Node(long int, Empty, Empty)’
+   96 |     -> decltype(::new((void*)0) _Tp(std::declval<_Args>()...))
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:140:5: note: candidate: ‘Node::Node(std::shared_ptr<TreeNode>, int64_t, std::shared_ptr<TreeNode>)’
+  140 |     Node(std::shared_ptr<TreeNode> left_, int64_t value_, std::shared_ptr<TreeNode> right_) : left(std::move(left_)), value(value_), right(std::move(right_)) {}
+      |     ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:140:36: note:   no known conversion for argument 1 from ‘long int’ to ‘std::shared_ptr<TreeNode>’
+  140 |     Node(std::shared_ptr<TreeNode> left_, int64_t value_, std::shared_ptr<TreeNode> right_) : left(std::move(left_)), value(value_), right(std::move(right_)) {}
+      |          ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:136:8: note: candidate: ‘Node::Node(const Node&)’
+  136 | struct Node : TreeNode {
+      |        ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:136:8: note:   candidate expects 1 argument, 3 provided
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:136:8: note: candidate: ‘Node::Node(Node&&)’
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:136:8: note:   candidate expects 1 argument, 3 provided
+/usr/include/c++/13/bits/stl_construct.h: In instantiation of ‘constexpr void std::_Construct(_Tp*, _Args&& ...) [with _Tp = Node; _Args = {long int, Empty, Empty}]’:
+/usr/include/c++/13/bits/alloc_traits.h:661:19:   required from ‘static constexpr void std::allocator_traits<std::allocator<void> >::construct(allocator_type&, _Up*, _Args&& ...) [with _Up = Node; _Args = {long int, Empty, Empty}; allocator_type = std::allocator<void>]’
+/usr/include/c++/13/bits/shared_ptr_base.h:604:39:   required from ‘std::_Sp_counted_ptr_inplace<_Tp, _Alloc, _Lp>::_Sp_counted_ptr_inplace(_Alloc, _Args&& ...) [with _Args = {long int, Empty, Empty}; _Tp = Node; _Alloc = std::allocator<void>; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]’
+/usr/include/c++/13/bits/shared_ptr_base.h:971:16:   required from ‘std::__shared_count<_Lp>::__shared_count(_Tp*&, std::_Sp_alloc_shared_tag<_Alloc>, _Args&& ...) [with _Tp = Node; _Alloc = std::allocator<void>; _Args = {long int, Empty, Empty}; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]’
+/usr/include/c++/13/bits/shared_ptr_base.h:1712:14:   required from ‘std::__shared_ptr<_Tp, _Lp>::__shared_ptr(std::_Sp_alloc_shared_tag<_Tp>, _Args&& ...) [with _Alloc = std::allocator<void>; _Args = {long int, Empty, Empty}; _Tp = Node; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]’
+/usr/include/c++/13/bits/shared_ptr.h:464:59:   required from ‘std::shared_ptr<_Tp>::shared_ptr(std::_Sp_alloc_shared_tag<_Tp>, _Args&& ...) [with _Alloc = std::allocator<void>; _Args = {long int, Empty, Empty}; _Tp = Node]’
+/usr/include/c++/13/bits/shared_ptr.h:1009:14:   required from ‘std::shared_ptr<std::_NonArray<_Tp> > std::make_shared(_Args&& ...) [with _Tp = Node; _Args = {long int, Empty, Empty}; _NonArray<_Tp> = Node]’
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:260:66:   required from here
+/usr/include/c++/13/bits/stl_construct.h:119:7: error: no matching function for call to ‘Node::Node(long int, Empty, Empty)’
+  119 |       ::new((void*)__p) _Tp(std::forward<_Args>(__args)...);
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:140:5: note: candidate: ‘Node::Node(std::shared_ptr<TreeNode>, int64_t, std::shared_ptr<TreeNode>)’
+  140 |     Node(std::shared_ptr<TreeNode> left_, int64_t value_, std::shared_ptr<TreeNode> right_) : left(std::move(left_)), value(value_), right(std::move(right_)) {}
+      |     ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:140:36: note:   no known conversion for argument 1 from ‘long int’ to ‘std::shared_ptr<TreeNode>’
+  140 |     Node(std::shared_ptr<TreeNode> left_, int64_t value_, std::shared_ptr<TreeNode> right_) : left(std::move(left_)), value(value_), right(std::move(right_)) {}
+      |          ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:136:8: note: candidate: ‘Node::Node(const Node&)’
+  136 | struct Node : TreeNode {
+      |        ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:136:8: note:   candidate expects 1 argument, 3 provided
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:136:8: note: candidate: ‘Node::Node(Node&&)’
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:136:8: note:   candidate expects 1 argument, 3 provided
+/usr/include/c++/13/bits/stl_construct.h: In instantiation of ‘constexpr void std::_Construct(_Tp*, _Args&& ...) [with _Tp = Node; _Args = {long int, shared_ptr<TreeNode>&, shared_ptr<TreeNode>&}]’:
+/usr/include/c++/13/bits/alloc_traits.h:661:19:   required from ‘static constexpr void std::allocator_traits<std::allocator<void> >::construct(allocator_type&, _Up*, _Args&& ...) [with _Up = Node; _Args = {long int, std::shared_ptr<TreeNode>&, std::shared_ptr<TreeNode>&}; allocator_type = std::allocator<void>]’
+/usr/include/c++/13/bits/shared_ptr_base.h:604:39:   required from ‘std::_Sp_counted_ptr_inplace<_Tp, _Alloc, _Lp>::_Sp_counted_ptr_inplace(_Alloc, _Args&& ...) [with _Args = {long int, std::shared_ptr<TreeNode>&, std::shared_ptr<TreeNode>&}; _Tp = Node; _Alloc = std::allocator<void>; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]’
+/usr/include/c++/13/bits/shared_ptr_base.h:971:16:   required from ‘std::__shared_count<_Lp>::__shared_count(_Tp*&, std::_Sp_alloc_shared_tag<_Alloc>, _Args&& ...) [with _Tp = Node; _Alloc = std::allocator<void>; _Args = {long int, std::shared_ptr<TreeNode>&, std::shared_ptr<TreeNode>&}; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]’
+/usr/include/c++/13/bits/shared_ptr_base.h:1712:14:   required from ‘std::__shared_ptr<_Tp, _Lp>::__shared_ptr(std::_Sp_alloc_shared_tag<_Tp>, _Args&& ...) [with _Alloc = std::allocator<void>; _Args = {long int, std::shared_ptr<TreeNode>&, std::shared_ptr<TreeNode>&}; _Tp = Node; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]’
+/usr/include/c++/13/bits/shared_ptr.h:464:59:   required from ‘std::shared_ptr<_Tp>::shared_ptr(std::_Sp_alloc_shared_tag<_Tp>, _Args&& ...) [with _Alloc = std::allocator<void>; _Args = {long int, std::shared_ptr<TreeNode>&, std::shared_ptr<TreeNode>&}; _Tp = Node]’
+/usr/include/c++/13/bits/shared_ptr.h:1009:14:   required from ‘std::shared_ptr<std::_NonArray<_Tp> > std::make_shared(_Args&& ...) [with _Tp = Node; _Args = {long int, shared_ptr<TreeNode>&, shared_ptr<TreeNode>&}; _NonArray<_Tp> = Node]’
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:263:67:   required from here
+/usr/include/c++/13/bits/stl_construct.h:115:28: error: no matching function for call to ‘construct_at(Node*&, long int, std::shared_ptr<TreeNode>&, std::shared_ptr<TreeNode>&)’
+  115 |           std::construct_at(__p, std::forward<_Args>(__args)...);
+      |           ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_construct.h:94:5: note: candidate: ‘template<class _Tp, class ... _Args> constexpr decltype (::new(void*(0)) _Tp) std::construct_at(_Tp*, _Args&& ...)’
+   94 |     construct_at(_Tp* __location, _Args&&... __args)
+      |     ^~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_construct.h:94:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_construct.h: In substitution of ‘template<class _Tp, class ... _Args> constexpr decltype (::new(void*(0)) _Tp) std::construct_at(_Tp*, _Args&& ...) [with _Tp = Node; _Args = {long int, std::shared_ptr<TreeNode>&, std::shared_ptr<TreeNode>&}]’:
+/usr/include/c++/13/bits/stl_construct.h:115:21:   required from ‘constexpr void std::_Construct(_Tp*, _Args&& ...) [with _Tp = Node; _Args = {long int, shared_ptr<TreeNode>&, shared_ptr<TreeNode>&}]’
+/usr/include/c++/13/bits/alloc_traits.h:661:19:   required from ‘static constexpr void std::allocator_traits<std::allocator<void> >::construct(allocator_type&, _Up*, _Args&& ...) [with _Up = Node; _Args = {long int, std::shared_ptr<TreeNode>&, std::shared_ptr<TreeNode>&}; allocator_type = std::allocator<void>]’
+/usr/include/c++/13/bits/shared_ptr_base.h:604:39:   required from ‘std::_Sp_counted_ptr_inplace<_Tp, _Alloc, _Lp>::_Sp_counted_ptr_inplace(_Alloc, _Args&& ...) [with _Args = {long int, std::shared_ptr<TreeNode>&, std::shared_ptr<TreeNode>&}; _Tp = Node; _Alloc = std::allocator<void>; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]’
+/usr/include/c++/13/bits/shared_ptr_base.h:971:16:   required from ‘std::__shared_count<_Lp>::__shared_count(_Tp*&, std::_Sp_alloc_shared_tag<_Alloc>, _Args&& ...) [with _Tp = Node; _Alloc = std::allocator<void>; _Args = {long int, std::shared_ptr<TreeNode>&, std::shared_ptr<TreeNode>&}; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]’
+/usr/include/c++/13/bits/shared_ptr_base.h:1712:14:   required from ‘std::__shared_ptr<_Tp, _Lp>::__shared_ptr(std::_Sp_alloc_shared_tag<_Tp>, _Args&& ...) [with _Alloc = std::allocator<void>; _Args = {long int, std::shared_ptr<TreeNode>&, std::shared_ptr<TreeNode>&}; _Tp = Node; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]’
+/usr/include/c++/13/bits/shared_ptr.h:464:59:   required from ‘std::shared_ptr<_Tp>::shared_ptr(std::_Sp_alloc_shared_tag<_Tp>, _Args&& ...) [with _Alloc = std::allocator<void>; _Args = {long int, std::shared_ptr<TreeNode>&, std::shared_ptr<TreeNode>&}; _Tp = Node]’
+/usr/include/c++/13/bits/shared_ptr.h:1009:14:   required from ‘std::shared_ptr<std::_NonArray<_Tp> > std::make_shared(_Args&& ...) [with _Tp = Node; _Args = {long int, shared_ptr<TreeNode>&, shared_ptr<TreeNode>&}; _NonArray<_Tp> = Node]’
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:263:67:   required from here
+/usr/include/c++/13/bits/stl_construct.h:96:17: error: no matching function for call to ‘Node::Node(long int, std::shared_ptr<TreeNode>&, std::shared_ptr<TreeNode>&)’
+   96 |     -> decltype(::new((void*)0) _Tp(std::declval<_Args>()...))
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:140:5: note: candidate: ‘Node::Node(std::shared_ptr<TreeNode>, int64_t, std::shared_ptr<TreeNode>)’
+  140 |     Node(std::shared_ptr<TreeNode> left_, int64_t value_, std::shared_ptr<TreeNode> right_) : left(std::move(left_)), value(value_), right(std::move(right_)) {}
+      |     ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:140:36: note:   no known conversion for argument 1 from ‘long int’ to ‘std::shared_ptr<TreeNode>’
+  140 |     Node(std::shared_ptr<TreeNode> left_, int64_t value_, std::shared_ptr<TreeNode> right_) : left(std::move(left_)), value(value_), right(std::move(right_)) {}
+      |          ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:136:8: note: candidate: ‘Node::Node(const Node&)’
+  136 | struct Node : TreeNode {
+      |        ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:136:8: note:   candidate expects 1 argument, 3 provided
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:136:8: note: candidate: ‘Node::Node(Node&&)’
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:136:8: note:   candidate expects 1 argument, 3 provided
+/usr/include/c++/13/bits/stl_construct.h: In instantiation of ‘constexpr void std::_Construct(_Tp*, _Args&& ...) [with _Tp = Node; _Args = {long int, shared_ptr<TreeNode>&, shared_ptr<TreeNode>&}]’:
+/usr/include/c++/13/bits/alloc_traits.h:661:19:   required from ‘static constexpr void std::allocator_traits<std::allocator<void> >::construct(allocator_type&, _Up*, _Args&& ...) [with _Up = Node; _Args = {long int, std::shared_ptr<TreeNode>&, std::shared_ptr<TreeNode>&}; allocator_type = std::allocator<void>]’
+/usr/include/c++/13/bits/shared_ptr_base.h:604:39:   required from ‘std::_Sp_counted_ptr_inplace<_Tp, _Alloc, _Lp>::_Sp_counted_ptr_inplace(_Alloc, _Args&& ...) [with _Args = {long int, std::shared_ptr<TreeNode>&, std::shared_ptr<TreeNode>&}; _Tp = Node; _Alloc = std::allocator<void>; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]’
+/usr/include/c++/13/bits/shared_ptr_base.h:971:16:   required from ‘std::__shared_count<_Lp>::__shared_count(_Tp*&, std::_Sp_alloc_shared_tag<_Alloc>, _Args&& ...) [with _Tp = Node; _Alloc = std::allocator<void>; _Args = {long int, std::shared_ptr<TreeNode>&, std::shared_ptr<TreeNode>&}; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]’
+/usr/include/c++/13/bits/shared_ptr_base.h:1712:14:   required from ‘std::__shared_ptr<_Tp, _Lp>::__shared_ptr(std::_Sp_alloc_shared_tag<_Tp>, _Args&& ...) [with _Alloc = std::allocator<void>; _Args = {long int, std::shared_ptr<TreeNode>&, std::shared_ptr<TreeNode>&}; _Tp = Node; __gnu_cxx::_Lock_policy _Lp = __gnu_cxx::_S_atomic]’
+/usr/include/c++/13/bits/shared_ptr.h:464:59:   required from ‘std::shared_ptr<_Tp>::shared_ptr(std::_Sp_alloc_shared_tag<_Tp>, _Args&& ...) [with _Alloc = std::allocator<void>; _Args = {long int, std::shared_ptr<TreeNode>&, std::shared_ptr<TreeNode>&}; _Tp = Node]’
+/usr/include/c++/13/bits/shared_ptr.h:1009:14:   required from ‘std::shared_ptr<std::_NonArray<_Tp> > std::make_shared(_Args&& ...) [with _Tp = Node; _Args = {long int, shared_ptr<TreeNode>&, shared_ptr<TreeNode>&}; _NonArray<_Tp> = Node]’
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:263:67:   required from here
+/usr/include/c++/13/bits/stl_construct.h:119:7: error: no matching function for call to ‘Node::Node(long int, std::shared_ptr<TreeNode>&, std::shared_ptr<TreeNode>&)’
+  119 |       ::new((void*)__p) _Tp(std::forward<_Args>(__args)...);
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:140:5: note: candidate: ‘Node::Node(std::shared_ptr<TreeNode>, int64_t, std::shared_ptr<TreeNode>)’
+  140 |     Node(std::shared_ptr<TreeNode> left_, int64_t value_, std::shared_ptr<TreeNode> right_) : left(std::move(left_)), value(value_), right(std::move(right_)) {}
+      |     ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:140:36: note:   no known conversion for argument 1 from ‘long int’ to ‘std::shared_ptr<TreeNode>’
+  140 |     Node(std::shared_ptr<TreeNode> left_, int64_t value_, std::shared_ptr<TreeNode> right_) : left(std::move(left_)), value(value_), right(std::move(right_)) {}
+      |          ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:136:8: note: candidate: ‘Node::Node(const Node&)’
+  136 | struct Node : TreeNode {
+      |        ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:136:8: note:   candidate expects 1 argument, 3 provided
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:136:8: note: candidate: ‘Node::Node(Node&&)’
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/serialize_deserialize_binary_tree.cpp:136:8: note:   candidate expects 1 argument, 3 provided

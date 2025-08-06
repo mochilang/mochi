@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 144/1077
-Last updated: 2025-08-06 22:53 +0700
+Completed programs: 184/1077
+Last updated: 2025-08-07 00:14 +0700
 
 Checklist:
 
@@ -162,56 +162,56 @@ Checklist:
 | 153 | data_compression/huffman | ✓ | 344.0µs | 3.54MB |
 | 154 | data_compression/lempel_ziv |   |  |  |
 | 155 | data_compression/lempel_ziv_decompress | ✓ | 94.0µs | 3.58MB |
-| 156 | data_compression/lz77 |   |  |  |
-| 157 | data_compression/peak_signal_to_noise_ratio |   |  |  |
-| 158 | data_compression/run_length_encoding |   |  |  |
-| 159 | data_structures/arrays/equilibrium_index_in_array |   |  |  |
-| 160 | data_structures/arrays/find_triplets_with_0_sum |   |  |  |
-| 161 | data_structures/arrays/index_2d_array_in_1d |   |  |  |
-| 162 | data_structures/arrays/kth_largest_element |   |  |  |
-| 163 | data_structures/arrays/median_two_array |   |  |  |
-| 164 | data_structures/arrays/monotonic_array |   |  |  |
-| 165 | data_structures/arrays/pairs_with_given_sum |   |  |  |
-| 166 | data_structures/arrays/permutations |   |  |  |
-| 167 | data_structures/arrays/prefix_sum |   |  |  |
+| 156 | data_compression/lz77 | ✓ | 250.0µs | 3.63MB |
+| 157 | data_compression/peak_signal_to_noise_ratio | ✓ | 9.0µs | 3.60MB |
+| 158 | data_compression/run_length_encoding | ✓ | 249.0µs | 3.70MB |
+| 159 | data_structures/arrays/equilibrium_index_in_array | ✓ | 132.0µs | 3.52MB |
+| 160 | data_structures/arrays/find_triplets_with_0_sum | ✓ | 268.0µs | 3.59MB |
+| 161 | data_structures/arrays/index_2d_array_in_1d | ✓ | 212.0µs | 3.62MB |
+| 162 | data_structures/arrays/kth_largest_element | ✓ | 188.0µs | 3.48MB |
+| 163 | data_structures/arrays/median_two_array | ✓ | 342.0µs | 3.73MB |
+| 164 | data_structures/arrays/monotonic_array | ✓ | 207.0µs | 3.74MB |
+| 165 | data_structures/arrays/pairs_with_given_sum | ✓ | 141.0µs | 3.69MB |
+| 166 | data_structures/arrays/permutations | ✓ | 297.0µs | 3.63MB |
+| 167 | data_structures/arrays/prefix_sum | ✓ | 150.0µs | 3.54MB |
 | 168 | data_structures/arrays/product_sum | ✓ | 126.0µs | 3.65MB |
-| 169 | data_structures/arrays/sparse_table |   |  |  |
-| 170 | data_structures/arrays/sudoku_solver |   |  |  |
-| 171 | data_structures/binary_tree/avl_tree |   |  |  |
-| 172 | data_structures/binary_tree/basic_binary_tree |   |  |  |
-| 173 | data_structures/binary_tree/binary_search_tree |   |  |  |
+| 169 | data_structures/arrays/sparse_table | ✓ | 220.0µs | 3.62MB |
+| 170 | data_structures/arrays/sudoku_solver | ✓ | 925.0µs | 3.68MB |
+| 171 | data_structures/binary_tree/avl_tree | ✓ | 395.0µs | 3.80MB |
+| 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 195.0µs | 3.50MB |
+| 173 | data_structures/binary_tree/binary_search_tree | ✓ | 215.0µs | 3.61MB |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive |   |  |  |
-| 175 | data_structures/binary_tree/binary_tree_mirror |   |  |  |
-| 176 | data_structures/binary_tree/binary_tree_node_sum |   |  |  |
+| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 298.0µs | 3.64MB |
+| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 141.0µs | 3.44MB |
 | 177 | data_structures/binary_tree/binary_tree_path_sum |   |  |  |
-| 178 | data_structures/binary_tree/diff_views_of_binary_tree |   |  |  |
-| 179 | data_structures/binary_tree/distribute_coins |   |  |  |
-| 180 | data_structures/binary_tree/fenwick_tree |   |  |  |
-| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist |   |  |  |
+| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 202.0µs | 3.71MB |
+| 179 | data_structures/binary_tree/distribute_coins | ✓ | 178.0µs | 3.48MB |
+| 180 | data_structures/binary_tree/fenwick_tree | ✓ | 145.0µs | 3.48MB |
+| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 287.0µs | 3.56MB |
 | 182 | data_structures/binary_tree/floor_and_ceiling |   |  |  |
-| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 |   |  |  |
+| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 | ✓ | 154.0µs | 3.59MB |
 | 184 | data_structures/binary_tree/is_sorted |   |  |  |
-| 185 | data_structures/binary_tree/is_sum_tree |   |  |  |
-| 186 | data_structures/binary_tree/lazy_segment_tree |   |  |  |
-| 187 | data_structures/binary_tree/lowest_common_ancestor |   |  |  |
-| 188 | data_structures/binary_tree/maximum_fenwick_tree |   |  |  |
-| 189 | data_structures/binary_tree/maximum_sum_bst |   |  |  |
+| 185 | data_structures/binary_tree/is_sum_tree | ✓ | 19.0µs | 3.39MB |
+| 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 420.0µs | 3.73MB |
+| 187 | data_structures/binary_tree/lowest_common_ancestor | ✓ | 534.0µs | 3.56MB |
+| 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 209.0ms | 3.81MB |
+| 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 130.0µs | 3.57MB |
 | 190 | data_structures/binary_tree/merge_two_binary_trees |   |  |  |
 | 191 | data_structures/binary_tree/mirror_binary_tree |   |  |  |
-| 192 | data_structures/binary_tree/non_recursive_segment_tree |   |  |  |
+| 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 198.0µs | 3.61MB |
 | 193 | data_structures/binary_tree/number_of_possible_binary_trees |   |  |  |
-| 194 | data_structures/binary_tree/red_black_tree |   |  |  |
-| 195 | data_structures/binary_tree/segment_tree |   |  |  |
-| 196 | data_structures/binary_tree/segment_tree_other |   |  |  |
+| 194 | data_structures/binary_tree/red_black_tree | ✓ | 291.0µs | 3.65MB |
+| 195 | data_structures/binary_tree/segment_tree | ✓ | 283.0µs | 3.63MB |
+| 196 | data_structures/binary_tree/segment_tree_other | ✓ | 571.0µs | 3.68MB |
 | 197 | data_structures/binary_tree/serialize_deserialize_binary_tree |   |  |  |
-| 198 | data_structures/binary_tree/symmetric_tree |   |  |  |
+| 198 | data_structures/binary_tree/symmetric_tree | ✓ | 205.0µs | 3.69MB |
 | 199 | data_structures/binary_tree/treap |   |  |  |
-| 200 | data_structures/binary_tree/wavelet_tree |   |  |  |
-| 201 | data_structures/disjoint_set/alternate_disjoint_set |   |  |  |
-| 202 | data_structures/disjoint_set/disjoint_set |   |  |  |
-| 203 | data_structures/hashing/bloom_filter |   |  |  |
-| 204 | data_structures/hashing/double_hash |   |  |  |
-| 205 | data_structures/hashing/hash_map |   |  |  |
+| 200 | data_structures/binary_tree/wavelet_tree | ✓ | 191.0µs | 3.65MB |
+| 201 | data_structures/disjoint_set/alternate_disjoint_set | ✓ | 131.0µs | 3.48MB |
+| 202 | data_structures/disjoint_set/disjoint_set | ✓ | 253.0µs | 3.55MB |
+| 203 | data_structures/hashing/bloom_filter | ✓ | 2.0ms | 3.75MB |
+| 204 | data_structures/hashing/double_hash | ✓ | 253.0µs | 3.62MB |
+| 205 | data_structures/hashing/hash_map | ✓ | 185.0µs | 3.77MB |
 | 206 | data_structures/hashing/hash_table |   |  |  |
 | 207 | data_structures/hashing/hash_table_with_linked_list |   |  |  |
 | 208 | data_structures/hashing/number_theory/prime_numbers |   |  |  |
