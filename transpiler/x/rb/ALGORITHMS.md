@@ -1,7 +1,7 @@
 # Ruby Algorithms Transpiler Output
 
-Completed programs: 509/1077
-Last updated: 2025-08-06 23:13 +0700
+Completed programs: 609/1077
+Last updated: 2025-08-06 23:55 +0700
 
 Checklist:
 
@@ -529,108 +529,108 @@ Checklist:
 | 520 | machine_learning/self_organizing_map | ✓ | 1ms | 17.4 KB |
 | 521 | machine_learning/sequential_minimum_optimization | ✓ | 1ms | 14.1 KB |
 | 522 | machine_learning/similarity_search | ✓ | 1ms | 12.9 KB |
-| 523 | machine_learning/support_vector_machines |   |  |  |
-| 524 | machine_learning/word_frequency_functions |   |  |  |
-| 525 | machine_learning/xgboost_classifier |   |  |  |
-| 526 | machine_learning/xgboost_regressor |   |  |  |
-| 527 | maths/abs |   |  |  |
-| 528 | maths/addition_without_arithmetic |   |  |  |
-| 529 | maths/aliquot_sum |   |  |  |
-| 530 | maths/allocation_number |   |  |  |
-| 531 | maths/arc_length |   |  |  |
-| 532 | maths/area |   |  |  |
-| 533 | maths/area_under_curve |   |  |  |
-| 534 | maths/average_absolute_deviation |   |  |  |
-| 535 | maths/average_mean |   |  |  |
-| 536 | maths/average_median |   |  |  |
-| 537 | maths/average_mode |   |  |  |
-| 538 | maths/bailey_borwein_plouffe |   |  |  |
+| 523 | machine_learning/support_vector_machines | ✓ | 1ms | 90.5 KB |
+| 524 | machine_learning/word_frequency_functions | ✓ | 1ms | -54135 B |
+| 525 | machine_learning/xgboost_classifier | ✓ | 1ms | 31.3 KB |
+| 526 | machine_learning/xgboost_regressor | ✓ | 1ms | 15.6 KB |
+| 527 | maths/abs | ✓ | 1ms | 10.0 KB |
+| 528 | maths/addition_without_arithmetic | ✓ | 1ms | 9.4 KB |
+| 529 | maths/aliquot_sum | ✓ | 1ms | 9.1 KB |
+| 530 | maths/allocation_number | ✓ | 1ms | 12.4 KB |
+| 531 | maths/arc_length | ✓ | 1ms | 9.2 KB |
+| 532 | maths/area | ✓ | 1ms | 15.0 KB |
+| 533 | maths/area_under_curve | ✓ | 1ms | 12.1 KB |
+| 534 | maths/average_absolute_deviation | ✓ | 1ms | 9.8 KB |
+| 535 | maths/average_mean | ✓ | 1ms | 9.5 KB |
+| 536 | maths/average_median | ✓ | 1ms | 9.8 KB |
+| 537 | maths/average_mode | ✓ | 1ms | 16.0 KB |
+| 538 | maths/bailey_borwein_plouffe | ✓ | 1ms | 208.9 KB |
 | 539 | maths/base_neg2_conversion |   |  |  |
-| 540 | maths/basic_maths |   |  |  |
-| 541 | maths/binary_exponentiation |   |  |  |
-| 542 | maths/binary_multiplication |   |  |  |
-| 543 | maths/binomial_coefficient |   |  |  |
-| 544 | maths/binomial_distribution |   |  |  |
-| 545 | maths/ceil |   |  |  |
-| 546 | maths/chebyshev_distance |   |  |  |
-| 547 | maths/check_polygon |   |  |  |
-| 548 | maths/chinese_remainder_theorem |   |  |  |
-| 549 | maths/chudnovsky_algorithm |   |  |  |
-| 550 | maths/collatz_sequence |   |  |  |
-| 551 | maths/combinations |   |  |  |
-| 552 | maths/continued_fraction |   |  |  |
-| 553 | maths/decimal_isolate |   |  |  |
-| 554 | maths/decimal_to_fraction |   |  |  |
-| 555 | maths/dodecahedron |   |  |  |
-| 556 | maths/double_factorial |   |  |  |
-| 557 | maths/dual_number_automatic_differentiation |   |  |  |
-| 558 | maths/entropy |   |  |  |
-| 559 | maths/euclidean_distance |   |  |  |
-| 560 | maths/euler_method |   |  |  |
-| 561 | maths/euler_modified |   |  |  |
-| 562 | maths/eulers_totient |   |  |  |
-| 563 | maths/extended_euclidean_algorithm |   |  |  |
-| 564 | maths/factorial |   |  |  |
-| 565 | maths/factors |   |  |  |
-| 566 | maths/fast_inverse_sqrt |   |  |  |
-| 567 | maths/fermat_little_theorem |   |  |  |
-| 568 | maths/fibonacci |   |  |  |
-| 569 | maths/find_max |   |  |  |
-| 570 | maths/find_min |   |  |  |
-| 571 | maths/floor |   |  |  |
-| 572 | maths/gamma |   |  |  |
-| 573 | maths/gaussian |   |  |  |
-| 574 | maths/gcd_of_n_numbers |   |  |  |
+| 540 | maths/basic_maths | ✓ | 1ms | 10.8 KB |
+| 541 | maths/binary_exponentiation | ✓ | 1ms | 9.6 KB |
+| 542 | maths/binary_multiplication | ✓ | 1ms | 9.3 KB |
+| 543 | maths/binomial_coefficient | ✓ | 1ms | 9.5 KB |
+| 544 | maths/binomial_distribution | ✓ | 1ms | 808 B |
+| 545 | maths/ceil | ✓ | 1ms | 9.5 KB |
+| 546 | maths/chebyshev_distance | ✓ | 1ms | 9.6 KB |
+| 547 | maths/check_polygon | ✓ | 1ms | 10.2 KB |
+| 548 | maths/chinese_remainder_theorem | ✓ | 1ms | 18.8 KB |
+| 549 | maths/chudnovsky_algorithm | ✓ | 1ms | 9.9 KB |
+| 550 | maths/collatz_sequence | ✓ | 1ms | 11.5 KB |
+| 551 | maths/combinations | ✓ | 1ms | 10.5 KB |
+| 552 | maths/continued_fraction | ✓ | 1ms | 10.9 KB |
+| 553 | maths/decimal_isolate | ✓ | 1ms | 10.0 KB |
+| 554 | maths/decimal_to_fraction | ✓ | 1ms | 36.1 KB |
+| 555 | maths/dodecahedron | ✓ | 1ms | 10.1 KB |
+| 556 | maths/double_factorial | ✓ | 1ms | 9.1 KB |
+| 557 | maths/dual_number_automatic_differentiation | ✓ | 1ms | 24.6 KB |
+| 558 | maths/entropy | ✓ | 1ms | 347.7 KB |
+| 559 | maths/euclidean_distance | ✓ | 1ms | 10.2 KB |
+| 560 | maths/euler_method | ✓ | 1ms | 57.1 KB |
+| 561 | maths/euler_modified | ✓ | 1ms | 12.9 KB |
+| 562 | maths/eulers_totient | ✓ | 1ms | 15.3 KB |
+| 563 | maths/extended_euclidean_algorithm | ✓ | 1ms | 12.2 KB |
+| 564 | maths/factorial | ✓ | 1ms | 9.1 KB |
+| 565 | maths/factors | ✓ | 1ms | 12.9 KB |
+| 566 | maths/fast_inverse_sqrt | ✓ | 1ms | 15.8 KB |
+| 567 | maths/fermat_little_theorem | ✓ | 1ms | 9.0 KB |
+| 568 | maths/fibonacci | ✓ | 1ms | 16.5 KB |
+| 569 | maths/find_max | ✓ | 1ms | 9.7 KB |
+| 570 | maths/find_min | ✓ | 1ms | 9.7 KB |
+| 571 | maths/floor | ✓ | 1ms | 9.2 KB |
+| 572 | maths/gamma | ✓ | 1ms | 12.3 KB |
+| 573 | maths/gaussian | ✓ | 1ms | 9.7 KB |
+| 574 | maths/gcd_of_n_numbers | ✓ | 1ms | 9.3 KB |
 | 575 | maths/geometric_mean |   |  |  |
-| 576 | maths/germain_primes |   |  |  |
-| 577 | maths/greatest_common_divisor |   |  |  |
-| 578 | maths/hardy_ramanujanalgo |   |  |  |
-| 579 | maths/integer_square_root |   |  |  |
-| 580 | maths/interquartile_range |   |  |  |
-| 581 | maths/is_int_palindrome |   |  |  |
-| 582 | maths/is_ip_v4_address_valid |   |  |  |
-| 583 | maths/is_square_free |   |  |  |
-| 584 | maths/jaccard_similarity |   |  |  |
-| 585 | maths/joint_probability_distribution |   |  |  |
-| 586 | maths/josephus_problem |   |  |  |
-| 587 | maths/juggler_sequence |   |  |  |
-| 588 | maths/karatsuba |   |  |  |
-| 589 | maths/kth_lexicographic_permutation |   |  |  |
-| 590 | maths/largest_of_very_large_numbers |   |  |  |
-| 591 | maths/least_common_multiple |   |  |  |
-| 592 | maths/line_length |   |  |  |
-| 593 | maths/liouville_lambda |   |  |  |
-| 594 | maths/lucas_lehmer_primality_test |   |  |  |
-| 595 | maths/lucas_series |   |  |  |
-| 596 | maths/maclaurin_series |   |  |  |
-| 597 | maths/manhattan_distance |   |  |  |
-| 598 | maths/matrix_exponentiation |   |  |  |
-| 599 | maths/max_sum_sliding_window |   |  |  |
-| 600 | maths/minkowski_distance |   |  |  |
-| 601 | maths/mobius_function |   |  |  |
-| 602 | maths/modular_division |   |  |  |
-| 603 | maths/monte_carlo |   |  |  |
-| 604 | maths/monte_carlo_dice |   |  |  |
-| 605 | maths/number_of_digits |   |  |  |
-| 606 | maths/numerical_analysis/adams_bashforth |   |  |  |
-| 607 | maths/numerical_analysis/bisection |   |  |  |
-| 608 | maths/numerical_analysis/bisection_2 |   |  |  |
-| 609 | maths/numerical_analysis/integration_by_simpson_approx |   |  |  |
-| 610 | maths/numerical_analysis/intersection |   |  |  |
-| 611 | maths/numerical_analysis/nevilles_method |   |  |  |
-| 612 | maths/numerical_analysis/newton_forward_interpolation |   |  |  |
-| 613 | maths/numerical_analysis/newton_raphson |   |  |  |
-| 614 | maths/numerical_analysis/numerical_integration |   |  |  |
-| 615 | maths/numerical_analysis/proper_fractions |   |  |  |
-| 616 | maths/numerical_analysis/runge_kutta |   |  |  |
-| 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 |   |  |  |
-| 618 | maths/numerical_analysis/runge_kutta_gills |   |  |  |
-| 619 | maths/numerical_analysis/secant_method |   |  |  |
-| 620 | maths/numerical_analysis/simpson_rule |   |  |  |
-| 621 | maths/numerical_analysis/square_root |   |  |  |
-| 622 | maths/odd_sieve |   |  |  |
-| 623 | maths/perfect_cube |   |  |  |
-| 624 | maths/perfect_number |   |  |  |
+| 576 | maths/germain_primes | ✓ | 1ms | 9.3 KB |
+| 577 | maths/greatest_common_divisor | ✓ | 1ms | 9.8 KB |
+| 578 | maths/hardy_ramanujanalgo | ✓ | 1ms | 10.0 KB |
+| 579 | maths/integer_square_root | ✓ | 1ms | 9.1 KB |
+| 580 | maths/interquartile_range | ✓ | 1ms | 13.6 KB |
+| 581 | maths/is_int_palindrome | ✓ | 1ms | 9.1 KB |
+| 582 | maths/is_ip_v4_address_valid | ✓ | 1ms | 41.2 KB |
+| 583 | maths/is_square_free | ✓ | 1ms | 9.3 KB |
+| 584 | maths/jaccard_similarity | ✓ | 1ms | 10.5 KB |
+| 585 | maths/joint_probability_distribution | ✓ | 1ms | 15.1 KB |
+| 586 | maths/josephus_problem | ✓ | 1ms | 11.2 KB |
+| 587 | maths/juggler_sequence | ✓ | 1ms | 11.4 KB |
+| 588 | maths/karatsuba | ✓ | 1ms | 11.1 KB |
+| 589 | maths/kth_lexicographic_permutation | ✓ | 1ms | 14.6 KB |
+| 590 | maths/largest_of_very_large_numbers | ✓ | 1ms | 10.1 KB |
+| 591 | maths/least_common_multiple | ✓ | 1ms | 9.2 KB |
+| 592 | maths/line_length | ✓ | 1ms | 10.4 KB |
+| 593 | maths/liouville_lambda | ✓ | 1ms | 9.5 KB |
+| 594 | maths/lucas_lehmer_primality_test | ✓ | 1ms | 9.3 KB |
+| 595 | maths/lucas_series | ✓ | 1ms | 9.3 KB |
+| 596 | maths/maclaurin_series | ✓ | 1ms | 10.3 KB |
+| 597 | maths/manhattan_distance | ✓ | 1ms | 10.0 KB |
+| 598 | maths/matrix_exponentiation | ✓ | 1ms | 20.8 KB |
+| 599 | maths/max_sum_sliding_window | ✓ | 1ms | 9.2 KB |
+| 600 | maths/minkowski_distance | ✓ | 1ms | 10.1 KB |
+| 601 | maths/mobius_function | ✓ | 1ms | 9.9 KB |
+| 602 | maths/modular_division | ✓ | 1ms | 11.0 KB |
+| 603 | maths/monte_carlo | ✓ | 1ms | 15.1 KB |
+| 604 | maths/monte_carlo_dice | ✓ | 1ms | 11.7 KB |
+| 605 | maths/number_of_digits | ✓ | 1ms | 9.8 KB |
+| 606 | maths/numerical_analysis/adams_bashforth | ✓ | 1ms | 15.5 KB |
+| 607 | maths/numerical_analysis/bisection | ✓ | 1ms | 9.8 KB |
+| 608 | maths/numerical_analysis/bisection_2 | ✓ | 1ms | 9.5 KB |
+| 609 | maths/numerical_analysis/integration_by_simpson_approx | ✓ | 1ms | 10.0 KB |
+| 610 | maths/numerical_analysis/intersection | ✓ | 1ms | 9.7 KB |
+| 611 | maths/numerical_analysis/nevilles_method | ✓ | 1ms | 16.9 KB |
+| 612 | maths/numerical_analysis/newton_forward_interpolation | ✓ | 1ms | 11.0 KB |
+| 613 | maths/numerical_analysis/newton_raphson | ✓ | 1ms | 11.8 KB |
+| 614 | maths/numerical_analysis/numerical_integration | ✓ | 1ms | 12.1 KB |
+| 615 | maths/numerical_analysis/proper_fractions | ✓ | 1ms | 15.2 KB |
+| 616 | maths/numerical_analysis/runge_kutta | ✓ | 1ms | 34.0 KB |
+| 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 | ✓ | 1ms | 10.4 KB |
+| 618 | maths/numerical_analysis/runge_kutta_gills | ✓ | 1ms | 12.6 KB |
+| 619 | maths/numerical_analysis/secant_method | ✓ | 1ms | 9.5 KB |
+| 620 | maths/numerical_analysis/simpson_rule | ✓ | 1ms | 10.1 KB |
+| 621 | maths/numerical_analysis/square_root | ✓ | 1ms | 9.7 KB |
+| 622 | maths/odd_sieve | ✓ | 1ms | 12.3 KB |
+| 623 | maths/perfect_cube | ✓ | 1ms | 9.2 KB |
+| 624 | maths/perfect_number | ✓ | 1ms | 9.2 KB |
 | 625 | maths/perfect_square |   |  |  |
 | 626 | maths/persistence |   |  |  |
 | 627 | maths/pi_generator |   |  |  |

@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -166,6 +167,12 @@ end
 const helperStringEach = `
 class String
   alias each each_char
+end
+`
+
+const helperPanic = `
+def panic(msg)
+  raise RuntimeError, msg
 end
 `
 
@@ -1815,7 +1822,11 @@ func (i *IntLit) emit(e *emitter) { fmt.Fprintf(e.w, "%d", i.Value) }
 type FloatLit struct{ Value float64 }
 
 func (f *FloatLit) emit(e *emitter) {
-	fmt.Fprintf(e.w, "%g", f.Value)
+	if math.Trunc(f.Value) == f.Value {
+		fmt.Fprintf(e.w, "%.1f", f.Value)
+	} else {
+		fmt.Fprintf(e.w, "%g", f.Value)
+	}
 }
 
 type BoolLit struct{ Value bool }
@@ -2314,7 +2325,14 @@ func (m *MethodCallExpr) emit(e *emitter) {
 		io.WriteString(e.w, ")")
 		return
 	}
-	m.Target.emit(e)
+	switch m.Target.(type) {
+	case *Ident, *FieldExpr:
+		m.Target.emit(e)
+	default:
+		io.WriteString(e.w, "(")
+		m.Target.emit(e)
+		io.WriteString(e.w, ")")
+	}
 	io.WriteString(e.w, ".")
 	io.WriteString(e.w, m.Method)
 	io.WriteString(e.w, "(")
@@ -2898,6 +2916,9 @@ func Emit(w io.Writer, p *Program) error {
 		return err
 	}
 	if _, err := io.WriteString(w, helperStringEach+"\n"); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, helperPanic+"\n"); err != nil {
 		return err
 	}
 	for _, s := range p.Stmts {
