@@ -67,6 +67,15 @@ local function _padStart(s, len, ch)
 end
 `
 
+const helperPadEnd = `
+local function _padEnd(s, len, ch)
+  if ch == nil or ch == '' then ch = ' ' end
+  if #s >= len then return s end
+  local fill = string.sub(ch, 1, 1)
+  return s .. string.rep(fill, len - #s)
+end
+`
+
 const helperBigRat = `
 local function _gcd(a, b)
   a = math.abs(a)
@@ -621,6 +630,22 @@ func (c *CallExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 	case "padStart":
 		io.WriteString(w, "_padStart(")
+		if len(c.Args) > 0 {
+			io.WriteString(w, "tostring(")
+			c.Args[0].emit(w)
+			io.WriteString(w, ")")
+		}
+		io.WriteString(w, ", ")
+		if len(c.Args) > 1 {
+			c.Args[1].emit(w)
+		}
+		io.WriteString(w, ", ")
+		if len(c.Args) > 2 {
+			c.Args[2].emit(w)
+		}
+		io.WriteString(w, ")")
+	case "padEnd":
+		io.WriteString(w, "_padEnd(")
 		if len(c.Args) > 0 {
 			io.WriteString(w, "tostring(")
 			c.Args[0].emit(w)
@@ -2595,6 +2620,8 @@ func collectHelpers(p *Program) map[string]bool {
 				used["bigrat"] = true
 			case "padStart":
 				used["padStart"] = true
+			case "padEnd":
+				used["padEnd"] = true
 			case "sha256":
 				used["sha256"] = true
 			case "MD5Hex":
@@ -2792,6 +2819,9 @@ func Emit(p *Program) []byte {
 	}
 	if used["padStart"] {
 		b.WriteString(helperPadStart)
+	}
+	if used["padEnd"] {
+		b.WriteString(helperPadEnd)
 	}
 	if used["bigrat"] {
 		b.WriteString(helperBigRat)
@@ -3056,6 +3086,10 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 					// string method
 					args = append([]Expr{expr}, args...)
 					expr = &CallExpr{Func: "padStart", Args: args}
+				} else if op.Field.Name == "padEnd" {
+					// string method
+					args = append([]Expr{expr}, args...)
+					expr = &CallExpr{Func: "padEnd", Args: args}
 				} else if id, ok := expr.(*Ident); ok {
 					if currentEnv != nil {
 						if t, err := currentEnv.GetVar(id.Name); err == nil {
