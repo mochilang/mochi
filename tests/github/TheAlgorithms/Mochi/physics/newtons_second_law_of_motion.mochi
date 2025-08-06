@@ -1,0 +1,21 @@
+/*
+Newton's Second Law of Motion
+
+Computes the net force acting on a body using F = m * a.
+Mass is measured in kilograms and acceleration in meters per
+second squared. The result is the force in Newtons. Inputs
+are validated to be non-negative; if invalid values are provided
+the function returns 0.0.
+*/
+
+fun newtons_second_law_of_motion(mass: float, acceleration: float): float {
+  if mass < 0.0 || acceleration < 0.0 {
+    return 0.0
+  }
+  return mass * acceleration
+}
+
+let mass = 12.5
+let acceleration = 10.0
+let force = newtons_second_law_of_motion(mass, acceleration)
+print("The force is " + str(force) + " N")
