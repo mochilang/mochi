@@ -889,12 +889,16 @@ func convertStmt(st *parser.Statement) (Node, error) {
 		case types.ListType:
 			return &List{Elems: []Node{Symbol("list-set!"), target, idxNode, val}}, nil
 		default:
-			// Fallback to hash-table semantics when the container type
-			// is unknown. This avoids treating maps as lists when type
-			// information is lost, which previously resulted in
-			// runtime errors for string keys.
-			needHash = true
-			return &List{Elems: []Node{Symbol("hash-table-set!"), target, idxNode, val}}, nil
+			// When the container type is unknown, attempt a best-effort
+			// guess based on the index. String keys likely indicate a
+			// map, while numeric indices behave like lists. This keeps
+			// list assignments working even when type information is
+			// lost, without breaking string-keyed maps.
+			if _, ok := idxNode.(StringLit); ok {
+				needHash = true
+				return &List{Elems: []Node{Symbol("hash-table-set!"), target, idxNode, val}}, nil
+			}
+			return &List{Elems: []Node{Symbol("list-set!"), target, idxNode, val}}, nil
 		}
 	case st.Assign != nil && len(st.Assign.Field) > 0:
 		var target Node = Symbol(st.Assign.Name)
