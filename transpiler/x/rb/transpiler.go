@@ -4207,6 +4207,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("floor expects 1 arg")
 			}
 			return &MethodCallExpr{Target: args[0], Method: "floor"}, nil
+		case "abs":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("abs expects 1 arg")
+			}
+			return &MethodCallExpr{Target: args[0], Method: "abs"}, nil
 		case "now":
 			if len(args) != 0 {
 				return nil, fmt.Errorf("now takes no args")
