@@ -1,0 +1,6 @@
+/workspace/mochi/tests/algorithms/x/Erlang/ciphers/trifid_cipher.erl:237:44: Warning: variable 'End_6' exported from 'case' (line 219, column 13)
+%  237| {Alpha_2, Alphabet_6, Decrypted_numeric_2, End_6, Groups, I_13, K_2, Message_2, Msg_2, Part_4, Period_2} = Fun_9(Alpha_2, Alphabet_6, Decrypted_numeric, End_6, Groups, I_13, K, Message_2, Msg_2, Part_4, Period_2),
+%     |                                            ^
+
+"Encrypted: SUEFECPHSEGYYJIXIMFOFOCEJLBSP"
+"Decrypted: DEFENDTHEEASTWALLOFTHECASTLE."

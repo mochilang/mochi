@@ -1,0 +1,11 @@
+/workspace/mochi/tests/algorithms/x/Erlang/conversions/convert_number_to_words.erl:201:19: Warning: variable 'Powers_7' exported from 'case' (line 151, column 9)
+%  201| {I_6, N_4, Num_2, Powers_7, System_2, Units_7, Word_groups_5} = Fun_3(I_5, N_3, Num_2, Powers_7, System_2, Units_7, Word_groups_3),
+%     |                   ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/conversions/convert_number_to_words.erl:201:39: Warning: variable 'Units_7' exported from 'case' (line 151, column 9)
+%  201| {I_6, N_4, Num_2, Powers_7, System_2, Units_7, Word_groups_5} = Fun_3(I_5, N_3, Num_2, Powers_7, System_2, Units_7, Word_groups_3),
+%     |                                       ^
+
+"one hundred twenty-three trillion four hundred fifty-six billion seven hundred eighty-nine million twelve thousand three hundred forty-five"
+"one hundred twenty-three thousand four hundred fifty-six milliard seven hundred eighty-nine million twelve thousand three hundred forty-five"
+"one crore crore twenty-three lakh crore forty-five thousand six hundred seventy-eight crore ninety lakh twelve thousand three hundred forty-five"

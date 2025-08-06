@@ -1,0 +1,14 @@
+/workspace/mochi/tests/algorithms/x/Erlang/conversions/octal_to_decimal.erl:149:25: Warning: variable 'Is_negative_3' exported from 'case' (line 123, column 9)
+%  149| {Decimal_number_2, I_2, Is_negative_3, Oct_string, S_4} = Fun_3(Decimal_number, I, Is_negative_3, Oct_string, S_4),
+%     |                         ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/conversions/octal_to_decimal.erl:149:52: Warning: variable 'S_4' exported from 'case' (line 123, column 9)
+%  149| {Decimal_number_2, I_2, Is_negative_3, Oct_string, S_4} = Fun_3(Decimal_number, I, Is_negative_3, Oct_string, S_4),
+%     |                                                    ^
+
+1
+-1
+10
+10
+-37
+0

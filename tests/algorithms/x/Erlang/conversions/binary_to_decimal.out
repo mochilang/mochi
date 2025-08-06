@@ -1,0 +1,20 @@
+/workspace/mochi/tests/algorithms/x/Erlang/conversions/binary_to_decimal.erl:127:19: Warning: variable 'Is_negative_3' exported from 'case' (line 105, column 9)
+%  127| {Bin_string, I_2, Is_negative_3, S_4, Trimmed} = Fun_3(Bin_string, I, Is_negative_3, S_4, Trimmed),
+%     |                   ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/conversions/binary_to_decimal.erl:127:34: Warning: variable 'S_4' exported from 'case' (line 105, column 9)
+%  127| {Bin_string, I_2, Is_negative_3, S_4, Trimmed} = Fun_3(Bin_string, I, Is_negative_3, S_4, Trimmed),
+%     |                                  ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/conversions/binary_to_decimal.erl:141:37: Warning: variable 'Is_negative_3' exported from 'case' (line 105, column 9)
+%  141| {Bin_string, Decimal_number_2, I_4, Is_negative_3, S_4, Trimmed} = Fun_4(Bin_string, Decimal_number, I_3, Is_negative_3, S_4, Trimmed),
+%     |                                     ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/conversions/binary_to_decimal.erl:141:52: Warning: variable 'S_4' exported from 'case' (line 105, column 9)
+%  141| {Bin_string, Decimal_number_2, I_4, Is_negative_3, S_4, Trimmed} = Fun_4(Bin_string, Decimal_number, I_3, Is_negative_3, S_4, Trimmed),
+%     |                                                    ^
+
+5
+10
+-29
+0
