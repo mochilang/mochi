@@ -1,0 +1,2 @@
+generate_all_combinations(4,2)
+generate_all_combinations(3,1)
