@@ -2714,6 +2714,10 @@ func convertForStmt(f *parser.ForStmt, env *types.Env) (Stmt, error) {
 		case types.MapType:
 			keys = true
 			elemType = t.Key
+		case types.StructType:
+			// Treat structured maps like objects and iterate over keys
+			keys = true
+			elemType = types.StringType{}
 		case types.ListType:
 			elemType = t.Elem
 		case types.GroupType:
