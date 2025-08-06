@@ -1,0 +1,9 @@
+run: exit status 1
+Result(name='voltage', value=2.5)
+[0m[1m[31merror[0m: Uncaught (in promise) ReferenceError: floor is not defined
+  return (floor(((x * m) + 0.5)) / m);
+[0m[31m  ^[0m
+    at [0m[1m[3mround_to[0m ([0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/electronics/electric_power.ts[0m:[0m[33m21[0m:[0m[33m3[0m)
+    at [0m[1m[3melectric_power[0m ([0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/electronics/electric_power.ts[0m:[0m[33m48[0m:[0m[33m47[0m)
+    at [0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/electronics/electric_power.ts[0m:[0m[33m124[0m:[0m[33m6[0m
+    at [0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/electronics/electric_power.ts[0m:[0m[33m143[0m:[0m[33m2[0m
