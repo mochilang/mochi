@@ -1,0 +1,26 @@
+/workspace/mochi/tests/algorithms/x/Erlang/cellular_automata/wa_tor.erl:275:41: Warning: the result of evaluating operator '++'/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%  275|             E_5 = lists:sublist(E_4, 4) ++ [((Energy + 5) - 1)] ++ lists:nthtail(4 + 1, E_4),
+%     |                                         ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/cellular_automata/wa_tor.erl:303:35: Warning: variable 'I_11' exported from 'case' (line 224, column 17)
+%  303| {Ate_3, Col, Dirs_2, E_6, Energy, I_11, J_3, Moved_3, Old_c, Old_r, Repro, Row_3, Typ_2} = Fun_8(Ate, Col, Dirs_2, E_2, Energy, I_11, J_2, Moved, Old_c, Old_r, Repro, Row_3, Typ_2),
+%     |                                   ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/cellular_automata/wa_tor.erl:325:41: Warning: the result of evaluating operator '++'/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%  325|             E_8 = lists:sublist(E_7, 2) ++ [Nc_2] ++ lists:nthtail(2 + 1, E_7),
+%     |                                         ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/cellular_automata/wa_tor.erl:346:35: Warning: variable 'I_11' exported from 'case' (line 224, column 17)
+%  346| {Ate_3, Col, Dirs_2, E_9, Energy, I_11, J_5, Moved_5, Old_c, Old_r, Repro, Row_3, Typ_2} = Fun_9(Ate_3, Col, Dirs_2, E_6, Energy, I_11, J_4, Moved_3, Old_c, Old_r, Repro, Row_3, Typ_2),
+%     |                                   ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/cellular_automata/wa_tor.erl:398:43: Warning: the result of evaluating operator '++'/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%  398|             E_15 = lists:sublist(E_14, 2) ++ [Nc_3] ++ lists:nthtail(2 + 1, E_14),
+%     |                                           ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/cellular_automata/wa_tor.erl:419:29: Warning: variable 'I_11' exported from 'case' (line 224, column 17)
+%  419| {Col, Dirs_2, E_16, Energy, I_11, J_8, Moved_8, Old_c, Old_r, Repro, Row_3, Typ_2} = Fun_11(Col, Dirs_2, E_2, Energy, I_11, J_7, Moved, Old_c, Old_r, Repro, Row_3, Typ_2),
+%     |                             ^
+
+"Prey: 20"
+"Predators: 5"

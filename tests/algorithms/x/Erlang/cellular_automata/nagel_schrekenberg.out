@@ -1,0 +1,6 @@
+/workspace/mochi/tests/algorithms/x/Erlang/cellular_automata/nagel_schrekenberg.erl:110:29: Warning: variable 'Initial_speed_3' exported from 'case' (line 82, column 9)
+%  110| {Frequency, Highway_3, I_4, Initial_speed_3, Max_speed, Number_of_cells, Random_frequency, Random_speed, Row_2} = Fun_2(Frequency, Highway_2, I_3, Initial_speed_3, Max_speed, Number_of_cells, Random_frequency, Random_speed, Row_2),
+%     |                             ^
+
+[[0 -1 -1 0 -1 -1] [-1 1 -1 -1 1 -1] [-1 -1 1 -1 -1 1]]
+[[0 -1 0 -1 0] [0 -1 0 -1 -1] [0 -1 -1 1 -1] [-1 1 -1 0 -1]]
