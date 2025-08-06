@@ -2,8 +2,8 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 119/1077
-Last updated: 2025-08-06 21:14 +0700
+Completed programs: 149/1077
+Last updated: 2025-08-06 21:38 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -128,37 +128,37 @@ Last updated: 2025-08-06 21:14 +0700
 | 119 | computer_vision/mosaic_augmentation | ✓ | 2.557ms | 3.5 MB |
 | 120 | computer_vision/pooling_functions | ✓ | 327µs | 3.2 MB |
 | 121 | conversions/astronomical_length_scale_conversion | ✓ | 388µs | 3.3 MB |
-| 122 | conversions/binary_to_decimal |   |  |  |
-| 123 | conversions/binary_to_hexadecimal |   |  |  |
-| 124 | conversions/binary_to_octal |   |  |  |
-| 125 | conversions/convert_number_to_words |   |  |  |
-| 126 | conversions/decimal_to_any |   |  |  |
-| 127 | conversions/decimal_to_binary |   |  |  |
-| 128 | conversions/decimal_to_hexadecimal |   |  |  |
-| 129 | conversions/decimal_to_octal |   |  |  |
-| 130 | conversions/energy_conversions |   |  |  |
-| 131 | conversions/excel_title_to_column |   |  |  |
-| 132 | conversions/hex_to_bin |   |  |  |
-| 133 | conversions/hexadecimal_to_decimal |   |  |  |
-| 134 | conversions/ipv4_conversion |   |  |  |
-| 135 | conversions/length_conversion |   |  |  |
-| 136 | conversions/molecular_chemistry |   |  |  |
-| 137 | conversions/octal_to_binary |   |  |  |
-| 138 | conversions/octal_to_decimal |   |  |  |
-| 139 | conversions/octal_to_hexadecimal |   |  |  |
-| 140 | conversions/prefix_conversions |   |  |  |
-| 141 | conversions/prefix_conversions_string |   |  |  |
+| 122 | conversions/binary_to_decimal | ✓ | 799µs | 3.4 MB |
+| 123 | conversions/binary_to_hexadecimal | ✓ | 522µs | 3.3 MB |
+| 124 | conversions/binary_to_octal | ✓ | 487µs | 3.2 MB |
+| 125 | conversions/convert_number_to_words | ✓ | 421µs | 3.5 MB |
+| 126 | conversions/decimal_to_any | ✓ | 490µs | 3.4 MB |
+| 127 | conversions/decimal_to_binary | ✓ | 401µs | 3.4 MB |
+| 128 | conversions/decimal_to_hexadecimal | ✓ | 625µs | 3.2 MB |
+| 129 | conversions/decimal_to_octal | ✓ | 451µs | 3.2 MB |
+| 130 | conversions/energy_conversions | ✓ | 428µs | 3.2 MB |
+| 131 | conversions/excel_title_to_column | ✓ | 902µs | 3.0 MB |
+| 132 | conversions/hex_to_bin | ✓ | 630µs | 3.2 MB |
+| 133 | conversions/hexadecimal_to_decimal | ✓ | 442µs | 3.2 MB |
+| 134 | conversions/ipv4_conversion | ✓ | 1.041ms | 3.4 MB |
+| 135 | conversions/length_conversion | ✓ | 720µs | 3.5 MB |
+| 136 | conversions/molecular_chemistry | ✓ | 739µs | 3.2 MB |
+| 137 | conversions/octal_to_binary | ✓ | 445µs | 3.2 MB |
+| 138 | conversions/octal_to_decimal | ✓ | 517µs | 3.2 MB |
+| 139 | conversions/octal_to_hexadecimal | ✓ | 391µs | 3.2 MB |
+| 140 | conversions/prefix_conversions | ✓ | 377µs | 3.3 MB |
+| 141 | conversions/prefix_conversions_string | ✓ | 489µs | 3.4 MB |
 | 142 | conversions/pressure_conversions |   |  |  |
-| 143 | conversions/rectangular_to_polar |   |  |  |
-| 144 | conversions/rgb_cmyk_conversion |   |  |  |
-| 145 | conversions/rgb_hsv_conversion |   |  |  |
-| 146 | conversions/roman_numerals |   |  |  |
-| 147 | conversions/speed_conversions |   |  |  |
-| 148 | conversions/temperature_conversions |   |  |  |
-| 149 | conversions/time_conversions |   |  |  |
-| 150 | conversions/volume_conversions |   |  |  |
-| 151 | conversions/weight_conversion |   |  |  |
-| 152 | data_compression/burrows_wheeler |   |  |  |
+| 143 | conversions/rectangular_to_polar | ✓ | 1.107ms | 3.7 MB |
+| 144 | conversions/rgb_cmyk_conversion | ✓ | 647µs | 3.3 MB |
+| 145 | conversions/rgb_hsv_conversion | ✓ | 2.534ms | 3.6 MB |
+| 146 | conversions/roman_numerals | ✓ | 270µs | 3.1 MB |
+| 147 | conversions/speed_conversions | ✓ | 620µs | 3.3 MB |
+| 148 | conversions/temperature_conversions | ✓ | 461µs | 3.3 MB |
+| 149 | conversions/time_conversions | ✓ | 723µs | 3.4 MB |
+| 150 | conversions/volume_conversions | ✓ | 390µs | 3.5 MB |
+| 151 | conversions/weight_conversion | ✓ | 427µs | 3.3 MB |
+| 152 | data_compression/burrows_wheeler | ✓ | 1.024ms | 3.4 MB |
 | 153 | data_compression/huffman |   |  |  |
 | 154 | data_compression/lempel_ziv |   |  |  |
 | 155 | data_compression/lempel_ziv_decompress |   |  |  |

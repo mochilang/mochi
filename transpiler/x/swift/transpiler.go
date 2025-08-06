@@ -848,6 +848,20 @@ func (as *ArrayStringExpr) emit(w io.Writer) {
 	}
 }
 
+// JoinExpr joins a list of strings with a separator.
+type JoinExpr struct {
+	List Expr
+	Sep  Expr
+}
+
+func (j *JoinExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "(")
+	j.List.emit(w)
+	fmt.Fprint(w, ").joined(separator: ")
+	j.Sep.emit(w)
+	fmt.Fprint(w, ")")
+}
+
 // LenExpr renders a length expression, optionally casting to String first.
 type LenExpr struct {
 	Value    Expr
@@ -1969,7 +1983,7 @@ func (p *Program) Emit() []byte {
 	}
 	if p.UseKeys {
 		buf.WriteString("func _keys<K,V>(_ m: [K: V]) -> [K] {\n")
-		buf.WriteString("    Array(m.keys)\n")
+		buf.WriteString("    return Array(m.keys)\n")
 		buf.WriteString("}\n")
 	}
 	if p.UsePad {
@@ -2380,7 +2394,11 @@ func findUpdatedVars(env *types.Env, list []*parser.Statement, vars map[string]b
 				if st.Let.Type != nil {
 					t = types.ResolveTypeRef(st.Let.Type, env)
 				} else if st.Let.Value != nil {
-					t = types.TypeOfExpr(st.Let.Value, env)
+					if isJoinExpr(st.Let.Value) {
+						t = types.StringType{}
+					} else {
+						t = types.TypeOfExpr(st.Let.Value, env)
+					}
 				}
 				env.SetVar(st.Let.Name, t, false)
 			}
@@ -2448,6 +2466,19 @@ func rootNamePostfix(pe *parser.PostfixExpr) string {
 		return rootNameExpr(pe.Target.Group)
 	}
 	return ""
+}
+
+func isJoinExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
+		return false
+	}
+	pe := e.Binary.Left.Value
+	for i := 0; i < len(pe.Ops)-1; i++ {
+		if pe.Ops[i].Field != nil && pe.Ops[i].Field.Name == "join" && pe.Ops[i+1].Call != nil {
+			return true
+		}
+	}
+	return false
 }
 
 func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
@@ -2565,6 +2596,9 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 				typ = toSwiftType(st.Let.Type)
 			} else if env != nil {
 				t := types.TypeOfExpr(st.Let.Value, env)
+				if isJoinExpr(st.Let.Value) {
+					t = types.StringType{}
+				}
 				typ = swiftTypeOf(t)
 				if !types.IsEmptyListLiteral(st.Let.Value) && !isEmptyMapLiteral(st.Let.Value) && !types.IsMapType(t) && !types.IsListType(t) {
 					if _, ok := t.(types.OptionType); !ok {
@@ -2581,12 +2615,20 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 			if st.Let.Type != nil {
 				varT = types.ResolveTypeRef(st.Let.Type, env)
 			} else if st.Let.Value != nil {
-				varT = types.TypeOfExpr(st.Let.Value, env)
+				if isJoinExpr(st.Let.Value) {
+					varT = types.StringType{}
+				} else {
+					varT = types.TypeOfExpr(st.Let.Value, env)
+				}
 			}
 			env.SetVar(st.Let.Name, varT, true)
 			swiftT := swiftTypeOf(varT)
 			if st.Let.Value != nil && swiftT != "Any" {
-				srcSwiftT := swiftTypeOf(types.TypeOfExpr(st.Let.Value, env))
+				srcT := types.TypeOfExpr(st.Let.Value, env)
+				if isJoinExpr(st.Let.Value) {
+					srcT = types.StringType{}
+				}
+				srcSwiftT := swiftTypeOf(srcT)
 				if srcSwiftT == swiftT {
 					// no cast needed
 				} else if ie, ok := ex.(*IndexExpr); ok && !ie.Force {
@@ -3930,13 +3972,26 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 	if p.Target != nil && p.Target.Selector != nil {
 		tail = p.Target.Selector.Tail
 	}
+	start := 0
+
+	// handle `Object.keys(map)`
+	if p.Target != nil && p.Target.Selector != nil && p.Target.Selector.Root == "Object" && len(tail) > 0 && tail[len(tail)-1] == "keys" && len(p.Ops) > 0 && p.Ops[0].Call != nil && len(p.Ops[0].Call.Args) == 1 {
+		arg, err := convertExpr(env, p.Ops[0].Call.Args[0])
+		if err != nil {
+			return nil, err
+		}
+		usesKeys = true
+		expr = &CallExpr{Func: "_keys", Args: []Expr{arg}}
+		tail = tail[:len(tail)-1]
+		start = 1
+	}
 
 	// handle `.contains(x)` as `x in expr`
-	if len(p.Ops) == 1 && p.Ops[0].Call != nil && len(tail) > 0 && tail[len(tail)-1] == "contains" {
+	if len(p.Ops)-start == 1 && p.Ops[start].Call != nil && len(tail) > 0 && tail[len(tail)-1] == "contains" {
 		for _, f := range tail[:len(tail)-1] {
 			expr = &IndexExpr{Base: expr, Index: &LitExpr{Value: f, IsString: true}, Force: true}
 		}
-		arg, err := convertExpr(env, p.Ops[0].Call.Args[0])
+		arg, err := convertExpr(env, p.Ops[start].Call.Args[0])
 		if err != nil {
 			return nil, err
 		}
@@ -3944,7 +3999,7 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 	}
 
 	// handle `.keys()` as `_keys(expr)`
-	if len(p.Ops) == 1 && p.Ops[0].Call != nil && len(p.Ops[0].Call.Args) == 0 && len(tail) > 0 && tail[len(tail)-1] == "keys" {
+	if len(p.Ops)-start == 1 && p.Ops[start].Call != nil && len(p.Ops[start].Call.Args) == 0 && len(tail) > 0 && tail[len(tail)-1] == "keys" {
 		for _, f := range tail[:len(tail)-1] {
 			expr = &IndexExpr{Base: expr, Index: &LitExpr{Value: f, IsString: true}, Force: true}
 		}
@@ -3953,17 +4008,17 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 	}
 
 	// handle `.get(key, default)`
-	if len(p.Ops) == 1 && p.Ops[0].Call != nil && len(tail) > 0 && tail[len(tail)-1] == "get" {
+	if len(p.Ops)-start == 1 && p.Ops[start].Call != nil && len(tail) > 0 && tail[len(tail)-1] == "get" {
 		for _, f := range tail[:len(tail)-1] {
 			expr = &IndexExpr{Base: expr, Index: &LitExpr{Value: f, IsString: true}, Force: true}
 		}
-		key, err := convertExpr(env, p.Ops[0].Call.Args[0])
+		key, err := convertExpr(env, p.Ops[start].Call.Args[0])
 		if err != nil {
 			return nil, err
 		}
 		var def Expr = &LitExpr{Value: "nil", IsString: false}
-		if len(p.Ops[0].Call.Args) > 1 {
-			def, err = convertExpr(env, p.Ops[0].Call.Args[1])
+		if len(p.Ops[start].Call.Args) > 1 {
+			def, err = convertExpr(env, p.Ops[start].Call.Args[1])
 			if err != nil {
 				return nil, err
 			}
@@ -3973,13 +4028,15 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 
 	if len(tail) > 0 {
 		var t types.Type
-		if env != nil && p.Target != nil && p.Target.Selector != nil {
-			if tt, err := env.GetVar(p.Target.Selector.Root); err == nil {
-				t = tt
+		if env != nil && start == 0 {
+			if p.Target != nil && p.Target.Selector != nil {
+				if tt, err := env.GetVar(p.Target.Selector.Root); err == nil {
+					t = tt
+				}
 			}
-		}
-		if t == nil {
-			t = types.TypeOfPrimaryBasic(p.Target, env)
+			if t == nil {
+				t = types.TypeOfPrimaryBasic(p.Target, env)
+			}
 		}
 		for i, f := range tail {
 			if _, ok := t.(types.StructType); ok || t == nil || isAnyType(t) {
@@ -4023,10 +4080,28 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 
 	var baseType types.Type
 	if env != nil {
-		baseType = types.TypeOfPrimaryBasic(p.Target, env)
+		if start == 1 {
+			if mt, ok := types.TypeOfExpr(p.Ops[0].Call.Args[0], env).(types.MapType); ok {
+				baseType = types.ListType{Elem: mt.Key}
+			}
+		} else {
+			baseType = types.TypeOfPrimaryBasic(p.Target, env)
+		}
 	}
-	for i := 0; i < len(p.Ops); i++ {
+	for i := start; i < len(p.Ops); i++ {
 		op := p.Ops[i]
+		if op.Field != nil && op.Field.Name == "join" {
+			if i+1 < len(p.Ops) && p.Ops[i+1].Call != nil {
+				sep, err := convertExpr(env, p.Ops[i+1].Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				expr = &JoinExpr{List: expr, Sep: sep}
+				i++
+				baseType = types.StringType{}
+				continue
+			}
+		}
 		if op.Index != nil {
 			if op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil {
 				var start, end Expr
