@@ -42,6 +42,7 @@ var (
 	usesCallable      bool
 	usesFetch         bool
 	usesAppend        bool
+	usesConcat        bool
 	usesSetIndex      bool
 	funcDepth         int
 )
@@ -110,6 +111,15 @@ def _fetch(url: str, opts: dict[str, Any] | None) -> Any:
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         text = resp.read()
     return json.loads(text)
+`
+
+const helperConcat = `
+def _concat(a, b):
+    if a is None:
+        return b
+    if b is None:
+        return a
+    return a + b
 `
 
 const helperAppend = `
@@ -2948,6 +2958,11 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 			return err
 		}
 	}
+	if usesConcat {
+		if _, err := io.WriteString(w, helperConcat+"\n"); err != nil {
+			return err
+		}
+	}
 	if usesAppend {
 		if _, err := io.WriteString(w, helperAppend+"\n"); err != nil {
 			return err
@@ -3234,6 +3249,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	usesCallable = false
 	usesFetch = false
 	usesAppend = false
+	usesConcat = false
 	usesSetIndex = false
 	p := &Program{}
 	for _, st := range prog.Statements {
@@ -4847,6 +4863,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				}
 			}
 			return &CallExpr{Func: &Name{Name: "print"}, Args: outArgs}, nil
+		case "concat":
+			if len(args) == 2 {
+				usesConcat = true
+				return &CallExpr{Func: &Name{Name: "_concat"}, Args: []Expr{args[0], args[1]}}, nil
+			}
 		case "append":
 			if len(args) == 2 {
 				elem := args[1]
