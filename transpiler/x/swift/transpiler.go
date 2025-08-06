@@ -36,6 +36,7 @@ var usesRepeat bool
 var usesRat bool
 var usesSHA256 bool
 var usesAppend bool
+var usesSet bool
 var usesLen bool
 var usesSplit bool
 var usesFetch bool
@@ -78,6 +79,7 @@ type Program struct {
 	UseRat        bool
 	UseSHA256     bool
 	UseAppend     bool
+	UseSet        bool
 	UseLen        bool
 	UseSplit      bool
 	UseFetch      bool
@@ -208,6 +210,43 @@ func defaultValueForType(t string) string {
 		}
 		return t + "()"
 	}
+}
+
+// returnsNull reports whether any return statement within stmts returns a null literal.
+func returnsNull(stmts []*parser.Statement) bool {
+	for _, st := range stmts {
+		if st.Return != nil {
+			if isNullLiteral(st.Return.Value) {
+				return true
+			}
+		}
+		if st.If != nil {
+			if returnsNull(st.If.Then) || returnsNull(st.If.Else) {
+				return true
+			}
+		}
+		if st.While != nil {
+			if returnsNull(st.While.Body) {
+				return true
+			}
+		}
+		if st.For != nil {
+			if returnsNull(st.For.Body) {
+				return true
+			}
+		}
+		if st.Test != nil {
+			if returnsNull(st.Test.Body) {
+				return true
+			}
+		}
+		if st.Bench != nil {
+			if returnsNull(st.Bench.Body) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func (sd *StructDef) emit(w io.Writer) {
@@ -592,6 +631,17 @@ func (b *BlockStmt) emit(w io.Writer) {
 	}
 }
 
+// ScopedBlockStmt emits statements within a new scope.
+type ScopedBlockStmt struct{ Stmts []Stmt }
+
+func (b *ScopedBlockStmt) emit(w io.Writer) {
+	fmt.Fprint(w, "do {\n")
+	for _, s := range b.Stmts {
+		s.emit(w)
+	}
+	fmt.Fprint(w, "}\n")
+}
+
 // BenchStmt represents a benchmarking block measuring runtime duration
 // and memory usage of the enclosed statements. Memory usage is approximated
 // by reading `/proc/self/status` on Linux systems.
@@ -773,13 +823,26 @@ func (ms *MapStringExpr) emit(w io.Writer) {
 	fmt.Fprint(w, ")")
 }
 
-// ArrayStringExpr renders a list as a compact string without spaces.
-type ArrayStringExpr struct{ Value Expr }
+// ArrayStringExpr renders a list as a string using a custom separator.
+// If Replace is true, any ", " occurrences inside elements are replaced with spaces.
+type ArrayStringExpr struct {
+	Value   Expr
+	Sep     string
+	Replace bool
+}
 
 func (as *ArrayStringExpr) emit(w io.Writer) {
+	sep := as.Sep
+	if sep == "" {
+		sep = ", "
+	}
 	fmt.Fprint(w, "\"[\" + ")
 	as.Value.emit(w)
-	fmt.Fprint(w, `.map{ String(describing: $0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"`)
+	if as.Replace {
+		fmt.Fprintf(w, `.map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: %q) + "]"`, sep)
+	} else {
+		fmt.Fprintf(w, `.map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: %q) + "]"`, sep)
+	}
 }
 
 // LenExpr renders a length expression, optionally casting to String first.
@@ -1946,6 +2009,18 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return out\n")
 		buf.WriteString("}\n")
 	}
+	if p.UseSet {
+		buf.WriteString("func _set<T>(_ xs: [T], _ idx: Int, _ v: T) -> [T] {\n")
+		buf.WriteString("    var out = xs\n")
+		buf.WriteString("    if idx < out.count {\n")
+		buf.WriteString("        out[idx] = v\n")
+		buf.WriteString("    } else {\n")
+		buf.WriteString("        out.append(contentsOf: Array(repeating: v, count: idx - out.count + 1))\n")
+		buf.WriteString("        out[idx] = v\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    return out\n")
+		buf.WriteString("}\n")
+	}
 	if p.UseLen {
 		buf.WriteString("func _len(_ v: Any) -> Int {\n")
 		buf.WriteString("    if let s = v as? String { return Array(s).count }\n")
@@ -2132,6 +2207,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	usesRat = false
 	usesSHA256 = false
 	usesAppend = false
+	usesSet = false
 	usesLen = false
 	usesSplit = false
 	usesFetch = false
@@ -2171,6 +2247,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	p.UseRat = usesRat
 	p.UseSHA256 = usesSHA256
 	p.UseAppend = usesAppend
+	p.UseSet = usesSet
 	p.UseLen = usesLen
 	p.UseSplit = usesSplit
 	p.UseFetch = usesFetch
@@ -2413,7 +2490,7 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 					} else if types.IsMapType(types.TypeOfExpr(a, env)) || types.IsStructType(types.TypeOfExpr(a, env)) {
 						ex = &MapStringExpr{Value: ex}
 					} else if types.IsListType(types.TypeOfExpr(a, env)) {
-						ex = &ArrayStringExpr{Value: ex}
+						ex = &ArrayStringExpr{Value: ex, Sep: ", ", Replace: false}
 					}
 				}
 				args = append(args, ex)
@@ -2463,7 +2540,9 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 				t := types.TypeOfExpr(st.Let.Value, env)
 				typ = swiftTypeOf(t)
 				if !types.IsEmptyListLiteral(st.Let.Value) && !isEmptyMapLiteral(st.Let.Value) && !types.IsMapType(t) && !types.IsListType(t) {
-					typ = ""
+					if _, ok := t.(types.OptionType); !ok {
+						typ = ""
+					}
 				}
 			}
 		} else if st.Let.Type != nil {
@@ -2596,7 +2675,7 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		return &BlockStmt{Stmts: body}, nil
+		return &ScopedBlockStmt{Stmts: body}, nil
 	case st.Bench != nil:
 		usesNow = true
 		usesMem = true
@@ -2697,6 +2776,12 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 				}
 			}
 		}
+		if ie, ok := lhs.(*IndexExpr); ok {
+			if be, ok2 := ie.Base.(*NameExpr); ok2 {
+				usesSet = true
+				return &AssignStmt{Name: be.Name, Expr: &CallExpr{Func: "_set", Args: []Expr{ie.Base, ie.Index, val}}}, nil
+			}
+		}
 		return &IndexAssignStmt{Target: lhs, Value: val}, nil
 	case st.Fun != nil:
 		return convertFunDecl(env, st.Fun)
@@ -2764,6 +2849,7 @@ func convertFunDecl(env *types.Env, f *parser.FunStmt) (Stmt, error) {
 	child := types.NewEnv(env)
 	updated := map[string]bool{}
 	findUpdatedVars(child, f.Body, updated, nil)
+	nullRet := returnsNull(f.Body)
 	// register function type for calls (and recursion)
 	if env != nil {
 		var params []types.Type
@@ -2778,6 +2864,10 @@ func convertFunDecl(env *types.Env, f *parser.FunStmt) (Stmt, error) {
 		if f.Return != nil {
 			retTyp = types.ResolveTypeRef(f.Return, env)
 		}
+		if nullRet {
+			retTyp = types.OptionType{Elem: retTyp}
+			fn.Ret = toSwiftOptionalType(f.Return)
+		}
 		env.SetFuncType(f.Name, types.FuncType{Params: params, Return: retTyp})
 		env.SetFunc(f.Name, f)
 	}
@@ -2785,6 +2875,9 @@ func convertFunDecl(env *types.Env, f *parser.FunStmt) (Stmt, error) {
 	var retT types.Type
 	if f.Return != nil {
 		retT = types.ResolveTypeRef(f.Return, env)
+		if nullRet {
+			retT = types.OptionType{Elem: retT}
+		}
 	} else {
 		retT = types.VoidType{}
 	}
@@ -4737,7 +4830,7 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			if env != nil {
 				t := types.TypeOfExpr(pr.Call.Args[0], env)
 				if types.IsListType(t) {
-					return &ArrayStringExpr{Value: arg}, nil
+					return &ArrayStringExpr{Value: arg, Sep: " ", Replace: true}, nil
 				}
 				if types.IsMapType(t) || types.IsStructType(t) {
 					return &MapStringExpr{Value: arg}, nil
@@ -5183,6 +5276,8 @@ func toSwiftType(t *parser.TypeRef) string {
 	case "bigint":
 		usesBigInt = true
 		return "BigInt"
+	case "void":
+		return "Void"
 	case "any":
 		return "Any?"
 	default:

@@ -2,24 +2,24 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 1/1077
-Last updated: 2025-08-06 15:56 +0700
+Completed programs: 12/1077
+Last updated: 2025-08-06 16:21 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 992µs | 3.7 MB |
-| 2 | backtracking/all_permutations |   |  |  |
-| 3 | backtracking/all_subsequences |   |  |  |
-| 4 | backtracking/coloring |   |  |  |
-| 5 | backtracking/combination_sum |   |  |  |
-| 6 | backtracking/crossword_puzzle_solver |   |  |  |
-| 7 | backtracking/hamiltonian_cycle |   |  |  |
-| 8 | backtracking/knight_tour |   |  |  |
-| 9 | backtracking/match_word_pattern |   |  |  |
-| 10 | backtracking/minimax |   |  |  |
-| 11 | backtracking/n_queens |   |  |  |
+| 1 | backtracking/all_combinations | ✓ | 1.752ms | 4.0 MB |
+| 2 | backtracking/all_permutations | ✓ | 1.383ms | 3.5 MB |
+| 3 | backtracking/all_subsequences | ✓ | 914µs | 3.4 MB |
+| 4 | backtracking/coloring | ✓ | 540µs | 3.3 MB |
+| 5 | backtracking/combination_sum | ✓ | 1.617ms | 3.8 MB |
+| 6 | backtracking/crossword_puzzle_solver | ✓ | 1.291ms | 3.5 MB |
+| 7 | backtracking/hamiltonian_cycle | ✓ | 254µs | 3.1 MB |
+| 8 | backtracking/knight_tour | ✓ | 422µs | 3.2 MB |
+| 9 | backtracking/match_word_pattern | ✓ | 742µs | 3.4 MB |
+| 10 | backtracking/minimax | ✓ | 248µs | 3.3 MB |
+| 11 | backtracking/n_queens | ✓ | 452µs | 2.9 MB |
 | 12 | backtracking/n_queens_math |   |  |  |
-| 13 | backtracking/power_sum |   |  |  |
+| 13 | backtracking/power_sum | ✓ | 423µs | 3.2 MB |
 | 14 | backtracking/rat_in_maze |   |  |  |
 | 15 | backtracking/sudoku |   |  |  |
 | 16 | backtracking/sum_of_subsets |   |  |  |
