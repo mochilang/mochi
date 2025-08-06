@@ -1,0 +1,3 @@
+/tmp/TestCSTranspiler_Algorithms_Golden001_dynamic_programming_matrix_chain_order2416854585/001/Program.cs(155,9): warning CS0162: Unreachable code detected [/tmp/TestCSTranspiler_Algorithms_Golden001_dynamic_programming_matrix_chain_order2416854585/001/app.csproj]
+No. of Operation required: 15125
+( ( A1 ( A2 A3 ) ) ( ( A4 A5 ) A6 ) )

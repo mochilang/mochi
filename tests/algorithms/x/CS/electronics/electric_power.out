@@ -1,0 +1,6 @@
+/tmp/TestCSTranspiler_Algorithms_Golden001_electronics_electric_power2760453579/001/Program.cs(147,9): warning CS0162: Unreachable code detected [/tmp/TestCSTranspiler_Algorithms_Golden001_electronics_electric_power2760453579/001/app.csproj]
+Result(name='voltage', value=2.5)
+Result(name='power', value=4)
+Result(name='power', value=6)
+Result(name='power', value=4.84)
+Result(name='current', value=3)
