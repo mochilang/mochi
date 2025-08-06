@@ -88,6 +88,12 @@ mochi_pad_start(S, Len, Ch) ->
     end.
 `
 
+const helperStr = `
+mochi_str(X) ->
+    S = lists:flatten(io_lib:format("~p", [X])),
+    re:replace(S, "\"", "", [global, {return, list}]).
+`
+
 const helperSHA256 = `
 mochi_sha256(Bs) ->
     Bin = list_to_binary(Bs),
@@ -199,6 +205,7 @@ var useLookupHost bool
 var useToInt bool
 var useMemberHelper bool
 var usePadStart bool
+var useStr bool
 var useSHA256 bool
 var useIndexOf bool
 var useParseIntStr bool
@@ -230,6 +237,7 @@ type Program struct {
 	UseToInt        bool
 	UseMemberHelper bool
 	UsePadStart     bool
+	UseStr          bool
 	UseSHA256       bool
 	UseIndexOf      bool
 	UseParseIntStr  bool
@@ -1051,11 +1059,13 @@ func (p *PrintStmt) emit(w io.Writer) {
 		return
 	}
 	parts := make([]string, len(p.Args))
+	isStr := make([]bool, len(p.Args))
 	for i, a := range p.Args {
 		if isStringExpr(a) {
 			parts[i] = "~ts"
+			isStr[i] = true
 		} else {
-			parts[i] = "~p"
+			parts[i] = "~ts"
 		}
 	}
 	fmt.Fprintf(w, "io:format(\"%s~n\", [", strings.Join(parts, " "))
@@ -1063,7 +1073,13 @@ func (p *PrintStmt) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
-		a.emit(w)
+		if isStr[i] {
+			a.emit(w)
+		} else {
+			io.WriteString(w, "mochi_str(")
+			a.emit(w)
+			io.WriteString(w, ")")
+		}
 	}
 	io.WriteString(w, "])")
 }
@@ -1157,7 +1173,7 @@ func isStringExpr(e Expr) bool {
 		if v.ReturnsString {
 			return true
 		}
-		if v.Func == "str" || strings.HasPrefix(v.Func, "string:") {
+		if v.Func == "str" || v.Func == "mochi_str" || strings.HasPrefix(v.Func, "string:") {
 			return true
 		}
 		return false
@@ -1984,16 +2000,6 @@ func (c *CallExpr) emit(w io.Writer) {
 			io.WriteString(w, "\" \"")
 		}
 		io.WriteString(w, ")")
-		return
-	case "str":
-		io.WriteString(w, "lists:flatten(io_lib:format(\"~p\", [")
-		for i, a := range c.Args {
-			if i > 0 {
-				io.WriteString(w, ", ")
-			}
-			a.emit(w)
-		}
-		io.WriteString(w, "]))")
 		return
 	case "sum":
 		io.WriteString(w, "lists:sum(")
@@ -3133,6 +3139,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useToInt = false
 	useMemberHelper = false
 	usePadStart = false
+	useStr = false
 	useSHA256 = false
 	useIndexOf = false
 	useParseIntStr = false
@@ -3180,6 +3187,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	p.UseToInt = useToInt
 	p.UseMemberHelper = useMemberHelper
 	p.UsePadStart = usePadStart
+	p.UseStr = useStr
 	p.UseSHA256 = useSHA256
 	p.UseIndexOf = useIndexOf
 	p.UseParseIntStr = useParseIntStr
@@ -3657,6 +3665,11 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		}
 		if c, ok := e.(*CallExpr); ok {
 			if c.Func == "print" {
+				for _, a := range c.Args {
+					if !isStringExpr(a) {
+						useStr = true
+					}
+				}
 				return []Stmt{&PrintStmt{Args: c.Args}}, nil
 			}
 			if c.Func == "json" && len(c.Args) == 1 {
@@ -5007,17 +5020,6 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			ce.Args = append(ce.Args, ae)
 		}
 		if ce.Func == "print" {
-			parts := make([]string, len(ce.Args))
-			for i, a := range ce.Args {
-				if isStringExpr(a) {
-					parts[i] = "~ts"
-				} else {
-					parts[i] = "~p"
-				}
-			}
-			fmtStr := strings.Join(parts, " ") + "~n"
-			args := []Expr{&StringLit{Value: fmtStr}, &ListLit{Elems: ce.Args}}
-			ce = &CallExpr{Func: "io:format", Args: args}
 			return ce, nil
 		}
 		if fn, ok := env.GetFunc(p.Call.Func); ok && len(p.Call.Args) < len(fn.Params) {
@@ -5070,6 +5072,9 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 		} else if ce.Func == "padstart" && len(ce.Args) == 3 {
 			usePadStart = true
 			return &CallExpr{Func: "mochi_pad_start", Args: ce.Args}, nil
+		} else if ce.Func == "str" && len(ce.Args) == 1 {
+			useStr = true
+			return &CallExpr{Func: "mochi_str", Args: ce.Args, ReturnsString: true}, nil
 		} else if ce.Func == "repeat" && len(ce.Args) == 2 {
 			useRepeat = true
 			useToInt = true
@@ -6202,12 +6207,16 @@ func (p *Program) Emit() []byte {
 		buf.WriteString(helperMember)
 		buf.WriteString("\n")
 	}
-	if p.UseSHA256 {
-		buf.WriteString(helperSHA256)
-		buf.WriteString("\n")
-	}
 	if p.UsePadStart {
 		buf.WriteString(helperPadStart)
+		buf.WriteString("\n")
+	}
+	if p.UseStr {
+		buf.WriteString(helperStr)
+		buf.WriteString("\n")
+	}
+	if p.UseSHA256 {
+		buf.WriteString(helperSHA256)
 		buf.WriteString("\n")
 	}
 	if p.UseIndexOf {
