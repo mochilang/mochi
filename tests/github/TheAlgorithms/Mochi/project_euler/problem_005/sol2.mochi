@@ -1,0 +1,40 @@
+/*
+Project Euler Problem 5 - Smallest multiple
+
+Find the smallest positive number that is evenly divisible by all integers
+from 1 to n. This can be computed by iteratively applying the least common
+multiple (LCM) across the range. Using the relationship
+lcm(a, b) = (a * b) / gcd(a, b) and the Euclidean algorithm for the gcd,
+we accumulate the LCM for each number from 1..n.
+*/
+
+fun gcd(a: int, b: int): int {
+  var x = a
+  var y = b
+  while y != 0 {
+    var t = y
+    y = x % y
+    x = t
+  }
+  return x
+}
+
+fun lcm(x: int, y: int): int {
+  return (x * y) / gcd(x, y)
+}
+
+fun solution(n: int): int {
+  var g = 1
+  var i = 1
+  while i <= n {
+    g = lcm(g, i)
+    i = i + 1
+  }
+  return g
+}
+
+fun main() {
+  print(str(solution(20)))
+}
+
+main()
