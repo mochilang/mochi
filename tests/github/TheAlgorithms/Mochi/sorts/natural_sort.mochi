@@ -1,0 +1,111 @@
+/*
+Sort a list of strings in human "natural" order where numeric substrings
+are compared by value instead of lexicographically. For example "file2" comes
+before "file10" even though '1' < '2'.
+
+Algorithm:
+1. Each comparison walks through both strings, splitting them into consecutive
+   digit and non-digit segments.
+2. Digit segments are converted to integers and compared numerically.
+3. Non-digit segments are converted to lowercase and compared lexicographically.
+4. The list is sorted using insertion sort with the above comparator.
+
+This implementation avoids the `any` type and foreign interfaces so it runs on
+`runtime/vm`. Sorting n strings of average length m runs in O(n^2 * m) time
+because of the insertion sort and linear scans of the segments.
+*/
+
+let DIGITS = "0123456789"
+let LOWER = "abcdefghijklmnopqrstuvwxyz"
+let UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+fun index_of(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if s[i] == ch { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun is_digit(ch: string): bool { return index_of(DIGITS, ch) >= 0 }
+fun to_lower(ch: string): string {
+  var idx = index_of(UPPER, ch)
+  if idx >= 0 { return LOWER[idx:idx+1] }
+  return ch
+}
+
+fun pad_left(s: string, width: int): string {
+  var res = s
+  while len(res) < width { res = "0" + res }
+  return res
+}
+
+fun alphanum_key(s: string): list<string> {
+  var key: list<string> = []
+  var i = 0
+  while i < len(s) {
+    if is_digit(s[i]) {
+      var num = ""
+      while i < len(s) && is_digit(s[i]) {
+        num = num + s[i]
+        i = i + 1
+      }
+      let len_str = pad_left(str(len(num)), 3)
+      key = append(key, "#" + len_str + num)
+    } else {
+      var seg = ""
+      while i < len(s) {
+        if is_digit(s[i]) { break }
+        seg = seg + to_lower(s[i])
+        i = i + 1
+      }
+      key = append(key, seg)
+    }
+  }
+  return key
+}
+
+fun compare_keys(a: list<string>, b: list<string>): int {
+  var i = 0
+  while i < len(a) && i < len(b) {
+    if a[i] < b[i] { return -1 }
+    if a[i] > b[i] { return 1 }
+    i = i + 1
+  }
+  if len(a) < len(b) { return -1 }
+  if len(a) > len(b) { return 1 }
+  return 0
+}
+
+fun natural_sort(arr: list<string>): list<string> {
+  var res: list<string> = []
+  var keys: list<list<string>> = []
+  var k = 0
+  while k < len(arr) {
+    res = append(res, arr[k])
+    keys = append(keys, alphanum_key(arr[k]))
+    k = k + 1
+  }
+  var i = 1
+  while i < len(res) {
+    let current = res[i]
+    let current_key = keys[i]
+    var j = i - 1
+    while j >= 0 && compare_keys(keys[j], current_key) > 0 {
+      res[j + 1] = res[j]
+      keys[j + 1] = keys[j]
+      j = j - 1
+    }
+    res[j + 1] = current
+    keys[j + 1] = current_key
+    i = i + 1
+  }
+  return res
+}
+
+var example1: list<string> = ["2 ft 7 in", "1 ft 5 in", "10 ft 2 in", "2 ft 11 in", "7 ft 6 in"]
+print(str(natural_sort(example1)))
+
+var example2: list<string> = ["Elm11", "Elm12", "Elm2", "elm0", "elm1", "elm10", "elm13", "elm9"]
+print(str(natural_sort(example2)))
