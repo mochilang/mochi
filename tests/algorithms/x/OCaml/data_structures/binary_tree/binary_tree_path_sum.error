@@ -1,0 +1,9 @@
+exit status 2
+File "/workspace/mochi/tests/algorithms/x/OCaml/data_structures/binary_tree/binary_tree_path_sum.ml", line 94, characters 64-65:
+94 |   __ret := (Obj.magic ((match node with | _empty -> 0 | [(__str ("tag"), "Node"); (__str ("left"), l); (__str ("value"), v); (__str ("right"), r)] -> ((if ((_dyn_add (current) (v)) = target) then 1 else 0 + dfs ((Obj.magic l : Obj.t)) (Obj.repr (target)) ((Obj.magic (_dyn_add (current) (v)) : int))
+                                                                     ^
+Error: Syntax error: ')' expected
+File "/workspace/mochi/tests/algorithms/x/OCaml/data_structures/binary_tree/binary_tree_path_sum.ml", line 94, characters 57-58:
+94 |   __ret := (Obj.magic ((match node with | _empty -> 0 | [(__str ("tag"), "Node"); (__str ("left"), l); (__str ("value"), v); (__str ("right"), r)] -> ((if ((_dyn_add (current) (v)) = target) then 1 else 0 + dfs ((Obj.magic l : Obj.t)) (Obj.repr (target)) ((Obj.magic (_dyn_add (current) (v)) : int))
+                                                              ^
+  This '(' might be unmatched

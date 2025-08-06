@@ -1190,9 +1190,9 @@ func (i *IndexOfBuiltin) emit(w io.Writer) {
 func (i *IndexOfBuiltin) emitPrint(w io.Writer) { i.emit(w) }
 
 func (s *SubstringBuiltin) emit(w io.Writer) {
-	io.WriteString(w, "String.sub ")
+	io.WriteString(w, "String.sub (")
 	s.Str.emit(w)
-	io.WriteString(w, " (")
+	io.WriteString(w, ") (")
 	s.Start.emit(w)
 	io.WriteString(w, ") (")
 	s.End.emit(w)
@@ -1712,8 +1712,9 @@ func (m *MapLit) emit(w io.Writer) {
 			io.WriteString(w, "; ")
 		}
 		io.WriteString(w, "(")
+		io.WriteString(w, "__str (")
 		it.Key.emit(w)
-		io.WriteString(w, ", ")
+		io.WriteString(w, "), ")
 		if m.Dynamic {
 			io.WriteString(w, "Obj.repr (")
 			it.Value.emit(w)
@@ -1739,9 +1740,9 @@ type MapIndexExpr struct {
 
 func (mi *MapIndexExpr) emit(w io.Writer) {
 	if mi.Dyn {
-		io.WriteString(w, "(Obj.obj (List.assoc (")
+		io.WriteString(w, "(Obj.obj (List.assoc (__str (")
 		mi.Key.emit(w)
-		io.WriteString(w, ") (")
+		io.WriteString(w, ")) (")
 		mi.Map.emit(w)
 		io.WriteString(w, ") : Obj.t) : ")
 		if strings.HasPrefix(mi.Typ, "map") {
@@ -1756,9 +1757,9 @@ func (mi *MapIndexExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, ")")
 	} else {
-		io.WriteString(w, "List.assoc (")
+		io.WriteString(w, "List.assoc (__str (")
 		mi.Key.emit(w)
-		io.WriteString(w, ") (")
+		io.WriteString(w, ")) (")
 		mi.Map.emit(w)
 		io.WriteString(w, ")")
 	}
@@ -1780,21 +1781,21 @@ func (mi *MapIndexExpr) emitPrint(w io.Writer) {
 	} else {
 		switch mi.Typ {
 		case "int":
-			io.WriteString(w, "string_of_int (List.assoc ")
+			io.WriteString(w, "string_of_int (List.assoc (__str (")
 			mi.Key.emit(w)
-			io.WriteString(w, " (")
+			io.WriteString(w, ")) (")
 			mi.Map.emit(w)
 			io.WriteString(w, ") )")
 		case "float":
-			io.WriteString(w, "string_of_float (List.assoc ")
+			io.WriteString(w, "string_of_float (List.assoc (__str (")
 			mi.Key.emit(w)
-			io.WriteString(w, " (")
+			io.WriteString(w, ")) (")
 			mi.Map.emit(w)
 			io.WriteString(w, ") )")
 		default:
-			io.WriteString(w, "__show (List.assoc ")
+			io.WriteString(w, "__show (List.assoc (__str (")
 			mi.Key.emit(w)
-			io.WriteString(w, " (")
+			io.WriteString(w, ")) (")
 			mi.Map.emit(w)
 			io.WriteString(w, ") )")
 		}
@@ -2146,8 +2147,9 @@ func isUnderscoreExpr(e *parser.Expr) bool {
 func (mu *MapUpdateExpr) emit(w io.Writer) {
 	io.WriteString(w, "(")
 	io.WriteString(w, "(")
+	io.WriteString(w, "__str (")
 	mu.Key.emit(w)
-	io.WriteString(w, ", ")
+	io.WriteString(w, "), ")
 	if mu.Dyn {
 		io.WriteString(w, "Obj.repr (")
 	}
@@ -2155,9 +2157,9 @@ func (mu *MapUpdateExpr) emit(w io.Writer) {
 	if mu.Dyn {
 		io.WriteString(w, ")")
 	}
-	io.WriteString(w, ") :: List.remove_assoc (")
+	io.WriteString(w, ") :: List.remove_assoc (__str (")
 	mu.Key.emit(w)
-	io.WriteString(w, ") ")
+	io.WriteString(w, ")) ")
 	if mu.Dyn {
 		if mi, ok := mu.Map.(*MapIndexExpr); ok && mi.Dyn {
 			// Map expression already yields a properly typed list.
@@ -2165,18 +2167,7 @@ func (mu *MapUpdateExpr) emit(w io.Writer) {
 		} else {
 			io.WriteString(w, "(Obj.magic (")
 			mu.Map.emit(w)
-			keyIsString := false
-			switch k := mu.Key.(type) {
-			case *StringLit:
-				keyIsString = true
-			case *Name:
-				keyIsString = k.Typ == "string"
-			}
-			if keyIsString {
-				io.WriteString(w, ") : (string * Obj.t) list)")
-			} else {
-				io.WriteString(w, ") : (int * Obj.t) list)")
-			}
+			io.WriteString(w, ") : (string * Obj.t) list)")
 		}
 	} else {
 		mu.Map.emit(w)
@@ -2923,10 +2914,19 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	}
-	op := b.Op
 	if b.Op == "%" {
-		op = "mod"
+		io.WriteString(w, "((")
+		b.Left.emit(w)
+		io.WriteString(w, " mod ")
+		b.Right.emit(w)
+		io.WriteString(w, " + ")
+		b.Right.emit(w)
+		io.WriteString(w, ") mod ")
+		b.Right.emit(w)
+		io.WriteString(w, ")")
+		return
 	}
+	op := b.Op
 	if b.Op == "==" {
 		op = "="
 	} else if b.Op == "!=" {
@@ -4463,6 +4463,22 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 			}
 			expr = &KeysBuiltin{Map: expr}
 			typ = "list"
+			i += 2
+			continue
+		case op.Field != nil && op.Field.Name == "join":
+			if i+1 >= len(p.Ops) || p.Ops[i+1].Call == nil || len(p.Ops[i+1].Call.Args) != 1 {
+				return nil, "", fmt.Errorf("join expects 1 arg")
+			}
+			if !strings.HasPrefix(typ, "list") {
+				return nil, "", fmt.Errorf("join expects list")
+			}
+			call := p.Ops[i+1].Call
+			sep, _, err := convertExpr(call.Args[0], env, vars)
+			if err != nil {
+				return nil, "", err
+			}
+			expr = &FuncCall{Name: "String.concat", Args: []Expr{sep, expr}, Ret: "string"}
+			typ = "string"
 			i += 2
 			continue
 		case op.Field != nil && op.Field.Name == "get":
