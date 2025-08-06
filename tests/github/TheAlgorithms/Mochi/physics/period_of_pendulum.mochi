@@ -1,0 +1,41 @@
+/*
+Period of a Simple Pendulum
+
+A simple pendulum consists of a bob of mass m suspended from a string of length L.
+For small oscillations its period T (time for one complete swing) depends only on
+L and the gravitational acceleration g. The mass of the bob does not affect the period.
+
+For small angles, the period is approximated by:
+T = 2 * pi * sqrt(L / g)
+
+This implementation computes T given the length L (in meters) using constants
+pi = 3.141592653589793 and g = 9.80665 m/s^2. It uses Newton's method to compute
+the square root and panics if a negative length is provided.
+*/
+
+let PI: float = 3.141592653589793
+let G: float = 9.80665
+
+fun sqrt(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess = x
+  var i = 0
+  while i < 10 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun period_of_pendulum(length: float): float {
+  if length < 0.0 {
+    panic("The length should be non-negative")
+  }
+  return 2.0 * PI * sqrt(length / G)
+}
+
+print(str(period_of_pendulum(1.23)))
+print(str(period_of_pendulum(2.37)))
+print(str(period_of_pendulum(5.63)))
+print(str(period_of_pendulum(0.0)))
+
