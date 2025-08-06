@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-06 21:32 GMT+7
+Last updated: 2025-08-06 21:53 GMT+7
 
-## Algorithms Golden Test Checklist (110/1077)
+## Algorithms Golden Test Checklist (149/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -117,56 +117,56 @@ Last updated: 2025-08-06 21:32 GMT+7
 | 108 | ciphers/trifid_cipher | ✓ | 54.0ms | 105.21KB |
 | 109 | ciphers/vernam_cipher | ✓ | 26.0ms | 38.88KB |
 | 110 | ciphers/vigenere_cipher | ✓ | 26.0ms | 34.10KB |
-| 111 | ciphers/xor_cipher |   |  |  |
-| 112 | computer_vision/cnn_classification |   |  |  |
-| 113 | computer_vision/flip_augmentation |   |  |  |
-| 114 | computer_vision/haralick_descriptors |   |  |  |
-| 115 | computer_vision/harris_corner |   |  |  |
-| 116 | computer_vision/horn_schunck |   |  |  |
-| 117 | computer_vision/intensity_based_segmentation |   |  |  |
-| 118 | computer_vision/mean_threshold |   |  |  |
-| 119 | computer_vision/mosaic_augmentation |   |  |  |
-| 120 | computer_vision/pooling_functions |   |  |  |
-| 121 | conversions/astronomical_length_scale_conversion |   |  |  |
-| 122 | conversions/binary_to_decimal |   |  |  |
-| 123 | conversions/binary_to_hexadecimal |   |  |  |
-| 124 | conversions/binary_to_octal |   |  |  |
-| 125 | conversions/convert_number_to_words |   |  |  |
-| 126 | conversions/decimal_to_any |   |  |  |
-| 127 | conversions/decimal_to_binary |   |  |  |
-| 128 | conversions/decimal_to_hexadecimal |   |  |  |
-| 129 | conversions/decimal_to_octal |   |  |  |
-| 130 | conversions/energy_conversions |   |  |  |
-| 131 | conversions/excel_title_to_column |   |  |  |
-| 132 | conversions/hex_to_bin |   |  |  |
-| 133 | conversions/hexadecimal_to_decimal |   |  |  |
-| 134 | conversions/ipv4_conversion |   |  |  |
-| 135 | conversions/length_conversion |   |  |  |
-| 136 | conversions/molecular_chemistry |   |  |  |
-| 137 | conversions/octal_to_binary |   |  |  |
-| 138 | conversions/octal_to_decimal |   |  |  |
-| 139 | conversions/octal_to_hexadecimal |   |  |  |
-| 140 | conversions/prefix_conversions |   |  |  |
-| 141 | conversions/prefix_conversions_string |   |  |  |
-| 142 | conversions/pressure_conversions |   |  |  |
-| 143 | conversions/rectangular_to_polar |   |  |  |
-| 144 | conversions/rgb_cmyk_conversion |   |  |  |
-| 145 | conversions/rgb_hsv_conversion |   |  |  |
-| 146 | conversions/roman_numerals |   |  |  |
-| 147 | conversions/speed_conversions |   |  |  |
-| 148 | conversions/temperature_conversions |   |  |  |
-| 149 | conversions/time_conversions |   |  |  |
-| 150 | conversions/volume_conversions |   |  |  |
-| 151 | conversions/weight_conversion |   |  |  |
-| 152 | data_compression/burrows_wheeler |   |  |  |
-| 153 | data_compression/huffman |   |  |  |
-| 154 | data_compression/lempel_ziv |   |  |  |
-| 155 | data_compression/lempel_ziv_decompress |   |  |  |
-| 156 | data_compression/lz77 |   |  |  |
-| 157 | data_compression/peak_signal_to_noise_ratio |   |  |  |
-| 158 | data_compression/run_length_encoding |   |  |  |
-| 159 | data_structures/arrays/equilibrium_index_in_array |   |  |  |
-| 160 | data_structures/arrays/find_triplets_with_0_sum |   |  |  |
+| 111 | ciphers/xor_cipher | ✓ | 72.0ms | 51.06KB |
+| 112 | computer_vision/cnn_classification | ✓ | 44.0ms | 58.11KB |
+| 113 | computer_vision/flip_augmentation | error |  |  |
+| 114 | computer_vision/haralick_descriptors | error |  |  |
+| 115 | computer_vision/harris_corner | ✓ | 46.0ms | 47.73KB |
+| 116 | computer_vision/horn_schunck | ✓ | 52.0ms | 56.05KB |
+| 117 | computer_vision/intensity_based_segmentation | ✓ | 48.0ms | 46.04KB |
+| 118 | computer_vision/mean_threshold | ✓ | 26.0ms | 680B |
+| 119 | computer_vision/mosaic_augmentation | error |  |  |
+| 120 | computer_vision/pooling_functions | ✓ | 46.0ms | 54.53KB |
+| 121 | conversions/astronomical_length_scale_conversion | ✓ | 25.0ms | 14.47KB |
+| 122 | conversions/binary_to_decimal | ✓ | 28.0ms | 808B |
+| 123 | conversions/binary_to_hexadecimal | ✓ | 35.0ms | 38.48KB |
+| 124 | conversions/binary_to_octal | ✓ | 34.0ms | 38.34KB |
+| 125 | conversions/convert_number_to_words | ✓ | 37.0ms | 47.62KB |
+| 126 | conversions/decimal_to_any | ✓ | 29.0ms | 32.90KB |
+| 127 | conversions/decimal_to_binary | ✓ | 36.0ms | 38.95KB |
+| 128 | conversions/decimal_to_hexadecimal | ✓ | 35.0ms | 38.51KB |
+| 129 | conversions/decimal_to_octal | ✓ | 36.0ms | 37.62KB |
+| 130 | conversions/energy_conversions | error |  |  |
+| 131 | conversions/excel_title_to_column | ✓ | 22.0ms | 664B |
+| 132 | conversions/hex_to_bin | error |  |  |
+| 133 | conversions/hexadecimal_to_decimal | ✓ | 22.0ms | 1.12KB |
+| 134 | conversions/ipv4_conversion | error |  |  |
+| 135 | conversions/length_conversion | ✓ | 27.0ms | 12.84KB |
+| 136 | conversions/molecular_chemistry | ✓ | 31.0ms | 664B |
+| 137 | conversions/octal_to_binary | ✓ | 29.0ms | 33.24KB |
+| 138 | conversions/octal_to_decimal | error |  |  |
+| 139 | conversions/octal_to_hexadecimal | error |  |  |
+| 140 | conversions/prefix_conversions | ✓ | 49.0ms | 14.93KB |
+| 141 | conversions/prefix_conversions_string | ✓ | 64.0ms | 89.84KB |
+| 142 | conversions/pressure_conversions | error |  |  |
+| 143 | conversions/rectangular_to_polar | ✓ | 26.0ms | 10.45KB |
+| 144 | conversions/rgb_cmyk_conversion | ✓ | 22.0ms | 496B |
+| 145 | conversions/rgb_hsv_conversion | ✓ | 22.0ms | 10.63KB |
+| 146 | conversions/roman_numerals | ✓ | 19.0ms | 528B |
+| 147 | conversions/speed_conversions | ✓ | 34.0ms | 10.66KB |
+| 148 | conversions/temperature_conversions | ✓ | 28.0ms | 10.25KB |
+| 149 | conversions/time_conversions | ✓ | 28.0ms | 13.68KB |
+| 150 | conversions/volume_conversions | ✓ | 25.0ms | 11.00KB |
+| 151 | conversions/weight_conversion | ✓ | 21.0ms | 12.88KB |
+| 152 | data_compression/burrows_wheeler | ✓ | 50.0ms | 52.35KB |
+| 153 | data_compression/huffman | error |  |  |
+| 154 | data_compression/lempel_ziv | error |  |  |
+| 155 | data_compression/lempel_ziv_decompress | ✓ | 39.0ms | 56.23KB |
+| 156 | data_compression/lz77 | ✓ | 62.0ms | 104.41KB |
+| 157 | data_compression/peak_signal_to_noise_ratio | ✓ | 22.0ms | 0B |
+| 158 | data_compression/run_length_encoding | ✓ | 49.0ms | 86.59KB |
+| 159 | data_structures/arrays/equilibrium_index_in_array | ✓ | 22.0ms | 552B |
+| 160 | data_structures/arrays/find_triplets_with_0_sum | ✓ | 44.0ms | 46.25KB |
 | 161 | data_structures/arrays/index_2d_array_in_1d |   |  |  |
 | 162 | data_structures/arrays/kth_largest_element |   |  |  |
 | 163 | data_structures/arrays/median_two_array |   |  |  |

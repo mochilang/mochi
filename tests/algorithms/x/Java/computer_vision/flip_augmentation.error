@@ -1,0 +1,26 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden113_flip_augmentation3183035006/001/Main.java:42: error: method appendObj in class Main cannot be applied to given types;
+            result = appendObj(result, new double[]{b[0], x_new, b[2], b[3], b[4]});
+                     ^
+  required: T[],T
+  found:    Object,double[]
+  reason: cannot infer type-variable(s) T
+    (argument mismatch; Object cannot be converted to T[])
+  where T is a type-variable:
+    T extends Object declared in method <T>appendObj(T[],T)
+/tmp/TestJavaTranspiler_Algorithms_Golden113_flip_augmentation3183035006/001/Main.java:45: error: incompatible types: Object cannot be converted to double[][]
+        return result;
+               ^
+/tmp/TestJavaTranspiler_Algorithms_Golden113_flip_augmentation3183035006/001/Main.java:54: error: method appendObj in class Main cannot be applied to given types;
+            result_1 = appendObj(result_1, new double[]{b_1[0], b_1[1], y_new, b_1[3], b_1[4]});
+                       ^
+  required: T[],T
+  found:    Object,double[]
+  reason: cannot infer type-variable(s) T
+    (argument mismatch; Object cannot be converted to T[])
+  where T is a type-variable:
+    T extends Object declared in method <T>appendObj(T[],T)
+/tmp/TestJavaTranspiler_Algorithms_Golden113_flip_augmentation3183035006/001/Main.java:57: error: incompatible types: Object cannot be converted to double[][]
+        return result_1;
+               ^
+4 errors

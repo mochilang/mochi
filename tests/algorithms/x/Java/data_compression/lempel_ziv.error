@@ -1,0 +1,5 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden154_lempel_ziv910451909/001/Main.java:20: error: incompatible types: String cannot be converted to Number
+            if (((Number)(k)).intValue() == key) {
+                         ^
+1 error

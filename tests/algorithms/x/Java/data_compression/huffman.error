@@ -1,0 +1,53 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden153_huffman3583499469/001/Main.java:88: error: no suitable method found for stream(Object)
+            leaves = java.util.stream.Stream.concat(java.util.Arrays.stream(leaves), java.util.stream.Stream.of(new Leaf(chars[k], freqs[k]))).toArray(Huffman[]::new);
+                                                                    ^
+    method Arrays.<T#1>stream(T#1[]) is not applicable
+      (cannot infer type-variable(s) T#1
+        (argument mismatch; Object cannot be converted to T#1[]))
+    method Arrays.<T#2>stream(T#2[],int,int) is not applicable
+      (cannot infer type-variable(s) T#2
+        (actual and formal argument lists differ in length))
+    method Arrays.stream(int[]) is not applicable
+      (argument mismatch; Object cannot be converted to int[])
+    method Arrays.stream(long[]) is not applicable
+      (argument mismatch; Object cannot be converted to long[])
+    method Arrays.stream(double[]) is not applicable
+      (argument mismatch; Object cannot be converted to double[])
+  where T#1,T#2 are type-variables:
+    T#1 extends Object declared in method <T#1>stream(T#1[])
+    T#2 extends Object declared in method <T#2>stream(T#2[],int,int)
+/tmp/TestJavaTranspiler_Algorithms_Golden153_huffman3583499469/001/Main.java:96: error: cannot find symbol
+        while (arr_1.length > 1) {
+                    ^
+  symbol:   variable length
+  location: variable arr_1 of type Object
+/tmp/TestJavaTranspiler_Algorithms_Golden153_huffman3583499469/001/Main.java:97: error: array required, but Object found
+            Huffman left = arr_1[0];
+                                ^
+/tmp/TestJavaTranspiler_Algorithms_Golden153_huffman3583499469/001/Main.java:99: error: array required, but Object found
+            Huffman right = arr_1[0];
+                                 ^
+/tmp/TestJavaTranspiler_Algorithms_Golden153_huffman3583499469/001/Main.java:102: error: no suitable method found for stream(Object)
+            arr_1 = java.util.stream.Stream.concat(java.util.Arrays.stream(arr_1), java.util.stream.Stream.of(node)).toArray(Huffman[]::new);
+                                                                   ^
+    method Arrays.<T#1>stream(T#1[]) is not applicable
+      (cannot infer type-variable(s) T#1
+        (argument mismatch; Object cannot be converted to T#1[]))
+    method Arrays.<T#2>stream(T#2[],int,int) is not applicable
+      (cannot infer type-variable(s) T#2
+        (actual and formal argument lists differ in length))
+    method Arrays.stream(int[]) is not applicable
+      (argument mismatch; Object cannot be converted to int[])
+    method Arrays.stream(long[]) is not applicable
+      (argument mismatch; Object cannot be converted to long[])
+    method Arrays.stream(double[]) is not applicable
+      (argument mismatch; Object cannot be converted to double[])
+  where T#1,T#2 are type-variables:
+    T#1 extends Object declared in method <T#1>stream(T#1[])
+    T#2 extends Object declared in method <T#2>stream(T#2[],int,int)
+/tmp/TestJavaTranspiler_Algorithms_Golden153_huffman3583499469/001/Main.java:105: error: array required, but Object found
+        return arr_1[0];
+                    ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+6 errors

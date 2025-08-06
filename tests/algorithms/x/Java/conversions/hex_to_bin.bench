@@ -1,0 +1,7 @@
+10101100
+Exception in thread "main" java.lang.NumberFormatException: For input string: "100110100100"
+	at java.base/java.lang.NumberFormatException.forInputString(NumberFormatException.java:67)
+	at java.base/java.lang.Integer.parseInt(Integer.java:662)
+	at java.base/java.lang.Integer.parseInt(Integer.java:778)
+	at Main.hex_to_bin(Main.java:99)
+	at Main.main(Main.java:110)
