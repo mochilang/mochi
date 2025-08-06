@@ -83,6 +83,7 @@ var scalaKeywords = map[string]bool{
 	"match":  true,
 	"with":   true,
 	"Map":    true,
+	"final":  true,
 	// Future Scala keywords
 	"enum":  true,
 	"given": true,
@@ -300,6 +301,11 @@ func paramAssigned(name string, stmts []*parser.Statement) bool {
 		case st.If != nil:
 			if paramAssigned(name, st.If.Then) || paramAssigned(name, st.If.Else) {
 				return true
+			}
+			if st.If.ElseIf != nil {
+				if paramAssigned(name, []*parser.Statement{{If: st.If.ElseIf}}) {
+					return true
+				}
 			}
 		case st.For != nil:
 			if paramAssigned(name, st.For.Body) {

@@ -1,13 +1,13 @@
 # Scala Algorithms Transpiler Output
 
-Completed programs: 43/1077
-Last updated: 2025-08-06 20:30 +0700
+Completed programs: 71/1077
+Last updated: 2025-08-06 21:17 +0700
 
 Checklist:
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 10µs | 3.5 MB |
+| 1 | backtracking/all_combinations | ✓ | 7µs | 8.7 MB |
 | 2 | backtracking/all_permutations | ✓ | 13µs | 8.7 MB |
 | 3 | backtracking/all_subsequences | ✓ | 6µs | 8.7 MB |
 | 4 | backtracking/coloring | ✓ | 11µs | 8.7 MB |
@@ -48,36 +48,36 @@ Checklist:
 | 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 19µs | 3.5 MB |
 | 40 | bit_manipulation/missing_number | ✓ | 6µs | 3.5 MB |
 | 41 | bit_manipulation/numbers_different_signs | ✓ | 4µs | 3.5 MB |
-| 42 | bit_manipulation/power_of_4 |   |  |  |
-| 43 | bit_manipulation/reverse_bits |   |  |  |
-| 44 | bit_manipulation/single_bit_manipulation_operations |   |  |  |
-| 45 | bit_manipulation/swap_all_odd_and_even_bits |   |  |  |
+| 42 | bit_manipulation/power_of_4 | ✓ | 2µs | 3.4 MB |
+| 43 | bit_manipulation/reverse_bits | ✓ | 6µs | 3.4 MB |
+| 44 | bit_manipulation/single_bit_manipulation_operations | ✓ | 2µs | 3.4 MB |
+| 45 | bit_manipulation/swap_all_odd_and_even_bits | ✓ | 12µs | 3.4 MB |
 | 46 | blockchain/diophantine_equation | ✓ | 11µs | 3.5 MB |
 | 47 | boolean_algebra/and_gate | ✓ | 5µs | 3.5 MB |
-| 48 | boolean_algebra/imply_gate |   |  |  |
-| 49 | boolean_algebra/karnaugh_map_simplification |   |  |  |
-| 50 | boolean_algebra/multiplexer |   |  |  |
-| 51 | boolean_algebra/nand_gate |   |  |  |
-| 52 | boolean_algebra/nimply_gate |   |  |  |
-| 53 | boolean_algebra/nor_gate |   |  |  |
-| 54 | boolean_algebra/not_gate |   |  |  |
-| 55 | boolean_algebra/or_gate |   |  |  |
-| 56 | boolean_algebra/quine_mc_cluskey |   |  |  |
-| 57 | boolean_algebra/xnor_gate |   |  |  |
-| 58 | boolean_algebra/xor_gate |   |  |  |
-| 59 | cellular_automata/conways_game_of_life |   |  |  |
-| 60 | cellular_automata/game_of_life |   |  |  |
-| 61 | cellular_automata/langtons_ant |   |  |  |
-| 62 | cellular_automata/nagel_schrekenberg |   |  |  |
-| 63 | cellular_automata/one_dimensional |   |  |  |
-| 64 | cellular_automata/wa_tor |   |  |  |
-| 65 | ciphers/a1z26 |   |  |  |
-| 66 | ciphers/affine_cipher |   |  |  |
-| 67 | ciphers/atbash |   |  |  |
-| 68 | ciphers/autokey |   |  |  |
-| 69 | ciphers/baconian_cipher |   |  |  |
-| 70 | ciphers/base16 |   |  |  |
-| 71 | ciphers/base32 |   |  |  |
+| 48 | boolean_algebra/imply_gate | ✓ | 2µs | 3.4 MB |
+| 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 3µs | 3.4 MB |
+| 50 | boolean_algebra/multiplexer | ✓ | 2µs | 3.4 MB |
+| 51 | boolean_algebra/nand_gate | ✓ | 2µs | 3.4 MB |
+| 52 | boolean_algebra/nimply_gate | ✓ | 2µs | 3.4 MB |
+| 53 | boolean_algebra/nor_gate | ✓ | 2µs | 3.4 MB |
+| 54 | boolean_algebra/not_gate | ✓ | 2µs | 3.4 MB |
+| 55 | boolean_algebra/or_gate | ✓ | 9µs | 3.4 MB |
+| 56 | boolean_algebra/quine_mc_cluskey | ✓ | 9µs | 3.4 MB |
+| 57 | boolean_algebra/xnor_gate | ✓ | 1µs | 3.4 MB |
+| 58 | boolean_algebra/xor_gate | ✓ | 2µs | 3.4 MB |
+| 59 | cellular_automata/conways_game_of_life | ✓ | 17µs | 3.4 MB |
+| 60 | cellular_automata/game_of_life | ✓ | 8µs | 3.4 MB |
+| 61 | cellular_automata/langtons_ant | ✓ |  |  |
+| 62 | cellular_automata/nagel_schrekenberg | ✓ | 9µs | 3.4 MB |
+| 63 | cellular_automata/one_dimensional | ✓ | 11µs | 3.4 MB |
+| 64 | cellular_automata/wa_tor | ✓ | 26µs | 3.5 MB |
+| 65 | ciphers/a1z26 | ✓ | 9µs | 3.4 MB |
+| 66 | ciphers/affine_cipher | ✓ | 11µs | 3.4 MB |
+| 67 | ciphers/atbash | ✓ | 4µs | 3.4 MB |
+| 68 | ciphers/autokey | ✓ | 13µs | 3.5 MB |
+| 69 | ciphers/baconian_cipher | ✓ | 4µs | 3.5 MB |
+| 70 | ciphers/base16 | ✓ | 9µs | 3.4 MB |
+| 71 | ciphers/base32 | ✓ | 9µs | 3.4 MB |
 | 72 | ciphers/base64_cipher |   |  |  |
 | 73 | ciphers/base85 |   |  |  |
 | 74 | ciphers/beaufort_cipher |   |  |  |
