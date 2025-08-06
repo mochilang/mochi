@@ -1,0 +1,119 @@
+/*
+Median of Medians Selection Algorithm
+
+This program implements three routines for selecting statistics from an
+unsorted list of integers:
+
+1. median_of_five(arr)
+   Sorts up to five integers using insertion sort and returns the median.
+   Runs in O(1) time for fixed-size input.
+
+2. median_of_medians(arr)
+   Divides the input into groups of five, computes each group's median,
+   and recursively returns the median of those medians.  This value is a
+   deterministic linear-time pivot for selection.
+
+3. quick_select(arr, target)
+   Uses the pivot from median_of_medians to partition the data and
+   recursively searches the partition containing the desired rank.
+   The algorithm completes in O(n) time.
+
+The implementation avoids the "any" type and foreign interfaces so it can
+run on the runtime/vm.
+*/
+
+fun set_at_int(xs: list<int>, idx: int, value: int): list<int> {
+  var i = 0
+  var res: list<int> = []
+  while i < len(xs) {
+    if i == idx {
+      res = append(res, value)
+    } else {
+      res = append(res, xs[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun sort_int(xs: list<int>): list<int> {
+  var res = xs
+  var i = 1
+  while i < len(res) {
+    let key = res[i]
+    var j = i - 1
+    while j >= 0 && res[j] > key {
+      res = set_at_int(res, j + 1, res[j])
+      j = j - 1
+    }
+    res = set_at_int(res, j + 1, key)
+    i = i + 1
+  }
+  return res
+}
+
+fun median_of_five(arr: list<int>): int {
+  let sorted = sort_int(arr)
+  return sorted[len(sorted) / 2]
+}
+
+fun median_of_medians(arr: list<int>): int {
+  if len(arr) <= 5 {
+    return median_of_five(arr)
+  }
+  var medians: list<int> = []
+  var i = 0
+  while i < len(arr) {
+    if i + 5 <= len(arr) {
+      medians = append(medians, median_of_five(arr[i:i+5]))
+    } else {
+      medians = append(medians, median_of_five(arr[i:len(arr)]))
+    }
+    i = i + 5
+  }
+  return median_of_medians(medians)
+}
+
+fun quick_select(arr: list<int>, target: int): int {
+  if target > len(arr) {
+    return -1
+  }
+  let x = median_of_medians(arr)
+  var left: list<int> = []
+  var right: list<int> = []
+  var check = false
+  var i = 0
+  while i < len(arr) {
+    if arr[i] < x {
+      left = append(left, arr[i])
+    } else if arr[i] > x {
+      right = append(right, arr[i])
+    } else if arr[i] == x {
+      if ! check {
+        check = true
+      } else {
+        right = append(right, arr[i])
+      }
+    } else {
+      right = append(right, arr[i])
+    }
+    i = i + 1
+  }
+  let rank_x = len(left) + 1
+  var answer = 0
+  if rank_x == target {
+    answer = x
+  } else if rank_x > target {
+    answer = quick_select(left, target)
+  } else {
+    answer = quick_select(right, target - rank_x)
+  }
+  return answer
+}
+
+fun main() {
+  print(str(median_of_five([5, 4, 3, 2])))
+  print(str(quick_select([2, 4, 5, 7, 899, 54, 32], 5)))
+}
+
+main()
