@@ -1,0 +1,49 @@
+/*
+Gaussian Error Linear Unit (GELU) activation function.
+
+The GELU is defined as x * sigmoid(1.702 * x) where sigmoid(z) = 1 / (1 + e^{-z}).
+This program implements the function in pure Mochi. The exponential e^x is
+approximated using a 20-term Taylor series to avoid foreign libraries. Sample
+values demonstrate both sigmoid and GELU computations.
+*/
+
+fun exp_taylor(x: float): float {
+  var term = 1.0
+  var sum = 1.0
+  var i = 1.0
+  while i < 20.0 {
+    term = term * x / i
+    sum = sum + term
+    i = i + 1.0
+  }
+  return sum
+}
+
+fun sigmoid(vector: list<float>): list<float> {
+  var result: list<float> = []
+  var i = 0
+  while i < len(vector) {
+    let x = vector[i]
+    let value = 1.0 / (1.0 + exp_taylor(-x))
+    result = append(result, value)
+    i = i + 1
+  }
+  return result
+}
+
+fun gaussian_error_linear_unit(vector: list<float>): list<float> {
+  var result: list<float> = []
+  var i = 0
+  while i < len(vector) {
+    let x = vector[i]
+    let gelu = x * (1.0 / (1.0 + exp_taylor(-1.702 * x)))
+    result = append(result, gelu)
+    i = i + 1
+  }
+  return result
+}
+
+let sample: list<float> = [-1.0, 1.0, 2.0]
+print(sigmoid(sample))
+print(gaussian_error_linear_unit(sample))
+print(gaussian_error_linear_unit([-3.0]))
