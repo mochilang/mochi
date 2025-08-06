@@ -1,0 +1,100 @@
+/*
+Swish Activation Function
+-------------------------
+This module implements the sigmoid and swish activation functions used in
+neural networks.  For an input x, sigmoid(x) = 1 / (1 + e^{-x}) and swish
+is defined as x * sigmoid(beta * x), where beta is a trainable parameter.
+
+The implementation operates on lists of floats and approximates the
+exponential function via the first ten terms of its Taylor series so it
+remains pure Mochi without foreign function interfaces.
+The algorithms run in O(n * k) time where n is the length of the input
+vector and k (10 here) is the number of series terms.  Additional space
+used is O(n) for the resulting lists.
+*/
+
+fun exp_approx(x: float): float {
+  var sum: float = 1.0
+  var term: float = 1.0
+  var i = 1
+  while i <= 20 {
+    term = term * x / (i as float)
+    sum = sum + term
+    i = i + 1
+  }
+  return sum
+}
+
+fun sigmoid(vector: list<float>): list<float> {
+  var result: list<float> = []
+  var i = 0
+  while i < len(vector) {
+    let v = vector[i]
+    let s = 1.0 / (1.0 + exp_approx(-v))
+    result = append(result, s)
+    i = i + 1
+  }
+  return result
+}
+
+fun swish(vector: list<float>, beta: float): list<float> {
+  var result: list<float> = []
+  var i = 0
+  while i < len(vector) {
+    let v = vector[i]
+    let s = 1.0 / (1.0 + exp_approx(-beta * v))
+    result = append(result, v * s)
+    i = i + 1
+  }
+  return result
+}
+
+fun sigmoid_linear_unit(vector: list<float>): list<float> {
+  return swish(vector, 1.0)
+}
+
+fun approx_equal(a: float, b: float, eps: float): bool {
+  let diff = if a > b { a - b } else { b - a }
+  return diff < eps
+}
+
+fun approx_equal_list(a: list<float>, b: list<float>, eps: float): bool {
+  if len(a) != len(b) {
+    return false
+  }
+  var i = 0
+  while i < len(a) {
+    if !approx_equal(a[i], b[i], eps) {
+      return false
+    }
+    i = i + 1
+  }
+  return true
+}
+
+fun test_swish() {
+  let v = [-1.0, 1.0, 2.0]
+  let eps = 0.001
+  if !approx_equal_list(sigmoid(v), [0.26894142, 0.73105858, 0.88079708], eps) {
+    panic("sigmoid incorrect")
+  }
+  if !approx_equal_list(sigmoid_linear_unit(v), [-0.26894142, 0.73105858, 1.76159416], eps) {
+    panic("sigmoid_linear_unit incorrect")
+  }
+  if !approx_equal_list(swish(v, 2.0), [-0.11920292, 0.88079708, 1.96402758], eps) {
+    panic("swish incorrect")
+  }
+  if !approx_equal_list(swish([-2.0], 1.0), [-0.23840584], eps) {
+    panic("swish with parameter 1 incorrect")
+  }
+}
+
+fun main() {
+  test_swish()
+  print(str(sigmoid([-1.0, 1.0, 2.0])))
+  print(str(sigmoid_linear_unit([-1.0, 1.0, 2.0])))
+  print(str(swish([-1.0, 1.0, 2.0], 2.0)))
+  print(str(swish([-2.0], 1.0)))
+}
+
+main()
