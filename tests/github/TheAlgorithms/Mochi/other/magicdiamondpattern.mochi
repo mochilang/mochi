@@ -1,0 +1,66 @@
+/*
+Generate a diamond pattern made of '*' characters.
+
+The upper half of the diamond is produced by `floyd`, which builds a pyramid
+of height `n` by prefixing each line with decreasing spaces and appending stars.
+The lower half is produced by `reverse_floyd`, which mirrors the pyramid and
+continues the diamond downward. `pretty_print` combines both halves. If `n`
+ is non-positive a friendly message is returned.
+*/
+
+
+fun floyd(n: int): string {
+  var result = ""
+  var i = 0
+  while i < n {
+    var j = 0
+    while j < n - i - 1 {
+      result = result + " "
+      j = j + 1
+    }
+    var k = 0
+    while k < i + 1 {
+      result = result + "* "
+      k = k + 1
+    }
+    result = result + "\n"
+    i = i + 1
+  }
+  return result
+}
+
+fun reverse_floyd(n: int): string {
+  var result = ""
+  var i = n
+  while i > 0 {
+    var j = i
+    while j > 0 {
+      result = result + "* "
+      j = j - 1
+    }
+    result = result + "\n"
+    var k = n - i + 1
+    while k > 0 {
+      result = result + " "
+      k = k - 1
+    }
+    i = i - 1
+  }
+  return result
+}
+
+fun pretty_print(n: int): string {
+  if n <= 0 {
+    return "       ...       ....        nothing printing :("
+  }
+  let upper_half = floyd(n)
+  let lower_half = reverse_floyd(n)
+  return upper_half + lower_half
+}
+
+fun main() {
+  print(pretty_print(3))
+  print(pretty_print(0))
+}
+
+main()
