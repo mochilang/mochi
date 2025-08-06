@@ -1,0 +1,82 @@
+/*
+Validate Filenames
+------------------
+This program checks a list of file paths for common formatting issues.
+For each path it flags four potential problems:
+  1. Uppercase characters
+  2. Space characters
+  3. Hyphen characters (excluding paths containing "/site-packages/")
+  4. Files not located inside a directory (no '/' present)
+
+The `validate` function returns the total number of problematic files and
+prints each offending file grouped by issue. The code avoids the `any`
+type and uses only Mochi built-ins so it can run on the `runtime/vm`.
+*/
+
+fun indexOf(s: string, sub: string): int {
+  let n = len(s)
+  let m = len(sub)
+  var i = 0
+  while i <= n - m {
+    if substring(s, i, i + m) == sub { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun contains(s: string, sub: string): bool {
+  return indexOf(s, sub) >= 0
+}
+
+fun validate(files: list<string>): int {
+  var upper: list<string> = []
+  var space: list<string> = []
+  var hyphen: list<string> = []
+  var nodir: list<string> = []
+
+  for f in files {
+    if f != lower(f) { upper = append(upper, f) }
+    if contains(f, " ") { space = append(space, f) }
+    if contains(f, "-") && contains(f, "/site-packages/") == false {
+      hyphen = append(hyphen, f)
+    }
+    if !contains(f, "/") { nodir = append(nodir, f) }
+  }
+
+  if len(upper) > 0 {
+    print(str(len(upper)) + " files contain uppercase characters:")
+    for f in upper { print(f) }
+    print("")
+  }
+  if len(space) > 0 {
+    print(str(len(space)) + " files contain space characters:")
+    for f in space { print(f) }
+    print("")
+  }
+  if len(hyphen) > 0 {
+    print(str(len(hyphen)) + " files contain hyphen characters:")
+    for f in hyphen { print(f) }
+    print("")
+  }
+  if len(nodir) > 0 {
+    print(str(len(nodir)) + " files are not in a directory:")
+    for f in nodir { print(f) }
+    print("")
+  }
+  return len(upper) + len(space) + len(hyphen) + len(nodir)
+}
+
+fun main() {
+  let files: list<string> = [
+    "scripts/Validate_filenames.py",
+    "good/file.txt",
+    "bad file.txt",
+    "/site-packages/pkg-name.py",
+    "nopath",
+    "src/hyphen-name.py"
+  ]
+  let bad = validate(files)
+  print(str(bad))
+}
+
+main()
