@@ -2,31 +2,31 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-06 20:45 GMT+7
+Last updated: 2025-08-06 21:09 GMT+7
 
-## Algorithms Golden Test Checklist (9/1077)
+## Algorithms Golden Test Checklist (16/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ |  |  |
-| 2 | backtracking/all_permutations | ✓ |  |  |
-| 3 | backtracking/all_subsequences | ✓ |  |  |
-| 4 | backtracking/coloring | ✓ |  |  |
-| 5 | backtracking/combination_sum | ✓ |  |  |
-| 6 | backtracking/crossword_puzzle_solver | ✓ |  |  |
+| 1 | backtracking/all_combinations | ✓ | 30.54ms | 124.45KiB |
+| 2 | backtracking/all_permutations | ✓ | 14.62ms | 132.73KiB |
+| 3 | backtracking/all_subsequences | ✓ | 13.64ms | 132.94KiB |
+| 4 | backtracking/coloring | ✓ | 16.80ms | 132.92KiB |
+| 5 | backtracking/combination_sum | ✓ | 31.16ms | 123.60KiB |
+| 6 | backtracking/crossword_puzzle_solver | ✓ | 11.90ms | 133.00KiB |
 | 7 | backtracking/hamiltonian_cycle | error |  |  |
 | 8 | backtracking/knight_tour | error |  |  |
 | 9 | backtracking/match_word_pattern | error |  |  |
-| 10 | backtracking/minimax | ✓ |  |  |
-| 11 | backtracking/n_queens | ✓ |  |  |
-| 12 | backtracking/n_queens_math | error |  |  |
-| 13 | backtracking/power_sum | ✓ |  |  |
-| 14 | backtracking/rat_in_maze |   |  |  |
-| 15 | backtracking/sudoku |   |  |  |
-| 16 | backtracking/sum_of_subsets |   |  |  |
-| 17 | backtracking/word_break |   |  |  |
-| 18 | backtracking/word_ladder |   |  |  |
-| 19 | backtracking/word_search |   |  |  |
-| 20 | bit_manipulation/binary_and_operator |   |  |  |
+| 10 | backtracking/minimax | ✓ | 25.86ms | 123.57KiB |
+| 11 | backtracking/n_queens | ✓ | 29.52ms | 115.22KiB |
+| 12 | backtracking/n_queens_math | ✓ | 52.86ms | 115.33KiB |
+| 13 | backtracking/power_sum | ✓ | 14.33ms | 134.19KiB |
+| 14 | backtracking/rat_in_maze | ✓ | 11.34ms | 132.45KiB |
+| 15 | backtracking/sudoku | ✓ | 33.40ms | 131.27KiB |
+| 16 | backtracking/sum_of_subsets | error |  |  |
+| 17 | backtracking/word_break | ✓ | 27.23ms | 114.40KiB |
+| 18 | backtracking/word_ladder | ✓ | 34.74ms | 122.67KiB |
+| 19 | backtracking/word_search | ✓ | 27.96ms | 114.00KiB |
+| 20 | bit_manipulation/binary_and_operator | ✓ | 17.15ms | 121.63KiB |
 | 21 | bit_manipulation/binary_coded_decimal |   |  |  |
 | 22 | bit_manipulation/binary_count_setbits |   |  |  |
 | 23 | bit_manipulation/binary_count_trailing_zeros |   |  |  |

@@ -1,5 +1,0 @@
-kotlinc: exit status 1
-OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/workspace/mochi/tests/algorithms/x/Kotlin/backtracking/n_queens_math.kt:75:20: error: unresolved reference: concat
-        boards = ((concat((boards as MutableList<Any?>), result)) as MutableList<MutableList<String>>)
-                   ^

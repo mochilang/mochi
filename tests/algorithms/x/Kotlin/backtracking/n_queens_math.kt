@@ -1,3 +1,10 @@
+fun <T> concat(a: MutableList<T>, b: MutableList<T>): MutableList<T> {
+    val res = mutableListOf<T>()
+    res.addAll(a)
+    res.addAll(b)
+    return res
+}
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -72,7 +79,7 @@ fun depth_first_search(pos: MutableList<Int>, dr: MutableList<Int>, dl: MutableL
             continue
         }
         var result: MutableList<MutableList<String>> = depth_first_search(run { val _tmp = pos.toMutableList(); _tmp.add(col); _tmp }, run { val _tmp = dr.toMutableList(); _tmp.add(row - col); _tmp }, run { val _tmp = dl.toMutableList(); _tmp.add(row + col); _tmp }, n)
-        boards = ((concat((boards as MutableList<Any?>), result)) as MutableList<MutableList<String>>)
+        boards = ((concat(boards, result)) as MutableList<MutableList<String>>)
         col = col + 1
     }
     return boards

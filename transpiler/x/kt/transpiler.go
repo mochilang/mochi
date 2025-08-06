@@ -243,6 +243,12 @@ return (x.toLong() / pow2(n)).toInt()
     repeat(n) { sb.append(s) }
     return sb.toString()
 }`,
+		"concat": `fun <T> concat(a: MutableList<T>, b: MutableList<T>): MutableList<T> {
+    val res = mutableListOf<T>()
+    res.addAll(a)
+    res.addAll(b)
+    return res
+}`,
 	}
 	reserved = map[string]bool{
 		"package": true, "as": true, "typealias": true, "class": true,
@@ -267,6 +273,7 @@ return (x.toLong() / pow2(n)).toInt()
 		"_sha256":         "MutableList<Int>",
 		"indexOf":         "Int",
 		"split":           "MutableList<String>",
+		"concat":          "MutableList<Any?>",
 	}
 }
 
@@ -3305,20 +3312,20 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				if typ == "MutableMap<Any, Any>" {
 					typ = "MutableMap<String, Any>"
 				}
-                               if gt := guessType(val); strings.Contains(gt, "Long") && !strings.Contains(typ, "Long") {
-                                       typ = gt
-                               }
-                               if strings.Contains(typ, "BigInteger") {
-                                       if gt := guessType(val); gt != "" && !strings.Contains(gt, "BigInteger") {
-                                               typ = gt
-                                       }
-                                       if strings.Contains(typ, "BigInteger") {
-                                               typ = ""
-                                       }
-                               }
-                               if strings.Contains(typ, "Any?") && guessType(val) != typ {
-                                       typ = ""
-                               }
+				if gt := guessType(val); strings.Contains(gt, "Long") && !strings.Contains(typ, "Long") {
+					typ = gt
+				}
+				if strings.Contains(typ, "BigInteger") {
+					if gt := guessType(val); gt != "" && !strings.Contains(gt, "BigInteger") {
+						typ = gt
+					}
+					if strings.Contains(typ, "BigInteger") {
+						typ = ""
+					}
+				}
+				if strings.Contains(typ, "Any?") && guessType(val) != typ {
+					typ = ""
+				}
 				if _, ok := val.(*NullLit); ok {
 					if typ == "" {
 						typ = "Any?"
@@ -3399,18 +3406,18 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						}
 					}
 				}
-                               if typ == "Any" {
-                                       typ = ""
-                               }
-                               if strings.Contains(typ, "BigInteger") {
-                                       if gt := guessType(val); gt != "" && !strings.Contains(gt, "BigInteger") {
-                                               typ = gt
-                                       }
-                                       if strings.Contains(typ, "BigInteger") {
-                                               typ = ""
-                                       }
-                               }
-                       }
+				if typ == "Any" {
+					typ = ""
+				}
+				if strings.Contains(typ, "BigInteger") {
+					if gt := guessType(val); gt != "" && !strings.Contains(gt, "BigInteger") {
+						typ = gt
+					}
+					if strings.Contains(typ, "BigInteger") {
+						typ = ""
+					}
+				}
+			}
 			if st.Var.Type != nil {
 				if _, ok := val.(*MapLit); ok {
 					val = &CastExpr{Value: val, Type: typ}
@@ -5455,6 +5462,20 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			return &AppendExpr{List: list, Elem: elem}, nil
+		case "concat":
+			if len(p.Call.Args) != 2 {
+				return nil, fmt.Errorf("concat expects 2 args")
+			}
+			a, err := convertExpr(env, p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			b, err := convertExpr(env, p.Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			useHelper("concat")
+			return &CallExpr{Func: "concat", Args: []Expr{a, b}}, nil
 		case "min":
 			if len(p.Call.Args) != 1 {
 				return nil, fmt.Errorf("min expects 1 arg")
