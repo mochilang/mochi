@@ -88,7 +88,7 @@ func TestZigTranspiler_Algorithms_Golden(t *testing.T) {
 			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 				cmd.Stdin = bytes.NewReader(data)
 			}
-			want, _ := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".out")
+			want, _ := os.ReadFile(outPath)
 			want = bytes.TrimSpace(want)
 
 			out, err := cmd.CombinedOutput()
@@ -99,22 +99,21 @@ func TestZigTranspiler_Algorithms_Golden(t *testing.T) {
 			}
 			_ = os.Remove(errPath)
 			benchData := got
+			progOut := got
 			if idx := bytes.LastIndexByte(got, '{'); idx >= 0 {
-				_ = os.WriteFile(outPath, bytes.TrimSpace(got[:idx]), 0o644)
+				progOut = bytes.TrimSpace(got[:idx])
+				_ = os.WriteFile(outPath, progOut, 0o644)
 				benchData = got[idx:]
 			} else {
-				_ = os.WriteFile(outPath, got, 0o644)
+				_ = os.WriteFile(outPath, progOut, 0o644)
 				benchData = nil
 			}
 			if benchData != nil {
 				_ = os.WriteFile(benchPath, benchData, 0o644)
 			}
-			if want != nil && len(want) > 0 {
-				if gotOut, err := os.ReadFile(outPath); err == nil {
-					gotOut = bytes.TrimSpace(gotOut)
-					if !bytes.Equal(gotOut, want) {
-						t.Errorf("output mismatch\nGot: %s\nWant: %s", gotOut, want)
-					}
+			if len(want) > 0 {
+				if !bytes.Equal(progOut, want) {
+					t.Errorf("output mismatch\nGot: %s\nWant: %s", progOut, want)
 				}
 			}
 		})
