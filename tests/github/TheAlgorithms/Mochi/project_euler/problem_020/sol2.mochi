@@ -1,0 +1,49 @@
+/*
+Project Euler Problem 20 – Factorial Digit Sum
+
+Given an integer n, compute the sum of the decimal digits of n!.
+Example: 10! = 3628800 so the digit sum is 3 + 6 + 2 + 8 + 8 + 0 + 0 = 27.
+
+Algorithm:
+1. Compute n! iteratively by multiplying numbers from 2 to n.
+2. Sum the digits by repeatedly taking the remainder modulo 10 and dividing by 10.
+3. Each loop is linear in its range and uses only integer arithmetic, so the
+   complexity is O(n log n) due to big integer operations.
+*/
+
+fun factorial(n: int): int {
+  var result = 1
+  var i = 2
+  while i <= n {
+    result = result * i
+    i = i + 1
+  }
+  return result
+}
+
+fun digit_sum(n: int): int {
+  var total = 0
+  var m = n
+  while m > 0 {
+    total = total + (m % 10)
+    m = m / 10
+  }
+  return total
+}
+
+fun solution(num: int): int {
+  var f = factorial(num)
+  return digit_sum(f)
+}
+
+fun main() {
+  print(solution(100))
+  print(solution(50))
+  print(solution(10))
+  print(solution(5))
+  print(solution(3))
+  print(solution(2))
+  print(solution(1))
+}
+
+main()
