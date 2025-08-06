@@ -1,0 +1,40 @@
+/*
+String Split
+
+Given a string and a separator character, produce a list of substrings
+split on the separator.  This mirrors Python's str.split but implemented
+manually.  The algorithm scans the string character by character while
+tracking the start index of the current token.  When the separator is
+encountered, the substring from the last start index to the separator is
+appended to the result, and the start index is advanced.  After the scan
+completes, the final substring is appended.  Empty substrings are preserved
+for consecutive separators or separators at the ends of the input.
+*/
+
+fun split_with_sep(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var last = 0
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i + 1)
+    if ch == sep {
+      parts = append(parts, substring(s, last, i))
+      last = i + 1
+    }
+    if i + 1 == len(s) {
+      parts = append(parts, substring(s, last, i + 1))
+    }
+    i = i + 1
+  }
+  return parts
+}
+
+fun split(s: string): list<string> {
+  return split_with_sep(s, " ")
+}
+
+print(str(split_with_sep("apple#banana#cherry#orange", "#")))
+print(str(split("Hello there")))
+print(str(split_with_sep("11/22/63", "/")))
+print(str(split_with_sep("12:43:39", ":")))
+print(str(split_with_sep(";abbb;;c;", ";")))
