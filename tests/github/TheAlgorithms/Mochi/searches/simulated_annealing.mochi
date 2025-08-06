@@ -1,0 +1,167 @@
+/*
+Simulated annealing heuristic search for bivariate functions.
+
+The algorithm explores the solution space by repeatedly moving to a randomly
+chosen neighbouring point.  If the neighbour yields a better score it is
+accepted.  Otherwise it may still be accepted with probability
+exp(change / temperature), allowing occasional uphill moves to escape local
+optima.  The temperature starts high and decreases geometrically each
+iteration; once it falls below a threshold or no neighbour can be accepted
+the search terminates.  This implementation demonstrates both
+minimisation and maximisation of simple functions.
+*/
+
+type SearchProblem {
+  x: float,
+  y: float,
+  step: float,
+}
+
+fun score(p: SearchProblem, f: fun(float, float): float): float {
+  return f(p.x, p.y)
+}
+
+fun get_neighbors(p: SearchProblem): list<SearchProblem> {
+  let s = p.step
+  var ns: list<SearchProblem> = []
+  ns = append(ns, SearchProblem { x: p.x - s, y: p.y - s, step: s })
+  ns = append(ns, SearchProblem { x: p.x - s, y: p.y, step: s })
+  ns = append(ns, SearchProblem { x: p.x - s, y: p.y + s, step: s })
+  ns = append(ns, SearchProblem { x: p.x, y: p.y - s, step: s })
+  ns = append(ns, SearchProblem { x: p.x, y: p.y + s, step: s })
+  ns = append(ns, SearchProblem { x: p.x + s, y: p.y - s, step: s })
+  ns = append(ns, SearchProblem { x: p.x + s, y: p.y, step: s })
+  ns = append(ns, SearchProblem { x: p.x + s, y: p.y + s, step: s })
+  return ns
+}
+
+fun remove_at(lst: list<SearchProblem>, idx: int): list<SearchProblem> {
+  var res: list<SearchProblem> = []
+  var i: int = 0
+  while i < len(lst) {
+    if i != idx {
+      res = append(res, lst[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+var seed: int = 1
+fun rand(): int {
+  let _t = now()
+  seed = (seed * 1103515245 + 12345) % 2147483648
+  return seed
+}
+
+fun random_float(): float {
+  return (rand() as float) / 2147483648.0
+}
+
+fun randint(low: int, high: int): int {
+  return (rand() % (high - low + 1)) + low
+}
+
+fun expApprox(x: float): float {
+  var y: float = x
+  var is_neg: bool = false
+  if x < 0.0 {
+    is_neg = true
+    y = -x
+  }
+  var term: float = 1.0
+  var sum: float = 1.0
+  var n: int = 1
+  while n < 30 {
+    term = term * y / (n as float)
+    sum = sum + term
+    n = n + 1
+  }
+  if is_neg { return 1.0 / sum }
+  return sum
+}
+
+fun simulated_annealing(
+  search_prob: SearchProblem,
+  f: fun(float, float): float,
+  find_max: bool,
+  max_x: float,
+  min_x: float,
+  max_y: float,
+  min_y: float,
+  start_temp: float,
+  rate_of_decrease: float,
+  threshold_temp: float
+): SearchProblem {
+  var search_end: bool = false
+  var current_state: SearchProblem = search_prob
+  var current_temp: float = start_temp
+  var best_state: SearchProblem = current_state
+
+  while !search_end {
+    let current_score: float = score(current_state, f)
+    if score(best_state, f) < current_score {
+      best_state = current_state
+    }
+    var next_state: SearchProblem = current_state
+    var found_next: bool = false
+    var neighbors: list<SearchProblem> = get_neighbors(current_state)
+    while !found_next && len(neighbors) > 0 {
+      let idx: int = randint(0, len(neighbors) - 1)
+      let picked_neighbor: SearchProblem = neighbors[idx]
+      neighbors = remove_at(neighbors, idx)
+      if picked_neighbor.x > max_x || picked_neighbor.x < min_x || picked_neighbor.y > max_y || picked_neighbor.y < min_y {
+        continue
+      }
+      var change: float = score(picked_neighbor, f) - current_score
+      if !find_max {
+        change = -change
+      }
+      if change > 0.0 {
+        next_state = picked_neighbor
+        found_next = true
+      } else {
+        let probability: float = expApprox(change / current_temp)
+        if random_float() < probability {
+          next_state = picked_neighbor
+          found_next = true
+        }
+      }
+    }
+    current_temp = current_temp - (current_temp * rate_of_decrease)
+    if current_temp < threshold_temp || (!found_next) {
+      search_end = true
+    } else {
+      current_state = next_state
+    }
+  }
+  return best_state
+}
+
+fun test_f1(x: float, y: float): float {
+  return x * x + y * y
+}
+
+fun test_f2(x: float, y: float): float {
+  return (3.0 * x * x) - (6.0 * y)
+}
+
+fun main() {
+  let prob1 = SearchProblem { x: 12.0, y: 47.0, step: 1.0 }
+  let min_state = simulated_annealing(prob1, test_f1, false, 100.0, 5.0, 50.0, -5.0, 100.0, 0.01, 1.0)
+  print("min1", test_f1(min_state.x, min_state.y))
+
+  let prob2 = SearchProblem { x: 12.0, y: 47.0, step: 1.0 }
+  let max_state = simulated_annealing(prob2, test_f1, true, 100.0, 5.0, 50.0, -5.0, 100.0, 0.01, 1.0)
+  print("max1", test_f1(max_state.x, max_state.y))
+
+  let prob3 = SearchProblem { x: 3.0, y: 4.0, step: 1.0 }
+  let min_state2 = simulated_annealing(prob3, test_f2, false, 1000.0, -1000.0, 1000.0, -1000.0, 100.0, 0.01, 1.0)
+  print("min2", test_f2(min_state2.x, min_state2.y))
+
+  let prob4 = SearchProblem { x: 3.0, y: 4.0, step: 1.0 }
+  let max_state2 = simulated_annealing(prob4, test_f2, true, 1000.0, -1000.0, 1000.0, -1000.0, 100.0, 0.01, 1.0)
+  print("max2", test_f2(max_state2.x, max_state2.y))
+}
+
+main()
