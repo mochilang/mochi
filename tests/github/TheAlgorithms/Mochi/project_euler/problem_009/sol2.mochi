@@ -1,0 +1,38 @@
+/*
+Project Euler Problem 9: Special Pythagorean Triplet
+---------------------------------------------------
+Find the unique product a*b*c of a Pythagorean triplet satisfying:
+  1. a < b < c
+  2. a^2 + b^2 = c^2
+  3. a + b + c = n
+
+By manipulating the equations one can express b in terms of a and n:
+  b = (n^2 - 2*a*n) / (2*n - 2*a)
+Then c = n - a - b.  Iterating a from 1 to n/3 checks every possible
+triplet.  Whenever a^2 + b^2 equals c^2 the candidate product a*b*c is
+computed and the maximum product is returned.  The loop runs in O(n).
+*/
+
+fun solution(n: int): int {
+  var product = -1
+  var candidate = 0
+  var a = 1
+  while a < n / 3 {
+    let b = (n * n - 2 * a * n) / (2 * n - 2 * a)
+    let c = n - a - b
+    if c * c == (a * a + b * b) {
+      candidate = a * b * c
+      if candidate > product {
+        product = candidate
+      }
+    }
+    a = a + 1
+  }
+  return product
+}
+
+fun main() {
+  print("solution() = " + str(solution(1000)))
+}
+
+main()
