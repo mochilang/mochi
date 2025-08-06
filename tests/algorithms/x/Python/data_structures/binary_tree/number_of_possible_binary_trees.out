@@ -1,0 +1,6 @@
+Enter the number of nodes:
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/number_of_possible_binary_trees.py", line 31, in <module>
+    input_str = input()
+                ^^^^^^^
+EOFError: EOF when reading a line

@@ -1,0 +1,3 @@
+Tree [2.0, 2.1, 2.2] is sorted: True
+Tree [2.0, 2.1, 2.0] is sorted: False
+Tree [2.0, 2.1, 2.1] is sorted: True

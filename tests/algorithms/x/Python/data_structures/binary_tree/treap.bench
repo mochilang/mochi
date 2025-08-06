@@ -1,0 +1,15 @@
+{
+  "duration_us": 9,
+  "memory_bytes": 14663680,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/treap.py", line 135, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/treap.py", line 112, in main
+    root = insert(root, 1)
+           ^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/treap.py", line 95, in insert
+    res = root.split(value)
+          ^^^^^^^^^^
+AttributeError: 'int' object has no attribute 'split'

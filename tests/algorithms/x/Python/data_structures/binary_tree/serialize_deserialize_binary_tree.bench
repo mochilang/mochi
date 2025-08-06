@@ -1,0 +1,15 @@
+{
+  "duration_us": 19,
+  "memory_bytes": 14143488,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/serialize_deserialize_binary_tree.py", line 123, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/serialize_deserialize_binary_tree.py", line 112, in main
+    root = five_tree()
+           ^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/serialize_deserialize_binary_tree.py", line 103, in five_tree
+    left_child = Node(value=2, left=Empty(), right=Empty())
+                                    ^^^^^^^
+TypeError: 'NoneType' object is not callable

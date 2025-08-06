@@ -1,0 +1,13 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/inorder_tree_traversal_2022.py", line 91, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/inorder_tree_traversal_2022.py", line 88, in main
+    state = make_tree()
+            ^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/inorder_tree_traversal_2022.py", line 82, in make_tree
+    insert(state, 6)
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/inorder_tree_traversal_2022.py", line 50, in insert
+    node = nodes[current]
+           ~~~~~^^^^^^^^^
+IndexError: list index out of range

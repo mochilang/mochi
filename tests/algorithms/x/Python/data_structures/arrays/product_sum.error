@@ -1,0 +1,12 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/arrays/product_sum.py", line 24, in <module>
+    print(product_sum_array(example))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/arrays/product_sum.py", line 21, in product_sum_array
+    res = product_sum(array, 1)
+          ^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/arrays/product_sum.py", line 14, in product_sum
+    if len(el) > 0:
+       ^^^^^^^
+TypeError: object of type 'int' has no len()

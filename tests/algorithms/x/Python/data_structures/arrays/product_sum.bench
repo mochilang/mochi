@@ -1,0 +1,16 @@
+{
+  "duration_us": 5,
+  "memory_bytes": 12935168,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/arrays/product_sum.py", line 50, in <module>
+    print(product_sum_array(example))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/arrays/product_sum.py", line 47, in product_sum_array
+    res = product_sum(array, 1)
+          ^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/arrays/product_sum.py", line 40, in product_sum
+    if len(el) > 0:
+       ^^^^^^^
+TypeError: object of type 'int' has no len()

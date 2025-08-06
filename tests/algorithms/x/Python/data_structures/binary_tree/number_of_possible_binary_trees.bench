@@ -1,0 +1,11 @@
+Enter the number of nodes:
+{
+  "duration_us": 41,
+  "memory_bytes": 13651968,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/number_of_possible_binary_trees.py", line 57, in <module>
+    input_str = input()
+                ^^^^^^^
+EOFError: EOF when reading a line

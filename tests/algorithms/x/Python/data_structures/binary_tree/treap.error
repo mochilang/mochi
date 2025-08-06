@@ -1,0 +1,11 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/treap.py", line 106, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/treap.py", line 87, in main
+    root = insert(root, 1)
+           ^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/treap.py", line 73, in insert
+    res = root.split(value)
+          ^^^^^^^^^^
+AttributeError: 'int' object has no attribute 'split'

@@ -1,0 +1,13 @@
+{
+  "duration_us": 19,
+  "memory_bytes": 13889536,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/data_compression/peak_signal_to_noise_ratio.py", line 83, in <module>
+    expected = 20.0 * log10(255.0 / sqrtApprox(0.25))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/data_compression/peak_signal_to_noise_ratio.py", line 59, in log10
+    return ln(x) / ln(10.0)
+           ~~~~~~^~~~~~~~~~
+ZeroDivisionError: float division by zero

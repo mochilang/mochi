@@ -1,0 +1,10 @@
+{
+  "duration_us": 706,
+  "memory_bytes": 13361152,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/merge_two_binary_trees.py", line 63, in <module>
+    tree1 = Node(left=Node(left=Node(left=Leaf(), value=4, right=Leaf()), value=2, right=Leaf()), value=1, right=Node(left=Leaf(), value=3, right=Leaf()))
+                                          ^^^^^^
+TypeError: 'NoneType' object is not callable
