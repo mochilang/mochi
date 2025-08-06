@@ -1,0 +1,6 @@
+run: exit status 255
+
+Fatal error: Uncaught Error: heaps(): Argument #1 ($arr) could not be passed by reference in /workspace/mochi/tests/algorithms/x/PHP/divide_and_conquer/heaps_algorithm_iterative.php:68
+Stack trace:
+#0 {main}
+  thrown in /workspace/mochi/tests/algorithms/x/PHP/divide_and_conquer/heaps_algorithm_iterative.php on line 68

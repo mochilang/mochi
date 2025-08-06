@@ -1,0 +1,7 @@
+Fatal error: Uncaught DivisionByZeroError: Division by zero in /workspace/mochi/tests/algorithms/x/PHP/digital_image_processing/edge_detection/canny.php:54
+Stack trace:
+#0 /workspace/mochi/tests/algorithms/x/PHP/digital_image_processing/edge_detection/canny.php(160): sqrtApprox(0.0)
+#1 /workspace/mochi/tests/algorithms/x/PHP/digital_image_processing/edge_detection/canny.php(246): sobel_filter(Array)
+#2 /workspace/mochi/tests/algorithms/x/PHP/digital_image_processing/edge_detection/canny.php(271): canny(Array, 20.0, 40.0, 128.0, 255.0)
+#3 {main}
+  thrown in /workspace/mochi/tests/algorithms/x/PHP/digital_image_processing/edge_detection/canny.php on line 54

@@ -1,0 +1,18 @@
+Deprecated: Implicit conversion from float 3.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/divide_and_conquer/inversions.php on line 12
+
+Deprecated: Implicit conversion from float 4.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/divide_and_conquer/inversions.php on line 12
+
+Deprecated: Implicit conversion from float 5.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/divide_and_conquer/inversions.php on line 12
+
+Deprecated: Implicit conversion from float 6.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/divide_and_conquer/inversions.php on line 12
+number of inversions = 8
+
+Deprecated: Implicit conversion from float 3.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/divide_and_conquer/inversions.php on line 12
+
+Deprecated: Implicit conversion from float 4.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/divide_and_conquer/inversions.php on line 12
+
+Deprecated: Implicit conversion from float 5.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/divide_and_conquer/inversions.php on line 12
+
+Deprecated: Implicit conversion from float 6.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/divide_and_conquer/inversions.php on line 12
+number of inversions = 0
+number of inversions = 0

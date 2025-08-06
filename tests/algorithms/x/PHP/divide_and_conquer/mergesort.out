@@ -1,0 +1,17 @@
+Deprecated: Implicit conversion from float 2.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/divide_and_conquer/mergesort.php on line 27
+
+Deprecated: Implicit conversion from float 3.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/divide_and_conquer/mergesort.php on line 27
+
+Deprecated: Implicit conversion from float 4.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/divide_and_conquer/mergesort.php on line 27
+
+Deprecated: Implicit conversion from float 1.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/divide_and_conquer/mergesort.php on line 27
+
+Deprecated: Implicit conversion from float 2.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/divide_and_conquer/mergesort.php on line 27
+
+Deprecated: Implicit conversion from float 1.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/divide_and_conquer/mergesort.php on line 27
+
+Deprecated: Implicit conversion from float 2.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/divide_and_conquer/mergesort.php on line 27
+[1 1 2 3 3 4 4 5]
+[-200 -10 -2 3 11 99 100 100000]
+[-200]
+map[]
