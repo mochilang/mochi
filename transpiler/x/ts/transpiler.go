@@ -37,6 +37,7 @@ var useKeys bool
 var useNumDenom bool
 var useSHA256 bool
 var useRepeat bool
+var useConcat bool
 var useParseIntStr bool
 var useBench bool
 var useStdout bool
@@ -2048,6 +2049,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	useNumDenom = false
 	useSHA256 = false
 	useRepeat = false
+	useConcat = false
 	useParseIntStr = false
 	useStdout = false
 	useHas = false
@@ -2067,6 +2069,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		useNumDenom = false
 		useSHA256 = false
 		useRepeat = false
+		useConcat = false
 		useParseIntStr = false
 		useStdout = false
 		useHas = false
@@ -2256,6 +2259,9 @@ function sha256(bs: number[]): number[] {
 	}
 	if useRepeat {
 		prelude = append(prelude, &RawStmt{Code: `function repeat(s: string, n: number): string { return s.repeat(Math.trunc(n)); }`})
+	}
+	if useConcat {
+		prelude = append(prelude, &RawStmt{Code: `function concat(a: any[], b: any[]): any[] { return a.concat(b); }`})
 	}
 	if useParseIntStr {
 		prelude = append(prelude, &RawStmt{Code: `function parseIntStr(s: string, base: number): number { return parseInt(s, Math.trunc(base)); }`})
@@ -3903,6 +3909,17 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			useRepeat = true
 			return &CallExpr{Func: "repeat", Args: []Expr{args[0], args[1]}}, nil
+		case "concat":
+			if transpileEnv != nil {
+				if _, ok := transpileEnv.GetFunc("concat"); ok {
+					return &CallExpr{Func: "concat", Args: args}, nil
+				}
+			}
+			if len(args) != 2 {
+				return nil, fmt.Errorf("concat expects two arguments")
+			}
+			useConcat = true
+			return &CallExpr{Func: "concat", Args: []Expr{args[0], args[1]}}, nil
 		case "pow":
 			if len(args) != 2 {
 				return nil, fmt.Errorf("pow expects two arguments")
@@ -4208,8 +4225,8 @@ func simpleExpr(e Expr) bool {
 			}
 		}
 		return true
-       case *NameRef:
-               return false
+	case *NameRef:
+		return false
 	case *BinaryExpr:
 		if v.Op == "+" || v.Op == "-" || v.Op == "*" || v.Op == "/" || v.Op == "%" {
 			return simpleExpr(v.Left) && simpleExpr(v.Right)
