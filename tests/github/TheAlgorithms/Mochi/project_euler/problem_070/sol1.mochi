@@ -1,0 +1,96 @@
+/*
+Project Euler Problem 70: Totient Permutation
+
+Euler's Totient function φ(n) counts the positive integers up to n that are relatively
+prime to n.  The goal is to find the n < 10^7 for which φ(n) is a digit permutation of n
+and the ratio n/φ(n) is minimized.  The algorithm follows two main steps:
+
+1. **Totient Sieve** – Build a list of totients for all integers up to max_n using a
+   sieve based on Euler's product formula.  Starting with an array where totients[i] = i,
+   every time a prime i is found, all multiples of i are updated via
+   totients[x] -= totients[x] / i.
+
+2. **Permutation Check** – For each n we compare digit frequencies of n and φ(n) using
+   integer arithmetic.  If they contain the same digits and n * φ(best) < best * φ(n), we
+   update the current best candidate.  Cross multiplication avoids division and allows
+   tracking the minimal ratio.
+
+The implementation uses only Mochi primitives, avoids the `any` type and foreign
+interfaces so it can run on the `runtime/vm`.
+*/
+
+fun get_totients(max_one: int): list<int> {
+  var totients: list<int> = []
+  var i = 0
+  while i < max_one {
+    totients = append(totients, i)
+    i = i + 1
+  }
+  i = 2
+  while i < max_one {
+    if totients[i] == i {
+      var x = i
+      while x < max_one {
+        totients[x] = totients[x] - totients[x] / i
+        x = x + i
+      }
+    }
+    i = i + 1
+  }
+  return totients
+}
+
+fun has_same_digits(num1: int, num2: int): bool {
+  var count1: list<int> = []
+  var count2: list<int> = []
+  var i = 0
+  while i < 10 {
+    count1 = append(count1, 0)
+    count2 = append(count2, 0)
+    i = i + 1
+  }
+  var n1 = num1
+  var n2 = num2
+  if n1 == 0 {
+    count1[0] = count1[0] + 1
+  }
+  if n2 == 0 {
+    count2[0] = count2[0] + 1
+  }
+  while n1 > 0 {
+    let d1 = n1 % 10
+    count1[d1] = count1[d1] + 1
+    n1 = n1 / 10
+  }
+  while n2 > 0 {
+    let d2 = n2 % 10
+    count2[d2] = count2[d2] + 1
+    n2 = n2 / 10
+  }
+  i = 0
+  while i < 10 {
+    if count1[i] != count2[i] {
+      return false
+    }
+    i = i + 1
+  }
+  return true
+}
+
+fun solution(max_n: int): int {
+  var min_numerator: int = 1
+  var min_denominator: int = 0
+  let totients = get_totients(max_n + 1)
+  var i = 2
+  while i <= max_n {
+    let t = totients[i]
+    if i * min_denominator < min_numerator * t && has_same_digits(i, t) {
+      min_numerator = i
+      min_denominator = t
+    }
+    i = i + 1
+  }
+  return min_numerator
+}
+
+print(str(solution(10000)))
