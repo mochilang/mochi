@@ -1,0 +1,147 @@
+/*
+Search books on Open Library by ISBN and display their details.
+
+This is a Mochi translation of TheAlgorithms/Python script
+"search_books_by_isbn".  The program normalizes an Open Library
+identifier (ISBN or author key), fetches JSON data from the
+Open Library API, and summarizes selected fields.
+
+Algorithm:
+1. Remove surrounding whitespace and slashes from the identifier.
+2. Ensure the identifier has exactly one '/'.
+3. Fetch the JSON document from https://openlibrary.org/{olid}.json
+   using Mochi's built in `fetch` expression.
+4. For book data, request each author record to obtain the author
+   names.
+5. Produce a summary containing title, publish date, authors,
+   number of pages, and ISBN numbers.
+
+The implementation uses only Mochi built-ins so it can run on the
+runtime/vm without any foreign interfaces.
+*/
+
+type AuthorRef {
+  key: string
+}
+
+type BookData {
+  title: string
+  publish_date: string
+  authors: list<AuthorRef>
+  number_of_pages: int
+  isbn_10: list<string>
+  isbn_13: list<string>
+}
+
+type AuthorData {
+  name: string
+}
+
+type BookSummary {
+  title: string
+  publish_date: string
+  authors: string
+  number_of_pages: int
+  isbn_10: string
+  isbn_13: string
+}
+
+fun join(xs: list<string>, sep: string): string {
+  var res = ""
+  var i = 0
+  while i < len(xs) {
+    if i > 0 { res = res + sep }
+    res = res + xs[i]
+    i = i + 1
+  }
+  return res
+}
+
+fun count_char(s: string, ch: string): int {
+  var cnt = 0
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i + 1) == ch { cnt = cnt + 1 }
+    i = i + 1
+  }
+  return cnt
+}
+
+fun strip(s: string): string {
+  var start = 0
+  var end = len(s)
+  while start < end && substring(s, start, start + 1) == " " {
+    start = start + 1
+  }
+  while end > start && substring(s, end - 1, end) == " " {
+    end = end - 1
+  }
+  return s[start:end]
+}
+
+fun trim_slashes(s: string): string {
+  var start = 0
+  var end = len(s)
+  while start < end && substring(s, start, start + 1) == "/" {
+    start = start + 1
+  }
+  while end > start && substring(s, end - 1, end) == "/" {
+    end = end - 1
+  }
+  return s[start:end]
+}
+
+fun normalize_olid(olid: string): string {
+  let stripped = strip(olid)
+  let cleaned = trim_slashes(stripped)
+  if count_char(cleaned, "/") != 1 {
+    panic(olid + " is not a valid Open Library olid")
+  }
+  return cleaned
+}
+
+fun get_book_data(olid: string): BookData {
+  let norm = normalize_olid(olid)
+  let url = "https://openlibrary.org/" + norm + ".json"
+  let data: BookData = fetch url
+  return data
+}
+
+fun get_author_data(olid: string): AuthorData {
+  let norm = normalize_olid(olid)
+  let url = "https://openlibrary.org/" + norm + ".json"
+  let data: AuthorData = fetch url
+  return data
+}
+
+fun summarize_book(book: BookData): BookSummary {
+  var names: list<string> = []
+  var i = 0
+  while i < len(book.authors) {
+    let ref = book.authors[i]
+    let auth = get_author_data(ref.key)
+    names = append(names, auth.name)
+    i = i + 1
+  }
+  return BookSummary{
+    title: book.title,
+    publish_date: book.publish_date,
+    authors: join(names, ", "),
+    number_of_pages: book.number_of_pages,
+    isbn_10: join(book.isbn_10, ", "),
+    isbn_13: join(book.isbn_13, ", "),
+  }
+}
+
+fun main() {
+  let book = get_book_data("isbn/0140328726")
+  let summary = summarize_book(book)
+  print("Title: " + summary.title)
+  print("Publish date: " + summary.publish_date)
+  print("Authors: " + summary.authors)
+  print("Number of pages: " + str(summary.number_of_pages))
+  print("ISBN (10): " + summary.isbn_10)
+  print("ISBN (13): " + summary.isbn_13)
+}
+
+main()
