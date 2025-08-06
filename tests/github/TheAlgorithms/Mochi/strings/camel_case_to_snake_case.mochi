@@ -1,0 +1,106 @@
+/*
+CamelCase or PascalCase to snake_case Conversion
+
+This algorithm converts an identifier written in camelCase or PascalCase
+into snake_case. It scans the input string character by character and
+inserts underscores at case transitions, between letters and digits, and
+in place of non-alphanumeric characters.
+
+Steps:
+1. Iterate through each character while tracking whether the previous
+   character was a digit or a letter.
+2. If the current character is uppercase, append an underscore followed by
+   its lowercase form.
+3. If transitioning from a digit to a lowercase letter or from a letter to
+   a digit, insert an underscore before the current character.
+4. Replace any non-alphanumeric character with an underscore.
+5. Remove a leading underscore if one was added at the beginning.
+*/
+
+let LOWER = "abcdefghijklmnopqrstuvwxyz"
+let UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+let DIGITS = "0123456789"
+
+fun is_lower(ch: string): bool {
+  var i = 0
+  while i < len(LOWER) {
+    if LOWER[i] == ch { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun is_upper(ch: string): bool {
+  var i = 0
+  while i < len(UPPER) {
+    if UPPER[i] == ch { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun is_digit(ch: string): bool {
+  var i = 0
+  while i < len(DIGITS) {
+    if DIGITS[i] == ch { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun is_alpha(ch: string): bool {
+  if is_lower(ch) { return true }
+  if is_upper(ch) { return true }
+  return false
+}
+
+fun is_alnum(ch: string): bool {
+  if is_alpha(ch) { return true }
+  if is_digit(ch) { return true }
+  return false
+}
+
+fun to_lower(ch: string): string {
+  var i = 0
+  while i < len(UPPER) {
+    if UPPER[i] == ch { return LOWER[i] }
+    i = i + 1
+  }
+  return ch
+}
+
+fun camel_to_snake_case(input_str: string): string {
+  var snake_str = ""
+  var i = 0
+  var prev_is_digit = false
+  var prev_is_alpha = false
+  while i < len(input_str) {
+    let ch = input_str[i]
+    if is_upper(ch) {
+      snake_str = snake_str + "_" + to_lower(ch)
+    } else if prev_is_digit && is_lower(ch) {
+      snake_str = snake_str + "_" + ch
+    } else if prev_is_alpha && is_digit(ch) {
+      snake_str = snake_str + "_" + ch
+    } else if !is_alnum(ch) {
+      snake_str = snake_str + "_"
+    } else {
+      snake_str = snake_str + ch
+    }
+    prev_is_digit = is_digit(ch)
+    prev_is_alpha = is_alpha(ch)
+    i = i + 1
+  }
+  if len(snake_str) > 0 && snake_str[0] == "_" {
+    snake_str = snake_str[1:len(snake_str)]
+  }
+  return snake_str
+}
+
+fun main() {
+  print(camel_to_snake_case("someRandomString"))
+  print(camel_to_snake_case("SomeRandomStr#ng"))
+  print(camel_to_snake_case("123SomeRandom123String123"))
+}
+
+main()
