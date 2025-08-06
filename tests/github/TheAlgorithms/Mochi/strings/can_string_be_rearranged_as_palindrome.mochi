@@ -1,0 +1,97 @@
+/*
+Check Palindrome Rearrangement
+------------------------------
+Given a string, determine whether its characters can be rearranged to form a
+palindrome. A string can form a palindrome if each character appears an even
+number of times, with at most one character allowed to appear an odd number of
+times. Both provided functions ignore spaces and treat letters in a
+case-insensitive manner:
+
+1. can_string_be_rearranged_as_palindrome_counter:
+   Counts character frequencies using a map and verifies that fewer than two
+   characters have odd counts.
+2. can_string_be_rearranged_as_palindrome:
+   Builds the frequency map manually and checks the same condition without
+   using external helpers.
+
+Example evaluations are printed at the bottom for demonstration.
+*/
+
+let LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+let LOWERCASE = "abcdefghijklmnopqrstuvwxyz"
+
+fun char_to_lower(c: string): string {
+  var i = 0
+  while i < len(LETTERS) {
+    if c == substring(LETTERS, i, i + 1) {
+      return substring(LOWERCASE, i, i + 1)
+    }
+    i = i + 1
+  }
+  return c
+}
+
+fun normalize(input_str: string): string {
+  var res = ""
+  var i = 0
+  while i < len(input_str) {
+    let ch = substring(input_str, i, i + 1)
+    let lc = char_to_lower(ch)
+    if lc >= "a" && lc <= "z" {
+      res = res + lc
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun can_string_be_rearranged_as_palindrome_counter(input_str: string): bool {
+  let s = normalize(input_str)
+  var freq: map<string, int> = {}
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i + 1)
+    if ch in freq {
+      freq[ch] = freq[ch] + 1
+    } else {
+      freq[ch] = 1
+    }
+    i = i + 1
+  }
+  var odd = 0
+  for key in freq {
+    if freq[key] % 2 != 0 {
+      odd = odd + 1
+    }
+  }
+  return odd < 2
+}
+
+fun can_string_be_rearranged_as_palindrome(input_str: string): bool {
+  let s = normalize(input_str)
+  if len(s) == 0 { return true }
+  var character_freq_dict: map<string, int> = {}
+  var i = 0
+  while i < len(s) {
+    let character = substring(s, i, i + 1)
+    if character in character_freq_dict {
+      character_freq_dict[character] = character_freq_dict[character] + 1
+    } else {
+      character_freq_dict[character] = 1
+    }
+    i = i + 1
+  }
+  var odd_char = 0
+  for character_key in character_freq_dict {
+    let character_count = character_freq_dict[character_key]
+    if character_count % 2 != 0 {
+      odd_char = odd_char + 1
+    }
+  }
+  return !(odd_char > 1)
+}
+
+print(can_string_be_rearranged_as_palindrome_counter("Momo"))
+print(can_string_be_rearranged_as_palindrome_counter("Mother"))
+print(can_string_be_rearranged_as_palindrome("Momo"))
+print(can_string_be_rearranged_as_palindrome("Mother"))
