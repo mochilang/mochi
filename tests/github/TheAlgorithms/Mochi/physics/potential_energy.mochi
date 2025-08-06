@@ -1,0 +1,24 @@
+/*
+Compute gravitational potential energy of an object relative to the Earth's surface.
+
+Given mass `m` (in kilograms) and height `h` (in meters), the gravitational
+potential energy `U` is:
+
+    U = m * g * h
+
+where `g` ≈ 9.80665 m/s^2 is the standard gravitational acceleration.
+The function verifies that mass and height are non-negative and then applies
+this formula. Time complexity is O(1).
+*/
+
+let G = 9.80665
+
+fun potential_energy(mass: float, height: float): float {
+  if mass < 0.0 { panic("The mass of a body cannot be negative") }
+  if height < 0.0 { panic("The height above the ground cannot be negative") }
+  return mass * G * height
+}
+
+print(potential_energy(10.0, 10.0))
+print(potential_energy(10.0, 5.0))
+print(potential_energy(2.0, 8.0))
