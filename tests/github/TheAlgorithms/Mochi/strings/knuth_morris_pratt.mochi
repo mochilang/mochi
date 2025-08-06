@@ -1,0 +1,49 @@
+/*
+Knuth-Morris-Pratt (KMP) algorithm searches for a pattern within a text in O(n + m) time.
+It precomputes a failure array that stores, for each position in the pattern, the length
+of the longest proper prefix which is also a suffix. During the search, when a mismatch
+occurs, the failure array is consulted to skip unnecessary comparisons, allowing the
+search to continue from the longest valid prefix.
+This implementation returns the starting index of the first occurrence of the pattern
+in the text, or -1 if the pattern is not present.
+*/
+
+fun get_failure_array(pattern: string): list<int> {
+  var failure: list<int> = [0]
+  var i = 0
+  var j = 1
+  while j < len(pattern) {
+    if substring(pattern, i, i + 1) == substring(pattern, j, j + 1) {
+      i = i + 1
+    } else if i > 0 {
+      i = failure[i - 1]
+      continue
+    }
+    j = j + 1
+    failure = append(failure, i)
+  }
+  return failure
+}
+
+fun knuth_morris_pratt(text: string, pattern: string): int {
+  let failure = get_failure_array(pattern)
+  var i = 0
+  var j = 0
+  while i < len(text) {
+    if substring(pattern, j, j + 1) == substring(text, i, i + 1) {
+      if j == len(pattern) - 1 {
+        return i - j
+      }
+      j = j + 1
+    } else if j > 0 {
+      j = failure[j - 1]
+      continue
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+let text = "abcxabcdabxabcdabcdabcy"
+let pattern = "abcdabcy"
+print(knuth_morris_pratt(text, pattern))
