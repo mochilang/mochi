@@ -82,14 +82,14 @@ func TestGoTranspiler_Algorithms_Golden(t *testing.T) {
 			if err := os.WriteFile(codePath, code, 0o644); err != nil {
 				t.Fatalf("write code: %v", err)
 			}
+			want, _ := os.ReadFile(outPath)
+			want = bytes.TrimSpace(want)
 			cmd := exec.Command("go", "run", codePath)
 			runEnv := append(os.Environ(), "MOCHI_BENCHMARK=1")
 			cmd.Env = runEnv
 			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 				cmd.Stdin = bytes.NewReader(data)
 			}
-			want, _ := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".out")
-			want = bytes.TrimSpace(want)
 
 			out, err := cmd.CombinedOutput()
 			got := bytes.TrimSpace(out)
@@ -109,12 +109,13 @@ func TestGoTranspiler_Algorithms_Golden(t *testing.T) {
 			if benchData != nil {
 				_ = os.WriteFile(benchPath, benchData, 0o644)
 			}
-			if want != nil && len(want) > 0 {
-				if gotOut, err := os.ReadFile(outPath); err == nil {
-					gotOut = bytes.TrimSpace(gotOut)
-					if !bytes.Equal(gotOut, want) {
-						t.Errorf("output mismatch\nGot: %s\nWant: %s", gotOut, want)
-					}
+			if updating() || len(want) == 0 {
+				return
+			}
+			if gotOut, err := os.ReadFile(outPath); err == nil {
+				gotOut = bytes.TrimSpace(gotOut)
+				if !bytes.Equal(gotOut, want) {
+					t.Errorf("output mismatch\nGot: %s\nWant: %s", gotOut, want)
 				}
 			}
 		})
