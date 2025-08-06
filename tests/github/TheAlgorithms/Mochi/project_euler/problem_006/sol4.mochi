@@ -1,0 +1,28 @@
+/*
+Project Euler Problem 6: Sum square difference
+
+Given a positive integer n, we want the difference between:
+1. The square of the sum of the first n natural numbers.
+2. The sum of the squares of the first n natural numbers.
+
+Using closed-form formulas:
+- Sum of squares = n * (n + 1) * (2 * n + 1) / 6
+- Square of sum = (n * (n + 1) / 2)^2
+The desired result is square_of_sum - sum_of_squares.
+
+This implementation is written in pure Mochi, uses only integer arithmetic,
+and avoids the `any` type.
+*/
+
+fun solution(n: int): int {
+  let sum_of_squares = n * (n + 1) * (2 * n + 1) / 6
+  let sum_first_n = n * (n + 1) / 2
+  let square_of_sum = sum_first_n * sum_first_n
+  return square_of_sum - sum_of_squares
+}
+
+print(solution(10))
+print(solution(15))
+print(solution(20))
+print(solution(50))
+print(solution(100))
