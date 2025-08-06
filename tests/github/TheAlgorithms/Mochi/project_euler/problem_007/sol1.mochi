@@ -1,0 +1,65 @@
+/*
+Project Euler Problem 7 - 10001st Prime
+---------------------------------------
+Given a positive integer n, find the n-th prime number. For example,
+when n = 6 the result is 13.
+
+This implementation uses the observation that all primes greater than
+3 are of the form 6k ± 1. The `is_prime` function performs trial
+division only on numbers of that form up to the square root of the
+candidate. An integer square root helper `isqrt` avoids floating point
+and foreign function interfaces.
+
+The `solution` function iterates through odd numbers, counting the
+primes until the desired index is reached. The code is written purely
+in Mochi and uses no `any` types so it can run on the runtime/vm.
+*/
+
+fun isqrt(n: int): int {
+  var r = 0
+  while (r + 1) * (r + 1) <= n {
+    r = r + 1
+  }
+  return r
+}
+
+fun is_prime(number: int): bool {
+  if 1 < number && number < 4 {
+    return true
+  } else if number < 2 || number % 2 == 0 || number % 3 == 0 {
+    return false
+  }
+  let limit = isqrt(number)
+  var i = 5
+  while i <= limit {
+    if number % i == 0 || number % (i + 2) == 0 {
+      return false
+    }
+    i = i + 6
+  }
+  return true
+}
+
+fun solution(nth: int): int {
+  var count = 0
+  var number = 1
+  while count != nth && number < 3 {
+    number = number + 1
+    if is_prime(number) {
+      count = count + 1
+    }
+  }
+  while count != nth {
+    number = number + 2
+    if is_prime(number) {
+      count = count + 1
+    }
+  }
+  return number
+}
+
+fun main() {
+  print("solution() = " + str(solution(10001)))
+}
+
+main()
