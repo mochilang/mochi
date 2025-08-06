@@ -59,69 +59,33 @@ exception Continue
 
 exception Return
 
-let rec minimax depth node_index is_max scores height =
-  let __ret = ref 0 in
-  (try
-  let depth = (Obj.magic depth : int) in
-  let node_index = (Obj.magic node_index : int) in
-  let height = (Obj.magic height : int) in
-  if (depth < 0) then (
-  (failwith ("Depth cannot be less than 0"));
-  );
-  if (List.length (scores) = 0) then (
-  (failwith ("Scores cannot be empty"));
-  );
-  if (depth = height) then (
-  __ret := (Obj.magic (List.nth (scores) (node_index)) : int); raise Return
-  );
-  if is_max then (
-  let left = minimax (Obj.repr ((depth + 1))) (Obj.repr ((node_index * 2))) (false) (scores) (Obj.repr (height)) in
-  let right = minimax (Obj.repr ((depth + 1))) (Obj.repr (((node_index * 2) + 1))) (false) (scores) (Obj.repr (height)) in
-  if (left > right) then (
-  __ret := (Obj.magic (left) : int); raise Return
-  ) else (
-  __ret := (Obj.magic (right) : int); raise Return
-  );
-  );
-  let left = minimax (Obj.repr ((depth + 1))) (Obj.repr ((node_index * 2))) (true) (scores) (Obj.repr (height)) in
-  let right = minimax (Obj.repr ((depth + 1))) (Obj.repr (((node_index * 2) + 1))) (true) (scores) (Obj.repr (height)) in
-  if (left < right) then (
-  __ret := (Obj.magic (left) : int); raise Return
-  ) else (
-  __ret := (Obj.magic (right) : int); raise Return
-  );
-    !__ret
-  with Return -> !__ret)
-
-and tree_height n =
+let rec binary_count_setbits n =
   let __ret = ref 0 in
   (try
   let n = (Obj.magic n : int) in
-  let h = ref (0) in
-  let v = ref (n) in
-  (try while (!v > 1) do
+  if (n < 0) then (
+  (failwith ("Input value must be a non-negative integer"));
+  );
+  let count = ref (0) in
+  let value = ref (n) in
+  (try while (!value > 0) do
     try
-  v := (!v / 2);
-  h := (!h + 1);
+  count := (!count + (!value mod 2));
+  value := (!value / 2);
     with Continue -> ()
   done with Break -> ());
-  __ret := (Obj.magic (!h) : int); raise Return
-  with Return -> !__ret)
-
-and main () =
-  let __ret = ref (Obj.magic 0) in
-  (try
-  let scores = ref ([90; 23; 6; 33; 21; 65; 123; 34423]) in
-  let height = tree_height (Obj.repr (List.length (!scores))) in
-  print_endline (("Optimal value : " ^ (string_of_int (minimax (Obj.repr (0)) (Obj.repr (0)) (true) (!scores) (Obj.repr (height))))));
-    !__ret
+  __ret := (Obj.magic (!count) : int); raise Return
   with Return -> !__ret)
 
 
 let () =
   let mem_start = _mem () in
   let start = _now () in
-  ignore (main ());
+  print_endline ((string_of_int (binary_count_setbits (Obj.repr (25)))));
+  print_endline ((string_of_int (binary_count_setbits (Obj.repr (36)))));
+  print_endline ((string_of_int (binary_count_setbits (Obj.repr (16)))));
+  print_endline ((string_of_int (binary_count_setbits (Obj.repr (58)))));
+  print_endline ((string_of_int (binary_count_setbits (Obj.repr (0)))));
   let finish = _now () in
   let mem_end = _mem () in
   let dur = (finish - start) / 1000 in

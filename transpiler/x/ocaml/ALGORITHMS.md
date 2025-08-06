@@ -1,38 +1,38 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 13/1077
-Last updated: 2025-08-06 20:30 +0700
+Completed programs: 25/1077
+Last updated: 2025-08-06 20:51 +0700
 
 Checklist:
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 171.0µs | 2.72KB |
-| 2 | backtracking/all_permutations | ✓ | 411.0µs | 40.45KB |
-| 3 | backtracking/all_subsequences | ✓ | 164.0µs | 7.16KB |
-| 4 | backtracking/coloring | ✓ | 194.0µs | 6.92KB |
-| 5 | backtracking/combination_sum | ✓ | 120.0µs | 3.63KB |
-| 6 | backtracking/crossword_puzzle_solver | ✓ | 862.0µs | 176.77KB |
+| 1 | backtracking/all_combinations | ✓ | 228.0µs | 3.41KB |
+| 2 | backtracking/all_permutations | ✓ | 848.0µs | 45.37KB |
+| 3 | backtracking/all_subsequences | ✓ | 296.0µs | 6.55KB |
+| 4 | backtracking/coloring | ✓ | 235.0µs | 6.92KB |
+| 5 | backtracking/combination_sum | ✓ | 180.0µs | 3.63KB |
+| 6 | backtracking/crossword_puzzle_solver | ✓ | 1.0ms | 176.77KB |
 | 7 | backtracking/hamiltonian_cycle | ✓ | 2.0µs | 208B |
-| 8 | backtracking/knight_tour | ✓ | 139.0µs | 272B |
+| 8 | backtracking/knight_tour | ✓ | 116.0µs | 272B |
 | 9 | backtracking/match_word_pattern |   |  |  |
-| 10 | backtracking/minimax | ✓ | 186.0µs | 448B |
-| 11 | backtracking/n_queens | ✓ | 294.0µs | 18.67KB |
-| 12 | backtracking/n_queens_math | ✓ | 268.0µs | 8.89KB |
-| 13 | backtracking/power_sum | ✓ | 179.0µs | 256B |
-| 14 | backtracking/rat_in_maze | ✓ | 235.0µs | 12.31KB |
-| 15 | backtracking/sudoku |   |  |  |
-| 16 | backtracking/sum_of_subsets |   |  |  |
-| 17 | backtracking/word_break |   |  |  |
-| 18 | backtracking/word_ladder |   |  |  |
-| 19 | backtracking/word_search |   |  |  |
-| 20 | bit_manipulation/binary_and_operator |   |  |  |
-| 21 | bit_manipulation/binary_coded_decimal |   |  |  |
-| 22 | bit_manipulation/binary_count_setbits |   |  |  |
-| 23 | bit_manipulation/binary_count_trailing_zeros |   |  |  |
-| 24 | bit_manipulation/binary_or_operator |   |  |  |
-| 25 | bit_manipulation/binary_shifts |   |  |  |
-| 26 | bit_manipulation/binary_twos_complement |   |  |  |
+| 10 | backtracking/minimax | ✓ | 168.0µs | 448B |
+| 11 | backtracking/n_queens | ✓ | 334.0µs | 18.67KB |
+| 12 | backtracking/n_queens_math | ✓ | 336.0µs | 8.89KB |
+| 13 | backtracking/power_sum | ✓ | 150.0µs | 256B |
+| 14 | backtracking/rat_in_maze | ✓ | 260.0µs | 12.31KB |
+| 15 | backtracking/sudoku | ✓ | 33.0ms | 4.97MB |
+| 16 | backtracking/sum_of_subsets | ✓ | 171.0µs | 2.26KB |
+| 17 | backtracking/word_break | ✓ | 61.0µs | 4.09KB |
+| 18 | backtracking/word_ladder | ✓ | 2.0ms | 210.08KB |
+| 19 | backtracking/word_search | ✓ | 111.0µs | 9.29KB |
+| 20 | bit_manipulation/binary_and_operator | ✓ | 178.0µs | 4.30KB |
+| 21 | bit_manipulation/binary_coded_decimal | ✓ | 150.0µs | 1.55KB |
+| 22 | bit_manipulation/binary_count_setbits | ✓ | 180.0µs | 288B |
+| 23 | bit_manipulation/binary_count_trailing_zeros | ✓ | 175.0µs | 304B |
+| 24 | bit_manipulation/binary_or_operator | ✓ | 43.0µs | 1.00KB |
+| 25 | bit_manipulation/binary_shifts | ✓ | 228.0µs | 1.27KB |
+| 26 | bit_manipulation/binary_twos_complement | ✓ | 152.0µs | 1.42KB |
 | 27 | bit_manipulation/binary_xor_operator |   |  |  |
 | 28 | bit_manipulation/bitwise_addition_recursive |   |  |  |
 | 29 | bit_manipulation/count_1s_brian_kernighan_method |   |  |  |
