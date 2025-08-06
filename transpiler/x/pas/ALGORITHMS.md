@@ -2,26 +2,26 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-06 16:40 GMT+7
+Last updated: 2025-08-06 20:45 GMT+7
 
-## Algorithms Golden Test Checklist (5/1077)
+## Algorithms Golden Test Checklist (11/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 1.0µs | 448B |
-| 2 | backtracking/all_permutations | ✓ | 1.0µs | 448B |
+| 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
+| 2 | backtracking/all_permutations | ✓ | 1.0µs | 416B |
 | 3 | backtracking/all_subsequences | ✓ | 1.0µs | 384B |
-| 4 | backtracking/coloring | ✓ | 1.0µs | 512B |
-| 5 | backtracking/combination_sum | ✓ | 2.0µs | 448B |
-| 6 | backtracking/crossword_puzzle_solver | error |  |  |
-| 7 | backtracking/hamiltonian_cycle |   |  |  |
-| 8 | backtracking/knight_tour |   |  |  |
+| 4 | backtracking/coloring | ✓ | 2.0µs | 448B |
+| 5 | backtracking/combination_sum | ✓ | 1.0µs | 448B |
+| 6 | backtracking/crossword_puzzle_solver | ✓ | 1.0µs | 3.34KB |
+| 7 | backtracking/hamiltonian_cycle | ✓ | 1.0µs | 0B |
+| 8 | backtracking/knight_tour | ✓ | 1.0µs | 64B |
 | 9 | backtracking/match_word_pattern |   |  |  |
 | 10 | backtracking/minimax |   |  |  |
-| 11 | backtracking/n_queens |   |  |  |
+| 11 | backtracking/n_queens | ✓ | 2.0µs | 0B |
 | 12 | backtracking/n_queens_math |   |  |  |
-| 13 | backtracking/power_sum |   |  |  |
+| 13 | backtracking/power_sum | ✓ | 1.0µs | 0B |
 | 14 | backtracking/rat_in_maze |   |  |  |
-| 15 | backtracking/sudoku |   |  |  |
+| 15 | backtracking/sudoku | ✓ | 2.0µs | 1.38KB |
 | 16 | backtracking/sum_of_subsets |   |  |  |
 | 17 | backtracking/word_break |   |  |  |
 | 18 | backtracking/word_ladder |   |  |  |

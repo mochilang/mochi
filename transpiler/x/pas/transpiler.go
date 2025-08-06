@@ -68,6 +68,13 @@ func sanitize(name string) string {
 	if v, ok := lookupName(name); ok {
 		return v
 	}
+	return declareName(name)
+}
+
+func declareName(name string) string {
+	if v, ok := currentScope()[name]; ok {
+		return v
+	}
 	newName := name
 	switch name {
 	case "label", "xor", "and", "or", "div", "mod", "type", "set", "result":
@@ -128,14 +135,14 @@ type MapLitDef struct {
 func ctorName(name string) string { return "make" + name }
 
 func pasType(t string) string {
-        switch t {
-        case "", "void":
-                return ""
-        case "any":
-                if currProg != nil {
-                        currProg.UseVariants = true
-                }
-                return "Variant"
+	switch t {
+	case "", "void":
+		return ""
+	case "any":
+		if currProg != nil {
+			currProg.UseVariants = true
+		}
+		return "Variant"
 	case "array of any":
 		if currProg != nil {
 			currProg.UseVariants = true
@@ -155,39 +162,39 @@ func pasType(t string) string {
 // Program is a minimal Pascal AST consisting of a sequence of statements
 // plus optional variable declarations.
 type Program struct {
-	Funs              []FunDecl
-	Vars              []VarDecl
-	Records           []RecordDef
-	ArrayAliases      map[string]string
-	LateAliases       map[string]string
-	UseFGL            bool
-	Stmts             []Stmt
-	UseSysUtils       bool
-	UseVariants       bool
-	UseMath           bool
-	NeedAvg           bool
-	NeedMin           bool
-	NeedMax           bool
-	NeedContains      bool
-	NeedShowList      bool
-	NeedShowList2     bool
-	NeedShowListInt64 bool
-	NeedShowMap       bool
-	NeedListStr       bool
-        NeedListStr2      bool
-        NeedListStrReal   bool
-        NeedListStrVariant bool
-        NeedIndexOf       bool
-	UseLookupHost     bool
-	UseNow            bool
-	UseMem            bool
-	NeedBenchNow      bool
-	UseInput          bool
-	UseBigRat         bool
-	UseSHA256         bool
-	NeedPadStart      bool
-	Maps              []MapLitDef
-	VarTypes          map[string]string
+	Funs               []FunDecl
+	Vars               []VarDecl
+	Records            []RecordDef
+	ArrayAliases       map[string]string
+	LateAliases        map[string]string
+	UseFGL             bool
+	Stmts              []Stmt
+	UseSysUtils        bool
+	UseVariants        bool
+	UseMath            bool
+	NeedAvg            bool
+	NeedMin            bool
+	NeedMax            bool
+	NeedContains       bool
+	NeedShowList       bool
+	NeedShowList2      bool
+	NeedShowListInt64  bool
+	NeedShowMap        bool
+	NeedListStr        bool
+	NeedListStr2       bool
+	NeedListStrReal    bool
+	NeedListStrVariant bool
+	NeedIndexOf        bool
+	UseLookupHost      bool
+	UseNow             bool
+	UseMem             bool
+	NeedBenchNow       bool
+	UseInput           bool
+	UseBigRat          bool
+	UseSHA256          bool
+	NeedPadStart       bool
+	Maps               []MapLitDef
+	VarTypes           map[string]string
 }
 
 func collectVarNames(e Expr, set map[string]struct{}) {
@@ -657,26 +664,26 @@ func (c *CastExpr) emit(w io.Writer) {
 		io.WriteString(w, "Double(")
 		c.Expr.emit(w)
 		io.WriteString(w, ")")
-       default:
-               if c.Type != "" {
-                       if strings.HasPrefix(c.Type, "array of ") {
-                               elem := strings.TrimPrefix(c.Type, "array of ")
-                               alias := currProg.addArrayAlias(elem)
-                               fmt.Fprintf(w, "%s(", alias)
-                               c.Expr.emit(w)
-                               io.WriteString(w, ")")
-                       } else if (isArrayType(c.Type) || isRecordType(c.Type)) && inferType(c.Expr) == "Variant" {
-                               fmt.Fprintf(w, "%s(pointer(PtrUInt(", c.Type)
-                               c.Expr.emit(w)
-                               io.WriteString(w, "))^)")
-                       } else {
-                               fmt.Fprintf(w, "%s(", c.Type)
-                               c.Expr.emit(w)
-                               io.WriteString(w, ")")
-                       }
-               } else {
-                       c.Expr.emit(w)
-               }
+	default:
+		if c.Type != "" {
+			if strings.HasPrefix(c.Type, "array of ") {
+				elem := strings.TrimPrefix(c.Type, "array of ")
+				alias := currProg.addArrayAlias(elem)
+				fmt.Fprintf(w, "%s(", alias)
+				c.Expr.emit(w)
+				io.WriteString(w, ")")
+			} else if (isArrayType(c.Type) || isRecordType(c.Type)) && inferType(c.Expr) == "Variant" {
+				fmt.Fprintf(w, "%s(pointer(PtrUInt(", c.Type)
+				c.Expr.emit(w)
+				io.WriteString(w, "))^)")
+			} else {
+				fmt.Fprintf(w, "%s(", c.Type)
+				c.Expr.emit(w)
+				io.WriteString(w, ")")
+			}
+		} else {
+			c.Expr.emit(w)
+		}
 	}
 }
 
@@ -1038,34 +1045,34 @@ func (s *SetStmt) emit(w io.Writer) {
 }
 
 func (p *PrintStmt) emit(w io.Writer) {
-       if len(p.Exprs) == 1 && len(p.Types) == 1 && (strings.HasPrefix(p.Types[0], "array of ") || isArrayAlias(p.Types[0])) {
-               t := resolveAlias(p.Types[0])
-               if t == "array of string" {
-                       io.WriteString(w, "writeln(list_to_str(")
-                       p.Exprs[0].emit(w)
-                       io.WriteString(w, "));")
-               } else if strings.HasPrefix(t, "array of array") || strings.HasPrefix(t, "array of IntArray") || strings.HasPrefix(t, "array of Int64Array") {
-                       io.WriteString(w, "show_list_list(")
-                       p.Exprs[0].emit(w)
-                       io.WriteString(w, ");")
-               } else if t == "array of int64" {
-                       io.WriteString(w, "show_list_int64(")
-                       p.Exprs[0].emit(w)
-                       io.WriteString(w, ");")
-               } else if t == "array of Variant" {
-                       currProg.NeedListStrVariant = true
-                       currProg.UseSysUtils = true
-                       currProg.UseVariants = true
-                       io.WriteString(w, "writeln(list_variant_to_str(")
-                       p.Exprs[0].emit(w)
-                       io.WriteString(w, "));")
-               } else {
-                       io.WriteString(w, "show_list(")
-                       p.Exprs[0].emit(w)
-                       io.WriteString(w, ");")
-               }
-               return
-       }
+	if len(p.Exprs) == 1 && len(p.Types) == 1 && (strings.HasPrefix(p.Types[0], "array of ") || isArrayAlias(p.Types[0])) {
+		t := resolveAlias(p.Types[0])
+		if t == "array of string" {
+			io.WriteString(w, "writeln(list_to_str(")
+			p.Exprs[0].emit(w)
+			io.WriteString(w, "));")
+		} else if strings.HasPrefix(t, "array of array") || strings.HasPrefix(t, "array of IntArray") || strings.HasPrefix(t, "array of Int64Array") {
+			io.WriteString(w, "show_list_list(")
+			p.Exprs[0].emit(w)
+			io.WriteString(w, ");")
+		} else if t == "array of int64" {
+			io.WriteString(w, "show_list_int64(")
+			p.Exprs[0].emit(w)
+			io.WriteString(w, ");")
+		} else if t == "array of Variant" {
+			currProg.NeedListStrVariant = true
+			currProg.UseSysUtils = true
+			currProg.UseVariants = true
+			io.WriteString(w, "writeln(list_variant_to_str(")
+			p.Exprs[0].emit(w)
+			io.WriteString(w, "));")
+		} else {
+			io.WriteString(w, "show_list(")
+			p.Exprs[0].emit(w)
+			io.WriteString(w, ");")
+		}
+		return
+	}
 	if len(p.Exprs) == 1 && len(p.Types) == 1 && strings.HasPrefix(p.Types[0], "specialize TFPGMap") {
 		currProg.NeedShowMap = true
 		io.WriteString(w, "show_map(")
@@ -1324,9 +1331,9 @@ begin
   Result := Result + ']';
 end;
 `)
-        }
-       if p.NeedListStrVariant {
-               buf.WriteString(`function list_variant_to_str(xs: array of Variant): string;
+	}
+	if p.NeedListStrVariant {
+		buf.WriteString(`function list_variant_to_str(xs: array of Variant): string;
 var i: integer;
 begin
   Result := '[';
@@ -1337,8 +1344,8 @@ begin
   Result := Result + ']';
 end;
 `)
-       }
-       if p.NeedListStrReal {
+	}
+	if p.NeedListStrReal {
 		buf.WriteString(`function list_real_to_str(xs: array of real): string;
 var i: integer;
 begin
@@ -1366,31 +1373,31 @@ end;
 			fmt.Fprintf(&buf, "  %s: %s;\n", v.Name, typ)
 		}
 	}
-       for _, f := range p.Funs {
-               rt := pasType(f.ReturnType)
-               if rt == "" {
-                       fmt.Fprintf(&buf, "procedure %s(", f.Name)
-               } else {
-                       fmt.Fprintf(&buf, "function %s(", f.Name)
-               }
-               for i, param := range f.Params {
-                       if i > 0 {
-                               io.WriteString(&buf, "; ")
-                       }
-                       if idx := strings.Index(param, ":"); idx != -1 {
-                               name := param[:idx]
-                               typ := strings.TrimSpace(param[idx+1:])
-                               fmt.Fprintf(&buf, "%s: %s", name, pasType(typ))
-                       } else {
-                               io.WriteString(&buf, param)
-                       }
-               }
-               if rt == "" {
-                       io.WriteString(&buf, "); forward;\n")
-               } else {
-                       fmt.Fprintf(&buf, "): %s; forward;\n", rt)
-               }
-       }
+	for _, f := range p.Funs {
+		rt := pasType(f.ReturnType)
+		if rt == "" {
+			fmt.Fprintf(&buf, "procedure %s(", f.Name)
+		} else {
+			fmt.Fprintf(&buf, "function %s(", f.Name)
+		}
+		for i, param := range f.Params {
+			if i > 0 {
+				io.WriteString(&buf, "; ")
+			}
+			if idx := strings.Index(param, ":"); idx != -1 {
+				name := param[:idx]
+				typ := strings.TrimSpace(param[idx+1:])
+				fmt.Fprintf(&buf, "%s: %s", name, pasType(typ))
+			} else {
+				io.WriteString(&buf, param)
+			}
+		}
+		if rt == "" {
+			io.WriteString(&buf, "); forward;\n")
+		} else {
+			fmt.Fprintf(&buf, "): %s; forward;\n", rt)
+		}
+	}
 	for _, f := range p.Funs {
 		f.emit(&buf)
 	}
@@ -1502,24 +1509,24 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						typesList = append(typesList, t)
 						if t == "boolean" {
 							needSys = true
-                                               } else if strings.HasPrefix(t, "array of ") || isArrayAlias(t) {
-                                                       tt := resolveAlias(t)
-                                                       if strings.HasPrefix(tt, "array of string") {
-                                                               pr.NeedListStr = true
-                                                       } else if strings.HasPrefix(tt, "array of array") || strings.HasPrefix(tt, "array of IntArray") || strings.HasPrefix(tt, "array of Int64Array") {
-                                                               pr.NeedShowList2 = true
-                                                       } else if strings.HasPrefix(tt, "array of int64") {
-                                                               pr.NeedShowListInt64 = true
-                                                       } else if strings.HasPrefix(tt, "array of Variant") {
-                                                               pr.NeedListStrVariant = true
-                                                               pr.UseVariants = true
-                                                               needSys = true
-                                                       } else {
-                                                               pr.NeedShowList = true
-                                                       }
-                                               } else if strings.HasPrefix(t, "specialize TFPGMap") {
-                                                       pr.NeedShowMap = true
-                                               }
+						} else if strings.HasPrefix(t, "array of ") || isArrayAlias(t) {
+							tt := resolveAlias(t)
+							if strings.HasPrefix(tt, "array of string") {
+								pr.NeedListStr = true
+							} else if strings.HasPrefix(tt, "array of array") || strings.HasPrefix(tt, "array of IntArray") || strings.HasPrefix(tt, "array of Int64Array") {
+								pr.NeedShowList2 = true
+							} else if strings.HasPrefix(tt, "array of int64") {
+								pr.NeedShowListInt64 = true
+							} else if strings.HasPrefix(tt, "array of Variant") {
+								pr.NeedListStrVariant = true
+								pr.UseVariants = true
+								needSys = true
+							} else {
+								pr.NeedShowList = true
+							}
+						} else if strings.HasPrefix(t, "specialize TFPGMap") {
+							pr.NeedShowMap = true
+						}
 					}
 					pr.Stmts = append(pr.Stmts, &PrintStmt{Exprs: parts, Types: typesList, NeedSysUtils: needSys})
 					continue
@@ -1544,7 +1551,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				}
 				pr.Records = append(pr.Records, RecordDef{Name: st.Type.Name, Fields: fields})
 			case st.Let != nil:
-				name := sanitize(st.Let.Name)
+				name := declareName(st.Let.Name)
 				vd := VarDecl{Name: name}
 				if st.Let.Type != nil {
 					vd.Type = typeFromRef(st.Let.Type)
@@ -1687,7 +1694,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					varTypes[vd.Name] = vd.Type
 				}
 			case st.Var != nil:
-				name := sanitize(st.Var.Name)
+				name := declareName(st.Var.Name)
 				vd := VarDecl{Name: name}
 				if st.Var.Type != nil {
 					vd.Type = typeFromRef(st.Var.Type)
@@ -1885,7 +1892,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						}
 					}
 				}
-				name := sanitize(st.For.Name)
+				name := declareName(st.For.Name)
 				varTypes[name] = typ
 				setVarType(name, varTypes[name])
 				pushScope()
@@ -2241,7 +2248,7 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 			}
 			out = append(out, &AssignStmt{Name: name, Expr: ex})
 		case st.Let != nil:
-			name := sanitize(st.Let.Name)
+			name := declareName(st.Let.Name)
 			vd := VarDecl{Name: name}
 			if st.Let.Type != nil {
 				vd.Type = typeFromRef(st.Let.Type)
@@ -2317,7 +2324,7 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 			}
 			currProg.Records = append(currProg.Records, RecordDef{Name: st.Type.Name, Fields: fields})
 		case st.Var != nil:
-			name := sanitize(st.Var.Name)
+			name := declareName(st.Var.Name)
 			vd := VarDecl{Name: name}
 			if st.Var.Type != nil {
 				vd.Type = typeFromRef(st.Var.Type)
@@ -2409,7 +2416,7 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 					}
 				}
 			}
-			name := sanitize(st.For.Name)
+			name := declareName(st.For.Name)
 			varTypes[name] = typ
 			setVarType(name, varTypes[name])
 			body, err := convertBody(env, st.For.Body, varTypes)
@@ -2505,24 +2512,24 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 					typesList = append(typesList, t)
 					if t == "boolean" {
 						needSys = true
-                                       } else if strings.HasPrefix(t, "array of ") || isArrayAlias(t) {
-                                               tt := resolveAlias(t)
-                                               if strings.HasPrefix(tt, "array of string") {
-                                                       currProg.NeedListStr = true
-                                               } else if strings.HasPrefix(tt, "array of array") || strings.HasPrefix(tt, "array of IntArray") || strings.HasPrefix(tt, "array of Int64Array") {
-                                                       currProg.NeedShowList2 = true
-                                               } else if strings.HasPrefix(tt, "array of int64") {
-                                                       currProg.NeedShowListInt64 = true
-                                               } else if strings.HasPrefix(tt, "array of Variant") {
-                                                       currProg.NeedListStrVariant = true
-                                                       currProg.UseVariants = true
-                                                       needSys = true
-                                               } else {
-                                                       currProg.NeedShowList = true
-                                               }
-                                       } else if strings.HasPrefix(t, "specialize TFPGMap") {
-                                               currProg.NeedShowMap = true
-                                       }
+					} else if strings.HasPrefix(t, "array of ") || isArrayAlias(t) {
+						tt := resolveAlias(t)
+						if strings.HasPrefix(tt, "array of string") {
+							currProg.NeedListStr = true
+						} else if strings.HasPrefix(tt, "array of array") || strings.HasPrefix(tt, "array of IntArray") || strings.HasPrefix(tt, "array of Int64Array") {
+							currProg.NeedShowList2 = true
+						} else if strings.HasPrefix(tt, "array of int64") {
+							currProg.NeedShowListInt64 = true
+						} else if strings.HasPrefix(tt, "array of Variant") {
+							currProg.NeedListStrVariant = true
+							currProg.UseVariants = true
+							needSys = true
+						} else {
+							currProg.NeedShowList = true
+						}
+					} else if strings.HasPrefix(t, "specialize TFPGMap") {
+						currProg.NeedShowMap = true
+					}
 				}
 				out = append(out, &PrintStmt{Exprs: parts, Types: typesList, NeedSysUtils: needSys})
 				continue
@@ -4031,9 +4038,9 @@ func pasTypeFromType(t types.Type) string {
 	case types.BigRatType:
 		currProg.UseBigRat = true
 		return "BigRat"
-       case types.StructType:
-               return v.Name
-       case types.ListType:
+	case types.StructType:
+		return v.Name
+	case types.ListType:
 		elem := pasTypeFromType(v.Elem)
 		if strings.HasPrefix(elem, "array of ") {
 			alias := currProg.addArrayAlias(strings.TrimPrefix(elem, "array of "))
@@ -4049,15 +4056,15 @@ func pasTypeFromType(t types.Type) string {
 		}
 		currProg.UseFGL = true
 		return fmt.Sprintf("specialize TFPGMap<%s, %s>", key, val)
-       case types.VoidType:
-               return ""
-       case types.AnyType:
-               currProg.UseVariants = true
-               return "Variant"
-       default:
-               currProg.UseVariants = true
-               return "Variant"
-       }
+	case types.VoidType:
+		return ""
+	case types.AnyType:
+		currProg.UseVariants = true
+		return "Variant"
+	default:
+		currProg.UseVariants = true
+		return "Variant"
+	}
 }
 
 func CurrentVarTypesDebug() map[string]string { return currentVarTypes }
@@ -4365,20 +4372,20 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				currProg.UseSysUtils = true
 				return &CallExpr{Name: "list_real_to_str", Args: args}, nil
 			}
-                       if strings.HasPrefix(t, "array of array of ") || strings.HasPrefix(t, "array of IntArray") || strings.HasSuffix(t, "IntArrayArray") {
-                               currProg.NeedListStr2 = true
-                               return &CallExpr{Name: "list_list_int_to_str", Args: args}, nil
-                       }
-                       if strings.HasPrefix(t, "array of Variant") {
-                               currProg.NeedListStrVariant = true
-                               currProg.UseSysUtils = true
-                               currProg.UseVariants = true
-                               return &CallExpr{Name: "list_variant_to_str", Args: args}, nil
-                       }
-                       if strings.HasPrefix(t, "array of ") || isArrayAlias(t) {
-                               currProg.NeedListStr2 = true
-                               return &CallExpr{Name: "list_int_to_str", Args: args}, nil
-                       }
+			if strings.HasPrefix(t, "array of array of ") || strings.HasPrefix(t, "array of IntArray") || strings.HasSuffix(t, "IntArrayArray") {
+				currProg.NeedListStr2 = true
+				return &CallExpr{Name: "list_list_int_to_str", Args: args}, nil
+			}
+			if strings.HasPrefix(t, "array of Variant") {
+				currProg.NeedListStrVariant = true
+				currProg.UseSysUtils = true
+				currProg.UseVariants = true
+				return &CallExpr{Name: "list_variant_to_str", Args: args}, nil
+			}
+			if strings.HasPrefix(t, "array of ") || isArrayAlias(t) {
+				currProg.NeedListStr2 = true
+				return &CallExpr{Name: "list_int_to_str", Args: args}, nil
+			}
 			if t == "Variant" || t == "any" {
 				currProg.UseSysUtils = true
 				currProg.UseVariants = true
