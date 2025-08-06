@@ -1,0 +1,60 @@
+/*
+Project Euler Problem 47: Distinct Prime Factors
+
+Find the first sequence of n consecutive integers where each has exactly
+n distinct prime factors. For n = 4 the sequence begins at 134043.
+
+This implementation uses a sieve-like approach with a map to count
+how many distinct primes divide each number up to a limit. Each prime
+updates the count for its multiples. We then search for the first run of
+n consecutive numbers whose counts equal n. No FFI or `any` types are used.
+*/
+
+fun run(n: int): list<int> {
+  let limit = 200000
+  var counts: map<int, int> = {}
+  var p = 2
+  while p <= limit {
+    if !(p in counts) {  // p is prime
+      var m = p
+      while m <= limit {
+        if m in counts {
+          counts[m] = counts[m] + 1
+        } else {
+          counts[m] = 1
+        }
+        m = m + p
+      }
+    }
+    p = p + 1
+  }
+  var streak = 0
+  var num = 2
+  while num <= limit {
+    let c = if num in counts { counts[num] } else { 0 }
+    if c == n {
+      streak = streak + 1
+      if streak == n {
+        var result: list<int> = []
+        var start = num - n + 1
+        var j = 0
+        while j < n {
+          result = append(result, start + j)
+          j = j + 1
+        }
+        return result
+      }
+    } else {
+      streak = 0
+    }
+    num = num + 1
+  }
+  return []
+}
+
+fun solution(n: int): int {
+  let res = run(n)
+  return res[0]
+}
+
+print(str(solution(4)))
