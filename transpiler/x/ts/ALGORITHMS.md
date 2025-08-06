@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-06 15:25 UTC
+Last updated: 2025-08-06 17:04 UTC
 
-## Algorithms Golden Test Checklist (353/1077)
+## Algorithms Golden Test Checklist (446/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 645µs | 22.6 KB |
@@ -410,106 +410,106 @@ Last updated: 2025-08-06 15:25 UTC
 | 401 | graphs/bidirectional_breadth_first_search | ✓ | 5.063ms | 149.4 KB |
 | 402 | graphs/bidirectional_search | ✓ | 1.454ms | 42.3 KB |
 | 403 | graphs/boruvka |   |  |  |
-| 404 | graphs/breadth_first_search |   |  |  |
-| 405 | graphs/breadth_first_search_2 |   |  |  |
-| 406 | graphs/breadth_first_search_shortest_path |   |  |  |
-| 407 | graphs/breadth_first_search_shortest_path_2 |   |  |  |
-| 408 | graphs/breadth_first_search_zero_one_shortest_path |   |  |  |
-| 409 | graphs/check_bipatrite |   |  |  |
-| 410 | graphs/check_cycle |   |  |  |
-| 411 | graphs/connected_components |   |  |  |
+| 404 | graphs/breadth_first_search | ✓ | 1.854ms | 29.5 KB |
+| 405 | graphs/breadth_first_search_2 | ✓ | 1.786ms | 535.3 KB |
+| 406 | graphs/breadth_first_search_shortest_path | ✓ | 1.977ms | 281.5 KB |
+| 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 9µs | 3.3 KB |
+| 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ | 1.52ms | 39.6 KB |
+| 409 | graphs/check_bipatrite | ✓ | 1.08ms | 17.8 KB |
+| 410 | graphs/check_cycle | ✓ | 1.792ms | 27.2 KB |
+| 411 | graphs/connected_components | ✓ | 2.739ms | 281.1 KB |
 | 412 | graphs/deep_clone_graph |   |  |  |
-| 413 | graphs/depth_first_search |   |  |  |
-| 414 | graphs/depth_first_search_2 |   |  |  |
+| 413 | graphs/depth_first_search | ✓ | 1.48ms | 273.6 KB |
+| 414 | graphs/depth_first_search_2 | ✓ | 2.24ms | 291.1 KB |
 | 415 | graphs/dijkstra |   |  |  |
-| 416 | graphs/dijkstra_2 |   |  |  |
-| 417 | graphs/dijkstra_algorithm |   |  |  |
-| 418 | graphs/dijkstra_alternate |   |  |  |
-| 419 | graphs/dijkstra_binary_grid |   |  |  |
-| 420 | graphs/dinic |   |  |  |
-| 421 | graphs/directed_and_undirected_weighted_graph |   |  |  |
+| 416 | graphs/dijkstra_2 | ✓ | 2.371ms | 43.2 KB |
+| 417 | graphs/dijkstra_algorithm | ✓ | 2.773ms | 587.0 KB |
+| 418 | graphs/dijkstra_alternate | ✓ | 1.915ms | 556.4 KB |
+| 419 | graphs/dijkstra_binary_grid | ✓ | 2.307ms | 57.2 KB |
+| 420 | graphs/dinic | ✓ | 1.872ms | 64.7 KB |
+| 421 | graphs/directed_and_undirected_weighted_graph | ✓ | 3.132ms | 315.4 KB |
 | 422 | graphs/edmonds_karp_multiple_source_and_sink |   |  |  |
-| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph |   |  |  |
-| 424 | graphs/even_tree |   |  |  |
+| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 3.748ms | 569.5 KB |
+| 424 | graphs/even_tree | ✓ | 1.817ms | 35.0 KB |
 | 425 | graphs/finding_bridges |   |  |  |
 | 426 | graphs/frequent_pattern_graph_miner |   |  |  |
-| 427 | graphs/g_topological_sort |   |  |  |
-| 428 | graphs/gale_shapley_bigraph |   |  |  |
-| 429 | graphs/graph_adjacency_list |   |  |  |
-| 430 | graphs/graph_adjacency_matrix |   |  |  |
-| 431 | graphs/graph_list |   |  |  |
-| 432 | graphs/graphs_floyd_warshall |   |  |  |
-| 433 | graphs/greedy_best_first |   |  |  |
-| 434 | graphs/greedy_min_vertex_cover |   |  |  |
-| 435 | graphs/kahns_algorithm_long |   |  |  |
+| 427 | graphs/g_topological_sort | ✓ | 2.276ms | 559.5 KB |
+| 428 | graphs/gale_shapley_bigraph | ✓ | 1.734ms | 532.0 KB |
+| 429 | graphs/graph_adjacency_list | ✓ | 2.11ms | 30.7 KB |
+| 430 | graphs/graph_adjacency_matrix | ✓ | 2.062ms | 33.7 KB |
+| 431 | graphs/graph_list | ✓ | 990µs | 24.0 KB |
+| 432 | graphs/graphs_floyd_warshall | ✓ | 2.526ms | 42.5 KB |
+| 433 | graphs/greedy_best_first | ✓ | 4.768ms | 956.7 KB |
+| 434 | graphs/greedy_min_vertex_cover | ✓ | 1.908ms | 274.5 KB |
+| 435 | graphs/kahns_algorithm_long | ✓ | 1.466ms | 276.2 KB |
 | 436 | graphs/kahns_algorithm_topo |   |  |  |
-| 437 | graphs/karger |   |  |  |
-| 438 | graphs/lanczos_eigenvectors |   |  |  |
-| 439 | graphs/markov_chain |   |  |  |
-| 440 | graphs/matching_min_vertex_cover |   |  |  |
-| 441 | graphs/minimum_path_sum |   |  |  |
-| 442 | graphs/minimum_spanning_tree_boruvka |   |  |  |
-| 443 | graphs/minimum_spanning_tree_kruskal |   |  |  |
-| 444 | graphs/minimum_spanning_tree_kruskal2 |   |  |  |
-| 445 | graphs/minimum_spanning_tree_prims |   |  |  |
-| 446 | graphs/minimum_spanning_tree_prims2 |   |  |  |
-| 447 | graphs/multi_heuristic_astar |   |  |  |
-| 448 | graphs/page_rank |   |  |  |
-| 449 | graphs/prim |   |  |  |
-| 450 | graphs/random_graph_generator |   |  |  |
-| 451 | graphs/scc_kosaraju |   |  |  |
-| 452 | graphs/strongly_connected_components |   |  |  |
+| 437 | graphs/karger | ✓ | 2.475ms | 95.4 KB |
+| 438 | graphs/lanczos_eigenvectors | ✓ | 4.555ms | 820.6 KB |
+| 439 | graphs/markov_chain | ✓ | 12.999ms | 187.7 KB |
+| 440 | graphs/matching_min_vertex_cover | ✓ | 1.579ms | 533.6 KB |
+| 441 | graphs/minimum_path_sum | ✓ | 2.08ms | 20.8 KB |
+| 442 | graphs/minimum_spanning_tree_boruvka | ✓ | 1.272ms | 28.4 KB |
+| 443 | graphs/minimum_spanning_tree_kruskal | ✓ | 2.703ms | 284.6 KB |
+| 444 | graphs/minimum_spanning_tree_kruskal2 | ✓ | 2.672ms | 543.5 KB |
+| 445 | graphs/minimum_spanning_tree_prims | ✓ | 1.504ms | 32.4 KB |
+| 446 | graphs/minimum_spanning_tree_prims2 | ✓ | 1.171ms | 27.2 KB |
+| 447 | graphs/multi_heuristic_astar | ✓ | 1.465ms | 26.3 KB |
+| 448 | graphs/page_rank | ✓ | 2.144ms | 51.8 KB |
+| 449 | graphs/prim | ✓ | 3.146ms | 566.0 KB |
+| 450 | graphs/random_graph_generator | ✓ | 1.715ms | 534.8 KB |
+| 451 | graphs/scc_kosaraju | ✓ | 1.157ms | 26.8 KB |
+| 452 | graphs/strongly_connected_components | ✓ | 2.542ms | 36.4 KB |
 | 453 | graphs/tarjans_scc |   |  |  |
-| 454 | graphs/tests/test_min_spanning_tree_kruskal |   |  |  |
-| 455 | graphs/tests/test_min_spanning_tree_prim |   |  |  |
-| 456 | greedy_methods/best_time_to_buy_and_sell_stock |   |  |  |
-| 457 | greedy_methods/fractional_cover_problem |   |  |  |
-| 458 | greedy_methods/fractional_knapsack |   |  |  |
-| 459 | greedy_methods/fractional_knapsack_2 |   |  |  |
-| 460 | greedy_methods/gas_station |   |  |  |
-| 461 | greedy_methods/minimum_coin_change |   |  |  |
-| 462 | greedy_methods/minimum_waiting_time |   |  |  |
-| 463 | greedy_methods/optimal_merge_pattern |   |  |  |
-| 464 | greedy_methods/smallest_range |   |  |  |
-| 465 | hashes/adler32 |   |  |  |
-| 466 | hashes/chaos_machine |   |  |  |
-| 467 | hashes/djb2 |   |  |  |
-| 468 | hashes/elf |   |  |  |
-| 469 | hashes/enigma_machine |   |  |  |
-| 470 | hashes/fletcher16 |   |  |  |
-| 471 | hashes/hamming_code |   |  |  |
-| 472 | hashes/luhn |   |  |  |
-| 473 | hashes/md5 |   |  |  |
-| 474 | hashes/sdbm |   |  |  |
-| 475 | hashes/sha1 |   |  |  |
-| 476 | hashes/sha256 |   |  |  |
-| 477 | knapsack/greedy_knapsack |   |  |  |
-| 478 | knapsack/knapsack |   |  |  |
-| 479 | knapsack/recursive_approach_knapsack |   |  |  |
-| 480 | knapsack/tests/test_greedy_knapsack |   |  |  |
-| 481 | knapsack/tests/test_knapsack |   |  |  |
-| 482 | linear_algebra/gaussian_elimination |   |  |  |
-| 483 | linear_algebra/jacobi_iteration_method |   |  |  |
-| 484 | linear_algebra/lu_decomposition |   |  |  |
-| 485 | linear_algebra/matrix_inversion |   |  |  |
-| 486 | linear_algebra/src/conjugate_gradient |   |  |  |
-| 487 | linear_algebra/src/gaussian_elimination_pivoting |   |  |  |
-| 488 | linear_algebra/src/lib |   |  |  |
-| 489 | linear_algebra/src/polynom_for_points |   |  |  |
-| 490 | linear_algebra/src/power_iteration |   |  |  |
-| 491 | linear_algebra/src/rank_of_matrix |   |  |  |
-| 492 | linear_algebra/src/rayleigh_quotient |   |  |  |
-| 493 | linear_algebra/src/schur_complement |   |  |  |
-| 494 | linear_algebra/src/test_linear_algebra |   |  |  |
-| 495 | linear_algebra/src/transformations_2d |   |  |  |
-| 496 | linear_programming/simplex |   |  |  |
-| 497 | machine_learning/apriori_algorithm |   |  |  |
-| 498 | machine_learning/astar |   |  |  |
-| 499 | machine_learning/automatic_differentiation |   |  |  |
-| 500 | machine_learning/data_transformations |   |  |  |
-| 501 | machine_learning/decision_tree |   |  |  |
-| 502 | machine_learning/dimensionality_reduction |   |  |  |
-| 503 | machine_learning/forecasting/run |   |  |  |
+| 454 | graphs/tests/test_min_spanning_tree_kruskal | ✓ | 1.479ms | 539.3 KB |
+| 455 | graphs/tests/test_min_spanning_tree_prim | ✓ | 1.672ms | 562.9 KB |
+| 456 | greedy_methods/best_time_to_buy_and_sell_stock | ✓ | 873µs | 17.6 KB |
+| 457 | greedy_methods/fractional_cover_problem | ✓ | 1.266ms | 36.8 KB |
+| 458 | greedy_methods/fractional_knapsack | ✓ | 894µs | 17.4 KB |
+| 459 | greedy_methods/fractional_knapsack_2 | ✓ | 2.193ms | 33.8 KB |
+| 460 | greedy_methods/gas_station | ✓ | 1.146ms | 19.4 KB |
+| 461 | greedy_methods/minimum_coin_change | ✓ | 856µs | 18.6 KB |
+| 462 | greedy_methods/minimum_waiting_time | ✓ | 1.687ms | 26.9 KB |
+| 463 | greedy_methods/optimal_merge_pattern | ✓ | 1.221ms | 25.3 KB |
+| 464 | greedy_methods/smallest_range | ✓ | 1.848ms | 540.3 KB |
+| 465 | hashes/adler32 | ✓ | 1.343ms | 275.2 KB |
+| 466 | hashes/chaos_machine | ✓ | 4.011ms | 690.7 KB |
+| 467 | hashes/djb2 | ✓ | 1.931ms | 19.8 KB |
+| 468 | hashes/elf | ✓ | 3.881ms | 803.6 KB |
+| 469 | hashes/enigma_machine | ✓ | 3.898ms | 315.9 KB |
+| 470 | hashes/fletcher16 | ✓ | 10µs | 3.3 KB |
+| 471 | hashes/hamming_code | ✓ | 3.645ms | 77.0 KB |
+| 472 | hashes/luhn | ✓ | 1.014ms | 17.2 KB |
+| 473 | hashes/md5 | ✓ | 13µs | 3.3 KB |
+| 474 | hashes/sdbm | ✓ | 2.433ms | 25.6 KB |
+| 475 | hashes/sha1 | ✓ | 6.727ms | 322.0 KB |
+| 476 | hashes/sha256 | ✓ | 3.521ms | 45.4 KB |
+| 477 | knapsack/greedy_knapsack | ✓ | 1.144ms | 23.6 KB |
+| 478 | knapsack/knapsack | ✓ | 705µs | 15.5 KB |
+| 479 | knapsack/recursive_approach_knapsack | ✓ | 748µs | 18.1 KB |
+| 480 | knapsack/tests/test_greedy_knapsack | ✓ | 2.456ms | 46.6 KB |
+| 481 | knapsack/tests/test_knapsack | ✓ | 1.012ms | 24.7 KB |
+| 482 | linear_algebra/gaussian_elimination | ✓ | 3.305ms | 303.4 KB |
+| 483 | linear_algebra/jacobi_iteration_method | ✓ | 3.256ms | 284.9 KB |
+| 484 | linear_algebra/lu_decomposition | ✓ | 3.727ms | 306.6 KB |
+| 485 | linear_algebra/matrix_inversion | ✓ | 2.448ms | 283.3 KB |
+| 486 | linear_algebra/src/conjugate_gradient | ✓ | 4.06ms | 182.2 KB |
+| 487 | linear_algebra/src/gaussian_elimination_pivoting | ✓ | 1.52ms | 32.2 KB |
+| 488 | linear_algebra/src/lib | ✓ | 1.283ms | 29.6 KB |
+| 489 | linear_algebra/src/polynom_for_points | ✓ | 3.157ms | 90.3 KB |
+| 490 | linear_algebra/src/power_iteration | ✓ | 4.087ms | 81.5 KB |
+| 491 | linear_algebra/src/rank_of_matrix | ✓ | 14µs | 3.3 KB |
+| 492 | linear_algebra/src/rayleigh_quotient | ✓ | 2.193ms | 55.4 KB |
+| 493 | linear_algebra/src/schur_complement | ✓ | 4.217ms | 296.0 KB |
+| 494 | linear_algebra/src/test_linear_algebra | ✓ | 4.31ms | 145.4 KB |
+| 495 | linear_algebra/src/transformations_2d | ✓ | 2.59ms | 291.1 KB |
+| 496 | linear_programming/simplex | ✓ | 3.782ms | 301.2 KB |
+| 497 | machine_learning/apriori_algorithm | ✓ | 3.17ms | 61.9 KB |
+| 498 | machine_learning/astar | ✓ | 2.08ms | 81.9 KB |
+| 499 | machine_learning/automatic_differentiation | ✓ | 852µs | 19.9 KB |
+| 500 | machine_learning/data_transformations | ✓ | 3.196ms | 800.8 KB |
+| 501 | machine_learning/decision_tree | ✓ | 23.606ms | 1.2 MB |
+| 502 | machine_learning/dimensionality_reduction | ✓ | 1.097ms | 14.3 KB |
+| 503 | machine_learning/forecasting/run | ✓ | 4.141ms | 327.7 KB |
 | 504 | machine_learning/frequent_pattern_growth |   |  |  |
 | 505 | machine_learning/gradient_boosting_classifier |   |  |  |
 | 506 | machine_learning/gradient_descent |   |  |  |
