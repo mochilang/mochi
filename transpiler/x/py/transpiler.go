@@ -42,6 +42,7 @@ var (
 	usesCallable      bool
 	usesFetch         bool
 	usesAppend        bool
+	usesSetIndex      bool
 	funcDepth         int
 )
 
@@ -116,6 +117,19 @@ def _append(lst, v):
     if lst is None:
         return [v]
     return lst + [v]
+`
+
+const helperSetIndex = `
+def _set_index(lst, i, v):
+    if isinstance(lst, dict):
+        lst[i] = v
+        return lst
+    if lst is None:
+        lst = []
+    if i >= len(lst):
+        lst.extend([None] * (i - len(lst) + 1))
+    lst[i] = v
+    return lst
 `
 
 var pyKeywords = map[string]bool{
@@ -1144,25 +1158,26 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		_, err := io.WriteString(w, "\n")
 		return err
 	case *IndexAssignStmt:
-		if _, err := io.WriteString(w, indent); err != nil {
+		usesSetIndex = true
+		if _, err := io.WriteString(w, indent+"_set_index("); err != nil {
 			return err
 		}
 		if err := emitExpr(w, st.Target); err != nil {
 			return err
 		}
-		if _, err := io.WriteString(w, "["); err != nil {
+		if _, err := io.WriteString(w, ", "); err != nil {
 			return err
 		}
 		if err := emitExpr(w, st.Index); err != nil {
 			return err
 		}
-		if _, err := io.WriteString(w, "] = "); err != nil {
+		if _, err := io.WriteString(w, ", "); err != nil {
 			return err
 		}
 		if err := emitExpr(w, st.Value); err != nil {
 			return err
 		}
-		_, err := io.WriteString(w, "\n")
+		_, err := io.WriteString(w, ")\n")
 		return err
 	case *FuncDef:
 		if _, err := io.WriteString(w, indent+"def "+safeName(st.Name)+"("); err != nil {
@@ -2917,6 +2932,11 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 			return err
 		}
 	}
+	if usesSetIndex {
+		if _, err := io.WriteString(w, helperSetIndex+"\n"); err != nil {
+			return err
+		}
+	}
 	// no runtime helpers required
 	for _, s := range p.Stmts {
 		switch st := s.(type) {
@@ -3193,6 +3213,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	usesCallable = false
 	usesFetch = false
 	usesAppend = false
+	usesSetIndex = false
 	p := &Program{}
 	for _, st := range prog.Statements {
 		switch {
@@ -3416,6 +3437,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 				if err != nil {
 					return nil, err
 				}
+				usesSetIndex = true
 				p.Stmts = append(p.Stmts, &IndexAssignStmt{Target: target, Index: idx, Value: val})
 			} else if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
 				p.Stmts = append(p.Stmts, &AssignStmt{Name: st.Assign.Name, Expr: val})
@@ -3448,6 +3470,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 				field := st.Assign.Field[len(st.Assign.Field)-1].Name
 				if mapIndex {
 					idx := &StringLit{Value: field}
+					usesSetIndex = true
 					p.Stmts = append(p.Stmts, &IndexAssignStmt{Target: target, Index: idx, Value: val})
 				} else {
 					p.Stmts = append(p.Stmts, &FieldAssignStmt{Target: target, Field: field, Value: val})
@@ -3893,6 +3916,7 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 				if err != nil {
 					return nil, err
 				}
+				usesSetIndex = true
 				out = append(out, &IndexAssignStmt{Target: target, Index: idx, Value: val})
 			} else if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
 				out = append(out, &AssignStmt{Name: s.Assign.Name, Expr: val})
@@ -3918,6 +3942,7 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 				field := s.Assign.Field[len(s.Assign.Field)-1].Name
 				if mapIndex {
 					idx := &StringLit{Value: field}
+					usesSetIndex = true
 					out = append(out, &IndexAssignStmt{Target: target, Index: idx, Value: val})
 				} else {
 					out = append(out, &FieldAssignStmt{Target: target, Field: field, Value: val})

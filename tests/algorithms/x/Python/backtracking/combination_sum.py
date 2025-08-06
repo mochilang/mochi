@@ -38,22 +38,23 @@ def _append(lst, v):
 _bench_mem_start = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
 _bench_start = _now()
 try:
-    def create_all_state(increment, total, level, current, result):
-        if level == 0:
-            return _append(result, current)
-        i = increment
-        while i <= total - level + 1:
-            next_current = _append(current, i)
-            result = create_all_state(i + 1, total, level - 1, next_current, result)
+    def backtrack(candidates, start, target, path, result):
+        if target == 0:
+            return _append(result, path)
+        i = start
+        while i < len(candidates):
+            value = candidates[i]
+            if value <= target:
+                new_path = _append(path, value)
+                result = backtrack(candidates, i, target - value, new_path, result)
             i = i + 1
         return result
-    def generate_all_combinations(n, k):
-        if k < 0 or n < 0:
-            return []
+    def combination_sum(candidates, target):
+        path = []
         result = []
-        return create_all_state(1, n, k, [], result)
-    print(str(generate_all_combinations(4, 2)))
-    print(str(generate_all_combinations(3, 1)))
+        return backtrack(candidates, 0, target, path, result)
+    print(str(combination_sum([2, 3, 5], 8)))
+    print(str(combination_sum([2, 3, 6, 7], 7)))
 finally:
     _bench_end = _now()
     _bench_mem_end = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss

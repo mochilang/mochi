@@ -2,21 +2,21 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Python`.
-Last updated: 2025-08-06 15:52 GMT+7
+Last updated: 2025-08-06 16:33 GMT+7
 
-## Algorithms Golden Test Checklist (1/1077)
+## Algorithms Golden Test Checklist (10/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 29.0µs | 13.17MB |
-| 2 | backtracking/all_permutations |   |  |  |
-| 3 | backtracking/all_subsequences |   |  |  |
-| 4 | backtracking/coloring |   |  |  |
-| 5 | backtracking/combination_sum |   |  |  |
-| 6 | backtracking/crossword_puzzle_solver |   |  |  |
-| 7 | backtracking/hamiltonian_cycle |   |  |  |
-| 8 | backtracking/knight_tour |   |  |  |
-| 9 | backtracking/match_word_pattern |   |  |  |
-| 10 | backtracking/minimax |   |  |  |
+| 1 | backtracking/all_combinations | ✓ | 62.0µs | 12.43MB |
+| 2 | backtracking/all_permutations | ✓ | 222.0µs | 12.50MB |
+| 3 | backtracking/all_subsequences | ✓ | 51.0µs | 12.39MB |
+| 4 | backtracking/coloring | ✓ | 67.0µs | 12.79MB |
+| 5 | backtracking/combination_sum | ✓ | 49.0µs | 12.44MB |
+| 6 | backtracking/crossword_puzzle_solver | ✓ | 55.0µs | 13.61MB |
+| 7 | backtracking/hamiltonian_cycle | ✓ | 103.0µs | 13.32MB |
+| 8 | backtracking/knight_tour | ✓ | 27.0µs | 13.42MB |
+| 9 | backtracking/match_word_pattern | ✓ | 226.0µs | 12.86MB |
+| 10 | backtracking/minimax | ✓ | 27.0µs | 12.41MB |
 | 11 | backtracking/n_queens |   |  |  |
 | 12 | backtracking/n_queens_math |   |  |  |
 | 13 | backtracking/power_sum |   |  |  |
