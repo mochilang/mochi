@@ -6507,7 +6507,19 @@ func Emit(prog *Program) []byte {
 	}
 	if needP {
 		buf.WriteString("\n    static String _p(Object v) {\n")
-		buf.WriteString("        return v != null ? String.valueOf(v) : \"<nil>\";\n")
+		buf.WriteString("        if (v == null) return \"<nil>\";\n")
+		buf.WriteString("        if (v.getClass().isArray()) {\n")
+		buf.WriteString("            if (v instanceof int[]) return java.util.Arrays.toString((int[]) v);\n")
+		buf.WriteString("            if (v instanceof long[]) return java.util.Arrays.toString((long[]) v);\n")
+		buf.WriteString("            if (v instanceof double[]) return java.util.Arrays.toString((double[]) v);\n")
+		buf.WriteString("            if (v instanceof boolean[]) return java.util.Arrays.toString((boolean[]) v);\n")
+		buf.WriteString("            if (v instanceof byte[]) return java.util.Arrays.toString((byte[]) v);\n")
+		buf.WriteString("            if (v instanceof char[]) return java.util.Arrays.toString((char[]) v);\n")
+		buf.WriteString("            if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);\n")
+		buf.WriteString("            if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);\n")
+		buf.WriteString("            return java.util.Arrays.deepToString((Object[]) v);\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        return String.valueOf(v);\n")
 		buf.WriteString("    }\n")
 	}
 	if needArrGetI {
