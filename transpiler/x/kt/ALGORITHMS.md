@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-06 21:09 GMT+7
+Last updated: 2025-08-06 21:31 GMT+7
 
-## Algorithms Golden Test Checklist (16/1077)
+## Algorithms Golden Test Checklist (17/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 30.54ms | 124.45KiB |
@@ -13,7 +13,7 @@ Last updated: 2025-08-06 21:09 GMT+7
 | 4 | backtracking/coloring | ✓ | 16.80ms | 132.92KiB |
 | 5 | backtracking/combination_sum | ✓ | 31.16ms | 123.60KiB |
 | 6 | backtracking/crossword_puzzle_solver | ✓ | 11.90ms | 133.00KiB |
-| 7 | backtracking/hamiltonian_cycle | error |  |  |
+| 7 | backtracking/hamiltonian_cycle | ✓ | 24.76ms | 123.41KiB |
 | 8 | backtracking/knight_tour | error |  |  |
 | 9 | backtracking/match_word_pattern | error |  |  |
 | 10 | backtracking/minimax | ✓ | 25.86ms | 123.57KiB |

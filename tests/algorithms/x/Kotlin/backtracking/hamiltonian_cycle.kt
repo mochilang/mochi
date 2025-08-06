@@ -1,3 +1,5 @@
+fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }
+
 fun expect(cond: Boolean) { if (!cond) throw RuntimeException("expect failed") }
 
 var _nowSeed = 0L
@@ -45,11 +47,11 @@ fun util_hamilton_cycle(graph: MutableList<MutableList<Int>>, path: MutableList<
     var next_ver: Int = 0
     while (next_ver < graph.size) {
         if (((valid_connection(graph, next_ver, curr_ind, path)) as Boolean)) {
-            path[curr_ind] = next_ver
+            _listSet(path, curr_ind, next_ver)
             if (((util_hamilton_cycle(graph, path, curr_ind + 1)) as Boolean)) {
                 return true
             }
-            path[curr_ind] = 0 - 1
+            _listSet(path, curr_ind, 0 - 1)
         }
         next_ver = next_ver + 1
     }
@@ -60,12 +62,12 @@ fun hamilton_cycle(graph: MutableList<MutableList<Int>>, start_index: Int): Muta
     var path: MutableList<Int> = mutableListOf<Int>()
     var i: Int = 0
     while (i < (graph.size + 1)) {
-        path[i] = 0 - 1
+        _listSet(path, i, 0 - 1)
         i = i + 1
     }
-    path[0] = start_index
+    _listSet(path, 0, start_index)
     var last: Int = path.size - 1
-    path[last] = start_index
+    _listSet(path, last, start_index)
     if (((util_hamilton_cycle(graph, path, 1)) as Boolean)) {
         return path
     }

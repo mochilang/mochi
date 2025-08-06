@@ -147,6 +147,7 @@ func init() {
 		"expect":       `fun expect(cond: Boolean) { if (!cond) throw RuntimeException("expect failed") }`,
 		"panic":        `fun panic(msg: String): Nothing { throw RuntimeException(msg) }`,
 		"input":        `fun input(): String = readLine() ?: ""`,
+		"_listSet":     `fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }`,
 		"importBigInt": `import java.math.BigInteger`,
 		"_lookupHost": `fun _lookupHost(host: String): MutableList<Any?> {
     return try {
@@ -346,6 +347,19 @@ type IndexAssignStmt struct {
 }
 
 func (s *IndexAssignStmt) emit(w io.Writer, indentLevel int) {
+	if ix, ok := s.Target.(*IndexExpr); ok {
+		if strings.HasPrefix(guessType(ix.Target), "MutableList<") {
+			indent(w, indentLevel)
+			io.WriteString(w, "_listSet(")
+			ix.Target.emit(w)
+			io.WriteString(w, ", ")
+			ix.Index.emit(w)
+			io.WriteString(w, ", ")
+			s.Value.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
+	}
 	indent(w, indentLevel)
 	switch tgt := s.Target.(type) {
 	case *IndexExpr:
@@ -3474,6 +3488,9 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				if ix.Type != "" && ix.Type != guessType(v) {
 					v = &CastExpr{Value: v, Type: ix.Type}
 				}
+				if strings.HasPrefix(guessType(ix.Target), "MutableList<") {
+					useHelper("_listSet")
+				}
 			}
 			p.Stmts = append(p.Stmts, &IndexAssignStmt{Target: target, Value: v})
 			seenStmt = true
@@ -4070,6 +4087,9 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 			if ix, ok := target.(*IndexExpr); ok {
 				if ix.Type != "" && ix.Type != guessType(v) {
 					v = &CastExpr{Value: v, Type: ix.Type}
+				}
+				if strings.HasPrefix(guessType(ix.Target), "MutableList<") {
+					useHelper("_listSet")
 				}
 			}
 			if fe, ok := target.(*FieldExpr); ok {
