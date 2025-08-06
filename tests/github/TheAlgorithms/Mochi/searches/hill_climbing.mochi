@@ -1,0 +1,123 @@
+/*
+Hill Climbing Search in Two Dimensions
+-------------------------------------
+Given a function f(x, y), hill climbing moves from an initial point to a
+neighboring point that improves the function value.  Eight neighbors are
+examined: horizontal, vertical and diagonal steps of a fixed size.  For
+maximization the algorithm chooses the neighbor with the greatest positive
+increase in f; for minimization it selects the neighbor with the greatest
+negative decrease.  The process repeats until no neighbor yields an
+improvement or a maximum number of iterations is reached.  Optional bounds
+limit the search domain.
+
+Time complexity: O(max_iter * 8) = O(max_iter)
+Space complexity: O(max_iter) for the visited states.
+*/
+
+type SearchProblem {
+  x: float,
+  y: float,
+  step: float,
+  f: fun(float, float): float
+}
+
+fun score(sp: SearchProblem): float {
+  return sp.f(sp.x, sp.y)
+}
+
+fun neighbors(sp: SearchProblem): list<SearchProblem> {
+  let s = sp.step
+  return [
+    SearchProblem { x: sp.x - s, y: sp.y - s, step: s, f: sp.f },
+    SearchProblem { x: sp.x - s, y: sp.y, step: s, f: sp.f },
+    SearchProblem { x: sp.x - s, y: sp.y + s, step: s, f: sp.f },
+    SearchProblem { x: sp.x, y: sp.y - s, step: s, f: sp.f },
+    SearchProblem { x: sp.x, y: sp.y + s, step: s, f: sp.f },
+    SearchProblem { x: sp.x + s, y: sp.y - s, step: s, f: sp.f },
+    SearchProblem { x: sp.x + s, y: sp.y, step: s, f: sp.f },
+    SearchProblem { x: sp.x + s, y: sp.y + s, step: s, f: sp.f }
+  ]
+}
+
+fun equal_state(a: SearchProblem, b: SearchProblem): bool {
+  return a.x == b.x && a.y == b.y
+}
+
+fun contains_state(lst: list<SearchProblem>, sp: SearchProblem): bool {
+  var i = 0
+  while i < len(lst) {
+    if equal_state(lst[i], sp) { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun hill_climbing(
+  sp: SearchProblem,
+  find_max: bool,
+  max_x: float,
+  min_x: float,
+  max_y: float,
+  min_y: float,
+  max_iter: int
+): SearchProblem {
+  var current = sp
+  var visited: list<SearchProblem> = []
+  var iterations = 0
+  var solution_found = false
+  while solution_found == false && iterations < max_iter {
+    visited = append(visited, current)
+    iterations = iterations + 1
+    let current_score = score(current)
+    let neighs = neighbors(current)
+    var max_change = -1.0e18
+    var min_change = 1.0e18
+    var next = current
+    var improved = false
+    var i = 0
+    while i < len(neighs) {
+      let n = neighs[i]
+      i = i + 1
+      if contains_state(visited, n) { continue }
+      if n.x > max_x || n.x < min_x || n.y > max_y || n.y < min_y { continue }
+      let change = score(n) - current_score
+      if find_max {
+        if change > max_change && change > 0.0 {
+          max_change = change
+          next = n
+          improved = true
+        }
+      } else {
+        if change < min_change && change < 0.0 {
+          min_change = change
+          next = n
+          improved = true
+        }
+      }
+    }
+    if improved {
+      current = next
+    } else {
+      solution_found = true
+    }
+  }
+  return current
+}
+
+fun test_f1(x: float, y: float): float { return x * x + y * y }
+
+fun main() {
+  let prob1 = SearchProblem { x: 3.0, y: 4.0, step: 1.0, f: test_f1 }
+  let local_min1 = hill_climbing(prob1, false, 1000000000.0, -1000000000.0, 1000000000.0, -1000000000.0, 10000)
+  print(str(int(score(local_min1))))
+
+  let prob2 = SearchProblem { x: 12.0, y: 47.0, step: 1.0, f: test_f1 }
+  let local_min2 = hill_climbing(prob2, false, 100.0, 5.0, 50.0, -5.0, 10000)
+  print(str(int(score(local_min2))))
+
+  let prob3 = SearchProblem { x: 3.0, y: 4.0, step: 1.0, f: test_f1 }
+  let local_max = hill_climbing(prob3, true, 1000000000.0, -1000000000.0, 1000000000.0, -1000000000.0, 1000)
+  print(str(int(score(local_max))))
+}
+
+main()
