@@ -1,0 +1,8 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/lazy_segment_tree.scala:78: error: identifier expected but 'lazy' found.
+def update(segment_tree: ArrayBuffer[BigInt], lazy: ArrayBuffer[BigInt], flag: ArrayBuffer[Boolean], idx: BigInt, l: BigInt, r: BigInt, a: BigInt, b: BigInt, `val`: BigInt): Any = {
+                                              ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/lazy_segment_tree.scala:192: error: ':' expected but '}' found.
+}
+^
+two errors found

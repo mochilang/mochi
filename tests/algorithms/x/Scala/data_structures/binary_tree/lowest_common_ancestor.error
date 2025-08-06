@@ -1,0 +1,9 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/lowest_common_ancestor.scala:126: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Any]
+ required: scala.collection.mutable.ArrayBuffer[scala.math.BigInt]
+Note: Any >: scala.math.BigInt, but class ArrayBuffer is invariant in type A.
+You may wish to investigate a wildcard type such as `_ >: scala.math.BigInt`. (SLS 3.2.10)
+    level = level :+ 0 - 1
+                  ^
+one error found

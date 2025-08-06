@@ -1,0 +1,31 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/wavelet_tree.scala:115: error: value - is not a member of Any
+    return rank_till_index(BigInt((node.asInstanceOf[Node].left).toString.toDouble.toInt), num, node.asInstanceOf[Node].map_left.asInstanceOf[ArrayBuffer[Any]]((index.toInt).toInt) - 1)
+                                                                                                                                                                                     ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/wavelet_tree.scala:117: error: type mismatch;
+ found   : Any
+ required: scala.math.BigInt
+    return rank_till_index(BigInt((node.asInstanceOf[Node].right).toString.toDouble.toInt), num, index - node.asInstanceOf[Node].map_left.asInstanceOf[ArrayBuffer[Any]]((index.toInt).toInt))
+                                                                                                                                                                        ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/wavelet_tree.scala:142: error: value - is not a member of Any
+    return quantile(BigInt((node.asInstanceOf[Node].left).toString.toDouble.toInt), index, BigInt(left_start.toString.toDouble.toInt), node.asInstanceOf[Node].map_left.asInstanceOf[ArrayBuffer[Any]]((end.toInt).toInt) - 1)
+                                                                                                                                                                                                                          ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/wavelet_tree.scala:144: error: type mismatch;
+ found   : Any
+ required: scala.math.BigInt
+    return quantile(BigInt((node.asInstanceOf[Node].right).toString.toDouble.toInt), index - num_left, start - BigInt(left_start.toString.toDouble.toInt), end - node.asInstanceOf[Node].map_left.asInstanceOf[ArrayBuffer[Any]]((end.toInt).toInt))
+                                                                                                                                                                                                                                ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/wavelet_tree.scala:160: error: value - is not a member of Any
+  val left: BigInt = range_counting(BigInt((node.asInstanceOf[Node].left).toString.toDouble.toInt), BigInt(((if (start == 0) 0 else node.asInstanceOf[Node].map_left.asInstanceOf[ArrayBuffer[Any]](((start - 1).toInt).toInt))).toString.toDouble.toInt), node.asInstanceOf[Node].map_left.asInstanceOf[ArrayBuffer[Any]]((end.toInt).toInt) - 1, start_num, end_num)
+                                                                                                                                                                                                                                                                                                                                              ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/wavelet_tree.scala:161: error: type mismatch;
+ found   : Any
+ required: scala.math.BigInt
+  val right: BigInt = range_counting(BigInt((node.asInstanceOf[Node].right).toString.toDouble.toInt), start - (if (start == 0) 0 else node.asInstanceOf[Node].map_left.asInstanceOf[ArrayBuffer[Any]](((start - 1).toInt).toInt)), end - node.asInstanceOf[Node].map_left.asInstanceOf[ArrayBuffer[Any]]((end.toInt).toInt), start_num, end_num)
+                                                                                                                                                                                                     ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/wavelet_tree.scala:161: error: type mismatch;
+ found   : Any
+ required: scala.math.BigInt
+  val right: BigInt = range_counting(BigInt((node.asInstanceOf[Node].right).toString.toDouble.toInt), start - (if (start == 0) 0 else node.asInstanceOf[Node].map_left.asInstanceOf[ArrayBuffer[Any]](((start - 1).toInt).toInt)), end - node.asInstanceOf[Node].map_left.asInstanceOf[ArrayBuffer[Any]]((end.toInt).toInt), start_num, end_num)
+                                                                                                                                                                                                                                                                                                        ^
+7 errors found

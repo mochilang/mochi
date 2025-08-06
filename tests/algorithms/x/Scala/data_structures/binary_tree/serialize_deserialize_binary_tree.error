@@ -1,0 +1,23 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/serialize_deserialize_binary_tree.scala:93: error: Main.Empty.type does not take parameters
+    return BuildResult(Empty(), idx + 1)
+                            ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/serialize_deserialize_binary_tree.scala:108: error: Main.Empty.type does not take parameters
+  val left_child: Node = Node(Empty(), 2, Empty())
+                                   ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/serialize_deserialize_binary_tree.scala:108: error: Main.Empty.type does not take parameters
+  val left_child: Node = Node(Empty(), 2, Empty())
+                                               ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/serialize_deserialize_binary_tree.scala:109: error: Main.Empty.type does not take parameters
+  val right_left: Node = Node(Empty(), 4, Empty())
+                                   ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/serialize_deserialize_binary_tree.scala:109: error: Main.Empty.type does not take parameters
+  val right_left: Node = Node(Empty(), 4, Empty())
+                                               ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/serialize_deserialize_binary_tree.scala:110: error: Main.Empty.type does not take parameters
+  val right_right: Node = Node(Empty(), 5, Empty())
+                                    ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/serialize_deserialize_binary_tree.scala:110: error: Main.Empty.type does not take parameters
+  val right_right: Node = Node(Empty(), 5, Empty())
+                                                ^
+7 errors found

@@ -1,0 +1,5 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/arrays/product_sum.scala:38: error: value size is not a member of Any
+    if (BigInt((el).size) > 0) {
+                    ^
+one error found
