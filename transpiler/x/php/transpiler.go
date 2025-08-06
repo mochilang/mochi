@@ -318,6 +318,8 @@ var phpReserved = map[string]struct{}{
 	"base64_decode": {},
 	"trim":          {},
 	"copy":          {},
+	"serialize":     {},
+	"unserialize":   {},
 	"extract":       {},
 	"new":           {},
 	"New":           {},

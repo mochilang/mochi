@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-06 21:35 GMT+7
+Last updated: 2025-08-06 22:06 GMT+7
 
-## Algorithms Golden Test Checklist (188/1077)
+## Algorithms Golden Test Checklist (189/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 117µs | 38.8 KB |
@@ -203,8 +203,8 @@ Last updated: 2025-08-06 21:35 GMT+7
 | 194 | data_structures/binary_tree/red_black_tree | ✓ | 216µs | 70.0 KB |
 | 195 | data_structures/binary_tree/segment_tree | ✓ | 197µs | 41.1 KB |
 | 196 | data_structures/binary_tree/segment_tree_other | error |  |  |
-| 197 | data_structures/binary_tree/serialize_deserialize_binary_tree |   |  |  |
-| 198 | data_structures/binary_tree/symmetric_tree |   |  |  |
+| 197 | data_structures/binary_tree/serialize_deserialize_binary_tree | error |  |  |
+| 198 | data_structures/binary_tree/symmetric_tree | ✓ | 131µs | 39.1 KB |
 | 199 | data_structures/binary_tree/treap |   |  |  |
 | 200 | data_structures/binary_tree/wavelet_tree |   |  |  |
 | 201 | data_structures/disjoint_set/alternate_disjoint_set |   |  |  |
