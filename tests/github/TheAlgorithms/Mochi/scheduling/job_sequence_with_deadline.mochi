@@ -1,0 +1,60 @@
+/*
+Job Sequencing with Deadlines
+-----------------------------
+Each job requires one unit of time and has a deadline after which it can no
+longer be executed. Each job also has an associated reward. The objective is to
+select a subset of jobs that maximizes total reward while meeting all deadlines.
+
+A simple greedy strategy sorts job indices by decreasing reward and considers
+them one by one. If a job's deadline is at least the position (starting from 1)
+in this ordering, the job is scheduled. This matches the Python reference
+implementation which uses enumeration index as the time slot.
+
+This implementation returns the list of job IDs that will be performed in order
+of selection.
+*/
+
+fun max_tasks(tasks_info: list<list<int>>): list<int> {
+  var order: list<int> = []
+  var i = 0
+  while i < len(tasks_info) {
+    order = append(order, i)
+    i = i + 1
+  }
+  var n = len(order)
+  i = 0
+  while i < n {
+    var j = i + 1
+    while j < n {
+      if tasks_info[order[j]][1] > tasks_info[order[i]][1] {
+        let tmp = order[i]
+        order[i] = order[j]
+        order[j] = tmp
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  var result: list<int> = []
+  var pos = 1
+  i = 0
+  while i < n {
+    let id = order[i]
+    let deadline = tasks_info[id][0]
+    if deadline >= pos {
+      result = append(result, id)
+    }
+    i = i + 1
+    pos = pos + 1
+  }
+  return result
+}
+
+fun main(): void {
+  let ex1: list<list<int>> = [[4,20],[1,10],[1,40],[1,30]]
+  let ex2: list<list<int>> = [[1,10],[2,20],[3,30],[2,40]]
+  print(str(max_tasks(ex1)))
+  print(str(max_tasks(ex2)))
+}
+
+main()
