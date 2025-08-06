@@ -1,0 +1,56 @@
+/*
+Counting Sundays (Project Euler Problem 19)
+
+Determine how many Sundays fell on the first day of the month during the
+twentieth century (1 Jan 1901 to 31 Dec 2000).
+
+Algorithm:
+- Track the day-of-month for each Sunday starting from 6 Jan 1901 (the first
+  Sunday of 1901).
+- Increment the day by 7 for each following Sunday and adjust the month and
+  year when the day exceeds the number of days in the current month.
+- Leap years occur every year divisible by 4 but not by 100 unless divisible by 400.
+- Count each Sunday that lands on day 1 before 2001.
+
+Time complexity: O(number of Sundays) ≈ O(1200)
+*/
+
+fun is_leap(year: int): bool {
+  if (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0) {
+    return true
+  }
+  return false
+}
+
+fun count_sundays(): int {
+  let days_per_month: list<int> = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+  var day = 6
+  var month = 1
+  var year = 1901
+  var sundays = 0
+  while year < 2001 {
+    day = day + 7
+    if is_leap(year) {
+      if day > days_per_month[month - 1] && month != 2 {
+        month = month + 1
+        day = day - days_per_month[month - 2]
+      } else if day > 29 && month == 2 {
+        month = month + 1
+        day = day - 29
+      }
+    } else if day > days_per_month[month - 1] {
+      month = month + 1
+      day = day - days_per_month[month - 2]
+    }
+    if month > 12 {
+      year = year + 1
+      month = 1
+    }
+    if year < 2001 && day == 1 {
+      sundays = sundays + 1
+    }
+  }
+  return sundays
+}
+
+print(count_sundays())
