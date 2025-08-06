@@ -2,12 +2,12 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 20/1077
-Last updated: 2025-08-06 18:11 +0700
+Completed programs: 40/1077
+Last updated: 2025-08-06 20:34 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 1.752ms | 4.0 MB |
+| 1 | backtracking/all_combinations | ✓ | 2.345ms | 3.7 MB |
 | 2 | backtracking/all_permutations | ✓ | 1.383ms | 3.5 MB |
 | 3 | backtracking/all_subsequences | ✓ | 914µs | 3.4 MB |
 | 4 | backtracking/coloring | ✓ | 540µs | 3.3 MB |
@@ -28,26 +28,26 @@ Last updated: 2025-08-06 18:11 +0700
 | 19 | backtracking/word_search | ✓ | 601µs | 2.9 MB |
 | 20 | bit_manipulation/binary_and_operator | ✓ | 357µs | 3.4 MB |
 | 21 | bit_manipulation/binary_coded_decimal | ✓ | 499µs | 3.2 MB |
-| 22 | bit_manipulation/binary_count_setbits |   |  |  |
-| 23 | bit_manipulation/binary_count_trailing_zeros |   |  |  |
-| 24 | bit_manipulation/binary_or_operator |   |  |  |
-| 25 | bit_manipulation/binary_shifts |   |  |  |
-| 26 | bit_manipulation/binary_twos_complement |   |  |  |
-| 27 | bit_manipulation/binary_xor_operator |   |  |  |
-| 28 | bit_manipulation/bitwise_addition_recursive |   |  |  |
-| 29 | bit_manipulation/count_1s_brian_kernighan_method |   |  |  |
-| 30 | bit_manipulation/count_number_of_one_bits |   |  |  |
-| 31 | bit_manipulation/excess_3_code |   |  |  |
-| 32 | bit_manipulation/find_previous_power_of_two |   |  |  |
-| 33 | bit_manipulation/find_unique_number |   |  |  |
-| 34 | bit_manipulation/gray_code_sequence |   |  |  |
-| 35 | bit_manipulation/highest_set_bit |   |  |  |
-| 36 | bit_manipulation/index_of_rightmost_set_bit |   |  |  |
-| 37 | bit_manipulation/is_even |   |  |  |
-| 38 | bit_manipulation/is_power_of_two |   |  |  |
-| 39 | bit_manipulation/largest_pow_of_two_le_num |   |  |  |
-| 40 | bit_manipulation/missing_number |   |  |  |
-| 41 | bit_manipulation/numbers_different_signs |   |  |  |
+| 22 | bit_manipulation/binary_count_setbits | ✓ | 248µs | 3.2 MB |
+| 23 | bit_manipulation/binary_count_trailing_zeros | ✓ | 258µs | 3.3 MB |
+| 24 | bit_manipulation/binary_or_operator | ✓ | 300µs | 3.2 MB |
+| 25 | bit_manipulation/binary_shifts | ✓ | 531µs | 3.2 MB |
+| 26 | bit_manipulation/binary_twos_complement | ✓ | 414µs | 2.9 MB |
+| 27 | bit_manipulation/binary_xor_operator | ✓ | 743µs | 3.2 MB |
+| 28 | bit_manipulation/bitwise_addition_recursive | ✓ | 317µs | 3.4 MB |
+| 29 | bit_manipulation/count_1s_brian_kernighan_method | ✓ | 375µs | 3.4 MB |
+| 30 | bit_manipulation/count_number_of_one_bits | ✓ | 417µs | 3.3 MB |
+| 31 | bit_manipulation/excess_3_code | ✓ | 418µs | 3.5 MB |
+| 32 | bit_manipulation/find_previous_power_of_two | ✓ | 1.277ms | 3.6 MB |
+| 33 | bit_manipulation/find_unique_number | ✓ | 371µs | 3.1 MB |
+| 34 | bit_manipulation/gray_code_sequence | ✓ | 1.26ms | 3.5 MB |
+| 35 | bit_manipulation/highest_set_bit | ✓ | 321µs | 3.1 MB |
+| 36 | bit_manipulation/index_of_rightmost_set_bit | ✓ | 348µs | 3.2 MB |
+| 37 | bit_manipulation/is_even | ✓ | 291µs | 3.4 MB |
+| 38 | bit_manipulation/is_power_of_two | ✓ | 136µs | 3.1 MB |
+| 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 286µs | 3.2 MB |
+| 40 | bit_manipulation/missing_number | ✓ | 479µs | 3.2 MB |
+| 41 | bit_manipulation/numbers_different_signs | ✓ | 270µs | 3.2 MB |
 | 42 | bit_manipulation/power_of_4 |   |  |  |
 | 43 | bit_manipulation/reverse_bits |   |  |  |
 | 44 | bit_manipulation/single_bit_manipulation_operations |   |  |  |
