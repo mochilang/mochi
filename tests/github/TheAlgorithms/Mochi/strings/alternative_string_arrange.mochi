@@ -1,0 +1,38 @@
+/*
+Interleaving Two Strings
+-----------------------
+Given two input strings, produce a new string by alternating
+characters from each. When one string runs out of characters,
+append the remainder of the other string.
+
+Algorithm:
+1. Compute the lengths of both strings.
+2. Iterate index i from 0 while i is less than either length.
+3. If i is within the first string, append its character.
+4. If i is within the second string, append its character.
+5. Return the accumulated result.
+
+Time complexity: O(n) where n is the length of the longer input.
+*/
+
+fun alternative_string_arrange(first_str: string, second_str: string): string {
+  let len1: int = len(first_str)
+  let len2: int = len(second_str)
+  var res: string = ""
+  var i: int = 0
+  while i < len1 || i < len2 {
+    if i < len1 {
+      res = res + first_str[i]
+    }
+    if i < len2 {
+      res = res + second_str[i]
+    }
+    i = i + 1
+  }
+  return res
+}
+
+print(alternative_string_arrange("ABCD", "XY"))
+print(alternative_string_arrange("XY", "ABCD"))
+print(alternative_string_arrange("AB", "XYZ"))
+print(alternative_string_arrange("ABC", ""))
