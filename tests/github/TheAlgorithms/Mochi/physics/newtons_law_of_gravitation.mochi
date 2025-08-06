@@ -1,0 +1,69 @@
+/*
+Newton's Law of Universal Gravitation
+------------------------------------
+Given three of the four parameters (force, two masses, or distance) the missing value
+can be computed using F = G * m1 * m2 / d^2. This implementation validates that
+exactly one argument is zero and none are negative. It then solves the algebraic
+rearrangement for the zero parameter:
+  force = G * m1 * m2 / d^2
+  mass_1 = F * d^2 / (G * m2)
+  mass_2 = F * d^2 / (G * m1)
+  distance = sqrt(G * m1 * m2 / F)
+The function returns a record identifying which quantity was computed along with its
+value.
+*/
+
+let GRAVITATIONAL_CONSTANT: float = 0.000000000066743
+
+type Result {
+  kind: string,
+  value: float,
+}
+
+fun sqrtApprox(x: float): float {
+  var guess = x / 2.0
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun gravitational_law(force: float, mass_1: float, mass_2: float, distance: float): Result {
+  var zero_count = 0
+  if force == 0.0 { zero_count = zero_count + 1 }
+  if mass_1 == 0.0 { zero_count = zero_count + 1 }
+  if mass_2 == 0.0 { zero_count = zero_count + 1 }
+  if distance == 0.0 { zero_count = zero_count + 1 }
+  if zero_count != 1 { panic("One and only one argument must be 0") }
+  if force < 0.0 { panic("Gravitational force can not be negative") }
+  if distance < 0.0 { panic("Distance can not be negative") }
+  if mass_1 < 0.0 { panic("Mass can not be negative") }
+  if mass_2 < 0.0 { panic("Mass can not be negative") }
+  let product_of_mass = mass_1 * mass_2
+  if force == 0.0 {
+    let f = GRAVITATIONAL_CONSTANT * product_of_mass / (distance * distance)
+    return Result { kind: "force", value: f }
+  }
+  if mass_1 == 0.0 {
+    let m1 = force * (distance * distance) / (GRAVITATIONAL_CONSTANT * mass_2)
+    return Result { kind: "mass_1", value: m1 }
+  }
+  if mass_2 == 0.0 {
+    let m2 = force * (distance * distance) / (GRAVITATIONAL_CONSTANT * mass_1)
+    return Result { kind: "mass_2", value: m2 }
+  }
+  let d = sqrtApprox(GRAVITATIONAL_CONSTANT * product_of_mass / force)
+  return Result { kind: "distance", value: d }
+}
+
+let r1 = gravitational_law(0.0, 5.0, 10.0, 20.0)
+let r2 = gravitational_law(7367.382, 0.0, 74.0, 3048.0)
+let r3 = gravitational_law(100.0, 5.0, 0.0, 3.0)
+let r4 = gravitational_law(100.0, 5.0, 10.0, 0.0)
+
+print(r1.kind + " " + str(r1.value))
+print(r2.kind + " " + str(r2.value))
+print(r3.kind + " " + str(r3.value))
+print(r4.kind + " " + str(r4.value))
