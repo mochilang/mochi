@@ -1,0 +1,26 @@
+/*
+Solve the Tower of Hanoi puzzle using recursion.
+
+The puzzle consists of three poles and a number of disks of different sizes.
+The objective is to move the entire stack from the start pole to the target
+pole, obeying two rules: only one disk may be moved at a time and no larger
+disk may be placed on top of a smaller disk. The classic recursive solution
+moves the top n-1 disks to the auxiliary pole, moves the largest disk to the
+target pole, then moves the n-1 disks from the auxiliary pole to the target.
+This program demonstrates the algorithm for a tower of height 3.
+*/
+
+fun move_tower(height: int, from_pole: string, to_pole: string, with_pole: string) {
+  if height >= 1 {
+    move_tower(height - 1, from_pole, with_pole, to_pole)
+    move_disk(from_pole, to_pole)
+    move_tower(height - 1, with_pole, to_pole, from_pole)
+  }
+}
+
+fun move_disk(fp: string, tp: string) {
+  print("moving disk from " + fp + " to " + tp)
+}
+
+let height: int = 3
+move_tower(height, "A", "B", "C")
