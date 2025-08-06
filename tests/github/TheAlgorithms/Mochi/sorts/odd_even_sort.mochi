@@ -1,0 +1,95 @@
+/*
+Odd-Even Sort
+-------------
+Odd-even sort (also known as brick sort) is a variation of bubble sort
+that operates in two alternating phases.  During the "even" phase it
+compares and swaps elements at even-odd index pairs (0&1, 2&3, ...).  The
+"odd" phase then compares the odd-even pairs (1&2, 3&4, ...).  These
+passes are repeated until the list is fully ordered.  The algorithm was
+originally designed for parallel processors with local interconnections
+because each phase can be executed concurrently.
+
+This implementation works on a list of integers, returns a new sorted
+list in ascending order, avoids the "any" type, and uses only Mochi core
+features so it can execute on runtime/vm without foreign interfaces.
+*/
+
+fun odd_even_sort(xs: list<int>): list<int> {
+  var arr: list<int> = []
+  var i = 0
+  while i < len(xs) {
+    arr = append(arr, xs[i])
+    i = i + 1
+  }
+  var n = len(arr)
+  var sorted = false
+  while sorted == false {
+    sorted = true
+    var j = 0
+    while j < n - 1 {
+      if arr[j] > arr[j + 1] {
+        let tmp = arr[j]
+        arr[j] = arr[j + 1]
+        arr[j + 1] = tmp
+        sorted = false
+      }
+      j = j + 2
+    }
+    j = 1
+    while j < n - 1 {
+      if arr[j] > arr[j + 1] {
+        let tmp = arr[j]
+        arr[j] = arr[j + 1]
+        arr[j + 1] = tmp
+        sorted = false
+      }
+      j = j + 2
+    }
+  }
+  return arr
+}
+
+fun print_list(xs: list<int>) {
+  var i = 0
+  var out = ""
+  while i < len(xs) {
+    if i > 0 {
+      out = out + " "
+    }
+    out = out + str(xs[i])
+    i = i + 1
+  }
+  print(out)
+}
+
+fun test_odd_even_sort() {
+  let a: list<int> = [5, 4, 3, 2, 1]
+  let r1 = odd_even_sort(a)
+  if r1[0] != 1 || r1[1] != 2 || r1[2] != 3 || r1[3] != 4 || r1[4] != 5 {
+    panic("case1 failed")
+  }
+  let b: list<int> = []
+  let r2 = odd_even_sort(b)
+  if len(r2) != 0 {
+    panic("case2 failed")
+  }
+  let c: list<int> = [-10, -1, 10, 2]
+  let r3 = odd_even_sort(c)
+  if r3[0] != (-10) || r3[1] != (-1) || r3[2] != 2 || r3[3] != 10 {
+    panic("case3 failed")
+  }
+  let d: list<int> = [1, 2, 3, 4]
+  let r4 = odd_even_sort(d)
+  if r4[0] != 1 || r4[1] != 2 || r4[2] != 3 || r4[3] != 4 {
+    panic("case4 failed")
+  }
+}
+
+fun main() {
+  test_odd_even_sort()
+  let sample: list<int> = [5, 4, 3, 2, 1]
+  let sorted = odd_even_sort(sample)
+  print_list(sorted)
+}
+
+main()
