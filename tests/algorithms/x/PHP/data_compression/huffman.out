@@ -1,0 +1,36 @@
+Warning: Undefined variable $Leaf in /workspace/mochi/tests/algorithms/x/PHP/data_compression/huffman.php on line 67
+
+Warning: Undefined variable $Leaf in /workspace/mochi/tests/algorithms/x/PHP/data_compression/huffman.php on line 67
+
+Warning: Undefined variable $Leaf in /workspace/mochi/tests/algorithms/x/PHP/data_compression/huffman.php on line 67
+
+Warning: Undefined variable $Leaf in /workspace/mochi/tests/algorithms/x/PHP/data_compression/huffman.php on line 67
+
+Warning: Undefined variable $Leaf in /workspace/mochi/tests/algorithms/x/PHP/data_compression/huffman.php on line 67
+
+Warning: Undefined variable $Leaf in /workspace/mochi/tests/algorithms/x/PHP/data_compression/huffman.php on line 67
+
+Warning: Undefined variable $Leaf in /workspace/mochi/tests/algorithms/x/PHP/data_compression/huffman.php on line 67
+
+Warning: Undefined variable $prefix in /workspace/mochi/tests/algorithms/x/PHP/data_compression/huffman.php on line 102
+
+Warning: Undefined variable $prefix in /workspace/mochi/tests/algorithms/x/PHP/data_compression/huffman.php on line 102
+
+Warning: Undefined variable $prefix in /workspace/mochi/tests/algorithms/x/PHP/data_compression/huffman.php on line 102
+
+Warning: Undefined variable $prefix in /workspace/mochi/tests/algorithms/x/PHP/data_compression/huffman.php on line 102
+
+Warning: Undefined variable $prefix in /workspace/mochi/tests/algorithms/x/PHP/data_compression/huffman.php on line 102
+
+Fatal error: Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /workspace/mochi/tests/algorithms/x/PHP/data_compression/huffman.php:88
+Stack trace:
+#0 /workspace/mochi/tests/algorithms/x/PHP/data_compression/huffman.php(102): concat_pairs(NULL, NULL)
+#1 /workspace/mochi/tests/algorithms/x/PHP/data_compression/huffman.php(104): {closure:collect_codes():95}(Array)
+#2 /workspace/mochi/tests/algorithms/x/PHP/data_compression/huffman.php(102): collect_codes(Array, '1')
+#3 /workspace/mochi/tests/algorithms/x/PHP/data_compression/huffman.php(104): {closure:collect_codes():95}(Array)
+#4 /workspace/mochi/tests/algorithms/x/PHP/data_compression/huffman.php(102): collect_codes(Array, '0')
+#5 /workspace/mochi/tests/algorithms/x/PHP/data_compression/huffman.php(104): {closure:collect_codes():95}(Array)
+#6 /workspace/mochi/tests/algorithms/x/PHP/data_compression/huffman.php(122): collect_codes(Array, '')
+#7 /workspace/mochi/tests/algorithms/x/PHP/data_compression/huffman.php(132): huffman_encode('beep boop beer!')
+#8 {main}
+  thrown in /workspace/mochi/tests/algorithms/x/PHP/data_compression/huffman.php on line 88

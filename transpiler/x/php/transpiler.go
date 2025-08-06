@@ -296,32 +296,32 @@ func SetBenchMain(v bool) { benchMain = v }
 // defines a function with one of these names we rename the function and all
 // call sites to avoid redeclaration errors.
 var phpReserved = map[string]struct{}{
-	"shuffle":     {},
-	"join":        {},
-	"list":        {},
-	"pow":         {},
-	"abs":         {},
-	"ord":         {},
-	"chr":         {},
-	"key":         {},
-	"exp":         {},
-        "hypot":       {},
-        "floor":       {},
-        "round":       {},
-       "fmod":        {},
-        "parseIntStr": {},
-        "repeat":      {},
-        "rand":        {},
-        "crc32":       {},
-        "xor":         {},
-        "base64_encode": {},
-        "base64_decode": {},
-        "trim":        {},
-        "copy":        {},
-        "extract":     {},
-	"new":         {},
-	"New":         {},
-	"echo":        {},
+	"shuffle":       {},
+	"join":          {},
+	"list":          {},
+	"pow":           {},
+	"abs":           {},
+	"ord":           {},
+	"chr":           {},
+	"key":           {},
+	"exp":           {},
+	"hypot":         {},
+	"floor":         {},
+	"round":         {},
+	"fmod":          {},
+	"parseIntStr":   {},
+	"repeat":        {},
+	"rand":          {},
+	"crc32":         {},
+	"xor":           {},
+	"base64_encode": {},
+	"base64_decode": {},
+	"trim":          {},
+	"copy":          {},
+	"extract":       {},
+	"new":           {},
+	"New":           {},
+	"echo":          {},
 }
 
 // phpReservedVar lists variable names that cannot be used directly in PHP
@@ -1459,8 +1459,9 @@ type UnionMatchCase struct {
 }
 
 type UnionMatchExpr struct {
-	Target Expr
-	Cases  []UnionMatchCase
+	Target  Expr
+	Cases   []UnionMatchCase
+	Default Expr
 }
 
 type QueryLoop struct {
@@ -1637,7 +1638,19 @@ func (u *UnionMatchExpr) emit(w io.Writer) {
 		c.Result.emit(w)
 		io.WriteString(w, ";\n")
 	}
-	io.WriteString(w, "  }\n")
+	if len(u.Cases) > 0 {
+		if u.Default != nil {
+			io.WriteString(w, "  } else {\n")
+			io.WriteString(w, "    return ")
+			u.Default.emit(w)
+			io.WriteString(w, ";\n")
+		}
+		io.WriteString(w, "  }\n")
+	} else if u.Default != nil {
+		io.WriteString(w, "  return ")
+		u.Default.emit(w)
+		io.WriteString(w, ";\n")
+	}
 	io.WriteString(w, "})(")
 	u.Target.emit(w)
 	io.WriteString(w, ")")
@@ -2736,18 +2749,18 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				return nil, fmt.Errorf("padStart expects 2 args")
 			}
 			return &CallExpr{Func: "str_pad", Args: []Expr{e, args[0], args[1], &Name{Value: "STR_PAD_LEFT"}}}, nil
-               case "keys":
-                       if len(args) == 0 {
-                               return &CallExpr{Func: "array_keys", Args: []Expr{e}}, nil
-                       }
-                       if len(args) == 1 {
-                               if v, ok := e.(*Var); ok && v.Name == "Object" {
-                                       return &CallExpr{Func: "array_keys", Args: args}, nil
-                               }
-                               return nil, fmt.Errorf("keys expects no args")
-                       }
-                       return nil, fmt.Errorf("keys expects at most 1 arg")
-               case "get":
+		case "keys":
+			if len(args) == 0 {
+				return &CallExpr{Func: "array_keys", Args: []Expr{e}}, nil
+			}
+			if len(args) == 1 {
+				if v, ok := e.(*Var); ok && v.Name == "Object" {
+					return &CallExpr{Func: "array_keys", Args: args}, nil
+				}
+				return nil, fmt.Errorf("keys expects no args")
+			}
+			return nil, fmt.Errorf("keys expects at most 1 arg")
+		case "get":
 			if len(args) == 1 {
 				return &CondExpr{Cond: &CallExpr{Func: "array_key_exists", Args: []Expr{args[0], e}}, Then: &IndexExpr{X: e, Index: args[0]}, Else: &NullLit{}}, nil
 			}
@@ -3972,6 +3985,7 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 	}
 	arms := make([]MatchArm, len(me.Cases))
 	var unionCases []UnionMatchCase
+	var defaultRes Expr
 	allUnion := true
 	for i, c := range me.Cases {
 		res, err := convertExpr(c.Result)
@@ -3988,29 +4002,54 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 				pex = nil
 			}
 			pat = pex
-			if ce, ok := pex.(*CallExpr); ok && transpileEnv != nil {
-				if ut, ok := transpileEnv.FindUnionByVariant(ce.Func); ok {
-					st := ut.Variants[ce.Func]
-					vars := make([]string, len(ce.Args))
-					for j, a := range ce.Args {
-						if v, ok := a.(*Var); ok {
-							vars[j] = v.Name
-						} else {
-							vars[j] = "_"
+			if transpileEnv != nil {
+				switch pe := pex.(type) {
+				case *CallExpr:
+					if ut, ok := transpileEnv.FindUnionByVariant(pe.Func); ok {
+						st := ut.Variants[pe.Func]
+						vars := make([]string, len(pe.Args))
+						for j, a := range pe.Args {
+							if v, ok := a.(*Var); ok {
+								vars[j] = v.Name
+							} else {
+								vars[j] = "_"
+							}
 						}
+						fields := make([]string, len(st.Order))
+						copy(fields, st.Order)
+						unionCases = append(unionCases, UnionMatchCase{Tag: pe.Func, Vars: vars, Fields: fields, Result: res})
+						continue
 					}
-					fields := make([]string, len(st.Order))
-					copy(fields, st.Order)
-					unionCases = append(unionCases, UnionMatchCase{Tag: ce.Func, Vars: vars, Fields: fields, Result: res})
-					continue
+				case *Var:
+					if ut, ok := transpileEnv.FindUnionByVariant(pe.Name); ok {
+						st := ut.Variants[pe.Name]
+						fields := make([]string, len(st.Order))
+						copy(fields, st.Order)
+						unionCases = append(unionCases, UnionMatchCase{Tag: pe.Name, Fields: fields, Result: res})
+						continue
+					}
+				case nil:
+					// wildcard pattern
+					if len(unionCases) > 0 {
+						defaultRes = res
+						continue
+					}
 				}
+			}
+		} else {
+			if len(unionCases) > 0 {
+				defaultRes = res
+				continue
 			}
 		}
 		arms[i] = MatchArm{Pattern: pat, Result: res}
 		allUnion = false
 	}
-	if allUnion && len(unionCases) > 0 {
-		return &UnionMatchExpr{Target: target, Cases: unionCases}, nil
+	if len(unionCases) > 0 {
+		if allUnion {
+			return &UnionMatchExpr{Target: target, Cases: unionCases, Default: defaultRes}, nil
+		}
+		return &UnionMatchExpr{Target: target, Cases: unionCases, Default: defaultRes}, nil
 	}
 	return &MatchExpr{Target: target, Arms: arms}, nil
 }

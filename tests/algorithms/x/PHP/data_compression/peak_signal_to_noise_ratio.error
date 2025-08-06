@@ -1,0 +1,3 @@
+run: exit status 255
+
+Fatal error: Cannot redeclare function log10() in /workspace/mochi/tests/algorithms/x/PHP/data_compression/peak_signal_to_noise_ratio.php on line 33
