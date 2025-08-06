@@ -3542,112 +3542,55 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		ls := &LetStmt{Name: st.Var.Name, Expr: e, Type: typ, Mutable: true}
 		letPtrs[st.Var.Name] = append(letPtrs[st.Var.Name], ls)
 		return ls, nil
-	case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
-		e, err := convertExpr(st.Assign.Value)
-		if err != nil {
-			return nil, err
-		}
-		mutatedVars[st.Assign.Name] = true
-		cur := varTypes[st.Assign.Name]
-		t := inferType(e)
-		if cur == "int" && t == "int64" {
-			e = &CastExpr{Expr: e, Type: "int"}
-			t = "int"
-		}
-		if t == "array" {
-			if app, ok := e.(*AppendExpr); ok {
-				if et := inferType(app.Elem); et != "" && et != "obj" {
-					t = et + " array"
+	case st.Assign != nil:
+		// Handle simple variable assignment. More complex targets are unsupported.
+		tgt := st.Assign.Target
+		if tgt != nil && len(tgt.Ops) == 0 && tgt.Target != nil {
+			if sel := tgt.Target.Selector; sel != nil && len(sel.Tail) == 0 {
+				name := sel.Root
+				e, err := convertExpr(st.Assign.Value)
+				if err != nil {
+					return nil, err
 				}
-			} else if cur := varTypes[st.Assign.Name]; cur != "" && cur != "array" && cur != "obj" {
-				t = cur
-				e = &CastExpr{Expr: e, Type: fsTypeFromString(cur)}
-			}
-		}
-		if t != "" {
-			if cur == "" || cur == "array" || cur == "map" {
-				varTypes[st.Assign.Name] = t
-				cur = t
-			}
-			if cur != "" && cur != t && cur != "obj" {
-				varTypes[st.Assign.Name] = "obj"
-				for _, ls := range letPtrs[st.Assign.Name] {
-					ls.Type = "obj"
-					if ls.Expr != nil {
-						ls.Expr = &CallExpr{Func: "box", Args: []Expr{ls.Expr}}
+				mutatedVars[name] = true
+				cur := varTypes[name]
+				t := inferType(e)
+				if cur == "int" && t == "int64" {
+					e = &CastExpr{Expr: e, Type: "int"}
+					t = "int"
+				}
+				if t == "array" {
+					if app, ok := e.(*AppendExpr); ok {
+						if et := inferType(app.Elem); et != "" && et != "obj" {
+							t = et + " array"
+						}
+					} else if cur := varTypes[name]; cur != "" && cur != "array" && cur != "obj" {
+						t = cur
+						e = &CastExpr{Expr: e, Type: fsTypeFromString(cur)}
 					}
 				}
-				e = &CallExpr{Func: "box", Args: []Expr{e}}
-			}
-		} else if vt := varTypes[st.Assign.Name]; vt != "" && vt != "obj" {
-			e = &CastExpr{Expr: e, Type: fsTypeFromString(vt)}
-		}
-		return &AssignStmt{Name: st.Assign.Name, Expr: e}, nil
-	case st.Assign != nil && (len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0):
-		val, err := convertExpr(st.Assign.Value)
-		if err != nil {
-			return nil, err
-		}
-		typ := varTypes[st.Assign.Name]
-		if strings.HasSuffix(typ, " array") {
-			elem := strings.TrimSuffix(typ, " array")
-			if elem == "obj" && inferType(val) != "obj" {
-				val = &CallExpr{Func: "box", Args: []Expr{val}}
-			}
-		}
-		target := Expr(&IdentExpr{Name: st.Assign.Name, Type: typ})
-		if len(st.Assign.Index) > 0 {
-			target, err = applyIndexOps(target, st.Assign.Index)
-			if err != nil {
-				return nil, err
-			}
-			if t := varTypes[st.Assign.Name]; strings.HasSuffix(t, " array") || strings.HasSuffix(t, " list") || strings.HasPrefix(t, "list<") || t == "array" {
-				if strings.HasSuffix(t, " array") && len(st.Assign.Index) == 1 {
-					usesArraySet = true
-				}
-				// array or list assignment
-				// handled by IndexAssignStmt below
-			} else if t := varTypes[st.Assign.Name]; strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") {
-				if len(st.Assign.Index) == 1 {
-					idx, err := convertExpr(st.Assign.Index[0].Start)
-					if err != nil {
-						return nil, err
+				if t != "" {
+					if cur == "" || cur == "array" || cur == "map" {
+						varTypes[name] = t
+						cur = t
 					}
-					return &IndexAssignStmt{Target: &IndexExpr{Target: &IdentExpr{Name: st.Assign.Name, Type: t}, Index: idx}, Value: val}, nil
-				}
-			}
-			if t := varTypes[st.Assign.Name]; t == "list" || strings.HasSuffix(t, " list") || strings.HasPrefix(t, "list<") {
-				indices := make([]Expr, len(st.Assign.Index))
-				for i, ix := range st.Assign.Index {
-					idx, err := convertExpr(ix.Start)
-					if err != nil {
-						return nil, err
+					if cur != "" && cur != t && cur != "obj" {
+						varTypes[name] = "obj"
+						for _, ls := range letPtrs[name] {
+							ls.Type = "obj"
+							if ls.Expr != nil {
+								ls.Expr = &CallExpr{Func: "box", Args: []Expr{ls.Expr}}
+							}
+						}
+						e = &CallExpr{Func: "box", Args: []Expr{e}}
 					}
-					indices[i] = idx
+				} else if vt := varTypes[name]; vt != "" && vt != "obj" {
+					e = &CastExpr{Expr: e, Type: fsTypeFromString(vt)}
 				}
-				list := &IdentExpr{Name: st.Assign.Name, Type: t}
-				upd := buildListUpdate(list, indices, val)
-				return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
+				return &AssignStmt{Name: name, Expr: e}, nil
 			}
-			if t := varTypes[st.Assign.Name]; strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") && len(st.Assign.Index) > 1 {
-				indices := make([]Expr, len(st.Assign.Index))
-				for i, ix := range st.Assign.Index {
-					idx, err := convertExpr(ix.Start)
-					if err != nil {
-						return nil, err
-					}
-					indices[i] = idx
-				}
-				upd := buildMapUpdate(&IdentExpr{Name: st.Assign.Name, Type: t}, indices, val)
-				return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
-			}
-			return &IndexAssignStmt{Target: target, Value: val}, nil
 		}
-		if len(st.Assign.Field) == 1 {
-			upd := &StructUpdateExpr{Target: target, Field: st.Assign.Field[0].Name, Value: val}
-			return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
-		}
-		return nil, fmt.Errorf("field assignment not supported")
+		return nil, fmt.Errorf("unsupported assignment")
 	case st.Return != nil:
 		var e Expr
 		if st.Return.Value != nil {
@@ -3882,7 +3825,7 @@ func convertExpr(e *parser.Expr) (Expr, error) {
 	exprs := []Expr{left}
 	ops := []string{}
 	for _, op := range e.Binary.Right {
-		right, err := convertPostfix(op.Right)
+		right, err := convertUnary(op.Right)
 		if err != nil {
 			return nil, err
 		}
