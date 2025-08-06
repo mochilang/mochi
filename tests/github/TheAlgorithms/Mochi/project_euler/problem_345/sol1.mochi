@@ -1,0 +1,129 @@
+/*
+Project Euler Problem 345: Matrix Sum
+------------------------------------
+Given a square matrix, the Matrix Sum is the maximum total of selected
+elements such that no two elements share the same row or column. This is
+the assignment problem for maximizing weight.  Instead of brute-force
+permutations, this solution performs dynamic programming over subsets of
+columns represented as bit masks.
+
+Algorithm:
+1. Parse the matrix from a list of space-separated strings into a list
+   of rows of integers.
+2. Precompute powers of two to encode column subsets numerically.
+3. Iterate over all masks from 0 to 2^n - 1. The number of set bits in a
+   mask determines the current row. For each unused column, update the
+   best sum for the new mask.
+4. The value for the mask with all bits set is the maximum Matrix Sum.
+
+This implementation uses only Mochi built-ins, avoids the `any` type and
+FFI, and runs on runtime/vm.
+*/
+
+fun parse_row(row_str: string): list<int> {
+  var nums: list<int> = []
+  var current = 0
+  var has_digit = false
+  var i = 0
+  while i < len(row_str) {
+    let ch = substring(row_str, i, i + 1)
+    if ch == " " {
+      if has_digit {
+        nums = append(nums, current)
+        current = 0
+        has_digit = false
+      }
+    } else {
+      current = current * 10 + (ch as int)
+      has_digit = true
+    }
+    i = i + 1
+  }
+  if has_digit {
+    nums = append(nums, current)
+  }
+  return nums
+}
+
+fun parse_matrix(matrix_str: list<string>): list<list<int>> {
+  var matrix: list<list<int>> = []
+  for row_str in matrix_str {
+    let row = parse_row(row_str)
+    matrix = append(matrix, row)
+  }
+  return matrix
+}
+
+fun bitcount(x: int): int {
+  var count = 0
+  var y = x
+  while y > 0 {
+    if y % 2 == 1 { count = count + 1 }
+    y = y / 2
+  }
+  return count
+}
+
+fun build_powers(n: int): list<int> {
+  var powers: list<int> = []
+  var i = 0
+  var current = 1
+  while i <= n {
+    powers = append(powers, current)
+    current = current * 2
+    i = i + 1
+  }
+  return powers
+}
+
+fun solution(matrix_str: list<string>): int {
+  let arr = parse_matrix(matrix_str)
+  let n = len(arr)
+  let powers = build_powers(n)
+  let size = powers[n]
+  var dp: list<int> = []
+  var i = 0
+  while i < size {
+    dp = append(dp, 0)
+    i = i + 1
+  }
+  var mask = 0
+  while mask < size {
+    let row = bitcount(mask)
+    if row < n {
+      var col = 0
+      while col < n {
+        if (mask / powers[col]) % 2 == 0 {
+          let new_mask = mask + powers[col]
+          let value = dp[mask] + arr[row][col]
+          if value > dp[new_mask] {
+            dp[new_mask] = value
+          }
+        }
+        col = col + 1
+      }
+    }
+    mask = mask + 1
+  }
+  return dp[size - 1]
+}
+
+let MATRIX_2: list<string> = [
+  "7 53 183 439 863 497 383 563 79 973 287 63 343 169 583",
+  "627 343 773 959 943 767 473 103 699 303 957 703 583 639 913",
+  "447 283 463 29 23 487 463 993 119 883 327 493 423 159 743",
+  "217 623 3 399 853 407 103 983 89 463 290 516 212 462 350",
+  "960 376 682 962 300 780 486 502 912 800 250 346 172 812 350",
+  "870 456 192 162 593 473 915 45 989 873 823 965 425 329 803",
+  "973 965 905 919 133 673 665 235 509 613 673 815 165 992 326",
+  "322 148 972 962 286 255 941 541 265 323 925 281 601 95 973",
+  "445 721 11 525 473 65 511 164 138 672 18 428 154 448 848",
+  "414 456 310 312 798 104 566 520 302 248 694 976 430 392 198",
+  "184 829 373 181 631 101 969 613 840 740 778 458 284 760 390",
+  "821 461 843 513 17 901 711 993 293 157 274 94 192 156 574",
+  "34 124 4 878 450 476 712 914 838 669 875 299 823 329 699",
+  "815 559 813 459 522 788 168 586 966 232 308 833 251 631 107",
+  "813 883 451 509 615 77 281 613 459 205 380 274 302 35 805",
+]
+let result = solution(MATRIX_2)
+print("solution() = " + str(result))
