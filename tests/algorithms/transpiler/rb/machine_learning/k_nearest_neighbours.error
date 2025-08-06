@@ -1,0 +1,6 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/rb/machine_learning/k_nearest_neighbours.rb:117:in `classify': undefined local variable or method `e18' for main:Object (NameError)
+
+      e18
+      ^^^
+	from /workspace/mochi/tests/algorithms/transpiler/rb/machine_learning/k_nearest_neighbours.rb:150:in `<main>'
