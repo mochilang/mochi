@@ -2,17 +2,17 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-06 16:09 GMT+7
+Last updated: 2025-08-06 16:40 GMT+7
 
-## Algorithms Golden Test Checklist (1/1077)
+## Algorithms Golden Test Checklist (5/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.0µs | 448B |
-| 2 | backtracking/all_permutations |   |  |  |
-| 3 | backtracking/all_subsequences |   |  |  |
-| 4 | backtracking/coloring |   |  |  |
-| 5 | backtracking/combination_sum |   |  |  |
-| 6 | backtracking/crossword_puzzle_solver |   |  |  |
+| 2 | backtracking/all_permutations | ✓ | 1.0µs | 448B |
+| 3 | backtracking/all_subsequences | ✓ | 1.0µs | 384B |
+| 4 | backtracking/coloring | ✓ | 1.0µs | 512B |
+| 5 | backtracking/combination_sum | ✓ | 2.0µs | 448B |
+| 6 | backtracking/crossword_puzzle_solver | error |  |  |
 | 7 | backtracking/hamiltonian_cycle |   |  |  |
 | 8 | backtracking/knight_tour |   |  |  |
 | 9 | backtracking/match_word_pattern |   |  |  |
