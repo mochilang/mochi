@@ -1,0 +1,25 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/transpiler/CPP/backtracking/n_queens_math.cpp:85:215: warning: multi-character character constant [-Wmultichar]
+   85 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/backtracking/n_queens_math.cpp:85:251: warning: multi-character character constant [-Wmultichar]
+   85 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/backtracking/n_queens_math.cpp: In function ‘std::vector<std::vector<std::__cxx11::basic_string<char> > > depth_first_search(std::vector<long int>&, std::vector<long int>&, std::vector<long int>&, int64_t)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/backtracking/n_queens_math.cpp:170:75: error: cannot bind non-const lvalue reference of type ‘std::vector<long int>&’ to an rvalue of type ‘std::vector<long int>’
+  170 |         std::vector<std::vector<std::string>> result = depth_first_search((std::vector<int64_t>)(([&]{ auto __tmp = pos; __tmp.push_back(col); return __tmp; }())), (std::vector<int64_t>)(([&]{ auto __tmp = dr; __tmp.push_back((int64_t)(row - col)); return __tmp; }())), (std::vector<int64_t>)(([&]{ auto __tmp = dl; __tmp.push_back((int64_t)(row + col)); return __tmp; }())), n);
+      |                                                                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/backtracking/n_queens_math.cpp:156:80: note:   initializing argument 1 of ‘std::vector<std::vector<std::__cxx11::basic_string<char> > > depth_first_search(std::vector<long int>&, std::vector<long int>&, std::vector<long int>&, int64_t)’
+  156 | std::vector<std::vector<std::string>> depth_first_search(std::vector<int64_t>& pos, std::vector<int64_t>& dr, std::vector<int64_t>& dl, int64_t n) {
+      |                                                          ~~~~~~~~~~~~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/backtracking/n_queens_math.cpp:171:18: error: ‘concat’ was not declared in this scope; did you mean ‘wcsncat’?
+  171 |         boards = concat(boards, result);
+      |                  ^~~~~~
+      |                  wcsncat
+/workspace/mochi/tests/algorithms/transpiler/CPP/backtracking/n_queens_math.cpp: In function ‘int64_t n_queens_solution(int64_t)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/backtracking/n_queens_math.cpp:178:76: error: cannot bind non-const lvalue reference of type ‘std::vector<long int>&’ to an rvalue of type ‘std::vector<long int>’
+  178 |     std::vector<std::vector<std::string>> boards = depth_first_search(std::vector<int64_t>{}, std::vector<int64_t>{}, std::vector<int64_t>{}, n);
+      |                                                                            ^~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/backtracking/n_queens_math.cpp:156:80: note:   initializing argument 1 of ‘std::vector<std::vector<std::__cxx11::basic_string<char> > > depth_first_search(std::vector<long int>&, std::vector<long int>&, std::vector<long int>&, int64_t)’
+  156 | std::vector<std::vector<std::string>> depth_first_search(std::vector<int64_t>& pos, std::vector<int64_t>& dr, std::vector<int64_t>& dl, int64_t n) {
+      |                                                          ~~~~~~~~~~~~~~~~~~~~~~^~~
