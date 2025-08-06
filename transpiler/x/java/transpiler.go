@@ -619,6 +619,22 @@ func fieldTypeFromVar(target Expr, name string) (string, bool) {
 				}
 			}
 		}
+	case *IndexExpr:
+		if t := inferType(v.Target); strings.HasSuffix(t, "[]") {
+			base := strings.TrimSuffix(t, "[]")
+			if topEnv != nil {
+				if st, ok := topEnv.GetStruct(base); ok {
+					if ft, ok2 := st.Fields[name]; ok2 {
+						return toJavaTypeFromType(ft), true
+					}
+				}
+			}
+			if structDefs != nil {
+				if f, ok := structDefs[base][name]; ok {
+					return f, true
+				}
+			}
+		}
 	}
 	return "", false
 }
@@ -4220,9 +4236,7 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		if exprUsesVar(expr, s.Fun.Name) {
-			refVars[s.Fun.Name] = true
-		}
+		refVars[s.Fun.Name] = true
 		ret := typeRefString(s.Fun.Return)
 		if lam, ok := expr.(*LambdaExpr); ok {
 			if ret == "" {
@@ -4517,33 +4531,6 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		elem := arrayElemType(iter)
-		if elem != "" {
-			varTypes[s.For.Name] = elem
-		}
-		savedType, had := varTypes[s.For.Name]
-		var body []Stmt
-		saved := pushScope(false)
-		for _, b := range s.For.Body {
-			st, err := compileStmt(b)
-			if err != nil {
-				popScope(saved)
-				if had {
-					varTypes[s.For.Name] = savedType
-				} else {
-					delete(varTypes, s.For.Name)
-				}
-				return nil, err
-			}
-			if st != nil {
-				body = append(body, st)
-			}
-		}
-		popScope(saved)
-		if had {
-			varTypes[s.For.Name] = savedType
-		} else {
-			delete(varTypes, s.For.Name)
-		}
 		isMap := false
 		keyType := ""
 		switch it := iter.(type) {
@@ -4569,10 +4556,33 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				varTypes[s.For.Name] = keyType
 				elemType = keyType
 			}
-		} else {
-			if elem != "" {
-				elemType = elem
+		} else if elem != "" {
+			varTypes[s.For.Name] = elem
+			elemType = elem
+		}
+		savedType, had := varTypes[s.For.Name]
+		var body []Stmt
+		saved := pushScope(false)
+		for _, b := range s.For.Body {
+			st, err := compileStmt(b)
+			if err != nil {
+				popScope(saved)
+				if had {
+					varTypes[s.For.Name] = savedType
+				} else {
+					delete(varTypes, s.For.Name)
+				}
+				return nil, err
 			}
+			if st != nil {
+				body = append(body, st)
+			}
+		}
+		popScope(saved)
+		if had {
+			varTypes[s.For.Name] = savedType
+		} else {
+			delete(varTypes, s.For.Name)
 		}
 		return &ForEachStmt{Name: s.For.Name, Iterable: iter, Body: body, IsMap: isMap, ElemType: elemType}, nil
 	case s.Update != nil:

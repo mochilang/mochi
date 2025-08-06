@@ -1,0 +1,5 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden432_graphs_floyd_warshall734264336/001/Main.java:62: error: incompatible types: Object[][] cannot be converted to double[][]
+            result = ((double[][])(floyd_warshall(((double[][])(graph)))));
+                                                               ^
+1 error

@@ -1,0 +1,5 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden393_vector3_for_2d_rendering2793004339/001/Main.java:51: error: variable angle is already defined in method rotate(double,double,double,String,double)
+        double[] angle = new double[1];
+                 ^
+1 error

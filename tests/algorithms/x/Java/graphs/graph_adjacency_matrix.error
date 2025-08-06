@@ -1,0 +1,8 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden430_graph_adjacency_matrix3626386236/001/Main.java:151: error: incompatible types: LinkedHashMap<String,Object> cannot be converted to Map<Integer,Integer>
+g.vertex_to_index = new java.util.LinkedHashMap<String, Object>();
+                    ^
+/tmp/TestJavaTranspiler_Algorithms_Golden430_graph_adjacency_matrix3626386236/001/Main.java:152: error: incompatible types: Object[] cannot be converted to int[][]
+g.adj_matrix = new Object[]{};
+               ^
+2 errors

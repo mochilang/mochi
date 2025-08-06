@@ -1,0 +1,5 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden304_catalan_numbers411251060/001/Main.java:10: error: unreachable statement
+            return new int[]{};
+            ^
+1 error

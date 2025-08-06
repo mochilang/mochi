@@ -1,0 +1,12 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden415_dijkstra2155342911/001/Main.java:107: error: for-each not applicable to expression type
+                for (var v2 : ((Object)(G2).get(u2))) {
+                              ^
+  required: array or java.lang.Iterable
+  found:    Object
+/tmp/TestJavaTranspiler_Algorithms_Golden415_dijkstra2155342911/001/Main.java:149: error: for-each not applicable to expression type
+                for (var v3 : ((Object)(G3).get(u3))) {
+                              ^
+  required: array or java.lang.Iterable
+  found:    Object
+2 errors
