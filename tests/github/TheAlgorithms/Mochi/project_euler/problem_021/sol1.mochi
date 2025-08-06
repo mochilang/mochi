@@ -1,0 +1,59 @@
+/*
+Amicable Numbers (Project Euler Problem 21)
+------------------------------------------
+Let d(n) be the sum of the proper divisors of n: numbers less than n that divide n exactly.
+Two numbers a and b form an amicable pair if d(a) = b, d(b) = a and a != b.
+This program finds the sum of all amicable numbers below a given limit.
+
+Algorithm:
+1. Compute integer square root using simple increment to avoid floats.
+2. For each number i < limit, compute sum_of_divisors(i) by iterating up to sqrt(i)
+   and adding both divisors when i % j == 0.
+3. If i forms an amicable pair with another number j, add i to running total.
+
+Time Complexity: O(n * sqrt(n)) where n is the limit.
+*/
+
+fun int_sqrt(n: int): int {
+  var r = 0
+  while (r + 1) * (r + 1) <= n {
+    r = r + 1
+  }
+  return r
+}
+
+fun sum_of_divisors(n: int): int {
+  var total = 0
+  let root = int_sqrt(n)
+  var i = 1
+  while i <= root {
+    if n % i == 0 {
+      if i * i == n {
+        total = total + i
+      } else {
+        total = total + i + (n / i)
+      }
+    }
+    i = i + 1
+  }
+  return total - n
+}
+
+fun solution(limit: int): int {
+  var total = 0
+  var i = 1
+  while i < limit {
+    let s = sum_of_divisors(i)
+    if s != i && sum_of_divisors(s) == i {
+      total = total + i
+    }
+    i = i + 1
+  }
+  return total
+}
+
+print(solution(10000))
+print(solution(5000))
+print(solution(1000))
+print(solution(100))
+print(solution(50))
