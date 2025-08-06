@@ -1,0 +1,33 @@
+/*
+Project Euler Problem 10: Summation of primes
+
+Given a limit n, compute the sum of all prime numbers less than n. This
+implementation applies the Sieve of Eratosthenes using a map to mark
+composite numbers:
+ 1. Iterate from 2 to n-1.
+ 2. When a number is not marked composite, it is prime. Add it to the sum
+    and mark all of its multiples starting from its square.
+
+The algorithm runs in O(n log log n) time and uses O(n) space for the
+composite map.
+*/
+
+fun solution(n: int): int {
+  var composite: map<int, bool> = {}
+  var total = 0
+  var num = 2
+  while num < n {
+    if !composite[num] {
+      total = total + num
+      var multiple = num * num
+      while multiple < n {
+        composite[multiple] = true
+        multiple = multiple + num
+      }
+    }
+    num = num + 1
+  }
+  return total
+}
+
+print(str(solution(2000000)))
