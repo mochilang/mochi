@@ -1,0 +1,41 @@
+/*
+Project Euler Problem 25: 1000-digit Fibonacci number
+----------------------------------------------------
+The Fibonacci sequence is defined by F_n = F_{n-1} + F_{n-2} with
+F_1 = F_2 = 1. The task is to find the index of the first term in the
+sequence that contains n digits. This implementation iteratively
+builds Fibonacci numbers and counts their digits via repeated division
+by 10, avoiding conversions to strings. The loop stops once a term's
+digit count equals n, and the corresponding index is returned.
+*/
+
+fun num_digits(x: int): int {
+  var count: int = 0
+  var n: int = x
+  while n > 0 {
+    count = count + 1
+    n = n / 10
+  }
+  return count
+}
+
+fun solution(n: int): int {
+  var f1: int = 1
+  var f2: int = 1
+  var index: int = 2
+  while true {
+    let f: int = f1 + f2
+    f1 = f2
+    f2 = f
+    index = index + 1
+    if num_digits(f) == n {
+      break
+    }
+  }
+  return index
+}
+
+print("solution(1000) = " + str(solution(1000)))
+print("solution(100) = " + str(solution(100)))
+print("solution(50) = " + str(solution(50)))
+print("solution(3) = " + str(solution(3)))
