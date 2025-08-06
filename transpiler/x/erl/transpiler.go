@@ -2584,12 +2584,17 @@ func (ws *WhileStmt) emit(w io.Writer) {
 			}
 			fmt.Fprintf(w, "C%d", i)
 		}
-		io.WriteString(w, ");\n                break -> {")
-		for i, p := range ws.Params {
+		io.WriteString(w, ");\n                {break")
+		for i := range ws.Params {
+			io.WriteString(w, ", ")
+			fmt.Fprintf(w, "B%d", i)
+		}
+		io.WriteString(w, "} -> {")
+		for i := range ws.Params {
 			if i > 0 {
 				io.WriteString(w, ", ")
 			}
-			io.WriteString(w, p)
+			fmt.Fprintf(w, "B%d", i)
 		}
 		io.WriteString(w, "}\n            end;\n        _ -> {")
 		for i, p := range ws.Params {
@@ -2686,7 +2691,16 @@ func (u *UpdateStmt) emit(w io.Writer) {
 }
 
 func (b *BreakStmt) emit(w io.Writer) {
-	io.WriteString(w, "throw(break)")
+	if len(b.Args) == 0 {
+		io.WriteString(w, "throw(break)")
+		return
+	}
+	io.WriteString(w, "throw({break")
+	for _, a := range b.Args {
+		io.WriteString(w, ", ")
+		io.WriteString(w, a)
+	}
+	io.WriteString(w, "})")
 }
 func (c *ContinueStmt) emit(w io.Writer) {
 	if len(c.Args) == 0 {
