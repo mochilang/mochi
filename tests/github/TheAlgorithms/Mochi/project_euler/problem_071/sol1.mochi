@@ -1,0 +1,43 @@
+/*
+Project Euler Problem 71: Ordered fractions
+
+Given a target fraction n/d, consider all reduced proper fractions with
+positive numerator and denominator not exceeding a given limit.  When
+these fractions are ordered by value, the task is to find the numerator
+of the fraction immediately to the left of n/d.
+
+Algorithm:
+1. Iterate denominators from 1 to the limit.
+2. For each denominator q, compute the greatest numerator p such that
+   p/q < n/d.  This is floor(q * n / d).  If q is a multiple of d, the
+   fraction equals n/d and we subtract one to stay strictly less.
+3. Track the maximum fraction found so far using cross multiplication
+   (p * best_den > q * best_num) to avoid floating point comparisons.
+4. Return the numerator of that best fraction.
+
+The implementation uses only integer arithmetic so it can run on the
+runtime/vm without foreign function interfaces and avoids the "any"
+type.  A few test cases mirror the Python implementation.
+*/
+
+fun solution(numerator: int, denominator: int, limit: int): int {
+  var max_numerator = 0
+  var max_denominator = 1
+  var current_denominator = 1
+  while current_denominator <= limit {
+    var current_numerator = current_denominator * numerator / denominator
+    if current_denominator % denominator == 0 {
+      current_numerator = current_numerator - 1
+    }
+    if current_numerator * max_denominator > current_denominator * max_numerator {
+      max_numerator = current_numerator
+      max_denominator = current_denominator
+    }
+    current_denominator = current_denominator + 1
+  }
+  return max_numerator
+}
+
+print(str(solution(3, 7, 1000000)))
+print(str(solution(3, 7, 8)))
+print(str(solution(6, 7, 60)))
