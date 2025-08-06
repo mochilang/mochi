@@ -1,0 +1,65 @@
+/*
+Word Pattern Encoding
+---------------------
+Given a word, generate a string that encodes the order in which unique
+characters appear. The first distinct letter is replaced with "0", the
+next new letter with "1", and so on. Repeated letters reuse the number
+assigned to their first occurrence. Letters are compared in a
+case-insensitive manner.
+
+Algorithm:
+1. Convert the input word to uppercase.
+2. Traverse the characters left to right keeping two lists:
+   - letters: previously seen characters
+   - numbers: corresponding pattern numbers as strings
+3. For each character, if it has been seen, append its existing number to
+   the result; otherwise assign the next number and record it.
+4. Separate numbers with '.' to form the final pattern string.
+
+This mirrors the Python implementation of get_word_pattern.
+*/
+
+fun find_index(xs: list<string>, x: string): int {
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == x { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun get_word_pattern(word: string): string {
+  let w = upper(word)
+  var letters: list<string> = []
+  var numbers: list<string> = []
+  var next_num: int = 0
+  var res: string = ""
+  var i: int = 0
+  while i < len(w) {
+    let ch = w[i]
+    let idx = find_index(letters, ch)
+    var num_str: string
+    if idx >= 0 {
+      num_str = numbers[idx]
+    } else {
+      num_str = str(next_num)
+      letters = append(letters, ch)
+      numbers = append(numbers, num_str)
+      next_num = next_num + 1
+    }
+    if i > 0 { res = res + "." }
+    res = res + num_str
+    i = i + 1
+  }
+  return res
+}
+
+fun main() {
+  print(get_word_pattern(""))
+  print(get_word_pattern(" "))
+  print(get_word_pattern("pattern"))
+  print(get_word_pattern("word pattern"))
+  print(get_word_pattern("get word pattern"))
+}
+
+main()
