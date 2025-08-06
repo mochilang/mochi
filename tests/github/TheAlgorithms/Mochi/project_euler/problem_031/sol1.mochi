@@ -1,0 +1,64 @@
+/*
+  Coin sums (Project Euler Problem 31)
+
+  Determine the number of different ways to form a given amount of pence
+  using the standard UK coin denominations: 1p, 2p, 5p, 10p, 20p,
+  50p, 100p (one pound) and 200p (two pounds).
+
+  The algorithm uses a simple recursive decomposition. Each function
+  corresponds to a coin denomination and counts the ways to compose
+  the target value using that coin and any smaller coins. For example,
+  `five_pence(x)` returns the combinations for x using coins up to
+  5p by combining results of `five_pence(x-5)` (at least one 5p coin)
+  with `two_pence(x)` (no 5p coins). This mirrors a dynamic programming
+  approach but expressed through mutually recursive functions.
+*/
+fun one_pence(): int {
+  return 1
+}
+
+fun two_pence(x: int): int {
+  if x < 0 { return 0 }
+  return two_pence(x - 2) + one_pence()
+}
+
+fun five_pence(x: int): int {
+  if x < 0 { return 0 }
+  return five_pence(x - 5) + two_pence(x)
+}
+
+fun ten_pence(x: int): int {
+  if x < 0 { return 0 }
+  return ten_pence(x - 10) + five_pence(x)
+}
+
+fun twenty_pence(x: int): int {
+  if x < 0 { return 0 }
+  return twenty_pence(x - 20) + ten_pence(x)
+}
+
+fun fifty_pence(x: int): int {
+  if x < 0 { return 0 }
+  return fifty_pence(x - 50) + twenty_pence(x)
+}
+
+fun one_pound(x: int): int {
+  if x < 0 { return 0 }
+  return one_pound(x - 100) + fifty_pence(x)
+}
+
+fun two_pound(x: int): int {
+  if x < 0 { return 0 }
+  return two_pound(x - 200) + one_pound(x)
+}
+
+fun solution(n: int): int {
+  return two_pound(n)
+}
+
+fun main() {
+  let n: int = int(input())
+  print(str(solution(n)))
+}
+
+main()
