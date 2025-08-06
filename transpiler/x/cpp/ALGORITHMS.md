@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 91/1077
-Last updated: 2025-08-06 21:14 +0700
+Completed programs: 139/1077
+Last updated: 2025-08-06 21:35 +0700
 
 Checklist:
 
@@ -107,56 +107,56 @@ Checklist:
 | 98 | ciphers/rot13 | ✓ | 1.0ms | 3.56MB |
 | 99 | ciphers/rsa_cipher | ✓ | 300.0µs | 3.71MB |
 | 100 | ciphers/rsa_factorization | ✓ | 299.0µs | 3.63MB |
-| 101 | ciphers/rsa_key_generator |   |  |  |
-| 102 | ciphers/running_key_cipher |   |  |  |
-| 103 | ciphers/shuffled_shift_cipher |   |  |  |
-| 104 | ciphers/simple_keyword_cypher |   |  |  |
-| 105 | ciphers/simple_substitution_cipher |   |  |  |
+| 101 | ciphers/rsa_key_generator | ✓ | 203.0µs | 3.66MB |
+| 102 | ciphers/running_key_cipher | ✓ | 369.0µs | 3.59MB |
+| 103 | ciphers/shuffled_shift_cipher | ✓ | 216.0µs | 3.56MB |
+| 104 | ciphers/simple_keyword_cypher | ✓ | 156.0µs | 3.48MB |
+| 105 | ciphers/simple_substitution_cipher | ✓ | 306.0µs | 3.59MB |
 | 106 | ciphers/transposition_cipher |   |  |  |
-| 107 | ciphers/transposition_cipher_encrypt_decrypt_file |   |  |  |
-| 108 | ciphers/trifid_cipher |   |  |  |
-| 109 | ciphers/vernam_cipher |   |  |  |
-| 110 | ciphers/vigenere_cipher |   |  |  |
-| 111 | ciphers/xor_cipher |   |  |  |
-| 112 | computer_vision/cnn_classification |   |  |  |
-| 113 | computer_vision/flip_augmentation |   |  |  |
-| 114 | computer_vision/haralick_descriptors |   |  |  |
-| 115 | computer_vision/harris_corner |   |  |  |
-| 116 | computer_vision/horn_schunck |   |  |  |
-| 117 | computer_vision/intensity_based_segmentation |   |  |  |
-| 118 | computer_vision/mean_threshold |   |  |  |
-| 119 | computer_vision/mosaic_augmentation |   |  |  |
-| 120 | computer_vision/pooling_functions |   |  |  |
-| 121 | conversions/astronomical_length_scale_conversion |   |  |  |
-| 122 | conversions/binary_to_decimal |   |  |  |
-| 123 | conversions/binary_to_hexadecimal |   |  |  |
-| 124 | conversions/binary_to_octal |   |  |  |
-| 125 | conversions/convert_number_to_words |   |  |  |
-| 126 | conversions/decimal_to_any |   |  |  |
-| 127 | conversions/decimal_to_binary |   |  |  |
-| 128 | conversions/decimal_to_hexadecimal |   |  |  |
-| 129 | conversions/decimal_to_octal |   |  |  |
-| 130 | conversions/energy_conversions |   |  |  |
-| 131 | conversions/excel_title_to_column |   |  |  |
-| 132 | conversions/hex_to_bin |   |  |  |
-| 133 | conversions/hexadecimal_to_decimal |   |  |  |
-| 134 | conversions/ipv4_conversion |   |  |  |
-| 135 | conversions/length_conversion |   |  |  |
-| 136 | conversions/molecular_chemistry |   |  |  |
-| 137 | conversions/octal_to_binary |   |  |  |
-| 138 | conversions/octal_to_decimal |   |  |  |
-| 139 | conversions/octal_to_hexadecimal |   |  |  |
-| 140 | conversions/prefix_conversions |   |  |  |
-| 141 | conversions/prefix_conversions_string |   |  |  |
+| 107 | ciphers/transposition_cipher_encrypt_decrypt_file | ✓ | 189.0µs | 3.59MB |
+| 108 | ciphers/trifid_cipher | ✓ | 577.0µs | 3.48MB |
+| 109 | ciphers/vernam_cipher | ✓ | 161.0µs | 3.52MB |
+| 110 | ciphers/vigenere_cipher | ✓ | 616.0µs | 3.47MB |
+| 111 | ciphers/xor_cipher | ✓ | 269.0µs | 3.57MB |
+| 112 | computer_vision/cnn_classification | ✓ | 344.0µs | 3.73MB |
+| 113 | computer_vision/flip_augmentation | ✓ | 411.0µs | 3.88MB |
+| 114 | computer_vision/haralick_descriptors | ✓ | 318.0µs | 3.72MB |
+| 115 | computer_vision/harris_corner | ✓ | 200.0µs | 3.64MB |
+| 116 | computer_vision/horn_schunck | ✓ | 941.0µs | 3.77MB |
+| 117 | computer_vision/intensity_based_segmentation | ✓ | 230.0µs | 3.62MB |
+| 118 | computer_vision/mean_threshold | ✓ | 164.0µs | 3.57MB |
+| 119 | computer_vision/mosaic_augmentation | ✓ | 7.0ms | 4.00MB |
+| 120 | computer_vision/pooling_functions | ✓ | 273.0µs | 3.72MB |
+| 121 | conversions/astronomical_length_scale_conversion | ✓ | 352.0µs | 3.75MB |
+| 122 | conversions/binary_to_decimal | ✓ | 224.0µs | 3.68MB |
+| 123 | conversions/binary_to_hexadecimal | ✓ | 184.0µs | 3.44MB |
+| 124 | conversions/binary_to_octal | ✓ | 181.0µs | 3.59MB |
+| 125 | conversions/convert_number_to_words | ✓ | 261.0µs | 3.67MB |
+| 126 | conversions/decimal_to_any | ✓ | 132.0µs | 3.52MB |
+| 127 | conversions/decimal_to_binary | ✓ | 159.0µs | 3.61MB |
+| 128 | conversions/decimal_to_hexadecimal | ✓ | 119.0µs | 3.52MB |
+| 129 | conversions/decimal_to_octal | ✓ | 209.0µs | 3.55MB |
+| 130 | conversions/energy_conversions | ✓ | 326.0µs | 3.79MB |
+| 131 | conversions/excel_title_to_column | ✓ | 121.0µs | 3.65MB |
+| 132 | conversions/hex_to_bin | ✓ | 263.0µs | 3.66MB |
+| 133 | conversions/hexadecimal_to_decimal | ✓ | 223.0µs | 3.61MB |
+| 134 | conversions/ipv4_conversion | ✓ | 269.0µs | 3.76MB |
+| 135 | conversions/length_conversion | ✓ | 584.0µs | 3.80MB |
+| 136 | conversions/molecular_chemistry | ✓ | 267.0µs | 3.68MB |
+| 137 | conversions/octal_to_binary | ✓ | 258.0µs | 3.61MB |
+| 138 | conversions/octal_to_decimal | ✓ | 202.0µs | 3.61MB |
+| 139 | conversions/octal_to_hexadecimal | ✓ | 190.0µs | 3.56MB |
+| 140 | conversions/prefix_conversions | ✓ | 320.0µs | 3.71MB |
+| 141 | conversions/prefix_conversions_string | ✓ | 312.0µs | 3.75MB |
 | 142 | conversions/pressure_conversions |   |  |  |
-| 143 | conversions/rectangular_to_polar |   |  |  |
-| 144 | conversions/rgb_cmyk_conversion |   |  |  |
-| 145 | conversions/rgb_hsv_conversion |   |  |  |
-| 146 | conversions/roman_numerals |   |  |  |
-| 147 | conversions/speed_conversions |   |  |  |
-| 148 | conversions/temperature_conversions |   |  |  |
-| 149 | conversions/time_conversions |   |  |  |
-| 150 | conversions/volume_conversions |   |  |  |
+| 143 | conversions/rectangular_to_polar | ✓ | 341.0µs | 3.73MB |
+| 144 | conversions/rgb_cmyk_conversion | ✓ | 182.0µs | 3.63MB |
+| 145 | conversions/rgb_hsv_conversion | ✓ | 396.0µs | 3.79MB |
+| 146 | conversions/roman_numerals | ✓ | 0ns | 3.43MB |
+| 147 | conversions/speed_conversions | ✓ | 334.0µs | 3.72MB |
+| 148 | conversions/temperature_conversions | ✓ | 439.0µs | 3.83MB |
+| 149 | conversions/time_conversions | ✓ | 327.0µs | 3.72MB |
+| 150 | conversions/volume_conversions | ✓ | 312.0µs | 3.76MB |
 | 151 | conversions/weight_conversion |   |  |  |
 | 152 | data_compression/burrows_wheeler |   |  |  |
 | 153 | data_compression/huffman |   |  |  |

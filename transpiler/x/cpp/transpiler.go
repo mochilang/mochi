@@ -1471,7 +1471,7 @@ func (s *StructLit) emit(w io.Writer) {
 			io.WriteString(w, ", ")
 		}
 		if f.Name != "" {
-			io.WriteString(w, "."+safeName(f.Name)+" = ")
+			io.WriteString(w, "."+f.Name+" = ")
 		}
 		f.Value.emit(w)
 	}
@@ -1614,7 +1614,7 @@ func (i *IndexExpr) emit(w io.Writer) {
 					if currentProgram != nil {
 						currentProgram.addInclude("<any>")
 					}
-					io.WriteString(w, "([](const auto& __m){ auto __it = __m.find(")
+					io.WriteString(w, "([&](const auto& __m){ auto __it = __m.find(")
 					i.Index.emit(w)
 					io.WriteString(w, "); return __it != __m.end() ? std::any_cast<"+resType+">(__it->second) : "+defaultValueForType(resType)+"; })")
 					io.WriteString(w, "(")
@@ -1629,7 +1629,7 @@ func (i *IndexExpr) emit(w io.Writer) {
 		parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(t, "std::map<"), ">"), ",", 2)
 		if len(parts) == 2 {
 			valType := strings.TrimSpace(parts[1])
-			io.WriteString(w, "([](const auto& __m){ auto __it = __m.find(")
+			io.WriteString(w, "([&](const auto& __m){ auto __it = __m.find(")
 			i.Index.emit(w)
 			io.WriteString(w, "); return __it != __m.end() ? __it->second : "+defaultValueForType(valType)+"; })")
 			io.WriteString(w, "(")
@@ -2951,6 +2951,10 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 	}
 	io.WriteString(w, safeName(a.Name))
 	io.WriteString(w, " = ")
+	if ll, ok := a.Value.(*ListLit); ok && len(ll.Elems) == 0 {
+		io.WriteString(w, "{};\n")
+		return
+	}
 	valType := exprType(a.Value)
 	varType := "auto"
 	if localTypes != nil {

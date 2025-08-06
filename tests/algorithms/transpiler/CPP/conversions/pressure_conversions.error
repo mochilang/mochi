@@ -1,0 +1,240 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:82:215: warning: multi-character character constant [-Wmultichar]
+   82 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:82:251: warning: multi-character character constant [-Wmultichar]
+   82 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp: In function ‘double pressure_conversion(double, std::string, std::string)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:137:57: error: ‘Object’ was not declared in this scope
+  137 |         std::vector<int64_t> keys = auto_join(auto_keys(Object, PRESSURE_CONVERSION), std::string(", "));
+      |                                                         ^~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:137:47: error: ‘auto_keys’ was not declared in this scope
+  137 |         std::vector<int64_t> keys = auto_join(auto_keys(Object, PRESSURE_CONVERSION), std::string(", "));
+      |                                               ^~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:137:37: error: ‘auto_join’ was not declared in this scope
+  137 |         std::vector<int64_t> keys = auto_join(auto_keys(Object, PRESSURE_CONVERSION), std::string(", "));
+      |                                     ^~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:138:139: error: no match for ‘operator+’ (operand types are ‘std::__cxx11::basic_string<char>’ and ‘std::vector<long int>’)
+  138 |         throw std::runtime_error((((std::string("Invalid 'from_type' value: '") + from_type) + std::string("'  Supported values are:\n")) + keys));
+      |                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^ ~~~~
+      |                                                                                              |                                              |
+      |                                                                                              std::__cxx11::basic_string<char>               std::vector<long int>
+In file included from /usr/include/c++/13/string:48,
+                 from /usr/include/c++/13/bits/locale_classes.h:40,
+                 from /usr/include/c++/13/bits/ios_base.h:41,
+                 from /usr/include/c++/13/ios:44,
+                 from /usr/include/c++/13/ostream:40,
+                 from /usr/include/c++/13/iostream:41,
+                 from /workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:2:
+/usr/include/c++/13/bits/stl_iterator.h:634:5: note: candidate: ‘template<class _Iterator> constexpr std::reverse_iterator<_IteratorL> std::operator+(typename reverse_iterator<_IteratorL>::difference_type, const reverse_iterator<_IteratorL>&)’
+  634 |     operator+(typename reverse_iterator<_Iterator>::difference_type __n,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:634:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:138:141: note:   ‘std::vector<long int>’ is not derived from ‘const std::reverse_iterator<_IteratorL>’
+  138 |         throw std::runtime_error((((std::string("Invalid 'from_type' value: '") + from_type) + std::string("'  Supported values are:\n")) + keys));
+      |                                                                                                                                             ^~~~
+/usr/include/c++/13/bits/stl_iterator.h:1808:5: note: candidate: ‘template<class _Iterator> constexpr std::move_iterator<_IteratorL> std::operator+(typename move_iterator<_IteratorL>::difference_type, const move_iterator<_IteratorL>&)’
+ 1808 |     operator+(typename move_iterator<_Iterator>::difference_type __n,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1808:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:138:141: note:   ‘std::vector<long int>’ is not derived from ‘const std::move_iterator<_IteratorL>’
+  138 |         throw std::runtime_error((((std::string("Invalid 'from_type' value: '") + from_type) + std::string("'  Supported values are:\n")) + keys));
+      |                                                                                                                                             ^~~~
+In file included from /usr/include/c++/13/string:54:
+/usr/include/c++/13/bits/basic_string.h:3553:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3553 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3553:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:138:141: note:   ‘std::vector<long int>’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  138 |         throw std::runtime_error((((std::string("Invalid 'from_type' value: '") + from_type) + std::string("'  Supported values are:\n")) + keys));
+      |                                                                                                                                             ^~~~
+/usr/include/c++/13/bits/basic_string.h:3571:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3571 |     operator+(const _CharT* __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3571:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:138:141: note:   mismatched types ‘const _CharT*’ and ‘std::__cxx11::basic_string<char>’
+  138 |         throw std::runtime_error((((std::string("Invalid 'from_type' value: '") + from_type) + std::string("'  Supported values are:\n")) + keys));
+      |                                                                                                                                             ^~~~
+/usr/include/c++/13/bits/basic_string.h:3590:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(_CharT, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3590 |     operator+(_CharT __lhs, const basic_string<_CharT,_Traits,_Alloc>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3590:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:138:141: note:   ‘std::vector<long int>’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  138 |         throw std::runtime_error((((std::string("Invalid 'from_type' value: '") + from_type) + std::string("'  Supported values are:\n")) + keys));
+      |                                                                                                                                             ^~~~
+/usr/include/c++/13/bits/basic_string.h:3607:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const _CharT*)’
+ 3607 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3607:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:138:141: note:   mismatched types ‘const _CharT*’ and ‘std::vector<long int>’
+  138 |         throw std::runtime_error((((std::string("Invalid 'from_type' value: '") + from_type) + std::string("'  Supported values are:\n")) + keys));
+      |                                                                                                                                             ^~~~
+/usr/include/c++/13/bits/basic_string.h:3625:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, _CharT)’
+ 3625 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs, _CharT __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3625:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:138:141: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘std::vector<long int>’)
+  138 |         throw std::runtime_error((((std::string("Invalid 'from_type' value: '") + from_type) + std::string("'  Supported values are:\n")) + keys));
+      |                                                                                                                                             ^~~~
+/usr/include/c++/13/bits/basic_string.h:3637:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3637 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3637:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:138:141: note:   ‘std::vector<long int>’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  138 |         throw std::runtime_error((((std::string("Invalid 'from_type' value: '") + from_type) + std::string("'  Supported values are:\n")) + keys));
+      |                                                                                                                                             ^~~~
+/usr/include/c++/13/bits/basic_string.h:3644:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3644 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3644:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:138:141: note:   ‘std::vector<long int>’ is not derived from ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  138 |         throw std::runtime_error((((std::string("Invalid 'from_type' value: '") + from_type) + std::string("'  Supported values are:\n")) + keys));
+      |                                                                                                                                             ^~~~
+/usr/include/c++/13/bits/basic_string.h:3651:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3651 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3651:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:138:141: note:   ‘std::vector<long int>’ is not derived from ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  138 |         throw std::runtime_error((((std::string("Invalid 'from_type' value: '") + from_type) + std::string("'  Supported values are:\n")) + keys));
+      |                                                                                                                                             ^~~~
+/usr/include/c++/13/bits/basic_string.h:3674:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3674 |     operator+(const _CharT* __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3674:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:138:141: note:   mismatched types ‘const _CharT*’ and ‘std::__cxx11::basic_string<char>’
+  138 |         throw std::runtime_error((((std::string("Invalid 'from_type' value: '") + from_type) + std::string("'  Supported values are:\n")) + keys));
+      |                                                                                                                                             ^~~~
+/usr/include/c++/13/bits/basic_string.h:3681:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3681 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3681:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:138:141: note:   ‘std::vector<long int>’ is not derived from ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  138 |         throw std::runtime_error((((std::string("Invalid 'from_type' value: '") + from_type) + std::string("'  Supported values are:\n")) + keys));
+      |                                                                                                                                             ^~~~
+/usr/include/c++/13/bits/basic_string.h:3688:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, const _CharT*)’
+ 3688 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3688:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:138:141: note:   mismatched types ‘const _CharT*’ and ‘std::vector<long int>’
+  138 |         throw std::runtime_error((((std::string("Invalid 'from_type' value: '") + from_type) + std::string("'  Supported values are:\n")) + keys));
+      |                                                                                                                                             ^~~~
+/usr/include/c++/13/bits/basic_string.h:3695:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, _CharT)’
+ 3695 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3695:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:138:141: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘std::vector<long int>’)
+  138 |         throw std::runtime_error((((std::string("Invalid 'from_type' value: '") + from_type) + std::string("'  Supported values are:\n")) + keys));
+      |                                                                                                                                             ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:141:57: error: ‘Object’ was not declared in this scope
+  141 |         std::vector<int64_t> keys = auto_join(auto_keys(Object, PRESSURE_CONVERSION), std::string(", "));
+      |                                                         ^~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:141:47: error: ‘auto_keys’ was not declared in this scope
+  141 |         std::vector<int64_t> keys = auto_join(auto_keys(Object, PRESSURE_CONVERSION), std::string(", "));
+      |                                               ^~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:141:37: error: ‘auto_join’ was not declared in this scope
+  141 |         std::vector<int64_t> keys = auto_join(auto_keys(Object, PRESSURE_CONVERSION), std::string(", "));
+      |                                     ^~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:142:135: error: no match for ‘operator+’ (operand types are ‘std::__cxx11::basic_string<char>’ and ‘std::vector<long int>’)
+  142 |         throw std::runtime_error((((std::string("Invalid 'to_type' value: '") + to_type) + std::string(".  Supported values are:\n")) + keys));
+      |                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^ ~~~~
+      |                                                                                          |                                              |
+      |                                                                                          std::__cxx11::basic_string<char>               std::vector<long int>
+/usr/include/c++/13/bits/stl_iterator.h:634:5: note: candidate: ‘template<class _Iterator> constexpr std::reverse_iterator<_IteratorL> std::operator+(typename reverse_iterator<_IteratorL>::difference_type, const reverse_iterator<_IteratorL>&)’
+  634 |     operator+(typename reverse_iterator<_Iterator>::difference_type __n,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:634:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:142:137: note:   ‘std::vector<long int>’ is not derived from ‘const std::reverse_iterator<_IteratorL>’
+  142 |         throw std::runtime_error((((std::string("Invalid 'to_type' value: '") + to_type) + std::string(".  Supported values are:\n")) + keys));
+      |                                                                                                                                         ^~~~
+/usr/include/c++/13/bits/stl_iterator.h:1808:5: note: candidate: ‘template<class _Iterator> constexpr std::move_iterator<_IteratorL> std::operator+(typename move_iterator<_IteratorL>::difference_type, const move_iterator<_IteratorL>&)’
+ 1808 |     operator+(typename move_iterator<_Iterator>::difference_type __n,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1808:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:142:137: note:   ‘std::vector<long int>’ is not derived from ‘const std::move_iterator<_IteratorL>’
+  142 |         throw std::runtime_error((((std::string("Invalid 'to_type' value: '") + to_type) + std::string(".  Supported values are:\n")) + keys));
+      |                                                                                                                                         ^~~~
+/usr/include/c++/13/bits/basic_string.h:3553:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3553 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3553:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:142:137: note:   ‘std::vector<long int>’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  142 |         throw std::runtime_error((((std::string("Invalid 'to_type' value: '") + to_type) + std::string(".  Supported values are:\n")) + keys));
+      |                                                                                                                                         ^~~~
+/usr/include/c++/13/bits/basic_string.h:3571:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3571 |     operator+(const _CharT* __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3571:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:142:137: note:   mismatched types ‘const _CharT*’ and ‘std::__cxx11::basic_string<char>’
+  142 |         throw std::runtime_error((((std::string("Invalid 'to_type' value: '") + to_type) + std::string(".  Supported values are:\n")) + keys));
+      |                                                                                                                                         ^~~~
+/usr/include/c++/13/bits/basic_string.h:3590:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(_CharT, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3590 |     operator+(_CharT __lhs, const basic_string<_CharT,_Traits,_Alloc>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3590:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:142:137: note:   ‘std::vector<long int>’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  142 |         throw std::runtime_error((((std::string("Invalid 'to_type' value: '") + to_type) + std::string(".  Supported values are:\n")) + keys));
+      |                                                                                                                                         ^~~~
+/usr/include/c++/13/bits/basic_string.h:3607:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const _CharT*)’
+ 3607 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3607:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:142:137: note:   mismatched types ‘const _CharT*’ and ‘std::vector<long int>’
+  142 |         throw std::runtime_error((((std::string("Invalid 'to_type' value: '") + to_type) + std::string(".  Supported values are:\n")) + keys));
+      |                                                                                                                                         ^~~~
+/usr/include/c++/13/bits/basic_string.h:3625:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, _CharT)’
+ 3625 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs, _CharT __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3625:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:142:137: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘std::vector<long int>’)
+  142 |         throw std::runtime_error((((std::string("Invalid 'to_type' value: '") + to_type) + std::string(".  Supported values are:\n")) + keys));
+      |                                                                                                                                         ^~~~
+/usr/include/c++/13/bits/basic_string.h:3637:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3637 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3637:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:142:137: note:   ‘std::vector<long int>’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  142 |         throw std::runtime_error((((std::string("Invalid 'to_type' value: '") + to_type) + std::string(".  Supported values are:\n")) + keys));
+      |                                                                                                                                         ^~~~
+/usr/include/c++/13/bits/basic_string.h:3644:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3644 |     operator+(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3644:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:142:137: note:   ‘std::vector<long int>’ is not derived from ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  142 |         throw std::runtime_error((((std::string("Invalid 'to_type' value: '") + to_type) + std::string(".  Supported values are:\n")) + keys));
+      |                                                                                                                                         ^~~~
+/usr/include/c++/13/bits/basic_string.h:3651:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3651 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3651:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:142:137: note:   ‘std::vector<long int>’ is not derived from ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  142 |         throw std::runtime_error((((std::string("Invalid 'to_type' value: '") + to_type) + std::string(".  Supported values are:\n")) + keys));
+      |                                                                                                                                         ^~~~
+/usr/include/c++/13/bits/basic_string.h:3674:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(const _CharT*, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3674 |     operator+(const _CharT* __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3674:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:142:137: note:   mismatched types ‘const _CharT*’ and ‘std::__cxx11::basic_string<char>’
+  142 |         throw std::runtime_error((((std::string("Invalid 'to_type' value: '") + to_type) + std::string(".  Supported values are:\n")) + keys));
+      |                                                                                                                                         ^~~~
+/usr/include/c++/13/bits/basic_string.h:3681:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Allocator>&&)’
+ 3681 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3681:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:142:137: note:   ‘std::vector<long int>’ is not derived from ‘std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+  142 |         throw std::runtime_error((((std::string("Invalid 'to_type' value: '") + to_type) + std::string(".  Supported values are:\n")) + keys));
+      |                                                                                                                                         ^~~~
+/usr/include/c++/13/bits/basic_string.h:3688:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, const _CharT*)’
+ 3688 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3688:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:142:137: note:   mismatched types ‘const _CharT*’ and ‘std::vector<long int>’
+  142 |         throw std::runtime_error((((std::string("Invalid 'to_type' value: '") + to_type) + std::string(".  Supported values are:\n")) + keys));
+      |                                                                                                                                         ^~~~
+/usr/include/c++/13/bits/basic_string.h:3695:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Allocator> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Allocator>&&, _CharT)’
+ 3695 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3695:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/conversions/pressure_conversions.cpp:142:137: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘std::vector<long int>’)
+  142 |         throw std::runtime_error((((std::string("Invalid 'to_type' value: '") + to_type) + std::string(".  Supported values are:\n")) + keys));
+      |                                                                                                                                         ^~~~
