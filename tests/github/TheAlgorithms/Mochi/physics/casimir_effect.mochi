@@ -1,0 +1,72 @@
+/*
+Compute one missing parameter of the Casimir force between two parallel plates.
+
+Given two perfectly conducting plates separated by vacuum, the magnitude of the
+Casimir force F between them is:
+
+F = (hbar * c * PI^2 * A) / (240 * a^4)
+
+where hbar is the reduced Planck constant, c is the speed of light, A the
+surface area of a plate and a the distance between plates.  The function below
+accepts three arguments -- force, area and distance -- with exactly one set to
+0.0.  It solves for the missing quantity using the above relation and panics if
+inputs are invalid.
+
+The computation uses only a handful of arithmetic operations so it runs in
+O(1) time and space.  A Newton iteration provides a square‑root helper that is
+applied twice to compute the fourth root when solving for distance.
+*/
+
+let PI: float = 3.141592653589793
+let REDUCED_PLANCK_CONSTANT: float = 0.0000000000000000000000000000000001054571817
+let SPEED_OF_LIGHT: float = 300000000.0
+
+fun sqrtApprox(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess = x
+  var i = 0
+  while i < 100 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun casimir_force(force: float, area: float, distance: float): map<string, float> {
+  var zero_count = 0
+  if force == 0.0 { zero_count = zero_count + 1 }
+  if area == 0.0 { zero_count = zero_count + 1 }
+  if distance == 0.0 { zero_count = zero_count + 1 }
+  if zero_count != 1 { panic("One and only one argument must be 0") }
+  if force < 0.0 { panic("Magnitude of force can not be negative") }
+  if distance < 0.0 { panic("Distance can not be negative") }
+  if area < 0.0 { panic("Area can not be negative") }
+
+  if force == 0.0 {
+    let num = REDUCED_PLANCK_CONSTANT * SPEED_OF_LIGHT * PI * PI * area
+    let den = 240.0 * distance * distance * distance * distance
+    let f = num / den
+    return {"force": f}
+  }
+
+  if area == 0.0 {
+    let num = 240.0 * force * distance * distance * distance * distance
+    let den = REDUCED_PLANCK_CONSTANT * SPEED_OF_LIGHT * PI * PI
+    let a = num / den
+    return {"area": a}
+  }
+
+  let num = REDUCED_PLANCK_CONSTANT * SPEED_OF_LIGHT * PI * PI * area
+  let den = 240.0 * force
+  let inner = num / den
+  let d = sqrtApprox(sqrtApprox(inner))
+  return {"distance": d}
+}
+
+fun main() {
+  print(str(casimir_force(0.0, 4.0, 0.03)))
+  print(str(casimir_force(0.0000000002635, 0.0023, 0.0)))
+  print(str(casimir_force(0.000000000000000002737, 0.0, 0.0023746)))
+}
+
+main()
