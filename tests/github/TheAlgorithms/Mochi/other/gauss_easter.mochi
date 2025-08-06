@@ -1,0 +1,60 @@
+/*
+Gauss's Easter algorithm computes the date of Easter Sunday for a given year
+in the Gregorian calendar. The method uses modular arithmetic to approximate
+the Paschal full moon and then finds the following Sunday. Steps:
+
+1. Compute remainders of the year for the 19-year Metonic cycle, the 4-year
+   leap-year cycle and the 7-day week.
+2. Adjust these values with century-based corrections for Gregorian leap year
+   rules.
+3. Determine the offset to the Paschal full moon and the days from that moon to
+   Sunday.
+4. Special cases move Easter from April 19 or April 18 when the calculated full
+   moon falls too late in the calendar.
+5. Otherwise add the offsets to March 22 to obtain the month and day.
+
+The algorithm runs in constant time using only integer and floating-point
+arithmetic.
+*/
+
+type EasterDate = { month: int, day: int }
+
+fun gauss_easter(year: int): EasterDate {
+  let metonic_cycle = year % 19
+  let julian_leap_year = year % 4
+  let non_leap_year = year % 7
+  let leap_day_inhibits = year / 100
+  let lunar_orbit_correction = (13 + 8 * leap_day_inhibits) / 25
+  let leap_day_reinstall_number = (leap_day_inhibits as float) / 4.0
+  let secular_moon_shift = (15.0 - (lunar_orbit_correction as float) + (leap_day_inhibits as float) - leap_day_reinstall_number) % 30.0
+  let century_starting_point = (4.0 + (leap_day_inhibits as float) - leap_day_reinstall_number) % 7.0
+  let days_to_add = (19.0 * (metonic_cycle as float) + secular_moon_shift) % 30.0
+  let days_from_phm_to_sunday = (2.0 * (julian_leap_year as float) + 4.0 * (non_leap_year as float) + 6.0 * days_to_add + century_starting_point) % 7.0
+  if days_to_add == 29.0 && days_from_phm_to_sunday == 6.0 {
+    return EasterDate{ month: 4, day: 19 }
+  }
+  if days_to_add == 28.0 && days_from_phm_to_sunday == 6.0 {
+    return EasterDate{ month: 4, day: 18 }
+  }
+  let offset = (days_to_add + days_from_phm_to_sunday) as int
+  let total = 22 + offset
+  if total > 31 {
+    return EasterDate{ month: 4, day: total - 31 }
+  }
+  return EasterDate{ month: 3, day: total }
+}
+
+fun format_date(year: int, d: EasterDate): string {
+  let month = if d.month < 10 { "0" + str(d.month) } else { str(d.month) }
+  let day = if d.day < 10 { "0" + str(d.day) } else { str(d.day) }
+  return str(year) + "-" + month + "-" + day
+}
+
+let years = [1994, 2000, 2010, 2021, 2023, 2032, 2100]
+var i = 0
+while i < len(years) {
+  let y = years[i]
+  let e = gauss_easter(y)
+  print("Easter in " + str(y) + " is " + format_date(y, e))
+  i = i + 1
+}
