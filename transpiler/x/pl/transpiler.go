@@ -2975,10 +2975,17 @@ func toPostfix(pf *parser.PostfixExpr, env *compileEnv) (Expr, error) {
 			}
 			expr = &IndexExpr{Target: expr, Index: idxExpr, IsString: isStr, IsMap: isMapLike(expr, env)}
 		case op.Cast != nil:
-			if op.Cast.Type == nil || op.Cast.Type.Simple == nil {
+			if op.Cast.Type == nil {
 				return nil, fmt.Errorf("unsupported cast")
 			}
-			expr = &CastExpr{Expr: expr, Type: *op.Cast.Type.Simple}
+			switch {
+			case op.Cast.Type.Simple != nil:
+				expr = &CastExpr{Expr: expr, Type: *op.Cast.Type.Simple}
+			case op.Cast.Type.Generic != nil, op.Cast.Type.Fun != nil, op.Cast.Type.Struct != nil:
+				// No-op for casts to complex types
+			default:
+				return nil, fmt.Errorf("unsupported cast")
+			}
 		case op.Call != nil:
 			args := make([]Expr, len(op.Call.Args))
 			for i, a := range op.Call.Args {
