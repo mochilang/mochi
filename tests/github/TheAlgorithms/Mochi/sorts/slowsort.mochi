@@ -1,0 +1,62 @@
+/*
+Sort a list of integers using the Slowsort algorithm.
+
+Slowsort is a deliberately inefficient "divide and surrender" sorting method.
+It repeatedly splits the array into two halves, recursively sorts both halves,
+ensures the largest element is at the end by swapping with the middle element,
+and finally recursively sorts all but the last element again.  The algorithm
+runs in roughly O(n^(log_2 n)) time, making it mainly of pedagogical or
+entertainment value rather than practical use.  Space usage is O(log n) for the
+recursion stack.
+*/
+
+fun swap(seq: list<int>, i: int, j: int): unit {
+  let temp = seq[i]
+  seq[i] = seq[j]
+  seq[j] = temp
+}
+
+fun slowsort_recursive(seq: list<int>, start: int, end_index: int): unit {
+  if start >= end_index { return }
+  let mid = (start + end_index) / 2
+  slowsort_recursive(seq, start, mid)
+  slowsort_recursive(seq, mid + 1, end_index)
+  if seq[end_index] < seq[mid] {
+    swap(seq, end_index, mid)
+  }
+  slowsort_recursive(seq, start, end_index - 1)
+}
+
+fun slow_sort(seq: list<int>): list<int> {
+  if len(seq) > 0 {
+    slowsort_recursive(seq, 0, len(seq) - 1)
+  }
+  return seq
+}
+
+let seq1 = [1, 6, 2, 5, 3, 4, 4, 5]
+print(str(slow_sort(seq1)))
+
+var seq2: list<int> = []
+print(str(slow_sort(seq2)))
+
+let seq3 = [2]
+print(str(slow_sort(seq3)))
+
+let seq4 = [1, 2, 3, 4]
+print(str(slow_sort(seq4)))
+
+let seq5 = [4, 3, 2, 1]
+print(str(slow_sort(seq5)))
+
+let seq6 = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+slowsort_recursive(seq6, 2, 7)
+print(str(seq6))
+
+let seq7 = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+slowsort_recursive(seq7, 0, 4)
+print(str(seq7))
+
+let seq8 = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+slowsort_recursive(seq8, 5, len(seq8) - 1)
+print(str(seq8))
