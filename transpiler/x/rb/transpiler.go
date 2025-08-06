@@ -1269,6 +1269,9 @@ func safeName(n string) string {
 		return n + "_"
 	}
 	if n != "" && unicode.IsUpper(rune(n[0])) {
+		if n == strings.ToUpper(n) {
+			return n
+		}
 		n = strings.ToLower(n[:1]) + n[1:]
 	}
 	return n
@@ -4015,6 +4018,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("append takes two args")
 			}
 			return &AppendExpr{List: args[0], Elem: args[1]}, nil
+		case "concat":
+			if len(args) != 2 {
+				return nil, fmt.Errorf("concat expects 2 args")
+			}
+			return &BinaryExpr{Op: "+", Left: args[0], Right: args[1]}, nil
 		case "substring":
 			if len(args) != 3 {
 				return nil, fmt.Errorf("substring expects 3 args")
