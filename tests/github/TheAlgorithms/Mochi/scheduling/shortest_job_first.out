@@ -1,0 +1,12 @@
+[0, 3, 5, 0]
+[0, 2, 0]
+[1, 0]
+[3, 6, 10, 1]
+[3, 6]
+[9, 10, 4]
+Average waiting time = 2
+Average turn around time = 5
+Average waiting time = 2.5
+Average turn around time = 4.5
+Average waiting time = 5.666666666666667
+Average turn around time = 5
