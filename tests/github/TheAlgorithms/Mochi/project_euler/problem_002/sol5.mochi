@@ -1,0 +1,33 @@
+/*
+Project Euler Problem 2: Sum of Even Fibonacci Numbers
+------------------------------------------------------
+Generate Fibonacci numbers starting from 1 and 2 and
+accumulate the sum of terms that are even-valued and do
+not exceed a given limit n. The algorithm iteratively
+updates two previous terms without storing the entire
+sequence, keeping the time complexity O(k) for k terms
+and constant space. For each step, if the current term is
+even, it is added to the running total.
+*/
+
+fun solution(n: int): int {
+  var a: int = 0
+  var b: int = 1
+  var total: int = 0
+  while b <= n {
+    if b % 2 == 0 {
+      total = total + b
+    }
+    let next_val: int = a + b
+    a = b
+    b = next_val
+  }
+  return total
+}
+
+print(str(solution(10)))
+print(str(solution(15)))
+print(str(solution(2)))
+print(str(solution(1)))
+print(str(solution(34)))
+print(str(solution(4000000)))
