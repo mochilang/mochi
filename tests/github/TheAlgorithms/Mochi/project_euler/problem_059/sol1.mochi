@@ -1,0 +1,162 @@
+/*
+Project Euler Problem 59 - XOR Cipher Decryption
+-------------------------------------------------
+Given a ciphertext encrypted by XORing each byte with a repeating key of three
+lowercase letters, recover the plaintext and compute the sum of its ASCII codes.
+The algorithm brute-forces all 26^3 possible keys. For each key the ciphertext
+is decrypted and discarded if any resulting byte is not a printable ASCII or
+standard whitespace character. The remaining candidates are filtered by the
+presence of common English words. Once a single candidate remains, its ASCII
+values are summed to produce the final answer. This implementation mirrors the
+Python version from TheAlgorithms and runs entirely within Mochi without FFI.
+*/
+
+fun xor(a: int, b: int): int {
+  var res = 0
+  var bit = 1
+  var x = a
+  var y = b
+  while x > 0 || y > 0 {
+    let abit = x % 2
+    let bbit = y % 2
+    if abit != bbit {
+      res = res + bit
+    }
+    x = x / 2
+    y = y / 2
+    bit = bit * 2
+  }
+  return res
+}
+
+let ascii_chars: string = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+
+fun chr(code: int): string {
+  if code == 10 { return "\n" }
+  if code == 13 { return "\r" }
+  if code == 9 { return "\t" }
+  if code >= 32 && code < 127 {
+    return ascii_chars[code - 32:code - 31]
+  }
+  return ""
+}
+
+fun ord(ch: string): int {
+  if ch == "\n" { return 10 }
+  if ch == "\r" { return 13 }
+  if ch == "\t" { return 9 }
+  var i = 0
+  while i < len(ascii_chars) {
+    if ascii_chars[i:i+1] == ch {
+      return 32 + i
+    }
+    i = i + 1
+  }
+  return 0
+}
+
+fun is_valid_ascii(code: int): bool {
+  if code >= 32 && code <= 126 { return true }
+  if code == 9 || code == 10 || code == 13 { return true }
+  return false
+}
+
+var LOWERCASE_INTS: list<int> = []
+var i = 97
+while i <= 122 {
+  LOWERCASE_INTS = append(LOWERCASE_INTS, i)
+  i = i + 1
+}
+
+var COMMON_WORDS: list<string> = ["the", "be", "to", "of", "and", "in", "that", "have"]
+
+fun try_key(ciphertext: list<int>, key: list<int>): string {
+  var decoded = ""
+  var i = 0
+  let klen = len(key)
+  while i < len(ciphertext) {
+    let decodedchar = xor(ciphertext[i], key[i % klen])
+    if !is_valid_ascii(decodedchar) { return null }
+    decoded = decoded + chr(decodedchar)
+    i = i + 1
+  }
+  return decoded
+}
+
+fun filter_valid_chars(ciphertext: list<int>): list<string> {
+  var possibles: list<string> = []
+  var i = 0
+  while i < len(LOWERCASE_INTS) {
+    var j = 0
+    while j < len(LOWERCASE_INTS) {
+      var k = 0
+      while k < len(LOWERCASE_INTS) {
+        let key = [LOWERCASE_INTS[i], LOWERCASE_INTS[j], LOWERCASE_INTS[k]]
+        let decoded = try_key(ciphertext, key)
+        if decoded != null {
+          possibles = append(possibles, decoded)
+        }
+        k = k + 1
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return possibles
+}
+
+fun contains(s: string, sub: string): bool {
+  let n = len(s)
+  let m = len(sub)
+  if m == 0 { return true }
+  var i = 0
+  while i <= n - m {
+    var j = 0
+    var is_match = true
+    while j < m {
+      if s[i + j] != sub[j] {
+        is_match = false
+        break
+      }
+      j = j + 1
+    }
+    if is_match { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun filter_common_word(possibles: list<string>, common_word: string): list<string> {
+  var res: list<string> = []
+  var i = 0
+  while i < len(possibles) {
+    let p = possibles[i]
+    if contains(lower(p), common_word) {
+      res = append(res, p)
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun solution(ciphertext: list<int>): int {
+  var possibles = filter_valid_chars(ciphertext)
+  var i = 0
+  while i < len(COMMON_WORDS) {
+    let word = COMMON_WORDS[i]
+    possibles = filter_common_word(possibles, word)
+    if len(possibles) == 1 { break }
+    i = i + 1
+  }
+  let decoded_text = possibles[0]
+  var sum = 0
+  var j = 0
+  while j < len(decoded_text) {
+    sum = sum + ord(substring(decoded_text, j, j + 1))
+    j = j + 1
+  }
+  return sum
+}
+
+let ciphertext: list<int> = [17, 6, 1, 69, 12, 1, 69, 26, 11, 69, 1, 2, 69, 15, 10, 1, 78, 13, 11, 78, 16, 13, 15, 16, 69, 6, 5, 19, 11]
+print(str(solution(ciphertext)))
