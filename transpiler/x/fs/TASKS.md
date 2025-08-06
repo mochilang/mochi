@@ -1,3 +1,7 @@
+## Progress (2025-08-06 20:48 +0700)
+- Reset test header flag between programs
+- Generated F# for 103/105 programs (103 passing)
+
 ## Progress (2025-08-05 01:50 +0700)
 - fs transpiler: avoid treating nested funcs as global
 - Generated F# for 103/105 programs (103 passing)

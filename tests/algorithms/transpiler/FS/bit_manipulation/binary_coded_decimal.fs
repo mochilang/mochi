@@ -30,43 +30,49 @@ let rec _str v =
      .Replace("\"", "")
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
-let rec backtrack (candidates: int array) (start: int) (target: int) (path: int array) (result: int array array) =
-    let mutable __ret : int array array = Unchecked.defaultof<int array array>
-    let mutable candidates = candidates
-    let mutable start = start
-    let mutable target = target
-    let mutable path = path
-    let mutable result = result
+let rec to_binary4 (n: int) =
+    let mutable __ret : string = Unchecked.defaultof<string>
+    let mutable n = n
     try
-        if target = 0 then
-            __ret <- Array.append result [|path|]
-            raise Return
-        let mutable i: int = start
-        while i < (Seq.length(candidates)) do
-            let value: int = _idx candidates (i)
-            if value <= target then
-                let new_path: int array = Array.append path [|value|]
-                result <- backtrack (candidates) (i) (target - value) (new_path) (result)
-            i <- i + 1
+        let mutable result: string = ""
+        let mutable x: int = n
+        while x > 0 do
+            result <- (_str (((x % 2 + 2) % 2))) + result
+            x <- x / 2
+        while (String.length(result)) < 4 do
+            result <- "0" + result
         __ret <- result
         raise Return
         __ret
     with
         | Return -> __ret
-and combination_sum (candidates: int array) (target: int) =
-    let mutable __ret : int array array = Unchecked.defaultof<int array array>
-    let mutable candidates = candidates
-    let mutable target = target
+and binary_coded_decimal (number: int) =
+    let mutable __ret : string = Unchecked.defaultof<string>
+    let mutable number = number
     try
-        let path: int array = [||]
-        let mutable result: int array array = [||]
-        __ret <- backtrack (candidates) (0) (target) (path) (result)
+        let mutable n: int = number
+        if n < 0 then
+            n <- 0
+        let digits: string = _str (n)
+        let mutable out: string = "0b"
+        let mutable i: int = 0
+        while i < (String.length(digits)) do
+            let d: string = string (digits.[i])
+            let d_int: int = int d
+            out <- out + (to_binary4 (d_int))
+            i <- i + 1
+        __ret <- out
         raise Return
         __ret
     with
         | Return -> __ret
-printfn "%s" (_str (combination_sum (unbox<int array> [|2; 3; 5|]) (8)))
-printfn "%s" (_str (combination_sum (unbox<int array> [|2; 3; 6; 7|]) (7)))
+printfn "%s" (binary_coded_decimal (-2))
+printfn "%s" (binary_coded_decimal (-1))
+printfn "%s" (binary_coded_decimal (0))
+printfn "%s" (binary_coded_decimal (3))
+printfn "%s" (binary_coded_decimal (2))
+printfn "%s" (binary_coded_decimal (12))
+printfn "%s" (binary_coded_decimal (987))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

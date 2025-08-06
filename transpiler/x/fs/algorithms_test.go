@@ -98,7 +98,7 @@ func TestFSTranspiler_Algorithms_Golden(t *testing.T) {
 			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 				run.Stdin = bytes.NewReader(data)
 			}
-			want, _ := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".out")
+			want, _ := os.ReadFile(outPath)
 			want = bytes.TrimSpace(want)
 			out, err := run.CombinedOutput()
 			got := bytes.TrimSpace(out)
