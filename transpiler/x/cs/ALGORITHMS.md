@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-06 21:35 GMT+7
+Last updated: 2025-08-06 22:12 GMT+7
 
-## Algorithms Golden Test Checklist (101/1077)
+## Algorithms Golden Test Checklist (130/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -108,25 +108,25 @@ Last updated: 2025-08-06 21:35 GMT+7
 | 99 | ciphers/rsa_cipher | ✓ | 2.0ms | 22.61KB |
 | 100 | ciphers/rsa_factorization | ✓ | 2.0ms | 17.44KB |
 | 101 | ciphers/rsa_key_generator | ✓ | 2.0ms | 16.91KB |
-| 102 | ciphers/running_key_cipher |   |  |  |
-| 103 | ciphers/shuffled_shift_cipher |   |  |  |
-| 104 | ciphers/simple_keyword_cypher |   |  |  |
-| 105 | ciphers/simple_substitution_cipher |   |  |  |
-| 106 | ciphers/transposition_cipher |   |  |  |
-| 107 | ciphers/transposition_cipher_encrypt_decrypt_file |   |  |  |
-| 108 | ciphers/trifid_cipher |   |  |  |
-| 109 | ciphers/vernam_cipher |   |  |  |
-| 110 | ciphers/vigenere_cipher |   |  |  |
-| 111 | ciphers/xor_cipher |   |  |  |
-| 112 | computer_vision/cnn_classification |   |  |  |
-| 113 | computer_vision/flip_augmentation |   |  |  |
-| 114 | computer_vision/haralick_descriptors |   |  |  |
-| 115 | computer_vision/harris_corner |   |  |  |
-| 116 | computer_vision/horn_schunck |   |  |  |
-| 117 | computer_vision/intensity_based_segmentation |   |  |  |
-| 118 | computer_vision/mean_threshold |   |  |  |
-| 119 | computer_vision/mosaic_augmentation |   |  |  |
-| 120 | computer_vision/pooling_functions |   |  |  |
+| 102 | ciphers/running_key_cipher | ✓ | 1.0ms | 46.76KB |
+| 103 | ciphers/shuffled_shift_cipher | ✓ | 1.0ms | 99.92KB |
+| 104 | ciphers/simple_keyword_cypher | ✓ | 2.0ms | 56.48KB |
+| 105 | ciphers/simple_substitution_cipher | ✓ | 2.0ms | 50.30KB |
+| 106 | ciphers/transposition_cipher | ✓ | 3.0ms | 30.79KB |
+| 107 | ciphers/transposition_cipher_encrypt_decrypt_file | ✓ | 2.0ms | 14.68KB |
+| 108 | ciphers/trifid_cipher | ✓ | 3.0ms | 66.70KB |
+| 109 | ciphers/vernam_cipher | ✓ | 2.0ms | 19.69KB |
+| 110 | ciphers/vigenere_cipher | ✓ | 2.0ms | 133.02KB |
+| 111 | ciphers/xor_cipher | ✓ | 2.0ms | 68.59KB |
+| 112 | computer_vision/cnn_classification | ✓ | 3.0ms | 20.16KB |
+| 113 | computer_vision/flip_augmentation | ✓ | 3.0ms | 26.51KB |
+| 114 | computer_vision/haralick_descriptors | ✓ | 3.0ms | 15.08KB |
+| 115 | computer_vision/harris_corner | ✓ | 3.0ms | 36.46KB |
+| 116 | computer_vision/horn_schunck | ✓ | 3.0ms | 178.27KB |
+| 117 | computer_vision/intensity_based_segmentation | ✓ | 3.0ms | 19.20KB |
+| 118 | computer_vision/mean_threshold | ✓ | 2.0ms | 17.64KB |
+| 119 | computer_vision/mosaic_augmentation | ✓ | 6.0ms | 4.76MB |
+| 120 | computer_vision/pooling_functions | ✓ | 4.0ms | 21.16KB |
 | 121 | conversions/astronomical_length_scale_conversion |   |  |  |
 | 122 | conversions/binary_to_decimal |   |  |  |
 | 123 | conversions/binary_to_hexadecimal |   |  |  |
@@ -138,7 +138,7 @@ Last updated: 2025-08-06 21:35 GMT+7
 | 129 | conversions/decimal_to_octal |   |  |  |
 | 130 | conversions/energy_conversions |   |  |  |
 | 131 | conversions/excel_title_to_column |   |  |  |
-| 132 | conversions/hex_to_bin |   |  |  |
+| 132 | conversions/hex_to_bin | ✓ | 3.0ms | 22.13KB |
 | 133 | conversions/hexadecimal_to_decimal |   |  |  |
 | 134 | conversions/ipv4_conversion |   |  |  |
 | 135 | conversions/length_conversion |   |  |  |
@@ -148,7 +148,7 @@ Last updated: 2025-08-06 21:35 GMT+7
 | 139 | conversions/octal_to_hexadecimal |   |  |  |
 | 140 | conversions/prefix_conversions |   |  |  |
 | 141 | conversions/prefix_conversions_string |   |  |  |
-| 142 | conversions/pressure_conversions |   |  |  |
+| 142 | conversions/pressure_conversions | ✓ | 3.0ms | 31.48KB |
 | 143 | conversions/rectangular_to_polar |   |  |  |
 | 144 | conversions/rgb_cmyk_conversion |   |  |  |
 | 145 | conversions/rgb_hsv_conversion |   |  |  |
@@ -158,13 +158,13 @@ Last updated: 2025-08-06 21:35 GMT+7
 | 149 | conversions/time_conversions |   |  |  |
 | 150 | conversions/volume_conversions |   |  |  |
 | 151 | conversions/weight_conversion |   |  |  |
-| 152 | data_compression/burrows_wheeler |   |  |  |
-| 153 | data_compression/huffman |   |  |  |
-| 154 | data_compression/lempel_ziv |   |  |  |
-| 155 | data_compression/lempel_ziv_decompress |   |  |  |
-| 156 | data_compression/lz77 |   |  |  |
-| 157 | data_compression/peak_signal_to_noise_ratio |   |  |  |
-| 158 | data_compression/run_length_encoding |   |  |  |
+| 152 | data_compression/burrows_wheeler | ✓ | 1.0ms | 23.09KB |
+| 153 | data_compression/huffman | ✓ | 15.0ms | 1.20MB |
+| 154 | data_compression/lempel_ziv | ✓ | 3.0ms | 18.96KB |
+| 155 | data_compression/lempel_ziv_decompress | ✓ | 2.0ms | 19.69KB |
+| 156 | data_compression/lz77 | ✓ | 2.0ms | 28.47KB |
+| 157 | data_compression/peak_signal_to_noise_ratio | ✓ | 1.0µs | 43.86KB |
+| 158 | data_compression/run_length_encoding | ✓ | 2.0ms | 22.90KB |
 | 159 | data_structures/arrays/equilibrium_index_in_array |   |  |  |
 | 160 | data_structures/arrays/find_triplets_with_0_sum |   |  |  |
 | 161 | data_structures/arrays/index_2d_array_in_1d |   |  |  |
@@ -174,7 +174,7 @@ Last updated: 2025-08-06 21:35 GMT+7
 | 165 | data_structures/arrays/pairs_with_given_sum |   |  |  |
 | 166 | data_structures/arrays/permutations |   |  |  |
 | 167 | data_structures/arrays/prefix_sum |   |  |  |
-| 168 | data_structures/arrays/product_sum |   |  |  |
+| 168 | data_structures/arrays/product_sum | ✓ | 13.0ms | 1.14MB |
 | 169 | data_structures/arrays/sparse_table |   |  |  |
 | 170 | data_structures/arrays/sudoku_solver |   |  |  |
 | 171 | data_structures/binary_tree/avl_tree |   |  |  |
