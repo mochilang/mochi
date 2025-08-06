@@ -1,0 +1,70 @@
+/*
+Project Euler Problem 22: Name Scores
+
+Given a list of over five thousand names, sort the names alphabetically and
+compute a score for each. The score of a name is the sum of its letters'
+positions in the alphabet (A=1, B=2, ... Z=26) multiplied by its 1-based
+position in the sorted list. The task is to compute the total of all name
+scores.
+
+Algorithm steps:
+1. Load the names from a JSONL file where each line is {"name": "..."}.
+2. Extract the names and sort them using bubble sort.
+3. For each name, compute its letter value and multiply by its index.
+4. Sum all scores and print the final total.
+*/
+
+type Name { name: string }
+
+fun ord_letter(ch: string): int {
+  let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  var i = 0
+  while i < len(alphabet) {
+    if alphabet[i:i+1] == ch { return i + 1 }
+    i = i + 1
+  }
+  return 0
+}
+
+fun name_value(name: string): int {
+  var total = 0
+  var i = 0
+  while i < len(name) {
+    total = total + ord_letter(name[i:i+1])
+    i = i + 1
+  }
+  return total
+}
+
+fun bubble_sort(arr: list<string>): list<string> {
+  var n = len(arr)
+  var i = 0
+  while i < n {
+    var j = 0
+    while j < n - i - 1 {
+      if arr[j] > arr[j + 1] {
+        let temp = arr[j]
+        arr[j] = arr[j + 1]
+        arr[j + 1] = temp
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+let rows = load "tests/github/TheAlgorithms/Mochi/project_euler/problem_022/p022_names.jsonl" as Name with { format: "jsonl" }
+var names: list<string> = []
+for r in rows {
+  names = append(names, r.name)
+}
+names = bubble_sort(names)
+
+var total = 0
+var i = 0
+while i < len(names) {
+  total = total + (i + 1) * name_value(names[i])
+  i = i + 1
+}
+print(str(total))
