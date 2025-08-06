@@ -1,0 +1,58 @@
+/*
+Project Euler Problem 25: First Fibonacci Term With N Digits
+
+The Fibonacci sequence is defined by F1 = 1, F2 = 1 and Fn = Fn-1 + Fn-2 for n > 2.
+The task is to find the index of the first term in this sequence that contains a
+specified number of decimal digits.
+
+Algorithm:
+1. Iterate through Fibonacci numbers starting from F1 = 1 and F2 = 1.
+2. After each new term is generated, convert it to a string and measure its
+   length in digits.
+3. Continue until the digit length meets or exceeds the required count.
+4. Return the index of this Fibonacci term.
+
+This implementation uses only integer arithmetic and built-in functions, and
+runs entirely within the Mochi runtime/vm.
+*/
+
+fun fibonacci(n: int): int {
+  if n == 1 {
+    return 0
+  }
+  if n == 2 {
+    return 1
+  }
+  var a: int = 0
+  var b: int = 1
+  var i: int = 2
+  while i <= n {
+    let c: int = a + b
+    a = b
+    b = c
+    i = i + 1
+  }
+  return b
+}
+
+fun fibonacci_digits_index(n: int): int {
+  var digits: int = 0
+  var index: int = 2
+  while digits < n {
+    index = index + 1
+    let fib: int = fibonacci(index)
+    digits = len(str(fib))
+  }
+  return index
+}
+
+fun solution(n: int): int {
+  return fibonacci_digits_index(n)
+}
+
+fun main() {
+  let n: int = int(input())
+  print(solution(n))
+}
+
+main()
