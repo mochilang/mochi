@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-06 21:08 GMT+7
+Last updated: 2025-08-06 21:35 GMT+7
 
-## Algorithms Golden Test Checklist (51/1077)
+## Algorithms Golden Test Checklist (101/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -58,56 +58,56 @@ Last updated: 2025-08-06 21:08 GMT+7
 | 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 3.0ms | 17.34KB |
 | 50 | boolean_algebra/multiplexer | ✓ | 3.0ms | 16.44KB |
 | 51 | boolean_algebra/nand_gate | ✓ | 3.0ms | 16.44KB |
-| 52 | boolean_algebra/nimply_gate |   |  |  |
-| 53 | boolean_algebra/nor_gate |   |  |  |
-| 54 | boolean_algebra/not_gate |   |  |  |
-| 55 | boolean_algebra/or_gate |   |  |  |
-| 56 | boolean_algebra/quine_mc_cluskey |   |  |  |
-| 57 | boolean_algebra/xnor_gate |   |  |  |
-| 58 | boolean_algebra/xor_gate |   |  |  |
-| 59 | cellular_automata/conways_game_of_life |   |  |  |
-| 60 | cellular_automata/game_of_life |   |  |  |
-| 61 | cellular_automata/langtons_ant |   |  |  |
-| 62 | cellular_automata/nagel_schrekenberg |   |  |  |
-| 63 | cellular_automata/one_dimensional |   |  |  |
-| 64 | cellular_automata/wa_tor |   |  |  |
-| 65 | ciphers/a1z26 |   |  |  |
-| 66 | ciphers/affine_cipher |   |  |  |
-| 67 | ciphers/atbash |   |  |  |
-| 68 | ciphers/autokey |   |  |  |
-| 69 | ciphers/baconian_cipher |   |  |  |
-| 70 | ciphers/base16 |   |  |  |
-| 71 | ciphers/base32 |   |  |  |
-| 72 | ciphers/base64_cipher |   |  |  |
-| 73 | ciphers/base85 |   |  |  |
-| 74 | ciphers/beaufort_cipher |   |  |  |
-| 75 | ciphers/bifid |   |  |  |
-| 76 | ciphers/brute_force_caesar_cipher |   |  |  |
-| 77 | ciphers/caesar_cipher |   |  |  |
-| 78 | ciphers/cryptomath_module |   |  |  |
-| 79 | ciphers/decrypt_caesar_with_chi_squared |   |  |  |
-| 80 | ciphers/deterministic_miller_rabin |   |  |  |
-| 81 | ciphers/diffie |   |  |  |
-| 82 | ciphers/diffie_hellman |   |  |  |
-| 83 | ciphers/elgamal_key_generator |   |  |  |
-| 84 | ciphers/enigma_machine2 |   |  |  |
-| 85 | ciphers/fractionated_morse_cipher |   |  |  |
-| 86 | ciphers/gronsfeld_cipher |   |  |  |
-| 87 | ciphers/hill_cipher |   |  |  |
-| 88 | ciphers/mixed_keyword_cypher |   |  |  |
-| 89 | ciphers/mono_alphabetic_ciphers |   |  |  |
-| 90 | ciphers/morse_code |   |  |  |
-| 91 | ciphers/onepad_cipher |   |  |  |
-| 92 | ciphers/permutation_cipher |   |  |  |
-| 93 | ciphers/playfair_cipher |   |  |  |
-| 94 | ciphers/polybius |   |  |  |
-| 95 | ciphers/porta_cipher |   |  |  |
-| 96 | ciphers/rabin_miller |   |  |  |
-| 97 | ciphers/rail_fence_cipher |   |  |  |
-| 98 | ciphers/rot13 |   |  |  |
-| 99 | ciphers/rsa_cipher |   |  |  |
-| 100 | ciphers/rsa_factorization |   |  |  |
-| 101 | ciphers/rsa_key_generator |   |  |  |
+| 52 | boolean_algebra/nimply_gate | ✓ | 2.0ms | 16.44KB |
+| 53 | boolean_algebra/nor_gate | ✓ | 2.0ms | 20.80KB |
+| 54 | boolean_algebra/not_gate | ✓ | 2.0ms | 16.39KB |
+| 55 | boolean_algebra/or_gate | ✓ | 2.0ms | 16.59KB |
+| 56 | boolean_algebra/quine_mc_cluskey | ✓ | 3.0ms | 21.18KB |
+| 57 | boolean_algebra/xnor_gate | ✓ | 2.0ms | 16.44KB |
+| 58 | boolean_algebra/xor_gate | ✓ | 2.0ms | 16.44KB |
+| 59 | cellular_automata/conways_game_of_life | ✓ | 3.0ms | 73.02KB |
+| 60 | cellular_automata/game_of_life | ✓ | 2.0ms | 31.39KB |
+| 61 | cellular_automata/langtons_ant | ✓ | 1.0µs | 43.76KB |
+| 62 | cellular_automata/nagel_schrekenberg | ✓ | 2.0ms | 30.05KB |
+| 63 | cellular_automata/one_dimensional | ✓ | 2.0ms | 151.65KB |
+| 64 | cellular_automata/wa_tor | ✓ | 2.0ms | 112.76KB |
+| 65 | ciphers/a1z26 | ✓ | 2.0ms | 26.03KB |
+| 66 | ciphers/affine_cipher | ✓ | 3.0ms | 232.48KB |
+| 67 | ciphers/atbash | ✓ | 2.0ms | 36.58KB |
+| 68 | ciphers/autokey | ✓ | 2.0ms | 133.99KB |
+| 69 | ciphers/baconian_cipher | ✓ | 3.0ms | 27.91KB |
+| 70 | ciphers/base16 | ✓ | 2.0ms | 34.00KB |
+| 71 | ciphers/base32 | ✓ | 2.0ms | 177.27KB |
+| 72 | ciphers/base64_cipher | ✓ | 7.0ms | 115.06KB |
+| 73 | ciphers/base85 | ✓ | 2.0ms | 96.95KB |
+| 74 | ciphers/beaufort_cipher | ✓ | 2.0ms | 32.81KB |
+| 75 | ciphers/bifid | ✓ | 2.0ms | 72.86KB |
+| 76 | ciphers/brute_force_caesar_cipher | ✓ | 2.0ms | 175.06KB |
+| 77 | ciphers/caesar_cipher | ✓ | 2.0ms | 1.37MB |
+| 78 | ciphers/cryptomath_module | ✓ | 2.0ms | 16.51KB |
+| 79 | ciphers/decrypt_caesar_with_chi_squared | ✓ | 2.0ms | 1.55MB |
+| 80 | ciphers/deterministic_miller_rabin | ✓ | 2.0ms | 17.98KB |
+| 81 | ciphers/diffie | ✓ | 3.0ms | 30.58KB |
+| 82 | ciphers/diffie_hellman | ✓ | 2.0ms | 12.90KB |
+| 83 | ciphers/elgamal_key_generator | ✓ | 2.0ms | 17.41KB |
+| 84 | ciphers/enigma_machine2 | ✓ | 2.0ms | 463.88KB |
+| 85 | ciphers/fractionated_morse_cipher | ✓ | 3.0ms | 37.67KB |
+| 86 | ciphers/gronsfeld_cipher | ✓ | 2.0ms | 85.42KB |
+| 87 | ciphers/hill_cipher | ✓ | 2.0ms | 104.26KB |
+| 88 | ciphers/mixed_keyword_cypher | ✓ | 2.0ms | 60.75KB |
+| 89 | ciphers/mono_alphabetic_ciphers | ✓ | 3.0ms | 18.87KB |
+| 90 | ciphers/morse_code | ✓ | 2.0ms | 24.50KB |
+| 91 | ciphers/onepad_cipher | ✓ | 2.0ms | 27.45KB |
+| 92 | ciphers/permutation_cipher | ✓ | 2.0ms | 22.02KB |
+| 93 | ciphers/playfair_cipher | ✓ | 4.0ms | 28.15KB |
+| 94 | ciphers/polybius | ✓ | 3.0ms | 23.82KB |
+| 95 | ciphers/porta_cipher | ✓ | 2.0ms | 37.04KB |
+| 96 | ciphers/rabin_miller | ✓ | 2.0ms | 177.33KB |
+| 97 | ciphers/rail_fence_cipher | ✓ | 2.0ms | 56.90KB |
+| 98 | ciphers/rot13 | ✓ | 2.0ms | 157.90KB |
+| 99 | ciphers/rsa_cipher | ✓ | 2.0ms | 22.61KB |
+| 100 | ciphers/rsa_factorization | ✓ | 2.0ms | 17.44KB |
+| 101 | ciphers/rsa_key_generator | ✓ | 2.0ms | 16.91KB |
 | 102 | ciphers/running_key_cipher |   |  |  |
 | 103 | ciphers/shuffled_shift_cipher |   |  |  |
 | 104 | ciphers/simple_keyword_cypher |   |  |  |

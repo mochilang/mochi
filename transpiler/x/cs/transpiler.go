@@ -916,15 +916,33 @@ func (ie *InExpr) emit(w io.Writer) {
 				return
 			}
 		}
-		ie.Collection.emit(w)
-		fmt.Fprint(w, ".ContainsKey(")
-		ie.Item.emit(w)
-		fmt.Fprint(w, ")")
+		t = typeOfExpr(ie.Collection)
+		if strings.HasSuffix(t, "[]") {
+			fmt.Fprint(w, "Array.IndexOf(")
+			ie.Collection.emit(w)
+			fmt.Fprint(w, ", ")
+			ie.Item.emit(w)
+			fmt.Fprint(w, ") >= 0")
+		} else {
+			ie.Collection.emit(w)
+			fmt.Fprint(w, ".ContainsKey(")
+			ie.Item.emit(w)
+			fmt.Fprint(w, ")")
+		}
 	} else if _, ok := ie.Collection.(*VarRef); ok {
-		ie.Collection.emit(w)
-		fmt.Fprint(w, ".ContainsKey(")
-		ie.Item.emit(w)
-		fmt.Fprint(w, ")")
+		t := typeOfExpr(ie.Collection)
+		if strings.HasSuffix(t, "[]") {
+			fmt.Fprint(w, "Array.IndexOf(")
+			ie.Collection.emit(w)
+			fmt.Fprint(w, ", ")
+			ie.Item.emit(w)
+			fmt.Fprint(w, ") >= 0")
+		} else {
+			ie.Collection.emit(w)
+			fmt.Fprint(w, ".ContainsKey(")
+			ie.Item.emit(w)
+			fmt.Fprint(w, ")")
+		}
 	} else {
 		fmt.Fprint(w, "Array.IndexOf(")
 		ie.Collection.emit(w)
@@ -1800,7 +1818,7 @@ func typeOfExpr(e Expr) string {
 		}
 		return "int"
 	case *LenExpr:
-		return "int"
+		return "long"
 	case *StrExpr:
 		return "string"
 	case *SubstringExpr:
@@ -3815,6 +3833,17 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					if i < len(types) && strings.HasSuffix(types[i], "[]") {
 						list.ElemType = types[i]
 					}
+				} else if mp, ok2 := arg.(*MapLit); ok2 && len(mp.Items) == 0 && i < len(types) && strings.HasPrefix(types[i], "Dictionary<") {
+					parts := strings.TrimPrefix(strings.TrimSuffix(types[i], ">"), "Dictionary<")
+					arr := strings.Split(parts, ",")
+					if len(arr) == 2 {
+						if mp.KeyType == "" {
+							mp.KeyType = strings.TrimSpace(arr[0])
+						}
+						if mp.ValType == "" {
+							mp.ValType = strings.TrimSpace(arr[1])
+						}
+					}
 				} else if i < len(types) && typeOfExpr(arg) == "object[]" && strings.HasSuffix(types[i], "[]") {
 					elem := strings.TrimSuffix(types[i], "[]")
 					conv := ""
@@ -3952,6 +3981,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				return &CallExpr{Func: "Convert.ToDouble", Args: []Expr{args[0]}}, nil
 			}
 		case "panic":
+			if len(args) == 1 {
+				return &PanicExpr{Arg: args[0]}, nil
+			}
+		case "error":
 			if len(args) == 1 {
 				return &PanicExpr{Arg: args[0]}, nil
 			}
