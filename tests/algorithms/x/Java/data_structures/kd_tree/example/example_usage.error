@@ -1,0 +1,6 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden218_example_usage1698780701/001/Main.java:166: error: incompatible types: double[] cannot be converted to Object[]
+            s = s + _p(_geto(arr, i_6));
+                             ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+1 error

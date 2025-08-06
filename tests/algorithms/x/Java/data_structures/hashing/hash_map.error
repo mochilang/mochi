@@ -1,0 +1,162 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:53: error: cannot find symbol
+        int ind = Math.floorMod(key, ((Bucket[]) (hm.get("buckets"))).length);
+                                                    ^
+  symbol:   method get(String)
+  location: variable hm of type HashMap
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:55: error: cannot find symbol
+            ind = ind + ((Bucket[]) (hm.get("buckets"))).length;
+                                       ^
+  symbol:   method get(String)
+  location: variable hm of type HashMap
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:61: error: cannot find symbol
+        return Math.floorMod((ind + 1), ((Bucket[]) (hm.get("buckets"))).length);
+                                                       ^
+  symbol:   method get(String)
+  location: variable hm of type HashMap
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:65: error: cannot find symbol
+        Bucket[] buckets_1 = (Bucket[])(((Bucket[]) (hm.get("buckets"))));
+                                                       ^
+  symbol:   method get(String)
+  location: variable hm of type HashMap
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:69: error: cannot find symbol
+hm.put("buckets", buckets_1);
+  ^
+  symbol:   method put(String,Bucket[])
+  location: variable hm of type HashMap
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:70: error: cannot find symbol
+hm.put("len", (int)(((int) (hm.get("len")))) + 1);
+                              ^
+  symbol:   method get(String)
+  location: variable hm of type HashMap
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:70: error: cannot find symbol
+hm.put("len", (int)(((int) (hm.get("len")))) + 1);
+  ^
+  symbol:   method put(String,int)
+  location: variable hm of type HashMap
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:75: error: cannot find symbol
+hm.put("buckets", buckets_1);
+  ^
+  symbol:   method put(String,Bucket[])
+  location: variable hm of type HashMap
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:82: error: cannot find symbol
+        int limit = ((Bucket[]) (hm.get("buckets"))).length * (int)(((int) (hm.get("cap_num")))) / (int)(((int) (hm.get("cap_den"))));
+                                   ^
+  symbol:   method get(String)
+  location: variable hm of type HashMap
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:82: error: cannot find symbol
+        int limit = ((Bucket[]) (hm.get("buckets"))).length * (int)(((int) (hm.get("cap_num")))) / (int)(((int) (hm.get("cap_den"))));
+                                                                              ^
+  symbol:   method get(String)
+  location: variable hm of type HashMap
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:82: error: cannot find symbol
+        int limit = ((Bucket[]) (hm.get("buckets"))).length * (int)(((int) (hm.get("cap_num")))) / (int)(((int) (hm.get("cap_den"))));
+                                                                                                                   ^
+  symbol:   method get(String)
+  location: variable hm of type HashMap
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:83: error: cannot find symbol
+        return (int)(((int) (hm.get("len")))) >= limit;
+                               ^
+  symbol:   method get(String)
+  location: variable hm of type HashMap
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:87: error: cannot find symbol
+        if (((Bucket[]) (hm.get("buckets"))).length <= (int)(((int) (hm.get("initial_size"))))) {
+                           ^
+  symbol:   method get(String)
+  location: variable hm of type HashMap
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:87: error: cannot find symbol
+        if (((Bucket[]) (hm.get("buckets"))).length <= (int)(((int) (hm.get("initial_size"))))) {
+                                                                       ^
+  symbol:   method get(String)
+  location: variable hm of type HashMap
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:90: error: cannot find symbol
+        int limit_1 = ((Bucket[]) (hm.get("buckets"))).length * (int)(((int) (hm.get("cap_num")))) / (2 * (int)(((int) (hm.get("cap_den")))));
+                                     ^
+  symbol:   method get(String)
+  location: variable hm of type HashMap
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:90: error: cannot find symbol
+        int limit_1 = ((Bucket[]) (hm.get("buckets"))).length * (int)(((int) (hm.get("cap_num")))) / (2 * (int)(((int) (hm.get("cap_den")))));
+                                                                                ^
+  symbol:   method get(String)
+  location: variable hm of type HashMap
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:90: error: cannot find symbol
+        int limit_1 = ((Bucket[]) (hm.get("buckets"))).length * (int)(((int) (hm.get("cap_num")))) / (2 * (int)(((int) (hm.get("cap_den")))));
+                                                                                                                          ^
+  symbol:   method get(String)
+  location: variable hm of type HashMap
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:91: error: cannot find symbol
+        return (int)(((int) (hm.get("len")))) < limit_1;
+                               ^
+  symbol:   method get(String)
+  location: variable hm of type HashMap
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:95: error: cannot find symbol
+        Bucket[] old = (Bucket[])(((Bucket[]) (hm.get("buckets"))));
+                                                 ^
+  symbol:   method get(String)
+  location: variable hm of type HashMap
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:96: error: cannot find symbol
+hm.put("buckets", make_buckets(new_size));
+  ^
+  symbol:   method put(String,Bucket[])
+  location: variable hm of type HashMap
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:97: error: cannot find symbol
+hm.put("len", 0);
+  ^
+  symbol:   method put(String,int)
+  location: variable hm of type HashMap
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:109: error: cannot find symbol
+        resize(hm, ((Bucket[]) (hm.get("buckets"))).length * 2);
+                                  ^
+  symbol:   method get(String)
+  location: variable hm of type HashMap
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:113: error: cannot find symbol
+        resize(hm, ((Bucket[]) (hm.get("buckets"))).length / 2);
+                                  ^
+  symbol:   method get(String)
+  location: variable hm of type HashMap
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:119: error: cannot find symbol
+        while (i_2 < ((Bucket[]) (hm.get("buckets"))).length) {
+                                    ^
+  symbol:   method get(String)
+  location: variable hm of type HashMap
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:136: error: cannot find symbol
+        Bucket[] buckets_2 = (Bucket[])(((Bucket[]) (hm.get("buckets"))));
+                                                       ^
+  symbol:   method get(String)
+  location: variable hm of type HashMap
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:154: error: cannot find symbol
+        Bucket[] buckets_3 = (Bucket[])(((Bucket[]) (hm.get("buckets"))));
+                                                       ^
+  symbol:   method get(String)
+  location: variable hm of type HashMap
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:165: error: cannot find symbol
+hm.put("buckets", buckets_3);
+  ^
+  symbol:   method put(String,Bucket[])
+  location: variable hm of type HashMap
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:166: error: cannot find symbol
+hm.put("len", (int)(((int) (hm.get("len")))) - 1);
+                              ^
+  symbol:   method get(String)
+  location: variable hm of type HashMap
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:166: error: cannot find symbol
+hm.put("len", (int)(((int) (hm.get("len")))) - 1);
+  ^
+  symbol:   method put(String,int)
+  location: variable hm of type HashMap
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:178: error: cannot find symbol
+        return ((int) (hm.get("len")));
+                         ^
+  symbol:   method get(String)
+  location: variable hm of type HashMap
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:185: error: cannot find symbol
+        while (i_5 < ((Bucket[]) (hm.get("buckets"))).length) {
+                                    ^
+  symbol:   method get(String)
+  location: variable hm of type HashMap
+/tmp/TestJavaTranspiler_Algorithms_Golden205_hash_map1553972524/001/Main.java:186: error: cannot find symbol
+            Bucket b_1 = ((Bucket[]) (hm.get("buckets")))[i_5];
+                                        ^
+  symbol:   method get(String)
+  location: variable hm of type HashMap
+32 errors

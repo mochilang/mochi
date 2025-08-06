@@ -1,0 +1,110 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden177_binary_tree_path_sum2142020728/001/Main.java:7: error: constructor Empty() is already defined in class Empty
+        Empty() {}
+        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden177_binary_tree_path_sum2142020728/001/Main.java:30: error: cannot find symbol
+        return node instanceof Empty ? 0 : (current + ((Number)(v)).intValue() == target ? 1 : 0) + dfs(((Node)(node)).left, target, current + ((Number)(((Node)(node)).value)).intValue()) + dfs(((Node)(node)).right, target, current + ((Number)(((Node)(node)).value)).intValue());
+                                                                ^
+  symbol:   variable v
+  location: class Main
+/tmp/TestJavaTranspiler_Algorithms_Golden177_binary_tree_path_sum2142020728/001/Main.java:38: error: cannot find symbol
+        return new Node(new Node(new Node(new Node(Empty, 3, Empty), 3, new Node(Empty, -2, Empty)), 5, new Node(Empty, 2, new Node(Empty, 1, Empty))), 10, new Node(Empty, -3, new Node(Empty, 11, Empty)));
+                                                   ^
+  symbol:   variable Empty
+  location: class Main
+/tmp/TestJavaTranspiler_Algorithms_Golden177_binary_tree_path_sum2142020728/001/Main.java:38: error: cannot find symbol
+        return new Node(new Node(new Node(new Node(Empty, 3, Empty), 3, new Node(Empty, -2, Empty)), 5, new Node(Empty, 2, new Node(Empty, 1, Empty))), 10, new Node(Empty, -3, new Node(Empty, 11, Empty)));
+                                                             ^
+  symbol:   variable Empty
+  location: class Main
+/tmp/TestJavaTranspiler_Algorithms_Golden177_binary_tree_path_sum2142020728/001/Main.java:38: error: cannot find symbol
+        return new Node(new Node(new Node(new Node(Empty, 3, Empty), 3, new Node(Empty, -2, Empty)), 5, new Node(Empty, 2, new Node(Empty, 1, Empty))), 10, new Node(Empty, -3, new Node(Empty, 11, Empty)));
+                                                                                 ^
+  symbol:   variable Empty
+  location: class Main
+/tmp/TestJavaTranspiler_Algorithms_Golden177_binary_tree_path_sum2142020728/001/Main.java:38: error: cannot find symbol
+        return new Node(new Node(new Node(new Node(Empty, 3, Empty), 3, new Node(Empty, -2, Empty)), 5, new Node(Empty, 2, new Node(Empty, 1, Empty))), 10, new Node(Empty, -3, new Node(Empty, 11, Empty)));
+                                                                                            ^
+  symbol:   variable Empty
+  location: class Main
+/tmp/TestJavaTranspiler_Algorithms_Golden177_binary_tree_path_sum2142020728/001/Main.java:38: error: cannot find symbol
+        return new Node(new Node(new Node(new Node(Empty, 3, Empty), 3, new Node(Empty, -2, Empty)), 5, new Node(Empty, 2, new Node(Empty, 1, Empty))), 10, new Node(Empty, -3, new Node(Empty, 11, Empty)));
+                                                                                                                 ^
+  symbol:   variable Empty
+  location: class Main
+/tmp/TestJavaTranspiler_Algorithms_Golden177_binary_tree_path_sum2142020728/001/Main.java:38: error: cannot find symbol
+        return new Node(new Node(new Node(new Node(Empty, 3, Empty), 3, new Node(Empty, -2, Empty)), 5, new Node(Empty, 2, new Node(Empty, 1, Empty))), 10, new Node(Empty, -3, new Node(Empty, 11, Empty)));
+                                                                                                                                    ^
+  symbol:   variable Empty
+  location: class Main
+/tmp/TestJavaTranspiler_Algorithms_Golden177_binary_tree_path_sum2142020728/001/Main.java:38: error: cannot find symbol
+        return new Node(new Node(new Node(new Node(Empty, 3, Empty), 3, new Node(Empty, -2, Empty)), 5, new Node(Empty, 2, new Node(Empty, 1, Empty))), 10, new Node(Empty, -3, new Node(Empty, 11, Empty)));
+                                                                                                                                              ^
+  symbol:   variable Empty
+  location: class Main
+/tmp/TestJavaTranspiler_Algorithms_Golden177_binary_tree_path_sum2142020728/001/Main.java:38: error: cannot find symbol
+        return new Node(new Node(new Node(new Node(Empty, 3, Empty), 3, new Node(Empty, -2, Empty)), 5, new Node(Empty, 2, new Node(Empty, 1, Empty))), 10, new Node(Empty, -3, new Node(Empty, 11, Empty)));
+                                                                                                                                                                     ^
+  symbol:   variable Empty
+  location: class Main
+/tmp/TestJavaTranspiler_Algorithms_Golden177_binary_tree_path_sum2142020728/001/Main.java:38: error: cannot find symbol
+        return new Node(new Node(new Node(new Node(Empty, 3, Empty), 3, new Node(Empty, -2, Empty)), 5, new Node(Empty, 2, new Node(Empty, 1, Empty))), 10, new Node(Empty, -3, new Node(Empty, 11, Empty)));
+                                                                                                                                                                                         ^
+  symbol:   variable Empty
+  location: class Main
+/tmp/TestJavaTranspiler_Algorithms_Golden177_binary_tree_path_sum2142020728/001/Main.java:38: error: cannot find symbol
+        return new Node(new Node(new Node(new Node(Empty, 3, Empty), 3, new Node(Empty, -2, Empty)), 5, new Node(Empty, 2, new Node(Empty, 1, Empty))), 10, new Node(Empty, -3, new Node(Empty, 11, Empty)));
+                                                                                                                                                                                                    ^
+  symbol:   variable Empty
+  location: class Main
+/tmp/TestJavaTranspiler_Algorithms_Golden177_binary_tree_path_sum2142020728/001/Main.java:42: error: cannot find symbol
+        return new Node(new Node(new Node(new Node(Empty, 3, Empty), 3, new Node(Empty, -2, Empty)), 5, new Node(Empty, 2, new Node(Empty, 1, Empty))), 10, new Node(Empty, -3, new Node(Empty, 10, Empty)));
+                                                   ^
+  symbol:   variable Empty
+  location: class Main
+/tmp/TestJavaTranspiler_Algorithms_Golden177_binary_tree_path_sum2142020728/001/Main.java:42: error: cannot find symbol
+        return new Node(new Node(new Node(new Node(Empty, 3, Empty), 3, new Node(Empty, -2, Empty)), 5, new Node(Empty, 2, new Node(Empty, 1, Empty))), 10, new Node(Empty, -3, new Node(Empty, 10, Empty)));
+                                                             ^
+  symbol:   variable Empty
+  location: class Main
+/tmp/TestJavaTranspiler_Algorithms_Golden177_binary_tree_path_sum2142020728/001/Main.java:42: error: cannot find symbol
+        return new Node(new Node(new Node(new Node(Empty, 3, Empty), 3, new Node(Empty, -2, Empty)), 5, new Node(Empty, 2, new Node(Empty, 1, Empty))), 10, new Node(Empty, -3, new Node(Empty, 10, Empty)));
+                                                                                 ^
+  symbol:   variable Empty
+  location: class Main
+/tmp/TestJavaTranspiler_Algorithms_Golden177_binary_tree_path_sum2142020728/001/Main.java:42: error: cannot find symbol
+        return new Node(new Node(new Node(new Node(Empty, 3, Empty), 3, new Node(Empty, -2, Empty)), 5, new Node(Empty, 2, new Node(Empty, 1, Empty))), 10, new Node(Empty, -3, new Node(Empty, 10, Empty)));
+                                                                                            ^
+  symbol:   variable Empty
+  location: class Main
+/tmp/TestJavaTranspiler_Algorithms_Golden177_binary_tree_path_sum2142020728/001/Main.java:42: error: cannot find symbol
+        return new Node(new Node(new Node(new Node(Empty, 3, Empty), 3, new Node(Empty, -2, Empty)), 5, new Node(Empty, 2, new Node(Empty, 1, Empty))), 10, new Node(Empty, -3, new Node(Empty, 10, Empty)));
+                                                                                                                 ^
+  symbol:   variable Empty
+  location: class Main
+/tmp/TestJavaTranspiler_Algorithms_Golden177_binary_tree_path_sum2142020728/001/Main.java:42: error: cannot find symbol
+        return new Node(new Node(new Node(new Node(Empty, 3, Empty), 3, new Node(Empty, -2, Empty)), 5, new Node(Empty, 2, new Node(Empty, 1, Empty))), 10, new Node(Empty, -3, new Node(Empty, 10, Empty)));
+                                                                                                                                    ^
+  symbol:   variable Empty
+  location: class Main
+/tmp/TestJavaTranspiler_Algorithms_Golden177_binary_tree_path_sum2142020728/001/Main.java:42: error: cannot find symbol
+        return new Node(new Node(new Node(new Node(Empty, 3, Empty), 3, new Node(Empty, -2, Empty)), 5, new Node(Empty, 2, new Node(Empty, 1, Empty))), 10, new Node(Empty, -3, new Node(Empty, 10, Empty)));
+                                                                                                                                              ^
+  symbol:   variable Empty
+  location: class Main
+/tmp/TestJavaTranspiler_Algorithms_Golden177_binary_tree_path_sum2142020728/001/Main.java:42: error: cannot find symbol
+        return new Node(new Node(new Node(new Node(Empty, 3, Empty), 3, new Node(Empty, -2, Empty)), 5, new Node(Empty, 2, new Node(Empty, 1, Empty))), 10, new Node(Empty, -3, new Node(Empty, 10, Empty)));
+                                                                                                                                                                     ^
+  symbol:   variable Empty
+  location: class Main
+/tmp/TestJavaTranspiler_Algorithms_Golden177_binary_tree_path_sum2142020728/001/Main.java:42: error: cannot find symbol
+        return new Node(new Node(new Node(new Node(Empty, 3, Empty), 3, new Node(Empty, -2, Empty)), 5, new Node(Empty, 2, new Node(Empty, 1, Empty))), 10, new Node(Empty, -3, new Node(Empty, 10, Empty)));
+                                                                                                                                                                                         ^
+  symbol:   variable Empty
+  location: class Main
+/tmp/TestJavaTranspiler_Algorithms_Golden177_binary_tree_path_sum2142020728/001/Main.java:42: error: cannot find symbol
+        return new Node(new Node(new Node(new Node(Empty, 3, Empty), 3, new Node(Empty, -2, Empty)), 5, new Node(Empty, 2, new Node(Empty, 1, Empty))), 10, new Node(Empty, -3, new Node(Empty, 10, Empty)));
+                                                                                                                                                                                                    ^
+  symbol:   variable Empty
+  location: class Main
+22 errors

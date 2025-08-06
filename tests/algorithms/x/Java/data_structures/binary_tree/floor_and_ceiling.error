@@ -1,0 +1,12 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden182_floor_and_ceiling3893114763/001/Main.java:26: error: method concat in class Main cannot be applied to given types;
+        result = ((int[])(concat(result, inorder(((Node[])(nodes)), node.right))));
+                          ^
+  required: T[],T[]
+  found:    int[],int[]
+  reason: inference variable T has incompatible bounds
+    equality constraints: int
+    upper bounds: Object
+  where T is a type-variable:
+    T extends Object declared in method <T>concat(T[],T[])
+1 error

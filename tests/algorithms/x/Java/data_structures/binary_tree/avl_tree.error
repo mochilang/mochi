@@ -1,0 +1,85 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden171_avl_tree139030087/001/Main.java:3: error: generic array creation
+    static java.util.Map<String,Integer>[] nodes = new java.util.Map<String,Integer>[0];
+                                                   ^
+/tmp/TestJavaTranspiler_Algorithms_Golden171_avl_tree139030087/001/Main.java:26: error: incompatible types: String cannot be converted to int
+nodes[i]["height"] = my_max(get_height((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("left", 0)))), get_height((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("right", 0))))) + 1;
+         ^
+/tmp/TestJavaTranspiler_Algorithms_Golden171_avl_tree139030087/001/Main.java:26: error: array required, but Map<String,Integer> found
+nodes[i]["height"] = my_max(get_height((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("left", 0)))), get_height((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("right", 0))))) + 1;
+        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden171_avl_tree139030087/001/Main.java:31: error: incompatible types: String cannot be converted to int
+nodes[i]["left"] = ((int)(((java.util.Map)nodes[left])).getOrDefault("right", 0));
+         ^
+/tmp/TestJavaTranspiler_Algorithms_Golden171_avl_tree139030087/001/Main.java:31: error: array required, but Map<String,Integer> found
+nodes[i]["left"] = ((int)(((java.util.Map)nodes[left])).getOrDefault("right", 0));
+        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden171_avl_tree139030087/001/Main.java:32: error: incompatible types: String cannot be converted to int
+nodes[left]["right"] = i;
+            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden171_avl_tree139030087/001/Main.java:32: error: array required, but Map<String,Integer> found
+nodes[left]["right"] = i;
+           ^
+/tmp/TestJavaTranspiler_Algorithms_Golden171_avl_tree139030087/001/Main.java:40: error: incompatible types: String cannot be converted to int
+nodes[i]["right"] = ((int)(((java.util.Map)nodes[right])).getOrDefault("left", 0));
+         ^
+/tmp/TestJavaTranspiler_Algorithms_Golden171_avl_tree139030087/001/Main.java:40: error: array required, but Map<String,Integer> found
+nodes[i]["right"] = ((int)(((java.util.Map)nodes[right])).getOrDefault("left", 0));
+        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden171_avl_tree139030087/001/Main.java:41: error: incompatible types: String cannot be converted to int
+nodes[right]["left"] = i;
+             ^
+/tmp/TestJavaTranspiler_Algorithms_Golden171_avl_tree139030087/001/Main.java:41: error: array required, but Map<String,Integer> found
+nodes[right]["left"] = i;
+            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden171_avl_tree139030087/001/Main.java:48: error: incompatible types: String cannot be converted to int
+nodes[i]["left"] = left_rotation((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("left", 0))));
+         ^
+/tmp/TestJavaTranspiler_Algorithms_Golden171_avl_tree139030087/001/Main.java:48: error: array required, but Map<String,Integer> found
+nodes[i]["left"] = left_rotation((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("left", 0))));
+        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden171_avl_tree139030087/001/Main.java:53: error: incompatible types: String cannot be converted to int
+nodes[i]["right"] = right_rotation((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("right", 0))));
+         ^
+/tmp/TestJavaTranspiler_Algorithms_Golden171_avl_tree139030087/001/Main.java:53: error: array required, but Map<String,Integer> found
+nodes[i]["right"] = right_rotation((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("right", 0))));
+        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden171_avl_tree139030087/001/Main.java:62: error: incompatible types: String cannot be converted to int
+nodes[i]["left"] = insert_node((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("left", 0))), value);
+         ^
+/tmp/TestJavaTranspiler_Algorithms_Golden171_avl_tree139030087/001/Main.java:62: error: array required, but Map<String,Integer> found
+nodes[i]["left"] = insert_node((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("left", 0))), value);
+        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden171_avl_tree139030087/001/Main.java:71: error: incompatible types: String cannot be converted to int
+nodes[i]["right"] = insert_node((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("right", 0))), value);
+         ^
+/tmp/TestJavaTranspiler_Algorithms_Golden171_avl_tree139030087/001/Main.java:71: error: array required, but Map<String,Integer> found
+nodes[i]["right"] = insert_node((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("right", 0))), value);
+        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden171_avl_tree139030087/001/Main.java:97: error: incompatible types: String cannot be converted to int
+nodes[i]["left"] = del_node((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("left", 0))), value);
+         ^
+/tmp/TestJavaTranspiler_Algorithms_Golden171_avl_tree139030087/001/Main.java:97: error: array required, but Map<String,Integer> found
+nodes[i]["left"] = del_node((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("left", 0))), value);
+        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden171_avl_tree139030087/001/Main.java:99: error: incompatible types: String cannot be converted to int
+nodes[i]["right"] = del_node((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("right", 0))), value);
+         ^
+/tmp/TestJavaTranspiler_Algorithms_Golden171_avl_tree139030087/001/Main.java:99: error: array required, but Map<String,Integer> found
+nodes[i]["right"] = del_node((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("right", 0))), value);
+        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden171_avl_tree139030087/001/Main.java:102: error: incompatible types: String cannot be converted to int
+nodes[i]["data"] = temp;
+         ^
+/tmp/TestJavaTranspiler_Algorithms_Golden171_avl_tree139030087/001/Main.java:102: error: array required, but Map<String,Integer> found
+nodes[i]["data"] = temp;
+        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden171_avl_tree139030087/001/Main.java:103: error: incompatible types: String cannot be converted to int
+nodes[i]["right"] = del_node((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("right", 0))), temp);
+         ^
+/tmp/TestJavaTranspiler_Algorithms_Golden171_avl_tree139030087/001/Main.java:103: error: array required, but Map<String,Integer> found
+nodes[i]["right"] = del_node((int)(((int)(((java.util.Map)nodes[i])).getOrDefault("right", 0))), temp);
+        ^
+Note: /tmp/TestJavaTranspiler_Algorithms_Golden171_avl_tree139030087/001/Main.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+27 errors

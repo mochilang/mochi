@@ -1,0 +1,5 @@
+Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index 1 out of bounds for length 1
+	at Main.insert(Main.java:44)
+	at Main.make_tree(Main.java:86)
+	at Main.main(Main.java:94)
+	at Main.main(Main.java:102)

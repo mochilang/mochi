@@ -1,0 +1,5 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden197_serialize_deserialize_binary_tree4116155264/001/Main.java:7: error: constructor Empty() is already defined in class Empty
+        Empty() {}
+        ^
+1 error
