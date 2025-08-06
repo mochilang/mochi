@@ -2,92 +2,92 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-06 22:08 GMT+7
+Last updated: 2025-08-06 22:45 GMT+7
 
-## Algorithms Golden Test Checklist (24/1077)
+## Algorithms Golden Test Checklist (67/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 21.91ms | 124.40KiB |
-| 2 | backtracking/all_permutations | ✓ | 15.67ms | 132.69KiB |
-| 3 | backtracking/all_subsequences | ✓ | 13.04ms | 132.89KiB |
-| 4 | backtracking/coloring | ✓ | 9.41ms | 132.83KiB |
-| 5 | backtracking/combination_sum | ✓ | 22.41ms | 123.55KiB |
-| 6 | backtracking/crossword_puzzle_solver | ✓ | 8.87ms | 132.91KiB |
-| 7 | backtracking/hamiltonian_cycle | ✓ | 24.36ms | 124.52KiB |
+| 1 | backtracking/all_combinations | ✓ | 30.54ms | 124.45KiB |
+| 2 | backtracking/all_permutations | ✓ | 14.62ms | 132.73KiB |
+| 3 | backtracking/all_subsequences | ✓ | 13.64ms | 132.94KiB |
+| 4 | backtracking/coloring | ✓ | 16.80ms | 132.92KiB |
+| 5 | backtracking/combination_sum | ✓ | 31.16ms | 123.60KiB |
+| 6 | backtracking/crossword_puzzle_solver | ✓ | 11.90ms | 133.00KiB |
+| 7 | backtracking/hamiltonian_cycle | ✓ | 24.76ms | 123.41KiB |
 | 8 | backtracking/knight_tour | ✓ | 7.54ms | 133.73KiB |
 | 9 | backtracking/match_word_pattern | error |  |  |
-| 10 | backtracking/minimax | ✓ | 24.67ms | 123.52KiB |
-| 11 | backtracking/n_queens | error | 29.52ms | 115.22KiB |
-| 12 | backtracking/n_queens_math | ✓ | 48.94ms | 115.28KiB |
-| 13 | backtracking/power_sum | ✓ | 7.59ms | 134.14KiB |
-| 14 | backtracking/rat_in_maze | ✓ | 11.38ms | 132.35KiB |
-| 15 | backtracking/sudoku | ✓ | 26.95ms | 132.05KiB |
+| 10 | backtracking/minimax | ✓ | 25.86ms | 123.57KiB |
+| 11 | backtracking/n_queens | ✓ | 29.52ms | 115.22KiB |
+| 12 | backtracking/n_queens_math | ✓ | 52.86ms | 115.33KiB |
+| 13 | backtracking/power_sum | ✓ | 14.33ms | 134.19KiB |
+| 14 | backtracking/rat_in_maze | ✓ | 11.34ms | 132.45KiB |
+| 15 | backtracking/sudoku | ✓ | 33.40ms | 131.27KiB |
 | 16 | backtracking/sum_of_subsets | error |  |  |
-| 17 | backtracking/word_break | error | 27.23ms | 114.40KiB |
-| 18 | backtracking/word_ladder | ✓ | 35.17ms | 122.62KiB |
-| 19 | backtracking/word_search | ✓ | 22.80ms | 122.71KiB |
-| 20 | bit_manipulation/binary_and_operator | error | 17.15ms | 121.63KiB |
-| 21 | bit_manipulation/binary_coded_decimal | ✓ | 7.77ms | 133.82KiB |
-| 22 | bit_manipulation/binary_count_setbits | ✓ | 7.36ms | 134.09KiB |
-| 23 | bit_manipulation/binary_count_trailing_zeros | ✓ | 7.71ms | 134.09KiB |
-| 24 | bit_manipulation/binary_or_operator | ✓ | 10.94ms | 130.41KiB |
-| 25 | bit_manipulation/binary_shifts | error |  |  |
-| 26 | bit_manipulation/binary_twos_complement | ✓ | 12.92ms | 130.32KiB |
-| 27 | bit_manipulation/binary_xor_operator | ✓ | 12.54ms | 130.41KiB |
-| 28 | bit_manipulation/bitwise_addition_recursive | ✓ | 8.51ms | 134.09KiB |
-| 29 | bit_manipulation/count_1s_brian_kernighan_method | ✓ | 7.37ms | 134.09KiB |
-| 30 | bit_manipulation/count_number_of_one_bits | ✓ | 21.00ms | 123.63KiB |
-| 31 | bit_manipulation/excess_3_code |   |  |  |
-| 32 | bit_manipulation/find_previous_power_of_two |   |  |  |
-| 33 | bit_manipulation/find_unique_number |   |  |  |
-| 34 | bit_manipulation/gray_code_sequence |   |  |  |
-| 35 | bit_manipulation/highest_set_bit |   |  |  |
-| 36 | bit_manipulation/index_of_rightmost_set_bit |   |  |  |
-| 37 | bit_manipulation/is_even |   |  |  |
-| 38 | bit_manipulation/is_power_of_two |   |  |  |
-| 39 | bit_manipulation/largest_pow_of_two_le_num |   |  |  |
-| 40 | bit_manipulation/missing_number |   |  |  |
-| 41 | bit_manipulation/numbers_different_signs |   |  |  |
-| 42 | bit_manipulation/power_of_4 |   |  |  |
-| 43 | bit_manipulation/reverse_bits |   |  |  |
-| 44 | bit_manipulation/single_bit_manipulation_operations |   |  |  |
-| 45 | bit_manipulation/swap_all_odd_and_even_bits |   |  |  |
-| 46 | blockchain/diophantine_equation |   |  |  |
-| 47 | boolean_algebra/and_gate |   |  |  |
-| 48 | boolean_algebra/imply_gate |   |  |  |
-| 49 | boolean_algebra/karnaugh_map_simplification |   |  |  |
-| 50 | boolean_algebra/multiplexer |   |  |  |
-| 51 | boolean_algebra/nand_gate |   |  |  |
-| 52 | boolean_algebra/nimply_gate |   |  |  |
-| 53 | boolean_algebra/nor_gate |   |  |  |
-| 54 | boolean_algebra/not_gate |   |  |  |
-| 55 | boolean_algebra/or_gate |   |  |  |
-| 56 | boolean_algebra/quine_mc_cluskey |   |  |  |
-| 57 | boolean_algebra/xnor_gate |   |  |  |
-| 58 | boolean_algebra/xor_gate |   |  |  |
-| 59 | cellular_automata/conways_game_of_life |   |  |  |
-| 60 | cellular_automata/game_of_life |   |  |  |
-| 61 | cellular_automata/langtons_ant |   |  |  |
-| 62 | cellular_automata/nagel_schrekenberg |   |  |  |
-| 63 | cellular_automata/one_dimensional |   |  |  |
-| 64 | cellular_automata/wa_tor |   |  |  |
-| 65 | ciphers/a1z26 |   |  |  |
-| 66 | ciphers/affine_cipher |   |  |  |
-| 67 | ciphers/atbash |   |  |  |
-| 68 | ciphers/autokey |   |  |  |
-| 69 | ciphers/baconian_cipher |   |  |  |
-| 70 | ciphers/base16 |   |  |  |
-| 71 | ciphers/base32 |   |  |  |
-| 72 | ciphers/base64_cipher |   |  |  |
-| 73 | ciphers/base85 |   |  |  |
-| 74 | ciphers/beaufort_cipher |   |  |  |
-| 75 | ciphers/bifid |   |  |  |
-| 76 | ciphers/brute_force_caesar_cipher |   |  |  |
-| 77 | ciphers/caesar_cipher |   |  |  |
-| 78 | ciphers/cryptomath_module |   |  |  |
-| 79 | ciphers/decrypt_caesar_with_chi_squared |   |  |  |
-| 80 | ciphers/deterministic_miller_rabin |   |  |  |
-| 81 | ciphers/diffie |   |  |  |
+| 17 | backtracking/word_break | ✓ | 27.23ms | 114.40KiB |
+| 18 | backtracking/word_ladder | ✓ | 34.74ms | 122.67KiB |
+| 19 | backtracking/word_search | ✓ | 27.96ms | 114.00KiB |
+| 20 | bit_manipulation/binary_and_operator | ✓ | 17.15ms | 121.63KiB |
+| 21 | bit_manipulation/binary_coded_decimal |   |  |  |
+| 22 | bit_manipulation/binary_count_setbits |   |  |  |
+| 23 | bit_manipulation/binary_count_trailing_zeros |   |  |  |
+| 24 | bit_manipulation/binary_or_operator |   |  |  |
+| 25 | bit_manipulation/binary_shifts |   |  |  |
+| 26 | bit_manipulation/binary_twos_complement |   |  |  |
+| 27 | bit_manipulation/binary_xor_operator |   |  |  |
+| 28 | bit_manipulation/bitwise_addition_recursive |   |  |  |
+| 29 | bit_manipulation/count_1s_brian_kernighan_method |   |  |  |
+| 30 | bit_manipulation/count_number_of_one_bits |   |  |  |
+| 31 | bit_manipulation/excess_3_code | ✓ | 23.64ms | 123.27KiB |
+| 32 | bit_manipulation/find_previous_power_of_two | ✓ | 26.99ms | 124.12KiB |
+| 33 | bit_manipulation/find_unique_number | ✓ | 24.50ms | 123.59KiB |
+| 34 | bit_manipulation/gray_code_sequence | ✓ | 8.77ms | 134.00KiB |
+| 35 | bit_manipulation/highest_set_bit | ✓ | 7.53ms | 134.14KiB |
+| 36 | bit_manipulation/index_of_rightmost_set_bit | ✓ | 11.60ms | 134.14KiB |
+| 37 | bit_manipulation/is_even | ✓ | 10.21ms | 134.19KiB |
+| 38 | bit_manipulation/is_power_of_two | ✓ | 10.15ms | 134.62KiB |
+| 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 9.55ms | 134.14KiB |
+| 40 | bit_manipulation/missing_number | ✓ | 21.97ms | 123.75KiB |
+| 41 | bit_manipulation/numbers_different_signs | ✓ | 9.15ms | 134.19KiB |
+| 42 | bit_manipulation/power_of_4 | ✓ | 9.72ms | 134.19KiB |
+| 43 | bit_manipulation/reverse_bits | ✓ | 11.28ms | 134.01KiB |
+| 44 | bit_manipulation/single_bit_manipulation_operations | ✓ | 11.01ms | 134.14KiB |
+| 45 | bit_manipulation/swap_all_odd_and_even_bits | ✓ | 31.78ms | 123.58KiB |
+| 46 | blockchain/diophantine_equation | ✓ | 11.21ms | 132.98KiB |
+| 47 | boolean_algebra/and_gate | ✓ | 23.26ms | 123.73KiB |
+| 48 | boolean_algebra/imply_gate | ✓ | 9.51ms | 134.19KiB |
+| 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 11.62ms | 132.52KiB |
+| 50 | boolean_algebra/multiplexer | ✓ | 10.53ms | 134.19KiB |
+| 51 | boolean_algebra/nand_gate | ✓ | 8.57ms | 134.19KiB |
+| 52 | boolean_algebra/nimply_gate | ✓ | 7.72ms | 134.19KiB |
+| 53 | boolean_algebra/nor_gate | ✓ | 14.76ms | 120.90KiB |
+| 54 | boolean_algebra/not_gate | ✓ | 9.99ms | 134.19KiB |
+| 55 | boolean_algebra/or_gate | ✓ | 20.89ms | 123.78KiB |
+| 56 | boolean_algebra/quine_mc_cluskey | ✓ | 25.31ms | 113.98KiB |
+| 57 | boolean_algebra/xnor_gate | ✓ | 9.10ms | 134.19KiB |
+| 58 | boolean_algebra/xor_gate | ✓ | 10.76ms | 134.19KiB |
+| 59 | cellular_automata/conways_game_of_life | ✓ | 14.75ms | 132.43KiB |
+| 60 | cellular_automata/game_of_life | ✓ | 15.12ms | 132.07KiB |
+| 61 | cellular_automata/langtons_ant | ✓ | 26.09ms | 123.44KiB |
+| 62 | cellular_automata/nagel_schrekenberg | ✓ | 25.44ms | 115.15KiB |
+| 63 | cellular_automata/one_dimensional | ✓ | 15.66ms | 129.87KiB |
+| 64 | cellular_automata/wa_tor | ✓ | 21.36ms | 122.63KiB |
+| 65 | ciphers/a1z26 | ✓ | 28.31ms | 103.49KiB |
+| 66 | ciphers/affine_cipher | ✓ | 20.11ms | 120.32KiB |
+| 67 | ciphers/atbash | ✓ | 13.25ms | 129.98KiB |
+| 68 | ciphers/autokey | ✓ | 17.08ms | 130.00KiB |
+| 69 | ciphers/baconian_cipher | ✓ | 19.73ms | 127.76KiB |
+| 70 | ciphers/base16 | ✓ | 15.52ms | 129.93KiB |
+| 71 | ciphers/base32 | ✓ | 21.86ms | 121.73KiB |
+| 72 | ciphers/base64_cipher | ✓ | 36.48ms | 106.88KiB |
+| 73 | ciphers/base85 | ✓ | 32.76ms | 116.04KiB |
+| 74 | ciphers/beaufort_cipher | ✓ | 10.35ms | 134.05KiB |
+| 75 | ciphers/bifid | ✓ | 13.81ms | 131.78KiB |
+| 76 | ciphers/brute_force_caesar_cipher | ✓ | 20.88ms | 121.38KiB |
+| 77 | ciphers/caesar_cipher | ✓ | 44.77ms | 121.59KiB |
+| 78 | ciphers/cryptomath_module | ✓ | 10.26ms | 134.14KiB |
+| 79 | ciphers/decrypt_caesar_with_chi_squared | ✓ | 23.96ms | 83.23KiB |
+| 80 | ciphers/deterministic_miller_rabin | error |  |  |
+| 81 | ciphers/diffie | error |  |  |
 | 82 | ciphers/diffie_hellman |   |  |  |
 | 83 | ciphers/elgamal_key_generator |   |  |  |
 | 84 | ciphers/enigma_machine2 |   |  |  |

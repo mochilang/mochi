@@ -148,6 +148,7 @@ func init() {
 		"panic":        `fun panic(msg: String): Nothing { throw RuntimeException(msg) }`,
 		"input":        `fun input(): String = readLine() ?: ""`,
 		"_listSet":     `fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }`,
+		"json":         `fun json(v: Any?) { println(toJson(v)) }`,
 		"importBigInt": `import java.math.BigInteger`,
 		"_lookupHost": `fun _lookupHost(host: String): MutableList<Any?> {
     return try {
@@ -312,6 +313,9 @@ func useHelper(name string) {
 		if name == "lshift" || name == "rshift" {
 			useHelper("pow2")
 		}
+		if name == "json" {
+			useHelper("toJson")
+		}
 	}
 }
 
@@ -353,7 +357,13 @@ func (s *IndexAssignStmt) emit(w io.Writer, indentLevel int) {
 			io.WriteString(w, "_listSet(")
 			ix.Target.emit(w)
 			io.WriteString(w, ", ")
-			ix.Index.emit(w)
+			if guessType(ix.Index) == "BigInteger" {
+				io.WriteString(w, "(")
+				ix.Index.emit(w)
+				io.WriteString(w, ").toInt()")
+			} else {
+				ix.Index.emit(w)
+			}
 			io.WriteString(w, ", ")
 			s.Value.emit(w)
 			io.WriteString(w, ")")
@@ -1209,7 +1219,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	numOp := (b.Op == "+" || b.Op == "-" || b.Op == "*" || b.Op == "/" || b.Op == "%") && !listOp
 	cmpOp := b.Op == ">" || b.Op == "<" || b.Op == ">=" || b.Op == "<=" || b.Op == "in"
 	boolOp := b.Op == "&&" || b.Op == "||"
-	bigOp := leftType == "BigInteger" && rightType == "BigInteger"
+	bigOp := leftType == "BigInteger" || rightType == "BigInteger"
 	ratOp := leftType == "BigRat" || rightType == "BigRat"
 	cast := func(e Expr, typ string) {
 		if typ == "Double" {
@@ -1642,6 +1652,18 @@ type AssignStmt struct {
 func (s *AssignStmt) emit(w io.Writer, indentLevel int) {
 	indent(w, indentLevel)
 	io.WriteString(w, safeName(s.Name)+" = ")
+	typ := ""
+	if vs, ok := varDecls[s.Name]; ok {
+		typ = vs.Type
+	} else {
+		typ = guessType(&VarRef{Name: s.Name})
+	}
+	if guessType(s.Value) == "Long" && typ != "Long" {
+		io.WriteString(w, "(")
+		s.Value.emit(w)
+		io.WriteString(w, ").toInt()")
+		return
+	}
 	s.Value.emit(w)
 }
 
@@ -3106,6 +3128,24 @@ func guessType(e Expr) string {
 	return ""
 }
 
+// containsLen reports whether the expression references a length operation.
+// This helps when the type checker promotes length-related expressions to
+// BigInteger even though Kotlin uses Int for collection sizes.
+func containsLen(e Expr) bool {
+	switch v := e.(type) {
+	case *LenExpr:
+		return true
+	case *BinaryExpr:
+		return containsLen(v.Left) || containsLen(v.Right)
+	case *CastExpr:
+		return containsLen(v.Value)
+	case *FieldExpr:
+		return v.Name == "size" || v.Name == "length" || containsLen(v.Receiver)
+	default:
+		return false
+	}
+}
+
 // newVarRef creates a VarRef with the type looked up in the environment when
 // available.
 func newVarRef(env *types.Env, name string) *VarRef {
@@ -3329,6 +3369,18 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				if gt := guessType(val); strings.Contains(gt, "Long") && !strings.Contains(typ, "Long") {
 					typ = gt
 				}
+				if strings.HasPrefix(typ, "MutableList<Int>") {
+					if ll, ok := val.(*ListLit); ok {
+						for _, e := range ll.Elems {
+							if guessType(e) == "Long" {
+								typ = "MutableList<Long>"
+								break
+							}
+						}
+					} else if gt := guessType(val); strings.HasPrefix(gt, "MutableList<Long>") {
+						typ = gt
+					}
+				}
 				if strings.Contains(typ, "BigInteger") {
 					if gt := guessType(val); gt != "" && !strings.Contains(gt, "BigInteger") {
 						typ = gt
@@ -3423,6 +3475,18 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				if typ == "Any" {
 					typ = ""
 				}
+				if strings.HasPrefix(typ, "MutableList<Int>") {
+					if ll, ok := val.(*ListLit); ok {
+						for _, e := range ll.Elems {
+							if guessType(e) == "Long" {
+								typ = "MutableList<Long>"
+								break
+							}
+						}
+					} else if gt := guessType(val); strings.HasPrefix(gt, "MutableList<Long>") {
+						typ = gt
+					}
+				}
 				if strings.Contains(typ, "BigInteger") {
 					if gt := guessType(val); gt != "" && !strings.Contains(gt, "BigInteger") {
 						typ = gt
@@ -3438,6 +3502,18 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				}
 			}
 			vs := &VarStmt{Name: st.Var.Name, Type: typ, Value: val}
+			// Sometimes the type checker reports BigInteger for values like
+			// lengths or indices, but the actual expression is within the
+			// Kotlin Int range.  In those cases guessType can determine a
+			// narrower Int type.  Use that instead so Kotlin code does not
+			// require BigInteger helpers unnecessarily.
+			if vs.Type == "BigInteger" && (guessType(val) == "Int" || containsLen(val)) {
+				if ce, ok := val.(*CastExpr); ok && ce.Type == "BigInteger" {
+					val = ce.Value
+					vs.Value = val
+				}
+				vs.Type = "Int"
+			}
 			varDecls[st.Var.Name] = vs
 			if seenStmt {
 				p.Stmts = append(p.Stmts, vs)
