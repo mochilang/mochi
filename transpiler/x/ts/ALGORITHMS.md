@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-07 04:13 UTC
+Last updated: 2025-08-07 08:19 UTC
 
-## Algorithms Golden Test Checklist (1001/1077)
+## Algorithms Golden Test Checklist (1003/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 645µs | 22.6 KB |
@@ -189,7 +189,7 @@ Last updated: 2025-08-07 04:13 UTC
 | 180 | data_structures/binary_tree/fenwick_tree | ✓ | 2.565ms | 51.1 KB |
 | 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist |   |  |  |
 | 182 | data_structures/binary_tree/floor_and_ceiling |   |  |  |
-| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 |   |  |  |
+| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 | ✓ | 571.223ms | 21.9 KB |
 | 184 | data_structures/binary_tree/is_sorted |   |  |  |
 | 185 | data_structures/binary_tree/is_sum_tree |   |  |  |
 | 186 | data_structures/binary_tree/lazy_segment_tree |   |  |  |
@@ -203,7 +203,7 @@ Last updated: 2025-08-07 04:13 UTC
 | 194 | data_structures/binary_tree/red_black_tree |   |  |  |
 | 195 | data_structures/binary_tree/segment_tree |   |  |  |
 | 196 | data_structures/binary_tree/segment_tree_other |   |  |  |
-| 197 | data_structures/binary_tree/serialize_deserialize_binary_tree |   |  |  |
+| 197 | data_structures/binary_tree/serialize_deserialize_binary_tree | ✓ | 571.223ms | 28.8 KB |
 | 198 | data_structures/binary_tree/symmetric_tree |   |  |  |
 | 199 | data_structures/binary_tree/treap |   |  |  |
 | 200 | data_structures/binary_tree/wavelet_tree |   |  |  |

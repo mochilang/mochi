@@ -1553,6 +1553,22 @@ func (a *AggQueryExpr) emit(w io.Writer) {
 }
 
 func (s *IndexAssignStmt) emit(w io.Writer) {
+	if ap, ok := s.Value.(*AppendExpr); ok {
+		if emitExprString(s.Target) == emitExprString(ap.List) {
+			s.Target.emit(w)
+			io.WriteString(w, ".push(")
+			if ap.Elem != nil {
+				ap.Elem.emit(w)
+			}
+			io.WriteString(w, ")")
+			if b, ok := w.(interface{ WriteByte(byte) error }); ok {
+				b.WriteByte(';')
+			} else {
+				io.WriteString(w, ";")
+			}
+			return
+		}
+	}
 	s.Target.emit(w)
 	io.WriteString(w, " = ")
 	s.Value.emit(w)
@@ -3759,7 +3775,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					if err != nil {
 						return nil, err
 					}
-					entries = append(entries, MapEntry{Key: &StringLit{Value: st.Order[i]}, Value: val})
+					key := f.Name
+					if key == "" {
+						if i < len(st.Order) {
+							key = st.Order[i]
+						}
+					}
+					entries = append(entries, MapEntry{Key: &StringLit{Value: key}, Value: val})
 				}
 				return &MapLit{Entries: entries}, nil
 			}
