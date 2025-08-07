@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Scheme code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Scheme`.
-Last updated: 2025-08-07 10:18 GMT+7
+Last updated: 2025-08-07 12:04 GMT+7
 
-## Algorithms Golden Test Checklist (519/1077)
+## Algorithms Golden Test Checklist (531/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 0s | 12.4 MB |
@@ -706,21 +706,21 @@ Last updated: 2025-08-07 10:18 GMT+7
 | 697 | matrix/binary_search_matrix |   |  |  |
 | 698 | matrix/count_islands_in_matrix |   |  |  |
 | 699 | matrix/count_negative_numbers_in_sorted_matrix |   |  |  |
-| 700 | matrix/count_paths |   |  |  |
-| 701 | matrix/cramers_rule_2x2 |   |  |  |
-| 702 | matrix/inverse_of_matrix |   |  |  |
-| 703 | matrix/largest_square_area_in_matrix |   |  |  |
+| 700 | matrix/count_paths | ✓ | 2ms | 13.5 MB |
+| 701 | matrix/cramers_rule_2x2 | ✓ | 0s | 12.3 MB |
+| 702 | matrix/inverse_of_matrix | ✓ | 0s | 14.2 MB |
+| 703 | matrix/largest_square_area_in_matrix | ✓ | 3ms | 13.6 MB |
 | 704 | matrix/matrix_based_game |   |  |  |
-| 705 | matrix/matrix_class |   |  |  |
-| 706 | matrix/matrix_equalization |   |  |  |
-| 707 | matrix/matrix_multiplication_recursion |   |  |  |
-| 708 | matrix/matrix_operation |   |  |  |
-| 709 | matrix/max_area_of_island |   |  |  |
+| 705 | matrix/matrix_class | ✓ | 13ms | 16.8 MB |
+| 706 | matrix/matrix_equalization | ✓ | 1ms | 13.3 MB |
+| 707 | matrix/matrix_multiplication_recursion | ✓ | 4ms | 13.3 MB |
+| 708 | matrix/matrix_operation | ✓ | 12ms | 16.4 MB |
+| 709 | matrix/max_area_of_island | ✓ | 11ms | 13.4 MB |
 | 710 | matrix/median_matrix |   |  |  |
 | 711 | matrix/nth_fibonacci_using_matrix_exponentiation |   |  |  |
-| 712 | matrix/pascal_triangle |   |  |  |
-| 713 | matrix/rotate_matrix |   |  |  |
-| 714 | matrix/searching_in_sorted_matrix |   |  |  |
+| 712 | matrix/pascal_triangle | ✓ | 1ms | 12.8 MB |
+| 713 | matrix/rotate_matrix | ✓ | 7ms | 13.6 MB |
+| 714 | matrix/searching_in_sorted_matrix | ✓ | 1ms | 12.7 MB |
 | 715 | matrix/sherman_morrison |   |  |  |
 | 716 | matrix/spiral_print |   |  |  |
 | 717 | matrix/tests/test_matrix_operation |   |  |  |
