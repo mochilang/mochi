@@ -1,4 +1,4 @@
-;; Generated on 2025-08-07 11:54 +0700
+;; Generated on 2025-08-07 14:14 +0700
 (import (scheme base))
 (import (scheme time))
 (import (chibi string))
@@ -31,7 +31,7 @@
 (define (lower s) (string-downcase s))
 (define (fmod a b) (- a (* (floor (/ a b)) b)))
 (define (_mod a b) (if (and (integer? a) (integer? b)) (modulo a b) (fmod a b)))
-(define (_div a b) (/ a b))
+(define (_div a b) (if (and (integer? a) (integer? b) (exact? a) (exact? b)) (quotient a b) (/ a b)))
 (define (_gt a b) (cond ((and (number? a) (number? b)) (> a b)) ((and (string? a) (string? b)) (string>? a b)) (else (> a b))))
 (define (_lt a b) (cond ((and (number? a) (number? b)) (< a b)) ((and (string? a) (string? b)) (string<? a b)) (else (< a b))))
 (define (_ge a b) (cond ((and (number? a) (number? b)) (>= a b)) ((and (string? a) (string? b)) (string>=? a b)) (else (>= a b))))
@@ -98,6 +98,7 @@
   (cond ((string? x) (string-length x))
         ((hash-table? x) (hash-table-size x))
         (else (length x))))
+(define (list-ref-safe lst idx) (if (and (integer? idx) (>= idx 0) (< idx (length lst))) (list-ref lst idx) '()))
 (
   let (
     (
@@ -158,27 +159,27 @@
                   and (
                     and (
                       equal? (
-                        list-ref eq1 0
+                        list-ref-safe eq1 0
                       )
                        0.0
                     )
                      (
                       equal? (
-                        list-ref eq1 1
+                        list-ref-safe eq1 1
                       )
                        0.0
                     )
                   )
                    (
                     equal? (
-                      list-ref eq2 0
+                      list-ref-safe eq2 0
                     )
                      0.0
                   )
                 )
                  (
                   equal? (
-                    list-ref eq2 1
+                    list-ref-safe eq2 1
                   )
                    0.0
                 )
@@ -198,7 +199,7 @@
               let (
                 (
                   a1 (
-                    list-ref eq1 0
+                    list-ref-safe eq1 0
                   )
                 )
               )
@@ -207,7 +208,7 @@
                   let (
                     (
                       b1 (
-                        list-ref eq1 1
+                        list-ref-safe eq1 1
                       )
                     )
                   )
@@ -216,7 +217,7 @@
                       let (
                         (
                           c1 (
-                            list-ref eq1 2
+                            list-ref-safe eq1 2
                           )
                         )
                       )
@@ -225,7 +226,7 @@
                           let (
                             (
                               a2 (
-                                list-ref eq2 0
+                                list-ref-safe eq2 0
                               )
                             )
                           )
@@ -234,7 +235,7 @@
                               let (
                                 (
                                   b2 (
-                                    list-ref eq2 1
+                                    list-ref-safe eq2 1
                                   )
                                 )
                               )
@@ -243,7 +244,7 @@
                                   let (
                                     (
                                       c2 (
-                                        list-ref eq2 2
+                                        list-ref-safe eq2 2
                                       )
                                     )
                                   )
@@ -444,7 +445,7 @@
                         )
                          (
                           else (
-                            list-ref r1 0
+                            list-ref-safe r1 0
                           )
                         )
                       )
@@ -474,7 +475,7 @@
                         )
                          (
                           else (
-                            list-ref r1 1
+                            list-ref-safe r1 1
                           )
                         )
                       )
@@ -532,7 +533,7 @@
                             )
                              (
                               else (
-                                list-ref r2 0
+                                list-ref-safe r2 0
                               )
                             )
                           )
@@ -562,7 +563,7 @@
                             )
                              (
                               else (
-                                list-ref r2 1
+                                list-ref-safe r2 1
                               )
                             )
                           )

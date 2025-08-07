@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Scheme code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Scheme`.
-Last updated: 2025-08-07 13:53 GMT+7
+Last updated: 2025-08-07 14:32 GMT+7
 
-## Algorithms Golden Test Checklist (536/1077)
+## Algorithms Golden Test Checklist (538/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 0s | 12.4 MB |
@@ -702,12 +702,12 @@ Last updated: 2025-08-07 13:53 GMT+7
 | 693 | maths/two_pointer | ✓ | 1ms | 13.4 MB |
 | 694 | maths/two_sum | ✓ | 0s | 12.4 MB |
 | 695 | maths/volume | ✓ | 2ms | 14.1 MB |
-| 696 | maths/zellers_congruence |   |  |  |
+| 696 | maths/zellers_congruence | ✓ | 1ms | 13.2 MB |
 | 697 | matrix/binary_search_matrix |   |  |  |
-| 698 | matrix/count_islands_in_matrix |   |  |  |
+| 698 | matrix/count_islands_in_matrix | ✓ | 3ms | 12.9 MB |
 | 699 | matrix/count_negative_numbers_in_sorted_matrix |   |  |  |
 | 700 | matrix/count_paths | ✓ | 2ms | 13.5 MB |
-| 701 | matrix/cramers_rule_2x2 | ✓ | 0s | 12.3 MB |
+| 701 | matrix/cramers_rule_2x2 | ✓ | 1ms | 12.9 MB |
 | 702 | matrix/inverse_of_matrix | ✓ | 0s | 14.2 MB |
 | 703 | matrix/largest_square_area_in_matrix | ✓ | 3ms | 13.6 MB |
 | 704 | matrix/matrix_based_game |   |  |  |
