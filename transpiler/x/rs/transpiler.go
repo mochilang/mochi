@@ -1688,6 +1688,10 @@ func (n *NameRef) emit(w io.Writer) {
 		io.WriteString(w, rustIdent(name))
 		return
 	}
+	if patternMode {
+		io.WriteString(w, rustIdent(name))
+		return
+	}
 	if cloneVars[n.Name] {
 		typ := n.Type
 		if typ == "" {
@@ -1749,6 +1753,21 @@ func (n *NameRef) emit(w io.Writer) {
 		typ = n.Type
 	} else {
 		typ = varTypes[n.Name]
+	}
+	if typ != "" && strings.HasPrefix(typ, "&") {
+		base := strings.TrimSpace(strings.TrimPrefix(strings.TrimPrefix(typ, "&mut"), "&"))
+		switch base {
+		case "i64", "bool", "f64":
+			io.WriteString(w, "*")
+			io.WriteString(w, rustIdent(name))
+		case "str":
+			io.WriteString(w, rustIdent(name))
+		default:
+			io.WriteString(w, "(*")
+			io.WriteString(w, rustIdent(name))
+			io.WriteString(w, ").clone()")
+		}
+		return
 	}
 	if ut, ok := curEnv.FindUnionByVariant(n.Name); ok && typ == "" {
 		fmt.Fprintf(w, "%s::%s", ut.Name, n.Name)
@@ -4663,10 +4682,18 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			elems[i] = ex
 		}
-		if len(elems) > 0 && inferType(elems[0]) == "String" {
-			for i, el := range elems {
-				if _, ok := el.(*StringLit); ok {
-					elems[i] = &StringCastExpr{Expr: el}
+		if len(elems) > 0 {
+			t0 := inferType(elems[0])
+			if t0 == "String" || t0 == "&String" {
+				for i, el := range elems {
+					switch v := el.(type) {
+					case *StringLit:
+						elems[i] = &StringCastExpr{Expr: el}
+					case *NameRef:
+						if varTypes[v.Name] == "&str" {
+							elems[i] = &StringCastExpr{Expr: el}
+						}
+					}
 				}
 			}
 		}
@@ -5125,12 +5152,35 @@ func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
+	tgtType := inferType(target)
+	if nr, ok := target.(*NameRef); ok {
+		if pt, ok2 := currentParamTypes[nr.Name]; ok2 {
+			tgtType = pt
+		}
+	}
 	arms := make([]MatchArm, len(me.Cases))
 	for i, c := range me.Cases {
 		oldBox := boxVars
 		pat, err := compilePattern(c.Pattern)
 		if err != nil {
 			return nil, err
+		}
+		if strings.HasPrefix(tgtType, "&") {
+			if el, ok := pat.(*EnumLit); ok {
+				for j, f := range el.Fields {
+					if nr, ok := f.(*NameRef); ok {
+						typ := el.Types[j]
+						if typ == "" {
+							typ = varTypes[nr.Name]
+						}
+						varTypes[nr.Name] = "&" + typ
+					}
+				}
+			} else if nr, ok := pat.(*NameRef); ok {
+				if typ, ok2 := varTypes[nr.Name]; ok2 {
+					varTypes[nr.Name] = "&" + typ
+				}
+			}
 		}
 		if n, ok := pat.(*NameRef); ok && n.Name == "_" {
 			pat = nil
