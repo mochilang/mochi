@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-07 15:17 GMT+7
+Last updated: 2025-08-07 16:40 GMT+7
 
-## Algorithms Golden Test Checklist (110/1077)
+## Algorithms Golden Test Checklist (111/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 50.25ms | 19.66MB |
@@ -48,7 +48,7 @@ Last updated: 2025-08-07 15:17 GMT+7
 | 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 36.464ms | 18.96MB |
 | 40 | bit_manipulation/missing_number | ✓ | 34.818ms | 19.64MB |
 | 41 | bit_manipulation/numbers_different_signs |   |  |  |
-| 42 | bit_manipulation/power_of_4 |   |  |  |
+| 42 | bit_manipulation/power_of_4 | ✓ | 33.962ms | 19.00MB |
 | 43 | bit_manipulation/reverse_bits |   |  |  |
 | 44 | bit_manipulation/single_bit_manipulation_operations |   |  |  |
 | 45 | bit_manipulation/swap_all_odd_and_even_bits |   |  |  |
