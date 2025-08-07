@@ -1,0 +1,6 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/rb/web_programming/fetch_bbc_news.rb:103:in `fetch_bbc_news': undefined method `length' for nil:NilClass (NoMethodError)
+
+    if resp["articles"].length == 0
+                       ^^^^^^^
+	from /workspace/mochi/tests/algorithms/transpiler/rb/web_programming/fetch_bbc_news.rb:116:in `<main>'

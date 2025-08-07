@@ -3001,6 +3001,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 	case st.ExternVar != nil, st.ExternFun != nil, st.ExternType != nil, st.ExternObject != nil:
 		return nil, nil
 	case st.Expr != nil:
+		if isExponentToken(st.Expr.Expr) {
+			return nil, nil
+		}
 		e, err := convertExpr(st.Expr.Expr)
 		if err != nil {
 			return nil, err
@@ -3327,6 +3330,21 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 	}
 }
 
+func isExponentToken(e *parser.Expr) bool {
+	if e != nil && e.Binary != nil {
+		u := e.Binary.Left
+		if pf := u.Value; pf != nil && pf.Target != nil && pf.Target.Selector != nil {
+			root := pf.Target.Selector.Root
+			if strings.HasPrefix(root, "e") {
+				if _, err := strconv.Atoi(root[1:]); err == nil {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
 func convertFunc(fn *parser.FunStmt) (*FuncStmt, error) {
 	funcDepth++
 	savedEnv := currentEnv
@@ -3346,8 +3364,8 @@ func convertFunc(fn *parser.FunStmt) (*FuncStmt, error) {
 		addVar(p.Name)
 	}
 	stmts := mergeSciNotation(fn.Body)
-	body := make([]Stmt, len(stmts))
-	for i, s := range stmts {
+	body := make([]Stmt, 0, len(stmts))
+	for _, s := range stmts {
 		st2, err := convertStmt(s)
 		if err != nil {
 			popScope()
@@ -3355,7 +3373,9 @@ func convertFunc(fn *parser.FunStmt) (*FuncStmt, error) {
 			funcDepth--
 			return nil, err
 		}
-		body[i] = st2
+		if st2 != nil {
+			body = append(body, st2)
+		}
 	}
 	popScope()
 	currentEnv = savedEnv
@@ -3583,13 +3603,15 @@ func convertWhile(ws *parser.WhileStmt) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
-	body := make([]Stmt, len(ws.Body))
-	for i, s := range ws.Body {
+	body := make([]Stmt, 0, len(ws.Body))
+	for _, s := range ws.Body {
 		st, err := convertStmt(s)
 		if err != nil {
 			return nil, err
 		}
-		body[i] = st
+		if st != nil {
+			body = append(body, st)
+		}
 	}
 	return &WhileStmt{Cond: cond, Body: body}, nil
 }

@@ -1,0 +1,5 @@
+/workspace/mochi/tests/algorithms/transpiler/rb/web_programming/fetch_anime_and_play.rb:125: warning: already initialized constant ANIME_DB
+/workspace/mochi/tests/algorithms/transpiler/rb/web_programming/fetch_anime_and_play.rb:124: warning: previous definition of ANIME_DB was here
+[#<struct ANIME_DB title="Demon Slayer" url="/anime/kimetsu-no-yaiba">]
+[{'title': 'Episode 1' 'url': '/watch/kimetsu-no-yaiba/1'} {'title': 'Episode 2' 'url': '/watch/kimetsu-no-yaiba/2'}]
+['https://ww7.gogoanime2.org/embed/kimetsu-no-yaiba/1' 'https://ww7.gogoanime2.org/playlist/kimetsu-no-yaiba/1.m3u8']

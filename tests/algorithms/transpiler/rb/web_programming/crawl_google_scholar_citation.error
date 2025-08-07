@@ -1,0 +1,6 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/rb/web_programming/crawl_google_scholar_citation.rb:119:in `<main>': undefined local variable or method `__name__' for main:Object (NameError)
+
+  if __name__ == "__main__"
+     ^^^^^^^^
+Did you mean?  __LINE__
