@@ -1,0 +1,2 @@
+best_path = [0 2 3 1 6 7 4 5 0]
+best_distance = 57.0
