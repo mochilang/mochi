@@ -211,7 +211,7 @@ func javaType(t string) string {
 		return "boolean"
 	case "string":
 		return "String"
-	case "void":
+	case "void", "unit":
 		return "void"
 	case "float", "float64", "double":
 		return "double"
@@ -244,7 +244,7 @@ func javaType(t string) string {
 				paramsStr := t[start:end]
 				ret := t[retIdx+1:]
 				if paramsStr == "" {
-					if ret == "void" || ret == "" {
+					if ret == "void" || ret == "" || ret == "unit" {
 						return "Runnable"
 					}
 					rt := javaBoxType(javaType(ret))
@@ -253,7 +253,7 @@ func javaType(t string) string {
 				params := strings.Split(paramsStr, ",")
 				if len(params) == 1 {
 					pt := javaBoxType(javaType(params[0]))
-					if ret == "void" {
+					if ret == "void" || ret == "unit" {
 						return fmt.Sprintf("java.util.function.Consumer<%s>", pt)
 					}
 					rt := javaBoxType(javaType(ret))
@@ -261,7 +261,7 @@ func javaType(t string) string {
 				} else if len(params) == 2 {
 					pt1 := javaBoxType(javaType(params[0]))
 					pt2 := javaBoxType(javaType(params[1]))
-					if ret == "void" {
+					if ret == "void" || ret == "unit" {
 						return fmt.Sprintf("java.util.function.BiConsumer<%s,%s>", pt1, pt2)
 					}
 					rt := javaBoxType(javaType(ret))
@@ -271,6 +271,9 @@ func javaType(t string) string {
 					pt1 := javaBoxType(javaType(params[0]))
 					pt2 := javaBoxType(javaType(params[1]))
 					pt3 := javaBoxType(javaType(params[2]))
+					if ret == "void" || ret == "unit" {
+						return fmt.Sprintf("Fn3<%s,%s,%s>", pt1, pt2, pt3)
+					}
 					rt := javaBoxType(javaType(ret))
 					return fmt.Sprintf("Fn3<%s,%s,%s,%s>", pt1, pt2, pt3, rt)
 				}
@@ -307,6 +310,8 @@ func javaBoxType(t string) string {
 		return "java.math.BigInteger"
 	case "bigrat", "BigRat":
 		return "BigRat"
+	case "void", "unit":
+		return "Void"
 	default:
 		if strings.HasSuffix(t, "[]") {
 			elem := strings.TrimSuffix(t, "[]")
