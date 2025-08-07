@@ -1,0 +1,29 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 50 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/dijkstras_two_stack_algorithm.exs:50:8: Main.slice_without_last_int/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 74 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/dijkstras_two_stack_algorithm.exs:74:8: Main.slice_without_last_string/1
+
+     warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 124 │       {idx, operand_stack, operator_stack} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/dijkstras_two_stack_algorithm.exs:124:8: Main.dijkstras_two_stack_algorithm/1
+
+     warning: variable "operator_stack" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 124 │       {idx, operand_stack, operator_stack} = try do
+     │                            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/dijkstras_two_stack_algorithm.exs:124:28: Main.dijkstras_two_stack_algorithm/1
+
+(5 + ((4 * 2) * (2 + 3))) = 45

@@ -1,0 +1,36 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 38 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/queue_on_pseudo_stack.exs:38:8: Main.drop_first/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 62 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/queue_on_pseudo_stack.exs:62:8: Main.drop_last/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 88 │       {i, s} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/queue_on_pseudo_stack.exs:88:8: Main.rotate/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 147 │         {i, s} = try do
+     │          ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/queue_on_pseudo_stack.exs:147:10: Main.to_string/1
+
+     error: imported Kernel.to_string/1 conflicts with local function
+     │
+ 132 │   def to_string(q) do
+     │       ^
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/queue_on_pseudo_stack.exs:132:7: Main (module)
+
+** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/queue_on_pseudo_stack.exs: cannot compile module Main (errors have been logged)

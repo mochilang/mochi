@@ -1,0 +1,71 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 29 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_table.exs:29:8: Main.repeat_int/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 53 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_table.exs:53:8: Main.repeat_bool/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 77 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_table.exs:77:8: Main.set_int/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 101 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_table.exs:101:8: Main.set_bool/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 153 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_table.exs:153:7: Main.is_prime/1
+
+     warning: variable "steps" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 211 │       {new_key, steps} = try do
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_table.exs:211:17: Main.collision_resolution/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 240 │       {i, survivors} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_table.exs:240:8: Main.rehashing/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 258 │       {i, new_ht} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_table.exs:258:8: Main.rehashing/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 306 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_table.exs:306:8: Main.keys/1
+
+** (ArgumentError) argument error
+    :erlang.++(nil, [0])
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_table.exs:22: anonymous fn/5 in Main.repeat_int/2
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_table.exs:30: Main.repeat_int/2
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_table.exs:114: Main.create_table/3
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_table.exs:319: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_table.exs:332: Main.bench_main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_table.exs:340: (file)

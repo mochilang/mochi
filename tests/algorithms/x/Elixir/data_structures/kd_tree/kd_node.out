@@ -1,0 +1,16 @@
+** (ArgumentError) cannot convert the given list to a string.
+
+To be converted to a string, a list must either be empty or only
+contain the following elements:
+
+  * strings
+  * integers representing Unicode code points
+  * a list containing one of these three elements
+
+Please check the given list or call inspect/1 to get the list representation, got:
+
+[2.0, 3.0]
+
+    (elixir 1.18.3) lib/list.ex:1124: List.to_string/1
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/kd_tree/kd_node.exs:18: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/kd_tree/kd_node.exs:25: (file)

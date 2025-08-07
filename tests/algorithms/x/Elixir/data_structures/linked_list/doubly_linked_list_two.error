@@ -1,0 +1,101 @@
+run: exit status 1
+    warning: variable "ll" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 65 │       ll = Map.put(ll, :nodes, nodes)
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/doubly_linked_list_two.exs:65:7: Main.insert_before_node/3
+
+    warning: variable "ll" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 90 │       ll = Map.put(ll, :nodes, nodes)
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/doubly_linked_list_two.exs:90:7: Main.insert_after_node/3
+
+    warning: variable "ll" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 97 │       {ll} = if ll.head_idx == (-1) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/doubly_linked_list_two.exs:97:8: Main.set_head/2
+
+     warning: variable "ll" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 111 │       {ll} = if ll.tail_idx == (-1) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/doubly_linked_list_two.exs:111:8: Main.set_tail/2
+
+     warning: variable "ll" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 129 │       {ll} = if ll.head_idx == (-1) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/doubly_linked_list_two.exs:129:8: Main.insert/2
+
+     warning: variable "current" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 166 │       {current, current_pos, ll} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/doubly_linked_list_two.exs:166:8: Main.insert_at_position/3
+
+     warning: variable "current_pos" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 166 │       {current, current_pos, ll} = try do
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/doubly_linked_list_two.exs:166:17: Main.insert_at_position/3
+
+     warning: variable "current" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 192 │       current = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/doubly_linked_list_two.exs:192:7: Main.get_node/2
+
+     warning: variable "ll" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 228 │       ll = Map.put(ll, :nodes, nodes)
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/doubly_linked_list_two.exs:228:7: Main.remove_node_pointers/2
+
+     warning: variable "current" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 295 │       {current, first, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/doubly_linked_list_two.exs:295:8: Main.to_string/1
+
+     warning: variable "first" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 295 │       {current, first, res} = try do
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/doubly_linked_list_two.exs:295:17: Main.to_string/1
+
+     warning: variable "current" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 319 │       current = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/doubly_linked_list_two.exs:319:7: Main.print_list/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 375 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/doubly_linked_list_two.exs:375:7: Main.main/0
+
+     error: imported Kernel.to_string/1 conflicts with local function
+     │
+ 272 │   def to_string(ll) do
+     │       ^
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/doubly_linked_list_two.exs:272:7: Main (module)
+
+** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/doubly_linked_list_two.exs: cannot compile module Main (errors have been logged)
+

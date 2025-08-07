@@ -1,0 +1,15 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 36 │           {j, point} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/kd_tree/example/hypercube_points.exs:36:12: Main.hypercube_points/3
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 49 │       {i, points} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/kd_tree/example/hypercube_points.exs:49:8: Main.hypercube_points/3
+
+[[0.5138700781390071, 0.1757413032464683], [0.3086515162140131, 0.5345338867045939], [0.9476279253140092, 0.17173630138859153]]

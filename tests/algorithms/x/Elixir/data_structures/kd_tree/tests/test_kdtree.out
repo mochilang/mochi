@@ -1,0 +1,40 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 36 │           {j, p} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/kd_tree/tests/test_kdtree.exs:36:12: Main.hypercube_points/3
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 49 │       {i, pts} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/kd_tree/tests/test_kdtree.exs:49:8: Main.hypercube_points/3
+
+    warning: variable "depth" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 60 │   def build_kdtree(points, depth) do
+    │                            ~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/kd_tree/tests/test_kdtree.exs:60:28: Main.build_kdtree/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 81 │       {i, sum} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/kd_tree/tests/test_kdtree.exs:81:8: Main.distance_sq/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 118 │       {i, nearest_dist, nearest_idx, visited} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/kd_tree/tests/test_kdtree.exs:118:8: Main.nearest_neighbour_search/2
+
+case1 true
+case2 true
+case3 true
+search true
+edge true

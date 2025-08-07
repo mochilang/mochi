@@ -1,0 +1,66 @@
+run: exit status 1
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 43 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/double_ended_queue.exs:43:8: Main.push_front/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 67 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/double_ended_queue.exs:67:8: Main.extend_back/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 91 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/double_ended_queue.exs:91:8: Main.extend_front/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 107 │       {j, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/double_ended_queue.exs:107:8: Main.extend_front/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 134 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/double_ended_queue.exs:134:8: Main.pop_back/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 161 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/double_ended_queue.exs:161:8: Main.pop_front/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 202 │       {i, s} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/double_ended_queue.exs:202:8: Main.to_string/1
+
+     error: imported Kernel.to_string/1 conflicts with local function
+     │
+ 186 │   def to_string(dq) do
+     │       ^
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/double_ended_queue.exs:186:7: Main (module)
+
+     error: imported Kernel.length/1 conflicts with local function
+     │
+ 179 │   def length(dq) do
+     │       ^
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/double_ended_queue.exs:179:7: Main (module)
+
+** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/double_ended_queue.exs: cannot compile module Main (errors have been logged)
+

@@ -1,0 +1,43 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 32 │       {i, s} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/reverse_k_group.exs:32:8: Main.to_string/1
+
+    warning: variable "g" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 98 │             {g, res} = try do
+    │              ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/reverse_k_group.exs:98:14: Main.reverse_k_nodes/2
+
+    warning: variable "g" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 80 │             {g, res} = try do
+    │              ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/reverse_k_group.exs:80:14: Main.reverse_k_nodes/2
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 63 │           {group, j} = try do
+    │                   ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/reverse_k_group.exs:63:19: Main.reverse_k_nodes/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 112 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/reverse_k_group.exs:112:8: Main.reverse_k_nodes/2
+
+    error: imported Kernel.to_string/1 conflicts with local function
+    │
+ 16 │   def to_string(list) do
+    │       ^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/reverse_k_group.exs:16:7: Main (module)
+
+** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/reverse_k_group.exs: cannot compile module Main (errors have been logged)

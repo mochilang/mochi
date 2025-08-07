@@ -1,0 +1,50 @@
+warning: variable "q" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 35 │       {q} = if q.front == 0 - 1 do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/linked_queue.exs:35:8: Main.put/2
+
+    warning: variable "q" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 58 │       {q} = if q.front == 0 - 1 do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/linked_queue.exs:58:8: Main.get/1
+
+    warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 82 │       {count, idx} = try do
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/linked_queue.exs:82:15: Main.length/1
+
+     warning: variable "first" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 115 │       {first, idx, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/linked_queue.exs:115:8: Main.to_string/1
+
+     warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 115 │       {first, idx, res} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/linked_queue.exs:115:15: Main.to_string/1
+
+     warning: variable "q" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 130 │       q = Map.put(q, :rear, 0 - 1)
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/linked_queue.exs:130:7: Main.clear/1
+
+    error: imported Kernel.length/1 conflicts with local function
+    │
+ 69 │   def length(q) do
+    │       ^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/linked_queue.exs:69:7: Main (module)
+
+** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/linked_queue.exs: cannot compile module Main (errors have been logged)

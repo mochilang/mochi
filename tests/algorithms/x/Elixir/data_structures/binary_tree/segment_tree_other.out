@@ -1,0 +1,95 @@
+warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 69 │       {idx, new_arr} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/segment_tree_other.exs:69:8: Main.update/3
+
+    warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 93 │       {idx, result} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/segment_tree_other.exs:93:8: Main.query_range/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 135 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/segment_tree_other.exs:135:7: Main.print_traverse/1
+
+**************************************************
+"SegmentTreeNode(start=0, end=0, val=2)"
+"SegmentTreeNode(start=1, end=1, val=1)"
+"SegmentTreeNode(start=0, end=1, val=3)"
+"SegmentTreeNode(start=2, end=2, val=5)"
+"SegmentTreeNode(start=0, end=2, val=8)"
+"SegmentTreeNode(start=3, end=3, val=3)"
+"SegmentTreeNode(start=4, end=4, val=4)"
+"SegmentTreeNode(start=3, end=4, val=7)"
+"SegmentTreeNode(start=0, end=4, val=15)"
+
+"SegmentTreeNode(start=0, end=0, val=2)"
+"SegmentTreeNode(start=1, end=1, val=5)"
+"SegmentTreeNode(start=0, end=1, val=7)"
+"SegmentTreeNode(start=2, end=2, val=5)"
+"SegmentTreeNode(start=0, end=2, val=12)"
+"SegmentTreeNode(start=3, end=3, val=3)"
+"SegmentTreeNode(start=4, end=4, val=4)"
+"SegmentTreeNode(start=3, end=4, val=7)"
+"SegmentTreeNode(start=0, end=4, val=19)"
+
+7
+5
+13
+
+**************************************************
+"SegmentTreeNode(start=0, end=0, val=2)"
+"SegmentTreeNode(start=1, end=1, val=1)"
+"SegmentTreeNode(start=0, end=1, val=2)"
+"SegmentTreeNode(start=2, end=2, val=5)"
+"SegmentTreeNode(start=0, end=2, val=5)"
+"SegmentTreeNode(start=3, end=3, val=3)"
+"SegmentTreeNode(start=4, end=4, val=4)"
+"SegmentTreeNode(start=3, end=4, val=4)"
+"SegmentTreeNode(start=0, end=4, val=5)"
+
+"SegmentTreeNode(start=0, end=0, val=2)"
+"SegmentTreeNode(start=1, end=1, val=5)"
+"SegmentTreeNode(start=0, end=1, val=5)"
+"SegmentTreeNode(start=2, end=2, val=5)"
+"SegmentTreeNode(start=0, end=2, val=5)"
+"SegmentTreeNode(start=3, end=3, val=3)"
+"SegmentTreeNode(start=4, end=4, val=4)"
+"SegmentTreeNode(start=3, end=4, val=4)"
+"SegmentTreeNode(start=0, end=4, val=5)"
+
+4
+5
+5
+
+**************************************************
+"SegmentTreeNode(start=0, end=0, val=2)"
+"SegmentTreeNode(start=1, end=1, val=1)"
+"SegmentTreeNode(start=0, end=1, val=1)"
+"SegmentTreeNode(start=2, end=2, val=5)"
+"SegmentTreeNode(start=0, end=2, val=1)"
+"SegmentTreeNode(start=3, end=3, val=3)"
+"SegmentTreeNode(start=4, end=4, val=4)"
+"SegmentTreeNode(start=3, end=4, val=3)"
+"SegmentTreeNode(start=0, end=4, val=1)"
+
+"SegmentTreeNode(start=0, end=0, val=2)"
+"SegmentTreeNode(start=1, end=1, val=5)"
+"SegmentTreeNode(start=0, end=1, val=2)"
+"SegmentTreeNode(start=2, end=2, val=5)"
+"SegmentTreeNode(start=0, end=2, val=2)"
+"SegmentTreeNode(start=3, end=3, val=3)"
+"SegmentTreeNode(start=4, end=4, val=4)"
+"SegmentTreeNode(start=3, end=4, val=3)"
+"SegmentTreeNode(start=0, end=4, val=2)"
+
+3
+5
+3

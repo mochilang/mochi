@@ -1,0 +1,70 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 23 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_table.exs:23:8: Main.repeat_int/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 47 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_table.exs:47:8: Main.repeat_bool/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 71 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_table.exs:71:8: Main.set_int/3
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 95 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_table.exs:95:8: Main.set_bool/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 147 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_table.exs:147:7: Main.is_prime/1
+
+     warning: variable "steps" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 205 │       {new_key, steps} = try do
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_table.exs:205:17: Main.collision_resolution/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 234 │       {i, survivors} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_table.exs:234:8: Main.rehashing/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 252 │       {i, new_ht} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_table.exs:252:8: Main.rehashing/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 300 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_table.exs:300:8: Main.keys/1
+
+** (ArgumentError) argument error
+    :erlang.++(nil, [0])
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_table.exs:16: anonymous fn/5 in Main.repeat_int/2
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_table.exs:24: Main.repeat_int/2
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_table.exs:108: Main.create_table/3
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_table.exs:313: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_table.exs:323: (file)
