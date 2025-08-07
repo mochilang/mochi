@@ -31,82 +31,31 @@ local function _panic(msg)
 io.stderr:write(tostring(msg))
 os.exit(1)
 end
-
-local function _equal(a, b)
-if a == b then return true end
-if type(a) ~= type(b) then return false end
-if type(a) ~= 'table' then return a == b end
-local count = 0
-for k, v in pairs(a) do
-  if not _equal(v, b[k]) then return false end
-  count = count + 1
-end
-for k in pairs(b) do
-  count = count - 1
-end
-return count == 0
-end
-
-local function _str(v)
-if type(v) == 'number' then
-  local s = tostring(v)
-  s = string.gsub(s, '%.0+$', '')
-  return s
-end
-return tostring(v)
-end
 do
   collectgarbage()
   local _bench_start_mem = collectgarbage('count') * 1024
   local _bench_start = os.clock()
-  function gcd(a, b)
-    local x = a
-    local y = b
-    while (y ~= 0) do
-      local t = (x % y)
-      x = y
-      y = t
+  function is_prime(number)
+    if (number < 0) then
+      _panic("is_prime() only accepts positive integers")
     end
-    if (x < 0) then
-      return (-x)
+    if ((1 < number) and (number < 4)) then
+      return true
+    else
+      if (((number < 2) or ((number % 2) == 0)) or ((number % 3) == 0)) then
+        return false
+      end
     end
-    return x
+    local i = 5
+    while ((i * i) <= number) do
+      if (((number % i) == 0) or ((number % (i + 2)) == 0)) then
+        return false
+      end
+      i = (i + 6)
+    end
+    return true
   end
-  function proper_fractions(den)
-    if (den < 0) then
-      _panic("The Denominator Cannot be less than 0")
-    end
-    local res = {}
-    local n = 1
-    while (n < den) do
-      if (gcd(n, den) == 1) then
-        res = (function(lst, item)
-        local res = {table.unpack(lst or {})}
-        table.insert(res, item)
-        return res
-      end)(res, ((_str(n) .. "/") .. _str(den)))
-    end
-    n = (n + 1)
-  end
-  return res
-end
-function test_proper_fractions()
-  local a = proper_fractions(10)
-  if (not _equal(a, {"1/10", "3/10", "7/10", "9/10"})) then
-    _panic("test 10 failed")
-  end
-  local b = proper_fractions(5)
-  if (not _equal(b, {"1/5", "2/5", "3/5", "4/5"})) then
-    _panic("test 5 failed")
-  end
-  local c = proper_fractions(0)
-  if (not _equal(c, {})) then
-    _panic("test 0 failed")
-  end
-end
-function main()
-  test_proper_fractions()
-  print((((type(
+  print((((type(tostring(is_prime(0))) == "table")) and (
   (function(v)
   local function encode(x)
   if type(x) == "table" then
@@ -150,7 +99,8 @@ function main()
       end
     end
     return encode(v)
-  end)(proper_fractions(10))) == "table")) and (
+  end)(tostring(is_prime(0)))) or (tostring(is_prime(0)))))
+  print((((type(tostring(is_prime(1))) == "table")) and (
   (function(v)
   local function encode(x)
   if type(x) == "table" then
@@ -194,7 +144,8 @@ function main()
       end
     end
     return encode(v)
-  end)(
+  end)(tostring(is_prime(1)))) or (tostring(is_prime(1)))))
+  print((((type(tostring(is_prime(2))) == "table")) and (
   (function(v)
   local function encode(x)
   if type(x) == "table" then
@@ -238,7 +189,8 @@ function main()
       end
     end
     return encode(v)
-  end)(proper_fractions(10)))) or (
+  end)(tostring(is_prime(2)))) or (tostring(is_prime(2)))))
+  print((((type(tostring(is_prime(3))) == "table")) and (
   (function(v)
   local function encode(x)
   if type(x) == "table" then
@@ -282,8 +234,8 @@ function main()
       end
     end
     return encode(v)
-  end)(proper_fractions(10)))))
-  print((((type(
+  end)(tostring(is_prime(3)))) or (tostring(is_prime(3)))))
+  print((((type(tostring(is_prime(27))) == "table")) and (
   (function(v)
   local function encode(x)
   if type(x) == "table" then
@@ -327,7 +279,8 @@ function main()
       end
     end
     return encode(v)
-  end)(proper_fractions(5))) == "table")) and (
+  end)(tostring(is_prime(27)))) or (tostring(is_prime(27)))))
+  print((((type(tostring(is_prime(87))) == "table")) and (
   (function(v)
   local function encode(x)
   if type(x) == "table" then
@@ -371,7 +324,8 @@ function main()
       end
     end
     return encode(v)
-  end)(
+  end)(tostring(is_prime(87)))) or (tostring(is_prime(87)))))
+  print((((type(tostring(is_prime(563))) == "table")) and (
   (function(v)
   local function encode(x)
   if type(x) == "table" then
@@ -415,7 +369,8 @@ function main()
       end
     end
     return encode(v)
-  end)(proper_fractions(5)))) or (
+  end)(tostring(is_prime(563)))) or (tostring(is_prime(563)))))
+  print((((type(tostring(is_prime(2999))) == "table")) and (
   (function(v)
   local function encode(x)
   if type(x) == "table" then
@@ -459,8 +414,8 @@ function main()
       end
     end
     return encode(v)
-  end)(proper_fractions(5)))))
-  print((((type(
+  end)(tostring(is_prime(2999)))) or (tostring(is_prime(2999)))))
+  print((((type(tostring(is_prime(67483))) == "table")) and (
   (function(v)
   local function encode(x)
   if type(x) == "table" then
@@ -504,145 +459,11 @@ function main()
       end
     end
     return encode(v)
-  end)(proper_fractions(0))) == "table")) and (
-  (function(v)
-  local function encode(x)
-  if type(x) == "table" then
-    if x.__name and x.__order then
-      local parts = {x.__name, " {"}
-      for i, k in ipairs(x.__order) do
-        if i > 1 then parts[#parts+1] = ", " end
-        parts[#parts+1] = k .. " = " .. encode(x[k])
-      end
-      parts[#parts+1] = "}"
-      return table.concat(parts)
-    elseif #x > 0 then
-        local allTables = true
-        for _, v in ipairs(x) do
-          if type(v) ~= "table" then allTables = false break end
-        end
-        local parts = {}
-        if not allTables then parts[#parts+1] = "[" end
-        for i, val in ipairs(x) do
-          parts[#parts+1] = encode(val)
-          if i < #x then parts[#parts+1] = " " end
-        end
-        if not allTables then parts[#parts+1] = "]" end
-        return table.concat(parts)
-      else
-        local keys = {}
-        for k in pairs(x) do if k ~= "__name" and k ~= "__order" then table.insert(keys, k) end end
-        table.sort(keys, function(a,b) return tostring(a) > tostring(b) end)
-        local parts = {"{"}
-        for i, k in ipairs(keys) do
-          parts[#parts+1] = "'" .. tostring(k) .. "': " .. encode(x[k])
-          if i < #keys then parts[#parts+1] = ", " end
-        end
-        parts[#parts+1] = "}"
-        return table.concat(parts)
-      end
-    elseif type(x) == "string" then
-        return '"' .. x .. '"'
-      else
-        return tostring(x)
-      end
-    end
-    return encode(v)
-  end)(
-  (function(v)
-  local function encode(x)
-  if type(x) == "table" then
-    if x.__name and x.__order then
-      local parts = {x.__name, " {"}
-      for i, k in ipairs(x.__order) do
-        if i > 1 then parts[#parts+1] = ", " end
-        parts[#parts+1] = k .. " = " .. encode(x[k])
-      end
-      parts[#parts+1] = "}"
-      return table.concat(parts)
-    elseif #x > 0 then
-        local allTables = true
-        for _, v in ipairs(x) do
-          if type(v) ~= "table" then allTables = false break end
-        end
-        local parts = {}
-        if not allTables then parts[#parts+1] = "[" end
-        for i, val in ipairs(x) do
-          parts[#parts+1] = encode(val)
-          if i < #x then parts[#parts+1] = " " end
-        end
-        if not allTables then parts[#parts+1] = "]" end
-        return table.concat(parts)
-      else
-        local keys = {}
-        for k in pairs(x) do if k ~= "__name" and k ~= "__order" then table.insert(keys, k) end end
-        table.sort(keys, function(a,b) return tostring(a) > tostring(b) end)
-        local parts = {"{"}
-        for i, k in ipairs(keys) do
-          parts[#parts+1] = "'" .. tostring(k) .. "': " .. encode(x[k])
-          if i < #keys then parts[#parts+1] = ", " end
-        end
-        parts[#parts+1] = "}"
-        return table.concat(parts)
-      end
-    elseif type(x) == "string" then
-        return '"' .. x .. '"'
-      else
-        return tostring(x)
-      end
-    end
-    return encode(v)
-  end)(proper_fractions(0)))) or (
-  (function(v)
-  local function encode(x)
-  if type(x) == "table" then
-    if x.__name and x.__order then
-      local parts = {x.__name, " {"}
-      for i, k in ipairs(x.__order) do
-        if i > 1 then parts[#parts+1] = ", " end
-        parts[#parts+1] = k .. " = " .. encode(x[k])
-      end
-      parts[#parts+1] = "}"
-      return table.concat(parts)
-    elseif #x > 0 then
-        local allTables = true
-        for _, v in ipairs(x) do
-          if type(v) ~= "table" then allTables = false break end
-        end
-        local parts = {}
-        if not allTables then parts[#parts+1] = "[" end
-        for i, val in ipairs(x) do
-          parts[#parts+1] = encode(val)
-          if i < #x then parts[#parts+1] = " " end
-        end
-        if not allTables then parts[#parts+1] = "]" end
-        return table.concat(parts)
-      else
-        local keys = {}
-        for k in pairs(x) do if k ~= "__name" and k ~= "__order" then table.insert(keys, k) end end
-        table.sort(keys, function(a,b) return tostring(a) > tostring(b) end)
-        local parts = {"{"}
-        for i, k in ipairs(keys) do
-          parts[#parts+1] = "'" .. tostring(k) .. "': " .. encode(x[k])
-          if i < #keys then parts[#parts+1] = ", " end
-        end
-        parts[#parts+1] = "}"
-        return table.concat(parts)
-      end
-    elseif type(x) == "string" then
-        return '"' .. x .. '"'
-      else
-        return tostring(x)
-      end
-    end
-    return encode(v)
-  end)(proper_fractions(0)))))
-end
-main()
-local _bench_end = os.clock()
-collectgarbage()
-local _bench_end_mem = collectgarbage('count') * 1024
-local _bench_duration_us = math.floor((_bench_end - _bench_start) * 1000000)
-local _bench_mem = math.floor(math.max(0, _bench_end_mem - _bench_start_mem))
-print('{\n  "duration_us": ' .. _bench_duration_us .. ',\n  "memory_bytes": ' .. _bench_mem .. ',\n  "name": "main"\n}')
+  end)(tostring(is_prime(67483)))) or (tostring(is_prime(67483)))))
+  local _bench_end = os.clock()
+  collectgarbage()
+  local _bench_end_mem = collectgarbage('count') * 1024
+  local _bench_duration_us = math.floor((_bench_end - _bench_start) * 1000000)
+  local _bench_mem = math.floor(math.max(0, _bench_end_mem - _bench_start_mem))
+  print('{\n  "duration_us": ' .. _bench_duration_us .. ',\n  "memory_bytes": ' .. _bench_mem .. ',\n  "name": "main"\n}')
 end;

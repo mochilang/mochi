@@ -1,0 +1,6 @@
+run: exit status 1
+lua: ...ests/algorithms/x/Lua/maths/series/hexagonal_numbers.lua:57: attempt to call a nil value (global '_equal')
+stack traceback:
+	...ests/algorithms/x/Lua/maths/series/hexagonal_numbers.lua:57: in function 'test_hexagonal_numbers'
+	...ests/algorithms/x/Lua/maths/series/hexagonal_numbers.lua:66: in main chunk
+	[C]: in ?

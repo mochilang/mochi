@@ -1,0 +1,8 @@
+run: exit status 1
+lua: ...ests/algorithms/x/Lua/matrix/count_islands_in_matrix.lua:68: attempt to index a nil value (field '?')
+stack traceback:
+	...ests/algorithms/x/Lua/matrix/count_islands_in_matrix.lua:68: in function 'is_safe'
+	...ests/algorithms/x/Lua/matrix/count_islands_in_matrix.lua:81: in function 'dfs'
+	...ests/algorithms/x/Lua/matrix/count_islands_in_matrix.lua:148: in function 'count_islands'
+	...ests/algorithms/x/Lua/matrix/count_islands_in_matrix.lua:158: in main chunk
+	[C]: in ?

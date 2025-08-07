@@ -2,184 +2,184 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-07 10:33 GMT+7
+Last updated: 2025-08-07 10:52 GMT+7
 
-## Algorithms Golden Test Checklist (561/1077)
+## Algorithms Golden Test Checklist (637/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 216µs | 912 B |
-| 2 | backtracking/all_permutations | ✓ | 768µs | 2.8 KB |
-| 3 | backtracking/all_subsequences | ✓ | 176µs | 1.3 KB |
-| 4 | backtracking/coloring | ✓ | 139µs | 2.0 KB |
-| 5 | backtracking/combination_sum | ✓ | 178µs | 1.0 KB |
+| 2 | backtracking/all_permutations | ✓ | 1.124ms | 2.8 KB |
+| 3 | backtracking/all_subsequences | ✓ | 203µs | 1.3 KB |
+| 4 | backtracking/coloring | ✓ | 214µs | 2.0 KB |
+| 5 | backtracking/combination_sum | ✓ | 399µs | 1.0 KB |
 | 6 | backtracking/crossword_puzzle_solver | ✓ | 80µs | 3.1 KB |
-| 7 | backtracking/hamiltonian_cycle | ✓ | 1µs | 120 B |
-| 8 | backtracking/knight_tour | ✓ | 95µs | 1.2 KB |
-| 9 | backtracking/match_word_pattern | ✓ | 1.071ms | 2.5 KB |
-| 10 | backtracking/minimax | ✓ | 82µs | 1.2 KB |
-| 11 | backtracking/n_queens | ✓ | 183µs | 1.4 KB |
-| 12 | backtracking/n_queens_math | ✓ | 214µs | 2.6 KB |
-| 13 | backtracking/power_sum | ✓ | 66µs | 1008 B |
-| 14 | backtracking/rat_in_maze | ✓ | 221µs | 3.5 KB |
-| 15 | backtracking/sudoku | ✓ | 3.259ms | 16.7 KB |
-| 16 | backtracking/sum_of_subsets | ✓ | 125µs | 2.4 KB |
-| 17 | backtracking/word_break | ✓ | 158µs | 1.1 KB |
-| 18 | backtracking/word_ladder | ✓ | 4.546ms | 2.6 KB |
-| 19 | backtracking/word_search | ✓ | 218µs | 2.7 KB |
-| 20 | bit_manipulation/binary_and_operator | ✓ | 142µs | 1000 B |
-| 21 | bit_manipulation/binary_coded_decimal | ✓ | 144µs | 912 B |
-| 22 | bit_manipulation/binary_count_setbits | ✓ | 102µs | 80 B |
-| 23 | bit_manipulation/binary_count_trailing_zeros | ✓ | 70µs | 80 B |
-| 24 | bit_manipulation/binary_or_operator | ✓ | 28µs | 32 B |
-| 25 | bit_manipulation/binary_shifts | ✓ | 123µs | 1.2 KB |
-| 26 | bit_manipulation/binary_twos_complement | ✓ | 130µs | 960 B |
-| 27 | bit_manipulation/binary_xor_operator | ✓ | 198µs | 1000 B |
-| 28 | bit_manipulation/bitwise_addition_recursive | ✓ | 79µs | 216 B |
-| 29 | bit_manipulation/count_1s_brian_kernighan_method | ✓ | 119µs | 136 B |
-| 30 | bit_manipulation/count_number_of_one_bits | ✓ | 109µs | 1.0 KB |
+| 7 | backtracking/hamiltonian_cycle | ✓ | 2µs | 120 B |
+| 8 | backtracking/knight_tour | ✓ | 128µs | 1.2 KB |
+| 9 | backtracking/match_word_pattern | ✓ | 1.8ms | 2.5 KB |
+| 10 | backtracking/minimax | ✓ | 122µs | 1.1 KB |
+| 11 | backtracking/n_queens | ✓ | 367µs | 1.4 KB |
+| 12 | backtracking/n_queens_math | ✓ | 348µs | 2.6 KB |
+| 13 | backtracking/power_sum | ✓ | 145µs | 1008 B |
+| 14 | backtracking/rat_in_maze | ✓ | 309µs | 3.4 KB |
+| 15 | backtracking/sudoku | ✓ | 4.098ms | 16.7 KB |
+| 16 | backtracking/sum_of_subsets | ✓ | 177µs | 2.4 KB |
+| 17 | backtracking/word_break | ✓ | 271µs | 1.1 KB |
+| 18 | backtracking/word_ladder | ✓ | 6.646ms | 2.6 KB |
+| 19 | backtracking/word_search | ✓ | 273µs | 2.7 KB |
+| 20 | bit_manipulation/binary_and_operator | ✓ | 258µs | 952 B |
+| 21 | bit_manipulation/binary_coded_decimal | ✓ | 135µs | 912 B |
+| 22 | bit_manipulation/binary_count_setbits | ✓ | 105µs | 40 B |
+| 23 | bit_manipulation/binary_count_trailing_zeros | ✓ | 83µs | 40 B |
+| 24 | bit_manipulation/binary_or_operator | ✓ | 34µs | 32 B |
+| 25 | bit_manipulation/binary_shifts | ✓ | 125µs | 1.2 KB |
+| 26 | bit_manipulation/binary_twos_complement | ✓ | 144µs | 912 B |
+| 27 | bit_manipulation/binary_xor_operator | ✓ | 245µs | 952 B |
+| 28 | bit_manipulation/bitwise_addition_recursive | ✓ | 91µs | 168 B |
+| 29 | bit_manipulation/count_1s_brian_kernighan_method | ✓ | 99µs | 136 B |
+| 30 | bit_manipulation/count_number_of_one_bits | ✓ | 133µs | 992 B |
 | 31 | bit_manipulation/excess_3_code | ✓ | 27µs | 136 B |
-| 32 | bit_manipulation/find_previous_power_of_two | ✓ | 130µs | 952 B |
-| 33 | bit_manipulation/find_unique_number | ✓ | 82µs | 896 B |
-| 34 | bit_manipulation/gray_code_sequence | ✓ | 151µs | 1.3 KB |
-| 35 | bit_manipulation/highest_set_bit | ✓ | 68µs | 80 B |
-| 36 | bit_manipulation/index_of_rightmost_set_bit | ✓ | 79µs | 80 B |
-| 37 | bit_manipulation/is_even | ✓ | 14µs | 32 B |
-| 38 | bit_manipulation/is_power_of_two | ✓ | 1µs | 80 B |
-| 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 113µs | 32 B |
-| 40 | bit_manipulation/missing_number | ✓ | 86µs | 808 B |
-| 41 | bit_manipulation/numbers_different_signs | ✓ | 24µs | 32 B |
-| 42 | bit_manipulation/power_of_4 | ✓ | 46µs | 32 B |
-| 43 | bit_manipulation/reverse_bits | ✓ | 199µs | 832 B |
-| 44 | bit_manipulation/single_bit_manipulation_operations | ✓ | 95µs | 360 B |
-| 45 | bit_manipulation/swap_all_odd_and_even_bits | ✓ | 701µs | 1.1 KB |
-| 46 | blockchain/diophantine_equation | ✓ | 262µs | 1.7 KB |
+| 32 | bit_manipulation/find_previous_power_of_two | ✓ | 145µs | 912 B |
+| 33 | bit_manipulation/find_unique_number | ✓ | 143µs | 848 B |
+| 34 | bit_manipulation/gray_code_sequence | ✓ | 171µs | 1.3 KB |
+| 35 | bit_manipulation/highest_set_bit | ✓ | 76µs | 40 B |
+| 36 | bit_manipulation/index_of_rightmost_set_bit | ✓ | 67µs | 40 B |
+| 37 | bit_manipulation/is_even | ✓ | 40µs | 32 B |
+| 38 | bit_manipulation/is_power_of_two | ✓ | 2µs | 40 B |
+| 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 129µs | 32 B |
+| 40 | bit_manipulation/missing_number | ✓ | 76µs | 808 B |
+| 41 | bit_manipulation/numbers_different_signs | ✓ | 23µs | 32 B |
+| 42 | bit_manipulation/power_of_4 | ✓ | 27µs | 32 B |
+| 43 | bit_manipulation/reverse_bits | ✓ | 159µs | 784 B |
+| 44 | bit_manipulation/single_bit_manipulation_operations | ✓ | 134µs | 360 B |
+| 45 | bit_manipulation/swap_all_odd_and_even_bits | ✓ | 743µs | 1.1 KB |
+| 46 | blockchain/diophantine_equation | ✓ | 201µs | 1.6 KB |
 | 47 | boolean_algebra/and_gate | ✓ | 82µs | 840 B |
-| 48 | boolean_algebra/imply_gate | ✓ | 73µs | 32 B |
-| 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 100µs | 1.2 KB |
-| 50 | boolean_algebra/multiplexer | ✓ | 72µs | 80 B |
-| 51 | boolean_algebra/nand_gate | ✓ | 73µs | 32 B |
-| 52 | boolean_algebra/nimply_gate | ✓ | 83µs | 32 B |
-| 53 | boolean_algebra/nor_gate | ✓ | 176µs | 1.0 KB |
-| 54 | boolean_algebra/not_gate | ✓ | 96µs | 32 B |
-| 55 | boolean_algebra/or_gate | ✓ | 94µs | 808 B |
-| 56 | boolean_algebra/quine_mc_cluskey | ✓ | 172µs | 1.4 KB |
-| 57 | boolean_algebra/xnor_gate | ✓ | 96µs | 32 B |
-| 58 | boolean_algebra/xor_gate | ✓ | 160µs | 32 B |
-| 59 | cellular_automata/conways_game_of_life | ✓ | 602µs | 3.0 KB |
-| 60 | cellular_automata/game_of_life | ✓ | 393µs | 2.8 KB |
-| 61 | cellular_automata/langtons_ant | ✓ | 1µs | 112 B |
-| 62 | cellular_automata/nagel_schrekenberg | ✓ | 193µs | 1.3 KB |
-| 63 | cellular_automata/one_dimensional | ✓ | 987µs | 10.4 KB |
-| 64 | cellular_automata/wa_tor | ✓ | 897µs | 10.7 KB |
-| 65 | ciphers/a1z26 | ✓ | 238µs | 1.2 KB |
-| 66 | ciphers/affine_cipher | ✓ | 10.504ms | 1.2 KB |
-| 67 | ciphers/atbash | ✓ | 671µs | 912 B |
-| 68 | ciphers/autokey | ✓ | 813µs | 1.1 KB |
-| 69 | ciphers/baconian_cipher | ✓ | 308µs | 2.5 KB |
-| 70 | ciphers/base16 | ✓ | 264µs | 1.4 KB |
-| 71 | ciphers/base32 | ✓ | 3.053ms | 1.2 KB |
-| 72 | ciphers/base64_cipher | ✓ | 430µs | 1.2 KB |
-| 73 | ciphers/base85 | ✓ | 899µs | 1.5 KB |
-| 74 | ciphers/beaufort_cipher | ✓ | 203µs | 1.1 KB |
-| 75 | ciphers/bifid | ✓ | 1.501ms | 1.9 KB |
-| 76 | ciphers/brute_force_caesar_cipher | ✓ | 3.319ms | 968 B |
-| 77 | ciphers/caesar_cipher | ✓ | 27.47ms | 2.4 KB |
-| 78 | ciphers/cryptomath_module | ✓ | 186µs | 136 B |
-| 79 | ciphers/decrypt_caesar_with_chi_squared | ✓ | 38.129ms | 1.6 KB |
-| 80 | ciphers/deterministic_miller_rabin | ✓ | 194µs | 888 B |
-| 81 | ciphers/diffie | ✓ | 201µs | 880 B |
-| 82 | ciphers/diffie_hellman | ✓ | 22µs | 904 B |
-| 83 | ciphers/elgamal_key_generator | ✓ | 73µs | 1.8 KB |
-| 84 | ciphers/enigma_machine2 | ✓ | 11.6ms | 1.8 KB |
-| 85 | ciphers/fractionated_morse_cipher | ✓ | 253µs | 3.4 KB |
-| 86 | ciphers/gronsfeld_cipher | ✓ | 2.614ms | 1.1 KB |
-| 87 | ciphers/hill_cipher | ✓ | 2.248ms | 1.9 KB |
-| 88 | ciphers/mixed_keyword_cypher | ✓ | 982µs | 1.1 KB |
-| 89 | ciphers/mono_alphabetic_ciphers | ✓ | 118µs | 1.0 KB |
-| 90 | ciphers/morse_code | ✓ | 471µs | 2.3 KB |
-| 91 | ciphers/onepad_cipher | ✓ | 317µs | 1.5 KB |
-| 92 | ciphers/permutation_cipher | ✓ | 177µs | 1.4 KB |
-| 93 | ciphers/playfair_cipher | ✓ | 547µs | 1.2 KB |
-| 94 | ciphers/polybius | ✓ | 436µs | 1.8 KB |
-| 95 | ciphers/porta_cipher | ✓ | 921µs | 1.6 KB |
-| 96 | ciphers/rabin_miller | ✓ | 427µs | 1.1 KB |
-| 97 | ciphers/rail_fence_cipher | ✓ | 443µs | 1.6 KB |
-| 98 | ciphers/rot13 | ✓ | 3.759ms | 1.0 KB |
-| 99 | ciphers/rsa_cipher | ✓ | 229µs | 1.2 KB |
-| 100 | ciphers/rsa_factorization | ✓ | 174µs | 872 B |
-| 101 | ciphers/rsa_key_generator | ✓ | 103µs | 752 B |
-| 102 | ciphers/running_key_cipher | ✓ | 403µs | 1.2 KB |
-| 103 | ciphers/shuffled_shift_cipher | ✓ | 2.148ms | 7.2 KB |
-| 104 | ciphers/simple_keyword_cypher | ✓ | 819µs | 2.6 KB |
-| 105 | ciphers/simple_substitution_cipher | ✓ | 1.12ms | 1.3 KB |
-| 106 | ciphers/transposition_cipher | ✓ | 119µs | 1.0 KB |
-| 107 | ciphers/transposition_cipher_encrypt_decrypt_file | ✓ | 70µs | 886 B |
-| 108 | ciphers/trifid_cipher | ✓ | 948µs | 1.2 KB |
-| 109 | ciphers/vernam_cipher | ✓ | 69µs | 1.1 KB |
-| 110 | ciphers/vigenere_cipher | ✓ | 1.693ms | 1.2 KB |
-| 111 | ciphers/xor_cipher | ✓ | 1.298ms | 1.1 KB |
-| 112 | computer_vision/cnn_classification | ✓ | 187µs | 4.1 KB |
-| 113 | computer_vision/flip_augmentation | ✓ | 268µs | 3.1 KB |
-| 114 | computer_vision/haralick_descriptors | ✓ | 67µs | 1.8 KB |
-| 115 | computer_vision/harris_corner | ✓ | 182µs | 2.4 KB |
-| 116 | computer_vision/horn_schunck | ✓ | 1.133ms | 2.4 KB |
-| 117 | computer_vision/intensity_based_segmentation | ✓ | 106µs | 976 B |
-| 118 | computer_vision/mean_threshold | ✓ | 101µs | 1.3 KB |
-| 119 | computer_vision/mosaic_augmentation | ✓ | 10.282ms | 2.1 KB |
-| 120 | computer_vision/pooling_functions | ✓ | 142µs | 1.0 KB |
-| 121 | conversions/astronomical_length_scale_conversion | ✓ | 136µs | 2.3 KB |
-| 122 | conversions/binary_to_decimal | ✓ | 129µs | 1016 B |
-| 123 | conversions/binary_to_hexadecimal | ✓ | 100µs | 1.1 KB |
-| 124 | conversions/binary_to_octal | ✓ | 112µs | 856 B |
-| 125 | conversions/convert_number_to_words | ✓ | 152µs | 2.6 KB |
-| 126 | conversions/decimal_to_any | ✓ | 29µs | 1000 B |
-| 127 | conversions/decimal_to_binary | ✓ | 121µs | 1.1 KB |
-| 128 | conversions/decimal_to_hexadecimal | ✓ | 43µs | 352 B |
-| 129 | conversions/decimal_to_octal | ✓ | 100µs | 776 B |
-| 130 | conversions/energy_conversions | ✓ | 46µs | 792 B |
-| 131 | conversions/excel_title_to_column | ✓ | 115µs | 2.9 KB |
-| 132 | conversions/hex_to_bin | ✓ | 213µs | 1.1 KB |
-| 133 | conversions/hexadecimal_to_decimal | ✓ | 114µs | 1.1 KB |
-| 134 | conversions/ipv4_conversion | ✓ | 297µs | 1.1 KB |
-| 135 | conversions/length_conversion | ✓ | 110µs | 1.1 KB |
-| 136 | conversions/molecular_chemistry | ✓ | 42µs | 904 B |
-| 137 | conversions/octal_to_binary | ✓ | 116µs | 856 B |
-| 138 | conversions/octal_to_decimal | ✓ | 106µs | 1.2 KB |
-| 139 | conversions/octal_to_hexadecimal | ✓ | 64µs | 1.0 KB |
-| 140 | conversions/prefix_conversions | ✓ | 142µs | 2.6 KB |
-| 141 | conversions/prefix_conversions_string | ✓ | 142µs | 4.3 KB |
+| 48 | boolean_algebra/imply_gate | ✓ | 107µs | 32 B |
+| 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 195µs | 1.2 KB |
+| 50 | boolean_algebra/multiplexer | ✓ | 95µs | 40 B |
+| 51 | boolean_algebra/nand_gate | ✓ | 158µs | 32 B |
+| 52 | boolean_algebra/nimply_gate | ✓ | 173µs | 32 B |
+| 53 | boolean_algebra/nor_gate | ✓ | 173µs | 1.0 KB |
+| 54 | boolean_algebra/not_gate | ✓ | 109µs | 32 B |
+| 55 | boolean_algebra/or_gate | ✓ | 106µs | 808 B |
+| 56 | boolean_algebra/quine_mc_cluskey | ✓ | 264µs | 1.4 KB |
+| 57 | boolean_algebra/xnor_gate | ✓ | 157µs | 32 B |
+| 58 | boolean_algebra/xor_gate | ✓ | 194µs | 32 B |
+| 59 | cellular_automata/conways_game_of_life | ✓ | 743µs | 3.0 KB |
+| 60 | cellular_automata/game_of_life | ✓ | 544µs | 2.8 KB |
+| 61 | cellular_automata/langtons_ant | ✓ | 2µs | 112 B |
+| 62 | cellular_automata/nagel_schrekenberg | ✓ | 294µs | 1.3 KB |
+| 63 | cellular_automata/one_dimensional | ✓ | 1.741ms | 10.4 KB |
+| 64 | cellular_automata/wa_tor | ✓ | 1.341ms | 10.7 KB |
+| 65 | ciphers/a1z26 | ✓ | 50µs | 1.1 KB |
+| 66 | ciphers/affine_cipher | ✓ | 9.146ms | 1.1 KB |
+| 67 | ciphers/atbash | ✓ | 1.163ms | 912 B |
+| 68 | ciphers/autokey | ✓ | 1.467ms | 1.0 KB |
+| 69 | ciphers/baconian_cipher | ✓ | 433µs | 2.5 KB |
+| 70 | ciphers/base16 | ✓ | 440µs | 1.3 KB |
+| 71 | ciphers/base32 | ✓ | 10.163ms | 1.2 KB |
+| 72 | ciphers/base64_cipher | ✓ | 736µs | 1.2 KB |
+| 73 | ciphers/base85 | ✓ | 1.174ms | 1.5 KB |
+| 74 | ciphers/beaufort_cipher | ✓ | 237µs | 1.1 KB |
+| 75 | ciphers/bifid | ✓ | 2.242ms | 1.9 KB |
+| 76 | ciphers/brute_force_caesar_cipher | ✓ | 4.835ms | 968 B |
+| 77 | ciphers/caesar_cipher | ✓ | 39.649ms | 2.4 KB |
+| 78 | ciphers/cryptomath_module | ✓ | 102µs | 136 B |
+| 79 | ciphers/decrypt_caesar_with_chi_squared | error |  |  |
+| 80 | ciphers/deterministic_miller_rabin | ✓ | 299µs | 840 B |
+| 81 | ciphers/diffie | ✓ | 279µs | 880 B |
+| 82 | ciphers/diffie_hellman | ✓ | 50µs | 904 B |
+| 83 | ciphers/elgamal_key_generator | ✓ | 84µs | 1.8 KB |
+| 84 | ciphers/enigma_machine2 | ✓ | 14.707ms | 1.8 KB |
+| 85 | ciphers/fractionated_morse_cipher | ✓ | 675µs | 3.4 KB |
+| 86 | ciphers/gronsfeld_cipher | ✓ | 3.915ms | 1.1 KB |
+| 87 | ciphers/hill_cipher | ✓ | 2.777ms | 1.9 KB |
+| 88 | ciphers/mixed_keyword_cypher | ✓ | 765µs | 1.1 KB |
+| 89 | ciphers/mono_alphabetic_ciphers | ✓ | 174µs | 1.0 KB |
+| 90 | ciphers/morse_code | ✓ | 499µs | 2.3 KB |
+| 91 | ciphers/onepad_cipher | ✓ | 338µs | 1.5 KB |
+| 92 | ciphers/permutation_cipher | ✓ | 197µs | 1.4 KB |
+| 93 | ciphers/playfair_cipher | ✓ | 655µs | 1.2 KB |
+| 94 | ciphers/polybius | ✓ | 412µs | 1.8 KB |
+| 95 | ciphers/porta_cipher | ✓ | 955µs | 1.6 KB |
+| 96 | ciphers/rabin_miller | ✓ | 436µs | 1.1 KB |
+| 97 | ciphers/rail_fence_cipher | ✓ | 441µs | 1.5 KB |
+| 98 | ciphers/rot13 | ✓ | 5.022ms | 1.0 KB |
+| 99 | ciphers/rsa_cipher | ✓ | 168µs | 1.2 KB |
+| 100 | ciphers/rsa_factorization | ✓ | 126µs | 872 B |
+| 101 | ciphers/rsa_key_generator | ✓ | 94µs | 752 B |
+| 102 | ciphers/running_key_cipher | ✓ | 495µs | 1.2 KB |
+| 103 | ciphers/shuffled_shift_cipher | ✓ | 2.433ms | 7.2 KB |
+| 104 | ciphers/simple_keyword_cypher | ✓ | 991µs | 2.6 KB |
+| 105 | ciphers/simple_substitution_cipher | ✓ | 1.159ms | 1.3 KB |
+| 106 | ciphers/transposition_cipher | ✓ | 143µs | 992 B |
+| 107 | ciphers/transposition_cipher_encrypt_decrypt_file | ✓ | 50µs | 886 B |
+| 108 | ciphers/trifid_cipher | ✓ | 1.628ms | 1.2 KB |
+| 109 | ciphers/vernam_cipher | ✓ | 95µs | 1.1 KB |
+| 110 | ciphers/vigenere_cipher | ✓ | 3.129ms | 1.2 KB |
+| 111 | ciphers/xor_cipher | ✓ | 1.807ms | 1.1 KB |
+| 112 | computer_vision/cnn_classification | ✓ | 177µs | 4.1 KB |
+| 113 | computer_vision/flip_augmentation | ✓ | 302µs | 3.1 KB |
+| 114 | computer_vision/haralick_descriptors | ✓ | 152µs | 1.8 KB |
+| 115 | computer_vision/harris_corner | ✓ | 191µs | 2.4 KB |
+| 116 | computer_vision/horn_schunck | ✓ | 1.248ms | 2.4 KB |
+| 117 | computer_vision/intensity_based_segmentation | ✓ | 145µs | 976 B |
+| 118 | computer_vision/mean_threshold | ✓ | 102µs | 1.3 KB |
+| 119 | computer_vision/mosaic_augmentation | ✓ | 12.064ms | 2.1 KB |
+| 120 | computer_vision/pooling_functions | ✓ | 138µs | 992 B |
+| 121 | conversions/astronomical_length_scale_conversion | ✓ | 178µs | 2.2 KB |
+| 122 | conversions/binary_to_decimal | ✓ | 118µs | 968 B |
+| 123 | conversions/binary_to_hexadecimal | ✓ | 101µs | 1.0 KB |
+| 124 | conversions/binary_to_octal | ✓ | 108µs | 808 B |
+| 125 | conversions/convert_number_to_words | ✓ | 154µs | 2.6 KB |
+| 126 | conversions/decimal_to_any | ✓ | 30µs | 960 B |
+| 127 | conversions/decimal_to_binary | ✓ | 82µs | 1.1 KB |
+| 128 | conversions/decimal_to_hexadecimal | ✓ | 28µs | 352 B |
+| 129 | conversions/decimal_to_octal | ✓ | 87µs | 776 B |
+| 130 | conversions/energy_conversions | ✓ | 62µs | 744 B |
+| 131 | conversions/excel_title_to_column | ✓ | 96µs | 2.9 KB |
+| 132 | conversions/hex_to_bin | ✓ | 132µs | 1.0 KB |
+| 133 | conversions/hexadecimal_to_decimal | ✓ | 125µs | 1.1 KB |
+| 134 | conversions/ipv4_conversion | ✓ | 268µs | 1.0 KB |
+| 135 | conversions/length_conversion | ✓ | 104µs | 1.1 KB |
+| 136 | conversions/molecular_chemistry | ✓ | 51µs | 904 B |
+| 137 | conversions/octal_to_binary | ✓ | 102µs | 808 B |
+| 138 | conversions/octal_to_decimal | ✓ | 131µs | 1.1 KB |
+| 139 | conversions/octal_to_hexadecimal | ✓ | 59µs | 992 B |
+| 140 | conversions/prefix_conversions | ✓ | 159µs | 2.6 KB |
+| 141 | conversions/prefix_conversions_string | ✓ | 84µs | 4.3 KB |
 | 142 | conversions/pressure_conversions | ✓ | 74µs | 1.5 KB |
-| 143 | conversions/rectangular_to_polar | ✓ | 167µs | 1.2 KB |
-| 144 | conversions/rgb_cmyk_conversion | ✓ | 110µs | 896 B |
-| 145 | conversions/rgb_hsv_conversion | ✓ | 88µs | 1.2 KB |
+| 143 | conversions/rectangular_to_polar | ✓ | 121µs | 1.2 KB |
+| 144 | conversions/rgb_cmyk_conversion | ✓ | 107µs | 848 B |
+| 145 | conversions/rgb_hsv_conversion | ✓ | 135µs | 1.2 KB |
 | 146 | conversions/roman_numerals | ✓ | 2µs | 640 B |
-| 147 | conversions/speed_conversions | ✓ | 180µs | 1.4 KB |
-| 148 | conversions/temperature_conversions | ✓ | 147µs | 1.5 KB |
-| 149 | conversions/time_conversions | ✓ | 116µs | 2.2 KB |
-| 150 | conversions/volume_conversions | ✓ | 106µs | 1.6 KB |
-| 151 | conversions/weight_conversion | ✓ | 53µs | 1.4 KB |
-| 152 | data_compression/burrows_wheeler | ✓ | 177µs | 1.3 KB |
-| 153 | data_compression/huffman | ✓ | 334µs | 1.4 KB |
-| 154 | data_compression/lempel_ziv | ✓ | 224µs | 1016 B |
-| 155 | data_compression/lempel_ziv_decompress | ✓ | 98µs | 1.0 KB |
-| 156 | data_compression/lz77 | ✓ | 321µs | 5.9 KB |
-| 157 | data_compression/peak_signal_to_noise_ratio | ✓ | 2µs | 176 B |
-| 158 | data_compression/run_length_encoding | ✓ | 213µs | 947 B |
-| 159 | data_structures/arrays/equilibrium_index_in_array | ✓ | 95µs | 1.4 KB |
-| 160 | data_structures/arrays/find_triplets_with_0_sum | ✓ | 484µs | 960 B |
-| 161 | data_structures/arrays/index_2d_array_in_1d | ✓ | 219µs | 896 B |
-| 162 | data_structures/arrays/kth_largest_element | ✓ | 119µs | 1.3 KB |
-| 163 | data_structures/arrays/median_two_array | ✓ | 205µs | 960 B |
-| 164 | data_structures/arrays/monotonic_array | ✓ | 27µs | 808 B |
-| 165 | data_structures/arrays/pairs_with_given_sum | ✓ | 85µs | 808 B |
-| 166 | data_structures/arrays/permutations | ✓ | 517µs | 1.2 KB |
-| 167 | data_structures/arrays/prefix_sum | ✓ | 261µs | 1.3 KB |
-| 168 | data_structures/arrays/product_sum | ✓ | 76µs | 1.5 KB |
-| 169 | data_structures/arrays/sparse_table | ✓ | 151µs | 2.0 KB |
-| 170 | data_structures/arrays/sudoku_solver | ✓ | 1.163ms | 15.8 KB |
-| 171 | data_structures/binary_tree/avl_tree | ✓ | 90µs | 2.6 KB |
-| 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 119µs | 3.0 KB |
-| 173 | data_structures/binary_tree/binary_search_tree | ✓ | 155µs | 1.3 KB |
+| 147 | conversions/speed_conversions | ✓ | 125µs | 1.3 KB |
+| 148 | conversions/temperature_conversions | ✓ | 71µs | 1.5 KB |
+| 149 | conversions/time_conversions | ✓ | 83µs | 2.2 KB |
+| 150 | conversions/volume_conversions | ✓ | 96µs | 1.6 KB |
+| 151 | conversions/weight_conversion | ✓ | 49µs | 1.4 KB |
+| 152 | data_compression/burrows_wheeler | ✓ | 196µs | 1.2 KB |
+| 153 | data_compression/huffman | ✓ | 316µs | 1.4 KB |
+| 154 | data_compression/lempel_ziv | ✓ | 194µs | 1016 B |
+| 155 | data_compression/lempel_ziv_decompress | ✓ | 102µs | 1.0 KB |
+| 156 | data_compression/lz77 | ✓ | 276µs | 5.9 KB |
+| 157 | data_compression/peak_signal_to_noise_ratio | ✓ | 1µs | 176 B |
+| 158 | data_compression/run_length_encoding | ✓ | 164µs | 947 B |
+| 159 | data_structures/arrays/equilibrium_index_in_array | ✓ | 99µs | 1.4 KB |
+| 160 | data_structures/arrays/find_triplets_with_0_sum | ✓ | 460µs | 960 B |
+| 161 | data_structures/arrays/index_2d_array_in_1d | ✓ | 140µs | 848 B |
+| 162 | data_structures/arrays/kth_largest_element | ✓ | 109µs | 1.3 KB |
+| 163 | data_structures/arrays/median_two_array | ✓ | 182µs | 912 B |
+| 164 | data_structures/arrays/monotonic_array | ✓ | 28µs | 808 B |
+| 165 | data_structures/arrays/pairs_with_given_sum | ✓ | 60µs | 808 B |
+| 166 | data_structures/arrays/permutations | ✓ | 406µs | 1.2 KB |
+| 167 | data_structures/arrays/prefix_sum | ✓ | 181µs | 1.3 KB |
+| 168 | data_structures/arrays/product_sum | ✓ | 92µs | 1.5 KB |
+| 169 | data_structures/arrays/sparse_table | ✓ | 154µs | 1.9 KB |
+| 170 | data_structures/arrays/sudoku_solver | ✓ | 995µs | 15.8 KB |
+| 171 | data_structures/binary_tree/avl_tree | ✓ | 81µs | 2.6 KB |
+| 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 152µs | 3.0 KB |
+| 173 | data_structures/binary_tree/binary_search_tree | ✓ | 158µs | 1.3 KB |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive | error |  |  |
 | 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 118µs | 1016 B |
 | 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 95µs | 1.3 KB |
@@ -526,7 +526,7 @@ Last updated: 2025-08-07 10:33 GMT+7
 | 517 | machine_learning/polynomial_regression | ✓ | 376µs | 5.2 KB |
 | 518 | machine_learning/principle_component_analysis | ✓ | 207µs | 3.6 KB |
 | 519 | machine_learning/scoring_functions | ✓ | 190µs | 1.3 KB |
-| 520 | machine_learning/self_organizing_map | ✓ | 95µs | 1.1 KB |
+| 520 | machine_learning/self_organizing_map | error | 95µs | 1.1 KB |
 | 521 | machine_learning/sequential_minimum_optimization | ✓ | 383µs | 2.0 KB |
 | 522 | machine_learning/similarity_search | ✓ | 205µs | 1.9 KB |
 | 523 | machine_learning/support_vector_machines | ✓ | 8.853ms | 2.2 KB |
@@ -621,92 +621,92 @@ Last updated: 2025-08-07 10:33 GMT+7
 | 612 | maths/numerical_analysis/newton_forward_interpolation | ✓ | 120µs | 1.1 KB |
 | 613 | maths/numerical_analysis/newton_raphson | ✓ | 64µs | 512 B |
 | 614 | maths/numerical_analysis/numerical_integration | ✓ | 7.104ms | 168 B |
-| 615 | maths/numerical_analysis/proper_fractions | error |  |  |
+| 615 | maths/numerical_analysis/proper_fractions | ✓ | 132µs | 1.1 KB |
 | 616 | maths/numerical_analysis/runge_kutta | ✓ | 1.53ms | 9.8 KB |
 | 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 | ✓ | 65µs | 960 B |
 | 618 | maths/numerical_analysis/runge_kutta_gills | ✓ | 106µs | 1.7 KB |
-| 619 | maths/numerical_analysis/secant_method |   |  |  |
-| 620 | maths/numerical_analysis/simpson_rule |   |  |  |
-| 621 | maths/numerical_analysis/square_root |   |  |  |
-| 622 | maths/odd_sieve |   |  |  |
-| 623 | maths/perfect_cube |   |  |  |
-| 624 | maths/perfect_number |   |  |  |
-| 625 | maths/perfect_square |   |  |  |
-| 626 | maths/persistence |   |  |  |
-| 627 | maths/pi_generator |   |  |  |
-| 628 | maths/pi_monte_carlo_estimation |   |  |  |
-| 629 | maths/points_are_collinear_3d |   |  |  |
-| 630 | maths/pollard_rho |   |  |  |
-| 631 | maths/polynomial_evaluation |   |  |  |
-| 632 | maths/polynomials/single_indeterminate_operations |   |  |  |
-| 633 | maths/power_using_recursion |   |  |  |
-| 634 | maths/prime_check |   |  |  |
-| 635 | maths/prime_factors |   |  |  |
-| 636 | maths/prime_numbers |   |  |  |
-| 637 | maths/prime_sieve_eratosthenes |   |  |  |
-| 638 | maths/primelib |   |  |  |
-| 639 | maths/print_multiplication_table |   |  |  |
-| 640 | maths/pythagoras |   |  |  |
-| 641 | maths/qr_decomposition |   |  |  |
-| 642 | maths/quadratic_equations_complex_numbers |   |  |  |
-| 643 | maths/radians |   |  |  |
-| 644 | maths/radix2_fft |   |  |  |
-| 645 | maths/remove_digit |   |  |  |
-| 646 | maths/segmented_sieve |   |  |  |
-| 647 | maths/series/arithmetic |   |  |  |
-| 648 | maths/series/geometric |   |  |  |
-| 649 | maths/series/geometric_series |   |  |  |
-| 650 | maths/series/harmonic |   |  |  |
-| 651 | maths/series/harmonic_series |   |  |  |
-| 652 | maths/series/hexagonal_numbers |   |  |  |
-| 653 | maths/series/p_series |   |  |  |
-| 654 | maths/sieve_of_eratosthenes |   |  |  |
-| 655 | maths/sigmoid |   |  |  |
-| 656 | maths/signum |   |  |  |
-| 657 | maths/simultaneous_linear_equation_solver |   |  |  |
-| 658 | maths/sin |   |  |  |
-| 659 | maths/sock_merchant |   |  |  |
-| 660 | maths/softmax |   |  |  |
-| 661 | maths/solovay_strassen_primality_test |   |  |  |
-| 662 | maths/spearman_rank_correlation_coefficient |   |  |  |
-| 663 | maths/special_numbers/armstrong_numbers |   |  |  |
-| 664 | maths/special_numbers/automorphic_number |   |  |  |
-| 665 | maths/special_numbers/bell_numbers |   |  |  |
-| 666 | maths/special_numbers/carmichael_number |   |  |  |
-| 667 | maths/special_numbers/catalan_number |   |  |  |
-| 668 | maths/special_numbers/hamming_numbers |   |  |  |
-| 669 | maths/special_numbers/happy_number |   |  |  |
-| 670 | maths/special_numbers/harshad_numbers |   |  |  |
-| 671 | maths/special_numbers/hexagonal_number |   |  |  |
-| 672 | maths/special_numbers/krishnamurthy_number |   |  |  |
-| 673 | maths/special_numbers/perfect_number |   |  |  |
-| 674 | maths/special_numbers/polygonal_numbers |   |  |  |
-| 675 | maths/special_numbers/pronic_number |   |  |  |
-| 676 | maths/special_numbers/proth_number |   |  |  |
-| 677 | maths/special_numbers/triangular_numbers |   |  |  |
-| 678 | maths/special_numbers/ugly_numbers |   |  |  |
-| 679 | maths/special_numbers/weird_number |   |  |  |
-| 680 | maths/sum_of_arithmetic_series |   |  |  |
-| 681 | maths/sum_of_digits |   |  |  |
-| 682 | maths/sum_of_geometric_progression |   |  |  |
-| 683 | maths/sum_of_harmonic_series |   |  |  |
-| 684 | maths/sumset |   |  |  |
-| 685 | maths/sylvester_sequence |   |  |  |
-| 686 | maths/tanh |   |  |  |
-| 687 | maths/test_factorial |   |  |  |
-| 688 | maths/test_prime_check |   |  |  |
-| 689 | maths/three_sum |   |  |  |
-| 690 | maths/trapezoidal_rule |   |  |  |
-| 691 | maths/triplet_sum |   |  |  |
-| 692 | maths/twin_prime |   |  |  |
-| 693 | maths/two_pointer |   |  |  |
-| 694 | maths/two_sum |   |  |  |
-| 695 | maths/volume |   |  |  |
-| 696 | maths/zellers_congruence |   |  |  |
-| 697 | matrix/binary_search_matrix |   |  |  |
-| 698 | matrix/count_islands_in_matrix |   |  |  |
-| 699 | matrix/count_negative_numbers_in_sorted_matrix |   |  |  |
-| 700 | matrix/count_paths |   |  |  |
+| 619 | maths/numerical_analysis/secant_method | ✓ | 140µs | 240 B |
+| 620 | maths/numerical_analysis/simpson_rule | ✓ | 121µs | 992 B |
+| 621 | maths/numerical_analysis/square_root | ✓ | 77µs | 280 B |
+| 622 | maths/odd_sieve | ✓ | 145µs | 808 B |
+| 623 | maths/perfect_cube | ✓ | 27µs | 64 B |
+| 624 | maths/perfect_number | ✓ | 1.160755s | 32 B |
+| 625 | maths/perfect_square | ✓ | 30µs | 64 B |
+| 626 | maths/persistence | ✓ | 85µs | 336 B |
+| 627 | maths/pi_generator | ✓ | 41µs | 1.1 KB |
+| 628 | maths/pi_monte_carlo_estimation | ✓ | 4.106ms | 1.2 KB |
+| 629 | maths/points_are_collinear_3d | ✓ | 60µs | 1.2 KB |
+| 630 | maths/pollard_rho | ✓ | 82µs | 1.0 KB |
+| 631 | maths/polynomial_evaluation | ✓ | 70µs | 1.1 KB |
+| 632 | maths/polynomials/single_indeterminate_operations | ✓ | 199µs | 1.6 KB |
+| 633 | maths/power_using_recursion | ✓ | 101µs | 1.3 KB |
+| 634 | maths/prime_check | ✓ | 26µs | 80 B |
+| 635 | maths/prime_factors | ✓ | 152µs | 1.1 KB |
+| 636 | maths/prime_numbers | ✓ | 164µs | 888 B |
+| 637 | maths/prime_sieve_eratosthenes | ✓ | 214µs | 1.1 KB |
+| 638 | maths/primelib | error |  |  |
+| 639 | maths/print_multiplication_table | ✓ | 152µs | 744 B |
+| 640 | maths/pythagoras | ✓ | 83µs | 1.1 KB |
+| 641 | maths/qr_decomposition | ✓ | 290µs | 2.6 KB |
+| 642 | maths/quadratic_equations_complex_numbers | ✓ | 172µs | 1.1 KB |
+| 643 | maths/radians | ✓ | 74µs | 432 B |
+| 644 | maths/radix2_fft | ✓ | 481µs | 3.2 KB |
+| 645 | maths/remove_digit | ✓ | 80µs | 288 B |
+| 646 | maths/segmented_sieve | ✓ | 245µs | 1.1 KB |
+| 647 | maths/series/arithmetic | ✓ | 141µs | 904 B |
+| 648 | maths/series/geometric | ✓ | 139µs | 1.2 KB |
+| 649 | maths/series/geometric_series | ✓ | 112µs | 808 B |
+| 650 | maths/series/harmonic | ✓ | 184µs | 904 B |
+| 651 | maths/series/harmonic_series | ✓ | 92µs | 808 B |
+| 652 | maths/series/hexagonal_numbers | error |  |  |
+| 653 | maths/series/p_series | ✓ | 166µs | 848 B |
+| 654 | maths/sieve_of_eratosthenes | ✓ | 559µs | 888 B |
+| 655 | maths/sigmoid | ✓ | 155µs | 840 B |
+| 656 | maths/signum | ✓ | 57µs | 288 B |
+| 657 | maths/simultaneous_linear_equation_solver | ✓ | 249µs | 1.3 KB |
+| 658 | maths/sin | error |  |  |
+| 659 | maths/sock_merchant | ✓ | 122µs | 1.0 KB |
+| 660 | maths/softmax | ✓ | 146µs | 1.1 KB |
+| 661 | maths/solovay_strassen_primality_test | ✓ | 37µs | 352 B |
+| 662 | maths/spearman_rank_correlation_coefficient | ✓ | 161µs | 1.1 KB |
+| 663 | maths/special_numbers/armstrong_numbers | ✓ | 77µs | 920 B |
+| 664 | maths/special_numbers/automorphic_number | ✓ | 15µs | 32 B |
+| 665 | maths/special_numbers/bell_numbers | ✓ | 116µs | 992 B |
+| 666 | maths/special_numbers/carmichael_number | ✓ | 2.359ms | 1.6 KB |
+| 667 | maths/special_numbers/catalan_number | ✓ | 90µs | 904 B |
+| 668 | maths/special_numbers/hamming_numbers | ✓ | 245µs | 856 B |
+| 669 | maths/special_numbers/happy_number | ✓ | 86µs | 1.0 KB |
+| 670 | maths/special_numbers/harshad_numbers | ✓ | 412µs | 1.3 KB |
+| 671 | maths/special_numbers/hexagonal_number | ✓ | 67µs | 824 B |
+| 672 | maths/special_numbers/krishnamurthy_number | ✓ | 44µs | 400 B |
+| 673 | maths/special_numbers/perfect_number | ✓ | 165µs | 840 B |
+| 674 | maths/special_numbers/polygonal_numbers | ✓ | 61µs | 824 B |
+| 675 | maths/special_numbers/pronic_number | ✓ | 597µs | 392 B |
+| 676 | maths/special_numbers/proth_number | ✓ | 177µs | 992 B |
+| 677 | maths/special_numbers/triangular_numbers | ✓ | 91µs | 296 B |
+| 678 | maths/special_numbers/ugly_numbers | ✓ | 1.213ms | 4.5 KB |
+| 679 | maths/special_numbers/weird_number | ✓ | 504µs | 2.6 KB |
+| 680 | maths/sum_of_arithmetic_series | ✓ | 74µs | 288 B |
+| 681 | maths/sum_of_digits | ✓ | 107µs | 1.3 KB |
+| 682 | maths/sum_of_geometric_progression | ✓ | 170µs | 392 B |
+| 683 | maths/sum_of_harmonic_series | ✓ | 70µs | 1.1 KB |
+| 684 | maths/sumset | ✓ | 159µs | 952 B |
+| 685 | maths/sylvester_sequence | ✓ | 105µs | 536 B |
+| 686 | maths/tanh | ✓ | 147µs | 944 B |
+| 687 | maths/test_factorial | ✓ | 78µs | 1.7 KB |
+| 688 | maths/test_prime_check | ✓ | 43µs | 80 B |
+| 689 | maths/three_sum | ✓ | 123µs | 912 B |
+| 690 | maths/trapezoidal_rule | ✓ | 129µs | 1.0 KB |
+| 691 | maths/triplet_sum | ✓ | 142µs | 1.3 KB |
+| 692 | maths/twin_prime | ✓ | 80µs | 392 B |
+| 693 | maths/two_pointer | ✓ | 160µs | 1.0 KB |
+| 694 | maths/two_sum | ✓ | 33µs | 808 B |
+| 695 | maths/volume | ✓ | 90µs | 1.6 KB |
+| 696 | maths/zellers_congruence | error |  |  |
+| 697 | matrix/binary_search_matrix | ✓ | 116µs | 952 B |
+| 698 | matrix/count_islands_in_matrix | error |  |  |
+| 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ |  |  |
+| 700 | matrix/count_paths | ✓ | 323µs | 2.8 KB |
 | 701 | matrix/cramers_rule_2x2 |   |  |  |
 | 702 | matrix/inverse_of_matrix |   |  |  |
 | 703 | matrix/largest_square_area_in_matrix |   |  |  |

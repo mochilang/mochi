@@ -214,6 +214,34 @@ local function _exists(v)
 end
 `
 
+const helperEqual = `
+local function _equal(a, b)
+  if a == b then return true end
+  if type(a) ~= type(b) then return false end
+  if type(a) ~= 'table' then return a == b end
+  local count = 0
+  for k, v in pairs(a) do
+    if not _equal(v, b[k]) then return false end
+    count = count + 1
+  end
+  for k in pairs(b) do
+    count = count - 1
+  end
+  return count == 0
+end
+`
+
+const helperStr = `
+local function _str(v)
+  if type(v) == 'number' then
+    local s = tostring(v)
+    s = string.gsub(s, '%.0+$', '')
+    return s
+  end
+  return tostring(v)
+end
+`
+
 const helperParseIntStr = `
 local function _parseIntStr(str)
   if type(str) == 'table' then
@@ -614,13 +642,13 @@ func (c *CallExpr) emit(w io.Writer) {
 		if len(c.Args) > 0 && (isListExpr(c.Args[0]) || isMapExpr(c.Args[0])) {
 			(&CallExpr{Func: "repr", Args: c.Args}).emit(w)
 		} else if len(c.Args) > 0 && isBigRatExpr(c.Args[0]) {
-			io.WriteString(w, "(tostring(")
+			io.WriteString(w, "(_str(")
 			c.Args[0].emit(w)
-			io.WriteString(w, ".num) .. '/' .. tostring(")
+			io.WriteString(w, ".num) .. '/' .. _str(")
 			c.Args[0].emit(w)
 			io.WriteString(w, ".den))")
 		} else {
-			io.WriteString(w, "tostring(")
+			io.WriteString(w, "_str(")
 			if len(c.Args) > 0 {
 				c.Args[0].emit(w)
 			}
@@ -1872,6 +1900,22 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	}
+	if (b.Op == "==" || b.Op == "!=") && (isListExpr(b.Left) || isListExpr(b.Right) || isMapExpr(b.Left) || isMapExpr(b.Right)) {
+		if b.Op == "==" {
+			io.WriteString(w, "_equal(")
+			b.Left.emit(w)
+			io.WriteString(w, ", ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			io.WriteString(w, "(not _equal(")
+			b.Left.emit(w)
+			io.WriteString(w, ", ")
+			b.Right.emit(w)
+			io.WriteString(w, "))")
+		}
+		return
+	}
 	op := b.Op
 	if isBigRatExpr(b.Left) || isBigRatExpr(b.Right) {
 		localOp := ""
@@ -2668,6 +2712,8 @@ func collectHelpers(p *Program) map[string]bool {
 				used["indexOf"] = true
 			case "exists":
 				used["exists"] = true
+			case "str":
+				used["str"] = true
 			case "split":
 				used["split"] = true
 			case "substring":
@@ -2713,6 +2759,9 @@ func collectHelpers(p *Program) map[string]bool {
 			walkExpr(ex.Then)
 			walkExpr(ex.Else)
 		case *BinaryExpr:
+			if (ex.Op == "==" || ex.Op == "!=") && (isListExpr(ex.Left) || isListExpr(ex.Right) || isMapExpr(ex.Left) || isMapExpr(ex.Right)) {
+				used["equal"] = true
+			}
 			walkExpr(ex.Left)
 			walkExpr(ex.Right)
 		case *UnaryExpr:
@@ -2883,6 +2932,12 @@ func Emit(p *Program) []byte {
 	}
 	if used["exists"] {
 		b.WriteString(helperExists)
+	}
+	if used["equal"] {
+		b.WriteString(helperEqual)
+	}
+	if used["str"] {
+		b.WriteString(helperStr)
 	}
 	if used["parseIntStr"] {
 		b.WriteString(helperParseIntStr)
