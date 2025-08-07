@@ -1,0 +1,5 @@
+run: exit status 1
+lua: /workspace/mochi/tests/algorithms/x/Lua/graphs/dijkstra.lua:122: attempt to perform arithmetic on a table value (field '?')
+stack traceback:
+	/workspace/mochi/tests/algorithms/x/Lua/graphs/dijkstra.lua:122: in main chunk
+	[C]: in ?

@@ -1,0 +1,3 @@
+GenType3 {impedance = 5.0}
+GenType1 {resistance = 3.0}
+GenType2 {reactance = 4.0}

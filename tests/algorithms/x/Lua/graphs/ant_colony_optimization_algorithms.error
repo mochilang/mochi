@@ -1,0 +1,8 @@
+run: exit status 1
+lua: ...thms/x/Lua/graphs/ant_colony_optimization_algorithms.lua:56: attempt to index a nil value (local 'city1')
+stack traceback:
+	...thms/x/Lua/graphs/ant_colony_optimization_algorithms.lua:56: in function 'distance'
+	...thms/x/Lua/graphs/ant_colony_optimization_algorithms.lua:148: in function 'city_select'
+	...thms/x/Lua/graphs/ant_colony_optimization_algorithms.lua:362: in function 'ant_colony'
+	...thms/x/Lua/graphs/ant_colony_optimization_algorithms.lua:657: in main chunk
+	[C]: in ?

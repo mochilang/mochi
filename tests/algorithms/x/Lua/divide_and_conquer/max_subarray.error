@@ -1,0 +1,8 @@
+run: exit status 1
+lua: ...sts/algorithms/x/Lua/divide_and_conquer/max_subarray.lua:96: attempt to add a 'string' with a 'number'
+stack traceback:
+	[C]: in metamethod 'add'
+	...sts/algorithms/x/Lua/divide_and_conquer/max_subarray.lua:96: in function 'show'
+	...sts/algorithms/x/Lua/divide_and_conquer/max_subarray.lua:161: in function 'main'
+	...sts/algorithms/x/Lua/divide_and_conquer/max_subarray.lua:242: in main chunk
+	[C]: in ?
