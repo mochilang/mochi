@@ -1,104 +1,88 @@
 exit status 1
-/tmp/TestSwiftTranspiler_Algorithms_Golden290_divide_and_conquer_heaps_algorithm1548357159/001/main.swift:86:46: warning: forced cast of '[[Int?]]' to same type has no effect
- 84 |             return (_append(res, copy) as! [[Int?]])
- 85 |         }
- 86 |         res = (permute((k &- 1), &arr, &res) as! [[Int?]])
-    |                                              `- warning: forced cast of '[[Int?]]' to same type has no effect
- 87 |         var i: Int = 0
- 88 |         while (i < (k &- 1)) {
+/tmp/TestSwiftTranspiler_Algorithms_Golden290_divide_and_conquer_heaps_algorithm3550496789/001/main.swift:93:46: warning: forced cast of '[[Int]]' to same type has no effect
+ 91 |             return (_append(res, copy) as! [[Int]])
+ 92 |         }
+ 93 |         res = (permute((k &- 1), &arr, &res) as! [[Int]])
+    |                                              `- warning: forced cast of '[[Int]]' to same type has no effect
+ 94 |         var i: Int = 0
+ 95 |         while (i < (k &- 1)) {
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden290_divide_and_conquer_heaps_algorithm1548357159/001/main.swift:90:36: warning: conditional downcast from 'Int?' to 'Int' does nothing
- 88 |         while (i < (k &- 1)) {
- 89 |             if (((k % 2 + 2) % 2) == 0) {
- 90 |                 let temp = (arr[i] as? Int ?? 0)
-    |                                    `- warning: conditional downcast from 'Int?' to 'Int' does nothing
- 91 |                 arr = _set(arr, i, (arr[(k &- 1)] as? Int ?? 0))
- 92 |                 arr = _set(arr, (k &- 1), (temp as! Int))
+/tmp/TestSwiftTranspiler_Algorithms_Golden290_divide_and_conquer_heaps_algorithm3550496789/001/main.swift:97:36: warning: conditional cast from 'Int' to 'Int' always succeeds
+ 95 |         while (i < (k &- 1)) {
+ 96 |             if (((k % 2 + 2) % 2) == 0) {
+ 97 |                 let temp = (arr[i] as? Int ?? 0)
+    |                                    `- warning: conditional cast from 'Int' to 'Int' always succeeds
+ 98 |                 arr = _set(arr, i, (arr[(k &- 1)] as? Int ?? 0))
+ 99 |                 arr = _set(arr, (k &- 1), Int(temp))
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden290_divide_and_conquer_heaps_algorithm1548357159/001/main.swift:91:51: warning: conditional downcast from 'Int?' to 'Int' does nothing
- 89 |             if (((k % 2 + 2) % 2) == 0) {
- 90 |                 let temp = (arr[i] as? Int ?? 0)
- 91 |                 arr = _set(arr, i, (arr[(k &- 1)] as? Int ?? 0))
-    |                                                   `- warning: conditional downcast from 'Int?' to 'Int' does nothing
- 92 |                 arr = _set(arr, (k &- 1), (temp as! Int))
- 93 |             } else {
+/tmp/TestSwiftTranspiler_Algorithms_Golden290_divide_and_conquer_heaps_algorithm3550496789/001/main.swift:98:51: warning: conditional cast from 'Int' to 'Int' always succeeds
+ 96 |             if (((k % 2 + 2) % 2) == 0) {
+ 97 |                 let temp = (arr[i] as? Int ?? 0)
+ 98 |                 arr = _set(arr, i, (arr[(k &- 1)] as? Int ?? 0))
+    |                                                   `- warning: conditional cast from 'Int' to 'Int' always succeeds
+ 99 |                 arr = _set(arr, (k &- 1), Int(temp))
+100 |             } else {
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden290_divide_and_conquer_heaps_algorithm1548357159/001/main.swift:92:49: warning: forced cast of 'Int' to same type has no effect
- 90 |                 let temp = (arr[i] as? Int ?? 0)
- 91 |                 arr = _set(arr, i, (arr[(k &- 1)] as? Int ?? 0))
- 92 |                 arr = _set(arr, (k &- 1), (temp as! Int))
-    |                                                 `- warning: forced cast of 'Int' to same type has no effect
- 93 |             } else {
- 94 |                 let temp = (arr[0] as? Int ?? 0)
+/tmp/TestSwiftTranspiler_Algorithms_Golden290_divide_and_conquer_heaps_algorithm3550496789/001/main.swift:101:36: warning: conditional cast from 'Int' to 'Int' always succeeds
+ 99 |                 arr = _set(arr, (k &- 1), Int(temp))
+100 |             } else {
+101 |                 let temp = (arr[0] as? Int ?? 0)
+    |                                    `- warning: conditional cast from 'Int' to 'Int' always succeeds
+102 |                 arr = _set(arr, 0, (arr[(k &- 1)] as? Int ?? 0))
+103 |                 arr = _set(arr, (k &- 1), Int(temp))
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden290_divide_and_conquer_heaps_algorithm1548357159/001/main.swift:94:36: warning: conditional downcast from 'Int?' to 'Int' does nothing
- 92 |                 arr = _set(arr, (k &- 1), (temp as! Int))
- 93 |             } else {
- 94 |                 let temp = (arr[0] as? Int ?? 0)
-    |                                    `- warning: conditional downcast from 'Int?' to 'Int' does nothing
- 95 |                 arr = _set(arr, 0, (arr[(k &- 1)] as? Int ?? 0))
- 96 |                 arr = _set(arr, (k &- 1), (temp as! Int))
+/tmp/TestSwiftTranspiler_Algorithms_Golden290_divide_and_conquer_heaps_algorithm3550496789/001/main.swift:102:51: warning: conditional cast from 'Int' to 'Int' always succeeds
+100 |             } else {
+101 |                 let temp = (arr[0] as? Int ?? 0)
+102 |                 arr = _set(arr, 0, (arr[(k &- 1)] as? Int ?? 0))
+    |                                                   `- warning: conditional cast from 'Int' to 'Int' always succeeds
+103 |                 arr = _set(arr, (k &- 1), Int(temp))
+104 |             }
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden290_divide_and_conquer_heaps_algorithm1548357159/001/main.swift:95:51: warning: conditional downcast from 'Int?' to 'Int' does nothing
- 93 |             } else {
- 94 |                 let temp = (arr[0] as? Int ?? 0)
- 95 |                 arr = _set(arr, 0, (arr[(k &- 1)] as? Int ?? 0))
-    |                                                   `- warning: conditional downcast from 'Int?' to 'Int' does nothing
- 96 |                 arr = _set(arr, (k &- 1), (temp as! Int))
- 97 |             }
+/tmp/TestSwiftTranspiler_Algorithms_Golden290_divide_and_conquer_heaps_algorithm3550496789/001/main.swift:105:50: warning: forced cast of '[[Int]]' to same type has no effect
+103 |                 arr = _set(arr, (k &- 1), Int(temp))
+104 |             }
+105 |             res = (permute((k &- 1), &arr, &res) as! [[Int]])
+    |                                                  `- warning: forced cast of '[[Int]]' to same type has no effect
+106 |             i = _int((i &+ 1))
+107 |         }
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden290_divide_and_conquer_heaps_algorithm1548357159/001/main.swift:96:49: warning: forced cast of 'Int' to same type has no effect
- 94 |                 let temp = (arr[0] as? Int ?? 0)
- 95 |                 arr = _set(arr, 0, (arr[(k &- 1)] as? Int ?? 0))
- 96 |                 arr = _set(arr, (k &- 1), (temp as! Int))
-    |                                                 `- warning: forced cast of 'Int' to same type has no effect
- 97 |             }
- 98 |             res = (permute((k &- 1), &arr, &res) as! [[Int?]])
+/tmp/TestSwiftTranspiler_Algorithms_Golden290_divide_and_conquer_heaps_algorithm3550496789/001/main.swift:115:45: error: cannot pass immutable value as inout argument: 'arr' is a 'let' constant
+113 |         }
+114 |         var res: [[Int]] = ([] as! [[Int]])
+115 |         res = (permute(_int(((arr).count)), &arr, &res) as! [[Int]])
+    |                                             `- error: cannot pass immutable value as inout argument: 'arr' is a 'let' constant
+116 |         return res
+117 |     }
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden290_divide_and_conquer_heaps_algorithm1548357159/001/main.swift:98:50: warning: forced cast of '[[Int?]]' to same type has no effect
- 96 |                 arr = _set(arr, (k &- 1), (temp as! Int))
- 97 |             }
- 98 |             res = (permute((k &- 1), &arr, &res) as! [[Int?]])
-    |                                                  `- warning: forced cast of '[[Int?]]' to same type has no effect
- 99 |             i = Int((i &+ 1))
-100 |         }
+/tmp/TestSwiftTranspiler_Algorithms_Golden290_divide_and_conquer_heaps_algorithm3550496789/001/main.swift:115:57: warning: forced cast of '[[Int]]' to same type has no effect
+113 |         }
+114 |         var res: [[Int]] = ([] as! [[Int]])
+115 |         res = (permute(_int(((arr).count)), &arr, &res) as! [[Int]])
+    |                                                         `- warning: forced cast of '[[Int]]' to same type has no effect
+116 |         return res
+117 |     }
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden290_divide_and_conquer_heaps_algorithm1548357159/001/main.swift:108:44: error: cannot pass immutable value as inout argument: 'arr' is a 'let' constant
-106 |         }
-107 |         var res: [[Int?]] = ([] as! [[Int?]])
-108 |         res = (permute(Int(((arr).count)), &arr, &res) as! [[Int?]])
-    |                                            `- error: cannot pass immutable value as inout argument: 'arr' is a 'let' constant
-109 |         return res
-110 |     }
+/tmp/TestSwiftTranspiler_Algorithms_Golden290_divide_and_conquer_heaps_algorithm3550496789/001/main.swift:119:60: warning: forced cast of '[[Int]]' to same type has no effect
+117 |     }
+118 |     func main() {
+119 |         let perms: [[Int]] = (heaps(([1, 2, 3] as! [Int])) as! [[Int]])
+    |                                                            `- warning: forced cast of '[[Int]]' to same type has no effect
+120 |         print(_p("[" + perms.map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: ", ") + "]"))
+121 |     }
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden290_divide_and_conquer_heaps_algorithm1548357159/001/main.swift:108:56: warning: forced cast of '[[Int?]]' to same type has no effect
-106 |         }
-107 |         var res: [[Int?]] = ([] as! [[Int?]])
-108 |         res = (permute(Int(((arr).count)), &arr, &res) as! [[Int?]])
-    |                                                        `- warning: forced cast of '[[Int?]]' to same type has no effect
-109 |         return res
-110 |     }
+/tmp/TestSwiftTranspiler_Algorithms_Golden290_divide_and_conquer_heaps_algorithm3550496789/001/main.swift:120:49: warning: cast from '[Int]' to unrelated type 'String' always fails
+118 |     func main() {
+119 |         let perms: [[Int]] = (heaps(([1, 2, 3] as! [Int])) as! [[Int]])
+120 |         print(_p("[" + perms.map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: ", ") + "]"))
+    |                                                 `- warning: cast from '[Int]' to unrelated type 'String' always fails
+121 |     }
+122 |     _ = main()
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden290_divide_and_conquer_heaps_algorithm1548357159/001/main.swift:112:62: warning: forced cast of '[[Int?]]' to same type has no effect
-110 |     }
-111 |     func main() {
-112 |         let perms: [[Int?]] = (heaps(([1, 2, 3] as! [Int?])) as! [[Int?]])
-    |                                                              `- warning: forced cast of '[[Int?]]' to same type has no effect
-113 |         print(_p("[" + perms.map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: ", ") + "]"))
-114 |     }
-
-/tmp/TestSwiftTranspiler_Algorithms_Golden290_divide_and_conquer_heaps_algorithm1548357159/001/main.swift:113:49: warning: cast from '[Int?]' to unrelated type 'String' always fails
-111 |     func main() {
-112 |         let perms: [[Int?]] = (heaps(([1, 2, 3] as! [Int?])) as! [[Int?]])
-113 |         print(_p("[" + perms.map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: ", ") + "]"))
-    |                                                 `- warning: cast from '[Int?]' to unrelated type 'String' always fails
-114 |     }
-115 |     _ = main()
-
-/tmp/TestSwiftTranspiler_Algorithms_Golden290_divide_and_conquer_heaps_algorithm1548357159/001/main.swift:115:5: warning: using '_' to ignore the result of a Void-returning function is redundant
-113 |         print(_p("[" + perms.map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: ", ") + "]"))
-114 |     }
-115 |     _ = main()
+/tmp/TestSwiftTranspiler_Algorithms_Golden290_divide_and_conquer_heaps_algorithm3550496789/001/main.swift:122:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+120 |         print(_p("[" + perms.map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: ", ") + "]"))
+121 |     }
+122 |     _ = main()
     |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
-116 |     let _benchEnd = _now()
-117 |     let _benchMemEnd = _mem()
+123 |     let _benchEnd = _now()
+124 |     let _benchMemEnd = _mem()
