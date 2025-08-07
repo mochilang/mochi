@@ -1795,7 +1795,9 @@ func (a *AppendExpr) emit(w io.Writer) {
 			elem.emit(w)
 		}
 	} else if et := valType; et != elemType && elemType != "auto" {
-		if et == "std::any" {
+		if _, ok := elem.(*NullLit); ok {
+			io.WriteString(w, defaultValueForType(elemType))
+		} else if et == "std::any" {
 			io.WriteString(w, "std::any_cast<"+elemType+">(")
 			elem.emit(w)
 			io.WriteString(w, ")")
@@ -5287,6 +5289,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 		case "keys":
 			if len(p.Call.Args) == 1 {
+				// If a user-defined function named "keys" exists, prefer it
+				if currentEnv != nil {
+					if _, ok := currentEnv.GetFunc("keys"); ok {
+						arg, err := convertExpr(p.Call.Args[0])
+						if err != nil {
+							return nil, err
+						}
+						return &CallExpr{Name: "keys", Args: []Expr{arg}}, nil
+					}
+				}
 				arg, err := convertExpr(p.Call.Args[0])
 				if err != nil {
 					return nil, err
