@@ -1,0 +1,4 @@
+Exception in thread "main" java.lang.RuntimeException: factors 12 failed
+	at Main.run_tests(Main.java:84)
+	at Main.main(Main.java:131)
+	at Main.main(Main.java:148)

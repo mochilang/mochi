@@ -1,0 +1,4 @@
+Exception in thread "main" java.lang.RuntimeException: capture_area failed
+	at Main.run_tests(Main.java:67)
+	at Main.main(Main.java:72)
+	at Main.main(Main.java:84)

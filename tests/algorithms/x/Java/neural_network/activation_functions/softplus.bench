@@ -1,0 +1,5 @@
+Exception in thread "main" java.lang.RuntimeException: ln domain error
+	at Main.ln(Main.java:5)
+	at Main.softplus(Main.java:38)
+	at Main.main(Main.java:49)
+	at Main.main(Main.java:57)
