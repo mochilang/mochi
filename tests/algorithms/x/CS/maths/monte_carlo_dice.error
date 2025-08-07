@@ -1,5 +1,0 @@
-exit status 134
-Unhandled exception. System.IndexOutOfRangeException: Index was outside the bounds of the array.
-   at Program.throw_dice(Int64 num_throws_6, Int64 num_dice_7) in /tmp/TestCSTranspiler_Algorithms_Golden001_maths_monte_carlo_dice168028926/001/Program.cs:line 134
-   at Program.main() in /tmp/TestCSTranspiler_Algorithms_Golden001_maths_monte_carlo_dice168028926/001/Program.cs:line 149
-   at Program.Main() in /tmp/TestCSTranspiler_Algorithms_Golden001_maths_monte_carlo_dice168028926/001/Program.cs:line 157

@@ -1,0 +1,5 @@
+exit status 134
+Unhandled exception. System.Exception: zeller test failed
+   at Program.test_zeller() in /tmp/TestCSTranspiler_Algorithms_Golden001_maths_zellers_congruence1643323429/001/Program.cs:line 177
+   at Program.main() in /tmp/TestCSTranspiler_Algorithms_Golden001_maths_zellers_congruence1643323429/001/Program.cs:line 184
+   at Program.Main() in /tmp/TestCSTranspiler_Algorithms_Golden001_maths_zellers_congruence1643323429/001/Program.cs:line 192

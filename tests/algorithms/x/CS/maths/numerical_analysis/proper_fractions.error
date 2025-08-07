@@ -1,5 +1,5 @@
 exit status 134
 Unhandled exception. System.Exception: test 10 failed
-   at Program.test_proper_fractions() in /tmp/TestCSTranspiler_Algorithms_Golden001_maths_numerical_analysis_proper_fractions2272285525/001/Program.cs:line 132
-   at Program.main() in /tmp/TestCSTranspiler_Algorithms_Golden001_maths_numerical_analysis_proper_fractions2272285525/001/Program.cs:line 145
-   at Program.Main() in /tmp/TestCSTranspiler_Algorithms_Golden001_maths_numerical_analysis_proper_fractions2272285525/001/Program.cs:line 155
+   at Program.test_proper_fractions() in /tmp/TestCSTranspiler_Algorithms_Golden001_maths_numerical_analysis_proper_fractions2933543890/001/Program.cs:line 132
+   at Program.main() in /tmp/TestCSTranspiler_Algorithms_Golden001_maths_numerical_analysis_proper_fractions2933543890/001/Program.cs:line 145
+   at Program.Main() in /tmp/TestCSTranspiler_Algorithms_Golden001_maths_numerical_analysis_proper_fractions2933543890/001/Program.cs:line 155

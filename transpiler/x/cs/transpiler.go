@@ -2823,7 +2823,7 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 		case op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil:
 			switch *op.Cast.Type.Simple {
 			case "int":
-				expr = &CallExpr{Func: "Convert.ToInt64", Args: []Expr{expr}}
+				expr = &RawExpr{Code: fmt.Sprintf("(long)(%s)", exprString(expr)), Type: "long"}
 			case "float":
 				expr = &CallExpr{Func: "Convert.ToDouble", Args: []Expr{expr}}
 			case "bigint":

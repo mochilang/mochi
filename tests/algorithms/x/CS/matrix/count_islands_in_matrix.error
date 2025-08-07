@@ -1,0 +1,6 @@
+exit status 134
+Unhandled exception. System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at Program.is_safe(Int64[][] grid_0, Boolean[][] visited_1, Int64 row_2, Int64 col_3) in /tmp/TestCSTranspiler_Algorithms_Golden001_matrix_count_islands_in_matrix2349177870/001/Program.cs:line 104
+   at Program.dfs(Int64[][] grid_9, Boolean[][] visited_10, Int64 row_11, Int64 col_12) in /tmp/TestCSTranspiler_Algorithms_Golden001_matrix_count_islands_in_matrix2349177870/001/Program.cs:line 118
+   at Program.count_islands(Int64[][] grid_18) in /tmp/TestCSTranspiler_Algorithms_Golden001_matrix_count_islands_in_matrix2349177870/001/Program.cs:line 146
+   at Program.Main() in /tmp/TestCSTranspiler_Algorithms_Golden001_matrix_count_islands_in_matrix2349177870/001/Program.cs:line 160
