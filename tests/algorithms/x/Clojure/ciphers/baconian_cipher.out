@@ -1,5 +1,4 @@
-Execution error (ClassCastException) at main/make-decode-map (baconian_cipher.clj:58).
-class clojure.lang.MapEntry cannot be cast to class java.lang.Number (clojure.lang.MapEntry is in unnamed module of loader 'app'; java.lang.Number is in module java.base of loader 'bootstrap')
-
-Full report at:
-/tmp/clojure-1232006573906182333.edn
+AABBBAABAAABABAABABAABBAB
+AABBBAABAAABABAABABAABBAB BABAAABBABBAAAAABABAAAABB
+hello world
+hello

@@ -1,3 +1,183 @@
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-07 17:31 +0700)
+- dart transpiler: convert numeric casts to toDouble
+- Regenerated golden files - 102/105 vm valid programs passing
+
 ## Progress (2025-08-02 10:28 +0700)
 - transpiler/java: add more rosetta cases
 - Regenerated golden files - 102/105 vm valid programs passing

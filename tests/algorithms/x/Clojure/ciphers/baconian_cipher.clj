@@ -52,10 +52,10 @@
 
 (def ^:dynamic split_spaces_parts nil)
 
-(def ^:dynamic main_encode_map {"a" "AAAAA" "b" "AAAAB" "c" "AAABA" "d" "AAABB" "e" "AABAA" "f" "AABAB" "g" "AABBA" "h" "AABBB" "i" "ABAAA" "j" "BBBAA" "k" "ABAAB" "l" "ABABA" "m" "ABABB" "n" "ABBAA" "o" "ABBAB" "p" "ABBBA" "q" "ABBBB" "r" "BAAAA" "s" "BAAAB" "t" "BAABA" "u" "BAABB" "v" "BBBAB" "w" "BABAA" "x" "BABAB" "y" "BABBA" "z" "BABBB" " " " "})
+(def ^:dynamic main_encode_map {" " " " "a" "AAAAA" "b" "AAAAB" "c" "AAABA" "d" "AAABB" "e" "AABAA" "f" "AABAB" "g" "AABBA" "h" "AABBB" "i" "ABAAA" "j" "BBBAA" "k" "ABAAB" "l" "ABABA" "m" "ABABB" "n" "ABBAA" "o" "ABBAB" "p" "ABBBA" "q" "ABBBB" "r" "BAAAA" "s" "BAAAB" "t" "BAABA" "u" "BAABB" "v" "BBBAB" "w" "BABAA" "x" "BABAB" "y" "BABBA" "z" "BABBB"})
 
 (defn make_decode_map []
-  (binding [make_decode_map_m nil] (try (do (set! make_decode_map_m {}) (doseq [k main_encode_map] (set! make_decode_map_m (assoc make_decode_map_m (nth main_encode_map k) k))) (throw (ex-info "return" {:v make_decode_map_m}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [make_decode_map_m nil] (try (do (set! make_decode_map_m {}) (doseq [k (keys main_encode_map)] (set! make_decode_map_m (assoc make_decode_map_m (get main_encode_map k) k))) (throw (ex-info "return" {:v make_decode_map_m}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (def ^:dynamic main_decode_map (make_decode_map))
 
