@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 166/1077
-Last updated: 2025-08-07 00:24 +0700
+Completed programs: 170/1077
+Last updated: 2025-08-07 08:07 +0700
 
 Checklist:
 
@@ -183,12 +183,12 @@ Checklist:
 | 174 | data_structures/binary_tree/binary_search_tree_recursive |   |  |  |
 | 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 924.0µs | 2.89KB |
 | 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 211.0µs | 1.05KB |
-| 177 | data_structures/binary_tree/binary_tree_path_sum |   |  |  |
-| 178 | data_structures/binary_tree/diff_views_of_binary_tree |   |  |  |
+| 177 | data_structures/binary_tree/binary_tree_path_sum | ✓ | 590.0µs | 936B |
+| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 957.0µs | 4.27KB |
 | 179 | data_structures/binary_tree/distribute_coins |   |  |  |
 | 180 | data_structures/binary_tree/fenwick_tree |   |  |  |
 | 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist |   |  |  |
-| 182 | data_structures/binary_tree/floor_and_ceiling |   |  |  |
+| 182 | data_structures/binary_tree/floor_and_ceiling | ✓ | 582.0µs | 1.84KB |
 | 183 | data_structures/binary_tree/inorder_tree_traversal_2022 |   |  |  |
 | 184 | data_structures/binary_tree/is_sorted |   |  |  |
 | 185 | data_structures/binary_tree/is_sum_tree |   |  |  |
@@ -196,7 +196,7 @@ Checklist:
 | 187 | data_structures/binary_tree/lowest_common_ancestor |   |  |  |
 | 188 | data_structures/binary_tree/maximum_fenwick_tree |   |  |  |
 | 189 | data_structures/binary_tree/maximum_sum_bst |   |  |  |
-| 190 | data_structures/binary_tree/merge_two_binary_trees |   |  |  |
+| 190 | data_structures/binary_tree/merge_two_binary_trees | ✓ | 369.0µs | 1.48KB |
 | 191 | data_structures/binary_tree/mirror_binary_tree |   |  |  |
 | 192 | data_structures/binary_tree/non_recursive_segment_tree |   |  |  |
 | 193 | data_structures/binary_tree/number_of_possible_binary_trees |   |  |  |

@@ -610,17 +610,46 @@ func (m *UnionMatchExpr) emit(w io.Writer) {
 	if m.Type != "" {
 		ret = m.Type
 	}
-	fmt.Fprintf(w, "func() %s { switch uv := ", ret)
-	m.Target.emit(w)
-	fmt.Fprint(w, ".(type) {")
+	needVar := false
+	hasDefault := false
 	for _, c := range m.Cases {
-		fmt.Fprintf(w, "case %s:", c.Variant)
+		if c.Variant == "_" {
+			hasDefault = true
+		}
+		if !needVar {
+			for _, b := range c.Bindings {
+				if b != "" && b != "_" {
+					needVar = true
+					break
+				}
+			}
+		}
+	}
+	if needVar {
+		fmt.Fprintf(w, "func() %s { switch uv := ", ret)
+		m.Target.emit(w)
+		fmt.Fprint(w, ".(type) {")
+	} else {
+		fmt.Fprintf(w, "func() %s { switch ", ret)
+		m.Target.emit(w)
+		fmt.Fprint(w, ".(type) {")
+	}
+	for _, c := range m.Cases {
+		if c.Variant == "_" {
+			fmt.Fprint(w, "default:")
+		} else {
+			fmt.Fprintf(w, "case %s:", c.Variant)
+		}
 		for i, b := range c.Bindings {
 			if b != "" && i < len(c.Fields) {
 				if b == "_" {
-					fmt.Fprintf(w, " _ = uv.%s;", c.Fields[i])
+					if needVar {
+						fmt.Fprintf(w, " _ = uv.%s;", c.Fields[i])
+					}
 				} else {
-					fmt.Fprintf(w, " %s := uv.%s;", b, c.Fields[i])
+					if needVar {
+						fmt.Fprintf(w, " %s := uv.%s;", b, c.Fields[i])
+					}
 				}
 			}
 		}
@@ -628,7 +657,11 @@ func (m *UnionMatchExpr) emit(w io.Writer) {
 		c.Body.emit(w)
 		fmt.Fprint(w, ";")
 	}
-	fmt.Fprintf(w, "default: var z %s; return z } }()", ret)
+	if hasDefault {
+		fmt.Fprint(w, "} }()")
+	} else {
+		fmt.Fprintf(w, "default: var z %s; return z } }()", ret)
+	}
 }
 
 func (i *IfStmt) emit(w io.Writer) {
@@ -1160,7 +1193,13 @@ func (l *ListLit) emit(w io.Writer) {
 		if sl, ok := e.(*StructLit); ok && l.Pretty && sl.Name == l.ElemType {
 			sl.emitBare(w)
 		} else {
-			e.emit(w)
+			if l.ElemType == "int" {
+				fmt.Fprint(w, "func(v any) int { if vv, ok := v.(int); ok { return vv }; return 0 }(")
+				e.emit(w)
+				fmt.Fprint(w, ")")
+			} else {
+				e.emit(w)
+			}
 		}
 		if l.Pretty {
 			fmt.Fprint(w, ",\n")
@@ -1310,6 +1349,24 @@ func (b *BigRatCmpExpr) emit(w io.Writer) {
 type BigIntToIntExpr struct{ Value Expr }
 
 func (b *BigIntToIntExpr) emit(w io.Writer) {
+	if vr, ok := b.Value.(*VarRef); ok {
+		if vd, ok2 := varDecls[vr.Name]; ok2 && vd.Type != "*big.Int" {
+			io.WriteString(w, "int(")
+			b.Value.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
+		if topEnv != nil {
+			if vt, err := topEnv.GetVar(vr.Name); err == nil {
+				if _, ok2 := vt.(types.BigIntType); !ok2 {
+					io.WriteString(w, "int(")
+					b.Value.emit(w)
+					io.WriteString(w, ")")
+					return
+				}
+			}
+		}
+	}
 	io.WriteString(w, "int(")
 	b.Value.emit(w)
 	io.WriteString(w, ".Int64())")
@@ -2073,42 +2130,9 @@ func (a *AssertExpr) emit(w io.Writer) {
 		}
 	}
 	if a.Type == "int" {
-		if ix, ok := a.Expr.(*IndexExpr); ok {
-			if vr, ok2 := ix.X.(*VarRef); ok2 && topEnv != nil {
-				if vt, err := topEnv.GetVar(vr.Name); err == nil {
-					if lt, ok3 := vt.(types.ListType); ok3 {
-						if _, ok4 := lt.Elem.(types.IntType); ok4 {
-							a.Expr.emit(w)
-							return
-						}
-					}
-				}
-			}
-		}
-		if ae, ok := a.Expr.(*AssertExpr); ok && ae.Type == "int" {
-			ae.emit(w)
-			return
-		}
-		if vr, ok := a.Expr.(*VarRef); ok {
-			if vd, ok2 := varDecls[vr.Name]; ok2 && vd.Type != "" && vd.Type != "any" {
-				a.Expr.emit(w)
-				return
-			}
-			if topEnv != nil {
-				if vt, err := topEnv.GetVar(vr.Name); err == nil {
-					if _, ok2 := vt.(types.IntType); ok2 {
-						a.Expr.emit(w)
-						return
-					}
-				}
-			}
-		}
-		if isBigIntExpr(a.Expr) {
-			(&BigIntToIntExpr{Value: a.Expr}).emit(w)
-			return
-		}
+		io.WriteString(w, "int(")
 		a.Expr.emit(w)
-		io.WriteString(w, ".(int)")
+		io.WriteString(w, ")")
 		return
 	}
 	if a.Type == "float64" {
@@ -4443,7 +4467,6 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 		}
 		if ret != "any" && exprType != ret {
 			if exprType == "*big.Int" && (ret == "int" || ret == "int64") {
-				usesBigInt = true
 				val = &BigIntToIntExpr{Value: val}
 			} else if ae, ok := val.(*AssertExpr); !(ok && ae.Type == ret) {
 				val = &AssertExpr{Expr: val, Type: ret}
@@ -5799,9 +5822,12 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			usesSlice = true
 			return &CallExpr{Func: "_slice", Args: args[:3]}, nil
 		case "split":
+			if _, ok := env.GetFunc("split"); ok {
+				return &CallExpr{Func: "split", Args: args}, nil
+			}
 			usesSplit = true
 			usesStrings = true
-			return &CallExpr{Func: "_split", Args: args[:2]}, nil
+			return &CallExpr{Func: "_strSplit", Args: args[:2]}, nil
 		case "substring", "substr":
 			usesSubstr = true
 			if types.IsAnyType(types.TypeOfExpr(p.Call.Args[0], env)) {
@@ -6697,6 +6723,10 @@ func Emit(prog *Program, bench bool) []byte {
 	}
 	buf.WriteString(")\n\n")
 
+	if prog.UseBigInt {
+		buf.WriteString("var _ = big.NewInt\n\n")
+	}
+
 	if prog.UseTime {
 		buf.WriteString("var seededNow bool\n")
 		buf.WriteString("var nowSeed int64\n")
@@ -6754,7 +6784,7 @@ func Emit(prog *Program, bench bool) []byte {
 		buf.WriteString("}\n\n")
 	}
 	if prog.UseSplit {
-		buf.WriteString("func _split(s, sep string) []string {\n")
+		buf.WriteString("func _strSplit(s, sep string) []string {\n")
 		buf.WriteString("    if sep == \"\" { sep = \" \" }\n")
 		buf.WriteString("    return strings.Split(s, sep)\n")
 		buf.WriteString("}\n\n")
@@ -7720,6 +7750,19 @@ func exprUses(name string, e Expr) bool {
 	case *ListLit:
 		for _, el := range t.Elems {
 			if exprUses(name, el) {
+				return true
+			}
+		}
+	case *FuncLit:
+		if stmtsUse(name, t.Body) {
+			return true
+		}
+	case *UnionMatchExpr:
+		if exprUses(name, t.Target) {
+			return true
+		}
+		for _, c := range t.Cases {
+			if exprUses(name, c.Body) {
 				return true
 			}
 		}
