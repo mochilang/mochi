@@ -1,0 +1,7 @@
+run: exit status 1
+lua: ...tests/algorithms/x/Lua/graphs/graph_adjacency_matrix.lua:85: attempt to call a nil value (global 'panic')
+stack traceback:
+	...tests/algorithms/x/Lua/graphs/graph_adjacency_matrix.lua:85: in function 'add_vertex'
+	...tests/algorithms/x/Lua/graphs/graph_adjacency_matrix.lua:53: in function 'make_graph'
+	...tests/algorithms/x/Lua/graphs/graph_adjacency_matrix.lua:291: in main chunk
+	[C]: in ?

@@ -1,0 +1,7 @@
+run: exit status 1
+lua: ...algorithms/x/Lua/graphs/frequent_pattern_graph_miner.lua:187: attempt to call a nil value (global 'toi')
+stack traceback:
+	...algorithms/x/Lua/graphs/frequent_pattern_graph_miner.lua:187: in function 'get_frequency_table'
+	...algorithms/x/Lua/graphs/frequent_pattern_graph_miner.lua:1177: in function 'main'
+	...algorithms/x/Lua/graphs/frequent_pattern_graph_miner.lua:1188: in main chunk
+	[C]: in ?

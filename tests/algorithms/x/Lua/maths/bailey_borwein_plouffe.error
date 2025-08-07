@@ -1,0 +1,5 @@
+run: exit status 1
+lua: .../tests/algorithms/x/Lua/maths/bailey_borwein_plouffe.lua:110: attempt to concatenate a nil value
+stack traceback:
+	.../tests/algorithms/x/Lua/maths/bailey_borwein_plouffe.lua:110: in main chunk
+	[C]: in ?

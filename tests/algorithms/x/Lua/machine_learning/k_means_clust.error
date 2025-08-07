@@ -1,0 +1,8 @@
+run: exit status 1
+lua: ...ests/algorithms/x/Lua/machine_learning/k_means_clust.lua:52: attempt to perform arithmetic on a nil value (field '?')
+stack traceback:
+	...ests/algorithms/x/Lua/machine_learning/k_means_clust.lua:52: in function 'distance_sq'
+	...ests/algorithms/x/Lua/machine_learning/k_means_clust.lua:77: in function 'assign_clusters'
+	...ests/algorithms/x/Lua/machine_learning/k_means_clust.lua:290: in function 'kmeans'
+	...ests/algorithms/x/Lua/machine_learning/k_means_clust.lua:309: in main chunk
+	[C]: in ?

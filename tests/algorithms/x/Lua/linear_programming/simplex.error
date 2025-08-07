@@ -1,0 +1,7 @@
+run: exit status 1
+lua: ...hi/tests/algorithms/x/Lua/linear_programming/simplex.lua:130: attempt to compare nil with number
+stack traceback:
+	...hi/tests/algorithms/x/Lua/linear_programming/simplex.lua:130: in function 'findPivot'
+	...hi/tests/algorithms/x/Lua/linear_programming/simplex.lua:246: in function 'simplex'
+	...hi/tests/algorithms/x/Lua/linear_programming/simplex.lua:257: in main chunk
+	[C]: in ?

@@ -1,0 +1,25 @@
+run: exit status 1
+lua: ...kspace/mochi/tests/algorithms/x/Lua/graphs/even_tree.lua:37: stack overflow
+stack traceback:
+	...kspace/mochi/tests/algorithms/x/Lua/graphs/even_tree.lua:37: in function 'dfs'
+	...kspace/mochi/tests/algorithms/x/Lua/graphs/even_tree.lua:39: in function 'dfs'
+	...kspace/mochi/tests/algorithms/x/Lua/graphs/even_tree.lua:39: in function 'dfs'
+	...kspace/mochi/tests/algorithms/x/Lua/graphs/even_tree.lua:39: in function 'dfs'
+	...kspace/mochi/tests/algorithms/x/Lua/graphs/even_tree.lua:39: in function 'dfs'
+	...kspace/mochi/tests/algorithms/x/Lua/graphs/even_tree.lua:39: in function 'dfs'
+	...kspace/mochi/tests/algorithms/x/Lua/graphs/even_tree.lua:39: in function 'dfs'
+	...kspace/mochi/tests/algorithms/x/Lua/graphs/even_tree.lua:39: in function 'dfs'
+	...kspace/mochi/tests/algorithms/x/Lua/graphs/even_tree.lua:39: in function 'dfs'
+	...kspace/mochi/tests/algorithms/x/Lua/graphs/even_tree.lua:39: in function 'dfs'
+	...	(skipping 90888 levels)
+	...kspace/mochi/tests/algorithms/x/Lua/graphs/even_tree.lua:39: in function 'dfs'
+	...kspace/mochi/tests/algorithms/x/Lua/graphs/even_tree.lua:39: in function 'dfs'
+	...kspace/mochi/tests/algorithms/x/Lua/graphs/even_tree.lua:39: in function 'dfs'
+	...kspace/mochi/tests/algorithms/x/Lua/graphs/even_tree.lua:39: in function 'dfs'
+	...kspace/mochi/tests/algorithms/x/Lua/graphs/even_tree.lua:39: in function 'dfs'
+	...kspace/mochi/tests/algorithms/x/Lua/graphs/even_tree.lua:39: in function 'dfs'
+	...kspace/mochi/tests/algorithms/x/Lua/graphs/even_tree.lua:39: in function 'dfs'
+	...kspace/mochi/tests/algorithms/x/Lua/graphs/even_tree.lua:51: in function 'even_tree'
+	...kspace/mochi/tests/algorithms/x/Lua/graphs/even_tree.lua:94: in function 'main'
+	...kspace/mochi/tests/algorithms/x/Lua/graphs/even_tree.lua:141: in main chunk
+	[C]: in ?
