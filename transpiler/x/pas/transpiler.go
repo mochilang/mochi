@@ -1836,50 +1836,51 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					}
 				}
 				pr.Vars = append(pr.Vars, vd)
-                       case st.Assign != nil:
-                               val, err := convertExpr(env, st.Assign.Value)
-                               if err != nil {
-                                       return nil, err
-                               }
-                               target, err := convertPostfix(env, st.Assign.Target)
-                               if err != nil {
-                                       return nil, err
-                               }
-                               switch t := target.(type) {
-                               case *VarRef:
-                                       name := t.Name
-                                       existing, ok := varTypes[name]
-                                       typ := inferType(val)
-                                       if typ == "" {
-                                               if tt := types.ExprType(st.Assign.Value, env); tt != nil {
-                                                       typ = pasTypeFromType(tt)
-                                               }
-                                       }
-                                       if typ != "" && (!ok || existing == "" || existing == "array of integer") {
-                                               varTypes[name] = typ
-                                               setVarType(name, typ)
-                                       }
-                                       pr.Stmts = append(pr.Stmts, &AssignStmt{Name: name, Expr: val})
-                               case *SelectorExpr:
-                                       pr.Stmts = append(pr.Stmts, &SetStmt{Target: t, Expr: val})
-                               case *IndexExpr:
-                                       if inner, ok := t.Target.(*VarRef); ok {
-                                               name := sanitize(inner.Name)
-                                               pr.Stmts = append(pr.Stmts, &IndexAssignStmt{Name: name, Index: t.Index, Expr: val})
-                                       } else if innerIdx, ok := t.Target.(*IndexExpr); ok {
-                                               if base, ok := innerIdx.Target.(*VarRef); ok {
-                                                       name := sanitize(base.Name)
-                                                       pr.Stmts = append(pr.Stmts, &DoubleIndexAssignStmt{Name: name, Index1: innerIdx.Index, Index2: t.Index, Expr: val})
-                                               } else {
-                                                       return nil, fmt.Errorf("unsupported assignment target")
-                                               }
-                                       } else {
-                                               return nil, fmt.Errorf("unsupported assignment target")
-                                       }
-                               default:
-                                       return nil, fmt.Errorf("unsupported assignment target")
-                               }
-                               continue
+			case st.Assign != nil:
+				val, err := convertExpr(env, st.Assign.Value)
+				if err != nil {
+					return nil, err
+				}
+				pf := assignTargetToPostfix(st.Assign)
+				target, err := convertPostfix(env, pf)
+				if err != nil {
+					return nil, err
+				}
+				switch t := target.(type) {
+				case *VarRef:
+					name := t.Name
+					existing, ok := varTypes[name]
+					typ := inferType(val)
+					if typ == "" {
+						if tt := types.ExprType(st.Assign.Value, env); tt != nil {
+							typ = pasTypeFromType(tt)
+						}
+					}
+					if typ != "" && (!ok || existing == "" || existing == "array of integer") {
+						varTypes[name] = typ
+						setVarType(name, typ)
+					}
+					pr.Stmts = append(pr.Stmts, &AssignStmt{Name: name, Expr: val})
+				case *SelectorExpr:
+					pr.Stmts = append(pr.Stmts, &SetStmt{Target: t, Expr: val})
+				case *IndexExpr:
+					if inner, ok := t.Target.(*VarRef); ok {
+						name := sanitize(inner.Name)
+						pr.Stmts = append(pr.Stmts, &IndexAssignStmt{Name: name, Index: t.Index, Expr: val})
+					} else if innerIdx, ok := t.Target.(*IndexExpr); ok {
+						if base, ok := innerIdx.Target.(*VarRef); ok {
+							name := sanitize(base.Name)
+							pr.Stmts = append(pr.Stmts, &DoubleIndexAssignStmt{Name: name, Index1: innerIdx.Index, Index2: t.Index, Expr: val})
+						} else {
+							return nil, fmt.Errorf("unsupported assignment target")
+						}
+					} else {
+						return nil, fmt.Errorf("unsupported assignment target")
+					}
+				default:
+					return nil, fmt.Errorf("unsupported assignment target")
+				}
+				continue
 			case st.For != nil:
 				start, err := convertExpr(env, st.For.Source)
 				if err != nil {
@@ -2170,44 +2171,45 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 	var out []Stmt
 	for _, st := range body {
 		switch {
-               case st.Assign != nil:
-                       val, err := convertExpr(env, st.Assign.Value)
-                       if err != nil {
-                               return nil, err
-                       }
-                       target, err := convertPostfix(env, st.Assign.Target)
-                       if err != nil {
-                               return nil, err
-                       }
-                       switch t := target.(type) {
-                       case *VarRef:
-                               name := t.Name
-                               if _, ok := varTypes[name]; !ok {
-                                       if typ := inferType(val); typ != "" {
-                                               varTypes[name] = typ
-                                               setVarType(name, typ)
-                                       }
-                               }
-                               out = append(out, &AssignStmt{Name: name, Expr: val})
-                       case *SelectorExpr:
-                               out = append(out, &SetStmt{Target: t, Expr: val})
-                       case *IndexExpr:
-                               if inner, ok := t.Target.(*VarRef); ok {
-                                       name := sanitize(inner.Name)
-                                       out = append(out, &IndexAssignStmt{Name: name, Index: t.Index, Expr: val})
-                               } else if innerIdx, ok := t.Target.(*IndexExpr); ok {
-                                       if base, ok := innerIdx.Target.(*VarRef); ok {
-                                               name := sanitize(base.Name)
-                                               out = append(out, &DoubleIndexAssignStmt{Name: name, Index1: innerIdx.Index, Index2: t.Index, Expr: val})
-                                       } else {
-                                               return nil, fmt.Errorf("unsupported assignment target")
-                                       }
-                               } else {
-                                       return nil, fmt.Errorf("unsupported assignment target")
-                               }
-                       default:
-                               return nil, fmt.Errorf("unsupported assignment target")
-                       }
+		case st.Assign != nil:
+			val, err := convertExpr(env, st.Assign.Value)
+			if err != nil {
+				return nil, err
+			}
+			pf := assignTargetToPostfix(st.Assign)
+			target, err := convertPostfix(env, pf)
+			if err != nil {
+				return nil, err
+			}
+			switch t := target.(type) {
+			case *VarRef:
+				name := t.Name
+				if _, ok := varTypes[name]; !ok {
+					if typ := inferType(val); typ != "" {
+						varTypes[name] = typ
+						setVarType(name, typ)
+					}
+				}
+				out = append(out, &AssignStmt{Name: name, Expr: val})
+			case *SelectorExpr:
+				out = append(out, &SetStmt{Target: t, Expr: val})
+			case *IndexExpr:
+				if inner, ok := t.Target.(*VarRef); ok {
+					name := sanitize(inner.Name)
+					out = append(out, &IndexAssignStmt{Name: name, Index: t.Index, Expr: val})
+				} else if innerIdx, ok := t.Target.(*IndexExpr); ok {
+					if base, ok := innerIdx.Target.(*VarRef); ok {
+						name := sanitize(base.Name)
+						out = append(out, &DoubleIndexAssignStmt{Name: name, Index1: innerIdx.Index, Index2: t.Index, Expr: val})
+					} else {
+						return nil, fmt.Errorf("unsupported assignment target")
+					}
+				} else {
+					return nil, fmt.Errorf("unsupported assignment target")
+				}
+			default:
+				return nil, fmt.Errorf("unsupported assignment target")
+			}
 		case st.Let != nil:
 			name := declareName(st.Let.Name)
 			vd := VarDecl{Name: name}
@@ -2726,29 +2728,29 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 	if len(e.Binary.Right) == 0 {
 		return left, nil
 	}
-       if len(e.Binary.Right) == 1 && e.Binary.Right[0].Op == "+" {
-               right, err := convertUnary(env, e.Binary.Right[0].Right)
-               if err != nil {
-                       return nil, err
-               }
+	if len(e.Binary.Right) == 1 && e.Binary.Right[0].Op == "+" {
+		right, err := convertPostfix(env, e.Binary.Right[0].Right)
+		if err != nil {
+			return nil, err
+		}
 		lt := inferType(left)
 		rt := inferType(right)
 		if strings.HasPrefix(lt, "array of ") && strings.HasPrefix(rt, "array of ") {
 			return &CallExpr{Name: "concat", Args: []Expr{left, right}}, nil
 		}
 	}
-       if len(e.Binary.Right) == 1 && e.Binary.Right[0].Op == "in" {
-               right, err := convertUnary(env, e.Binary.Right[0].Right)
-               if err != nil {
-                       return nil, err
-               }
-               tmp := &parser.Expr{Binary: &parser.BinaryExpr{Left: e.Binary.Right[0].Right}}
-               t := types.ExprType(tmp, env)
-               if _, ok := t.(types.ListType); ok {
-                       currProg.NeedContains = true
-                       return &ContainsExpr{Collection: right, Value: left, Kind: "list"}, nil
-               }
-       }
+	if len(e.Binary.Right) == 1 && e.Binary.Right[0].Op == "in" {
+		right, err := convertPostfix(env, e.Binary.Right[0].Right)
+		if err != nil {
+			return nil, err
+		}
+		tmp := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: e.Binary.Right[0].Right}}}
+		t := types.ExprType(tmp, env)
+		if _, ok := t.(types.ListType); ok {
+			currProg.NeedContains = true
+			return &ContainsExpr{Collection: right, Value: left, Kind: "list"}, nil
+		}
+	}
 
 	prec := func(op string) int {
 		switch op {
@@ -2844,10 +2846,10 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 	}
 
 	for _, op := range e.Binary.Right {
-               right, err := convertUnary(env, op.Right)
-               if err != nil {
-                       return nil, err
-               }
+		right, err := convertPostfix(env, op.Right)
+		if err != nil {
+			return nil, err
+		}
 		for len(ops) > 0 && prec(op.Op) <= prec(ops[len(ops)-1]) {
 			if err := build(); err != nil {
 				return nil, err
@@ -4043,6 +4045,17 @@ func pasTypeFromType(t types.Type) string {
 }
 
 func CurrentVarTypesDebug() map[string]string { return currentVarTypes }
+
+func assignTargetToPostfix(as *parser.AssignStmt) *parser.PostfixExpr {
+	pf := &parser.PostfixExpr{Target: &parser.Primary{Selector: &parser.SelectorExpr{Root: as.Name}}}
+	for _, idx := range as.Index {
+		pf.Ops = append(pf.Ops, &parser.PostfixOp{Index: idx})
+	}
+	for _, fld := range as.Field {
+		pf.Ops = append(pf.Ops, &parser.PostfixOp{Field: fld})
+	}
+	return pf
+}
 
 func convertUnary(env *types.Env, u *parser.Unary) (Expr, error) {
 	if u == nil {
