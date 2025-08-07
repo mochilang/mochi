@@ -1,0 +1,9 @@
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/multi_heuristic_astar.erl:483:73: Warning: variable 'J_3' exported from 'case' (line 406, column 17)
+%  483| {Back_pointer_7, Chosen_3, Ckey, Current_3, G_function_6, Goal_7, I_28, J_3, K_2, N_heuristic, Neighs, Open_list_9, Pair, Path_5, Start_3, Visited_3} = Fun_18(Back_pointer_4, Chosen_3, Ckey, Current_3, G_function_3, Goal_7, I_24, J_3, K, N_heuristic, Neighs, Open_list_6, Pair, Path_5, Start_3, Visited_3),
+%     |                                                                         ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/multi_heuristic_astar.erl:483:123: Warning: variable 'Path_5' exported from 'case' (line 406, column 17)
+%  483| {Back_pointer_7, Chosen_3, Ckey, Current_3, G_function_6, Goal_7, I_28, J_3, K_2, N_heuristic, Neighs, Open_list_9, Pair, Path_5, Start_3, Visited_3} = Fun_18(Back_pointer_4, Chosen_3, Ckey, Current_3, G_function_3, Goal_7, I_24, J_3, K, N_heuristic, Neighs, Open_list_6, Pair, Path_5, Start_3, Visited_3),
+%     |                                                                                                                           ^
+
+"No path found to goal"

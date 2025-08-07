@@ -2034,6 +2034,15 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, ")")
 		return
+	case "reverse":
+		io.WriteString(w, "lists:reverse(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		} else {
+			io.WriteString(w, "[]")
+		}
+		io.WriteString(w, ")")
+		return
 	case "padStart", "padstart":
 		usePadStart = true
 		io.WriteString(w, "mochi_pad_start(")
@@ -3106,7 +3115,7 @@ func mapOp(op string) string {
 
 func builtinFunc(name string) bool {
 	switch name {
-	case "print", "append", "avg", "count", "len", "concat", "str", "sum", "min", "max", "values", "keys", "exists", "contains", "sha256", "json", "now", "input", "int", "abs", "upper", "lower", "indexOf", "parseIntStr", "indexof", "parseintstr", "repeat", "padstart", "bigrat", "num", "denom", "split":
+	case "print", "append", "avg", "count", "len", "concat", "str", "sum", "min", "max", "values", "keys", "exists", "contains", "sha256", "json", "now", "input", "int", "abs", "upper", "lower", "indexOf", "parseIntStr", "indexof", "parseintstr", "repeat", "padstart", "bigrat", "num", "denom", "split", "reverse":
 		return true
 	default:
 		return false
@@ -5223,6 +5232,8 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			return &CallExpr{Func: "mochi_repeat", Args: ce.Args}, nil
 		} else if ce.Func == "split" && len(ce.Args) == 2 {
 			return &CallExpr{Func: "string:tokens", Args: ce.Args}, nil
+		} else if ce.Func == "reverse" && len(ce.Args) == 1 {
+			return &CallExpr{Func: "lists:reverse", Args: ce.Args}, nil
 		} else if ce.Func == "bigrat" && (len(ce.Args) == 1 || len(ce.Args) == 2) {
 			useBigRat = true
 			return &CallExpr{Func: "mochi_bigrat", Args: ce.Args}, nil

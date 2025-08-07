@@ -1,0 +1,34 @@
+run: exit status 127
+1
+2
+4
+5
+3
+1
+2
+3
+4
+5
+6
+7
+8
+7
+9
+20
+20
+11
+1
+2
+3
+4
+[[0, 5, 7, 13], [12, 0, 2, 8], [11, 16, 0, 7], [4, 9, 11, 0]]
+4
+escript: exception error: no match of right hand side value {nil,[0,2,2,3,4]}
+  in function  main:'-kruskal/2-Fun_29_loop/8-1-'/8 (/workspace/mochi/tests/algorithms/x/Erlang/graphs/basic_graphs.erl, line 576)
+  in call from main:kruskal/2 (/workspace/mochi/tests/algorithms/x/Erlang/graphs/basic_graphs.erl, line 590)
+  in call from main:main/1 (/workspace/mochi/tests/algorithms/x/Erlang/graphs/basic_graphs.erl, line 631)
+  in call from escript:run/2 (escript.erl, line 904)
+  in call from escript:start/1 (escript.erl, line 418)
+  in call from init:start_it/1 
+  in call from init:start_em/1 
+  in call from init:do_boot/3

@@ -1,0 +1,12 @@
+run: exit status 127
+escript: exception error: bad argument
+  in function  length/1
+     called as length(nil)
+     *** argument 1: not a list
+  in call from main:'-bfs/2-Fun_3_loop/9-1-'/9 (/workspace/mochi/tests/algorithms/x/Erlang/graphs/breadth_first_search.erl, line 111)
+  in call from main:'-bfs/2-Fun_4_loop/6-0-'/6 (/workspace/mochi/tests/algorithms/x/Erlang/graphs/breadth_first_search.erl, line 127)
+  in call from main:bfs/2 (/workspace/mochi/tests/algorithms/x/Erlang/graphs/breadth_first_search.erl, line 132)
+  in call from main:main/1 (/workspace/mochi/tests/algorithms/x/Erlang/graphs/breadth_first_search.erl, line 147)
+  in call from escript:run/2 (escript.erl, line 904)
+  in call from escript:start/1 (escript.erl, line 418)
+  in call from init:start_it/1

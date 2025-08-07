@@ -1,0 +1,6 @@
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/check_cycle.erl:73:54: Warning: the result of evaluating operator '++'/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%   73|         Rec_stk_3 = lists:sublist(Rec_stk_2, Vertex) ++ [false] ++ lists:nthtail(Vertex + 1, Rec_stk_2),
+%     |                                                      ^
+
+false
+true

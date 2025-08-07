@@ -1,0 +1,10 @@
+run: exit status 127
+escript: exception error: an error occurred when evaluating an arithmetic expression
+  in operator  +/2
+     called as nil + 1
+  in call from main:'-pass_and_relaxation/9-Fun_3_loop/12-0-'/12 (/workspace/mochi/tests/algorithms/x/Erlang/graphs/bi_directional_dijkstra.erl, line 102)
+  in call from main:pass_and_relaxation/9 (/workspace/mochi/tests/algorithms/x/Erlang/graphs/bi_directional_dijkstra.erl, line 135)
+  in call from main:'-bidirectional_dij/4-Fun_4_loop/14-0-'/14 (/workspace/mochi/tests/algorithms/x/Erlang/graphs/bi_directional_dijkstra.erl, line 175)
+  in call from main:'-bidirectional_dij/4-Fun_4_loop/14-0-'/14 (/workspace/mochi/tests/algorithms/x/Erlang/graphs/bi_directional_dijkstra.erl, line 185)
+  in call from main:bidirectional_dij/4 (/workspace/mochi/tests/algorithms/x/Erlang/graphs/bi_directional_dijkstra.erl, line 193)
+  in call from main:main/1 (/workspace/mochi/tests/algorithms/x/Erlang/graphs/bi_directional_dijkstra.erl, line 207)

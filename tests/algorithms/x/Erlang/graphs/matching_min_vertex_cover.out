@@ -1,0 +1,5 @@
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/matching_min_vertex_cover.erl:143:2: Warning: variable 'Chosen_5' exported from 'case' (line 122, column 13)
+%  143| {Chosen_5, E, Edges_4, Filtered_3, Graph_2, Idx, U, V_2} = Fun_4(Edges_4, Chosen_5, E, Edges_4, Filtered, Graph_2, Idx, U, V_2),
+%     |  ^
+
+[4 3 2 0]

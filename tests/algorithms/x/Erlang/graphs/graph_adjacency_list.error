@@ -1,0 +1,13 @@
+run: exit status 127
+"#{1 => [2] 2 => [1 3] 3 => [2 4] 4 => [3]}"
+escript: exception error: bad map: ["3"]
+  in function  maps:keys/1
+     called as maps:keys(["3"])
+     *** argument 1: not a map
+  in call from main:contains_edge/3 (/workspace/mochi/tests/algorithms/x/Erlang/graphs/graph_adjacency_list.erl, line 268)
+  in call from main:add_edge/3 (/workspace/mochi/tests/algorithms/x/Erlang/graphs/graph_adjacency_list.erl, line 161)
+  in call from main:main/0 (/workspace/mochi/tests/algorithms/x/Erlang/graphs/graph_adjacency_list.erl, line 289)
+  in call from main:main/1 (/workspace/mochi/tests/algorithms/x/Erlang/graphs/graph_adjacency_list.erl, line 300)
+  in call from escript:run/2 (escript.erl, line 904)
+  in call from escript:start/1 (escript.erl, line 418)
+  in call from init:start_it/1

@@ -1,0 +1,5 @@
+/workspace/mochi/tests/algorithms/x/Erlang/graphics/digital_differential_analyzer_line.erl:52:1: Warning: function mochi_safe_mul/2 is unused
+%   52| mochi_safe_mul(A, B) ->
+%     | ^
+
+[#{"x" => 2, "y" => 2}, #{"x" => 3, "y" => 3}, #{"x" => 4, "y" => 4}]

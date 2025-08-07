@@ -1,0 +1,10 @@
+run: exit status 127
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/frequent_pattern_graph_miner.erl:205:19: function toi/1 undefined
+%  205|             case (toi(maps:get("count", (case erlang:is_map(Table_2) of true -> maps:get(J, Table_2, nil); _ -> case J < 0 of true -> lists:nth(erlang:length(Table_2) + J + 1, Table_2); _ -> lists:nth(J + 1, Table_2) end end), nil)) > toi(maps:get("count", (case erlang:is_map(Table_2) of true -> maps:get(Max_i, Table_2, nil); _ -> case Max_i < 0 of true -> lists:nth(erlang:length(Table_2) + Max_i + 1, Table_2); _ -> lists:nth(Max_i + 1, Table_2) end end), nil))) of
+%     |                   ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/frequent_pattern_graph_miner.erl:205:236: function toi/1 undefined
+%  205|             case (toi(maps:get("count", (case erlang:is_map(Table_2) of true -> maps:get(J, Table_2, nil); _ -> case J < 0 of true -> lists:nth(erlang:length(Table_2) + J + 1, Table_2); _ -> lists:nth(J + 1, Table_2) end end), nil)) > toi(maps:get("count", (case erlang:is_map(Table_2) of true -> maps:get(Max_i, Table_2, nil); _ -> case Max_i < 0 of true -> lists:nth(erlang:length(Table_2) + Max_i + 1, Table_2); _ -> lists:nth(Max_i + 1, Table_2) end end), nil))) of
+%     |                                                                                                                                                                                                                                            ^
+
+escript: There were compilation errors.
