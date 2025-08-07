@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-07 01:57 UTC
+Last updated: 2025-08-07 02:54 UTC
 
-## Algorithms Golden Test Checklist (993/1077)
+## Algorithms Golden Test Checklist (999/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 645µs | 22.6 KB |
@@ -1006,81 +1006,81 @@ Last updated: 2025-08-07 01:57 UTC
 | 997 | strings/capitalize | ✓ | 852µs | 26.1 KB |
 | 998 | strings/check_anagrams | ✓ | 1.11ms | 288.9 KB |
 | 999 | strings/count_vowels | ✓ | 1.739ms | 31.9 KB |
-| 1000 | strings/credit_card_validator | ✓ | 781µs | 532.4 KB |
-| 1001 | strings/damerau_levenshtein_distance | ✓ | 1.266ms | 549.5 KB |
-| 1002 | strings/detecting_english_programmatically | ✓ | 2.102ms | 36.0 KB |
-| 1003 | strings/dna | ✓ | 1.157ms | 26.7 KB |
-| 1004 | strings/edit_distance | ✓ | 9.015ms | 372.4 KB |
-| 1005 | strings/frequency_finder | ✓ | 2.89ms | 553.9 KB |
-| 1006 | strings/hamming_distance | ✓ | 635µs | 20.4 KB |
-| 1007 | strings/indian_phone_validator | ✓ | 723µs | 29.9 KB |
-| 1008 | strings/is_contains_unique_chars | ✓ | 1.986ms | 118.3 KB |
-| 1009 | strings/is_isogram | ✓ | 1.928ms | 27.6 KB |
-| 1010 | strings/is_pangram | ✓ | 947µs | 35.5 KB |
-| 1011 | strings/is_polish_national_id | ✓ | 1.234ms | 30.3 KB |
-| 1012 | strings/is_spain_national_id | ✓ | 1.977ms | 38.2 KB |
-| 1013 | strings/is_srilankan_phone_number | ✓ | 555µs | 16.2 KB |
-| 1014 | strings/is_valid_email_address | ✓ | 4.384ms | 653.9 KB |
-| 1015 | strings/jaro_winkler | ✓ | 886µs | 578.2 KB |
-| 1016 | strings/join | ✓ | 777µs | 30.0 KB |
-| 1017 | strings/knuth_morris_pratt | ✓ | 707µs | 528.7 KB |
-| 1018 | strings/levenshtein_distance | ✓ | 2.018ms | 537.1 KB |
-| 1019 | strings/lower | ✓ | 554µs | 24.7 KB |
-| 1020 | strings/manacher | ✓ | 843µs | 31.1 KB |
-| 1021 | strings/min_cost_string_conversion | ✓ | 1.854ms | 108.4 KB |
-| 1022 | strings/naive_string_search | ✓ | 1.098ms | 527.9 KB |
-| 1023 | strings/ngram | ✓ | 639µs | 21.8 KB |
-| 1024 | strings/palindrome | ✓ | 1.46ms | 44.6 KB |
-| 1025 | strings/pig_latin | ✓ | 602µs | 21.4 KB |
-| 1026 | strings/prefix_function | ✓ | 904µs | 37.4 KB |
-| 1027 | strings/rabin_karp | ✓ | 1.902ms | 29.4 KB |
-| 1028 | strings/remove_duplicate | ✓ | 1.714ms | 31.5 KB |
-| 1029 | strings/reverse_letters | ✓ | 772µs | 533.3 KB |
-| 1030 | strings/reverse_words | ✓ | 731µs | 19.8 KB |
-| 1031 | strings/snake_case_to_camel_pascal_case | ✓ | 781µs | 25.8 KB |
-| 1032 | strings/split |   |  |  |
-| 1033 | strings/string_switch_case | ✓ | 2.005ms | 65.9 KB |
-| 1034 | strings/strip | ✓ | 1.26ms | 537.1 KB |
-| 1035 | strings/text_justification | ✓ | 837µs | 25.3 KB |
-| 1036 | strings/title | ✓ | 1.829ms | 48.0 KB |
-| 1037 | strings/top_k_frequent_words | ✓ | 1.313ms | 30.6 KB |
-| 1038 | strings/upper | ✓ | 496µs | 21.8 KB |
-| 1039 | strings/wave_string | ✓ | 723µs | 22.9 KB |
-| 1040 | strings/wildcard_pattern_matching | ✓ | 1.213ms | 576.0 KB |
-| 1041 | strings/word_occurrence | ✓ | 807µs | 27.0 KB |
-| 1042 | strings/word_patterns | ✓ | 1.341ms | 31.5 KB |
-| 1043 | strings/z_function | ✓ | 1.137ms | 549.3 KB |
-| 1044 | web_programming/co2_emission | ✓ | 4.198ms | 83.8 KB |
-| 1045 | web_programming/covid_stats_via_xpath | ✓ | 1.338ms | 536.3 KB |
-| 1046 | web_programming/crawl_google_results | ✓ | 773µs | 27.5 KB |
-| 1047 | web_programming/crawl_google_scholar_citation | ✓ | 677µs | 530.2 KB |
-| 1048 | web_programming/currency_converter | ✓ | 434µs | 15.1 KB |
-| 1049 | web_programming/current_stock_price | ✓ | 726µs | 33.9 KB |
-| 1050 | web_programming/current_weather | ✓ | 513µs | 17.0 KB |
-| 1051 | web_programming/daily_horoscope | ✓ | 510µs | 15.2 KB |
+| 1000 | strings/credit_card_validator | ✓ | 1.216ms | 532.5 KB |
+| 1001 | strings/damerau_levenshtein_distance | ✓ | 1.74ms | 53.6 KB |
+| 1002 | strings/detecting_english_programmatically | ✓ | 3.219ms | 36.0 KB |
+| 1003 | strings/dna | ✓ | 987µs | 26.7 KB |
+| 1004 | strings/edit_distance | ✓ | 14.972ms | 372.4 KB |
+| 1005 | strings/frequency_finder | ✓ | 5.252ms | 59.6 KB |
+| 1006 | strings/hamming_distance | ✓ | 1.048ms | 20.4 KB |
+| 1007 | strings/indian_phone_validator | ✓ | 1.339ms | 29.9 KB |
+| 1008 | strings/is_contains_unique_chars | ✓ | 2.939ms | 622.4 KB |
+| 1009 | strings/is_isogram | ✓ | 2.242ms | 27.6 KB |
+| 1010 | strings/is_pangram | ✓ | 2.311ms | 291.5 KB |
+| 1011 | strings/is_polish_national_id | ✓ | 1.328ms | 30.3 KB |
+| 1012 | strings/is_spain_national_id | ✓ | 2.39ms | 38.2 KB |
+| 1013 | strings/is_srilankan_phone_number | ✓ | 850µs | 16.2 KB |
+| 1014 | strings/is_valid_email_address | ✓ | 5.982ms | 165.7 KB |
+| 1015 | strings/jaro_winkler | ✓ | 1.72ms | 530.5 KB |
+| 1016 | strings/join | ✓ | 949µs | 30.0 KB |
+| 1017 | strings/knuth_morris_pratt | ✓ | 1.417ms | 528.7 KB |
+| 1018 | strings/levenshtein_distance | ✓ | 2.27ms | 537.1 KB |
+| 1019 | strings/lower | ✓ | 904µs | 24.7 KB |
+| 1020 | strings/manacher | ✓ | 1.194ms | 533.3 KB |
+| 1021 | strings/min_cost_string_conversion | ✓ | 2.298ms | 582.5 KB |
+| 1022 | strings/naive_string_search | ✓ | 1.045ms | 15.8 KB |
+| 1023 | strings/ngram | ✓ | 1.008ms | 21.8 KB |
+| 1024 | strings/palindrome | ✓ | 2.199ms | 44.6 KB |
+| 1025 | strings/pig_latin | ✓ | 968µs | 21.4 KB |
+| 1026 | strings/prefix_function | ✓ | 3.314ms | 37.4 KB |
+| 1027 | strings/rabin_karp | ✓ | 2.719ms | 29.4 KB |
+| 1028 | strings/remove_duplicate | ✓ | 1.694ms | 535.1 KB |
+| 1029 | strings/reverse_letters | ✓ | 1.845ms | 277.3 KB |
+| 1030 | strings/reverse_words | ✓ | 916µs | 19.8 KB |
+| 1031 | strings/snake_case_to_camel_pascal_case | ✓ | 1.334ms | 25.8 KB |
+| 1032 | strings/split | ✓ | 1.382ms | 28.1 KB |
+| 1033 | strings/string_switch_case | ✓ | 2.227ms | 65.9 KB |
+| 1034 | strings/strip | ✓ | 1.761ms | 537.2 KB |
+| 1035 | strings/text_justification | ✓ | 1.964ms | 35.0 KB |
+| 1036 | strings/title | ✓ | 3.6ms | 48.0 KB |
+| 1037 | strings/top_k_frequent_words | ✓ | 2.161ms | 30.6 KB |
+| 1038 | strings/upper | ✓ | 770µs | 21.8 KB |
+| 1039 | strings/wave_string | ✓ | 1.115ms | 22.9 KB |
+| 1040 | strings/wildcard_pattern_matching | ✓ | 5.972ms | 576.0 KB |
+| 1041 | strings/word_occurrence | ✓ | 1.703ms | 27.0 KB |
+| 1042 | strings/word_patterns | ✓ | 1.502ms | 31.5 KB |
+| 1043 | strings/z_function | ✓ | 1.892ms | 549.4 KB |
+| 1044 | web_programming/co2_emission | ✓ | 5.99ms | 83.8 KB |
+| 1045 | web_programming/covid_stats_via_xpath | ✓ | 2.193ms | 32.2 KB |
+| 1046 | web_programming/crawl_google_results | ✓ | 1.103ms | 27.5 KB |
+| 1047 | web_programming/crawl_google_scholar_citation | ✓ | 1.251ms | 25.7 KB |
+| 1048 | web_programming/currency_converter | ✓ | 776µs | 15.1 KB |
+| 1049 | web_programming/current_stock_price | ✓ | 950µs | 33.9 KB |
+| 1050 | web_programming/current_weather | ✓ | 928µs | 17.0 KB |
+| 1051 | web_programming/daily_horoscope | ✓ | 829µs | 15.2 KB |
 | 1052 | web_programming/download_images_from_google_query |   |  |  |
-| 1053 | web_programming/emails_from_url | ✓ | 2.289ms | 34.8 KB |
-| 1054 | web_programming/fetch_anime_and_play | ✓ | 691µs | 23.1 KB |
+| 1053 | web_programming/emails_from_url | ✓ | 2.982ms | 36.8 KB |
+| 1054 | web_programming/fetch_anime_and_play | ✓ | 1.088ms | 23.1 KB |
 | 1055 | web_programming/fetch_bbc_news | ✓ |  |  |
-| 1056 | web_programming/fetch_github_info | ✓ | 4.994ms | 66.1 KB |
-| 1057 | web_programming/fetch_jobs | ✓ | 687µs | 20.6 KB |
-| 1058 | web_programming/fetch_quotes |   |  |  |
-| 1059 | web_programming/fetch_well_rx_price | ✓ | 1.269ms | 531.7 KB |
-| 1060 | web_programming/get_amazon_product_data | ✓ | 2.414ms | 34.3 KB |
-| 1061 | web_programming/get_imdb_top_250_movies_csv | ✓ | 561µs | 23.7 KB |
-| 1062 | web_programming/get_ip_geolocation | ✓ | 3.446ms | 70.8 KB |
-| 1063 | web_programming/get_top_billionaires |   |  |  |
-| 1064 | web_programming/get_top_hn_posts | ✓ | 3.45ms | 62.2 KB |
-| 1065 | web_programming/giphy |   |  |  |
-| 1066 | web_programming/instagram_crawler | ✓ | 3.238ms | 631.3 KB |
+| 1056 | web_programming/fetch_github_info | ✓ | 5.702ms | 66.1 KB |
+| 1057 | web_programming/fetch_jobs | ✓ | 1.115ms | 20.6 KB |
+| 1058 | web_programming/fetch_quotes | ✓ | 264.346ms | 122.1 KB |
+| 1059 | web_programming/fetch_well_rx_price | ✓ | 2.538ms | 26.8 KB |
+| 1060 | web_programming/get_amazon_product_data | ✓ | 6.635ms | 43.0 KB |
+| 1061 | web_programming/get_imdb_top_250_movies_csv | ✓ | 1.069ms | 23.7 KB |
+| 1062 | web_programming/get_ip_geolocation | ✓ | 148.496ms | 134.1 KB |
+| 1063 | web_programming/get_top_billionaires | ✓ | 503.985ms | 928.9 KB |
+| 1064 | web_programming/get_top_hn_posts | ✓ | 344.902ms | 246.4 KB |
+| 1065 | web_programming/giphy | ✓ | 1.305ms | 25.5 KB |
+| 1066 | web_programming/instagram_crawler | ✓ | 4.789ms | 631.1 KB |
 | 1067 | web_programming/instagram_pic |   |  |  |
-| 1068 | web_programming/instagram_video | ✓ | 526µs | 14.5 KB |
-| 1069 | web_programming/nasa_data |   |  |  |
-| 1070 | web_programming/open_google_results | ✓ | 710µs | 19.1 KB |
-| 1071 | web_programming/random_anime_character | ✓ | 574µs | 26.0 KB |
-| 1072 | web_programming/recaptcha_verification | ✓ | 512µs | 21.3 KB |
-| 1073 | web_programming/reddit |   |  |  |
-| 1074 | web_programming/search_books_by_isbn | ✓ | 3.563ms | 89.2 KB |
+| 1068 | web_programming/instagram_video | ✓ | 909µs | 14.5 KB |
+| 1069 | web_programming/nasa_data | ✓ | 648.68ms | 1.1 MB |
+| 1070 | web_programming/open_google_results | ✓ | 1.045ms | 19.1 KB |
+| 1071 | web_programming/random_anime_character | ✓ | 1.013ms | 26.0 KB |
+| 1072 | web_programming/recaptcha_verification | ✓ | 1.054ms | 21.3 KB |
+| 1073 | web_programming/reddit | ✓ | 3.356ms | 48.9 KB |
+| 1074 | web_programming/search_books_by_isbn | ✓ | 374.34ms | 210.0 KB |
 | 1075 | web_programming/slack_message |   |  |  |
-| 1076 | web_programming/test_fetch_github_info | ✓ | 714µs | 19.8 KB |
+| 1076 | web_programming/test_fetch_github_info | ✓ | 1.016ms | 19.8 KB |
 | 1077 | web_programming/world_covid19_stats |   |  |  |
