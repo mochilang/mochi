@@ -1352,7 +1352,9 @@ func (p *Program) Emit() []byte {
 	for _, vd := range varDecls {
 		key := vd.Scope + ":" + vd.Name
 		if vd.Mutable && !varMut[key] && !varMut[":"+vd.Name] {
-			vd.Mutable = false
+			if !strings.HasSuffix(vd.Name, "_var") {
+				vd.Mutable = false
+			}
 		}
 	}
 	buf.WriteString(header())
@@ -1425,8 +1427,8 @@ func (p *Program) Emit() []byte {
 		}
 		buf.WriteString("    const info = @typeInfo(@TypeOf(v));\n")
 		buf.WriteString("    switch (info) {\n")
-		buf.WriteString("    .pointer => |p| {\n")
-		buf.WriteString("        if (p.size == .slice) {\n")
+		buf.WriteString("    .Pointer => |p| {\n")
+		buf.WriteString("        if (p.size == .Slice) {\n")
 		buf.WriteString("            var out = std.ArrayList(u8).init(std.heap.page_allocator);\n")
 		buf.WriteString("            defer out.deinit();\n")
 		buf.WriteString("            out.append('[') catch unreachable;\n")
@@ -1518,7 +1520,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    _ = it.next(); // total program size\n")
 		buf.WriteString("    if (it.next()) |tok| {\n")
 		buf.WriteString("        const pages = std.fmt.parseInt(i64, tok, 10) catch return 0;\n")
-		buf.WriteString("        return pages * std.heap.page_size_min;\n")
+		buf.WriteString("        return pages * std.mem.page_size;\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    return 0;\n")
 		buf.WriteString("}\n")
@@ -1660,9 +1662,6 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 			targetType = zigTypeFromExpr(v.Value)
 		}
 	}
-	if strings.HasPrefix(targetType, "std.StringHashMap(") || strings.HasPrefix(targetType, "std.AutoHashMap(") {
-		mut = true
-	}
 	kw := "const"
 	if mut {
 		kw = "var"
@@ -1715,7 +1714,7 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 		}
 	}
 	io.WriteString(w, ";")
-	if indent > 0 && varUses[key] == 0 && varUses[":"+v.Name] == 0 && !varMut[key] && !varMut[":"+v.Name] {
+	if indent > 0 && varUses[key] == 0 && varUses[":"+v.Name] == 0 && !varMut[key] && !varMut[":"+v.Name] && !v.Mutable {
 		io.WriteString(w, " _ = ")
 		io.WriteString(w, v.Name)
 		io.WriteString(w, ";")
@@ -3228,6 +3227,9 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 								continue
 							}
 						}
+						if strings.HasPrefix(st, "std.StringHashMap(") || strings.HasPrefix(st, "std.AutoHashMap(") {
+							imap = true
+						}
 					}
 					if mapVars[t.Name] {
 						imap = true
@@ -3238,7 +3240,9 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 				elemType := ""
 				if !imap {
 					targetType := zigTypeFromExpr(expr)
-					if strings.HasPrefix(targetType, "[]") {
+					if strings.HasPrefix(targetType, "std.StringHashMap(") || strings.HasPrefix(targetType, "std.AutoHashMap(") {
+						imap = true
+					} else if strings.HasPrefix(targetType, "[]") {
 						if targetType == "[]const u8" {
 							elemType = "[]const u8"
 						} else {
@@ -4673,8 +4677,12 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 				return nil, err
 			}
 			target = &IndexExpr{Target: target, Index: ix, Map: imap}
-			// subsequent indexes default to list access
-			imap = false
+			ttype := zigTypeFromExpr(target)
+			if strings.HasPrefix(ttype, "std.StringHashMap(") || strings.HasPrefix(ttype, "std.AutoHashMap(") {
+				imap = true
+			} else {
+				imap = false
+			}
 		}
 		val, err := compileExpr(s.Assign.Value)
 		if err != nil {
@@ -5078,6 +5086,14 @@ func collectVarInfo(p *Program) (map[string]int, map[string]bool) {
 			uses[scope+":"+t.Func]++
 			if globalNames[t.Func] {
 				uses[":"+t.Func]++
+			}
+			if idx := strings.IndexByte(t.Func, '.'); idx >= 0 {
+				base := t.Func[:idx]
+				key := scope + ":" + base
+				muts[key] = true
+				if globalNames[base] {
+					muts[":"+base] = true
+				}
 			}
 		case *IfExpr:
 			walkExpr(t.Cond)
