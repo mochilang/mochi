@@ -1,0 +1,2 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/ciphers/cryptomath_module.zig:24:18: error: expected '.', found '('

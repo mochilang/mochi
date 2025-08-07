@@ -1,2 +1,2 @@
 exit status 1
-/workspace/mochi/tests/algorithms/transpiler/Zig/conversions/prefix_conversions_string.zig:88:552: error: expected type '[10]prefix_conversions_string.Si_positive', found '[]prefix_conversions_string.Si_positive'
+/workspace/mochi/tests/algorithms/transpiler/Zig/conversions/prefix_conversions_string.zig:99:552: error: expected type '[10]prefix_conversions_string.Si_positive', found '[]prefix_conversions_string.Si_positive'

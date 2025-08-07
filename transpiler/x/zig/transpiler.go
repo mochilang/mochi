@@ -1678,7 +1678,7 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 		}
 	}
 	kw := "const"
-	if mut {
+	if indent > 0 || mut {
 		kw = "var"
 	}
 	if lit, ok := v.Value.(*ListLit); ok && mut && v.Type == "" {
@@ -1728,13 +1728,14 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 			io.WriteString(w, valueAccess(targetType))
 		}
 	}
-	io.WriteString(w, ";")
-	if indent > 0 && varUses[key] == 0 && varUses[":"+v.Name] == 0 && !varMut[key] && !varMut[":"+v.Name] && !v.Mutable {
-		io.WriteString(w, " _ = ")
+	io.WriteString(w, ";\n")
+	if kw == "var" && indent > 0 {
+		writeIndent(w, indent)
 		io.WriteString(w, v.Name)
-		io.WriteString(w, ";")
+		io.WriteString(w, " = ")
+		io.WriteString(w, v.Name)
+		io.WriteString(w, ";\n")
 	}
-	io.WriteString(w, "\n")
 }
 
 func (a *AssignStmt) emit(w io.Writer, indent int) {

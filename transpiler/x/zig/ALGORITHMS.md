@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-07 12:04 +0700
+Last updated: 2025-08-07 14:57 +0700
 
-## Program Checklist (118/1077)
+## Program Checklist (153/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.114ms | 512.0 KB |
@@ -62,106 +62,106 @@ Last updated: 2025-08-07 12:04 +0700
 | 53 | boolean_algebra/nor_gate | ✓ | 4.566ms | 768.0 KB |
 | 54 | boolean_algebra/not_gate | ✓ | 415µs | 256.0 KB |
 | 55 | boolean_algebra/or_gate | ✓ | 686µs | 256.0 KB |
-| 56 | boolean_algebra/quine_mc_cluskey |   |  |  |
-| 57 | boolean_algebra/xnor_gate |   |  |  |
-| 58 | boolean_algebra/xor_gate |   |  |  |
-| 59 | cellular_automata/conways_game_of_life |   |  |  |
-| 60 | cellular_automata/game_of_life |   |  |  |
-| 61 | cellular_automata/langtons_ant |   |  |  |
-| 62 | cellular_automata/nagel_schrekenberg |   |  |  |
-| 63 | cellular_automata/one_dimensional |   |  |  |
-| 64 | cellular_automata/wa_tor |   |  |  |
-| 65 | ciphers/a1z26 |   |  |  |
+| 56 | boolean_algebra/quine_mc_cluskey | ✓ | 1.336ms | 512.0 KB |
+| 57 | boolean_algebra/xnor_gate | ✓ | 629µs | 256.0 KB |
+| 58 | boolean_algebra/xor_gate | ✓ | 374µs | 256.0 KB |
+| 59 | cellular_automata/conways_game_of_life | ✓ | 4.266ms | 1.5 MB |
+| 60 | cellular_automata/game_of_life | ✓ | 4.028ms | 1.2 MB |
+| 61 | cellular_automata/langtons_ant | ✓ | 205µs |  |
+| 62 | cellular_automata/nagel_schrekenberg | ✓ | 1.803ms | 768.0 KB |
+| 63 | cellular_automata/one_dimensional | ✓ | 18.13ms | 4.2 MB |
+| 64 | cellular_automata/wa_tor | ✓ | 8.706ms | 2.8 MB |
+| 65 | ciphers/a1z26 | ✓ | 888µs | 256.0 KB |
 | 66 | ciphers/affine_cipher |   |  |  |
-| 67 | ciphers/atbash |   |  |  |
+| 67 | ciphers/atbash | ✓ | 854µs | 384.0 KB |
 | 68 | ciphers/autokey |   |  |  |
 | 69 | ciphers/baconian_cipher |   |  |  |
 | 70 | ciphers/base16 |   |  |  |
-| 71 | ciphers/base32 |   |  |  |
-| 72 | ciphers/base64_cipher |   |  |  |
-| 73 | ciphers/base85 |   |  |  |
-| 74 | ciphers/beaufort_cipher |   |  |  |
-| 75 | ciphers/bifid |   |  |  |
-| 76 | ciphers/brute_force_caesar_cipher |   |  |  |
-| 77 | ciphers/caesar_cipher |   |  |  |
+| 71 | ciphers/base32 | ✓ | 22.044ms | 6.8 MB |
+| 72 | ciphers/base64_cipher | ✓ | 2.964ms | 1.0 MB |
+| 73 | ciphers/base85 | ✓ | 8.01ms | 2.6 MB |
+| 74 | ciphers/beaufort_cipher | ✓ | 975µs | 384.0 KB |
+| 75 | ciphers/bifid | ✓ | 4.345ms | 1.4 MB |
+| 76 | ciphers/brute_force_caesar_cipher | ✓ | 5.989ms | 1.9 MB |
+| 77 | ciphers/caesar_cipher | ✓ | 22.286ms | 6.4 MB |
 | 78 | ciphers/cryptomath_module |   |  |  |
 | 79 | ciphers/decrypt_caesar_with_chi_squared |   |  |  |
 | 80 | ciphers/deterministic_miller_rabin |   |  |  |
 | 81 | ciphers/diffie |   |  |  |
-| 82 | ciphers/diffie_hellman |   |  |  |
-| 83 | ciphers/elgamal_key_generator |   |  |  |
-| 84 | ciphers/enigma_machine2 |   |  |  |
+| 82 | ciphers/diffie_hellman | ✓ | 313µs | 128.0 KB |
+| 83 | ciphers/elgamal_key_generator | ✓ | 544µs | 256.0 KB |
+| 84 | ciphers/enigma_machine2 | ✓ | 5.101ms | 1.5 MB |
 | 85 | ciphers/fractionated_morse_cipher |   |  |  |
-| 86 | ciphers/gronsfeld_cipher |   |  |  |
-| 87 | ciphers/hill_cipher |   |  |  |
-| 88 | ciphers/mixed_keyword_cypher |   |  |  |
-| 89 | ciphers/mono_alphabetic_ciphers |   |  |  |
-| 90 | ciphers/morse_code |   |  |  |
-| 91 | ciphers/onepad_cipher |   |  |  |
-| 92 | ciphers/permutation_cipher |   |  |  |
+| 86 | ciphers/gronsfeld_cipher | ✓ | 2.226ms | 768.0 KB |
+| 87 | ciphers/hill_cipher | ✓ | 4.471ms | 1.5 MB |
+| 88 | ciphers/mixed_keyword_cypher | ✓ | 4.94ms | 1.4 MB |
+| 89 | ciphers/mono_alphabetic_ciphers | ✓ | 868µs | 384.0 KB |
+| 90 | ciphers/morse_code | ✓ | 2.345ms | 768.0 KB |
+| 91 | ciphers/onepad_cipher | ✓ | 768µs | 384.0 KB |
+| 92 | ciphers/permutation_cipher | ✓ | 1.284ms | 384.0 KB |
 | 93 | ciphers/playfair_cipher |   |  |  |
-| 94 | ciphers/polybius |   |  |  |
-| 95 | ciphers/porta_cipher |   |  |  |
-| 96 | ciphers/rabin_miller |   |  |  |
-| 97 | ciphers/rail_fence_cipher |   |  |  |
-| 98 | ciphers/rot13 |   |  |  |
-| 99 | ciphers/rsa_cipher |   |  |  |
-| 100 | ciphers/rsa_factorization |   |  |  |
-| 101 | ciphers/rsa_key_generator | ✓ | 563µs | 256.0 KB |
-| 102 | ciphers/running_key_cipher | ✓ | 1.993ms | 640.0 KB |
-| 103 | ciphers/shuffled_shift_cipher | ✓ | 9.688ms | 1.5 MB |
-| 104 | ciphers/simple_keyword_cypher | ✓ | 2.183ms | 512.0 KB |
-| 105 | ciphers/simple_substitution_cipher | ✓ | 1.205ms | 384.0 KB |
-| 106 | ciphers/transposition_cipher | ✓ | 821µs | 384.0 KB |
-| 107 | ciphers/transposition_cipher_encrypt_decrypt_file | ✓ | 958µs | 256.0 KB |
-| 108 | ciphers/trifid_cipher | ✓ | 8.972ms | 2.1 MB |
-| 109 | ciphers/vernam_cipher | ✓ | 787µs | 256.0 KB |
-| 110 | ciphers/vigenere_cipher | ✓ | 1.953ms | 640.0 KB |
-| 111 | ciphers/xor_cipher | ✓ | 1.863ms | 640.0 KB |
-| 112 | computer_vision/cnn_classification | ✓ | 1.509ms | 520.0 KB |
-| 113 | computer_vision/flip_augmentation | ✓ | 3.587ms | 896.0 KB |
-| 114 | computer_vision/haralick_descriptors | ✓ | 963µs | 384.0 KB |
-| 115 | computer_vision/harris_corner | ✓ | 3.871ms | 1.0 MB |
-| 116 | computer_vision/horn_schunck | ✓ | 26.536ms | 6.1 MB |
-| 117 | computer_vision/intensity_based_segmentation | ✓ | 1.577ms | 384.0 KB |
-| 118 | computer_vision/mean_threshold | ✓ | 465µs | 256.0 KB |
-| 119 | computer_vision/mosaic_augmentation | ✓ | 183.513ms | 40.3 MB |
-| 120 | computer_vision/pooling_functions | ✓ | 1.947ms | 768.0 KB |
-| 121 | conversions/astronomical_length_scale_conversion | ✓ | 1.198ms | 384.0 KB |
-| 122 | conversions/binary_to_decimal | ✓ | 611µs | 384.0 KB |
-| 123 | conversions/binary_to_hexadecimal | ✓ | 1.741ms | 640.0 KB |
-| 124 | conversions/binary_to_octal | ✓ | 827µs | 384.0 KB |
+| 94 | ciphers/polybius | ✓ | 2.23ms | 768.0 KB |
+| 95 | ciphers/porta_cipher | ✓ | 1.387ms | 384.0 KB |
+| 96 | ciphers/rabin_miller | ✓ | 728µs | 384.0 KB |
+| 97 | ciphers/rail_fence_cipher | ✓ | 6.703ms | 2.1 MB |
+| 98 | ciphers/rot13 | ✓ | 3.076ms | 768.0 KB |
+| 99 | ciphers/rsa_cipher | ✓ | 1.197ms | 384.0 KB |
+| 100 | ciphers/rsa_factorization | ✓ | 557µs | 256.0 KB |
+| 101 | ciphers/rsa_key_generator | ✓ | 491µs | 256.0 KB |
+| 102 | ciphers/running_key_cipher | ✓ | 1.776ms | 640.0 KB |
+| 103 | ciphers/shuffled_shift_cipher | ✓ | 4.804ms | 1.5 MB |
+| 104 | ciphers/simple_keyword_cypher | ✓ | 1.46ms | 384.0 KB |
+| 105 | ciphers/simple_substitution_cipher | ✓ | 979µs | 256.0 KB |
+| 106 | ciphers/transposition_cipher | ✓ | 406µs | 384.0 KB |
+| 107 | ciphers/transposition_cipher_encrypt_decrypt_file | ✓ | 711µs | 128.0 KB |
+| 108 | ciphers/trifid_cipher | ✓ | 6.408ms | 2.0 MB |
+| 109 | ciphers/vernam_cipher | ✓ | 498µs | 256.0 KB |
+| 110 | ciphers/vigenere_cipher | ✓ | 1.731ms | 512.0 KB |
+| 111 | ciphers/xor_cipher | ✓ | 1.193ms | 512.0 KB |
+| 112 | computer_vision/cnn_classification | ✓ | 1.142ms | 640.0 KB |
+| 113 | computer_vision/flip_augmentation | ✓ | 2.42ms | 768.0 KB |
+| 114 | computer_vision/haralick_descriptors | ✓ | 648µs | 384.0 KB |
+| 115 | computer_vision/harris_corner | ✓ | 2.764ms | 1.0 MB |
+| 116 | computer_vision/horn_schunck | ✓ | 18.895ms | 6.2 MB |
+| 117 | computer_vision/intensity_based_segmentation | ✓ | 679µs | 256.0 KB |
+| 118 | computer_vision/mean_threshold | ✓ | 383µs | 256.0 KB |
+| 119 | computer_vision/mosaic_augmentation | ✓ | 124.022ms | 40.0 MB |
+| 120 | computer_vision/pooling_functions | ✓ | 1.496ms | 640.0 KB |
+| 121 | conversions/astronomical_length_scale_conversion | ✓ | 931µs | 512.0 KB |
+| 122 | conversions/binary_to_decimal | ✓ | 465µs | 256.0 KB |
+| 123 | conversions/binary_to_hexadecimal | ✓ | 1.454ms | 512.0 KB |
+| 124 | conversions/binary_to_octal | ✓ | 545µs | 256.0 KB |
 | 125 | conversions/convert_number_to_words |   |  |  |
-| 126 | conversions/decimal_to_any | ✓ | 697µs | 384.0 KB |
-| 127 | conversions/decimal_to_binary | ✓ | 1.54ms | 512.0 KB |
-| 128 | conversions/decimal_to_hexadecimal | ✓ | 888µs | 256.0 KB |
-| 129 | conversions/decimal_to_octal | ✓ | 622µs | 256.0 KB |
-| 130 | conversions/energy_conversions | ✓ | 840µs | 384.0 KB |
-| 131 | conversions/excel_title_to_column | ✓ | 459µs | 384.0 KB |
+| 126 | conversions/decimal_to_any | ✓ | 434µs | 256.0 KB |
+| 127 | conversions/decimal_to_binary | ✓ | 1.404ms | 384.0 KB |
+| 128 | conversions/decimal_to_hexadecimal | ✓ | 806µs | 256.0 KB |
+| 129 | conversions/decimal_to_octal | ✓ | 467µs | 256.0 KB |
+| 130 | conversions/energy_conversions | ✓ | 551µs | 512.0 KB |
+| 131 | conversions/excel_title_to_column | ✓ | 376µs | 256.0 KB |
 | 132 | conversions/hex_to_bin |   |  |  |
-| 133 | conversions/hexadecimal_to_decimal | ✓ | 659µs | 128.0 KB |
+| 133 | conversions/hexadecimal_to_decimal | ✓ | 403µs | 256.0 KB |
 | 134 | conversions/ipv4_conversion |   |  |  |
-| 135 | conversions/length_conversion | ✓ | 1.026ms | 384.0 KB |
-| 136 | conversions/molecular_chemistry | ✓ | 595µs | 384.0 KB |
-| 137 | conversions/octal_to_binary | ✓ | 823µs | 256.0 KB |
-| 138 | conversions/octal_to_decimal | ✓ | 963µs | 384.0 KB |
-| 139 | conversions/octal_to_hexadecimal | ✓ | 690µs | 256.0 KB |
-| 140 | conversions/prefix_conversions | ✓ | 1.078ms | 384.0 KB |
+| 135 | conversions/length_conversion | ✓ | 748µs | 384.0 KB |
+| 136 | conversions/molecular_chemistry | ✓ | 541µs | 384.0 KB |
+| 137 | conversions/octal_to_binary | ✓ | 601µs | 256.0 KB |
+| 138 | conversions/octal_to_decimal | ✓ | 336µs | 256.0 KB |
+| 139 | conversions/octal_to_hexadecimal | ✓ | 639µs | 256.0 KB |
+| 140 | conversions/prefix_conversions | ✓ | 872µs | 512.0 KB |
 | 141 | conversions/prefix_conversions_string |   |  |  |
 | 142 | conversions/pressure_conversions |   |  |  |
-| 143 | conversions/rectangular_to_polar | ✓ | 1.076ms | 384.0 KB |
-| 144 | conversions/rgb_cmyk_conversion | ✓ | 1.313ms | 384.0 KB |
+| 143 | conversions/rectangular_to_polar | ✓ | 1.003ms | 512.0 KB |
+| 144 | conversions/rgb_cmyk_conversion | ✓ | 785µs | 384.0 KB |
 | 145 | conversions/rgb_hsv_conversion |   |  |  |
-| 146 | conversions/roman_numerals | ✓ | 374µs | 256.0 KB |
-| 147 | conversions/speed_conversions | ✓ | 749µs | 384.0 KB |
-| 148 | conversions/temperature_conversions | ✓ | 661µs | 256.0 KB |
+| 146 | conversions/roman_numerals | ✓ | 285µs | 128.0 KB |
+| 147 | conversions/speed_conversions | ✓ | 724µs | 512.0 KB |
+| 148 | conversions/temperature_conversions | ✓ | 299µs | 256.0 KB |
 | 149 | conversions/time_conversions |   |  |  |
-| 150 | conversions/volume_conversions | ✓ | 645µs | 384.0 KB |
-| 151 | conversions/weight_conversion | ✓ | 859µs | 384.0 KB |
-| 152 | data_compression/burrows_wheeler | ✓ | 2.303ms | 640.0 KB |
+| 150 | conversions/volume_conversions | ✓ | 558µs | 512.0 KB |
+| 151 | conversions/weight_conversion | ✓ | 471µs | 384.0 KB |
+| 152 | data_compression/burrows_wheeler | ✓ | 1.55ms | 640.0 KB |
 | 153 | data_compression/huffman |   |  |  |
-| 154 | data_compression/lempel_ziv | ✓ | 1.771ms | 640.0 KB |
-| 155 | data_compression/lempel_ziv_decompress | ✓ | 1.397ms | 512.0 KB |
+| 154 | data_compression/lempel_ziv | ✓ | 1.59ms | 640.0 KB |
+| 155 | data_compression/lempel_ziv_decompress | ✓ | 1.034ms | 384.0 KB |
 | 156 | data_compression/lz77 |   |  |  |
 | 157 | data_compression/peak_signal_to_noise_ratio | ✓ | 245µs |  |
 | 158 | data_compression/run_length_encoding | ✓ | 2.517ms | 640.0 KB |

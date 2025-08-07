@@ -1,0 +1,2 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/ciphers/playfair_cipher.zig:44:35: error: expected expression, found 'const'
