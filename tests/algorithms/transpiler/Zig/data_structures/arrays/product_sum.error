@@ -1,2 +1,0 @@
-exit status 1
-/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/arrays/product_sum.zig:35:303: error: expected type 'i64', found '[]i64'

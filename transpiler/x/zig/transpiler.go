@@ -181,7 +181,7 @@ func valueTag(t string) string {
 		return "Str"
 	case "bool":
 		return "Bool"
-	case "[][]i64":
+	case "[][]i64", "[]Value":
 		return "List"
 	case "[][]const u8":
 		return "StrList"
@@ -200,7 +200,7 @@ func valueAccess(t string) string {
 		return ".Str"
 	case "bool":
 		return ".Bool"
-	case "[][]i64":
+	case "[][]i64", "[]Value":
 		return ".List"
 	case "[][]const u8":
 		return ".StrList"
@@ -1358,7 +1358,7 @@ func (p *Program) Emit() []byte {
 	buf.WriteString(header())
 	buf.WriteString("const std = @import(\"std\");\n")
 	if useValue {
-		buf.WriteString("const Value = union(enum) { Null: void, Int: i64, Float: f64, Str: []const u8, Bool: bool, List: [][]i64, StrList: [][]const u8, };\n")
+		buf.WriteString("const Value = union(enum) { Null: void, Int: i64, Float: f64, Str: []const u8, Bool: bool, List: []Value, StrList: [][]const u8, };\n")
 	}
 	buf.WriteString("\nfn handleError(err: anyerror) noreturn {\n")
 	buf.WriteString("    std.debug.panic(\"{any}\", .{err});\n}\n\n")
@@ -1424,17 +1424,22 @@ func (p *Program) Emit() []byte {
 			buf.WriteString("    }\n")
 		}
 		buf.WriteString("    const info = @typeInfo(@TypeOf(v));\n")
-		buf.WriteString("    if (info == .Pointer and info.Pointer.size == .Slice) {\n")
-		buf.WriteString("        var out = std.ArrayList(u8).init(std.heap.page_allocator);\n")
-		buf.WriteString("        defer out.deinit();\n")
-		buf.WriteString("        out.append('[') catch unreachable;\n")
-		buf.WriteString("        for (v, 0..) |e, i| {\n")
-		buf.WriteString("            if (i != 0) { out.append(' ') catch unreachable; }\n")
-		buf.WriteString("            const s = _str(e);\n")
-		buf.WriteString("            out.appendSlice(s) catch unreachable;\n")
+		buf.WriteString("    switch (info) {\n")
+		buf.WriteString("    .pointer => |p| {\n")
+		buf.WriteString("        if (p.size == .slice) {\n")
+		buf.WriteString("            var out = std.ArrayList(u8).init(std.heap.page_allocator);\n")
+		buf.WriteString("            defer out.deinit();\n")
+		buf.WriteString("            out.append('[') catch unreachable;\n")
+		buf.WriteString("            for (v, 0..) |e, i| {\n")
+		buf.WriteString("                if (i != 0) { out.append(' ') catch unreachable; }\n")
+		buf.WriteString("                const s = _str(e);\n")
+		buf.WriteString("                out.appendSlice(s) catch unreachable;\n")
+		buf.WriteString("            }\n")
+		buf.WriteString("            out.append(']') catch unreachable;\n")
+		buf.WriteString("            return out.toOwnedSlice() catch unreachable;\n")
 		buf.WriteString("        }\n")
-		buf.WriteString("        out.append(']') catch unreachable;\n")
-		buf.WriteString("        return out.toOwnedSlice() catch unreachable;\n")
+		buf.WriteString("    },\n")
+		buf.WriteString("    else => {},\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    return std.fmt.allocPrint(std.heap.page_allocator, \"{any}\", .{v}) catch unreachable;\n")
 		buf.WriteString("}\n")
@@ -1513,7 +1518,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    _ = it.next(); // total program size\n")
 		buf.WriteString("    if (it.next()) |tok| {\n")
 		buf.WriteString("        const pages = std.fmt.parseInt(i64, tok, 10) catch return 0;\n")
-		buf.WriteString("        return pages * std.mem.page_size;\n")
+		buf.WriteString("        return pages * std.heap.page_size_min;\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    return 0;\n")
 		buf.WriteString("}\n")
@@ -2225,10 +2230,17 @@ func (l *ListLit) emit(w io.Writer) {
 		for i, e := range l.Elems {
 			fmt.Fprintf(w, " %s[%d] = ", tmp, i)
 			if l.ElemType == "Value" {
-				t := zigTypeFromExpr(e)
-				fmt.Fprintf(w, "Value{.%s = ", valueTag(t))
-				e.emit(w)
-				io.WriteString(w, "};")
+				if ll, ok := e.(*ListLit); ok {
+					ll.ElemType = "Value"
+					io.WriteString(w, "Value{.List = ")
+					ll.emit(w)
+					io.WriteString(w, "};")
+				} else {
+					t := zigTypeFromExpr(e)
+					fmt.Fprintf(w, "Value{.%s = ", valueTag(t))
+					e.emit(w)
+					io.WriteString(w, "};")
+				}
 			} else {
 				e.emit(w)
 				io.WriteString(w, ";")
@@ -2324,6 +2336,9 @@ func (c *CastExpr) emit(w io.Writer) {
 			io.WriteString(w, "@as(i64, @intFromFloat(")
 			c.Value.emit(w)
 			io.WriteString(w, "))")
+		} else if zigTypeFromExpr(c.Value) == "Value" {
+			c.Value.emit(w)
+			io.WriteString(w, ".Int")
 		} else {
 			io.WriteString(w, "@as(i64, ")
 			c.Value.emit(w)
@@ -2554,32 +2569,40 @@ func (c *CallExpr) emit(w io.Writer) {
 	switch c.Func {
 	case "len", "count":
 		if len(c.Args) > 0 {
-			io.WriteString(w, "@as(i64, @intCast(")
-			if s, ok := c.Args[0].(*StringLit); ok {
-				fmt.Fprintf(w, "%q.len", s.Value)
-			} else if l, ok := c.Args[0].(*ListLit); ok {
-				fmt.Fprintf(w, "%d", len(l.Elems))
-			} else if v, ok := c.Args[0].(*VarRef); ok {
-				if mapVars[v.Name] {
-					v.emit(w)
-					io.WriteString(w, ".count()")
-				} else if t, ok2 := varTypes[v.Name]; ok2 {
-					if _, ok3 := groupItemTypes[t]; ok3 {
+			if zigTypeFromExpr(c.Args[0]) == "Value" {
+				io.WriteString(w, "@as(i64, @intCast(if (")
+				c.Args[0].emit(w)
+				io.WriteString(w, " == .List) ")
+				c.Args[0].emit(w)
+				io.WriteString(w, ".List.len else 0))")
+			} else {
+				io.WriteString(w, "@as(i64, @intCast(")
+				if s, ok := c.Args[0].(*StringLit); ok {
+					fmt.Fprintf(w, "%q.len", s.Value)
+				} else if l, ok := c.Args[0].(*ListLit); ok {
+					fmt.Fprintf(w, "%d", len(l.Elems))
+				} else if v, ok := c.Args[0].(*VarRef); ok {
+					if mapVars[v.Name] {
 						v.emit(w)
-						io.WriteString(w, ".items.len")
+						io.WriteString(w, ".count()")
+					} else if t, ok2 := varTypes[v.Name]; ok2 {
+						if _, ok3 := groupItemTypes[t]; ok3 {
+							v.emit(w)
+							io.WriteString(w, ".items.len")
+						} else {
+							v.emit(w)
+							io.WriteString(w, ".len")
+						}
 					} else {
 						v.emit(w)
 						io.WriteString(w, ".len")
 					}
 				} else {
-					v.emit(w)
+					c.Args[0].emit(w)
 					io.WriteString(w, ".len")
 				}
-			} else {
-				c.Args[0].emit(w)
-				io.WriteString(w, ".len")
+				io.WriteString(w, "))")
 			}
-			io.WriteString(w, "))")
 		} else {
 			io.WriteString(w, "0")
 		}
