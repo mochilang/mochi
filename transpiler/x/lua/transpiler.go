@@ -67,6 +67,19 @@ local function _padStart(s, len, ch)
 end
 `
 
+const helperReverse = `
+local function _reverse(x)
+  if type(x) == 'string' then
+    return string.reverse(x)
+  end
+  local n = #x
+  for i = 1, math.floor(n/2) do
+    x[i], x[n-i+1] = x[n-i+1], x[i]
+  end
+  return x
+end
+`
+
 const helperBigRat = `
 local function _gcd(a, b)
   a = math.abs(a)
@@ -696,6 +709,12 @@ func (c *CallExpr) emit(w io.Writer) {
 		io.WriteString(w, ", ")
 		if len(c.Args) > 1 {
 			c.Args[1].emit(w)
+		}
+		io.WriteString(w, ")")
+	case "reverse":
+		io.WriteString(w, "_reverse(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
 		}
 		io.WriteString(w, ")")
 	case "sha256":
@@ -2706,6 +2725,8 @@ func collectHelpers(p *Program) map[string]bool {
 				used["bigrat"] = true
 			case "padStart":
 				used["padStart"] = true
+			case "reverse":
+				used["reverse"] = true
 			case "sha256":
 				used["sha256"] = true
 			case "MD5Hex":
@@ -2912,6 +2933,9 @@ func Emit(p *Program) []byte {
 	}
 	if used["padStart"] {
 		b.WriteString(helperPadStart)
+	}
+	if used["reverse"] {
+		b.WriteString(helperReverse)
 	}
 	if used["bigrat"] {
 		b.WriteString(helperBigRat)
@@ -3192,6 +3216,10 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 					// string method
 					args = append([]Expr{expr}, args...)
 					expr = &CallExpr{Func: "padStart", Args: args}
+				} else if op.Field.Name == "reverse" {
+					// string or list method
+					args = append([]Expr{expr}, args...)
+					expr = &CallExpr{Func: "reverse", Args: args}
 				} else if id, ok := expr.(*Ident); ok {
 					if currentEnv != nil {
 						if t, err := currentEnv.GetVar(id.Name); err == nil {
