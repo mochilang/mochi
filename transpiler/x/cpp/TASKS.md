@@ -1,3 +1,308 @@
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 20:53 +0700)
+- cpp transpiler: preserve param context in lambdas
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-08-06 20:15 +0700)
 - ts transpiler: handle object key iteration
 - Generated C++ for 103/105 programs
