@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error at main/peek (stack_using_two_queues.clj:39).
+peek from empty stack
+
+Full report at:
+/tmp/clojure-11015602154366847909.edn

@@ -1,0 +1,5 @@
+Execution error (ArithmeticException) at main/sqrtApprox (canny.clj:128).
+Divide by zero
+
+Full report at:
+/tmp/clojure-152704405537752027.edn

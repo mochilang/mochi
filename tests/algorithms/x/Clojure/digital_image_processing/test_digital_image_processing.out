@@ -1,0 +1,5 @@
+Execution error (ClassCastException) at main/img-convolve (test_digital_image_processing.clj:200).
+class java.lang.Double cannot be cast to class java.lang.String (java.lang.Double and java.lang.String are in module java.base of loader 'bootstrap')
+
+Full report at:
+/tmp/clojure-4869993500274212284.edn
