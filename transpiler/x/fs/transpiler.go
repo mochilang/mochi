@@ -542,7 +542,10 @@ func simpleListType(l *ListLit) string {
 		for _, e := range l.Elems[1:] {
 			t := inferType(e)
 			if (elemType == "int" && t == "int64") || (elemType == "int64" && t == "int") {
-				elemType = "int"
+				// When mixing 32-bit and 64-bit integers in a list,
+				// promote the element type to int64 so that large
+				// literals are preserved without overflow.
+				elemType = "int64"
 				continue
 			}
 			if t != elemType {
@@ -921,24 +924,13 @@ func (b *BenchStmt) emit(w io.Writer) {
 	io.WriteString(w, "let __bench_start = _now()\n")
 	writeIndent(w)
 	io.WriteString(w, "let __mem_start = System.GC.GetTotalMemory(true)\n")
-	for i := 0; i < len(b.Body); {
-		if fd, ok := b.Body[i].(*FunDef); ok {
+	for i, st := range b.Body {
+		if fd, ok := st.(*FunDef); ok {
 			fd.emitWithPrefix(w, "let rec")
-			i++
-			for i < len(b.Body) {
-				next, ok := b.Body[i].(*FunDef)
-				if !ok {
-					break
-				}
-				w.Write([]byte{'\n'})
-				next.emitWithPrefix(w, "and")
-				i++
-			}
 		} else {
-			b.Body[i].emit(w)
-			i++
+			st.emit(w)
 		}
-		if i < len(b.Body) {
+		if i < len(b.Body)-1 {
 			w.Write([]byte{'\n'})
 		}
 	}
@@ -960,6 +952,7 @@ func (l *ListLit) emit(w io.Writer) {
 	types := make([]string, len(l.Elems))
 	same := true
 	prev := ""
+	hasInt64 := false
 	for i, e := range l.Elems {
 		t := inferType(e)
 		if t == "array" {
@@ -969,6 +962,9 @@ func (l *ListLit) emit(w io.Writer) {
 			}
 		}
 		types[i] = t
+		if t == "int64" {
+			hasInt64 = true
+		}
 		if i == 0 {
 			prev = t
 		} else if t != prev && !(t == "int" && prev == "int64") && !(t == "int64" && prev == "int") && t != "" && prev != "" {
@@ -977,7 +973,11 @@ func (l *ListLit) emit(w io.Writer) {
 	}
 	io.WriteString(w, "[|")
 	for i, e := range l.Elems {
-		if !same && types[i] != "obj" {
+		if hasInt64 && types[i] == "int" {
+			io.WriteString(w, "int64 (")
+			e.emit(w)
+			io.WriteString(w, ")")
+		} else if !same && types[i] != "obj" {
 			io.WriteString(w, "box (")
 			e.emit(w)
 			io.WriteString(w, ")")
@@ -1449,7 +1449,7 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 	if id, ok := target.(*IdentExpr); ok {
 		t := inferType(id)
 		name := fsIdent(id.Name)
-		if strings.Contains(t, "array") && len(indices) == 1 {
+		if strings.HasSuffix(t, " array") && len(indices) == 1 {
 			usesArraySet = true
 			writeIndent(w)
 			io.WriteString(w, name)
@@ -1462,7 +1462,7 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 			io.WriteString(w, ")")
 			return
 		}
-		if strings.Contains(t, "array") || t == "" || strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") {
+		if strings.HasSuffix(t, " array") || t == "" || strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") {
 			writeIndent(w)
 			io.WriteString(w, name)
 			for _, ix := range indices {
@@ -2332,7 +2332,7 @@ type IndexExpr struct {
 
 func (i *IndexExpr) emit(w io.Writer) {
 	t := inferType(i.Target)
-	if strings.Contains(t, "array") || t == "" {
+	if strings.HasSuffix(t, " array") || t == "" {
 		usesSafeIndex = true
 		io.WriteString(w, "_idx ")
 		if needsParen(i.Target) {
@@ -3592,8 +3592,26 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 			return &AssignStmt{Name: name, Expr: e}, nil
 		}
-		// Complex targets (indexing/fields) not yet supported.
-		return nil, fmt.Errorf("unsupported assignment target")
+		// Handle assignments to indexed or field targets like a[i] <- v or obj.field <- v
+		target := Expr(&IdentExpr{Name: st.Assign.Name})
+		for _, idx := range st.Assign.Index {
+			if idx.Colon != nil || idx.Colon2 != nil {
+				return nil, fmt.Errorf("slice assignment not supported")
+			}
+			ix, err := convertExpr(idx.Start)
+			if err != nil {
+				return nil, err
+			}
+			target = &IndexExpr{Target: target, Index: ix}
+		}
+		for _, f := range st.Assign.Field {
+			target = &FieldExpr{Target: target, Name: f.Name}
+		}
+		val, err := convertExpr(st.Assign.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &IndexAssignStmt{Target: target, Value: val}, nil
 	case st.Return != nil:
 		var e Expr
 		if st.Return.Value != nil {
