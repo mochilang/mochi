@@ -1,4 +1,4 @@
-;; Generated on 2025-08-07 14:14 +0700
+;; Generated on 2025-08-07 16:11 +0700
 (import (scheme base))
 (import (scheme time))
 (import (chibi string))
@@ -21,6 +21,10 @@
         ((null? x) "[]")
         ((string? x) (let ((out (open-output-string))) (json-write x out) (get-output-string out)))
         ((boolean? x) (if x "true" "false"))
+        ((number? x)
+         (if (integer? x)
+             (number->string (inexact->exact x))
+             (number->string x)))
         (else (number->string x))))
 (define (to-str-space x)
   (cond ((pair? x)
@@ -147,10 +151,8 @@
                   panic "Please enter a valid equation."
                 )
               )
-               (
-                quote (
-                  
-                )
+               '(
+                
               )
             )
              (
@@ -189,10 +191,8 @@
                   panic "Both a & b of two equations can't be zero."
                 )
               )
-               (
-                quote (
-                  
-                )
+               '(
+                
               )
             )
              (
@@ -310,20 +310,16 @@
                                                           panic "Infinite solutions. (Consistent system)"
                                                         )
                                                       )
-                                                       (
-                                                        quote (
-                                                          
-                                                        )
+                                                       '(
+                                                        
                                                       )
                                                     )
                                                      (
                                                       panic "No solution. (Inconsistent system)"
                                                     )
                                                   )
-                                                   (
-                                                    quote (
-                                                      
-                                                    )
+                                                   '(
+                                                    
                                                   )
                                                 )
                                                  (
@@ -342,10 +338,8 @@
                                                       )
                                                     )
                                                   )
-                                                   (
-                                                    quote (
-                                                      
-                                                    )
+                                                   '(
+                                                    
                                                   )
                                                 )
                                                  (
@@ -488,10 +482,8 @@
                     panic "Test1 failed"
                   )
                 )
-                 (
-                  quote (
-                    
-                  )
+                 '(
+                  
                 )
               )
                (
@@ -576,10 +568,8 @@
                         panic "Test2 failed"
                       )
                     )
-                     (
-                      quote (
-                        
-                      )
+                     '(
+                      
                     )
                   )
                 )

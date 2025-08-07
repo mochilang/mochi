@@ -1,4 +1,4 @@
-;; Generated on 2025-08-07 13:41 +0700
+;; Generated on 2025-08-07 16:11 +0700
 (import (scheme base))
 (import (scheme time))
 (import (chibi string))
@@ -21,6 +21,10 @@
         ((null? x) "[]")
         ((string? x) (let ((out (open-output-string))) (json-write x out) (get-output-string out)))
         ((boolean? x) (if x "true" "false"))
+        ((number? x)
+         (if (integer? x)
+             (number->string (inexact->exact x))
+             (number->string x)))
         (else (number->string x))))
 (define (to-str-space x)
   (cond ((pair? x)
@@ -31,7 +35,7 @@
 (define (lower s) (string-downcase s))
 (define (fmod a b) (- a (* (floor (/ a b)) b)))
 (define (_mod a b) (if (and (integer? a) (integer? b)) (modulo a b) (fmod a b)))
-(define (_div a b) (/ a b))
+(define (_div a b) (if (and (integer? a) (integer? b) (exact? a) (exact? b)) (quotient a b) (/ a b)))
 (define (_gt a b) (cond ((and (number? a) (number? b)) (> a b)) ((and (string? a) (string? b)) (string>? a b)) (else (> a b))))
 (define (_lt a b) (cond ((and (number? a) (number? b)) (< a b)) ((and (string? a) (string? b)) (string<? a b)) (else (< a b))))
 (define (_ge a b) (cond ((and (number? a) (number? b)) (>= a b)) ((and (string? a) (string? b)) (string>=? a b)) (else (>= a b))))
@@ -98,6 +102,7 @@
   (cond ((string? x) (string-length x))
         ((hash-table? x) (hash-table-size x))
         (else (length x))))
+(define (list-ref-safe lst idx) (if (and (integer? idx) (>= idx 0) (< idx (length lst))) (list-ref lst idx) '()))
 (
   let (
     (
@@ -252,10 +257,8 @@
                                     loop3
                                   )
                                 )
-                                 (
-                                  quote (
-                                    
-                                  )
+                                 '(
+                                  
                                 )
                               )
                             )
@@ -374,10 +377,8 @@
                                         loop7
                                       )
                                     )
-                                     (
-                                      quote (
-                                        
-                                      )
+                                     '(
+                                      
                                     )
                                   )
                                 )
@@ -485,7 +486,7 @@
                                               )
                                                (
                                                 else (
-                                                  list-ref pairs i
+                                                  list-ref-safe pairs i
                                                 )
                                               )
                                             )
@@ -568,10 +569,8 @@
                                                                                     set! num ""
                                                                                   )
                                                                                 )
-                                                                                 (
-                                                                                  quote (
-                                                                                    
-                                                                                  )
+                                                                                 '(
+                                                                                  
                                                                                 )
                                                                               )
                                                                             )
@@ -594,10 +593,8 @@
                                                                         loop12
                                                                       )
                                                                     )
-                                                                     (
-                                                                      quote (
-                                                                        
-                                                                      )
+                                                                     '(
+                                                                      
                                                                     )
                                                                   )
                                                                 )
@@ -624,10 +621,8 @@
                                                             )
                                                           )
                                                         )
-                                                         (
-                                                          quote (
-                                                            
-                                                          )
+                                                         '(
+                                                          
                                                         )
                                                       )
                                                        (
@@ -644,10 +639,8 @@
                                                             panic "Each move must have exactly two numbers."
                                                           )
                                                         )
-                                                         (
-                                                          quote (
-                                                            
-                                                          )
+                                                         '(
+                                                          
                                                         )
                                                       )
                                                        (
@@ -655,7 +648,7 @@
                                                           (
                                                             x (
                                                               to_int (
-                                                                list-ref numbers 0
+                                                                list-ref-safe numbers 0
                                                               )
                                                             )
                                                           )
@@ -666,7 +659,7 @@
                                                               (
                                                                 y (
                                                                   to_int (
-                                                                    list-ref numbers 1
+                                                                    list-ref-safe numbers 1
                                                                   )
                                                                 )
                                                               )
@@ -709,10 +702,8 @@
                                         loop10
                                       )
                                     )
-                                     (
-                                      quote (
-                                        
-                                      )
+                                     '(
+                                      
                                     )
                                   )
                                 )
@@ -754,10 +745,8 @@
                 panic "Matrix size must be a positive integer."
               )
             )
-             (
-              quote (
-                
-              )
+             '(
+              
             )
           )
         )
@@ -787,10 +776,8 @@
                   panic "The matrix dont match with size."
                 )
               )
-               (
-                quote (
-                  
-                )
+               '(
+                
               )
             )
              (
@@ -821,7 +808,7 @@
                                   let (
                                     (
                                       row (
-                                        list-ref matrix i
+                                        list-ref-safe matrix i
                                       )
                                     )
                                   )
@@ -847,10 +834,8 @@
                                           )
                                         )
                                       )
-                                       (
-                                        quote (
-                                          
-                                        )
+                                       '(
+                                        
                                       )
                                     )
                                      (
@@ -899,10 +884,8 @@
                                                                   panic "Matrix rows can only contain letters and numbers."
                                                                 )
                                                               )
-                                                               (
-                                                                quote (
-                                                                  
-                                                                )
+                                                               '(
+                                                                
                                                               )
                                                             )
                                                              (
@@ -916,10 +899,8 @@
                                                           loop18
                                                         )
                                                       )
-                                                       (
-                                                        quote (
-                                                          
-                                                        )
+                                                       '(
+                                                        
                                                       )
                                                     )
                                                   )
@@ -944,10 +925,8 @@
                                   loop16
                                 )
                               )
-                               (
-                                quote (
-                                  
-                                )
+                               '(
+                                
                               )
                             )
                           )
@@ -1004,7 +983,7 @@
                                 let (
                                   (
                                     mv (
-                                      list-ref moves i
+                                      list-ref-safe moves i
                                     )
                                   )
                                 )
@@ -1045,10 +1024,8 @@
                                         panic "Move is out of bounds for a matrix."
                                       )
                                     )
-                                     (
-                                      quote (
-                                        
-                                      )
+                                     '(
+                                      
                                     )
                                   )
                                    (
@@ -1062,10 +1039,8 @@
                                 loop21
                               )
                             )
-                             (
-                              quote (
-                                
-                              )
+                             '(
+                              
                             )
                           )
                         )
@@ -1121,7 +1096,7 @@
                                 let (
                                   (
                                     p (
-                                      list-ref pos i
+                                      list-ref-safe pos i
                                     )
                                   )
                                 )
@@ -1146,10 +1121,8 @@
                                         ret23 #t
                                       )
                                     )
-                                     (
-                                      quote (
-                                        
-                                      )
+                                     '(
+                                      
                                     )
                                   )
                                    (
@@ -1163,10 +1136,8 @@
                                 loop24
                               )
                             )
-                             (
-                              quote (
-                                
-                              )
+                             '(
+                              
                             )
                           )
                         )
@@ -1229,12 +1200,12 @@
                             cond (
                               (
                                 string? (
-                                  list-ref matrix_g column
+                                  list-ref-safe matrix_g column
                                 )
                               )
                                (
                                 _substring (
-                                  list-ref matrix_g column
+                                  list-ref-safe matrix_g column
                                 )
                                  row (
                                   + row 1
@@ -1244,20 +1215,20 @@
                              (
                               (
                                 hash-table? (
-                                  list-ref matrix_g column
+                                  list-ref-safe matrix_g column
                                 )
                               )
                                (
                                 hash-table-ref (
-                                  list-ref matrix_g column
+                                  list-ref-safe matrix_g column
                                 )
                                  row
                               )
                             )
                              (
                               else (
-                                list-ref (
-                                  list-ref matrix_g column
+                                list-ref-safe (
+                                  list-ref-safe matrix_g column
                                 )
                                  row
                               )
@@ -1275,10 +1246,8 @@
                               ret26 repeated
                             )
                           )
-                           (
-                            quote (
-                              
-                            )
+                           '(
+                            
                           )
                         )
                          (
@@ -1335,7 +1304,7 @@
                                                   let (
                                                     (
                                                       pos (
-                                                        list-ref stack idx
+                                                        list-ref-safe stack idx
                                                       )
                                                     )
                                                   )
@@ -1386,10 +1355,8 @@
                                                           loop27
                                                         )
                                                       )
-                                                       (
-                                                        quote (
-                                                          
-                                                        )
+                                                       '(
+                                                        
                                                       )
                                                     )
                                                      (
@@ -1406,10 +1373,8 @@
                                                           loop27
                                                         )
                                                       )
-                                                       (
-                                                        quote (
-                                                          
-                                                        )
+                                                       '(
+                                                        
                                                       )
                                                     )
                                                      (
@@ -1425,14 +1390,14 @@
                                                           cond (
                                                             (
                                                               string? (
-                                                                list-ref matrix_g (
+                                                                list-ref-safe matrix_g (
                                                                   hash-table-ref pos "x"
                                                                 )
                                                               )
                                                             )
                                                              (
                                                               _substring (
-                                                                list-ref matrix_g (
+                                                                list-ref-safe matrix_g (
                                                                   hash-table-ref pos "x"
                                                                 )
                                                               )
@@ -1450,14 +1415,14 @@
                                                            (
                                                             (
                                                               hash-table? (
-                                                                list-ref matrix_g (
+                                                                list-ref-safe matrix_g (
                                                                   hash-table-ref pos "x"
                                                                 )
                                                               )
                                                             )
                                                              (
                                                               hash-table-ref (
-                                                                list-ref matrix_g (
+                                                                list-ref-safe matrix_g (
                                                                   hash-table-ref pos "x"
                                                                 )
                                                               )
@@ -1468,8 +1433,8 @@
                                                           )
                                                            (
                                                             else (
-                                                              list-ref (
-                                                                list-ref matrix_g (
+                                                              list-ref-safe (
+                                                                list-ref-safe matrix_g (
                                                                   hash-table-ref pos "x"
                                                                 )
                                                               )
@@ -1582,10 +1547,8 @@
                                                           )
                                                         )
                                                       )
-                                                       (
-                                                        quote (
-                                                          
-                                                        )
+                                                       '(
+                                                        
                                                       )
                                                     )
                                                   )
@@ -1596,10 +1559,8 @@
                                               loop27
                                             )
                                           )
-                                           (
-                                            quote (
-                                              
-                                            )
+                                           '(
+                                            
                                           )
                                         )
                                       )
@@ -1697,12 +1658,12 @@
                                           cond (
                                             (
                                               string? (
-                                                list-ref matrix_g row
+                                                list-ref-safe matrix_g row
                                               )
                                             )
                                              (
                                               _substring (
-                                                list-ref matrix_g row
+                                                list-ref-safe matrix_g row
                                               )
                                                column (
                                                 + column 1
@@ -1712,20 +1673,20 @@
                                            (
                                             (
                                               hash-table? (
-                                                list-ref matrix_g row
+                                                list-ref-safe matrix_g row
                                               )
                                             )
                                              (
                                               hash-table-ref (
-                                                list-ref matrix_g row
+                                                list-ref-safe matrix_g row
                                               )
                                                column
                                             )
                                           )
                                            (
                                             else (
-                                              list-ref (
-                                                list-ref matrix_g row
+                                              list-ref-safe (
+                                                list-ref-safe matrix_g row
                                               )
                                                column
                                             )
@@ -1771,10 +1732,8 @@
                                     loop31
                                   )
                                 )
-                                 (
-                                  quote (
-                                    
-                                  )
+                                 '(
+                                  
                                 )
                               )
                             )
@@ -1808,10 +1767,10 @@
                                  (
                                   begin (
                                     list-set! (
-                                      list-ref matrix_g row
+                                      list-ref-safe matrix_g row
                                     )
                                      column (
-                                      list-ref new_list row
+                                      list-ref-safe new_list row
                                     )
                                   )
                                    (
@@ -1823,10 +1782,8 @@
                                     loop33
                                   )
                                 )
-                                 (
-                                  quote (
-                                    
-                                  )
+                                 '(
+                                  
                                 )
                               )
                             )
@@ -1930,12 +1887,12 @@
                                                                   cond (
                                                                     (
                                                                       string? (
-                                                                        list-ref matrix_g row
+                                                                        list-ref-safe matrix_g row
                                                                       )
                                                                     )
                                                                      (
                                                                       _substring (
-                                                                        list-ref matrix_g row
+                                                                        list-ref-safe matrix_g row
                                                                       )
                                                                        column (
                                                                         + column 1
@@ -1945,20 +1902,20 @@
                                                                    (
                                                                     (
                                                                       hash-table? (
-                                                                        list-ref matrix_g row
+                                                                        list-ref-safe matrix_g row
                                                                       )
                                                                     )
                                                                      (
                                                                       hash-table-ref (
-                                                                        list-ref matrix_g row
+                                                                        list-ref-safe matrix_g row
                                                                       )
                                                                        column
                                                                     )
                                                                   )
                                                                    (
                                                                     else (
-                                                                      list-ref (
-                                                                        list-ref matrix_g row
+                                                                      list-ref-safe (
+                                                                        list-ref-safe matrix_g row
                                                                       )
                                                                        column
                                                                     )
@@ -1972,17 +1929,13 @@
                                                                 set! all_empty #f
                                                               )
                                                                (
-                                                                break39 (
-                                                                  quote (
-                                                                    
-                                                                  )
+                                                                break39 '(
+                                                                  
                                                                 )
                                                               )
                                                             )
-                                                             (
-                                                              quote (
-                                                                
-                                                              )
+                                                             '(
+                                                              
                                                             )
                                                           )
                                                            (
@@ -1994,10 +1947,8 @@
                                                             loop38
                                                           )
                                                         )
-                                                         (
-                                                          quote (
-                                                            
-                                                          )
+                                                         '(
+                                                          
                                                         )
                                                       )
                                                     )
@@ -2019,10 +1970,8 @@
                                                 )
                                               )
                                             )
-                                             (
-                                              quote (
-                                                
-                                              )
+                                             '(
+                                              
                                             )
                                           )
                                            (
@@ -2038,10 +1987,8 @@
                                     loop36
                                   )
                                 )
-                                 (
-                                  quote (
-                                    
-                                  )
+                                 '(
+                                  
                                 )
                               )
                             )
@@ -2083,7 +2030,7 @@
                                         let (
                                           (
                                             col (
-                                              list-ref empty_cols i
+                                              list-ref-safe empty_cols i
                                             )
                                           )
                                         )
@@ -2140,7 +2087,7 @@
                                                                                  (
                                                                                   begin (
                                                                                     list-set! (
-                                                                                      list-ref matrix_g r
+                                                                                      list-ref-safe matrix_g r
                                                                                     )
                                                                                      (
                                                                                       - c 1
@@ -2149,12 +2096,12 @@
                                                                                       cond (
                                                                                         (
                                                                                           string? (
-                                                                                            list-ref matrix_g r
+                                                                                            list-ref-safe matrix_g r
                                                                                           )
                                                                                         )
                                                                                          (
                                                                                           _substring (
-                                                                                            list-ref matrix_g r
+                                                                                            list-ref-safe matrix_g r
                                                                                           )
                                                                                            c (
                                                                                             + c 1
@@ -2164,20 +2111,20 @@
                                                                                        (
                                                                                         (
                                                                                           hash-table? (
-                                                                                            list-ref matrix_g r
+                                                                                            list-ref-safe matrix_g r
                                                                                           )
                                                                                         )
                                                                                          (
                                                                                           hash-table-ref (
-                                                                                            list-ref matrix_g r
+                                                                                            list-ref-safe matrix_g r
                                                                                           )
                                                                                            c
                                                                                         )
                                                                                       )
                                                                                        (
                                                                                         else (
-                                                                                          list-ref (
-                                                                                            list-ref matrix_g r
+                                                                                          list-ref-safe (
+                                                                                            list-ref-safe matrix_g r
                                                                                           )
                                                                                            c
                                                                                         )
@@ -2193,10 +2140,8 @@
                                                                                     loop44
                                                                                   )
                                                                                 )
-                                                                                 (
-                                                                                  quote (
-                                                                                    
-                                                                                  )
+                                                                                 '(
+                                                                                  
                                                                                 )
                                                                               )
                                                                             )
@@ -2219,10 +2164,8 @@
                                                                 loop42
                                                               )
                                                             )
-                                                             (
-                                                              quote (
-                                                                
-                                                              )
+                                                             '(
+                                                              
                                                             )
                                                           )
                                                         )
@@ -2260,7 +2203,7 @@
                                                                  (
                                                                   begin (
                                                                     list-set! (
-                                                                      list-ref matrix_g r
+                                                                      list-ref-safe matrix_g r
                                                                     )
                                                                      (
                                                                       - size 1
@@ -2276,10 +2219,8 @@
                                                                     loop46
                                                                   )
                                                                 )
-                                                                 (
-                                                                  quote (
-                                                                    
-                                                                  )
+                                                                 '(
+                                                                  
                                                                 )
                                                               )
                                                             )
@@ -2306,10 +2247,8 @@
                                         loop40
                                       )
                                     )
-                                     (
-                                      quote (
-                                        
-                                      )
+                                     '(
+                                      
                                     )
                                   )
                                 )
@@ -2411,7 +2350,7 @@
                                               )
                                                (
                                                 else (
-                                                  list-ref same_colors i
+                                                  list-ref-safe same_colors i
                                                 )
                                               )
                                             )
@@ -2420,7 +2359,7 @@
                                          (
                                           begin (
                                             list-set! (
-                                              list-ref matrix_g (
+                                              list-ref-safe matrix_g (
                                                 hash-table-ref p "x"
                                               )
                                             )
@@ -2440,10 +2379,8 @@
                                         loop49
                                       )
                                     )
-                                     (
-                                      quote (
-                                        
-                                      )
+                                     '(
+                                      
                                     )
                                   )
                                 )
@@ -2493,10 +2430,8 @@
                                             loop51
                                           )
                                         )
-                                         (
-                                          quote (
-                                            
-                                          )
+                                         '(
+                                          
                                         )
                                       )
                                     )
@@ -2518,10 +2453,8 @@
                     )
                   )
                 )
-                 (
-                  quote (
-                    
-                  )
+                 '(
+                  
                 )
               )
                (
@@ -2602,7 +2535,7 @@
                                     let (
                                       (
                                         row (
-                                          list-ref matrix i
+                                          list-ref-safe matrix i
                                         )
                                       )
                                     )
@@ -2662,10 +2595,8 @@
                                                                 loop56
                                                               )
                                                             )
-                                                             (
-                                                              quote (
-                                                                
-                                                              )
+                                                             '(
+                                                              
                                                             )
                                                           )
                                                         )
@@ -2699,10 +2630,8 @@
                                     loop54
                                   )
                                 )
-                                 (
-                                  quote (
-                                    
-                                  )
+                                 '(
+                                  
                                 )
                               )
                             )
@@ -2779,7 +2708,7 @@
                                         let (
                                           (
                                             mv (
-                                              list-ref moves i
+                                              list-ref-safe moves i
                                             )
                                           )
                                         )
@@ -2824,10 +2753,8 @@
                                         loop59
                                       )
                                     )
-                                     (
-                                      quote (
-                                        
-                                      )
+                                     '(
+                                      
                                     )
                                   )
                                 )

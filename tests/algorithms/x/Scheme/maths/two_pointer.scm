@@ -1,4 +1,4 @@
-;; Generated on 2025-08-07 13:41 +0700
+;; Generated on 2025-08-07 16:11 +0700
 (import (scheme base))
 (import (scheme time))
 (import (chibi string))
@@ -21,6 +21,10 @@
         ((null? x) "[]")
         ((string? x) (let ((out (open-output-string))) (json-write x out) (get-output-string out)))
         ((boolean? x) (if x "true" "false"))
+        ((number? x)
+         (if (integer? x)
+             (number->string (inexact->exact x))
+             (number->string x)))
         (else (number->string x))))
 (define (to-str-space x)
   (cond ((pair? x)
@@ -31,7 +35,7 @@
 (define (lower s) (string-downcase s))
 (define (fmod a b) (- a (* (floor (/ a b)) b)))
 (define (_mod a b) (if (and (integer? a) (integer? b)) (modulo a b) (fmod a b)))
-(define (_div a b) (/ a b))
+(define (_div a b) (if (and (integer? a) (integer? b) (exact? a) (exact? b)) (quotient a b) (/ a b)))
 (define (_gt a b) (cond ((and (number? a) (number? b)) (> a b)) ((and (string? a) (string? b)) (string>? a b)) (else (> a b))))
 (define (_lt a b) (cond ((and (number? a) (number? b)) (< a b)) ((and (string? a) (string? b)) (string<? a b)) (else (< a b))))
 (define (_ge a b) (cond ((and (number? a) (number? b)) (>= a b)) ((and (string? a) (string? b)) (string>=? a b)) (else (>= a b))))
@@ -98,6 +102,7 @@
   (cond ((string? x) (string-length x))
         ((hash-table? x) (hash-table-size x))
         (else (length x))))
+(define (list-ref-safe lst idx) (if (and (integer? idx) (>= idx 0) (< idx (length lst))) (list-ref lst idx) '()))
 (
   let (
     (
@@ -162,10 +167,10 @@
                                       (
                                         s (
                                           + (
-                                            list-ref nums i
+                                            list-ref-safe nums i
                                           )
                                            (
-                                            list-ref nums j
+                                            list-ref-safe nums j
                                           )
                                         )
                                       )
@@ -182,10 +187,8 @@
                                             )
                                           )
                                         )
-                                         (
-                                          quote (
-                                            
-                                          )
+                                         '(
+                                          
                                         )
                                       )
                                        (
@@ -213,10 +216,8 @@
                                     loop2
                                   )
                                 )
-                                 (
-                                  quote (
-                                    
-                                  )
+                                 '(
+                                  
                                 )
                               )
                             )
@@ -269,10 +270,8 @@
                   panic "case1"
                 )
               )
-               (
-                quote (
-                  
-                )
+               '(
+                
               )
             )
              (
@@ -294,10 +293,8 @@
                   panic "case2"
                 )
               )
-               (
-                quote (
-                  
-                )
+               '(
+                
               )
             )
              (
@@ -319,10 +316,8 @@
                   panic "case3"
                 )
               )
-               (
-                quote (
-                  
-                )
+               '(
+                
               )
             )
              (
@@ -344,10 +339,8 @@
                   panic "case4"
                 )
               )
-               (
-                quote (
-                  
-                )
+               '(
+                
               )
             )
              (
@@ -369,10 +362,8 @@
                   panic "case5"
                 )
               )
-               (
-                quote (
-                  
-                )
+               '(
+                
               )
             )
              (
@@ -394,10 +385,8 @@
                   panic "case6"
                 )
               )
-               (
-                quote (
-                  
-                )
+               '(
+                
               )
             )
              (
@@ -419,10 +408,8 @@
                   panic "case7"
                 )
               )
-               (
-                quote (
-                  
-                )
+               '(
+                
               )
             )
              (
@@ -444,10 +431,8 @@
                   panic "case8"
                 )
               )
-               (
-                quote (
-                  
-                )
+               '(
+                
               )
             )
           )

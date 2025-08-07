@@ -1,4 +1,4 @@
-;; Generated on 2025-08-07 14:14 +0700
+;; Generated on 2025-08-07 16:11 +0700
 (import (scheme base))
 (import (scheme time))
 (import (chibi string))
@@ -21,6 +21,10 @@
         ((null? x) "[]")
         ((string? x) (let ((out (open-output-string))) (json-write x out) (get-output-string out)))
         ((boolean? x) (if x "true" "false"))
+        ((number? x)
+         (if (integer? x)
+             (number->string (inexact->exact x))
+             (number->string x)))
         (else (number->string x))))
 (define (to-str-space x)
   (cond ((pair? x)
@@ -386,10 +390,8 @@
                                                     dfs grid visited new_row new_col
                                                   )
                                                 )
-                                                 (
-                                                  quote (
-                                                    
-                                                  )
+                                                 '(
+                                                  
                                                 )
                                               )
                                                (
@@ -405,10 +407,8 @@
                                         loop3
                                       )
                                     )
-                                     (
-                                      quote (
-                                        
-                                      )
+                                     '(
+                                      
                                     )
                                   )
                                 )
@@ -540,10 +540,8 @@
                                                                     loop8
                                                                   )
                                                                 )
-                                                                 (
-                                                                  quote (
-                                                                    
-                                                                  )
+                                                                 '(
+                                                                  
                                                                 )
                                                               )
                                                             )
@@ -575,10 +573,8 @@
                                             loop6
                                           )
                                         )
-                                         (
-                                          quote (
-                                            
-                                          )
+                                         '(
+                                          
                                         )
                                       )
                                     )
@@ -735,10 +731,8 @@
                                                                         )
                                                                       )
                                                                     )
-                                                                     (
-                                                                      quote (
-                                                                        
-                                                                      )
+                                                                     '(
+                                                                      
                                                                     )
                                                                   )
                                                                    (
@@ -750,10 +744,8 @@
                                                                     loop12
                                                                   )
                                                                 )
-                                                                 (
-                                                                  quote (
-                                                                    
-                                                                  )
+                                                                 '(
+                                                                  
                                                                 )
                                                               )
                                                             )
@@ -776,10 +768,8 @@
                                                 loop10
                                               )
                                             )
-                                             (
-                                              quote (
-                                                
-                                              )
+                                             '(
+                                              
                                             )
                                           )
                                         )

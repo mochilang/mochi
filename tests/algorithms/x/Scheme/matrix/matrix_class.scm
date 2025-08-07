@@ -1,4 +1,4 @@
-;; Generated on 2025-08-07 11:54 +0700
+;; Generated on 2025-08-07 16:11 +0700
 (import (scheme base))
 (import (scheme time))
 (import (chibi string))
@@ -21,6 +21,10 @@
         ((null? x) "[]")
         ((string? x) (let ((out (open-output-string))) (json-write x out) (get-output-string out)))
         ((boolean? x) (if x "true" "false"))
+        ((number? x)
+         (if (integer? x)
+             (number->string (inexact->exact x))
+             (number->string x)))
         (else (number->string x))))
 (define (to-str-space x)
   (cond ((pair? x)
@@ -31,7 +35,7 @@
 (define (lower s) (string-downcase s))
 (define (fmod a b) (- a (* (floor (/ a b)) b)))
 (define (_mod a b) (if (and (integer? a) (integer? b)) (modulo a b) (fmod a b)))
-(define (_div a b) (/ a b))
+(define (_div a b) (if (and (integer? a) (integer? b) (exact? a) (exact? b)) (quotient a b) (/ a b)))
 (define (_gt a b) (cond ((and (number? a) (number? b)) (> a b)) ((and (string? a) (string? b)) (string>? a b)) (else (> a b))))
 (define (_lt a b) (cond ((and (number? a) (number? b)) (< a b)) ((and (string? a) (string? b)) (string<? a b)) (else (< a b))))
 (define (_ge a b) (cond ((and (number? a) (number? b)) (>= a b)) ((and (string? a) (string? b)) (string>=? a b)) (else (>= a b))))
@@ -98,6 +102,7 @@
   (cond ((string? x) (string-length x))
         ((hash-table? x) (hash-table-size x))
         (else (length x))))
+(define (list-ref-safe lst idx) (if (and (integer? idx) (>= idx 0) (< idx (length lst))) (list-ref lst idx) '()))
 (
   let (
     (
@@ -153,10 +158,8 @@
                     )
                   )
                 )
-                 (
-                  quote (
-                    
-                  )
+                 '(
+                  
                 )
               )
                (
@@ -164,7 +167,7 @@
                   (
                     c (
                       _len (
-                        list-ref values 0
+                        list-ref-safe values 0
                       )
                     )
                   )
@@ -199,7 +202,7 @@
                                           not (
                                             equal? (
                                               _len (
-                                                list-ref values i
+                                                list-ref-safe values i
                                               )
                                             )
                                              c
@@ -224,10 +227,8 @@
                                             )
                                           )
                                         )
-                                         (
-                                          quote (
-                                            
-                                          )
+                                         '(
+                                          
                                         )
                                       )
                                        (
@@ -239,10 +240,8 @@
                                         loop2
                                       )
                                     )
-                                     (
-                                      quote (
-                                        
-                                      )
+                                     '(
+                                      
                                     )
                                   )
                                 )
@@ -364,7 +363,7 @@
                                                                   cond (
                                                                     (
                                                                       string? (
-                                                                        list-ref (
+                                                                        list-ref-safe (
                                                                           hash-table-ref m "data"
                                                                         )
                                                                          i
@@ -372,7 +371,7 @@
                                                                     )
                                                                      (
                                                                       _substring (
-                                                                        list-ref (
+                                                                        list-ref-safe (
                                                                           hash-table-ref m "data"
                                                                         )
                                                                          i
@@ -385,7 +384,7 @@
                                                                    (
                                                                     (
                                                                       hash-table? (
-                                                                        list-ref (
+                                                                        list-ref-safe (
                                                                           hash-table-ref m "data"
                                                                         )
                                                                          i
@@ -393,7 +392,7 @@
                                                                     )
                                                                      (
                                                                       hash-table-ref (
-                                                                        list-ref (
+                                                                        list-ref-safe (
                                                                           hash-table-ref m "data"
                                                                         )
                                                                          i
@@ -403,8 +402,8 @@
                                                                   )
                                                                    (
                                                                     else (
-                                                                      list-ref (
-                                                                        list-ref (
+                                                                      list-ref-safe (
+                                                                        list-ref-safe (
                                                                           hash-table-ref m "data"
                                                                         )
                                                                          i
@@ -425,10 +424,8 @@
                                                             loop7
                                                           )
                                                         )
-                                                         (
-                                                          quote (
-                                                            
-                                                          )
+                                                         '(
+                                                          
                                                         )
                                                       )
                                                     )
@@ -460,10 +457,8 @@
                                     loop5
                                   )
                                 )
-                                 (
-                                  quote (
-                                    
-                                  )
+                                 '(
+                                  
                                 )
                               )
                             )
@@ -594,10 +589,8 @@
                                                             loop12
                                                           )
                                                         )
-                                                         (
-                                                          quote (
-                                                            
-                                                          )
+                                                         '(
+                                                          
                                                         )
                                                       )
                                                     )
@@ -629,10 +622,8 @@
                                     loop10
                                   )
                                 )
-                                 (
-                                  quote (
-                                    
-                                  )
+                                 '(
+                                  
                                 )
                               )
                             )
@@ -770,7 +761,7 @@
                                                                           cond (
                                                                             (
                                                                               string? (
-                                                                                list-ref (
+                                                                                list-ref-safe (
                                                                                   hash-table-ref m "data"
                                                                                 )
                                                                                  i
@@ -778,7 +769,7 @@
                                                                             )
                                                                              (
                                                                               _substring (
-                                                                                list-ref (
+                                                                                list-ref-safe (
                                                                                   hash-table-ref m "data"
                                                                                 )
                                                                                  i
@@ -791,7 +782,7 @@
                                                                            (
                                                                             (
                                                                               hash-table? (
-                                                                                list-ref (
+                                                                                list-ref-safe (
                                                                                   hash-table-ref m "data"
                                                                                 )
                                                                                  i
@@ -799,7 +790,7 @@
                                                                             )
                                                                              (
                                                                               hash-table-ref (
-                                                                                list-ref (
+                                                                                list-ref-safe (
                                                                                   hash-table-ref m "data"
                                                                                 )
                                                                                  i
@@ -809,8 +800,8 @@
                                                                           )
                                                                            (
                                                                             else (
-                                                                              list-ref (
-                                                                                list-ref (
+                                                                              list-ref-safe (
+                                                                                list-ref-safe (
                                                                                   hash-table-ref m "data"
                                                                                 )
                                                                                  i
@@ -823,10 +814,8 @@
                                                                     )
                                                                   )
                                                                 )
-                                                                 (
-                                                                  quote (
-                                                                    
-                                                                  )
+                                                                 '(
+                                                                  
                                                                 )
                                                               )
                                                                (
@@ -838,10 +827,8 @@
                                                                 loop17
                                                               )
                                                             )
-                                                             (
-                                                              quote (
-                                                                
-                                                              )
+                                                             '(
+                                                              
                                                             )
                                                           )
                                                         )
@@ -865,10 +852,8 @@
                                         )
                                       )
                                     )
-                                     (
-                                      quote (
-                                        
-                                      )
+                                     '(
+                                      
                                     )
                                   )
                                    (
@@ -880,10 +865,8 @@
                                     loop15
                                   )
                                 )
-                                 (
-                                  quote (
-                                    
-                                  )
+                                 '(
+                                  
                                 )
                               )
                             )
@@ -971,10 +954,8 @@
                     ret19 minor
                   )
                 )
-                 (
-                  quote (
-                    
-                  )
+                 '(
+                  
                 )
               )
                (
@@ -1087,10 +1068,8 @@
                                                             loop23
                                                           )
                                                         )
-                                                         (
-                                                          quote (
-                                                            
-                                                          )
+                                                         '(
+                                                          
                                                         )
                                                       )
                                                     )
@@ -1122,10 +1101,8 @@
                                     loop21
                                   )
                                 )
-                                 (
-                                  quote (
-                                    
-                                  )
+                                 '(
+                                  
                                 )
                               )
                             )
@@ -1260,10 +1237,8 @@
                                                             loop28
                                                           )
                                                         )
-                                                         (
-                                                          quote (
-                                                            
-                                                          )
+                                                         '(
+                                                          
                                                         )
                                                       )
                                                     )
@@ -1295,10 +1270,8 @@
                                     loop26
                                   )
                                 )
-                                 (
-                                  quote (
-                                    
-                                  )
+                                 '(
+                                  
                                 )
                               )
                             )
@@ -1362,10 +1335,8 @@
                   ret30 0.0
                 )
               )
-               (
-                quote (
-                  
-                )
+               '(
+                
               )
             )
              (
@@ -1380,10 +1351,8 @@
                   ret30 0.0
                 )
               )
-               (
-                quote (
-                  
-                )
+               '(
+                
               )
             )
              (
@@ -1399,7 +1368,7 @@
                     cond (
                       (
                         string? (
-                          list-ref (
+                          list-ref-safe (
                             hash-table-ref m "data"
                           )
                            0
@@ -1407,7 +1376,7 @@
                       )
                        (
                         _substring (
-                          list-ref (
+                          list-ref-safe (
                             hash-table-ref m "data"
                           )
                            0
@@ -1420,7 +1389,7 @@
                      (
                       (
                         hash-table? (
-                          list-ref (
+                          list-ref-safe (
                             hash-table-ref m "data"
                           )
                            0
@@ -1428,7 +1397,7 @@
                       )
                        (
                         hash-table-ref (
-                          list-ref (
+                          list-ref-safe (
                             hash-table-ref m "data"
                           )
                            0
@@ -1438,8 +1407,8 @@
                     )
                      (
                       else (
-                        list-ref (
-                          list-ref (
+                        list-ref-safe (
+                          list-ref-safe (
                             hash-table-ref m "data"
                           )
                            0
@@ -1450,10 +1419,8 @@
                   )
                 )
               )
-               (
-                quote (
-                  
-                )
+               '(
+                
               )
             )
              (
@@ -1471,7 +1438,7 @@
                         cond (
                           (
                             string? (
-                              list-ref (
+                              list-ref-safe (
                                 hash-table-ref m "data"
                               )
                                0
@@ -1479,7 +1446,7 @@
                           )
                            (
                             _substring (
-                              list-ref (
+                              list-ref-safe (
                                 hash-table-ref m "data"
                               )
                                0
@@ -1492,7 +1459,7 @@
                          (
                           (
                             hash-table? (
-                              list-ref (
+                              list-ref-safe (
                                 hash-table-ref m "data"
                               )
                                0
@@ -1500,7 +1467,7 @@
                           )
                            (
                             hash-table-ref (
-                              list-ref (
+                              list-ref-safe (
                                 hash-table-ref m "data"
                               )
                                0
@@ -1510,8 +1477,8 @@
                         )
                          (
                           else (
-                            list-ref (
-                              list-ref (
+                            list-ref-safe (
+                              list-ref-safe (
                                 hash-table-ref m "data"
                               )
                                0
@@ -1524,7 +1491,7 @@
                         cond (
                           (
                             string? (
-                              list-ref (
+                              list-ref-safe (
                                 hash-table-ref m "data"
                               )
                                1
@@ -1532,7 +1499,7 @@
                           )
                            (
                             _substring (
-                              list-ref (
+                              list-ref-safe (
                                 hash-table-ref m "data"
                               )
                                1
@@ -1545,7 +1512,7 @@
                          (
                           (
                             hash-table? (
-                              list-ref (
+                              list-ref-safe (
                                 hash-table-ref m "data"
                               )
                                1
@@ -1553,7 +1520,7 @@
                           )
                            (
                             hash-table-ref (
-                              list-ref (
+                              list-ref-safe (
                                 hash-table-ref m "data"
                               )
                                1
@@ -1563,8 +1530,8 @@
                         )
                          (
                           else (
-                            list-ref (
-                              list-ref (
+                            list-ref-safe (
+                              list-ref-safe (
                                 hash-table-ref m "data"
                               )
                                1
@@ -1579,7 +1546,7 @@
                         cond (
                           (
                             string? (
-                              list-ref (
+                              list-ref-safe (
                                 hash-table-ref m "data"
                               )
                                0
@@ -1587,7 +1554,7 @@
                           )
                            (
                             _substring (
-                              list-ref (
+                              list-ref-safe (
                                 hash-table-ref m "data"
                               )
                                0
@@ -1600,7 +1567,7 @@
                          (
                           (
                             hash-table? (
-                              list-ref (
+                              list-ref-safe (
                                 hash-table-ref m "data"
                               )
                                0
@@ -1608,7 +1575,7 @@
                           )
                            (
                             hash-table-ref (
-                              list-ref (
+                              list-ref-safe (
                                 hash-table-ref m "data"
                               )
                                0
@@ -1618,8 +1585,8 @@
                         )
                          (
                           else (
-                            list-ref (
-                              list-ref (
+                            list-ref-safe (
+                              list-ref-safe (
                                 hash-table-ref m "data"
                               )
                                0
@@ -1632,7 +1599,7 @@
                         cond (
                           (
                             string? (
-                              list-ref (
+                              list-ref-safe (
                                 hash-table-ref m "data"
                               )
                                1
@@ -1640,7 +1607,7 @@
                           )
                            (
                             _substring (
-                              list-ref (
+                              list-ref-safe (
                                 hash-table-ref m "data"
                               )
                                1
@@ -1653,7 +1620,7 @@
                          (
                           (
                             hash-table? (
-                              list-ref (
+                              list-ref-safe (
                                 hash-table-ref m "data"
                               )
                                1
@@ -1661,7 +1628,7 @@
                           )
                            (
                             hash-table-ref (
-                              list-ref (
+                              list-ref-safe (
                                 hash-table-ref m "data"
                               )
                                1
@@ -1671,8 +1638,8 @@
                         )
                          (
                           else (
-                            list-ref (
-                              list-ref (
+                            list-ref-safe (
+                              list-ref-safe (
                                 hash-table-ref m "data"
                               )
                                1
@@ -1685,10 +1652,8 @@
                   )
                 )
               )
-               (
-                quote (
-                  
-                )
+               '(
+                
               )
             )
              (
@@ -1731,7 +1696,7 @@
                                             cond (
                                               (
                                                 string? (
-                                                  list-ref (
+                                                  list-ref-safe (
                                                     hash-table-ref m "data"
                                                   )
                                                    0
@@ -1739,7 +1704,7 @@
                                               )
                                                (
                                                 _substring (
-                                                  list-ref (
+                                                  list-ref-safe (
                                                     hash-table-ref m "data"
                                                   )
                                                    0
@@ -1752,7 +1717,7 @@
                                              (
                                               (
                                                 hash-table? (
-                                                  list-ref (
+                                                  list-ref-safe (
                                                     hash-table-ref m "data"
                                                   )
                                                    0
@@ -1760,7 +1725,7 @@
                                               )
                                                (
                                                 hash-table-ref (
-                                                  list-ref (
+                                                  list-ref-safe (
                                                     hash-table-ref m "data"
                                                   )
                                                    0
@@ -1770,8 +1735,8 @@
                                             )
                                              (
                                               else (
-                                                list-ref (
-                                                  list-ref (
+                                                list-ref-safe (
+                                                  list-ref-safe (
                                                     hash-table-ref m "data"
                                                   )
                                                    0
@@ -1795,10 +1760,8 @@
                                       loop31
                                     )
                                   )
-                                   (
-                                    quote (
-                                      
-                                    )
+                                   '(
+                                    
                                   )
                                 )
                               )
@@ -1968,7 +1931,7 @@
                                                                             )
                                                                              (
                                                                               else (
-                                                                                list-ref (
+                                                                                list-ref-safe (
                                                                                   hash-table-ref cof "data"
                                                                                 )
                                                                                  j
@@ -2008,7 +1971,7 @@
                                                                             )
                                                                              (
                                                                               else (
-                                                                                list-ref (
+                                                                                list-ref-safe (
                                                                                   hash-table-ref cof "data"
                                                                                 )
                                                                                  j
@@ -2053,7 +2016,7 @@
                                                                             )
                                                                              (
                                                                               else (
-                                                                                list-ref (
+                                                                                list-ref-safe (
                                                                                   hash-table-ref cof "data"
                                                                                 )
                                                                                  j
@@ -2093,7 +2056,7 @@
                                                                             )
                                                                              (
                                                                               else (
-                                                                                list-ref (
+                                                                                list-ref-safe (
                                                                                   hash-table-ref cof "data"
                                                                                 )
                                                                                  j
@@ -2105,7 +2068,7 @@
                                                                       )
                                                                        (
                                                                         else (
-                                                                          list-ref (
+                                                                          list-ref-safe (
                                                                             cond (
                                                                               (
                                                                                 string? (
@@ -2136,7 +2099,7 @@
                                                                             )
                                                                              (
                                                                               else (
-                                                                                list-ref (
+                                                                                list-ref-safe (
                                                                                   hash-table-ref cof "data"
                                                                                 )
                                                                                  j
@@ -2159,10 +2122,8 @@
                                                                 loop37
                                                               )
                                                             )
-                                                             (
-                                                              quote (
-                                                                
-                                                              )
+                                                             '(
+                                                              
                                                             )
                                                           )
                                                         )
@@ -2194,10 +2155,8 @@
                                         loop35
                                       )
                                     )
-                                     (
-                                      quote (
-                                        
-                                      )
+                                     '(
+                                      
                                     )
                                   )
                                 )
@@ -2278,10 +2237,8 @@
                     )
                   )
                 )
-                 (
-                  quote (
-                    
-                  )
+                 '(
+                  
                 )
               )
                (
@@ -2408,14 +2365,14 @@
                                       append newData (
                                         _list (
                                           append (
-                                            list-ref (
+                                            list-ref-safe (
                                               hash-table-ref m "data"
                                             )
                                              i
                                           )
                                            (
                                             _list (
-                                              list-ref col i
+                                              list-ref-safe col i
                                             )
                                           )
                                         )
@@ -2431,10 +2388,8 @@
                                     loop42
                                   )
                                 )
-                                 (
-                                  quote (
-                                    
-                                  )
+                                 '(
+                                  
                                 )
                               )
                             )
@@ -2562,7 +2517,7 @@
                                                                     cond (
                                                                       (
                                                                         string? (
-                                                                          list-ref (
+                                                                          list-ref-safe (
                                                                             hash-table-ref m "data"
                                                                           )
                                                                            i
@@ -2570,7 +2525,7 @@
                                                                       )
                                                                        (
                                                                         _substring (
-                                                                          list-ref (
+                                                                          list-ref-safe (
                                                                             hash-table-ref m "data"
                                                                           )
                                                                            i
@@ -2583,7 +2538,7 @@
                                                                      (
                                                                       (
                                                                         hash-table? (
-                                                                          list-ref (
+                                                                          list-ref-safe (
                                                                             hash-table-ref m "data"
                                                                           )
                                                                            i
@@ -2591,7 +2546,7 @@
                                                                       )
                                                                        (
                                                                         hash-table-ref (
-                                                                          list-ref (
+                                                                          list-ref-safe (
                                                                             hash-table-ref m "data"
                                                                           )
                                                                            i
@@ -2601,8 +2556,8 @@
                                                                     )
                                                                      (
                                                                       else (
-                                                                        list-ref (
-                                                                          list-ref (
+                                                                        list-ref-safe (
+                                                                          list-ref-safe (
                                                                             hash-table-ref m "data"
                                                                           )
                                                                            i
@@ -2625,10 +2580,8 @@
                                                             loop47
                                                           )
                                                         )
-                                                         (
-                                                          quote (
-                                                            
-                                                          )
+                                                         '(
+                                                          
                                                         )
                                                       )
                                                     )
@@ -2660,10 +2613,8 @@
                                     loop45
                                   )
                                 )
-                                 (
-                                  quote (
-                                    
-                                  )
+                                 '(
+                                  
                                 )
                               )
                             )
@@ -2772,10 +2723,8 @@
                   )
                 )
               )
-               (
-                quote (
-                  
-                )
+               '(
+                
               )
             )
              (
@@ -2856,7 +2805,7 @@
                                                                       cond (
                                                                         (
                                                                           string? (
-                                                                            list-ref (
+                                                                            list-ref-safe (
                                                                               hash-table-ref a "data"
                                                                             )
                                                                              i
@@ -2864,7 +2813,7 @@
                                                                         )
                                                                          (
                                                                           _substring (
-                                                                            list-ref (
+                                                                            list-ref-safe (
                                                                               hash-table-ref a "data"
                                                                             )
                                                                              i
@@ -2877,7 +2826,7 @@
                                                                        (
                                                                         (
                                                                           hash-table? (
-                                                                            list-ref (
+                                                                            list-ref-safe (
                                                                               hash-table-ref a "data"
                                                                             )
                                                                              i
@@ -2885,7 +2834,7 @@
                                                                         )
                                                                          (
                                                                           hash-table-ref (
-                                                                            list-ref (
+                                                                            list-ref-safe (
                                                                               hash-table-ref a "data"
                                                                             )
                                                                              i
@@ -2895,8 +2844,8 @@
                                                                       )
                                                                        (
                                                                         else (
-                                                                          list-ref (
-                                                                            list-ref (
+                                                                          list-ref-safe (
+                                                                            list-ref-safe (
                                                                               hash-table-ref a "data"
                                                                             )
                                                                              i
@@ -2909,7 +2858,7 @@
                                                                       cond (
                                                                         (
                                                                           string? (
-                                                                            list-ref (
+                                                                            list-ref-safe (
                                                                               hash-table-ref b "data"
                                                                             )
                                                                              i
@@ -2917,7 +2866,7 @@
                                                                         )
                                                                          (
                                                                           _substring (
-                                                                            list-ref (
+                                                                            list-ref-safe (
                                                                               hash-table-ref b "data"
                                                                             )
                                                                              i
@@ -2930,7 +2879,7 @@
                                                                        (
                                                                         (
                                                                           hash-table? (
-                                                                            list-ref (
+                                                                            list-ref-safe (
                                                                               hash-table-ref b "data"
                                                                             )
                                                                              i
@@ -2938,7 +2887,7 @@
                                                                         )
                                                                          (
                                                                           hash-table-ref (
-                                                                            list-ref (
+                                                                            list-ref-safe (
                                                                               hash-table-ref b "data"
                                                                             )
                                                                              i
@@ -2948,8 +2897,8 @@
                                                                       )
                                                                        (
                                                                         else (
-                                                                          list-ref (
-                                                                            list-ref (
+                                                                          list-ref-safe (
+                                                                            list-ref-safe (
                                                                               hash-table-ref b "data"
                                                                             )
                                                                              i
@@ -2971,10 +2920,8 @@
                                                               loop53
                                                             )
                                                           )
-                                                           (
-                                                            quote (
-                                                              
-                                                            )
+                                                           '(
+                                                            
                                                           )
                                                         )
                                                       )
@@ -3006,10 +2953,8 @@
                                       loop51
                                     )
                                   )
-                                   (
-                                    quote (
-                                      
-                                    )
+                                   '(
+                                    
                                   )
                                 )
                               )
@@ -3100,10 +3045,8 @@
                   )
                 )
               )
-               (
-                quote (
-                  
-                )
+               '(
+                
               )
             )
              (
@@ -3184,7 +3127,7 @@
                                                                       cond (
                                                                         (
                                                                           string? (
-                                                                            list-ref (
+                                                                            list-ref-safe (
                                                                               hash-table-ref a "data"
                                                                             )
                                                                              i
@@ -3192,7 +3135,7 @@
                                                                         )
                                                                          (
                                                                           _substring (
-                                                                            list-ref (
+                                                                            list-ref-safe (
                                                                               hash-table-ref a "data"
                                                                             )
                                                                              i
@@ -3205,7 +3148,7 @@
                                                                        (
                                                                         (
                                                                           hash-table? (
-                                                                            list-ref (
+                                                                            list-ref-safe (
                                                                               hash-table-ref a "data"
                                                                             )
                                                                              i
@@ -3213,7 +3156,7 @@
                                                                         )
                                                                          (
                                                                           hash-table-ref (
-                                                                            list-ref (
+                                                                            list-ref-safe (
                                                                               hash-table-ref a "data"
                                                                             )
                                                                              i
@@ -3223,8 +3166,8 @@
                                                                       )
                                                                        (
                                                                         else (
-                                                                          list-ref (
-                                                                            list-ref (
+                                                                          list-ref-safe (
+                                                                            list-ref-safe (
                                                                               hash-table-ref a "data"
                                                                             )
                                                                              i
@@ -3237,7 +3180,7 @@
                                                                       cond (
                                                                         (
                                                                           string? (
-                                                                            list-ref (
+                                                                            list-ref-safe (
                                                                               hash-table-ref b "data"
                                                                             )
                                                                              i
@@ -3245,7 +3188,7 @@
                                                                         )
                                                                          (
                                                                           _substring (
-                                                                            list-ref (
+                                                                            list-ref-safe (
                                                                               hash-table-ref b "data"
                                                                             )
                                                                              i
@@ -3258,7 +3201,7 @@
                                                                        (
                                                                         (
                                                                           hash-table? (
-                                                                            list-ref (
+                                                                            list-ref-safe (
                                                                               hash-table-ref b "data"
                                                                             )
                                                                              i
@@ -3266,7 +3209,7 @@
                                                                         )
                                                                          (
                                                                           hash-table-ref (
-                                                                            list-ref (
+                                                                            list-ref-safe (
                                                                               hash-table-ref b "data"
                                                                             )
                                                                              i
@@ -3276,8 +3219,8 @@
                                                                       )
                                                                        (
                                                                         else (
-                                                                          list-ref (
-                                                                            list-ref (
+                                                                          list-ref-safe (
+                                                                            list-ref-safe (
                                                                               hash-table-ref b "data"
                                                                             )
                                                                              i
@@ -3299,10 +3242,8 @@
                                                               loop58
                                                             )
                                                           )
-                                                           (
-                                                            quote (
-                                                              
-                                                            )
+                                                           '(
+                                                            
                                                           )
                                                         )
                                                       )
@@ -3334,10 +3275,8 @@
                                       loop56
                                     )
                                   )
-                                   (
-                                    quote (
-                                      
-                                    )
+                                   '(
+                                    
                                   )
                                 )
                               )
@@ -3422,10 +3361,10 @@
                                     set! sum (
                                       _add sum (
                                         * (
-                                          list-ref row i
+                                          list-ref-safe row i
                                         )
                                          (
-                                          list-ref col i
+                                          list-ref-safe col i
                                         )
                                       )
                                     )
@@ -3439,10 +3378,8 @@
                                     loop61
                                   )
                                 )
-                                 (
-                                  quote (
-                                    
-                                  )
+                                 '(
+                                  
                                 )
                               )
                             )
@@ -3504,10 +3441,8 @@
                   )
                 )
               )
-               (
-                quote (
-                  
-                )
+               '(
+                
               )
             )
              (
@@ -3594,7 +3529,7 @@
                                                                     append row (
                                                                       _list (
                                                                         matrix_dot (
-                                                                          list-ref (
+                                                                          list-ref-safe (
                                                                             hash-table-ref a "data"
                                                                           )
                                                                            i
@@ -3620,7 +3555,7 @@
                                                                           )
                                                                            (
                                                                             else (
-                                                                              list-ref bcols j
+                                                                              list-ref-safe bcols j
                                                                             )
                                                                           )
                                                                         )
@@ -3637,10 +3572,8 @@
                                                                   loop66
                                                                 )
                                                               )
-                                                               (
-                                                                quote (
-                                                                  
-                                                                )
+                                                               '(
+                                                                
                                                               )
                                                             )
                                                           )
@@ -3672,10 +3605,8 @@
                                           loop64
                                         )
                                       )
-                                       (
-                                        quote (
-                                          
-                                        )
+                                       '(
+                                        
                                       )
                                     )
                                   )
@@ -3737,10 +3668,8 @@
                   )
                 )
               )
-               (
-                quote (
-                  
-                )
+               '(
+                
               )
             )
              (
@@ -3764,10 +3693,8 @@
                       )
                     )
                   )
-                   (
-                    quote (
-                      
-                    )
+                   '(
+                    
                   )
                 )
                  (
@@ -3788,10 +3715,8 @@
                   )
                 )
               )
-               (
-                quote (
-                  
-                )
+               '(
+                
               )
             )
              (
@@ -3839,10 +3764,8 @@
                                       loop69
                                     )
                                   )
-                                   (
-                                    quote (
-                                      
-                                    )
+                                   '(
+                                    
                                   )
                                 )
                               )
@@ -3887,10 +3810,8 @@
                   ret71 "[]"
                 )
               )
-               (
-                quote (
-                  
-                )
+               '(
+                
               )
             )
              (
@@ -3964,7 +3885,7 @@
                                                                 cond (
                                                                   (
                                                                     string? (
-                                                                      list-ref (
+                                                                      list-ref-safe (
                                                                         hash-table-ref m "data"
                                                                       )
                                                                        i
@@ -3972,7 +3893,7 @@
                                                                   )
                                                                    (
                                                                     _substring (
-                                                                      list-ref (
+                                                                      list-ref-safe (
                                                                         hash-table-ref m "data"
                                                                       )
                                                                        i
@@ -3985,7 +3906,7 @@
                                                                  (
                                                                   (
                                                                     hash-table? (
-                                                                      list-ref (
+                                                                      list-ref-safe (
                                                                         hash-table-ref m "data"
                                                                       )
                                                                        i
@@ -3993,7 +3914,7 @@
                                                                   )
                                                                    (
                                                                     hash-table-ref (
-                                                                      list-ref (
+                                                                      list-ref-safe (
                                                                         hash-table-ref m "data"
                                                                       )
                                                                        i
@@ -4003,8 +3924,8 @@
                                                                 )
                                                                  (
                                                                   else (
-                                                                    list-ref (
-                                                                      list-ref (
+                                                                    list-ref-safe (
+                                                                      list-ref-safe (
                                                                         hash-table-ref m "data"
                                                                       )
                                                                        i
@@ -4032,10 +3953,8 @@
                                                               )
                                                             )
                                                           )
-                                                           (
-                                                            quote (
-                                                              
-                                                            )
+                                                           '(
+                                                            
                                                           )
                                                         )
                                                          (
@@ -4047,10 +3966,8 @@
                                                           loop74
                                                         )
                                                       )
-                                                       (
-                                                        quote (
-                                                          
-                                                        )
+                                                       '(
+                                                        
                                                       )
                                                     )
                                                   )
@@ -4083,10 +4000,8 @@
                                               )
                                             )
                                           )
-                                           (
-                                            quote (
-                                              
-                                            )
+                                           '(
+                                            
                                           )
                                         )
                                          (
@@ -4100,10 +4015,8 @@
                                       loop72
                                     )
                                   )
-                                   (
-                                    quote (
-                                      
-                                    )
+                                   '(
+                                    
                                   )
                                 )
                               )

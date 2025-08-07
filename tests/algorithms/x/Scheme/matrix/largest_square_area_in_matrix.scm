@@ -1,4 +1,4 @@
-;; Generated on 2025-08-07 11:54 +0700
+;; Generated on 2025-08-07 16:11 +0700
 (import (scheme base))
 (import (scheme time))
 (import (chibi string))
@@ -21,6 +21,10 @@
         ((null? x) "[]")
         ((string? x) (let ((out (open-output-string))) (json-write x out) (get-output-string out)))
         ((boolean? x) (if x "true" "false"))
+        ((number? x)
+         (if (integer? x)
+             (number->string (inexact->exact x))
+             (number->string x)))
         (else (number->string x))))
 (define (to-str-space x)
   (cond ((pair? x)
@@ -31,7 +35,7 @@
 (define (lower s) (string-downcase s))
 (define (fmod a b) (- a (* (floor (/ a b)) b)))
 (define (_mod a b) (if (and (integer? a) (integer? b)) (modulo a b) (fmod a b)))
-(define (_div a b) (/ a b))
+(define (_div a b) (if (and (integer? a) (integer? b) (exact? a) (exact? b)) (quotient a b) (/ a b)))
 (define (_gt a b) (cond ((and (number? a) (number? b)) (> a b)) ((and (string? a) (string? b)) (string>? a b)) (else (> a b))))
 (define (_lt a b) (cond ((and (number? a) (number? b)) (< a b)) ((and (string? a) (string? b)) (string<? a b)) (else (< a b))))
 (define (_ge a b) (cond ((and (number? a) (number? b)) (>= a b)) ((and (string? a) (string? b)) (string>=? a b)) (else (>= a b))))
@@ -98,6 +102,7 @@
   (cond ((string? x) (string-length x))
         ((hash-table? x) (hash-table-size x))
         (else (length x))))
+(define (list-ref-safe lst idx) (if (and (integer? idx) (>= idx 0) (< idx (length lst))) (list-ref lst idx) '()))
 (
   let (
     (
@@ -136,10 +141,8 @@
                   ret1 0
                 )
               )
-               (
-                quote (
-                  
-                )
+               '(
+                
               )
             )
              (
@@ -187,12 +190,12 @@
                               cond (
                                 (
                                   string? (
-                                    list-ref mat row
+                                    list-ref-safe mat row
                                   )
                                 )
                                  (
                                   _substring (
-                                    list-ref mat row
+                                    list-ref-safe mat row
                                   )
                                    col (
                                     + col 1
@@ -202,20 +205,20 @@
                                (
                                 (
                                   hash-table? (
-                                    list-ref mat row
+                                    list-ref-safe mat row
                                   )
                                 )
                                  (
                                   hash-table-ref (
-                                    list-ref mat row
+                                    list-ref-safe mat row
                                   )
                                    col
                                 )
                               )
                                (
                                 else (
-                                  list-ref (
-                                    list-ref mat row
+                                  list-ref-safe (
+                                    list-ref-safe mat row
                                   )
                                    col
                                 )
@@ -240,7 +243,7 @@
                                 begin (
                                   if (
                                     _gt sub (
-                                      list-ref largest_square_area 0
+                                      list-ref-safe largest_square_area 0
                                     )
                                   )
                                    (
@@ -248,10 +251,8 @@
                                       list-set! largest_square_area 0 sub
                                     )
                                   )
-                                   (
-                                    quote (
-                                      
-                                    )
+                                   '(
+                                    
                                   )
                                 )
                                  (
@@ -299,7 +300,7 @@
               )
                (
                 ret2 (
-                  list-ref largest 0
+                  list-ref-safe largest 0
                 )
               )
             )
@@ -331,10 +332,8 @@
                   ret3 0
                 )
               )
-               (
-                quote (
-                  
-                )
+               '(
+                
               )
             )
              (
@@ -344,12 +343,12 @@
                     cond (
                       (
                         string? (
-                          list-ref dp_array row
+                          list-ref-safe dp_array row
                         )
                       )
                        (
                         _substring (
-                          list-ref dp_array row
+                          list-ref-safe dp_array row
                         )
                          col (
                           + col 1
@@ -359,20 +358,20 @@
                      (
                       (
                         hash-table? (
-                          list-ref dp_array row
+                          list-ref-safe dp_array row
                         )
                       )
                        (
                         hash-table-ref (
-                          list-ref dp_array row
+                          list-ref-safe dp_array row
                         )
                          col
                       )
                     )
                      (
                       else (
-                        list-ref (
-                          list-ref dp_array row
+                        list-ref-safe (
+                          list-ref-safe dp_array row
                         )
                          col
                       )
@@ -389,12 +388,12 @@
                     cond (
                       (
                         string? (
-                          list-ref dp_array row
+                          list-ref-safe dp_array row
                         )
                       )
                        (
                         _substring (
-                          list-ref dp_array row
+                          list-ref-safe dp_array row
                         )
                          col (
                           + col 1
@@ -404,20 +403,20 @@
                      (
                       (
                         hash-table? (
-                          list-ref dp_array row
+                          list-ref-safe dp_array row
                         )
                       )
                        (
                         hash-table-ref (
-                          list-ref dp_array row
+                          list-ref-safe dp_array row
                         )
                          col
                       )
                     )
                      (
                       else (
-                        list-ref (
-                          list-ref dp_array row
+                        list-ref-safe (
+                          list-ref-safe dp_array row
                         )
                          col
                       )
@@ -425,10 +424,8 @@
                   )
                 )
               )
-               (
-                quote (
-                  
-                )
+               '(
+                
               )
             )
              (
@@ -476,12 +473,12 @@
                               cond (
                                 (
                                   string? (
-                                    list-ref mat row
+                                    list-ref-safe mat row
                                   )
                                 )
                                  (
                                   _substring (
-                                    list-ref mat row
+                                    list-ref-safe mat row
                                   )
                                    col (
                                     + col 1
@@ -491,20 +488,20 @@
                                (
                                 (
                                   hash-table? (
-                                    list-ref mat row
+                                    list-ref-safe mat row
                                   )
                                 )
                                  (
                                   hash-table-ref (
-                                    list-ref mat row
+                                    list-ref-safe mat row
                                   )
                                    col
                                 )
                               )
                                (
                                 else (
-                                  list-ref (
-                                    list-ref mat row
+                                  list-ref-safe (
+                                    list-ref-safe mat row
                                   )
                                    col
                                 )
@@ -529,7 +526,7 @@
                                 begin (
                                   if (
                                     _gt sub (
-                                      list-ref largest_square_area 0
+                                      list-ref-safe largest_square_area 0
                                     )
                                   )
                                    (
@@ -537,15 +534,13 @@
                                       list-set! largest_square_area 0 sub
                                     )
                                   )
-                                   (
-                                    quote (
-                                      
-                                    )
+                                   '(
+                                    
                                   )
                                 )
                                  (
                                   list-set! (
-                                    list-ref dp_array row
+                                    list-ref-safe dp_array row
                                   )
                                    col sub
                                 )
@@ -558,7 +553,7 @@
                            (
                             begin (
                               list-set! (
-                                list-ref dp_array row
+                                list-ref-safe dp_array row
                               )
                                col 0
                             )
@@ -679,10 +674,8 @@
                                                                 loop7
                                                               )
                                                             )
-                                                             (
-                                                              quote (
-                                                                
-                                                              )
+                                                             '(
+                                                              
                                                             )
                                                           )
                                                         )
@@ -714,10 +707,8 @@
                                         loop5
                                       )
                                     )
-                                     (
-                                      quote (
-                                        
-                                      )
+                                     '(
+                                      
                                     )
                                   )
                                 )
@@ -734,7 +725,7 @@
                       )
                        (
                         ret4 (
-                          list-ref largest 0
+                          list-ref-safe largest 0
                         )
                       )
                     )
@@ -837,10 +828,8 @@
                                                             loop12
                                                           )
                                                         )
-                                                         (
-                                                          quote (
-                                                            
-                                                          )
+                                                         '(
+                                                          
                                                         )
                                                       )
                                                     )
@@ -872,10 +861,8 @@
                                     loop10
                                   )
                                 )
-                                 (
-                                  quote (
-                                    
-                                  )
+                                 '(
+                                  
                                 )
                               )
                             )
@@ -953,12 +940,12 @@
                                                                       cond (
                                                                         (
                                                                           string? (
-                                                                            list-ref dp_array row
+                                                                            list-ref-safe dp_array row
                                                                           )
                                                                         )
                                                                          (
                                                                           _substring (
-                                                                            list-ref dp_array row
+                                                                            list-ref-safe dp_array row
                                                                           )
                                                                            (
                                                                             + col 1
@@ -974,12 +961,12 @@
                                                                        (
                                                                         (
                                                                           hash-table? (
-                                                                            list-ref dp_array row
+                                                                            list-ref-safe dp_array row
                                                                           )
                                                                         )
                                                                          (
                                                                           hash-table-ref (
-                                                                            list-ref dp_array row
+                                                                            list-ref-safe dp_array row
                                                                           )
                                                                            (
                                                                             + col 1
@@ -988,8 +975,8 @@
                                                                       )
                                                                        (
                                                                         else (
-                                                                          list-ref (
-                                                                            list-ref dp_array row
+                                                                          list-ref-safe (
+                                                                            list-ref-safe dp_array row
                                                                           )
                                                                            (
                                                                             + col 1
@@ -1007,14 +994,14 @@
                                                                           cond (
                                                                             (
                                                                               string? (
-                                                                                list-ref dp_array (
+                                                                                list-ref-safe dp_array (
                                                                                   + row 1
                                                                                 )
                                                                               )
                                                                             )
                                                                              (
                                                                               _substring (
-                                                                                list-ref dp_array (
+                                                                                list-ref-safe dp_array (
                                                                                   + row 1
                                                                                 )
                                                                               )
@@ -1032,14 +1019,14 @@
                                                                            (
                                                                             (
                                                                               hash-table? (
-                                                                                list-ref dp_array (
+                                                                                list-ref-safe dp_array (
                                                                                   + row 1
                                                                                 )
                                                                               )
                                                                             )
                                                                              (
                                                                               hash-table-ref (
-                                                                                list-ref dp_array (
+                                                                                list-ref-safe dp_array (
                                                                                   + row 1
                                                                                 )
                                                                               )
@@ -1050,8 +1037,8 @@
                                                                           )
                                                                            (
                                                                             else (
-                                                                              list-ref (
-                                                                                list-ref dp_array (
+                                                                              list-ref-safe (
+                                                                                list-ref-safe dp_array (
                                                                                   + row 1
                                                                                 )
                                                                               )
@@ -1071,14 +1058,14 @@
                                                                               cond (
                                                                                 (
                                                                                   string? (
-                                                                                    list-ref dp_array (
+                                                                                    list-ref-safe dp_array (
                                                                                       + row 1
                                                                                     )
                                                                                   )
                                                                                 )
                                                                                  (
                                                                                   _substring (
-                                                                                    list-ref dp_array (
+                                                                                    list-ref-safe dp_array (
                                                                                       + row 1
                                                                                     )
                                                                                   )
@@ -1090,14 +1077,14 @@
                                                                                (
                                                                                 (
                                                                                   hash-table? (
-                                                                                    list-ref dp_array (
+                                                                                    list-ref-safe dp_array (
                                                                                       + row 1
                                                                                     )
                                                                                   )
                                                                                 )
                                                                                  (
                                                                                   hash-table-ref (
-                                                                                    list-ref dp_array (
+                                                                                    list-ref-safe dp_array (
                                                                                       + row 1
                                                                                     )
                                                                                   )
@@ -1106,8 +1093,8 @@
                                                                               )
                                                                                (
                                                                                 else (
-                                                                                  list-ref (
-                                                                                    list-ref dp_array (
+                                                                                  list-ref-safe (
+                                                                                    list-ref-safe dp_array (
                                                                                       + row 1
                                                                                     )
                                                                                   )
@@ -1124,12 +1111,12 @@
                                                                                 cond (
                                                                                   (
                                                                                     string? (
-                                                                                      list-ref mat row
+                                                                                      list-ref-safe mat row
                                                                                     )
                                                                                   )
                                                                                    (
                                                                                     _substring (
-                                                                                      list-ref mat row
+                                                                                      list-ref-safe mat row
                                                                                     )
                                                                                      col (
                                                                                       + col 1
@@ -1139,20 +1126,20 @@
                                                                                  (
                                                                                   (
                                                                                     hash-table? (
-                                                                                      list-ref mat row
+                                                                                      list-ref-safe mat row
                                                                                     )
                                                                                   )
                                                                                    (
                                                                                     hash-table-ref (
-                                                                                      list-ref mat row
+                                                                                      list-ref-safe mat row
                                                                                     )
                                                                                      col
                                                                                   )
                                                                                 )
                                                                                  (
                                                                                   else (
-                                                                                    list-ref (
-                                                                                      list-ref mat row
+                                                                                    list-ref-safe (
+                                                                                      list-ref-safe mat row
                                                                                     )
                                                                                      col
                                                                                   )
@@ -1176,7 +1163,7 @@
                                                                                  (
                                                                                   begin (
                                                                                     list-set! (
-                                                                                      list-ref dp_array row
+                                                                                      list-ref-safe dp_array row
                                                                                     )
                                                                                      col value
                                                                                   )
@@ -1189,10 +1176,8 @@
                                                                                         set! largest value
                                                                                       )
                                                                                     )
-                                                                                     (
-                                                                                      quote (
-                                                                                        
-                                                                                      )
+                                                                                     '(
+                                                                                      
                                                                                     )
                                                                                   )
                                                                                 )
@@ -1201,7 +1186,7 @@
                                                                              (
                                                                               begin (
                                                                                 list-set! (
-                                                                                  list-ref dp_array row
+                                                                                  list-ref-safe dp_array row
                                                                                 )
                                                                                  col 0
                                                                               )
@@ -1222,10 +1207,8 @@
                                                                 loop16
                                                               )
                                                             )
-                                                             (
-                                                              quote (
-                                                                
-                                                              )
+                                                             '(
+                                                              
                                                             )
                                                           )
                                                         )
@@ -1248,10 +1231,8 @@
                                             loop14
                                           )
                                         )
-                                         (
-                                          quote (
-                                            
-                                          )
+                                         '(
+                                          
                                         )
                                       )
                                     )
@@ -1335,10 +1316,8 @@
                                     loop19
                                   )
                                 )
-                                 (
-                                  quote (
-                                    
-                                  )
+                                 '(
+                                  
                                 )
                               )
                             )
@@ -1399,10 +1378,8 @@
                                             loop21
                                           )
                                         )
-                                         (
-                                          quote (
-                                            
-                                          )
+                                         '(
+                                          
                                         )
                                       )
                                     )
@@ -1477,7 +1454,7 @@
                                                                         let (
                                                                           (
                                                                             right (
-                                                                              list-ref current_row (
+                                                                              list-ref-safe current_row (
                                                                                 + col 1
                                                                               )
                                                                             )
@@ -1488,7 +1465,7 @@
                                                                             let (
                                                                               (
                                                                                 diagonal (
-                                                                                  list-ref next_row (
+                                                                                  list-ref-safe next_row (
                                                                                     + col 1
                                                                                   )
                                                                                 )
@@ -1499,7 +1476,7 @@
                                                                                 let (
                                                                                   (
                                                                                     bottom (
-                                                                                      list-ref next_row col
+                                                                                      list-ref-safe next_row col
                                                                                     )
                                                                                   )
                                                                                 )
@@ -1510,12 +1487,12 @@
                                                                                         cond (
                                                                                           (
                                                                                             string? (
-                                                                                              list-ref mat row
+                                                                                              list-ref-safe mat row
                                                                                             )
                                                                                           )
                                                                                            (
                                                                                             _substring (
-                                                                                              list-ref mat row
+                                                                                              list-ref-safe mat row
                                                                                             )
                                                                                              col (
                                                                                               + col 1
@@ -1525,20 +1502,20 @@
                                                                                          (
                                                                                           (
                                                                                             hash-table? (
-                                                                                              list-ref mat row
+                                                                                              list-ref-safe mat row
                                                                                             )
                                                                                           )
                                                                                            (
                                                                                             hash-table-ref (
-                                                                                              list-ref mat row
+                                                                                              list-ref-safe mat row
                                                                                             )
                                                                                              col
                                                                                           )
                                                                                         )
                                                                                          (
                                                                                           else (
-                                                                                            list-ref (
-                                                                                              list-ref mat row
+                                                                                            list-ref-safe (
+                                                                                              list-ref-safe mat row
                                                                                             )
                                                                                              col
                                                                                           )
@@ -1572,10 +1549,8 @@
                                                                                                 set! largest value
                                                                                               )
                                                                                             )
-                                                                                             (
-                                                                                              quote (
-                                                                                                
-                                                                                              )
+                                                                                             '(
+                                                                                              
                                                                                             )
                                                                                           )
                                                                                         )
@@ -1602,10 +1577,8 @@
                                                                         loop25
                                                                       )
                                                                     )
-                                                                     (
-                                                                      quote (
-                                                                        
-                                                                      )
+                                                                     '(
+                                                                      
                                                                     )
                                                                   )
                                                                 )
@@ -1665,10 +1638,8 @@
                                                                             loop27
                                                                           )
                                                                         )
-                                                                         (
-                                                                          quote (
-                                                                            
-                                                                          )
+                                                                         '(
+                                                                          
                                                                         )
                                                                       )
                                                                     )
@@ -1693,10 +1664,8 @@
                                                     loop23
                                                   )
                                                 )
-                                                 (
-                                                  quote (
-                                                    
-                                                  )
+                                                 '(
+                                                  
                                                 )
                                               )
                                             )

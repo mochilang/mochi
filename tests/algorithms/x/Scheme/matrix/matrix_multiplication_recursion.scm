@@ -1,4 +1,4 @@
-;; Generated on 2025-08-07 11:54 +0700
+;; Generated on 2025-08-07 16:11 +0700
 (import (scheme base))
 (import (scheme time))
 (import (chibi string))
@@ -21,6 +21,10 @@
         ((null? x) "[]")
         ((string? x) (let ((out (open-output-string))) (json-write x out) (get-output-string out)))
         ((boolean? x) (if x "true" "false"))
+        ((number? x)
+         (if (integer? x)
+             (number->string (inexact->exact x))
+             (number->string x)))
         (else (number->string x))))
 (define (to-str-space x)
   (cond ((pair? x)
@@ -31,7 +35,7 @@
 (define (lower s) (string-downcase s))
 (define (fmod a b) (- a (* (floor (/ a b)) b)))
 (define (_mod a b) (if (and (integer? a) (integer? b)) (modulo a b) (fmod a b)))
-(define (_div a b) (/ a b))
+(define (_div a b) (if (and (integer? a) (integer? b) (exact? a) (exact? b)) (quotient a b) (/ a b)))
 (define (_gt a b) (cond ((and (number? a) (number? b)) (> a b)) ((and (string? a) (string? b)) (string>? a b)) (else (> a b))))
 (define (_lt a b) (cond ((and (number? a) (number? b)) (< a b)) ((and (string? a) (string? b)) (string<? a b)) (else (< a b))))
 (define (_ge a b) (cond ((and (number? a) (number? b)) (>= a b)) ((and (string? a) (string? b)) (string>=? a b)) (else (>= a b))))
@@ -98,6 +102,7 @@
   (cond ((string? x) (string-length x))
         ((hash-table? x) (hash-table-size x))
         (else (length x))))
+(define (list-ref-safe lst idx) (if (and (integer? idx) (>= idx 0) (< idx (length lst))) (list-ref lst idx) '()))
 (
   let (
     (
@@ -159,7 +164,7 @@
                                       not (
                                         equal? (
                                           _len (
-                                            list-ref matrix i
+                                            list-ref-safe matrix i
                                           )
                                         )
                                          n
@@ -170,10 +175,8 @@
                                         ret1 #f
                                       )
                                     )
-                                     (
-                                      quote (
-                                        
-                                      )
+                                     '(
+                                      
                                     )
                                   )
                                    (
@@ -185,10 +188,8 @@
                                     loop2
                                   )
                                 )
-                                 (
-                                  quote (
-                                    
-                                  )
+                                 '(
+                                  
                                 )
                               )
                             )
@@ -233,7 +234,7 @@
                   (
                     cols (
                       _len (
-                        list-ref b 0
+                        list-ref-safe b 0
                       )
                     )
                   )
@@ -352,12 +353,12 @@
                                                                                                       cond (
                                                                                                         (
                                                                                                           string? (
-                                                                                                            list-ref a i
+                                                                                                            list-ref-safe a i
                                                                                                           )
                                                                                                         )
                                                                                                          (
                                                                                                           _substring (
-                                                                                                            list-ref a i
+                                                                                                            list-ref-safe a i
                                                                                                           )
                                                                                                            k (
                                                                                                             + k 1
@@ -367,20 +368,20 @@
                                                                                                        (
                                                                                                         (
                                                                                                           hash-table? (
-                                                                                                            list-ref a i
+                                                                                                            list-ref-safe a i
                                                                                                           )
                                                                                                         )
                                                                                                          (
                                                                                                           hash-table-ref (
-                                                                                                            list-ref a i
+                                                                                                            list-ref-safe a i
                                                                                                           )
                                                                                                            k
                                                                                                         )
                                                                                                       )
                                                                                                        (
                                                                                                         else (
-                                                                                                          list-ref (
-                                                                                                            list-ref a i
+                                                                                                          list-ref-safe (
+                                                                                                            list-ref-safe a i
                                                                                                           )
                                                                                                            k
                                                                                                         )
@@ -390,12 +391,12 @@
                                                                                                       cond (
                                                                                                         (
                                                                                                           string? (
-                                                                                                            list-ref b k
+                                                                                                            list-ref-safe b k
                                                                                                           )
                                                                                                         )
                                                                                                          (
                                                                                                           _substring (
-                                                                                                            list-ref b k
+                                                                                                            list-ref-safe b k
                                                                                                           )
                                                                                                            j (
                                                                                                             + j 1
@@ -405,20 +406,20 @@
                                                                                                        (
                                                                                                         (
                                                                                                           hash-table? (
-                                                                                                            list-ref b k
+                                                                                                            list-ref-safe b k
                                                                                                           )
                                                                                                         )
                                                                                                          (
                                                                                                           hash-table-ref (
-                                                                                                            list-ref b k
+                                                                                                            list-ref-safe b k
                                                                                                           )
                                                                                                            j
                                                                                                         )
                                                                                                       )
                                                                                                        (
                                                                                                         else (
-                                                                                                          list-ref (
-                                                                                                            list-ref b k
+                                                                                                          list-ref-safe (
+                                                                                                            list-ref-safe b k
                                                                                                           )
                                                                                                            j
                                                                                                         )
@@ -436,10 +437,8 @@
                                                                                                 loop9
                                                                                               )
                                                                                             )
-                                                                                             (
-                                                                                              quote (
-                                                                                                
-                                                                                              )
+                                                                                             '(
+                                                                                              
                                                                                             )
                                                                                           )
                                                                                         )
@@ -471,10 +470,8 @@
                                                                         loop7
                                                                       )
                                                                     )
-                                                                     (
-                                                                      quote (
-                                                                        
-                                                                      )
+                                                                     '(
+                                                                      
                                                                     )
                                                                   )
                                                                 )
@@ -506,10 +503,8 @@
                                                 loop5
                                               )
                                             )
-                                             (
-                                              quote (
-                                                
-                                              )
+                                             '(
+                                              
                                             )
                                           )
                                         )
@@ -553,17 +548,13 @@
               )
                (
                 begin (
-                  ret11 (
-                    quote (
-                      
-                    )
+                  ret11 '(
+                    
                   )
                 )
               )
-               (
-                quote (
-                  
-                )
+               '(
+                
               )
             )
              (
@@ -578,17 +569,13 @@
                    0 0 a b result n m
                 )
                  (
-                  ret11 (
-                    quote (
-                      
-                    )
+                  ret11 '(
+                    
                   )
                 )
               )
-               (
-                quote (
-                  
-                )
+               '(
+                
               )
             )
              (
@@ -605,34 +592,30 @@
                    0 a b result n m
                 )
                  (
-                  ret11 (
-                    quote (
-                      
-                    )
+                  ret11 '(
+                    
                   )
                 )
               )
-               (
-                quote (
-                  
-                )
+               '(
+                
               )
             )
              (
               list-set! (
-                list-ref result i
+                list-ref-safe result i
               )
                j (
                 + (
                   cond (
                     (
                       string? (
-                        list-ref result i
+                        list-ref-safe result i
                       )
                     )
                      (
                       _substring (
-                        list-ref result i
+                        list-ref-safe result i
                       )
                        j (
                         + j 1
@@ -642,20 +625,20 @@
                    (
                     (
                       hash-table? (
-                        list-ref result i
+                        list-ref-safe result i
                       )
                     )
                      (
                       hash-table-ref (
-                        list-ref result i
+                        list-ref-safe result i
                       )
                        j
                     )
                   )
                    (
                     else (
-                      list-ref (
-                        list-ref result i
+                      list-ref-safe (
+                        list-ref-safe result i
                       )
                        j
                     )
@@ -666,12 +649,12 @@
                     cond (
                       (
                         string? (
-                          list-ref a i
+                          list-ref-safe a i
                         )
                       )
                        (
                         _substring (
-                          list-ref a i
+                          list-ref-safe a i
                         )
                          k (
                           + k 1
@@ -681,20 +664,20 @@
                      (
                       (
                         hash-table? (
-                          list-ref a i
+                          list-ref-safe a i
                         )
                       )
                        (
                         hash-table-ref (
-                          list-ref a i
+                          list-ref-safe a i
                         )
                          k
                       )
                     )
                      (
                       else (
-                        list-ref (
-                          list-ref a i
+                        list-ref-safe (
+                          list-ref-safe a i
                         )
                          k
                       )
@@ -704,12 +687,12 @@
                     cond (
                       (
                         string? (
-                          list-ref b k
+                          list-ref-safe b k
                         )
                       )
                        (
                         _substring (
-                          list-ref b k
+                          list-ref-safe b k
                         )
                          j (
                           + j 1
@@ -719,20 +702,20 @@
                      (
                       (
                         hash-table? (
-                          list-ref b k
+                          list-ref-safe b k
                         )
                       )
                        (
                         hash-table-ref (
-                          list-ref b k
+                          list-ref-safe b k
                         )
                          j
                       )
                     )
                      (
                       else (
-                        list-ref (
-                          list-ref b k
+                        list-ref-safe (
+                          list-ref-safe b k
                         )
                          j
                       )
@@ -783,10 +766,8 @@
                   )
                 )
               )
-               (
-                quote (
-                  
-                )
+               '(
+                
               )
             )
              (
@@ -819,10 +800,8 @@
                   panic "Invalid matrix dimensions"
                 )
               )
-               (
-                quote (
-                  
-                )
+               '(
+                
               )
             )
              (
@@ -839,7 +818,7 @@
                     (
                       m (
                         _len (
-                          list-ref b 0
+                          list-ref-safe b 0
                         )
                       )
                     )
@@ -927,10 +906,8 @@
                                                                       loop15
                                                                     )
                                                                   )
-                                                                   (
-                                                                    quote (
-                                                                      
-                                                                    )
+                                                                   '(
+                                                                    
                                                                   )
                                                                 )
                                                               )
@@ -962,10 +939,8 @@
                                               loop13
                                             )
                                           )
-                                           (
-                                            quote (
-                                              
-                                            )
+                                           '(
+                                            
                                           )
                                         )
                                       )
