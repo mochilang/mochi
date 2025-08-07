@@ -1,0 +1,12 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/lucas_series.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+1
+15127
+2
+11
+1
+15127
+2
+167761

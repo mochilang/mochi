@@ -54,7 +54,7 @@ var mochiLexer = lexer.MustSimple([]lexer.SimpleRule{
 	// minus is parsed separately as an operator. This allows
 	// expressions like `len(list)-1` inside index operations to
 	// parse correctly.
-	{Name: "Float", Pattern: `\d+\.\d+`},
+	{Name: "Float", Pattern: `\d+\.\d+(?:[eE][+-]?\d+)?|\d+[eE][+-]?\d+`},
 	{Name: "Int", Pattern: `0[xX][0-9a-fA-F]+|0[bB][01]+|0[oO][0-7]+|\d+`},
 	{Name: "String", Pattern: `"(?:\\.|[^"\\])*"`},
 	{Name: "Punct", Pattern: `==|!=|<=|>=|&&|\|\||=>|:-|\.\.|[-+*/%=<>!|{}\[\](),.:]`},

@@ -1,0 +1,7 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/line_length.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+1.4142135623730947
+9.999999999999977
+14.78942783008959

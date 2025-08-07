@@ -1,6 +1,0 @@
-run: exit status 127
-/workspace/mochi/tests/algorithms/x/Erlang/machine_learning/k_nearest_neighbours.erl:147:17: variable 'E18' is unbound
-%  147|             _ = E18,
-%     |                 ^
-
-escript: There were compilation errors.
