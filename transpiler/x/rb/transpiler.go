@@ -4391,21 +4391,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("concat expects 2 args")
 			}
 			return &BinaryExpr{Op: "+", Left: args[0], Right: args[1]}, nil
-		case "substring":
-			if len(args) != 3 {
-				return nil, fmt.Errorf("substring expects 3 args")
+		case "substring", "substr", "slice":
+			if len(args) < 2 || len(args) > 3 {
+				return nil, fmt.Errorf("%s expects 2 or 3 args", name)
 			}
-			return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
-		case "substr":
-			if len(args) != 3 {
-				return nil, fmt.Errorf("substr expects 3 args")
+			var end Expr
+			if len(args) == 3 {
+				end = args[2]
 			}
-			return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
-		case "slice":
-			if len(args) != 3 {
-				return nil, fmt.Errorf("slice expects 3 args")
-			}
-			return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
+			return &SliceExpr{Target: args[0], Start: args[1], End: end}, nil
 		case "upper":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("upper expects 1 arg")
