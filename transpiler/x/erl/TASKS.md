@@ -1,3 +1,215 @@
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 15:40 +0700)
+- ex transpiler: handle global var mutations (c3816b866e)
+- Regenerated golden files - 103/105 vm valid programs passing
+
 ## Progress (2025-08-07 09:56 +0700)
 - transpiler/ex: support list concat builtin (cf9c8584f7)
 - Regenerated golden files - 103/105 vm valid programs passing

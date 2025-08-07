@@ -1,0 +1,11 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/numerical_analysis/integration_by_simpson_approx.erl:39:1: Warning: function mochi_nth/2 is unused
+%   39| mochi_nth(I, L) ->
+%     | ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/maths/numerical_analysis/integration_by_simpson_approx.erl:108:24: Warning: ambiguous call of overridden auto-imported BIF floor/1 --
+use erlang:floor/1 or "-compile({no_auto_import,[floor/1]})." to resolve name clash
+%  108|         mochi_safe_div(floor((mochi_safe_mul(X_2, M) + 0.5)), M)
+%     |                        ^
+
+2.333
+-2.8

@@ -1,0 +1,8 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/series/arithmetic.erl:52:1: Warning: function mochi_safe_mul/2 is unused
+%   52| mochi_safe_mul(A, B) ->
+%     | ^
+
+true
+false
+4
+7.5

@@ -1,0 +1,5 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/pi_monte_carlo_estimation.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+"An estimate of PI is 3.1356 with an error of 0.005992653589792951"

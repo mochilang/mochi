@@ -1,0 +1,14 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/series/geometric_series.erl:39:1: Warning: function mochi_nth/2 is unused
+%   39| mochi_nth(I, L) ->
+%     | ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/maths/series/geometric_series.erl:65:1: Warning: function mochi_safe_div/2 is unused
+%   65| mochi_safe_div(A, B) ->
+%     | ^
+
+[2.0, 4.0, 8.0, 16.0]
+[2.0, -4.0, 8.0, -16.0]
+[-2.0, -4.0, -8.0, -16.0]
+[]
+[]
+[1.0]

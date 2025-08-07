@@ -1,0 +1,5 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/segmented_sieve.erl:186:86: Warning: variable 'T_3' exported from 'case' (line 171, column 13)
+%  186| {Each, End, High, I_4, Idx, In_prime_3, J2_2, K_2, Low, N_2, Prime_2, Size, Start_2, T_3, Temp_4, TempSeg_3} = Fun_8(Each, End, High, I_4, Idx, In_prime_3, J2, K_2, Low, N_2, Prime_2, Size, Start_2, T_3, Temp_4, TempSeg_2),
+%     |                                                                                      ^
+
+[2 3 5 7 11 13 17 19 23 29]

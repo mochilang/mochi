@@ -1,0 +1,5 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/numerical_analysis/newton_raphson.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+"root = 0.4384471571538314,  error = 1.2384711944868343e-7"

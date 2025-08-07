@@ -1,0 +1,9 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/numerical_analysis/runge_kutta.erl:82:13: Warning: variable 'N_3' exported from 'case' (line 66, column 9)
+%   82| {F, H, I_2, N_3, Span, X0, X_end, Y_2, Y0} = Fun(F, H, I, N_3, Span, X0, X_end, Y, Y0),
+%     |             ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/maths/numerical_analysis/runge_kutta.erl:100:18: Warning: variable 'N_3' exported from 'case' (line 66, column 9)
+%  100| {F, H, I_2, K_2, N_3, Span, X_2, X0, X_end, Y_4, Y0} = Fun_2(F, H, I_2, K, N_3, Span, X, X0, X_end, Y_3, Y0),
+%     |                  ^
+
+2.718279744135166
