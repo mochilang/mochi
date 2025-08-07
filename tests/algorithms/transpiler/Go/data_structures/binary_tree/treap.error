@@ -1,0 +1,3 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/data_structures/binary_tree/treap.go:186:22: cannot use NIL (variable of type int) as *big.Int value in variable declaration
