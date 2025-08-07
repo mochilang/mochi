@@ -1,0 +1,8 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/linked_list/doubly_linked_list_two.scala:257: error: value contains is not a member of Main.LinkedList
+  println(String.valueOf(ll.contains(10)))
+                            ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/linked_list/doubly_linked_list_two.scala:259: error: value contains is not a member of Main.LinkedList
+  println(String.valueOf(ll.contains(10)))
+                            ^
+two errors found

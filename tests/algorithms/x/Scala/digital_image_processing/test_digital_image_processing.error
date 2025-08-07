@@ -1,0 +1,5 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/digital_image_processing/test_digital_image_processing.scala:220: error: value * is not a member of Any
+          sy = sy + gy((ky.toInt).toInt).asInstanceOf[ArrayBuffer[Any]]((kx.toInt).toInt) * pixel
+                                                                                          ^
+one error found
