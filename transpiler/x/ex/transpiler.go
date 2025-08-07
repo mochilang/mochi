@@ -1859,6 +1859,9 @@ func Emit(p *Program, benchMain bool) []byte {
 	if usedHelpers["now"] {
 		buf.WriteString(nowHelper(1))
 	}
+	if usedHelpers["input"] {
+		buf.WriteString(inputHelper(1))
+	}
 	if benchMain {
 		buf.WriteString(benchNowHelper(1))
 		buf.WriteString(memHelper(1))
@@ -3988,14 +3991,8 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			}
 		case "input":
 			if len(args) == 0 {
-				gets := &CallExpr{Func: "IO.gets", Args: []Expr{&StringLit{Value: ""}}}
-				trim := &CallExpr{Func: "String.trim", Args: []Expr{&VarRef{Name: "line"}}}
-				clauses := []CaseClause{
-					{Pattern: &NilLit{}, Result: &StringLit{Value: ""}},
-					{Pattern: &AtomLit{Name: ":eof"}, Result: &StringLit{Value: ""}},
-					{Pattern: &VarRef{Name: "line"}, Result: trim},
-				}
-				return &CaseExpr{Target: gets, Clauses: clauses}, nil
+				usedHelpers["input"] = true
+				return &CallExpr{Func: "_input", Args: nil}, nil
 			}
 		case "values":
 			if len(args) == 1 {
@@ -4356,6 +4353,19 @@ func benchNowHelper(indent int) string {
 	pad := strings.Repeat("  ", indent)
 	buf.WriteString(pad + "defp _bench_now() do\n")
 	buf.WriteString(pad + "  System.monotonic_time(:microsecond)\n")
+	buf.WriteString(pad + "end\n")
+	return buf.String()
+}
+
+func inputHelper(indent int) string {
+	var buf bytes.Buffer
+	pad := strings.Repeat("  ", indent)
+	buf.WriteString(pad + "defp _input() do\n")
+	buf.WriteString(pad + "  case IO.gets(\"\") do\n")
+	buf.WriteString(pad + "    nil -> \"\"\n")
+	buf.WriteString(pad + "    :eof -> \"\"\n")
+	buf.WriteString(pad + "    line -> String.trim(line)\n")
+	buf.WriteString(pad + "  end\n")
 	buf.WriteString(pad + "end\n")
 	return buf.String()
 }

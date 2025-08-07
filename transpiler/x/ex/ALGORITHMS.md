@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-07 10:10 GMT+7
+Last updated: 2025-08-07 11:11 GMT+7
 
-## Algorithms Golden Test Checklist (154/1077)
+## Algorithms Golden Test Checklist (155/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -199,7 +199,7 @@ Last updated: 2025-08-07 10:10 GMT+7
 | 190 | data_structures/binary_tree/merge_two_binary_trees | ✓ | 129us | 0 B |
 | 191 | data_structures/binary_tree/mirror_binary_tree | ✓ | 6.17ms | 25.0 MB |
 | 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 5.49ms | 17.4 MB |
-| 193 | data_structures/binary_tree/number_of_possible_binary_trees |   |  |  |
+| 193 | data_structures/binary_tree/number_of_possible_binary_trees | ✓ | 19.12ms | 25.0 MB |
 | 194 | data_structures/binary_tree/red_black_tree |   |  |  |
 | 195 | data_structures/binary_tree/segment_tree |   |  |  |
 | 196 | data_structures/binary_tree/segment_tree_other |   |  |  |
