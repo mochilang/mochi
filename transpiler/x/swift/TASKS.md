@@ -1,5 +1,5 @@
-## Progress (2025-08-04 21:23 +0700)
-- remove obsolete http error
+## Progress (2025-08-07 09:47 +0700)
+- swift: improve list handling and string conversion
 - Generated golden tests for 102/105 programs
 - Updated README checklist and output artifacts
 

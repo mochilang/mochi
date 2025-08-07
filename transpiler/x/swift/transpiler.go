@@ -4471,8 +4471,23 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			typ := toSwiftType(op.Cast.Type)
 			if env != nil {
 				resT := types.ResolveTypeRef(op.Cast.Type, env)
-				if typ == "Int" && types.IsStringType(baseType) {
-					expr = &CastExpr{Expr: expr, Type: "Int!", FromString: true}
+				isStrIdx := false
+				if ie, ok := expr.(*IndexExpr); ok && ie.AsString {
+					isStrIdx = true
+				}
+				baseOptIsStr := false
+				if ot, ok := baseType.(types.OptionType); ok {
+					baseOptIsStr = types.IsStringType(ot.Elem)
+				}
+				if typ == "Int" {
+					if types.IsStringType(baseType) || isStrIdx || baseOptIsStr {
+						expr = &CastExpr{Expr: expr, Type: "Int!", FromString: true}
+					} else if types.IsAnyType(baseType) {
+						expr = &CallExpr{Func: "_int", Args: []Expr{expr}}
+						usesInt = true
+					} else {
+						expr = &CastExpr{Expr: expr, Type: "Int"}
+					}
 					baseType = resT
 				} else if st, ok := resT.(types.StructType); ok {
 					if ml, ok := expr.(*MapLit); ok {
