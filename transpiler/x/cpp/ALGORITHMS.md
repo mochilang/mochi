@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
 Completed programs: 365/1077
-Last updated: 2025-08-07 17:30 +0700
+Last updated: 2025-08-07 19:54 +0700
 
 Checklist:
 
@@ -256,26 +256,26 @@ Checklist:
 | 247 | data_structures/stacks/balanced_parentheses | ✓ | 168.0µs | 3.64MB |
 | 248 | data_structures/stacks/dijkstras_two_stack_algorithm | ✓ | 247.0µs | 3.49MB |
 | 249 | data_structures/stacks/infix_to_postfix_conversion | ✓ | 625.0µs | 3.56MB |
-| 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ | 1.0µs | 3.54MB |
-| 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 256.0µs | 3.73MB |
-| 252 | data_structures/stacks/lexicographical_numbers | ✓ | 405.0µs | 3.56MB |
-| 253 | data_structures/stacks/next_greater_element | ✓ | 518.0µs | 3.85MB |
-| 254 | data_structures/stacks/postfix_evaluation | ✓ | 340.0µs | 3.66MB |
-| 255 | data_structures/stacks/prefix_evaluation | ✓ | 543.0µs | 3.77MB |
-| 256 | data_structures/stacks/stack | ✓ | 236.0µs | 3.65MB |
-| 257 | data_structures/stacks/stack_using_two_queues | ✓ | 289.0µs | 3.56MB |
-| 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 214.0µs | 3.70MB |
-| 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 204.0µs | 3.49MB |
-| 260 | data_structures/stacks/stock_span_problem | ✓ | 117.0µs | 3.58MB |
-| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 202.0µs | 3.61MB |
-| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 241.0µs | 3.73MB |
-| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 228.0µs | 3.79MB |
-| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 235.0µs | 3.55MB |
+| 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ | 1.0µs | 3.44MB |
+| 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 246.0µs | 3.68MB |
+| 252 | data_structures/stacks/lexicographical_numbers | ✓ | 485.0µs | 3.75MB |
+| 253 | data_structures/stacks/next_greater_element | ✓ | 517.0µs | 3.84MB |
+| 254 | data_structures/stacks/postfix_evaluation | ✓ | 572.0µs | 3.73MB |
+| 255 | data_structures/stacks/prefix_evaluation | ✓ | 514.0µs | 3.69MB |
+| 256 | data_structures/stacks/stack | ✓ | 291.0µs | 3.68MB |
+| 257 | data_structures/stacks/stack_using_two_queues | ✓ | 286.0µs | 3.72MB |
+| 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 370.0µs | 3.77MB |
+| 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 223.0µs | 3.59MB |
+| 260 | data_structures/stacks/stock_span_problem | ✓ | 220.0µs | 3.63MB |
+| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 306.0µs | 3.52MB |
+| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 221.0µs | 3.59MB |
+| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 242.0µs | 3.76MB |
+| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 336.0µs | 3.66MB |
 | 265 | data_structures/trie/radix_tree |   |  |  |
 | 266 | data_structures/trie/trie |   |  |  |
-| 267 | digital_image_processing/change_brightness | ✓ | 201.0µs | 3.58MB |
-| 268 | digital_image_processing/change_contrast | ✓ | 197.0µs | 3.64MB |
-| 269 | digital_image_processing/convert_to_negative | ✓ | 240.0µs | 3.68MB |
+| 267 | digital_image_processing/change_brightness | ✓ | 206.0µs | 3.60MB |
+| 268 | digital_image_processing/change_contrast | ✓ | 458.0µs | 3.71MB |
+| 269 | digital_image_processing/convert_to_negative | ✓ | 307.0µs | 3.59MB |
 | 270 | digital_image_processing/dithering/burkes | ✓ | 276.0µs | 3.62MB |
 | 271 | digital_image_processing/edge_detection/canny | ✓ | 216.0µs | 3.58MB |
 | 272 | digital_image_processing/filters/bilateral_filter | ✓ | 392.0µs | 3.79MB |

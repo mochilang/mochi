@@ -5312,6 +5312,8 @@ func convertFunLambda(fn *parser.FunStmt) (*BlockLambda, error) {
 	prev := inFunction
 	inFunction = true
 	prevRet := currentReturnType
+	prevParams := paramNames
+	prevMut := mutatedParams
 	paramNames = map[string]bool{}
 	mutatedParams = map[string]bool{}
 	for _, p := range fn.Params {
@@ -5341,6 +5343,9 @@ func convertFunLambda(fn *parser.FunStmt) (*BlockLambda, error) {
 		localTypes = prevLocals
 		currentVarDecls = prevDecls
 		currentReturnType = prevRet
+		paramNames = prevParams
+		mutatedParams = prevMut
+		inFunction = prev
 	}()
 
 	ret := "std::any"
@@ -5359,7 +5364,6 @@ func convertFunLambda(fn *parser.FunStmt) (*BlockLambda, error) {
 	for _, st := range fn.Body {
 		s, err := convertStmt(st)
 		if err != nil {
-			inFunction = prev
 			return nil, err
 		}
 		body = append(body, s)
@@ -5400,9 +5404,6 @@ func convertFunLambda(fn *parser.FunStmt) (*BlockLambda, error) {
 		}
 		params = append(params, Param{Name: p.Name, Type: typ, ByVal: mutatedParams[p.Name]})
 	}
-	inFunction = prev
-	paramNames = nil
-	mutatedParams = nil
 	return &BlockLambda{Params: params, Body: body, ReturnType: ret}, nil
 }
 
