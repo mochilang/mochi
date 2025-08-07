@@ -1431,11 +1431,7 @@ func applyBinOp(op string, left, right Node) Node {
 		inter := &List{Elems: []Node{Symbol("clojure.set/intersection"), &List{Elems: []Node{Symbol("set"), left}}, &List{Elems: []Node{Symbol("set"), right}}}}
 		return &List{Elems: []Node{Symbol("vec"), inter}}
 	case "/":
-		// Prefer integer division when the divisor is a literal to match
-		// Mochi's semantics. Clojure's `quot` performs truncating
-		// division on integers, avoiding unintended ratios for
-		// expressions like `coef / 2` in Rosetta tasks.
-		if _, ok := right.(IntLit); ok {
+		if !isFloatNode(left) && !isFloatNode(right) {
 			return &List{Elems: []Node{Symbol("quot"), left, right}}
 		}
 		fallthrough
@@ -1469,6 +1465,17 @@ func isStringNode(n Node) bool {
 				switch sym {
 				case "str", "subs", "clojure.string/join", "fields", "join", "numberName", "pluralizeFirst", "slur":
 					return true
+				case "if":
+					if len(t.Elems) >= 3 {
+						thenNode := t.Elems[2]
+						var elseNode Node
+						if len(t.Elems) >= 4 {
+							elseNode = t.Elems[3]
+						}
+						if isStringNode(thenNode) && (elseNode == nil || isStringNode(elseNode)) {
+							return true
+						}
+					}
 				case "nth", "get":
 					if len(t.Elems) >= 2 {
 						if isStringListNode(t.Elems[1]) {
@@ -1625,9 +1632,25 @@ func isMapNode(n Node) bool {
 		}
 	case Symbol:
 		if transpileEnv != nil {
-			if typ, err := transpileEnv.GetVar(string(t)); err == nil {
+			name := string(t)
+			if typ, err := transpileEnv.GetVar(name); err == nil {
 				if _, ok := typ.(types.MapType); ok {
 					return true
+				}
+			} else {
+				if orig := originalVar(name); orig != name {
+					if typ, err := transpileEnv.GetVar(orig); err == nil {
+						if _, ok := typ.(types.MapType); ok {
+							return true
+						}
+					}
+				}
+				if idx := strings.Index(name, "_"); idx >= 0 {
+					if typ, err := transpileEnv.GetVar(name[idx+1:]); err == nil {
+						if _, ok := typ.(types.MapType); ok {
+							return true
+						}
+					}
 				}
 			}
 		}
@@ -1647,6 +1670,73 @@ func isNumberNode(n Node) bool {
 				switch typ.(type) {
 				case types.IntType, types.FloatType:
 					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func isIntNode(n Node) bool {
+	switch t := n.(type) {
+	case IntLit:
+		return true
+	case Symbol:
+		if transpileEnv != nil {
+			name := string(t)
+			if typ, err := transpileEnv.GetVar(name); err == nil {
+				switch typ.(type) {
+				case types.IntType, types.BigIntType:
+					return true
+				}
+			} else {
+				if orig := originalVar(name); orig != name {
+					if typ, err := transpileEnv.GetVar(orig); err == nil {
+						switch typ.(type) {
+						case types.IntType, types.BigIntType:
+							return true
+						}
+					}
+				}
+				if idx := strings.Index(name, "_"); idx >= 0 {
+					if typ, err := transpileEnv.GetVar(name[idx+1:]); err == nil {
+						switch typ.(type) {
+						case types.IntType, types.BigIntType:
+							return true
+						}
+					}
+				}
+			}
+		}
+	}
+	return false
+}
+
+func isFloatNode(n Node) bool {
+	switch t := n.(type) {
+	case FloatLit:
+		return true
+	case Symbol:
+		if transpileEnv != nil {
+			name := string(t)
+			if typ, err := transpileEnv.GetVar(name); err == nil {
+				if _, ok := typ.(types.FloatType); ok {
+					return true
+				}
+			} else {
+				if orig := originalVar(name); orig != name {
+					if typ, err := transpileEnv.GetVar(orig); err == nil {
+						if _, ok := typ.(types.FloatType); ok {
+							return true
+						}
+					}
+				}
+				if idx := strings.Index(name, "_"); idx >= 0 {
+					if typ, err := transpileEnv.GetVar(name[idx+1:]); err == nil {
+						if _, ok := typ.(types.FloatType); ok {
+							return true
+						}
+					}
 				}
 			}
 		}
@@ -3195,7 +3285,11 @@ func transpileForStmt(f *parser.ForStmt) (Node, error) {
 		if err != nil {
 			return nil, err
 		}
-		seq = iter
+		if isMapNode(iter) {
+			seq = &List{Elems: []Node{Symbol("keys"), iter}}
+		} else {
+			seq = iter
+		}
 	}
 	if !useCtrl {
 		binding := &Vector{Elems: []Node{Symbol(f.Name), seq}}

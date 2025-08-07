@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-07 17:06 GMT+7
+Last updated: 2025-08-07 17:48 GMT+7
 
-## Algorithms Golden Test Checklist (160/1077)
+## Algorithms Golden Test Checklist (163/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 50.25ms | 19.66MB |
@@ -55,7 +55,7 @@ Last updated: 2025-08-07 17:06 GMT+7
 | 46 | blockchain/diophantine_equation | ✓ | 76.324ms | 21.59MB |
 | 47 | boolean_algebra/and_gate | ✓ | 51.95ms | 19.10MB |
 | 48 | boolean_algebra/imply_gate | ✓ | 58.594ms | 20.46MB |
-| 49 | boolean_algebra/karnaugh_map_simplification | error |  |  |
+| 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 58.286ms | 20.75MB |
 | 50 | boolean_algebra/multiplexer | ✓ | 47.292ms | 19.04MB |
 | 51 | boolean_algebra/nand_gate | ✓ | 51.263ms | 18.62MB |
 | 52 | boolean_algebra/nimply_gate | ✓ | 48.457ms | 18.98MB |
@@ -72,10 +72,10 @@ Last updated: 2025-08-07 17:06 GMT+7
 | 63 | cellular_automata/one_dimensional | ✓ | 66.647ms | 23.04MB |
 | 64 | cellular_automata/wa_tor | ✓ | 222.553ms | 28.69MB |
 | 65 | ciphers/a1z26 | ✓ | 78.855ms | 21.28MB |
-| 66 | ciphers/affine_cipher | error |  |  |
+| 66 | ciphers/affine_cipher | ✓ | 88.77ms | 23.08MB |
 | 67 | ciphers/atbash | ✓ | 54.189ms | 19.86MB |
 | 68 | ciphers/autokey | ✓ | 65.221ms | 21.81MB |
-| 69 | ciphers/baconian_cipher | error |  |  |
+| 69 | ciphers/baconian_cipher | ✓ | 59.015ms | 22.05MB |
 | 70 | ciphers/base16 | error |  |  |
 | 71 | ciphers/base32 | ✓ | 94.663ms | 24.10MB |
 | 72 | ciphers/base64_cipher | ✓ | 57.056ms | 24.36MB |
