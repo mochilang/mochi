@@ -62,6 +62,7 @@ var globalNames map[string]bool
 var variantTags map[string]int
 var globalInits []Stmt
 var currentReturnType string
+var currentFunc string
 var zigKeywords = map[string]bool{
 	"fn":       true,
 	"const":    true,
@@ -315,6 +316,7 @@ type VarDecl struct {
 	Value   Expr
 	Mutable bool
 	Type    string
+	Scope   string
 }
 
 // AssignStmt represents simple assignments like `x = expr`.
@@ -1348,7 +1350,8 @@ func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
 	varUses, varMut = collectVarInfo(p)
 	for _, vd := range varDecls {
-		if vd.Mutable && !varMut[vd.Name] {
+		key := vd.Scope + ":" + vd.Name
+		if vd.Mutable && !varMut[key] && !varMut[":"+vd.Name] {
 			vd.Mutable = false
 		}
 	}
@@ -1534,7 +1537,8 @@ func (f *Func) emit(w io.Writer) {
 			io.WriteString(w, ", ")
 		}
 		name := p.Name
-		if varUses[p.Name] == 0 {
+		key := f.Name + ":" + p.Name
+		if varUses[key] == 0 {
 			name = "_"
 		}
 		fmt.Fprintf(w, "%s: %s", name, p.Type)
@@ -1641,7 +1645,8 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 
 func (v *VarDecl) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
-	mut := v.Mutable || varMut[v.Name]
+	key := v.Scope + ":" + v.Name
+	mut := v.Mutable || varMut[key] || varMut[":"+v.Name]
 	targetType := v.Type
 	if targetType == "" {
 		if t, ok := varTypes[v.Name]; ok && t != "" {
@@ -1705,7 +1710,7 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 		}
 	}
 	io.WriteString(w, ";")
-	if indent > 0 && varUses[v.Name] == 0 && !varMut[v.Name] {
+	if indent > 0 && varUses[key] == 0 && varUses[":"+v.Name] == 0 && !varMut[key] && !varMut[":"+v.Name] {
 		io.WriteString(w, " _ = ")
 		io.WriteString(w, v.Name)
 		io.WriteString(w, ";")
@@ -4240,7 +4245,7 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 		if mutables[p.Name] {
 			aliasName = uniqueName(name + "_var")
 			namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
-			vd := &VarDecl{Name: aliasName, Value: &VarRef{Name: paramName}, Mutable: true}
+			vd := &VarDecl{Name: aliasName, Value: &VarRef{Name: paramName}, Mutable: true, Scope: currentFunc}
 			preStmts = append(preStmts, vd)
 			varDecls[p.Name] = vd
 			varDecls[aliasName] = vd
@@ -4261,11 +4266,14 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 		mainFuncName = "mochi_main"
 		name = mainFuncName
 	}
+	oldFunc := currentFunc
+	currentFunc = name
 	funParamsStack = append(funParamsStack, names)
 	funDepth++
 	defer func() {
 		funDepth--
 		funParamsStack = funParamsStack[:len(funParamsStack)-1]
+		currentFunc = oldFunc
 	}()
 	ret := ""
 	if fn.Return != nil && (fn.Return.Simple != nil || fn.Return.Generic != nil || fn.Return.Fun != nil) {
@@ -4396,7 +4404,7 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 			aliasStack[len(aliasStack)-1][s.Let.Name] = alias
 			namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
 		}
-		vd := &VarDecl{Name: alias, Value: expr, Mutable: mutable}
+		vd := &VarDecl{Name: alias, Value: expr, Mutable: mutable, Scope: currentFunc}
 		if s.Let.Type != nil {
 			vd.Type = toZigType(s.Let.Type)
 		} else {
@@ -4405,6 +4413,9 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		varTypes[s.Let.Name] = vd.Type
 		varDecls[s.Let.Name] = vd
 		varDecls[alias] = vd
+		if globalNames[s.Let.Name] {
+			globalNames[alias] = true
+		}
 		if lst, ok := expr.(*ListLit); ok {
 			if funDepth <= 1 && inferListStruct(s.Let.Name, lst) != "" {
 				vd.Type = fmt.Sprintf("[%d]%s", len(lst.Elems), lst.ElemType)
@@ -4517,7 +4528,7 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 			aliasStack[len(aliasStack)-1][s.Var.Name] = alias
 			namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
 		}
-		vd := &VarDecl{Name: alias, Value: expr, Mutable: mutable}
+		vd := &VarDecl{Name: alias, Value: expr, Mutable: mutable, Scope: currentFunc}
 		if s.Var.Type != nil {
 			vd.Type = toZigType(s.Var.Type)
 		} else {
@@ -5020,11 +5031,16 @@ func compileTypeDecl(td *parser.TypeDecl) error {
 func collectVarInfo(p *Program) (map[string]int, map[string]bool) {
 	uses := map[string]int{}
 	muts := map[string]bool{}
+	var scope string
 	var walkExpr func(e Expr)
 	walkExpr = func(e Expr) {
 		switch t := e.(type) {
 		case *VarRef:
-			uses[t.Name]++
+			key := scope + ":" + t.Name
+			uses[key]++
+			if globalNames[t.Name] {
+				uses[":"+t.Name]++
+			}
 		case *BinaryExpr:
 			walkExpr(t.Left)
 			walkExpr(t.Right)
@@ -5036,7 +5052,10 @@ func collectVarInfo(p *Program) (map[string]int, map[string]bool) {
 			// isn't present in varDecls. This ensures that
 			// parameters with function types are treated as used
 			// and not renamed to '_' during emission.
-			uses[t.Func]++
+			uses[scope+":"+t.Func]++
+			if globalNames[t.Func] {
+				uses[":"+t.Func]++
+			}
 		case *IfExpr:
 			walkExpr(t.Cond)
 			if t.Then != nil {
@@ -5062,10 +5081,8 @@ func collectVarInfo(p *Program) (map[string]int, map[string]bool) {
 				walkExpr(e2.Value)
 			}
 		case *AppendExpr:
-			if s, ok := exprToString(t.List); ok {
-				base := strings.SplitN(s, ".", 2)[0]
-				muts[base] = true
-			}
+			// append returns a new list and does not mutate the
+			// original, so we only walk the sub-expressions
 			walkExpr(t.List)
 			walkExpr(t.Value)
 		case *NotExpr:
@@ -5075,7 +5092,11 @@ func collectVarInfo(p *Program) (map[string]int, map[string]bool) {
 			walkExpr(t.Start)
 			walkExpr(t.End)
 		case *CopySliceExpr:
-			uses[t.Src]++
+			key := scope + ":" + t.Src
+			uses[key]++
+			if globalNames[t.Src] {
+				uses[":"+t.Src]++
+			}
 		}
 	}
 	var walkStmt func(s Stmt)
@@ -5086,19 +5107,31 @@ func collectVarInfo(p *Program) (map[string]int, map[string]bool) {
 				walkExpr(t.Value)
 			}
 		case *AssignStmt:
-			muts[t.Name] = true
+			key := scope + ":" + t.Name
+			muts[key] = true
+			if globalNames[t.Name] {
+				muts[":"+t.Name] = true
+			}
 			walkExpr(t.Value)
 		case *IndexAssignStmt:
 			if s, ok := exprToString(t.Target); ok {
 				base := strings.SplitN(s, ".", 2)[0]
-				muts[base] = true
+				key := scope + ":" + base
+				muts[key] = true
+				if globalNames[base] {
+					muts[":"+base] = true
+				}
 			}
 			walkExpr(t.Target)
 			walkExpr(t.Value)
 		case *FieldAssignStmt:
 			if s, ok := exprToString(t.Target); ok {
 				base := strings.SplitN(s, ".", 2)[0]
-				muts[base] = true
+				key := scope + ":" + base
+				muts[key] = true
+				if globalNames[base] {
+					muts[":"+base] = true
+				}
 			}
 			walkExpr(t.Value)
 		case *ExprStmt:
@@ -5144,12 +5177,14 @@ func collectVarInfo(p *Program) (map[string]int, map[string]bool) {
 		}
 	}
 	for _, g := range p.Globals {
+		scope = ""
 		walkStmt(g)
 	}
 	for _, f := range p.Functions {
 		if f == nil {
 			continue
 		}
+		scope = f.Name
 		for _, st := range f.Body {
 			walkStmt(st)
 		}
