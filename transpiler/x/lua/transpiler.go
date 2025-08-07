@@ -268,7 +268,11 @@ end
 const helperSlice = `
 local function slice(lst, s, e)
   if s < 0 then s = #lst + s end
-  if e == nil then e = #lst end
+  if e == nil then
+    e = #lst
+  elseif e < 0 then
+    e = #lst + e
+  end
   local r = {}
   for i = s + 1, e do
     r[#r+1] = lst[i]
