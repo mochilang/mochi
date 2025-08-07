@@ -1,0 +1,11 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/hardy_ramanujanalgo.erl:39:1: Warning: function mochi_nth/2 is unused
+%   39| mochi_nth(I, L) ->
+%     | ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/maths/hardy_ramanujanalgo.erl:192:24: Warning: ambiguous call of overridden auto-imported BIF floor/1 --
+use erlang:floor/1 or "-compile({no_auto_import,[floor/1]})." to resolve name clash
+%  192|         mochi_safe_div(floor((mochi_safe_mul(X_3, 10000.0) + 0.5)), 10000.0)
+%     |                        ^
+
+"The number of distinct prime factors is/are 3"
+"The value of log(log(n)) is 2.8765"

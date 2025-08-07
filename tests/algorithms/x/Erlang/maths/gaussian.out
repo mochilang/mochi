@@ -1,0 +1,13 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/gaussian.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/maths/gaussian.erl:94:2: Warning: variable 'Is_neg_3' exported from 'case' (line 73, column 9)
+%   94| {Is_neg_3, N_2, Sum_2, Term_2, X_2, Y_3} = Fun_2(Is_neg_3, N, Sum, Term, X_2, Y_3),
+%     |  ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/maths/gaussian.erl:94:37: Warning: variable 'Y_3' exported from 'case' (line 73, column 9)
+%   94| {Is_neg_3, N_2, Sum_2, Term_2, X_2, Y_3} = Fun_2(Is_neg_3, N, Sum, Term, X_2, Y_3),
+%     |                                     ^
+
+0.24197072451914337
