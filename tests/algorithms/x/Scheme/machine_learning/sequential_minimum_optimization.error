@@ -1,0 +1,18 @@
+run: exit status 70
+ERROR in list-ref on line 36 of file /usr/share/chibi/init-7.scm: car: not a pair: ()
+  called from <anonymous> on line 775 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/sequential_minimum_optimization.scm
+  called from <anonymous> on line 564 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/sequential_minimum_optimization.scm
+  called from loop15 on line 547 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/sequential_minimum_optimization.scm
+  called from <anonymous> on line 662 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/sequential_minimum_optimization.scm
+  called from <anonymous> on line 564 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/sequential_minimum_optimization.scm
+  called from loop15 on line 542 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/sequential_minimum_optimization.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 525 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/sequential_minimum_optimization.scm
+  called from loop13 on line 511 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/sequential_minimum_optimization.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 494 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/sequential_minimum_optimization.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 280 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 280 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm

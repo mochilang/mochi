@@ -1,0 +1,9 @@
+run: exit status 70
+ERROR: surface area 5 failed
+  called from <anonymous> on line 407 of file /workspace/mochi/tests/algorithms/x/Scheme/maths/dodecahedron.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 501 of file /workspace/mochi/tests/algorithms/x/Scheme/maths/dodecahedron.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 545 of file /workspace/mochi/tests/algorithms/x/Scheme/maths/dodecahedron.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm

@@ -1,0 +1,9 @@
+run: exit status 70
+ERROR: interquartile_range case2 failed
+  called from <anonymous> on line 806 of file /workspace/mochi/tests/algorithms/x/Scheme/maths/interquartile_range.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 932 of file /workspace/mochi/tests/algorithms/x/Scheme/maths/interquartile_range.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 968 of file /workspace/mochi/tests/algorithms/x/Scheme/maths/interquartile_range.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm

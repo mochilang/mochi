@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Scheme code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Scheme`.
-Last updated: 2025-08-07 09:50 GMT+7
+Last updated: 2025-08-07 10:18 GMT+7
 
-## Algorithms Golden Test Checklist (413/1077)
+## Algorithms Golden Test Checklist (519/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 0s | 12.4 MB |
@@ -507,132 +507,132 @@ Last updated: 2025-08-07 09:50 GMT+7
 | 498 | machine_learning/astar |   |  |  |
 | 499 | machine_learning/automatic_differentiation |   |  |  |
 | 500 | machine_learning/data_transformations |   |  |  |
-| 501 | machine_learning/decision_tree |   |  |  |
-| 502 | machine_learning/dimensionality_reduction |   |  |  |
-| 503 | machine_learning/forecasting/run |   |  |  |
+| 501 | machine_learning/decision_tree | ✓ | 2.105s | 16.5 MB |
+| 502 | machine_learning/dimensionality_reduction | ✓ | 0s | 12.5 MB |
+| 503 | machine_learning/forecasting/run | ✓ | 2ms | 16.5 MB |
 | 504 | machine_learning/frequent_pattern_growth |   |  |  |
-| 505 | machine_learning/gradient_boosting_classifier |   |  |  |
-| 506 | machine_learning/gradient_descent |   |  |  |
-| 507 | machine_learning/k_means_clust |   |  |  |
-| 508 | machine_learning/k_nearest_neighbours |   |  |  |
+| 505 | machine_learning/gradient_boosting_classifier | ✓ | 1ms | 13.9 MB |
+| 506 | machine_learning/gradient_descent | ✓ | 1.649s | 13.4 MB |
+| 507 | machine_learning/k_means_clust | ✓ | 2ms | 13.7 MB |
+| 508 | machine_learning/k_nearest_neighbours | ✓ | 1ms | 13.7 MB |
 | 509 | machine_learning/linear_discriminant_analysis |   |  |  |
-| 510 | machine_learning/linear_regression |   |  |  |
-| 511 | machine_learning/local_weighted_learning/local_weighted_learning |   |  |  |
-| 512 | machine_learning/logistic_regression |   |  |  |
-| 513 | machine_learning/loss_functions |   |  |  |
-| 514 | machine_learning/lstm/lstm_prediction |   |  |  |
+| 510 | machine_learning/linear_regression | ✓ | 3ms | 13.9 MB |
+| 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 2ms | 15.0 MB |
+| 512 | machine_learning/logistic_regression | ✓ | 170ms | 13.4 MB |
+| 513 | machine_learning/loss_functions | ✓ | 6ms | 16.9 MB |
+| 514 | machine_learning/lstm/lstm_prediction | ✓ | 393ms | 16.6 MB |
 | 515 | machine_learning/mfcc |   |  |  |
-| 516 | machine_learning/multilayer_perceptron_classifier |   |  |  |
-| 517 | machine_learning/polynomial_regression |   |  |  |
-| 518 | machine_learning/principle_component_analysis |   |  |  |
-| 519 | machine_learning/scoring_functions |   |  |  |
-| 520 | machine_learning/self_organizing_map |   |  |  |
+| 516 | machine_learning/multilayer_perceptron_classifier | ✓ | 903ms | 14.4 MB |
+| 517 | machine_learning/polynomial_regression | ✓ | 1ms | 14.2 MB |
+| 518 | machine_learning/principle_component_analysis | ✓ | 1ms | 14.7 MB |
+| 519 | machine_learning/scoring_functions | ✓ | 1ms | 14.3 MB |
+| 520 | machine_learning/self_organizing_map | ✓ | 2ms | 13.5 MB |
 | 521 | machine_learning/sequential_minimum_optimization |   |  |  |
-| 522 | machine_learning/similarity_search |   |  |  |
+| 522 | machine_learning/similarity_search | ✓ | 1ms | 13.8 MB |
 | 523 | machine_learning/support_vector_machines |   |  |  |
 | 524 | machine_learning/word_frequency_functions |   |  |  |
-| 525 | machine_learning/xgboost_classifier |   |  |  |
-| 526 | machine_learning/xgboost_regressor |   |  |  |
-| 527 | maths/abs |   |  |  |
-| 528 | maths/addition_without_arithmetic |   |  |  |
-| 529 | maths/aliquot_sum |   |  |  |
-| 530 | maths/allocation_number |   |  |  |
-| 531 | maths/arc_length |   |  |  |
-| 532 | maths/area |   |  |  |
-| 533 | maths/area_under_curve |   |  |  |
-| 534 | maths/average_absolute_deviation |   |  |  |
-| 535 | maths/average_mean |   |  |  |
-| 536 | maths/average_median |   |  |  |
-| 537 | maths/average_mode |   |  |  |
-| 538 | maths/bailey_borwein_plouffe |   |  |  |
+| 525 | machine_learning/xgboost_classifier | ✓ | 2ms | 13.8 MB |
+| 526 | machine_learning/xgboost_regressor | ✓ | 1ms | 13.9 MB |
+| 527 | maths/abs | ✓ | 0s | 13.8 MB |
+| 528 | maths/addition_without_arithmetic | ✓ | 5ms | 12.9 MB |
+| 529 | maths/aliquot_sum | ✓ | 1ms | 12.5 MB |
+| 530 | maths/allocation_number | ✓ | 1ms | 12.9 MB |
+| 531 | maths/arc_length | ✓ | 0s | 12.5 MB |
+| 532 | maths/area | ✓ | 1ms | 14.1 MB |
+| 533 | maths/area_under_curve | ✓ | 448ms | 12.0 MB |
+| 534 | maths/average_absolute_deviation | ✓ | 1ms | 12.5 MB |
+| 535 | maths/average_mean | ✓ | 0s | 12.2 MB |
+| 536 | maths/average_median | ✓ | 0s | 12.3 MB |
+| 537 | maths/average_mode | ✓ | 9ms | 13.8 MB |
+| 538 | maths/bailey_borwein_plouffe | ✓ |  |  |
 | 539 | maths/base_neg2_conversion |   |  |  |
-| 540 | maths/basic_maths |   |  |  |
-| 541 | maths/binary_exponentiation |   |  |  |
-| 542 | maths/binary_multiplication |   |  |  |
-| 543 | maths/binomial_coefficient |   |  |  |
-| 544 | maths/binomial_distribution |   |  |  |
-| 545 | maths/ceil |   |  |  |
-| 546 | maths/chebyshev_distance |   |  |  |
-| 547 | maths/check_polygon |   |  |  |
-| 548 | maths/chinese_remainder_theorem |   |  |  |
-| 549 | maths/chudnovsky_algorithm |   |  |  |
-| 550 | maths/collatz_sequence |   |  |  |
-| 551 | maths/combinations |   |  |  |
-| 552 | maths/continued_fraction |   |  |  |
+| 540 | maths/basic_maths | ✓ | 3ms | 13.7 MB |
+| 541 | maths/binary_exponentiation | ✓ | 0s | 12.6 MB |
+| 542 | maths/binary_multiplication | ✓ | 0s | 12.3 MB |
+| 543 | maths/binomial_coefficient | ✓ | 0s | 12.8 MB |
+| 544 | maths/binomial_distribution | ✓ | 0s | 12.8 MB |
+| 545 | maths/ceil | ✓ | 0s | 12.1 MB |
+| 546 | maths/chebyshev_distance | ✓ | 1ms | 12.3 MB |
+| 547 | maths/check_polygon | ✓ | 0s | 12.9 MB |
+| 548 | maths/chinese_remainder_theorem | ✓ | 1ms | 13.1 MB |
+| 549 | maths/chudnovsky_algorithm | ✓ | 0s | 12.9 MB |
+| 550 | maths/collatz_sequence | ✓ | 1ms | 12.3 MB |
+| 551 | maths/combinations | ✓ | 0s | 12.9 MB |
+| 552 | maths/continued_fraction | ✓ | 0s | 12.4 MB |
 | 553 | maths/decimal_isolate |   |  |  |
-| 554 | maths/decimal_to_fraction |   |  |  |
+| 554 | maths/decimal_to_fraction | ✓ | 2ms | 14.5 MB |
 | 555 | maths/dodecahedron |   |  |  |
-| 556 | maths/double_factorial |   |  |  |
-| 557 | maths/dual_number_automatic_differentiation |   |  |  |
+| 556 | maths/double_factorial | ✓ | 0s | 12.6 MB |
+| 557 | maths/dual_number_automatic_differentiation | ✓ | 2ms | 13.8 MB |
 | 558 | maths/entropy |   |  |  |
-| 559 | maths/euclidean_distance |   |  |  |
-| 560 | maths/euler_method |   |  |  |
-| 561 | maths/euler_modified |   |  |  |
-| 562 | maths/eulers_totient |   |  |  |
-| 563 | maths/extended_euclidean_algorithm |   |  |  |
-| 564 | maths/factorial |   |  |  |
-| 565 | maths/factors |   |  |  |
+| 559 | maths/euclidean_distance | ✓ | 0s | 12.7 MB |
+| 560 | maths/euler_method | ✓ | 46ms | 12.8 MB |
+| 561 | maths/euler_modified | ✓ | 1ms | 12.5 MB |
+| 562 | maths/eulers_totient | ✓ | 1ms | 12.6 MB |
+| 563 | maths/extended_euclidean_algorithm | ✓ | 0s | 13.1 MB |
+| 564 | maths/factorial | ✓ | 1ms | 12.2 MB |
+| 565 | maths/factors | ✓ | 0s | 12.4 MB |
 | 566 | maths/fast_inverse_sqrt |   |  |  |
-| 567 | maths/fermat_little_theorem |   |  |  |
+| 567 | maths/fermat_little_theorem | ✓ | 1ms | 12.0 MB |
 | 568 | maths/fibonacci |   |  |  |
-| 569 | maths/find_max |   |  |  |
-| 570 | maths/find_min |   |  |  |
+| 569 | maths/find_max | ✓ | 1ms | 13.1 MB |
+| 570 | maths/find_min | ✓ | 0s | 13.6 MB |
 | 571 | maths/floor |   |  |  |
-| 572 | maths/gamma |   |  |  |
-| 573 | maths/gaussian |   |  |  |
-| 574 | maths/gcd_of_n_numbers |   |  |  |
+| 572 | maths/gamma | ✓ | 9.236s | 13.6 MB |
+| 573 | maths/gaussian | ✓ | 0s | 12.2 MB |
+| 574 | maths/gcd_of_n_numbers | ✓ | 1ms | 12.4 MB |
 | 575 | maths/geometric_mean |   |  |  |
-| 576 | maths/germain_primes |   |  |  |
-| 577 | maths/greatest_common_divisor |   |  |  |
+| 576 | maths/germain_primes | ✓ | 0s | 13.0 MB |
+| 577 | maths/greatest_common_divisor | ✓ | 1ms | 13.1 MB |
 | 578 | maths/hardy_ramanujanalgo |   |  |  |
-| 579 | maths/integer_square_root |   |  |  |
+| 579 | maths/integer_square_root | ✓ | 0s | 12.6 MB |
 | 580 | maths/interquartile_range |   |  |  |
-| 581 | maths/is_int_palindrome |   |  |  |
-| 582 | maths/is_ip_v4_address_valid |   |  |  |
-| 583 | maths/is_square_free |   |  |  |
-| 584 | maths/jaccard_similarity |   |  |  |
-| 585 | maths/joint_probability_distribution |   |  |  |
-| 586 | maths/josephus_problem |   |  |  |
-| 587 | maths/juggler_sequence |   |  |  |
-| 588 | maths/karatsuba |   |  |  |
-| 589 | maths/kth_lexicographic_permutation |   |  |  |
+| 581 | maths/is_int_palindrome | ✓ | 0s | 12.4 MB |
+| 582 | maths/is_ip_v4_address_valid | ✓ | 5ms | 12.8 MB |
+| 583 | maths/is_square_free | ✓ | 0s | 12.2 MB |
+| 584 | maths/jaccard_similarity | ✓ | 1ms | 13.0 MB |
+| 585 | maths/joint_probability_distribution | ✓ | 2ms | 13.6 MB |
+| 586 | maths/josephus_problem | ✓ | 0s | 12.5 MB |
+| 587 | maths/juggler_sequence | ✓ | 1ms | 13.1 MB |
+| 588 | maths/karatsuba | ✓ | 2ms | 12.2 MB |
+| 589 | maths/kth_lexicographic_permutation | ✓ | 2ms | 13.8 MB |
 | 590 | maths/largest_of_very_large_numbers |   |  |  |
-| 591 | maths/least_common_multiple |   |  |  |
-| 592 | maths/line_length |   |  |  |
-| 593 | maths/liouville_lambda |   |  |  |
-| 594 | maths/lucas_lehmer_primality_test |   |  |  |
-| 595 | maths/lucas_series |   |  |  |
+| 591 | maths/least_common_multiple | ✓ | 0s | 12.7 MB |
+| 592 | maths/line_length | ✓ | 16ms | 12.5 MB |
+| 593 | maths/liouville_lambda | ✓ | 1ms | 12.2 MB |
+| 594 | maths/lucas_lehmer_primality_test | ✓ | 0s | 12.9 MB |
+| 595 | maths/lucas_series | ✓ | 247ms | 11.8 MB |
 | 596 | maths/maclaurin_series |   |  |  |
-| 597 | maths/manhattan_distance |   |  |  |
-| 598 | maths/matrix_exponentiation |   |  |  |
-| 599 | maths/max_sum_sliding_window |   |  |  |
-| 600 | maths/minkowski_distance |   |  |  |
-| 601 | maths/mobius_function |   |  |  |
-| 602 | maths/modular_division |   |  |  |
-| 603 | maths/monte_carlo |   |  |  |
-| 604 | maths/monte_carlo_dice |   |  |  |
-| 605 | maths/number_of_digits |   |  |  |
-| 606 | maths/numerical_analysis/adams_bashforth |   |  |  |
-| 607 | maths/numerical_analysis/bisection |   |  |  |
-| 608 | maths/numerical_analysis/bisection_2 |   |  |  |
+| 597 | maths/manhattan_distance | ✓ | 1ms | 12.7 MB |
+| 598 | maths/matrix_exponentiation | ✓ | 2ms | 13.7 MB |
+| 599 | maths/max_sum_sliding_window | ✓ | 0s | 13.0 MB |
+| 600 | maths/minkowski_distance | ✓ | 1ms | 12.3 MB |
+| 601 | maths/mobius_function | ✓ | 0s | 12.4 MB |
+| 602 | maths/modular_division | ✓ | 1ms | 13.9 MB |
+| 603 | maths/monte_carlo | ✓ | 70ms | 13.6 MB |
+| 604 | maths/monte_carlo_dice | ✓ | 146ms | 12.5 MB |
+| 605 | maths/number_of_digits | ✓ | 1ms | 13.2 MB |
+| 606 | maths/numerical_analysis/adams_bashforth | ✓ | 1ms | 14.2 MB |
+| 607 | maths/numerical_analysis/bisection | ✓ | 1ms | 12.3 MB |
+| 608 | maths/numerical_analysis/bisection_2 | ✓ |  |  |
 | 609 | maths/numerical_analysis/integration_by_simpson_approx |   |  |  |
-| 610 | maths/numerical_analysis/intersection |   |  |  |
-| 611 | maths/numerical_analysis/nevilles_method |   |  |  |
-| 612 | maths/numerical_analysis/newton_forward_interpolation |   |  |  |
-| 613 | maths/numerical_analysis/newton_raphson |   |  |  |
-| 614 | maths/numerical_analysis/numerical_integration |   |  |  |
-| 615 | maths/numerical_analysis/proper_fractions |   |  |  |
+| 610 | maths/numerical_analysis/intersection | ✓ | 1ms | 12.8 MB |
+| 611 | maths/numerical_analysis/nevilles_method | ✓ | 1ms | 13.2 MB |
+| 612 | maths/numerical_analysis/newton_forward_interpolation | ✓ | 0s | 12.8 MB |
+| 613 | maths/numerical_analysis/newton_raphson | ✓ | 0s | 13.2 MB |
+| 614 | maths/numerical_analysis/numerical_integration | ✓ | 431ms | 12.3 MB |
+| 615 | maths/numerical_analysis/proper_fractions | ✓ | 1ms | 12.7 MB |
 | 616 | maths/numerical_analysis/runge_kutta |   |  |  |
-| 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 |   |  |  |
-| 618 | maths/numerical_analysis/runge_kutta_gills |   |  |  |
-| 619 | maths/numerical_analysis/secant_method |   |  |  |
-| 620 | maths/numerical_analysis/simpson_rule |   |  |  |
-| 621 | maths/numerical_analysis/square_root |   |  |  |
-| 622 | maths/odd_sieve |   |  |  |
-| 623 | maths/perfect_cube |   |  |  |
-| 624 | maths/perfect_number |   |  |  |
-| 625 | maths/perfect_square |   |  |  |
-| 626 | maths/persistence |   |  |  |
+| 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 | ✓ | 0s | 13.4 MB |
+| 618 | maths/numerical_analysis/runge_kutta_gills | ✓ | 1ms | 12.9 MB |
+| 619 | maths/numerical_analysis/secant_method | ✓ | 1ms | 12.4 MB |
+| 620 | maths/numerical_analysis/simpson_rule | ✓ |  |  |
+| 621 | maths/numerical_analysis/square_root | ✓ | 0s | 12.7 MB |
+| 622 | maths/odd_sieve | ✓ | 1ms | 12.5 MB |
+| 623 | maths/perfect_cube | ✓ | 0s | 12.2 MB |
+| 624 | maths/perfect_number | ✓ |  |  |
+| 625 | maths/perfect_square | ✓ | 0s | 12.5 MB |
+| 626 | maths/persistence | ✓ | 0s | 12.5 MB |
 | 627 | maths/pi_generator |   |  |  |
 | 628 | maths/pi_monte_carlo_estimation |   |  |  |
 | 629 | maths/points_are_collinear_3d |   |  |  |
