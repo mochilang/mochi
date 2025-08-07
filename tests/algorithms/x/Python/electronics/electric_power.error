@@ -1,0 +1,13 @@
+run: exit status 1
+Result(name='voltage', value=2.0)
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/electronics/electric_power.py", line 62, in <module>
+    r2 = electric_power(2.0, 2.0, 0.0)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/electronics/electric_power.py", line 55, in electric_power
+    return Result(name="power", value=round_to(p, 2))
+                                      ^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/electronics/electric_power.py", line 32, in round_to
+    return floor(x * m + 0.5) / m
+           ^^^^^
+NameError: name 'floor' is not defined. Did you mean: 'float'?

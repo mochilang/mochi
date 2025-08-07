@@ -1,0 +1,21 @@
+{
+  "duration_us": 4555,
+  "memory_bytes": 14413824,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/fractals/julia_sets.py", line 146, in <module>
+    julia_demo()
+  File "/workspace/mochi/tests/algorithms/x/Python/fractals/julia_sets.py", line 137, in julia_demo
+    z_exp = iterate_function(eval_exponential, c_exp, 10, z0, 1e+10)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/fractals/julia_sets.py", line 105, in iterate_function
+    if complex_abs(z_n) > infinity:
+       ^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/fractals/julia_sets.py", line 61, in complex_abs
+    return sqrtApprox(a.re * a.re + a.im * a.im)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/fractals/julia_sets.py", line 57, in sqrtApprox
+    guess = (guess + x // guess) / 2.0
+                     ~~^^~~~~~~
+ZeroDivisionError: float floor division by zero

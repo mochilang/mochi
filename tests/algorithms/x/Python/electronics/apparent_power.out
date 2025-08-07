@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/electronics/apparent_power.py", line 60, in <module>
+    assert approx_equal(s, expected, 0.5)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

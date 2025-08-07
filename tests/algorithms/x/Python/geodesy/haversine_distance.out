@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/geodesy/haversine_distance.py", line 83, in <module>
+    print(str(haversine_distance(SAN_FRANCISCO[0], SAN_FRANCISCO[1], YOSEMITE[0], YOSEMITE[1])))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/geodesy/haversine_distance.py", line 71, in haversine_distance
+    phi_1 = atanApprox((1.0 - flattening) * tan_approx(to_radians(lat1)))
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/geodesy/haversine_distance.py", line 38, in tan_approx
+    return sin_taylor(x) / cos_taylor(x)
+           ~~~~~~~~~~~~~~^~~~~~~~~~~~~~~
+ZeroDivisionError: float division by zero

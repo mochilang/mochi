@@ -1,0 +1,10 @@
+{
+  "duration_us": 46,
+  "memory_bytes": 14614528,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/electronics/resistor_color_code.py", line 135, in <module>
+    assert calculate_resistance(3, ["Black", "Blue", "Orange"]) == "6000Ω ±20% "
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError
