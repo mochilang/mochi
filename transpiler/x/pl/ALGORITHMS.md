@@ -2,14 +2,14 @@
 
 This checklist is auto-generated.
 Generated Prolog code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Prolog`.
-Last updated: 2025-08-07 15:18 GMT+7
+Last updated: 2025-08-07 16:25 GMT+7
 
-## Algorithms Golden Test Checklist (2/1077)
+## Algorithms Golden Test Checklist (3/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 73.0µs | 0B |
 | 2 | backtracking/all_permutations | ✓ |  |  |
-| 3 | backtracking/all_subsequences |   |  |  |
+| 3 | backtracking/all_subsequences | ✓ | 152.0µs | 0B |
 | 4 | backtracking/coloring |   |  |  |
 | 5 | backtracking/combination_sum |   |  |  |
 | 6 | backtracking/crossword_puzzle_solver |   |  |  |
