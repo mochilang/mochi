@@ -1,0 +1,25 @@
+run: exit status 70
+ERROR in "string-cmp": invalid type, expected String: ("milk")
+  called from <anonymous> on line 188 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/apriori_algorithm.scm
+  called from loop3 on line 173 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/apriori_algorithm.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 153 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/apriori_algorithm.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 267 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/apriori_algorithm.scm
+  called from loop6 on line 250 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/apriori_algorithm.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 230 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/apriori_algorithm.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 1720 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/apriori_algorithm.scm
+  called from loop53 on line 1703 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/apriori_algorithm.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from loop51 on line 1668 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/apriori_algorithm.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 1600 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/apriori_algorithm.scm
+  called from loop47 on line 1577 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/apriori_algorithm.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 1564 of file /workspace/mochi/tests/algorithms/x/Scheme/machine_learning/apriori_algorithm.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 280 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm

@@ -36,6 +36,7 @@ var usesBench bool
 var usesSubprocess bool
 var usesFetch bool
 var needMD5Hex bool
+var needSHA256 bool
 var benchMain bool
 var returnStack []Symbol
 var unionConsts map[string]int
@@ -259,6 +260,19 @@ func header() []byte {
 	if needMD5Hex {
 		prelude += "(import (chibi crypto md5))\n"
 	}
+	if needSHA256 {
+		prelude += "(import (chibi crypto sha2))\n"
+		prelude += `(define (_sha256 v)
+  (let* ((bv (cond ((string? v) (string->utf8 v))
+                   ((list? v) (apply bytevector v))
+                   (else (error "sha256 expects string or list"))))
+         (hex (sha-256 bv)))
+    (let loop ((i 0) (out '()))
+      (if (>= i (string-length hex))
+          (reverse out)
+          (let ((b (string->number (substring hex i (+ i 2)) 16)))
+            (loop (+ i 2) (cons b out)))))))`
+	}
 	if usesInput {
 		prelude += "(import (chibi io))\n"
 	}
@@ -429,7 +443,7 @@ func header() []byte {
 		ts.In(loc).Format("2006-01-02 15:04 -0700"), prelude))
 }
 
-func voidSym() Node { return &List{Elems: []Node{Symbol("quote"), &List{Elems: []Node{}}}} }
+func voidSym() Node { return Symbol("'()") }
 
 func typedDefault(t *parser.TypeRef) Node {
 	if t == nil || t.Simple == nil {
@@ -2980,6 +2994,12 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 				&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), args[0]}}, &List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("string-contains"), args[0], args[1]}}, BoolLit(true), BoolLit(false)}}}},
 				&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("member"), args[1], args[0]}}, BoolLit(true), BoolLit(false)}}}},
 			}}, nil
+		case "sha256":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("sha256 expects 1 arg")
+			}
+			needSHA256 = true
+			return &List{Elems: []Node{Symbol("_sha256"), args[0]}}, nil
 		case "keys":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("keys expects 1 arg")
