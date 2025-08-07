@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-07 02:54 UTC
+Last updated: 2025-08-07 03:34 UTC
 
-## Algorithms Golden Test Checklist (999/1077)
+## Algorithms Golden Test Checklist (1000/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 645µs | 22.6 KB |
@@ -71,7 +71,7 @@ Last updated: 2025-08-07 02:54 UTC
 | 62 | cellular_automata/nagel_schrekenberg | ✓ | 1.278ms | 33.1 KB |
 | 63 | cellular_automata/one_dimensional | ✓ | 1.54ms | 100.1 KB |
 | 64 | cellular_automata/wa_tor | ✓ | 2.975ms | 669.4 KB |
-| 65 | ciphers/a1z26 | ✓ | 945µs | 30.1 KB |
+| 65 | ciphers/a1z26 | ✓ | 571.223ms | 33.7 KB |
 | 66 | ciphers/affine_cipher | ✓ | 2.349ms | 537.4 KB |
 | 67 | ciphers/atbash | ✓ | 1.418ms | 24.3 KB |
 | 68 | ciphers/autokey | ✓ | 1.975ms | 544.5 KB |
@@ -88,8 +88,8 @@ Last updated: 2025-08-07 02:54 UTC
 | 79 | ciphers/decrypt_caesar_with_chi_squared | ✓ | 9.83ms | 265.3 KB |
 | 80 | ciphers/deterministic_miller_rabin | ✓ | 3.004ms | 106.3 KB |
 | 81 | ciphers/diffie | ✓ | 1.635ms | 32.2 KB |
-| 82 | ciphers/diffie_hellman |   |  |  |
-| 83 | ciphers/elgamal_key_generator | ✓ | 1.641ms | 45.7 KB |
+| 82 | ciphers/diffie_hellman | ✓ | 571.223ms | 18.1 KB |
+| 83 | ciphers/elgamal_key_generator | ✓ | 571.223ms | 544.8 KB |
 | 84 | ciphers/enigma_machine2 | ✓ | 5.609ms | 56.7 KB |
 | 85 | ciphers/fractionated_morse_cipher | ✓ | 1.903ms | 556.5 KB |
 | 86 | ciphers/gronsfeld_cipher | ✓ | 3.173ms | 546.0 KB |
@@ -97,12 +97,12 @@ Last updated: 2025-08-07 02:54 UTC
 | 88 | ciphers/mixed_keyword_cypher | ✓ | 2.721ms | 42.9 KB |
 | 89 | ciphers/mono_alphabetic_ciphers | ✓ | 953µs | 17.0 KB |
 | 90 | ciphers/morse_code | ✓ | 3.066ms | 42.6 KB |
-| 91 | ciphers/onepad_cipher | ✓ | 3.377ms | 280.5 KB |
-| 92 | ciphers/permutation_cipher | ✓ | 1.248ms | 26.4 KB |
+| 91 | ciphers/onepad_cipher | ✓ | 571.223ms | 23.2 KB |
+| 92 | ciphers/permutation_cipher | ✓ | 571.223ms | 34.9 KB |
 | 93 | ciphers/playfair_cipher | ✓ | 2.055ms | 33.9 KB |
 | 94 | ciphers/polybius | ✓ | 1.358ms | 38.1 KB |
 | 95 | ciphers/porta_cipher | ✓ | 2.315ms | 35.5 KB |
-| 96 | ciphers/rabin_miller | ✓ | 2.925ms | 544.8 KB |
+| 96 | ciphers/rabin_miller | ✓ | 268.155ms | 550.3 KB |
 | 97 | ciphers/rail_fence_cipher | ✓ | 2.011ms | 53.2 KB |
 | 98 | ciphers/rot13 | ✓ | 2.735ms | 31.0 KB |
 | 99 | ciphers/rsa_cipher | ✓ | 2.068ms | 537.5 KB |

@@ -1,7 +1,0 @@
-run: exit status 1
-[0m[1m[31merror[0m: Uncaught (in promise) Error: Invalid public key
-function panic(msg: any): never { throw new Error(String(msg)); }
-[0m[31m                                        ^[0m
-    at [0m[1m[3mpanic[0m ([0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/ciphers/diffie_hellman.ts[0m:[0m[33m98[0m:[0m[33m41[0m)
-    at [0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/ciphers/diffie_hellman.ts[0m:[0m[33m117[0m:[0m[33m5[0m
-    at [0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/ciphers/diffie_hellman.ts[0m:[0m[33m134[0m:[0m[33m2[0m

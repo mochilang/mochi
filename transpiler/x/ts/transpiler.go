@@ -54,6 +54,8 @@ var returnOutsideFunc bool
 var paramStack []map[string]bool
 var asyncFuncs map[string]bool
 
+const maxSafeMul = 94906265 // sqrt(2^53 - 1)
+
 var reserved = map[string]bool{
 	"break": true, "case": true, "catch": true, "class": true, "const": true,
 	"continue": true, "debugger": true, "default": true, "delete": true,
@@ -617,19 +619,19 @@ func (e *SumExpr) emit(w io.Writer) {
 }
 
 func (e *MinExpr) emit(w io.Writer) {
-        io.WriteString(w, "(() => { const _arr = ")
-        if e.Value != nil {
-                e.Value.emit(w)
-        }
-        io.WriteString(w, "; return _arr.length === 0 ? 0 : Math.min(..._arr); })()")
+	io.WriteString(w, "(() => { const _arr = ")
+	if e.Value != nil {
+		e.Value.emit(w)
+	}
+	io.WriteString(w, "; return _arr.length === 0 ? 0 : Math.min(..._arr); })()")
 }
 
 func (e *MaxExpr) emit(w io.Writer) {
-        io.WriteString(w, "(() => { const _arr = ")
-        if e.Value != nil {
-                e.Value.emit(w)
-        }
-        io.WriteString(w, "; return _arr.length === 0 ? 0 : Math.max(..._arr); })()")
+	io.WriteString(w, "(() => { const _arr = ")
+	if e.Value != nil {
+		e.Value.emit(w)
+	}
+	io.WriteString(w, "; return _arr.length === 0 ? 0 : Math.max(..._arr); })()")
 }
 
 func (e *IntDivExpr) emit(w io.Writer) {
@@ -2051,10 +2053,10 @@ func emitStmt(w *indentWriter, s Stmt, level int) {
 // runtime helper libraries. Most Mochi features are supported including
 // joins and grouping in query expressions.
 func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, error) {
-        transpileEnv = env
-        generatedTypes = map[string]bool{}
-        prelude = nil
-        pythonMathAliases = map[string]bool{}
+	transpileEnv = env
+	generatedTypes = map[string]bool{}
+	prelude = nil
+	pythonMathAliases = map[string]bool{}
 	useNow = false
 	useInput = false
 	useKeys = false
@@ -2067,13 +2069,13 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	useHas = false
 	useFetch = false
 	useLookupHost = false
-        useStr = false
-        useLen = false
-        usePanic = false
-        usePyName = false
-        funcDepth = 0
-        returnOutsideFunc = false
-       asyncFuncs = map[string]bool{}
+	useStr = false
+	useLen = false
+	usePanic = false
+	usePyName = false
+	funcDepth = 0
+	returnOutsideFunc = false
+	asyncFuncs = map[string]bool{}
 	defer func() {
 		transpileEnv = nil
 		generatedTypes = nil
@@ -2091,18 +2093,18 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		useHas = false
 		useFetch = false
 		useLookupHost = false
-                useStr = false
-                useLen = false
-                usePanic = false
-                usePyName = false
-                funcDepth = 0
-                returnOutsideFunc = false
-               asyncFuncs = nil
-        }()
-        tsProg := &Program{}
-        fixScientificNotation(prog)
-        mainDefined := false
-        mainCalled := false
+		useStr = false
+		useLen = false
+		usePanic = false
+		usePyName = false
+		funcDepth = 0
+		returnOutsideFunc = false
+		asyncFuncs = nil
+	}()
+	tsProg := &Program{}
+	fixScientificNotation(prog)
+	mainDefined := false
+	mainCalled := false
 
 	for _, st := range prog.Statements {
 		if st.Fun != nil && st.Fun.Name == "main" {
@@ -2207,6 +2209,9 @@ var _nowSeeded = false;
       _nowSeed = v;
       _nowSeeded = true;
     }
+  } else {
+    _nowSeed = 1;
+    _nowSeeded = true;
   }
 }
 function _now(): number {
@@ -2301,14 +2306,14 @@ function sha256(bs: number[]): number[] {
   return String(x);
 }`})
 	}
-        if usePanic {
-                prelude = append(prelude, &RawStmt{Code: `function _panic(msg: any): never { throw new Error(String(msg)); }`})
-        }
-        if usePyName {
-                prelude = append(prelude, &RawStmt{Code: `const __name__ = "__main__";`})
-        }
-        if useHas {
-                prelude = append(prelude, &RawStmt{Code: `function _has(obj: any, key: any): boolean {
+	if usePanic {
+		prelude = append(prelude, &RawStmt{Code: `function _panic(msg: any): never { throw new Error(String(msg)); }`})
+	}
+	if usePyName {
+		prelude = append(prelude, &RawStmt{Code: `const __name__ = "__main__";`})
+	}
+	if useHas {
+		prelude = append(prelude, &RawStmt{Code: `function _has(obj: any, key: any): boolean {
   return Object.prototype.hasOwnProperty.call(obj, String(key));
 }`})
 	}
@@ -2337,7 +2342,7 @@ function sha256(bs: number[]): number[] {
 }`})
 	}
 	if useFetch {
-                prelude = append(prelude, &RawStmt{Code: `async function _fetch(url: string, opts?: any): Promise<any> {
+		prelude = append(prelude, &RawStmt{Code: `async function _fetch(url: string, opts?: any): Promise<any> {
   const init: RequestInit = { method: opts?.method ?? 'GET' };
   if (opts?.headers) init.headers = opts.headers;
   if (opts && 'body' in opts) init.body = JSON.stringify(opts.body);
@@ -2485,15 +2490,15 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 				}
 				return &AssignStmt{Name: s.Var.Name, Expr: e}, nil
 			}
-                        transpileEnv.SetVar(s.Var.Name, t, true)
-                        if len(paramStack) > 0 {
-                                paramStack[len(paramStack)-1][s.Var.Name] = true
-                        }
-                }
-                if q, ok := e.(*QueryExprJS); ok && q.ElemType != "" {
-                        typeStr = q.ElemType + "[]"
-                }
-                return &VarDecl{Name: s.Var.Name, Expr: e, Const: !mutable, Type: typeStr}, nil
+			transpileEnv.SetVar(s.Var.Name, t, true)
+			if len(paramStack) > 0 {
+				paramStack[len(paramStack)-1][s.Var.Name] = true
+			}
+		}
+		if q, ok := e.(*QueryExprJS); ok && q.ElemType != "" {
+			typeStr = q.ElemType + "[]"
+		}
+		return &VarDecl{Name: s.Var.Name, Expr: e, Const: !mutable, Type: typeStr}, nil
 	case s.Assign != nil:
 		val, err := convertExpr(s.Assign.Value)
 		if err != nil {
@@ -2671,14 +2676,14 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		if s.Fun.Return != nil {
 			retType = tsType(types.ResolveTypeRef(s.Fun.Return, transpileEnv))
 		}
-               name := safeName(s.Fun.Name)
-               fd := &FuncDecl{Name: name, Params: params, ParamTypes: typesArr, ReturnType: retType, Body: body, Async: useFetch}
-               if fd.Async {
-                       asyncFuncs[name] = true
-               }
-               return fd, nil
-        case s.If != nil:
-                return convertIfStmt(s.If, transpileEnv)
+		name := safeName(s.Fun.Name)
+		fd := &FuncDecl{Name: name, Params: params, ParamTypes: typesArr, ReturnType: retType, Body: body, Async: useFetch}
+		if fd.Async {
+			asyncFuncs[name] = true
+		}
+		return fd, nil
+	case s.If != nil:
+		return convertIfStmt(s.If, transpileEnv)
 	case s.While != nil:
 		return convertWhileStmt(s.While, transpileEnv)
 	case s.For != nil:
@@ -2920,19 +2925,19 @@ func convertTypeDecl(td *parser.TypeDecl) (Stmt, error) {
 }
 
 func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
-        paramStack = append(paramStack, map[string]bool{})
-        defer func() { paramStack = paramStack[:len(paramStack)-1] }()
-        var out []Stmt
-        for _, s := range list {
-                st, err := convertStmt(s)
-                if err != nil {
-                        return nil, err
-                }
-                if st != nil {
-                        out = append(out, st)
-                }
-        }
-        return out, nil
+	paramStack = append(paramStack, map[string]bool{})
+	defer func() { paramStack = paramStack[:len(paramStack)-1] }()
+	var out []Stmt
+	for _, s := range list {
+		st, err := convertStmt(s)
+		if err != nil {
+			return nil, err
+		}
+		if st != nil {
+			out = append(out, st)
+		}
+	}
+	return out, nil
 }
 
 func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
@@ -3458,8 +3463,13 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 					operands[i+1] = &CallExpr{Func: "BigInt", Args: []Expr{operands[i+1]}}
 					typesArr[i+1] = types.BigIntType{}
 				}
-			}
-			if ops[i] == "/" && (isIntType(typesArr[i]) && isIntType(typesArr[i+1]) || (isVarIntExpr(operands[i]) && isIntLitExpr(operands[i+1])) || (isIntLitExpr(operands[i]) && isIntLitExpr(operands[i+1]))) && !(isFloatLitExpr(operands[i]) || isFloatLitExpr(operands[i+1])) {
+			} else if ops[i] == "%" && isIntType(typesArr[i]) && isIntType(typesArr[i+1]) && containsLargeIntMul(operands[i]) {
+				operands[i] = toBigIntExpr(operands[i])
+				operands[i+1] = toBigIntExpr(operands[i+1])
+				expr := &BinaryExpr{Left: operands[i], Op: "%", Right: operands[i+1]}
+				operands[i] = &CallExpr{Func: "Number", Args: []Expr{expr}}
+				typesArr[i] = types.IntType{}
+			} else if ops[i] == "/" && (isIntType(typesArr[i]) && isIntType(typesArr[i+1]) || (isVarIntExpr(operands[i]) && isIntLitExpr(operands[i+1])) || (isIntLitExpr(operands[i]) && isIntLitExpr(operands[i+1]))) && !(isFloatLitExpr(operands[i]) || isFloatLitExpr(operands[i+1])) {
 				if isBigIntType(typesArr[i]) || isBigIntType(typesArr[i+1]) {
 					operands[i] = &IntDivExpr{Left: operands[i], Right: operands[i+1], Big: true}
 					typesArr[i] = types.BigIntType{}
@@ -3928,16 +3938,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("float expects one argument")
 			}
 			return &CallExpr{Func: "Number", Args: args}, nil
-               case "split":
-                       if transpileEnv != nil {
-                               if _, ok := transpileEnv.GetFunc("split"); ok {
-                                       return &CallExpr{Func: "split", Args: args}, nil
-                               }
-                       }
-                       if len(args) != 2 {
-                               return nil, fmt.Errorf("split expects two arguments")
-                       }
-                       return &MethodCallExpr{Target: args[0], Method: "split", Args: []Expr{args[1]}}, nil
+		case "split":
+			if transpileEnv != nil {
+				if _, ok := transpileEnv.GetFunc("split"); ok {
+					return &CallExpr{Func: "split", Args: args}, nil
+				}
+			}
+			if len(args) != 2 {
+				return nil, fmt.Errorf("split expects two arguments")
+			}
+			return &MethodCallExpr{Target: args[0], Method: "split", Args: []Expr{args[1]}}, nil
 		case "parseIntStr":
 			if transpileEnv != nil {
 				if _, ok := transpileEnv.GetFunc("parseIntStr"); ok {
@@ -4055,27 +4065,27 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			useNumDenom = true
 			return &CallExpr{Func: "num", Args: args}, nil
-               case "denom":
-                       if len(args) != 1 {
-                               return nil, fmt.Errorf("denom expects one argument")
-                       }
-                       useNumDenom = true
-                       return &CallExpr{Func: "denom", Args: args}, nil
-               case "first":
-                       if len(args) != 1 {
-                               return nil, fmt.Errorf("first expects one argument")
-                       }
-                       return &IndexExpr{Target: args[0], Index: &NumberLit{Value: "0"}}, nil
-               case "error":
-                       if len(args) != 1 {
-                               return nil, fmt.Errorf("error expects one argument")
-                       }
-                       usePanic = true
-                       return &CallExpr{Func: "_panic", Args: args}, nil
-               case "panic":
-                       if _, ok := transpileEnv.GetFunc("panic"); ok {
-                               // user-defined panic function; treat like normal call
-                               return &CallExpr{Func: "panic", Args: args}, nil
+		case "denom":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("denom expects one argument")
+			}
+			useNumDenom = true
+			return &CallExpr{Func: "denom", Args: args}, nil
+		case "first":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("first expects one argument")
+			}
+			return &IndexExpr{Target: args[0], Index: &NumberLit{Value: "0"}}, nil
+		case "error":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("error expects one argument")
+			}
+			usePanic = true
+			return &CallExpr{Func: "_panic", Args: args}, nil
+		case "panic":
+			if _, ok := transpileEnv.GetFunc("panic"); ok {
+				// user-defined panic function; treat like normal call
+				return &CallExpr{Func: "panic", Args: args}, nil
 			}
 			if len(args) != 1 {
 				return nil, fmt.Errorf("panic expects one argument")
@@ -4098,12 +4108,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					}, nil
 				}
 			}
-                       if asyncFuncs[p.Call.Func] {
-                               return &AwaitExpr{X: &CallExpr{Func: p.Call.Func, Args: args}}, nil
-                       }
-                       return &CallExpr{Func: p.Call.Func, Args: args}, nil
-               }
-       case p.If != nil:
+			if asyncFuncs[p.Call.Func] {
+				return &AwaitExpr{X: &CallExpr{Func: p.Call.Func, Args: args}}, nil
+			}
+			return &CallExpr{Func: p.Call.Func, Args: args}, nil
+		}
+	case p.If != nil:
 		cond, err := convertExpr(p.If.Cond)
 		if err != nil {
 			return nil, err
@@ -4175,16 +4185,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		if p.Load.Path != nil {
 			path = strings.Trim(*p.Load.Path, "\"")
 		}
-               pathExpr := fmt.Sprintf("%q", path)
-               clean := path
-               for strings.HasPrefix(clean, "../") {
-                       clean = strings.TrimPrefix(clean, "../")
-               }
-               if path != "" && strings.HasPrefix(path, "../") {
-                       pathExpr = fmt.Sprintf("new URL(\"../../../%s\", import.meta.url).pathname", clean)
-               } else if path != "" && !strings.HasPrefix(path, "/") {
-                       pathExpr = fmt.Sprintf("new URL('../../../../..', import.meta.url).pathname + %q", path)
-               }
+		pathExpr := fmt.Sprintf("%q", path)
+		clean := path
+		for strings.HasPrefix(clean, "../") {
+			clean = strings.TrimPrefix(clean, "../")
+		}
+		if path != "" && strings.HasPrefix(path, "../") {
+			pathExpr = fmt.Sprintf("new URL(\"../../../%s\", import.meta.url).pathname", clean)
+		} else if path != "" && !strings.HasPrefix(path, "/") {
+			pathExpr = fmt.Sprintf("new URL('../../../../..', import.meta.url).pathname + %q", path)
+		}
 		switch format {
 		case "json":
 			return &RawExpr{Code: fmt.Sprintf("JSON.parse(Deno.readTextFileSync(%s))", pathExpr)}, nil
@@ -4634,6 +4644,54 @@ func isBigIntType(t types.Type) bool {
 		return isBigIntType(tt.Elem)
 	default:
 		return false
+	}
+}
+
+func containsLargeIntMul(e Expr) bool {
+	switch v := e.(type) {
+	case *BinaryExpr:
+		if v.Op == "*" {
+			if isLargeIntOperand(v.Left) && (isVarIntExpr(v.Right) || isLargeIntOperand(v.Right)) {
+				return true
+			}
+			if isLargeIntOperand(v.Right) && (isVarIntExpr(v.Left) || isLargeIntOperand(v.Left)) {
+				return true
+			}
+		}
+		return containsLargeIntMul(v.Left) || containsLargeIntMul(v.Right)
+	case *IntDivExpr:
+		return containsLargeIntMul(v.Left) || containsLargeIntMul(v.Right)
+	}
+	return false
+}
+
+func isLargeIntOperand(e Expr) bool {
+	if n, ok := e.(*NumberLit); ok {
+		val, err := strconv.ParseInt(strings.TrimSuffix(n.Value, "n"), 10, 64)
+		if err == nil {
+			if val > maxSafeMul || val < -maxSafeMul {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func toBigIntExpr(e Expr) Expr {
+	switch v := e.(type) {
+	case *NumberLit:
+		if !strings.HasSuffix(v.Value, "n") {
+			return &NumberLit{Value: v.Value + "n"}
+		}
+		return v
+	case *BinaryExpr:
+		return &BinaryExpr{Left: toBigIntExpr(v.Left), Op: v.Op, Right: toBigIntExpr(v.Right)}
+	case *IntDivExpr:
+		return &IntDivExpr{Left: toBigIntExpr(v.Left), Right: toBigIntExpr(v.Right), Big: true}
+	case *NameRef:
+		return &CallExpr{Func: "BigInt", Args: []Expr{v}}
+	default:
+		return &CallExpr{Func: "BigInt", Args: []Expr{e}}
 	}
 }
 
@@ -5091,15 +5149,15 @@ func identName(e *parser.Expr) (string, bool) {
 // expressions so the transpiler can treat it uniformly with dynamic property
 // access. It never returns nil.
 func selectorToExpr(sel *parser.SelectorExpr) Expr {
-        expr := Expr(&NameRef{Name: sel.Root})
-        if sel.Root == "__name__" {
-                usePyName = true
-        }
-        for _, part := range sel.Tail {
-                if pythonMathAliases != nil {
-                        if nr, ok := expr.(*NameRef); ok && pythonMathAliases[nr.Name] {
-                                if part == "pi" || part == "e" {
-                                        part = strings.ToUpper(part)
+	expr := Expr(&NameRef{Name: sel.Root})
+	if sel.Root == "__name__" {
+		usePyName = true
+	}
+	for _, part := range sel.Tail {
+		if pythonMathAliases != nil {
+			if nr, ok := expr.(*NameRef); ok && pythonMathAliases[nr.Name] {
+				if part == "pi" || part == "e" {
+					part = strings.ToUpper(part)
 				}
 			}
 		}
@@ -5393,127 +5451,126 @@ func exprToNode(e Expr) *ast.Node {
 // preceding numeric literal and removes the dangling identifier statement so
 // the transpiled code sees the correct value.
 func fixScientificNotation(prog *parser.Program) {
-        if prog == nil {
-                return
-        }
-        prog.Statements = fixSciSlice(prog.Statements)
+	if prog == nil {
+		return
+	}
+	prog.Statements = fixSciSlice(prog.Statements)
 }
 
 func fixSciSlice(stmts []*parser.Statement) []*parser.Statement {
-        if len(stmts) == 0 {
-                return stmts
-        }
-        var out []*parser.Statement
-        for i := 0; i < len(stmts); i++ {
-                st := stmts[i]
-                // Merge var/let/assign followed by eNN expression
-                if i+1 < len(stmts) && stmts[i+1].Expr != nil {
-                        if exp, ok := parseENotation(stmts[i+1].Expr.Expr); ok {
-                                adjusted := false
-                                if st.Var != nil {
-                                        adjusted = applyENotation(st.Var.Value, exp)
-                                } else if st.Let != nil {
-                                        adjusted = applyENotation(st.Let.Value, exp)
-                                } else if st.Assign != nil {
-                                        adjusted = applyENotation(st.Assign.Value, exp)
-                                }
-                                if adjusted {
-                                        i++ // skip exponent statement
-                                }
-                        }
-                }
-                // Recurse into statement bodies
-                if st.Fun != nil {
-                        st.Fun.Body = fixSciSlice(st.Fun.Body)
-                }
-                if st.If != nil {
-                        st.If.Then = fixSciSlice(st.If.Then)
-                        if st.If.ElseIf != nil {
-                                st.If.ElseIf.Then = fixSciSlice(st.If.ElseIf.Then)
-                                if len(st.If.ElseIf.Else) > 0 {
-                                        st.If.ElseIf.Else = fixSciSlice(st.If.ElseIf.Else)
-                                }
-                        }
-                        if len(st.If.Else) > 0 {
-                                st.If.Else = fixSciSlice(st.If.Else)
-                        }
-                }
-                if st.While != nil {
-                        st.While.Body = fixSciSlice(st.While.Body)
-                }
-                if st.For != nil {
-                        st.For.Body = fixSciSlice(st.For.Body)
-                }
-                if st.Bench != nil {
-                        st.Bench.Body = fixSciSlice(st.Bench.Body)
-                }
-                if st.Test != nil {
-                        st.Test.Body = fixSciSlice(st.Test.Body)
-                }
-                out = append(out, st)
-        }
-        return out
+	if len(stmts) == 0 {
+		return stmts
+	}
+	var out []*parser.Statement
+	for i := 0; i < len(stmts); i++ {
+		st := stmts[i]
+		// Merge var/let/assign followed by eNN expression
+		if i+1 < len(stmts) && stmts[i+1].Expr != nil {
+			if exp, ok := parseENotation(stmts[i+1].Expr.Expr); ok {
+				adjusted := false
+				if st.Var != nil {
+					adjusted = applyENotation(st.Var.Value, exp)
+				} else if st.Let != nil {
+					adjusted = applyENotation(st.Let.Value, exp)
+				} else if st.Assign != nil {
+					adjusted = applyENotation(st.Assign.Value, exp)
+				}
+				if adjusted {
+					i++ // skip exponent statement
+				}
+			}
+		}
+		// Recurse into statement bodies
+		if st.Fun != nil {
+			st.Fun.Body = fixSciSlice(st.Fun.Body)
+		}
+		if st.If != nil {
+			st.If.Then = fixSciSlice(st.If.Then)
+			if st.If.ElseIf != nil {
+				st.If.ElseIf.Then = fixSciSlice(st.If.ElseIf.Then)
+				if len(st.If.ElseIf.Else) > 0 {
+					st.If.ElseIf.Else = fixSciSlice(st.If.ElseIf.Else)
+				}
+			}
+			if len(st.If.Else) > 0 {
+				st.If.Else = fixSciSlice(st.If.Else)
+			}
+		}
+		if st.While != nil {
+			st.While.Body = fixSciSlice(st.While.Body)
+		}
+		if st.For != nil {
+			st.For.Body = fixSciSlice(st.For.Body)
+		}
+		if st.Bench != nil {
+			st.Bench.Body = fixSciSlice(st.Bench.Body)
+		}
+		if st.Test != nil {
+			st.Test.Body = fixSciSlice(st.Test.Body)
+		}
+		out = append(out, st)
+	}
+	return out
 }
 
 // parseENotation checks if the expression is an identifier of the form eNN
 // and returns the numeric exponent when true.
 func parseENotation(expr *parser.Expr) (int, bool) {
-        if expr == nil || expr.Binary == nil || len(expr.Binary.Right) != 0 {
-                return 0, false
-        }
-        u := expr.Binary.Left
-        if u == nil || len(u.Ops) != 0 || u.Value == nil || u.Value.Target == nil {
-                return 0, false
-        }
-        sel := u.Value.Target.Selector
-        if sel == nil || len(sel.Tail) != 0 {
-                return 0, false
-        }
-        name := sel.Root
-        if strings.HasPrefix(name, "e") {
-                if n, err := strconv.Atoi(name[1:]); err == nil {
-                        return n, true
-                }
-        }
-        return 0, false
+	if expr == nil || expr.Binary == nil || len(expr.Binary.Right) != 0 {
+		return 0, false
+	}
+	u := expr.Binary.Left
+	if u == nil || len(u.Ops) != 0 || u.Value == nil || u.Value.Target == nil {
+		return 0, false
+	}
+	sel := u.Value.Target.Selector
+	if sel == nil || len(sel.Tail) != 0 {
+		return 0, false
+	}
+	name := sel.Root
+	if strings.HasPrefix(name, "e") {
+		if n, err := strconv.Atoi(name[1:]); err == nil {
+			return n, true
+		}
+	}
+	return 0, false
 }
 
 // applyENotation multiplies the numeric literal inside expr by 10^exp. It
 // returns true if the expression was modified.
 func applyENotation(expr *parser.Expr, exp int) bool {
-        if expr == nil || expr.Binary == nil || len(expr.Binary.Right) != 0 {
-                return false
-        }
-        u := expr.Binary.Left
-        if u == nil || u.Value == nil || u.Value.Target == nil {
-                return false
-        }
-        sign := 1.0
-        if len(u.Ops) == 1 {
-                if u.Ops[0] == "-" {
-                        sign = -1.0
-                } else if u.Ops[0] != "+" {
-                        return false
-                }
-                u.Ops = nil
-        } else if len(u.Ops) > 1 {
-                return false
-        }
-        lit := u.Value.Target.Lit
-        if lit == nil {
-                return false
-        }
-        var val float64
-        if lit.Float != nil {
-                val = *lit.Float
-        } else if lit.Int != nil {
-                val = float64(*lit.Int)
-                lit.Int = nil
-        } else {
-                return false
-        }
-        val = sign * val * math.Pow(10, float64(exp))
-        lit.Float = &val
-        return true
+	if expr == nil || expr.Binary == nil || len(expr.Binary.Right) != 0 {
+		return false
+	}
+	u := expr.Binary.Left
+	if u == nil || u.Value == nil || u.Value.Target == nil {
+		return false
+	}
+	sign := 1.0
+	if len(u.Ops) == 1 {
+		if u.Ops[0] == "-" {
+			sign = -1.0
+		} else if u.Ops[0] != "+" {
+			return false
+		}
+		u.Ops = nil
+	} else if len(u.Ops) > 1 {
+		return false
+	}
+	lit := u.Value.Target.Lit
+	if lit == nil {
+		return false
+	}
+	var val float64
+	if lit.Float != nil {
+		val = *lit.Float
+	} else if lit.Int != nil {
+		val = float64(*lit.Int)
+		lit.Int = nil
+	} else {
+		return false
+	}
+	val = sign * val * math.Pow(10, float64(exp))
+	lit.Float = &val
+	return true
 }
-
