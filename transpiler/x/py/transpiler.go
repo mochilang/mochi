@@ -137,6 +137,11 @@ def _set_index(lst, idx, val):
     return lst
 `
 
+const helperPanic = `
+def panic(msg):
+    raise Exception(msg)
+`
+
 var pyKeywords = map[string]bool{
 	"False":    true,
 	"True":     true,
@@ -2957,6 +2962,9 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 		}
 	}
 	if _, err := io.WriteString(w, "import sys\nsys.set_int_max_str_digits(0)\nimport os\nif os.path.dirname(__file__) in sys.path:\n    sys.path.remove(os.path.dirname(__file__))\n\n"); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, helperPanic+"\n"); err != nil {
 		return err
 	}
 	if usesNow {
