@@ -1,0 +1,6 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/rb/neural_network/activation_functions/softplus.rb:64:in `panic': ln domain error (RuntimeError)
+	from /workspace/mochi/tests/algorithms/transpiler/rb/neural_network/activation_functions/softplus.rb:71:in `ln'
+	from /workspace/mochi/tests/algorithms/transpiler/rb/neural_network/activation_functions/softplus.rb:102:in `softplus'
+	from /workspace/mochi/tests/algorithms/transpiler/rb/neural_network/activation_functions/softplus.rb:112:in `main'
+	from /workspace/mochi/tests/algorithms/transpiler/rb/neural_network/activation_functions/softplus.rb:116:in `<main>'

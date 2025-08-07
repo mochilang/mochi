@@ -1,0 +1,5 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/rb/physics/basic_orbital_capture.rb:64:in `panic': capture_area failed (RuntimeError)
+	from /workspace/mochi/tests/algorithms/transpiler/rb/physics/basic_orbital_capture.rb:125:in `run_tests'
+	from /workspace/mochi/tests/algorithms/transpiler/rb/physics/basic_orbital_capture.rb:129:in `main'
+	from /workspace/mochi/tests/algorithms/transpiler/rb/physics/basic_orbital_capture.rb:137:in `<main>'

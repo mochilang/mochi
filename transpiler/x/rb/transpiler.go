@@ -4085,6 +4085,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("float takes one arg")
 			}
 			return &CastExpr{Value: args[0], Type: "float"}, nil
+		case "to_float":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("to_float expects 1 arg")
+			}
+			return &CastExpr{Value: args[0], Type: "float"}, nil
 		case "str":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("str takes one arg")
