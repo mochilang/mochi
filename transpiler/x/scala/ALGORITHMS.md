@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
-Completed programs: 326/1077
-Last updated: 2025-08-07 09:45 +0700
+Completed programs: 327/1077
+Last updated: 2025-08-07 10:15 +0700
 
 Checklist:
 
@@ -356,7 +356,7 @@ Checklist:
 | 347 | dynamic_programming/viterbi | ✓ | 4µs | 8.8 MB |
 | 348 | dynamic_programming/wildcard_matching | ✓ | 10µs | 8.7 MB |
 | 349 | dynamic_programming/word_break | ✓ | 8µs | 8.7 MB |
-| 350 | electronics/apparent_power |   |  |  |
+| 350 | electronics/apparent_power | ✓ |  |  |
 | 351 | electronics/builtin_voltage |   |  |  |
 | 352 | electronics/capacitor_equivalence |   |  |  |
 | 353 | electronics/carrier_concentration |   |  |  |
