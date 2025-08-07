@@ -1,0 +1,6 @@
+run: exit status 1
+No path from start_vertex to finish_vertex.
+  context...:
+   /workspace/mochi/tests/algorithms/x/Racket/graphs/breadth_first_search_zero_one_shortest_path.rkt:169:2
+   /workspace/mochi/tests/algorithms/x/Racket/graphs/breadth_first_search_zero_one_shortest_path.rkt:168:0
+   body of "/workspace/mochi/tests/algorithms/x/Racket/graphs/breadth_first_search_zero_one_shortest_path.rkt"

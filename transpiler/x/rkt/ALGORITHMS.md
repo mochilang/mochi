@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Racket code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Racket`.
-Last updated: 2025-08-07 08:21 UTC
+Last updated: 2025-08-07 09:19 UTC
 
-## Algorithms Golden Test Checklist (310/1077)
+## Algorithms Golden Test Checklist (399/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 9m31.223891s | 18.0 KB |
@@ -332,105 +332,105 @@ Last updated: 2025-08-07 08:21 UTC
 | 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 9m31.223891s | 195.7 KB |
 | 324 | dynamic_programming/matrix_chain_multiplication | ✓ | 9m31.223891s | 384 B |
 | 325 | dynamic_programming/matrix_chain_order | ✓ | 9m31.223891s | 104.7 KB |
-| 326 | dynamic_programming/max_non_adjacent_sum |   |  |  |
-| 327 | dynamic_programming/max_product_subarray |   |  |  |
-| 328 | dynamic_programming/max_subarray_sum |   |  |  |
-| 329 | dynamic_programming/min_distance_up_bottom |   |  |  |
-| 330 | dynamic_programming/minimum_coin_change |   |  |  |
-| 331 | dynamic_programming/minimum_cost_path |   |  |  |
-| 332 | dynamic_programming/minimum_partition |   |  |  |
-| 333 | dynamic_programming/minimum_size_subarray_sum |   |  |  |
-| 334 | dynamic_programming/minimum_squares_to_represent_a_number |   |  |  |
-| 335 | dynamic_programming/minimum_steps_to_one |   |  |  |
-| 336 | dynamic_programming/minimum_tickets_cost |   |  |  |
-| 337 | dynamic_programming/optimal_binary_search_tree |   |  |  |
-| 338 | dynamic_programming/palindrome_partitioning |   |  |  |
-| 339 | dynamic_programming/range_sum_query |   |  |  |
-| 340 | dynamic_programming/regex_match |   |  |  |
-| 341 | dynamic_programming/rod_cutting |   |  |  |
-| 342 | dynamic_programming/smith_waterman |   |  |  |
-| 343 | dynamic_programming/subset_generation |   |  |  |
-| 344 | dynamic_programming/sum_of_subset |   |  |  |
-| 345 | dynamic_programming/trapped_water |   |  |  |
-| 346 | dynamic_programming/tribonacci |   |  |  |
-| 347 | dynamic_programming/viterbi |   |  |  |
-| 348 | dynamic_programming/wildcard_matching |   |  |  |
-| 349 | dynamic_programming/word_break |   |  |  |
-| 350 | electronics/apparent_power |   |  |  |
+| 326 | dynamic_programming/max_non_adjacent_sum | ✓ | 9m31.223891s | 11.6 KB |
+| 327 | dynamic_programming/max_product_subarray | ✓ | 9m31.223891s | 4.7 KB |
+| 328 | dynamic_programming/max_subarray_sum | ✓ | 9m31.223891s | 22.6 KB |
+| 329 | dynamic_programming/min_distance_up_bottom | ✓ |  |  |
+| 330 | dynamic_programming/minimum_coin_change | ✓ | 9m31.223891s | 288.2 KB |
+| 331 | dynamic_programming/minimum_cost_path | ✓ | 9m31.223891s | 16.8 KB |
+| 332 | dynamic_programming/minimum_partition | ✓ | 9m31.223891s |  |
+| 333 | dynamic_programming/minimum_size_subarray_sum | ✓ | 9m31.223891s | 27.7 KB |
+| 334 | dynamic_programming/minimum_squares_to_represent_a_number | ✓ | 9m31.223891s | 212.1 KB |
+| 335 | dynamic_programming/minimum_steps_to_one | ✓ |  |  |
+| 336 | dynamic_programming/minimum_tickets_cost | ✓ | 9m31.223891s | 177.8 KB |
+| 337 | dynamic_programming/optimal_binary_search_tree | ✓ | 9m31.223891s | 96.3 KB |
+| 338 | dynamic_programming/palindrome_partitioning | ✓ |  |  |
+| 339 | dynamic_programming/range_sum_query | ✓ | 9m31.223891s | 11.5 KB |
+| 340 | dynamic_programming/regex_match | ✓ | 9m31.223891s | 138.2 KB |
+| 341 | dynamic_programming/rod_cutting | ✓ |  |  |
+| 342 | dynamic_programming/smith_waterman | ✓ | 9m31.223891s | 10.0 KB |
+| 343 | dynamic_programming/subset_generation | ✓ | 9m31.223891s | 46.5 KB |
+| 344 | dynamic_programming/sum_of_subset | ✓ |  |  |
+| 345 | dynamic_programming/trapped_water | ✓ | 9m31.223891s | 53.6 KB |
+| 346 | dynamic_programming/tribonacci | ✓ | 9m31.223891s | 5.5 KB |
+| 347 | dynamic_programming/viterbi | ✓ |  |  |
+| 348 | dynamic_programming/wildcard_matching | ✓ | 9m31.223891s | 199.8 KB |
+| 349 | dynamic_programming/word_break | ✓ | 9m31.223891s | 104.0 KB |
+| 350 | electronics/apparent_power | ✓ | 9m31.223891s | 384 B |
 | 351 | electronics/builtin_voltage |   |  |  |
-| 352 | electronics/capacitor_equivalence |   |  |  |
-| 353 | electronics/carrier_concentration |   |  |  |
-| 354 | electronics/charging_capacitor |   |  |  |
-| 355 | electronics/charging_inductor |   |  |  |
-| 356 | electronics/circular_convolution |   |  |  |
-| 357 | electronics/coulombs_law |   |  |  |
-| 358 | electronics/electric_conductivity |   |  |  |
-| 359 | electronics/electric_power |   |  |  |
-| 360 | electronics/electrical_impedance |   |  |  |
-| 361 | electronics/ic_555_timer |   |  |  |
-| 362 | electronics/ind_reactance |   |  |  |
+| 352 | electronics/capacitor_equivalence | ✓ | 9m31.223891s | 6.6 KB |
+| 353 | electronics/carrier_concentration | ✓ | 9m31.223891s | 2.3 KB |
+| 354 | electronics/charging_capacitor | ✓ | 9m31.223891s | 60.2 KB |
+| 355 | electronics/charging_inductor | ✓ | 9m31.223891s | 47.7 KB |
+| 356 | electronics/circular_convolution | ✓ | 9m31.223891s | 12.7 KB |
+| 357 | electronics/coulombs_law | ✓ | 9m31.223891s | 21.5 KB |
+| 358 | electronics/electric_conductivity | ✓ | 9m31.223891s | 6.6 KB |
+| 359 | electronics/electric_power | ✓ | 9m31.223891s | 7.2 KB |
+| 360 | electronics/electrical_impedance | ✓ | 9m31.223891s | 31.0 KB |
+| 361 | electronics/ic_555_timer | ✓ | 9m31.223891s | 3.7 KB |
+| 362 | electronics/ind_reactance | ✓ | 9m31.223891s | 8.2 KB |
 | 363 | electronics/ohms_law |   |  |  |
-| 364 | electronics/real_and_reactive_power |   |  |  |
-| 365 | electronics/resistor_color_code |   |  |  |
-| 366 | electronics/resistor_equivalence |   |  |  |
-| 367 | electronics/resonant_frequency |   |  |  |
-| 368 | electronics/wheatstone_bridge |   |  |  |
-| 369 | file_transfer/receive_file |   |  |  |
-| 370 | file_transfer/send_file |   |  |  |
-| 371 | file_transfer/tests/test_send_file |   |  |  |
-| 372 | financial/equated_monthly_installments |   |  |  |
-| 373 | financial/exponential_moving_average |   |  |  |
-| 374 | financial/interest |   |  |  |
-| 375 | financial/present_value |   |  |  |
-| 376 | financial/price_plus_tax |   |  |  |
-| 377 | financial/simple_moving_average |   |  |  |
-| 378 | financial/straight_line_depreciation |   |  |  |
-| 379 | financial/time_and_half_pay |   |  |  |
-| 380 | fractals/julia_sets |   |  |  |
-| 381 | fractals/koch_snowflake |   |  |  |
-| 382 | fractals/mandelbrot |   |  |  |
-| 383 | fractals/sierpinski_triangle |   |  |  |
-| 384 | fractals/vicsek |   |  |  |
-| 385 | fuzzy_logic/fuzzy_operations |   |  |  |
-| 386 | genetic_algorithm/basic_string |   |  |  |
-| 387 | geodesy/haversine_distance |   |  |  |
-| 388 | geodesy/lamberts_ellipsoidal_distance |   |  |  |
-| 389 | geometry/geometry |   |  |  |
-| 390 | graphics/bezier_curve |   |  |  |
-| 391 | graphics/butterfly_pattern |   |  |  |
-| 392 | graphics/digital_differential_analyzer_line |   |  |  |
+| 364 | electronics/real_and_reactive_power | ✓ | 9m31.223891s | 20.4 KB |
+| 365 | electronics/resistor_color_code | ✓ | 9m31.223891s | 384 B |
+| 366 | electronics/resistor_equivalence | ✓ | 9m31.223891s | 6.8 KB |
+| 367 | electronics/resonant_frequency | ✓ | 9m31.223891s | 11.2 KB |
+| 368 | electronics/wheatstone_bridge | ✓ | 9m31.223891s | 3.0 KB |
+| 369 | file_transfer/receive_file | ✓ | 9m31.223891s | 3.3 KB |
+| 370 | file_transfer/send_file | ✓ | 9m31.223891s | 4.3 KB |
+| 371 | file_transfer/tests/test_send_file | ✓ |  |  |
+| 372 | financial/equated_monthly_installments | ✓ | 9m31.223891s | 63.6 KB |
+| 373 | financial/exponential_moving_average | ✓ | 9m31.223891s | 4.8 KB |
+| 374 | financial/interest | ✓ | 9m31.223891s | 695.4 KB |
+| 375 | financial/present_value | ✓ | 9m31.223891s | 33.6 KB |
+| 376 | financial/price_plus_tax | ✓ | 9m31.223891s | 2.6 KB |
+| 377 | financial/simple_moving_average | ✓ | 9m31.223891s | 12.4 KB |
+| 378 | financial/straight_line_depreciation | ✓ | 9m31.223891s | 37.3 KB |
+| 379 | financial/time_and_half_pay | ✓ | 9m31.223891s | 3.6 KB |
+| 380 | fractals/julia_sets | ✓ | 9m31.223891s |  |
+| 381 | fractals/koch_snowflake | ✓ | 9m31.223891s | 15.6 KB |
+| 382 | fractals/mandelbrot | ✓ | 9m31.223891s | 2.1 KB |
+| 383 | fractals/sierpinski_triangle | ✓ | 9m31.223891s | 52.7 KB |
+| 384 | fractals/vicsek | ✓ |  |  |
+| 385 | fuzzy_logic/fuzzy_operations | ✓ | 9m31.223891s | 13.6 KB |
+| 386 | genetic_algorithm/basic_string | ✓ | 9m31.223891s | 8.4 KB |
+| 387 | geodesy/haversine_distance | ✓ | 9m31.223891s | 68.2 KB |
+| 388 | geodesy/lamberts_ellipsoidal_distance | ✓ | 9m31.223891s | 54.1 KB |
+| 389 | geometry/geometry | ✓ | 9m31.223891s | 28.5 KB |
+| 390 | graphics/bezier_curve | ✓ | 9m31.223891s | 36.1 KB |
+| 391 | graphics/butterfly_pattern | ✓ | 9m31.223891s | 91.1 KB |
+| 392 | graphics/digital_differential_analyzer_line | ✓ | 9m31.223891s | 9.9 KB |
 | 393 | graphics/vector3_for_2d_rendering |   |  |  |
-| 394 | graphs/a_star |   |  |  |
-| 395 | graphs/ant_colony_optimization_algorithms |   |  |  |
-| 396 | graphs/articulation_points |   |  |  |
-| 397 | graphs/basic_graphs |   |  |  |
-| 398 | graphs/bellman_ford |   |  |  |
-| 399 | graphs/bi_directional_dijkstra |   |  |  |
-| 400 | graphs/bidirectional_a_star |   |  |  |
-| 401 | graphs/bidirectional_breadth_first_search |   |  |  |
-| 402 | graphs/bidirectional_search |   |  |  |
+| 394 | graphs/a_star | ✓ | 9m31.223891s | 192.2 KB |
+| 395 | graphs/ant_colony_optimization_algorithms | ✓ | 7m25.36997s | 2.0 MB |
+| 396 | graphs/articulation_points | ✓ | 9m31.223891s | 275.5 KB |
+| 397 | graphs/basic_graphs | ✓ |  |  |
+| 398 | graphs/bellman_ford | ✓ | 9m31.223891s | 4.7 KB |
+| 399 | graphs/bi_directional_dijkstra | ✓ | 9m31.223891s | 62.6 KB |
+| 400 | graphs/bidirectional_a_star | ✓ | 9m31.223891s | 2.7 KB |
+| 401 | graphs/bidirectional_breadth_first_search | ✓ | 9m31.223891s | 152.5 KB |
+| 402 | graphs/bidirectional_search | ✓ | 9m31.223891s | 43.3 KB |
 | 403 | graphs/boruvka |   |  |  |
-| 404 | graphs/breadth_first_search |   |  |  |
-| 405 | graphs/breadth_first_search_2 |   |  |  |
+| 404 | graphs/breadth_first_search | ✓ | 9m31.223891s | 6.0 KB |
+| 405 | graphs/breadth_first_search_2 | ✓ | 9m31.223891s | 30.5 KB |
 | 406 | graphs/breadth_first_search_shortest_path |   |  |  |
-| 407 | graphs/breadth_first_search_shortest_path_2 |   |  |  |
+| 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 9m31.223891s | 384 B |
 | 408 | graphs/breadth_first_search_zero_one_shortest_path |   |  |  |
-| 409 | graphs/check_bipatrite |   |  |  |
-| 410 | graphs/check_cycle |   |  |  |
-| 411 | graphs/connected_components |   |  |  |
+| 409 | graphs/check_bipatrite | ✓ |  |  |
+| 410 | graphs/check_cycle | ✓ | 9m31.223891s | 36.8 KB |
+| 411 | graphs/connected_components | ✓ | 9m31.223891s | 117.0 KB |
 | 412 | graphs/deep_clone_graph |   |  |  |
-| 413 | graphs/depth_first_search |   |  |  |
-| 414 | graphs/depth_first_search_2 |   |  |  |
-| 415 | graphs/dijkstra |   |  |  |
-| 416 | graphs/dijkstra_2 |   |  |  |
+| 413 | graphs/depth_first_search | ✓ | 9m31.223891s | 1.0 KB |
+| 414 | graphs/depth_first_search_2 | ✓ |  |  |
+| 415 | graphs/dijkstra | ✓ | 9m31.223891s | 45.3 KB |
+| 416 | graphs/dijkstra_2 | ✓ | 9m31.223891s | 34.3 KB |
 | 417 | graphs/dijkstra_algorithm |   |  |  |
-| 418 | graphs/dijkstra_alternate |   |  |  |
-| 419 | graphs/dijkstra_binary_grid |   |  |  |
+| 418 | graphs/dijkstra_alternate | ✓ | 9m31.223891s | 6.4 KB |
+| 419 | graphs/dijkstra_binary_grid | ✓ | 9m31.223891s | 115.5 KB |
 | 420 | graphs/dinic |   |  |  |
-| 421 | graphs/directed_and_undirected_weighted_graph |   |  |  |
+| 421 | graphs/directed_and_undirected_weighted_graph | ✓ | 9m31.223891s | 24.2 KB |
 | 422 | graphs/edmonds_karp_multiple_source_and_sink |   |  |  |
-| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph |   |  |  |
-| 424 | graphs/even_tree |   |  |  |
+| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 9m31.223891s | 416.8 KB |
+| 424 | graphs/even_tree | ✓ | 9m31.223891s | 28.0 KB |
 | 425 | graphs/finding_bridges |   |  |  |
 | 426 | graphs/frequent_pattern_graph_miner |   |  |  |
 | 427 | graphs/g_topological_sort |   |  |  |

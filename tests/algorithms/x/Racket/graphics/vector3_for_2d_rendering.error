@@ -1,0 +1,9 @@
+run: exit status 1
+angle: undefined;
+ cannot use before initialization
+  context...:
+   /workspace/mochi/tests/algorithms/x/Racket/graphics/vector3_for_2d_rendering.rkt:123:2
+   /workspace/mochi/tests/algorithms/x/Racket/graphics/vector3_for_2d_rendering.rkt:152:2
+   /workspace/mochi/tests/algorithms/x/Racket/graphics/vector3_for_2d_rendering.rkt:151:0
+   body of "/workspace/mochi/tests/algorithms/x/Racket/graphics/vector3_for_2d_rendering.rkt"
+(7.6923076923076925 15.384615384615385)
