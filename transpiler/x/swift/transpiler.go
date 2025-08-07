@@ -1275,9 +1275,12 @@ func (c *CastExpr) emit(w io.Writer) {
 					c.Expr.emit(w)
 					fmt.Fprint(w, ")!")
 				} else {
-					fmt.Fprint(w, "Int(")
+					// Use generic helper for safe conversion when the
+					// Swift `Int()` initializer might return an optional.
+					fmt.Fprint(w, "_int(")
 					c.Expr.emit(w)
 					fmt.Fprint(w, ")")
+					usesInt = true
 				}
 				return
 			}
@@ -1301,6 +1304,15 @@ func (c *CastExpr) emit(w io.Writer) {
 				fmt.Fprint(w, ")!")
 				return
 			}
+			// Fallback to helper that safely converts arbitrary values
+			// to Int. This handles String inputs (returning 0 on failure)
+			// and avoids optional unwrapping issues when Swift's Int(
+			// _ ) initializer returns an optional.
+			fmt.Fprint(w, "_int(")
+			c.Expr.emit(w)
+			fmt.Fprint(w, ")")
+			usesInt = true
+			return
 		}
 		if ce, ok := c.Expr.(*CallExpr); ok && t == "String" && ce.Func == "str" {
 			c.Expr.emit(w)
@@ -2272,7 +2284,10 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	usesNow = false
 	usesLookupHost = false
 	usesNum = false
-	usesInt = false
+	// Always enable the generic `_int` helper to handle Int conversions
+	// from various source types safely (e.g. from `String`). This avoids
+	// optional unwrapping errors when using Swift's `Int()` initializer.
+	usesInt = true
 	usesKeys = false
 	usesMem = false
 	usesBigInt = false
@@ -4480,9 +4495,8 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 					baseOptIsStr = types.IsStringType(ot.Elem)
 				}
 				if typ == "Int" {
-					if types.IsStringType(baseType) || isStrIdx || baseOptIsStr {
-						expr = &CastExpr{Expr: expr, Type: "Int!", FromString: true}
-					} else if types.IsAnyType(baseType) {
+					if types.IsStringType(baseType) || isStrIdx || baseOptIsStr || types.IsAnyType(baseType) {
+						// Use generic helper for string/any sources to avoid optional conversions
 						expr = &CallExpr{Func: "_int", Args: []Expr{expr}}
 						usesInt = true
 					} else {

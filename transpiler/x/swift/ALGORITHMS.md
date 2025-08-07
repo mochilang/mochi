@@ -2,12 +2,12 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 341/1077
-Last updated: 2025-08-07 10:19 +0700
+Completed programs: 342/1077
+Last updated: 2025-08-07 11:01 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 2.345ms | 3.7 MB |
+| 1 | backtracking/all_combinations | ✓ | 1.067ms | 3.7 MB |
 | 2 | backtracking/all_permutations | ✓ | 1.383ms | 3.5 MB |
 | 3 | backtracking/all_subsequences | ✓ | 914µs | 3.4 MB |
 | 4 | backtracking/coloring | ✓ | 540µs | 3.3 MB |
@@ -407,7 +407,7 @@ Last updated: 2025-08-07 10:19 +0700
 | 398 | graphs/bellman_ford | ✓ | 244µs | 3.4 MB |
 | 399 | graphs/bi_directional_dijkstra | ✓ | 451µs | 3.2 MB |
 | 400 | graphs/bidirectional_a_star | ✓ | 1.055ms | 3.2 MB |
-| 401 | graphs/bidirectional_breadth_first_search |   |  |  |
+| 401 | graphs/bidirectional_breadth_first_search | ✓ | 1.732ms | 3.1 MB |
 | 402 | graphs/bidirectional_search |   |  |  |
 | 403 | graphs/boruvka |   |  |  |
 | 404 | graphs/breadth_first_search | ✓ | 791µs | 3.4 MB |
