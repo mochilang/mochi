@@ -1,0 +1,5 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/special_numbers/bell_numbers.erl:75:42: Warning: variable 'K_3' exported from 'case' (line 58, column 9)
+%   75| {Coefficient_3, Elements_to_choose, I_2, K_3, Total_elements} = Fun(Coefficient, Elements_to_choose, I, K_3, Total_elements),
+%     |                                          ^
+
+[1 1 2 5 15 52]

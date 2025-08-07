@@ -1,0 +1,17 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/special_numbers/harshad_numbers.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+"0"
+"10111"
+"213"
+"A7"
+"13"
+"30"
+"1001"
+["1", "10", "100", "110", "1000", "1010", "1100"]
+["1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B"]
+["1", "2", "3", "10", "12", "20", "21"]
+true
+true
+false

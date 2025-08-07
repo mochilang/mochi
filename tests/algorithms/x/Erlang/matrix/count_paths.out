@@ -1,0 +1,6 @@
+/workspace/mochi/tests/algorithms/x/Erlang/matrix/count_paths.erl:77:47: Warning: the result of evaluating operator '++'/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%   77|         Visit_3 = lists:sublist(Visit_2, Row) ++ [lists:sublist(lists:nth(Row + 1, Visit_2), Col) ++ [false] ++ lists:nthtail(Col + 1, lists:nth(Row + 1, Visit_2))] ++ lists:nthtail(Row + 1, Visit_2),
+%     |                                               ^
+
+2
+2

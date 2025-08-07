@@ -1,0 +1,5 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/sum_of_harmonic_series.erl:52:1: Warning: function mochi_safe_mul/2 is unused
+%   52| mochi_safe_mul(A, B) ->
+%     | ^
+
+0.75

@@ -1,0 +1,11 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/tanh.erl:92:7: Warning: variable 'Neg_3' exported from 'case' (line 71, column 9)
+%   92| {N_2, Neg_3, Sum_2, Term_2, X, Y_3} = Fun(N, Neg_3, Sum, Term, X, Y_3),
+%     |       ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/maths/tanh.erl:92:32: Warning: variable 'Y_3' exported from 'case' (line 71, column 9)
+%   92| {N_2, Neg_3, Sum_2, Term_2, X, Y_3} = Fun(N, Neg_3, Sum, Term, X, Y_3),
+%     |                                ^
+
+[0.7615941559557646 0.999909204239807 0.9999877115417961 -0.5849798828807289]
+[0.9999997746747891 0.9999999957857453 0.9640275800758169 -0.7530659048695519 
+ 0.9999999999865419]

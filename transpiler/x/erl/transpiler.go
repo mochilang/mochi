@@ -162,7 +162,16 @@ mochi_safe_mul(A, B) ->
     try A * B catch _:_ -> 1.0e308 end.
 
 mochi_safe_div(A, B) ->
-    try A / B catch _:_ -> 0.0 end.
+    try
+        case erlang:is_integer(A) andalso erlang:is_integer(B) of
+            true ->
+                case B of
+                    0 -> 0;
+                    _ -> A div B
+                end;
+            false -> A / B
+        end
+    catch _:_ -> 0.0 end.
 `
 
 const helperSafeFmod = `
@@ -2113,21 +2122,21 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, ")")
 		return
-	case "pow":
-		io.WriteString(w, "trunc(math:pow(")
-		if len(c.Args) > 0 {
-			c.Args[0].emit(w)
-		} else {
-			io.WriteString(w, "0")
-		}
-		io.WriteString(w, ", ")
-		if len(c.Args) > 1 {
-			c.Args[1].emit(w)
-		} else {
-			io.WriteString(w, "0")
-		}
-		io.WriteString(w, "))")
-		return
+        case "pow":
+                io.WriteString(w, "math:pow(")
+                if len(c.Args) > 0 {
+                        c.Args[0].emit(w)
+                } else {
+                        io.WriteString(w, "0")
+                }
+                io.WriteString(w, ", ")
+                if len(c.Args) > 1 {
+                        c.Args[1].emit(w)
+                } else {
+                        io.WriteString(w, "0")
+                }
+                io.WriteString(w, ")")
+                return
 	case "pow_big":
 		if len(c.Args) == 2 {
 			if lit, ok := c.Args[0].(*IntLit); ok && lit.Value == 2 {
@@ -3738,12 +3747,16 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 							&PutStmt{Name: name, Expr: &NameRef{Name: tmp}},
 						}, nil
 					}
-					alias := ctx.newAlias(name)
-					ctx.markMutated(name)
-					ctx.clearConst(name)
-					pat := fmt.Sprintf("{_, %s}", alias)
-					return []Stmt{&LetStmt{Name: pat, Expr: c}}, nil
-				}
+                                        res := ctx.newAlias(name + "_res")
+                                        tmp := ctx.newAlias(name + "_tmp")
+                                        ctx.markMutated(name)
+                                        ctx.clearConst(name)
+                                        return []Stmt{
+                                                &LetStmt{Name: res, Expr: c},
+                                                &LetStmt{Name: tmp, Expr: &CallExpr{Func: "element", Args: []Expr{&IntLit{Value:2}, &NameRef{Name: res}}}},
+                                                &LetStmt{Name: nr.Name, Expr: &NameRef{Name: tmp}},
+                                        }, nil
+                                }
 				if get, ok := arg.(*CallExpr); ok && get.Func == "erlang:get" && len(get.Args) == 1 {
 					if atom, ok := get.Args[0].(*AtomLit); ok {
 						gname := strings.Trim(atom.Name, "'")

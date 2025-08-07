@@ -1,0 +1,5 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/zellers_congruence.erl:65:1: Warning: function mochi_safe_div/2 is unused
+%   65| mochi_safe_div(A, B) ->
+%     | ^
+
+"Your date 01-31-2010,  is a Sunday!"
