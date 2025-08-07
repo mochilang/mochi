@@ -1,0 +1,15 @@
+/tmp/TestCSTranspiler_Algorithms_Golden001_machine_learning_linear_regression4244293534/001/Program.cs(179,9): warning CS0162: Unreachable code detected [/tmp/TestCSTranspiler_Algorithms_Golden001_machine_learning_linear_regression4244293534/001/app.csproj]
+At Iteration 1 - Error is 2.0827037037037037
+At Iteration 2 - Error is 1.8591027801646092
+At Iteration 3 - Error is 1.6596154397458098
+At Iteration 4 - Error is 1.4816409644214683
+At Iteration 5 - Error is 1.3228591315720422
+At Iteration 6 - Error is 1.181199961693929
+At Iteration 7 - Error is 1.054816728911467
+At Iteration 8 - Error is 0.9420618823880457
+At Iteration 9 - Error is 0.8414655646869247
+At Iteration 10 - Error is 0.7517164469927611
+Resultant Feature vector :
+0.15586072628289852
+0.3662629180621683
+Mean Absolute Error : 0.5

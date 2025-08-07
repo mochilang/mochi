@@ -1,0 +1,5 @@
+/tmp/TestCSTranspiler_Algorithms_Golden001_machine_learning_decision_tree2763998630/001/Program.cs(170,17): warning CS1717: Assignment made to same variable; did you mean to assign something else? [/tmp/TestCSTranspiler_Algorithms_Golden001_machine_learning_decision_tree2763998630/001/app.csproj]
+/tmp/TestCSTranspiler_Algorithms_Golden001_machine_learning_decision_tree2763998630/001/Program.cs(172,17): warning CS1717: Assignment made to same variable; did you mean to assign something else? [/tmp/TestCSTranspiler_Algorithms_Golden001_machine_learning_decision_tree2763998630/001/app.csproj]
+Test values: [-0.7841243352741003 0.04955055844038725 0.6372422501444817 -0.20744953956454992 0.5222999956458807 -0.3413255298510194 0.30170902982354164 -0.03555064182728529 0.774067522957921 0.24346484523266554]
+Predictions: [-0.7014273114453726 10.66977091524143 10.66977091524143 10.66977091524143 10.66977091524143 10.66977091524143 10.66977091524143 10.66977091524143 10.66977091524143 10.66977091524143]
+Average error: 98.47103072440163

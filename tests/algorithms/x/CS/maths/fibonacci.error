@@ -1,0 +1,4 @@
+exit status 134
+Unhandled exception. System.Exception: iterative failed
+   at Program.run_tests() in /tmp/TestCSTranspiler_Algorithms_Golden001_maths_fibonacci3417425489/001/Program.cs:line 286
+   at Program.Main() in /tmp/TestCSTranspiler_Algorithms_Golden001_maths_fibonacci3417425489/001/Program.cs:line 310
