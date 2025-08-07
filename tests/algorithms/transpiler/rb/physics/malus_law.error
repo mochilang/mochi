@@ -1,0 +1,5 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/rb/physics/malus_law.rb:64:in `panic': malus_law test3 failed (RuntimeError)
+	from /workspace/mochi/tests/algorithms/transpiler/rb/physics/malus_law.rb:107:in `test_malus_law'
+	from /workspace/mochi/tests/algorithms/transpiler/rb/physics/malus_law.rb:120:in `main'
+	from /workspace/mochi/tests/algorithms/transpiler/rb/physics/malus_law.rb:125:in `<main>'
