@@ -1,0 +1,8 @@
+run: exit status 1
++: contract violation
+  expected: number?
+  given: "D"
+  context...:
+   /workspace/mochi/tests/algorithms/x/Racket/graphs/breadth_first_search_shortest_path.rkt:110:2
+   /workspace/mochi/tests/algorithms/x/Racket/graphs/breadth_first_search_shortest_path.rkt:109:0
+   body of "/workspace/mochi/tests/algorithms/x/Racket/graphs/breadth_first_search_shortest_path.rkt"

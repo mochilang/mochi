@@ -895,7 +895,9 @@ func (i *InvokeExpr) emit(w io.Writer) {
 type LenExpr struct{ Arg Expr }
 
 func (l *LenExpr) emit(w io.Writer) {
-	io.WriteString(w, "(cond [(string? ")
+	io.WriteString(w, "(cond [(not ")
+	l.Arg.emit(w)
+	io.WriteString(w, ") 0] [(string? ")
 	l.Arg.emit(w)
 	io.WriteString(w, ") (string-length ")
 	l.Arg.emit(w)
