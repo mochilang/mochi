@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Python`.
-Last updated: 2025-08-07 11:12 GMT+7
+Last updated: 2025-08-07 17:36 GMT+7
 
-## Algorithms Golden Test Checklist (480/1077)
+## Algorithms Golden Test Checklist (500/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 63.0µs | 12.88MB |
@@ -437,26 +437,26 @@ Last updated: 2025-08-07 11:12 GMT+7
 | 428 | graphs/gale_shapley_bigraph |   |  |  |
 | 429 | graphs/graph_adjacency_list |   |  |  |
 | 430 | graphs/graph_adjacency_matrix |   |  |  |
-| 431 | graphs/graph_list |   |  |  |
-| 432 | graphs/graphs_floyd_warshall |   |  |  |
-| 433 | graphs/greedy_best_first |   |  |  |
-| 434 | graphs/greedy_min_vertex_cover |   |  |  |
-| 435 | graphs/kahns_algorithm_long |   |  |  |
-| 436 | graphs/kahns_algorithm_topo |   |  |  |
-| 437 | graphs/karger |   |  |  |
-| 438 | graphs/lanczos_eigenvectors |   |  |  |
-| 439 | graphs/markov_chain |   |  |  |
-| 440 | graphs/matching_min_vertex_cover |   |  |  |
-| 441 | graphs/minimum_path_sum |   |  |  |
-| 442 | graphs/minimum_spanning_tree_boruvka |   |  |  |
-| 443 | graphs/minimum_spanning_tree_kruskal |   |  |  |
-| 444 | graphs/minimum_spanning_tree_kruskal2 |   |  |  |
-| 445 | graphs/minimum_spanning_tree_prims |   |  |  |
-| 446 | graphs/minimum_spanning_tree_prims2 |   |  |  |
-| 447 | graphs/multi_heuristic_astar |   |  |  |
-| 448 | graphs/page_rank |   |  |  |
-| 449 | graphs/prim |   |  |  |
-| 450 | graphs/random_graph_generator |   |  |  |
+| 431 | graphs/graph_list | ✓ | 799.0µs | 13.38MB |
+| 432 | graphs/graphs_floyd_warshall | ✓ | 52.0µs | 12.55MB |
+| 433 | graphs/greedy_best_first | ✓ | 1.0ms | 13.72MB |
+| 434 | graphs/greedy_min_vertex_cover | ✓ | 51.0µs | 12.23MB |
+| 435 | graphs/kahns_algorithm_long | ✓ | 31.0µs | 12.55MB |
+| 436 | graphs/kahns_algorithm_topo | ✓ | 35.0µs | 12.99MB |
+| 437 | graphs/karger | ✓ | 959.0µs | 13.74MB |
+| 438 | graphs/lanczos_eigenvectors | ✓ | 1.0ms | 14.16MB |
+| 439 | graphs/markov_chain | ✓ | 3.0ms | 12.65MB |
+| 440 | graphs/matching_min_vertex_cover | ✓ | 34.0µs | 13.42MB |
+| 441 | graphs/minimum_path_sum | ✓ | 43.0µs | 12.52MB |
+| 442 | graphs/minimum_spanning_tree_boruvka | ✓ | 50.0µs | 14.10MB |
+| 443 | graphs/minimum_spanning_tree_kruskal | ✓ | 52.0µs | 13.67MB |
+| 444 | graphs/minimum_spanning_tree_kruskal2 | ✓ | 59.0µs | 14.00MB |
+| 445 | graphs/minimum_spanning_tree_prims | ✓ | 1.0ms | 13.55MB |
+| 446 | graphs/minimum_spanning_tree_prims2 | ✓ | 1.0ms | 13.63MB |
+| 447 | graphs/multi_heuristic_astar | ✓ | 2.0ms | 14.50MB |
+| 448 | graphs/page_rank | ✓ | 848.0µs | 12.85MB |
+| 449 | graphs/prim | ✓ | 94.0µs | 13.75MB |
+| 450 | graphs/random_graph_generator | ✓ | 37.0µs | 13.17MB |
 | 451 | graphs/scc_kosaraju |   |  |  |
 | 452 | graphs/strongly_connected_components |   |  |  |
 | 453 | graphs/tarjans_scc |   |  |  |
