@@ -1,0 +1,21 @@
+run: exit status 1
+True
+2
+3
+False
+True
+[0, 1, 2, 3, 4]
+4
+3
+{
+  "duration_us": 44,
+  "memory_bytes": 13332480,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/stacks/stack.py", line 101, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/stacks/stack.py", line 95, in main
+    print(str(1 in s))
+              ^^^^^^
+TypeError: argument of type 'Stack' is not iterable

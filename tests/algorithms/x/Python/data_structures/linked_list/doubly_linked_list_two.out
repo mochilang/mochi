@@ -1,0 +1,23 @@
+-1
+-1
+True
+10
+10
+10
+20
+1000
+10
+20
+2000
+False
+1000
+10
+20
+2000
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/linked_list/doubly_linked_list_two.py", line 233, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/linked_list/doubly_linked_list_two.py", line 206, in main
+    print(str(10 in ll))
+              ^^^^^^^^
+TypeError: argument of type 'LinkedList' is not iterable

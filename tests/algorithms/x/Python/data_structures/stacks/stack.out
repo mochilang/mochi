@@ -1,0 +1,15 @@
+True
+2
+3
+False
+True
+[0, 1, 2, 3, 4]
+4
+3
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/stacks/stack.py", line 72, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/stacks/stack.py", line 70, in main
+    print(str(1 in s))
+              ^^^^^^
+TypeError: argument of type 'Stack' is not iterable

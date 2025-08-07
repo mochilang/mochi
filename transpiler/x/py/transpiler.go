@@ -3971,6 +3971,23 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 				}
 				out = append(out, &IndexAssignStmt{Target: target, Index: idx, Value: val})
 				usesSetIndex = true
+			} else if len(s.Assign.Index) >= 1 && len(s.Assign.Field) > 0 {
+				target := Expr(&Name{Name: s.Assign.Name})
+				for i := 0; i < len(s.Assign.Index); i++ {
+					if s.Assign.Index[i].Colon != nil || s.Assign.Index[i].Colon2 != nil {
+						return nil, fmt.Errorf("unsupported assignment")
+					}
+					idx, err := convertExpr(s.Assign.Index[i].Start)
+					if err != nil {
+						return nil, err
+					}
+					target = &IndexExpr{Target: target, Index: idx}
+				}
+				for i := 0; i < len(s.Assign.Field)-1; i++ {
+					target = &FieldExpr{Target: target, Name: s.Assign.Field[i].Name, MapIndex: false}
+				}
+				field := s.Assign.Field[len(s.Assign.Field)-1].Name
+				out = append(out, &FieldAssignStmt{Target: target, Field: field, Value: val})
 			} else if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
 				out = append(out, &AssignStmt{Name: s.Assign.Name, Expr: val})
 			} else if len(s.Assign.Index) == 0 && len(s.Assign.Field) > 0 {
@@ -4653,6 +4670,14 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 						mapIndex = false
 					}
 				}
+				if mapIndex && currentEnv != nil {
+					for _, st := range currentEnv.Structs() {
+						if _, ok := st.Fields[op.Field.Name]; ok {
+							mapIndex = false
+							break
+						}
+					}
+				}
 			}
 			expr = &FieldExpr{Target: expr, Name: op.Field.Name, MapIndex: mapIndex, MapGet: mapIndex}
 		case op.Call != nil:
@@ -4824,31 +4849,31 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			args = append(args, ae)
 		}
-               hasFunc := false
-               if currentEnv != nil {
-                       if fn, ok := currentEnv.GetFunc(p.Call.Func); ok {
-                               hasFunc = true
-                               if len(args) < len(fn.Params) {
-                                       rem := fn.Params[len(args):]
-                                       var names []string
-                                       var extra []Expr
-                                       for _, p := range rem {
-                                               names = append(names, p.Name)
-                                               extra = append(extra, &Name{Name: p.Name})
-                                       }
-                                       call := &CallExpr{Func: &Name{Name: p.Call.Func}, Args: append(args, extra...)}
-                                       return &LambdaExpr{Params: names, Expr: call}, nil
-                               }
-                       }
-                       if t, err := currentEnv.GetVar("self"); err == nil {
-                               if st, ok := t.(types.StructType); ok {
-                                       if _, ok := st.Methods[p.Call.Func]; ok {
-                                               return &CallExpr{Func: &FieldExpr{Target: &Name{Name: "self"}, Name: p.Call.Func}, Args: args}, nil
-                                       }
-                               }
-                       }
-               }
-               switch p.Call.Func {
+		hasFunc := false
+		if currentEnv != nil {
+			if fn, ok := currentEnv.GetFunc(p.Call.Func); ok {
+				hasFunc = true
+				if len(args) < len(fn.Params) {
+					rem := fn.Params[len(args):]
+					var names []string
+					var extra []Expr
+					for _, p := range rem {
+						names = append(names, p.Name)
+						extra = append(extra, &Name{Name: p.Name})
+					}
+					call := &CallExpr{Func: &Name{Name: p.Call.Func}, Args: append(args, extra...)}
+					return &LambdaExpr{Params: names, Expr: call}, nil
+				}
+			}
+			if t, err := currentEnv.GetVar("self"); err == nil {
+				if st, ok := t.(types.StructType); ok {
+					if _, ok := st.Methods[p.Call.Func]; ok {
+						return &CallExpr{Func: &FieldExpr{Target: &Name{Name: "self"}, Name: p.Call.Func}, Args: args}, nil
+					}
+				}
+			}
+		}
+		switch p.Call.Func {
 		case "print":
 			outArgs := make([]Expr, len(args))
 			for i, a := range args {
@@ -4912,16 +4937,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 1 {
 				return &CallExpr{Func: &Name{Name: "len"}, Args: args}, nil
 			}
-               case "values":
-                       if !hasFunc && len(args) == 1 {
-                               call := &CallExpr{Func: &FieldExpr{Target: args[0], Name: "values"}, Args: nil}
-                               return &CallExpr{Func: &Name{Name: "list"}, Args: []Expr{call}}, nil
-                       }
-               case "keys":
-                       if !hasFunc && len(args) == 1 {
-                               call := &CallExpr{Func: &FieldExpr{Target: args[0], Name: "keys"}, Args: nil}
-                               return &CallExpr{Func: &Name{Name: "list"}, Args: []Expr{call}}, nil
-                       }
+		case "values":
+			if !hasFunc && len(args) == 1 {
+				call := &CallExpr{Func: &FieldExpr{Target: args[0], Name: "values"}, Args: nil}
+				return &CallExpr{Func: &Name{Name: "list"}, Args: []Expr{call}}, nil
+			}
+		case "keys":
+			if !hasFunc && len(args) == 1 {
+				call := &CallExpr{Func: &FieldExpr{Target: args[0], Name: "keys"}, Args: nil}
+				return &CallExpr{Func: &Name{Name: "list"}, Args: []Expr{call}}, nil
+			}
 		case "min", "max":
 			if len(args) == 1 {
 				return &CallExpr{Func: &Name{Name: p.Call.Func}, Args: args}, nil
