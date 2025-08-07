@@ -36,6 +36,8 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+
 int seed = 1;
 int NEG_ONE = -1;
 int rand() {
@@ -154,9 +156,9 @@ List<List<int>> simulate(List<List<int>> highway, int number_of_update, double p
 
 void _main() {
   List<List<int>> ex1 = simulate(construct_highway(6, 3, 0, false, false, 2), 2, 0.0, 2);
-  print((ex1).toString());
+  print(_str(ex1));
   List<List<int>> ex2 = simulate(construct_highway(5, 2, -2, false, false, 2), 3, 0.0, 2);
-  print((ex2).toString());
+  print(_str(ex2));
 }
 
 void _start() {

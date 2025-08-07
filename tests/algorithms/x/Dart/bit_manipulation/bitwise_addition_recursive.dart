@@ -36,10 +36,7 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
-
-void _json(dynamic v) {
-  print(jsonEncode(v));
-}
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
 
 int bitwise_xor(int a, int b) {
   int result = 0;
@@ -94,9 +91,9 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print((bitwise_addition_recursive(4, 5)).toString());
-  print((bitwise_addition_recursive(8, 9)).toString());
-  print((bitwise_addition_recursive(0, 4)).toString());
+  print(_str(bitwise_addition_recursive(4, 5)));
+  print(_str(bitwise_addition_recursive(8, 9)));
+  print(_str(bitwise_addition_recursive(0, 4)));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

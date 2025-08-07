@@ -36,10 +36,7 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
-
-void _json(dynamic v) {
-  print(jsonEncode(v));
-}
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
 
 String repeat_char(String ch, int count) {
   String res = "";
@@ -78,7 +75,7 @@ String to_binary_no_prefix(int n) {
   }
   String res = "";
   while (v > 0) {
-    res = (v % 2).toString() + res;
+    res = _str(v % 2) + res;
     v = v ~/ 2;
   }
   return res;

@@ -36,7 +36,9 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
-String _repeat(String s, int n) => List.filled(n, s).join();
+String _repeat(String s, int n) => n <= 0 ? '' : List.filled(n, s).join();
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
 
 String B32_CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 int indexOfChar(String s, String ch) {
@@ -115,7 +117,7 @@ String to_binary(int n, int bits) {
   String out = "";
   int i = 0;
   while (i < bits) {
-    out = (v % 2).toString() + out;
+    out = _str(v % 2) + out;
     v = v ~/ 2;
     i = i + 1;
   }

@@ -36,10 +36,7 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
-
-void _json(dynamic v) {
-  print(jsonEncode(v));
-}
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
 
 int lowest_set_bit(int n) {
   int lb = 1;
@@ -70,12 +67,12 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print((get_1s_count(25)).toString());
-  print((get_1s_count(37)).toString());
-  print((get_1s_count(21)).toString());
-  print((get_1s_count(58)).toString());
-  print((get_1s_count(0)).toString());
-  print((get_1s_count(256)).toString());
+  print(_str(get_1s_count(25)));
+  print(_str(get_1s_count(37)));
+  print(_str(get_1s_count(21)));
+  print(_str(get_1s_count(58)));
+  print(_str(get_1s_count(0)));
+  print(_str(get_1s_count(256)));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

@@ -36,6 +36,8 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+
 String alphabet = "abcdefghijklmnopqrstuvwxyz";
 bool contains(List<String> xs, String x) {
   int i = 0;
@@ -90,13 +92,13 @@ List<String> word_ladder(String current, List<String> path, String target, List<
 
 void _main() {
   List<String> w1 = ["hot", "dot", "dog", "lot", "log", "cog"];
-  print((word_ladder("hit", ["hit"], "cog", w1)).toString());
+  print(_str(word_ladder("hit", ["hit"], "cog", w1)));
   List<String> w2 = ["hot", "dot", "dog", "lot", "log"];
-  print((word_ladder("hit", ["hit"], "cog", w2)).toString());
+  print(_str(word_ladder("hit", ["hit"], "cog", w2)));
   List<String> w3 = ["load", "goad", "gold", "lead", "lord"];
-  print((word_ladder("lead", ["lead"], "gold", w3)).toString());
+  print(_str(word_ladder("lead", ["lead"], "gold", w3)));
   List<String> w4 = ["came", "cage", "code", "cade", "gave"];
-  print((word_ladder("game", ["game"], "code", w4)).toString());
+  print(_str(word_ladder("game", ["game"], "code", w4)));
 }
 
 void _start() {

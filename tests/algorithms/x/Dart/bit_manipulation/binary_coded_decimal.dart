@@ -36,11 +36,13 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+
 String to_binary4(int n) {
   String result = "";
   int x = n;
   while (x > 0) {
-    result = (x % 2).toString() + result;
+    result = _str(x % 2) + result;
     x = x ~/ 2;
   }
   while (result.length < 4) {
@@ -54,7 +56,7 @@ String binary_coded_decimal(int number) {
   if (n < 0) {
     n = 0;
   }
-  String digits = (n).toString();
+  String digits = _str(n);
   String out = "0b";
   int i = 0;
   while (i < digits.length) {

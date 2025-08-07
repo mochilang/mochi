@@ -36,6 +36,8 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+
 int WIDTH = 10;
 int HEIGHT = 10;
 int PREY_INITIAL_COUNT = 20;
@@ -280,8 +282,8 @@ void main() {
     step_world();
     t = t + 1;
   }
-  print("Prey: " + (count_entities(TYPE_PREY)).toString());
-  print("Predators: " + (count_entities(TYPE_PREDATOR)).toString());
+  print("Prey: " + _str(count_entities(TYPE_PREY)));
+  print("Predators: " + _str(count_entities(TYPE_PREDATOR)));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

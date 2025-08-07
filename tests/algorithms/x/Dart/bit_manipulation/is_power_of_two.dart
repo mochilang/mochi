@@ -36,11 +36,6 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
-
-void _json(dynamic v) {
-  print(jsonEncode(v));
-}
-
 bool is_power_of_two(int number) {
   if (number < 0) {
     throw Exception("number must not be negative");

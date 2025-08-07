@@ -36,10 +36,7 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
-
-void _json(dynamic v) {
-  print(jsonEncode(v));
-}
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
 
 int bit_xor(int a, int b) {
   int ua = a;
@@ -77,9 +74,9 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print((find_unique_number([1, 1, 2, 2, 3])).toString());
-  print((find_unique_number([4, 5, 4, 6, 6])).toString());
-  print((find_unique_number([7])).toString());
+  print(_str(find_unique_number([1, 1, 2, 2, 3])));
+  print(_str(find_unique_number([4, 5, 4, 6, 6])));
+  print(_str(find_unique_number([7])));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

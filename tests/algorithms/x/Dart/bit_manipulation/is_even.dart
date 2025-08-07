@@ -36,10 +36,7 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
-
-void _json(dynamic v) {
-  print(jsonEncode(v));
-}
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
 
 bool is_even(int number) {
   return number % 2 == 0;
@@ -52,13 +49,13 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print((is_even(1)).toString());
-  print((is_even(4)).toString());
-  print((is_even(9)).toString());
-  print((is_even(15)).toString());
-  print((is_even(40)).toString());
-  print((is_even(100)).toString());
-  print((is_even(101)).toString());
+  print(_str(is_even(1)));
+  print(_str(is_even(4)));
+  print(_str(is_even(9)));
+  print(_str(is_even(15)));
+  print(_str(is_even(40)));
+  print(_str(is_even(100)));
+  print(_str(is_even(101)));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

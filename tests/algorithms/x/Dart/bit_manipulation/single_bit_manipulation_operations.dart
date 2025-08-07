@@ -36,6 +36,8 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+
 int pow2(int exp) {
   int result = 1;
   int i = 0;
@@ -87,11 +89,11 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print((set_bit(13, 1)).toString());
-  print((clear_bit(18, 1)).toString());
-  print((flip_bit(5, 1)).toString());
-  print((is_bit_set(10, 3)).toString());
-  print((get_bit(10, 1)).toString());
+  print(_str(set_bit(13, 1)));
+  print(_str(clear_bit(18, 1)));
+  print(_str(flip_bit(5, 1)));
+  print(_str(is_bit_set(10, 3)));
+  print(_str(get_bit(10, 1)));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

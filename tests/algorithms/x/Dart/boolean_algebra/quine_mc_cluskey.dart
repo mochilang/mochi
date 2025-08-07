@@ -36,6 +36,8 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+
 String compare_string(String string1, String string2) {
   String result = "";
   int count = 0;
@@ -127,7 +129,7 @@ List<String> decimal_to_binary(int no_of_variable, List<int> minterms) {
     String string = "";
     int i = 0;
     while (i < no_of_variable) {
-    string = (minterm % 2).toString() + string;
+    string = _str(minterm % 2) + string;
     minterm = minterm ~/ 2;
     i = i + 1;
   }
@@ -293,11 +295,11 @@ void _main() {
   List<String> binary = decimal_to_binary(no_of_variable, minterms);
   List<String> prime_implicants = check(binary);
   print("Prime Implicants are:");
-  print((prime_implicants).toString());
+  print(_str(prime_implicants));
   List<List<int>> chart = prime_implicant_chart(prime_implicants, binary);
   List<String> essential_prime_implicants = selection(chart, prime_implicants);
   print("Essential Prime Implicants are:");
-  print((essential_prime_implicants).toString());
+  print(_str(essential_prime_implicants));
 }
 
 void _start() {

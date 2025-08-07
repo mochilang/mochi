@@ -36,11 +36,6 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
-
-void _json(dynamic v) {
-  print(jsonEncode(v));
-}
-
 String binary_or(int a, int b) {
   if (a < 0 || b < 0) {
     return "ValueError";

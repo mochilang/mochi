@@ -36,12 +36,14 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+
 String get_reverse_bit_string(int number) {
   String bit_string = "";
   int n = number;
   int i = 0;
   while (i < 32) {
-    bit_string = bit_string + (n % 2).toString();
+    bit_string = bit_string + _str(n % 2);
     n = n ~/ 2;
     i = i + 1;
   }

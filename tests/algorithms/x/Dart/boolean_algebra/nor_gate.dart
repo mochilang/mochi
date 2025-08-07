@@ -36,6 +36,8 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+
 int nor_gate(int input_1, int input_2) {
   if (input_1 == 0 && input_2 == 0) {
     return 1;
@@ -66,7 +68,7 @@ String center(String s, int width) {
 
 String make_table_row(int i, int j) {
   int output = nor_gate(i, j);
-  return "| " + center((i).toString(), 8) + " | " + center((j).toString(), 8) + " | " + center((output).toString(), 8) + " |";
+  return "| " + center(_str(i), 8) + " | " + center(_str(j), 8) + " | " + center(_str(output), 8) + " |";
 }
 
 String truth_table() {

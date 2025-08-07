@@ -36,6 +36,8 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+
 String base16_encode(List<int> data) {
   String digits = "0123456789ABCDEF";
   String res = "";
@@ -71,14 +73,14 @@ List<int> base16_decode(String data) {
   List<int> out = <int>[];
   int i = 0;
   while (i < data.length) {
-    dynamic hi_char = _substr(data, i, i + 1);
-    dynamic lo_char = _substr(data, i + 1, i + 2);
-    dynamic hi = hex_value(hi_char);
-    dynamic lo = hex_value(lo_char);
-    if (hi.compareTo(0) < 0 || lo.compareTo(0) < 0) {
+    String hi_char = _substr(data, i, i + 1);
+    String lo_char = _substr(data, i + 1, i + 2);
+    int hi = hex_value(hi_char);
+    int lo = hex_value(lo_char);
+    if (hi < 0 || lo < 0) {
     throw Exception("Base16 encoded data is invalid: Data is not uppercase hex or it contains invalid characters.");
   }
-    out = ([...out, hi * 16 + lo] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
+    out = [...out, hi * 16 + lo];
     i = i + 2;
   }
   return out;
@@ -96,9 +98,9 @@ void main() {
   print(base16_encode(example1));
   print(base16_encode(example2));
   print(base16_encode(<int>[]));
-  print((base16_decode("48656C6C6F20576F726C6421")).toString());
-  print((base16_decode("48454C4C4F20574F524C4421")).toString());
-  print((base16_decode("")).toString());
+  print(_str(base16_decode("48656C6C6F20576F726C6421")));
+  print(_str(base16_decode("48454C4C4F20574F524C4421")));
+  print(_str(base16_decode("")));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

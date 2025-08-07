@@ -36,10 +36,7 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
-
-void _json(dynamic v) {
-  print(jsonEncode(v));
-}
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
 
 int bit_and(int a, int b) {
   int ua = a;
@@ -89,12 +86,12 @@ void _main() {
   List<int> numbers = [25, 37, 21, 58, 0, 256];
   int i = 0;
   while (i < numbers.length) {
-    print((count_bits_kernighan(numbers[i])).toString());
+    print(_str(count_bits_kernighan(numbers[i])));
     i = i + 1;
   }
   i = 0;
   while (i < numbers.length) {
-    print((count_bits_modulo(numbers[i])).toString());
+    print(_str(count_bits_modulo(numbers[i])));
     i = i + 1;
   }
 }
