@@ -1,0 +1,2 @@
+"Original Linked List: 1 -> 2 -> 3 -> 4 -> 5"
+"After reversing groups of size 2: 2 -> 1 -> 4 -> 3 -> 5"

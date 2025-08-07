@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"mochi/parser"
+	"mochi/runtime/data"
 	"mochi/types"
 )
 
@@ -83,6 +84,20 @@ mochi_pad_start(S, Len, Ch) ->
     case SL >= Len of
         true -> S;
         _ -> string:copies(Fill, Len - SL) ++ S
+    end.
+`
+
+const helperExists = `
+mochi_exists(X) ->
+    case erlang:is_map(X) of
+        true -> maps:size(X) > 0;
+        _ -> case erlang:is_list(X) of
+            true -> length(X) > 0;
+            _ -> case is_binary(X) of
+                true -> byte_size(X) > 0;
+                _ -> false
+            end
+        end
     end.
 `
 
@@ -217,6 +232,7 @@ var useLookupHost bool
 var useToInt bool
 var useMemberHelper bool
 var usePadStart bool
+var useExists bool
 var useSHA256 bool
 var useIndexOf bool
 var useParseIntStr bool
@@ -250,6 +266,7 @@ type Program struct {
 	UseToInt        bool
 	UseMemberHelper bool
 	UsePadStart     bool
+	UseExists       bool
 	UseSHA256       bool
 	UseIndexOf      bool
 	UseParseIntStr  bool
@@ -3179,6 +3196,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useToInt = false
 	useMemberHelper = false
 	usePadStart = false
+	useExists = false
 	useSHA256 = false
 	useIndexOf = false
 	useParseIntStr = false
@@ -3228,6 +3246,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	p.UseToInt = useToInt
 	p.UseMemberHelper = useMemberHelper
 	p.UsePadStart = usePadStart
+	p.UseExists = useExists
 	p.UseSHA256 = useSHA256
 	p.UseIndexOf = useIndexOf
 	p.UseParseIntStr = useParseIntStr
@@ -3406,15 +3425,10 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		if err != nil {
 			return nil, err
 		}
-		tgtExpr, err := convertPostfix(st.Assign.Target, env, ctx)
-		if err != nil {
-			return nil, err
-		}
-		nr, ok := tgtExpr.(*NameRef)
-		if !ok || len(st.Assign.Target.Ops) > 0 || st.Assign.Target.Target == nil || st.Assign.Target.Target.Selector == nil || len(st.Assign.Target.Target.Selector.Tail) > 0 {
+		if len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0 {
 			return nil, fmt.Errorf("complex assignment not supported")
 		}
-		name := nr.Name
+		name := st.Assign.Name
 		if ctx.isGlobal(name) {
 			return []Stmt{&PutStmt{Name: name, Expr: val}}, nil
 		}
@@ -4371,15 +4385,106 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 		}
 		return &ContainsExpr{Str: base, Sub: arg}, nil
 	}
-	if pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "keys" && len(pf.Ops) == 1 && pf.Ops[0].Call != nil {
-		base, err := convertPrimary(&parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}}, env, ctx)
+	if pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "keys" && len(pf.Ops) >= 1 && pf.Ops[0].Call != nil {
+		call := pf.Ops[0].Call
+		if len(call.Args) != 1 {
+			return nil, fmt.Errorf("keys expects 1 arg")
+		}
+		arg, err := convertExpr(call.Args[0], env, ctx)
 		if err != nil {
 			return nil, err
 		}
-		if len(pf.Ops[0].Call.Args) != 0 {
-			return nil, fmt.Errorf("keys expects 0 arg")
+		expr := Expr(&CallExpr{Func: "maps:keys", Args: []Expr{arg}})
+		for i := 1; i < len(pf.Ops); i++ {
+			op := pf.Ops[i]
+			switch {
+			case op.Field != nil:
+				if op.Field.Name == "join" && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil {
+					sepCall := pf.Ops[i+1].Call
+					if len(sepCall.Args) != 1 {
+						return nil, fmt.Errorf("join expects 1 arg")
+					}
+					sep, err := convertExpr(sepCall.Args[0], env, ctx)
+					if err != nil {
+						return nil, err
+					}
+					expr = &CallExpr{Func: "string:join", Args: []Expr{expr, sep}}
+					i++
+					continue
+				}
+				expr = &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}, Kind: "map"}
+			case op.Call != nil:
+				args := make([]Expr, len(op.Call.Args))
+				for j, a := range op.Call.Args {
+					ae, err := convertExpr(a, env, ctx)
+					if err != nil {
+						return nil, err
+					}
+					args[j] = ae
+				}
+				if nr, ok := expr.(*NameRef); ok {
+					ce := &CallExpr{Func: nr.Name, Args: args}
+					expr = ce
+				} else {
+					expr = &ApplyExpr{Fun: expr, Args: args}
+				}
+			case op.Cast != nil:
+				if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
+					switch *op.Cast.Type.Simple {
+					case "int":
+						useToInt = true
+						expr = &CallExpr{Func: "mochi_to_int", Args: []Expr{expr}}
+					case "float":
+						expr = &CallExpr{Func: "float", Args: []Expr{expr}}
+					case "bigrat":
+						useBigRat = true
+						expr = &CallExpr{Func: "mochi_bigrat", Args: []Expr{expr}}
+					}
+				}
+			case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil:
+				idx, err := convertExpr(op.Index.Start, env, ctx)
+				if err != nil {
+					return nil, err
+				}
+				kind := "list"
+				isStr := false
+				if t := exprType(expr, env, ctx); t != nil {
+					switch tt := t.(type) {
+					case types.MapType, types.StructType:
+						kind = "map"
+					case types.StringType:
+						kind = "string"
+						isStr = true
+					case types.ListType:
+						if _, ok := tt.Elem.(types.StringType); ok {
+							isStr = true
+						}
+					}
+				}
+				if kind == "list" && ctx != nil {
+					if nr, ok := expr.(*NameRef); ok && ctx.isMapVar(ctx.original(nr.Name)) {
+						kind = "map"
+					}
+				}
+				if kind == "list" {
+					if isMapExpr(expr, env, ctx) {
+						kind = "map"
+						if fieldIsString(expr, idx, env, ctx) {
+							isStr = true
+						}
+					} else if isStringExpr(expr) {
+						kind = "string"
+						isStr = true
+					} else if _, ok := idx.(*StringLit); ok || isStringExpr(idx) {
+						kind = "map"
+					}
+				}
+				expr = &IndexExpr{Target: expr, Index: idx, Kind: kind, IsString: isStr}
+			default:
+				return nil, fmt.Errorf("unsupported postfix operation")
+			}
 		}
-		return &CallExpr{Func: "maps:keys", Args: []Expr{base}}, nil
+		return expr, nil
 	}
 	if pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "get" && len(pf.Ops) == 1 && pf.Ops[0].Call != nil {
 		base, err := convertPrimary(&parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}}, env, ctx)
@@ -4435,6 +4540,21 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 	for i := 0; i < len(pf.Ops); i++ {
 		op := pf.Ops[i]
 		switch {
+		case op.Field != nil:
+			if op.Field.Name == "join" && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil {
+				sepCall := pf.Ops[i+1].Call
+				if len(sepCall.Args) != 1 {
+					return nil, fmt.Errorf("join expects 1 arg")
+				}
+				sep, err := convertExpr(sepCall.Args[0], env, ctx)
+				if err != nil {
+					return nil, err
+				}
+				expr = &CallExpr{Func: "string:join", Args: []Expr{expr, sep}}
+				i++
+				continue
+			}
+			expr = &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}, Kind: "map"}
 		case op.Call != nil:
 			if ie, ok := expr.(*IndexExpr); ok && ie.Kind == "map" {
 				if key, ok := ie.Index.(*StringLit); ok && key.Value == "get" {
@@ -4877,7 +4997,7 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			if isMapExpr(ce.Args[0], env, ctx) {
 				ce.Func = "maps:size"
 			} else {
-				ce.Func = "length"
+				ce.Func = "erlang:length"
 			}
 			return ce, nil
 		} else if ce.Func == "concat" && len(ce.Args) == 2 {
@@ -4890,16 +5010,8 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			ce.Func = "maps:keys"
 			return ce, nil
 		} else if ce.Func == "exists" && len(ce.Args) == 1 {
-			arg := ce.Args[0]
-			var lenExpr Expr
-			if isMapExpr(arg, env, ctx) {
-				lenExpr = &CallExpr{Func: "maps:size", Args: []Expr{arg}}
-			} else if isStringExpr(arg) {
-				lenExpr = &CallExpr{Func: "byte_size", Args: []Expr{arg}}
-			} else {
-				lenExpr = &CallExpr{Func: "length", Args: []Expr{arg}}
-			}
-			return &BinaryExpr{Left: lenExpr, Op: ">", Right: &IntLit{Value: 0}}, nil
+			useExists = true
+			return &CallExpr{Func: "mochi_exists", Args: ce.Args}, nil
 		} else if ce.Func == "contains" && len(ce.Args) == 2 {
 			target := ce.Args[0]
 			sub := ce.Args[1]
@@ -6055,6 +6167,10 @@ func (p *Program) Emit() []byte {
 	}
 	if p.UsePadStart {
 		buf.WriteString(helperPadStart)
+		buf.WriteString("\n")
+	}
+	if p.UseExists {
+		buf.WriteString(helperExists)
 		buf.WriteString("\n")
 	}
 	if p.UseIndexOf {

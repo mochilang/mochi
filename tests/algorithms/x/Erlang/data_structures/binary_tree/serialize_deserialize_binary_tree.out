@@ -1,0 +1,7 @@
+/workspace/mochi/tests/algorithms/x/Erlang/data_structures/binary_tree/serialize_deserialize_binary_tree.erl:84:17: Warning: variable 'Sign_3' exported from 'case' (line 65, column 9)
+%   84| {I_6, Num_2, S, Sign_3} = Fun_2(I_5, Num, S, Sign_3),
+%     |                 ^
+
+"1, 2, null, null, 3, 4, null, null, 5, null, null"
+"1, 2, null, null, 3, 4, null, null, 5, null, null"
+true
