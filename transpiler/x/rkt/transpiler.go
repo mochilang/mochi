@@ -747,6 +747,7 @@ type IndexExpr struct {
 	Index    Expr
 	IsString bool
 	IsMap    bool
+	Default  Expr
 }
 
 type SliceExpr struct {
@@ -783,7 +784,13 @@ func (i *IndexExpr) emit(w io.Writer) {
 		i.Target.emit(w)
 		io.WriteString(w, " ")
 		i.Index.emit(w)
-		io.WriteString(w, " #f) #f)")
+		io.WriteString(w, " ")
+		if i.Default != nil {
+			i.Default.emit(w)
+		} else {
+			io.WriteString(w, "#f")
+		}
+		io.WriteString(w, ") #f)")
 	} else {
 		io.WriteString(w, "(if ")
 		i.Target.emit(w)
@@ -1467,6 +1474,25 @@ func zeroValue(t *parser.TypeRef, env *types.Env) Expr {
 		return &CallExpr{Func: "hash"}
 	default:
 		return nil
+	}
+}
+
+func zeroValueType(typ types.Type) Expr {
+	switch typ.(type) {
+	case types.IntType, types.Int64Type:
+		return &IntLit{Value: 0}
+	case types.FloatType:
+		return &FloatLit{Value: 0}
+	case types.BoolType:
+		return &Name{Name: "#f"}
+	case types.StringType:
+		return &StringLit{Value: ""}
+	case types.ListType:
+		return &ListLit{}
+	case types.MapType, types.StructType:
+		return &CallExpr{Func: "hash"}
+	default:
+		return &Name{Name: "#f"}
 	}
 }
 
@@ -2744,9 +2770,8 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 							}
 						}
 					}
-					// call the function stored in the field, passing the target as first argument
+					// call the function stored in the field
 					var args []Expr
-					args = append(args, n.Target)
 					for _, a := range op.Call.Args {
 						arg, err := convertExpr(a, env)
 						if err != nil {
@@ -2754,10 +2779,14 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 						}
 						args = append(args, arg)
 					}
-					expr = &InvokeExpr{Callee: expr, Args: args}
 					if fn, ok := t.(types.FuncType); ok {
+						if len(fn.Params) == len(args)+1 {
+							args = append([]Expr{n.Target}, args...)
+						}
+						expr = &InvokeExpr{Callee: expr, Args: args}
 						t = fn.Return
 					} else {
+						expr = &InvokeExpr{Callee: expr, Args: args}
 						t = types.AnyType{}
 					}
 					break
@@ -2781,9 +2810,10 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			}
 			isStr := types.IsStringType(t)
 			isMap := types.IsMapType(t)
-			expr = &IndexExpr{Target: expr, Index: idx, IsString: isStr, IsMap: isMap}
+			var def Expr
 			if isMap {
 				if mt, ok := t.(types.MapType); ok {
+					def = zeroValueType(mt.Value)
 					t = mt.Value
 				} else {
 					t = types.AnyType{}
@@ -2793,6 +2823,7 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			} else {
 				t = types.AnyType{}
 			}
+			expr = &IndexExpr{Target: expr, Index: idx, IsString: isStr, IsMap: isMap, Default: def}
 		case op.Index != nil && op.Index.Colon != nil:
 			if op.Index.Colon2 != nil || op.Index.Step != nil {
 				return nil, fmt.Errorf("slice step not supported")
