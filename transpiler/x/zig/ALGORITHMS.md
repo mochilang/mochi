@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-07 00:08 +0700
+Last updated: 2025-08-07 08:09 +0700
 
-## Program Checklist (105/1077)
+## Program Checklist (112/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.114ms | 512.0 KB |
@@ -167,13 +167,13 @@ Last updated: 2025-08-07 00:08 +0700
 | 158 | data_compression/run_length_encoding | ✓ | 2.517ms | 640.0 KB |
 | 159 | data_structures/arrays/equilibrium_index_in_array | ✓ | 736µs | 384.0 KB |
 | 160 | data_structures/arrays/find_triplets_with_0_sum | ✓ | 3.449ms | 956.0 KB |
-| 161 | data_structures/arrays/index_2d_array_in_1d |   |  |  |
-| 162 | data_structures/arrays/kth_largest_element |   |  |  |
-| 163 | data_structures/arrays/median_two_array |   |  |  |
-| 164 | data_structures/arrays/monotonic_array |   |  |  |
-| 165 | data_structures/arrays/pairs_with_given_sum |   |  |  |
-| 166 | data_structures/arrays/permutations |   |  |  |
-| 167 | data_structures/arrays/prefix_sum |   |  |  |
+| 161 | data_structures/arrays/index_2d_array_in_1d | ✓ | 1.361ms | 384.0 KB |
+| 162 | data_structures/arrays/kth_largest_element | ✓ | 504µs | 128.0 KB |
+| 163 | data_structures/arrays/median_two_array | ✓ | 2.505ms | 512.0 KB |
+| 164 | data_structures/arrays/monotonic_array | ✓ | 579µs | 256.0 KB |
+| 165 | data_structures/arrays/pairs_with_given_sum | ✓ | 1.3ms | 128.0 KB |
+| 166 | data_structures/arrays/permutations | ✓ | 4.407ms | 1.0 MB |
+| 167 | data_structures/arrays/prefix_sum | ✓ | 1.336ms | 384.0 KB |
 | 168 | data_structures/arrays/product_sum |   |  |  |
 | 169 | data_structures/arrays/sparse_table |   |  |  |
 | 170 | data_structures/arrays/sudoku_solver |   |  |  |
