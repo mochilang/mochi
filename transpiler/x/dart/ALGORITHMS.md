@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-07 12:13 GMT+7
+Last updated: 2025-08-07 15:48 GMT+7
 
 ## Algorithms Golden Test Checklist (651/1077)
 | Index | Name | Status | Duration | Memory |
@@ -107,7 +107,7 @@ Last updated: 2025-08-07 12:13 GMT+7
 | 98 | ciphers/rot13 | ✓ | 15.712ms | 2.5 MB |
 | 99 | ciphers/rsa_cipher | ✓ | 10.258ms | 3.5 MB |
 | 100 | ciphers/rsa_factorization | ✓ | 15.475ms | 10.0 MB |
-| 101 | ciphers/rsa_key_generator | ✓ | 8.945ms | 2.9 MB |
+| 101 | ciphers/rsa_key_generator | ✓ | 28.401ms | 10.4 MB |
 | 102 | ciphers/running_key_cipher | ✓ | 10.655ms | 3.6 MB |
 | 103 | ciphers/shuffled_shift_cipher | ✓ | 13.48ms | 4.9 MB |
 | 104 | ciphers/simple_keyword_cypher | ✓ | 20.428ms | 10.5 MB |
