@@ -78,7 +78,7 @@ func declareName(name string) string {
 	}
 	newName := name
 	switch strings.ToLower(name) {
-	case "label", "xor", "and", "or", "div", "mod", "type", "set", "result", "repeat", "end", "nil", "length", "ord":
+	case "label", "xor", "and", "or", "div", "mod", "type", "set", "result", "repeat", "end", "nil", "length", "ord", "array":
 		// Avoid Pascal reserved keywords (case-insensitive)
 		newName = name + "_"
 	}
@@ -861,6 +861,7 @@ type IndexExpr struct {
 	Target Expr
 	Index  Expr
 	String bool
+	Field  string
 }
 
 func (i *IndexExpr) emit(w io.Writer) {
@@ -871,6 +872,10 @@ func (i *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, "+1")
 	}
 	io.WriteString(w, "]")
+	if i.Field != "" {
+		io.WriteString(w, ".")
+		io.WriteString(w, sanitizeField(i.Field))
+	}
 }
 
 type SliceExpr struct {
@@ -1928,7 +1933,15 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				case *IndexExpr:
 					if inner, ok := t.Target.(*VarRef); ok {
 						name := sanitize(inner.Name)
-						pr.Stmts = append(pr.Stmts, &IndexAssignStmt{Name: name, Index: t.Index, Expr: val})
+						if t.Field != "" {
+							var buf bytes.Buffer
+							t.Index.emit(&buf)
+							idxStr := buf.String()
+							assignName := fmt.Sprintf("%s[%s].%s", name, idxStr, sanitizeField(t.Field))
+							pr.Stmts = append(pr.Stmts, &AssignStmt{Name: assignName, Expr: val})
+						} else {
+							pr.Stmts = append(pr.Stmts, &IndexAssignStmt{Name: name, Index: t.Index, Expr: val})
+						}
 					} else if innerIdx, ok := t.Target.(*IndexExpr); ok {
 						if base, ok := innerIdx.Target.(*VarRef); ok {
 							name := sanitize(base.Name)
@@ -4345,6 +4358,9 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 				expr = v
 			case *VarRef:
 				expr = &SelectorExpr{Root: v.Name, Tail: []string{fname}}
+			case *IndexExpr:
+				v.Field = fname
+				expr = v
 			default:
 				root := exprToVarRef(expr)
 				if root == "" {
@@ -5102,8 +5118,20 @@ func inferType(e Expr) string {
 		}
 		t := resolveAlias(inferType(v.Target))
 		if strings.HasPrefix(t, "array of ") {
-			elem := strings.TrimPrefix(t, "array of ")
-			return resolveAlias(elem)
+			elem := resolveAlias(strings.TrimPrefix(t, "array of "))
+			if v.Field != "" {
+				for _, r := range currProg.Records {
+					if r.Name == elem {
+						for _, f := range r.Fields {
+							if f.Name == v.Field {
+								return resolveAlias(f.Type)
+							}
+						}
+					}
+				}
+				return ""
+			}
+			return elem
 		}
 		if strings.HasPrefix(t, "specialize TFPGMap") {
 			parts := strings.TrimPrefix(t, "specialize TFPGMap<")
