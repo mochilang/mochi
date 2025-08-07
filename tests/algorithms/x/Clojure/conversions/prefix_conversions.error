@@ -3,4 +3,4 @@ Execution error (ClassCastException) at main/convert-si-prefix (prefix_conversio
 class java.lang.String cannot be cast to class java.lang.Number (java.lang.String and java.lang.Number are in module java.base of loader 'bootstrap')
 
 Full report at:
-/tmp/clojure-11806873202832232963.edn
+/tmp/clojure-8273131173616706472.edn

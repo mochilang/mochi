@@ -1,0 +1,5 @@
+Execution error at main/check-keys (affine_cipher.clj:107).
+Key A 909/19 and the symbol set size 95 are not relatively prime. Choose a different key.
+
+Full report at:
+/tmp/clojure-7591684952939858001.edn

@@ -54,10 +54,10 @@
 (def ^:dynamic main_ascii " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~")
 
 (defn ord [ord_ch]
-  (binding [ord_i nil] (try (do (set! ord_i 0) (while (< ord_i (count main_ascii)) (do (when (= (subvec main_ascii ord_i (+ ord_i 1)) ord_ch) (throw (ex-info "return" {:v (+ 32 ord_i)}))) (set! ord_i (+ ord_i 1)))) (throw (ex-info "return" {:v 0}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [ord_i nil] (try (do (set! ord_i 0) (while (< ord_i (count main_ascii)) (do (when (= (subs main_ascii ord_i (min (+ ord_i 1) (count main_ascii))) ord_ch) (throw (ex-info "return" {:v (+ 32 ord_i)}))) (set! ord_i (+ ord_i 1)))) (throw (ex-info "return" {:v 0}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn chr [chr_n]
-  (try (if (and (>= chr_n 32) (< chr_n 127)) (subvec main_ascii (- chr_n 32) (- chr_n 31)) "") (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (if (and (>= chr_n 32) (< chr_n 127)) (subs main_ascii (- chr_n 32) (min (- chr_n 31) (count main_ascii))) "") (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn normalize_key [normalize_key_key]
   (binding [normalize_key_k nil] (try (do (set! normalize_key_k normalize_key_key) (when (= normalize_key_k 0) (set! normalize_key_k 1)) (set! normalize_key_k (mod normalize_key_k 256)) (when (< normalize_key_k 0) (set! normalize_key_k (+ normalize_key_k 256))) (throw (ex-info "return" {:v normalize_key_k}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))

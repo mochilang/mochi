@@ -1,0 +1,7 @@
+HWe olordll
+Hello World
+Execution error (UnsupportedOperationException) at main/-main (rail_fence_cipher.clj:88).
+nth not supported on this type: PersistentHashMap
+
+Full report at:
+/tmp/clojure-17538634357404489445.edn

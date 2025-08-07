@@ -1,0 +1,5 @@
+Execution error (StringIndexOutOfBoundsException) at jdk.internal.util.Preconditions$1/apply (Preconditions.java:55).
+Range [0, -3) out of bounds for length 0
+
+Full report at:
+/tmp/clojure-16256217324129095797.edn

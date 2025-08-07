@@ -2,4 +2,4 @@ Execution error (ClassCastException) at main/convert-time (time_conversions.clj:
 class java.lang.String cannot be cast to class java.lang.Number (java.lang.String and java.lang.Number are in module java.base of loader 'bootstrap')
 
 Full report at:
-/tmp/clojure-14784798262115828458.edn
+/tmp/clojure-5591817063031893579.edn

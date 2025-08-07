@@ -1,0 +1,6 @@
+run: exit status 1
+Syntax error compiling at (/workspace/mochi/tests/algorithms/x/Clojure/ciphers/cryptomath_module.clj:53:346).
+Unable to resolve symbol: error in this context
+
+Full report at:
+/tmp/clojure-4150000272188584208.edn

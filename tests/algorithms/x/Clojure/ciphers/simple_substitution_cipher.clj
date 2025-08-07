@@ -48,8 +48,6 @@
 
 (def ^:dynamic is_upper_i nil)
 
-(def ^:dynamic rand_seed nil)
-
 (def ^:dynamic translate_message_chars_a nil)
 
 (def ^:dynamic translate_message_chars_b nil)
@@ -75,7 +73,7 @@
 (def ^:dynamic main_seed 1)
 
 (defn rand [rand_n]
-  (binding [rand_seed nil] (try (do (set! rand_seed (mod (+ (* main_seed 1664525) 1013904223) 2147483647)) (throw (ex-info "return" {:v (mod rand_seed rand_n)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (try (do (alter-var-root (var main_seed) (fn [_] (mod (+ (* main_seed 1664525) 1013904223) 2147483647))) (throw (ex-info "return" {:v (mod main_seed rand_n)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn get_random_key []
   (binding [get_random_key_chars nil get_random_key_i nil get_random_key_j nil get_random_key_k nil get_random_key_res nil get_random_key_tmp nil] (try (do (set! get_random_key_chars nil) (set! get_random_key_i 0) (while (< get_random_key_i (count main_LETTERS)) (do (set! get_random_key_chars (conj get_random_key_chars (nth main_LETTERS get_random_key_i))) (set! get_random_key_i (+ get_random_key_i 1)))) (set! get_random_key_j (- (count get_random_key_chars) 1)) (while (> get_random_key_j 0) (do (set! get_random_key_k (rand (+ get_random_key_j 1))) (set! get_random_key_tmp (nth get_random_key_chars get_random_key_j)) (set! get_random_key_chars (assoc get_random_key_chars get_random_key_j (nth get_random_key_chars get_random_key_k))) (set! get_random_key_chars (assoc get_random_key_chars get_random_key_k get_random_key_tmp)) (set! get_random_key_j (- get_random_key_j 1)))) (set! get_random_key_res "") (set! get_random_key_i 0) (while (< get_random_key_i (count get_random_key_chars)) (do (set! get_random_key_res (str get_random_key_res (nth get_random_key_chars get_random_key_i))) (set! get_random_key_i (+ get_random_key_i 1)))) (throw (ex-info "return" {:v get_random_key_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))

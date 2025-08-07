@@ -62,8 +62,6 @@
 
 (def ^:dynamic pow2_res nil)
 
-(def ^:dynamic rand_range_seed nil)
-
 (defn pow2 [pow2_exp]
   (binding [pow2_i nil pow2_res nil] (try (do (set! pow2_res 1) (set! pow2_i 0) (while (< pow2_i pow2_exp) (do (set! pow2_res (* pow2_res 2)) (set! pow2_i (+ pow2_i 1)))) (throw (ex-info "return" {:v pow2_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
@@ -73,7 +71,7 @@
   (try (throw (ex-info "return" {:v (mod (+ (* next_seed_x 1103515245) 12345) 2147483648)})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn rand_range [rand_range_min rand_range_max]
-  (binding [rand_range_seed nil] (try (do (set! rand_range_seed (next_seed main_seed)) (throw (ex-info "return" {:v (+ rand_range_min (mod rand_range_seed (- rand_range_max rand_range_min)))}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (try (do (alter-var-root (var main_seed) (fn [_] (next_seed main_seed))) (throw (ex-info "return" {:v (+ rand_range_min (mod main_seed (- rand_range_max rand_range_min)))}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn gcd [gcd_a gcd_b]
   (binding [gcd_temp nil gcd_x nil gcd_y nil] (try (do (set! gcd_x gcd_a) (set! gcd_y gcd_b) (while (not= gcd_y 0) (do (set! gcd_temp (mod gcd_x gcd_y)) (set! gcd_x gcd_y) (set! gcd_y gcd_temp))) (throw (ex-info "return" {:v gcd_x}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))

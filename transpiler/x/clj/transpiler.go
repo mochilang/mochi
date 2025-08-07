@@ -135,14 +135,26 @@ func (s *Set) Emit(w io.Writer) {
 	io.WriteString(w, "}")
 }
 
+func nodeKeyString(n Node) string {
+	var buf bytes.Buffer
+	if n != nil {
+		n.Emit(&buf)
+	}
+	return buf.String()
+}
+
 // Map represents a Clojure map: {:k v ...}
 type Map struct {
 	Pairs [][2]Node
 }
 
 func (m *Map) Emit(w io.Writer) {
+	pairs := append([][2]Node(nil), m.Pairs...)
+	sort.Slice(pairs, func(i, j int) bool {
+		return nodeKeyString(pairs[i][0]) < nodeKeyString(pairs[j][0])
+	})
 	io.WriteString(w, "{")
-	for i, kv := range m.Pairs {
+	for i, kv := range pairs {
 		if i > 0 {
 			io.WriteString(w, " ")
 		}

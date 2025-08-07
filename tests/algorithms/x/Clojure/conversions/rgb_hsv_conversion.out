@@ -2,4 +2,4 @@ Execution error (ClassCastException) at main/fmod (rgb_hsv_conversion.clj:65).
 class java.lang.Double cannot be cast to class java.lang.String (java.lang.Double and java.lang.String are in module java.base of loader 'bootstrap')
 
 Full report at:
-/tmp/clojure-9877867521977621091.edn
+/tmp/clojure-5598319685034115257.edn
