@@ -1,12 +1,8 @@
 run: exit status 1
-Message sent
-{
-  "duration_us": 4172,
-  "memory_bytes": 82128,
-  "name": "main"
-}
-[0m[1m[31merror[0m: Uncaught (in promise) ReferenceError: error is not defined
-    error(("Request to slack returned an error: " + response));
-[0m[31m    ^[0m
+[0m[1m[31merror[0m: Uncaught (in promise) Error: Request to slack returned an error: [object Object]
+function _panic(msg: any): never { throw new Error(String(msg)); }
+[0m[31m                                         ^[0m
+    at [0m[1m[3m_panic[0m ([0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/web_programming/slack_message.ts[0m:[0m[33m65[0m:[0m[33m42[0m)
     at [0m[1m[3msend_slack_message[0m ([0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/web_programming/slack_message.ts[0m:[0m[33m8[0m:[0m[33m5[0m)
     at [0m[1m[3meventLoopTick[0m ([0m[36mext:core/01_core.js[0m:[0m[33m179[0m:[0m[33m7[0m)
+    at async [0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/web_programming/slack_message.ts[0m:[0m[33m90[0m:[0m[33m3[0m

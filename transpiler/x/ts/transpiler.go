@@ -52,6 +52,7 @@ var usePyName bool
 var funcDepth int
 var returnOutsideFunc bool
 var paramStack []map[string]bool
+var asyncFuncs map[string]bool
 
 var reserved = map[string]bool{
 	"break": true, "case": true, "catch": true, "class": true, "const": true,
@@ -2050,10 +2051,10 @@ func emitStmt(w *indentWriter, s Stmt, level int) {
 // runtime helper libraries. Most Mochi features are supported including
 // joins and grouping in query expressions.
 func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, error) {
-	transpileEnv = env
-	generatedTypes = map[string]bool{}
-	prelude = nil
-	pythonMathAliases = map[string]bool{}
+        transpileEnv = env
+        generatedTypes = map[string]bool{}
+        prelude = nil
+        pythonMathAliases = map[string]bool{}
 	useNow = false
 	useInput = false
 	useKeys = false
@@ -2072,6 +2073,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
         usePyName = false
         funcDepth = 0
         returnOutsideFunc = false
+       asyncFuncs = map[string]bool{}
 	defer func() {
 		transpileEnv = nil
 		generatedTypes = nil
@@ -2095,6 +2097,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
                 usePyName = false
                 funcDepth = 0
                 returnOutsideFunc = false
+               asyncFuncs = nil
         }()
         tsProg := &Program{}
         fixScientificNotation(prog)
@@ -2334,7 +2337,7 @@ function sha256(bs: number[]): number[] {
 }`})
 	}
 	if useFetch {
-		prelude = append(prelude, &RawStmt{Code: `async function _fetch(url: string, opts?: any): Promise<any> {
+                prelude = append(prelude, &RawStmt{Code: `async function _fetch(url: string, opts?: any): Promise<any> {
   const init: RequestInit = { method: opts?.method ?? 'GET' };
   if (opts?.headers) init.headers = opts.headers;
   if (opts && 'body' in opts) init.body = JSON.stringify(opts.body);
@@ -2343,6 +2346,12 @@ function sha256(bs: number[]): number[] {
     for (const [k, v] of Object.entries(opts.query)) qs.set(k, String(v));
     const sep = url.includes('?') ? '&' : '?';
     url = url + sep + qs.toString();
+  }
+  if (!/^https?:/.test(url)) {
+    const root = new URL('../../../../..', import.meta.url).pathname;
+    const path = url.startsWith('/') ? url : root + url;
+    const text = await Deno.readTextFile(path);
+    try { return JSON.parse(text); } catch { return text; }
   }
   const resp = await fetch(url, init);
   const text = await resp.text();
@@ -2662,10 +2671,14 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		if s.Fun.Return != nil {
 			retType = tsType(types.ResolveTypeRef(s.Fun.Return, transpileEnv))
 		}
-		name := safeName(s.Fun.Name)
-		return &FuncDecl{Name: name, Params: params, ParamTypes: typesArr, ReturnType: retType, Body: body, Async: useFetch}, nil
-	case s.If != nil:
-		return convertIfStmt(s.If, transpileEnv)
+               name := safeName(s.Fun.Name)
+               fd := &FuncDecl{Name: name, Params: params, ParamTypes: typesArr, ReturnType: retType, Body: body, Async: useFetch}
+               if fd.Async {
+                       asyncFuncs[name] = true
+               }
+               return fd, nil
+        case s.If != nil:
+                return convertIfStmt(s.If, transpileEnv)
 	case s.While != nil:
 		return convertWhileStmt(s.While, transpileEnv)
 	case s.For != nil:
@@ -3915,11 +3928,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("float expects one argument")
 			}
 			return &CallExpr{Func: "Number", Args: args}, nil
-		case "split":
-			if len(args) != 2 {
-				return nil, fmt.Errorf("split expects two arguments")
-			}
-			return &MethodCallExpr{Target: args[0], Method: "split", Args: []Expr{args[1]}}, nil
+               case "split":
+                       if transpileEnv != nil {
+                               if _, ok := transpileEnv.GetFunc("split"); ok {
+                                       return &CallExpr{Func: "split", Args: args}, nil
+                               }
+                       }
+                       if len(args) != 2 {
+                               return nil, fmt.Errorf("split expects two arguments")
+                       }
+                       return &MethodCallExpr{Target: args[0], Method: "split", Args: []Expr{args[1]}}, nil
 		case "parseIntStr":
 			if transpileEnv != nil {
 				if _, ok := transpileEnv.GetFunc("parseIntStr"); ok {
@@ -4037,16 +4055,27 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			useNumDenom = true
 			return &CallExpr{Func: "num", Args: args}, nil
-		case "denom":
-			if len(args) != 1 {
-				return nil, fmt.Errorf("denom expects one argument")
-			}
-			useNumDenom = true
-			return &CallExpr{Func: "denom", Args: args}, nil
-		case "panic":
-			if _, ok := transpileEnv.GetFunc("panic"); ok {
-				// user-defined panic function; treat like normal call
-				return &CallExpr{Func: "panic", Args: args}, nil
+               case "denom":
+                       if len(args) != 1 {
+                               return nil, fmt.Errorf("denom expects one argument")
+                       }
+                       useNumDenom = true
+                       return &CallExpr{Func: "denom", Args: args}, nil
+               case "first":
+                       if len(args) != 1 {
+                               return nil, fmt.Errorf("first expects one argument")
+                       }
+                       return &IndexExpr{Target: args[0], Index: &NumberLit{Value: "0"}}, nil
+               case "error":
+                       if len(args) != 1 {
+                               return nil, fmt.Errorf("error expects one argument")
+                       }
+                       usePanic = true
+                       return &CallExpr{Func: "_panic", Args: args}, nil
+               case "panic":
+                       if _, ok := transpileEnv.GetFunc("panic"); ok {
+                               // user-defined panic function; treat like normal call
+                               return &CallExpr{Func: "panic", Args: args}, nil
 			}
 			if len(args) != 1 {
 				return nil, fmt.Errorf("panic expects one argument")
@@ -4069,9 +4098,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					}, nil
 				}
 			}
-			return &CallExpr{Func: p.Call.Func, Args: args}, nil
-		}
-	case p.If != nil:
+                       if asyncFuncs[p.Call.Func] {
+                               return &AwaitExpr{X: &CallExpr{Func: p.Call.Func, Args: args}}, nil
+                       }
+                       return &CallExpr{Func: p.Call.Func, Args: args}, nil
+               }
+       case p.If != nil:
 		cond, err := convertExpr(p.If.Cond)
 		if err != nil {
 			return nil, err
@@ -4143,14 +4175,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		if p.Load.Path != nil {
 			path = strings.Trim(*p.Load.Path, "\"")
 		}
-		pathExpr := fmt.Sprintf("%q", path)
-		clean := path
-		for strings.HasPrefix(clean, "../") {
-			clean = strings.TrimPrefix(clean, "../")
-		}
-		if path != "" && strings.HasPrefix(path, "../") {
-			pathExpr = fmt.Sprintf("new URL(\"../../../%s\", import.meta.url).pathname", clean)
-		}
+               pathExpr := fmt.Sprintf("%q", path)
+               clean := path
+               for strings.HasPrefix(clean, "../") {
+                       clean = strings.TrimPrefix(clean, "../")
+               }
+               if path != "" && strings.HasPrefix(path, "../") {
+                       pathExpr = fmt.Sprintf("new URL(\"../../../%s\", import.meta.url).pathname", clean)
+               } else if path != "" && !strings.HasPrefix(path, "/") {
+                       pathExpr = fmt.Sprintf("new URL('../../../../..', import.meta.url).pathname + %q", path)
+               }
 		switch format {
 		case "json":
 			return &RawExpr{Code: fmt.Sprintf("JSON.parse(Deno.readTextFileSync(%s))", pathExpr)}, nil
