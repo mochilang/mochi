@@ -171,6 +171,8 @@ type Program struct {
 	Records            []RecordDef
 	ArrayAliases       map[string]string
 	LateAliases        map[string]string
+	FuncAliases        map[string]string
+	FuncAliasDefs      map[string]string
 	UseFGL             bool
 	Stmts              []Stmt
 	UseSysUtils        bool
@@ -366,38 +368,38 @@ func (f *FunDecl) emit(out io.Writer) {
 	} else {
 		fmt.Fprintf(out, "): %s;\n", rt)
 	}
-        if len(f.Locals) > 0 {
-                seen := map[string]bool{}
-                params := map[string]bool{}
-                for _, p := range f.Params {
-                        if idx := strings.Index(p, ":"); idx != -1 {
-                                params[strings.ToLower(strings.TrimSpace(p[:idx]))] = true
-                        } else {
-                                params[strings.ToLower(p)] = true
-                        }
-                }
-                var locals []VarDecl
-                for _, v := range f.Locals {
-                        key := strings.ToLower(v.Name)
-                        if params[key] || seen[key] {
-                                continue
-                        }
-                        seen[key] = true
-                        locals = append(locals, v)
-                }
-                if len(locals) > 0 {
-                        io.WriteString(out, "var\n")
-                        for _, v := range locals {
-                                typ := v.Type
-                                if typ == "" {
-                                        typ = "integer"
-                                } else {
-                                        typ = pasType(typ)
-                                }
-                                fmt.Fprintf(out, "  %s: %s;\n", v.Name, typ)
-                        }
-                }
-        }
+	if len(f.Locals) > 0 {
+		seen := map[string]bool{}
+		params := map[string]bool{}
+		for _, p := range f.Params {
+			if idx := strings.Index(p, ":"); idx != -1 {
+				params[strings.ToLower(strings.TrimSpace(p[:idx]))] = true
+			} else {
+				params[strings.ToLower(p)] = true
+			}
+		}
+		var locals []VarDecl
+		for _, v := range f.Locals {
+			key := strings.ToLower(v.Name)
+			if params[key] || seen[key] {
+				continue
+			}
+			seen[key] = true
+			locals = append(locals, v)
+		}
+		if len(locals) > 0 {
+			io.WriteString(out, "var\n")
+			for _, v := range locals {
+				typ := v.Type
+				if typ == "" {
+					typ = "integer"
+				} else {
+					typ = pasType(typ)
+				}
+				fmt.Fprintf(out, "  %s: %s;\n", v.Name, typ)
+			}
+		}
+	}
 	for _, s := range f.Body {
 		if nf, ok := s.(*NestedFunDecl); ok {
 			io.WriteString(out, "  ")
@@ -545,7 +547,13 @@ func (b *BoolLit) isBool() bool { return true }
 // VarRef references a variable by name.
 type VarRef struct{ Name string }
 
-func (v *VarRef) emit(w io.Writer) { io.WriteString(w, v.Name) }
+func (v *VarRef) emit(w io.Writer) {
+	if _, ok := funcNames[v.Name]; ok {
+		io.WriteString(w, "@"+v.Name)
+	} else {
+		io.WriteString(w, v.Name)
+	}
+}
 
 // CallExpr represents a function call.
 type CallExpr struct {
@@ -1301,6 +1309,16 @@ func (p *Program) Emit() []byte {
 			fmt.Fprintf(&buf, "type %s = array of %s;\n", alias, elem)
 		}
 	}
+	if len(p.FuncAliasDefs) > 0 {
+		names := make([]string, 0, len(p.FuncAliasDefs))
+		for name := range p.FuncAliasDefs {
+			names = append(names, name)
+		}
+		sort.Strings(names)
+		for _, name := range names {
+			fmt.Fprintf(&buf, "type %s = %s;\n", name, p.FuncAliasDefs[name])
+		}
+	}
 	if len(p.ArrayAliases) > 0 {
 		keys := make([]string, 0, len(p.ArrayAliases))
 		for elem := range p.ArrayAliases {
@@ -1996,21 +2014,21 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					}
 					funcReturns[fn.Name] = rt
 				}
-                                paramNames := map[string]string{}
-                                for _, p := range st.Fun.Params {
-                                        typ := "integer"
-                                        if p.Type != nil {
-                                                typ = typeFromRef(p.Type)
-                                        }
-                                        if strings.HasPrefix(typ, "array of ") {
-                                                elem := strings.TrimPrefix(typ, "array of ")
-                                                typ = currProg.addArrayAlias(elem)
-                                        }
-                                        name := sanitize(p.Name)
-                                        paramNames[p.Name] = name
-                                        local[name] = typ
-                                        currentScope()[p.Name] = name
-                                }
+				paramNames := map[string]string{}
+				for _, p := range st.Fun.Params {
+					typ := "integer"
+					if p.Type != nil {
+						typ = typeFromRef(p.Type)
+					}
+					if strings.HasPrefix(typ, "array of ") {
+						elem := strings.TrimPrefix(typ, "array of ")
+						typ = currProg.addArrayAlias(elem)
+					}
+					name := sanitize(p.Name)
+					paramNames[p.Name] = name
+					local[name] = typ
+					currentScope()[p.Name] = name
+				}
 				fnBody, err := convertBody(env, st.Fun.Body, local)
 				if err != nil {
 					return nil, err
@@ -2021,19 +2039,19 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				popScope()
 				locals := append([]VarDecl(nil), currProg.Vars[startVarCount:]...)
 				currProg.Vars = currProg.Vars[:startVarCount]
-                                var params []string
-                                for _, p := range st.Fun.Params {
-                                        typ := "integer"
-                                        if p.Type != nil {
-                                                typ = typeFromRef(p.Type)
-                                        }
-                                        if strings.HasPrefix(typ, "array of ") {
-                                                elem := strings.TrimPrefix(typ, "array of ")
-                                                typ = currProg.addArrayAlias(elem)
-                                        }
-                                        name := paramNames[p.Name]
-                                        params = append(params, formatParam(name, typ))
-                                }
+				var params []string
+				for _, p := range st.Fun.Params {
+					typ := "integer"
+					if p.Type != nil {
+						typ = typeFromRef(p.Type)
+					}
+					if strings.HasPrefix(typ, "array of ") {
+						elem := strings.TrimPrefix(typ, "array of ")
+						typ = currProg.addArrayAlias(elem)
+					}
+					name := paramNames[p.Name]
+					params = append(params, formatParam(name, typ))
+				}
 				if rt == "" {
 					for _, st := range fnBody {
 						if ret, ok := st.(*ReturnStmt); ok && ret.Expr != nil {
@@ -2215,20 +2233,20 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 				out = append(out, &AssignStmt{Name: name, Expr: val})
 			case *SelectorExpr:
 				out = append(out, &SetStmt{Target: t, Expr: val})
-                               case *IndexExpr:
-                                if inner, ok := t.Target.(*VarRef); ok {
-                                        name := inner.Name
-                                        out = append(out, &IndexAssignStmt{Name: name, Index: t.Index, Expr: val})
-                                } else if innerIdx, ok := t.Target.(*IndexExpr); ok {
-                                        if base, ok := innerIdx.Target.(*VarRef); ok {
-                                                name := base.Name
-                                                out = append(out, &DoubleIndexAssignStmt{Name: name, Index1: innerIdx.Index, Index2: t.Index, Expr: val})
-                                        } else {
-                                                return nil, fmt.Errorf("unsupported assignment target")
-                                        }
-                                } else {
-                                        return nil, fmt.Errorf("unsupported assignment target")
-                                }
+			case *IndexExpr:
+				if inner, ok := t.Target.(*VarRef); ok {
+					name := inner.Name
+					out = append(out, &IndexAssignStmt{Name: name, Index: t.Index, Expr: val})
+				} else if innerIdx, ok := t.Target.(*IndexExpr); ok {
+					if base, ok := innerIdx.Target.(*VarRef); ok {
+						name := base.Name
+						out = append(out, &DoubleIndexAssignStmt{Name: name, Index1: innerIdx.Index, Index2: t.Index, Expr: val})
+					} else {
+						return nil, fmt.Errorf("unsupported assignment target")
+					}
+				} else {
+					return nil, fmt.Errorf("unsupported assignment target")
+				}
 			default:
 				return nil, fmt.Errorf("unsupported assignment target")
 			}
@@ -4001,6 +4019,18 @@ func typeFromRef(tr *parser.TypeRef) string {
 		}
 		return ensureRecord(fields)
 	}
+	if tr.Fun != nil {
+		params := make([]types.Type, len(tr.Fun.Params))
+		for i, p := range tr.Fun.Params {
+			params[i] = stringToType(typeFromRef(p))
+		}
+		var ret types.Type = types.VoidType{}
+		if tr.Fun.Return != nil {
+			ret = stringToType(typeFromRef(tr.Fun.Return))
+		}
+		ft := types.FuncType{Params: params, Return: ret}
+		return currProg.addFuncAlias(ft)
+	}
 	return ""
 }
 
@@ -4055,6 +4085,11 @@ func pasTypeFromType(t types.Type) string {
 		}
 		currProg.UseFGL = true
 		return fmt.Sprintf("specialize TFPGMap<%s, %s>", key, val)
+	case types.FuncType:
+		if currProg != nil {
+			return currProg.addFuncAlias(v)
+		}
+		return ""
 	case types.VoidType:
 		return ""
 	case types.AnyType:
@@ -4063,6 +4098,26 @@ func pasTypeFromType(t types.Type) string {
 	default:
 		currProg.UseVariants = true
 		return "Variant"
+	}
+}
+
+func stringToType(s string) types.Type {
+	switch s {
+	case "string":
+		return types.StringType{}
+	case "boolean":
+		return types.BoolType{}
+	case "integer":
+		return types.IntType{}
+	case "real":
+		return types.FloatType{}
+	case "BigRat":
+		return types.BigRatType{}
+	default:
+		if s == "" {
+			return types.VoidType{}
+		}
+		return types.StructType{Name: s}
 	}
 }
 
@@ -4505,14 +4560,14 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			currProg.NeedPadStart = true
 			currProg.UseSysUtils = true
 			return &CallExpr{Name: "padStart", Args: args}, nil
-                } else if name == "append" && len(args) == 2 {
-                        t := resolveAlias(inferType(args[0]))
-                        if strings.HasPrefix(t, "array of ") {
-                                elem := strings.TrimPrefix(t, "array of ")
-                                _ = currProg.addArrayAlias(elem)
-                        }
-                        return &CallExpr{Name: "concat", Args: []Expr{args[0], &ListLit{Elems: []Expr{args[1]}}}}, nil
-                } else if name == "float" && len(args) == 1 {
+		} else if name == "append" && len(args) == 2 {
+			t := resolveAlias(inferType(args[0]))
+			if strings.HasPrefix(t, "array of ") {
+				elem := strings.TrimPrefix(t, "array of ")
+				_ = currProg.addArrayAlias(elem)
+			}
+			return &CallExpr{Name: "concat", Args: []Expr{args[0], &ListLit{Elems: []Expr{args[1]}}}}, nil
+		} else if name == "float" && len(args) == 1 {
 			return &CallExpr{Name: "Double", Args: args}, nil
 		} else if name == "contains" && len(args) == 2 {
 			if _, ok := funcNames[name]; ok {
@@ -5393,6 +5448,40 @@ func (p *Program) addArrayAlias(elem string) string {
 			p.LateAliases[elem] = alias
 		}
 	}
+	return alias
+}
+
+func (p *Program) addFuncAlias(ft types.FuncType) string {
+	if p.FuncAliases == nil {
+		p.FuncAliases = make(map[string]string)
+		p.FuncAliasDefs = make(map[string]string)
+	}
+	sigParts := make([]string, len(ft.Params))
+	for i, par := range ft.Params {
+		sigParts[i] = par.String()
+	}
+	ret := "void"
+	if ft.Return != nil {
+		ret = ft.Return.String()
+	}
+	sig := fmt.Sprintf("(%s)->%s", strings.Join(sigParts, ","), ret)
+	if alias, ok := p.FuncAliases[sig]; ok {
+		return alias
+	}
+	alias := fmt.Sprintf("FuncType%d", len(p.FuncAliases)+1)
+	params := make([]string, len(ft.Params))
+	for i, par := range ft.Params {
+		params[i] = fmt.Sprintf("arg%d: %s", i, pasTypeFromType(par))
+	}
+	decl := ""
+	retT := pasTypeFromType(ft.Return)
+	if retT == "" {
+		decl = fmt.Sprintf("procedure(%s)", strings.Join(params, "; "))
+	} else {
+		decl = fmt.Sprintf("function(%s): %s", strings.Join(params, "; "), retT)
+	}
+	p.FuncAliases[sig] = alias
+	p.FuncAliasDefs[alias] = decl
 	return alias
 }
 
