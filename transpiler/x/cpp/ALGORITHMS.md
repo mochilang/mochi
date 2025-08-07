@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 201/1077
-Last updated: 2025-08-07 00:28 +0700
+Completed programs: 317/1077
+Last updated: 2025-08-07 08:50 +0700
 
 Checklist:
 
@@ -217,166 +217,166 @@ Checklist:
 | 208 | data_structures/hashing/number_theory/prime_numbers |   |  |  |
 | 209 | data_structures/hashing/quadratic_probing | ✓ | 127.0µs | 3.54MB |
 | 210 | data_structures/hashing/tests/test_hash_map |   |  |  |
-| 211 | data_structures/heap/binomial_heap | ✓ | 208.0µs | 3.71MB |
-| 212 | data_structures/heap/heap | ✓ |  |  |
-| 213 | data_structures/heap/heap_generic | ✓ | 304.0µs | 3.80MB |
-| 214 | data_structures/heap/max_heap | ✓ | 152.0µs | 3.47MB |
+| 211 | data_structures/heap/binomial_heap |   |  |  |
+| 212 | data_structures/heap/heap |   |  |  |
+| 213 | data_structures/heap/heap_generic |   |  |  |
+| 214 | data_structures/heap/max_heap |   |  |  |
 | 215 | data_structures/heap/min_heap |   |  |  |
-| 216 | data_structures/heap/randomized_heap | ✓ | 325.0µs | 3.55MB |
-| 217 | data_structures/kd_tree/build_kdtree | ✓ | 312.0µs | 3.86MB |
+| 216 | data_structures/heap/randomized_heap |   |  |  |
+| 217 | data_structures/kd_tree/build_kdtree |   |  |  |
 | 218 | data_structures/kd_tree/example/example_usage |   |  |  |
-| 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 373.0µs | 3.81MB |
-| 220 | data_structures/kd_tree/kd_node | ✓ |  |  |
-| 221 | data_structures/kd_tree/nearest_neighbour_search | ✓ |  |  |
-| 222 | data_structures/kd_tree/tests/test_kdtree | ✓ |  |  |
-| 223 | data_structures/linked_list/circular_linked_list | ✓ | 263.0µs | 3.61MB |
-| 224 | data_structures/linked_list/deque_doubly | ✓ |  |  |
-| 225 | data_structures/linked_list/doubly_linked_list | ✓ |  |  |
-| 226 | data_structures/linked_list/doubly_linked_list_two | ✓ |  |  |
+| 219 | data_structures/kd_tree/example/hypercube_points |   |  |  |
+| 220 | data_structures/kd_tree/kd_node |   |  |  |
+| 221 | data_structures/kd_tree/nearest_neighbour_search |   |  |  |
+| 222 | data_structures/kd_tree/tests/test_kdtree |   |  |  |
+| 223 | data_structures/linked_list/circular_linked_list |   |  |  |
+| 224 | data_structures/linked_list/deque_doubly |   |  |  |
+| 225 | data_structures/linked_list/doubly_linked_list |   |  |  |
+| 226 | data_structures/linked_list/doubly_linked_list_two |   |  |  |
 | 227 | data_structures/linked_list/floyds_cycle_detection |   |  |  |
-| 228 | data_structures/linked_list/from_sequence | ✓ |  |  |
-| 229 | data_structures/linked_list/has_loop |   |  |  |
-| 230 | data_structures/linked_list/is_palindrome |   |  |  |
-| 231 | data_structures/linked_list/merge_two_lists |   |  |  |
-| 232 | data_structures/linked_list/middle_element_of_linked_list |   |  |  |
-| 233 | data_structures/linked_list/print_reverse |   |  |  |
-| 234 | data_structures/linked_list/reverse_k_group |   |  |  |
-| 235 | data_structures/linked_list/rotate_to_the_right |   |  |  |
-| 236 | data_structures/linked_list/singly_linked_list |   |  |  |
-| 237 | data_structures/linked_list/skip_list |   |  |  |
-| 238 | data_structures/linked_list/swap_nodes |   |  |  |
-| 239 | data_structures/queues/circular_queue |   |  |  |
-| 240 | data_structures/queues/circular_queue_linked_list |   |  |  |
-| 241 | data_structures/queues/double_ended_queue |   |  |  |
-| 242 | data_structures/queues/linked_queue |   |  |  |
+| 228 | data_structures/linked_list/from_sequence |   |  |  |
+| 229 | data_structures/linked_list/has_loop | ✓ | 215.0µs | 3.62MB |
+| 230 | data_structures/linked_list/is_palindrome | ✓ | 152.0µs | 3.48MB |
+| 231 | data_structures/linked_list/merge_two_lists | ✓ | 293.0µs | 3.61MB |
+| 232 | data_structures/linked_list/middle_element_of_linked_list | ✓ | 213.0µs | 3.51MB |
+| 233 | data_structures/linked_list/print_reverse | ✓ | 238.0µs | 3.74MB |
+| 234 | data_structures/linked_list/reverse_k_group | ✓ | 252.0µs | 3.62MB |
+| 235 | data_structures/linked_list/rotate_to_the_right | ✓ | 250.0µs | 3.64MB |
+| 236 | data_structures/linked_list/singly_linked_list | ✓ | 328.0µs | 3.55MB |
+| 237 | data_structures/linked_list/skip_list | ✓ | 294.0µs | 3.77MB |
+| 238 | data_structures/linked_list/swap_nodes | ✓ | 272.0µs | 3.45MB |
+| 239 | data_structures/queues/circular_queue | ✓ | 176.0µs | 3.58MB |
+| 240 | data_structures/queues/circular_queue_linked_list | ✓ | 209.0µs | 3.57MB |
+| 241 | data_structures/queues/double_ended_queue | ✓ | 268.0µs | 3.62MB |
+| 242 | data_structures/queues/linked_queue | ✓ | 231.0µs | 3.70MB |
 | 243 | data_structures/queues/priority_queue_using_list |   |  |  |
 | 244 | data_structures/queues/queue_by_list |   |  |  |
-| 245 | data_structures/queues/queue_by_two_stacks |   |  |  |
-| 246 | data_structures/queues/queue_on_pseudo_stack |   |  |  |
-| 247 | data_structures/stacks/balanced_parentheses |   |  |  |
-| 248 | data_structures/stacks/dijkstras_two_stack_algorithm |   |  |  |
-| 249 | data_structures/stacks/infix_to_postfix_conversion |   |  |  |
-| 250 | data_structures/stacks/infix_to_prefix_conversion |   |  |  |
-| 251 | data_structures/stacks/largest_rectangle_histogram |   |  |  |
-| 252 | data_structures/stacks/lexicographical_numbers |   |  |  |
+| 245 | data_structures/queues/queue_by_two_stacks | ✓ | 160.0µs | 3.51MB |
+| 246 | data_structures/queues/queue_on_pseudo_stack | ✓ | 255.0µs | 3.76MB |
+| 247 | data_structures/stacks/balanced_parentheses | ✓ | 168.0µs | 3.64MB |
+| 248 | data_structures/stacks/dijkstras_two_stack_algorithm | ✓ | 247.0µs | 3.49MB |
+| 249 | data_structures/stacks/infix_to_postfix_conversion | ✓ | 269.0µs | 3.51MB |
+| 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ | 1.0µs | 3.54MB |
+| 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 256.0µs | 3.73MB |
+| 252 | data_structures/stacks/lexicographical_numbers | ✓ | 405.0µs | 3.56MB |
 | 253 | data_structures/stacks/next_greater_element |   |  |  |
-| 254 | data_structures/stacks/postfix_evaluation |   |  |  |
-| 255 | data_structures/stacks/prefix_evaluation |   |  |  |
-| 256 | data_structures/stacks/stack |   |  |  |
-| 257 | data_structures/stacks/stack_using_two_queues |   |  |  |
-| 258 | data_structures/stacks/stack_with_doubly_linked_list |   |  |  |
-| 259 | data_structures/stacks/stack_with_singly_linked_list |   |  |  |
-| 260 | data_structures/stacks/stock_span_problem |   |  |  |
-| 261 | data_structures/suffix_tree/example/example_usage |   |  |  |
-| 262 | data_structures/suffix_tree/suffix_tree |   |  |  |
-| 263 | data_structures/suffix_tree/suffix_tree_node |   |  |  |
-| 264 | data_structures/suffix_tree/tests/test_suffix_tree |   |  |  |
+| 254 | data_structures/stacks/postfix_evaluation | ✓ | 340.0µs | 3.66MB |
+| 255 | data_structures/stacks/prefix_evaluation | ✓ | 543.0µs | 3.77MB |
+| 256 | data_structures/stacks/stack | ✓ | 236.0µs | 3.65MB |
+| 257 | data_structures/stacks/stack_using_two_queues | ✓ | 289.0µs | 3.56MB |
+| 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 214.0µs | 3.70MB |
+| 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 204.0µs | 3.49MB |
+| 260 | data_structures/stacks/stock_span_problem | ✓ | 117.0µs | 3.58MB |
+| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 202.0µs | 3.61MB |
+| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 241.0µs | 3.73MB |
+| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 228.0µs | 3.79MB |
+| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 235.0µs | 3.55MB |
 | 265 | data_structures/trie/radix_tree |   |  |  |
 | 266 | data_structures/trie/trie |   |  |  |
-| 267 | digital_image_processing/change_brightness |   |  |  |
-| 268 | digital_image_processing/change_contrast |   |  |  |
-| 269 | digital_image_processing/convert_to_negative |   |  |  |
-| 270 | digital_image_processing/dithering/burkes |   |  |  |
-| 271 | digital_image_processing/edge_detection/canny |   |  |  |
-| 272 | digital_image_processing/filters/bilateral_filter |   |  |  |
+| 267 | digital_image_processing/change_brightness | ✓ | 201.0µs | 3.58MB |
+| 268 | digital_image_processing/change_contrast | ✓ | 197.0µs | 3.64MB |
+| 269 | digital_image_processing/convert_to_negative | ✓ | 240.0µs | 3.68MB |
+| 270 | digital_image_processing/dithering/burkes | ✓ | 276.0µs | 3.62MB |
+| 271 | digital_image_processing/edge_detection/canny | ✓ | 216.0µs | 3.58MB |
+| 272 | digital_image_processing/filters/bilateral_filter | ✓ | 392.0µs | 3.79MB |
 | 273 | digital_image_processing/filters/convolve |   |  |  |
-| 274 | digital_image_processing/filters/gabor_filter |   |  |  |
-| 275 | digital_image_processing/filters/gaussian_filter |   |  |  |
-| 276 | digital_image_processing/filters/laplacian_filter |   |  |  |
-| 277 | digital_image_processing/filters/local_binary_pattern |   |  |  |
-| 278 | digital_image_processing/filters/median_filter |   |  |  |
-| 279 | digital_image_processing/filters/sobel_filter |   |  |  |
-| 280 | digital_image_processing/histogram_equalization/histogram_stretch |   |  |  |
-| 281 | digital_image_processing/index_calculation |   |  |  |
-| 282 | digital_image_processing/morphological_operations/dilation_operation |   |  |  |
-| 283 | digital_image_processing/morphological_operations/erosion_operation |   |  |  |
-| 284 | digital_image_processing/resize/resize |   |  |  |
-| 285 | digital_image_processing/rotation/rotation |   |  |  |
-| 286 | digital_image_processing/sepia |   |  |  |
-| 287 | digital_image_processing/test_digital_image_processing |   |  |  |
+| 274 | digital_image_processing/filters/gabor_filter | ✓ | 332.0µs | 3.80MB |
+| 275 | digital_image_processing/filters/gaussian_filter | ✓ | 81.0µs | 3.45MB |
+| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 224.0µs | 3.71MB |
+| 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 228.0µs | 3.55MB |
+| 278 | digital_image_processing/filters/median_filter | ✓ | 255.0µs | 3.61MB |
+| 279 | digital_image_processing/filters/sobel_filter | ✓ | 659.0µs | 3.81MB |
+| 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 160.0µs | 3.58MB |
+| 281 | digital_image_processing/index_calculation | ✓ | 350.0µs | 3.67MB |
+| 282 | digital_image_processing/morphological_operations/dilation_operation | ✓ | 449.0µs | 3.83MB |
+| 283 | digital_image_processing/morphological_operations/erosion_operation | ✓ | 421.0µs | 3.70MB |
+| 284 | digital_image_processing/resize/resize | ✓ | 308.0µs | 3.63MB |
+| 285 | digital_image_processing/rotation/rotation | ✓ | 175.0µs | 3.51MB |
+| 286 | digital_image_processing/sepia | ✓ | 242.0µs | 3.62MB |
+| 287 | digital_image_processing/test_digital_image_processing | ✓ | 455.0µs | 3.76MB |
 | 288 | divide_and_conquer/closest_pair_of_points |   |  |  |
-| 289 | divide_and_conquer/convex_hull |   |  |  |
+| 289 | divide_and_conquer/convex_hull | ✓ | 2.0µs | 3.61MB |
 | 290 | divide_and_conquer/heaps_algorithm |   |  |  |
 | 291 | divide_and_conquer/heaps_algorithm_iterative |   |  |  |
-| 292 | divide_and_conquer/inversions |   |  |  |
-| 293 | divide_and_conquer/kth_order_statistic |   |  |  |
-| 294 | divide_and_conquer/max_difference_pair |   |  |  |
-| 295 | divide_and_conquer/max_subarray |   |  |  |
-| 296 | divide_and_conquer/mergesort |   |  |  |
-| 297 | divide_and_conquer/peak |   |  |  |
-| 298 | divide_and_conquer/power |   |  |  |
+| 292 | divide_and_conquer/inversions | ✓ | 110.0µs | 3.66MB |
+| 293 | divide_and_conquer/kth_order_statistic | ✓ | 213.0µs | 3.69MB |
+| 294 | divide_and_conquer/max_difference_pair | ✓ | 175.0µs | 3.61MB |
+| 295 | divide_and_conquer/max_subarray | ✓ | 321.0µs | 3.66MB |
+| 296 | divide_and_conquer/mergesort | ✓ | 266.0µs | 3.61MB |
+| 297 | divide_and_conquer/peak | ✓ | 302.0µs | 3.59MB |
+| 298 | divide_and_conquer/power | ✓ | 367.0µs | 3.73MB |
 | 299 | divide_and_conquer/strassen_matrix_multiplication |   |  |  |
-| 300 | docs/conf |   |  |  |
-| 301 | dynamic_programming/abbreviation |   |  |  |
-| 302 | dynamic_programming/all_construct |   |  |  |
-| 303 | dynamic_programming/bitmask |   |  |  |
-| 304 | dynamic_programming/catalan_numbers |   |  |  |
-| 305 | dynamic_programming/climbing_stairs |   |  |  |
-| 306 | dynamic_programming/combination_sum_iv |   |  |  |
-| 307 | dynamic_programming/edit_distance |   |  |  |
-| 308 | dynamic_programming/factorial |   |  |  |
-| 309 | dynamic_programming/fast_fibonacci |   |  |  |
-| 310 | dynamic_programming/fibonacci |   |  |  |
-| 311 | dynamic_programming/fizz_buzz |   |  |  |
-| 312 | dynamic_programming/floyd_warshall |   |  |  |
-| 313 | dynamic_programming/integer_partition |   |  |  |
-| 314 | dynamic_programming/iterating_through_submasks |   |  |  |
-| 315 | dynamic_programming/k_means_clustering_tensorflow |   |  |  |
+| 300 | docs/conf | ✓ | 194.0µs | 3.64MB |
+| 301 | dynamic_programming/abbreviation | ✓ | 252.0µs | 3.48MB |
+| 302 | dynamic_programming/all_construct | ✓ | 599.0µs | 3.64MB |
+| 303 | dynamic_programming/bitmask | ✓ | 197.0µs | 3.61MB |
+| 304 | dynamic_programming/catalan_numbers | ✓ | 192.0µs | 3.75MB |
+| 305 | dynamic_programming/climbing_stairs | ✓ | 149.0µs | 3.62MB |
+| 306 | dynamic_programming/combination_sum_iv | ✓ | 202.0µs | 3.62MB |
+| 307 | dynamic_programming/edit_distance | ✓ | 376.0µs | 3.62MB |
+| 308 | dynamic_programming/factorial | ✓ | 252.0µs | 3.69MB |
+| 309 | dynamic_programming/fast_fibonacci | ✓ | 228.0µs | 3.72MB |
+| 310 | dynamic_programming/fibonacci | ✓ | 264.0µs | 3.61MB |
+| 311 | dynamic_programming/fizz_buzz | ✓ | 205.0µs | 3.54MB |
+| 312 | dynamic_programming/floyd_warshall | ✓ | 211.0µs | 3.69MB |
+| 313 | dynamic_programming/integer_partition | ✓ | 7.0ms | 3.77MB |
+| 314 | dynamic_programming/iterating_through_submasks | ✓ | 245.0µs | 3.68MB |
+| 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 446.0µs | 3.76MB |
 | 316 | dynamic_programming/knapsack |   |  |  |
-| 317 | dynamic_programming/largest_divisible_subset |   |  |  |
-| 318 | dynamic_programming/longest_common_subsequence |   |  |  |
-| 319 | dynamic_programming/longest_common_substring |   |  |  |
-| 320 | dynamic_programming/longest_increasing_subsequence |   |  |  |
-| 321 | dynamic_programming/longest_increasing_subsequence_iterative |   |  |  |
-| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn |   |  |  |
-| 323 | dynamic_programming/longest_palindromic_subsequence |   |  |  |
-| 324 | dynamic_programming/matrix_chain_multiplication |   |  |  |
-| 325 | dynamic_programming/matrix_chain_order |   |  |  |
-| 326 | dynamic_programming/max_non_adjacent_sum |   |  |  |
-| 327 | dynamic_programming/max_product_subarray |   |  |  |
-| 328 | dynamic_programming/max_subarray_sum |   |  |  |
-| 329 | dynamic_programming/min_distance_up_bottom |   |  |  |
-| 330 | dynamic_programming/minimum_coin_change |   |  |  |
-| 331 | dynamic_programming/minimum_cost_path |   |  |  |
-| 332 | dynamic_programming/minimum_partition |   |  |  |
-| 333 | dynamic_programming/minimum_size_subarray_sum |   |  |  |
-| 334 | dynamic_programming/minimum_squares_to_represent_a_number |   |  |  |
-| 335 | dynamic_programming/minimum_steps_to_one |   |  |  |
-| 336 | dynamic_programming/minimum_tickets_cost |   |  |  |
-| 337 | dynamic_programming/optimal_binary_search_tree |   |  |  |
-| 338 | dynamic_programming/palindrome_partitioning |   |  |  |
-| 339 | dynamic_programming/range_sum_query |   |  |  |
-| 340 | dynamic_programming/regex_match |   |  |  |
-| 341 | dynamic_programming/rod_cutting |   |  |  |
-| 342 | dynamic_programming/smith_waterman |   |  |  |
-| 343 | dynamic_programming/subset_generation |   |  |  |
-| 344 | dynamic_programming/sum_of_subset |   |  |  |
-| 345 | dynamic_programming/trapped_water |   |  |  |
-| 346 | dynamic_programming/tribonacci |   |  |  |
-| 347 | dynamic_programming/viterbi |   |  |  |
-| 348 | dynamic_programming/wildcard_matching |   |  |  |
-| 349 | dynamic_programming/word_break |   |  |  |
-| 350 | electronics/apparent_power |   |  |  |
-| 351 | electronics/builtin_voltage |   |  |  |
-| 352 | electronics/capacitor_equivalence |   |  |  |
-| 353 | electronics/carrier_concentration |   |  |  |
-| 354 | electronics/charging_capacitor |   |  |  |
-| 355 | electronics/charging_inductor |   |  |  |
-| 356 | electronics/circular_convolution |   |  |  |
-| 357 | electronics/coulombs_law |   |  |  |
-| 358 | electronics/electric_conductivity |   |  |  |
-| 359 | electronics/electric_power |   |  |  |
-| 360 | electronics/electrical_impedance |   |  |  |
-| 361 | electronics/ic_555_timer |   |  |  |
-| 362 | electronics/ind_reactance |   |  |  |
-| 363 | electronics/ohms_law |   |  |  |
-| 364 | electronics/real_and_reactive_power |   |  |  |
-| 365 | electronics/resistor_color_code |   |  |  |
-| 366 | electronics/resistor_equivalence |   |  |  |
-| 367 | electronics/resonant_frequency |   |  |  |
-| 368 | electronics/wheatstone_bridge |   |  |  |
-| 369 | file_transfer/receive_file |   |  |  |
-| 370 | file_transfer/send_file |   |  |  |
+| 317 | dynamic_programming/largest_divisible_subset | ✓ | 185.0µs | 3.54MB |
+| 318 | dynamic_programming/longest_common_subsequence | ✓ | 201.0µs | 3.70MB |
+| 319 | dynamic_programming/longest_common_substring | ✓ | 367.0µs | 3.70MB |
+| 320 | dynamic_programming/longest_increasing_subsequence | ✓ | 10.0µs | 3.48MB |
+| 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 377.0µs | 3.55MB |
+| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | ✓ | 139.0µs | 3.52MB |
+| 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 355.0µs | 3.75MB |
+| 324 | dynamic_programming/matrix_chain_multiplication | ✓ | 18.0µs | 3.51MB |
+| 325 | dynamic_programming/matrix_chain_order | ✓ | 342.0µs | 3.61MB |
+| 326 | dynamic_programming/max_non_adjacent_sum | ✓ | 169.0µs | 3.70MB |
+| 327 | dynamic_programming/max_product_subarray | ✓ | 157.0µs | 3.62MB |
+| 328 | dynamic_programming/max_subarray_sum | ✓ | 387.0µs | 3.78MB |
+| 329 | dynamic_programming/min_distance_up_bottom | ✓ | 681.0µs | 3.48MB |
+| 330 | dynamic_programming/minimum_coin_change | ✓ | 306.0µs | 3.52MB |
+| 331 | dynamic_programming/minimum_cost_path | ✓ | 202.0µs | 3.70MB |
+| 332 | dynamic_programming/minimum_partition | ✓ | 1.0ms | 3.71MB |
+| 333 | dynamic_programming/minimum_size_subarray_sum | ✓ | 276.0µs | 3.69MB |
+| 334 | dynamic_programming/minimum_squares_to_represent_a_number | ✓ | 231.0µs | 3.60MB |
+| 335 | dynamic_programming/minimum_steps_to_one | ✓ | 222.0µs | 3.66MB |
+| 336 | dynamic_programming/minimum_tickets_cost | ✓ | 301.0µs | 3.74MB |
+| 337 | dynamic_programming/optimal_binary_search_tree | ✓ | 327.0µs | 3.63MB |
+| 338 | dynamic_programming/palindrome_partitioning | ✓ | 443.0µs | 3.40MB |
+| 339 | dynamic_programming/range_sum_query | ✓ | 317.0µs | 3.62MB |
+| 340 | dynamic_programming/regex_match | ✓ | 464.0µs | 3.50MB |
+| 341 | dynamic_programming/rod_cutting | ✓ | 143.0µs | 3.65MB |
+| 342 | dynamic_programming/smith_waterman | ✓ | 139.0µs | 3.71MB |
+| 343 | dynamic_programming/subset_generation | ✓ | 295.0µs | 3.77MB |
+| 344 | dynamic_programming/sum_of_subset | ✓ | 441.0µs | 3.43MB |
+| 345 | dynamic_programming/trapped_water | ✓ | 207.0µs | 3.70MB |
+| 346 | dynamic_programming/tribonacci | ✓ | 193.0µs | 3.69MB |
+| 347 | dynamic_programming/viterbi | ✓ | 145.0µs | 3.48MB |
+| 348 | dynamic_programming/wildcard_matching | ✓ | 373.0µs | 3.65MB |
+| 349 | dynamic_programming/word_break | ✓ | 232.0µs | 3.45MB |
+| 350 | electronics/apparent_power | ✓ | 1.0µs | 3.52MB |
+| 351 | electronics/builtin_voltage | ✓ | 238.0µs | 3.75MB |
+| 352 | electronics/capacitor_equivalence | ✓ | 371.0µs | 3.74MB |
+| 353 | electronics/carrier_concentration | ✓ | 629.0µs | 3.70MB |
+| 354 | electronics/charging_capacitor | ✓ | 358.0µs | 3.75MB |
+| 355 | electronics/charging_inductor | ✓ | 391.0µs | 3.73MB |
+| 356 | electronics/circular_convolution | ✓ | 365.0µs | 3.74MB |
+| 357 | electronics/coulombs_law | ✓ | 387.0µs | 3.68MB |
+| 358 | electronics/electric_conductivity | ✓ | 359.0µs | 3.75MB |
+| 359 | electronics/electric_power | ✓ | 375.0µs | 3.79MB |
+| 360 | electronics/electrical_impedance | ✓ | 432.0µs | 3.82MB |
+| 361 | electronics/ic_555_timer | ✓ | 380.0µs | 3.68MB |
+| 362 | electronics/ind_reactance | ✓ | 337.0µs | 3.76MB |
+| 363 | electronics/ohms_law | ✓ | 154.0µs | 3.52MB |
+| 364 | electronics/real_and_reactive_power | ✓ | 343.0µs | 3.77MB |
+| 365 | electronics/resistor_color_code | ✓ | 0ns | 3.50MB |
+| 366 | electronics/resistor_equivalence | ✓ | 392.0µs | 3.79MB |
+| 367 | electronics/resonant_frequency | ✓ | 377.0µs | 3.78MB |
+| 368 | electronics/wheatstone_bridge | ✓ | 339.0µs | 3.65MB |
+| 369 | file_transfer/receive_file | ✓ | 170.0µs | 3.44MB |
+| 370 | file_transfer/send_file | ✓ | 147.0µs | 3.44MB |
 | 371 | file_transfer/tests/test_send_file |   |  |  |
 | 372 | financial/equated_monthly_installments |   |  |  |
 | 373 | financial/exponential_moving_average |   |  |  |

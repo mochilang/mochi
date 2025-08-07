@@ -1,0 +1,18 @@
+run: signal: aborted
+Priority 0: [10, 100, 128]
+Priority 1: [70, 7, 64]
+Priority 2: [1, 5, 4]
+10
+100
+128
+70
+7
+Priority 0: []
+Priority 1: [64]
+Priority 2: [1, 5, 4]
+64
+1
+5
+4
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  All queues are empty

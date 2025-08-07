@@ -41,7 +41,9 @@ var usesParseIntStr bool
 var useBigInt bool
 var useBigRat bool
 var useRepeat bool
+var useConcat bool
 var useSplit bool
+var useSlice bool
 var useJSON bool
 var usesPanic bool
 var usesSubprocess bool
@@ -160,7 +162,9 @@ type Program struct {
 	UseBigInt      bool
 	UseBigRat      bool
 	UseRepeat      bool
+	UseConcat      bool
 	UseSplit       bool
+	UseSlice       bool
 	UseJSON        bool
 	UseBenchNow    bool
 	UsePanic       bool
@@ -869,6 +873,22 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "    return out;")
 		fmt.Fprintln(w, "}")
 	}
+	if p.UseConcat {
+		fmt.Fprintln(w, "template<typename T> std::vector<T> _concat(const std::vector<T>& a, const std::vector<T>& b) {")
+		fmt.Fprintln(w, "    std::vector<T> out = a;")
+		fmt.Fprintln(w, "    out.insert(out.end(), b.begin(), b.end());")
+		fmt.Fprintln(w, "    return out;")
+		fmt.Fprintln(w, "}")
+	}
+	if p.UseSlice {
+		fmt.Fprintln(w, "template<typename T> std::vector<T> _slice(const std::vector<T>& s, int64_t start, int64_t end) {")
+		fmt.Fprintln(w, "    if(start < 0) start = 0;")
+		fmt.Fprintln(w, "    if(end > (int64_t)s.size()) end = s.size();")
+		fmt.Fprintln(w, "    if(start > (int64_t)s.size()) start = s.size();")
+		fmt.Fprintln(w, "    if(end < start) end = start;")
+		fmt.Fprintln(w, "    return std::vector<T>(s.begin()+start, s.begin()+end);")
+		fmt.Fprintln(w, "}")
+	}
 	if p.UseSplit {
 		fmt.Fprintln(w, "static std::vector<std::string> _split(const std::string& s, const std::string& sep) {")
 		fmt.Fprintln(w, "    std::vector<std::string> out; size_t pos = 0, prev = 0;")
@@ -1096,20 +1116,22 @@ func (p *Program) write(w io.Writer) {
 			typ := p.Type
 			if strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") {
 				if p.ByVal {
-					// Pass vectors and maps by value when mutated to permit rvalue arguments
-					io.WriteString(w, typ)
+					io.WriteString(w, typ+"&")
 				} else {
 					io.WriteString(w, "const "+typ+"&")
 				}
 			} else if isStructType(typ) {
 				if p.ByVal {
-					io.WriteString(w, typ)
+					io.WriteString(w, typ+"&")
 				} else {
 					io.WriteString(w, "const "+typ+"&")
 				}
 			} else {
-				// For primitive types pass by value even if mutated to allow rvalue arguments
-				io.WriteString(w, typ)
+				if p.ByVal {
+					io.WriteString(w, typ+"&")
+				} else {
+					io.WriteString(w, typ)
+				}
 			}
 			io.WriteString(w, " ")
 			io.WriteString(w, safeName(p.Name))
@@ -1182,20 +1204,22 @@ func (f *Func) emit(w io.Writer) {
 		} else {
 			if strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") {
 				if p.ByVal {
-					// Pass by value when mutated to allow rvalue arguments
-					io.WriteString(w, typ+" ")
+					io.WriteString(w, typ+"& ")
 				} else {
 					io.WriteString(w, "const "+typ+"& ")
 				}
 			} else if isStructType(typ) {
 				if p.ByVal {
-					io.WriteString(w, typ+" ")
+					io.WriteString(w, typ+"& ")
 				} else {
 					io.WriteString(w, "const "+typ+"& ")
 				}
 			} else {
-				// Primitive types passed by value regardless of mutation
-				io.WriteString(w, typ+" ")
+				if p.ByVal {
+					io.WriteString(w, typ+"& ")
+				} else {
+					io.WriteString(w, typ+" ")
+				}
 			}
 		}
 		io.WriteString(w, safeName(p.Name))
@@ -3838,25 +3862,43 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			}
 			if len(stmt.Assign.Index) > 0 {
 				parts := stmt.Assign.Index
-				if parts[len(parts)-1].Colon != nil {
-					return nil, fmt.Errorf("unsupported index assignment")
-				}
-				idx, err := convertExpr(parts[len(parts)-1].Start)
-				if err != nil {
-					return nil, err
-				}
 				var target Expr = &VarRef{Name: stmt.Assign.Name}
-				for _, sp := range parts[:len(parts)-1] {
-					if sp.Colon != nil {
+				if len(stmt.Assign.Field) > 0 {
+					for _, sp := range parts {
+						if sp.Colon != nil {
+							return nil, fmt.Errorf("unsupported index assignment")
+						}
+						id, err := convertExpr(sp.Start)
+						if err != nil {
+							return nil, err
+						}
+						target = &IndexExpr{Target: target, Index: id}
+					}
+					for _, f := range stmt.Assign.Field[:len(stmt.Assign.Field)-1] {
+						target = &SelectorExpr{Target: target, Field: f.Name}
+					}
+					fld := stmt.Assign.Field[len(stmt.Assign.Field)-1].Name
+					body = append(body, &AssignFieldStmt{Target: target, Field: fld, Value: val})
+				} else {
+					if parts[len(parts)-1].Colon != nil {
 						return nil, fmt.Errorf("unsupported index assignment")
 					}
-					id, err := convertExpr(sp.Start)
+					idx, err := convertExpr(parts[len(parts)-1].Start)
 					if err != nil {
 						return nil, err
 					}
-					target = &IndexExpr{Target: target, Index: id}
+					for _, sp := range parts[:len(parts)-1] {
+						if sp.Colon != nil {
+							return nil, fmt.Errorf("unsupported index assignment")
+						}
+						id, err := convertExpr(sp.Start)
+						if err != nil {
+							return nil, err
+						}
+						target = &IndexExpr{Target: target, Index: id}
+					}
+					body = append(body, &AssignIndexStmt{Target: target, Index: idx, Value: val})
 				}
-				body = append(body, &AssignIndexStmt{Target: target, Index: idx, Value: val})
 			} else if len(stmt.Assign.Field) > 0 {
 				var target Expr = &VarRef{Name: stmt.Assign.Name}
 				for _, f := range stmt.Assign.Field[:len(stmt.Assign.Field)-1] {
@@ -3906,6 +3948,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 						fs.IsMap = true
 					}
 				}
+			}
+			if t := exprType(start); strings.HasPrefix(t, "std::map<") {
+				fs.IsMap = true
 			}
 			if isIdx {
 				fs.IsMap = false
@@ -3994,7 +4039,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	cp.UseBigInt = useBigInt
 	cp.UseBigRat = useBigRat
 	cp.UseRepeat = useRepeat
+	cp.UseConcat = useConcat
 	cp.UseSplit = useSplit
+	cp.UseSlice = useSlice
 	cp.UseJSON = useJSON
 	cp.UseBenchNow = benchMain
 	cp.UsePanic = usesPanic
@@ -4329,6 +4376,31 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 				mutatedParams[s.Assign.Name] = true
 			}
 			parts := s.Assign.Index
+			var target Expr = &VarRef{Name: s.Assign.Name}
+			if len(s.Assign.Field) > 0 {
+				for _, sp := range parts {
+					if sp.Colon != nil {
+						return nil, fmt.Errorf("unsupported index assignment")
+					}
+					id, err := convertExpr(sp.Start)
+					if err != nil {
+						return nil, err
+					}
+					target = &IndexExpr{Target: target, Index: id}
+				}
+				for _, f := range s.Assign.Field[:len(s.Assign.Field)-1] {
+					target = &SelectorExpr{Target: target, Field: f.Name}
+				}
+				fld := s.Assign.Field[len(s.Assign.Field)-1].Name
+				sel := &SelectorExpr{Target: target, Field: fld}
+				if ll, ok := val.(*ListLit); ok && len(ll.Elems) == 0 {
+					baseType := exprType(sel)
+					if strings.HasPrefix(baseType, "std::vector<") {
+						ll.ElemType = elementTypeFromListType(baseType)
+					}
+				}
+				return &AssignFieldStmt{Target: target, Field: fld, Value: val}, nil
+			}
 			if parts[len(parts)-1].Colon != nil {
 				return nil, fmt.Errorf("unsupported index assignment")
 			}
@@ -4336,7 +4408,6 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			var target Expr = &VarRef{Name: s.Assign.Name}
 			for _, sp := range parts[:len(parts)-1] {
 				if sp.Colon != nil {
 					return nil, fmt.Errorf("unsupported index assignment")
@@ -4370,6 +4441,13 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 				target = &SelectorExpr{Target: target, Field: f.Name}
 			}
 			fld := s.Assign.Field[len(s.Assign.Field)-1].Name
+			sel := &SelectorExpr{Target: target, Field: fld}
+			if ll, ok := val.(*ListLit); ok && len(ll.Elems) == 0 {
+				baseType := exprType(sel)
+				if strings.HasPrefix(baseType, "std::vector<") {
+					ll.ElemType = elementTypeFromListType(baseType)
+				}
+			}
 			return &AssignFieldStmt{Target: target, Field: fld, Value: val}, nil
 		}
 		if paramNames != nil && len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
@@ -4409,6 +4487,9 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 					fs.IsMap = true
 				}
 			}
+		}
+		if t := exprType(start); strings.HasPrefix(t, "std::map<") {
+			fs.IsMap = true
 		}
 		gtyp := guessType(s.For.Source)
 		if vr, ok := start.(*VarRef); ok {
@@ -4733,6 +4814,11 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				ce, err := convertExpr(a)
 				if err != nil {
 					return nil, err
+				}
+				if vr, ok := ce.(*VarRef); ok {
+					if paramNames != nil && paramNames[vr.Name] {
+						mutatedParams[vr.Name] = true
+					}
 				}
 				args = append(args, ce)
 			}
@@ -5371,6 +5457,36 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					return nil, err
 				}
 				return &PadStartExpr{Value: v0, Width: v1, Pad: v2}, nil
+			}
+		case "concat":
+			if len(p.Call.Args) == 2 {
+				a0, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				a1, err := convertExpr(p.Call.Args[1])
+				if err != nil {
+					return nil, err
+				}
+				useConcat = true
+				return &CallExpr{Name: "_concat", Args: []Expr{a0, a1}}, nil
+			}
+		case "slice":
+			if len(p.Call.Args) == 3 {
+				s0, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				s1, err := convertExpr(p.Call.Args[1])
+				if err != nil {
+					return nil, err
+				}
+				s2, err := convertExpr(p.Call.Args[2])
+				if err != nil {
+					return nil, err
+				}
+				useSlice = true
+				return &CallExpr{Name: "_slice", Args: []Expr{s0, s1, s2}}, nil
 			}
 		case "repeat":
 			if len(p.Call.Args) == 2 {
