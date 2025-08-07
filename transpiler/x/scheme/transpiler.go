@@ -357,6 +357,7 @@ func header() []byte {
 		" (let ((cur (string-contains s sub)))" +
 		"   (if cur (string-cursor->index s cur) -1)))"
 	prelude += "\n(define (_display . args) (apply display args))"
+	prelude += "\n(define (panic msg) (error msg))"
 	prelude += `
 (define (padStart s width pad)
   (let loop ((out s))
