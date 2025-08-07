@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-06 23:33 GMT+7
+Last updated: 2025-08-07 00:14 GMT+7
 
-## Algorithms Golden Test Checklist (250/1077)
+## Algorithms Golden Test Checklist (251/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 216µs | 912 B |
@@ -280,7 +280,7 @@ Last updated: 2025-08-06 23:33 GMT+7
 | 271 | digital_image_processing/edge_detection/canny | ✓ | 312µs | 4.5 KB |
 | 272 | digital_image_processing/filters/bilateral_filter | ✓ | 231µs | 1.6 KB |
 | 273 | digital_image_processing/filters/convolve |   |  |  |
-| 274 | digital_image_processing/filters/gabor_filter |   |  |  |
+| 274 | digital_image_processing/filters/gabor_filter | ✓ | 114µs | 1.5 KB |
 | 275 | digital_image_processing/filters/gaussian_filter |   |  |  |
 | 276 | digital_image_processing/filters/laplacian_filter |   |  |  |
 | 277 | digital_image_processing/filters/local_binary_pattern |   |  |  |
