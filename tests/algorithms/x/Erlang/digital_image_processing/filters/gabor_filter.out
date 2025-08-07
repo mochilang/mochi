@@ -1,0 +1,7 @@
+/workspace/mochi/tests/algorithms/x/Erlang/digital_image_processing/filters/gabor_filter.erl:159:44: Warning: variable 'Size_3' exported from 'case' (line 122, column 9)
+%  159| {Gabor_2, Gamma, Ksize, Lambd, Psi, Sigma, Size_3, Theta, Y_2} = Fun_5(Gabor, Gamma, Ksize, Lambd, Psi, Sigma, Size_3, Theta, Y),
+%     |                                            ^
+
+[[0.8027211741762093, 1.0, 0.8027211741762093], 
+ [0.8027211741762093, 1.0, 0.8027211741762093], 
+ [0.8027211741762093, 1.0, 0.8027211741762093]]

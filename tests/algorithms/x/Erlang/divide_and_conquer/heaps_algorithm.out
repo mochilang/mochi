@@ -1,0 +1,5 @@
+/workspace/mochi/tests/algorithms/x/Erlang/divide_and_conquer/heaps_algorithm.erl:77:9: Warning: variable 'Copy_2' exported from 'case' (line 48, column 9)
+%   77| {Arr_6, Copy_2, I_2, K, Res_3} = Fun(Arr, Copy_2, I, K, Res_2),
+%     |         ^
+
+[[1, 2, 3], [2, 1, 3], [3, 2, 1], [2, 3, 1], [1, 2, 3], [2, 1, 3]]

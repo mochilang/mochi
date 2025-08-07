@@ -2276,11 +2276,19 @@ func (i *IndexExpr) emit(w io.Writer) {
 		i.Index.emit(w)
 		io.WriteString(w, ", ")
 		i.Target.emit(w)
-		io.WriteString(w, ", nil); _ -> lists:nth(")
+		io.WriteString(w, ", nil); _ -> case ")
+		i.Index.emit(w)
+		io.WriteString(w, " < 0 of true -> lists:nth(erlang:length(")
+		i.Target.emit(w)
+		io.WriteString(w, ") + ")
 		i.Index.emit(w)
 		io.WriteString(w, " + 1, ")
 		i.Target.emit(w)
-		io.WriteString(w, ") end)")
+		io.WriteString(w, "); _ -> lists:nth(")
+		i.Index.emit(w)
+		io.WriteString(w, " + 1, ")
+		i.Target.emit(w)
+		io.WriteString(w, ") end end)")
 	}
 }
 
@@ -3424,6 +3432,15 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		}
 		ctx.setMapVar(st.Let.Name, isMap)
 		ctx.setBoolVar(st.Let.Name, isBoolExpr(e, env, ctx) || (st.Let.Type != nil && st.Let.Type.Simple != nil && *st.Let.Type.Simple == "bool"))
+		// record the static type for later lookups
+		letTyp := exprT
+		if st.Let.Type != nil {
+			letTyp = types.ResolveTypeRef(st.Let.Type, env)
+		}
+		if letTyp == nil {
+			letTyp = types.AnyType{}
+		}
+		env.SetVar(st.Let.Name, letTyp, false)
 		switch e.(type) {
 		case *IntLit, *FloatLit, *BoolLit, *StringLit, *AtomLit:
 			ctx.setConst(st.Let.Name, e)
@@ -3485,6 +3502,15 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		}
 		ctx.setMapVar(st.Var.Name, isMapV)
 		ctx.setBoolVar(st.Var.Name, isBoolExpr(e, env, ctx) || (st.Var.Type != nil && st.Var.Type.Simple != nil && *st.Var.Type.Simple == "bool"))
+		// record the static type for later lookups
+		varTyp := exprT
+		if st.Var.Type != nil {
+			varTyp = types.ResolveTypeRef(st.Var.Type, env)
+		}
+		if varTyp == nil {
+			varTyp = types.AnyType{}
+		}
+		env.SetVar(st.Var.Name, varTyp, true)
 		ctx.clearConst(st.Var.Name)
 		if top {
 			ctx.setGlobal(st.Var.Name)
@@ -3538,6 +3564,9 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 						return []Stmt{&MapAssignStmt{Name: alias, Old: old, Key: idxExpr, Value: val}}, nil
 					}
 				}
+			}
+			if ctx.isMapVar(name) {
+				return []Stmt{&MapAssignStmt{Name: alias, Old: old, Key: idxExpr, Value: val}}, nil
 			}
 			return []Stmt{&ListAssignStmt{Name: alias, Old: old, Index: idxExpr, Value: val}}, nil
 		}

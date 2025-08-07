@@ -1,0 +1,9 @@
+/workspace/mochi/tests/algorithms/x/Erlang/electronics/circular_convolution.erl:94:24: Warning: ambiguous call of overridden auto-imported BIF floor/1 --
+use erlang:floor/1 or "-compile({no_auto_import,[floor/1]})." to resolve name clash
+%   94|         mochi_safe_div(floor((mochi_safe_mul(X_2, M) + 0.5)), M)
+%     |                        ^
+
+[10.0 10.0 6.0 14.0]
+[5.2 6.0 6.48 6.64 6.48 6.0 5.2 4.08]
+[6.25 -3.0 1.5 -2.0 -2.75]
+[8.0 -2.0 3.0 4.0 11.0]

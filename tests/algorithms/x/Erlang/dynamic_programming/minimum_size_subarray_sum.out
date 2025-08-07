@@ -1,0 +1,8 @@
+/workspace/mochi/tests/algorithms/x/Erlang/dynamic_programming/minimum_size_subarray_sum.erl:97:14: Warning: variable 'I_3' exported from 'case' (line 48, column 9)
+%   97| {Curr_sum_3, I_3, Left_2, Min_len_3, N, Numbers, Right_2, Target} = Fun_4(Curr_sum, I_3, Left, Min_len, N, Numbers, Right, Target),
+%     |              ^
+
+2
+4
+0
+1

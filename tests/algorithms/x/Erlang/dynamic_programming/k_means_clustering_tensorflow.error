@@ -1,0 +1,15 @@
+run: exit status 127
+/workspace/mochi/tests/algorithms/x/Erlang/dynamic_programming/k_means_clustering_tensorflow.erl:45:1: Warning: function mochi_safe_div/2 is unused
+%   45| mochi_safe_div(A, B) ->
+%     | ^
+
+escript: exception error: an error occurred when evaluating an arithmetic expression
+  in operator  div/2
+     called as 24.5 div 5
+  in call from main:'-mean/1-Fun_3_loop/4-0-'/4 (/workspace/mochi/tests/algorithms/x/Erlang/dynamic_programming/k_means_clustering_tensorflow.erl, line 86)
+  in call from main:mean/1 (/workspace/mochi/tests/algorithms/x/Erlang/dynamic_programming/k_means_clustering_tensorflow.erl, line 92)
+  in call from main:'-k_means/3-Fun_9_loop/10-5-'/10 (/workspace/mochi/tests/algorithms/x/Erlang/dynamic_programming/k_means_clustering_tensorflow.erl, line 180)
+  in call from main:'-k_means/3-Fun_10_loop/8-2-'/8 (/workspace/mochi/tests/algorithms/x/Erlang/dynamic_programming/k_means_clustering_tensorflow.erl, line 189)
+  in call from main:k_means/3 (/workspace/mochi/tests/algorithms/x/Erlang/dynamic_programming/k_means_clustering_tensorflow.erl, line 195)
+  in call from main:main/0 (/workspace/mochi/tests/algorithms/x/Erlang/dynamic_programming/k_means_clustering_tensorflow.erl, line 202)
+  in call from main:main/1 (/workspace/mochi/tests/algorithms/x/Erlang/dynamic_programming/k_means_clustering_tensorflow.erl, line 211)

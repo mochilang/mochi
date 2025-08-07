@@ -1,0 +1,12 @@
+/workspace/mochi/tests/algorithms/x/Erlang/electronics/charging_capacitor.erl:83:2: Warning: variable 'Is_neg_3' exported from 'case' (line 62, column 9)
+%   83| {Is_neg_3, N_2, Sum_2, Term_2, X, Y_3} = Fun(Is_neg_3, N, Sum, Term, X, Y_3),
+%     |  ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/electronics/charging_capacitor.erl:83:35: Warning: variable 'Y_3' exported from 'case' (line 62, column 9)
+%   83| {Is_neg_3, N_2, Sum_2, Term_2, X, Y_3} = Fun(Is_neg_3, N, Sum, Term, X, Y_3),
+%     |                                   ^
+
+0.013
+1.446
+0.007
+19.975

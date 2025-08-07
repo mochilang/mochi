@@ -1,3 +1,415 @@
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 09:56 +0700)
+- transpiler/ex: support list concat builtin (cf9c8584f7)
+- Regenerated golden files - 103/105 vm valid programs passing
+
 ## Progress (2025-08-07 08:20 +0700)
 - feat(erl): support more algorithms (e561788721)
 - Regenerated golden files - 103/105 vm valid programs passing
