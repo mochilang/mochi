@@ -478,6 +478,26 @@ type BenchStmt struct {
 	Body []Stmt
 }
 
+func markStructParamMutations(stmts []Stmt, params map[string]bool, mutated map[string]bool) {
+	for _, st := range stmts {
+		switch s := st.(type) {
+		case *AssignStmt:
+			if len(s.Fields) > 0 && params[s.Name] {
+				mutated[s.Name] = true
+			}
+		case *IfStmt:
+			markStructParamMutations(s.Then, params, mutated)
+			markStructParamMutations(s.Else, params, mutated)
+		case *WhileStmt:
+			markStructParamMutations(s.Body, params, mutated)
+		case *ForStmt:
+			markStructParamMutations(s.Body, params, mutated)
+		case *BenchStmt:
+			markStructParamMutations(s.Body, params, mutated)
+		}
+	}
+}
+
 func (c *CallStmt) emit(w io.Writer, indent int) {
 	if c.Func == "print" && len(c.Args) == 1 {
 		t := inferExprType(currentEnv, c.Args[0])
@@ -574,12 +594,21 @@ func (c *CallStmt) emit(w io.Writer, indent int) {
 		if !first && i >= 0 {
 			// already wrote comma above
 		}
-		if strings.HasPrefix(paramType, "struct ") && strings.HasSuffix(paramType, "*") {
+		pointerParam := strings.HasSuffix(paramType, "*")
+		if pointerParam {
 			io.WriteString(w, "&")
+		} else if _, ok := structTypes[paramType]; ok {
+			if vr, ok := a.(*VarRef); ok {
+				if at, ok2 := varTypes[vr.Name]; ok2 && strings.HasSuffix(at, "*") && strings.TrimSuffix(at, "*") == paramType {
+					io.WriteString(w, "*")
+				}
+			}
 		}
 		if vr, ok := a.(*VarRef); ok && paramType != "" {
 			if at, ok2 := varTypes[vr.Name]; ok2 && at != paramType {
-				fmt.Fprintf(w, "(%s)", paramType)
+				if !(pointerParam && at == strings.TrimSuffix(paramType, "*")) {
+					fmt.Fprintf(w, "(%s)", paramType)
+				}
 			}
 		}
 		a.emitExpr(w)
@@ -1461,7 +1490,9 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 				sliceLen = "_slice_str_len"
 			}
 			writeIndent(w, indent)
-			if _, declared := varTypes[a.Name]; declared {
+			if len(a.Fields) == 1 {
+				fmt.Fprintf(w, "%s.%s_len = %s;\n", a.Name, a.Fields[0], sliceLen)
+			} else if _, declared := varTypes[a.Name]; declared {
 				fmt.Fprintf(w, "%s_len = %s;\n", a.Name, sliceLen)
 			} else {
 				fmt.Fprintf(w, "size_t %s_len = %s;\n", a.Name, sliceLen)
@@ -1886,8 +1917,13 @@ func (f *FieldExpr) emitExpr(w io.Writer) {
 			return
 		}
 	}
+	typ := inferExprType(currentEnv, f.Target)
 	f.Target.emitExpr(w)
-	io.WriteString(w, ".")
+	if strings.HasPrefix(typ, "struct ") && strings.HasSuffix(typ, "*") {
+		io.WriteString(w, "->")
+	} else {
+		io.WriteString(w, ".")
+	}
 	io.WriteString(w, f.Name)
 }
 
@@ -6021,6 +6057,22 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 	if err != nil {
 		return nil, err
 	}
+	paramSet := map[string]bool{}
+	for _, p := range params {
+		paramSet[p.Name] = true
+	}
+	mutated := map[string]bool{}
+	markStructParamMutations(body, paramSet, mutated)
+	for i := range params {
+		if mutated[params[i].Name] && !strings.HasSuffix(params[i].Type, "*") {
+			if _, ok := structTypes[params[i].Type]; ok {
+				params[i].Type = params[i].Type + "*"
+				paramTypes[i] = params[i].Type
+				varTypes[params[i].Name] = params[i].Type
+			}
+		}
+	}
+	funcParamTypes[name] = paramTypes
 	if fn.ExprBody != nil {
 		expr := convertExpr(fn.ExprBody)
 		if expr == nil {
@@ -6533,36 +6585,63 @@ func convertUnary(u *parser.Unary) Expr {
 					funcReturnTypes["_substring"] = "const char*"
 					current = &CallExpr{Func: "_substring", Args: []Expr{current, sliceStart, sliceEnd}}
 				} else if typ == "int[]" || typ == "long long[]" {
-					if vr, ok := current.(*VarRef); ok {
+					switch v := current.(type) {
+					case *VarRef:
 						if sliceEnd == nil {
-							sliceEnd = &VarRef{Name: vr.Name + "_len"}
+							sliceEnd = &VarRef{Name: v.Name + "_len"}
 						}
 						needSliceInt = true
 						funcReturnTypes["_slice_int"] = typ
-						current = &CallExpr{Func: "_slice_int", Args: []Expr{current, &VarRef{Name: vr.Name + "_len"}, sliceStart, sliceEnd, &UnaryExpr{Op: "&", Expr: &VarRef{Name: "_slice_int_len"}}}}
-					} else {
+						current = &CallExpr{Func: "_slice_int", Args: []Expr{current, &VarRef{Name: v.Name + "_len"}, sliceStart, sliceEnd, &UnaryExpr{Op: "&", Expr: &VarRef{Name: "_slice_int_len"}}}}
+					case *FieldExpr:
+						lenField := &FieldExpr{Target: v.Target, Name: v.Name + "_len"}
+						if sliceEnd == nil {
+							sliceEnd = lenField
+						}
+						needSliceInt = true
+						funcReturnTypes["_slice_int"] = typ
+						current = &CallExpr{Func: "_slice_int", Args: []Expr{current, lenField, sliceStart, sliceEnd, &UnaryExpr{Op: "&", Expr: &VarRef{Name: "_slice_int_len"}}}}
+					default:
 						return nil
 					}
 				} else if typ == "double[]" {
-					if vr, ok := current.(*VarRef); ok {
+					switch v := current.(type) {
+					case *VarRef:
 						if sliceEnd == nil {
-							sliceEnd = &VarRef{Name: vr.Name + "_len"}
+							sliceEnd = &VarRef{Name: v.Name + "_len"}
 						}
 						needSliceDouble = true
 						funcReturnTypes["_slice_double"] = "double[]"
-						current = &CallExpr{Func: "_slice_double", Args: []Expr{current, &VarRef{Name: vr.Name + "_len"}, sliceStart, sliceEnd, &UnaryExpr{Op: "&", Expr: &VarRef{Name: "_slice_double_len"}}}}
-					} else {
+						current = &CallExpr{Func: "_slice_double", Args: []Expr{current, &VarRef{Name: v.Name + "_len"}, sliceStart, sliceEnd, &UnaryExpr{Op: "&", Expr: &VarRef{Name: "_slice_double_len"}}}}
+					case *FieldExpr:
+						lenField := &FieldExpr{Target: v.Target, Name: v.Name + "_len"}
+						if sliceEnd == nil {
+							sliceEnd = lenField
+						}
+						needSliceDouble = true
+						funcReturnTypes["_slice_double"] = "double[]"
+						current = &CallExpr{Func: "_slice_double", Args: []Expr{current, lenField, sliceStart, sliceEnd, &UnaryExpr{Op: "&", Expr: &VarRef{Name: "_slice_double_len"}}}}
+					default:
 						return nil
 					}
 				} else if typ == "const char*[]" {
-					if vr, ok := current.(*VarRef); ok {
+					switch v := current.(type) {
+					case *VarRef:
 						if sliceEnd == nil {
-							sliceEnd = &VarRef{Name: vr.Name + "_len"}
+							sliceEnd = &VarRef{Name: v.Name + "_len"}
 						}
 						needSliceStr = true
 						funcReturnTypes["_slice_str"] = "const char*[]"
-						current = &CallExpr{Func: "_slice_str", Args: []Expr{current, &VarRef{Name: vr.Name + "_len"}, sliceStart, sliceEnd, &UnaryExpr{Op: "&", Expr: &VarRef{Name: "_slice_str_len"}}}}
-					} else {
+						current = &CallExpr{Func: "_slice_str", Args: []Expr{current, &VarRef{Name: v.Name + "_len"}, sliceStart, sliceEnd, &UnaryExpr{Op: "&", Expr: &VarRef{Name: "_slice_str_len"}}}}
+					case *FieldExpr:
+						lenField := &FieldExpr{Target: v.Target, Name: v.Name + "_len"}
+						if sliceEnd == nil {
+							sliceEnd = lenField
+						}
+						needSliceStr = true
+						funcReturnTypes["_slice_str"] = "const char*[]"
+						current = &CallExpr{Func: "_slice_str", Args: []Expr{current, lenField, sliceStart, sliceEnd, &UnaryExpr{Op: "&", Expr: &VarRef{Name: "_slice_str_len"}}}}
+					default:
 						return nil
 					}
 				} else {
@@ -7202,6 +7281,10 @@ func convertListExpr(e *parser.Expr) ([]Expr, bool) {
 				out = append(out, item)
 			}
 			return out, true
+		}
+		switch ex.(type) {
+		case *VarRef, *FieldExpr, *IndexExpr:
+			return nil, false
 		}
 	}
 	if lst, ok := interpretList(e); ok {

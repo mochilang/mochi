@@ -1,0 +1,149 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c: In function ‘push’:
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:99:6: error: ‘s’ is a pointer; did you mean to use ‘->’?
+   99 |     s.temp_queue = list_append_int(s.temp_queue, &s.temp_queue_len, item);
+      |      ^
+      |      ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:99:37: error: ‘s’ is a pointer; did you mean to use ‘->’?
+   99 |     s.temp_queue = list_append_int(s.temp_queue, &s.temp_queue_len, item);
+      |                                     ^
+      |                                     ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:99:52: error: ‘s’ is a pointer; did you mean to use ‘->’?
+   99 |     s.temp_queue = list_append_int(s.temp_queue, &s.temp_queue_len, item);
+      |                                                    ^
+      |                                                    ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:100:12: warning: implicit declaration of function ‘len’ [-Wimplicit-function-declaration]
+  100 |     while (len(s.main_queue) > 0LL) {
+      |            ^~~
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:100:17: error: ‘s’ is a pointer; did you mean to use ‘->’?
+  100 |     while (len(s.main_queue) > 0LL) {
+      |                 ^
+      |                 ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:101:10: error: ‘s’ is a pointer; did you mean to use ‘->’?
+  101 |         s.temp_queue = list_append_int(s.temp_queue, &s.temp_queue_len, s.main_queue[(int)(0LL)]);
+      |          ^
+      |          ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:101:41: error: ‘s’ is a pointer; did you mean to use ‘->’?
+  101 |         s.temp_queue = list_append_int(s.temp_queue, &s.temp_queue_len, s.main_queue[(int)(0LL)]);
+      |                                         ^
+      |                                         ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:101:56: error: ‘s’ is a pointer; did you mean to use ‘->’?
+  101 |         s.temp_queue = list_append_int(s.temp_queue, &s.temp_queue_len, s.main_queue[(int)(0LL)]);
+      |                                                        ^
+      |                                                        ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:101:74: error: ‘s’ is a pointer; did you mean to use ‘->’?
+  101 |         s.temp_queue = list_append_int(s.temp_queue, &s.temp_queue_len, s.main_queue[(int)(0LL)]);
+      |                                                                          ^
+      |                                                                          ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:102:10: error: ‘s’ is a pointer; did you mean to use ‘->’?
+  102 |         s.main_queue = _slice_int(s.main_queue, s.main_queue_len, 1LL, len(s.main_queue), &(_slice_int_len));
+      |          ^
+      |          ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:102:36: error: ‘s’ is a pointer; did you mean to use ‘->’?
+  102 |         s.main_queue = _slice_int(s.main_queue, s.main_queue_len, 1LL, len(s.main_queue), &(_slice_int_len));
+      |                                    ^
+      |                                    ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:102:50: error: ‘s’ is a pointer; did you mean to use ‘->’?
+  102 |         s.main_queue = _slice_int(s.main_queue, s.main_queue_len, 1LL, len(s.main_queue), &(_slice_int_len));
+      |                                                  ^
+      |                                                  ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:102:77: error: ‘s’ is a pointer; did you mean to use ‘->’?
+  102 |         s.main_queue = _slice_int(s.main_queue, s.main_queue_len, 1LL, len(s.main_queue), &(_slice_int_len));
+      |                                                                             ^
+      |                                                                             ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:103:10: error: ‘s’ is a pointer; did you mean to use ‘->’?
+  103 |         s.main_queue_len = _slice_int_len;
+      |          ^
+      |          ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:105:28: error: ‘s’ is a pointer; did you mean to use ‘->’?
+  105 |     long long *new_main = s.temp_queue;
+      |                            ^
+      |                            ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:106:28: error: ‘s’ is a pointer; did you mean to use ‘->’?
+  106 |     size_t new_main_len = s.temp_queue_len;
+      |                            ^
+      |                            ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:107:6: error: ‘s’ is a pointer; did you mean to use ‘->’?
+  107 |     s.temp_queue = s.main_queue;
+      |      ^
+      |      ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:107:21: error: ‘s’ is a pointer; did you mean to use ‘->’?
+  107 |     s.temp_queue = s.main_queue;
+      |                     ^
+      |                     ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:108:6: error: ‘s’ is a pointer; did you mean to use ‘->’?
+  108 |     s.main_queue = new_main;
+      |      ^
+      |      ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c: In function ‘pop’:
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:112:14: error: ‘s’ is a pointer; did you mean to use ‘->’?
+  112 |     if (len(s.main_queue) == 0LL) {
+      |              ^
+      |              ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:115:23: error: ‘s’ is a pointer; did you mean to use ‘->’?
+  115 |     long long item = s.main_queue[(int)(0LL)];
+      |                       ^
+      |                       ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:116:6: error: ‘s’ is a pointer; did you mean to use ‘->’?
+  116 |     s.main_queue = _slice_int(s.main_queue, s.main_queue_len, 1LL, len(s.main_queue), &(_slice_int_len));
+      |      ^
+      |      ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:116:32: error: ‘s’ is a pointer; did you mean to use ‘->’?
+  116 |     s.main_queue = _slice_int(s.main_queue, s.main_queue_len, 1LL, len(s.main_queue), &(_slice_int_len));
+      |                                ^
+      |                                ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:116:46: error: ‘s’ is a pointer; did you mean to use ‘->’?
+  116 |     s.main_queue = _slice_int(s.main_queue, s.main_queue_len, 1LL, len(s.main_queue), &(_slice_int_len));
+      |                                              ^
+      |                                              ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:116:73: error: ‘s’ is a pointer; did you mean to use ‘->’?
+  116 |     s.main_queue = _slice_int(s.main_queue, s.main_queue_len, 1LL, len(s.main_queue), &(_slice_int_len));
+      |                                                                         ^
+      |                                                                         ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:117:6: error: ‘s’ is a pointer; did you mean to use ‘->’?
+  117 |     s.main_queue_len = _slice_int_len;
+      |      ^
+      |      ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c: In function ‘main’:
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:136:9: error: cannot convert to a pointer type
+  136 |         push(&(StackWithQueues*)stack, 1LL);
+      |         ^~~~
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:136:14: error: lvalue required as unary ‘&’ operand
+  136 |         push(&(StackWithQueues*)stack, 1LL);
+      |              ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:137:9: error: cannot convert to a pointer type
+  137 |         push(&(StackWithQueues*)stack, 2LL);
+      |         ^~~~
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:137:14: error: lvalue required as unary ‘&’ operand
+  137 |         push(&(StackWithQueues*)stack, 2LL);
+      |              ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:138:9: error: cannot convert to a pointer type
+  138 |         push(&(StackWithQueues*)stack, 3LL);
+      |         ^~~~
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:138:14: error: lvalue required as unary ‘&’ operand
+  138 |         push(&(StackWithQueues*)stack, 3LL);
+      |              ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:140:26: error: incompatible type for argument 1 of ‘pop’
+  140 |         puts(str_int(pop(stack)));
+      |                          ^~~~~
+      |                          |
+      |                          StackWithQueues
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:111:32: note: expected ‘StackWithQueues *’ but argument is of type ‘StackWithQueues’
+  111 | long long pop(StackWithQueues* s) {
+      |               ~~~~~~~~~~~~~~~~~^
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:142:26: error: incompatible type for argument 1 of ‘pop’
+  142 |         puts(str_int(pop(stack)));
+      |                          ^~~~~
+      |                          |
+      |                          StackWithQueues
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:111:32: note: expected ‘StackWithQueues *’ but argument is of type ‘StackWithQueues’
+  111 | long long pop(StackWithQueues* s) {
+      |               ~~~~~~~~~~~~~~~~~^
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:143:26: error: incompatible type for argument 1 of ‘pop’
+  143 |         puts(str_int(pop(stack)));
+      |                          ^~~~~
+      |                          |
+      |                          StackWithQueues
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack_using_two_queues.c:111:32: note: expected ‘StackWithQueues *’ but argument is of type ‘StackWithQueues’
+  111 | long long pop(StackWithQueues* s) {
+      |               ~~~~~~~~~~~~~~~~~^

@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (107/1077) - Last updated 2025-08-07 19:54 +0700:
+Checklist of programs that currently transpile and run (111/1077) - Last updated 2025-08-07 20:18 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -256,10 +256,10 @@ Checklist of programs that currently transpile and run (107/1077) - Last updated
 | 249 | data_structures/stacks/infix_to_postfix_conversion |  |  |  |
 | 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ |  |  |
 | 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 522us | 1.4 MB |
-| 252 | data_structures/stacks/lexicographical_numbers |  |  |  |
-| 253 | data_structures/stacks/next_greater_element |  |  |  |
-| 254 | data_structures/stacks/postfix_evaluation |  |  |  |
-| 255 | data_structures/stacks/prefix_evaluation |  |  |  |
+| 252 | data_structures/stacks/lexicographical_numbers | ✓ | 502us | 1.5 MB |
+| 253 | data_structures/stacks/next_greater_element | ✓ | 544us | 1.6 MB |
+| 254 | data_structures/stacks/postfix_evaluation | ✓ | 480us | 1.6 MB |
+| 255 | data_structures/stacks/prefix_evaluation | ✓ | 682us | 1.6 MB |
 | 256 | data_structures/stacks/stack |  |  |  |
 | 257 | data_structures/stacks/stack_using_two_queues |  |  |  |
 | 258 | data_structures/stacks/stack_with_doubly_linked_list |  |  |  |
