@@ -1,0 +1,6 @@
+/workspace/mochi/tests/algorithms/x/Erlang/data_structures/arrays/permutations.erl:115:2: Warning: variable 'Base_2' exported from 'case' (line 82, column 9)
+%  115| {Base_2, Count_2, Current_2, Nums, Result_2} = Fun_4(Base_2, Count, Current, Nums, Result),
+%     |  ^
+
+[[3 2 1] [2 3 1] [1 3 2] [3 1 2] [2 1 3] [1 2 3]]
+[[1 2 3] [1 3 2] [2 1 3] [2 3 1] [3 2 1] [3 1 2]]

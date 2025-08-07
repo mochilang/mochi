@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"mochi/parser"
+	"mochi/runtime/data"
 	"mochi/types"
 )
 
@@ -3402,19 +3403,14 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		}
 		return []Stmt{&LetStmt{Name: alias, Expr: e}}, nil
 	case st.Assign != nil:
+		if len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0 {
+			return nil, fmt.Errorf("complex assignment not supported")
+		}
 		val, err := convertExpr(st.Assign.Value, env, ctx)
 		if err != nil {
 			return nil, err
 		}
-		tgtExpr, err := convertPostfix(st.Assign.Target, env, ctx)
-		if err != nil {
-			return nil, err
-		}
-		nr, ok := tgtExpr.(*NameRef)
-		if !ok || len(st.Assign.Target.Ops) > 0 || st.Assign.Target.Target == nil || st.Assign.Target.Target.Selector == nil || len(st.Assign.Target.Target.Selector.Tail) > 0 {
-			return nil, fmt.Errorf("complex assignment not supported")
-		}
-		name := nr.Name
+		name := st.Assign.Name
 		if ctx.isGlobal(name) {
 			return []Stmt{&PutStmt{Name: name, Expr: val}}, nil
 		}

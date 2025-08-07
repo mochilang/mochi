@@ -1,0 +1,12 @@
+/workspace/mochi/tests/algorithms/x/Erlang/conversions/rectangular_to_polar.erl:151:24: Warning: ambiguous call of overridden auto-imported BIF floor/1 --
+use erlang:floor/1 or "-compile({no_auto_import,[floor/1]})." to resolve name clash
+%  151|         mochi_safe_div(floor((mochi_safe_mul(X_5, M) + 0.5)), M)
+%     |                        ^
+
+[7.07 -44.76]
+[1.41 135.24]
+[1.41 -135.24]
+[0.0 44.76]
+[0.0 135.24]
+[11.41 31.58]
+[100497.76 84.29]
