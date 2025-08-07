@@ -1,0 +1,112 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/binary_search_tree.fs(49,38): error FS0001: Type mismatch. Expecting a
+    obj array array    
+but given a
+    obj array    
+The type 'obj array' does not match the type 'obj'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/binary_search_tree.fs(52,42): error FS0001: Type mismatch. Expecting a
+    obj array array    
+but given a
+    obj array    
+The type 'obj array' does not match the type 'obj'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/binary_search_tree.fs(55,9): error FS0001: This expression was expected to have type
+    obj    
+but here has type
+    obj array    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/binary_search_tree.fs(57,21): error FS0001: This expression was expected to have type
+    obj    
+but here has type
+    obj array    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/binary_search_tree.fs(70,35): error FS0001: Type mismatch. Expecting a
+    obj array array    
+but given a
+    obj array    
+The type 'obj array' does not match the type 'obj'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/binary_search_tree.fs(72,31): error FS0001: Type mismatch. Expecting a
+    obj array array    
+but given a
+    obj array    
+The type 'obj array' does not match the type 'obj'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/binary_search_tree.fs(85,49): error FS0001: Type mismatch. Expecting a
+    obj array array    
+but given a
+    obj array    
+The type 'obj array' does not match the type 'obj'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/binary_search_tree.fs(87,32): error FS0001: Type mismatch. Expecting a
+    obj array array    
+but given a
+    obj array    
+The type 'obj array' does not match the type 'obj'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/binary_search_tree.fs(97,21): error FS0001: This expression was expected to have type
+    'a array    
+but here has type
+    obj    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/binary_search_tree.fs(98,34): error FS0001: This expression was expected to have type
+    'a array    
+but here has type
+    obj    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/binary_search_tree.fs(109,21): error FS0001: This expression was expected to have type
+    'a array    
+but here has type
+    obj    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/binary_search_tree.fs(110,34): error FS0001: This expression was expected to have type
+    'a array    
+but here has type
+    obj    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/binary_search_tree.fs(125,38): error FS0001: Type mismatch. Expecting a
+    obj array array    
+but given a
+    obj array    
+The type 'obj array' does not match the type 'obj'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/binary_search_tree.fs(128,42): error FS0001: Type mismatch. Expecting a
+    obj array array    
+but given a
+    obj array    
+The type 'obj array' does not match the type 'obj'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/binary_search_tree.fs(137,29): error FS0001: This expression was expected to have type
+    obj    
+but here has type
+    int    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/binary_search_tree.fs(138,42): error FS0001: Type mismatch. Expecting a
+    obj array array    
+but given a
+    obj array    
+The type 'obj array' does not match the type 'obj'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/binary_search_tree.fs(141,9): error FS0001: This expression was expected to have type
+    obj    
+but here has type
+    obj array    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/binary_search_tree.fs(143,21): error FS0001: This expression was expected to have type
+    obj    
+but here has type
+    obj array    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/binary_search_tree.fs(152,21): error FS0001: This expression was expected to have type
+    obj array    
+but here has type
+    obj    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/binary_search_tree.fs(158,17): error FS0001: This expression was expected to have type
+    obj array    
+but here has type
+    obj    

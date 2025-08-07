@@ -1,7 +1,7 @@
 # F# Algorithms Transpiler Output
 
-Completed programs: 80/1077
-Last updated: 2025-08-07 08:16 +0700
+Completed programs: 167/1077
+Last updated: 2025-08-07 10:31 +0700
 
 Checklist:
 
@@ -87,105 +87,105 @@ Checklist:
 | 78 | ciphers/cryptomath_module | ✓ | 571.223ms | 63.1 KB |
 | 79 | ciphers/decrypt_caesar_with_chi_squared | ✓ | 571.223ms | 59.9 KB |
 | 80 | ciphers/deterministic_miller_rabin | ✓ | 571.223ms | 56.0 KB |
-| 81 | ciphers/diffie |   |  |  |
-| 82 | ciphers/diffie_hellman |   |  |  |
-| 83 | ciphers/elgamal_key_generator |   |  |  |
-| 84 | ciphers/enigma_machine2 |   |  |  |
+| 81 | ciphers/diffie | ✓ | 571.223ms | 57.5 KB |
+| 82 | ciphers/diffie_hellman | ✓ | 571.223ms | 39.4 KB |
+| 83 | ciphers/elgamal_key_generator | ✓ | 571.223ms | 63.1 KB |
+| 84 | ciphers/enigma_machine2 | ✓ | 571.223ms | 31.5 KB |
 | 85 | ciphers/fractionated_morse_cipher | ✓ | 571.223ms | 37.5 KB |
-| 86 | ciphers/gronsfeld_cipher |   |  |  |
-| 87 | ciphers/hill_cipher |   |  |  |
-| 88 | ciphers/mixed_keyword_cypher |   |  |  |
-| 89 | ciphers/mono_alphabetic_ciphers |   |  |  |
-| 90 | ciphers/morse_code |   |  |  |
-| 91 | ciphers/onepad_cipher |   |  |  |
-| 92 | ciphers/permutation_cipher |   |  |  |
-| 93 | ciphers/playfair_cipher |   |  |  |
-| 94 | ciphers/polybius |   |  |  |
-| 95 | ciphers/porta_cipher |   |  |  |
-| 96 | ciphers/rabin_miller |   |  |  |
-| 97 | ciphers/rail_fence_cipher |   |  |  |
-| 98 | ciphers/rot13 |   |  |  |
-| 99 | ciphers/rsa_cipher |   |  |  |
-| 100 | ciphers/rsa_factorization |   |  |  |
-| 101 | ciphers/rsa_key_generator |   |  |  |
-| 102 | ciphers/running_key_cipher |   |  |  |
-| 103 | ciphers/shuffled_shift_cipher |   |  |  |
-| 104 | ciphers/simple_keyword_cypher |   |  |  |
-| 105 | ciphers/simple_substitution_cipher |   |  |  |
-| 106 | ciphers/transposition_cipher |   |  |  |
-| 107 | ciphers/transposition_cipher_encrypt_decrypt_file |   |  |  |
-| 108 | ciphers/trifid_cipher |   |  |  |
-| 109 | ciphers/vernam_cipher |   |  |  |
-| 110 | ciphers/vigenere_cipher |   |  |  |
-| 111 | ciphers/xor_cipher |   |  |  |
-| 112 | computer_vision/cnn_classification |   |  |  |
-| 113 | computer_vision/flip_augmentation |   |  |  |
-| 114 | computer_vision/haralick_descriptors |   |  |  |
-| 115 | computer_vision/harris_corner |   |  |  |
-| 116 | computer_vision/horn_schunck |   |  |  |
-| 117 | computer_vision/intensity_based_segmentation |   |  |  |
-| 118 | computer_vision/mean_threshold |   |  |  |
-| 119 | computer_vision/mosaic_augmentation |   |  |  |
-| 120 | computer_vision/pooling_functions |   |  |  |
-| 121 | conversions/astronomical_length_scale_conversion |   |  |  |
-| 122 | conversions/binary_to_decimal |   |  |  |
-| 123 | conversions/binary_to_hexadecimal |   |  |  |
-| 124 | conversions/binary_to_octal |   |  |  |
-| 125 | conversions/convert_number_to_words |   |  |  |
-| 126 | conversions/decimal_to_any |   |  |  |
-| 127 | conversions/decimal_to_binary |   |  |  |
-| 128 | conversions/decimal_to_hexadecimal |   |  |  |
-| 129 | conversions/decimal_to_octal |   |  |  |
-| 130 | conversions/energy_conversions |   |  |  |
-| 131 | conversions/excel_title_to_column |   |  |  |
+| 86 | ciphers/gronsfeld_cipher | ✓ | 571.223ms | 31.9 KB |
+| 87 | ciphers/hill_cipher | ✓ | 571.223ms | 31.9 KB |
+| 88 | ciphers/mixed_keyword_cypher | ✓ | 571.223ms | 31.6 KB |
+| 89 | ciphers/mono_alphabetic_ciphers | ✓ | 571.223ms | 30.9 KB |
+| 90 | ciphers/morse_code | ✓ | 571.223ms | 45.8 KB |
+| 91 | ciphers/onepad_cipher | ✓ | 571.223ms | 56.3 KB |
+| 92 | ciphers/permutation_cipher | ✓ | 571.223ms | 58.4 KB |
+| 93 | ciphers/playfair_cipher | ✓ | 571.223ms | 33.8 KB |
+| 94 | ciphers/polybius | ✓ | 571.223ms | 55.1 KB |
+| 95 | ciphers/porta_cipher | ✓ | 571.223ms | 31.4 KB |
+| 96 | ciphers/rabin_miller | ✓ | 268.155ms | 57.7 KB |
+| 97 | ciphers/rail_fence_cipher | ✓ | 571.223ms | 33.1 KB |
+| 98 | ciphers/rot13 | ✓ | 571.223ms | 54.6 KB |
+| 99 | ciphers/rsa_cipher | ✓ | 571.223ms | 55.8 KB |
+| 100 | ciphers/rsa_factorization | ✓ | 571.223ms | 55.5 KB |
+| 101 | ciphers/rsa_key_generator | ✓ | 571.223ms | 55.0 KB |
+| 102 | ciphers/running_key_cipher | ✓ | 571.223ms | 42.0 KB |
+| 103 | ciphers/shuffled_shift_cipher | ✓ | 571.223ms | 46.0 KB |
+| 104 | ciphers/simple_keyword_cypher | ✓ | 571.223ms | 32.4 KB |
+| 105 | ciphers/simple_substitution_cipher | ✓ | 571.223ms | 31.5 KB |
+| 106 | ciphers/transposition_cipher | ✓ | 571.223ms | 55.2 KB |
+| 107 | ciphers/transposition_cipher_encrypt_decrypt_file | ✓ | 571.223ms | 39.3 KB |
+| 108 | ciphers/trifid_cipher | ✓ | 571.223ms | 30.9 KB |
+| 109 | ciphers/vernam_cipher | ✓ | 571.223ms | 31.4 KB |
+| 110 | ciphers/vigenere_cipher | ✓ | 571.223ms | 39.3 KB |
+| 111 | ciphers/xor_cipher | ✓ | 571.223ms | 56.3 KB |
+| 112 | computer_vision/cnn_classification | ✓ | 571.223ms | 37.1 KB |
+| 113 | computer_vision/flip_augmentation | ✓ | 571.223ms | 60.2 KB |
+| 114 | computer_vision/haralick_descriptors | ✓ | 571.223ms | 56.2 KB |
+| 115 | computer_vision/harris_corner | ✓ | 571.223ms | 56.8 KB |
+| 116 | computer_vision/horn_schunck | ✓ | 571.223ms | 55.4 KB |
+| 117 | computer_vision/intensity_based_segmentation | ✓ | 571.223ms | 55.5 KB |
+| 118 | computer_vision/mean_threshold | ✓ | 571.223ms | 59.4 KB |
+| 119 | computer_vision/mosaic_augmentation | ✓ | 571.223ms | 110.0 KB |
+| 120 | computer_vision/pooling_functions | ✓ | 571.223ms | 61.9 KB |
+| 121 | conversions/astronomical_length_scale_conversion | ✓ | 571.223ms | 67.8 KB |
+| 122 | conversions/binary_to_decimal | ✓ | 571.223ms | 55.4 KB |
+| 123 | conversions/binary_to_hexadecimal | ✓ | 571.223ms | 31.5 KB |
+| 124 | conversions/binary_to_octal | ✓ | 571.223ms | 55.0 KB |
+| 125 | conversions/convert_number_to_words | ✓ | 571.223ms | 31.5 KB |
+| 126 | conversions/decimal_to_any | ✓ | 571.223ms | 31.3 KB |
+| 127 | conversions/decimal_to_binary | ✓ | 571.223ms | 55.6 KB |
+| 128 | conversions/decimal_to_hexadecimal | ✓ | 571.223ms | 40.6 KB |
+| 129 | conversions/decimal_to_octal | ✓ | 571.223ms | 55.3 KB |
+| 130 | conversions/energy_conversions | ✓ | 571.223ms | 74.0 KB |
+| 131 | conversions/excel_title_to_column | ✓ | 571.223ms | 31.9 KB |
 | 132 | conversions/hex_to_bin |   |  |  |
-| 133 | conversions/hexadecimal_to_decimal |   |  |  |
+| 133 | conversions/hexadecimal_to_decimal | ✓ | 571.223ms | 55.2 KB |
 | 134 | conversions/ipv4_conversion |   |  |  |
-| 135 | conversions/length_conversion |   |  |  |
-| 136 | conversions/molecular_chemistry |   |  |  |
-| 137 | conversions/octal_to_binary |   |  |  |
-| 138 | conversions/octal_to_decimal |   |  |  |
+| 135 | conversions/length_conversion | ✓ | 571.223ms | 34.5 KB |
+| 136 | conversions/molecular_chemistry | ✓ | 571.223ms | 55.5 KB |
+| 137 | conversions/octal_to_binary | ✓ | 571.223ms | 55.3 KB |
+| 138 | conversions/octal_to_decimal | ✓ | 571.223ms | 55.1 KB |
 | 139 | conversions/octal_to_hexadecimal |   |  |  |
-| 140 | conversions/prefix_conversions |   |  |  |
-| 141 | conversions/prefix_conversions_string |   |  |  |
+| 140 | conversions/prefix_conversions | ✓ | 571.223ms | 58.5 KB |
+| 141 | conversions/prefix_conversions_string | ✓ | 571.223ms | 56.2 KB |
 | 142 | conversions/pressure_conversions |   |  |  |
-| 143 | conversions/rectangular_to_polar |   |  |  |
-| 144 | conversions/rgb_cmyk_conversion |   |  |  |
+| 143 | conversions/rectangular_to_polar | ✓ | 571.223ms | 56.4 KB |
+| 144 | conversions/rgb_cmyk_conversion | ✓ | 571.223ms | 59.6 KB |
 | 145 | conversions/rgb_hsv_conversion |   |  |  |
-| 146 | conversions/roman_numerals |   |  |  |
-| 147 | conversions/speed_conversions |   |  |  |
-| 148 | conversions/temperature_conversions |   |  |  |
-| 149 | conversions/time_conversions |   |  |  |
-| 150 | conversions/volume_conversions |   |  |  |
-| 151 | conversions/weight_conversion |   |  |  |
+| 146 | conversions/roman_numerals | ✓ | 571.223ms | 4.1 KB |
+| 147 | conversions/speed_conversions | ✓ | 571.223ms | 56.9 KB |
+| 148 | conversions/temperature_conversions | ✓ | 571.223ms | 34.9 KB |
+| 149 | conversions/time_conversions | ✓ | 571.223ms | 35.1 KB |
+| 150 | conversions/volume_conversions | ✓ | 571.223ms | 70.4 KB |
+| 151 | conversions/weight_conversion | ✓ | 571.223ms | 36.0 KB |
 | 152 | data_compression/burrows_wheeler |   |  |  |
-| 153 | data_compression/huffman |   |  |  |
-| 154 | data_compression/lempel_ziv |   |  |  |
-| 155 | data_compression/lempel_ziv_decompress |   |  |  |
-| 156 | data_compression/lz77 |   |  |  |
-| 157 | data_compression/peak_signal_to_noise_ratio |   |  |  |
-| 158 | data_compression/run_length_encoding |   |  |  |
-| 159 | data_structures/arrays/equilibrium_index_in_array |   |  |  |
-| 160 | data_structures/arrays/find_triplets_with_0_sum |   |  |  |
-| 161 | data_structures/arrays/index_2d_array_in_1d |   |  |  |
-| 162 | data_structures/arrays/kth_largest_element |   |  |  |
-| 163 | data_structures/arrays/median_two_array |   |  |  |
-| 164 | data_structures/arrays/monotonic_array |   |  |  |
-| 165 | data_structures/arrays/pairs_with_given_sum |   |  |  |
-| 166 | data_structures/arrays/permutations |   |  |  |
-| 167 | data_structures/arrays/prefix_sum |   |  |  |
+| 153 | data_compression/huffman | ✓ | 571.223ms | 35.2 KB |
+| 154 | data_compression/lempel_ziv | ✓ | 571.223ms | 55.3 KB |
+| 155 | data_compression/lempel_ziv_decompress | ✓ | 571.223ms | 55.2 KB |
+| 156 | data_compression/lz77 | ✓ | 571.223ms | 59.9 KB |
+| 157 | data_compression/peak_signal_to_noise_ratio | ✓ | 571.223ms | 3.7 KB |
+| 158 | data_compression/run_length_encoding | ✓ | 571.223ms | 55.5 KB |
+| 159 | data_structures/arrays/equilibrium_index_in_array | ✓ | 571.223ms | 32.2 KB |
+| 160 | data_structures/arrays/find_triplets_with_0_sum | ✓ | 571.223ms | 56.1 KB |
+| 161 | data_structures/arrays/index_2d_array_in_1d | ✓ | 571.223ms | 71.0 KB |
+| 162 | data_structures/arrays/kth_largest_element | ✓ | 571.223ms | 42.6 KB |
+| 163 | data_structures/arrays/median_two_array | ✓ | 571.223ms | 34.1 KB |
+| 164 | data_structures/arrays/monotonic_array | ✓ | 571.223ms | 55.0 KB |
+| 165 | data_structures/arrays/pairs_with_given_sum | ✓ | 571.223ms | 32.0 KB |
+| 166 | data_structures/arrays/permutations | ✓ | 571.223ms | 68.6 KB |
+| 167 | data_structures/arrays/prefix_sum | ✓ | 571.223ms | 58.4 KB |
 | 168 | data_structures/arrays/product_sum |   |  |  |
-| 169 | data_structures/arrays/sparse_table |   |  |  |
-| 170 | data_structures/arrays/sudoku_solver |   |  |  |
+| 169 | data_structures/arrays/sparse_table | ✓ | 571.223ms | 67.3 KB |
+| 170 | data_structures/arrays/sudoku_solver | ✓ | 571.223ms | 58.9 KB |
 | 171 | data_structures/binary_tree/avl_tree |   |  |  |
-| 172 | data_structures/binary_tree/basic_binary_tree |   |  |  |
+| 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 571.223ms | 60.9 KB |
 | 173 | data_structures/binary_tree/binary_search_tree |   |  |  |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive |   |  |  |
-| 175 | data_structures/binary_tree/binary_tree_mirror |   |  |  |
-| 176 | data_structures/binary_tree/binary_tree_node_sum |   |  |  |
+| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 571.223ms | 61.7 KB |
+| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 571.223ms | 31.7 KB |
 | 177 | data_structures/binary_tree/binary_tree_path_sum |   |  |  |
-| 178 | data_structures/binary_tree/diff_views_of_binary_tree |   |  |  |
-| 179 | data_structures/binary_tree/distribute_coins |   |  |  |
+| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 571.223ms | 55.8 KB |
+| 179 | data_structures/binary_tree/distribute_coins | ✓ | 571.223ms | 32.0 KB |
 | 180 | data_structures/binary_tree/fenwick_tree |   |  |  |
 | 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist |   |  |  |
 | 182 | data_structures/binary_tree/floor_and_ceiling |   |  |  |

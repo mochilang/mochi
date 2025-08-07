@@ -1,0 +1,15 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/algorithms/transpiler/FS/conversions/pressure_conversions.fs(48,36): error FS0039: The namespace or module 'Object' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/conversions/pressure_conversions.fs(48,35): error FS0072: Lookup on object of indeterminate type based on information prior to this program point. A type annotation may be needed prior to this program point to constrain the type of the object. This may allow the lookup to be resolved.
+
+/workspace/mochi/tests/algorithms/transpiler/FS/conversions/pressure_conversions.fs(49,103): error FS0001: The type 'obj array' does not match the type 'string'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/conversions/pressure_conversions.fs(51,36): error FS0039: The namespace or module 'Object' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/conversions/pressure_conversions.fs(51,35): error FS0072: Lookup on object of indeterminate type based on information prior to this program point. A type annotation may be needed prior to this program point to constrain the type of the object. This may allow the lookup to be resolved.
+
+/workspace/mochi/tests/algorithms/transpiler/FS/conversions/pressure_conversions.fs(52,99): error FS0001: The type 'obj array' does not match the type 'string'

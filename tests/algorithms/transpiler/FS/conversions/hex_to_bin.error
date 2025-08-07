@@ -1,0 +1,18 @@
+exit status 1
+10101100
+
+Unhandled Exception:
+System.OverflowException: Value was either too large or too small for an Int32.
+  at System.Number.ThrowOverflowOrFormatException (System.Boolean overflow, System.String overflowResourceKey) [0x00020] in <12b418a7818c4ca0893feeaaf67f1e7f>:0 
+  at System.Number.ParseInt32 (System.ReadOnlySpan`1[T] value, System.Globalization.NumberStyles styles, System.Globalization.NumberFormatInfo info) [0x0001c] in <12b418a7818c4ca0893feeaaf67f1e7f>:0 
+  at System.Int32.Parse (System.String s, System.Globalization.NumberStyles style, System.IFormatProvider provider) [0x00020] in <12b418a7818c4ca0893feeaaf67f1e7f>:0 
+  at Microsoft.FSharp.Core.LanguagePrimitives.ParseInt32 (System.String s) [0x00093] in <65d1017bc6ad35d9a74503837b01d165>:0 
+  at Hex_to_bin.hex_to_bin (System.String hex_num) [0x0010b] in <6894205222a25a0ba745038352209468>:0 
+  at <StartupCode$hex_to_bin>.$Hex_to_bin.main@ () [0x0007f] in <6894205222a25a0ba745038352209468>:0 
+[ERROR] FATAL UNHANDLED EXCEPTION: System.OverflowException: Value was either too large or too small for an Int32.
+  at System.Number.ThrowOverflowOrFormatException (System.Boolean overflow, System.String overflowResourceKey) [0x00020] in <12b418a7818c4ca0893feeaaf67f1e7f>:0 
+  at System.Number.ParseInt32 (System.ReadOnlySpan`1[T] value, System.Globalization.NumberStyles styles, System.Globalization.NumberFormatInfo info) [0x0001c] in <12b418a7818c4ca0893feeaaf67f1e7f>:0 
+  at System.Int32.Parse (System.String s, System.Globalization.NumberStyles style, System.IFormatProvider provider) [0x00020] in <12b418a7818c4ca0893feeaaf67f1e7f>:0 
+  at Microsoft.FSharp.Core.LanguagePrimitives.ParseInt32 (System.String s) [0x00093] in <65d1017bc6ad35d9a74503837b01d165>:0 
+  at Hex_to_bin.hex_to_bin (System.String hex_num) [0x0010b] in <6894205222a25a0ba745038352209468>:0 
+  at <StartupCode$hex_to_bin>.$Hex_to_bin.main@ () [0x0007f] in <6894205222a25a0ba745038352209468>:0

@@ -1,0 +1,6 @@
+Binary tree: seq
+  [[1, System.Int32[]] [2, System.Int32[]] [3, System.Int32[]]
+   [7, System.Int32[]]]
+Binary tree mirror: seq
+  [[1, System.Int32[]] [2, System.Int32[]] [3, System.Int32[]]
+   [7, System.Int32[]]]

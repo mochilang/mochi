@@ -1,0 +1,8 @@
+exit status 1
+Unhandled Exception:
+System.InvalidCastException: Specified cast is not valid.
+  at Octal_to_hexadecimal.octal_to_hex (System.String octal) [0x00341] in <689420753cdbf241a745038375209468>:0 
+  at <StartupCode$octal_to_hexadecimal>.$Octal_to_hexadecimal.main@ () [0x000b7] in <689420753cdbf241a745038375209468>:0 
+[ERROR] FATAL UNHANDLED EXCEPTION: System.InvalidCastException: Specified cast is not valid.
+  at Octal_to_hexadecimal.octal_to_hex (System.String octal) [0x00341] in <689420753cdbf241a745038375209468>:0 
+  at <StartupCode$octal_to_hexadecimal>.$Octal_to_hexadecimal.main@ () [0x000b7] in <689420753cdbf241a745038375209468>:0

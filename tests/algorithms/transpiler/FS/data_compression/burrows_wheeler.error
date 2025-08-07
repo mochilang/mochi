@@ -1,0 +1,5 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_compression/burrows_wheeler.fs(104,24): error FS0039: The value or constructor 'index_of' is not defined
