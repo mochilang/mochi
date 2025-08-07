@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (111/1077) - Last updated 2025-08-07 20:18 +0700:
+Checklist of programs that currently transpile and run (113/1077) - Last updated 2025-08-07 23:28 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -262,8 +262,8 @@ Checklist of programs that currently transpile and run (111/1077) - Last updated
 | 255 | data_structures/stacks/prefix_evaluation | ✓ | 682us | 1.6 MB |
 | 256 | data_structures/stacks/stack |  |  |  |
 | 257 | data_structures/stacks/stack_using_two_queues |  |  |  |
-| 258 | data_structures/stacks/stack_with_doubly_linked_list |  |  |  |
-| 259 | data_structures/stacks/stack_with_singly_linked_list |  |  |  |
+| 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 671us | 1.4 MB |
+| 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 304us | 1.6 MB |
 | 260 | data_structures/stacks/stock_span_problem |  |  |  |
 | 261 | data_structures/suffix_tree/example/example_usage |  |  |  |
 | 262 | data_structures/suffix_tree/suffix_tree |  |  |  |
