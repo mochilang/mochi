@@ -3620,26 +3620,26 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	varTypes = map[string]string{}
 	funcRet = map[string]string{}
 	extraDecls = nil
-        structCount = 0
-        topEnv = env
-        groupItems = map[string]string{}
-        needLoadYaml = false
-        needSaveJsonl = false
-        needAppendObj = false
-        needConcat = false
-        needNetLookupHost = false
-        needEnviron = false
-        needRepeat = false
-        needMin = false
-        needMax = false
-        needExists = false
-        needToObjectArray = false
-        needJSON = false
-        needCastInt2D = false
-        needFn3 = false
-        needInput = false
-        needNow = false
-        needMem = false
+	structCount = 0
+	topEnv = env
+	groupItems = map[string]string{}
+	needLoadYaml = false
+	needSaveJsonl = false
+	needAppendObj = false
+	needConcat = false
+	needNetLookupHost = false
+	needEnviron = false
+	needRepeat = false
+	needMin = false
+	needMax = false
+	needExists = false
+	needToObjectArray = false
+	needJSON = false
+	needCastInt2D = false
+	needFn3 = false
+	needInput = false
+	needNow = false
+	needMem = false
 	needAppendBool = false
 	needPadStart = false
 	needSHA256 = false
@@ -4765,6 +4765,13 @@ func applyBinaryOp(left Expr, op *parser.BinaryOp, right Expr) (Expr, error) {
 					return &CastExpr{Type: "int", Value: call}, nil
 				}
 				return &CallExpr{Func: "Math.floorMod", Args: []Expr{left, right}}, nil
+			}
+		}
+		if op.Op == "/" {
+			lt := inferType(left)
+			rt := inferType(right)
+			if lt != "double" && lt != "float" && rt != "double" && rt != "float" && lt != "bigint" && rt != "bigint" && lt != "java.math.BigInteger" && rt != "java.math.BigInteger" {
+				return &CallExpr{Func: "Math.floorDiv", Args: []Expr{left, right}}, nil
 			}
 		}
 		return &BinaryExpr{Left: left, Op: op.Op, Right: right}, nil
