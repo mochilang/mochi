@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (104/1077) - Last updated 2025-08-07 16:48 +0700:
+Checklist of programs that currently transpile and run (105/1077) - Last updated 2025-08-07 17:30 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -117,7 +117,7 @@ Checklist of programs that currently transpile and run (104/1077) - Last updated
 | 110 | ciphers/vigenere_cipher | ✓ | 336us | 1.4 MB |
 | 111 | ciphers/xor_cipher | ✓ | 841us | 1.7 MB |
 | 112 | computer_vision/cnn_classification | ✓ | 613us | 1.6 MB |
-| 113 | computer_vision/flip_augmentation |  |  |  |
+| 113 | computer_vision/flip_augmentation | ✓ | 581us | 1.6 MB |
 | 114 | computer_vision/haralick_descriptors |  |  |  |
 | 115 | computer_vision/harris_corner |  |  |  |
 | 116 | computer_vision/horn_schunck |  |  |  |

@@ -48,6 +48,8 @@ var (
 	needStrListInt          bool
 	needStrListStr          bool
 	needStrListListInt      bool
+	needStrListDouble       bool
+	needStrListListDouble   bool
 	needJSONListListInt     bool
 	needUpper               bool
 	needLower               bool
@@ -2360,6 +2362,29 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 						io.WriteString(w, ")")
 					}
 					return
+				} else if elem == "double" {
+					needStrListListDouble = true
+					needStrListDouble = true
+					if _, ok := arg.(*CallExpr); ok {
+						tmp := fmt.Sprintf("__tmp%d", tempCounter)
+						tempCounter++
+						io.WriteString(w, "({double **"+tmp+" = ")
+						arg.emitExpr(w)
+						io.WriteString(w, "; char *__res = str_list_list_double("+tmp+", ")
+						emitLenExpr(w, arg)
+						io.WriteString(w, ", ")
+						emitLensExpr(w, arg)
+						io.WriteString(w, "); __res;})")
+					} else {
+						io.WriteString(w, "str_list_list_double(")
+						arg.emitExpr(w)
+						io.WriteString(w, ", ")
+						emitLenExpr(w, arg)
+						io.WriteString(w, ", ")
+						emitLensExpr(w, arg)
+						io.WriteString(w, ")")
+					}
+					return
 				}
 			} else if base == "int" || base == "long long" {
 				needStrListInt = true
@@ -2373,6 +2398,24 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 					io.WriteString(w, "); __res;})")
 				} else {
 					io.WriteString(w, "str_list_int(")
+					arg.emitExpr(w)
+					io.WriteString(w, ", ")
+					emitLenExpr(w, arg)
+					io.WriteString(w, ")")
+				}
+				return
+			} else if base == "double" {
+				needStrListDouble = true
+				if _, ok := arg.(*CallExpr); ok {
+					tmp := fmt.Sprintf("__tmp%d", tempCounter)
+					tempCounter++
+					io.WriteString(w, "({double *"+tmp+" = ")
+					arg.emitExpr(w)
+					io.WriteString(w, "; char *__res = str_list_double("+tmp+", ")
+					emitLenExpr(w, arg)
+					io.WriteString(w, "); __res;})")
+				} else {
+					io.WriteString(w, "str_list_double(")
 					arg.emitExpr(w)
 					io.WriteString(w, ", ")
 					emitLenExpr(w, arg)
@@ -2963,7 +3006,7 @@ func (p *Program) Emit() []byte {
 	if needSHA256 || needMD5Hex {
 		buf.WriteString("#include <unistd.h>\n")
 	}
-	if needStrConcat || needStrInt || needStrFloat || needStrBool || needStrListInt || needStrListStr || needStrListListInt || needSubstring || needAtoi || needCharAt || needSliceInt || needSliceDouble || needSliceStr || needRepeat || needParseIntStr || needInput || needNow || needUpper || needLower || needPadStart || needListAppendInt || needListAppendStr || needListAppendPtr || needListAppendDoublePtr || needListAppendDoubleNew || needListAppendStrPtr || needListAppendSizeT || needListAppendStrNew || len(needListAppendStruct) > 0 || len(needListAppendStructNew) > 0 || needSHA256 || needMD5Hex {
+	if needStrConcat || needStrInt || needStrFloat || needStrBool || needStrListInt || needStrListStr || needStrListListInt || needStrListDouble || needStrListListDouble || needSubstring || needAtoi || needCharAt || needSliceInt || needSliceDouble || needSliceStr || needRepeat || needParseIntStr || needInput || needNow || needUpper || needLower || needPadStart || needListAppendInt || needListAppendStr || needListAppendPtr || needListAppendDoublePtr || needListAppendDoubleNew || needListAppendStrPtr || needListAppendSizeT || needListAppendStrNew || len(needListAppendStruct) > 0 || len(needListAppendStructNew) > 0 || needSHA256 || needMD5Hex {
 		buf.WriteString("#include <stdlib.h>\n")
 	}
 	if needMem {
@@ -3157,6 +3200,26 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return buf;\n")
 		buf.WriteString("}\n\n")
 	}
+	if needStrListDouble {
+		buf.WriteString("static char* str_list_double(const double *arr, size_t len) {\n")
+		buf.WriteString("    size_t cap = len * 32 + 2;\n")
+		buf.WriteString("    char *buf = malloc(cap);\n")
+		buf.WriteString("    size_t pos = 0;\n")
+		buf.WriteString("    buf[pos++] = '[';\n")
+		buf.WriteString("    for (size_t i = 0; i < len; i++) {\n")
+		buf.WriteString("        char tmp[64];\n")
+		buf.WriteString("        snprintf(tmp, sizeof(tmp), \"%g\", arr[i]);\n")
+		buf.WriteString("        size_t n = strlen(tmp);\n")
+		buf.WriteString("        if (pos + n + 2 >= cap) { cap = cap * 2 + n + 2; buf = realloc(buf, cap); }\n")
+		buf.WriteString("        memcpy(buf + pos, tmp, n);\n")
+		buf.WriteString("        pos += n;\n")
+		buf.WriteString("        if (i + 1 < len) buf[pos++] = ' ';\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    buf[pos++] = ']';\n")
+		buf.WriteString("    buf[pos] = 0;\n")
+		buf.WriteString("    return buf;\n")
+		buf.WriteString("}\n\n")
+	}
 	if needStrListListInt {
 		buf.WriteString("static char* str_list_list_int(long long **arr, size_t len, const size_t lens[]) {\n")
 		buf.WriteString("    size_t cap = 2;\n")
@@ -3166,6 +3229,27 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    buf[pos++] = '[';\n")
 		buf.WriteString("    for (size_t i = 0; i < len; i++) {\n")
 		buf.WriteString("        char *inner = str_list_int(arr[i], lens[i]);\n")
+		buf.WriteString("        size_t n = strlen(inner);\n")
+		buf.WriteString("        if (pos + n + 2 >= cap) { cap = cap * 2 + n + 2; buf = realloc(buf, cap); }\n")
+		buf.WriteString("        memcpy(buf + pos, inner, n);\n")
+		buf.WriteString("        pos += n;\n")
+		buf.WriteString("        free(inner);\n")
+		buf.WriteString("        if (i + 1 < len) buf[pos++] = ' ';\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    buf[pos++] = ']';\n")
+		buf.WriteString("    buf[pos] = 0;\n")
+		buf.WriteString("    return buf;\n")
+		buf.WriteString("}\n\n")
+	}
+	if needStrListListDouble {
+		buf.WriteString("static char* str_list_list_double(double **arr, size_t len, const size_t lens[]) {\n")
+		buf.WriteString("    size_t cap = 2;\n")
+		buf.WriteString("    for (size_t i = 0; i < len; i++) cap += lens[i] * 32 + 3;\n")
+		buf.WriteString("    char *buf = malloc(cap);\n")
+		buf.WriteString("    size_t pos = 0;\n")
+		buf.WriteString("    buf[pos++] = '[';\n")
+		buf.WriteString("    for (size_t i = 0; i < len; i++) {\n")
+		buf.WriteString("        char *inner = str_list_double(arr[i], lens[i]);\n")
 		buf.WriteString("        size_t n = strlen(inner);\n")
 		buf.WriteString("        if (pos + n + 2 >= cap) { cap = cap * 2 + n + 2; buf = realloc(buf, cap); }\n")
 		buf.WriteString("        memcpy(buf + pos, inner, n);\n")
@@ -3922,6 +4006,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needStrListInt = false
 	needStrListStr = false
 	needStrListListInt = false
+	needStrListDouble = false
+	needStrListListDouble = false
 	needJSONListListInt = false
 	needUpper = false
 	needLower = false
