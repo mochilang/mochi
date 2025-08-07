@@ -1,0 +1,3 @@
+KnapsackResult {max_value = 25.0, fractions = System.Double[]}
+KnapsackResult {max_value = 16.0, fractions = System.Double[]}
+KnapsackResult {max_value = 0.0, fractions = System.Double[]}

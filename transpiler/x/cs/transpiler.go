@@ -283,6 +283,18 @@ type AssignIndexStmt struct {
 }
 
 func (s *AssignIndexStmt) emit(w io.Writer) {
+	if lit, ok := s.Index.(*StringLit); ok {
+		if t := typeOfExpr(s.Target); t != "" {
+			if st, ok := structTypes[t]; ok {
+				if _, ok := st.Fields[lit.Value]; ok {
+					s.Target.emit(w)
+					fmt.Fprintf(w, ".%s = ", safeName(lit.Value))
+					s.Value.emit(w)
+					return
+				}
+			}
+		}
+	}
 	s.Target.emit(w)
 	fmt.Fprint(w, "[")
 	s.Index.emit(w)
@@ -1882,6 +1894,13 @@ func typeOfExpr(e Expr) string {
 				return arr[1]
 			}
 		}
+		if lit, ok := ex.Index.(*StringLit); ok {
+			if st, ok := structTypes[t]; ok {
+				if ft, ok := st.Fields[lit.Value]; ok {
+					return csTypeFromType(ft)
+				}
+			}
+		}
 		return ""
 	case *FieldExpr:
 		t := typeOfExpr(ex.Target)
@@ -2114,6 +2133,15 @@ func (ix *IndexExpr) emit(w io.Writer) {
 	t := typeOfExpr(ix)
 	targetType := typeOfExpr(ix.Target)
 	idxType := typeOfExpr(ix.Index)
+	if lit, ok := ix.Index.(*StringLit); ok {
+		if st, ok := structTypes[targetType]; ok {
+			if _, ok := st.Fields[lit.Value]; ok {
+				ix.Target.emit(w)
+				fmt.Fprintf(w, ".%s", safeName(lit.Value))
+				return
+			}
+		}
+	}
 	if strings.HasPrefix(targetType, "Dictionary<") && !strings.HasSuffix(targetType, "[]") {
 		parts := strings.TrimPrefix(strings.TrimSuffix(targetType, ">"), "Dictionary<")
 		arr := splitTop(parts)
