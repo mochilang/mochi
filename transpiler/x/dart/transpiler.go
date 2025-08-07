@@ -2741,7 +2741,10 @@ func (c *CastExpr) emit(w io.Writer) error {
 		return err
 	}
 
-	if (c.Type == "num" || c.Type == "double") && valType == "int" {
+	if c.Type == "num" || c.Type == "double" {
+		if valType == "num" || valType == "double" {
+			return c.Value.emit(w)
+		}
 		if _, err := io.WriteString(w, "("); err != nil {
 			return err
 		}
@@ -2754,10 +2757,6 @@ func (c *CastExpr) emit(w io.Writer) error {
 		}
 		_, err = io.WriteString(w, ".toDouble()")
 		return err
-	}
-
-	if c.Type == "num" && valType == "double" {
-		return c.Value.emit(w)
 	}
 	if strings.HasPrefix(c.Type, "List<") && valType != c.Type {
 		return emitListConversion(w, c.Value, c.Type)
