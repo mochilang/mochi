@@ -627,6 +627,7 @@ var ocamlReserved = map[string]bool{
 	"end": true, "exception": true, "external": true, "fun": true, "function": true,
 	"let": true, "in": true, "match": true, "mod": true, "module": true, "open": true,
 	"rec": true, "try": true, "type": true, "val": true, "when": true, "with": true,
+	"lazy": true,
 	"new":  true,
 	"sig":  true,
 	"done": true,
@@ -1741,6 +1742,36 @@ func (m *MapLit) emit(w io.Writer) {
 
 func (m *MapLit) emitPrint(w io.Writer) { m.emit(w) }
 
+type patternEmitter interface{ emitPattern(io.Writer) }
+
+func (m *MapLit) emitPattern(w io.Writer) {
+	io.WriteString(w, "[")
+	for i, it := range m.Items {
+		if i > 0 {
+			io.WriteString(w, "; ")
+		}
+		io.WriteString(w, "(")
+		if pe, ok := it.Key.(patternEmitter); ok {
+			pe.emitPattern(w)
+		} else {
+			it.Key.emit(w)
+		}
+		io.WriteString(w, ", ")
+		switch v := it.Value.(type) {
+		case *StringLit:
+			fmt.Fprintf(w, "(%q : Obj.t)", v.Value)
+		default:
+			if pe, ok := it.Value.(patternEmitter); ok {
+				pe.emitPattern(w)
+			} else {
+				it.Value.emit(w)
+			}
+		}
+		io.WriteString(w, ")")
+	}
+	io.WriteString(w, "]")
+}
+
 // MapIndexExpr represents map[key] access.
 type MapIndexExpr struct {
 	Map    Expr
@@ -2582,7 +2613,11 @@ func (m *MatchExpr) emit(w io.Writer) {
 	for _, a := range m.Arms {
 		io.WriteString(w, " | ")
 		if a.Pattern != nil {
-			a.Pattern.emit(w)
+			if pe, ok := a.Pattern.(patternEmitter); ok {
+				pe.emitPattern(w)
+			} else {
+				a.Pattern.emit(w)
+			}
 		} else {
 			io.WriteString(w, "_")
 		}
@@ -5949,19 +5984,21 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		}
 	}
 	if c.Func == "split" && len(c.Args) == 2 {
-		strArg, styp, err := convertExpr(c.Args[0], env, vars)
-		if err != nil {
-			return nil, "", err
+		if _, ok := env.GetFunc("split"); !ok {
+			strArg, styp, err := convertExpr(c.Args[0], env, vars)
+			if err != nil {
+				return nil, "", err
+			}
+			sepArg, typ2, err := convertExpr(c.Args[1], env, vars)
+			if err != nil {
+				return nil, "", err
+			}
+			if styp != "string" || typ2 != "string" {
+				return nil, "", fmt.Errorf("split expects string,string")
+			}
+			usesSplit = true
+			return &FuncCall{Name: "_split", Args: []Expr{strArg, sepArg}, Ret: "list-string"}, "list-string", nil
 		}
-		sepArg, typ2, err := convertExpr(c.Args[1], env, vars)
-		if err != nil {
-			return nil, "", err
-		}
-		if styp != "string" || typ2 != "string" {
-			return nil, "", fmt.Errorf("split expects string,string")
-		}
-		usesSplit = true
-		return &FuncCall{Name: "_split", Args: []Expr{strArg, sepArg}, Ret: "list-string"}, "list-string", nil
 	}
 	if c.Func == "sha256" && len(c.Args) == 1 {
 		arg, typ, err := convertExpr(c.Args[0], env, vars)
@@ -6031,14 +6068,16 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		return &ValuesBuiltin{Map: mapArg}, "list", nil
 	}
 	if c.Func == "keys" && len(c.Args) == 1 {
-		mapArg, typ, err := convertExpr(c.Args[0], env, vars)
-		if err != nil {
-			return nil, "", err
+		if _, ok := env.GetFunc("keys"); !ok {
+			mapArg, typ, err := convertExpr(c.Args[0], env, vars)
+			if err != nil {
+				return nil, "", err
+			}
+			if typ != "map" && !strings.HasPrefix(typ, "map-") && !strings.HasPrefix(typ, "map{") {
+				return nil, "", fmt.Errorf("keys expects map")
+			}
+			return &KeysBuiltin{Map: mapArg}, "list", nil
 		}
-		if typ != "map" && !strings.HasPrefix(typ, "map-") && !strings.HasPrefix(typ, "map{") {
-			return nil, "", fmt.Errorf("keys expects map")
-		}
-		return &KeysBuiltin{Map: mapArg}, "list", nil
 	}
 	if fn, ok := env.GetFunc(c.Func); ok {
 		ret := "int"
