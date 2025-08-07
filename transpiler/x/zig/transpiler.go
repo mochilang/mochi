@@ -1723,9 +1723,13 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 			}
 		}
 	} else {
-		v.Value.emit(w)
-		if zigTypeFromExpr(v.Value) == "Value" {
-			io.WriteString(w, valueAccess(targetType))
+		if _, ok := v.Value.(*NullLit); ok && valueAccess(targetType) == ".List" {
+			fmt.Fprintf(w, "&[_]%s{}", strings.TrimPrefix(targetType, "[]"))
+		} else {
+			v.Value.emit(w)
+			if zigTypeFromExpr(v.Value) == "Value" {
+				io.WriteString(w, valueAccess(targetType))
+			}
 		}
 	}
 	io.WriteString(w, ";\n")
@@ -1748,10 +1752,20 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 			ll.ElemType = vd.Type[2:]
 		}
 	}
-	a.Value.emit(w)
-	if zigTypeFromExpr(a.Value) == "Value" {
-		if suf := valueAccess(varTypes[a.Name]); suf != "" {
-			io.WriteString(w, suf)
+	targetType := varTypes[a.Name]
+	if targetType == "" {
+		if vd, ok2 := varDecls[a.Name]; ok2 {
+			targetType = vd.Type
+		}
+	}
+	if _, ok := a.Value.(*NullLit); ok && valueAccess(targetType) == ".List" {
+		fmt.Fprintf(w, "&[_]%s{}", strings.TrimPrefix(targetType, "[]"))
+	} else {
+		a.Value.emit(w)
+		if zigTypeFromExpr(a.Value) == "Value" {
+			if suf := valueAccess(targetType); suf != "" {
+				io.WriteString(w, suf)
+			}
 		}
 	}
 	io.WriteString(w, ";\n")
@@ -1781,7 +1795,29 @@ func (a *IndexAssignStmt) emit(w io.Writer, indent int) {
 	}
 	a.Target.emit(w)
 	io.WriteString(w, " = ")
-	a.Value.emit(w)
+	targetType := zigTypeFromExpr(a.Target)
+	valType := zigTypeFromExpr(a.Value)
+	if targetType == "Value" {
+		switch {
+		case strings.HasPrefix(valType, "[]"):
+			fmt.Fprintf(w, "Value{.List = ")
+			a.Value.emit(w)
+			io.WriteString(w, "}")
+		case valType != "Value":
+			fmt.Fprintf(w, "Value{.%s = ", valueTag(valType))
+			a.Value.emit(w)
+			io.WriteString(w, "}")
+		default:
+			a.Value.emit(w)
+		}
+	} else if _, ok := a.Value.(*NullLit); ok && valueAccess(targetType) == ".List" {
+		fmt.Fprintf(w, "&[_]%s{}", strings.TrimPrefix(targetType, "[]"))
+	} else {
+		a.Value.emit(w)
+		if valType == "Value" && targetType != "Value" {
+			io.WriteString(w, valueAccess(targetType))
+		}
+	}
 	io.WriteString(w, ";\n")
 }
 
@@ -1953,17 +1989,55 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	}
 	lt := zigTypeFromExpr(b.Left)
 	rt := zigTypeFromExpr(b.Right)
-	if (b.Op == "==" || b.Op == "!=") && lt == "Value" && rt == "Value" {
-		if _, ok := b.Right.(*NullLit); ok {
-			b.Left.emit(w)
-			fmt.Fprintf(w, " %s .Null", b.Op)
-			return
+	if b.Op == "==" || b.Op == "!=" {
+		if lt == "Value" && rt == "Value" {
+			if _, ok := b.Right.(*NullLit); ok {
+				b.Left.emit(w)
+				fmt.Fprintf(w, " %s .Null", b.Op)
+				return
+			}
+			if _, ok := b.Left.(*NullLit); ok {
+				b.Right.emit(w)
+				fmt.Fprintf(w, " %s .Null", b.Op)
+				return
+			}
 		}
-		if _, ok := b.Left.(*NullLit); ok {
-			b.Right.emit(w)
-			fmt.Fprintf(w, " %s .Null", b.Op)
-			return
+		if strings.HasPrefix(lt, "[]") {
+			if _, ok := b.Right.(*NullLit); ok {
+				b.Left.emit(w)
+				if b.Op == "==" {
+					io.WriteString(w, ".len == 0")
+				} else {
+					io.WriteString(w, ".len != 0")
+				}
+				return
+			}
 		}
+		if strings.HasPrefix(rt, "[]") {
+			if _, ok := b.Left.(*NullLit); ok {
+				b.Right.emit(w)
+				if b.Op == "==" {
+					io.WriteString(w, ".len == 0")
+				} else {
+					io.WriteString(w, ".len != 0")
+				}
+				return
+			}
+		}
+	}
+	if lt != "Value" && rt == "Value" {
+		b.Left.emit(w)
+		fmt.Fprintf(w, " %s ", b.Op)
+		b.Right.emit(w)
+		io.WriteString(w, valueAccess(lt))
+		return
+	}
+	if lt == "Value" && rt != "Value" {
+		b.Left.emit(w)
+		io.WriteString(w, valueAccess(rt))
+		fmt.Fprintf(w, " %s ", b.Op)
+		b.Right.emit(w)
+		return
 	}
 	if b.Op == "==" || b.Op == "!=" {
 		if sl, ok := b.Right.(*StringLit); ok && sl.Value == "" {
@@ -2250,6 +2324,8 @@ func (l *ListLit) emit(w io.Writer) {
 					io.WriteString(w, "Value{.List = ")
 					ll.emit(w)
 					io.WriteString(w, "};")
+				} else if _, ok := e.(*NullLit); ok {
+					io.WriteString(w, "Value{.Null = {}};")
 				} else {
 					t := zigTypeFromExpr(e)
 					fmt.Fprintf(w, "Value{.%s = ", valueTag(t))
@@ -2398,7 +2474,7 @@ func (b *BoolLit) emit(w io.Writer) {
 
 func (n *NullLit) emit(w io.Writer) {
 	if useValue {
-		io.WriteString(w, "Value{.Null = {}}")
+		io.WriteString(w, "(Value{.Null = {}})")
 	} else {
 		io.WriteString(w, "\"\"")
 	}
@@ -2550,7 +2626,14 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 		if list, ok := r.Value.(*ListLit); ok && list.ElemType == "" && strings.HasPrefix(currentReturnType, "[]") {
 			list.ElemType = currentReturnType[2:]
 		}
-		r.Value.emit(w)
+		if _, ok := r.Value.(*NullLit); ok && valueAccess(currentReturnType) == ".List" {
+			fmt.Fprintf(w, "&[_]%s{}", strings.TrimPrefix(currentReturnType, "[]"))
+		} else {
+			r.Value.emit(w)
+			if zigTypeFromExpr(r.Value) == "Value" {
+				io.WriteString(w, valueAccess(currentReturnType))
+			}
+		}
 	}
 	io.WriteString(w, ";\n")
 }

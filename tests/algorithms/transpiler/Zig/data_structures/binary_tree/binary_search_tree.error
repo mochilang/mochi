@@ -1,0 +1,19 @@
+signal: aborted
+thread 12048 panic: access of union field 'List' while field 'Null' is active
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/binary_search_tree.zig:18:91: 0x103783a in insert (binary_search_tree)
+        node[@as(usize, @intCast(1))] = Value{.List = insert(node[@as(usize, @intCast(1))].List, value)};
+                                                                                          ^
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/binary_search_tree.zig:101:22: 0x10349dc in mochi_main (binary_search_tree)
+        root = insert(root, v);
+                     ^
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/binary_search_tree.zig:116:19: 0x1032b16 in main (binary_search_tree)
+        mochi_main();
+                  ^
+/usr/local/zig-linux-x86_64-0.12.0/lib/std/start.zig:501:22: 0x1032729 in main (binary_search_tree)
+            root.main();
+                     ^
+???:?:?: 0x7f318b7fc1c9 in ??? (libc.so.6)
+Unwind information for `libc.so.6:0x7f318b7fc1c9` was not available, trace may be incomplete
+
+???:?:?: 0x7f318b7fc28a in ??? (libc.so.6)
+???:?:?: 0x10323d4 in ??? (???)
