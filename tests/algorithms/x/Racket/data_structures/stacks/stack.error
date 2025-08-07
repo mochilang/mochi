@@ -1,0 +1,8 @@
+run: exit status 1
+peek from empty stack
+  context...:
+   /workspace/mochi/tests/algorithms/x/Racket/data_structures/stacks/stack.rkt:134:2
+   /workspace/mochi/tests/algorithms/x/Racket/data_structures/stacks/stack.rkt:154:2
+   /workspace/mochi/tests/algorithms/x/Racket/data_structures/stacks/stack.rkt:153:0
+   body of "/workspace/mochi/tests/algorithms/x/Racket/data_structures/stacks/stack.rkt"
+#t

@@ -1,0 +1,8 @@
+run: exit status 1
+dequeue from empty queue
+  context...:
+   /workspace/mochi/tests/algorithms/x/Racket/data_structures/queues/linked_queue.rkt:148:2
+   /workspace/mochi/tests/algorithms/x/Racket/data_structures/queues/linked_queue.rkt:147:0
+   body of "/workspace/mochi/tests/algorithms/x/Racket/data_structures/queues/linked_queue.rkt"
+#t
+#t

@@ -233,6 +233,13 @@ type ListMapAssignStmt struct {
 	Expr  Expr
 }
 
+type ListFieldAssignStmt struct {
+	Name  string
+	Index Expr
+	Field string
+	Expr  Expr
+}
+
 func (d *DoubleListAssignStmt) emit(w io.Writer) {
 	name := sanitizeName(d.Name)
 	fmt.Fprintf(w, "(set! %s (list-set %s ", name, name)
@@ -274,6 +281,21 @@ func (l *ListMapAssignStmt) emit(w io.Writer) {
 	io.WriteString(w, ") ")
 	l.Key.emit(w)
 	io.WriteString(w, " ")
+	l.Expr.emit(w)
+	io.WriteString(w, ")))\n")
+}
+
+func (l *ListFieldAssignStmt) emit(w io.Writer) {
+	name := sanitizeName(l.Name)
+	fmt.Fprintf(w, "(set! %s (list-set %s ", name, name)
+	l.Index.emit(w)
+	io.WriteString(w, " (hash-set (list-ref ")
+	io.WriteString(w, name)
+	io.WriteString(w, " ")
+	l.Index.emit(w)
+	io.WriteString(w, ") \"")
+	io.WriteString(w, l.Field)
+	io.WriteString(w, "\" ")
 	l.Expr.emit(w)
 	io.WriteString(w, ")))\n")
 }
@@ -1895,6 +1917,13 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 			return &DoubleListAssignStmt{Name: name, Index1: idx1, Index2: idx2, Expr: e}, nil
 		}
+		if len(ops) == 2 && ops[0].Index != nil && ops[1].Field != nil && ops[0].Index.Colon == nil {
+			idx, err := convertExpr(ops[0].Index.Start, env)
+			if err != nil {
+				return nil, err
+			}
+			return &ListFieldAssignStmt{Name: name, Index: idx, Field: ops[1].Field.Name, Expr: e}, nil
+		}
 		if len(ops) == 1 && ops[0].Field != nil {
 			key := &StringLit{Value: ops[0].Field.Name}
 			return &MapAssignStmt{Name: name, Key: key, Expr: e}, nil
@@ -3075,6 +3104,9 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 				}
 				return &CallExpr{Func: "hash", Args: entries}, nil
 			}
+		}
+		if _, ok := env.GetFunc(c.Func); ok {
+			return &CallExpr{Func: sanitizeName(c.Func), Args: args}, nil
 		}
 	}
 	switch c.Func {

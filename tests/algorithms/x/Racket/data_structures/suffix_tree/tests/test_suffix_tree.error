@@ -1,0 +1,12 @@
+run: exit status 1
+list-ref: index reaches a non-pair
+  index: 0
+  in: "banana"
+  context...:
+   /workspace/mochi/tests/algorithms/x/Racket/data_structures/suffix_tree/tests/test_suffix_tree.rkt:86:14
+   /workspace/mochi/tests/algorithms/x/Racket/data_structures/suffix_tree/tests/test_suffix_tree.rkt:82:21
+   /workspace/mochi/tests/algorithms/x/Racket/data_structures/suffix_tree/tests/test_suffix_tree.rkt:74:2
+   /workspace/mochi/tests/algorithms/x/Racket/data_structures/suffix_tree/tests/test_suffix_tree.rkt:110:161
+   /workspace/mochi/tests/algorithms/x/Racket/data_structures/suffix_tree/tests/test_suffix_tree.rkt:108:2
+   /workspace/mochi/tests/algorithms/x/Racket/data_structures/suffix_tree/tests/test_suffix_tree.rkt:107:0
+   body of "/workspace/mochi/tests/algorithms/x/Racket/data_structures/suffix_tree/tests/test_suffix_tree.rkt"
