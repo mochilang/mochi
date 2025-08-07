@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 318/1077
-Last updated: 2025-08-07 09:38 +0700
+Completed programs: 344/1077
+Last updated: 2025-08-07 10:08 +0700
 
 Checklist:
 
@@ -378,32 +378,32 @@ Checklist:
 | 369 | file_transfer/receive_file | ✓ | 170.0µs | 3.44MB |
 | 370 | file_transfer/send_file | ✓ | 147.0µs | 3.44MB |
 | 371 | file_transfer/tests/test_send_file | ✓ | 194.0µs | 3.52MB |
-| 372 | financial/equated_monthly_installments |   |  |  |
-| 373 | financial/exponential_moving_average |   |  |  |
-| 374 | financial/interest |   |  |  |
-| 375 | financial/present_value |   |  |  |
-| 376 | financial/price_plus_tax |   |  |  |
-| 377 | financial/simple_moving_average |   |  |  |
-| 378 | financial/straight_line_depreciation |   |  |  |
-| 379 | financial/time_and_half_pay |   |  |  |
-| 380 | fractals/julia_sets |   |  |  |
-| 381 | fractals/koch_snowflake |   |  |  |
-| 382 | fractals/mandelbrot |   |  |  |
-| 383 | fractals/sierpinski_triangle |   |  |  |
-| 384 | fractals/vicsek |   |  |  |
-| 385 | fuzzy_logic/fuzzy_operations |   |  |  |
-| 386 | genetic_algorithm/basic_string |   |  |  |
-| 387 | geodesy/haversine_distance |   |  |  |
-| 388 | geodesy/lamberts_ellipsoidal_distance |   |  |  |
-| 389 | geometry/geometry |   |  |  |
-| 390 | graphics/bezier_curve |   |  |  |
-| 391 | graphics/butterfly_pattern |   |  |  |
-| 392 | graphics/digital_differential_analyzer_line |   |  |  |
-| 393 | graphics/vector3_for_2d_rendering |   |  |  |
-| 394 | graphs/a_star |   |  |  |
-| 395 | graphs/ant_colony_optimization_algorithms |   |  |  |
-| 396 | graphs/articulation_points |   |  |  |
-| 397 | graphs/basic_graphs |   |  |  |
+| 372 | financial/equated_monthly_installments | ✓ | 433.0µs | 3.77MB |
+| 373 | financial/exponential_moving_average | ✓ | 524.0µs | 3.84MB |
+| 374 | financial/interest | ✓ | 504.0µs | 3.71MB |
+| 375 | financial/present_value | ✓ | 498.0µs | 3.67MB |
+| 376 | financial/price_plus_tax | ✓ | 724.0µs | 3.67MB |
+| 377 | financial/simple_moving_average | ✓ | 497.0µs | 3.75MB |
+| 378 | financial/straight_line_depreciation | ✓ | 778.0µs | 3.74MB |
+| 379 | financial/time_and_half_pay | ✓ | 447.0µs | 3.73MB |
+| 380 | fractals/julia_sets | ✓ | 826.0µs | 3.71MB |
+| 381 | fractals/koch_snowflake | ✓ | 448.0µs | 3.81MB |
+| 382 | fractals/mandelbrot | ✓ | 251.0µs | 3.64MB |
+| 383 | fractals/sierpinski_triangle | ✓ | 516.0µs | 3.68MB |
+| 384 | fractals/vicsek | ✓ | 522.0µs | 3.59MB |
+| 385 | fuzzy_logic/fuzzy_operations | ✓ | 769.0µs | 3.78MB |
+| 386 | genetic_algorithm/basic_string | ✓ | 341.0µs | 3.73MB |
+| 387 | geodesy/haversine_distance | ✓ | 455.0µs | 3.64MB |
+| 388 | geodesy/lamberts_ellipsoidal_distance | ✓ | 543.0µs | 3.73MB |
+| 389 | geometry/geometry | ✓ | 769.0µs | 3.72MB |
+| 390 | graphics/bezier_curve | ✓ | 545.0µs | 3.79MB |
+| 391 | graphics/butterfly_pattern | ✓ | 380.0µs | 3.48MB |
+| 392 | graphics/digital_differential_analyzer_line | ✓ | 246.0µs | 3.70MB |
+| 393 | graphics/vector3_for_2d_rendering | ✓ | 598.0µs | 3.66MB |
+| 394 | graphs/a_star | ✓ | 591.0µs | 3.59MB |
+| 395 | graphs/ant_colony_optimization_algorithms | ✓ | 18.0ms | 3.66MB |
+| 396 | graphs/articulation_points | ✓ | 347.0µs | 3.64MB |
+| 397 | graphs/basic_graphs | ✓ |  |  |
 | 398 | graphs/bellman_ford |   |  |  |
 | 399 | graphs/bi_directional_dijkstra |   |  |  |
 | 400 | graphs/bidirectional_a_star |   |  |  |
