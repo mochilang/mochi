@@ -1291,6 +1291,12 @@ func (c *CastExpr) emit(w io.Writer) {
 				fmt.Fprint(w, " as? Int ?? 0)")
 				return
 			}
+			if c.FromString {
+				fmt.Fprint(w, "Int(")
+				c.Expr.emit(w)
+				fmt.Fprint(w, ")!")
+				return
+			}
 		}
 		if ce, ok := c.Expr.(*CallExpr); ok && t == "String" && ce.Func == "str" {
 			c.Expr.emit(w)

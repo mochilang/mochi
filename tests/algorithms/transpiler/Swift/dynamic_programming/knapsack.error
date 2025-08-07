@@ -1,0 +1,8 @@
+error[T008]: type mismatch: expected KnapsackResult, got {string: any}
+  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/dynamic_programming/knapsack.mochi:113:10
+
+113 |   return { value: optimal_val, subset: subset }
+    |          ^
+
+help:
+  Change the value to match the expected type.
