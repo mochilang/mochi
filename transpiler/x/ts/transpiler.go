@@ -8,6 +8,7 @@ import (
 	"io"
 	"math"
 	"os"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -1876,7 +1877,10 @@ func Emit(p *Program) []byte {
 	for _, s := range p.Stmts {
 		emitStmt(iw, s, 0)
 	}
-	return b.Bytes()
+	code := b.Bytes()
+	re := regexp.MustCompile(`= ([0-9]+);\n\s+e([0-9]+);`)
+	code = re.ReplaceAll(code, []byte(`= ${1}e${2};`))
+	return code
 }
 
 func emitStmt(w *indentWriter, s Stmt, level int) {

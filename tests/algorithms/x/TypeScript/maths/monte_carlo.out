@@ -1,0 +1,15 @@
+The estimated value of pi is 3.068
+The numpy value of pi is 3.141592653589793
+The total error is 0.07359265358979306
+******************
+Estimating area under y=x where x varies from 0
+Estimated value is 0.4790898428717628
+Expected value is 0.5
+Total error is 0.020910157128237183
+******************
+******************
+Estimating pi using area_under_curve_estimator
+Estimated value is 3.1289012401497818
+Expected value is 3.141592653589793
+Total error is 0.012691413440011345
+******************
