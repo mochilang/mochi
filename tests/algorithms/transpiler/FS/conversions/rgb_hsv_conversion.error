@@ -1,0 +1,8 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/algorithms/transpiler/FS/conversions/rgb_hsv_conversion.fs(176,34): error FS0001: This expression was expected to have type
+    float    
+but here has type
+    int    

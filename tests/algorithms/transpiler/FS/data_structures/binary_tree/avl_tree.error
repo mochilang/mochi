@@ -1,0 +1,321 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(58,47): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(58,53): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(77,59): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(77,65): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(77,109): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(77,115): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(85,30): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(85,36): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(86,36): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(86,42): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(99,31): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(99,37): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(100,37): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(100,43): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(113,51): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(113,57): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(123,53): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(123,59): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(137,26): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(137,32): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(138,53): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(138,59): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(139,35): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(139,41): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(139,87): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(139,93): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(140,34): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(140,52): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(145,54): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(145,60): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(146,35): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(146,41): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(146,88): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(146,94): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(147,34): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(147,52): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(162,27): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(162,57): error FS0001: This expression was expected to have type
+    IDictionary<string,int>    
+but here has type
+    int    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(163,25): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(163,31): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(164,23): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(164,29): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(177,26): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(177,32): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(178,50): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(178,56): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(180,30): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(180,36): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(181,55): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(181,61): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(183,33): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(183,61): error FS0001: This expression was expected to have type
+    IDictionary<string,int>    
+but here has type
+    int    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(183,82): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(183,111): error FS0001: This expression was expected to have type
+    IDictionary<string,int>    
+but here has type
+    int    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(184,57): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(184,63): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(186,59): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(186,65): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(188,36): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(188,64): error FS0001: This expression was expected to have type
+    IDictionary<string,int>    
+but here has type
+    int    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(189,35): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(189,41): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(191,35): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(191,41): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(195,40): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(195,46): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(196,40): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(196,46): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(198,34): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(198,52): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(198,121): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(198,139): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(204,38): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(204,56): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(204,123): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(204,141): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(221,42): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(221,48): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(222,43): error FS0001: Type mismatch. Expecting a
+    int array    
+but given a
+    IDictionary<string,int> array    
+The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(222,49): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/avl_tree.fs(223,52): error FS0039: The field, constructor or member 'Item' is not defined
