@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-07 10:31 GMT+7
+Last updated: 2025-08-07 15:16 GMT+7
 
-## Algorithms Golden Test Checklist (93/1077)
+## Algorithms Golden Test Checklist (94/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -198,7 +198,7 @@ Last updated: 2025-08-07 10:31 GMT+7
 | 189 | data_structures/binary_tree/maximum_sum_bst |   |  |  |
 | 190 | data_structures/binary_tree/merge_two_binary_trees |   |  |  |
 | 191 | data_structures/binary_tree/mirror_binary_tree |   |  |  |
-| 192 | data_structures/binary_tree/non_recursive_segment_tree |   |  |  |
+| 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 0ns | 576B |
 | 193 | data_structures/binary_tree/number_of_possible_binary_trees |   |  |  |
 | 194 | data_structures/binary_tree/red_black_tree |   |  |  |
 | 195 | data_structures/binary_tree/segment_tree |   |  |  |
