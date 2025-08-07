@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-06 23:41 +0700
+Last updated: 2025-08-07 00:08 +0700
 
-## Program Checklist (63/1077)
+## Program Checklist (105/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.114ms | 512.0 KB |
@@ -109,7 +109,7 @@ Last updated: 2025-08-06 23:41 +0700
 | 100 | ciphers/rsa_factorization |   |  |  |
 | 101 | ciphers/rsa_key_generator | ✓ | 563µs | 256.0 KB |
 | 102 | ciphers/running_key_cipher | ✓ | 1.993ms | 640.0 KB |
-| 103 | ciphers/shuffled_shift_cipher |   | 9.688ms | 1.5 MB |
+| 103 | ciphers/shuffled_shift_cipher | ✓ | 9.688ms | 1.5 MB |
 | 104 | ciphers/simple_keyword_cypher | ✓ | 2.183ms | 512.0 KB |
 | 105 | ciphers/simple_substitution_cipher | ✓ | 1.205ms | 384.0 KB |
 | 106 | ciphers/transposition_cipher | ✓ | 821µs | 384.0 KB |
@@ -117,56 +117,56 @@ Last updated: 2025-08-06 23:41 +0700
 | 108 | ciphers/trifid_cipher | ✓ | 8.972ms | 2.1 MB |
 | 109 | ciphers/vernam_cipher | ✓ | 787µs | 256.0 KB |
 | 110 | ciphers/vigenere_cipher | ✓ | 1.953ms | 640.0 KB |
-| 111 | ciphers/xor_cipher |   |  |  |
-| 112 | computer_vision/cnn_classification |   |  |  |
-| 113 | computer_vision/flip_augmentation |   |  |  |
-| 114 | computer_vision/haralick_descriptors |   |  |  |
-| 115 | computer_vision/harris_corner |   |  |  |
-| 116 | computer_vision/horn_schunck |   |  |  |
-| 117 | computer_vision/intensity_based_segmentation |   |  |  |
-| 118 | computer_vision/mean_threshold |   |  |  |
-| 119 | computer_vision/mosaic_augmentation |   |  |  |
-| 120 | computer_vision/pooling_functions |   |  |  |
-| 121 | conversions/astronomical_length_scale_conversion |   |  |  |
-| 122 | conversions/binary_to_decimal |   |  |  |
-| 123 | conversions/binary_to_hexadecimal |   |  |  |
-| 124 | conversions/binary_to_octal |   |  |  |
+| 111 | ciphers/xor_cipher | ✓ | 1.863ms | 640.0 KB |
+| 112 | computer_vision/cnn_classification | ✓ | 1.509ms | 520.0 KB |
+| 113 | computer_vision/flip_augmentation | ✓ | 3.587ms | 896.0 KB |
+| 114 | computer_vision/haralick_descriptors | ✓ | 963µs | 384.0 KB |
+| 115 | computer_vision/harris_corner | ✓ | 3.871ms | 1.0 MB |
+| 116 | computer_vision/horn_schunck | ✓ | 26.536ms | 6.1 MB |
+| 117 | computer_vision/intensity_based_segmentation | ✓ | 1.577ms | 384.0 KB |
+| 118 | computer_vision/mean_threshold | ✓ | 465µs | 256.0 KB |
+| 119 | computer_vision/mosaic_augmentation | ✓ | 183.513ms | 40.3 MB |
+| 120 | computer_vision/pooling_functions | ✓ | 1.947ms | 768.0 KB |
+| 121 | conversions/astronomical_length_scale_conversion | ✓ | 1.198ms | 384.0 KB |
+| 122 | conversions/binary_to_decimal | ✓ | 611µs | 384.0 KB |
+| 123 | conversions/binary_to_hexadecimal | ✓ | 1.741ms | 640.0 KB |
+| 124 | conversions/binary_to_octal | ✓ | 827µs | 384.0 KB |
 | 125 | conversions/convert_number_to_words |   |  |  |
-| 126 | conversions/decimal_to_any |   |  |  |
-| 127 | conversions/decimal_to_binary |   |  |  |
-| 128 | conversions/decimal_to_hexadecimal |   |  |  |
-| 129 | conversions/decimal_to_octal |   |  |  |
-| 130 | conversions/energy_conversions |   |  |  |
-| 131 | conversions/excel_title_to_column |   |  |  |
+| 126 | conversions/decimal_to_any | ✓ | 697µs | 384.0 KB |
+| 127 | conversions/decimal_to_binary | ✓ | 1.54ms | 512.0 KB |
+| 128 | conversions/decimal_to_hexadecimal | ✓ | 888µs | 256.0 KB |
+| 129 | conversions/decimal_to_octal | ✓ | 622µs | 256.0 KB |
+| 130 | conversions/energy_conversions | ✓ | 840µs | 384.0 KB |
+| 131 | conversions/excel_title_to_column | ✓ | 459µs | 384.0 KB |
 | 132 | conversions/hex_to_bin |   |  |  |
-| 133 | conversions/hexadecimal_to_decimal |   |  |  |
+| 133 | conversions/hexadecimal_to_decimal | ✓ | 659µs | 128.0 KB |
 | 134 | conversions/ipv4_conversion |   |  |  |
-| 135 | conversions/length_conversion |   |  |  |
-| 136 | conversions/molecular_chemistry |   |  |  |
-| 137 | conversions/octal_to_binary |   |  |  |
-| 138 | conversions/octal_to_decimal |   |  |  |
-| 139 | conversions/octal_to_hexadecimal |   |  |  |
-| 140 | conversions/prefix_conversions |   |  |  |
+| 135 | conversions/length_conversion | ✓ | 1.026ms | 384.0 KB |
+| 136 | conversions/molecular_chemistry | ✓ | 595µs | 384.0 KB |
+| 137 | conversions/octal_to_binary | ✓ | 823µs | 256.0 KB |
+| 138 | conversions/octal_to_decimal | ✓ | 963µs | 384.0 KB |
+| 139 | conversions/octal_to_hexadecimal | ✓ | 690µs | 256.0 KB |
+| 140 | conversions/prefix_conversions | ✓ | 1.078ms | 384.0 KB |
 | 141 | conversions/prefix_conversions_string |   |  |  |
 | 142 | conversions/pressure_conversions |   |  |  |
-| 143 | conversions/rectangular_to_polar |   |  |  |
-| 144 | conversions/rgb_cmyk_conversion |   |  |  |
+| 143 | conversions/rectangular_to_polar | ✓ | 1.076ms | 384.0 KB |
+| 144 | conversions/rgb_cmyk_conversion | ✓ | 1.313ms | 384.0 KB |
 | 145 | conversions/rgb_hsv_conversion |   |  |  |
-| 146 | conversions/roman_numerals |   |  |  |
-| 147 | conversions/speed_conversions |   |  |  |
-| 148 | conversions/temperature_conversions |   |  |  |
+| 146 | conversions/roman_numerals | ✓ | 374µs | 256.0 KB |
+| 147 | conversions/speed_conversions | ✓ | 749µs | 384.0 KB |
+| 148 | conversions/temperature_conversions | ✓ | 661µs | 256.0 KB |
 | 149 | conversions/time_conversions |   |  |  |
-| 150 | conversions/volume_conversions |   |  |  |
-| 151 | conversions/weight_conversion |   |  |  |
-| 152 | data_compression/burrows_wheeler |   |  |  |
+| 150 | conversions/volume_conversions | ✓ | 645µs | 384.0 KB |
+| 151 | conversions/weight_conversion | ✓ | 859µs | 384.0 KB |
+| 152 | data_compression/burrows_wheeler | ✓ | 2.303ms | 640.0 KB |
 | 153 | data_compression/huffman |   |  |  |
-| 154 | data_compression/lempel_ziv |   |  |  |
-| 155 | data_compression/lempel_ziv_decompress |   |  |  |
+| 154 | data_compression/lempel_ziv | ✓ | 1.771ms | 640.0 KB |
+| 155 | data_compression/lempel_ziv_decompress | ✓ | 1.397ms | 512.0 KB |
 | 156 | data_compression/lz77 |   |  |  |
-| 157 | data_compression/peak_signal_to_noise_ratio |   |  |  |
-| 158 | data_compression/run_length_encoding |   |  |  |
-| 159 | data_structures/arrays/equilibrium_index_in_array |   |  |  |
-| 160 | data_structures/arrays/find_triplets_with_0_sum |   |  |  |
+| 157 | data_compression/peak_signal_to_noise_ratio | ✓ | 245µs |  |
+| 158 | data_compression/run_length_encoding | ✓ | 2.517ms | 640.0 KB |
+| 159 | data_structures/arrays/equilibrium_index_in_array | ✓ | 736µs | 384.0 KB |
+| 160 | data_structures/arrays/find_triplets_with_0_sum | ✓ | 3.449ms | 956.0 KB |
 | 161 | data_structures/arrays/index_2d_array_in_1d |   |  |  |
 | 162 | data_structures/arrays/kth_largest_element |   |  |  |
 | 163 | data_structures/arrays/median_two_array |   |  |  |

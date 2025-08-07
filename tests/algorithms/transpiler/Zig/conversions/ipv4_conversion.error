@@ -1,0 +1,2 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/conversions/ipv4_conversion.zig:39:28: error: invalid operands to binary expression: 'Int' and 'ErrorUnion'

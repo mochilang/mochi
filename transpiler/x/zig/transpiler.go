@@ -968,6 +968,8 @@ func zigTypeFromExpr(e Expr) string {
 			return "i64"
 		case "int":
 			return "i64"
+		case "_lower", "_upper":
+			return "[]const u8"
 		case "sum":
 			if len(ce.Args) > 0 {
 				t := zigTypeFromExpr(ce.Args[0])
@@ -2130,14 +2132,28 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		return
 	}
 	if op == "/" {
-		lt := zigTypeFromExpr(b.Left)
-		rt := zigTypeFromExpr(b.Right)
 		if isIntType(lt) && isIntType(rt) {
 			io.WriteString(w, "@divTrunc(")
 			b.Left.emit(w)
 			io.WriteString(w, ", ")
 			b.Right.emit(w)
 			io.WriteString(w, ")")
+			return
+		}
+	}
+	if op == "+" || op == "-" || op == "*" || op == "/" {
+		if lt == "f64" && isIntType(rt) {
+			b.Left.emit(w)
+			io.WriteString(w, " "+op+" @as(f64, @floatFromInt(")
+			b.Right.emit(w)
+			io.WriteString(w, "))")
+			return
+		}
+		if isIntType(lt) && rt == "f64" {
+			io.WriteString(w, "@as(f64, @floatFromInt(")
+			b.Left.emit(w)
+			io.WriteString(w, ") "+op+" ")
+			b.Right.emit(w)
 			return
 		}
 	}
@@ -2564,9 +2580,21 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 	case "int":
 		if len(c.Args) == 1 {
-			io.WriteString(w, "std.fmt.parseInt(i64, ")
-			c.Args[0].emit(w)
-			io.WriteString(w, ", 10) catch 0")
+			arg := c.Args[0]
+			switch zigTypeFromExpr(arg) {
+			case "[]const u8":
+				io.WriteString(w, "std.fmt.parseInt(i64, ")
+				arg.emit(w)
+				io.WriteString(w, ", 10) catch 0")
+			case "f64":
+				io.WriteString(w, "@as(i64, @intFromFloat(")
+				arg.emit(w)
+				io.WriteString(w, "))")
+			default:
+				io.WriteString(w, "@as(i64, ")
+				arg.emit(w)
+				io.WriteString(w, ")")
+			}
 		} else {
 			io.WriteString(w, "0")
 		}
@@ -4463,7 +4491,16 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 				return nil, err
 			}
 		} else {
-			expr = &IntLit{Value: 0}
+			if s.Var.Type != nil {
+				t := toZigType(s.Var.Type)
+				if strings.HasPrefix(t, "[]") || strings.HasPrefix(t, "std.StringHashMap(") || strings.HasPrefix(t, "std.AutoHashMap(") {
+					expr = nil
+				} else {
+					expr = &IntLit{Value: 0}
+				}
+			} else {
+				expr = &IntLit{Value: 0}
+			}
 		}
 		mutable := funDepth <= 1
 		if funDepth > 0 && len(localMutablesStack) > 0 {
