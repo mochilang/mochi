@@ -4391,7 +4391,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			return &FloatCastExpr{Expr: args[0]}, nil
 		}
 		if name == "keys" && len(args) == 1 {
-			return &MethodCallExpr{Receiver: args[0], Name: "keys"}, nil
+			useKeys = true
+			funReturns["_keys"] = "Vec<String>"
+			return &CallExpr{Func: "_keys", Args: []Expr{args[0]}}, nil
 		}
 		if name == "abs" && len(args) == 1 {
 			if _, ok := funReturns["abs"]; ok {
