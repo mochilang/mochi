@@ -1353,6 +1353,29 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 		iex.NoSuffix = false
 		defer func() { iex.NoBang = oldBang; iex.NoSuffix = oldSuf }()
 	}
+	if (b.Op == "==" || b.Op == "!=") && strings.HasPrefix(lt, "List<") && strings.HasPrefix(rt, "List<") {
+		usesJSON = true
+		if _, err := io.WriteString(w, "jsonEncode("); err != nil {
+			return err
+		}
+		if err := b.Left.emit(w); err != nil {
+			return err
+		}
+		if b.Op == "==" {
+			if _, err := io.WriteString(w, ") == jsonEncode("); err != nil {
+				return err
+			}
+		} else {
+			if _, err := io.WriteString(w, ") != jsonEncode("); err != nil {
+				return err
+			}
+		}
+		if err := b.Right.emit(w); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, ")")
+		return err
+	}
 	if lt == "BigRat" || rt == "BigRat" {
 		useBigRat = true
 		var fn string
