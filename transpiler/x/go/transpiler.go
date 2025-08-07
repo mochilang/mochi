@@ -224,6 +224,37 @@ func isBigIntExpr(e Expr) bool {
 	return false
 }
 
+// evalIntExpr attempts to evaluate an expression to a Go int. It supports
+// simple integer literals and binary operations with int results.
+func evalIntExpr(e Expr) (int, bool) {
+	switch ex := e.(type) {
+	case *IntLit:
+		return ex.Value, true
+	case *BinaryExpr:
+		if l, ok := evalIntExpr(ex.Left); ok {
+			if r, ok2 := evalIntExpr(ex.Right); ok2 {
+				switch ex.Op {
+				case "+":
+					return l + r, true
+				case "-":
+					return l - r, true
+				case "*":
+					return l * r, true
+				case "/":
+					if r != 0 {
+						return l / r, true
+					}
+				case "%":
+					if r != 0 {
+						return l % r, true
+					}
+				}
+			}
+		}
+	}
+	return 0, false
+}
+
 type Stmt interface{ emit(io.Writer) }
 
 type Expr interface{ emit(io.Writer) }
@@ -2042,6 +2073,18 @@ func (a *AssertExpr) emit(w io.Writer) {
 		}
 	}
 	if a.Type == "int" {
+		if ix, ok := a.Expr.(*IndexExpr); ok {
+			if vr, ok2 := ix.X.(*VarRef); ok2 && topEnv != nil {
+				if vt, err := topEnv.GetVar(vr.Name); err == nil {
+					if lt, ok3 := vt.(types.ListType); ok3 {
+						if _, ok4 := lt.Elem.(types.IntType); ok4 {
+							a.Expr.emit(w)
+							return
+						}
+					}
+				}
+			}
+		}
 		if ae, ok := a.Expr.(*AssertExpr); ok && ae.Type == "int" {
 			ae.emit(w)
 			return
@@ -2621,7 +2664,12 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 			}
 			if typ == "*big.Int" {
-				e = ensureBigIntExpr(e, valType)
+				if v, ok := evalIntExpr(e); ok {
+					typ = "int"
+					e = &IntLit{Value: v}
+				} else {
+					e = ensureBigIntExpr(e, valType)
+				}
 			}
 			if declaredType != nil {
 				if env == topEnv {
@@ -3458,6 +3506,11 @@ func compileMatchExpr(me *parser.MatchExpr, env *types.Env) (Expr, error) {
 					body, err := compileExpr(c.Result, caseEnv, "")
 					if err != nil {
 						return nil, err
+					}
+					for j, b := range bindings {
+						if b != "" && !exprUses(b, body) {
+							bindings[j] = "_"
+						}
 					}
 					cases[i] = UnionMatchCase{Variant: variant, Fields: fields, Bindings: bindings, Body: body}
 				}

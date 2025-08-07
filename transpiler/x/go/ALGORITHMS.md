@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 164/1077
-Last updated: 2025-08-06 23:10 +0700
+Completed programs: 166/1077
+Last updated: 2025-08-07 00:24 +0700
 
 Checklist:
 
@@ -181,8 +181,8 @@ Checklist:
 | 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 908.0µs | 3.83KB |
 | 173 | data_structures/binary_tree/binary_search_tree |   |  |  |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive |   |  |  |
-| 175 | data_structures/binary_tree/binary_tree_mirror |   |  |  |
-| 176 | data_structures/binary_tree/binary_tree_node_sum |   |  |  |
+| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 924.0µs | 2.89KB |
+| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 211.0µs | 1.05KB |
 | 177 | data_structures/binary_tree/binary_tree_path_sum |   |  |  |
 | 178 | data_structures/binary_tree/diff_views_of_binary_tree |   |  |  |
 | 179 | data_structures/binary_tree/distribute_coins |   |  |  |
