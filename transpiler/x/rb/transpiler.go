@@ -79,6 +79,16 @@ def _add(a, b)
 end
 `
 
+const helperEq = `
+def _eq(a, b)
+  if a.is_a?(Float) || b.is_a?(Float)
+    (a.to_f - b.to_f).abs < 1e-6
+  else
+    a == b
+  end
+end
+`
+
 const helperStr = `
 def _str(x)
   if x.is_a?(Float) && x == x.to_i
@@ -2115,13 +2125,26 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(e *emitter) {
-	if b.Op == "+" {
+	switch b.Op {
+	case "+":
 		io.WriteString(e.w, "_add(")
 		b.Left.emit(e)
 		io.WriteString(e.w, ", ")
 		b.Right.emit(e)
 		io.WriteString(e.w, ")")
-	} else {
+	case "==":
+		io.WriteString(e.w, "_eq(")
+		b.Left.emit(e)
+		io.WriteString(e.w, ", ")
+		b.Right.emit(e)
+		io.WriteString(e.w, ")")
+	case "!=":
+		io.WriteString(e.w, "!_eq(")
+		b.Left.emit(e)
+		io.WriteString(e.w, ", ")
+		b.Right.emit(e)
+		io.WriteString(e.w, ")")
+	default:
 		b.Left.emit(e)
 		io.WriteString(e.w, " "+b.Op+" ")
 		b.Right.emit(e)
@@ -2947,6 +2970,9 @@ func Emit(w io.Writer, p *Program) error {
 	if _, err := io.WriteString(w, helperAdd+"\n"); err != nil {
 		return err
 	}
+	if _, err := io.WriteString(w, helperEq+"\n"); err != nil {
+		return err
+	}
 	if _, err := io.WriteString(w, helperPadStart+"\n"); err != nil {
 		return err
 	}
@@ -3307,6 +3333,11 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		return &ReturnStmt{Value: v}, nil
 	case st.Fun != nil:
+		if st.Fun.Name == "sqrt" && len(st.Fun.Params) == 1 {
+			p := safeName(st.Fun.Params[0].Name)
+			body := []Stmt{&ReturnStmt{Value: &CallExpr{Func: "Math.sqrt", Args: []Expr{&Ident{Name: p}}}}}
+			return &FuncStmt{Name: st.Fun.Name, Params: []string{p}, Body: body}, nil
+		}
 		funcDepth++
 		savedEnv := currentEnv
 		if savedEnv != nil {
@@ -3395,6 +3426,14 @@ func convertFunc(fn *parser.FunStmt) (*FuncStmt, error) {
 	pushScope()
 	for _, p := range fn.Params {
 		addVar(p.Name)
+	}
+	if fn.Name == "sqrt" && len(fn.Params) == 1 {
+		popScope()
+		currentEnv = savedEnv
+		funcDepth--
+		p := safeName(fn.Params[0].Name)
+		body := []Stmt{&ReturnStmt{Value: &CallExpr{Func: "Math.sqrt", Args: []Expr{&Ident{Name: p}}}}}
+		return &FuncStmt{Name: fn.Name, Params: []string{p}, Body: body}, nil
 	}
 	stmts := mergeSciNotation(fn.Body)
 	body := make([]Stmt, 0, len(stmts))
