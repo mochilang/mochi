@@ -1,0 +1,13 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/rb/maths/primelib.rb:64:in `panic': arguments must be prime and p1 < p2 (RuntimeError)
+	from /workspace/mochi/tests/algorithms/transpiler/rb/maths/primelib.rb:238:in `get_primes_between'
+	from /workspace/mochi/tests/algorithms/transpiler/rb/maths/primelib.rb:334:in `<main>'
+true
+[2 3 5 7 11 13 17 19]
+[2 3 5 7 11 13 17 19]
+[7 41]
+41
+7
+40
+[5 23]
+23
