@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-07 10:25 GMT+7
+Last updated: 2025-08-07 10:45 GMT+7
 
-## Algorithms Golden Test Checklist (640/1077)
+## Algorithms Golden Test Checklist (727/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -772,111 +772,111 @@ Last updated: 2025-08-07 10:25 GMT+7
 | 763 | physics/basic_orbital_capture | error |  |  |
 | 764 | physics/casimir_effect | ✓ | 29.0ms | 10.77KB |
 | 765 | physics/center_of_mass | ✓ | 64.0ms | 94.73KB |
-| 766 | physics/centripetal_force |   |  |  |
-| 767 | physics/coulombs_law |   |  |  |
-| 768 | physics/doppler_frequency |   |  |  |
-| 769 | physics/escape_velocity |   |  |  |
-| 770 | physics/grahams_law |   |  |  |
-| 771 | physics/horizontal_projectile_motion |   |  |  |
-| 772 | physics/hubble_parameter |   |  |  |
-| 773 | physics/ideal_gas_law |   |  |  |
-| 774 | physics/in_static_equilibrium |   |  |  |
-| 775 | physics/kinetic_energy |   |  |  |
-| 776 | physics/lens_formulae |   |  |  |
-| 777 | physics/lorentz_transformation_four_vector |   |  |  |
-| 778 | physics/malus_law |   |  |  |
-| 779 | physics/mass_energy_equivalence |   |  |  |
-| 780 | physics/mirror_formulae |   |  |  |
-| 781 | physics/n_body_simulation |   |  |  |
-| 782 | physics/newtons_law_of_gravitation |   |  |  |
-| 783 | physics/newtons_second_law_of_motion |   |  |  |
-| 784 | physics/orbital_transfer_work |   |  |  |
-| 785 | physics/period_of_pendulum |   |  |  |
-| 786 | physics/photoelectric_effect |   |  |  |
-| 787 | physics/potential_energy |   |  |  |
-| 788 | physics/rainfall_intensity |   |  |  |
-| 789 | physics/reynolds_number |   |  |  |
-| 790 | physics/rms_speed_of_molecule |   |  |  |
-| 791 | physics/shear_stress |   |  |  |
-| 792 | physics/speed_of_sound |   |  |  |
-| 793 | physics/speeds_of_gas_molecules |   |  |  |
-| 794 | physics/terminal_velocity |   |  |  |
-| 795 | project_euler/problem_001/sol1 |   |  |  |
-| 796 | project_euler/problem_001/sol2 |   |  |  |
-| 797 | project_euler/problem_001/sol3 |   |  |  |
-| 798 | project_euler/problem_001/sol4 |   |  |  |
-| 799 | project_euler/problem_001/sol5 |   |  |  |
-| 800 | project_euler/problem_001/sol6 |   |  |  |
-| 801 | project_euler/problem_001/sol7 |   |  |  |
-| 802 | project_euler/problem_002/sol1 |   |  |  |
-| 803 | project_euler/problem_002/sol2 |   |  |  |
-| 804 | project_euler/problem_002/sol3 |   |  |  |
-| 805 | project_euler/problem_002/sol4 |   |  |  |
-| 806 | project_euler/problem_002/sol5 |   |  |  |
-| 807 | project_euler/problem_003/sol1 |   |  |  |
-| 808 | project_euler/problem_003/sol2 |   |  |  |
-| 809 | project_euler/problem_003/sol3 |   |  |  |
-| 810 | project_euler/problem_004/sol1 |   |  |  |
-| 811 | project_euler/problem_004/sol2 |   |  |  |
-| 812 | project_euler/problem_005/sol1 |   |  |  |
-| 813 | project_euler/problem_005/sol2 |   |  |  |
-| 814 | project_euler/problem_006/sol1 |   |  |  |
-| 815 | project_euler/problem_006/sol2 |   |  |  |
-| 816 | project_euler/problem_006/sol3 |   |  |  |
-| 817 | project_euler/problem_006/sol4 |   |  |  |
-| 818 | project_euler/problem_007/sol1 |   |  |  |
-| 819 | project_euler/problem_007/sol2 |   |  |  |
-| 820 | project_euler/problem_007/sol3 |   |  |  |
-| 821 | project_euler/problem_008/sol1 |   |  |  |
-| 822 | project_euler/problem_008/sol2 |   |  |  |
-| 823 | project_euler/problem_008/sol3 |   |  |  |
-| 824 | project_euler/problem_009/sol1 |   |  |  |
-| 825 | project_euler/problem_009/sol2 |   |  |  |
-| 826 | project_euler/problem_009/sol3 |   |  |  |
-| 827 | project_euler/problem_010/sol1 |   |  |  |
-| 828 | project_euler/problem_010/sol2 |   |  |  |
-| 829 | project_euler/problem_010/sol3 |   |  |  |
-| 830 | project_euler/problem_011/sol1 |   |  |  |
-| 831 | project_euler/problem_011/sol2 |   |  |  |
-| 832 | project_euler/problem_012/sol1 |   |  |  |
-| 833 | project_euler/problem_012/sol2 |   |  |  |
-| 834 | project_euler/problem_013/sol1 |   |  |  |
-| 835 | project_euler/problem_014/sol1 |   |  |  |
-| 836 | project_euler/problem_014/sol2 |   |  |  |
-| 837 | project_euler/problem_015/sol1 |   |  |  |
-| 838 | project_euler/problem_016/sol1 |   |  |  |
-| 839 | project_euler/problem_016/sol2 |   |  |  |
-| 840 | project_euler/problem_017/sol1 |   |  |  |
-| 841 | project_euler/problem_018/solution |   |  |  |
-| 842 | project_euler/problem_019/sol1 |   |  |  |
-| 843 | project_euler/problem_020/sol1 |   |  |  |
-| 844 | project_euler/problem_020/sol2 |   |  |  |
-| 845 | project_euler/problem_020/sol3 |   |  |  |
-| 846 | project_euler/problem_020/sol4 |   |  |  |
-| 847 | project_euler/problem_021/sol1 |   |  |  |
-| 848 | project_euler/problem_022/sol1 |   |  |  |
-| 849 | project_euler/problem_022/sol2 |   |  |  |
-| 850 | project_euler/problem_023/sol1 |   |  |  |
-| 851 | project_euler/problem_024/sol1 |   |  |  |
-| 852 | project_euler/problem_025/sol1 |   |  |  |
-| 853 | project_euler/problem_025/sol2 |   |  |  |
-| 854 | project_euler/problem_025/sol3 |   |  |  |
-| 855 | project_euler/problem_026/sol1 |   |  |  |
-| 856 | project_euler/problem_027/sol1 |   |  |  |
-| 857 | project_euler/problem_028/sol1 |   |  |  |
-| 858 | project_euler/problem_029/sol1 |   |  |  |
-| 859 | project_euler/problem_030/sol1 |   |  |  |
-| 860 | project_euler/problem_031/sol1 |   |  |  |
-| 861 | project_euler/problem_031/sol2 |   |  |  |
-| 862 | project_euler/problem_032/sol32 |   |  |  |
-| 863 | project_euler/problem_033/sol1 |   |  |  |
-| 864 | project_euler/problem_034/sol1 |   |  |  |
-| 865 | project_euler/problem_035/sol1 |   |  |  |
-| 866 | project_euler/problem_036/sol1 |   |  |  |
-| 867 | project_euler/problem_037/sol1 |   |  |  |
-| 868 | project_euler/problem_038/sol1 |   |  |  |
-| 869 | project_euler/problem_039/sol1 |   |  |  |
-| 870 | project_euler/problem_040/sol1 |   |  |  |
+| 766 | physics/centripetal_force | ✓ | 14.0ms | 10.35KB |
+| 767 | physics/coulombs_law | ✓ | 34.0ms | 83.98KB |
+| 768 | physics/doppler_frequency | ✓ | 15.0ms | 10.36KB |
+| 769 | physics/escape_velocity | ✓ | 20.0ms | 10.25KB |
+| 770 | physics/grahams_law | ✓ | 18.0ms | 10.36KB |
+| 771 | physics/horizontal_projectile_motion | ✓ | 16.0ms | 10.25KB |
+| 772 | physics/hubble_parameter | ✓ | 14.0ms | 10.25KB |
+| 773 | physics/ideal_gas_law | error |  |  |
+| 774 | physics/in_static_equilibrium | ✓ | 19.0ms | 1.74KB |
+| 775 | physics/kinetic_energy | ✓ | 16.0ms | 10.25KB |
+| 776 | physics/lens_formulae | ✓ | 16.0ms | 10.45KB |
+| 777 | physics/lorentz_transformation_four_vector | error |  |  |
+| 778 | physics/malus_law | error |  |  |
+| 779 | physics/mass_energy_equivalence | ✓ | 18.0ms | 10.45KB |
+| 780 | physics/mirror_formulae | ✓ | 14.0ms | 10.56KB |
+| 781 | physics/n_body_simulation | ✓ | 32.0ms | 80.52KB |
+| 782 | physics/newtons_law_of_gravitation | ✓ | 33.0ms | 88.82KB |
+| 783 | physics/newtons_second_law_of_motion | ✓ | 30.0ms | 78.98KB |
+| 784 | physics/orbital_transfer_work | ✓ | 44.0ms | 99.92KB |
+| 785 | physics/period_of_pendulum | ✓ | 16.0ms | 10.45KB |
+| 786 | physics/photoelectric_effect | ✓ | 18.0ms | 10.45KB |
+| 787 | physics/potential_energy | ✓ | 14.0ms | 10.25KB |
+| 788 | physics/rainfall_intensity | ✓ | 14.0ms | 10.56KB |
+| 789 | physics/reynolds_number | ✓ | 16.0ms | 10.25KB |
+| 790 | physics/rms_speed_of_molecule | ✓ | 45.0ms | 81.73KB |
+| 791 | physics/shear_stress | ✓ | 36.0ms | 87.98KB |
+| 792 | physics/speed_of_sound | ✓ | 15.0ms | 10.45KB |
+| 793 | physics/speeds_of_gas_molecules | ✓ | 16.0ms | 10.45KB |
+| 794 | physics/terminal_velocity | ✓ | 14.0ms | 10.45KB |
+| 795 | project_euler/problem_001/sol1 | ✓ | 14.0ms | 768B |
+| 796 | project_euler/problem_001/sol2 | ✓ | 23.0ms | 37.63KB |
+| 797 | project_euler/problem_001/sol3 | ✓ | 15.0ms | 664B |
+| 798 | project_euler/problem_001/sol4 | ✓ | 43.0ms | 54.62KB |
+| 799 | project_euler/problem_001/sol5 | ✓ | 14.0ms | 768B |
+| 800 | project_euler/problem_001/sol6 | ✓ | 22.0ms | 37.63KB |
+| 801 | project_euler/problem_001/sol7 | ✓ | 24.0ms | 768B |
+| 802 | project_euler/problem_002/sol1 | ✓ | 23.0ms | 37.63KB |
+| 803 | project_euler/problem_002/sol2 | ✓ | 22.0ms | 37.63KB |
+| 804 | project_euler/problem_002/sol3 | ✓ | 24.0ms | 37.53KB |
+| 805 | project_euler/problem_002/sol4 | ✓ | 23.0ms | 37.63KB |
+| 806 | project_euler/problem_002/sol5 | ✓ | 14.0ms | 768B |
+| 807 | project_euler/problem_003/sol1 | ✓ | 22.0ms | 37.62KB |
+| 808 | project_euler/problem_003/sol2 | error |  |  |
+| 809 | project_euler/problem_003/sol3 | ✓ | 14.0ms | 768B |
+| 810 | project_euler/problem_004/sol1 | ✓ | 64.0ms | 38.10KB |
+| 811 | project_euler/problem_004/sol2 | ✓ | 30.0ms | 1.13KB |
+| 812 | project_euler/problem_005/sol1 | ✓ | 15.0ms | 552B |
+| 813 | project_euler/problem_005/sol2 | ✓ | 14.0ms | 768B |
+| 814 | project_euler/problem_006/sol1 | ✓ | 19.0ms | 664B |
+| 815 | project_euler/problem_006/sol2 | ✓ | 23.0ms | 37.63KB |
+| 816 | project_euler/problem_006/sol3 | ✓ | 22.0ms | 37.53KB |
+| 817 | project_euler/problem_006/sol4 | ✓ | 14.0ms | 552B |
+| 818 | project_euler/problem_007/sol1 | ✓ | 36.0ms | 38.02KB |
+| 819 | project_euler/problem_007/sol2 | ✓ | 278.0ms | 53.95KB |
+| 820 | project_euler/problem_007/sol3 | error |  |  |
+| 821 | project_euler/problem_008/sol1 | ✓ | 34.0ms | 38.82KB |
+| 822 | project_euler/problem_008/sol2 | error |  |  |
+| 823 | project_euler/problem_008/sol3 | ✓ | 25.0ms | 39.17KB |
+| 824 | project_euler/problem_009/sol1 | ✓ | 17.0ms | 664B |
+| 825 | project_euler/problem_009/sol2 | ✓ | 27.0ms | 37.63KB |
+| 826 | project_euler/problem_009/sol3 | ✓ | 21.0ms | 944B |
+| 827 | project_euler/problem_010/sol1 | ✓ | 21.0ms | 37.74KB |
+| 828 | project_euler/problem_010/sol2 | ✓ |  |  |
+| 829 | project_euler/problem_010/sol3 | ✓ | 208.0ms | 1.13KB |
+| 830 | project_euler/problem_011/sol1 | ✓ | 13.0ms | 664B |
+| 831 | project_euler/problem_011/sol2 | ✓ | 14.0ms | 2.62KB |
+| 832 | project_euler/problem_012/sol1 | ✓ | 24.0ms | 1.02KB |
+| 833 | project_euler/problem_012/sol2 | ✓ | 26.0ms | 784B |
+| 834 | project_euler/problem_013/sol1 | error |  |  |
+| 835 | project_euler/problem_014/sol1 | error |  |  |
+| 836 | project_euler/problem_014/sol2 | error |  |  |
+| 837 | project_euler/problem_015/sol1 | error |  |  |
+| 838 | project_euler/problem_016/sol1 | error |  |  |
+| 839 | project_euler/problem_016/sol2 | ✓ | 32.0ms | 46.70KB |
+| 840 | project_euler/problem_017/sol1 | ✓ | 14.0ms | 768B |
+| 841 | project_euler/problem_018/solution | ✓ | 14.0ms | 664B |
+| 842 | project_euler/problem_019/sol1 | ✓ | 14.0ms | 664B |
+| 843 | project_euler/problem_020/sol1 | ✓ | 17.0ms | 664B |
+| 844 | project_euler/problem_020/sol2 | ✓ | 16.0ms | 552B |
+| 845 | project_euler/problem_020/sol3 | ✓ | 13.0ms | 664B |
+| 846 | project_euler/problem_020/sol4 | error |  |  |
+| 847 | project_euler/problem_021/sol1 | ✓ | 27.0ms | 784B |
+| 848 | project_euler/problem_022/sol1 | ✓ | 19.0ms | 952B |
+| 849 | project_euler/problem_022/sol2 | ✓ |  |  |
+| 850 | project_euler/problem_023/sol1 | ✓ | 1.50s | 46.79KB |
+| 851 | project_euler/problem_024/sol1 | ✓ | 22.0ms | 32.99KB |
+| 852 | project_euler/problem_025/sol1 | error |  |  |
+| 853 | project_euler/problem_025/sol2 | error |  |  |
+| 854 | project_euler/problem_025/sol3 | ✓ |  |  |
+| 855 | project_euler/problem_026/sol1 | ✓ | 241.0ms | 46.79KB |
+| 856 | project_euler/problem_027/sol1 | ✓ | 54.0ms | 1.13KB |
+| 857 | project_euler/problem_028/sol1 | ✓ | 15.0ms | 768B |
+| 858 | project_euler/problem_029/sol1 | error |  |  |
+| 859 | project_euler/problem_030/sol1 | ✓ | 28.0ms | 840B |
+| 860 | project_euler/problem_031/sol1 | error |  |  |
+| 861 | project_euler/problem_031/sol2 | ✓ | 35.0ms | 46.11KB |
+| 862 | project_euler/problem_032/sol32 | error |  |  |
+| 863 | project_euler/problem_033/sol1 | ✓ | 27.0ms | 46.15KB |
+| 864 | project_euler/problem_034/sol1 | ✓ | 50.0ms | 1.08KB |
+| 865 | project_euler/problem_035/sol1 | ✓ | 145.0ms | 64.73KB |
+| 866 | project_euler/problem_036/sol1 | ✓ | 1.36s | 33.34KB |
+| 867 | project_euler/problem_037/sol1 | ✓ | 281.0ms | 53.88KB |
+| 868 | project_euler/problem_038/sol1 | ✓ | 45.0ms | 54.20KB |
+| 869 | project_euler/problem_039/sol1 | ✓ | 90.0ms | 70.23KB |
+| 870 | project_euler/problem_040/sol1 | error |  |  |
 | 871 | project_euler/problem_041/sol1 |   |  |  |
 | 872 | project_euler/problem_042/solution42 |   |  |  |
 | 873 | project_euler/problem_043/sol1 |   |  |  |

@@ -1,0 +1,5 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden838_sol14100420544/001/Main.java:19: error: incompatible types: String cannot be converted to int
+            sum = sum + (string_num.substring(i_1, i_1+1));
+                      ^
+1 error

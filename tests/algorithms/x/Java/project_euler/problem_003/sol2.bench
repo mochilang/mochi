@@ -1,0 +1,4 @@
+Exception in thread "main" java.lang.RuntimeException: Parameter n must be greater than or equal to one.
+	at Main.largest_prime_factor(Main.java:5)
+	at Main.main(Main.java:24)
+	at Main.main(Main.java:30)

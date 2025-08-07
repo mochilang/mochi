@@ -1,0 +1,5 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden820_sol32238218140/001/Main.java:31: error: unreachable statement
+        return 0;
+        ^
+1 error

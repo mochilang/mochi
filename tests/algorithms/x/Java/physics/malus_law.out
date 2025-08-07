@@ -1,0 +1,4 @@
+Exception in thread "main" java.lang.RuntimeException: malus_law test3 failed
+	at Main.test_malus_law(Main.java:48)
+	at Main.main(Main.java:62)
+	at Main.main(Main.java:68)

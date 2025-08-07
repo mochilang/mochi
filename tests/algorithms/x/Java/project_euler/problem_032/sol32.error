@@ -1,0 +1,5 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden862_sol322391985581/001/Main.java:18: error: incompatible types: String cannot be converted to Number
+        return ((Number)(join_digits(((String[])(xs))))).intValue();
+                        ^
+1 error
