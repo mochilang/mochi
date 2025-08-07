@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Scheme code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Scheme`.
-Last updated: 2025-08-07 12:04 GMT+7
+Last updated: 2025-08-07 13:53 GMT+7
 
-## Algorithms Golden Test Checklist (531/1077)
+## Algorithms Golden Test Checklist (536/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 0s | 12.4 MB |
@@ -697,11 +697,11 @@ Last updated: 2025-08-07 12:04 GMT+7
 | 688 | maths/test_prime_check |   |  |  |
 | 689 | maths/three_sum |   |  |  |
 | 690 | maths/trapezoidal_rule |   |  |  |
-| 691 | maths/triplet_sum |   |  |  |
-| 692 | maths/twin_prime |   |  |  |
-| 693 | maths/two_pointer |   |  |  |
-| 694 | maths/two_sum |   |  |  |
-| 695 | maths/volume |   |  |  |
+| 691 | maths/triplet_sum | ✓ | 3ms | 14.1 MB |
+| 692 | maths/twin_prime | ✓ | 0s | 12.3 MB |
+| 693 | maths/two_pointer | ✓ | 1ms | 13.4 MB |
+| 694 | maths/two_sum | ✓ | 0s | 12.4 MB |
+| 695 | maths/volume | ✓ | 2ms | 14.1 MB |
 | 696 | maths/zellers_congruence |   |  |  |
 | 697 | matrix/binary_search_matrix |   |  |  |
 | 698 | matrix/count_islands_in_matrix |   |  |  |

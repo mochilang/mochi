@@ -1,0 +1,20 @@
+run: exit status 70
+ERROR in list-tail on line 34 of file /usr/share/chibi/init-7.scm: cdr: not a pair: ()
+  called from list-ref on line 36 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 155 of file /workspace/mochi/tests/algorithms/x/Scheme/matrix/count_islands_in_matrix.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 384 of file /workspace/mochi/tests/algorithms/x/Scheme/matrix/count_islands_in_matrix.scm
+  called from loop3 on line 356 of file /workspace/mochi/tests/algorithms/x/Scheme/matrix/count_islands_in_matrix.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from loop12 on line 642 of file /workspace/mochi/tests/algorithms/x/Scheme/matrix/count_islands_in_matrix.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 625 of file /workspace/mochi/tests/algorithms/x/Scheme/matrix/count_islands_in_matrix.scm
+  called from loop10 on line 618 of file /workspace/mochi/tests/algorithms/x/Scheme/matrix/count_islands_in_matrix.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 598 of file /workspace/mochi/tests/algorithms/x/Scheme/matrix/count_islands_in_matrix.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 831 of file /workspace/mochi/tests/algorithms/x/Scheme/matrix/count_islands_in_matrix.scm
+  called from <anonymous> on line 280 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm

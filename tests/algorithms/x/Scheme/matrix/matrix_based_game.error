@@ -1,0 +1,26 @@
+run: exit status 70
+ERROR in list-tail on line 34 of file /usr/share/chibi/init-7.scm: cdr: not a pair: ()
+  called from list-ref on line 36 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 1358 of file /workspace/mochi/tests/algorithms/x/Scheme/matrix/matrix_based_game.scm
+  called from loop27 on line 1326 of file /workspace/mochi/tests/algorithms/x/Scheme/matrix/matrix_based_game.scm
+  called from <anonymous> on line 1358 of file /workspace/mochi/tests/algorithms/x/Scheme/matrix/matrix_based_game.scm
+  called from loop27 on line 1326 of file /workspace/mochi/tests/algorithms/x/Scheme/matrix/matrix_based_game.scm
+  called from <anonymous> on line 1358 of file /workspace/mochi/tests/algorithms/x/Scheme/matrix/matrix_based_game.scm
+  called from loop27 on line 1326 of file /workspace/mochi/tests/algorithms/x/Scheme/matrix/matrix_based_game.scm
+  called from <anonymous> on line 1358 of file /workspace/mochi/tests/algorithms/x/Scheme/matrix/matrix_based_game.scm
+  called from loop27 on line 1326 of file /workspace/mochi/tests/algorithms/x/Scheme/matrix/matrix_based_game.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 1301 of file /workspace/mochi/tests/algorithms/x/Scheme/matrix/matrix_based_game.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 280 of file /usr/share/chibi/init-7.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 2791 of file /workspace/mochi/tests/algorithms/x/Scheme/matrix/matrix_based_game.scm
+  called from loop59 on line 2777 of file /workspace/mochi/tests/algorithms/x/Scheme/matrix/matrix_based_game.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 2758 of file /workspace/mochi/tests/algorithms/x/Scheme/matrix/matrix_based_game.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 2891 of file /workspace/mochi/tests/algorithms/x/Scheme/matrix/matrix_based_game.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 2937 of file /workspace/mochi/tests/algorithms/x/Scheme/matrix/matrix_based_game.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
