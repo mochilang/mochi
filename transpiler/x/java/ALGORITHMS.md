@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-07 00:06 GMT+7
+Last updated: 2025-08-07 00:16 GMT+7
 
-## Algorithms Golden Test Checklist (549/1077)
+## Algorithms Golden Test Checklist (551/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -668,8 +668,8 @@ Last updated: 2025-08-07 00:06 GMT+7
 | 659 | maths/sock_merchant | ✓ | 27.0ms | 46.25KB |
 | 660 | maths/softmax | ✓ | 28.0ms | 56.93KB |
 | 661 | maths/solovay_strassen_primality_test | ✓ | 18.0ms | 768B |
-| 662 | maths/spearman_rank_correlation_coefficient |   |  |  |
-| 663 | maths/special_numbers/armstrong_numbers |   |  |  |
+| 662 | maths/spearman_rank_correlation_coefficient | ✓ | 45.0ms | 56.05KB |
+| 663 | maths/special_numbers/armstrong_numbers | ✓ | 37.0ms | 46.14KB |
 | 664 | maths/special_numbers/automorphic_number |   |  |  |
 | 665 | maths/special_numbers/bell_numbers |   |  |  |
 | 666 | maths/special_numbers/carmichael_number |   |  |  |
