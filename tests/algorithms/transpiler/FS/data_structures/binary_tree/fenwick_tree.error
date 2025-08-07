@@ -1,9 +1,0 @@
-exit status 1
-F# Compiler for F# 4.0 (Open Source Edition)
-Freely distributed under the Apache 2.0 Open Source License
-
-/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/fenwick_tree.fs(47,34): error FS0039: The value or constructor 'fenwick_next' is not defined
-
-/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/fenwick_tree.fs(81,34): error FS0039: The value or constructor 'fenwick_next' is not defined
-
-/workspace/mochi/tests/algorithms/transpiler/FS/data_structures/binary_tree/fenwick_tree.fs(163,28): error FS0039: The value or constructor 'fenwick_get' is not defined
