@@ -23,6 +23,7 @@ import (
 var usesNow bool
 var usesSlice bool
 var usesFmt bool
+var usesLen bool
 var benchMain bool
 
 // SetBenchMain configures whether the generated main function should be wrapped
@@ -69,6 +70,14 @@ _slice(List, Start, End, Result) :-
 
 const helperFmt = `
 print_fmt(Fmt, Args, _) :- format(Fmt, Args).
+`
+
+const helperLen = `
+:- arithmetic_function(len/1).
+len(X, R) :-
+    ( is_list(X) -> length(X, R)
+    ; string(X) -> string_length(X, R)
+    ).
 `
 
 // Program represents a simple Prolog program.
@@ -668,7 +677,7 @@ func (p *MultiPrintStmt) emit(w io.Writer, idx int) {
 	}
 }
 
-func (l *LetStmt) emit(w io.Writer, _ int) {
+func (l *LetStmt) emit(w io.Writer, idx int) {
 	if ie, ok := l.Expr.(*IfExpr); ok {
 		io.WriteString(w, "    ")
 		emitIfToVar(w, l.Name, ie)
@@ -707,11 +716,22 @@ func (l *LetStmt) emit(w io.Writer, _ int) {
 		return
 	}
 	if ae, ok := l.Expr.(*AppendExpr); ok {
-		io.WriteString(w, "    append(")
-		ae.List.emit(w)
-		io.WriteString(w, ", [")
-		ae.Elem.emit(w)
-		fmt.Fprintf(w, "], %s)", l.Name)
+		if ie, ok2 := ae.Elem.(*IndexExpr); ok2 && !ie.IsMap && !ie.IsString {
+			tmp := fmt.Sprintf("T%d", idx)
+			fmt.Fprintf(w, "    nth0(")
+			ie.Index.emit(w)
+			io.WriteString(w, ", ")
+			ie.Target.emit(w)
+			fmt.Fprintf(w, ", %s),\n    append(", tmp)
+			ae.List.emit(w)
+			fmt.Fprintf(w, ", [%s], %s)", tmp, l.Name)
+		} else {
+			io.WriteString(w, "    append(")
+			ae.List.emit(w)
+			io.WriteString(w, ", [")
+			ae.Elem.emit(w)
+			fmt.Fprintf(w, "], %s)", l.Name)
+		}
 		return
 	}
 	if ie, ok := l.Expr.(*IndexExpr); ok && ie.IsMap {
@@ -742,13 +762,27 @@ func (s *IndexAssignStmt) emit(w io.Writer, idx int) {
 }
 
 func (c *CallStmt) emit(w io.Writer, idx int) {
+	tempNames := make([]string, len(c.Call.Args))
+	for i, a := range c.Call.Args {
+		if needsIs(a) {
+			tmp := fmt.Sprintf("T%d", idx+i)
+			tempNames[i] = tmp
+			fmt.Fprintf(w, "    %s is ", tmp)
+			a.emit(w)
+			io.WriteString(w, ",\n")
+		}
+	}
 	io.WriteString(w, "    ")
 	fmt.Fprintf(w, "%s(", c.Call.Name)
 	for i, a := range c.Call.Args {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
-		a.emit(w)
+		if tempNames[i] != "" {
+			io.WriteString(w, tempNames[i])
+		} else {
+			a.emit(w)
+		}
 	}
 	if len(c.Call.Args) > 0 {
 		io.WriteString(w, ", _")
@@ -813,7 +847,7 @@ func emitStmtList(w io.Writer, stmts []Stmt, idx int) {
 	for j, st := range stmts {
 		if _, ok := st.(*ReturnStmt); ok {
 			st.emit(w, idx+j)
-			continue
+			return
 		}
 		if !first {
 			io.WriteString(w, ",\n")
@@ -2067,6 +2101,9 @@ func Emit(w io.Writer, p *Program) error {
 	if usesFmt {
 		io.WriteString(w, helperFmt+"\n")
 	}
+	if usesLen {
+		io.WriteString(w, helperLen+"\n")
+	}
 	io.WriteString(w, ":- initialization(main).\n")
 	io.WriteString(w, ":- style_check(-singleton).\n\n")
 	for _, fn := range p.Funcs {
@@ -2354,6 +2391,15 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+			if len(ifStmt.Else) == 0 && endsWithReturn(ifStmt.Then) && i+1 < len(sts) {
+				rest, err := compileStmts(sts[i+1:], env)
+				if err != nil {
+					return nil, err
+				}
+				ifStmt.Else = rest
+				out = append(out, ifStmt)
+				return out, nil
+			}
 			// constant condition folding
 			if b, ok := ifStmt.Cond.(*BoolLit); ok {
 				if b.Value {
@@ -2528,6 +2574,14 @@ func compileStmts(sts []*parser.Statement, env *compileEnv) ([]Stmt, error) {
 		}
 	}
 	return out, nil
+}
+
+func endsWithReturn(stmts []Stmt) bool {
+	if len(stmts) == 0 {
+		return false
+	}
+	_, ok := stmts[len(stmts)-1].(*ReturnStmt)
+	return ok
 }
 
 func compileIfStmt(is *parser.IfStmt, env *compileEnv) (*IfStmt, error) {
@@ -3133,6 +3187,7 @@ func toPrimary(p *parser.Primary, env *compileEnv) (Expr, error) {
 				if isStringLike(arg, env) {
 					return &CallExpr{Name: "string_length", Args: []Expr{arg}}, nil
 				}
+				usesLen = true
 				return &LenExpr{Value: arg}, nil
 			case "str":
 				return &StrExpr{Value: arg}, nil
