@@ -2605,7 +2605,7 @@ func valueToExpr(v interface{}, typ *parser.TypeRef) Expr {
 	}
 }
 
-func dataExprFromFile(path, format string, typ *parser.TypeRef) (Expr, error) {
+func dataExprFromFile(path, format, delim string, header bool, typ *parser.TypeRef) (Expr, error) {
 	if path == "" {
 		return &ListLit{}, nil
 	}
@@ -2647,6 +2647,35 @@ func dataExprFromFile(path, format string, typ *parser.TypeRef) (Expr, error) {
 			arr = append(arr, obj)
 		}
 		v = arr
+	case "csv", "":
+		d := delim
+		if d == "" {
+			d = ","
+		}
+		lines := strings.Split(strings.TrimSpace(string(data)), "\n")
+		var rows []interface{}
+		var headers []string
+		for i, line := range lines {
+			line = strings.TrimSpace(line)
+			if line == "" {
+				continue
+			}
+			parts := strings.Split(line, d)
+			if i == 0 && header {
+				headers = parts
+				continue
+			}
+			m := map[string]interface{}{}
+			for j, part := range parts {
+				key := fmt.Sprintf("c%d", j)
+				if header && j < len(headers) {
+					key = headers[j]
+				}
+				m[key] = strings.TrimSpace(part)
+			}
+			rows = append(rows, m)
+		}
+		v = rows
 	default:
 		return nil, fmt.Errorf("unsupported load format")
 	}
@@ -2809,6 +2838,59 @@ func parseFormat(e *parser.Expr) string {
 		}
 	}
 	return ""
+}
+
+func literalBool(e *parser.Expr) (bool, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return false, false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return false, false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Bool != nil {
+		return bool(*p.Target.Lit.Bool), true
+	}
+	return false, false
+}
+
+func parseLoadOptions(e *parser.Expr) (format, delim string, header bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Map == nil {
+		return
+	}
+	for _, it := range p.Target.Map.Items {
+		key, ok := literalString(it.Key)
+		if !ok {
+			continue
+		}
+		switch key {
+		case "format":
+			if s, ok := literalString(it.Value); ok {
+				format = s
+			}
+		case "delimiter":
+			if s, ok := literalString(it.Value); ok {
+				delim = s
+			}
+		case "header":
+			if b, ok := literalBool(it.Value); ok {
+				header = b
+			}
+		}
+	}
+	return
 }
 
 func extractMapLiteral(e *parser.Expr) ([]string, []*parser.Expr, bool) {
@@ -4535,12 +4617,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &CallExpr{Func: "_fetch", Args: []Expr{urlExpr}}, nil
 	case p.Load != nil:
-		format := parseFormat(p.Load.With)
+		format, delim, header := parseLoadOptions(p.Load.With)
 		path := ""
 		if p.Load.Path != nil {
 			path = strings.Trim(*p.Load.Path, "\"")
 		}
-		return dataExprFromFile(path, format, p.Load.Type)
+		return dataExprFromFile(path, format, delim, header, p.Load.Type)
 	case p.Save != nil:
 		if p.Save.Path != nil && p.Save.With != nil {
 			format := parseFormat(p.Save.With)
