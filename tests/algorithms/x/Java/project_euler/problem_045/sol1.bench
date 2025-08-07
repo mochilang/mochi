@@ -1,0 +1,3 @@
+Exception in thread "main" java.lang.RuntimeException: 330 should be pentagonal
+	at Main.test_is_pentagonal(Main.java:64)
+	at Main.main(Main.java:84)

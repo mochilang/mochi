@@ -1,0 +1,5 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden905_sol21934917671/001/Main.java:25: error: incompatible types: boolean cannot be converted to Number
+        while (((Number)((seen.containsKey(cur)))).intValue() == false && length <= limit) {
+                        ^
+1 error

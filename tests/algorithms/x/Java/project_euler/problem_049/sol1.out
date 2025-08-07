@@ -1,0 +1,6 @@
+Exception in thread "main" java.lang.NumberFormatException: For input string: "148748178147"
+	at java.base/java.lang.NumberFormatException.forInputString(NumberFormatException.java:67)
+	at java.base/java.lang.Integer.parseInt(Integer.java:662)
+	at java.base/java.lang.Integer.parseInt(Integer.java:778)
+	at Main.solution(Main.java:176)
+	at Main.main(Main.java:193)
