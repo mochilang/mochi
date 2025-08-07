@@ -57,6 +57,7 @@ type Program struct {
 	UseSHA256      bool
 	UseParseIntStr bool
 	UseDictAdd     bool
+	UseDictGet     bool
 	UseSafeIndex   bool
 	UseStr         bool
 	UseRepr        bool
@@ -84,6 +85,7 @@ var (
 	usesSHA256     bool
 	benchMain      bool
 	usesDictAdd    bool
+	usesDictGet    bool
 	currentReturn  string
 	funcDepth      int
 	methodDefs     []Stmt
@@ -168,6 +170,11 @@ const helperDictCreate = `let _dictCreate<'K,'V when 'K : equality> (pairs:('K *
     for (k, v) in pairs do
         d.[k] <- v
     upcast d`
+
+const helperDictGet = `let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
+    match d.TryGetValue(k) with
+    | true, v -> v
+    | _ -> Unchecked.defaultof<'V>`
 
 const helperIndex = `let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>`
@@ -1342,7 +1349,13 @@ func (a *AppendExpr) emit(w io.Writer) {
 			return
 		}
 	}
-	a.Elem.emit(w)
+	if needsParen(a.Elem) {
+		io.WriteString(w, "(")
+		a.Elem.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		a.Elem.emit(w)
+	}
 	io.WriteString(w, "|]")
 }
 
@@ -1705,6 +1718,14 @@ func (s *LetStmt) emit(w io.Writer) {
 			io.WriteString(w, ">")
 		} else if s.Type == "string" {
 			io.WriteString(w, "\"\"")
+		} else if s.Type == "bool" {
+			io.WriteString(w, "false")
+		} else if s.Type == "float" {
+			io.WriteString(w, "0.0")
+		} else if s.Type != "" && s.Type != "int" {
+			io.WriteString(w, "Unchecked.defaultof<")
+			io.WriteString(w, s.Type)
+			io.WriteString(w, ">")
 		} else {
 			io.WriteString(w, "0")
 		}
@@ -2273,6 +2294,11 @@ func inferType(e Expr) string {
 			return "string"
 		}
 		if t, ok := varTypes[v.Func]; ok && t != "" {
+			if strings.Contains(t, "->") {
+				parts := strings.Split(t, "->")
+				ret := strings.TrimSpace(parts[len(parts)-1])
+				return ret
+			}
 			return t
 		}
 		if transpileEnv != nil {
@@ -2394,8 +2420,16 @@ func (i *IndexExpr) emit(w io.Writer) {
 		return
 	}
 	if id, ok := i.Target.(*IdentExpr); ok && strings.HasPrefix(id.Type, "System.Collections.Generic.IDictionary<") {
-		i.Target.emit(w)
-		io.WriteString(w, ".[")
+		usesDictGet = true
+		io.WriteString(w, "_dictGet ")
+		if needsParen(i.Target) {
+			io.WriteString(w, "(")
+			i.Target.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			i.Target.emit(w)
+		}
+		io.WriteString(w, " (")
 		if mapKeyType(id.Type) == "string" {
 			io.WriteString(w, "(string (")
 			i.Index.emit(w)
@@ -2403,12 +2437,20 @@ func (i *IndexExpr) emit(w io.Writer) {
 		} else {
 			i.Index.emit(w)
 		}
-		io.WriteString(w, "]")
+		io.WriteString(w, ")")
 		return
 	}
 	if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") {
-		i.Target.emit(w)
-		io.WriteString(w, ".[")
+		usesDictGet = true
+		io.WriteString(w, "_dictGet ")
+		if needsParen(i.Target) {
+			io.WriteString(w, "(")
+			i.Target.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			i.Target.emit(w)
+		}
+		io.WriteString(w, " (")
 		if mapKeyType(t) == "string" {
 			io.WriteString(w, "(string (")
 			i.Index.emit(w)
@@ -2416,7 +2458,7 @@ func (i *IndexExpr) emit(w io.Writer) {
 		} else {
 			i.Index.emit(w)
 		}
-		io.WriteString(w, "]")
+		io.WriteString(w, ")")
 		return
 	}
 	if t == "map" || t == "obj" || t == "" {
@@ -3030,7 +3072,13 @@ func Emit(prog *Program) []byte {
 	if prog.UseDictAdd {
 		buf.WriteString(helperDictAdd)
 		buf.WriteString("\n")
+	}
+	if prog.UseDictAdd || prog.UseDictGet {
 		buf.WriteString(helperDictCreate)
+		buf.WriteString("\n")
+	}
+	if prog.UseDictGet {
+		buf.WriteString(helperDictGet)
 		buf.WriteString("\n")
 	}
 	if prog.UseSafeIndex {
@@ -3151,6 +3199,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesPadStart = false
 	usesSHA256 = false
 	usesDictAdd = false
+	usesDictGet = false
 	usesSafeIndex = false
 	usesStr = false
 	usesRepr = false
@@ -3220,7 +3269,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	p.UsePadStart = usesPadStart
 	p.UseSHA256 = usesSHA256
 	p.UseParseIntStr = useParseIntStr
-	p.UseDictAdd = usesDictAdd
+	p.UseDictAdd = true
+	p.UseDictGet = true
 	p.UseSafeIndex = usesSafeIndex
 	p.UseStr = usesStr
 	p.UseRepr = usesRepr
@@ -3480,12 +3530,18 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				e = &CastExpr{Expr: e, Type: fsDecl}
 			}
 		}
-		if ml, ok := e.(*MapLit); ok && len(ml.Items) == 1 && strings.HasPrefix(fsDecl, "System.Collections.Generic.IDictionary<") {
+		if ml, ok := e.(*MapLit); ok && strings.HasPrefix(fsDecl, "System.Collections.Generic.IDictionary<") {
 			vtyp := mapValueType(fsDecl)
-			if call, ok2 := ml.Items[0][1].(*CallExpr); ok2 && call.Func == "box" && len(call.Args) == 1 {
-				ml.Items[0][1] = call.Args[0]
+			ml.Types = make([]string, len(ml.Items))
+			for i := range ml.Items {
+				if call, ok2 := ml.Items[i][1].(*CallExpr); ok2 && call.Func == "box" && len(call.Args) == 1 {
+					ml.Items[i][1] = call.Args[0]
+				}
+				if ll, ok2 := ml.Items[i][1].(*ListLit); ok2 && len(ll.Elems) == 0 {
+					ml.Items[i][1] = &CastExpr{Expr: ml.Items[i][1], Type: vtyp}
+				}
+				ml.Types[i] = vtyp
 			}
-			ml.Types = []string{vtyp}
 		}
 		varTypes[st.Let.Name] = declared
 		typ := fsDecl
@@ -3590,6 +3646,19 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 						v.Elems[i] = &MapLit{Items: items}
 					}
 				}
+			}
+		}
+		if ml, ok := e.(*MapLit); ok && strings.HasPrefix(fsDecl, "System.Collections.Generic.IDictionary<") {
+			vtyp := mapValueType(fsDecl)
+			ml.Types = make([]string, len(ml.Items))
+			for i := range ml.Items {
+				if call, ok2 := ml.Items[i][1].(*CallExpr); ok2 && call.Func == "box" && len(call.Args) == 1 {
+					ml.Items[i][1] = call.Args[0]
+				}
+				if ll, ok2 := ml.Items[i][1].(*ListLit); ok2 && len(ll.Elems) == 0 {
+					ml.Items[i][1] = &CastExpr{Expr: ml.Items[i][1], Type: vtyp}
+				}
+				ml.Types[i] = vtyp
 			}
 		}
 		varTypes[st.Var.Name] = declared
@@ -4737,6 +4806,10 @@ func applyIndexOps(base Expr, ops []*parser.IndexOp) (Expr, error) {
 		idx, err := convertExpr(op.Start)
 		if err != nil {
 			return nil, err
+		}
+		if strings.HasPrefix(inferType(base), "System.Collections.Generic.IDictionary<") {
+			usesDictGet = true
+			usesDictAdd = true
 		}
 		base = &IndexExpr{Target: base, Index: idx}
 	}
