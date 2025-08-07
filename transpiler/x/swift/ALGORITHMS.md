@@ -3,7 +3,7 @@
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
 Completed programs: 341/1077
-Last updated: 2025-08-07 09:47 +0700
+Last updated: 2025-08-07 10:19 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -406,7 +406,7 @@ Last updated: 2025-08-07 09:47 +0700
 | 397 | graphs/basic_graphs | ✓ | 891µs | 3.2 MB |
 | 398 | graphs/bellman_ford | ✓ | 244µs | 3.4 MB |
 | 399 | graphs/bi_directional_dijkstra | ✓ | 451µs | 3.2 MB |
-| 400 | graphs/bidirectional_a_star | ✓ | 1.549ms | 3.4 MB |
+| 400 | graphs/bidirectional_a_star | ✓ | 1.055ms | 3.2 MB |
 | 401 | graphs/bidirectional_breadth_first_search |   |  |  |
 | 402 | graphs/bidirectional_search |   |  |  |
 | 403 | graphs/boruvka |   |  |  |
