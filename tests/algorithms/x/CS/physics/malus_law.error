@@ -1,0 +1,5 @@
+exit status 134
+Unhandled exception. System.Exception: malus_law test1 failed
+   at Program.test_malus_law() in /tmp/TestCSTranspiler_Algorithms_Golden001_physics_malus_law2169455194/001/Program.cs:line 133
+   at Program.main() in /tmp/TestCSTranspiler_Algorithms_Golden001_physics_malus_law2169455194/001/Program.cs:line 153
+   at Program.Main() in /tmp/TestCSTranspiler_Algorithms_Golden001_physics_malus_law2169455194/001/Program.cs:line 161

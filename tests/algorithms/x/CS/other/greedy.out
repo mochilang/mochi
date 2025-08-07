@@ -1,0 +1,3 @@
+[Thing(Burger, 80, 40), Thing(Pizza, 100, 60), Thing(Coca Cola, 60, 40), Thing(Rice, 70, 70), Thing(Sambhar, 50, 100), Thing(Chicken, 110, 85), Thing(Fries, 90, 55), Thing(Milk, 60, 70)]
+[Thing(Fries, 90, 55), Thing(Burger, 80, 40), Thing(Rice, 70, 70), Thing(Coca Cola, 60, 40), Thing(Milk, 60, 70), Thing(Sambhar, 50, 100), Thing(Chicken, 110, 85)]
+520
