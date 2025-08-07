@@ -1,0 +1,10 @@
+/workspace/mochi/tests/algorithms/x/Erlang/conversions/prefix_conversions.erl:80:8: Warning: variable 'E_3' exported from 'case' (line 64, column 9)
+%   80| {Base, E_3, Exp, I_2, Result_2} = Fun(Base, E_3, Exp, I, Result),
+%     |        ^
+
+1000
+0
+1
+1024
+0
+1

@@ -1,0 +1,16 @@
+run: exit status 127
+/workspace/mochi/tests/algorithms/x/Erlang/data_structures/binary_tree/number_of_possible_binary_trees.erl:70:5: Warning: variable 'Kk_3' exported from 'case' (line 55, column 9)
+%   70| {K, Kk_3, N, Result_3} = Fun(lists:seq(0, (Kk_3) - 1), K, Kk_3, N, Result),
+%     |     ^
+
+"Enter the number of nodes:"
+escript: exception error: bad argument
+  in function  list_to_integer/1
+     called as list_to_integer("q")
+     *** argument 1: not a textual representation of an integer
+  in call from main:main/1 (/workspace/mochi/tests/algorithms/x/Erlang/data_structures/binary_tree/number_of_possible_binary_trees.erl, line 110)
+  in call from escript:run/2 (escript.erl, line 904)
+  in call from escript:start/1 (escript.erl, line 418)
+  in call from init:start_it/1 
+  in call from init:start_em/1 
+  in call from init:do_boot/3

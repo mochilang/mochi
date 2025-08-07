@@ -1,0 +1,12 @@
+/workspace/mochi/tests/algorithms/x/Erlang/conversions/prefix_conversions_string.erl:85:8: Warning: variable 'E_3' exported from 'case' (line 52, column 9)
+%   85| {Base, E_3, Exp, I_5, Result_4} = Fun_3(Base, E_3, Exp, I_4, Result_3),
+%     |        ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/conversions/prefix_conversions_string.erl:113:7: Warning: variable 'Prefixes_4' exported from 'case' (line 92, column 9)
+%  113| {I_7, Prefixes_4, Value} = Fun_4(I_6, Prefixes_4, Value),
+%     |       ^
+
+"10.0 kilo"
+"0.005"
+"64.0 kilo"
+"512"

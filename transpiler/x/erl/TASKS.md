@@ -1,3 +1,415 @@
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-07 00:21 +0700)
+- c transpiler: handle string lengths and map init (52a2f6fb79)
+- Regenerated golden files - 103/105 vm valid programs passing
+
 ## Progress (2025-08-04 15:16 +0700)
 - kt: handle stdout and refine var typing (de164682f4)
 - Regenerated golden files - 103/105 vm valid programs passing
