@@ -1,0 +1,5 @@
+Fatal error: Uncaught TypeError: Cannot access offset of type array on array in /workspace/mochi/tests/algorithms/x/PHP/other/greedy.php:44
+Stack trace:
+#0 /workspace/mochi/tests/algorithms/x/PHP/other/greedy.php(111): build_menu(Array, Array, Array)
+#1 {main}
+  thrown in /workspace/mochi/tests/algorithms/x/PHP/other/greedy.php on line 44

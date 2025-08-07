@@ -1,0 +1,7 @@
+run: exit status 255
+
+Fatal error: Uncaught TypeError: Cannot access offset of type array on array in /workspace/mochi/tests/algorithms/x/PHP/other/greedy.php:61
+Stack trace:
+#0 /workspace/mochi/tests/algorithms/x/PHP/other/greedy.php(128): build_menu(Array, Array, Array)
+#1 {main}
+  thrown in /workspace/mochi/tests/algorithms/x/PHP/other/greedy.php on line 61
