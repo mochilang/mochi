@@ -1,7 +1,7 @@
 # F# Algorithms Transpiler Output
 
-Completed programs: 383/1077
-Last updated: 2025-08-07 16:27 +0700
+Completed programs: 382/1077
+Last updated: 2025-08-07 17:32 +0700
 
 Checklist:
 
@@ -377,7 +377,7 @@ Checklist:
 | 368 | electronics/wheatstone_bridge | ✓ | 571.223ms | 33.8 KB |
 | 369 | file_transfer/receive_file | ✓ | 571.223ms | 31.2 KB |
 | 370 | file_transfer/send_file | ✓ | 571.223ms | 35.1 KB |
-| 371 | file_transfer/tests/test_send_file | ✓ |  |  |
+| 371 | file_transfer/tests/test_send_file |   |  |  |
 | 372 | financial/equated_monthly_installments | ✓ | 571.223ms | 55.9 KB |
 | 373 | financial/exponential_moving_average | ✓ | 571.223ms | 68.4 KB |
 | 374 | financial/interest | ✓ | 571.223ms | 56.0 KB |
@@ -392,32 +392,32 @@ Checklist:
 | 383 | fractals/sierpinski_triangle | ✓ | 571.223ms | 55.1 KB |
 | 384 | fractals/vicsek | ✓ | 571.223ms | 39.6 KB |
 | 385 | fuzzy_logic/fuzzy_operations | ✓ | 571.223ms | 60.8 KB |
-| 386 | genetic_algorithm/basic_string | ✓ | 571.223ms | 66.4 KB |
-| 387 | geodesy/haversine_distance | ✓ | 571.223ms | 55.9 KB |
+| 386 | genetic_algorithm/basic_string | ✓ | 571.223ms | 54.7 KB |
+| 387 | geodesy/haversine_distance | ✓ | 571.223ms | 64.0 KB |
 | 388 | geodesy/lamberts_ellipsoidal_distance | ✓ | 571.223ms | 33.8 KB |
 | 389 | geometry/geometry | ✓ | 571.223ms | 34.8 KB |
-| 390 | graphics/bezier_curve | ✓ | 571.223ms | 60.6 KB |
-| 391 | graphics/butterfly_pattern | ✓ | 571.223ms | 48.7 KB |
-| 392 | graphics/digital_differential_analyzer_line | ✓ | 571.223ms | 58.8 KB |
-| 393 | graphics/vector3_for_2d_rendering | ✓ | 571.223ms | 56.5 KB |
+| 390 | graphics/bezier_curve | ✓ | 571.223ms | 56.7 KB |
+| 391 | graphics/butterfly_pattern | ✓ | 571.223ms | 31.3 KB |
+| 392 | graphics/digital_differential_analyzer_line | ✓ | 571.223ms | 62.9 KB |
+| 393 | graphics/vector3_for_2d_rendering | ✓ | 571.223ms | 63.8 KB |
 | 394 | graphs/a_star | ✓ | 571.223ms | 56.4 KB |
-| 395 | graphs/ant_colony_optimization_algorithms | ✓ | 445.369ms | 61.1 KB |
-| 396 | graphs/articulation_points | ✓ | 571.223ms | 37.4 KB |
+| 395 | graphs/ant_colony_optimization_algorithms | ✓ | 445.369ms | 68.4 KB |
+| 396 | graphs/articulation_points | ✓ | 571.223ms | 36.3 KB |
 | 397 | graphs/basic_graphs | ✓ | 571.223ms | 65.0 KB |
-| 398 | graphs/bellman_ford | ✓ | 571.223ms | 56.1 KB |
-| 399 | graphs/bi_directional_dijkstra | ✓ | 571.223ms | 56.4 KB |
-| 400 | graphs/bidirectional_a_star | ✓ | 571.223ms | 56.1 KB |
+| 398 | graphs/bellman_ford | ✓ | 571.223ms | 55.9 KB |
+| 399 | graphs/bi_directional_dijkstra | ✓ | 571.223ms | 69.3 KB |
+| 400 | graphs/bidirectional_a_star | ✓ | 571.223ms | 73.4 KB |
 | 401 | graphs/bidirectional_breadth_first_search | ✓ | 571.223ms | 57.2 KB |
-| 402 | graphs/bidirectional_search | ✓ | 571.223ms | 59.7 KB |
+| 402 | graphs/bidirectional_search | ✓ | 571.223ms | 73.9 KB |
 | 403 | graphs/boruvka |   |  |  |
-| 404 | graphs/breadth_first_search | ✓ | 571.223ms | 66.9 KB |
+| 404 | graphs/breadth_first_search | ✓ | 571.223ms | 73.7 KB |
 | 405 | graphs/breadth_first_search_2 | ✓ | 571.223ms | 32.3 KB |
 | 406 | graphs/breadth_first_search_shortest_path | ✓ | 571.223ms | 33.5 KB |
-| 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 571.223ms | 16.5 KB |
-| 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ | 571.223ms | 56.4 KB |
-| 409 | graphs/check_bipatrite | ✓ | 571.223ms | 65.1 KB |
+| 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 571.223ms | 14.3 KB |
+| 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ | 571.223ms | 67.8 KB |
+| 409 | graphs/check_bipatrite | ✓ | 571.223ms | 55.5 KB |
 | 410 | graphs/check_cycle | ✓ | 571.223ms | 31.8 KB |
-| 411 | graphs/connected_components | ✓ | 571.223ms | 56.3 KB |
+| 411 | graphs/connected_components | ✓ | 571.223ms | 56.2 KB |
 | 412 | graphs/deep_clone_graph |   |  |  |
 | 413 | graphs/depth_first_search | ✓ | 571.223ms | 55.8 KB |
 | 414 | graphs/depth_first_search_2 | ✓ | 571.223ms | 64.5 KB |
