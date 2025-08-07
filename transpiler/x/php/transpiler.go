@@ -25,7 +25,7 @@ var builtinNames = map[string]struct{}{
 	"str": {}, "min": {}, "max": {}, "append": {}, "json": {}, "exists": {},
 	"values": {}, "keys": {}, "load": {}, "save": {}, "now": {}, "input": {},
 	"upper": {}, "lower": {}, "num": {}, "denom": {}, "indexOf": {}, "repeat": {}, "parseIntStr": {}, "slice": {}, "split": {}, "contains": {}, "substr": {}, "pow": {}, "getoutput": {}, "intval": {}, "floatval": {}, "int": {}, "float": {},
-	"concat": {},
+	"concat": {}, "panic": {},
 }
 
 const helperLookupHost = `function _lookup_host($host) {
@@ -269,6 +269,11 @@ const helperFetch = `function _fetch($url, $opts = null) {
     return json_decode($data, true);
 }`
 
+const helperPanic = `function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}`
+
 var usesLookupHost bool
 var usesNow bool
 var usesLen bool
@@ -280,6 +285,7 @@ var usesParseIntStr bool
 var usesIntDiv bool
 var usesSHA256 bool
 var usesEnviron bool
+var usesPanic bool
 var usesBigIntOps bool
 var usesGetOutput bool
 var usesAppend bool
@@ -2393,6 +2399,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if usesPanic {
+		if _, err := io.WriteString(w, helperPanic+"\n"); err != nil {
+			return err
+		}
+	}
 	if usesGetOutput {
 		if _, err := io.WriteString(w, helperGetOutput+"\n"); err != nil {
 			return err
@@ -2468,6 +2479,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesIntDiv = false
 	usesSHA256 = false
 	usesEnviron = false
+	usesPanic = false
 	usesBigIntOps = false
 	usesGetOutput = false
 	usesAppend = false
@@ -3077,6 +3089,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return &CallExpr{Func: "parseIntStr", Args: []Expr{args[0], args[1]}}, nil
 			}
 			return nil, fmt.Errorf("parseIntStr expects 1 or 2 args")
+		} else if name == "panic" && isBuiltin {
+			if len(args) != 1 {
+				return nil, fmt.Errorf("panic expects 1 arg")
+			}
+			usesPanic = true
+			return &CallExpr{Func: "_panic", Args: args}, nil
 		} else if name == "sha256" {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("sha256 expects 1 arg")
