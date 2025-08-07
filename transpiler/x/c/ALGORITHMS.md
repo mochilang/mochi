@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (67/1077) - Last updated 2025-08-07 09:46 +0700:
+Checklist of programs that currently transpile and run (71/1077) - Last updated 2025-08-07 10:17 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -79,10 +79,10 @@ Checklist of programs that currently transpile and run (67/1077) - Last updated 
 | 72 | ciphers/base64_cipher | ✓ | 782us | 1.6 MB |
 | 73 | ciphers/base85 | ✓ | 797us | 1.7 MB |
 | 74 | ciphers/beaufort_cipher | ✓ | 192us | 1.6 MB |
-| 75 | ciphers/bifid |  |  |  |
-| 76 | ciphers/brute_force_caesar_cipher |  |  |  |
-| 77 | ciphers/caesar_cipher |  |  |  |
-| 78 | ciphers/cryptomath_module |  |  |  |
+| 75 | ciphers/bifid | ✓ | 408us | 1.5 MB |
+| 76 | ciphers/brute_force_caesar_cipher | ✓ | 1.02ms | 1.6 MB |
+| 77 | ciphers/caesar_cipher | ✓ | 6.93ms | 3.3 MB |
+| 78 | ciphers/cryptomath_module | ✓ | 695us | 1.5 MB |
 | 79 | ciphers/decrypt_caesar_with_chi_squared |  |  |  |
 | 80 | ciphers/deterministic_miller_rabin |  |  |  |
 | 81 | ciphers/diffie |  |  |  |
