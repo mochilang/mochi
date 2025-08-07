@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-07 00:15 GMT+7
+Last updated: 2025-08-07 00:57 GMT+7
 
-## Algorithms Golden Test Checklist (508/1077)
+## Algorithms Golden Test Checklist (683/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 11.624ms | 3.5 MB |
@@ -721,206 +721,206 @@ Last updated: 2025-08-07 00:15 GMT+7
 | 712 | matrix/pascal_triangle | ✓ | 10.977ms | 3.0 MB |
 | 713 | matrix/rotate_matrix | ✓ | 11.539ms | 4.5 MB |
 | 714 | matrix/searching_in_sorted_matrix | ✓ | 22.705ms | 10.7 MB |
-| 715 | matrix/sherman_morrison |   |  |  |
-| 716 | matrix/spiral_print |   |  |  |
-| 717 | matrix/tests/test_matrix_operation |   |  |  |
-| 718 | matrix/validate_sudoku_board |   |  |  |
-| 719 | networking_flow/ford_fulkerson |   |  |  |
-| 720 | networking_flow/minimum_cut |   |  |  |
-| 721 | neural_network/activation_functions/binary_step |   |  |  |
-| 722 | neural_network/activation_functions/exponential_linear_unit |   |  |  |
-| 723 | neural_network/activation_functions/gaussian_error_linear_unit |   |  |  |
-| 724 | neural_network/activation_functions/leaky_rectified_linear_unit |   |  |  |
-| 725 | neural_network/activation_functions/mish |   |  |  |
-| 726 | neural_network/activation_functions/rectified_linear_unit |   |  |  |
-| 727 | neural_network/activation_functions/scaled_exponential_linear_unit |   |  |  |
-| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent |   |  |  |
-| 729 | neural_network/activation_functions/softplus |   |  |  |
-| 730 | neural_network/activation_functions/squareplus |   |  |  |
-| 731 | neural_network/activation_functions/swish |   |  |  |
-| 732 | neural_network/back_propagation_neural_network |   |  |  |
-| 733 | neural_network/convolution_neural_network |   |  |  |
-| 734 | neural_network/input_data |   |  |  |
-| 735 | neural_network/simple_neural_network |   |  |  |
-| 736 | neural_network/two_hidden_layers_neural_network |   |  |  |
-| 737 | other/activity_selection |   |  |  |
-| 738 | other/alternative_list_arrange |   |  |  |
-| 739 | other/bankers_algorithm |   |  |  |
-| 740 | other/davis_putnam_logemann_loveland |   |  |  |
-| 741 | other/doomsday |   |  |  |
-| 742 | other/fischer_yates_shuffle |   |  |  |
-| 743 | other/gauss_easter |   |  |  |
-| 744 | other/greedy |   |  |  |
-| 745 | other/guess_the_number_search |   |  |  |
-| 746 | other/h_index |   |  |  |
-| 747 | other/least_recently_used |   |  |  |
-| 748 | other/lfu_cache |   |  |  |
-| 749 | other/linear_congruential_generator |   |  |  |
-| 750 | other/lru_cache |   |  |  |
-| 751 | other/magicdiamondpattern |   |  |  |
-| 752 | other/majority_vote_algorithm |   |  |  |
-| 753 | other/maximum_subsequence |   |  |  |
-| 754 | other/nested_brackets |   |  |  |
-| 755 | other/number_container_system |   |  |  |
-| 756 | other/quine |   |  |  |
-| 757 | other/scoring_algorithm |   |  |  |
-| 758 | other/sdes |   |  |  |
-| 759 | other/tower_of_hanoi |   |  |  |
-| 760 | other/word_search |   |  |  |
-| 761 | physics/altitude_pressure |   |  |  |
-| 762 | physics/archimedes_principle_of_buoyant_force |   |  |  |
-| 763 | physics/basic_orbital_capture |   |  |  |
-| 764 | physics/casimir_effect |   |  |  |
-| 765 | physics/center_of_mass |   |  |  |
-| 766 | physics/centripetal_force |   |  |  |
-| 767 | physics/coulombs_law |   |  |  |
-| 768 | physics/doppler_frequency |   |  |  |
-| 769 | physics/escape_velocity |   |  |  |
-| 770 | physics/grahams_law |   |  |  |
-| 771 | physics/horizontal_projectile_motion |   |  |  |
-| 772 | physics/hubble_parameter |   |  |  |
-| 773 | physics/ideal_gas_law |   |  |  |
-| 774 | physics/in_static_equilibrium |   |  |  |
-| 775 | physics/kinetic_energy |   |  |  |
-| 776 | physics/lens_formulae |   |  |  |
-| 777 | physics/lorentz_transformation_four_vector |   |  |  |
-| 778 | physics/malus_law |   |  |  |
-| 779 | physics/mass_energy_equivalence |   |  |  |
-| 780 | physics/mirror_formulae |   |  |  |
-| 781 | physics/n_body_simulation |   |  |  |
-| 782 | physics/newtons_law_of_gravitation |   |  |  |
-| 783 | physics/newtons_second_law_of_motion |   |  |  |
-| 784 | physics/orbital_transfer_work |   |  |  |
-| 785 | physics/period_of_pendulum |   |  |  |
-| 786 | physics/photoelectric_effect |   |  |  |
-| 787 | physics/potential_energy |   |  |  |
-| 788 | physics/rainfall_intensity |   |  |  |
-| 789 | physics/reynolds_number |   |  |  |
-| 790 | physics/rms_speed_of_molecule |   |  |  |
-| 791 | physics/shear_stress |   |  |  |
-| 792 | physics/speed_of_sound |   |  |  |
-| 793 | physics/speeds_of_gas_molecules |   |  |  |
-| 794 | physics/terminal_velocity |   |  |  |
-| 795 | project_euler/problem_001/sol1 |   |  |  |
-| 796 | project_euler/problem_001/sol2 |   |  |  |
-| 797 | project_euler/problem_001/sol3 |   |  |  |
-| 798 | project_euler/problem_001/sol4 |   |  |  |
-| 799 | project_euler/problem_001/sol5 |   |  |  |
-| 800 | project_euler/problem_001/sol6 |   |  |  |
-| 801 | project_euler/problem_001/sol7 |   |  |  |
-| 802 | project_euler/problem_002/sol1 |   |  |  |
-| 803 | project_euler/problem_002/sol2 |   |  |  |
-| 804 | project_euler/problem_002/sol3 |   |  |  |
-| 805 | project_euler/problem_002/sol4 |   |  |  |
-| 806 | project_euler/problem_002/sol5 |   |  |  |
-| 807 | project_euler/problem_003/sol1 |   |  |  |
-| 808 | project_euler/problem_003/sol2 |   |  |  |
-| 809 | project_euler/problem_003/sol3 |   |  |  |
-| 810 | project_euler/problem_004/sol1 |   |  |  |
-| 811 | project_euler/problem_004/sol2 |   |  |  |
-| 812 | project_euler/problem_005/sol1 |   |  |  |
-| 813 | project_euler/problem_005/sol2 |   |  |  |
-| 814 | project_euler/problem_006/sol1 |   |  |  |
-| 815 | project_euler/problem_006/sol2 |   |  |  |
-| 816 | project_euler/problem_006/sol3 |   |  |  |
-| 817 | project_euler/problem_006/sol4 |   |  |  |
-| 818 | project_euler/problem_007/sol1 |   |  |  |
-| 819 | project_euler/problem_007/sol2 |   |  |  |
-| 820 | project_euler/problem_007/sol3 |   |  |  |
-| 821 | project_euler/problem_008/sol1 |   |  |  |
-| 822 | project_euler/problem_008/sol2 |   |  |  |
-| 823 | project_euler/problem_008/sol3 |   |  |  |
-| 824 | project_euler/problem_009/sol1 |   |  |  |
-| 825 | project_euler/problem_009/sol2 |   |  |  |
-| 826 | project_euler/problem_009/sol3 |   |  |  |
-| 827 | project_euler/problem_010/sol1 |   |  |  |
-| 828 | project_euler/problem_010/sol2 |   |  |  |
-| 829 | project_euler/problem_010/sol3 |   |  |  |
-| 830 | project_euler/problem_011/sol1 |   |  |  |
-| 831 | project_euler/problem_011/sol2 |   |  |  |
-| 832 | project_euler/problem_012/sol1 |   |  |  |
-| 833 | project_euler/problem_012/sol2 |   |  |  |
-| 834 | project_euler/problem_013/sol1 |   |  |  |
-| 835 | project_euler/problem_014/sol1 |   |  |  |
-| 836 | project_euler/problem_014/sol2 |   |  |  |
-| 837 | project_euler/problem_015/sol1 |   |  |  |
-| 838 | project_euler/problem_016/sol1 |   |  |  |
-| 839 | project_euler/problem_016/sol2 |   |  |  |
-| 840 | project_euler/problem_017/sol1 |   |  |  |
-| 841 | project_euler/problem_018/solution |   |  |  |
-| 842 | project_euler/problem_019/sol1 |   |  |  |
-| 843 | project_euler/problem_020/sol1 |   |  |  |
-| 844 | project_euler/problem_020/sol2 |   |  |  |
-| 845 | project_euler/problem_020/sol3 |   |  |  |
-| 846 | project_euler/problem_020/sol4 |   |  |  |
-| 847 | project_euler/problem_021/sol1 |   |  |  |
-| 848 | project_euler/problem_022/sol1 |   |  |  |
-| 849 | project_euler/problem_022/sol2 |   |  |  |
-| 850 | project_euler/problem_023/sol1 |   |  |  |
-| 851 | project_euler/problem_024/sol1 |   |  |  |
-| 852 | project_euler/problem_025/sol1 |   |  |  |
-| 853 | project_euler/problem_025/sol2 |   |  |  |
+| 715 | matrix/sherman_morrison | ✓ | 19.248ms | 4.0 MB |
+| 716 | matrix/spiral_print | ✓ |  |  |
+| 717 | matrix/tests/test_matrix_operation | ✓ |  |  |
+| 718 | matrix/validate_sudoku_board | ✓ |  |  |
+| 719 | networking_flow/ford_fulkerson | ✓ |  |  |
+| 720 | networking_flow/minimum_cut | ✓ |  |  |
+| 721 | neural_network/activation_functions/binary_step | ✓ |  |  |
+| 722 | neural_network/activation_functions/exponential_linear_unit | ✓ |  |  |
+| 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ |  |  |
+| 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ |  |  |
+| 725 | neural_network/activation_functions/mish | ✓ |  |  |
+| 726 | neural_network/activation_functions/rectified_linear_unit | ✓ |  |  |
+| 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ |  |  |
+| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | error |  |  |
+| 729 | neural_network/activation_functions/softplus | error |  |  |
+| 730 | neural_network/activation_functions/squareplus | ✓ |  |  |
+| 731 | neural_network/activation_functions/swish | ✓ |  |  |
+| 732 | neural_network/back_propagation_neural_network | ✓ |  |  |
+| 733 | neural_network/convolution_neural_network | ✓ |  |  |
+| 734 | neural_network/input_data | ✓ |  |  |
+| 735 | neural_network/simple_neural_network | ✓ |  |  |
+| 736 | neural_network/two_hidden_layers_neural_network | ✓ |  |  |
+| 737 | other/activity_selection | ✓ |  |  |
+| 738 | other/alternative_list_arrange | error |  |  |
+| 739 | other/bankers_algorithm | ✓ |  |  |
+| 740 | other/davis_putnam_logemann_loveland | ✓ |  |  |
+| 741 | other/doomsday | ✓ |  |  |
+| 742 | other/fischer_yates_shuffle | ✓ |  |  |
+| 743 | other/gauss_easter | ✓ |  |  |
+| 744 | other/greedy | ✓ |  |  |
+| 745 | other/guess_the_number_search | ✓ |  |  |
+| 746 | other/h_index | ✓ |  |  |
+| 747 | other/least_recently_used | ✓ |  |  |
+| 748 | other/lfu_cache | ✓ |  |  |
+| 749 | other/linear_congruential_generator | ✓ |  |  |
+| 750 | other/lru_cache | ✓ |  |  |
+| 751 | other/magicdiamondpattern | ✓ |  |  |
+| 752 | other/majority_vote_algorithm | ✓ |  |  |
+| 753 | other/maximum_subsequence | ✓ |  |  |
+| 754 | other/nested_brackets | ✓ |  |  |
+| 755 | other/number_container_system | ✓ |  |  |
+| 756 | other/quine | ✓ |  |  |
+| 757 | other/scoring_algorithm | ✓ |  |  |
+| 758 | other/sdes | error |  |  |
+| 759 | other/tower_of_hanoi | ✓ |  |  |
+| 760 | other/word_search | ✓ |  |  |
+| 761 | physics/altitude_pressure | ✓ |  |  |
+| 762 | physics/archimedes_principle_of_buoyant_force | ✓ |  |  |
+| 763 | physics/basic_orbital_capture | error |  |  |
+| 764 | physics/casimir_effect | ✓ |  |  |
+| 765 | physics/center_of_mass | ✓ |  |  |
+| 766 | physics/centripetal_force | ✓ |  |  |
+| 767 | physics/coulombs_law | ✓ |  |  |
+| 768 | physics/doppler_frequency | ✓ |  |  |
+| 769 | physics/escape_velocity | ✓ |  |  |
+| 770 | physics/grahams_law | ✓ |  |  |
+| 771 | physics/horizontal_projectile_motion | ✓ |  |  |
+| 772 | physics/hubble_parameter | ✓ |  |  |
+| 773 | physics/ideal_gas_law | error |  |  |
+| 774 | physics/in_static_equilibrium | ✓ |  |  |
+| 775 | physics/kinetic_energy | ✓ |  |  |
+| 776 | physics/lens_formulae | ✓ |  |  |
+| 777 | physics/lorentz_transformation_four_vector | ✓ |  |  |
+| 778 | physics/malus_law | error |  |  |
+| 779 | physics/mass_energy_equivalence | ✓ |  |  |
+| 780 | physics/mirror_formulae | ✓ |  |  |
+| 781 | physics/n_body_simulation | ✓ |  |  |
+| 782 | physics/newtons_law_of_gravitation | ✓ |  |  |
+| 783 | physics/newtons_second_law_of_motion | ✓ |  |  |
+| 784 | physics/orbital_transfer_work | ✓ |  |  |
+| 785 | physics/period_of_pendulum | ✓ |  |  |
+| 786 | physics/photoelectric_effect | ✓ |  |  |
+| 787 | physics/potential_energy | ✓ |  |  |
+| 788 | physics/rainfall_intensity | ✓ |  |  |
+| 789 | physics/reynolds_number | ✓ |  |  |
+| 790 | physics/rms_speed_of_molecule | ✓ |  |  |
+| 791 | physics/shear_stress | ✓ |  |  |
+| 792 | physics/speed_of_sound | ✓ |  |  |
+| 793 | physics/speeds_of_gas_molecules | ✓ |  |  |
+| 794 | physics/terminal_velocity | ✓ |  |  |
+| 795 | project_euler/problem_001/sol1 | ✓ |  |  |
+| 796 | project_euler/problem_001/sol2 | ✓ |  |  |
+| 797 | project_euler/problem_001/sol3 | ✓ |  |  |
+| 798 | project_euler/problem_001/sol4 | ✓ |  |  |
+| 799 | project_euler/problem_001/sol5 | ✓ |  |  |
+| 800 | project_euler/problem_001/sol6 | ✓ |  |  |
+| 801 | project_euler/problem_001/sol7 | ✓ |  |  |
+| 802 | project_euler/problem_002/sol1 | ✓ |  |  |
+| 803 | project_euler/problem_002/sol2 | ✓ |  |  |
+| 804 | project_euler/problem_002/sol3 | ✓ |  |  |
+| 805 | project_euler/problem_002/sol4 | ✓ |  |  |
+| 806 | project_euler/problem_002/sol5 | ✓ |  |  |
+| 807 | project_euler/problem_003/sol1 | ✓ |  |  |
+| 808 | project_euler/problem_003/sol2 | ✓ |  |  |
+| 809 | project_euler/problem_003/sol3 | ✓ |  |  |
+| 810 | project_euler/problem_004/sol1 | ✓ |  |  |
+| 811 | project_euler/problem_004/sol2 | ✓ |  |  |
+| 812 | project_euler/problem_005/sol1 | ✓ |  |  |
+| 813 | project_euler/problem_005/sol2 | ✓ |  |  |
+| 814 | project_euler/problem_006/sol1 | ✓ |  |  |
+| 815 | project_euler/problem_006/sol2 | ✓ |  |  |
+| 816 | project_euler/problem_006/sol3 | ✓ |  |  |
+| 817 | project_euler/problem_006/sol4 | ✓ |  |  |
+| 818 | project_euler/problem_007/sol1 | ✓ |  |  |
+| 819 | project_euler/problem_007/sol2 | error |  |  |
+| 820 | project_euler/problem_007/sol3 | ✓ |  |  |
+| 821 | project_euler/problem_008/sol1 | ✓ |  |  |
+| 822 | project_euler/problem_008/sol2 | ✓ |  |  |
+| 823 | project_euler/problem_008/sol3 | ✓ |  |  |
+| 824 | project_euler/problem_009/sol1 | ✓ |  |  |
+| 825 | project_euler/problem_009/sol2 | ✓ |  |  |
+| 826 | project_euler/problem_009/sol3 | ✓ |  |  |
+| 827 | project_euler/problem_010/sol1 | ✓ |  |  |
+| 828 | project_euler/problem_010/sol2 | ✓ |  |  |
+| 829 | project_euler/problem_010/sol3 | ✓ |  |  |
+| 830 | project_euler/problem_011/sol1 | ✓ |  |  |
+| 831 | project_euler/problem_011/sol2 | ✓ |  |  |
+| 832 | project_euler/problem_012/sol1 | ✓ |  |  |
+| 833 | project_euler/problem_012/sol2 | ✓ |  |  |
+| 834 | project_euler/problem_013/sol1 | ✓ |  |  |
+| 835 | project_euler/problem_014/sol1 | error |  |  |
+| 836 | project_euler/problem_014/sol2 | error |  |  |
+| 837 | project_euler/problem_015/sol1 | ✓ |  |  |
+| 838 | project_euler/problem_016/sol1 | ✓ |  |  |
+| 839 | project_euler/problem_016/sol2 | ✓ |  |  |
+| 840 | project_euler/problem_017/sol1 | ✓ |  |  |
+| 841 | project_euler/problem_018/solution | ✓ |  |  |
+| 842 | project_euler/problem_019/sol1 | ✓ |  |  |
+| 843 | project_euler/problem_020/sol1 | ✓ |  |  |
+| 844 | project_euler/problem_020/sol2 | ✓ |  |  |
+| 845 | project_euler/problem_020/sol3 | ✓ |  |  |
+| 846 | project_euler/problem_020/sol4 | error |  |  |
+| 847 | project_euler/problem_021/sol1 | ✓ |  |  |
+| 848 | project_euler/problem_022/sol1 | ✓ |  |  |
+| 849 | project_euler/problem_022/sol2 | error |  |  |
+| 850 | project_euler/problem_023/sol1 | ✓ |  |  |
+| 851 | project_euler/problem_024/sol1 | ✓ |  |  |
+| 852 | project_euler/problem_025/sol1 | error |  |  |
+| 853 | project_euler/problem_025/sol2 | error |  |  |
 | 854 | project_euler/problem_025/sol3 |   |  |  |
-| 855 | project_euler/problem_026/sol1 |   |  |  |
-| 856 | project_euler/problem_027/sol1 |   |  |  |
-| 857 | project_euler/problem_028/sol1 |   |  |  |
-| 858 | project_euler/problem_029/sol1 |   |  |  |
-| 859 | project_euler/problem_030/sol1 |   |  |  |
-| 860 | project_euler/problem_031/sol1 |   |  |  |
-| 861 | project_euler/problem_031/sol2 |   |  |  |
-| 862 | project_euler/problem_032/sol32 |   |  |  |
-| 863 | project_euler/problem_033/sol1 |   |  |  |
-| 864 | project_euler/problem_034/sol1 |   |  |  |
-| 865 | project_euler/problem_035/sol1 |   |  |  |
-| 866 | project_euler/problem_036/sol1 |   |  |  |
-| 867 | project_euler/problem_037/sol1 |   |  |  |
-| 868 | project_euler/problem_038/sol1 |   |  |  |
-| 869 | project_euler/problem_039/sol1 |   |  |  |
-| 870 | project_euler/problem_040/sol1 |   |  |  |
-| 871 | project_euler/problem_041/sol1 |   |  |  |
-| 872 | project_euler/problem_042/solution42 |   |  |  |
-| 873 | project_euler/problem_043/sol1 |   |  |  |
-| 874 | project_euler/problem_044/sol1 |   |  |  |
-| 875 | project_euler/problem_045/sol1 |   |  |  |
-| 876 | project_euler/problem_046/sol1 |   |  |  |
-| 877 | project_euler/problem_047/sol1 |   |  |  |
-| 878 | project_euler/problem_048/sol1 |   |  |  |
-| 879 | project_euler/problem_049/sol1 |   |  |  |
-| 880 | project_euler/problem_050/sol1 |   |  |  |
-| 881 | project_euler/problem_051/sol1 |   |  |  |
-| 882 | project_euler/problem_052/sol1 |   |  |  |
-| 883 | project_euler/problem_053/sol1 |   |  |  |
-| 884 | project_euler/problem_054/sol1 |   |  |  |
-| 885 | project_euler/problem_054/test_poker_hand |   |  |  |
-| 886 | project_euler/problem_055/sol1 |   |  |  |
-| 887 | project_euler/problem_056/sol1 |   |  |  |
-| 888 | project_euler/problem_057/sol1 |   |  |  |
-| 889 | project_euler/problem_058/sol1 |   |  |  |
-| 890 | project_euler/problem_059/sol1 |   |  |  |
-| 891 | project_euler/problem_062/sol1 |   |  |  |
-| 892 | project_euler/problem_063/sol1 |   |  |  |
-| 893 | project_euler/problem_064/sol1 |   |  |  |
-| 894 | project_euler/problem_065/sol1 |   |  |  |
-| 895 | project_euler/problem_067/sol1 |   |  |  |
-| 896 | project_euler/problem_067/sol2 |   |  |  |
-| 897 | project_euler/problem_068/sol1 |   |  |  |
-| 898 | project_euler/problem_069/sol1 |   |  |  |
-| 899 | project_euler/problem_070/sol1 |   |  |  |
-| 900 | project_euler/problem_071/sol1 |   |  |  |
-| 901 | project_euler/problem_072/sol1 |   |  |  |
-| 902 | project_euler/problem_072/sol2 |   |  |  |
-| 903 | project_euler/problem_073/sol1 |   |  |  |
-| 904 | project_euler/problem_074/sol1 |   |  |  |
-| 905 | project_euler/problem_074/sol2 |   |  |  |
-| 906 | project_euler/problem_075/sol1 |   |  |  |
-| 907 | project_euler/problem_076/sol1 |   |  |  |
-| 908 | project_euler/problem_077/sol1 |   |  |  |
-| 909 | project_euler/problem_078/sol1 |   |  |  |
-| 910 | project_euler/problem_079/sol1 |   |  |  |
-| 911 | project_euler/problem_092/sol1 |   |  |  |
-| 912 | project_euler/problem_116/sol1 |   |  |  |
-| 913 | project_euler/problem_345/sol1 |   |  |  |
-| 914 | quantum/q_fourier_transform |   |  |  |
+| 855 | project_euler/problem_026/sol1 | ✓ |  |  |
+| 856 | project_euler/problem_027/sol1 | ✓ |  |  |
+| 857 | project_euler/problem_028/sol1 | ✓ |  |  |
+| 858 | project_euler/problem_029/sol1 | error |  |  |
+| 859 | project_euler/problem_030/sol1 | ✓ |  |  |
+| 860 | project_euler/problem_031/sol1 | error |  |  |
+| 861 | project_euler/problem_031/sol2 | ✓ |  |  |
+| 862 | project_euler/problem_032/sol32 | ✓ |  |  |
+| 863 | project_euler/problem_033/sol1 | ✓ |  |  |
+| 864 | project_euler/problem_034/sol1 | ✓ |  |  |
+| 865 | project_euler/problem_035/sol1 | error |  |  |
+| 866 | project_euler/problem_036/sol1 | ✓ |  |  |
+| 867 | project_euler/problem_037/sol1 | ✓ |  |  |
+| 868 | project_euler/problem_038/sol1 | ✓ |  |  |
+| 869 | project_euler/problem_039/sol1 | ✓ |  |  |
+| 870 | project_euler/problem_040/sol1 | error |  |  |
+| 871 | project_euler/problem_041/sol1 | ✓ |  |  |
+| 872 | project_euler/problem_042/solution42 | error |  |  |
+| 873 | project_euler/problem_043/sol1 | ✓ |  |  |
+| 874 | project_euler/problem_044/sol1 | ✓ |  |  |
+| 875 | project_euler/problem_045/sol1 | error |  |  |
+| 876 | project_euler/problem_046/sol1 | ✓ |  |  |
+| 877 | project_euler/problem_047/sol1 | ✓ |  |  |
+| 878 | project_euler/problem_048/sol1 | ✓ |  |  |
+| 879 | project_euler/problem_049/sol1 | ✓ |  |  |
+| 880 | project_euler/problem_050/sol1 | ✓ |  |  |
+| 881 | project_euler/problem_051/sol1 | ✓ |  |  |
+| 882 | project_euler/problem_052/sol1 | ✓ |  |  |
+| 883 | project_euler/problem_053/sol1 | ✓ |  |  |
+| 884 | project_euler/problem_054/sol1 | error |  |  |
+| 885 | project_euler/problem_054/test_poker_hand | ✓ |  |  |
+| 886 | project_euler/problem_055/sol1 | error |  |  |
+| 887 | project_euler/problem_056/sol1 | error |  |  |
+| 888 | project_euler/problem_057/sol1 | ✓ |  |  |
+| 889 | project_euler/problem_058/sol1 | ✓ |  |  |
+| 890 | project_euler/problem_059/sol1 | ✓ |  |  |
+| 891 | project_euler/problem_062/sol1 | ✓ |  |  |
+| 892 | project_euler/problem_063/sol1 | ✓ |  |  |
+| 893 | project_euler/problem_064/sol1 | error |  |  |
+| 894 | project_euler/problem_065/sol1 | ✓ |  |  |
+| 895 | project_euler/problem_067/sol1 | ✓ |  |  |
+| 896 | project_euler/problem_067/sol2 | ✓ |  |  |
+| 897 | project_euler/problem_068/sol1 | ✓ |  |  |
+| 898 | project_euler/problem_069/sol1 | ✓ |  |  |
+| 899 | project_euler/problem_070/sol1 | ✓ |  |  |
+| 900 | project_euler/problem_071/sol1 | ✓ |  |  |
+| 901 | project_euler/problem_072/sol1 | ✓ |  |  |
+| 902 | project_euler/problem_072/sol2 | ✓ |  |  |
+| 903 | project_euler/problem_073/sol1 | ✓ |  |  |
+| 904 | project_euler/problem_074/sol1 | ✓ |  |  |
+| 905 | project_euler/problem_074/sol2 | ✓ |  |  |
+| 906 | project_euler/problem_075/sol1 | ✓ |  |  |
+| 907 | project_euler/problem_076/sol1 | ✓ |  |  |
+| 908 | project_euler/problem_077/sol1 | ✓ |  |  |
+| 909 | project_euler/problem_078/sol1 | ✓ |  |  |
+| 910 | project_euler/problem_079/sol1 | ✓ |  |  |
+| 911 | project_euler/problem_092/sol1 | ✓ |  |  |
+| 912 | project_euler/problem_116/sol1 | ✓ |  |  |
+| 913 | project_euler/problem_345/sol1 | ✓ |  |  |
+| 914 | quantum/q_fourier_transform | ✓ |  |  |
 | 915 | scheduling/job_sequence_with_deadline |   |  |  |
 | 916 | scheduling/job_sequencing_with_deadline |   |  |  |
 | 917 | scheduling/multi_level_feedback_queue |   |  |  |
