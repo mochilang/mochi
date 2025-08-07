@@ -236,6 +236,32 @@ func javaType(t string) string {
 		if t == "" {
 			return ""
 		}
+		if strings.HasPrefix(t, "list<") && strings.HasSuffix(t, ">") {
+			inner := strings.TrimSuffix(strings.TrimPrefix(t, "list<"), ">")
+			return javaType(inner) + "[]"
+		}
+		if strings.HasPrefix(t, "map<") && strings.HasSuffix(t, ">") {
+			rest := strings.TrimSuffix(strings.TrimPrefix(t, "map<"), ">")
+			depth := 0
+			comma := -1
+			for i, ch := range rest {
+				switch ch {
+				case '<':
+					depth++
+				case '>':
+					depth--
+				case ',':
+					if depth == 0 && comma < 0 {
+						comma = i
+					}
+				}
+			}
+			if comma >= 0 {
+				key := strings.TrimSpace(rest[:comma])
+				val := strings.TrimSpace(rest[comma+1:])
+				return fmt.Sprintf("java.util.Map<%s, %s>", javaType(key), javaType(val))
+			}
+		}
 		if strings.HasPrefix(t, "fn(") {
 			start := strings.Index(t, "(") + 1
 			end := strings.Index(t, ")")
@@ -403,6 +429,16 @@ func mapKeyType(t string) string {
 }
 
 func emitCastExpr(w io.Writer, e Expr, typ string) {
+	if ml, ok := e.(*MapLit); ok {
+		if strings.HasPrefix(typ, "java.util.Map<") {
+			if ml.KeyType == "" {
+				ml.KeyType = mapKeyType(typ)
+			}
+			if ml.ValueType == "" {
+				ml.ValueType = mapValueType(typ)
+			}
+		}
+	}
 	// Cast map lookups to the destination type when needed.
 	if typ == "boolean" {
 		if inferType(e) == "boolean" {
@@ -3257,6 +3293,11 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		if needCast {
 			fmt.Fprint(w, "))")
 		}
+	} else if isListExpr(ix.Target) {
+		ix.Target.emit(w)
+		fmt.Fprint(w, ".get(")
+		ix.Index.emit(w)
+		fmt.Fprint(w, ")")
 	} else if isMapExpr(ix.Target) {
 		castType := "java.util.Map"
 		if ix.ResultType != "" {
