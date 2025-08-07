@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-07 15:48 GMT+7
+Last updated: 2025-08-07 16:33 GMT+7
 
-## Algorithms Golden Test Checklist (651/1077)
+## Algorithms Golden Test Checklist (652/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 11.075ms | 3.5 MB |
@@ -658,7 +658,7 @@ Last updated: 2025-08-07 15:48 GMT+7
 | 649 | maths/series/geometric_series | error |  |  |
 | 650 | maths/series/harmonic | error |  |  |
 | 651 | maths/series/harmonic_series | error |  |  |
-| 652 | maths/series/hexagonal_numbers | error |  |  |
+| 652 | maths/series/hexagonal_numbers | ✓ | 11.858ms | 4.2 MB |
 | 653 | maths/series/p_series | ✓ | 12.796ms | 2.6 MB |
 | 654 | maths/sieve_of_eratosthenes | ✓ | 13.931ms | 4.6 MB |
 | 655 | maths/sigmoid | error |  |  |
