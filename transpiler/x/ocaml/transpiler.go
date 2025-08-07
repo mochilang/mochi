@@ -96,6 +96,8 @@ func (p *Program) UsesStrModule() bool {
 			return exprUses(x.Str) || exprUses(x.Start) || exprUses(x.End)
 		case *SumBuiltin:
 			return exprUses(x.List)
+		case *IndexOfBuiltin:
+			return exprUses(x.Str) || exprUses(x.Sub)
 		case *FuncCall:
 			for _, a := range x.Args {
 				if exprUses(a) {
