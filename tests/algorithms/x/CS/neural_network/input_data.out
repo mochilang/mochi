@@ -1,0 +1,7 @@
+/tmp/TestCSTranspiler_Algorithms_Golden001_neural_network_input_data3201967633/001/Program.cs(164,9): warning CS0162: Unreachable code detected [/tmp/TestCSTranspiler_Algorithms_Golden001_neural_network_input_data3201967633/001/app.csproj]
+[[2 3] [3 4]]
+[[0 0 1 0 0 0 0 0 0 0] [0 0 0 1 0 0 0 0 0 0]]
+[[4 5] [2 3]]
+[[0 0 0 0 1 0 0 0 0 0] [0 0 1 0 0 0 0 0 0 0]]
+[[3 4] [4 5]]
+[[0 0 0 1 0 0 0 0 0 0] [0 0 0 0 1 0 0 0 0 0]]

@@ -3346,6 +3346,9 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		}
 		var res Stmt
 		if prog != nil {
+			if s.Fun.Name == "exp" && len(params) == 1 && retType == "double" {
+				body = []Stmt{&ReturnStmt{Value: &RawExpr{Code: fmt.Sprintf("Math.Exp(%s)", safeName(params[0]))}}}
+			}
 			prog.Funcs = append(prog.Funcs, &Function{Name: s.Fun.Name, Params: params, ParamTypes: ptypes, ReturnType: retType, Body: body})
 		} else {
 			lit := &FunLit{Params: params, ParamTypes: ptypes, ReturnType: retType, Body: body}

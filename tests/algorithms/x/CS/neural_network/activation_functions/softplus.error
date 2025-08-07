@@ -1,6 +1,0 @@
-exit status 134
-Unhandled exception. System.Exception: ln domain error
-   at Program.ln(Double x_0) in /tmp/TestCSTranspiler_Algorithms_Golden001_neural_network_activation_functions_softplus3477402030/001/Program.cs:line 102
-   at Program.softplus(Double[] vector_11) in /tmp/TestCSTranspiler_Algorithms_Golden001_neural_network_activation_functions_softplus3477402030/001/Program.cs:line 135
-   at Program.main() in /tmp/TestCSTranspiler_Algorithms_Golden001_neural_network_activation_functions_softplus3477402030/001/Program.cs:line 146
-   at Program.Main() in /tmp/TestCSTranspiler_Algorithms_Golden001_neural_network_activation_functions_softplus3477402030/001/Program.cs:line 155

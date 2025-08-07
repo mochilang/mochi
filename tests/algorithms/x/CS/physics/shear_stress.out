@@ -1,0 +1,4 @@
+/tmp/TestCSTranspiler_Algorithms_Golden001_physics_shear_stress4081334418/001/Program.cs(126,9): warning CS0162: Unreachable code detected [/tmp/TestCSTranspiler_Algorithms_Golden001_physics_shear_stress4081334418/001/app.csproj]
+Result(name='area', value=4)
+Result(name='stress', value=8)
+Result(name='tangential_force', value=1200000)
