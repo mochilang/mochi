@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Python`.
-Last updated: 2025-08-07 10:39 GMT+7
+Last updated: 2025-08-07 11:12 GMT+7
 
-## Algorithms Golden Test Checklist (479/1077)
+## Algorithms Golden Test Checklist (480/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 63.0µs | 12.88MB |
@@ -611,7 +611,7 @@ Last updated: 2025-08-07 10:39 GMT+7
 | 602 | maths/modular_division | ✓ | 77.0µs | 13.66MB |
 | 603 | maths/monte_carlo | ✓ | 4.0ms | 13.23MB |
 | 604 | maths/monte_carlo_dice | ✓ | 15.0ms | 12.56MB |
-| 605 | maths/number_of_digits |   |  |  |
+| 605 | maths/number_of_digits | ✓ | 18.0µs | 13.47MB |
 | 606 | maths/numerical_analysis/adams_bashforth |   |  |  |
 | 607 | maths/numerical_analysis/bisection |   |  |  |
 | 608 | maths/numerical_analysis/bisection_2 |   |  |  |
