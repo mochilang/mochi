@@ -1,0 +1,14 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/transpiler/CPP/divide_and_conquer/max_difference_pair.cpp:80:215: warning: multi-character character constant [-Wmultichar]
+   80 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/divide_and_conquer/max_difference_pair.cpp:80:251: warning: multi-character character constant [-Wmultichar]
+   80 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/divide_and_conquer/max_difference_pair.cpp: In function ‘int main()’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/divide_and_conquer/max_difference_pair.cpp:184:59: error: cannot bind non-const lvalue reference of type ‘std::vector<long int>&’ to an rvalue of type ‘std::vector<long int>’
+  184 |         std::vector<int64_t> result = max_difference(std::vector<int64_t>{int64_t(5), int64_t(11), int64_t(2), int64_t(1), int64_t(7), int64_t(9), int64_t(0), int64_t(7)});
+      |                                                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/divide_and_conquer/max_difference_pair.cpp:168:59: note:   initializing argument 1 of ‘std::vector<long int> max_difference(std::vector<long int>&)’
+  168 | std::vector<int64_t> max_difference(std::vector<int64_t>& a) {
+      |                                     ~~~~~~~~~~~~~~~~~~~~~~^
