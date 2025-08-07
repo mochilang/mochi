@@ -3960,7 +3960,11 @@ func inferType(e Expr) string {
 		if strings.HasPrefix(t, "Map<") && strings.HasSuffix(t, ">") {
 			parts := strings.TrimSuffix(strings.TrimPrefix(t, "Map<"), ">")
 			if idx := strings.Index(parts, ","); idx >= 0 {
-				return strings.TrimSpace(parts[idx+1:]) + "?"
+				val := strings.TrimSpace(parts[idx+1:])
+				if !ex.NoBang {
+					return val
+				}
+				return val + "?"
 			}
 		}
 		return "dynamic"
@@ -5951,12 +5955,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &MapLit{Entries: entries}, nil
 	case p.Load != nil:
-		format := parseFormat(p.Load.With)
+		format, delim, header := parseLoadOptions(p.Load.With)
 		path := ""
 		if p.Load.Path != nil {
 			path = strings.Trim(*p.Load.Path, "\"")
 		}
-		expr, err := dataExprFromFile(path, format, p.Load.Type)
+		expr, err := dataExprFromFile(path, format, delim, header, p.Load.Type)
 		if err == nil {
 			return expr, nil
 		}
@@ -6377,6 +6381,24 @@ func literalString(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+func literalBool(e *parser.Expr) (bool, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return false, false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return false, false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Bool != nil {
+		return bool(*p.Target.Lit.Bool), true
+	}
+	return false, false
+}
+
 func parseFormat(e *parser.Expr) string {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return ""
@@ -6401,6 +6423,44 @@ func parseFormat(e *parser.Expr) string {
 		}
 	}
 	return ""
+}
+
+func parseLoadOptions(e *parser.Expr) (format, delimiter string, header bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Map == nil {
+		return
+	}
+	for _, it := range p.Target.Map.Items {
+		key, ok := isSimpleIdent(it.Key)
+		if !ok {
+			key, ok = literalString(it.Key)
+		}
+		if !ok {
+			continue
+		}
+		switch key {
+		case "format":
+			if s, ok := literalString(it.Value); ok {
+				format = s
+			}
+		case "delimiter":
+			if s, ok := literalString(it.Value); ok {
+				delimiter = s
+			}
+		case "header":
+			if b, ok := literalBool(it.Value); ok {
+				header = b
+			}
+		}
+	}
+	return
 }
 
 func repoRoot() string {
@@ -6464,19 +6524,19 @@ func valueToExpr(v interface{}, typ *parser.TypeRef) Expr {
 	}
 }
 
-func dataExprFromFile(path, format string, typ *parser.TypeRef) (Expr, error) {
+func dataExprFromFile(path, format, delim string, header bool, typ *parser.TypeRef) (Expr, error) {
 	if path == "" {
 		return &ListLit{}, nil
 	}
-        root := repoRoot()
-        if root != "" {
-                if strings.HasPrefix(path, "../") {
-                        clean := strings.TrimPrefix(path, "../")
-                        path = filepath.Join(root, "tests", clean)
-                } else if strings.HasPrefix(path, "tests/") {
-                        path = filepath.Join(root, path)
-                }
-        }
+	root := repoRoot()
+	if root != "" {
+		if strings.HasPrefix(path, "../") {
+			clean := strings.TrimPrefix(path, "../")
+			path = filepath.Join(root, "tests", clean)
+		} else if strings.HasPrefix(path, "tests/") {
+			path = filepath.Join(root, path)
+		}
+	}
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -6504,6 +6564,35 @@ func dataExprFromFile(path, format string, typ *parser.TypeRef) (Expr, error) {
 			}
 		}
 		v = arr
+	case "csv", "":
+		d := delim
+		if d == "" {
+			d = ","
+		}
+		lines := bytes.Split(data, []byte{'\n'})
+		var rows []interface{}
+		var headers []string
+		for i, line := range lines {
+			line = bytes.TrimSpace(line)
+			if len(line) == 0 {
+				continue
+			}
+			parts := strings.Split(string(line), d)
+			if i == 0 && header {
+				headers = parts
+				continue
+			}
+			m := map[string]interface{}{}
+			for j, part := range parts {
+				key := fmt.Sprintf("c%d", j)
+				if header && j < len(headers) {
+					key = headers[j]
+				}
+				m[key] = strings.TrimSpace(part)
+			}
+			rows = append(rows, m)
+		}
+		v = rows
 	default:
 		return nil, fmt.Errorf("unsupported load format")
 	}
