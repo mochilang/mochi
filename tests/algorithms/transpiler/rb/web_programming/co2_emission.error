@@ -1,0 +1,6 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/rb/web_programming/co2_emission.rb:115:in `main': undefined method `from' for {"from"=>"2020-09-30T23:30Z" "to"=>"2020-10-01T00:00Z" "intensity"=>{"forecast"=>123 "actual"=>160 "index"=>"moderate"}}:Hash (NoMethodError)
+
+      puts(((["from" e.from "to" e.to ":" e.intensity.actual]).map{ |x| if x.nil? then 'None' elsif x == true then 'True' elsif x == false then 'False' elsif x.respond_to?(:to_h) then '{' + x.to_h.map{ |k,v| "'#{k}': #{v.is_a?(String) ? '\'' + v + '\'' : v.to_s}" }.join(' ') + '}' else x end }.join(' ')).rstrip())
+                       ^^^^^
+	from /workspace/mochi/tests/algorithms/transpiler/rb/web_programming/co2_emission.rb:125:in `<main>'

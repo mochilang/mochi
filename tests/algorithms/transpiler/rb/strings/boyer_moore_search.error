@@ -1,0 +1,8 @@
+error[P999]: /workspace/mochi/tests/github/TheAlgorithms/Mochi/strings/boyer_moore_search.mochi:42:26: unexpected token "-" (expected PostfixExpr)
+  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/strings/boyer_moore_search.mochi:42:26
+
+ 42 |     if mismatch_index == -1 {
+    |                          ^
+
+help:
+  Parse error occurred. Check syntax near this location.
