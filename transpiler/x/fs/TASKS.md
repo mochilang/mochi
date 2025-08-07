@@ -1,3 +1,7 @@
+## Progress (2025-08-07 00:16 +0700)
+- feat(fs): handle index assignments and arrays
+- Generated F# for 103/105 programs (103 passing)
+
 ## Progress (2025-08-06 20:48 +0700)
 - Reset test header flag between programs
 - Generated F# for 103/105 programs (103 passing)

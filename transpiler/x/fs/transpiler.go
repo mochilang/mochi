@@ -3549,83 +3549,51 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		letPtrs[st.Var.Name] = append(letPtrs[st.Var.Name], ls)
 		return ls, nil
 	case st.Assign != nil:
-		// Handle simple variable assignment. More complex targets are unsupported.
-		tgt := st.Assign.Target
-		if tgt != nil && len(tgt.Ops) == 0 && tgt.Target != nil {
-			if sel := tgt.Target.Selector; sel != nil && len(sel.Tail) == 0 {
-				name := sel.Root
-				e, err := convertExpr(st.Assign.Value)
-				if err != nil {
-					return nil, err
-				}
-				mutatedVars[name] = true
-				cur := varTypes[name]
-				t := inferType(e)
-				if cur == "int" && t == "int64" {
-					e = &CastExpr{Expr: e, Type: "int"}
-					t = "int"
-				}
-				if t == "array" {
-					if app, ok := e.(*AppendExpr); ok {
-						if et := inferType(app.Elem); et != "" && et != "obj" {
-							t = et + " array"
-						}
-					} else if cur := varTypes[name]; cur != "" && cur != "array" && cur != "obj" {
-						t = cur
-						e = &CastExpr{Expr: e, Type: fsTypeFromString(cur)}
-					}
-				}
-				if t != "" {
-					if cur == "" || cur == "array" || cur == "map" {
-						varTypes[name] = t
-						cur = t
-					}
-					if cur != "" && cur != t && cur != "obj" {
-						varTypes[name] = "obj"
-						for _, ls := range letPtrs[name] {
-							ls.Type = "obj"
-							if ls.Expr != nil {
-								ls.Expr = &CallExpr{Func: "box", Args: []Expr{ls.Expr}}
-							}
-						}
-						e = &CallExpr{Func: "box", Args: []Expr{e}}
-					}
-				} else if vt := varTypes[name]; vt != "" && vt != "obj" {
-					e = &CastExpr{Expr: e, Type: fsTypeFromString(vt)}
-				}
-				return &AssignStmt{Name: name, Expr: e}, nil
-			}
-		} else if tgt != nil {
-			// Support assignments to indexed expressions, e.g., m[k] = v
+		if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
+			name := st.Assign.Name
 			e, err := convertExpr(st.Assign.Value)
 			if err != nil {
 				return nil, err
 			}
-			texpr, err := convertPostfix(tgt)
-			if err != nil {
-				return nil, err
+			mutatedVars[name] = true
+			cur := varTypes[name]
+			t := inferType(e)
+			if cur == "int" && t == "int64" {
+				e = &CastExpr{Expr: e, Type: "int"}
+				t = "int"
 			}
-			// mark root identifier as mutated
-			tmp := texpr
-			for {
-				switch t := tmp.(type) {
-				case *IndexExpr:
-					tmp = t.Target
-				case *FieldExpr:
-					tmp = t.Target
-				case *IdentExpr:
-					mutatedVars[t.Name] = true
-					tmp = nil
-				default:
-					tmp = nil
-				}
-				if tmp == nil {
-					break
+			if t == "array" {
+				if app, ok := e.(*AppendExpr); ok {
+					if et := inferType(app.Elem); et != "" && et != "obj" {
+						t = et + " array"
+					}
+				} else if cur := varTypes[name]; cur != "" && cur != "array" && cur != "obj" {
+					t = cur
+					e = &CastExpr{Expr: e, Type: fsTypeFromString(cur)}
 				}
 			}
-			return &IndexAssignStmt{Target: texpr, Value: e}, nil
+			if t != "" {
+				if cur == "" || cur == "array" || cur == "map" {
+					varTypes[name] = t
+					cur = t
+				}
+				if cur != "" && cur != t && cur != "obj" {
+					varTypes[name] = "obj"
+					for _, ls := range letPtrs[name] {
+						ls.Type = "obj"
+						if ls.Expr != nil {
+							ls.Expr = &CallExpr{Func: "box", Args: []Expr{ls.Expr}}
+						}
+					}
+					e = &CallExpr{Func: "box", Args: []Expr{e}}
+				}
+			} else if vt := varTypes[name]; vt != "" && vt != "obj" {
+				e = &CastExpr{Expr: e, Type: fsTypeFromString(vt)}
+			}
+			return &AssignStmt{Name: name, Expr: e}, nil
 		}
-		return nil, fmt.Errorf("unsupported assignment")
+		// Complex targets (indexing/fields) not yet supported.
+		return nil, fmt.Errorf("unsupported assignment target")
 	case st.Return != nil:
 		var e Expr
 		if st.Return.Value != nil {
@@ -3864,7 +3832,7 @@ func convertExpr(e *parser.Expr) (Expr, error) {
 	exprs := []Expr{left}
 	ops := []string{}
 	for _, op := range e.Binary.Right {
-		right, err := convertUnary(op.Right)
+		right, err := convertPostfix(op.Right)
 		if err != nil {
 			return nil, err
 		}
@@ -4018,7 +3986,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				if pts, ok := funcParamTypes[p.Call.Func]; ok {
 					for i, t := range pts {
 						if i < len(args) && t != "" && t != inferType(args[i]) {
-							args[i] = &CastExpr{Expr: args[i], Type: t}
+							if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") && inferType(args[i]) == "map" {
+								// let F# infer generic types for map literals
+							} else {
+								args[i] = &CastExpr{Expr: args[i], Type: t}
+							}
 						}
 					}
 				}
