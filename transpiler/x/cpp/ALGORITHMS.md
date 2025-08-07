@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
 Completed programs: 365/1077
-Last updated: 2025-08-07 20:53 +0700
+Last updated: 2025-08-07 22:51 +0700
 
 Checklist:
 
@@ -257,36 +257,36 @@ Checklist:
 | 248 | data_structures/stacks/dijkstras_two_stack_algorithm | ✓ | 247.0µs | 3.49MB |
 | 249 | data_structures/stacks/infix_to_postfix_conversion | ✓ | 625.0µs | 3.56MB |
 | 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ | 1.0µs | 3.44MB |
-| 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 376.0µs | 3.55MB |
-| 252 | data_structures/stacks/lexicographical_numbers | ✓ | 569.0µs | 3.63MB |
-| 253 | data_structures/stacks/next_greater_element | ✓ | 925.0µs | 3.75MB |
-| 254 | data_structures/stacks/postfix_evaluation | ✓ | 514.0µs | 3.79MB |
-| 255 | data_structures/stacks/prefix_evaluation | ✓ | 548.0µs | 3.77MB |
-| 256 | data_structures/stacks/stack | ✓ | 229.0µs | 3.60MB |
-| 257 | data_structures/stacks/stack_using_two_queues | ✓ | 228.0µs | 3.60MB |
-| 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 329.0µs | 3.61MB |
-| 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 247.0µs | 3.59MB |
-| 260 | data_structures/stacks/stock_span_problem | ✓ | 133.0µs | 3.44MB |
-| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 411.0µs | 3.53MB |
-| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 205.0µs | 3.57MB |
-| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 271.0µs | 3.76MB |
-| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 235.0µs | 3.53MB |
+| 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 278.0µs | 3.70MB |
+| 252 | data_structures/stacks/lexicographical_numbers | ✓ | 657.0µs | 3.67MB |
+| 253 | data_structures/stacks/next_greater_element | ✓ | 797.0µs | 3.73MB |
+| 254 | data_structures/stacks/postfix_evaluation | ✓ | 506.0µs | 3.68MB |
+| 255 | data_structures/stacks/prefix_evaluation | ✓ | 586.0µs | 3.77MB |
+| 256 | data_structures/stacks/stack | ✓ | 292.0µs | 3.70MB |
+| 257 | data_structures/stacks/stack_using_two_queues | ✓ | 355.0µs | 3.55MB |
+| 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 369.0µs | 3.75MB |
+| 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 338.0µs | 3.46MB |
+| 260 | data_structures/stacks/stock_span_problem | ✓ | 169.0µs | 3.59MB |
+| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 429.0µs | 3.70MB |
+| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 303.0µs | 3.74MB |
+| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 255.0µs | 3.67MB |
+| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 259.0µs | 3.70MB |
 | 265 | data_structures/trie/radix_tree |   |  |  |
 | 266 | data_structures/trie/trie |   |  |  |
-| 267 | digital_image_processing/change_brightness | ✓ | 255.0µs | 3.69MB |
-| 268 | digital_image_processing/change_contrast | ✓ | 250.0µs | 3.70MB |
-| 269 | digital_image_processing/convert_to_negative | ✓ | 263.0µs | 3.70MB |
-| 270 | digital_image_processing/dithering/burkes | ✓ | 439.0µs | 3.68MB |
-| 271 | digital_image_processing/edge_detection/canny | ✓ | 289.0µs | 3.60MB |
-| 272 | digital_image_processing/filters/bilateral_filter | ✓ | 461.0µs | 3.78MB |
-| 273 | digital_image_processing/filters/convolve | ✓ | 313.0µs | 3.77MB |
-| 274 | digital_image_processing/filters/gabor_filter | ✓ | 347.0µs | 3.80MB |
-| 275 | digital_image_processing/filters/gaussian_filter | ✓ | 170.0µs | 3.43MB |
-| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 287.0µs | 3.55MB |
-| 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 361.0µs | 3.55MB |
-| 278 | digital_image_processing/filters/median_filter | ✓ | 299.0µs | 3.55MB |
-| 279 | digital_image_processing/filters/sobel_filter | ✓ | 1.0ms | 3.77MB |
-| 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 163.0µs | 3.41MB |
+| 267 | digital_image_processing/change_brightness | ✓ | 371.0µs | 3.70MB |
+| 268 | digital_image_processing/change_contrast | ✓ | 369.0µs | 3.57MB |
+| 269 | digital_image_processing/convert_to_negative | ✓ | 348.0µs | 3.71MB |
+| 270 | digital_image_processing/dithering/burkes | ✓ | 567.0µs | 3.72MB |
+| 271 | digital_image_processing/edge_detection/canny | ✓ | 279.0µs | 3.75MB |
+| 272 | digital_image_processing/filters/bilateral_filter | ✓ | 534.0µs | 3.85MB |
+| 273 | digital_image_processing/filters/convolve | ✓ | 383.0µs | 3.64MB |
+| 274 | digital_image_processing/filters/gabor_filter | ✓ | 422.0µs | 3.79MB |
+| 275 | digital_image_processing/filters/gaussian_filter | ✓ | 204.0µs | 3.65MB |
+| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 354.0µs | 3.57MB |
+| 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 409.0µs | 3.63MB |
+| 278 | digital_image_processing/filters/median_filter | ✓ | 427.0µs | 3.61MB |
+| 279 | digital_image_processing/filters/sobel_filter | ✓ | 1.0ms | 3.87MB |
+| 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 167.0µs | 3.47MB |
 | 281 | digital_image_processing/index_calculation | ✓ | 350.0µs | 3.67MB |
 | 282 | digital_image_processing/morphological_operations/dilation_operation | ✓ | 449.0µs | 3.83MB |
 | 283 | digital_image_processing/morphological_operations/erosion_operation | ✓ | 421.0µs | 3.70MB |

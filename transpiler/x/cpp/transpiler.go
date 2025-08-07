@@ -1724,7 +1724,7 @@ func (i *IndexExpr) emit(w io.Writer) {
 					}
 					io.WriteString(w, "([&](const auto& __m){ auto __it = __m.find(")
 					i.Index.emit(w)
-					io.WriteString(w, "); return __it != __m.end() ? std::any_cast<"+resType+">(__it->second) : "+defaultValueForType(resType)+"; })")
+					io.WriteString(w, "); if (__it == __m.end()) return "+defaultValueForType(resType)+"; return std::any_cast<"+resType+">(__it->second); })")
 					io.WriteString(w, "(")
 					i.Target.emit(w)
 					io.WriteString(w, ")")
@@ -1739,7 +1739,7 @@ func (i *IndexExpr) emit(w io.Writer) {
 			valType := strings.TrimSpace(parts[1])
 			io.WriteString(w, "([&](const auto& __m){ auto __it = __m.find(")
 			i.Index.emit(w)
-			io.WriteString(w, "); return __it != __m.end() ? __it->second : "+defaultValueForType(valType)+"; })")
+			io.WriteString(w, "); if (__it == __m.end()) return "+defaultValueForType(valType)+"; return __it->second; })")
 			io.WriteString(w, "(")
 			i.Target.emit(w)
 			io.WriteString(w, ")")
