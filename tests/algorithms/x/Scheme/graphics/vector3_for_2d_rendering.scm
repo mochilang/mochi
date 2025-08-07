@@ -101,12 +101,12 @@
 (
   let (
     (
-      start13 (
+      start12 (
         current-jiffy
       )
     )
      (
-      jps16 (
+      jps15 (
         jiffies-per-second
       )
     )
@@ -121,7 +121,7 @@
        (
         begin (
           define (
-            abs x
+            floor x
           )
            (
             call/cc (
@@ -129,25 +129,72 @@
                 ret1
               )
                (
-                begin (
-                  if (
-                    < x 0.0
-                  )
-                   (
-                    begin (
-                      ret1 (
-                        - x
+                let (
+                  (
+                    i (
+                      let (
+                        (
+                          v2 x
+                        )
                       )
-                    )
-                  )
-                   (
-                    quote (
-                      
+                       (
+                        cond (
+                          (
+                            string? v2
+                          )
+                           (
+                            inexact->exact (
+                              floor (
+                                string->number v2
+                              )
+                            )
+                          )
+                        )
+                         (
+                          (
+                            boolean? v2
+                          )
+                           (
+                            if v2 1 0
+                          )
+                        )
+                         (
+                          else (
+                            inexact->exact (
+                              floor v2
+                            )
+                          )
+                        )
+                      )
                     )
                   )
                 )
                  (
-                  ret1 x
+                  begin (
+                    if (
+                      > (
+                        + 0.0 i
+                      )
+                       x
+                    )
+                     (
+                      begin (
+                        set! i (
+                          - i 1
+                        )
+                      )
+                    )
+                     (
+                      quote (
+                        
+                      )
+                    )
+                  )
+                   (
+                    ret1 (
+                      + 0.0 i
+                    )
+                  )
                 )
               )
             )
@@ -155,19 +202,23 @@
         )
          (
           define (
-            to_radians deg
+            modf x m
           )
            (
             call/cc (
               lambda (
-                ret2
+                ret3
               )
                (
-                ret2 (
-                  _div (
-                    * deg PI
+                ret3 (
+                  - x (
+                    * (
+                      floor (
+                        _div x m
+                      )
+                    )
+                     m
                   )
-                   180.0
                 )
               )
             )
@@ -180,7 +231,7 @@
            (
             call/cc (
               lambda (
-                ret3
+                ret4
               )
                (
                 let (
@@ -206,12 +257,12 @@
                           begin (
                             call/cc (
                               lambda (
-                                break5
+                                break6
                               )
                                (
                                 letrec (
                                   (
-                                    loop4 (
+                                    loop5 (
                                       lambda (
                                         
                                       )
@@ -271,7 +322,7 @@
                                             )
                                           )
                                            (
-                                            loop4
+                                            loop5
                                           )
                                         )
                                          (
@@ -284,13 +335,13 @@
                                   )
                                 )
                                  (
-                                  loop4
+                                  loop5
                                 )
                               )
                             )
                           )
                            (
-                            ret3 sum
+                            ret4 sum
                           )
                         )
                       )
@@ -308,7 +359,7 @@
            (
             call/cc (
               lambda (
-                ret6
+                ret7
               )
                (
                 let (
@@ -334,12 +385,12 @@
                           begin (
                             call/cc (
                               lambda (
-                                break8
+                                break9
                               )
                                (
                                 letrec (
                                   (
-                                    loop7 (
+                                    loop8 (
                                       lambda (
                                         
                                       )
@@ -404,7 +455,7 @@
                                             )
                                           )
                                            (
-                                            loop7
+                                            loop8
                                           )
                                         )
                                          (
@@ -417,13 +468,13 @@
                                   )
                                 )
                                  (
-                                  loop7
+                                  loop8
                                 )
                               )
                             )
                           )
                            (
-                            ret6 sum
+                            ret7 sum
                           )
                         )
                       )
@@ -436,51 +487,7 @@
         )
          (
           define (
-            rect mag angle
-          )
-           (
-            call/cc (
-              lambda (
-                ret9
-              )
-               (
-                let (
-                  (
-                    c (
-                      cos_taylor angle
-                    )
-                  )
-                )
-                 (
-                  begin (
-                    let (
-                      (
-                        s (
-                          sin_taylor angle
-                        )
-                      )
-                    )
-                     (
-                      begin (
-                        ret9 (
-                          _list (
-                            * mag c
-                          )
-                           (
-                            * mag s
-                          )
-                        )
-                      )
-                    )
-                  )
-                )
-              )
-            )
-          )
-        )
-         (
-          define (
-            multiply a b
+            convert_to_2d x y z scale distance
           )
            (
             call/cc (
@@ -488,40 +495,43 @@
                 ret10
               )
                (
-                ret10 (
-                  _list (
-                    - (
+                let (
+                  (
+                    projected_x (
                       * (
-                        list-ref a 0
+                        _div (
+                          * x distance
+                        )
+                         (
+                          + z distance
+                        )
                       )
-                       (
-                        list-ref b 0
-                      )
-                    )
-                     (
-                      * (
-                        list-ref a 1
-                      )
-                       (
-                        list-ref b 1
-                      )
+                       scale
                     )
                   )
-                   (
-                    _add (
-                      * (
-                        list-ref a 0
-                      )
-                       (
-                        list-ref b 1
+                )
+                 (
+                  begin (
+                    let (
+                      (
+                        projected_y (
+                          * (
+                            _div (
+                              * y distance
+                            )
+                             (
+                              + z distance
+                            )
+                          )
+                           scale
+                        )
                       )
                     )
                      (
-                      * (
-                        list-ref a 1
-                      )
-                       (
-                        list-ref b 0
+                      begin (
+                        ret10 (
+                          _list projected_x projected_y
+                        )
                       )
                     )
                   )
@@ -532,7 +542,7 @@
         )
          (
           define (
-            apparent_power voltage current voltage_angle current_angle
+            rotate x y z axis angle
           )
            (
             call/cc (
@@ -542,26 +552,66 @@
                (
                 let (
                   (
-                    vrad (
-                      to_radians voltage_angle
+                    angle (
+                      _div (
+                        * (
+                          _div (
+                            modf angle 360.0
+                          )
+                           450.0
+                        )
+                         180.0
+                      )
+                       PI
                     )
                   )
                 )
                  (
                   begin (
-                    let (
-                      (
-                        irad (
-                          to_radians current_angle
+                    set! angle (
+                      modf angle (
+                        * 2.0 PI
+                      )
+                    )
+                  )
+                   (
+                    if (
+                      _gt angle PI
+                    )
+                     (
+                      begin (
+                        set! angle (
+                          - angle (
+                            * 2.0 PI
+                          )
                         )
                       )
+                    )
+                     (
+                      quote (
+                        
+                      )
+                    )
+                  )
+                   (
+                    if (
+                      string=? axis "z"
                     )
                      (
                       begin (
                         let (
                           (
-                            vrect (
-                              rect voltage vrad
+                            new_x (
+                              - (
+                                * x (
+                                  cos_taylor angle
+                                )
+                              )
+                               (
+                                * y (
+                                  sin_taylor angle
+                                )
+                              )
                             )
                           )
                         )
@@ -569,8 +619,17 @@
                           begin (
                             let (
                               (
-                                irect (
-                                  rect current irad
+                                new_y (
+                                  _add (
+                                    * y (
+                                      cos_taylor angle
+                                    )
+                                  )
+                                   (
+                                    * x (
+                                      sin_taylor angle
+                                    )
+                                  )
                                 )
                               )
                             )
@@ -578,14 +637,14 @@
                               begin (
                                 let (
                                   (
-                                    result (
-                                      multiply vrect irect
-                                    )
+                                    new_z z
                                   )
                                 )
                                  (
                                   begin (
-                                    ret11 result
+                                    ret11 (
+                                      _list new_x new_y new_z
+                                    )
                                   )
                                 )
                               )
@@ -594,6 +653,161 @@
                         )
                       )
                     )
+                     (
+                      quote (
+                        
+                      )
+                    )
+                  )
+                   (
+                    if (
+                      string=? axis "x"
+                    )
+                     (
+                      begin (
+                        let (
+                          (
+                            new_y (
+                              - (
+                                * y (
+                                  cos_taylor angle
+                                )
+                              )
+                               (
+                                * z (
+                                  sin_taylor angle
+                                )
+                              )
+                            )
+                          )
+                        )
+                         (
+                          begin (
+                            let (
+                              (
+                                new_z (
+                                  _add (
+                                    * z (
+                                      cos_taylor angle
+                                    )
+                                  )
+                                   (
+                                    * y (
+                                      sin_taylor angle
+                                    )
+                                  )
+                                )
+                              )
+                            )
+                             (
+                              begin (
+                                let (
+                                  (
+                                    new_x x
+                                  )
+                                )
+                                 (
+                                  begin (
+                                    ret11 (
+                                      _list new_x new_y new_z
+                                    )
+                                  )
+                                )
+                              )
+                            )
+                          )
+                        )
+                      )
+                    )
+                     (
+                      quote (
+                        
+                      )
+                    )
+                  )
+                   (
+                    if (
+                      string=? axis "y"
+                    )
+                     (
+                      begin (
+                        let (
+                          (
+                            new_x (
+                              - (
+                                * x (
+                                  cos_taylor angle
+                                )
+                              )
+                               (
+                                * z (
+                                  sin_taylor angle
+                                )
+                              )
+                            )
+                          )
+                        )
+                         (
+                          begin (
+                            let (
+                              (
+                                new_z (
+                                  _add (
+                                    * z (
+                                      cos_taylor angle
+                                    )
+                                  )
+                                   (
+                                    * x (
+                                      sin_taylor angle
+                                    )
+                                  )
+                                )
+                              )
+                            )
+                             (
+                              begin (
+                                let (
+                                  (
+                                    new_y y
+                                  )
+                                )
+                                 (
+                                  begin (
+                                    ret11 (
+                                      _list new_x new_y new_z
+                                    )
+                                  )
+                                )
+                              )
+                            )
+                          )
+                        )
+                      )
+                    )
+                     (
+                      quote (
+                        
+                      )
+                    )
+                  )
+                   (
+                    _display (
+                      if (
+                        string? "not a valid axis, choose one of 'x', 'y', 'z'"
+                      )
+                       "not a valid axis, choose one of 'x', 'y', 'z'" (
+                        to-str "not a valid axis, choose one of 'x', 'y', 'z'"
+                      )
+                    )
+                  )
+                   (
+                    newline
+                  )
+                   (
+                    ret11 (
+                      _list 0.0 0.0 0.0
+                    )
                   )
                 )
               )
@@ -601,53 +815,63 @@
           )
         )
          (
-          define (
-            approx_equal a b eps
-          )
-           (
-            call/cc (
-              lambda (
-                ret12
+          _display (
+            if (
+              string? (
+                to-str-space (
+                  convert_to_2d 1.0 2.0 3.0 10.0 10.0
+                )
               )
-               (
-                ret12 (
-                  and (
-                    _lt (
-                      abs (
-                        - (
-                          list-ref a 0
-                        )
-                         (
-                          list-ref b 0
-                        )
-                      )
-                    )
-                     eps
-                  )
-                   (
-                    _lt (
-                      abs (
-                        - (
-                          list-ref a 1
-                        )
-                         (
-                          list-ref b 1
-                        )
-                      )
-                    )
-                     eps
-                  )
+            )
+             (
+              to-str-space (
+                convert_to_2d 1.0 2.0 3.0 10.0 10.0
+              )
+            )
+             (
+              to-str (
+                to-str-space (
+                  convert_to_2d 1.0 2.0 3.0 10.0 10.0
                 )
               )
             )
           )
+        )
+         (
+          newline
+        )
+         (
+          _display (
+            if (
+              string? (
+                to-str-space (
+                  rotate 1.0 2.0 3.0 "y" 90.0
+                )
+              )
+            )
+             (
+              to-str-space (
+                rotate 1.0 2.0 3.0 "y" 90.0
+              )
+            )
+             (
+              to-str (
+                to-str-space (
+                  rotate 1.0 2.0 3.0 "y" 90.0
+                )
+              )
+            )
+          )
+        )
+         (
+          newline
         )
       )
     )
      (
       let (
         (
-          end14 (
+          end13 (
             current-jiffy
           )
         )
@@ -655,14 +879,14 @@
        (
         let (
           (
-            dur15 (
+            dur14 (
               quotient (
                 * (
-                  - end14 start13
+                  - end13 start12
                 )
                  1000000
               )
-               jps16
+               jps15
             )
           )
         )
@@ -670,7 +894,7 @@
           begin (
             _display (
               string-append "{\n  \"duration_us\": " (
-                number->string dur15
+                number->string dur14
               )
                ",\n  \"memory_bytes\": " (
                 number->string (

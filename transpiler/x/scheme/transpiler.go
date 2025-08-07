@@ -1561,34 +1561,37 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 			}
 			node = &List{Elems: []Node{Symbol("padStart"), &List{Elems: []Node{Symbol("to-str"), node}}, widthArg, padArg}}
 			i++
-		case op.Field != nil && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil:
-			call := pf.Ops[i+1].Call
-			args := make([]Node, len(call.Args))
-			for j, a := range call.Args {
-				n, err := convertParserExpr(a)
-				if err != nil {
-					return nil, err
-				}
-				args[j] = n
-			}
-			name := op.Field.Name
-			if _, ok := currentEnv.GetFunc(name); ok {
-				args = append([]Node{node}, args...)
-				node = &List{Elems: append([]Node{Symbol(name)}, args...)}
-			} else if _, ok := methodNames[name]; ok {
-				args = append([]Node{node}, args...)
-				node = &List{Elems: append([]Node{Symbol(name)}, args...)}
-			} else {
-				needHash = true
-				fn := &List{Elems: []Node{Symbol("hash-table-ref"), node, StringLit(name)}}
-				node = &List{Elems: append([]Node{fn}, args...)}
-			}
-			i++
-		default:
-			return nil, fmt.Errorf("unsupported postfix")
-		}
-	}
-	return node, nil
+               case op.Field != nil && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil:
+                       call := pf.Ops[i+1].Call
+                       args := make([]Node, len(call.Args))
+                       for j, a := range call.Args {
+                               n, err := convertParserExpr(a)
+                               if err != nil {
+                                       return nil, err
+                               }
+                               args[j] = n
+                       }
+                       name := op.Field.Name
+                       if _, ok := currentEnv.GetFunc(name); ok {
+                               args = append([]Node{node}, args...)
+                               node = &List{Elems: append([]Node{Symbol(name)}, args...)}
+                       } else if _, ok := methodNames[name]; ok {
+                               args = append([]Node{node}, args...)
+                               node = &List{Elems: append([]Node{Symbol(name)}, args...)}
+                       } else {
+                               needHash = true
+                               fn := &List{Elems: []Node{Symbol("hash-table-ref"), node, StringLit(name)}}
+                               node = &List{Elems: append([]Node{fn}, args...)}
+                       }
+                       i++
+               case op.Field != nil:
+                       needHash = true
+                       node = &List{Elems: []Node{Symbol("hash-table-ref"), node, StringLit(op.Field.Name)}}
+               default:
+                       return nil, fmt.Errorf("unsupported postfix")
+               }
+       }
+       return node, nil
 }
 
 func convertParserPrimary(p *parser.Primary) (Node, error) {
