@@ -1,0 +1,4 @@
+exit status 1
+/tmp/TestCSTranspiler_Algorithms_Golden001_graphs_karger3268989400/001/Program.cs(158,29): error CS0029: Cannot implicitly convert type 'System.Collections.Generic.Dictionary<string, string[]>.KeyCollection' to 'string[]' [/tmp/TestCSTranspiler_Algorithms_Golden001_graphs_karger3268989400/001/app.csproj]
+
+The build failed. Fix the build errors and run again.

@@ -1,0 +1,10 @@
+======= Nodes =======
+Node {name = "A", inbound = System.String[], outbound = System.String[]}
+Node {name = "B", inbound = System.String[], outbound = System.String[]}
+Node {name = "C", inbound = System.String[], outbound = System.String[]}
+======= Iteration 1 =======
+map[A:1, B:0.575, C:1.06375]
+======= Iteration 2 =======
+map[A:1.0541874999999998, B:0.5980296875, C:1.106354921875]
+======= Iteration 3 =======
+map[A:1.09040168359375, B:0.6134207155273438, C:1.134828323725586]

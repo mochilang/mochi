@@ -3175,6 +3175,23 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 			return &AssignIndexStmt{Target: t.Target, Index: t.Index, Value: val}, nil
 		case *FieldExpr:
+			// When assigning an empty map or list literal to a struct field,
+			// propagate the field's type so we emit a properly typed zero value
+			// instead of Dictionary<object, object> or object[].
+			if l, ok := val.(*ListLit); ok && len(l.Elems) == 0 {
+				if ft := typeOfExpr(t); strings.HasSuffix(ft, "[]") {
+					l.ElemType = ft
+				}
+			} else if mp, ok := val.(*MapLit); ok && len(mp.Items) == 0 {
+				if ft := typeOfExpr(t); strings.HasPrefix(ft, "Dictionary<") {
+					inside := strings.TrimPrefix(strings.TrimSuffix(ft, ">"), "Dictionary<")
+					parts := strings.Split(inside, ",")
+					if len(parts) == 2 {
+						mp.KeyType = strings.TrimSpace(parts[0])
+						mp.ValType = strings.TrimSpace(parts[1])
+					}
+				}
+			}
 			return &AssignFieldStmt{Target: t.Target, Name: t.Name, Value: val}, nil
 		default:
 			return nil, fmt.Errorf("unsupported assignment target")
