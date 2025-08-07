@@ -2676,6 +2676,13 @@ type CastExpr struct {
 
 func (c *CastExpr) emit(w io.Writer) error {
 	valType := inferType(c.Value)
+	if c.Type == "double" && valType == "int" {
+		if err := c.Value.emit(w); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, ".toDouble()")
+		return err
+	}
 	if c.Type == "BigInt" {
 		if lit, ok := c.Value.(*IntLit); ok {
 			_, err := fmt.Fprintf(w, "BigInt.from(%d)", lit.Value)
@@ -2769,6 +2776,10 @@ func (c *CastExpr) emit(w io.Writer) error {
 		_, err := io.WriteString(w, " as int")
 		return err
 	case "num", "double":
+		if valType != "num" && valType != "double" {
+			_, err := io.WriteString(w, ".toDouble()")
+			return err
+		}
 		_, err := io.WriteString(w, " as "+c.Type)
 		return err
 	case "String":
