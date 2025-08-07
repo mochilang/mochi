@@ -2297,12 +2297,10 @@ func identNameUnary(u *parser.Unary) (string, bool) {
 	return p.Target.Selector.Root, true
 }
 
-func intValueUnary(u *parser.Unary) (int, bool) {
-	if u == nil || len(u.Ops) != 0 || u.Value == nil {
-		return 0, false
-	}
-	p := u.Value
-	if len(p.Ops) != 0 || p.Target == nil || p.Target.Lit == nil || p.Target.Lit.Int == nil {
+// intValuePostfix returns the integer literal value represented by the postfix
+// expression if it is a plain integer literal without any postfix operators.
+func intValuePostfix(p *parser.PostfixExpr) (int, bool) {
+	if p == nil || len(p.Ops) != 0 || p.Target == nil || p.Target.Lit == nil || p.Target.Lit.Int == nil {
 		return 0, false
 	}
 	return int(*p.Target.Lit.Int), true
@@ -2342,7 +2340,7 @@ func isStartPlusOne(start, end *parser.Expr) bool {
 	if !ok || leftName != startName {
 		return false
 	}
-	if val, ok := intValueUnary(op.Right); ok && val == 1 {
+	if val, ok := intValuePostfix(op.Right); ok && val == 1 {
 		return true
 	}
 	return false
@@ -2927,7 +2925,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	exprs := []Expr{left}
 	ops := []string{}
 	for _, op := range b.Right {
-		right, err := convertUnary(op.Right)
+		right, err := convertPostfix(op.Right)
 		if err != nil {
 			return nil, err
 		}
@@ -4256,7 +4254,15 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		target, err := convertPostfix(st.Assign.Target)
+		// Build a postfix expression representing the assignment target.
+		p := &parser.PostfixExpr{Target: &parser.Primary{Selector: &parser.SelectorExpr{Root: st.Assign.Name}}}
+		for _, idx := range st.Assign.Index {
+			p.Ops = append(p.Ops, &parser.PostfixOp{Index: idx})
+		}
+		for _, f := range st.Assign.Field {
+			p.Ops = append(p.Ops, &parser.PostfixOp{Field: f})
+		}
+		target, err := convertPostfix(p)
 		if err != nil {
 			return nil, err
 		}
