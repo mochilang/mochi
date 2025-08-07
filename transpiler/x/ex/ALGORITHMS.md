@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-07 08:42 GMT+7
+Last updated: 2025-08-07 08:50 GMT+7
 
-## Algorithms Golden Test Checklist (152/1077)
+## Algorithms Golden Test Checklist (153/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -197,7 +197,7 @@ Last updated: 2025-08-07 08:42 GMT+7
 | 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 306.28ms | 1.5 GB |
 | 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 5.60ms | 25.0 MB |
 | 190 | data_structures/binary_tree/merge_two_binary_trees | ✓ | 129us | 0 B |
-| 191 | data_structures/binary_tree/mirror_binary_tree |   |  |  |
+| 191 | data_structures/binary_tree/mirror_binary_tree | ✓ | 6.17ms | 25.0 MB |
 | 192 | data_structures/binary_tree/non_recursive_segment_tree |   |  |  |
 | 193 | data_structures/binary_tree/number_of_possible_binary_trees |   |  |  |
 | 194 | data_structures/binary_tree/red_black_tree |   |  |  |

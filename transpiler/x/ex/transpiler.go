@@ -3970,6 +3970,13 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				elemList := &ListLit{Elems: []Expr{args[1]}}
 				return &BinaryExpr{Left: list, Op: "++", Right: elemList}, nil
 			}
+		case "concat":
+			if len(args) >= 2 {
+				if len(args) == 2 {
+					return &BinaryExpr{Left: args[0], Op: "++", Right: args[1]}, nil
+				}
+				return &CallExpr{Func: "Enum.concat", Args: []Expr{&ListLit{Elems: args}}}, nil
+			}
 		case "keys":
 			if len(args) == 1 {
 				return &CallExpr{Func: "Map.keys", Args: []Expr{args[0]}}, nil
