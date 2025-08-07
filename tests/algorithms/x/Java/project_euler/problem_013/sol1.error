@@ -1,0 +1,12 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden834_sol11231984584/001/Main.java:12: error: bad operand types for binary operator '-'
+                da = (a.substring(i, i+1)) - 48;
+                                           ^
+  first type:  String
+  second type: int
+/tmp/TestJavaTranspiler_Algorithms_Golden834_sol11231984584/001/Main.java:17: error: bad operand types for binary operator '-'
+                db = (b.substring(j, j+1)) - 48;
+                                           ^
+  first type:  String
+  second type: int
+2 errors

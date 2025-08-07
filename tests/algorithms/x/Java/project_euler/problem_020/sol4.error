@@ -1,0 +1,5 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden846_sol4877720985/001/Main.java:16: error: incompatible types: String cannot be converted to int
+            result = result + (s.substring(j, j+1));
+                            ^
+1 error

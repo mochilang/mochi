@@ -1,0 +1,7 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden870_sol11751256952/001/Main.java:15: error: bad operand types for binary operator '*'
+                    product = product * (s.substring(j, j+1));
+                                      ^
+  first type:  int
+  second type: String
+1 error
