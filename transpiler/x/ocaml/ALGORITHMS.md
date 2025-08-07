@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 171/1077
-Last updated: 2025-08-06 23:36 +0700
+Completed programs: 176/1077
+Last updated: 2025-08-07 00:30 +0700
 
 Checklist:
 
@@ -190,9 +190,9 @@ Checklist:
 | 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 197.0µs | 4.64KB |
 | 182 | data_structures/binary_tree/floor_and_ceiling | ✓ | 175.0µs | 2.27KB |
 | 183 | data_structures/binary_tree/inorder_tree_traversal_2022 |   |  |  |
-| 184 | data_structures/binary_tree/is_sorted |   |  |  |
-| 185 | data_structures/binary_tree/is_sum_tree |   |  |  |
-| 186 | data_structures/binary_tree/lazy_segment_tree |   |  |  |
+| 184 | data_structures/binary_tree/is_sorted | ✓ | 219.0µs | 4.16KB |
+| 185 | data_structures/binary_tree/is_sum_tree | ✓ |  |  |
+| 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 719.0µs | 107.45KB |
 | 187 | data_structures/binary_tree/lowest_common_ancestor |   |  |  |
 | 188 | data_structures/binary_tree/maximum_fenwick_tree |   |  |  |
 | 189 | data_structures/binary_tree/maximum_sum_bst |   |  |  |
@@ -205,14 +205,14 @@ Checklist:
 | 196 | data_structures/binary_tree/segment_tree_other |   |  |  |
 | 197 | data_structures/binary_tree/serialize_deserialize_binary_tree |   |  |  |
 | 198 | data_structures/binary_tree/symmetric_tree |   |  |  |
-| 199 | data_structures/binary_tree/treap |   |  |  |
+| 199 | data_structures/binary_tree/treap | ✓ | 328.0µs | 37.35KB |
 | 200 | data_structures/binary_tree/wavelet_tree |   |  |  |
 | 201 | data_structures/disjoint_set/alternate_disjoint_set |   |  |  |
 | 202 | data_structures/disjoint_set/disjoint_set |   |  |  |
 | 203 | data_structures/hashing/bloom_filter |   |  |  |
 | 204 | data_structures/hashing/double_hash |   |  |  |
 | 205 | data_structures/hashing/hash_map |   |  |  |
-| 206 | data_structures/hashing/hash_table |   |  |  |
+| 206 | data_structures/hashing/hash_table | ✓ | 172.0µs | 3.62KB |
 | 207 | data_structures/hashing/hash_table_with_linked_list |   |  |  |
 | 208 | data_structures/hashing/number_theory/prime_numbers |   |  |  |
 | 209 | data_structures/hashing/quadratic_probing |   |  |  |
