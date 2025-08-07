@@ -1,0 +1,4 @@
+exit status 1
+/tmp/TestCSTranspiler_Algorithms_Golden001_maths_factors387342114/001/Program.cs(148,14): error CS0019: Operator '!=' cannot be applied to operands of type 'long[]' and 'object[]' [/tmp/TestCSTranspiler_Algorithms_Golden001_maths_factors387342114/001/app.csproj]
+
+The build failed. Fix the build errors and run again.

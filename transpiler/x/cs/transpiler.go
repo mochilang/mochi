@@ -1111,10 +1111,11 @@ type FloatLit struct{ Value float64 }
 
 func (f *FloatLit) emit(w io.Writer) {
 	s := strconv.FormatFloat(f.Value, 'g', -1, 64)
-	if !strings.ContainsAny(s, ".eE") {
-		if !strings.Contains(s, ".") {
-			s += ".0"
-		}
+	if strings.ContainsAny(s, "eE") {
+		s = strings.ReplaceAll(s, "e+", "e")
+		s = strings.ReplaceAll(s, "E+", "E")
+	} else if !strings.Contains(s, ".") {
+		s += ".0"
 	}
 	fmt.Fprint(w, s)
 }
@@ -4738,8 +4739,6 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("using System.Collections.Generic;\n")
 	}
 	if usesLinq {
-		buf.WriteString("using System.Linq;\n")
-	} else {
 		buf.WriteString("using System.Linq;\n")
 	}
 	if usesJson {
