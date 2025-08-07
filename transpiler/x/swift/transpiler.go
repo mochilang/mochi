@@ -1251,9 +1251,13 @@ func (c *CastExpr) emit(w io.Writer) {
 				return
 			}
 			if _, ok := c.Expr.(*NameExpr); ok {
-				fmt.Fprint(w, "(")
+				// Use Int(...) constructor for simple variable casts to
+				// avoid runtime crashes when the underlying value is
+				// a Double. The forced cast "as! Int" traps with an
+				// illegal instruction if the value isn't already an Int.
+				fmt.Fprint(w, "Int(")
 				c.Expr.emit(w)
-				fmt.Fprint(w, " as! Int)")
+				fmt.Fprint(w, ")")
 				return
 			}
 			if force {
