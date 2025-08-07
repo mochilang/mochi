@@ -1,0 +1,4 @@
+run: exit status 254
+../../../tests/algorithms/x/Dart/web_programming/get_ip_geolocation.dart:67:50: Error: Couldn't find constructor 'Map.fromJson'.
+  Map<String, String> data = Map<String, String>.fromJson(_fetch(url));
+                                                 ^^^^^^^^

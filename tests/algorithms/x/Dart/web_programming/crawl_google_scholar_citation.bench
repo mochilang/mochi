@@ -1,0 +1,3 @@
+../../../tests/algorithms/x/Dart/web_programming/crawl_google_scholar_citation.dart:100:7: Error: Undefined name '__name__'.
+  if (__name__ == "__main__") {
+      ^^^^^^^^

@@ -1,0 +1,7 @@
+Unhandled exception:
+type 'Null' is not a subtype of type 'List<Article>'
+#0      new NewsResponse.fromJson (file:///workspace/mochi/tests/algorithms/x/Dart/web_programming/fetch_bbc_news.dart:76:84)
+#1      fetch_bbc_news (file:///workspace/mochi/tests/algorithms/x/Dart/web_programming/fetch_bbc_news.dart:81:36)
+#2      main (file:///workspace/mochi/tests/algorithms/x/Dart/web_programming/fetch_bbc_news.dart:101:3)
+#3      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#4      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

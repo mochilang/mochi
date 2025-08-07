@@ -1,0 +1,5 @@
+run: exit status 254
+../../../tests/algorithms/x/Dart/scripts/build_directory_md.dart:246:21: Error: The argument type 'String' can't be assigned to the parameter type 'List<String>'.
+ - 'List' is from 'dart:core'.
+    filepath = join(_substr(parts, 0, parts.length - 1), "/");
+                    ^

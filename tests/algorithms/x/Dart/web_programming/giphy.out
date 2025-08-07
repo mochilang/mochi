@@ -1,0 +1,21 @@
+../../../tests/algorithms/x/Dart/web_programming/giphy.dart:51:28: Error: Too many positional arguments: 0 allowed, but 1 found.
+Try removing the extra positional arguments.
+  List<dynamic> gifs = [Gif("https://example.com/1"), Gif("https://example.com/2"), Gif("https://example.com/3")];
+                           ^
+../../../tests/algorithms/x/Dart/web_programming/giphy.dart:18:3: Context: Found this candidate, but the arguments don't match.
+  Gif({required this.url});
+  ^^^
+../../../tests/algorithms/x/Dart/web_programming/giphy.dart:51:58: Error: Too many positional arguments: 0 allowed, but 1 found.
+Try removing the extra positional arguments.
+  List<dynamic> gifs = [Gif("https://example.com/1"), Gif("https://example.com/2"), Gif("https://example.com/3")];
+                                                         ^
+../../../tests/algorithms/x/Dart/web_programming/giphy.dart:18:3: Context: Found this candidate, but the arguments don't match.
+  Gif({required this.url});
+  ^^^
+../../../tests/algorithms/x/Dart/web_programming/giphy.dart:51:88: Error: Too many positional arguments: 0 allowed, but 1 found.
+Try removing the extra positional arguments.
+  List<dynamic> gifs = [Gif("https://example.com/1"), Gif("https://example.com/2"), Gif("https://example.com/3")];
+                                                                                       ^
+../../../tests/algorithms/x/Dart/web_programming/giphy.dart:18:3: Context: Found this candidate, but the arguments don't match.
+  Gif({required this.url});
+  ^^^
