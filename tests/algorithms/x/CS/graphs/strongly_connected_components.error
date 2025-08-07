@@ -1,0 +1,5 @@
+exit status 1
+/tmp/TestCSTranspiler_Algorithms_Golden001_graphs_strongly_connected_components2608738698/001/Program.cs(125,31): error CS0029: Cannot implicitly convert type 'bool[]' to 'object[]' [/tmp/TestCSTranspiler_Algorithms_Golden001_graphs_strongly_connected_components2608738698/001/app.csproj]
+/tmp/TestCSTranspiler_Algorithms_Golden001_graphs_strongly_connected_components2608738698/001/Program.cs(141,114): error CS1503: Argument 3: cannot convert from 'object[]' to 'bool[]' [/tmp/TestCSTranspiler_Algorithms_Golden001_graphs_strongly_connected_components2608738698/001/app.csproj]
+
+The build failed. Fix the build errors and run again.
