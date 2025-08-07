@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-07 10:47 GMT+7
+Last updated: 2025-08-07 11:19 GMT+7
 
-## Algorithms Golden Test Checklist (149/1077)
+## Algorithms Golden Test Checklist (150/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -161,7 +161,7 @@ Last updated: 2025-08-07 10:47 GMT+7
 | 152 | data_compression/burrows_wheeler | ✓ | 117µs | 2.1 MB |
 | 153 | data_compression/huffman | ✓ | 170µs | 2.3 MB |
 | 154 | data_compression/lempel_ziv | ✓ | 146µs | 2.1 MB |
-| 155 | data_compression/lempel_ziv_decompress |   |  |  |
+| 155 | data_compression/lempel_ziv_decompress | ✓ | 131µs | 2.1 MB |
 | 156 | data_compression/lz77 |   |  |  |
 | 157 | data_compression/peak_signal_to_noise_ratio |   |  |  |
 | 158 | data_compression/run_length_encoding |   |  |  |
