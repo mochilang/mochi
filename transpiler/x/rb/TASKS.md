@@ -1,3 +1,533 @@
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-07 00:17 +0700)
+- Commit 96b7a648be: feat(rb): improve float handling and builtins
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-08-02 15:25 +0700)
 - Commit a0abba8b50: zig: support multi-arg print
 - Generated Ruby for 104/105 programs

@@ -1,0 +1,8 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/rb/matrix/count_islands_in_matrix.rb:72:in `is_safe': undefined method `[]' for nil:NilClass (NoMethodError)
+
+    visited_cell = visited[row][col]
+                               ^^^^^
+	from /workspace/mochi/tests/algorithms/transpiler/rb/matrix/count_islands_in_matrix.rb:85:in `dfs'
+	from /workspace/mochi/tests/algorithms/transpiler/rb/matrix/count_islands_in_matrix.rb:112:in `count_islands'
+	from /workspace/mochi/tests/algorithms/transpiler/rb/matrix/count_islands_in_matrix.rb:122:in `<main>'

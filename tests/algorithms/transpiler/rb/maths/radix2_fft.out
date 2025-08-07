@@ -1,0 +1,2 @@
+/workspace/mochi/tests/algorithms/transpiler/rb/maths/radix2_fft.rb:228: warning: already initialized constant Complex
+[0 2 3 8 6 8]

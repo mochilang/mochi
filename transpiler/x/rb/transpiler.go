@@ -4149,6 +4149,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			return &MethodCallExpr{Target: args[0], Method: "downcase"}, nil
 		case "contains":
+			if currentEnv != nil {
+				if _, ok := currentEnv.GetFunc(name); ok {
+					return &CallExpr{Func: name, Args: args}, nil
+				}
+			}
 			if len(args) != 2 {
 				return nil, fmt.Errorf("contains expects 2 args")
 			}
