@@ -1,4 +1,4 @@
-;; Generated on 2025-08-07 11:54 +0700
+;; Generated on 2025-08-07 16:11 +0700
 (import (scheme base))
 (import (scheme time))
 (import (chibi string))
@@ -21,6 +21,10 @@
         ((null? x) "[]")
         ((string? x) (let ((out (open-output-string))) (json-write x out) (get-output-string out)))
         ((boolean? x) (if x "true" "false"))
+        ((number? x)
+         (if (integer? x)
+             (number->string (inexact->exact x))
+             (number->string x)))
         (else (number->string x))))
 (define (to-str-space x)
   (cond ((pair? x)
@@ -31,7 +35,7 @@
 (define (lower s) (string-downcase s))
 (define (fmod a b) (- a (* (floor (/ a b)) b)))
 (define (_mod a b) (if (and (integer? a) (integer? b)) (modulo a b) (fmod a b)))
-(define (_div a b) (/ a b))
+(define (_div a b) (if (and (integer? a) (integer? b) (exact? a) (exact? b)) (quotient a b) (/ a b)))
 (define (_gt a b) (cond ((and (number? a) (number? b)) (> a b)) ((and (string? a) (string? b)) (string>? a b)) (else (> a b))))
 (define (_lt a b) (cond ((and (number? a) (number? b)) (< a b)) ((and (string? a) (string? b)) (string<? a b)) (else (< a b))))
 (define (_ge a b) (cond ((and (number? a) (number? b)) (>= a b)) ((and (string? a) (string? b)) (string>=? a b)) (else (>= a b))))
@@ -98,6 +102,7 @@
   (cond ((string? x) (string-length x))
         ((hash-table? x) (hash-table-size x))
         (else (length x))))
+(define (list-ref-safe lst idx) (if (and (integer? idx) (>= idx 0) (< idx (length lst))) (list-ref lst idx) '()))
 (
   let (
     (
@@ -135,7 +140,7 @@
                   (
                     col_length (
                       _len (
-                        list-ref grid 0
+                        list-ref-safe grid 0
                       )
                     )
                   )
@@ -165,10 +170,8 @@
                         ret1 0
                       )
                     )
-                     (
-                      quote (
-                        
-                      )
+                     '(
+                      
                     )
                   )
                    (
@@ -176,12 +179,12 @@
                       cond (
                         (
                           string? (
-                            list-ref visit row
+                            list-ref-safe visit row
                           )
                         )
                          (
                           _substring (
-                            list-ref visit row
+                            list-ref-safe visit row
                           )
                            col (
                             + col 1
@@ -191,20 +194,20 @@
                        (
                         (
                           hash-table? (
-                            list-ref visit row
+                            list-ref-safe visit row
                           )
                         )
                          (
                           hash-table-ref (
-                            list-ref visit row
+                            list-ref-safe visit row
                           )
                            col
                         )
                       )
                        (
                         else (
-                          list-ref (
-                            list-ref visit row
+                          list-ref-safe (
+                            list-ref-safe visit row
                           )
                            col
                         )
@@ -215,10 +218,8 @@
                         ret1 0
                       )
                     )
-                     (
-                      quote (
-                        
-                      )
+                     '(
+                      
                     )
                   )
                    (
@@ -227,12 +228,12 @@
                         cond (
                           (
                             string? (
-                              list-ref grid row
+                              list-ref-safe grid row
                             )
                           )
                            (
                             _substring (
-                              list-ref grid row
+                              list-ref-safe grid row
                             )
                              col (
                               + col 1
@@ -242,20 +243,20 @@
                          (
                           (
                             hash-table? (
-                              list-ref grid row
+                              list-ref-safe grid row
                             )
                           )
                            (
                             hash-table-ref (
-                              list-ref grid row
+                              list-ref-safe grid row
                             )
                              col
                           )
                         )
                          (
                           else (
-                            list-ref (
-                              list-ref grid row
+                            list-ref-safe (
+                              list-ref-safe grid row
                             )
                              col
                           )
@@ -268,10 +269,8 @@
                         ret1 0
                       )
                     )
-                     (
-                      quote (
-                        
-                      )
+                     '(
+                      
                     )
                   )
                    (
@@ -292,15 +291,13 @@
                         ret1 1
                       )
                     )
-                     (
-                      quote (
-                        
-                      )
+                     '(
+                      
                     )
                   )
                    (
                     list-set! (
-                      list-ref visit row
+                      list-ref-safe visit row
                     )
                      col #t
                   )
@@ -353,7 +350,7 @@
                       )
                        (
                         list-set! (
-                          list-ref visit row
+                          list-ref-safe visit row
                         )
                          col #f
                       )
@@ -392,7 +389,7 @@
                   (
                     cols (
                       _len (
-                        list-ref grid 0
+                        list-ref-safe grid 0
                       )
                     )
                   )
@@ -480,10 +477,8 @@
                                                                     loop5
                                                                   )
                                                                 )
-                                                                 (
-                                                                  quote (
-                                                                    
-                                                                  )
+                                                                 '(
+                                                                  
                                                                 )
                                                               )
                                                             )
@@ -515,10 +510,8 @@
                                             loop3
                                           )
                                         )
-                                         (
-                                          quote (
-                                            
-                                          )
+                                         '(
+                                          
                                         )
                                       )
                                     )

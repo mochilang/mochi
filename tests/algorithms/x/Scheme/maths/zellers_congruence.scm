@@ -1,4 +1,4 @@
-;; Generated on 2025-08-07 14:14 +0700
+;; Generated on 2025-08-07 16:11 +0700
 (import (scheme base))
 (import (scheme time))
 (import (chibi string))
@@ -21,6 +21,10 @@
         ((null? x) "[]")
         ((string? x) (let ((out (open-output-string))) (json-write x out) (get-output-string out)))
         ((boolean? x) (if x "true" "false"))
+        ((number? x)
+         (if (integer? x)
+             (number->string (inexact->exact x))
+             (number->string x)))
         (else (number->string x))))
 (define (to-str-space x)
   (cond ((pair? x)
@@ -180,10 +184,8 @@
                                             panic "invalid literal"
                                           )
                                         )
-                                         (
-                                          quote (
-                                            
-                                          )
+                                         '(
+                                          
                                         )
                                       )
                                        (
@@ -240,10 +242,8 @@
                                     loop2
                                   )
                                 )
-                                 (
-                                  quote (
-                                    
-                                  )
+                                 '(
+                                  
                                 )
                               )
                             )
@@ -319,10 +319,8 @@
                     panic "Must be 10 characters long"
                   )
                 )
-                 (
-                  quote (
-                    
-                  )
+                 '(
+                  
                 )
               )
                (
@@ -350,10 +348,8 @@
                         panic "Month must be between 1 - 12"
                       )
                     )
-                     (
-                      quote (
-                        
-                      )
+                     '(
+                      
                     )
                   )
                    (
@@ -385,10 +381,8 @@
                             panic "Date separator must be '-' or '/'"
                           )
                         )
-                         (
-                          quote (
-                            
-                          )
+                         '(
+                          
                         )
                       )
                        (
@@ -416,10 +410,8 @@
                                 panic "Date must be between 1 - 31"
                               )
                             )
-                             (
-                              quote (
-                                
-                              )
+                             '(
+                              
                             )
                           )
                            (
@@ -451,10 +443,8 @@
                                     panic "Date separator must be '-' or '/'"
                                   )
                                 )
-                                 (
-                                  quote (
-                                    
-                                  )
+                                 '(
+                                  
                                 )
                               )
                                (
@@ -482,10 +472,8 @@
                                         panic "Year out of range. There has to be some sort of limit...right?"
                                       )
                                     )
-                                     (
-                                      quote (
-                                        
-                                      )
+                                     '(
+                                      
                                     )
                                   )
                                    (
@@ -518,10 +506,8 @@
                                                 )
                                               )
                                             )
-                                             (
-                                              quote (
-                                                
-                                              )
+                                             '(
+                                              
                                             )
                                           )
                                            (
@@ -664,18 +650,14 @@
                                                                                     )
                                                                                   )
                                                                                 )
-                                                                                 (
-                                                                                  quote (
-                                                                                    
-                                                                                  )
+                                                                                 '(
+                                                                                  
                                                                                 )
                                                                               )
                                                                                (
                                                                                 ret5 (
-                                                                                  hash-table-ref/default days f (
-                                                                                    quote (
-                                                                                      
-                                                                                    )
+                                                                                  hash-table-ref/default days f '(
+                                                                                    
                                                                                   )
                                                                                 )
                                                                               )
@@ -830,10 +812,8 @@
                                                 panic "zeller test failed"
                                               )
                                             )
-                                             (
-                                              quote (
-                                                
-                                              )
+                                             '(
+                                              
                                             )
                                           )
                                            (
@@ -847,10 +827,8 @@
                                         loop9
                                       )
                                     )
-                                     (
-                                      quote (
-                                        
-                                      )
+                                     '(
+                                      
                                     )
                                   )
                                 )

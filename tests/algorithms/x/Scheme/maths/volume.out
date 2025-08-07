@@ -1,9 +1,9 @@
 Volumes:
-Cube: 8.0
-Cuboid: 8.0
+Cube: 8
+Cuboid: 8
 Cone: 1.3333333333333333
 Right Circular Cone: 8.377580409572781
-Prism: 4.0
+Prism: 4
 Pyramid: 1.3333333333333333
 Sphere: 33.510321638291124
 Hemisphere: 16.755160819145562

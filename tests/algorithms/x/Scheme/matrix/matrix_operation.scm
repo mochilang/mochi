@@ -1,4 +1,4 @@
-;; Generated on 2025-08-07 11:54 +0700
+;; Generated on 2025-08-07 16:11 +0700
 (import (scheme base))
 (import (scheme time))
 (import (chibi string))
@@ -21,6 +21,10 @@
         ((null? x) "[]")
         ((string? x) (let ((out (open-output-string))) (json-write x out) (get-output-string out)))
         ((boolean? x) (if x "true" "false"))
+        ((number? x)
+         (if (integer? x)
+             (number->string (inexact->exact x))
+             (number->string x)))
         (else (number->string x))))
 (define (to-str-space x)
   (cond ((pair? x)
@@ -31,7 +35,7 @@
 (define (lower s) (string-downcase s))
 (define (fmod a b) (- a (* (floor (/ a b)) b)))
 (define (_mod a b) (if (and (integer? a) (integer? b)) (modulo a b) (fmod a b)))
-(define (_div a b) (/ a b))
+(define (_div a b) (if (and (integer? a) (integer? b) (exact? a) (exact? b)) (quotient a b) (/ a b)))
 (define (_gt a b) (cond ((and (number? a) (number? b)) (> a b)) ((and (string? a) (string? b)) (string>? a b)) (else (> a b))))
 (define (_lt a b) (cond ((and (number? a) (number? b)) (< a b)) ((and (string? a) (string? b)) (string<? a b)) (else (< a b))))
 (define (_ge a b) (cond ((and (number? a) (number? b)) (>= a b)) ((and (string? a) (string? b)) (string>=? a b)) (else (>= a b))))
@@ -98,6 +102,7 @@
   (cond ((string? x) (string-length x))
         ((hash-table? x) (hash-table-size x))
         (else (length x))))
+(define (list-ref-safe lst idx) (if (and (integer? idx) (>= idx 0) (< idx (length lst))) (list-ref lst idx) '()))
 (
   let (
     (
@@ -126,7 +131,7 @@
               (
                 rows (
                   _len (
-                    list-ref matrices 0
+                    list-ref-safe matrices 0
                   )
                 )
               )
@@ -140,12 +145,12 @@
                         cond (
                           (
                             string? (
-                              list-ref matrices 0
+                              list-ref-safe matrices 0
                             )
                           )
                            (
                             _substring (
-                              list-ref matrices 0
+                              list-ref-safe matrices 0
                             )
                              0 (
                               + 0 1
@@ -155,20 +160,20 @@
                          (
                           (
                             hash-table? (
-                              list-ref matrices 0
+                              list-ref-safe matrices 0
                             )
                           )
                            (
                             hash-table-ref (
-                              list-ref matrices 0
+                              list-ref-safe matrices 0
                             )
                              0
                           )
                         )
                          (
                           else (
-                            list-ref (
-                              list-ref matrices 0
+                            list-ref-safe (
+                              list-ref-safe matrices 0
                             )
                              0
                           )
@@ -286,12 +291,12 @@
                                                                                                       cond (
                                                                                                         (
                                                                                                           string? (
-                                                                                                            list-ref matrices m
+                                                                                                            list-ref-safe matrices m
                                                                                                           )
                                                                                                         )
                                                                                                          (
                                                                                                           _substring (
-                                                                                                            list-ref matrices m
+                                                                                                            list-ref-safe matrices m
                                                                                                           )
                                                                                                            r (
                                                                                                             + r 1
@@ -301,20 +306,20 @@
                                                                                                        (
                                                                                                         (
                                                                                                           hash-table? (
-                                                                                                            list-ref matrices m
+                                                                                                            list-ref-safe matrices m
                                                                                                           )
                                                                                                         )
                                                                                                          (
                                                                                                           hash-table-ref (
-                                                                                                            list-ref matrices m
+                                                                                                            list-ref-safe matrices m
                                                                                                           )
                                                                                                            r
                                                                                                         )
                                                                                                       )
                                                                                                        (
                                                                                                         else (
-                                                                                                          list-ref (
-                                                                                                            list-ref matrices m
+                                                                                                          list-ref-safe (
+                                                                                                            list-ref-safe matrices m
                                                                                                           )
                                                                                                            r
                                                                                                         )
@@ -326,12 +331,12 @@
                                                                                                       cond (
                                                                                                         (
                                                                                                           string? (
-                                                                                                            list-ref matrices m
+                                                                                                            list-ref-safe matrices m
                                                                                                           )
                                                                                                         )
                                                                                                          (
                                                                                                           _substring (
-                                                                                                            list-ref matrices m
+                                                                                                            list-ref-safe matrices m
                                                                                                           )
                                                                                                            r (
                                                                                                             + r 1
@@ -341,20 +346,20 @@
                                                                                                        (
                                                                                                         (
                                                                                                           hash-table? (
-                                                                                                            list-ref matrices m
+                                                                                                            list-ref-safe matrices m
                                                                                                           )
                                                                                                         )
                                                                                                          (
                                                                                                           hash-table-ref (
-                                                                                                            list-ref matrices m
+                                                                                                            list-ref-safe matrices m
                                                                                                           )
                                                                                                            r
                                                                                                         )
                                                                                                       )
                                                                                                        (
                                                                                                         else (
-                                                                                                          list-ref (
-                                                                                                            list-ref matrices m
+                                                                                                          list-ref-safe (
+                                                                                                            list-ref-safe matrices m
                                                                                                           )
                                                                                                            r
                                                                                                         )
@@ -371,12 +376,12 @@
                                                                                                       cond (
                                                                                                         (
                                                                                                           string? (
-                                                                                                            list-ref matrices m
+                                                                                                            list-ref-safe matrices m
                                                                                                           )
                                                                                                         )
                                                                                                          (
                                                                                                           _substring (
-                                                                                                            list-ref matrices m
+                                                                                                            list-ref-safe matrices m
                                                                                                           )
                                                                                                            r (
                                                                                                             + r 1
@@ -386,20 +391,20 @@
                                                                                                        (
                                                                                                         (
                                                                                                           hash-table? (
-                                                                                                            list-ref matrices m
+                                                                                                            list-ref-safe matrices m
                                                                                                           )
                                                                                                         )
                                                                                                          (
                                                                                                           hash-table-ref (
-                                                                                                            list-ref matrices m
+                                                                                                            list-ref-safe matrices m
                                                                                                           )
                                                                                                            r
                                                                                                         )
                                                                                                       )
                                                                                                        (
                                                                                                         else (
-                                                                                                          list-ref (
-                                                                                                            list-ref matrices m
+                                                                                                          list-ref-safe (
+                                                                                                            list-ref-safe matrices m
                                                                                                           )
                                                                                                            r
                                                                                                         )
@@ -411,12 +416,12 @@
                                                                                                       cond (
                                                                                                         (
                                                                                                           string? (
-                                                                                                            list-ref matrices m
+                                                                                                            list-ref-safe matrices m
                                                                                                           )
                                                                                                         )
                                                                                                          (
                                                                                                           _substring (
-                                                                                                            list-ref matrices m
+                                                                                                            list-ref-safe matrices m
                                                                                                           )
                                                                                                            r (
                                                                                                             + r 1
@@ -426,20 +431,20 @@
                                                                                                        (
                                                                                                         (
                                                                                                           hash-table? (
-                                                                                                            list-ref matrices m
+                                                                                                            list-ref-safe matrices m
                                                                                                           )
                                                                                                         )
                                                                                                          (
                                                                                                           hash-table-ref (
-                                                                                                            list-ref matrices m
+                                                                                                            list-ref-safe matrices m
                                                                                                           )
                                                                                                            r
                                                                                                         )
                                                                                                       )
                                                                                                        (
                                                                                                         else (
-                                                                                                          list-ref (
-                                                                                                            list-ref matrices m
+                                                                                                          list-ref-safe (
+                                                                                                            list-ref-safe matrices m
                                                                                                           )
                                                                                                            r
                                                                                                         )
@@ -450,16 +455,16 @@
                                                                                                 )
                                                                                                  (
                                                                                                   else (
-                                                                                                    list-ref (
+                                                                                                    list-ref-safe (
                                                                                                       cond (
                                                                                                         (
                                                                                                           string? (
-                                                                                                            list-ref matrices m
+                                                                                                            list-ref-safe matrices m
                                                                                                           )
                                                                                                         )
                                                                                                          (
                                                                                                           _substring (
-                                                                                                            list-ref matrices m
+                                                                                                            list-ref-safe matrices m
                                                                                                           )
                                                                                                            r (
                                                                                                             + r 1
@@ -469,20 +474,20 @@
                                                                                                        (
                                                                                                         (
                                                                                                           hash-table? (
-                                                                                                            list-ref matrices m
+                                                                                                            list-ref-safe matrices m
                                                                                                           )
                                                                                                         )
                                                                                                          (
                                                                                                           hash-table-ref (
-                                                                                                            list-ref matrices m
+                                                                                                            list-ref-safe matrices m
                                                                                                           )
                                                                                                            r
                                                                                                         )
                                                                                                       )
                                                                                                        (
                                                                                                         else (
-                                                                                                          list-ref (
-                                                                                                            list-ref matrices m
+                                                                                                          list-ref-safe (
+                                                                                                            list-ref-safe matrices m
                                                                                                           )
                                                                                                            r
                                                                                                         )
@@ -503,10 +508,8 @@
                                                                                             loop6
                                                                                           )
                                                                                         )
-                                                                                         (
-                                                                                          quote (
-                                                                                            
-                                                                                          )
+                                                                                         '(
+                                                                                          
                                                                                         )
                                                                                       )
                                                                                     )
@@ -538,10 +541,8 @@
                                                                     loop4
                                                                   )
                                                                 )
-                                                                 (
-                                                                  quote (
-                                                                    
-                                                                  )
+                                                                 '(
+                                                                  
                                                                 )
                                                               )
                                                             )
@@ -573,10 +574,8 @@
                                             loop2
                                           )
                                         )
-                                         (
-                                          quote (
-                                            
-                                          )
+                                         '(
+                                          
                                         )
                                       )
                                     )
@@ -625,7 +624,7 @@
                   (
                     cols (
                       _len (
-                        list-ref a 0
+                        list-ref-safe a 0
                       )
                     )
                   )
@@ -705,12 +704,12 @@
                                                                             cond (
                                                                               (
                                                                                 string? (
-                                                                                  list-ref a r
+                                                                                  list-ref-safe a r
                                                                                 )
                                                                               )
                                                                                (
                                                                                 _substring (
-                                                                                  list-ref a r
+                                                                                  list-ref-safe a r
                                                                                 )
                                                                                  c (
                                                                                   + c 1
@@ -720,20 +719,20 @@
                                                                              (
                                                                               (
                                                                                 hash-table? (
-                                                                                  list-ref a r
+                                                                                  list-ref-safe a r
                                                                                 )
                                                                               )
                                                                                (
                                                                                 hash-table-ref (
-                                                                                  list-ref a r
+                                                                                  list-ref-safe a r
                                                                                 )
                                                                                  c
                                                                               )
                                                                             )
                                                                              (
                                                                               else (
-                                                                                list-ref (
-                                                                                  list-ref a r
+                                                                                list-ref-safe (
+                                                                                  list-ref-safe a r
                                                                                 )
                                                                                  c
                                                                               )
@@ -743,12 +742,12 @@
                                                                             cond (
                                                                               (
                                                                                 string? (
-                                                                                  list-ref b r
+                                                                                  list-ref-safe b r
                                                                                 )
                                                                               )
                                                                                (
                                                                                 _substring (
-                                                                                  list-ref b r
+                                                                                  list-ref-safe b r
                                                                                 )
                                                                                  c (
                                                                                   + c 1
@@ -758,20 +757,20 @@
                                                                              (
                                                                               (
                                                                                 hash-table? (
-                                                                                  list-ref b r
+                                                                                  list-ref-safe b r
                                                                                 )
                                                                               )
                                                                                (
                                                                                 hash-table-ref (
-                                                                                  list-ref b r
+                                                                                  list-ref-safe b r
                                                                                 )
                                                                                  c
                                                                               )
                                                                             )
                                                                              (
                                                                               else (
-                                                                                list-ref (
-                                                                                  list-ref b r
+                                                                                list-ref-safe (
+                                                                                  list-ref-safe b r
                                                                                 )
                                                                                  c
                                                                               )
@@ -790,10 +789,8 @@
                                                                     loop11
                                                                   )
                                                                 )
-                                                                 (
-                                                                  quote (
-                                                                    
-                                                                  )
+                                                                 '(
+                                                                  
                                                                 )
                                                               )
                                                             )
@@ -825,10 +822,8 @@
                                             loop9
                                           )
                                         )
-                                         (
-                                          quote (
-                                            
-                                          )
+                                         '(
+                                          
                                         )
                                       )
                                     )
@@ -930,7 +925,7 @@
                                                         if (
                                                           < j (
                                                             _len (
-                                                              list-ref matrix i
+                                                              list-ref-safe matrix i
                                                             )
                                                           )
                                                         )
@@ -943,12 +938,12 @@
                                                                     cond (
                                                                       (
                                                                         string? (
-                                                                          list-ref matrix i
+                                                                          list-ref-safe matrix i
                                                                         )
                                                                       )
                                                                        (
                                                                         _substring (
-                                                                          list-ref matrix i
+                                                                          list-ref-safe matrix i
                                                                         )
                                                                          j (
                                                                           + j 1
@@ -958,20 +953,20 @@
                                                                      (
                                                                       (
                                                                         hash-table? (
-                                                                          list-ref matrix i
+                                                                          list-ref-safe matrix i
                                                                         )
                                                                       )
                                                                        (
                                                                         hash-table-ref (
-                                                                          list-ref matrix i
+                                                                          list-ref-safe matrix i
                                                                         )
                                                                          j
                                                                       )
                                                                     )
                                                                      (
                                                                       else (
-                                                                        list-ref (
-                                                                          list-ref matrix i
+                                                                        list-ref-safe (
+                                                                          list-ref-safe matrix i
                                                                         )
                                                                          j
                                                                       )
@@ -991,10 +986,8 @@
                                                             loop16
                                                           )
                                                         )
-                                                         (
-                                                          quote (
-                                                            
-                                                          )
+                                                         '(
+                                                          
                                                         )
                                                       )
                                                     )
@@ -1026,10 +1019,8 @@
                                     loop14
                                   )
                                 )
-                                 (
-                                  quote (
-                                    
-                                  )
+                                 '(
+                                  
                                 )
                               )
                             )
@@ -1074,7 +1065,7 @@
                   (
                     colsA (
                       _len (
-                        list-ref a 0
+                        list-ref-safe a 0
                       )
                     )
                   )
@@ -1094,7 +1085,7 @@
                           (
                             colsB (
                               _len (
-                                list-ref b 0
+                                list-ref-safe b 0
                               )
                             )
                           )
@@ -1204,12 +1195,12 @@
                                                                                                           cond (
                                                                                                             (
                                                                                                               string? (
-                                                                                                                list-ref a i
+                                                                                                                list-ref-safe a i
                                                                                                               )
                                                                                                             )
                                                                                                              (
                                                                                                               _substring (
-                                                                                                                list-ref a i
+                                                                                                                list-ref-safe a i
                                                                                                               )
                                                                                                                k (
                                                                                                                 + k 1
@@ -1219,20 +1210,20 @@
                                                                                                            (
                                                                                                             (
                                                                                                               hash-table? (
-                                                                                                                list-ref a i
+                                                                                                                list-ref-safe a i
                                                                                                               )
                                                                                                             )
                                                                                                              (
                                                                                                               hash-table-ref (
-                                                                                                                list-ref a i
+                                                                                                                list-ref-safe a i
                                                                                                               )
                                                                                                                k
                                                                                                             )
                                                                                                           )
                                                                                                            (
                                                                                                             else (
-                                                                                                              list-ref (
-                                                                                                                list-ref a i
+                                                                                                              list-ref-safe (
+                                                                                                                list-ref-safe a i
                                                                                                               )
                                                                                                                k
                                                                                                             )
@@ -1242,12 +1233,12 @@
                                                                                                           cond (
                                                                                                             (
                                                                                                               string? (
-                                                                                                                list-ref b k
+                                                                                                                list-ref-safe b k
                                                                                                               )
                                                                                                             )
                                                                                                              (
                                                                                                               _substring (
-                                                                                                                list-ref b k
+                                                                                                                list-ref-safe b k
                                                                                                               )
                                                                                                                j (
                                                                                                                 + j 1
@@ -1257,20 +1248,20 @@
                                                                                                            (
                                                                                                             (
                                                                                                               hash-table? (
-                                                                                                                list-ref b k
+                                                                                                                list-ref-safe b k
                                                                                                               )
                                                                                                             )
                                                                                                              (
                                                                                                               hash-table-ref (
-                                                                                                                list-ref b k
+                                                                                                                list-ref-safe b k
                                                                                                               )
                                                                                                                j
                                                                                                             )
                                                                                                           )
                                                                                                            (
                                                                                                             else (
-                                                                                                              list-ref (
-                                                                                                                list-ref b k
+                                                                                                              list-ref-safe (
+                                                                                                                list-ref-safe b k
                                                                                                               )
                                                                                                                j
                                                                                                             )
@@ -1288,10 +1279,8 @@
                                                                                                     loop23
                                                                                                   )
                                                                                                 )
-                                                                                                 (
-                                                                                                  quote (
-                                                                                                    
-                                                                                                  )
+                                                                                                 '(
+                                                                                                  
                                                                                                 )
                                                                                               )
                                                                                             )
@@ -1323,10 +1312,8 @@
                                                                             loop21
                                                                           )
                                                                         )
-                                                                         (
-                                                                          quote (
-                                                                            
-                                                                          )
+                                                                         '(
+                                                                          
                                                                         )
                                                                       )
                                                                     )
@@ -1358,10 +1345,8 @@
                                                     loop19
                                                   )
                                                 )
-                                                 (
-                                                  quote (
-                                                    
-                                                  )
+                                                 '(
+                                                  
                                                 )
                                               )
                                             )
@@ -1498,10 +1483,8 @@
                                                             loop28
                                                           )
                                                         )
-                                                         (
-                                                          quote (
-                                                            
-                                                          )
+                                                         '(
+                                                          
                                                         )
                                                       )
                                                     )
@@ -1533,10 +1516,8 @@
                                     loop26
                                   )
                                 )
-                                 (
-                                  quote (
-                                    
-                                  )
+                                 '(
+                                  
                                 )
                               )
                             )
@@ -1581,7 +1562,7 @@
                   (
                     cols (
                       _len (
-                        list-ref matrix 0
+                        list-ref-safe matrix 0
                       )
                     )
                   )
@@ -1660,12 +1641,12 @@
                                                                           cond (
                                                                             (
                                                                               string? (
-                                                                                list-ref matrix r
+                                                                                list-ref-safe matrix r
                                                                               )
                                                                             )
                                                                              (
                                                                               _substring (
-                                                                                list-ref matrix r
+                                                                                list-ref-safe matrix r
                                                                               )
                                                                                c (
                                                                                 + c 1
@@ -1675,20 +1656,20 @@
                                                                            (
                                                                             (
                                                                               hash-table? (
-                                                                                list-ref matrix r
+                                                                                list-ref-safe matrix r
                                                                               )
                                                                             )
                                                                              (
                                                                               hash-table-ref (
-                                                                                list-ref matrix r
+                                                                                list-ref-safe matrix r
                                                                               )
                                                                                c
                                                                             )
                                                                           )
                                                                            (
                                                                             else (
-                                                                              list-ref (
-                                                                                list-ref matrix r
+                                                                              list-ref-safe (
+                                                                                list-ref-safe matrix r
                                                                               )
                                                                                c
                                                                             )
@@ -1706,10 +1687,8 @@
                                                                     loop33
                                                                   )
                                                                 )
-                                                                 (
-                                                                  quote (
-                                                                    
-                                                                  )
+                                                                 '(
+                                                                  
                                                                 )
                                                               )
                                                             )
@@ -1741,10 +1720,8 @@
                                             loop31
                                           )
                                         )
-                                         (
-                                          quote (
-                                            
-                                          )
+                                         '(
+                                          
                                         )
                                       )
                                     )
@@ -1853,7 +1830,7 @@
                                                             if (
                                                               < j (
                                                                 _len (
-                                                                  list-ref matrix i
+                                                                  list-ref-safe matrix i
                                                                 )
                                                               )
                                                             )
@@ -1872,12 +1849,12 @@
                                                                           cond (
                                                                             (
                                                                               string? (
-                                                                                list-ref matrix i
+                                                                                list-ref-safe matrix i
                                                                               )
                                                                             )
                                                                              (
                                                                               _substring (
-                                                                                list-ref matrix i
+                                                                                list-ref-safe matrix i
                                                                               )
                                                                                j (
                                                                                 + j 1
@@ -1887,20 +1864,20 @@
                                                                            (
                                                                             (
                                                                               hash-table? (
-                                                                                list-ref matrix i
+                                                                                list-ref-safe matrix i
                                                                               )
                                                                             )
                                                                              (
                                                                               hash-table-ref (
-                                                                                list-ref matrix i
+                                                                                list-ref-safe matrix i
                                                                               )
                                                                                j
                                                                             )
                                                                           )
                                                                            (
                                                                             else (
-                                                                              list-ref (
-                                                                                list-ref matrix i
+                                                                              list-ref-safe (
+                                                                                list-ref-safe matrix i
                                                                               )
                                                                                j
                                                                             )
@@ -1910,10 +1887,8 @@
                                                                     )
                                                                   )
                                                                 )
-                                                                 (
-                                                                  quote (
-                                                                    
-                                                                  )
+                                                                 '(
+                                                                  
                                                                 )
                                                               )
                                                                (
@@ -1925,10 +1900,8 @@
                                                                 loop38
                                                               )
                                                             )
-                                                             (
-                                                              quote (
-                                                                
-                                                              )
+                                                             '(
+                                                              
                                                             )
                                                           )
                                                         )
@@ -1952,10 +1925,8 @@
                                         )
                                       )
                                     )
-                                     (
-                                      quote (
-                                        
-                                      )
+                                     '(
+                                      
                                     )
                                   )
                                    (
@@ -1967,10 +1938,8 @@
                                     loop36
                                   )
                                 )
-                                 (
-                                  quote (
-                                    
-                                  )
+                                 '(
+                                  
                                 )
                               )
                             )
@@ -2015,12 +1984,12 @@
                     cond (
                       (
                         string? (
-                          list-ref matrix 0
+                          list-ref-safe matrix 0
                         )
                       )
                        (
                         _substring (
-                          list-ref matrix 0
+                          list-ref-safe matrix 0
                         )
                          0 (
                           + 0 1
@@ -2030,20 +1999,20 @@
                      (
                       (
                         hash-table? (
-                          list-ref matrix 0
+                          list-ref-safe matrix 0
                         )
                       )
                        (
                         hash-table-ref (
-                          list-ref matrix 0
+                          list-ref-safe matrix 0
                         )
                          0
                       )
                     )
                      (
                       else (
-                        list-ref (
-                          list-ref matrix 0
+                        list-ref-safe (
+                          list-ref-safe matrix 0
                         )
                          0
                       )
@@ -2051,10 +2020,8 @@
                   )
                 )
               )
-               (
-                quote (
-                  
-                )
+               '(
+                
               )
             )
              (
@@ -2087,7 +2054,7 @@
                                   if (
                                     < c (
                                       _len (
-                                        list-ref matrix 0
+                                        list-ref-safe matrix 0
                                       )
                                     )
                                   )
@@ -2126,12 +2093,12 @@
                                                       cond (
                                                         (
                                                           string? (
-                                                            list-ref matrix 0
+                                                            list-ref-safe matrix 0
                                                           )
                                                         )
                                                          (
                                                           _substring (
-                                                            list-ref matrix 0
+                                                            list-ref-safe matrix 0
                                                           )
                                                            c (
                                                             + c 1
@@ -2141,20 +2108,20 @@
                                                        (
                                                         (
                                                           hash-table? (
-                                                            list-ref matrix 0
+                                                            list-ref-safe matrix 0
                                                           )
                                                         )
                                                          (
                                                           hash-table-ref (
-                                                            list-ref matrix 0
+                                                            list-ref-safe matrix 0
                                                           )
                                                            c
                                                         )
                                                       )
                                                        (
                                                         else (
-                                                          list-ref (
-                                                            list-ref matrix 0
+                                                          list-ref-safe (
+                                                            list-ref-safe matrix 0
                                                           )
                                                            c
                                                         )
@@ -2181,10 +2148,8 @@
                                       loop41
                                     )
                                   )
-                                   (
-                                    quote (
-                                      
-                                    )
+                                   '(
+                                    
                                   )
                                 )
                               )
@@ -2236,10 +2201,8 @@
                     )
                   )
                 )
-                 (
-                  quote (
-                    
-                  )
+                 '(
+                  
                 )
               )
                (
@@ -2346,10 +2309,8 @@
                                                                     loop46
                                                                   )
                                                                 )
-                                                                 (
-                                                                  quote (
-                                                                    
-                                                                  )
+                                                                 '(
+                                                                  
                                                                 )
                                                               )
                                                             )
@@ -2381,10 +2342,8 @@
                                             loop44
                                           )
                                         )
-                                         (
-                                          quote (
-                                            
-                                          )
+                                         '(
+                                          
                                         )
                                       )
                                     )
@@ -2486,12 +2445,12 @@
                                                                                     cond (
                                                                                       (
                                                                                         string? (
-                                                                                          list-ref matrix_minor i
+                                                                                          list-ref-safe matrix_minor i
                                                                                         )
                                                                                       )
                                                                                        (
                                                                                         _substring (
-                                                                                          list-ref matrix_minor i
+                                                                                          list-ref-safe matrix_minor i
                                                                                         )
                                                                                          j (
                                                                                           + j 1
@@ -2501,20 +2460,20 @@
                                                                                      (
                                                                                       (
                                                                                         hash-table? (
-                                                                                          list-ref matrix_minor i
+                                                                                          list-ref-safe matrix_minor i
                                                                                         )
                                                                                       )
                                                                                        (
                                                                                         hash-table-ref (
-                                                                                          list-ref matrix_minor i
+                                                                                          list-ref-safe matrix_minor i
                                                                                         )
                                                                                          j
                                                                                       )
                                                                                     )
                                                                                      (
                                                                                       else (
-                                                                                        list-ref (
-                                                                                          list-ref matrix_minor i
+                                                                                        list-ref-safe (
+                                                                                          list-ref-safe matrix_minor i
                                                                                         )
                                                                                          j
                                                                                       )
@@ -2536,10 +2495,8 @@
                                                                         loop50
                                                                       )
                                                                     )
-                                                                     (
-                                                                      quote (
-                                                                        
-                                                                      )
+                                                                     '(
+                                                                      
                                                                     )
                                                                   )
                                                                 )
@@ -2571,10 +2528,8 @@
                                                 loop48
                                               )
                                             )
-                                             (
-                                              quote (
-                                                
-                                              )
+                                             '(
+                                              
                                             )
                                           )
                                         )

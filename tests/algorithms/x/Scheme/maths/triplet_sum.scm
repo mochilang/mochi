@@ -1,4 +1,4 @@
-;; Generated on 2025-08-07 13:41 +0700
+;; Generated on 2025-08-07 16:11 +0700
 (import (scheme base))
 (import (scheme time))
 (import (chibi string))
@@ -21,6 +21,10 @@
         ((null? x) "[]")
         ((string? x) (let ((out (open-output-string))) (json-write x out) (get-output-string out)))
         ((boolean? x) (if x "true" "false"))
+        ((number? x)
+         (if (integer? x)
+             (number->string (inexact->exact x))
+             (number->string x)))
         (else (number->string x))))
 (define (to-str-space x)
   (cond ((pair? x)
@@ -31,7 +35,7 @@
 (define (lower s) (string-downcase s))
 (define (fmod a b) (- a (* (floor (/ a b)) b)))
 (define (_mod a b) (if (and (integer? a) (integer? b)) (modulo a b) (fmod a b)))
-(define (_div a b) (/ a b))
+(define (_div a b) (if (and (integer? a) (integer? b) (exact? a) (exact? b)) (quotient a b) (/ a b)))
 (define (_gt a b) (cond ((and (number? a) (number? b)) (> a b)) ((and (string? a) (string? b)) (string>? a b)) (else (> a b))))
 (define (_lt a b) (cond ((and (number? a) (number? b)) (< a b)) ((and (string? a) (string? b)) (string<? a b)) (else (< a b))))
 (define (_ge a b) (cond ((and (number? a) (number? b)) (>= a b)) ((and (string? a) (string? b)) (string>=? a b)) (else (>= a b))))
@@ -98,6 +102,7 @@
   (cond ((string? x) (string-length x))
         ((hash-table? x) (hash-table-size x))
         (else (length x))))
+(define (list-ref-safe lst idx) (if (and (integer? idx) (>= idx 0) (< idx (length lst))) (list-ref lst idx) '()))
 (
   let (
     (
@@ -160,7 +165,7 @@
                                     set! arr (
                                       append arr (
                                         _list (
-                                          list-ref nums i
+                                          list-ref-safe nums i
                                         )
                                       )
                                     )
@@ -174,10 +179,8 @@
                                     loop2
                                   )
                                 )
-                                 (
-                                  quote (
-                                    
-                                  )
+                                 '(
+                                  
                                 )
                               )
                             )
@@ -254,10 +257,10 @@
                                                               begin (
                                                                 if (
                                                                   > (
-                                                                    list-ref arr b
+                                                                    list-ref-safe arr b
                                                                   )
                                                                    (
-                                                                    list-ref arr (
+                                                                    list-ref-safe arr (
                                                                       + b 1
                                                                     )
                                                                   )
@@ -267,14 +270,14 @@
                                                                     let (
                                                                       (
                                                                         tmp (
-                                                                          list-ref arr b
+                                                                          list-ref-safe arr b
                                                                         )
                                                                       )
                                                                     )
                                                                      (
                                                                       begin (
                                                                         list-set! arr b (
-                                                                          list-ref arr (
+                                                                          list-ref-safe arr (
                                                                             + b 1
                                                                           )
                                                                         )
@@ -288,10 +291,8 @@
                                                                     )
                                                                   )
                                                                 )
-                                                                 (
-                                                                  quote (
-                                                                    
-                                                                  )
+                                                                 '(
+                                                                  
                                                                 )
                                                               )
                                                                (
@@ -303,10 +304,8 @@
                                                                 loop6
                                                               )
                                                             )
-                                                             (
-                                                              quote (
-                                                                
-                                                              )
+                                                             '(
+                                                              
                                                             )
                                                           )
                                                         )
@@ -329,10 +328,8 @@
                                             loop4
                                           )
                                         )
-                                         (
-                                          quote (
-                                            
-                                          )
+                                         '(
+                                          
                                         )
                                       )
                                     )
@@ -406,7 +403,7 @@
                                     set! arr (
                                       append arr (
                                         _list (
-                                          list-ref xs i
+                                          list-ref-safe xs i
                                         )
                                       )
                                     )
@@ -420,10 +417,8 @@
                                     loop9
                                   )
                                 )
-                                 (
-                                  quote (
-                                    
-                                  )
+                                 '(
+                                  
                                 )
                               )
                             )
@@ -500,10 +495,10 @@
                                                               begin (
                                                                 if (
                                                                   > (
-                                                                    list-ref arr b
+                                                                    list-ref-safe arr b
                                                                   )
                                                                    (
-                                                                    list-ref arr (
+                                                                    list-ref-safe arr (
                                                                       + b 1
                                                                     )
                                                                   )
@@ -513,14 +508,14 @@
                                                                     let (
                                                                       (
                                                                         tmp (
-                                                                          list-ref arr b
+                                                                          list-ref-safe arr b
                                                                         )
                                                                       )
                                                                     )
                                                                      (
                                                                       begin (
                                                                         list-set! arr b (
-                                                                          list-ref arr (
+                                                                          list-ref-safe arr (
                                                                             + b 1
                                                                           )
                                                                         )
@@ -534,10 +529,8 @@
                                                                     )
                                                                   )
                                                                 )
-                                                                 (
-                                                                  quote (
-                                                                    
-                                                                  )
+                                                                 '(
+                                                                  
                                                                 )
                                                               )
                                                                (
@@ -549,10 +542,8 @@
                                                                 loop13
                                                               )
                                                             )
-                                                             (
-                                                              quote (
-                                                                
-                                                              )
+                                                             '(
+                                                              
                                                             )
                                                           )
                                                         )
@@ -575,10 +566,8 @@
                                             loop11
                                           )
                                         )
-                                         (
-                                          quote (
-                                            
-                                          )
+                                         '(
+                                          
                                         )
                                       )
                                     )
@@ -706,14 +695,14 @@
                                                                           equal? (
                                                                             + (
                                                                               + (
-                                                                                list-ref arr i
+                                                                                list-ref-safe arr i
                                                                               )
                                                                                (
-                                                                                list-ref arr j
+                                                                                list-ref-safe arr j
                                                                               )
                                                                             )
                                                                              (
-                                                                              list-ref arr k
+                                                                              list-ref-safe arr k
                                                                             )
                                                                           )
                                                                            target
@@ -723,22 +712,20 @@
                                                                             ret15 (
                                                                               sort3 (
                                                                                 _list (
-                                                                                  list-ref arr i
+                                                                                  list-ref-safe arr i
                                                                                 )
                                                                                  (
-                                                                                  list-ref arr j
+                                                                                  list-ref-safe arr j
                                                                                 )
                                                                                  (
-                                                                                  list-ref arr k
+                                                                                  list-ref-safe arr k
                                                                                 )
                                                                               )
                                                                             )
                                                                           )
                                                                         )
-                                                                         (
-                                                                          quote (
-                                                                            
-                                                                          )
+                                                                         '(
+                                                                          
                                                                         )
                                                                       )
                                                                        (
@@ -750,10 +737,8 @@
                                                                         loop20
                                                                       )
                                                                     )
-                                                                     (
-                                                                      quote (
-                                                                        
-                                                                      )
+                                                                     '(
+                                                                      
                                                                     )
                                                                   )
                                                                 )
@@ -776,10 +761,8 @@
                                                     loop18
                                                   )
                                                 )
-                                                 (
-                                                  quote (
-                                                    
-                                                  )
+                                                 '(
+                                                  
                                                 )
                                               )
                                             )
@@ -802,10 +785,8 @@
                                 loop16
                               )
                             )
-                             (
-                              quote (
-                                
-                              )
+                             '(
+                              
                             )
                           )
                         )
@@ -941,7 +922,7 @@
                                                                           )
                                                                            (
                                                                             else (
-                                                                              list-ref sorted i
+                                                                              list-ref-safe sorted i
                                                                             )
                                                                           )
                                                                         )
@@ -966,7 +947,7 @@
                                                                           )
                                                                            (
                                                                             else (
-                                                                              list-ref sorted left
+                                                                              list-ref-safe sorted left
                                                                             )
                                                                           )
                                                                         )
@@ -992,7 +973,7 @@
                                                                         )
                                                                          (
                                                                           else (
-                                                                            list-ref sorted right
+                                                                            list-ref-safe sorted right
                                                                           )
                                                                         )
                                                                       )
@@ -1028,7 +1009,7 @@
                                                                             )
                                                                              (
                                                                               else (
-                                                                                list-ref sorted i
+                                                                                list-ref-safe sorted i
                                                                               )
                                                                             )
                                                                           )
@@ -1053,7 +1034,7 @@
                                                                             )
                                                                              (
                                                                               else (
-                                                                                list-ref sorted left
+                                                                                list-ref-safe sorted left
                                                                               )
                                                                             )
                                                                           )
@@ -1078,17 +1059,15 @@
                                                                             )
                                                                              (
                                                                               else (
-                                                                                list-ref sorted right
+                                                                                list-ref-safe sorted right
                                                                               )
                                                                             )
                                                                           )
                                                                         )
                                                                       )
                                                                     )
-                                                                     (
-                                                                      quote (
-                                                                        
-                                                                      )
+                                                                     '(
+                                                                      
                                                                     )
                                                                   )
                                                                    (
@@ -1116,10 +1095,8 @@
                                                                 loop25
                                                               )
                                                             )
-                                                             (
-                                                              quote (
-                                                                
-                                                              )
+                                                             '(
+                                                              
                                                             )
                                                           )
                                                         )
@@ -1144,10 +1121,8 @@
                                         loop23
                                       )
                                     )
-                                     (
-                                      quote (
-                                        
-                                      )
+                                     '(
+                                      
                                     )
                                   )
                                 )
@@ -1199,10 +1174,8 @@
                   ret27 #f
                 )
               )
-               (
-                quote (
-                  
-                )
+               '(
+                
               )
             )
              (
@@ -1235,10 +1208,10 @@
                                   if (
                                     not (
                                       equal? (
-                                        list-ref a i
+                                        list-ref-safe a i
                                       )
                                        (
-                                        list-ref b i
+                                        list-ref-safe b i
                                       )
                                     )
                                   )
@@ -1247,10 +1220,8 @@
                                       ret27 #f
                                     )
                                   )
-                                   (
-                                    quote (
-                                      
-                                    )
+                                   '(
+                                    
                                   )
                                 )
                                  (
@@ -1262,10 +1233,8 @@
                                   loop28
                                 )
                               )
-                               (
-                                quote (
-                                  
-                                )
+                               '(
+                                
                               )
                             )
                           )
@@ -1320,10 +1289,8 @@
                     panic "ts1 case1 failed"
                   )
                 )
-                 (
-                  quote (
-                    
-                  )
+                 '(
+                  
                 )
               )
                (
@@ -1342,10 +1309,8 @@
                     panic "ts2 case1 failed"
                   )
                 )
-                 (
-                  quote (
-                    
-                  )
+                 '(
+                  
                 )
               )
                (
@@ -1373,10 +1338,8 @@
                         panic "ts1 case2 failed"
                       )
                     )
-                     (
-                      quote (
-                        
-                      )
+                     '(
+                      
                     )
                   )
                    (
@@ -1395,10 +1358,8 @@
                         panic "ts2 case2 failed"
                       )
                     )
-                     (
-                      quote (
-                        
-                      )
+                     '(
+                      
                     )
                   )
                    (
@@ -1426,10 +1387,8 @@
                             panic "ts1 case3 failed"
                           )
                         )
-                         (
-                          quote (
-                            
-                          )
+                         '(
+                          
                         )
                       )
                        (
@@ -1448,10 +1407,8 @@
                             panic "ts2 case3 failed"
                           )
                         )
-                         (
-                          quote (
-                            
-                          )
+                         '(
+                          
                         )
                       )
                     )
@@ -1523,7 +1480,7 @@
                                       )
                                        (
                                         else (
-                                          list-ref res 0
+                                          list-ref-safe res 0
                                         )
                                       )
                                     )
@@ -1552,7 +1509,7 @@
                                     )
                                      (
                                       else (
-                                        list-ref res 1
+                                        list-ref-safe res 1
                                       )
                                     )
                                   )
@@ -1582,7 +1539,7 @@
                                 )
                                  (
                                   else (
-                                    list-ref res 2
+                                    list-ref-safe res 2
                                   )
                                 )
                               )
@@ -1615,7 +1572,7 @@
                                     )
                                      (
                                       else (
-                                        list-ref res 0
+                                        list-ref-safe res 0
                                       )
                                     )
                                   )
@@ -1644,7 +1601,7 @@
                                   )
                                    (
                                     else (
-                                      list-ref res 1
+                                      list-ref-safe res 1
                                     )
                                   )
                                 )
@@ -1674,7 +1631,7 @@
                               )
                                (
                                 else (
-                                  list-ref res 2
+                                  list-ref-safe res 2
                                 )
                               )
                             )
@@ -1707,7 +1664,7 @@
                                       )
                                        (
                                         else (
-                                          list-ref res 0
+                                          list-ref-safe res 0
                                         )
                                       )
                                     )
@@ -1736,7 +1693,7 @@
                                     )
                                      (
                                       else (
-                                        list-ref res 1
+                                        list-ref-safe res 1
                                       )
                                     )
                                   )
@@ -1766,7 +1723,7 @@
                                 )
                                  (
                                   else (
-                                    list-ref res 2
+                                    list-ref-safe res 2
                                   )
                                 )
                               )

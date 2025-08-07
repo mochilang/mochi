@@ -1,0 +1,16 @@
+run: exit status 70
+ERROR: arguments must be prime and p1 < p2
+  called from <anonymous> on line 1772 of file /workspace/mochi/tests/algorithms/x/Scheme/maths/primelib.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 2496 of file /workspace/mochi/tests/algorithms/x/Scheme/maths/primelib.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+true
+[2 3 5 7 11 13 17 19]
+[2 3 5 7 11 13 17 19]
+[7 41]
+41
+7
+40
+[5 23]
+23
