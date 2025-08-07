@@ -1,7 +1,7 @@
 # F# Algorithms Transpiler Output
 
-Completed programs: 78/1077
-Last updated: 2025-08-07 00:16 +0700
+Completed programs: 80/1077
+Last updated: 2025-08-07 08:16 +0700
 
 Checklist:
 
@@ -86,12 +86,12 @@ Checklist:
 | 77 | ciphers/caesar_cipher | ✓ | 571.223ms | 35.3 KB |
 | 78 | ciphers/cryptomath_module | ✓ | 571.223ms | 63.1 KB |
 | 79 | ciphers/decrypt_caesar_with_chi_squared | ✓ | 571.223ms | 59.9 KB |
-| 80 | ciphers/deterministic_miller_rabin |   |  |  |
+| 80 | ciphers/deterministic_miller_rabin | ✓ | 571.223ms | 56.0 KB |
 | 81 | ciphers/diffie |   |  |  |
 | 82 | ciphers/diffie_hellman |   |  |  |
 | 83 | ciphers/elgamal_key_generator |   |  |  |
 | 84 | ciphers/enigma_machine2 |   |  |  |
-| 85 | ciphers/fractionated_morse_cipher |   |  |  |
+| 85 | ciphers/fractionated_morse_cipher | ✓ | 571.223ms | 37.5 KB |
 | 86 | ciphers/gronsfeld_cipher |   |  |  |
 | 87 | ciphers/hill_cipher |   |  |  |
 | 88 | ciphers/mixed_keyword_cypher |   |  |  |
