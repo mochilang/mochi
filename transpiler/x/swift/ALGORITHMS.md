@@ -2,12 +2,12 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 342/1077
-Last updated: 2025-08-07 11:01 +0700
+Completed programs: 343/1077
+Last updated: 2025-08-07 14:57 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 1.067ms | 3.7 MB |
+| 1 | backtracking/all_combinations | ✓ | 2.345ms | 3.7 MB |
 | 2 | backtracking/all_permutations | ✓ | 1.383ms | 3.5 MB |
 | 3 | backtracking/all_subsequences | ✓ | 914µs | 3.4 MB |
 | 4 | backtracking/coloring | ✓ | 540µs | 3.3 MB |
@@ -227,7 +227,7 @@ Last updated: 2025-08-07 11:01 +0700
 | 218 | data_structures/kd_tree/example/example_usage |   |  |  |
 | 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 908µs | 3.2 MB |
 | 220 | data_structures/kd_tree/kd_node | ✓ | 995µs | 3.5 MB |
-| 221 | data_structures/kd_tree/nearest_neighbour_search |   |  |  |
+| 221 | data_structures/kd_tree/nearest_neighbour_search | ✓ | 997µs | 3.5 MB |
 | 222 | data_structures/kd_tree/tests/test_kdtree |   |  |  |
 | 223 | data_structures/linked_list/circular_linked_list |   |  |  |
 | 224 | data_structures/linked_list/deque_doubly |   |  |  |
