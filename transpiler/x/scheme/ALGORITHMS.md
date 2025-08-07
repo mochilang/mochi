@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Scheme code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Scheme`.
-Last updated: 2025-08-07 09:08 GMT+7
+Last updated: 2025-08-07 09:50 GMT+7
 
-## Algorithms Golden Test Checklist (415/1077)
+## Algorithms Golden Test Checklist (413/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 0s | 12.4 MB |
@@ -361,8 +361,8 @@ Last updated: 2025-08-07 09:08 GMT+7
 | 352 | electronics/capacitor_equivalence | ✓ | 0s | 12.4 MB |
 | 353 | electronics/carrier_concentration | ✓ | 0s | 12.9 MB |
 | 354 | electronics/charging_capacitor | ✓ | 1ms | 12.3 MB |
-| 355 | electronics/charging_inductor | ✓ |  |  |
-| 356 | electronics/circular_convolution | ✓ |  |  |
+| 355 | electronics/charging_inductor |   |  |  |
+| 356 | electronics/circular_convolution |   |  |  |
 | 357 | electronics/coulombs_law | ✓ | 1ms | 13.3 MB |
 | 358 | electronics/electric_conductivity | ✓ | 3ms | 12.8 MB |
 | 359 | electronics/electric_power | ✓ | 1ms | 12.8 MB |
@@ -406,8 +406,8 @@ Last updated: 2025-08-07 09:08 GMT+7
 | 397 | graphs/basic_graphs | ✓ | 5ms | 16.5 MB |
 | 398 | graphs/bellman_ford | ✓ | 0s | 12.9 MB |
 | 399 | graphs/bi_directional_dijkstra | ✓ | 1ms | 13.6 MB |
-| 400 | graphs/bidirectional_a_star | ✓ | 74ms | 16.5 MB |
-| 401 | graphs/bidirectional_breadth_first_search | ✓ | 27ms | 16.5 MB |
+| 400 | graphs/bidirectional_a_star | ✓ | 134ms | 16.6 MB |
+| 401 | graphs/bidirectional_breadth_first_search | ✓ | 46ms | 16.6 MB |
 | 402 | graphs/bidirectional_search | ✓ |  |  |
 | 403 | graphs/boruvka |   |  |  |
 | 404 | graphs/breadth_first_search | ✓ | 1ms | 12.7 MB |
