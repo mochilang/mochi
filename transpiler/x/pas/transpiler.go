@@ -77,9 +77,9 @@ func declareName(name string) string {
 		return v
 	}
 	newName := name
-	switch name {
-	case "label", "xor", "and", "or", "div", "mod", "type", "set", "result", "repeat":
-		// Avoid Pascal reserved keywords
+	switch strings.ToLower(name) {
+	case "label", "xor", "and", "or", "div", "mod", "type", "set", "result", "repeat", "end":
+		// Avoid Pascal reserved keywords (case-insensitive)
 		newName = name + "_"
 	}
 	if currentFunc != "" {
@@ -102,6 +102,14 @@ func declareName(name string) string {
 		varOwners[newName] = currentFunc
 	}
 	return newName
+}
+
+func sanitizeField(name string) string {
+	switch strings.ToLower(name) {
+	case "label", "xor", "and", "or", "div", "mod", "type", "set", "result", "repeat", "end":
+		return name + "_"
+	}
+	return name
 }
 
 // Program is a minimal Pascal AST consisting of a sequence of statements.
@@ -527,7 +535,7 @@ type SelectorExpr struct {
 func (s *SelectorExpr) emit(w io.Writer) {
 	io.WriteString(w, s.Root)
 	for _, t := range s.Tail {
-		fmt.Fprintf(w, ".%s", t)
+		fmt.Fprintf(w, ".%s", sanitizeField(t))
 	}
 }
 
@@ -1662,7 +1670,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					if typ == "" {
 						continue
 					}
-					fields = append(fields, Field{Name: m.Field.Name, Type: typ})
+					fields = append(fields, Field{Name: sanitizeField(m.Field.Name), Type: typ})
 				}
 				pr.Records = append(pr.Records, RecordDef{Name: st.Type.Name, Fields: fields})
 			case st.Let != nil:
@@ -2323,7 +2331,7 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 				if typ == "" {
 					continue
 				}
-				fields = append(fields, Field{Name: m.Field.Name, Type: typ})
+				fields = append(fields, Field{Name: sanitizeField(m.Field.Name), Type: typ})
 			}
 			currProg.Records = append(currProg.Records, RecordDef{Name: st.Type.Name, Fields: fields})
 		case st.Var != nil:
@@ -4305,6 +4313,21 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 				expr = &ContainsExpr{Collection: expr, Value: arg, Kind: "list"}
 			}
 			i++
+		case op.Field != nil:
+			fname := sanitizeField(op.Field.Name)
+			switch v := expr.(type) {
+			case *SelectorExpr:
+				v.Tail = append(v.Tail, fname)
+				expr = v
+			case *VarRef:
+				expr = &SelectorExpr{Root: v.Name, Tail: []string{fname}}
+			default:
+				root := exprToVarRef(expr)
+				if root == "" {
+					return nil, fmt.Errorf("unsupported postfix")
+				}
+				expr = &SelectorExpr{Root: root, Tail: []string{fname}}
+			}
 		case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil:
 			idx, err := convertExpr(env, op.Index.Start)
 			if err != nil {
@@ -5383,7 +5406,7 @@ func parseYAMLRecords(data []byte) ([]map[string]string, error) {
 
 func hasVar(name string) bool {
 	for _, v := range currProg.Vars {
-		if v.Name == name {
+		if strings.EqualFold(v.Name, name) {
 			return true
 		}
 	}

@@ -1,0 +1,33 @@
+compile: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/algorithms/x/Pascal/data_structures/binary_tree/serialize_deserialize_binary_tree.pas
+serialize_deserialize_binary_tree.pas(74,10) Warning: Function result does not seem to be set
+serialize_deserialize_binary_tree.pas(138,8) Error: Generics without specialization cannot be used as a type for a variable
+serialize_deserialize_binary_tree.pas(138,22) Error: Identifier not found "Empty"
+serialize_deserialize_binary_tree.pas(138,49) Error: Identifier not found "v"
+serialize_deserialize_binary_tree.pas(138,71) Error: Identifier not found "l"
+serialize_deserialize_binary_tree.pas(138,94) Error: Identifier not found "r"
+serialize_deserialize_binary_tree.pas(145,19) Error: Error in type definition
+serialize_deserialize_binary_tree.pas(149,24) Error: Identifier not found "makeEmpty"
+serialize_deserialize_binary_tree.pas(153,17) Error: Identifier not found "makeNode"
+serialize_deserialize_binary_tree.pas(154,34) Error: Incompatible type for arg no. 1: Got "<erroneous type>", expected "TreeNode"
+serialize_deserialize_binary_tree.pas(167,29) Error: Error in type definition
+serialize_deserialize_binary_tree.pas(168,29) Error: Error in type definition
+serialize_deserialize_binary_tree.pas(169,30) Error: Error in type definition
+serialize_deserialize_binary_tree.pas(170,30) Error: Error in type definition
+serialize_deserialize_binary_tree.pas(172,27) Error: Identifier not found "makeNode"
+serialize_deserialize_binary_tree.pas(172,39) Error: Identifier not found "makeEmpty"
+serialize_deserialize_binary_tree.pas(172,52) Error: Identifier not found "makeEmpty"
+serialize_deserialize_binary_tree.pas(173,27) Error: Identifier not found "makeNode"
+serialize_deserialize_binary_tree.pas(173,39) Error: Identifier not found "makeEmpty"
+serialize_deserialize_binary_tree.pas(173,52) Error: Identifier not found "makeEmpty"
+serialize_deserialize_binary_tree.pas(174,28) Error: Identifier not found "makeNode"
+serialize_deserialize_binary_tree.pas(174,40) Error: Identifier not found "makeEmpty"
+serialize_deserialize_binary_tree.pas(174,53) Error: Identifier not found "makeEmpty"
+serialize_deserialize_binary_tree.pas(175,28) Error: Identifier not found "makeNode"
+serialize_deserialize_binary_tree.pas(176,8) Error: Identifier not found "makeNode"
+serialize_deserialize_binary_tree.pas(206) Fatal: There were 24 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

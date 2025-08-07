@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-07 15:16 GMT+7
+Last updated: 2025-08-07 16:06 GMT+7
 
-## Algorithms Golden Test Checklist (94/1077)
+## Algorithms Golden Test Checklist (98/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -199,11 +199,11 @@ Last updated: 2025-08-07 15:16 GMT+7
 | 190 | data_structures/binary_tree/merge_two_binary_trees |   |  |  |
 | 191 | data_structures/binary_tree/mirror_binary_tree |   |  |  |
 | 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 0ns | 576B |
-| 193 | data_structures/binary_tree/number_of_possible_binary_trees |   |  |  |
-| 194 | data_structures/binary_tree/red_black_tree |   |  |  |
-| 195 | data_structures/binary_tree/segment_tree |   |  |  |
-| 196 | data_structures/binary_tree/segment_tree_other |   |  |  |
-| 197 | data_structures/binary_tree/serialize_deserialize_binary_tree |   |  |  |
+| 193 | data_structures/binary_tree/number_of_possible_binary_trees | ✓ | 0ns | 64B |
+| 194 | data_structures/binary_tree/red_black_tree | ✓ | 0ns | 0B |
+| 195 | data_structures/binary_tree/segment_tree | ✓ | 1.0µs | 384B |
+| 196 | data_structures/binary_tree/segment_tree_other | ✓ | 4.0µs | 128B |
+| 197 | data_structures/binary_tree/serialize_deserialize_binary_tree | error |  |  |
 | 198 | data_structures/binary_tree/symmetric_tree |   |  |  |
 | 199 | data_structures/binary_tree/treap |   |  |  |
 | 200 | data_structures/binary_tree/wavelet_tree |   |  |  |
