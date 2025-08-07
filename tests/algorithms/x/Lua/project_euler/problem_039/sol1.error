@@ -1,0 +1,7 @@
+run: exit status 1
+lua: ...ests/algorithms/x/Lua/project_euler/problem_039/sol1.lua:88: attempt to compare number with nil
+stack traceback:
+	...ests/algorithms/x/Lua/project_euler/problem_039/sol1.lua:88: in function 'max_perimeter'
+	...ests/algorithms/x/Lua/project_euler/problem_039/sol1.lua:100: in function 'main'
+	...ests/algorithms/x/Lua/project_euler/problem_039/sol1.lua:284: in main chunk
+	[C]: in ?
