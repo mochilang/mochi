@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
-Completed programs: 287/1077
-Last updated: 2025-08-07 00:27 +0700
+Completed programs: 370/1077
+Last updated: 2025-08-07 08:32 +0700
 
 Checklist:
 
@@ -323,90 +323,90 @@ Checklist:
 | 314 | dynamic_programming/iterating_through_submasks | ✓ | 10µs | 8.7 MB |
 | 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 12µs | 8.8 MB |
 | 316 | dynamic_programming/knapsack |   |  |  |
-| 317 | dynamic_programming/largest_divisible_subset |   |  |  |
-| 318 | dynamic_programming/longest_common_subsequence |   |  |  |
-| 319 | dynamic_programming/longest_common_substring |   |  |  |
-| 320 | dynamic_programming/longest_increasing_subsequence |   |  |  |
-| 321 | dynamic_programming/longest_increasing_subsequence_iterative |   |  |  |
-| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn |   |  |  |
-| 323 | dynamic_programming/longest_palindromic_subsequence |   |  |  |
-| 324 | dynamic_programming/matrix_chain_multiplication |   |  |  |
-| 325 | dynamic_programming/matrix_chain_order |   |  |  |
-| 326 | dynamic_programming/max_non_adjacent_sum |   |  |  |
-| 327 | dynamic_programming/max_product_subarray |   |  |  |
-| 328 | dynamic_programming/max_subarray_sum |   |  |  |
-| 329 | dynamic_programming/min_distance_up_bottom |   |  |  |
-| 330 | dynamic_programming/minimum_coin_change |   |  |  |
-| 331 | dynamic_programming/minimum_cost_path |   |  |  |
-| 332 | dynamic_programming/minimum_partition |   |  |  |
-| 333 | dynamic_programming/minimum_size_subarray_sum |   |  |  |
-| 334 | dynamic_programming/minimum_squares_to_represent_a_number |   |  |  |
-| 335 | dynamic_programming/minimum_steps_to_one |   |  |  |
-| 336 | dynamic_programming/minimum_tickets_cost |   |  |  |
-| 337 | dynamic_programming/optimal_binary_search_tree |   |  |  |
-| 338 | dynamic_programming/palindrome_partitioning |   |  |  |
-| 339 | dynamic_programming/range_sum_query |   |  |  |
-| 340 | dynamic_programming/regex_match |   |  |  |
-| 341 | dynamic_programming/rod_cutting |   |  |  |
-| 342 | dynamic_programming/smith_waterman |   |  |  |
-| 343 | dynamic_programming/subset_generation |   |  |  |
-| 344 | dynamic_programming/sum_of_subset |   |  |  |
-| 345 | dynamic_programming/trapped_water |   |  |  |
-| 346 | dynamic_programming/tribonacci |   |  |  |
-| 347 | dynamic_programming/viterbi |   |  |  |
-| 348 | dynamic_programming/wildcard_matching |   |  |  |
-| 349 | dynamic_programming/word_break |   |  |  |
-| 350 | electronics/apparent_power |   |  |  |
-| 351 | electronics/builtin_voltage |   |  |  |
-| 352 | electronics/capacitor_equivalence |   |  |  |
-| 353 | electronics/carrier_concentration |   |  |  |
-| 354 | electronics/charging_capacitor |   |  |  |
-| 355 | electronics/charging_inductor |   |  |  |
-| 356 | electronics/circular_convolution |   |  |  |
-| 357 | electronics/coulombs_law |   |  |  |
-| 358 | electronics/electric_conductivity |   |  |  |
-| 359 | electronics/electric_power |   |  |  |
-| 360 | electronics/electrical_impedance |   |  |  |
-| 361 | electronics/ic_555_timer |   |  |  |
-| 362 | electronics/ind_reactance |   |  |  |
-| 363 | electronics/ohms_law |   |  |  |
-| 364 | electronics/real_and_reactive_power |   |  |  |
-| 365 | electronics/resistor_color_code |   |  |  |
-| 366 | electronics/resistor_equivalence |   |  |  |
-| 367 | electronics/resonant_frequency |   |  |  |
-| 368 | electronics/wheatstone_bridge |   |  |  |
-| 369 | file_transfer/receive_file |   |  |  |
-| 370 | file_transfer/send_file |   |  |  |
-| 371 | file_transfer/tests/test_send_file |   |  |  |
-| 372 | financial/equated_monthly_installments |   |  |  |
-| 373 | financial/exponential_moving_average |   |  |  |
-| 374 | financial/interest |   |  |  |
-| 375 | financial/present_value |   |  |  |
-| 376 | financial/price_plus_tax |   |  |  |
-| 377 | financial/simple_moving_average |   |  |  |
-| 378 | financial/straight_line_depreciation |   |  |  |
-| 379 | financial/time_and_half_pay |   |  |  |
-| 380 | fractals/julia_sets |   |  |  |
-| 381 | fractals/koch_snowflake |   |  |  |
-| 382 | fractals/mandelbrot |   |  |  |
-| 383 | fractals/sierpinski_triangle |   |  |  |
-| 384 | fractals/vicsek |   |  |  |
-| 385 | fuzzy_logic/fuzzy_operations |   |  |  |
-| 386 | genetic_algorithm/basic_string |   |  |  |
-| 387 | geodesy/haversine_distance |   |  |  |
-| 388 | geodesy/lamberts_ellipsoidal_distance |   |  |  |
-| 389 | geometry/geometry |   |  |  |
-| 390 | graphics/bezier_curve |   |  |  |
-| 391 | graphics/butterfly_pattern |   |  |  |
-| 392 | graphics/digital_differential_analyzer_line |   |  |  |
-| 393 | graphics/vector3_for_2d_rendering |   |  |  |
-| 394 | graphs/a_star |   |  |  |
-| 395 | graphs/ant_colony_optimization_algorithms |   |  |  |
-| 396 | graphs/articulation_points |   |  |  |
-| 397 | graphs/basic_graphs |   |  |  |
-| 398 | graphs/bellman_ford |   |  |  |
-| 399 | graphs/bi_directional_dijkstra |   |  |  |
-| 400 | graphs/bidirectional_a_star |   |  |  |
+| 317 | dynamic_programming/largest_divisible_subset | ✓ | 9µs | 8.8 MB |
+| 318 | dynamic_programming/longest_common_subsequence | ✓ | 4µs | 8.7 MB |
+| 319 | dynamic_programming/longest_common_substring | ✓ | 10µs | 8.7 MB |
+| 320 | dynamic_programming/longest_increasing_subsequence | ✓ |  |  |
+| 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 10µs | 8.7 MB |
+| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | ✓ | 7µs | 8.7 MB |
+| 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 11µs | 8.7 MB |
+| 324 | dynamic_programming/matrix_chain_multiplication | ✓ |  |  |
+| 325 | dynamic_programming/matrix_chain_order | ✓ | 7µs | 8.7 MB |
+| 326 | dynamic_programming/max_non_adjacent_sum | ✓ | 10µs | 8.7 MB |
+| 327 | dynamic_programming/max_product_subarray | ✓ | 10µs | 8.7 MB |
+| 328 | dynamic_programming/max_subarray_sum | ✓ | 10µs | 8.7 MB |
+| 329 | dynamic_programming/min_distance_up_bottom | ✓ | 23µs | 8.7 MB |
+| 330 | dynamic_programming/minimum_coin_change | ✓ | 7µs | 8.7 MB |
+| 331 | dynamic_programming/minimum_cost_path | ✓ | 6µs | 8.7 MB |
+| 332 | dynamic_programming/minimum_partition | ✓ | 25µs | 8.7 MB |
+| 333 | dynamic_programming/minimum_size_subarray_sum | ✓ | 10µs | 8.7 MB |
+| 334 | dynamic_programming/minimum_squares_to_represent_a_number | ✓ | 9µs | 8.7 MB |
+| 335 | dynamic_programming/minimum_steps_to_one | ✓ | 6µs | 8.7 MB |
+| 336 | dynamic_programming/minimum_tickets_cost | ✓ | 11µs | 8.7 MB |
+| 337 | dynamic_programming/optimal_binary_search_tree | ✓ | 14µs | 8.7 MB |
+| 338 | dynamic_programming/palindrome_partitioning | ✓ | 17µs | 8.7 MB |
+| 339 | dynamic_programming/range_sum_query | ✓ | 8µs | 8.7 MB |
+| 340 | dynamic_programming/regex_match | ✓ | 12µs | 8.7 MB |
+| 341 | dynamic_programming/rod_cutting | ✓ | 11µs | 8.7 MB |
+| 342 | dynamic_programming/smith_waterman | ✓ | 7µs | 8.7 MB |
+| 343 | dynamic_programming/subset_generation | ✓ | 7µs | 8.7 MB |
+| 344 | dynamic_programming/sum_of_subset | ✓ | 9µs | 8.7 MB |
+| 345 | dynamic_programming/trapped_water | ✓ | 8µs | 8.7 MB |
+| 346 | dynamic_programming/tribonacci | ✓ | 8µs | 8.7 MB |
+| 347 | dynamic_programming/viterbi | ✓ | 4µs | 8.8 MB |
+| 348 | dynamic_programming/wildcard_matching | ✓ | 10µs | 8.7 MB |
+| 349 | dynamic_programming/word_break | ✓ | 8µs | 8.7 MB |
+| 350 | electronics/apparent_power | ✓ | 1µs | 8.7 MB |
+| 351 | electronics/builtin_voltage | ✓ | 11µs | 8.7 MB |
+| 352 | electronics/capacitor_equivalence | ✓ | 5µs | 8.7 MB |
+| 353 | electronics/carrier_concentration | ✓ | 4µs | 8.8 MB |
+| 354 | electronics/charging_capacitor | ✓ | 12µs | 8.7 MB |
+| 355 | electronics/charging_inductor | ✓ | 10µs | 8.7 MB |
+| 356 | electronics/circular_convolution | ✓ | 5µs | 8.7 MB |
+| 357 | electronics/coulombs_law | ✓ | 11µs | 8.7 MB |
+| 358 | electronics/electric_conductivity | ✓ | 5µs | 8.7 MB |
+| 359 | electronics/electric_power | ✓ | 5µs | 8.7 MB |
+| 360 | electronics/electrical_impedance | ✓ | 7µs | 8.7 MB |
+| 361 | electronics/ic_555_timer | ✓ | 5µs | 8.7 MB |
+| 362 | electronics/ind_reactance | ✓ | 7µs | 8.7 MB |
+| 363 | electronics/ohms_law | ✓ | 19µs | 8.7 MB |
+| 364 | electronics/real_and_reactive_power | ✓ | 5µs | 8.7 MB |
+| 365 | electronics/resistor_color_code | ✓ | 1µs | 8.7 MB |
+| 366 | electronics/resistor_equivalence | ✓ | 5µs | 8.7 MB |
+| 367 | electronics/resonant_frequency | ✓ | 5µs | 8.8 MB |
+| 368 | electronics/wheatstone_bridge | ✓ | 3µs | 8.7 MB |
+| 369 | file_transfer/receive_file | ✓ | 5µs | 8.7 MB |
+| 370 | file_transfer/send_file | ✓ | 7µs | 8.7 MB |
+| 371 | file_transfer/tests/test_send_file | ✓ | 5µs | 8.7 MB |
+| 372 | financial/equated_monthly_installments | ✓ | 4µs | 8.7 MB |
+| 373 | financial/exponential_moving_average | ✓ | 4µs | 8.7 MB |
+| 374 | financial/interest | ✓ | 21µs | 8.7 MB |
+| 375 | financial/present_value | ✓ | 11µs | 8.7 MB |
+| 376 | financial/price_plus_tax | ✓ | 4µs | 8.7 MB |
+| 377 | financial/simple_moving_average | ✓ | 4µs | 8.8 MB |
+| 378 | financial/straight_line_depreciation | ✓ | 11µs | 8.7 MB |
+| 379 | financial/time_and_half_pay | ✓ | 4µs | 8.7 MB |
+| 380 | fractals/julia_sets | ✓ | 53µs | 8.7 MB |
+| 381 | fractals/koch_snowflake | ✓ | 4µs | 8.7 MB |
+| 382 | fractals/mandelbrot | ✓ | 4µs | 8.7 MB |
+| 383 | fractals/sierpinski_triangle | ✓ | 8µs | 8.7 MB |
+| 384 | fractals/vicsek | ✓ | 7µs | 8.7 MB |
+| 385 | fuzzy_logic/fuzzy_operations | ✓ | 4µs | 8.8 MB |
+| 386 | genetic_algorithm/basic_string | ✓ | 10µs | 8.7 MB |
+| 387 | geodesy/haversine_distance | ✓ | 10µs | 8.7 MB |
+| 388 | geodesy/lamberts_ellipsoidal_distance | ✓ | 9µs | 8.7 MB |
+| 389 | geometry/geometry | ✓ | 6µs | 8.7 MB |
+| 390 | graphics/bezier_curve | ✓ | 7µs | 8.7 MB |
+| 391 | graphics/butterfly_pattern | ✓ | 5µs | 8.7 MB |
+| 392 | graphics/digital_differential_analyzer_line | ✓ | 9µs | 8.7 MB |
+| 393 | graphics/vector3_for_2d_rendering | ✓ | 10µs | 8.7 MB |
+| 394 | graphs/a_star | ✓ | 16µs | 8.7 MB |
+| 395 | graphs/ant_colony_optimization_algorithms | ✓ | 191µs | 8.7 MB |
+| 396 | graphs/articulation_points | ✓ | 8µs | 8.7 MB |
+| 397 | graphs/basic_graphs | ✓ | 17µs | 8.7 MB |
+| 398 | graphs/bellman_ford | ✓ | 4µs | 8.7 MB |
+| 399 | graphs/bi_directional_dijkstra | ✓ | 11µs | 8.7 MB |
+| 400 | graphs/bidirectional_a_star | error |  |  |
 | 401 | graphs/bidirectional_breadth_first_search |   |  |  |
 | 402 | graphs/bidirectional_search |   |  |  |
 | 403 | graphs/boruvka |   |  |  |
