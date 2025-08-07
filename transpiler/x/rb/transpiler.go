@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 	"unicode"
@@ -3344,8 +3345,9 @@ func convertFunc(fn *parser.FunStmt) (*FuncStmt, error) {
 	for _, p := range fn.Params {
 		addVar(p.Name)
 	}
-	body := make([]Stmt, len(fn.Body))
-	for i, s := range fn.Body {
+	stmts := mergeSciNotation(fn.Body)
+	body := make([]Stmt, len(stmts))
+	for i, s := range stmts {
 		st2, err := convertStmt(s)
 		if err != nil {
 			popScope()
@@ -3363,6 +3365,77 @@ func convertFunc(fn *parser.FunStmt) (*FuncStmt, error) {
 		params[i] = safeName(p.Name)
 	}
 	return &FuncStmt{Name: fn.Name, Params: params, Body: body}, nil
+}
+
+// mergeSciNotation merges scientific notation represented as a float literal
+// followed by a standalone identifier like e18 into a single float literal.
+// Some Mochi programs use syntax like 1.0e18 which the parser currently
+// splits into a float literal (1.0) and a separate expression statement with
+// selector root "e18". This helper scans the function body and combines such
+// pairs into a single float value so the transpiled Ruby code renders the
+// intended scientific-notation number.
+func mergeSciNotation(stmts []*parser.Statement) []*parser.Statement {
+	if len(stmts) == 0 {
+		return stmts
+	}
+	res := make([]*parser.Statement, 0, len(stmts))
+	for i := 0; i < len(stmts); i++ {
+		st := stmts[i]
+		if st.While != nil {
+			st.While.Body = mergeSciNotation(st.While.Body)
+		}
+		if st.If != nil {
+			st.If.Then = mergeSciNotation(st.If.Then)
+			st.If.Else = mergeSciNotation(st.If.Else)
+		}
+		if st.For != nil {
+			st.For.Body = mergeSciNotation(st.For.Body)
+		}
+		// drop standalone exponent tokens like e18
+		if st.Expr != nil && st.Expr.Expr != nil && st.Expr.Expr.Binary != nil {
+			u := st.Expr.Expr.Binary.Left
+			if pf := u.Value; pf != nil && pf.Target != nil && pf.Target.Selector != nil {
+				root := pf.Target.Selector.Root
+				if strings.HasPrefix(root, "e") {
+					if _, err := strconv.Atoi(root[1:]); err == nil {
+						continue
+					}
+				}
+			}
+		}
+		if st.Var != nil && i+1 < len(stmts) {
+			next := stmts[i+1]
+			// check next statement is an expr with selector root eNN
+			if next.Expr != nil && next.Expr.Expr != nil && next.Expr.Expr.Binary != nil {
+				u := next.Expr.Expr.Binary.Left
+				if pf := u.Value; pf != nil && pf.Target != nil && pf.Target.Selector != nil {
+					root := pf.Target.Selector.Root
+					if strings.HasPrefix(root, "e") {
+						if exp, err := strconv.Atoi(root[1:]); err == nil {
+							if st.Var.Value != nil && st.Var.Value.Binary != nil {
+								u2 := st.Var.Value.Binary.Left
+								if pf2 := u2.Value; pf2 != nil && pf2.Target != nil && pf2.Target.Lit != nil && pf2.Target.Lit.Float != nil {
+									sign := 1.0
+									for _, op := range u2.Ops {
+										if op == "-" {
+											sign *= -1
+										}
+									}
+									base := *pf2.Target.Lit.Float
+									newVal := sign * base * math.Pow10(exp)
+									u2.Ops = nil
+									*pf2.Target.Lit.Float = newVal
+									i++ // skip next statement
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		res = append(res, st)
+	}
+	return res
 }
 
 func convertIf(ifst *parser.IfStmt) (Stmt, error) {
