@@ -4400,6 +4400,12 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 // boolean operators.
 func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, error) {
 	currentEnv = env
+	// reset per-program state to avoid leaking values between compilations
+	loopCounter = 0
+	continueLabels = nil
+	structCount = 0
+	funcDepth = 0
+	currentStruct = ""
 	lp := &Program{Env: env}
 	for _, st := range prog.Statements {
 		s, err := convertStmt(st)
