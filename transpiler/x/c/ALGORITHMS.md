@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (62/1077) - Last updated 2025-08-07 00:21 +0700:
+Checklist of programs that currently transpile and run (67/1077) - Last updated 2025-08-07 09:46 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -74,11 +74,11 @@ Checklist of programs that currently transpile and run (62/1077) - Last updated 
 | 67 | ciphers/atbash | ✓ | 222us | 1.5 MB |
 | 68 | ciphers/autokey | ✓ | 335us | 1.4 MB |
 | 69 | ciphers/baconian_cipher | ✓ | 226us | 1.5 MB |
-| 70 | ciphers/base16 |  |  |  |
-| 71 | ciphers/base32 |  |  |  |
-| 72 | ciphers/base64_cipher |  |  |  |
-| 73 | ciphers/base85 |  |  |  |
-| 74 | ciphers/beaufort_cipher |  |  |  |
+| 70 | ciphers/base16 | ✓ | 448us | 1.6 MB |
+| 71 | ciphers/base32 | ✓ | 617us | 1.7 MB |
+| 72 | ciphers/base64_cipher | ✓ | 782us | 1.6 MB |
+| 73 | ciphers/base85 | ✓ | 797us | 1.7 MB |
+| 74 | ciphers/beaufort_cipher | ✓ | 192us | 1.6 MB |
 | 75 | ciphers/bifid |  |  |  |
 | 76 | ciphers/brute_force_caesar_cipher |  |  |  |
 | 77 | ciphers/caesar_cipher |  |  |  |

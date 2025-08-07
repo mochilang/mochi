@@ -117,6 +117,8 @@ var (
 	// track inner function declarations that are ignored during
 	// transpilation so references to them can be stubbed out
 	localFuncs map[string]bool
+	// track extra arguments for hoisted local functions
+	localFuncArgs map[string][]string
 )
 
 // SetBenchMain configures whether the generated main function is wrapped in a
@@ -605,6 +607,34 @@ func (j *JSONCall) emit(w io.Writer, indent int) {
 	io.WriteString(w, ", ")
 	emitLensExpr(w, j.Arg)
 	io.WriteString(w, ");\n")
+}
+
+type JSONListIntCall struct {
+	Arg Expr
+}
+
+func (j *JSONListIntCall) emit(w io.Writer, indent int) {
+	if ce, ok := j.Arg.(*CallExpr); ok {
+		if ret, ok2 := funcReturnTypes[ce.Func]; ok2 && strings.HasSuffix(ret, "[]") {
+			tmp := fmt.Sprintf("__tmp%d", tempCounter)
+			tempCounter++
+			decl := listPtrType(ret)
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "%s %s = ", decl, tmp)
+			ce.emitExpr(w)
+			io.WriteString(w, ";\n")
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "puts(str_list_int(%s, %s_len));\n", tmp, ce.Func)
+			return
+		}
+	}
+	writeIndent(w, indent)
+	io.WriteString(w, "puts(str_list_int(")
+	j.Arg.emitExpr(w)
+	io.WriteString(w, ", ")
+	emitLenExpr(w, j.Arg)
+	io.WriteString(w, "));")
+	io.WriteString(w, "\n")
 }
 
 func (r *ReturnStmt) emit(w io.Writer, indent int) {
@@ -3641,6 +3671,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	varTypes = make(map[string]string)
 	closureApply = make(map[string]string)
 	closureFields = make(map[string][]string)
+	localFuncArgs = make(map[string][]string)
 	mapKeyTypes = make(map[string]string)
 	mapValTypes = make(map[string]string)
 	extraFuncs = nil
@@ -3786,6 +3817,10 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				funcAliases[name] = "user_random"
 				name = "user_random"
 			}
+			if name == "repeat" { // avoid conflict with builtin helper
+				funcAliases[name] = "user_repeat"
+				name = "user_repeat"
+			}
 			fun, err := compileFunction(env, name, fnExpr)
 			if err != nil {
 				return nil, err
@@ -3880,7 +3915,60 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		return nil, nil
 	case s.Fun != nil:
 		if localFuncs != nil {
-			localFuncs[s.Fun.Name] = true
+			// hoist local function
+			fnExpr := &parser.FunExpr{Params: s.Fun.Params, Return: s.Fun.Return, BlockBody: s.Fun.Body}
+			// gather captured variables
+			vars := map[string]struct{}{}
+			for _, st := range s.Fun.Body {
+				gatherVarsStmt(st, vars)
+			}
+			// remove params and locals
+			for _, p := range s.Fun.Params {
+				delete(vars, p.Name)
+			}
+			decls := map[string]struct{}{}
+			for _, st := range s.Fun.Body {
+				gatherDeclsStmt(st, decls)
+			}
+			for n := range decls {
+				delete(vars, n)
+			}
+			capNames := make([]string, 0, len(vars))
+			for n := range vars {
+				capNames = append(capNames, n)
+			}
+			sort.Strings(capNames)
+			var newParams []*parser.Param
+			for _, n := range capNames {
+				var t types.Type
+				if vt, err := env.GetVar(n); err == nil {
+					t = vt
+				} else if ct, ok := varTypes[n]; ok {
+					if ct == "const char*" {
+						t = types.StringType{}
+					} else if strings.Contains(ct, "double") {
+						t = types.FloatType{}
+					} else {
+						t = types.IntType{}
+					}
+				} else {
+					t = types.IntType{}
+				}
+				newParams = append(newParams, &parser.Param{Name: n, Type: typeRefFromMochiType(t)})
+			}
+			newParams = append(newParams, s.Fun.Params...)
+			fnExpr.Params = newParams
+			innerName := currentFuncName + "_" + s.Fun.Name
+			fun, err := compileFunction(env, innerName, fnExpr)
+			if err != nil {
+				return nil, err
+			}
+			extraFuncs = append(extraFuncs, fun)
+			funcAliases[s.Fun.Name] = innerName
+			if len(capNames) > 0 {
+				localFuncArgs[innerName] = capNames
+			}
+			return nil, nil
 		}
 		return nil, nil
 	case s.Expr != nil:
@@ -3944,6 +4032,10 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			if strings.HasPrefix(typ, "long long") && strings.HasSuffix(typ, "[][]") {
 				needJSONListListInt = true
 				return &JSONCall{Arg: arg}, nil
+			}
+			if strings.HasPrefix(typ, "long long") && strings.HasSuffix(typ, "[]") {
+				needStrListInt = true
+				return &JSONListIntCall{Arg: arg}, nil
 			}
 			return nil, fmt.Errorf("unsupported json argument")
 		}
@@ -5125,6 +5217,93 @@ func gatherVarsPrimary(p *parser.Primary, vars map[string]struct{}) {
 			gatherVarsExpr(c.Pattern, vars)
 			gatherVarsExpr(c.Result, vars)
 		}
+	}
+}
+
+func gatherVarsStmt(s *parser.Statement, vars map[string]struct{}) {
+	if s == nil {
+		return
+	}
+	switch {
+	case s.Return != nil:
+		gatherVarsExpr(s.Return.Value, vars)
+	case s.Expr != nil && s.Expr.Expr != nil:
+		gatherVarsExpr(s.Expr.Expr, vars)
+	case s.Let != nil:
+		gatherVarsExpr(s.Let.Value, vars)
+	case s.Var != nil:
+		gatherVarsExpr(s.Var.Value, vars)
+	case s.If != nil:
+		gatherVarsExpr(s.If.Cond, vars)
+		for _, st := range s.If.Then {
+			gatherVarsStmt(st, vars)
+		}
+		if s.If.ElseIf != nil {
+			gatherVarsExpr(s.If.ElseIf.Cond, vars)
+			for _, st := range s.If.ElseIf.Then {
+				gatherVarsStmt(st, vars)
+			}
+		}
+		if s.If.Else != nil {
+			for _, st := range s.If.Else {
+				gatherVarsStmt(st, vars)
+			}
+		}
+	case s.While != nil:
+		gatherVarsExpr(s.While.Cond, vars)
+		for _, st := range s.While.Body {
+			gatherVarsStmt(st, vars)
+		}
+	}
+}
+
+func gatherDeclsStmt(s *parser.Statement, decls map[string]struct{}) {
+	if s == nil {
+		return
+	}
+	switch {
+	case s.Let != nil:
+		decls[s.Let.Name] = struct{}{}
+	case s.Var != nil:
+		decls[s.Var.Name] = struct{}{}
+	case s.If != nil:
+		for _, st := range s.If.Then {
+			gatherDeclsStmt(st, decls)
+		}
+		if s.If.ElseIf != nil {
+			for _, st := range s.If.ElseIf.Then {
+				gatherDeclsStmt(st, decls)
+			}
+		}
+		if s.If.Else != nil {
+			for _, st := range s.If.Else {
+				gatherDeclsStmt(st, decls)
+			}
+		}
+	case s.While != nil:
+		for _, st := range s.While.Body {
+			gatherDeclsStmt(st, decls)
+		}
+	}
+}
+
+func typeRefFromMochiType(t types.Type) *parser.TypeRef {
+	switch v := t.(type) {
+	case types.StringType:
+		name := "string"
+		return &parser.TypeRef{Simple: &name}
+	case types.FloatType:
+		name := "float"
+		return &parser.TypeRef{Simple: &name}
+	case types.IntType:
+		name := "int"
+		return &parser.TypeRef{Simple: &name}
+	case types.ListType:
+		elem := typeRefFromMochiType(v.Elem)
+		return &parser.TypeRef{Generic: &parser.GenericType{Name: "list", Args: []*parser.TypeRef{elem}}}
+	default:
+		name := "int"
+		return &parser.TypeRef{Simple: &name}
 	}
 }
 
@@ -6364,6 +6543,13 @@ func convertUnary(u *parser.Unary) Expr {
 		}
 		if newName, ok := funcAliases[call.Func]; ok {
 			call.Func = newName
+		}
+		if extra, ok := localFuncArgs[call.Func]; ok {
+			pref := make([]Expr, 0, len(extra)+len(args))
+			for _, n := range extra {
+				pref = append(pref, &VarRef{Name: n})
+			}
+			args = append(pref, args...)
 		}
 		if t, ok := varTypes[call.Func]; ok {
 			if apply, ok2 := closureApply[t]; ok2 {
