@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-07 17:37 GMT+7
+Last updated: 2025-08-07 23:33 GMT+7
 
-## Algorithms Golden Test Checklist (654/1077)
+## Algorithms Golden Test Checklist (657/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 11.075ms | 3.5 MB |
@@ -259,12 +259,12 @@ Last updated: 2025-08-07 17:37 GMT+7
 | 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ | 13.814ms | 2.5 MB |
 | 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 11.062ms | 2.4 MB |
 | 252 | data_structures/stacks/lexicographical_numbers | ✓ | 13.84ms | 3.6 MB |
-| 253 | data_structures/stacks/next_greater_element | error |  |  |
+| 253 | data_structures/stacks/next_greater_element |   |  |  |
 | 254 | data_structures/stacks/postfix_evaluation | ✓ | 13.254ms | 3.0 MB |
-| 255 | data_structures/stacks/prefix_evaluation | error |  |  |
-| 256 | data_structures/stacks/stack | error |  |  |
+| 255 | data_structures/stacks/prefix_evaluation | ✓ |  |  |
+| 256 | data_structures/stacks/stack | ✓ |  |  |
 | 257 | data_structures/stacks/stack_using_two_queues | ✓ | 20.412ms | 9.8 MB |
-| 258 | data_structures/stacks/stack_with_doubly_linked_list | error |  |  |
+| 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ |  |  |
 | 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 25.076ms | 10.8 MB |
 | 260 | data_structures/stacks/stock_span_problem | ✓ | 14.113ms | 3.6 MB |
 | 261 | data_structures/suffix_tree/example/example_usage | ✓ | 12.521ms | 3.4 MB |

@@ -1,9 +1,0 @@
-run: exit status 254
-../../../tests/algorithms/x/Dart/data_structures/stacks/stack_with_doubly_linked_list.dart:77:52: Error: The value 'null' can't be assigned to the parameter type 'Node' because 'Node' is not nullable.
- - 'Node' is from '../../../tests/algorithms/x/Dart/data_structures/stacks/stack_with_doubly_linked_list.dart'.
-    while (nodes.length <= stack.head) { nodes.add(null); } nodes[stack.head] = head_node;
-                                                   ^
-../../../tests/algorithms/x/Dart/data_structures/stacks/stack_with_doubly_linked_list.dart:93:50: Error: The value 'null' can't be assigned to the parameter type 'Node' because 'Node' is not nullable.
- - 'Node' is from '../../../tests/algorithms/x/Dart/data_structures/stacks/stack_with_doubly_linked_list.dart'.
-    while (nodes.length <= next_idx) { nodes.add(null); } nodes[next_idx] = next_node;
-                                                 ^
