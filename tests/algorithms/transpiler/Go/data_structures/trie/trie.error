@@ -1,0 +1,13 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/data_structures/trie/trie.go:83:23: cannot use nodes[curr].Children (variable of type map[string]int) as Node value in variable declaration
+../../../tests/algorithms/transpiler/Go/data_structures/trie/trie.go:85:6: invalid operation: func() bool {…}() (value of type bool) is not an interface
+../../../tests/algorithms/transpiler/Go/data_structures/trie/trie.go:86:23: cannot range over children (variable of struct type Node)
+../../../tests/algorithms/transpiler/Go/data_structures/trie/trie.go:93:25: children.Ch undefined (type Node has no field or method Ch)
+../../../tests/algorithms/transpiler/Go/data_structures/trie/trie.go:104:16: invalid operation: cannot index new_children (variable of struct type Node)
+../../../tests/algorithms/transpiler/Go/data_structures/trie/trie.go:107:20: cannot use new_children (variable of struct type Node) as map[string]int value in assignment
+../../../tests/algorithms/transpiler/Go/data_structures/trie/trie.go:137:23: cannot use nodes[curr].Children (variable of type map[string]int) as Node value in variable declaration
+../../../tests/algorithms/transpiler/Go/data_structures/trie/trie.go:139:7: invalid operation: func() bool {…}() (value of type bool) is not an interface
+../../../tests/algorithms/transpiler/Go/data_structures/trie/trie.go:140:23: cannot range over children (variable of struct type Node)
+../../../tests/algorithms/transpiler/Go/data_structures/trie/trie.go:149:19: children.Ch undefined (type Node has no field or method Ch)
+../../../tests/algorithms/transpiler/Go/data_structures/trie/trie.go:149:19: too many errors

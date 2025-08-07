@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 170/1077
-Last updated: 2025-08-07 08:07 +0700
+Completed programs: 186/1077
+Last updated: 2025-08-07 18:49 +0700
 
 Checklist:
 
@@ -256,26 +256,26 @@ Checklist:
 | 247 | data_structures/stacks/balanced_parentheses |   |  |  |
 | 248 | data_structures/stacks/dijkstras_two_stack_algorithm |   |  |  |
 | 249 | data_structures/stacks/infix_to_postfix_conversion |   |  |  |
-| 250 | data_structures/stacks/infix_to_prefix_conversion |   |  |  |
-| 251 | data_structures/stacks/largest_rectangle_histogram |   |  |  |
-| 252 | data_structures/stacks/lexicographical_numbers |   |  |  |
-| 253 | data_structures/stacks/next_greater_element |   |  |  |
-| 254 | data_structures/stacks/postfix_evaluation |   |  |  |
-| 255 | data_structures/stacks/prefix_evaluation |   |  |  |
+| 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ | 980.0µs | 130.87KB |
+| 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 441.0µs | 1.38KB |
+| 252 | data_structures/stacks/lexicographical_numbers | ✓ | 610.0µs | 6.77KB |
+| 253 | data_structures/stacks/next_greater_element | ✓ | 405.0µs | 5.56KB |
+| 254 | data_structures/stacks/postfix_evaluation | ✓ | 440.0µs | 1.40KB |
+| 255 | data_structures/stacks/prefix_evaluation | ✓ | 456.0µs | 2.84KB |
 | 256 | data_structures/stacks/stack |   |  |  |
 | 257 | data_structures/stacks/stack_using_two_queues |   |  |  |
-| 258 | data_structures/stacks/stack_with_doubly_linked_list |   |  |  |
-| 259 | data_structures/stacks/stack_with_singly_linked_list |   |  |  |
-| 260 | data_structures/stacks/stock_span_problem |   |  |  |
-| 261 | data_structures/suffix_tree/example/example_usage |   |  |  |
-| 262 | data_structures/suffix_tree/suffix_tree |   |  |  |
-| 263 | data_structures/suffix_tree/suffix_tree_node |   |  |  |
-| 264 | data_structures/suffix_tree/tests/test_suffix_tree |   |  |  |
+| 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 244.0µs | 1.31KB |
+| 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 582.0µs | 1.16KB |
+| 260 | data_structures/stacks/stock_span_problem | ✓ | 279.0µs | 1.10KB |
+| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 410.0µs | 1.19KB |
+| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 765.0µs | 9.81KB |
+| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 500.0µs | 1.41KB |
+| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 216.0µs | 1.30KB |
 | 265 | data_structures/trie/radix_tree |   |  |  |
 | 266 | data_structures/trie/trie |   |  |  |
-| 267 | digital_image_processing/change_brightness |   |  |  |
-| 268 | digital_image_processing/change_contrast |   |  |  |
-| 269 | digital_image_processing/convert_to_negative |   |  |  |
+| 267 | digital_image_processing/change_brightness | ✓ | 688.0µs | 3.86KB |
+| 268 | digital_image_processing/change_contrast | ✓ | 560.0µs | 2.68KB |
+| 269 | digital_image_processing/convert_to_negative | ✓ | 598.0µs | 4.30KB |
 | 270 | digital_image_processing/dithering/burkes |   |  |  |
 | 271 | digital_image_processing/edge_detection/canny |   |  |  |
 | 272 | digital_image_processing/filters/bilateral_filter |   |  |  |

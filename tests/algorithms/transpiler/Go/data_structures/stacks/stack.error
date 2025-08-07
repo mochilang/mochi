@@ -1,0 +1,14 @@
+exit status 1
+true
+panic: peek from empty stack
+
+goroutine 1 [running]:
+main.peek(...)
+	/workspace/mochi/tests/algorithms/transpiler/Go/data_structures/stacks/stack.go:80
+main.mochiMain()
+	/workspace/mochi/tests/algorithms/transpiler/Go/data_structures/stacks/stack.go:108 +0x105
+main.main.func1(...)
+	/workspace/mochi/tests/algorithms/transpiler/Go/data_structures/stacks/stack.go:127
+main.main()
+	/workspace/mochi/tests/algorithms/transpiler/Go/data_structures/stacks/stack.go:134 +0x92
+exit status 2
