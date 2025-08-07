@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Python`.
-Last updated: 2025-08-07 10:26 GMT+7
+Last updated: 2025-08-07 10:39 GMT+7
 
-## Algorithms Golden Test Checklist (474/1077)
+## Algorithms Golden Test Checklist (479/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 63.0µs | 12.88MB |
@@ -606,11 +606,11 @@ Last updated: 2025-08-07 10:26 GMT+7
 | 597 | maths/manhattan_distance | ✓ |  |  |
 | 598 | maths/matrix_exponentiation | ✓ |  |  |
 | 599 | maths/max_sum_sliding_window | ✓ |  |  |
-| 600 | maths/minkowski_distance |   |  |  |
-| 601 | maths/mobius_function |   |  |  |
-| 602 | maths/modular_division |   |  |  |
-| 603 | maths/monte_carlo |   |  |  |
-| 604 | maths/monte_carlo_dice |   |  |  |
+| 600 | maths/minkowski_distance | ✓ | 58.0µs | 12.55MB |
+| 601 | maths/mobius_function | ✓ | 21.0µs | 12.52MB |
+| 602 | maths/modular_division | ✓ | 77.0µs | 13.66MB |
+| 603 | maths/monte_carlo | ✓ | 4.0ms | 13.23MB |
+| 604 | maths/monte_carlo_dice | ✓ | 15.0ms | 12.56MB |
 | 605 | maths/number_of_digits |   |  |  |
 | 606 | maths/numerical_analysis/adams_bashforth |   |  |  |
 | 607 | maths/numerical_analysis/bisection |   |  |  |
