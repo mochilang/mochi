@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (71/1077) - Last updated 2025-08-07 10:17 +0700:
+Checklist of programs that currently transpile and run (84/1077) - Last updated 2025-08-07 11:03 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -83,19 +83,19 @@ Checklist of programs that currently transpile and run (71/1077) - Last updated 
 | 76 | ciphers/brute_force_caesar_cipher | ✓ | 1.02ms | 1.6 MB |
 | 77 | ciphers/caesar_cipher | ✓ | 6.93ms | 3.3 MB |
 | 78 | ciphers/cryptomath_module | ✓ | 695us | 1.5 MB |
-| 79 | ciphers/decrypt_caesar_with_chi_squared |  |  |  |
-| 80 | ciphers/deterministic_miller_rabin |  |  |  |
-| 81 | ciphers/diffie |  |  |  |
-| 82 | ciphers/diffie_hellman |  |  |  |
-| 83 | ciphers/elgamal_key_generator |  |  |  |
-| 84 | ciphers/enigma_machine2 |  |  |  |
-| 85 | ciphers/fractionated_morse_cipher |  |  |  |
-| 86 | ciphers/gronsfeld_cipher |  |  |  |
-| 87 | ciphers/hill_cipher |  |  |  |
-| 88 | ciphers/mixed_keyword_cypher |  |  |  |
-| 89 | ciphers/mono_alphabetic_ciphers |  |  |  |
-| 90 | ciphers/morse_code |  |  |  |
-| 91 | ciphers/onepad_cipher |  |  |  |
+| 79 | ciphers/decrypt_caesar_with_chi_squared | ✓ | 8.37ms | 3.6 MB |
+| 80 | ciphers/deterministic_miller_rabin | ✓ | 333us | 1.5 MB |
+| 81 | ciphers/diffie | ✓ | 322us | 1.5 MB |
+| 82 | ciphers/diffie_hellman | ✓ | 190us | 1.5 MB |
+| 83 | ciphers/elgamal_key_generator | ✓ | 480us | 1.6 MB |
+| 84 | ciphers/enigma_machine2 | ✓ | 2.73ms | 2.1 MB |
+| 85 | ciphers/fractionated_morse_cipher | ✓ | 306us | 1.6 MB |
+| 86 | ciphers/gronsfeld_cipher | ✓ | 728us | 1.8 MB |
+| 87 | ciphers/hill_cipher | ✓ | 233us | 1.6 MB |
+| 88 | ciphers/mixed_keyword_cypher | ✓ | 163us | 1.4 MB |
+| 89 | ciphers/mono_alphabetic_ciphers | ✓ | 316us | 1.5 MB |
+| 90 | ciphers/morse_code | ✓ | 442us | 1.6 MB |
+| 91 | ciphers/onepad_cipher | ✓ | 309us | 1.4 MB |
 | 92 | ciphers/permutation_cipher |  |  |  |
 | 93 | ciphers/playfair_cipher |  |  |  |
 | 94 | ciphers/polybius |  |  |  |
