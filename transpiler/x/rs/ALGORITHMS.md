@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-07 11:19 GMT+7
+Last updated: 2025-08-07 16:30 GMT+7
 
-## Algorithms Golden Test Checklist (150/1077)
+## Algorithms Golden Test Checklist (162/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -162,19 +162,19 @@ Last updated: 2025-08-07 11:19 GMT+7
 | 153 | data_compression/huffman | ✓ | 170µs | 2.3 MB |
 | 154 | data_compression/lempel_ziv | ✓ | 146µs | 2.1 MB |
 | 155 | data_compression/lempel_ziv_decompress | ✓ | 131µs | 2.1 MB |
-| 156 | data_compression/lz77 |   |  |  |
-| 157 | data_compression/peak_signal_to_noise_ratio |   |  |  |
-| 158 | data_compression/run_length_encoding |   |  |  |
-| 159 | data_structures/arrays/equilibrium_index_in_array |   |  |  |
-| 160 | data_structures/arrays/find_triplets_with_0_sum |   |  |  |
-| 161 | data_structures/arrays/index_2d_array_in_1d |   |  |  |
-| 162 | data_structures/arrays/kth_largest_element |   |  |  |
-| 163 | data_structures/arrays/median_two_array |   |  |  |
-| 164 | data_structures/arrays/monotonic_array |   |  |  |
-| 165 | data_structures/arrays/pairs_with_given_sum |   |  |  |
-| 166 | data_structures/arrays/permutations |   |  |  |
-| 167 | data_structures/arrays/prefix_sum |   |  |  |
-| 168 | data_structures/arrays/product_sum |   |  |  |
+| 156 | data_compression/lz77 | ✓ | 152µs | 2.0 MB |
+| 157 | data_compression/peak_signal_to_noise_ratio | ✓ |  | 1.9 MB |
+| 158 | data_compression/run_length_encoding | ✓ | 57µs | 2.0 MB |
+| 159 | data_structures/arrays/equilibrium_index_in_array | ✓ | 55µs | 2.0 MB |
+| 160 | data_structures/arrays/find_triplets_with_0_sum | ✓ | 115µs | 2.0 MB |
+| 161 | data_structures/arrays/index_2d_array_in_1d | ✓ | 54µs | 2.1 MB |
+| 162 | data_structures/arrays/kth_largest_element | ✓ | 45µs | 1.9 MB |
+| 163 | data_structures/arrays/median_two_array | ✓ | 48µs | 1.9 MB |
+| 164 | data_structures/arrays/monotonic_array | ✓ | 29µs | 2.1 MB |
+| 165 | data_structures/arrays/pairs_with_given_sum | ✓ | 26µs | 2.1 MB |
+| 166 | data_structures/arrays/permutations | ✓ | 118µs | 2.2 MB |
+| 167 | data_structures/arrays/prefix_sum | ✓ | 70µs | 2.0 MB |
+| 168 | data_structures/arrays/product_sum | error |  |  |
 | 169 | data_structures/arrays/sparse_table |   |  |  |
 | 170 | data_structures/arrays/sudoku_solver |   |  |  |
 | 171 | data_structures/binary_tree/avl_tree |   |  |  |

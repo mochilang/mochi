@@ -1607,6 +1607,20 @@ func (s *StringCastExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	}
+	if nl, ok := s.Expr.(*NumberLit); ok && strings.HasPrefix(nl.Value, "-") {
+		io.WriteString(w, "(")
+		nl.emit(w)
+		io.WriteString(w, ")")
+		io.WriteString(w, ".to_string()")
+		return
+	}
+	if ue, ok := s.Expr.(*UnaryExpr); ok && ue.Op == "-" {
+		io.WriteString(w, "(")
+		ue.emit(w)
+		io.WriteString(w, ")")
+		io.WriteString(w, ".to_string()")
+		return
+	}
 	s.Expr.emit(w)
 	io.WriteString(w, ".to_string()")
 }
@@ -2875,7 +2889,18 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		var err error
 		emptyList := false
 		if stmt.Let.Value != nil {
-			if f := fetchExprOnly(stmt.Let.Value); f != nil && stmt.Let.Type != nil {
+			if name := exprName(stmt.Let.Value); name != "" {
+				e, err = compileExpr(stmt.Let.Value)
+				if err != nil {
+					return nil, err
+				}
+				e = &MethodCallExpr{Receiver: e, Name: "clone"}
+			} else if ll := listLiteral(stmt.Let.Value); ll != nil && stmt.Let.Type != nil && rustTypeRef(stmt.Let.Type) == "Vec<String>" {
+				e, err = compileStringList(ll)
+				if err != nil {
+					return nil, err
+				}
+			} else if f := fetchExprOnly(stmt.Let.Value); f != nil && stmt.Let.Type != nil {
 				urlExpr, err := compileExpr(f.URL)
 				if err != nil {
 					return nil, err
@@ -3096,49 +3121,62 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		var err error
 		emptyList := false
 		if stmt.Var.Value != nil {
-			if ml := mapLiteralExpr(stmt.Var.Value); ml != nil {
-				if stmt.Var.Type != nil {
-					rt := rustTypeRef(stmt.Var.Type)
-					if strings.HasPrefix(rt, "HashMap") {
-						forceMap[ml] = true
-					}
-				} else if curEnv != nil {
-					if t, err := curEnv.GetVar(stmt.Var.Name); err == nil {
-						rt := rustTypeFromType(t)
+			if name := exprName(stmt.Var.Value); name != "" {
+				e, err = compileExpr(stmt.Var.Value)
+				if err != nil {
+					return nil, err
+				}
+				e = &MethodCallExpr{Receiver: e, Name: "clone"}
+			} else if ll := listLiteral(stmt.Var.Value); ll != nil && stmt.Var.Type != nil && rustTypeRef(stmt.Var.Type) == "Vec<String>" {
+				e, err = compileStringList(ll)
+				if err != nil {
+					return nil, err
+				}
+			} else {
+				if ml := mapLiteralExpr(stmt.Var.Value); ml != nil {
+					if stmt.Var.Type != nil {
+						rt := rustTypeRef(stmt.Var.Type)
 						if strings.HasPrefix(rt, "HashMap") {
 							forceMap[ml] = true
 						}
-					}
-				}
-			}
-			if ll := listLiteral(stmt.Var.Value); ll != nil {
-				if st, ok := types.InferStructFromList(ll, curEnv); ok {
-					name := types.UniqueStructName(strings.Title(stmt.Var.Name)+"Item", curEnv, nil)
-					curEnv.SetStruct(name, st)
-					fields := make([]Param, len(st.Order))
-					for i, n := range st.Order {
-						fields[i] = Param{Name: n, Type: rustTypeFromType(st.Fields[n])}
-					}
-					typeDecls = append(typeDecls, &StructDecl{Name: name, Fields: fields})
-					structTypes[name] = st
-					structForList[ll] = name
-					st.Name = name
-					curEnv.SetStruct(name, st)
-					curEnv.SetVar(stmt.Var.Name, types.ListType{Elem: st}, true)
-					for _, el := range ll.Elems {
-						if ml := mapLiteralExpr(el); ml != nil {
-							structForMap[ml] = name
+					} else if curEnv != nil {
+						if t, err := curEnv.GetVar(stmt.Var.Name); err == nil {
+							rt := rustTypeFromType(t)
+							if strings.HasPrefix(rt, "HashMap") {
+								forceMap[ml] = true
+							}
 						}
 					}
-					varTypes[stmt.Var.Name] = fmt.Sprintf("Vec<%s>", name)
 				}
-			}
-			if ll := listLiteral(stmt.Var.Value); ll != nil && len(ll.Elems) == 0 {
-				emptyList = true
-			}
-			e, err = compileExpr(stmt.Var.Value)
-			if err != nil {
-				return nil, err
+				if ll := listLiteral(stmt.Var.Value); ll != nil {
+					if st, ok := types.InferStructFromList(ll, curEnv); ok {
+						name := types.UniqueStructName(strings.Title(stmt.Var.Name)+"Item", curEnv, nil)
+						curEnv.SetStruct(name, st)
+						fields := make([]Param, len(st.Order))
+						for i, n := range st.Order {
+							fields[i] = Param{Name: n, Type: rustTypeFromType(st.Fields[n])}
+						}
+						typeDecls = append(typeDecls, &StructDecl{Name: name, Fields: fields})
+						structTypes[name] = st
+						structForList[ll] = name
+						st.Name = name
+						curEnv.SetStruct(name, st)
+						curEnv.SetVar(stmt.Var.Name, types.ListType{Elem: st}, true)
+						for _, el := range ll.Elems {
+							if ml := mapLiteralExpr(el); ml != nil {
+								structForMap[ml] = name
+							}
+						}
+						varTypes[stmt.Var.Name] = fmt.Sprintf("Vec<%s>", name)
+					}
+				}
+				if ll := listLiteral(stmt.Var.Value); ll != nil && len(ll.Elems) == 0 {
+					emptyList = true
+				}
+				e, err = compileExpr(stmt.Var.Value)
+				if err != nil {
+					return nil, err
+				}
 			}
 			if _, ok := e.(*MapLit); ok {
 				mapVars[stmt.Var.Name] = true
@@ -3186,9 +3224,7 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			} else if typ == "Vec<String>" {
 				if ll, ok := e.(*ListLit); ok {
 					for i, el := range ll.Elems {
-						if _, ok := el.(*StringLit); ok {
-							ll.Elems[i] = &StringCastExpr{Expr: el}
-						}
+						ll.Elems[i] = stringifyExpr(el)
 					}
 				}
 			}
@@ -5919,6 +5955,29 @@ func listLiteral(e *parser.Expr) *parser.ListLiteral {
 	return p.Target.List
 }
 
+func compileStringList(ll *parser.ListLiteral) (Expr, error) {
+	elems := make([]Expr, len(ll.Elems))
+	for i, el := range ll.Elems {
+		if inner := listLiteral(el); inner != nil {
+			ex, err := compileStringList(inner)
+			if err != nil {
+				return nil, err
+			}
+			elems[i] = &StringCastExpr{Expr: ex}
+			continue
+		}
+		ex, err := compileExpr(el)
+		if err != nil {
+			return nil, err
+		}
+		if inferType(ex) != "String" {
+			ex = &StringCastExpr{Expr: ex}
+		}
+		elems[i] = ex
+	}
+	return &ListLit{Elems: elems}, nil
+}
+
 func literalString(e *parser.Expr) (string, bool) {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return "", false
@@ -6914,6 +6973,37 @@ func exprIsName(e *parser.Expr, name string) bool {
 		return true
 	}
 	return false
+}
+
+func exprName(e *parser.Expr) string {
+	if e == nil || e.Binary == nil {
+		return ""
+	}
+	if len(e.Binary.Right) != 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return ""
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Selector == nil || len(p.Target.Selector.Tail) != 0 {
+		return ""
+	}
+	return p.Target.Selector.Root
+}
+
+func stringifyExpr(e Expr) Expr {
+	if l, ok := e.(*ListLit); ok {
+		for i, el := range l.Elems {
+			l.Elems[i] = stringifyExpr(el)
+		}
+		return &StringCastExpr{Expr: l}
+	}
+	if inferType(e) != "String" {
+		return &StringCastExpr{Expr: e}
+	}
+	return e
 }
 
 func rustIdent(name string) string {
