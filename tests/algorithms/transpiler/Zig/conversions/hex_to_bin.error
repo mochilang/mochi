@@ -1,0 +1,3 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/conversions/hex_to_bin.zig:24:36: error: function with non-void return type 'i64' implicitly returns
+/workspace/mochi/tests/algorithms/transpiler/Zig/conversions/hex_to_bin.zig:74:1: note: control flow reaches end of body here

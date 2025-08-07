@@ -1,0 +1,2 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/conversions/pressure_conversions.zig:17:27: error: use of undeclared identifier 'join'

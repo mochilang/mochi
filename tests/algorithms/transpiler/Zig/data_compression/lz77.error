@@ -1,0 +1,2 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_compression/lz77.zig:116:610: error: expected type '[8]lz77.Tokens_example', found '[]lz77.Tokens_example'

@@ -1,0 +1,2 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/conversions/time_conversions.zig:41:61: error: expected ')', found ';'
