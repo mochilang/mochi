@@ -128,6 +128,11 @@ mochi_parse_int_str(S) ->
     try list_to_integer(S) catch _:_ -> 0 end.
 `
 
+const helperNth = `
+mochi_nth(I, L) ->
+    try lists:nth(I, L) catch _:_ -> nil end.
+`
+
 const helperFetch = `
 mochi_fetch(Url) ->
     mochi_fetch(Url, nil).
@@ -244,6 +249,7 @@ var useNot bool
 var useSafeArith bool
 var useSafeFmod bool
 var useMod bool
+var useNth bool
 var mutatedFuncs map[string]int
 var benchMain bool
 
@@ -278,6 +284,7 @@ type Program struct {
 	UseSafeArith    bool
 	UseSafeFmod     bool
 	UseMod          bool
+	UseNth          bool
 }
 
 // context tracks variable aliases to emulate mutable variables.
@@ -2287,13 +2294,14 @@ func (i *IndexExpr) emit(w io.Writer) {
 		i.Target.emit(w)
 		io.WriteString(w, ", nil); _ -> case ")
 		i.Index.emit(w)
-		io.WriteString(w, " < 0 of true -> lists:nth(erlang:length(")
+		useNth = true
+		io.WriteString(w, " < 0 of true -> mochi_nth(erlang:length(")
 		i.Target.emit(w)
 		io.WriteString(w, ") + ")
 		i.Index.emit(w)
 		io.WriteString(w, " + 1, ")
 		i.Target.emit(w)
-		io.WriteString(w, "); _ -> lists:nth(")
+		io.WriteString(w, "); _ -> mochi_nth(")
 		i.Index.emit(w)
 		io.WriteString(w, " + 1, ")
 		i.Target.emit(w)
@@ -3310,6 +3318,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useSafeArith = false
 	useSafeFmod = false
 	useMod = false
+	useNth = true
 	mutatedFuncs = map[string]int{
 		"topple":       0,
 		"fill":         0,
@@ -3360,6 +3369,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	p.UseSafeArith = useSafeArith
 	p.UseSafeFmod = useSafeFmod
 	p.UseMod = useMod
+	p.UseNth = useNth
 	return p, nil
 }
 
@@ -3794,6 +3804,19 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 				ctx.clearConst(n)
 			}
 		}
+		var start, end Expr
+		hasRange := st.For.RangeEnd != nil
+		if hasRange {
+			var err error
+			start, err = convertExpr(st.For.Source, env, ctx)
+			if err != nil {
+				return nil, err
+			}
+			end, err = convertExpr(st.For.RangeEnd, env, ctx)
+			if err != nil {
+				return nil, err
+			}
+		}
 		params := make([]string, len(names))
 		next := make([]string, len(names))
 		for i, n := range names {
@@ -3803,15 +3826,7 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 			ctx.orig[loopCtx.alias[n]] = n
 		}
 		brk := containsLoopCtrl(body)
-		if st.For.RangeEnd != nil {
-			start, err := convertExpr(st.For.Source, env, ctx)
-			if err != nil {
-				return nil, err
-			}
-			end, err := convertExpr(st.For.RangeEnd, env, ctx)
-			if err != nil {
-				return nil, err
-			}
+		if hasRange {
 			return []Stmt{&ForStmt{Var: alias, Kind: "range", Start: start, End: end, Body: body, Breakable: brk, Params: params, Next: next, Fun: funName}}, nil
 		}
 		src, err := convertExpr(st.For.Source, env, ctx)
@@ -4406,9 +4421,16 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 						ops = append(ops[:i], ops[i+1:]...)
 						continue
 					}
-					if !isFloatExpr(l, env, ctx) && !isFloatExpr(r, env, ctx) && !isBigRatType(lt) && !isBigRatType(rt) {
+					if isIntExpr(l, env, ctx) && isIntExpr(r, env, ctx) && !isBigRatType(lt) && !isBigRatType(rt) {
 						op = "div"
 						typesList[i] = types.IntType{}
+					} else {
+						useSafeArith = true
+						exprs[i] = &CallExpr{Func: "mochi_safe_div", Args: []Expr{l, r}}
+						exprs = append(exprs[:i+1], exprs[i+2:]...)
+						typesList = append(typesList[:i+1], typesList[i+2:]...)
+						ops = append(ops[:i], ops[i+1:]...)
+						continue
 					}
 				} else if op == "%" {
 					if isFloatType(typesList[i]) || isFloatType(typesList[i+1]) || isFloatExpr(l, env, ctx) || isFloatExpr(r, env, ctx) {
@@ -6381,6 +6403,10 @@ func (p *Program) Emit() []byte {
 	}
 	if p.UseParseIntStr {
 		buf.WriteString(helperParseIntStr)
+		buf.WriteString("\n")
+	}
+	if p.UseNth {
+		buf.WriteString(helperNth)
 		buf.WriteString("\n")
 	}
 	if p.UseBigRat {
