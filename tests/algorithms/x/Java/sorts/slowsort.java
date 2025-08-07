@@ -8,13 +8,13 @@ public class Main {
     static int[] seq7;
     static int[] seq8;
 
-    static unit swap(int[] seq, int i, int j) {
+    static void swap(int[] seq, int i, int j) {
         int temp = seq[i];
 seq[i] = seq[j];
 seq[j] = temp;
     }
 
-    static unit slowsort_recursive(int[] seq, int start, int end_index) {
+    static void slowsort_recursive(int[] seq, int start, int end_index) {
         if (start >= end_index) {
             return;
         }
@@ -34,59 +34,25 @@ seq[j] = temp;
         return seq;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            seq1 = ((int[])(new int[]{1, 6, 2, 5, 3, 4, 4, 5}));
-            System.out.println(_p(slow_sort(((int[])(seq1)))));
-            seq2 = ((int[])(new int[]{}));
-            System.out.println(_p(slow_sort(((int[])(seq2)))));
-            seq3 = ((int[])(new int[]{2}));
-            System.out.println(_p(slow_sort(((int[])(seq3)))));
-            seq4 = ((int[])(new int[]{1, 2, 3, 4}));
-            System.out.println(_p(slow_sort(((int[])(seq4)))));
-            seq5 = ((int[])(new int[]{4, 3, 2, 1}));
-            System.out.println(_p(slow_sort(((int[])(seq5)))));
-            seq6 = ((int[])(new int[]{9, 8, 7, 6, 5, 4, 3, 2, 1, 0}));
-            slowsort_recursive(((int[])(seq6)), 2, 7);
-            System.out.println(_p(seq6));
-            seq7 = ((int[])(new int[]{9, 8, 7, 6, 5, 4, 3, 2, 1, 0}));
-            slowsort_recursive(((int[])(seq7)), 0, 4);
-            System.out.println(_p(seq7));
-            seq8 = ((int[])(new int[]{9, 8, 7, 6, 5, 4, 3, 2, 1, 0}));
-            slowsort_recursive(((int[])(seq8)), 5, seq8.length - 1);
-            System.out.println(_p(seq8));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        seq1 = ((int[])(new int[]{1, 6, 2, 5, 3, 4, 4, 5}));
+        System.out.println(_p(slow_sort(((int[])(seq1)))));
+        seq2 = ((int[])(new int[]{}));
+        System.out.println(_p(slow_sort(((int[])(seq2)))));
+        seq3 = ((int[])(new int[]{2}));
+        System.out.println(_p(slow_sort(((int[])(seq3)))));
+        seq4 = ((int[])(new int[]{1, 2, 3, 4}));
+        System.out.println(_p(slow_sort(((int[])(seq4)))));
+        seq5 = ((int[])(new int[]{4, 3, 2, 1}));
+        System.out.println(_p(slow_sort(((int[])(seq5)))));
+        seq6 = ((int[])(new int[]{9, 8, 7, 6, 5, 4, 3, 2, 1, 0}));
+        slowsort_recursive(((int[])(seq6)), 2, 7);
+        System.out.println(_p(seq6));
+        seq7 = ((int[])(new int[]{9, 8, 7, 6, 5, 4, 3, 2, 1, 0}));
+        slowsort_recursive(((int[])(seq7)), 0, 4);
+        System.out.println(_p(seq7));
+        seq8 = ((int[])(new int[]{9, 8, 7, 6, 5, 4, 3, 2, 1, 0}));
+        slowsort_recursive(((int[])(seq8)), 5, seq8.length - 1);
+        System.out.println(_p(seq8));
     }
 
     static String _p(Object v) {
