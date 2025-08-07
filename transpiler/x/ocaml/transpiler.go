@@ -363,6 +363,7 @@ type VarInfo struct {
 	ref   bool
 	group bool
 	ret   string
+	boxed bool
 }
 
 func collectMutations(stmts []*parser.Statement, mutated map[string]bool) {
@@ -1762,6 +1763,10 @@ func (m *MapLit) emitPattern(w io.Writer) {
 		switch v := it.Value.(type) {
 		case *StringLit:
 			fmt.Fprintf(w, "(%q : Obj.t)", v.Value)
+		case *Name:
+			// Annotate variable patterns to Obj.t so mixed field types
+			// don't force a single concrete type during matching.
+			fmt.Fprintf(w, "(%s : Obj.t)", sanitizeIdent(v.Ident))
 		default:
 			if pe, ok := it.Value.(patternEmitter); ok {
 				pe.emitPattern(w)
@@ -5296,7 +5301,11 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 				}
 				vars[p.Selector.Root] = info
 			}
-			return &Name{Ident: p.Selector.Root, Typ: info.typ, Ref: info.ref}, info.typ, nil
+			expr := Expr(&Name{Ident: p.Selector.Root, Typ: info.typ, Ref: info.ref})
+			if info.boxed && info.typ != "" {
+				expr = &CastExpr{Expr: expr, Type: "obj_to_" + info.typ}
+			}
+			return expr, info.typ, nil
 		}
 		return convertSelector(p.Selector, env, vars)
 	}
@@ -5411,7 +5420,7 @@ func convertMatch(m *parser.MatchExpr, env *types.Env, vars map[string]VarInfo) 
 										if k, ok := it2.Key.(*StringLit); ok {
 											if nm, ok := it2.Value.(*Name); ok {
 												ft := fields[k.Value]
-												armVars[nm.Ident] = VarInfo{typ: ft}
+												armVars[nm.Ident] = VarInfo{typ: ft, boxed: true}
 											}
 										}
 									}

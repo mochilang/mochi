@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 180/1077
-Last updated: 2025-08-07 16:33 +0700
+Completed programs: 185/1077
+Last updated: 2025-08-07 17:13 +0700
 
 Checklist:
 
@@ -198,11 +198,11 @@ Checklist:
 | 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 244.0µs | 11.45KB |
 | 190 | data_structures/binary_tree/merge_two_binary_trees |   |  |  |
 | 191 | data_structures/binary_tree/mirror_binary_tree | ✓ | 286.0µs | 18.08KB |
-| 192 | data_structures/binary_tree/non_recursive_segment_tree |   |  |  |
-| 193 | data_structures/binary_tree/number_of_possible_binary_trees |   |  |  |
-| 194 | data_structures/binary_tree/red_black_tree |   |  |  |
-| 195 | data_structures/binary_tree/segment_tree |   |  |  |
-| 196 | data_structures/binary_tree/segment_tree_other |   |  |  |
+| 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 194.0µs | 10.58KB |
+| 193 | data_structures/binary_tree/number_of_possible_binary_trees | ✓ | 316.0µs | 344B |
+| 194 | data_structures/binary_tree/red_black_tree | ✓ | 418.0µs | 23.41KB |
+| 195 | data_structures/binary_tree/segment_tree | ✓ | 819.0µs | 109.77KB |
+| 196 | data_structures/binary_tree/segment_tree_other | ✓ | 696.0µs | 48.44KB |
 | 197 | data_structures/binary_tree/serialize_deserialize_binary_tree |   |  |  |
 | 198 | data_structures/binary_tree/symmetric_tree |   |  |  |
 | 199 | data_structures/binary_tree/treap | ✓ | 328.0µs | 37.35KB |
