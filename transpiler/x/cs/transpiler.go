@@ -103,6 +103,7 @@ var usesRepeat bool
 var usesSubstr bool
 var usesLen bool
 var usesMod bool
+var usesAtoi bool
 var envTypes map[string]types.Type
 
 func isNullExpr(e Expr) bool {
@@ -2526,6 +2527,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	funRets["_num"] = "BigInteger"
 	funRets["_denom"] = "BigInteger"
 	funRets["Convert.ToInt64"] = "long"
+	funRets["_atoi"] = "long"
 	funRets["Convert.ToDouble"] = "double"
 	funRets["Convert.ToString"] = "string"
 	for _, st := range p.Statements {
@@ -3988,7 +3990,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 		case "int":
 			if len(args) == 1 {
-				return &CallExpr{Func: "Convert.ToInt64", Args: []Expr{args[0]}}, nil
+				usesAtoi = true
+				return &CallExpr{Func: "_atoi", Args: []Expr{args[0]}}, nil
 			}
 		case "float":
 			if len(args) == 1 {
@@ -4898,6 +4901,21 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\t\t}\n")
 		buf.WriteString("\t\tvar line = Console.ReadLine();\n")
 		buf.WriteString("\t\treturn line == null ? \"\" : line;\n")
+		buf.WriteString("\t}\n")
+	}
+	if usesAtoi {
+		buf.WriteString("\tstatic long _atoi(object v) {\n")
+		buf.WriteString("\t\tif (v == null) return 0;\n")
+		buf.WriteString("\t\tif (v is long l) return l;\n")
+		buf.WriteString("\t\tif (v is int i) return i;\n")
+		buf.WriteString("\t\tif (v is double d) return (long)d;\n")
+		buf.WriteString("\t\tif (v is bool b) return b ? 1L : 0L;\n")
+		buf.WriteString("\t\tif (v is string s) {\n")
+		buf.WriteString("\t\t\tif (long.TryParse(s, out var n)) return n;\n")
+		buf.WriteString("\t\t\tif (double.TryParse(s, out var f)) return (long)f;\n")
+		buf.WriteString("\t\t\treturn 0;\n")
+		buf.WriteString("\t\t}\n")
+		buf.WriteString("\t\ttry { return Convert.ToInt64(v); } catch { return 0; }\n")
 		buf.WriteString("\t}\n")
 	}
 	if usesBigRat {
