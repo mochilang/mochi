@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
 Completed programs: 344/1077
-Last updated: 2025-08-07 10:08 +0700
+Last updated: 2025-08-07 10:25 +0700
 
 Checklist:
 
@@ -403,7 +403,7 @@ Checklist:
 | 394 | graphs/a_star | ✓ | 591.0µs | 3.59MB |
 | 395 | graphs/ant_colony_optimization_algorithms | ✓ | 18.0ms | 3.66MB |
 | 396 | graphs/articulation_points | ✓ | 347.0µs | 3.64MB |
-| 397 | graphs/basic_graphs | ✓ |  |  |
+| 397 | graphs/basic_graphs | ✓ | 544.0µs | 3.55MB |
 | 398 | graphs/bellman_ford |   |  |  |
 | 399 | graphs/bi_directional_dijkstra |   |  |  |
 | 400 | graphs/bidirectional_a_star |   |  |  |
