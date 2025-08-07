@@ -1,5 +1,20 @@
 # 📦 CHANGELOG.md
 
+## [0.10.60] – 2025-08-07T07:42:09+00:00
+
+### Added
+
+* Centralized example input handling and expanded fetch support
+* New algorithms including LZW decompression, Burrows–Wheeler transform, number_of_digits and numerous refreshed outputs across languages
+
+### Changed
+
+* Improved transpilers with better map and list operations, BigInt and float conversions, panic helpers and function field support
+
+### Fixed
+
+* Resolved issues with string slicing, map iteration, typed lists, integer casts and reserved names across multiple targets
+
 ## [0.10.59] – 2025-08-06T15:21:31+07:00
 
 ### Added
