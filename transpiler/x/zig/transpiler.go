@@ -1357,6 +1357,21 @@ func (p *Program) Emit() []byte {
 			}
 		}
 	}
+	for _, fn := range p.Functions {
+		if params, ok := funcParamTypes[fn.Name]; ok {
+			for i, prm := range fn.Params {
+				key := fn.Name + ":" + prm.Name
+				if varMut[key] {
+					t := strings.TrimPrefix(prm.Type, "*")
+					if strings.HasPrefix(t, "std.StringHashMap(") || strings.HasPrefix(t, "std.AutoHashMap(") {
+						fn.Params[i].Type = "*" + t
+						varTypes[prm.Name] = fn.Params[i].Type
+						params[i] = fn.Params[i].Type
+					}
+				}
+			}
+		}
+	}
 	buf.WriteString(header())
 	buf.WriteString("const std = @import(\"std\");\n")
 	if useValue {
@@ -2440,22 +2455,46 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 	tmp := fmt.Sprintf("__it%d", loopCounter)
 	loopCounter++
 	if f.Iterable != nil {
-		io.WriteString(w, "for (")
-		f.Iterable.emit(w)
-		io.WriteString(w, ") |")
-		if used {
-			io.WriteString(w, tmp)
-			io.WriteString(w, "| {\n")
-			writeIndent(w, indent+1)
-			typ := zigTypeFromExpr(f.Iterable)
-			if typ == "[]const u8" {
-				fmt.Fprintf(w, "const %s: []const u8 = &[_]u8{%s};\n", f.Name, tmp)
+		typ := zigTypeFromExpr(f.Iterable)
+		typ = strings.TrimPrefix(typ, "*")
+		typ = strings.TrimPrefix(typ, "const ")
+		if strings.HasPrefix(typ, "std.AutoHashMap") {
+			iterVar := fmt.Sprintf("__mapit%d", loopCounter)
+			loopCounter++
+			io.WriteString(w, "var ")
+			io.WriteString(w, iterVar)
+			io.WriteString(w, " = ")
+			f.Iterable.emit(w)
+			io.WriteString(w, ".keyIterator();\n")
+			writeIndent(w, indent)
+			io.WriteString(w, "while (")
+			io.WriteString(w, iterVar)
+			io.WriteString(w, ".next()) |")
+			if used {
+				io.WriteString(w, tmp)
+				io.WriteString(w, "| {\n")
+				writeIndent(w, indent+1)
+				fmt.Fprintf(w, "const %s = %s.*;\n", f.Name, tmp)
 			} else {
-				fmt.Fprintf(w, "const %s = %s;\n", f.Name, tmp)
+				io.WriteString(w, "_| {\n")
 			}
 		} else {
-			io.WriteString(w, "_|")
-			io.WriteString(w, " {\n")
+			io.WriteString(w, "for (")
+			f.Iterable.emit(w)
+			io.WriteString(w, ") |")
+			if used {
+				io.WriteString(w, tmp)
+				io.WriteString(w, "| {\n")
+				writeIndent(w, indent+1)
+				if typ == "[]const u8" {
+					fmt.Fprintf(w, "const %s: []const u8 = &[_]u8{%s};\n", f.Name, tmp)
+				} else {
+					fmt.Fprintf(w, "const %s = %s;\n", f.Name, tmp)
+				}
+			} else {
+				io.WriteString(w, "_|")
+				io.WriteString(w, " {\n")
+			}
 		}
 	} else {
 		io.WriteString(w, "for (@as(usize, @intCast(")
@@ -2768,6 +2807,9 @@ func (c *CallExpr) emit(w io.Writer) {
 				}
 				if exp != at {
 					switch {
+					case strings.HasPrefix(exp, "*") && !strings.HasPrefix(at, "*"):
+						io.WriteString(w, "&")
+						a.emit(w)
 					case at == "Value":
 						a.emit(w)
 						io.WriteString(w, valueAccess(exp))
@@ -4258,10 +4300,15 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 	preStmts := []Stmt{}
 	paramTypes := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
+		mutable := mutables[p.Name] || varMut[fn.Name+":"+p.Name] || varMut[":"+p.Name]
 		typ := toZigType(p.Type)
+		isMap := strings.HasPrefix(typ, "std.StringHashMap(") || strings.HasPrefix(typ, "std.AutoHashMap(")
+		if mutable && isMap {
+			typ = "*" + typ
+		}
 		name := p.Name
 		paramName := name
-		if mutables[p.Name] {
+		if mutable {
 			paramName = uniqueName(name + "_param")
 		} else if globalNames[name] {
 			paramName = name + "_param"
@@ -4269,7 +4316,7 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 			paramName = uniqueName(name)
 		}
 		aliasName := paramName
-		if mutables[p.Name] {
+		if mutable {
 			aliasName = uniqueName(name + "_var")
 			namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
 			vd := &VarDecl{Name: aliasName, Value: &VarRef{Name: paramName}, Mutable: true, Scope: currentFunc}
@@ -4284,7 +4331,7 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 		varTypes[name] = typ
 		namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], aliasName, name)
 		paramTypes[i] = typ
-		if strings.HasPrefix(typ, "std.StringHashMap(") || strings.HasPrefix(typ, "std.AutoHashMap(") {
+		if isMap {
 			mapVars[aliasName] = true
 		}
 	}
