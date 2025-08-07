@@ -1,0 +1,12 @@
+run: exit status 127
+escript: exception error: bad map: ["C"]
+  in function  maps:keys/1
+     called as maps:keys(["C"])
+     *** argument 1: not a map
+  in call from main:'-breath_first_search/1-Fun_2_loop/4-0-'/4 (/workspace/mochi/tests/algorithms/x/Erlang/graphs/breadth_first_search_shortest_path.erl, line 81)
+  in call from main:breath_first_search/1 (/workspace/mochi/tests/algorithms/x/Erlang/graphs/breadth_first_search_shortest_path.erl, line 87)
+  in call from main:main/1 (/workspace/mochi/tests/algorithms/x/Erlang/graphs/breadth_first_search_shortest_path.erl, line 111)
+  in call from escript:run/2 (escript.erl, line 904)
+  in call from escript:start/1 (escript.erl, line 418)
+  in call from init:start_it/1 
+  in call from init:start_em/1

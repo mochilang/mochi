@@ -1,0 +1,7 @@
+/workspace/mochi/tests/algorithms/x/Erlang/graphics/vector3_for_2d_rendering.erl:71:31: Warning: ambiguous call of overridden auto-imported BIF floor/1 --
+use erlang:floor/1 or "-compile({no_auto_import,[floor/1]})." to resolve name clash
+%   71|         (X_2 - mochi_safe_mul(floor(mochi_safe_div(X_2, M)), M))
+%     |                               ^
+
+[7.6923076923076925 15.384615384615385]
+[3.1305246750737585 2 0.4470070007889573]

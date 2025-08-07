@@ -1,0 +1,9 @@
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/graphs_floyd_warshall.erl:52:1: Warning: function mochi_safe_mul/2 is unused
+%   52| mochi_safe_mul(A, B) ->
+%     | ^
+
+"\nThe shortest path matrix using Floyd Warshall algorithm\n"
+"0\t5\t8\t9\t"
+"INF\t0\t3\t4\t"
+"INF\tINF\t0\t1\t"
+"INF\tINF\tINF\t0\t"

@@ -1,0 +1,3 @@
+/workspace/mochi/tests/algorithms/x/Erlang/electronics/resistor_color_code.erl:75:1: Warning: function mochi_safe_div/2 is unused
+%   75| mochi_safe_div(A, B) ->
+%     | ^

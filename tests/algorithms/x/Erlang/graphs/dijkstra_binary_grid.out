@@ -1,0 +1,27 @@
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/dijkstra_binary_grid.erl:172:54: Warning: variable 'Dx_3' exported from 'case' (line 96, column 9)
+%  172| {INF, Allow_diagonal, Cols, Destination, Dist_map_5, Dx_3, Dy_3, Front_2, Grid, Prev_5, Queue_5, Rows, Source} = Fun_3(INF, Allow_diagonal, Cols, Destination, Dist_map, Dx_3, Dy_3, Front, Grid, Prev, Queue, Rows, Source),
+%     |                                                      ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/dijkstra_binary_grid.erl:172:60: Warning: variable 'Dy_3' exported from 'case' (line 96, column 9)
+%  172| {INF, Allow_diagonal, Cols, Destination, Dist_map_5, Dx_3, Dy_3, Front_2, Grid, Prev_5, Queue_5, Rows, Source} = Fun_3(INF, Allow_diagonal, Cols, Destination, Dist_map, Dx_3, Dy_3, Front, Grid, Prev, Queue, Rows, Source),
+%     |                                                            ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/dijkstra_binary_grid.erl:188:64: Warning: variable 'Dx_3' exported from 'case' (line 96, column 9)
+%  188| {INF, Allow_diagonal, Cols, Dest_key, Destination, Dist_map_5, Dx_3, Dy_3, Front_2, Grid, Path_rev_2, Prev_5, Queue_5, Rows, Source, Step_key_2, Step_pt_2} = Fun_4(INF, Allow_diagonal, Cols, Dest_key, Destination, Dist_map_5, Dx_3, Dy_3, Front_2, Grid, Path_rev, Prev_5, Queue_5, Rows, Source, Step_key, Step_pt),
+%     |                                                                ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/dijkstra_binary_grid.erl:188:70: Warning: variable 'Dy_3' exported from 'case' (line 96, column 9)
+%  188| {INF, Allow_diagonal, Cols, Dest_key, Destination, Dist_map_5, Dx_3, Dy_3, Front_2, Grid, Path_rev_2, Prev_5, Queue_5, Rows, Source, Step_key_2, Step_pt_2} = Fun_4(INF, Allow_diagonal, Cols, Dest_key, Destination, Dist_map_5, Dx_3, Dy_3, Front_2, Grid, Path_rev, Prev_5, Queue_5, Rows, Source, Step_key, Step_pt),
+%     |                                                                      ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/dijkstra_binary_grid.erl:200:64: Warning: variable 'Dx_3' exported from 'case' (line 96, column 9)
+%  200| {INF, Allow_diagonal, Cols, Dest_key, Destination, Dist_map_5, Dx_3, Dy_3, Front_2, Grid, K_2, Path_3, Path_rev_2, Prev_5, Queue_5, Rows, Source, Step_key_2, Step_pt_2} = Fun_5(INF, Allow_diagonal, Cols, Dest_key, Destination, Dist_map_5, Dx_3, Dy_3, Front_2, Grid, K, Path_2, Path_rev_2, Prev_5, Queue_5, Rows, Source, Step_key_2, Step_pt_2),
+%     |                                                                ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/dijkstra_binary_grid.erl:200:70: Warning: variable 'Dy_3' exported from 'case' (line 96, column 9)
+%  200| {INF, Allow_diagonal, Cols, Dest_key, Destination, Dist_map_5, Dx_3, Dy_3, Front_2, Grid, K_2, Path_3, Path_rev_2, Prev_5, Queue_5, Rows, Source, Step_key_2, Step_pt_2} = Fun_5(INF, Allow_diagonal, Cols, Dest_key, Destination, Dist_map_5, Dx_3, Dy_3, Front_2, Grid, K, Path_2, Path_rev_2, Prev_5, Queue_5, Rows, Source, Step_key_2, Step_pt_2),
+%     |                                                                      ^
+
+"4,  [(0,  0),  (0,  1),  (1,  1),  (2,  1),  (2,  2)]"
+"2,  [(0,  0),  (1,  1),  (2,  2)]"
+"4,  [(0,  0),  (0,  1),  (0,  2),  (1,  2),  (2,  2)]"

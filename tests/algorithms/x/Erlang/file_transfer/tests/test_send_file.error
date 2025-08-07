@@ -1,0 +1,10 @@
+run: exit status 127
+escript: exception error: no match of right hand side value 1
+  in function  main:send_file/2 (/workspace/mochi/tests/algorithms/x/Erlang/file_transfer/tests/test_send_file.erl, line 130)
+  in call from main:test_send_file_running_as_expected/0 (/workspace/mochi/tests/algorithms/x/Erlang/file_transfer/tests/test_send_file.erl, line 152)
+  in call from main:main/1 (/workspace/mochi/tests/algorithms/x/Erlang/file_transfer/tests/test_send_file.erl, line 163)
+  in call from escript:run/2 (escript.erl, line 904)
+  in call from escript:start/1 (escript.erl, line 418)
+  in call from init:start_it/1 
+  in call from init:start_em/1 
+  in call from init:do_boot/3

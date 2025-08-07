@@ -1,0 +1,24 @@
+run: exit status 127
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/minimum_spanning_tree_prims2.erl:264:106: Warning: evaluation of operator '+'/2 will fail with a 'badarith' exception
+%  264|     Graph_tmp = lists:sublist(erlang:get('graph'), "a") ++ [#{"b" => 3, "c" => 15}] ++ lists:nthtail("a" + 1, erlang:get('graph')),
+%     |                                                                                                          ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/minimum_spanning_tree_prims2.erl:266:120: Warning: evaluation of operator '+'/2 will fail with a 'badarith' exception
+%  266|     Graph_tmp_2 = lists:sublist(erlang:get('graph'), "b") ++ [#{"a" => 3, "c" => 10, "d" => 100}] ++ lists:nthtail("b" + 1, erlang:get('graph')),
+%     |                                                                                                                        ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/minimum_spanning_tree_prims2.erl:268:119: Warning: evaluation of operator '+'/2 will fail with a 'badarith' exception
+%  268|     Graph_tmp_3 = lists:sublist(erlang:get('graph'), "c") ++ [#{"a" => 15, "b" => 10, "d" => 5}] ++ lists:nthtail("c" + 1, erlang:get('graph')),
+%     |                                                                                                                       ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/minimum_spanning_tree_prims2.erl:270:109: Warning: evaluation of operator '+'/2 will fail with a 'badarith' exception
+%  270|     Graph_tmp_4 = lists:sublist(erlang:get('graph'), "d") ++ [#{"b" => 100, "c" => 5}] ++ lists:nthtail("d" + 1, erlang:get('graph')),
+%     |                                                                                                             ^
+
+escript: exception error: no function clause matching lists:sublist(#{},"a") (lists.erl, line 592)
+  in function  main:main/1 (/workspace/mochi/tests/algorithms/x/Erlang/graphs/minimum_spanning_tree_prims2.erl, line 264)
+  in call from escript:run/2 (escript.erl, line 904)
+  in call from escript:start/1 (escript.erl, line 418)
+  in call from init:start_it/1 
+  in call from init:start_em/1 
+  in call from init:do_boot/3

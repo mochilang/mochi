@@ -1,0 +1,6 @@
+/workspace/mochi/tests/algorithms/x/Erlang/electronics/resistor_equivalence.erl:42:1: Warning: function mochi_safe_mul/2 is unused
+%   42| mochi_safe_mul(A, B) ->
+%     | ^
+
+"Parallel: 0.8737571620498019"
+"Series: 8.21389"

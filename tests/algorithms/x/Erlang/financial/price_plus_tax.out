@@ -1,0 +1,6 @@
+/workspace/mochi/tests/algorithms/x/Erlang/financial/price_plus_tax.erl:45:1: Warning: function mochi_safe_div/2 is unused
+%   45| mochi_safe_div(A, B) ->
+%     | ^
+
+"price_plus_tax(100,  0.25) = 125.0"
+"price_plus_tax(125.50,  0.05) = 131.775"

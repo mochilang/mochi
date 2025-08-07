@@ -1,0 +1,16 @@
+/workspace/mochi/tests/algorithms/x/Erlang/geometry/geometry.erl:45:1: Warning: function mochi_safe_div/2 is unused
+%   45| mochi_safe_div(A, B) ->
+%     | ^
+
+90
+5
+157.07963267948966
+47.12388980384689
+78.53981633974483
+31.41592653589793
+10
+29.0
+30
+50
+20
+25

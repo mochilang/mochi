@@ -1,0 +1,10 @@
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/lanczos_eigenvectors.erl:489:88: Warning: variable 'T_8' exported from 'case' (line 454, column 17)
+%  489| {A_13, A_in, App, Apq, Aqq, C_2, I_28, Iter, K_3, Max_3, Max_iter, N_3, P_5, Q_8, S_4, T_8, Tau, Theta, V_6} = Fun_24(A_8, A_in, App, Apq, Aqq, C_2, I_28, Iter, K_2, Max_3, Max_iter, N_3, P_5, Q_8, S_4, T_8, Tau, Theta, V_6),
+%     |                                                                                        ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/lanczos_eigenvectors.erl:503:88: Warning: variable 'T_8' exported from 'case' (line 454, column 17)
+%  503| {A_13, A_in, App, Apq, Aqq, C_2, I_28, Iter, K_5, Max_3, Max_iter, N_3, P_5, Q_8, S_4, T_8, Tau, Theta, V_8} = Fun_25(A_13, A_in, App, Apq, Aqq, C_2, I_28, Iter, K_4, Max_3, Max_iter, N_3, P_5, Q_8, S_4, T_8, Tau, Theta, V_6),
+%     |                                                                                        ^
+
+"[2.0000000000000004,  -1.0000000000000004]"
+"[[0.5773502691896258,  0.7441921137662304]; [0.5773502691896258,  -0.08117755737489832]; [0.5773502691896257,  -0.6630145563913323]]"

@@ -1,0 +1,5 @@
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/minimum_spanning_tree_prims.erl:136:53: Warning: variable 'Result_3' exported from 'case' (line 115, column 17)
+%  136| {Count, Dist_5, Graph, I_4, Min_val_3, N, Parent_4, Result_3, U_3, V_2, Visited_3} = Fun_4((case erlang:is_map(Graph) of true -> maps:get(U_3, Graph, nil); _ -> case U_3 < 0 of true -> lists:nth(erlang:length(Graph) + U_3 + 1, Graph); _ -> lists:nth(U_3 + 1, Graph) end end), Count, Dist_3, Graph, I_4, Min_val_3, N, Parent_2, Result_3, U_3, V_2, Visited_3),
+%     |                                                     ^
+
+"[(0,  1),  (1,  4),  (4,  3),  (4,  5),  (5,  2)]"

@@ -1,0 +1,38 @@
+run: exit status 127
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/directed_and_undirected_weighted_graph.erl:549:5: Warning: variable 'Count_6' exported from 'case' (line 519, column 9)
+%  549| {C, Count_6, G_23, I_23} = Fun_20(C, Count_6, G_23, I_22),
+%     |     ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/directed_and_undirected_weighted_graph.erl:684:2: Warning: variable 'Edges_19' exported from 'case' (line 633, column 9)
+%  684| {Edges_19, Edges2_5, G_37, I_26, J_4, M_15, New_edges_8, New_edges2_3, U_6, V_5} = Fun_23(Edges_19, Edges2_5, G_37, I_26, J_3, M_15, New_edges_8, New_edges2, U_6, V_5),
+%     |  ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/directed_and_undirected_weighted_graph.erl:684:22: Warning: variable 'G_37' exported from 'case' (line 633, column 9)
+%  684| {Edges_19, Edges2_5, G_37, I_26, J_4, M_15, New_edges_8, New_edges2_3, U_6, V_5} = Fun_23(Edges_19, Edges2_5, G_37, I_26, J_3, M_15, New_edges_8, New_edges2, U_6, V_5),
+%     |                      ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/directed_and_undirected_weighted_graph.erl:684:28: Warning: variable 'I_26' exported from 'case' (line 633, column 9)
+%  684| {Edges_19, Edges2_5, G_37, I_26, J_4, M_15, New_edges_8, New_edges2_3, U_6, V_5} = Fun_23(Edges_19, Edges2_5, G_37, I_26, J_3, M_15, New_edges_8, New_edges2, U_6, V_5),
+%     |                            ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/directed_and_undirected_weighted_graph.erl:684:39: Warning: variable 'M_15' exported from 'case' (line 633, column 9)
+%  684| {Edges_19, Edges2_5, G_37, I_26, J_4, M_15, New_edges_8, New_edges2_3, U_6, V_5} = Fun_23(Edges_19, Edges2_5, G_37, I_26, J_3, M_15, New_edges_8, New_edges2, U_6, V_5),
+%     |                                       ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/directed_and_undirected_weighted_graph.erl:684:45: Warning: variable 'New_edges_8' exported from 'case' (line 633, column 9)
+%  684| {Edges_19, Edges2_5, G_37, I_26, J_4, M_15, New_edges_8, New_edges2_3, U_6, V_5} = Fun_23(Edges_19, Edges2_5, G_37, I_26, J_3, M_15, New_edges_8, New_edges2, U_6, V_5),
+%     |                                             ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/graphs/directed_and_undirected_weighted_graph.erl:962:7: Warning: variable 'Count_9' exported from 'case' (line 932, column 9)
+%  962| {C_2, Count_9, G_49, I_36} = Fun_34(C_2, Count_9, G_49, I_35),
+%     |       ^
+
+escript: exception error: bad map: nil
+  in function  map_size/1
+     called as map_size(nil)
+     *** argument 1: not a map
+  in call from main:'-dg_dfs_util/5-Fun_7_loop/7-0-'/7 (/workspace/mochi/tests/algorithms/x/Erlang/graphs/directed_and_undirected_weighted_graph.erl, line 224)
+  in call from main:dg_dfs_util/5 (/workspace/mochi/tests/algorithms/x/Erlang/graphs/directed_and_undirected_weighted_graph.erl, line 241)
+  in call from main:dg_dfs/3 (/workspace/mochi/tests/algorithms/x/Erlang/graphs/directed_and_undirected_weighted_graph.erl, line 257)
+  in call from main:main/0 (/workspace/mochi/tests/algorithms/x/Erlang/graphs/directed_and_undirected_weighted_graph.erl, line 989)
+  in call from main:main/1 (/workspace/mochi/tests/algorithms/x/Erlang/graphs/directed_and_undirected_weighted_graph.erl, line 1009)

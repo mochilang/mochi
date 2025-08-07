@@ -1,0 +1,16 @@
+run: exit status 127
+#{0 => [1 2] 1 => [2] 2 => [0 3] 3 => [3]}
+"0  ->  1 -> 2"
+"1  ->  2"
+"2  ->  0 -> 3"
+"3  ->  3"
+"DFS:"
+escript: exception error: bad map: [1,2]
+  in function  map_size/1
+     called as map_size([1,2])
+     *** argument 1: not a map
+  in call from main:'-dfs_recursive/4-Fun_4_loop/6-0-'/6 (/workspace/mochi/tests/algorithms/x/Erlang/graphs/depth_first_search_2.erl, line 153)
+  in call from main:dfs_recursive/4 (/workspace/mochi/tests/algorithms/x/Erlang/graphs/depth_first_search_2.erl, line 166)
+  in call from main:'-dfs/1-Fun_7_loop/5-1-'/5 (/workspace/mochi/tests/algorithms/x/Erlang/graphs/depth_first_search_2.erl, line 200)
+  in call from main:dfs/1 (/workspace/mochi/tests/algorithms/x/Erlang/graphs/depth_first_search_2.erl, line 209)
+  in call from main:main/1 (/workspace/mochi/tests/algorithms/x/Erlang/graphs/depth_first_search_2.erl, line 225)
