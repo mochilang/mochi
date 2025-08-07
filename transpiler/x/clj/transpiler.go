@@ -417,6 +417,15 @@ func renameVar(name string) string {
 	if newName, ok := renameVars[name]; ok {
 		return newName
 	}
+	// if the name exists in an outer scope, reuse it
+	for i := len(outerVarStack) - 1; i >= 0; i-- {
+		if m := outerVarStack[i]; m != nil {
+			if v, ok := m[name]; ok {
+				renameVars[name] = v
+				return v
+			}
+		}
+	}
 	if reservedNames[name] {
 		newName := name + "_v"
 		renameVars[name] = newName
@@ -1087,11 +1096,20 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 				}
 			}
 		}
+		isOuter := false
+		for i := len(outerVarStack) - 1; i >= 0; i-- {
+			if m := outerVarStack[i]; m != nil {
+				if _, ok := m[s.Assign.Name]; ok {
+					isOuter = true
+					break
+				}
+			}
+		}
 		if funDepth > 1 {
-			if declVars != nil {
+			if !isOuter && declVars != nil {
 				declVars[name] = true
 			}
-			if localVars != nil {
+			if !isOuter && localVars != nil {
 				localVars[name] = true
 			}
 		} else if funDepth == 1 && currentFun == "main" {
@@ -1099,22 +1117,22 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 				declVars[name] = true
 			}
 		}
+		var assignVal Node = v
 		if simple && len(path) > 0 {
-			var assign Node
 			if len(path) == 1 {
-				assign = &List{Elems: []Node{Symbol("assoc"), Symbol(name), path[0], v}}
+				assignVal = &List{Elems: []Node{Symbol("assoc"), Symbol(name), path[0], v}}
 			} else {
-				assign = &List{Elems: []Node{Symbol("assoc-in"), Symbol(name), &Vector{Elems: path}, v}}
+				assignVal = &List{Elems: []Node{Symbol("assoc-in"), Symbol(name), &Vector{Elems: path}, v}}
 			}
-			if funDepth > 1 {
-				return &List{Elems: []Node{Symbol("set!"), Symbol(name), assign}}, nil
-			}
-			return &List{Elems: []Node{Symbol("def"), Symbol(name), assign}}, nil
 		}
 		if funDepth > 1 {
-			return &List{Elems: []Node{Symbol("set!"), Symbol(name), v}}, nil
+			if isOuter {
+				fnExpr := &List{Elems: []Node{Symbol("fn"), &Vector{Elems: []Node{Symbol("_")}}, assignVal}}
+				return &List{Elems: []Node{Symbol("alter-var-root"), &List{Elems: []Node{Symbol("var"), Symbol(name)}}, fnExpr}}, nil
+			}
+			return &List{Elems: []Node{Symbol("set!"), Symbol(name), assignVal}}, nil
 		}
-		return &List{Elems: []Node{Symbol("def"), Symbol(name), v}}, nil
+		return &List{Elems: []Node{Symbol("def"), Symbol(name), assignVal}}, nil
 	case s.Fun != nil:
 		return transpileFunStmt(s.Fun)
 	case s.Return != nil:

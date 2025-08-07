@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-07 10:29 GMT+7
+Last updated: 2025-08-07 10:44 GMT+7
 
-## Algorithms Golden Test Checklist (77/1077)
+## Algorithms Golden Test Checklist (78/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 50.25ms | 19.66MB |
@@ -206,7 +206,7 @@ Last updated: 2025-08-07 10:29 GMT+7
 | 197 | data_structures/binary_tree/serialize_deserialize_binary_tree | error |  |  |
 | 198 | data_structures/binary_tree/symmetric_tree | ✓ | 52.192ms | 21.09MB |
 | 199 | data_structures/binary_tree/treap | error |  |  |
-| 200 | data_structures/binary_tree/wavelet_tree |   |  |  |
+| 200 | data_structures/binary_tree/wavelet_tree | ✓ | 30.993ms | 26.32MB |
 | 201 | data_structures/disjoint_set/alternate_disjoint_set |   |  |  |
 | 202 | data_structures/disjoint_set/disjoint_set |   |  |  |
 | 203 | data_structures/hashing/bloom_filter |   |  |  |
