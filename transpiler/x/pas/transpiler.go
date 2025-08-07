@@ -78,7 +78,7 @@ func declareName(name string) string {
 	}
 	newName := name
 	switch strings.ToLower(name) {
-	case "label", "xor", "and", "or", "div", "mod", "type", "set", "result", "repeat", "end":
+	case "label", "xor", "and", "or", "div", "mod", "type", "set", "result", "repeat", "end", "nil", "length", "ord":
 		// Avoid Pascal reserved keywords (case-insensitive)
 		newName = name + "_"
 	}
@@ -106,7 +106,7 @@ func declareName(name string) string {
 
 func sanitizeField(name string) string {
 	switch strings.ToLower(name) {
-	case "label", "xor", "and", "or", "div", "mod", "type", "set", "result", "repeat", "end":
+	case "label", "xor", "and", "or", "div", "mod", "type", "set", "result", "repeat", "end", "nil", "length", "ord":
 		return name + "_"
 	}
 	return name
@@ -195,6 +195,7 @@ type Program struct {
 	NeedShowList2      bool
 	NeedShowListInt64  bool
 	NeedShowMap        bool
+	NeedMapIntIntStr   bool
 	NeedListStr        bool
 	NeedListStr2       bool
 	NeedListStrReal    bool
@@ -1481,6 +1482,21 @@ begin
 end;
 `)
 	}
+	if p.NeedMapIntIntStr {
+		buf.WriteString(`function map_int_int_to_str(m: specialize TFPGMap<integer, integer>): string;
+var i: integer;
+begin
+  Result := 'map[';
+  for i := 0 to m.Count - 1 do begin
+    Result := Result + IntToStr(m.Keys[i]);
+    Result := Result + ':';
+    Result := Result + IntToStr(m.Data[i]);
+    if i < m.Count - 1 then Result := Result + ' ';
+  end;
+  Result := Result + ']';
+end;
+`)
+	}
 	if p.NeedShowMap {
 		buf.WriteString("procedure show_map(m: specialize TFPGMap<string, Variant>);\nvar i: integer;\nbegin\n  write('map[');\n  for i := 0 to m.Count - 1 do begin\n    write(m.Keys[i]);\n    write(':');\n    write(m.Data[i]);\n    if i < m.Count - 1 then write(' ');\n  end;\n  writeln(']');\nend;\n")
 	}
@@ -1558,7 +1574,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 		if st.Fun != nil {
 			name := st.Fun.Name
 			switch name {
-			case "xor", "and", "or", "div", "mod", "type", "repeat":
+			case "xor", "and", "or", "div", "mod", "type", "repeat", "ord":
 				name = name + "_"
 			}
 			funcNames[name] = struct{}{}
@@ -3919,6 +3935,14 @@ func ensureMap(keyType, valType string, items []MapItem, params []string) string
 	if valType == "" {
 		valType = "Variant"
 	}
+	if strings.HasPrefix(valType, "array of ") {
+		elem := strings.TrimPrefix(valType, "array of ")
+		valType = currProg.addArrayAlias(elem)
+	}
+	if strings.HasPrefix(keyType, "array of ") {
+		elem := strings.TrimPrefix(keyType, "array of ")
+		keyType = currProg.addArrayAlias(elem)
+	}
 	if len(params) == 0 {
 		for _, m := range currProg.Maps {
 			if m.KeyType == keyType && m.ValType == valType && len(m.Items) == len(items) {
@@ -4464,6 +4488,20 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		} else if name == "str" && len(args) == 1 {
 			t := inferType(args[0])
 			rt := resolveAlias(t)
+			if strings.HasPrefix(t, "specialize TFPGMap") || strings.HasPrefix(rt, "specialize TFPGMap") {
+				parts := strings.TrimSuffix(strings.TrimPrefix(t, "specialize TFPGMap<"), ">")
+				kv := strings.Split(parts, ",")
+				if len(kv) == 2 {
+					key := strings.TrimSpace(kv[0])
+					val := strings.TrimSpace(kv[1])
+					if key == "integer" && val == "integer" {
+						currProg.NeedMapIntIntStr = true
+						currProg.UseSysUtils = true
+						return &CallExpr{Name: "map_int_int_to_str", Args: args}, nil
+					}
+				}
+				return args[0], nil
+			}
 			if strings.HasPrefix(t, "array of string") || strings.HasPrefix(rt, "array of string") {
 				currProg.NeedListStr = true
 				return &CallExpr{Name: "list_to_str", Args: args}, nil
@@ -4544,8 +4582,10 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			currProg.NeedMax = true
 			return &CallExpr{Name: "max", Args: args}, nil
 		} else if name == "keys" && len(args) == 1 {
-			// treat keys(map) as the map itself for iteration purposes
-			return args[0], nil
+			if _, ok := funcNames[name]; !ok {
+				// treat keys(map) as the map itself for iteration purposes
+				return args[0], nil
+			}
 		} else if name == "values" && len(args) == 1 {
 			if vr, ok := args[0].(*VarRef); ok {
 				if t, ok := currentVarTypes[vr.Name]; ok {
@@ -5084,24 +5124,35 @@ func inferType(e Expr) string {
 		if s, ok := lookupName(root); ok {
 			root = s
 		}
-		if t, ok := currentVarTypes[root]; ok {
-			if strings.HasPrefix(t, "array of ") {
-				t = strings.TrimPrefix(t, "array of ")
-			}
+		t, ok := currentVarTypes[root]
+		if !ok {
+			return ""
+		}
+		t = resolveAlias(t)
+		if strings.HasPrefix(t, "array of ") {
+			t = strings.TrimPrefix(t, "array of ")
+		}
+		for i, sel := range v.Tail {
+			found := false
 			for _, r := range currProg.Records {
 				if r.Name == t {
-					if len(v.Tail) > 0 {
-						field := v.Tail[len(v.Tail)-1]
-						for _, f := range r.Fields {
-							if f.Name == field {
-								return f.Type
+					for _, f := range r.Fields {
+						if f.Name == sel {
+							t = resolveAlias(f.Type)
+							if i < len(v.Tail)-1 && strings.HasPrefix(t, "array of ") {
+								t = strings.TrimPrefix(t, "array of ")
 							}
+							found = true
+							break
 						}
 					}
 				}
 			}
+			if !found {
+				return ""
+			}
 		}
-		return ""
+		return t
 	case *CastExpr:
 		if v.Type == "int" {
 			return "integer"
