@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-07 11:13 GMT+7
+Last updated: 2025-08-07 15:17 GMT+7
 
-## Algorithms Golden Test Checklist (81/1077)
+## Algorithms Golden Test Checklist (110/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 50.25ms | 19.66MB |
@@ -18,35 +18,35 @@ Last updated: 2025-08-07 11:13 GMT+7
 | 9 | backtracking/match_word_pattern | ✓ | 61.392ms | 21.23MB |
 | 10 | backtracking/minimax | ✓ | 33.902ms | 20.10MB |
 | 11 | backtracking/n_queens |   |  |  |
-| 12 | backtracking/n_queens_math |   |  |  |
-| 13 | backtracking/power_sum |   |  |  |
-| 14 | backtracking/rat_in_maze |   |  |  |
-| 15 | backtracking/sudoku |   |  |  |
-| 16 | backtracking/sum_of_subsets |   |  |  |
-| 17 | backtracking/word_break |   |  |  |
-| 18 | backtracking/word_ladder |   |  |  |
-| 19 | backtracking/word_search |   |  |  |
-| 20 | bit_manipulation/binary_and_operator |   |  |  |
-| 21 | bit_manipulation/binary_coded_decimal |   |  |  |
-| 22 | bit_manipulation/binary_count_setbits |   |  |  |
-| 23 | bit_manipulation/binary_count_trailing_zeros |   |  |  |
-| 24 | bit_manipulation/binary_or_operator |   |  |  |
-| 25 | bit_manipulation/binary_shifts |   |  |  |
-| 26 | bit_manipulation/binary_twos_complement |   |  |  |
-| 27 | bit_manipulation/binary_xor_operator |   |  |  |
-| 28 | bit_manipulation/bitwise_addition_recursive |   |  |  |
-| 29 | bit_manipulation/count_1s_brian_kernighan_method |   |  |  |
-| 30 | bit_manipulation/count_number_of_one_bits |   |  |  |
-| 31 | bit_manipulation/excess_3_code |   |  |  |
-| 32 | bit_manipulation/find_previous_power_of_two |   |  |  |
-| 33 | bit_manipulation/find_unique_number |   |  |  |
-| 34 | bit_manipulation/gray_code_sequence |   |  |  |
-| 35 | bit_manipulation/highest_set_bit |   |  |  |
-| 36 | bit_manipulation/index_of_rightmost_set_bit |   |  |  |
-| 37 | bit_manipulation/is_even |   |  |  |
-| 38 | bit_manipulation/is_power_of_two |   |  |  |
-| 39 | bit_manipulation/largest_pow_of_two_le_num |   |  |  |
-| 40 | bit_manipulation/missing_number |   |  |  |
+| 12 | backtracking/n_queens_math | ✓ | 54.596ms | 21.57MB |
+| 13 | backtracking/power_sum | ✓ | 45.022ms | 20.11MB |
+| 14 | backtracking/rat_in_maze | ✓ | 63.228ms | 21.36MB |
+| 15 | backtracking/sudoku | ✓ | 409.06ms | 21.98MB |
+| 16 | backtracking/sum_of_subsets | ✓ | 36.758ms | 21.00MB |
+| 17 | backtracking/word_break | ✓ | 38.376ms | 20.10MB |
+| 18 | backtracking/word_ladder | ✓ | 135.001ms | 21.08MB |
+| 19 | backtracking/word_search | ✓ | 46.393ms | 21.81MB |
+| 20 | bit_manipulation/binary_and_operator | ✓ | 43.445ms | 20.40MB |
+| 21 | bit_manipulation/binary_coded_decimal | ✓ | 32.775ms | 19.88MB |
+| 22 | bit_manipulation/binary_count_setbits | ✓ | 39.722ms | 19.26MB |
+| 23 | bit_manipulation/binary_count_trailing_zeros | ✓ | 33.721ms | 19.12MB |
+| 24 | bit_manipulation/binary_or_operator | ✓ | 35.034ms | 19.28MB |
+| 25 | bit_manipulation/binary_shifts | ✓ | 53.312ms | 22.43MB |
+| 26 | bit_manipulation/binary_twos_complement | ✓ | 32.95ms | 20.69MB |
+| 27 | bit_manipulation/binary_xor_operator | ✓ | 32.592ms | 20.37MB |
+| 28 | bit_manipulation/bitwise_addition_recursive | ✓ | 36.662ms | 20.45MB |
+| 29 | bit_manipulation/count_1s_brian_kernighan_method | ✓ | 31.395ms | 19.62MB |
+| 30 | bit_manipulation/count_number_of_one_bits | ✓ | 44.44ms | 20.55MB |
+| 31 | bit_manipulation/excess_3_code | ✓ | 32.819ms | 18.97MB |
+| 32 | bit_manipulation/find_previous_power_of_two | ✓ | 58.077ms | 19.60MB |
+| 33 | bit_manipulation/find_unique_number | ✓ | 32.451ms | 20.43MB |
+| 34 | bit_manipulation/gray_code_sequence | ✓ | 60.565ms | 20.17MB |
+| 35 | bit_manipulation/highest_set_bit | ✓ | 40.212ms | 19.08MB |
+| 36 | bit_manipulation/index_of_rightmost_set_bit | ✓ | 33.254ms | 19.42MB |
+| 37 | bit_manipulation/is_even | ✓ | 34.578ms | 18.98MB |
+| 38 | bit_manipulation/is_power_of_two | ✓ | 37.221ms | 19.07MB |
+| 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 36.464ms | 18.96MB |
+| 40 | bit_manipulation/missing_number | ✓ | 34.818ms | 19.64MB |
 | 41 | bit_manipulation/numbers_different_signs |   |  |  |
 | 42 | bit_manipulation/power_of_4 |   |  |  |
 | 43 | bit_manipulation/reverse_bits |   |  |  |
