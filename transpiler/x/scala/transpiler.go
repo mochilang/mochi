@@ -1313,8 +1313,15 @@ type CastExpr struct {
 }
 
 func (c *CastExpr) emit(w io.Writer) {
-	if strings.HasPrefix(c.Type, "ArrayBuffer[") {
-		if ll, ok := c.Value.(*ListLit); ok {
+       if strings.Contains(c.Type, "=>") {
+               if _, ok := c.Value.(*Name); ok {
+                       c.Value.emit(w)
+                       fmt.Fprintf(w, ".asInstanceOf[%s]", c.Type)
+                       return
+               }
+       }
+       if strings.HasPrefix(c.Type, "ArrayBuffer[") {
+               if ll, ok := c.Value.(*ListLit); ok {
 			elem := strings.TrimSuffix(strings.TrimPrefix(c.Type, "ArrayBuffer["), "]")
 			if len(ll.Elems) == 0 {
 				fmt.Fprintf(w, "ArrayBuffer[%s]()", elem)
@@ -1578,7 +1585,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			t := inferTypeWithEnv(rightExpr, nil)
 			if t == "String" || t == "" {
 				left = &CharLit{Value: sl.Value}
-				rightExpr = &CallExpr{Fn: &FieldExpr{Receiver: rightExpr, Name: "charAt"}, Args: []Expr{&IntLit{Value: 0}}}
+                               rightExpr = &CallExpr{Fn: &FieldExpr{Receiver: rightExpr, Name: "charAt"}, Args: []Expr{&FieldExpr{Receiver: &IntLit{Value: 0}, Name: "toInt"}}}
 			} else {
 				left = &CharLit{Value: sl.Value}
 			}
@@ -1586,7 +1593,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			t := inferTypeWithEnv(left, nil)
 			if t == "String" || t == "" {
 				rightExpr = &CharLit{Value: sl.Value}
-				left = &CallExpr{Fn: &FieldExpr{Receiver: left, Name: "charAt"}, Args: []Expr{&IntLit{Value: 0}}}
+                               left = &CallExpr{Fn: &FieldExpr{Receiver: left, Name: "charAt"}, Args: []Expr{&FieldExpr{Receiver: &IntLit{Value: 0}, Name: "toInt"}}}
 			} else {
 				rightExpr = &CharLit{Value: sl.Value}
 			}
@@ -3424,14 +3431,19 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 }
 
 func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
-	args := make([]Expr, len(c.Args))
-	for i, a := range c.Args {
-		ex, err := convertExpr(a, env)
-		if err != nil {
-			return nil, err
-		}
-		args[i] = ex
-	}
+       args := make([]Expr, len(c.Args))
+       for i, a := range c.Args {
+               ex, err := convertExpr(a, env)
+               if err != nil {
+                       return nil, err
+               }
+               if n, ok := ex.(*Name); ok && env != nil {
+                       if _, okf := env.GetFunc(n.Name); okf {
+                               ex = &FunRef{Name: n.Name}
+                       }
+               }
+               args[i] = ex
+       }
 	name := c.Func
 	switch name {
 	case "len", "count":
@@ -3506,10 +3518,20 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 			}
 			return &CallExpr{Fn: &FieldExpr{Receiver: &Name{Name: "Math"}, Name: "abs"}, Args: args}, nil
 		}
-	case "floor":
-		if len(args) == 1 {
-			return &CallExpr{Fn: &FieldExpr{Receiver: &Name{Name: "Math"}, Name: "floor"}, Args: args}, nil
-		}
+        case "floor":
+                if len(args) == 1 {
+                        return &CallExpr{Fn: &FieldExpr{Receiver: &Name{Name: "Math"}, Name: "floor"}, Args: args}, nil
+                }
+       case "pow_int":
+               if len(args) == 2 {
+                       exp := &FieldExpr{Receiver: args[1], Name: "toDouble"}
+                       return &CallExpr{Fn: &FieldExpr{Receiver: &Name{Name: "Math"}, Name: "pow"}, Args: []Expr{args[0], exp}}, nil
+               }
+       case "nth_root":
+               if len(args) == 2 {
+                       denom := &BinaryExpr{Left: &FloatLit{Value: 1.0}, Op: "/", Right: &FieldExpr{Receiver: args[1], Name: "toDouble"}}
+                       return &CallExpr{Fn: &FieldExpr{Receiver: &Name{Name: "Math"}, Name: "pow"}, Args: []Expr{args[0], denom}}, nil
+               }
 	case "input":
 		if len(args) == 0 {
 			call := &CallExpr{Fn: &Name{Name: "scala.io.StdIn.readLine"}, Args: nil}

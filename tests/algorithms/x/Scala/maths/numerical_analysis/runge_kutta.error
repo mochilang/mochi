@@ -1,0 +1,12 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/maths/numerical_analysis/runge_kutta.scala:64: error: missing argument list for method f
+Unapplied methods are only converted to functions when a function type is expected.
+You can make this conversion explicit by writing `f _` or `f(_,_)` instead of `f`.
+  val result: ArrayBuffer[Double] = runge_kutta(f.asInstanceOf[(Double, Double) => Double], 1.0, 0.0, 0.01, 5.0)
+                                                ^
+/workspace/mochi/tests/algorithms/x/Scala/maths/numerical_analysis/runge_kutta.scala:82: error: missing argument list for method f
+Unapplied methods are only converted to functions when a function type is expected.
+You can make this conversion explicit by writing `f _` or `f(_,_)` instead of `f`.
+  val r: ArrayBuffer[Double] = runge_kutta(f.asInstanceOf[(Double, Double) => Double], 1.0, 0.0, 0.1, 1.0)
+                                           ^
+two errors found
