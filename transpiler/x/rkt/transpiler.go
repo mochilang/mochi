@@ -1337,6 +1337,12 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		io.WriteString(w, ")) ")
 		b.Right.emit(w)
 		io.WriteString(w, "))")
+	case "idiv":
+		io.WriteString(w, "(floor (/ ")
+		b.Left.emit(w)
+		io.WriteString(w, " ")
+		b.Right.emit(w)
+		io.WriteString(w, "))")
 	default:
 		fmt.Fprintf(w, "(%s ", b.Op)
 		b.Left.emit(w)
@@ -2297,7 +2303,7 @@ func precedence(op string) int {
 		return 3
 	case "+", "-", "string-append":
 		return 4
-	case "*", "/", "modulo", "quotient":
+	case "*", "/", "modulo", "quotient", "idiv":
 		return 5
 	default:
 		return 0
@@ -2447,15 +2453,15 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 			if types.IsFloatType(leftType) || types.IsFloatType(rt) {
 				op = "/"
 			} else if lt := leftType; (types.IsIntType(lt) || types.IsInt64Type(lt) || types.IsBigIntType(lt)) && rtInt {
-				op = "quotient"
+				op = "idiv"
 			} else if ltInt && (rtInt || heuristicInt(right, env)) {
-				op = "quotient"
+				op = "idiv"
 			} else {
 				lt := leftType
 				if literalIntPostfix(rightUnary.Value) && !types.IsFloatType(lt) {
-					op = "quotient"
+					op = "idiv"
 				} else if (types.IsIntType(lt) || types.IsInt64Type(lt) || types.IsBigIntType(lt)) && rtInt {
-					op = "quotient"
+					op = "idiv"
 				} else {
 					op = "/"
 				}
