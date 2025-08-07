@@ -1,0 +1,74 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack.c: In function ‘str_list_int’:
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack.c:24:38: warning: format ‘%d’ expects argument of type ‘int’, but argument 4 has type ‘long long int’ [-Wformat=]
+   24 |         snprintf(tmp, sizeof(tmp), "%d", arr[i]);
+      |                                     ~^   ~~~~~~
+      |                                      |      |
+      |                                      int    long long int
+      |                                     %lld
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack.c: In function ‘push’:
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack.c:132:17: error: incompatible type for argument 1 of ‘is_full’
+  132 |     if (is_full(s)) {
+      |                 ^
+      |                 |
+      |                 Stack *
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack.c:127:25: note: expected ‘Stack’ but argument is of type ‘Stack *’
+  127 | long long is_full(Stack s) {
+      |                   ~~~~~~^
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack.c:135:6: error: ‘s’ is a pointer; did you mean to use ‘->’?
+  135 |     s.items = list_append_int(s.items, &s.items_len, item);
+      |      ^
+      |      ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack.c:135:32: error: ‘s’ is a pointer; did you mean to use ‘->’?
+  135 |     s.items = list_append_int(s.items, &s.items_len, item);
+      |                                ^
+      |                                ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack.c:135:42: error: ‘s’ is a pointer; did you mean to use ‘->’?
+  135 |     s.items = list_append_int(s.items, &s.items_len, item);
+      |                                          ^
+      |                                          ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack.c: In function ‘pop’:
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack.c:139:18: error: incompatible type for argument 1 of ‘is_empty’
+  139 |     if (is_empty(s)) {
+      |                  ^
+      |                  |
+      |                  Stack *
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack.c:119:26: note: expected ‘Stack’ but argument is of type ‘Stack *’
+  119 | long long is_empty(Stack s) {
+      |                    ~~~~~~^
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack.c:142:19: warning: implicit declaration of function ‘len’ [-Wimplicit-function-declaration]
+  142 |     long long n = len(s.items);
+      |                   ^~~
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack.c:142:24: error: ‘s’ is a pointer; did you mean to use ‘->’?
+  142 |     long long n = len(s.items);
+      |                        ^
+      |                        ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack.c:143:22: error: ‘s’ is a pointer; did you mean to use ‘->’?
+  143 |     long long val = s.items[(int)(n - 1LL)];
+      |                      ^
+      |                      ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack.c:144:6: error: ‘s’ is a pointer; did you mean to use ‘->’?
+  144 |     s.items = _slice_int(s.items, s.items_len, 0LL, n - 1LL, &(_slice_int_len));
+      |      ^
+      |      ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack.c:144:27: error: ‘s’ is a pointer; did you mean to use ‘->’?
+  144 |     s.items = _slice_int(s.items, s.items_len, 0LL, n - 1LL, &(_slice_int_len));
+      |                           ^
+      |                           ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack.c:144:36: error: ‘s’ is a pointer; did you mean to use ‘->’?
+  144 |     s.items = _slice_int(s.items, s.items_len, 0LL, n - 1LL, &(_slice_int_len));
+      |                                    ^
+      |                                    ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack.c:145:6: error: ‘s’ is a pointer; did you mean to use ‘->’?
+  145 |     s.items_len = _slice_int_len;
+      |      ^
+      |      ->
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack.c: In function ‘user_main’:
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack.c:184:22: error: incompatible type for argument 1 of ‘pop’
+  184 |     puts(str_int(pop(s)));
+      |                      ^
+      |                      |
+      |                      Stack
+/workspace/mochi/tests/algorithms/x/C/data_structures/stacks/stack.c:138:22: note: expected ‘Stack *’ but argument is of type ‘Stack’
+  138 | long long pop(Stack* s) {
+      |               ~~~~~~~^
