@@ -170,7 +170,7 @@ const helperDictCreate = `let _dictCreate<'K,'V when 'K : equality> (pairs:('K *
     upcast d`
 
 const helperIndex = `let _idx (arr:'a array) (i:int) : 'a =
-    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>`
+    if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>`
 
 const helperArraySet = `let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     let mutable a = arr
@@ -1463,9 +1463,9 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 			io.WriteString(w, name)
 			io.WriteString(w, " <- _arrset ")
 			io.WriteString(w, name)
-			io.WriteString(w, " ")
-			indices[0].emit(w)
 			io.WriteString(w, " (")
+			indices[0].emit(w)
+			io.WriteString(w, ") (")
 			s.Value.emit(w)
 			io.WriteString(w, ")")
 			return
@@ -2821,17 +2821,24 @@ func (s *SliceExpr) emit(w io.Writer) {
 	}
 	t := inferType(s.Target)
 	if s.IsString || t == "string" || t == "" {
-		s.Target.emit(w)
-		io.WriteString(w, ".Substring(")
-		start.emit(w)
-		io.WriteString(w, ", ")
-		var length Expr
+		var finish Expr
 		if s.End != nil {
-			length = &BinaryExpr{Left: s.End, Op: "-", Right: start}
+			finish = s.End
 		} else {
-			length = &BinaryExpr{Left: &CallExpr{Func: "String.length", Args: []Expr{s.Target}}, Op: "-", Right: start}
+			finish = &CallExpr{Func: "String.length", Args: []Expr{s.Target}}
 		}
-		length.emit(w)
+		io.WriteString(w, "_substring ")
+		if needsParen(s.Target) {
+			io.WriteString(w, "(")
+			s.Target.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			s.Target.emit(w)
+		}
+		io.WriteString(w, " (")
+		start.emit(w)
+		io.WriteString(w, ") (")
+		finish.emit(w)
 		io.WriteString(w, ")")
 		return
 	}
@@ -2879,7 +2886,7 @@ func (c *CastExpr) emit(w io.Writer) {
 			c.Expr.emit(w)
 		}
 	case "float":
-		if t == "obj" || isIndexExpr(c.Expr) {
+		if t == "obj" {
 			io.WriteString(w, "System.Convert.ToDouble ")
 		} else {
 			io.WriteString(w, "float ")
@@ -2892,7 +2899,7 @@ func (c *CastExpr) emit(w io.Writer) {
 			c.Expr.emit(w)
 		}
 	case "int":
-		if t == "obj" || isIndexExpr(c.Expr) {
+		if t == "obj" {
 			io.WriteString(w, "unbox<int> ")
 		} else {
 			io.WriteString(w, "int ")
@@ -3658,6 +3665,20 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		base := target
+		idxCount := len(st.Assign.Index)
+		for {
+			if ix, ok := base.(*IndexExpr); ok {
+				base = ix.Target
+			} else {
+				break
+			}
+		}
+		if id, ok := base.(*IdentExpr); ok && idxCount == 1 {
+			if strings.HasSuffix(inferType(id), " array") {
+				usesArraySet = true
+			}
+		}
 		return &IndexAssignStmt{Target: target, Value: val}, nil
 	case st.Return != nil:
 		var e Expr
@@ -4010,6 +4031,9 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				}
 			}
 			isStr := inferType(expr) == "string"
+			if isStr {
+				usesSubstring = true
+			}
 			expr = &SliceExpr{Target: expr, Start: start, End: end, IsString: isStr}
 		case op.Field != nil:
 			expr = &FieldExpr{Target: expr, Name: op.Field.Name}

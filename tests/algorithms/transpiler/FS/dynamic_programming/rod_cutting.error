@@ -1,0 +1,8 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/algorithms/transpiler/FS/dynamic_programming/rod_cutting.fs(58,51): error FS0001: This expression was expected to have type
+    int    
+but here has type
+    int64    
