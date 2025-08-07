@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (84/1077) - Last updated 2025-08-07 11:03 +0700:
+Checklist of programs that currently transpile and run (104/1077) - Last updated 2025-08-07 16:48 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -97,26 +97,26 @@ Checklist of programs that currently transpile and run (84/1077) - Last updated 
 | 90 | ciphers/morse_code | ✓ | 442us | 1.6 MB |
 | 91 | ciphers/onepad_cipher | ✓ | 309us | 1.4 MB |
 | 92 | ciphers/permutation_cipher |  |  |  |
-| 93 | ciphers/playfair_cipher |  |  |  |
-| 94 | ciphers/polybius |  |  |  |
-| 95 | ciphers/porta_cipher |  |  |  |
-| 96 | ciphers/rabin_miller |  |  |  |
-| 97 | ciphers/rail_fence_cipher |  |  |  |
-| 98 | ciphers/rot13 |  |  |  |
-| 99 | ciphers/rsa_cipher |  |  |  |
-| 100 | ciphers/rsa_factorization |  |  |  |
-| 101 | ciphers/rsa_key_generator |  |  |  |
-| 102 | ciphers/running_key_cipher |  |  |  |
-| 103 | ciphers/shuffled_shift_cipher |  |  |  |
-| 104 | ciphers/simple_keyword_cypher |  |  |  |
-| 105 | ciphers/simple_substitution_cipher |  |  |  |
-| 106 | ciphers/transposition_cipher |  |  |  |
-| 107 | ciphers/transposition_cipher_encrypt_decrypt_file |  |  |  |
-| 108 | ciphers/trifid_cipher |  |  |  |
-| 109 | ciphers/vernam_cipher |  |  |  |
-| 110 | ciphers/vigenere_cipher |  |  |  |
-| 111 | ciphers/xor_cipher |  |  |  |
-| 112 | computer_vision/cnn_classification |  |  |  |
+| 93 | ciphers/playfair_cipher | ✓ | 411us | 1.5 MB |
+| 94 | ciphers/polybius | ✓ | 620us | 1.5 MB |
+| 95 | ciphers/porta_cipher | ✓ | 623us | 1.6 MB |
+| 96 | ciphers/rabin_miller | ✓ | 506us | 1.4 MB |
+| 97 | ciphers/rail_fence_cipher | ✓ | 341us | 1.5 MB |
+| 98 | ciphers/rot13 | ✓ | 1.68ms | 1.7 MB |
+| 99 | ciphers/rsa_cipher | ✓ | 428us | 1.4 MB |
+| 100 | ciphers/rsa_factorization | ✓ | 288us | 1.6 MB |
+| 101 | ciphers/rsa_key_generator | ✓ | 772us | 1.4 MB |
+| 102 | ciphers/running_key_cipher | ✓ | 556us | 1.6 MB |
+| 103 | ciphers/shuffled_shift_cipher | ✓ | 382us | 1.5 MB |
+| 104 | ciphers/simple_keyword_cypher | ✓ | 400us | 1.5 MB |
+| 105 | ciphers/simple_substitution_cipher | ✓ | 320us | 1.6 MB |
+| 106 | ciphers/transposition_cipher | ✓ | 471us | 1.5 MB |
+| 107 | ciphers/transposition_cipher_encrypt_decrypt_file | ✓ | 417us | 1.5 MB |
+| 108 | ciphers/trifid_cipher | ✓ | 676us | 1.5 MB |
+| 109 | ciphers/vernam_cipher | ✓ | 255us | 1.6 MB |
+| 110 | ciphers/vigenere_cipher | ✓ | 336us | 1.4 MB |
+| 111 | ciphers/xor_cipher | ✓ | 841us | 1.7 MB |
+| 112 | computer_vision/cnn_classification | ✓ | 613us | 1.6 MB |
 | 113 | computer_vision/flip_augmentation |  |  |  |
 | 114 | computer_vision/haralick_descriptors |  |  |  |
 | 115 | computer_vision/harris_corner |  |  |  |

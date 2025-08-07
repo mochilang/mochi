@@ -60,11 +60,13 @@ var (
 	joinMultiEnabled        bool
 	builtinAliases          map[string]string
 	funcAliases             map[string]string
+	varAliases              map[string]string
 	mapKeyTypes             map[string]string
 	mapValTypes             map[string]string
 	needMapGetSI            bool
 	needMapSetSI            bool
 	needMapGetIS            bool
+	needMapSetIS            bool
 	needMapGetSL            bool
 	needMapSetSL            bool
 	needMapGetSS            bool
@@ -1895,7 +1897,7 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 			needMapGetSI = true
 			funcReturnTypes["map_get_si"] = "int"
 			io.WriteString(w, "map_get_si(")
-			if varTypes[vr.Name] == "MapSL" || varTypes[vr.Name] == "MapSS" || varTypes[vr.Name] == "MapSI" || varTypes[vr.Name] == "MapSD" {
+			if varTypes[vr.Name] == "MapSL" || varTypes[vr.Name] == "MapSS" || varTypes[vr.Name] == "MapSI" || varTypes[vr.Name] == "MapSD" || varTypes[vr.Name] == "MapIS" {
 				io.WriteString(w, vr.Name+".keys, ")
 				io.WriteString(w, vr.Name+".vals, ")
 				io.WriteString(w, vr.Name+".len, ")
@@ -1923,9 +1925,15 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 			needMapGetIS = true
 			funcReturnTypes["map_get_is"] = "const char*"
 			io.WriteString(w, "map_get_is(")
-			io.WriteString(w, vr.Name+"_keys, ")
-			io.WriteString(w, vr.Name+"_vals, ")
-			io.WriteString(w, vr.Name+"_len, ")
+			if varTypes[vr.Name] == "MapIS" {
+				io.WriteString(w, vr.Name+".keys, ")
+				io.WriteString(w, vr.Name+".vals, ")
+				io.WriteString(w, vr.Name+".len, ")
+			} else {
+				io.WriteString(w, vr.Name+"_keys, ")
+				io.WriteString(w, vr.Name+"_vals, ")
+				io.WriteString(w, vr.Name+"_len, ")
+			}
 			i.Index.emitExpr(w)
 			io.WriteString(w, ")")
 			return
@@ -1934,7 +1942,7 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 			needMapGetSS = true
 			funcReturnTypes["map_get_ss"] = "const char*"
 			io.WriteString(w, "map_get_ss(")
-			if varTypes[vr.Name] == "MapSL" || varTypes[vr.Name] == "MapSS" || varTypes[vr.Name] == "MapSI" || varTypes[vr.Name] == "MapSD" {
+			if varTypes[vr.Name] == "MapSL" || varTypes[vr.Name] == "MapSS" || varTypes[vr.Name] == "MapSI" || varTypes[vr.Name] == "MapSD" || varTypes[vr.Name] == "MapIS" {
 				io.WriteString(w, vr.Name+".keys, ")
 				io.WriteString(w, vr.Name+".vals, ")
 				io.WriteString(w, vr.Name+".len, ")
@@ -2054,13 +2062,14 @@ func (v *VarRef) emitExpr(w io.Writer) {
 			return
 		}
 	}
-	switch v.Name {
+	name := aliasName(v.Name)
+	switch name {
 	case "math.pi":
 		io.WriteString(w, "3.141592653589793")
 	case "math.e":
 		io.WriteString(w, "2.718281828459045")
 	default:
-		io.WriteString(w, v.Name)
+		io.WriteString(w, name)
 	}
 }
 
@@ -2572,7 +2581,7 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 			if keyT == "const char*" {
 				needContainsStr = true
 				io.WriteString(w, "contains_str(")
-				if varTypes[vr.Name] == "MapSL" || varTypes[vr.Name] == "MapSS" || varTypes[vr.Name] == "MapSI" || varTypes[vr.Name] == "MapSD" {
+				if varTypes[vr.Name] == "MapSL" || varTypes[vr.Name] == "MapSS" || varTypes[vr.Name] == "MapSI" || varTypes[vr.Name] == "MapSD" || varTypes[vr.Name] == "MapIS" {
 					io.WriteString(w, vr.Name+".keys, ")
 					io.WriteString(w, vr.Name+".len, ")
 				} else {
@@ -2586,7 +2595,7 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 			if keyT == "int" {
 				needContainsMapInt = true
 				io.WriteString(w, "contains_map_int(")
-				if varTypes[vr.Name] == "MapSL" || varTypes[vr.Name] == "MapSS" || varTypes[vr.Name] == "MapSI" || varTypes[vr.Name] == "MapSD" {
+				if varTypes[vr.Name] == "MapSL" || varTypes[vr.Name] == "MapSS" || varTypes[vr.Name] == "MapSI" || varTypes[vr.Name] == "MapSD" || varTypes[vr.Name] == "MapIS" {
 					io.WriteString(w, vr.Name+".keys, ")
 					io.WriteString(w, vr.Name+".len, ")
 				} else {
@@ -3237,6 +3246,9 @@ func (p *Program) Emit() []byte {
 	if needMapGetSI || needMapSetSI {
 		buf.WriteString("typedef struct { const char **keys; int *vals; size_t len; size_t cap; } MapSI;\n\n")
 	}
+	if needMapGetIS || needMapSetIS {
+		buf.WriteString("typedef struct { int *keys; const char **vals; size_t len; size_t cap; } MapIS;\n\n")
+	}
 	if needMapGetSD || needMapSetSD {
 		buf.WriteString("typedef struct { const char **keys; double *vals; size_t len; size_t cap; } MapSD;\n\n")
 	}
@@ -3294,6 +3306,19 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("        if (keys[i] == key) return vals[i];\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    return \"\";\n")
+		buf.WriteString("}\n\n")
+	}
+	if needMapSetIS {
+		buf.WriteString("static void map_set_is(MapIS *m, int key, const char *val) {\n")
+		buf.WriteString("    for (size_t i = 0; i < m->len; i++) {\n")
+		buf.WriteString("        if (m->keys[i] == key) { m->vals[i] = val; return; }\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    if (m->len >= m->cap) {\n")
+		buf.WriteString("        m->cap = m->cap ? m->cap * 2 : 16;\n")
+		buf.WriteString("        m->keys = realloc(m->keys, m->cap * sizeof(int));\n")
+		buf.WriteString("        m->vals = realloc((void*)m->vals, m->cap * sizeof(char*));\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    m->keys[m->len] = key; m->vals[m->len] = val; m->len++;\n")
 		buf.WriteString("}\n\n")
 	}
 	if needMapGetSS {
@@ -3882,6 +3907,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	localFuncArgs = make(map[string][]string)
 	mapKeyTypes = make(map[string]string)
 	mapValTypes = make(map[string]string)
+	varAliases = make(map[string]string)
 	extraFuncs = nil
 	structCounter = 0
 	tempCounter = 0
@@ -4267,7 +4293,8 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			return &CallStmt{Func: call.Func, Args: args, Type: typ}, nil
 		}
 	case s.Let != nil:
-		currentVarName = s.Let.Name
+		currentVarName = aliasName(s.Let.Name)
+		s.Let.Name = currentVarName
 		if s.Let.Type != nil {
 			currentVarType = types.ResolveTypeRef(s.Let.Type, env)
 		} else {
@@ -4518,6 +4545,10 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			mapKeyTypes[s.Let.Name] = "const char*"
 			mapValTypes[s.Let.Name] = "int"
 			needMapGetSI = true
+		} else if declType == "MapIS" {
+			mapKeyTypes[s.Let.Name] = "int"
+			mapValTypes[s.Let.Name] = "const char*"
+			needMapGetIS = true
 		} else if declType == "MapSD" {
 			mapKeyTypes[s.Let.Name] = "const char*"
 			mapValTypes[s.Let.Name] = "double"
@@ -4561,11 +4592,19 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				varTypes[s.Let.Name] = "MapSL"
 				needMapGetSL = true
 			} else if valT == "const char*" {
-				varTypes[s.Let.Name] = "MapSS"
-				needMapGetSS = true
-			} else if valT == "double" {
+				if keyT == "const char*" {
+					varTypes[s.Let.Name] = "MapSS"
+					needMapGetSS = true
+				} else {
+					varTypes[s.Let.Name] = "MapIS"
+					needMapGetIS = true
+				}
+			} else if valT == "double" && keyT == "const char*" {
 				varTypes[s.Let.Name] = "MapSD"
 				needMapGetSD = true
+			} else if valT == "int" && keyT == "const char*" {
+				varTypes[s.Let.Name] = "MapSI"
+				needMapGetSI = true
 			} else {
 				varTypes[s.Let.Name] = "int"
 			}
@@ -4640,8 +4679,10 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			fmt.Fprintf(&buf, "size_t %s_len = %d;\n", s.Let.Name, len(m.Items))
 			if strings.HasSuffix(valT, "[]") {
 				fmt.Fprintf(&buf, "MapSL %s = { %s_keys, %s_vals, %s_lens, %d, %d };\n", s.Let.Name, s.Let.Name, s.Let.Name, s.Let.Name, len(m.Items), len(m.Items)+16)
-			} else if valT == "const char*" {
+			} else if valT == "const char*" && keyT == "const char*" {
 				fmt.Fprintf(&buf, "MapSS %s = { %s_keys, %s_vals, %d, %d };\n", s.Let.Name, s.Let.Name, s.Let.Name, len(m.Items), len(m.Items)+16)
+			} else if valT == "const char*" && keyT == "int" {
+				fmt.Fprintf(&buf, "MapIS %s = { %s_keys, %s_vals, %d, %d };\n", s.Let.Name, s.Let.Name, s.Let.Name, len(m.Items), len(m.Items)+16)
 			} else if valT == "int" && keyT == "const char*" {
 				fmt.Fprintf(&buf, "MapSI %s = { %s_keys, %s_vals, %d, %d };\n", s.Let.Name, s.Let.Name, s.Let.Name, len(m.Items), len(m.Items)+16)
 			} else if valT == "double" && keyT == "const char*" {
@@ -4655,7 +4696,8 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		}
 		return ds, nil
 	case s.Var != nil:
-		currentVarName = s.Var.Name
+		currentVarName = aliasName(s.Var.Name)
+		s.Var.Name = currentVarName
 		if s.Var.Type != nil {
 			currentVarType = types.ResolveTypeRef(s.Var.Type, env)
 		} else {
@@ -4688,6 +4730,19 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		currentVarType = nil
 		if declType == "" {
 			declType = inferCType(env, s.Var.Name, valExpr)
+		}
+		if declType == "const char*" {
+			if vr, ok := valExpr.(*VarRef); ok {
+				if vt, ok2 := varTypes[vr.Name]; ok2 && (vt == "int" || vt == "long long") {
+					declType = "int"
+				} else if t, err := env.GetVar(vr.Name); err == nil {
+					if _, ok3 := t.(types.IntType); ok3 {
+						declType = "int"
+					} else if _, ok3 := t.(types.Int64Type); ok3 {
+						declType = "int"
+					}
+				}
+			}
 		}
 		if strings.Contains(declType, "double") {
 			markMath()
@@ -4726,17 +4781,23 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				env.SetVar(s.Var.Name, types.IntType{}, true)
 			}
 		}
-		if _, ok := valExpr.(*FieldExpr); ok && (declType == "MapSS" || declType == "MapSL" || declType == "MapSD") {
-			mapKeyTypes[s.Var.Name] = "const char*"
-			if declType == "MapSS" {
+		if _, ok := valExpr.(*FieldExpr); ok && (declType == "MapSS" || declType == "MapSL" || declType == "MapSD" || declType == "MapIS") {
+			if declType == "MapIS" {
+				mapKeyTypes[s.Var.Name] = "int"
 				mapValTypes[s.Var.Name] = "const char*"
-				needMapGetSS = true
-			} else if declType == "MapSL" {
-				mapValTypes[s.Var.Name] = "const char*[]"
-				needMapGetSL = true
+				needMapGetIS = true
 			} else {
-				mapValTypes[s.Var.Name] = "double"
-				needMapGetSD = true
+				mapKeyTypes[s.Var.Name] = "const char*"
+				if declType == "MapSS" {
+					mapValTypes[s.Var.Name] = "const char*"
+					needMapGetSS = true
+				} else if declType == "MapSL" {
+					mapValTypes[s.Var.Name] = "const char*[]"
+					needMapGetSL = true
+				} else {
+					mapValTypes[s.Var.Name] = "double"
+					needMapGetSD = true
+				}
 			}
 		}
 		if m, isMap := valExpr.(*MapLit); isMap {
@@ -4768,21 +4829,38 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			if s.Var.Type != nil && types.IsStringAnyMapLike(types.ResolveTypeRef(s.Var.Type, env)) {
 				valT = "const char*"
 			}
+			if valT == "long long" {
+				valT = "int"
+			}
 			mapKeyTypes[s.Var.Name] = keyT
 			mapValTypes[s.Var.Name] = valT
 			if strings.HasSuffix(valT, "[]") {
 				varTypes[s.Var.Name] = "MapSL"
 				needMapGetSL = true
 			} else if valT == "const char*" {
-				varTypes[s.Var.Name] = "MapSS"
-				needMapGetSS = true
+				if keyT == "const char*" {
+					varTypes[s.Var.Name] = "MapSS"
+					needMapGetSS = true
+				} else {
+					varTypes[s.Var.Name] = "MapIS"
+					needMapGetIS = true
+				}
+			} else if valT == "int" && keyT == "const char*" {
+				varTypes[s.Var.Name] = "MapSI"
+				needMapGetSI = true
 			} else {
 				varTypes[s.Var.Name] = "int"
 			}
-			if len(m.Items) == 0 && valT == "const char*" && keyT == "const char*" {
-				var buf bytes.Buffer
-				fmt.Fprintf(&buf, "MapSS %s = { NULL, NULL, 0, 0 };\n", s.Var.Name)
-				return &RawStmt{Code: buf.String()}, nil
+			if len(m.Items) == 0 {
+				if valT == "const char*" && keyT == "const char*" {
+					var buf bytes.Buffer
+					fmt.Fprintf(&buf, "MapSS %s = { NULL, NULL, 0, 0 };\n", s.Var.Name)
+					return &RawStmt{Code: buf.String()}, nil
+				} else if valT == "const char*" && keyT == "int" {
+					var buf bytes.Buffer
+					fmt.Fprintf(&buf, "MapIS %s = { NULL, NULL, 0, 0 };\n", s.Var.Name)
+					return &RawStmt{Code: buf.String()}, nil
+				}
 			}
 			var buf bytes.Buffer
 			fmt.Fprintf(&buf, "static %s %s_keys[%d] = {", keyT, s.Var.Name, len(m.Items)+16)
@@ -4855,8 +4933,10 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			fmt.Fprintf(&buf, "size_t %s_len = %d;\n", s.Var.Name, len(m.Items))
 			if strings.HasSuffix(valT, "[]") {
 				fmt.Fprintf(&buf, "MapSL %s = { %s_keys, %s_vals, %s_lens, %d, %d };\n", s.Var.Name, s.Var.Name, s.Var.Name, s.Var.Name, len(m.Items), len(m.Items)+16)
-			} else if valT == "const char*" {
+			} else if valT == "const char*" && keyT == "const char*" {
 				fmt.Fprintf(&buf, "MapSS %s = { %s_keys, %s_vals, %d, %d };\n", s.Var.Name, s.Var.Name, s.Var.Name, len(m.Items), len(m.Items)+16)
+			} else if valT == "const char*" && keyT == "int" {
+				fmt.Fprintf(&buf, "MapIS %s = { %s_keys, %s_vals, %d, %d };\n", s.Var.Name, s.Var.Name, s.Var.Name, len(m.Items), len(m.Items)+16)
 			} else if valT == "int" && keyT == "const char*" {
 				fmt.Fprintf(&buf, "MapSI %s = { %s_keys, %s_vals, %d, %d };\n", s.Var.Name, s.Var.Name, s.Var.Name, len(m.Items), len(m.Items)+16)
 			}
@@ -4868,6 +4948,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		}
 		return ds, nil
 	case s.Assign != nil:
+		s.Assign.Name = aliasName(s.Assign.Name)
 		delete(constLists, s.Assign.Name)
 		delete(constStrings, s.Assign.Name)
 		if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
@@ -4954,7 +5035,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				needMapSetSI = true
 				var buf bytes.Buffer
 				buf.WriteString("map_set_si(")
-				if varTypes[s.Assign.Name] == "MapSL" || varTypes[s.Assign.Name] == "MapSS" || varTypes[s.Assign.Name] == "MapSI" || varTypes[s.Assign.Name] == "MapSD" {
+				if varTypes[s.Assign.Name] == "MapSL" || varTypes[s.Assign.Name] == "MapSS" || varTypes[s.Assign.Name] == "MapSI" || varTypes[s.Assign.Name] == "MapSD" || varTypes[s.Assign.Name] == "MapIS" {
 					buf.WriteString(s.Assign.Name + ".keys, ")
 					buf.WriteString(s.Assign.Name + ".vals, &")
 					buf.WriteString(s.Assign.Name + ".len, ")
@@ -4977,7 +5058,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				needMapSetSL = true
 				var buf bytes.Buffer
 				buf.WriteString("map_set_sl(")
-				if varTypes[s.Assign.Name] == "MapSL" || varTypes[s.Assign.Name] == "MapSS" || varTypes[s.Assign.Name] == "MapSI" || varTypes[s.Assign.Name] == "MapSD" {
+				if varTypes[s.Assign.Name] == "MapSL" || varTypes[s.Assign.Name] == "MapSS" || varTypes[s.Assign.Name] == "MapSI" || varTypes[s.Assign.Name] == "MapSD" || varTypes[s.Assign.Name] == "MapIS" {
 					buf.WriteString(s.Assign.Name + ".keys, ")
 					buf.WriteString(s.Assign.Name + ".vals, ")
 					buf.WriteString(s.Assign.Name + ".lens, &")
@@ -5006,6 +5087,18 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				idxs[0].emitExpr(&buf)
 				buf.WriteString(", ")
 				valExpr.emitExpr(&buf)
+				buf.WriteString(");\n")
+				return &RawStmt{Code: buf.String()}, nil
+			}
+			if keyT == "int" && valT == "const char*" {
+				needMapSetIS = true
+				var buf bytes.Buffer
+				buf.WriteString("map_set_is(&")
+				buf.WriteString(s.Assign.Name)
+				buf.WriteString(", ")
+				idxs[0].emitExpr(&buf)
+				buf.WriteString(", ")
+				emitMapStringValue(&buf, valExpr)
 				buf.WriteString(");\n")
 				return &RawStmt{Code: buf.String()}, nil
 			}
@@ -5071,7 +5164,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				}
 				listVar := name + "_keys"
 				lenVar := name + "_len"
-				if vt := varTypes[name]; vt == "MapSL" || vt == "MapSS" || vt == "MapSI" || vt == "MapSD" {
+				if vt := varTypes[name]; vt == "MapSL" || vt == "MapSS" || vt == "MapSI" || vt == "MapSD" || vt == "MapIS" {
 					listVar = name + ".keys"
 					lenVar = name + ".len"
 				}
@@ -5097,7 +5190,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 					}
 					listVar := name + "_keys"
 					lenVar := name + "_len"
-					if vt := varTypes[name]; vt == "MapSL" || vt == "MapSS" || vt == "MapSI" || vt == "MapSD" {
+					if vt := varTypes[name]; vt == "MapSL" || vt == "MapSS" || vt == "MapSI" || vt == "MapSD" || vt == "MapIS" {
 						listVar = name + ".keys"
 						lenVar = name + ".len"
 					}
@@ -5119,7 +5212,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 					}
 					listVar := name + "_keys"
 					lenVar := name + "_len"
-					if vt := varTypes[name]; vt == "MapSL" || vt == "MapSS" || vt == "MapSI" || vt == "MapSD" {
+					if vt := varTypes[name]; vt == "MapSL" || vt == "MapSS" || vt == "MapSI" || vt == "MapSD" || vt == "MapIS" {
 						listVar = name + ".keys"
 						lenVar = name + ".len"
 					}
@@ -5155,6 +5248,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 							}
 						}
 					}
+					varTypes[s.For.Name] = elemType
 					body, err := compileStmts(env, s.For.Body)
 					if err != nil {
 						return nil, err
@@ -7696,9 +7790,6 @@ func inferExprType(env *types.Env, e Expr) string {
 
 func inferCType(env *types.Env, name string, e Expr) string {
 	if t := inferExprType(env, e); t != "" {
-		// If inference reports a one-dimensional int slice but the
-		// literal actually contains nested lists of floating point
-		// values, upgrade the type to a two-dimensional float slice.
 		if t == "int[]" {
 			if lst, ok := e.(*ListLit); ok && len(lst.Elems) > 0 {
 				if sub, ok2 := lst.Elems[0].(*ListLit); ok2 {
@@ -7713,6 +7804,14 @@ func inferCType(env *types.Env, name string, e Expr) string {
 						return "double[][]"
 					}
 					return "long long[][]"
+				}
+			}
+		}
+		if vr, ok := e.(*VarRef); ok {
+			if vt, err := env.GetVar(vr.Name); err == nil {
+				envT := cTypeFromMochiType(vt)
+				if envT != "" && envT != t {
+					return envT
 				}
 			}
 		}
@@ -7770,6 +7869,14 @@ func cTypeFromMochiType(t types.Type) string {
 					return name
 				}
 				return "MapSS"
+			}
+		}
+		if _, ok := tt.Key.(types.IntType); ok {
+			if _, ok2 := tt.Value.(types.StringType); ok2 {
+				return "MapIS"
+			}
+			if _, ok2 := tt.Value.(types.IntType); ok2 {
+				return "MapII"
 			}
 		}
 		return "int"
@@ -8316,7 +8423,7 @@ func varName(e *parser.Expr) string {
 		return ""
 	}
 	if sel := e.Binary.Left.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 {
-		return sel.Root
+		return aliasName(sel.Root)
 	}
 	return ""
 }
@@ -8331,9 +8438,23 @@ func simpleVarName(e *parser.Expr) string {
 	}
 	p := u.Value
 	if p.Target != nil && p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
-		return p.Target.Selector.Root
+		return aliasName(p.Target.Selector.Root)
 	}
 	return ""
+}
+
+func aliasName(name string) string {
+	if a, ok := varAliases[name]; ok {
+		return a
+	}
+	switch name {
+	case "char", "double", "float", "int", "long", "short", "signed", "unsigned", "void", "enum", "struct", "union", "goto", "sizeof", "typedef":
+		a := name + "_"
+		varAliases[name] = a
+		return a
+	default:
+		return name
+	}
 }
 
 func exprVarName(e *parser.Expr) string {
