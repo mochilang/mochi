@@ -1,0 +1,3 @@
+run: exit status 255
+
+Fatal error: Cannot redeclare function sin() in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/decision_tree.php on line 46

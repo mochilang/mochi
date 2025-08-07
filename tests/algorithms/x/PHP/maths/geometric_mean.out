@@ -1,0 +1,8 @@
+Warning: Undefined variable $panic in /workspace/mochi/tests/algorithms/x/PHP/maths/geometric_mean.php on line 78
+
+Fatal error: Uncaught Error: Value of type null is not callable in /workspace/mochi/tests/algorithms/x/PHP/maths/geometric_mean.php:78
+Stack trace:
+#0 /workspace/mochi/tests/algorithms/x/PHP/maths/geometric_mean.php(86): test_compute_geometric_mean()
+#1 /workspace/mochi/tests/algorithms/x/PHP/maths/geometric_mean.php(89): main()
+#2 {main}
+  thrown in /workspace/mochi/tests/algorithms/x/PHP/maths/geometric_mean.php on line 78
