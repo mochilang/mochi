@@ -1,7 +1,7 @@
 exit status 1
-/workspace/mochi/tests/algorithms/transpiler/Zig/data_compression/huffman.zig:74:213: error: no field named 'op' in struct 'hash_map.HashMap([]const u8,i64,hash_map.StringContext,80)'
-/usr/local/zig-0.11.0/lib/std/hash_map.zig:371:12: note: struct declared here
-/workspace/mochi/tests/algorithms/transpiler/Zig/data_compression/huffman.zig:87:32: error: no field named 'op' in struct 'huffman.Node'
-/workspace/mochi/tests/algorithms/transpiler/Zig/data_compression/huffman.zig:8:14: note: struct declared here
-/workspace/mochi/tests/algorithms/transpiler/Zig/data_compression/huffman.zig:105:39: error: expected type '[][][]const u8', found 'comptime_int'
-/workspace/mochi/tests/algorithms/transpiler/Zig/data_compression/huffman.zig:104:63: note: function return type declared here
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_compression/huffman.zig:88:213: error: no field named 'op' in struct 'hash_map.HashMap([]const u8,i64,hash_map.StringContext,80)'
+/usr/local/zig-0.13.0/lib/std/hash_map.zig:366:12: note: struct declared here
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_compression/huffman.zig:104:30: error: no field named 'op' in struct 'huffman.Node'
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_compression/huffman.zig:13:14: note: struct declared here
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_compression/huffman.zig:125:39: error: expected type '[][][]const u8', found 'comptime_int'
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_compression/huffman.zig:124:63: note: function return type declared here

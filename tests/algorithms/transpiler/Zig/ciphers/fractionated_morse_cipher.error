@@ -1,0 +1,2 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/ciphers/fractionated_morse_cipher.zig:50:37: error: expected expression, found 'const'

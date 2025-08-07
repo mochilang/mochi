@@ -1,0 +1,25 @@
+signal: aborted
+false
+true
+false
+true
+false
+true
+thread 32989 panic: integer overflow
+/workspace/mochi/tests/algorithms/transpiler/Zig/ciphers/deterministic_miller_rabin.zig:19:20: 0x1038ac2 in mod_pow (deterministic_miller_rabin)
+        b = @mod(b * b, mod);
+                   ^
+/workspace/mochi/tests/algorithms/transpiler/Zig/ciphers/deterministic_miller_rabin.zig:73:29: 0x1035abf in miller_rabin (deterministic_miller_rabin)
+        var x: i64 = mod_pow(prime, d, n);
+                            ^
+/workspace/mochi/tests/algorithms/transpiler/Zig/ciphers/deterministic_miller_rabin.zig:108:53: 0x1033341 in main (deterministic_miller_rabin)
+        std.debug.print("{s}\n", .{_str(miller_rabin(3078386641, false))});
+                                                    ^
+/usr/local/zig-0.13.0/lib/std/start.zig:514:22: 0x1032e09 in main (deterministic_miller_rabin)
+            root.main();
+                     ^
+???:?:?: 0x7fc2f26f91c9 in ??? (libc.so.6)
+Unwind information for `libc.so.6:0x7fc2f26f91c9` was not available, trace may be incomplete
+
+???:?:?: 0x7fc2f26f928a in ??? (libc.so.6)
+???:?:?: 0x1032ab4 in ??? (???)

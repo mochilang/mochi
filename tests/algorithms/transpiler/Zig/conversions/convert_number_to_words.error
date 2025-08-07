@@ -1,23 +1,23 @@
 signal: aborted
 one hundred twenty-three trillion four hundred fifty-six billion seven hundred eighty-nine million twelve thousand three hundred forty-five
-thread 14092 panic: integer overflow
-/workspace/mochi/tests/algorithms/transpiler/Zig/conversions/convert_number_to_words.zig:22:19: 0x228f8c in pow10 (convert_number_to_words)
+thread 40707 panic: integer overflow
+/workspace/mochi/tests/algorithms/transpiler/Zig/conversions/convert_number_to_words.zig:24:19: 0x103bcc7 in pow10 (convert_number_to_words)
         res = res * 10;
                   ^
-/workspace/mochi/tests/algorithms/transpiler/Zig/conversions/convert_number_to_words.zig:33:21: 0x228da2 in max_value (convert_number_to_words)
+/workspace/mochi/tests/algorithms/transpiler/Zig/conversions/convert_number_to_words.zig:35:21: 0x103bb1c in max_value (convert_number_to_words)
         return pow10(21) - 1;
                     ^
-/workspace/mochi/tests/algorithms/transpiler/Zig/conversions/convert_number_to_words.zig:81:22: 0x2249f7 in convert_number (convert_number_to_words)
+/workspace/mochi/tests/algorithms/transpiler/Zig/conversions/convert_number_to_words.zig:91:22: 0x1036fd1 in convert_number (convert_number_to_words)
     if (n > max_value(system)) {
                      ^
-/workspace/mochi/tests/algorithms/transpiler/Zig/conversions/convert_number_to_words.zig:136:50: 0x222fbe in main (convert_number_to_words)
+/workspace/mochi/tests/algorithms/transpiler/Zig/conversions/convert_number_to_words.zig:155:50: 0x1034f7d in main (convert_number_to_words)
         std.debug.print("{s}\n", .{convert_number(123456789012345, "long")});
                                                  ^
-/usr/local/zig-0.11.0/lib/std/start.zig:564:22: 0x221189 in main (convert_number_to_words)
+/usr/local/zig-0.13.0/lib/std/start.zig:514:22: 0x1033259 in main (convert_number_to_words)
             root.main();
                      ^
-???:?:?: 0x7fcea16c81c9 in ??? (libc.so.6)
-Unwind information for `libc.so.6:0x7fcea16c81c9` was not available, trace may be incomplete
+???:?:?: 0x7f2edfb031c9 in ??? (libc.so.6)
+Unwind information for `libc.so.6:0x7f2edfb031c9` was not available, trace may be incomplete
 
-???:?:?: 0x7fcea16c828a in ??? (libc.so.6)
-???:?:?: 0x220e14 in ??? (???)
+???:?:?: 0x7f2edfb0328a in ??? (libc.so.6)
+???:?:?: 0x1032f04 in ??? (???)
