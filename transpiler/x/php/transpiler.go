@@ -62,6 +62,7 @@ function _now() {
 }`
 
 const helperLen = `function _len($x) {
+    if ($x === null) { return 0; }
     if (is_array($x)) { return count($x); }
     if (is_string($x)) { return strlen($x); }
     return strlen(strval($x));
