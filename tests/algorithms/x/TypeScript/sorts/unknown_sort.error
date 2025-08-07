@@ -1,0 +1,9 @@
+run: exit status 1
+[0m[1m[31merror[0m: Uncaught (in promise) Error: case1 failed
+function _panic(msg: any): never { throw new Error(String(msg)); }
+[0m[31m                                         ^[0m
+    at [0m[1m[3m_panic[0m ([0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/sorts/unknown_sort.ts[0m:[0m[33m132[0m:[0m[33m42[0m)
+    at [0m[1m[3mtest_merge_sort[0m ([0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/sorts/unknown_sort.ts[0m:[0m[33m65[0m:[0m[33m5[0m)
+    at [0m[1m[3mmain[0m ([0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/sorts/unknown_sort.ts[0m:[0m[33m75[0m:[0m[33m3[0m)
+    at [0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/sorts/unknown_sort.ts[0m:[0m[33m137[0m:[0m[33m3[0m
+    at [0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/sorts/unknown_sort.ts[0m:[0m[33m149[0m:[0m[33m2[0m
