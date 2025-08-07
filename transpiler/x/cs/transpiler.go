@@ -702,11 +702,21 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			rt := typeOfExpr(b.Right)
 			if b.Op == "%" {
 				usesMod = true
-				fmt.Fprint(w, "_mod(")
-				b.Left.emit(w)
-				fmt.Fprint(w, ", ")
-				b.Right.emit(w)
-				fmt.Fprint(w, ")")
+				lt := typeOfExpr(b.Left)
+				rt := typeOfExpr(b.Right)
+				if lt == "double" || rt == "double" {
+					fmt.Fprint(w, "(")
+					b.Left.emit(w)
+					fmt.Fprint(w, " % ")
+					b.Right.emit(w)
+					fmt.Fprint(w, ")")
+				} else {
+					fmt.Fprint(w, "_mod(")
+					b.Left.emit(w)
+					fmt.Fprint(w, ", ")
+					b.Right.emit(w)
+					fmt.Fprint(w, ")")
+				}
 				return
 			}
 			if b.Op == "+" && lt == "string" && strings.HasSuffix(rt, "[]") {
@@ -2823,7 +2833,11 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 		case op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil:
 			switch *op.Cast.Type.Simple {
 			case "int":
-				expr = &RawExpr{Code: fmt.Sprintf("(long)(%s)", exprString(expr)), Type: "long"}
+				if texpr := typeOfExpr(expr); texpr == "" || texpr == "object" || texpr == "string" {
+					expr = &RawExpr{Code: fmt.Sprintf("long.Parse(%s)", exprString(expr)), Type: "long"}
+				} else {
+					expr = &RawExpr{Code: fmt.Sprintf("(long)(%s)", exprString(expr)), Type: "long"}
+				}
 			case "float":
 				expr = &CallExpr{Func: "Convert.ToDouble", Args: []Expr{expr}}
 			case "bigint":
@@ -2850,6 +2864,14 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 				vt := csType(op.Cast.Type.Generic.Args[1])
 				typ := fmt.Sprintf("Dictionary<%s, %s>", kt, vt)
 				expr = &RawExpr{Code: fmt.Sprintf("(%s as %s) ?? new %s{}", exprString(expr), typ, typ), Type: typ}
+			} else if op.Cast.Type.Simple != nil {
+				switch *op.Cast.Type.Simple {
+				case "int":
+					texpr := typeOfExpr(expr)
+					if texpr == "" || texpr == "object" || texpr == "string" {
+						expr = &RawExpr{Code: fmt.Sprintf("long.Parse(%s)", exprString(expr)), Type: "long"}
+					}
+				}
 			} // ignore other casts
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
@@ -3158,9 +3180,22 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			if isMapExpr(val) {
 				mapVars[name] = true
 			}
+			prev := ""
+			if tt, ok := finalVarTypes[name]; ok {
+				prev = tt
+			} else if tt, ok := varTypes[name]; ok {
+				prev = tt
+			}
 			if tt := typeOfExpr(val); tt != "" && tt != "object" {
 				varTypes[name] = tt
 				finalVarTypes[name] = tt
+			}
+			if l, ok := val.(*ListLit); ok && len(l.Elems) == 0 {
+				if prev != "" && strings.HasSuffix(prev, "[]") {
+					l.ElemType = prev
+					varTypes[name] = prev
+					finalVarTypes[name] = prev
+				}
 			}
 			mutatedVars[name] = true
 			return &AssignStmt{Name: name, Value: val}, nil
@@ -3956,6 +3991,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 1 {
 				return &CallExpr{Func: "Convert.ToDouble", Args: []Expr{args[0]}}, nil
 			}
+		case "to_float":
+			if len(args) == 1 {
+				return &CallExpr{Func: "Convert.ToDouble", Args: []Expr{args[0]}}, nil
+			}
 		case "panic":
 			if len(args) == 1 {
 				return &PanicExpr{Arg: args[0]}, nil
@@ -4738,9 +4777,8 @@ func Emit(prog *Program) []byte {
 	if usesDict {
 		buf.WriteString("using System.Collections.Generic;\n")
 	}
-	if usesLinq {
-		buf.WriteString("using System.Linq;\n")
-	}
+	// Always include LINQ for array operations.
+	buf.WriteString("using System.Linq;\n")
 	if usesJson {
 		buf.WriteString("using System.Text.Json;\n")
 	}
