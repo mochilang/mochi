@@ -2603,6 +2603,7 @@ type MatchExpr struct {
 
 type MatchArm struct {
 	Pattern Expr // nil for wildcard
+	Guard   Expr
 	Result  Expr
 }
 
@@ -2620,6 +2621,10 @@ func (m *MatchExpr) emit(w io.Writer) {
 			}
 		} else {
 			io.WriteString(w, "_")
+		}
+		if a.Guard != nil {
+			io.WriteString(w, " when ")
+			a.Guard.emit(w)
 		}
 		io.WriteString(w, " -> ")
 		a.Result.emit(w)
@@ -5246,9 +5251,6 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 			items = append(items, MapEntry{Key: key, Value: val})
 		}
 		dyn := true
-		if _, ok := env.FindUnionByVariant(p.Struct.Name); ok {
-			dyn = false
-		}
 		typ := "map-dyn"
 		if _, ok := structFields[p.Struct.Name]; ok {
 			typ = p.Struct.Name
@@ -5338,10 +5340,31 @@ func convertMatch(m *parser.MatchExpr, env *types.Env, vars map[string]VarInfo) 
 	var typ string
 	for i, c := range m.Cases {
 		var pat Expr
+		var guard Expr
 		if !isUnderscoreExpr(c.Pattern) {
 			p, _, err := convertExpr(c.Pattern, env, vars)
 			if err != nil {
 				return nil, "", err
+			}
+			// detect struct patterns with tag string
+			if ml, ok := p.(*MapLit); ok {
+				for j, it := range ml.Items {
+					if ks, ok := it.Key.(*StringLit); ok && ks.Value == "tag" {
+						if vs, ok := it.Value.(*StringLit); ok {
+							tagVar := fmt.Sprintf("__tag%d", i)
+							ml.Items[j].Value = &Name{Ident: tagVar}
+							guard = &BinaryExpr{
+								Left:  &FuncCall{Name: "__str", Args: []Expr{&Name{Ident: tagVar}}, Ret: "string"},
+								Op:    "=",
+								Right: &StringLit{Value: vs.Value},
+								Typ:   "bool",
+								Ltyp:  "string",
+								Rtyp:  "string",
+							}
+						}
+						break
+					}
+				}
 			}
 			pat = p
 		}
@@ -5352,7 +5375,7 @@ func convertMatch(m *parser.MatchExpr, env *types.Env, vars map[string]VarInfo) 
 		if i == 0 {
 			typ = rtyp
 		}
-		arms[i] = MatchArm{Pattern: pat, Result: res}
+		arms[i] = MatchArm{Pattern: pat, Guard: guard, Result: res}
 	}
 	if typ == "" {
 		typ = "int"

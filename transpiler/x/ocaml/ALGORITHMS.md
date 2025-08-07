@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 176/1077
-Last updated: 2025-08-07 00:30 +0700
+Completed programs: 179/1077
+Last updated: 2025-08-07 10:03 +0700
 
 Checklist:
 
@@ -193,9 +193,9 @@ Checklist:
 | 184 | data_structures/binary_tree/is_sorted | ✓ | 219.0µs | 4.16KB |
 | 185 | data_structures/binary_tree/is_sum_tree | ✓ |  |  |
 | 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 719.0µs | 107.45KB |
-| 187 | data_structures/binary_tree/lowest_common_ancestor |   |  |  |
-| 188 | data_structures/binary_tree/maximum_fenwick_tree |   |  |  |
-| 189 | data_structures/binary_tree/maximum_sum_bst |   |  |  |
+| 187 | data_structures/binary_tree/lowest_common_ancestor | ✓ | 1.0ms | 216.91KB |
+| 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 2.40s | 1.12GB |
+| 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 244.0µs | 11.45KB |
 | 190 | data_structures/binary_tree/merge_two_binary_trees |   |  |  |
 | 191 | data_structures/binary_tree/mirror_binary_tree |   |  |  |
 | 192 | data_structures/binary_tree/non_recursive_segment_tree |   |  |  |
