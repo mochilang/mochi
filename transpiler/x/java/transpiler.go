@@ -3447,6 +3447,9 @@ func isMapExpr(e Expr) bool {
 				return true
 			}
 		}
+		if _, ok := mapVarFields[ex.Name]; ok {
+			return true
+		}
 	case *FieldExpr:
 		if t, ok := fieldTypeFromVar(ex.Target, ex.Name); ok {
 			if strings.Contains(t, "Map") {
@@ -4901,6 +4904,13 @@ func applyBinaryOp(left Expr, op *parser.BinaryOp, right Expr) (Expr, error) {
 			return &MethodCallExpr{Target: right, Name: "contains", Args: []Expr{left}}, nil
 		}
 		if isMapExpr(right) || inferType(right) == "map" {
+			return &MethodCallExpr{Target: right, Name: "containsKey", Args: []Expr{left}}, nil
+		}
+		if v, ok := right.(*VarExpr); ok {
+			t := inferType(v)
+			if strings.HasSuffix(t, "[]") {
+				return &MethodCallExpr{Target: right, Name: "contains", Args: []Expr{left}}, nil
+			}
 			return &MethodCallExpr{Target: right, Name: "containsKey", Args: []Expr{left}}, nil
 		}
 		return nil, fmt.Errorf("unsupported binary op: %s", op.Op)
