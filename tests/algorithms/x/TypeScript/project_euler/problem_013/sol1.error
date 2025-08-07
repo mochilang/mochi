@@ -1,0 +1,22 @@
+run: signal: trace/breakpoint trap
+
+<--- Last few GCs --->
+
+[26249:0x565429ced000]    61484 ms: Scavenge (during sweeping) 2038.3 (2043.0) -> 2037.7 (2045.0) MB, pooled: 0.0 MB, 16.32 / 0.00 ms (average mu = 0.215, current mu = 0.142) allocation failure; 
+[26249:0x565429ced000]    62948 ms: Mark-Compact (reduce) 2037.7 (2045.0) -> 2037.7 (2039.5) MB, pooled: 0.0 MB, 1360.93 / 0.00 ms (+ 2.2 ms in 1 steps since start of marking, biggest step 2.2 ms, walltime since start of marking 1374 ms) (average mu = 0.1
+
+
+#
+# Fatal JavaScript out of memory: Ineffective mark-compacts near heap limit
+#
+==== C stack trace ===============================
+
+    deno(+0x2b98253) [0x565411f1c253]
+    deno(+0x2b972cb) [0x565411f1b2cb]
+    deno(+0x2b9b368) [0x565411f1f368]
+    deno(+0x2bf0476) [0x565411f74476]
+    deno(+0x2dd9057) [0x56541215d057]
+    deno(+0x2ddc1e5) [0x5654121601e5]
+    deno(+0x2deb10d) [0x56541216f10d]
+    deno(+0x2dea9cf) [0x56541216e9cf]
+    deno(+0x36d7f4b) [0x565412a5bf4b]
