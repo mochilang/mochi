@@ -1,0 +1,6 @@
+run: exit status 127
+/workspace/mochi/tests/algorithms/x/Erlang/electronics/electric_power.erl:76:24: variable 'Floor' is unbound
+%   76|         mochi_safe_div(Floor((mochi_safe_mul(X_2, M) + 0.5)), M)
+%     |                        ^
+
+escript: There were compilation errors.

@@ -1,0 +1,8 @@
+/workspace/mochi/tests/algorithms/x/Erlang/digital_image_processing/dithering/burkes.erl:55:1: Warning: function mochi_safe_div/2 is unused
+%   55| mochi_safe_div(A, B) ->
+%     | ^
+
+"0 0 255 255"
+"255 255 0 0"
+"255 0 255 0"
+"0 255 255 0"

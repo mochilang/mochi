@@ -1,0 +1,8 @@
+/workspace/mochi/tests/algorithms/x/Erlang/digital_image_processing/morphological_operations/erosion_operation.erl:45:1: Warning: function mochi_safe_div/2 is unused
+%   45| mochi_safe_div(A, B) ->
+%     | ^
+
+[[187.6453]]
+[[false true false]]
+[[false false false]]
+[[false false false]]

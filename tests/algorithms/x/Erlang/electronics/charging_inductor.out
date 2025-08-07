@@ -1,0 +1,12 @@
+/workspace/mochi/tests/algorithms/x/Erlang/electronics/charging_inductor.erl:83:2: Warning: variable 'Half_2' exported from 'case' (line 64, column 9)
+%   83| {Half_2, N_2, Sum_2, Term_2, X} = Fun(Half_2, N, Sum, Term, X),
+%     |  ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/electronics/charging_inductor.erl:118:24: Warning: ambiguous call of overridden auto-imported BIF floor/1 --
+use erlang:floor/1 or "-compile({no_auto_import,[floor/1]})." to resolve name clash
+%  118|         mochi_safe_div(floor((mochi_safe_mul(X_3, M) + 0.5)), M)
+%     |                        ^
+
+2.817
+1.543
+0.016

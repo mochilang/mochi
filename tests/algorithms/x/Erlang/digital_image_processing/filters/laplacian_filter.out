@@ -1,0 +1,9 @@
+/workspace/mochi/tests/algorithms/x/Erlang/digital_image_processing/filters/laplacian_filter.erl:149:18: Warning: variable 'Kernel_9' exported from 'case' (line 73, column 9)
+%  149| {Cols_2, I_4, K, Kernel_9, Ksize, Output_2, Pad, Rows_2, Src} = Fun_6(Cols_2, I_3, K, Kernel_9, Ksize, Output, Pad, Rows_2, Src),
+%     |                  ^
+
+"[0,  10,  10,  10,  0]"
+"[10,  -20,  -10,  -20,  10]"
+"[10,  -10,  0,  -10,  10]"
+"[10,  -20,  -10,  -20,  10]"
+"[0,  10,  10,  10,  0]"

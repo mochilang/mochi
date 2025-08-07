@@ -1,0 +1,9 @@
+/workspace/mochi/tests/algorithms/x/Erlang/digital_image_processing/filters/convolve.erl:87:73: Warning: variable 'Src_i_6' exported from 'case' (line 59, column 13)
+%   87| {Height, I, Image, J_2, New_height, New_width, Pad_size, Padded, Row_2, Src_i_6, Width} = Fun(Height, I, Image, J, New_height, New_width, Pad_size, Padded, Row, Src_i_6, Width),
+%     |                                                                         ^
+
+"2 1 -4 3 0"
+"-3 0 -7 6 0"
+"-16 -11 -22 9 0"
+"7 8 9 0 0"
+"0 0 0 0 0"
