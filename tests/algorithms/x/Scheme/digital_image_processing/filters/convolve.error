@@ -1,0 +1,17 @@
+run: exit status 70
+ERROR in list-tail on line 34 of file /usr/share/chibi/init-7.scm: cdr: not a pair: ()
+  called from list-ref on line 36 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 286 of file /workspace/mochi/tests/algorithms/x/Scheme/digital_image_processing/filters/convolve.scm
+  called from loop4 on line 273 of file /workspace/mochi/tests/algorithms/x/Scheme/digital_image_processing/filters/convolve.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 256 of file /workspace/mochi/tests/algorithms/x/Scheme/digital_image_processing/filters/convolve.scm
+  called from loop2 on line 197 of file /workspace/mochi/tests/algorithms/x/Scheme/digital_image_processing/filters/convolve.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 180 of file /workspace/mochi/tests/algorithms/x/Scheme/digital_image_processing/filters/convolve.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 280 of file /usr/share/chibi/init-7.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 280 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 280 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm

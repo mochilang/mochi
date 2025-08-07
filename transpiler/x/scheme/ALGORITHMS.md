@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Scheme code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Scheme`.
-Last updated: 2025-08-07 00:16 GMT+7
+Last updated: 2025-08-07 08:33 GMT+7
 
-## Algorithms Golden Test Checklist (219/1077)
+## Algorithms Golden Test Checklist (279/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 0s | 12.4 MB |
@@ -252,75 +252,75 @@ Last updated: 2025-08-07 00:16 GMT+7
 | 243 | data_structures/queues/priority_queue_using_list | ✓ | 4ms | 14.4 MB |
 | 244 | data_structures/queues/queue_by_list | ✓ | 1ms | 13.2 MB |
 | 245 | data_structures/queues/queue_by_two_stacks | ✓ | 3ms | 13.2 MB |
-| 246 | data_structures/queues/queue_on_pseudo_stack |   |  |  |
-| 247 | data_structures/stacks/balanced_parentheses |   |  |  |
-| 248 | data_structures/stacks/dijkstras_two_stack_algorithm |   |  |  |
-| 249 | data_structures/stacks/infix_to_postfix_conversion |   |  |  |
-| 250 | data_structures/stacks/infix_to_prefix_conversion |   |  |  |
-| 251 | data_structures/stacks/largest_rectangle_histogram |   |  |  |
-| 252 | data_structures/stacks/lexicographical_numbers |   |  |  |
+| 246 | data_structures/queues/queue_on_pseudo_stack | ✓ | 1ms | 13.4 MB |
+| 247 | data_structures/stacks/balanced_parentheses | ✓ | 1ms | 12.7 MB |
+| 248 | data_structures/stacks/dijkstras_two_stack_algorithm | ✓ | 1ms | 13.0 MB |
+| 249 | data_structures/stacks/infix_to_postfix_conversion | ✓ | 1ms | 13.7 MB |
+| 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ | 0s | 14.0 MB |
+| 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 1ms | 13.2 MB |
+| 252 | data_structures/stacks/lexicographical_numbers | ✓ |  |  |
 | 253 | data_structures/stacks/next_greater_element |   |  |  |
-| 254 | data_structures/stacks/postfix_evaluation |   |  |  |
-| 255 | data_structures/stacks/prefix_evaluation |   |  |  |
-| 256 | data_structures/stacks/stack |   |  |  |
+| 254 | data_structures/stacks/postfix_evaluation | ✓ | 4ms | 13.7 MB |
+| 255 | data_structures/stacks/prefix_evaluation | ✓ | 3ms | 13.4 MB |
+| 256 | data_structures/stacks/stack | ✓ | 2ms | 13.1 MB |
 | 257 | data_structures/stacks/stack_using_two_queues |   |  |  |
-| 258 | data_structures/stacks/stack_with_doubly_linked_list |   |  |  |
-| 259 | data_structures/stacks/stack_with_singly_linked_list |   |  |  |
-| 260 | data_structures/stacks/stock_span_problem |   |  |  |
-| 261 | data_structures/suffix_tree/example/example_usage |   |  |  |
-| 262 | data_structures/suffix_tree/suffix_tree |   |  |  |
-| 263 | data_structures/suffix_tree/suffix_tree_node |   |  |  |
-| 264 | data_structures/suffix_tree/tests/test_suffix_tree |   |  |  |
+| 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 2ms | 13.6 MB |
+| 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 0s | 12.8 MB |
+| 260 | data_structures/stacks/stock_span_problem | ✓ | 0s | 12.2 MB |
+| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 0s | 13.0 MB |
+| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 6ms | 13.6 MB |
+| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 0s | 13.3 MB |
+| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 1ms | 12.4 MB |
 | 265 | data_structures/trie/radix_tree |   |  |  |
 | 266 | data_structures/trie/trie |   |  |  |
-| 267 | digital_image_processing/change_brightness |   |  |  |
-| 268 | digital_image_processing/change_contrast |   |  |  |
-| 269 | digital_image_processing/convert_to_negative |   |  |  |
-| 270 | digital_image_processing/dithering/burkes |   |  |  |
+| 267 | digital_image_processing/change_brightness | ✓ | 0s | 12.5 MB |
+| 268 | digital_image_processing/change_contrast | ✓ | 1ms | 12.6 MB |
+| 269 | digital_image_processing/convert_to_negative | ✓ | 1ms | 12.5 MB |
+| 270 | digital_image_processing/dithering/burkes | ✓ | 1ms | 14.9 MB |
 | 271 | digital_image_processing/edge_detection/canny |   |  |  |
-| 272 | digital_image_processing/filters/bilateral_filter |   |  |  |
+| 272 | digital_image_processing/filters/bilateral_filter | ✓ | 2ms | 14.0 MB |
 | 273 | digital_image_processing/filters/convolve |   |  |  |
-| 274 | digital_image_processing/filters/gabor_filter |   |  |  |
-| 275 | digital_image_processing/filters/gaussian_filter |   |  |  |
-| 276 | digital_image_processing/filters/laplacian_filter |   |  |  |
-| 277 | digital_image_processing/filters/local_binary_pattern |   |  |  |
-| 278 | digital_image_processing/filters/median_filter |   |  |  |
-| 279 | digital_image_processing/filters/sobel_filter |   |  |  |
-| 280 | digital_image_processing/histogram_equalization/histogram_stretch |   |  |  |
+| 274 | digital_image_processing/filters/gabor_filter | ✓ | 2ms | 13.6 MB |
+| 275 | digital_image_processing/filters/gaussian_filter | ✓ | 2ms | 13.7 MB |
+| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 10ms | 14.6 MB |
+| 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 6ms | 13.4 MB |
+| 278 | digital_image_processing/filters/median_filter | ✓ | 3ms | 13.0 MB |
+| 279 | digital_image_processing/filters/sobel_filter | ✓ | 19ms | 16.6 MB |
+| 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 13ms | 12.5 MB |
 | 281 | digital_image_processing/index_calculation |   |  |  |
-| 282 | digital_image_processing/morphological_operations/dilation_operation |   |  |  |
-| 283 | digital_image_processing/morphological_operations/erosion_operation |   |  |  |
-| 284 | digital_image_processing/resize/resize |   |  |  |
-| 285 | digital_image_processing/rotation/rotation |   |  |  |
-| 286 | digital_image_processing/sepia |   |  |  |
-| 287 | digital_image_processing/test_digital_image_processing |   |  |  |
+| 282 | digital_image_processing/morphological_operations/dilation_operation | ✓ | 1ms | 14.8 MB |
+| 283 | digital_image_processing/morphological_operations/erosion_operation | ✓ | 1ms | 14.3 MB |
+| 284 | digital_image_processing/resize/resize | ✓ | 2ms | 12.9 MB |
+| 285 | digital_image_processing/rotation/rotation | ✓ | 3ms | 14.4 MB |
+| 286 | digital_image_processing/sepia | ✓ | 1ms | 12.6 MB |
+| 287 | digital_image_processing/test_digital_image_processing | ✓ | 19ms | 16.5 MB |
 | 288 | divide_and_conquer/closest_pair_of_points |   |  |  |
-| 289 | divide_and_conquer/convex_hull |   |  |  |
-| 290 | divide_and_conquer/heaps_algorithm |   |  |  |
-| 291 | divide_and_conquer/heaps_algorithm_iterative |   |  |  |
+| 289 | divide_and_conquer/convex_hull | ✓ | 0s | 13.2 MB |
+| 290 | divide_and_conquer/heaps_algorithm | ✓ | 1ms | 12.5 MB |
+| 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 2ms | 12.5 MB |
 | 292 | divide_and_conquer/inversions |   |  |  |
-| 293 | divide_and_conquer/kth_order_statistic |   |  |  |
-| 294 | divide_and_conquer/max_difference_pair |   |  |  |
-| 295 | divide_and_conquer/max_subarray |   |  |  |
-| 296 | divide_and_conquer/mergesort |   |  |  |
-| 297 | divide_and_conquer/peak |   |  |  |
-| 298 | divide_and_conquer/power |   |  |  |
-| 299 | divide_and_conquer/strassen_matrix_multiplication |   |  |  |
-| 300 | docs/conf |   |  |  |
-| 301 | dynamic_programming/abbreviation |   |  |  |
-| 302 | dynamic_programming/all_construct |   |  |  |
-| 303 | dynamic_programming/bitmask |   |  |  |
-| 304 | dynamic_programming/catalan_numbers |   |  |  |
-| 305 | dynamic_programming/climbing_stairs |   |  |  |
-| 306 | dynamic_programming/combination_sum_iv |   |  |  |
-| 307 | dynamic_programming/edit_distance |   |  |  |
-| 308 | dynamic_programming/factorial |   |  |  |
-| 309 | dynamic_programming/fast_fibonacci |   |  |  |
-| 310 | dynamic_programming/fibonacci |   |  |  |
-| 311 | dynamic_programming/fizz_buzz |   |  |  |
-| 312 | dynamic_programming/floyd_warshall |   |  |  |
-| 313 | dynamic_programming/integer_partition |   |  |  |
-| 314 | dynamic_programming/iterating_through_submasks |   |  |  |
+| 293 | divide_and_conquer/kth_order_statistic | ✓ | 1ms | 12.5 MB |
+| 294 | divide_and_conquer/max_difference_pair | ✓ | 1ms | 13.0 MB |
+| 295 | divide_and_conquer/max_subarray | ✓ | 2ms | 13.2 MB |
+| 296 | divide_and_conquer/mergesort | ✓ | 5ms | 12.5 MB |
+| 297 | divide_and_conquer/peak | ✓ | 0s | 12.8 MB |
+| 298 | divide_and_conquer/power | ✓ | 1ms | 12.4 MB |
+| 299 | divide_and_conquer/strassen_matrix_multiplication | ✓ | 78ms | 16.7 MB |
+| 300 | docs/conf | ✓ | 0s | 12.4 MB |
+| 301 | dynamic_programming/abbreviation | ✓ | 2ms | 13.6 MB |
+| 302 | dynamic_programming/all_construct | ✓ | 4ms | 12.8 MB |
+| 303 | dynamic_programming/bitmask | ✓ | 1ms | 12.2 MB |
+| 304 | dynamic_programming/catalan_numbers | ✓ | 0s | 12.4 MB |
+| 305 | dynamic_programming/climbing_stairs | ✓ | 0s | 12.7 MB |
+| 306 | dynamic_programming/combination_sum_iv | ✓ | 4ms | 13.2 MB |
+| 307 | dynamic_programming/edit_distance | ✓ | 6ms | 13.6 MB |
+| 308 | dynamic_programming/factorial | ✓ | 0s | 12.8 MB |
+| 309 | dynamic_programming/fast_fibonacci | ✓ | 5ms | 12.2 MB |
+| 310 | dynamic_programming/fibonacci | ✓ | 1ms | 13.0 MB |
+| 311 | dynamic_programming/fizz_buzz | ✓ | 5ms | 12.2 MB |
+| 312 | dynamic_programming/floyd_warshall | ✓ | 1ms | 13.5 MB |
+| 313 | dynamic_programming/integer_partition | ✓ |  |  |
+| 314 | dynamic_programming/iterating_through_submasks | ✓ | 2ms | 12.4 MB |
 | 315 | dynamic_programming/k_means_clustering_tensorflow |   |  |  |
 | 316 | dynamic_programming/knapsack |   |  |  |
 | 317 | dynamic_programming/largest_divisible_subset |   |  |  |
