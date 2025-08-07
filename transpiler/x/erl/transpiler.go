@@ -1060,6 +1060,24 @@ type MapAssignStmt struct {
 	Value Expr
 }
 
+// DoubleListAssignStmt assigns to an element of a nested list.
+type DoubleListAssignStmt struct {
+	Name   string
+	Old    string
+	Index1 Expr
+	Index2 Expr
+	Value  Expr
+}
+
+// ListMapAssignStmt assigns to a field within a list element map.
+type ListMapAssignStmt struct {
+	Name  string
+	Old   string
+	Index Expr
+	Key   Expr
+	Value Expr
+}
+
 // UpdateStmt updates fields of items in a list of maps.
 type UpdateStmt struct {
 	Target string
@@ -2103,6 +2121,31 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, ")")
 		return
+	case "slice":
+		if len(c.Args) == 3 {
+			io.WriteString(w, "(case erlang:is_binary(")
+			c.Args[0].emit(w)
+			io.WriteString(w, ") of true -> string:substr(")
+			c.Args[0].emit(w)
+			io.WriteString(w, ", ")
+			c.Args[1].emit(w)
+			io.WriteString(w, " + 1, (")
+			c.Args[2].emit(w)
+			io.WriteString(w, " - ")
+			c.Args[1].emit(w)
+			io.WriteString(w, ")); _ -> lists:sublist(")
+			c.Args[0].emit(w)
+			io.WriteString(w, ", (")
+			c.Args[1].emit(w)
+			io.WriteString(w, " + 1), (")
+			c.Args[2].emit(w)
+			io.WriteString(w, " - ")
+			c.Args[1].emit(w)
+			io.WriteString(w, ")) end)")
+		} else {
+			io.WriteString(w, "[]")
+		}
+		return
 	case "panic":
 		io.WriteString(w, "erlang:error(")
 		if len(c.Args) > 0 {
@@ -2699,6 +2742,48 @@ func (ma *MapAssignStmt) emit(w io.Writer) {
 	io.WriteString(w, ", ")
 	ma.Value.emit(w)
 	fmt.Fprintf(w, ", %s)", ma.Old)
+}
+
+func (da *DoubleListAssignStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "%s = lists:sublist(%s, ", da.Name, da.Old)
+	da.Index1.emit(w)
+	io.WriteString(w, ") ++ [lists:sublist(lists:nth(")
+	da.Index1.emit(w)
+	io.WriteString(w, " + 1, ")
+	io.WriteString(w, da.Old)
+	io.WriteString(w, "), ")
+	da.Index2.emit(w)
+	io.WriteString(w, ") ++ [")
+	da.Value.emit(w)
+	io.WriteString(w, "] ++ lists:nthtail(")
+	da.Index2.emit(w)
+	io.WriteString(w, " + 1, lists:nth(")
+	da.Index1.emit(w)
+	io.WriteString(w, " + 1, ")
+	io.WriteString(w, da.Old)
+	io.WriteString(w, "))] ++ lists:nthtail(")
+	da.Index1.emit(w)
+	io.WriteString(w, " + 1, ")
+	io.WriteString(w, da.Old)
+	io.WriteString(w, ")")
+}
+
+func (lm *ListMapAssignStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "%s = lists:sublist(%s, ", lm.Name, lm.Old)
+	lm.Index.emit(w)
+	io.WriteString(w, ") ++ [maps:put(")
+	lm.Key.emit(w)
+	io.WriteString(w, ", ")
+	lm.Value.emit(w)
+	io.WriteString(w, ", lists:nth(")
+	lm.Index.emit(w)
+	io.WriteString(w, " + 1, ")
+	io.WriteString(w, lm.Old)
+	io.WriteString(w, ") )] ++ lists:nthtail(")
+	lm.Index.emit(w)
+	io.WriteString(w, " + 1, ")
+	io.WriteString(w, lm.Old)
+	io.WriteString(w, ")")
 }
 
 func (u *UpdateStmt) emit(w io.Writer) {
@@ -3425,44 +3510,118 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		if err != nil {
 			return nil, err
 		}
-		if len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0 {
-			return nil, fmt.Errorf("complex assignment not supported")
-		}
 		name := st.Assign.Name
-		if ctx.isGlobal(name) {
-			return []Stmt{&PutStmt{Name: name, Expr: val}}, nil
-		}
+		ctx.clearConst(name)
 		if ctx.isParam(name) {
 			ctx.markMutated(name)
 		}
-		alias := ctx.newAlias(name)
-		if ce, ok := val.(*CallExpr); ok {
-			if idx, ok := mutatedFuncs[ce.Func]; ok && idx < len(ce.Args) {
-				if nr, ok := ce.Args[idx].(*NameRef); ok {
-					orig := ctx.original(nr.Name)
-					mAlias := ctx.newAlias(orig)
-					ctx.markMutated(orig)
-					ctx.clearConst(orig)
-					ctx.alias[orig] = mAlias
-					pat := fmt.Sprintf("{%s, %s}", alias, mAlias)
-					return []Stmt{&LetStmt{Name: pat, Expr: val}}, nil
+		// Handle indexed or field assignments
+		if len(st.Assign.Index) == 1 && st.Assign.Index[0].Colon == nil && len(st.Assign.Field) == 0 {
+			idxExpr, err := convertExpr(st.Assign.Index[0].Start, env, ctx)
+			if err != nil {
+				return nil, err
+			}
+			if ctx.isGlobal(name) {
+				old := fmt.Sprintf("erlang:get('%s')", name)
+				tmp := ctx.newAlias(name + "_tmp")
+				stmt := &ListAssignStmt{Name: tmp, Old: old, Index: idxExpr, Value: val}
+				return []Stmt{stmt, &PutStmt{Name: name, Expr: &NameRef{Name: tmp}}}, nil
+			}
+			old := ctx.current(name)
+			alias := ctx.newAlias(name)
+			if t, err2 := env.GetVar(name); err2 == nil {
+				if _, ok := t.(types.MapType); ok {
+					return []Stmt{&MapAssignStmt{Name: alias, Old: old, Key: idxExpr, Value: val}}, nil
+				}
+				if _, ok := t.(types.AnyType); ok {
+					if _, ok := types.TypeOfExprBasic(st.Assign.Index[0].Start, env).(types.StringType); ok {
+						return []Stmt{&MapAssignStmt{Name: alias, Old: old, Key: idxExpr, Value: val}}, nil
+					}
 				}
 			}
+			return []Stmt{&ListAssignStmt{Name: alias, Old: old, Index: idxExpr, Value: val}}, nil
 		}
-		ctx.setStrFields(name, stringFields(val))
-		ctx.setBoolFields(name, boolFields(val, env, ctx))
-		ctx.setStringVar(name, isStringExpr(val))
-		ctx.setListStrVar(name, isStringListExpr(val))
-		ctx.setFloatVar(name, isFloatExpr(val, env, ctx))
-		ctx.setMapVar(name, isMapExpr(val, env, ctx))
-		ctx.setBoolVar(name, isBoolExpr(val, env, ctx))
-		switch val.(type) {
-		case *IntLit, *FloatLit, *BoolLit, *StringLit, *AtomLit:
-			ctx.setConst(name, val)
-		default:
-			ctx.clearConst(name)
+		if len(st.Assign.Index) == 1 && st.Assign.Index[0].Colon == nil && len(st.Assign.Field) == 1 {
+			idxExpr, err := convertExpr(st.Assign.Index[0].Start, env, ctx)
+			if err != nil {
+				return nil, err
+			}
+			key := &StringLit{Value: st.Assign.Field[0].Name}
+			if ctx.isGlobal(name) {
+				old := fmt.Sprintf("erlang:get('%s')", name)
+				tmp := ctx.newAlias(name + "_tmp")
+				stmt := &ListMapAssignStmt{Name: tmp, Old: old, Index: idxExpr, Key: key, Value: val}
+				return []Stmt{stmt, &PutStmt{Name: name, Expr: &NameRef{Name: tmp}}}, nil
+			}
+			old := ctx.current(name)
+			alias := ctx.newAlias(name)
+			return []Stmt{&ListMapAssignStmt{Name: alias, Old: old, Index: idxExpr, Key: key, Value: val}}, nil
 		}
-		return []Stmt{&LetStmt{Name: alias, Expr: val}}, nil
+		if len(st.Assign.Index) == 2 && st.Assign.Index[0].Colon == nil && st.Assign.Index[1].Colon == nil && len(st.Assign.Field) == 0 {
+			idx1, err := convertExpr(st.Assign.Index[0].Start, env, ctx)
+			if err != nil {
+				return nil, err
+			}
+			idx2, err := convertExpr(st.Assign.Index[1].Start, env, ctx)
+			if err != nil {
+				return nil, err
+			}
+			if ctx.isGlobal(name) {
+				old := fmt.Sprintf("erlang:get('%s')", name)
+				tmp := ctx.newAlias(name + "_tmp")
+				stmt := &DoubleListAssignStmt{Name: tmp, Old: old, Index1: idx1, Index2: idx2, Value: val}
+				return []Stmt{stmt, &PutStmt{Name: name, Expr: &NameRef{Name: tmp}}}, nil
+			}
+			old := ctx.current(name)
+			alias := ctx.newAlias(name)
+			return []Stmt{&DoubleListAssignStmt{Name: alias, Old: old, Index1: idx1, Index2: idx2, Value: val}}, nil
+		}
+		if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 1 {
+			key := &StringLit{Value: st.Assign.Field[0].Name}
+			if ctx.isGlobal(name) {
+				old := fmt.Sprintf("erlang:get('%s')", name)
+				tmp := ctx.newAlias(name + "_tmp")
+				stmt := &MapAssignStmt{Name: tmp, Old: old, Key: key, Value: val}
+				return []Stmt{stmt, &PutStmt{Name: name, Expr: &NameRef{Name: tmp}}}, nil
+			}
+			old := ctx.current(name)
+			alias := ctx.newAlias(name)
+			return []Stmt{&MapAssignStmt{Name: alias, Old: old, Key: key, Value: val}}, nil
+		}
+		if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
+			if ctx.isGlobal(name) {
+				return []Stmt{&PutStmt{Name: name, Expr: val}}, nil
+			}
+			alias := ctx.newAlias(name)
+			if ce, ok := val.(*CallExpr); ok {
+				if idx, ok := mutatedFuncs[ce.Func]; ok && idx < len(ce.Args) {
+					if nr, ok := ce.Args[idx].(*NameRef); ok {
+						orig := ctx.original(nr.Name)
+						mAlias := ctx.newAlias(orig)
+						ctx.markMutated(orig)
+						ctx.clearConst(orig)
+						ctx.alias[orig] = mAlias
+						pat := fmt.Sprintf("{%s, %s}", alias, mAlias)
+						return []Stmt{&LetStmt{Name: pat, Expr: val}}, nil
+					}
+				}
+			}
+			ctx.setStrFields(name, stringFields(val))
+			ctx.setBoolFields(name, boolFields(val, env, ctx))
+			ctx.setStringVar(name, isStringExpr(val))
+			ctx.setListStrVar(name, isStringListExpr(val))
+			ctx.setFloatVar(name, isFloatExpr(val, env, ctx))
+			ctx.setMapVar(name, isMapExpr(val, env, ctx))
+			ctx.setBoolVar(name, isBoolExpr(val, env, ctx))
+			switch val.(type) {
+			case *IntLit, *FloatLit, *BoolLit, *StringLit, *AtomLit:
+				ctx.setConst(name, val)
+			default:
+				ctx.clearConst(name)
+			}
+			return []Stmt{&LetStmt{Name: alias, Expr: val}}, nil
+		}
+		return nil, fmt.Errorf("complex assignment not supported")
 	/* legacy assignment cases removed */
 	case st.Update != nil:
 		u, err := convertUpdateStmt(st.Update, env, ctx)
@@ -6137,8 +6296,11 @@ func (p *Program) Emit() []byte {
 	buf.WriteString("-export([" + strings.Join(exports, ", ") + "]).\n\n")
 	var noAuto []string
 	for _, f := range p.Funs {
-		if f.Name == "node" && len(f.Params) == 1 {
-			noAuto = append(noAuto, "node/1")
+		if (f.Name == "node" || f.Name == "length" || f.Name == "size") && len(f.Params) == 1 {
+			noAuto = append(noAuto, fmt.Sprintf("%s/1", f.Name))
+		}
+		if (f.Name == "put" && len(f.Params) == 2) || (f.Name == "get" && len(f.Params) == 1) {
+			noAuto = append(noAuto, fmt.Sprintf("%s/%d", f.Name, len(f.Params)))
 		}
 	}
 	if len(noAuto) > 0 {
