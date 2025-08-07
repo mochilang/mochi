@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
-Completed programs: 429/1077
-Last updated: 2025-08-07 11:03 +0700
+Completed programs: 517/1077
+Last updated: 2025-08-07 12:04 +0700
 
 Checklist:
 
@@ -478,106 +478,106 @@ Checklist:
 | 469 | hashes/enigma_machine | ✓ | 3µs | 8.7 MB |
 | 470 | hashes/fletcher16 | ✓ |  |  |
 | 471 | hashes/hamming_code |   |  |  |
-| 472 | hashes/luhn |   |  |  |
-| 473 | hashes/md5 |   |  |  |
-| 474 | hashes/sdbm |   |  |  |
-| 475 | hashes/sha1 |   |  |  |
-| 476 | hashes/sha256 |   |  |  |
-| 477 | knapsack/greedy_knapsack |   |  |  |
-| 478 | knapsack/knapsack |   |  |  |
-| 479 | knapsack/recursive_approach_knapsack |   |  |  |
-| 480 | knapsack/tests/test_greedy_knapsack |   |  |  |
-| 481 | knapsack/tests/test_knapsack |   |  |  |
-| 482 | linear_algebra/gaussian_elimination |   |  |  |
-| 483 | linear_algebra/jacobi_iteration_method |   |  |  |
-| 484 | linear_algebra/lu_decomposition |   |  |  |
-| 485 | linear_algebra/matrix_inversion |   |  |  |
-| 486 | linear_algebra/src/conjugate_gradient |   |  |  |
-| 487 | linear_algebra/src/gaussian_elimination_pivoting |   |  |  |
-| 488 | linear_algebra/src/lib |   |  |  |
-| 489 | linear_algebra/src/polynom_for_points |   |  |  |
-| 490 | linear_algebra/src/power_iteration |   |  |  |
-| 491 | linear_algebra/src/rank_of_matrix |   |  |  |
-| 492 | linear_algebra/src/rayleigh_quotient |   |  |  |
-| 493 | linear_algebra/src/schur_complement |   |  |  |
-| 494 | linear_algebra/src/test_linear_algebra |   |  |  |
-| 495 | linear_algebra/src/transformations_2d |   |  |  |
-| 496 | linear_programming/simplex |   |  |  |
-| 497 | machine_learning/apriori_algorithm |   |  |  |
-| 498 | machine_learning/astar |   |  |  |
-| 499 | machine_learning/automatic_differentiation |   |  |  |
-| 500 | machine_learning/data_transformations |   |  |  |
-| 501 | machine_learning/decision_tree |   |  |  |
-| 502 | machine_learning/dimensionality_reduction |   |  |  |
-| 503 | machine_learning/forecasting/run |   |  |  |
-| 504 | machine_learning/frequent_pattern_growth |   |  |  |
-| 505 | machine_learning/gradient_boosting_classifier |   |  |  |
-| 506 | machine_learning/gradient_descent |   |  |  |
-| 507 | machine_learning/k_means_clust |   |  |  |
-| 508 | machine_learning/k_nearest_neighbours |   |  |  |
-| 509 | machine_learning/linear_discriminant_analysis |   |  |  |
-| 510 | machine_learning/linear_regression |   |  |  |
-| 511 | machine_learning/local_weighted_learning/local_weighted_learning |   |  |  |
-| 512 | machine_learning/logistic_regression |   |  |  |
-| 513 | machine_learning/loss_functions |   |  |  |
-| 514 | machine_learning/lstm/lstm_prediction |   |  |  |
-| 515 | machine_learning/mfcc |   |  |  |
-| 516 | machine_learning/multilayer_perceptron_classifier |   |  |  |
-| 517 | machine_learning/polynomial_regression |   |  |  |
-| 518 | machine_learning/principle_component_analysis |   |  |  |
-| 519 | machine_learning/scoring_functions |   |  |  |
-| 520 | machine_learning/self_organizing_map |   |  |  |
-| 521 | machine_learning/sequential_minimum_optimization |   |  |  |
-| 522 | machine_learning/similarity_search |   |  |  |
-| 523 | machine_learning/support_vector_machines |   |  |  |
-| 524 | machine_learning/word_frequency_functions |   |  |  |
-| 525 | machine_learning/xgboost_classifier |   |  |  |
-| 526 | machine_learning/xgboost_regressor |   |  |  |
-| 527 | maths/abs |   |  |  |
-| 528 | maths/addition_without_arithmetic |   |  |  |
-| 529 | maths/aliquot_sum |   |  |  |
-| 530 | maths/allocation_number |   |  |  |
-| 531 | maths/arc_length |   |  |  |
-| 532 | maths/area |   |  |  |
-| 533 | maths/area_under_curve |   |  |  |
-| 534 | maths/average_absolute_deviation |   |  |  |
-| 535 | maths/average_mean |   |  |  |
-| 536 | maths/average_median |   |  |  |
-| 537 | maths/average_mode |   |  |  |
-| 538 | maths/bailey_borwein_plouffe |   |  |  |
-| 539 | maths/base_neg2_conversion |   |  |  |
-| 540 | maths/basic_maths |   |  |  |
-| 541 | maths/binary_exponentiation |   |  |  |
-| 542 | maths/binary_multiplication |   |  |  |
-| 543 | maths/binomial_coefficient |   |  |  |
-| 544 | maths/binomial_distribution |   |  |  |
-| 545 | maths/ceil |   |  |  |
-| 546 | maths/chebyshev_distance |   |  |  |
-| 547 | maths/check_polygon |   |  |  |
-| 548 | maths/chinese_remainder_theorem |   |  |  |
-| 549 | maths/chudnovsky_algorithm |   |  |  |
-| 550 | maths/collatz_sequence |   |  |  |
-| 551 | maths/combinations |   |  |  |
-| 552 | maths/continued_fraction |   |  |  |
-| 553 | maths/decimal_isolate |   |  |  |
-| 554 | maths/decimal_to_fraction |   |  |  |
-| 555 | maths/dodecahedron |   |  |  |
-| 556 | maths/double_factorial |   |  |  |
-| 557 | maths/dual_number_automatic_differentiation |   |  |  |
-| 558 | maths/entropy |   |  |  |
-| 559 | maths/euclidean_distance |   |  |  |
-| 560 | maths/euler_method |   |  |  |
-| 561 | maths/euler_modified |   |  |  |
-| 562 | maths/eulers_totient |   |  |  |
-| 563 | maths/extended_euclidean_algorithm |   |  |  |
-| 564 | maths/factorial |   |  |  |
-| 565 | maths/factors |   |  |  |
-| 566 | maths/fast_inverse_sqrt |   |  |  |
-| 567 | maths/fermat_little_theorem |   |  |  |
-| 568 | maths/fibonacci |   |  |  |
-| 569 | maths/find_max |   |  |  |
-| 570 | maths/find_min |   |  |  |
-| 571 | maths/floor |   |  |  |
+| 472 | hashes/luhn | ✓ | 7µs | 8.7 MB |
+| 473 | hashes/md5 | ✓ |  |  |
+| 474 | hashes/sdbm | ✓ | 11µs | 8.7 MB |
+| 475 | hashes/sha1 | ✓ | 46µs | 8.7 MB |
+| 476 | hashes/sha256 | ✓ | 43µs | 8.9 MB |
+| 477 | knapsack/greedy_knapsack | ✓ | 13µs | 8.7 MB |
+| 478 | knapsack/knapsack | ✓ | 6µs | 8.7 MB |
+| 479 | knapsack/recursive_approach_knapsack | ✓ | 5µs | 8.7 MB |
+| 480 | knapsack/tests/test_greedy_knapsack | ✓ | 11µs | 8.7 MB |
+| 481 | knapsack/tests/test_knapsack | ✓ | 5µs | 8.7 MB |
+| 482 | linear_algebra/gaussian_elimination | ✓ | 12µs | 8.7 MB |
+| 483 | linear_algebra/jacobi_iteration_method | ✓ | 4µs | 8.7 MB |
+| 484 | linear_algebra/lu_decomposition | ✓ | 6µs | 8.7 MB |
+| 485 | linear_algebra/matrix_inversion | ✓ | 6µs | 8.7 MB |
+| 486 | linear_algebra/src/conjugate_gradient | ✓ | 4µs | 8.7 MB |
+| 487 | linear_algebra/src/gaussian_elimination_pivoting | ✓ | 5µs | 8.7 MB |
+| 488 | linear_algebra/src/lib | ✓ | 10µs | 8.7 MB |
+| 489 | linear_algebra/src/polynom_for_points | ✓ | 18µs | 8.7 MB |
+| 490 | linear_algebra/src/power_iteration | ✓ | 5µs | 8.7 MB |
+| 491 | linear_algebra/src/rank_of_matrix | ✓ | 1µs | 8.7 MB |
+| 492 | linear_algebra/src/rayleigh_quotient | ✓ | 5µs | 8.7 MB |
+| 493 | linear_algebra/src/schur_complement | ✓ | 5µs | 8.8 MB |
+| 494 | linear_algebra/src/test_linear_algebra | ✓ | 11µs | 8.8 MB |
+| 495 | linear_algebra/src/transformations_2d | ✓ | 10µs | 8.7 MB |
+| 496 | linear_programming/simplex | ✓ | 6µs | 8.7 MB |
+| 497 | machine_learning/apriori_algorithm | error |  |  |
+| 498 | machine_learning/astar | ✓ | 6µs | 8.7 MB |
+| 499 | machine_learning/automatic_differentiation | ✓ | 8µs | 8.7 MB |
+| 500 | machine_learning/data_transformations | ✓ | 12µs | 8.7 MB |
+| 501 | machine_learning/decision_tree | error |  |  |
+| 502 | machine_learning/dimensionality_reduction | ✓ | 3µs | 8.7 MB |
+| 503 | machine_learning/forecasting/run | ✓ | 14µs | 8.8 MB |
+| 504 | machine_learning/frequent_pattern_growth | error |  |  |
+| 505 | machine_learning/gradient_boosting_classifier | ✓ | 4µs | 8.7 MB |
+| 506 | machine_learning/gradient_descent | ✓ | 184µs | 8.7 MB |
+| 507 | machine_learning/k_means_clust | ✓ | 4µs | 8.8 MB |
+| 508 | machine_learning/k_nearest_neighbours | error |  |  |
+| 509 | machine_learning/linear_discriminant_analysis | ✓ | 42µs | 8.7 MB |
+| 510 | machine_learning/linear_regression | ✓ | 1µs | 8.7 MB |
+| 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 7µs | 8.7 MB |
+| 512 | machine_learning/logistic_regression | ✓ | 5µs | 8.8 MB |
+| 513 | machine_learning/loss_functions | error |  |  |
+| 514 | machine_learning/lstm/lstm_prediction | ✓ | 4µs | 8.7 MB |
+| 515 | machine_learning/mfcc | ✓ | 36µs | 8.7 MB |
+| 516 | machine_learning/multilayer_perceptron_classifier | error |  |  |
+| 517 | machine_learning/polynomial_regression | error |  |  |
+| 518 | machine_learning/principle_component_analysis | ✓ | 4µs | 8.7 MB |
+| 519 | machine_learning/scoring_functions | ✓ | 11µs | 8.7 MB |
+| 520 | machine_learning/self_organizing_map | ✓ | 16µs | 8.7 MB |
+| 521 | machine_learning/sequential_minimum_optimization | ✓ | 5µs | 8.7 MB |
+| 522 | machine_learning/similarity_search | ✓ | 4µs | 8.7 MB |
+| 523 | machine_learning/support_vector_machines | error |  |  |
+| 524 | machine_learning/word_frequency_functions | ✓ | 13µs | 8.8 MB |
+| 525 | machine_learning/xgboost_classifier | ✓ | 14µs | 8.7 MB |
+| 526 | machine_learning/xgboost_regressor | ✓ | 13µs | 8.7 MB |
+| 527 | maths/abs | ✓ | 9µs | 8.7 MB |
+| 528 | maths/addition_without_arithmetic | ✓ | 9µs | 8.7 MB |
+| 529 | maths/aliquot_sum | ✓ | 5µs | 8.7 MB |
+| 530 | maths/allocation_number | ✓ | 7µs | 8.7 MB |
+| 531 | maths/arc_length | ✓ | 3µs | 8.7 MB |
+| 532 | maths/area | ✓ | 12µs | 8.7 MB |
+| 533 | maths/area_under_curve | ✓ | 32µs | 8.7 MB |
+| 534 | maths/average_absolute_deviation | ✓ | 9µs | 8.7 MB |
+| 535 | maths/average_mean | ✓ | 9µs | 8.7 MB |
+| 536 | maths/average_median | ✓ | 10µs | 8.7 MB |
+| 537 | maths/average_mode | ✓ | 12µs | 8.7 MB |
+| 538 | maths/bailey_borwein_plouffe | ✓ | 4.918ms | 8.7 MB |
+| 539 | maths/base_neg2_conversion | error |  |  |
+| 540 | maths/basic_maths | ✓ | 8µs | 8.7 MB |
+| 541 | maths/binary_exponentiation | ✓ | 5µs | 8.7 MB |
+| 542 | maths/binary_multiplication | ✓ | 6µs | 8.8 MB |
+| 543 | maths/binomial_coefficient | ✓ | 8µs | 8.7 MB |
+| 544 | maths/binomial_distribution | ✓ |  |  |
+| 545 | maths/ceil | ✓ | 9µs | 8.7 MB |
+| 546 | maths/chebyshev_distance | ✓ | 5µs | 8.7 MB |
+| 547 | maths/check_polygon | ✓ | 5µs | 8.8 MB |
+| 548 | maths/chinese_remainder_theorem | ✓ | 4µs | 8.7 MB |
+| 549 | maths/chudnovsky_algorithm | ✓ | 8µs | 8.7 MB |
+| 550 | maths/collatz_sequence | ✓ | 6µs | 8.8 MB |
+| 551 | maths/combinations | ✓ | 5µs | 8.7 MB |
+| 552 | maths/continued_fraction | ✓ | 6µs | 8.7 MB |
+| 553 | maths/decimal_isolate | ✓ | 8µs | 8.7 MB |
+| 554 | maths/decimal_to_fraction | error |  |  |
+| 555 | maths/dodecahedron | ✓ | 9µs | 8.7 MB |
+| 556 | maths/double_factorial | ✓ | 6µs | 8.7 MB |
+| 557 | maths/dual_number_automatic_differentiation | error |  |  |
+| 558 | maths/entropy | ✓ | 39µs | 8.7 MB |
+| 559 | maths/euclidean_distance | ✓ | 5µs | 8.8 MB |
+| 560 | maths/euler_method | ✓ | 19µs | 8.8 MB |
+| 561 | maths/euler_modified | ✓ | 13µs | 8.7 MB |
+| 562 | maths/eulers_totient | ✓ | 8µs | 8.7 MB |
+| 563 | maths/extended_euclidean_algorithm | ✓ | 5µs | 8.7 MB |
+| 564 | maths/factorial | ✓ | 5µs | 8.7 MB |
+| 565 | maths/factors | ✓ | 7µs | 8.7 MB |
+| 566 | maths/fast_inverse_sqrt | error |  |  |
+| 567 | maths/fermat_little_theorem | ✓ | 4µs | 8.8 MB |
+| 568 | maths/fibonacci | ✓ | 10µs | 8.7 MB |
+| 569 | maths/find_max | ✓ | 6µs | 8.7 MB |
+| 570 | maths/find_min | ✓ | 6µs | 8.7 MB |
+| 571 | maths/floor | ✓ | 5µs | 8.7 MB |
 | 572 | maths/gamma |   |  |  |
 | 573 | maths/gaussian |   |  |  |
 | 574 | maths/gcd_of_n_numbers |   |  |  |

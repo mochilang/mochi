@@ -1,0 +1,12 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/machine_learning/polynomial_regression.scala:117: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Any]
+ required: scala.collection.mutable.ArrayBuffer[scala.collection.mutable.ArrayBuffer[Double]]
+Note: Any >: scala.collection.mutable.ArrayBuffer[Double], but class ArrayBuffer is invariant in type A.
+You may wish to investigate a wildcard type such as `_ >: scala.collection.mutable.ArrayBuffer[Double]`. (SLS 3.2.10)
+    M = M :+ A((i.toInt).toInt) :+ b((i.toInt).toInt)
+                                ^
+/workspace/mochi/tests/algorithms/x/Scala/machine_learning/polynomial_regression.scala:184: error: not found: value Xty
+val coeffs: ArrayBuffer[Double] = gaussian_elimination(XtX, Xty)
+                                                            ^
+two errors found

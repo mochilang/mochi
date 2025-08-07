@@ -1,0 +1,35 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/machine_learning/loss_functions.scala:214: error: not found: value j
+    j = BigInt(0)
+    ^
+/workspace/mochi/tests/algorithms/x/Scala/machine_learning/loss_functions.scala:215: error: not found: value j
+    while (j < cols) {
+           ^
+/workspace/mochi/tests/algorithms/x/Scala/machine_learning/loss_functions.scala:216: error: not found: value j
+      val yt: Double = y_true((i.toInt).toInt)((j.toInt).toInt)
+                                                ^
+/workspace/mochi/tests/algorithms/x/Scala/machine_learning/loss_functions.scala:217: error: not found: value j
+      val yp: Double = y_pred((i.toInt).toInt)((j.toInt).toInt)
+                                                ^
+/workspace/mochi/tests/algorithms/x/Scala/machine_learning/loss_functions.scala:223: error: not found: value j
+      j = j + BigInt(1)
+      ^
+/workspace/mochi/tests/algorithms/x/Scala/machine_learning/loss_functions.scala:232: error: not found: value j
+    j = BigInt(0)
+    ^
+/workspace/mochi/tests/algorithms/x/Scala/machine_learning/loss_functions.scala:233: error: not found: value j
+    while (j < cols) {
+           ^
+/workspace/mochi/tests/algorithms/x/Scala/machine_learning/loss_functions.scala:234: error: not found: value j
+      val yp: Double = clip(y_pred((i.toInt).toInt)((j.toInt).toInt), epsilon, 1.0)
+                                                     ^
+/workspace/mochi/tests/algorithms/x/Scala/machine_learning/loss_functions.scala:235: error: not found: value j
+      row_loss = row_loss + a((j.toInt).toInt) * powf(1.0 - yp, gamma) * y_true((i.toInt).toInt)((j.toInt).toInt) * ln(yp)
+                               ^
+/workspace/mochi/tests/algorithms/x/Scala/machine_learning/loss_functions.scala:235: error: not found: value j
+      row_loss = row_loss + a((j.toInt).toInt) * powf(1.0 - yp, gamma) * y_true((i.toInt).toInt)((j.toInt).toInt) * ln(yp)
+                                                                                                  ^
+/workspace/mochi/tests/algorithms/x/Scala/machine_learning/loss_functions.scala:236: error: not found: value j
+      j = j + BigInt(1)
+      ^
+11 errors found
