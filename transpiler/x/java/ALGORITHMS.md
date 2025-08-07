@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-07 10:45 GMT+7
+Last updated: 2025-08-07 12:15 GMT+7
 
-## Algorithms Golden Test Checklist (727/1077)
+## Algorithms Golden Test Checklist (818/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -877,116 +877,116 @@ Last updated: 2025-08-07 10:45 GMT+7
 | 868 | project_euler/problem_038/sol1 | ✓ | 45.0ms | 54.20KB |
 | 869 | project_euler/problem_039/sol1 | ✓ | 90.0ms | 70.23KB |
 | 870 | project_euler/problem_040/sol1 | error |  |  |
-| 871 | project_euler/problem_041/sol1 |   |  |  |
-| 872 | project_euler/problem_042/solution42 |   |  |  |
-| 873 | project_euler/problem_043/sol1 |   |  |  |
-| 874 | project_euler/problem_044/sol1 |   |  |  |
-| 875 | project_euler/problem_045/sol1 |   |  |  |
-| 876 | project_euler/problem_046/sol1 |   |  |  |
-| 877 | project_euler/problem_047/sol1 |   |  |  |
-| 878 | project_euler/problem_048/sol1 |   |  |  |
-| 879 | project_euler/problem_049/sol1 |   |  |  |
+| 871 | project_euler/problem_041/sol1 | ✓ | 70.0ms | 53.84KB |
+| 872 | project_euler/problem_042/solution42 | error |  |  |
+| 873 | project_euler/problem_043/sol1 | ✓ | 2.51s | 53.58KB |
+| 874 | project_euler/problem_044/sol1 | ✓ | 1.09s | 53.77KB |
+| 875 | project_euler/problem_045/sol1 | error |  |  |
+| 876 | project_euler/problem_046/sol1 | ✓ | 31.0ms | 46.79KB |
+| 877 | project_euler/problem_047/sol1 | ✓ | 228.0ms | 46.74KB |
+| 878 | project_euler/problem_048/sol1 | ✓ | 26.0ms | 37.62KB |
+| 879 | project_euler/problem_049/sol1 | error |  |  |
 | 880 | project_euler/problem_050/sol1 |   |  |  |
-| 881 | project_euler/problem_051/sol1 |   |  |  |
-| 882 | project_euler/problem_052/sol1 |   |  |  |
-| 883 | project_euler/problem_053/sol1 |   |  |  |
-| 884 | project_euler/problem_054/sol1 |   |  |  |
-| 885 | project_euler/problem_054/test_poker_hand |   |  |  |
-| 886 | project_euler/problem_055/sol1 |   |  |  |
-| 887 | project_euler/problem_056/sol1 |   |  |  |
-| 888 | project_euler/problem_057/sol1 |   |  |  |
-| 889 | project_euler/problem_058/sol1 |   |  |  |
-| 890 | project_euler/problem_059/sol1 |   |  |  |
-| 891 | project_euler/problem_062/sol1 |   |  |  |
-| 892 | project_euler/problem_063/sol1 |   |  |  |
-| 893 | project_euler/problem_064/sol1 |   |  |  |
-| 894 | project_euler/problem_065/sol1 |   |  |  |
-| 895 | project_euler/problem_067/sol1 |   |  |  |
-| 896 | project_euler/problem_067/sol2 |   |  |  |
-| 897 | project_euler/problem_068/sol1 |   |  |  |
-| 898 | project_euler/problem_069/sol1 |   |  |  |
-| 899 | project_euler/problem_070/sol1 |   |  |  |
-| 900 | project_euler/problem_071/sol1 |   |  |  |
+| 881 | project_euler/problem_051/sol1 | error |  |  |
+| 882 | project_euler/problem_052/sol1 | ✓ | 1.09s | 46.79KB |
+| 883 | project_euler/problem_053/sol1 | ✓ | 17.0ms | 1.13KB |
+| 884 | project_euler/problem_054/sol1 | error |  |  |
+| 885 | project_euler/problem_054/test_poker_hand | ✓ | 43.0ms | 102.38KB |
+| 886 | project_euler/problem_055/sol1 | error |  |  |
+| 887 | project_euler/problem_056/sol1 | error |  |  |
+| 888 | project_euler/problem_057/sol1 | ✓ | 23.0ms | 712B |
+| 889 | project_euler/problem_058/sol1 | ✓ | 80.0ms | 1.21KB |
+| 890 | project_euler/problem_059/sol1 | ✓ | 1.08s | 55.24KB |
+| 891 | project_euler/problem_062/sol1 | error |  |  |
+| 892 | project_euler/problem_063/sol1 | ✓ | 25.0ms | 37.65KB |
+| 893 | project_euler/problem_064/sol1 | error |  |  |
+| 894 | project_euler/problem_065/sol1 | ✓ | 16.0ms | 552B |
+| 895 | project_euler/problem_067/sol1 | ✓ | 17.0ms | 22.54KB |
+| 896 | project_euler/problem_067/sol2 | ✓ | 50.0ms | 68.20KB |
+| 897 | project_euler/problem_068/sol1 | ✓ | 11.46s | 51.39KB |
+| 898 | project_euler/problem_069/sol1 | ✓ | 15.0ms | 664B |
+| 899 | project_euler/problem_070/sol1 | ✓ | 307.0ms | 46.79KB |
+| 900 | project_euler/problem_071/sol1 | ✓ | 25.0ms | 1.02KB |
 | 901 | project_euler/problem_072/sol1 |   |  |  |
-| 902 | project_euler/problem_072/sol2 |   |  |  |
-| 903 | project_euler/problem_073/sol1 |   |  |  |
-| 904 | project_euler/problem_074/sol1 |   |  |  |
-| 905 | project_euler/problem_074/sol2 |   |  |  |
-| 906 | project_euler/problem_075/sol1 |   |  |  |
-| 907 | project_euler/problem_076/sol1 |   |  |  |
-| 908 | project_euler/problem_077/sol1 |   |  |  |
-| 909 | project_euler/problem_078/sol1 |   |  |  |
-| 910 | project_euler/problem_079/sol1 |   |  |  |
-| 911 | project_euler/problem_092/sol1 |   |  |  |
-| 912 | project_euler/problem_116/sol1 |   |  |  |
-| 913 | project_euler/problem_345/sol1 |   |  |  |
-| 914 | quantum/q_fourier_transform |   |  |  |
-| 915 | scheduling/job_sequence_with_deadline |   |  |  |
-| 916 | scheduling/job_sequencing_with_deadline |   |  |  |
-| 917 | scheduling/multi_level_feedback_queue |   |  |  |
-| 918 | scheduling/non_preemptive_shortest_job_first |   |  |  |
-| 919 | scheduling/round_robin |   |  |  |
-| 920 | scheduling/shortest_job_first |   |  |  |
-| 921 | scripts/build_directory_md |   |  |  |
-| 922 | scripts/validate_filenames |   |  |  |
-| 923 | scripts/validate_solutions |   |  |  |
-| 924 | searches/binary_search |   |  |  |
-| 925 | searches/double_linear_search |   |  |  |
-| 926 | searches/double_linear_search_recursion |   |  |  |
-| 927 | searches/exponential_search |   |  |  |
-| 928 | searches/fibonacci_search |   |  |  |
-| 929 | searches/hill_climbing |   |  |  |
-| 930 | searches/interpolation_search |   |  |  |
-| 931 | searches/jump_search |   |  |  |
-| 932 | searches/linear_search |   |  |  |
-| 933 | searches/median_of_medians |   |  |  |
-| 934 | searches/quick_select |   |  |  |
-| 935 | searches/sentinel_linear_search |   |  |  |
-| 936 | searches/simple_binary_search |   |  |  |
-| 937 | searches/simulated_annealing |   |  |  |
-| 938 | searches/tabu_search |   |  |  |
-| 939 | searches/ternary_search |   |  |  |
-| 940 | sorts/bead_sort |   |  |  |
-| 941 | sorts/binary_insertion_sort |   |  |  |
-| 942 | sorts/bitonic_sort |   |  |  |
-| 943 | sorts/bogo_sort |   |  |  |
-| 944 | sorts/bubble_sort |   |  |  |
-| 945 | sorts/bucket_sort |   |  |  |
-| 946 | sorts/circle_sort |   |  |  |
-| 947 | sorts/cocktail_shaker_sort |   |  |  |
-| 948 | sorts/comb_sort |   |  |  |
-| 949 | sorts/counting_sort |   |  |  |
-| 950 | sorts/cycle_sort |   |  |  |
-| 951 | sorts/double_sort |   |  |  |
-| 952 | sorts/dutch_national_flag_sort |   |  |  |
-| 953 | sorts/exchange_sort |   |  |  |
-| 954 | sorts/external_sort |   |  |  |
-| 955 | sorts/gnome_sort |   |  |  |
-| 956 | sorts/heap_sort |   |  |  |
-| 957 | sorts/insertion_sort |   |  |  |
-| 958 | sorts/intro_sort |   |  |  |
-| 959 | sorts/iterative_merge_sort |   |  |  |
-| 960 | sorts/merge_insertion_sort |   |  |  |
-| 961 | sorts/merge_sort |   |  |  |
-| 962 | sorts/msd_radix_sort |   |  |  |
-| 963 | sorts/natural_sort |   |  |  |
-| 964 | sorts/odd_even_sort |   |  |  |
-| 965 | sorts/odd_even_transposition_parallel |   |  |  |
-| 966 | sorts/odd_even_transposition_single_threaded |   |  |  |
-| 967 | sorts/pancake_sort |   |  |  |
-| 968 | sorts/patience_sort |   |  |  |
-| 969 | sorts/pigeon_sort |   |  |  |
-| 970 | sorts/pigeonhole_sort |   |  |  |
-| 971 | sorts/quick_sort |   |  |  |
-| 972 | sorts/quick_sort_3_partition |   |  |  |
-| 973 | sorts/radix_sort |   |  |  |
-| 974 | sorts/recursive_insertion_sort |   |  |  |
-| 975 | sorts/recursive_mergesort_array |   |  |  |
-| 976 | sorts/recursive_quick_sort |   |  |  |
-| 977 | sorts/selection_sort |   |  |  |
-| 978 | sorts/shell_sort |   |  |  |
-| 979 | sorts/shrink_shell_sort |   |  |  |
-| 980 | sorts/slowsort |   |  |  |
+| 902 | project_euler/problem_072/sol2 | ✓ | 46.0ms | 46.21KB |
+| 903 | project_euler/problem_073/sol1 | ✓ | 497.0ms | 784B |
+| 904 | project_euler/problem_074/sol1 | ✓ | 43.0ms | 222.55KB |
+| 905 | project_euler/problem_074/sol2 | error |  |  |
+| 906 | project_euler/problem_075/sol1 | ✓ | 524.0ms | 38.55KB |
+| 907 | project_euler/problem_076/sol1 | ✓ | 66.0ms | 46.30KB |
+| 908 | project_euler/problem_077/sol1 | ✓ | 594.0ms | 293.27KB |
+| 909 | project_euler/problem_078/sol1 | error |  |  |
+| 910 | project_euler/problem_079/sol1 | ✓ | 55.0ms | 53.62KB |
+| 911 | project_euler/problem_092/sol1 | ✓ | 15.0ms | 1.13KB |
+| 912 | project_euler/problem_116/sol1 | ✓ | 29.0ms | 46.04KB |
+| 913 | project_euler/problem_345/sol1 | ✓ | 1.52s | 55.23KB |
+| 914 | quantum/q_fourier_transform | ✓ | 25.0ms | 38.45KB |
+| 915 | scheduling/job_sequence_with_deadline | ✓ | 29.0ms | 46.14KB |
+| 916 | scheduling/job_sequencing_with_deadline | ✓ | 32.0ms | 51.91KB |
+| 917 | scheduling/multi_level_feedback_queue | ✓ | 34.0ms | 59.23KB |
+| 918 | scheduling/non_preemptive_shortest_job_first | ✓ | 45.0ms | 122.70KB |
+| 919 | scheduling/round_robin | error |  |  |
+| 920 | scheduling/shortest_job_first | ✓ | 43.0ms | 64.05KB |
+| 921 | scripts/build_directory_md | ✓ | 49.0ms | 122.77KB |
+| 922 | scripts/validate_filenames | ✓ | 33.0ms | 57.82KB |
+| 923 | scripts/validate_solutions | error |  |  |
+| 924 | searches/binary_search | ✓ | 15.0ms | 880B |
+| 925 | searches/double_linear_search | ✓ | 27.0ms | 46.25KB |
+| 926 | searches/double_linear_search_recursion | ✓ | 16.0ms | 448B |
+| 927 | searches/exponential_search | ✓ | 14.0ms | 0B |
+| 928 | searches/fibonacci_search | ✓ | 15.0ms | 768B |
+| 929 | searches/hill_climbing | error |  |  |
+| 930 | searches/interpolation_search | ✓ | 15.0ms | 768B |
+| 931 | searches/jump_search | ✓ | 16.0ms | 664B |
+| 932 | searches/linear_search | ✓ | 16.0ms | 664B |
+| 933 | searches/median_of_medians | ✓ | 29.0ms | 46.35KB |
+| 934 | searches/quick_select | ✓ | 31.0ms | 56.27KB |
+| 935 | searches/sentinel_linear_search | ✓ | 28.0ms | 46.25KB |
+| 936 | searches/simple_binary_search | ✓ | 16.0ms | 632B |
+| 937 | searches/simulated_annealing | ✓ | 81.0ms | 70.16KB |
+| 938 | searches/tabu_search | ✓ | 30.0ms | 52.22KB |
+| 939 | searches/ternary_search | ✓ | 15.0ms | 664B |
+| 940 | sorts/bead_sort | ✓ | 14.0ms | 656B |
+| 941 | sorts/binary_insertion_sort | ✓ | 15.0ms | 760B |
+| 942 | sorts/bitonic_sort | ✓ | 30.0ms | 46.24KB |
+| 943 | sorts/bogo_sort | ✓ | 14.0ms | 904B |
+| 944 | sorts/bubble_sort | ✓ | 26.0ms | 46.25KB |
+| 945 | sorts/bucket_sort | ✓ | 30.0ms | 56.93KB |
+| 946 | sorts/circle_sort | ✓ | 14.0ms | 872B |
+| 947 | sorts/cocktail_shaker_sort | ✓ | 14.0ms | 656B |
+| 948 | sorts/comb_sort | ✓ | 21.0ms | 496B |
+| 949 | sorts/counting_sort | ✓ | 29.0ms | 51.72KB |
+| 950 | sorts/cycle_sort | ✓ | 14.0ms | 656B |
+| 951 | sorts/double_sort | ✓ | 19.0ms | 872B |
+| 952 | sorts/dutch_national_flag_sort | ✓ | 14.0ms | 496B |
+| 953 | sorts/exchange_sort | ✓ | 13.0ms | 656B |
+| 954 | sorts/external_sort | ✓ | 32.0ms | 46.14KB |
+| 955 | sorts/gnome_sort | ✓ | 15.0ms | 496B |
+| 956 | sorts/heap_sort | ✓ | 16.0ms | 792B |
+| 957 | sorts/insertion_sort | ✓ | 13.0ms | 656B |
+| 958 | sorts/intro_sort | ✓ | 16.0ms | 784B |
+| 959 | sorts/iterative_merge_sort | ✓ | 29.0ms | 54.84KB |
+| 960 | sorts/merge_insertion_sort | ✓ | 28.0ms | 46.24KB |
+| 961 | sorts/merge_sort | ✓ | 26.0ms | 46.24KB |
+| 962 | sorts/msd_radix_sort | ✓ | 28.0ms | 46.37KB |
+| 963 | sorts/natural_sort | ✓ | 53.0ms | 96.84KB |
+| 964 | sorts/odd_even_sort | ✓ | 35.0ms | 54.53KB |
+| 965 | sorts/odd_even_transposition_parallel | ✓ | 16.0ms | 872B |
+| 966 | sorts/odd_even_transposition_single_threaded | ✓ | 17.0ms | 10.55KB |
+| 967 | sorts/pancake_sort | ✓ | 13.0ms | 656B |
+| 968 | sorts/patience_sort | ✓ | 26.0ms | 46.24KB |
+| 969 | sorts/pigeon_sort | ✓ | 29.0ms | 46.14KB |
+| 970 | sorts/pigeonhole_sort | ✓ | 36.0ms | 92.90KB |
+| 971 | sorts/quick_sort | error |  |  |
+| 972 | sorts/quick_sort_3_partition | error |  |  |
+| 973 | sorts/radix_sort | ✓ | 28.0ms | 46.24KB |
+| 974 | sorts/recursive_insertion_sort | ✓ | 21.0ms | 656B |
+| 975 | sorts/recursive_mergesort_array | ✓ | 28.0ms | 46.24KB |
+| 976 | sorts/recursive_quick_sort | ✓ | 29.0ms | 46.14KB |
+| 977 | sorts/selection_sort | ✓ | 14.0ms | 656B |
+| 978 | sorts/shell_sort | ✓ | 17.0ms | 656B |
+| 979 | sorts/shrink_shell_sort | ✓ | 13.0ms | 760B |
+| 980 | sorts/slowsort | error |  |  |
 | 981 | sorts/stooge_sort |   |  |  |
 | 982 | sorts/strand_sort |   |  |  |
 | 983 | sorts/tim_sort |   |  |  |

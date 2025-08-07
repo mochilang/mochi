@@ -1,0 +1,6 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden923_validate_solutions229590424/001/Main.java:24: error: incompatible types: String cannot be converted to int[]
+        return bytes_to_hex(((int[])(_sha256(s))));
+                                             ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+1 error

@@ -1,0 +1,8 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden929_hill_climbing2770288727/001/Main.java:55: error: not a statement
+            e18;
+            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden929_hill_climbing2770288727/001/Main.java:57: error: not a statement
+            e18;
+            ^
+2 errors

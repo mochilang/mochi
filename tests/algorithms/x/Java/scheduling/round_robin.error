@@ -1,0 +1,5 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden919_round_robin1517544311/001/Main.java:39: error: unreachable statement
+        return waiting;
+        ^
+1 error

@@ -1,0 +1,8 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden881_sol13514425194/001/Main.java:7: error: incompatible types: String cannot be converted to int
+            value = value * 10 + (s.substring(i, i+1));
+                               ^
+/tmp/TestJavaTranspiler_Algorithms_Golden881_sol13514425194/001/Main.java:18: error: incompatible types: String cannot be converted to int
+            int d = (num_str.substring(i_1, i_1+1));
+                                      ^
+2 errors

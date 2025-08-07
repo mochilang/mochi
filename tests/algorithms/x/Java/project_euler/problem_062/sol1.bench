@@ -1,0 +1,7 @@
+Exception in thread "main" java.lang.NumberFormatException: For input string: "-"
+	at java.base/java.lang.NumberFormatException.forInputString(NumberFormatException.java:67)
+	at java.base/java.lang.Integer.parseInt(Integer.java:652)
+	at java.base/java.lang.Integer.parseInt(Integer.java:778)
+	at Main.get_digits(Main.java:14)
+	at Main.solution(Main.java:35)
+	at Main.main(Main.java:53)
