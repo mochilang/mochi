@@ -1,3 +1,42 @@
+## Progress (2025-08-07 15:53 +0700)
+- pas: support function parameters (progress 88/105)
+
+## Progress (2025-08-07 15:53 +0700)
+- pas: support function parameters (progress 88/105)
+
+## Progress (2025-08-07 15:53 +0700)
+- pas: support function parameters (progress 88/105)
+
+## Progress (2025-08-07 15:53 +0700)
+- pas: support function parameters (progress 88/105)
+
+## Progress (2025-08-07 15:53 +0700)
+- pas: support function parameters (progress 88/105)
+
+## Progress (2025-08-07 15:53 +0700)
+- pas: support function parameters (progress 88/105)
+
+## Progress (2025-08-07 15:53 +0700)
+- pas: support function parameters (progress 88/105)
+
+## Progress (2025-08-07 15:53 +0700)
+- pas: support function parameters (progress 88/105)
+
+## Progress (2025-08-07 15:53 +0700)
+- pas: support function parameters (progress 88/105)
+
+## Progress (2025-08-07 15:53 +0700)
+- pas: support function parameters (progress 88/105)
+
+## Progress (2025-08-07 15:53 +0700)
+- pas: support function parameters (progress 88/105)
+
+## Progress (2025-08-07 15:53 +0700)
+- pas: support function parameters (progress 88/105)
+
+## Progress (2025-08-07 15:53 +0700)
+- pas: support function parameters (progress 88/105)
+
 ## Progress (2025-08-06 20:30 +0700)
 - zig: cast indices to usize (progress 88/105)
 
