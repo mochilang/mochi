@@ -120,7 +120,8 @@ var (
 	benchMain bool
 
 	// track local variable declarations so they can be adjusted
-	declStmts map[string]*DeclStmt
+	declStmts   map[string]*DeclStmt
+	declAliases map[string]bool
 	// track inner function declarations that are ignored during
 	// transpilation so references to them can be stubbed out
 	localFuncs map[string]bool
@@ -891,6 +892,10 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 			fmt.Fprintf(w, "size_t *%s_lens = %s_lens;\n", d.Name, vr.Name)
 			writeIndent(w, indent)
 			fmt.Fprintf(w, "size_t %s_lens_len = %s_len;\n", d.Name, vr.Name)
+			if declAliases == nil {
+				declAliases = make(map[string]bool)
+			}
+			declAliases[d.Name] = true
 			return
 		}
 		if fe, ok := d.Value.(*FieldExpr); ok {
@@ -1054,6 +1059,10 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 			fmt.Fprintf(w, "%s *%s = %s;\n", base, d.Name, vr.Name)
 			writeIndent(w, indent)
 			fmt.Fprintf(w, "size_t %s_len = %s_len;\n", d.Name, vr.Name)
+			if declAliases == nil {
+				declAliases = make(map[string]bool)
+			}
+			declAliases[d.Name] = true
 			return
 		}
 		if fe, ok := d.Value.(*FieldExpr); ok {
@@ -1184,8 +1193,12 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 func (a *AssignStmt) emit(w io.Writer, indent int) {
 	if call, ok := a.Value.(*CallExpr); ok && call.Func == "append" && len(call.Args) == 2 {
 		if vr, ok2 := call.Args[0].(*VarRef); ok2 && vr.Name == a.Name && len(a.Indexes) == 0 && len(a.Fields) == 0 {
+			fromAlias := declAliases[a.Name]
 			if ds, ok := declStmts[a.Name]; ok {
 				ds.Value = nil
+			}
+			if fromAlias {
+				declAliases[a.Name] = false
 			}
 			base := varBaseType(a.Name)
 			if t := inferExprType(currentEnv, call.Args[1]); t != "" {
@@ -1212,6 +1225,34 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 				}
 			}
 			writeIndent(w, indent)
+			if fromAlias {
+				switch base {
+				case "int", "long long":
+					needListAppendIntNew = true
+					fmt.Fprintf(w, "%s = list_append_int_new(%s, %s_len, ", a.Name, a.Name, a.Name)
+					call.Args[1].emitExpr(w)
+					io.WriteString(w, ");\n")
+					writeIndent(w, indent)
+					fmt.Fprintf(w, "%s_len++;\n", a.Name)
+					return
+				case "double":
+					needListAppendDoubleNew = true
+					fmt.Fprintf(w, "%s = list_append_double_new(%s, %s_len, ", a.Name, a.Name, a.Name)
+					call.Args[1].emitExpr(w)
+					io.WriteString(w, ");\n")
+					writeIndent(w, indent)
+					fmt.Fprintf(w, "%s_len++;\n", a.Name)
+					return
+				case "const char*":
+					needListAppendStrNew = true
+					fmt.Fprintf(w, "%s = list_append_str_new(%s, %s_len, ", a.Name, a.Name, a.Name)
+					call.Args[1].emitExpr(w)
+					io.WriteString(w, ");\n")
+					writeIndent(w, indent)
+					fmt.Fprintf(w, "%s_len++;\n", a.Name)
+					return
+				}
+			}
 			switch base {
 			case "int":
 				needListAppendInt = true
@@ -5877,6 +5918,7 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 	}
 	localFuncs = map[string]bool{}
 	declStmts = map[string]*DeclStmt{}
+	declAliases = map[string]bool{}
 	var params []Param
 	var paramTypes []string
 	origParamCount := len(fn.Params)
@@ -6009,6 +6051,7 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 	currentEnv = prevEnv
 	varTypes = prevVarTypes
 	declStmts = nil
+	declAliases = nil
 	localFuncs = nil
 	return fnInfo, nil
 }
