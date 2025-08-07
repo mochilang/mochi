@@ -2,8 +2,8 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 293/1077
-Last updated: 2025-08-07 08:27 +0700
+Completed programs: 333/1077
+Last updated: 2025-08-07 08:46 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -367,46 +367,46 @@ Last updated: 2025-08-07 08:27 +0700
 | 358 | electronics/electric_conductivity | ✓ | 392µs | 3.2 MB |
 | 359 | electronics/electric_power | ✓ | 333µs | 3.4 MB |
 | 360 | electronics/electrical_impedance | ✓ | 657µs | 3.4 MB |
-| 361 | electronics/ic_555_timer |   |  |  |
-| 362 | electronics/ind_reactance |   |  |  |
-| 363 | electronics/ohms_law |   |  |  |
-| 364 | electronics/real_and_reactive_power |   |  |  |
-| 365 | electronics/resistor_color_code |   |  |  |
-| 366 | electronics/resistor_equivalence |   |  |  |
-| 367 | electronics/resonant_frequency |   |  |  |
-| 368 | electronics/wheatstone_bridge |   |  |  |
-| 369 | file_transfer/receive_file |   |  |  |
-| 370 | file_transfer/send_file |   |  |  |
-| 371 | file_transfer/tests/test_send_file |   |  |  |
-| 372 | financial/equated_monthly_installments |   |  |  |
-| 373 | financial/exponential_moving_average |   |  |  |
-| 374 | financial/interest |   |  |  |
-| 375 | financial/present_value |   |  |  |
-| 376 | financial/price_plus_tax |   |  |  |
-| 377 | financial/simple_moving_average |   |  |  |
-| 378 | financial/straight_line_depreciation |   |  |  |
-| 379 | financial/time_and_half_pay |   |  |  |
-| 380 | fractals/julia_sets |   |  |  |
-| 381 | fractals/koch_snowflake |   |  |  |
-| 382 | fractals/mandelbrot |   |  |  |
-| 383 | fractals/sierpinski_triangle |   |  |  |
-| 384 | fractals/vicsek |   |  |  |
-| 385 | fuzzy_logic/fuzzy_operations |   |  |  |
-| 386 | genetic_algorithm/basic_string |   |  |  |
-| 387 | geodesy/haversine_distance |   |  |  |
-| 388 | geodesy/lamberts_ellipsoidal_distance |   |  |  |
-| 389 | geometry/geometry |   |  |  |
-| 390 | graphics/bezier_curve |   |  |  |
-| 391 | graphics/butterfly_pattern |   |  |  |
-| 392 | graphics/digital_differential_analyzer_line |   |  |  |
-| 393 | graphics/vector3_for_2d_rendering |   |  |  |
-| 394 | graphs/a_star |   |  |  |
-| 395 | graphs/ant_colony_optimization_algorithms |   |  |  |
-| 396 | graphs/articulation_points |   |  |  |
-| 397 | graphs/basic_graphs |   |  |  |
-| 398 | graphs/bellman_ford |   |  |  |
-| 399 | graphs/bi_directional_dijkstra |   |  |  |
-| 400 | graphs/bidirectional_a_star |   |  |  |
+| 361 | electronics/ic_555_timer | ✓ | 274µs | 3.3 MB |
+| 362 | electronics/ind_reactance | ✓ | 383µs | 3.3 MB |
+| 363 | electronics/ohms_law | ✓ | 1.257ms | 4.3 MB |
+| 364 | electronics/real_and_reactive_power | ✓ | 211µs | 3.3 MB |
+| 365 | electronics/resistor_color_code | ✓ | 462µs | 3.4 MB |
+| 366 | electronics/resistor_equivalence | ✓ | 291µs | 3.2 MB |
+| 367 | electronics/resonant_frequency | ✓ | 242µs | 3.2 MB |
+| 368 | electronics/wheatstone_bridge | ✓ | 256µs | 3.1 MB |
+| 369 | file_transfer/receive_file | ✓ | 203µs | 3.1 MB |
+| 370 | file_transfer/send_file | ✓ | 269µs | 3.2 MB |
+| 371 | file_transfer/tests/test_send_file | ✓ | 189µs | 3.1 MB |
+| 372 | financial/equated_monthly_installments | ✓ | 247µs | 3.2 MB |
+| 373 | financial/exponential_moving_average | ✓ | 664µs | 3.6 MB |
+| 374 | financial/interest | ✓ | 296µs | 3.4 MB |
+| 375 | financial/present_value | ✓ | 296µs | 3.4 MB |
+| 376 | financial/price_plus_tax | ✓ | 275µs | 3.3 MB |
+| 377 | financial/simple_moving_average | ✓ | 401µs | 3.1 MB |
+| 378 | financial/straight_line_depreciation | ✓ | 1.048ms | 3.5 MB |
+| 379 | financial/time_and_half_pay | ✓ | 264µs | 3.1 MB |
+| 380 | fractals/julia_sets | ✓ | 775µs | 3.2 MB |
+| 381 | fractals/koch_snowflake | ✓ | 312µs | 3.1 MB |
+| 382 | fractals/mandelbrot | ✓ | 408µs | 3.4 MB |
+| 383 | fractals/sierpinski_triangle | ✓ | 320µs | 3.2 MB |
+| 384 | fractals/vicsek | ✓ | 229µs | 3.1 MB |
+| 385 | fuzzy_logic/fuzzy_operations | ✓ | 328µs | 3.2 MB |
+| 386 | genetic_algorithm/basic_string | ✓ | 381µs | 3.2 MB |
+| 387 | geodesy/haversine_distance | ✓ | 311µs | 3.4 MB |
+| 388 | geodesy/lamberts_ellipsoidal_distance | ✓ | 286µs | 3.2 MB |
+| 389 | geometry/geometry | ✓ | 238µs | 3.2 MB |
+| 390 | graphics/bezier_curve | ✓ | 517µs | 3.5 MB |
+| 391 | graphics/butterfly_pattern | ✓ | 218µs | 3.2 MB |
+| 392 | graphics/digital_differential_analyzer_line | ✓ | 1.037ms | 3.4 MB |
+| 393 | graphics/vector3_for_2d_rendering | ✓ | 659µs | 3.5 MB |
+| 394 | graphs/a_star | ✓ | 485µs | 3.1 MB |
+| 395 | graphs/ant_colony_optimization_algorithms | ✓ | 86.271ms | 3.7 MB |
+| 396 | graphs/articulation_points | ✓ | 404µs | 3.1 MB |
+| 397 | graphs/basic_graphs | ✓ | 891µs | 3.2 MB |
+| 398 | graphs/bellman_ford | ✓ | 244µs | 3.4 MB |
+| 399 | graphs/bi_directional_dijkstra | ✓ | 451µs | 3.2 MB |
+| 400 | graphs/bidirectional_a_star | ✓ | 1.011ms | 3.4 MB |
 | 401 | graphs/bidirectional_breadth_first_search |   |  |  |
 | 402 | graphs/bidirectional_search |   |  |  |
 | 403 | graphs/boruvka |   |  |  |
