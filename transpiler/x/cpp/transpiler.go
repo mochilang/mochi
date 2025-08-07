@@ -176,6 +176,18 @@ type Program struct {
 	UseAnyVec      bool
 }
 
+func findFunc(name string) *Func {
+	if currentProgram == nil {
+		return nil
+	}
+	for _, fn := range currentProgram.Functions {
+		if fn.Name == name {
+			return fn
+		}
+	}
+	return nil
+}
+
 func (p *Program) addInclude(inc string) {
 	for _, v := range p.Includes {
 		if v == inc {
@@ -5697,6 +5709,19 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					}
 					call := &CallExpr{Name: safeName(p.Call.Func), Args: callArgs}
 					return &LambdaExpr{Params: params, Body: call}, nil
+				}
+			}
+		}
+		if paramNames != nil {
+			if fn := findFunc(p.Call.Func); fn != nil {
+				for i, a := range args {
+					if i < len(fn.Params) && fn.Params[i].ByVal {
+						if vr, ok := a.(*VarRef); ok {
+							if paramNames[vr.Name] {
+								mutatedParams[vr.Name] = true
+							}
+						}
+					}
 				}
 			}
 		}
