@@ -15,7 +15,7 @@ indices are popped and their next greater element is recorded.
 */
 
 let arr = [-10.0, -5.0, 0.0, 5.0, 5.1, 11.0, 13.0, 21.0, 3.0, 4.0, -21.0, -10.0, -5.0, -1.0, 0.0]
-let expect = [-5.0, 0.0, 5.0, 5.1, 11.0, 13.0, 21.0, -1.0, 4.0, -1.0, -10.0, -5.0, -1.0, 0.0, -1.0]
+let expected = [-5.0, 0.0, 5.0, 5.1, 11.0, 13.0, 21.0, -1.0, 4.0, -1.0, -10.0, -5.0, -1.0, 0.0, -1.0]
 
 fun next_greatest_element_slow(xs: list<float>): list<float> {
   var res: list<float> = []

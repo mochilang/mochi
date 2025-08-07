@@ -1,0 +1,8 @@
+run: exit status 127
+escript: exception error: no function clause matching lists:sublist(#{},"b") (lists.erl, line 592)
+  in function  main:'-add_suffix/3-Fun_2_loop/6-0-'/6 (/workspace/mochi/tests/algorithms/x/Erlang/data_structures/suffix_tree/suffix_tree.erl, line 87)
+  in call from main:add_suffix/3 (/workspace/mochi/tests/algorithms/x/Erlang/data_structures/suffix_tree/suffix_tree.erl, line 103)
+  in call from main:'-build_suffix_tree/1-Fun_4_loop/5-0-'/5 (/workspace/mochi/tests/algorithms/x/Erlang/data_structures/suffix_tree/suffix_tree.erl, line 134)
+  in call from main:build_suffix_tree/1 (/workspace/mochi/tests/algorithms/x/Erlang/data_structures/suffix_tree/suffix_tree.erl, line 140)
+  in call from main:new_suffix_tree/1 (/workspace/mochi/tests/algorithms/x/Erlang/data_structures/suffix_tree/suffix_tree.erl, line 148)
+  in call from main:main/1 (/workspace/mochi/tests/algorithms/x/Erlang/data_structures/suffix_tree/suffix_tree.erl, line 180)

@@ -42,7 +42,7 @@ fun add_suffix(tree: SuffixTree, suffix: string, index: int): SuffixTree {
   var node_idx = 0
   var j = 0
   while j < len(suffix) {
-    let ch = suffix[j]
+    let ch = substring(suffix, j, j + 1)
     var node = nodes[node_idx]
     var children = node.children
     if !has_key(children, ch) {
@@ -73,7 +73,7 @@ fun build_suffix_tree(tree: SuffixTree): SuffixTree {
     var suffix = ""
     var k = i
     while k < n {
-      suffix = suffix + text[k]
+      suffix = suffix + substring(text, k, k + 1)
       k = k + 1
     }
     t = add_suffix(t, suffix, i)
@@ -94,7 +94,7 @@ fun search(tree: SuffixTree, pattern: string): bool {
   var i = 0
   let nodes = tree.nodes
   while i < len(pattern) {
-    let ch = pattern[i]
+    let ch = substring(pattern, i, i + 1)
     let node = nodes[node_idx]
     let children = node.children
     if !has_key(children, ch) {

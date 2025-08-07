@@ -1,0 +1,21 @@
+/workspace/mochi/tests/algorithms/x/Erlang/data_structures/stacks/postfix_evaluation.erl:111:2: Warning: variable 'First_2' exported from 'case' (line 79, column 9)
+%  111| {First_2, Idx_7, Int_part_2, Sign_4, Token} = Fun_2(First_2, Idx_6, Int_part, Sign_4, Token),
+%     |  ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/data_structures/stacks/postfix_evaluation.erl:111:30: Warning: variable 'Sign_4' exported from 'case' (line 79, column 9)
+%  111| {First_2, Idx_7, Int_part_2, Sign_4, Token} = Fun_2(First_2, Idx_6, Int_part, Sign_4, Token),
+%     |                              ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/data_structures/stacks/postfix_evaluation.erl:127:2: Warning: variable 'First_2' exported from 'case' (line 79, column 9)
+%  127| {First_2, Idx_9, Int_part_2, Place_2, Result_2, Sign_4, Token} = Fun_3(First_2, Idx_8, Int_part_2, Place, Result, Sign_4, Token),
+%     |  ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/data_structures/stacks/postfix_evaluation.erl:127:49: Warning: variable 'Sign_4' exported from 'case' (line 79, column 9)
+%  127| {First_2, Idx_9, Int_part_2, Place_2, Result_2, Sign_4, Token} = Fun_3(First_2, Idx_8, Int_part_2, Place, Result, Sign_4, Token),
+%     |                                                 ^
+
+9
+6.6
+59
+1
+0

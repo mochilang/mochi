@@ -8,7 +8,7 @@ stack or recursively by consuming the token stream.  Both approaches
 run in O(n) time where n is the number of tokens.
 */
 
-fun split(s: string, sep: string): list<string> {
+fun split_custom(s: string, sep: string): list<string> {
   var res: list<string> = []
   var current = ""
   var i = 0
@@ -27,7 +27,7 @@ fun split(s: string, sep: string): list<string> {
 }
 
 fun tokenize(s: string): list<string> {
-  let parts = split(s, " ")
+  let parts = split_custom(s, " ")
   var res: list<string> = []
   var i = 0
   while i < len(parts) {
