@@ -1,10 +1,5 @@
-/workspace/mochi/tests/algorithms/x/Erlang/maths/sin.erl:39:1: Warning: function mochi_nth/2 is unused
-%   39| mochi_nth(I, L) ->
+/workspace/mochi/tests/algorithms/x/Erlang/maths/sin.erl:40:1: Warning: function mochi_nth/2 is unused
+%   40| mochi_nth(I, L) ->
 %     | ^
-
-/workspace/mochi/tests/algorithms/x/Erlang/maths/sin.erl:128:13: Warning: ambiguous call of overridden auto-imported BIF floor/1 --
-use erlang:floor/1 or "-compile({no_auto_import,[floor/1]})." to resolve name clash
-%  128|         K = floor(mochi_safe_div(Angle_in_degrees, 360.0)),
-%     |             ^
 
 0.8987940462991669
