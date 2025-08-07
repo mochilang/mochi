@@ -1486,11 +1486,15 @@ func (c *CallExpr) emit(w io.Writer) {
 			return
 		}
 	case "str":
-		fmt.Fprint(w, "String(describing: ")
+		// Use the helper `_p` to mirror Mochi's string conversion which
+		// trims trailing decimals for whole numbers.
 		if len(c.Args) > 0 {
+			fmt.Fprint(w, "_p(")
 			c.Args[0].emit(w)
+			fmt.Fprint(w, ")")
+		} else {
+			fmt.Fprint(w, "\"\"")
 		}
-		fmt.Fprint(w, ")")
 		return
 	case "int":
 		if len(c.Args) == 1 {
@@ -2778,7 +2782,8 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 				varT = types.AnyType{}
 			}
 			if st.Var.Type == nil && currentAnyUpdated != nil && currentAnyUpdated[st.Var.Name] {
-				if _, ok := varT.(types.ListType); !ok {
+				// Only widen to Any if the inferred type is itself Any.
+				if _, ok := varT.(types.AnyType); ok {
 					varT = types.AnyType{}
 				}
 			}
@@ -3062,6 +3067,11 @@ func convertFunDecl(env *types.Env, f *parser.FunStmt) (Stmt, error) {
 		if mutFlags[i] {
 			if !(fn.Params[i].InOut) {
 				p := f.Params[i]
+				if len(body) > 0 {
+					if vd, ok := body[0].(*VarDecl); ok && vd.Name == p.Name {
+						continue
+					}
+				}
 				body = append([]Stmt{&VarDecl{Name: p.Name, Expr: &NameExpr{Name: p.Name}}}, body...)
 			}
 		}
@@ -4300,6 +4310,8 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 					baseType = bt.Value
 				case types.ListType:
 					baseType = bt.Elem
+				case types.StructType:
+					baseType = bt
 				default:
 					baseType = types.AnyType{}
 				}
@@ -5488,11 +5500,9 @@ func toSwiftType(t *parser.TypeRef) string {
 		switch t.Generic.Name {
 		case "list":
 			elem := toSwiftType(t.Generic.Args[0])
-			suf := "?"
-			if strings.HasSuffix(elem, "]") {
-				suf = ""
-			}
-			return "[" + elem + suf + "]"
+			// Mochi lists hold non-nil values, so element types are not
+			// wrapped in optionals unless explicitly requested.
+			return "[" + elem + "]"
 		case "map":
 			key := toSwiftType(t.Generic.Args[0])
 			if key == "Any?" || key == "Any" {
@@ -5607,11 +5617,11 @@ func swiftTypeOf(t types.Type) string {
 		return "Any?"
 	case types.ListType:
 		elem := swiftTypeOf(tt.Elem)
-		suf := "?"
-		if strings.HasSuffix(elem, "]") {
-			suf = ""
-		}
-		return "[" + elem + suf + "]"
+		// Lists in Mochi do not allow nil elements, so we use a
+		// non-optional element type in Swift as well. Optional
+		// element types will still propagate when explicitly
+		// declared (e.g. list<option<string>>).
+		return "[" + elem + "]"
 	case types.MapType:
 		key := swiftTypeOf(tt.Key)
 		if key == "Any?" || key == "Any" {
