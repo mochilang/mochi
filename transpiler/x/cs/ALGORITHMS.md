@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-07 10:30 GMT+7
+Last updated: 2025-08-07 11:00 GMT+7
 
-## Algorithms Golden Test Checklist (590/1077)
+## Algorithms Golden Test Checklist (596/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -706,11 +706,11 @@ Last updated: 2025-08-07 10:30 GMT+7
 | 697 | matrix/binary_search_matrix | ✓ | 2.0ms | 18.70KB |
 | 698 | matrix/count_islands_in_matrix | error |  |  |
 | 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 4.0ms | 15.08GB |
-| 700 | matrix/count_paths |   |  |  |
+| 700 | matrix/count_paths | ✓ | 3.0ms | 21.24KB |
 | 701 | matrix/cramers_rule_2x2 |   |  |  |
 | 702 | matrix/inverse_of_matrix |   |  |  |
-| 703 | matrix/largest_square_area_in_matrix |   |  |  |
-| 704 | matrix/matrix_based_game |   |  |  |
+| 703 | matrix/largest_square_area_in_matrix | ✓ | 4.0ms | 20.72KB |
+| 704 | matrix/matrix_based_game | ✓ | 4.0ms | 36.11KB |
 | 705 | matrix/matrix_class |   |  |  |
 | 706 | matrix/matrix_equalization |   |  |  |
 | 707 | matrix/matrix_multiplication_recursion |   |  |  |
@@ -734,8 +734,8 @@ Last updated: 2025-08-07 10:30 GMT+7
 | 725 | neural_network/activation_functions/mish |   |  |  |
 | 726 | neural_network/activation_functions/rectified_linear_unit |   |  |  |
 | 727 | neural_network/activation_functions/scaled_exponential_linear_unit |   |  |  |
-| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent |   |  |  |
-| 729 | neural_network/activation_functions/softplus |   |  |  |
+| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 9.0ms | 105.61KB |
+| 729 | neural_network/activation_functions/softplus | error |  |  |
 | 730 | neural_network/activation_functions/squareplus |   |  |  |
 | 731 | neural_network/activation_functions/swish |   |  |  |
 | 732 | neural_network/back_propagation_neural_network |   |  |  |
@@ -749,11 +749,11 @@ Last updated: 2025-08-07 10:30 GMT+7
 | 740 | other/davis_putnam_logemann_loveland |   |  |  |
 | 741 | other/doomsday |   |  |  |
 | 742 | other/fischer_yates_shuffle |   |  |  |
-| 743 | other/gauss_easter |   |  |  |
+| 743 | other/gauss_easter | ✓ | 3.0ms | 19.54KB |
 | 744 | other/greedy |   |  |  |
 | 745 | other/guess_the_number_search |   |  |  |
 | 746 | other/h_index |   |  |  |
-| 747 | other/least_recently_used |   |  |  |
+| 747 | other/least_recently_used | ✓ | 3.0ms | 19.94KB |
 | 748 | other/lfu_cache |   |  |  |
 | 749 | other/linear_congruential_generator |   |  |  |
 | 750 | other/lru_cache |   |  |  |
@@ -769,7 +769,7 @@ Last updated: 2025-08-07 10:30 GMT+7
 | 760 | other/word_search |   |  |  |
 | 761 | physics/altitude_pressure |   |  |  |
 | 762 | physics/archimedes_principle_of_buoyant_force |   |  |  |
-| 763 | physics/basic_orbital_capture |   |  |  |
+| 763 | physics/basic_orbital_capture | error |  |  |
 | 764 | physics/casimir_effect |   |  |  |
 | 765 | physics/center_of_mass |   |  |  |
 | 766 | physics/centripetal_force |   |  |  |
@@ -779,7 +779,7 @@ Last updated: 2025-08-07 10:30 GMT+7
 | 770 | physics/grahams_law |   |  |  |
 | 771 | physics/horizontal_projectile_motion |   |  |  |
 | 772 | physics/hubble_parameter |   |  |  |
-| 773 | physics/ideal_gas_law |   |  |  |
+| 773 | physics/ideal_gas_law | error |  |  |
 | 774 | physics/in_static_equilibrium |   |  |  |
 | 775 | physics/kinetic_energy |   |  |  |
 | 776 | physics/lens_formulae |   |  |  |
