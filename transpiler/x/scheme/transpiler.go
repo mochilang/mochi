@@ -341,11 +341,10 @@ func header() []byte {
 	prelude += "\n(define (lower s) (string-downcase s))"
 	prelude += "\n(define (fmod a b) (- a (* (floor (/ a b)) b)))"
 	prelude += "\n(define (_mod a b) (if (and (integer? a) (integer? b)) (modulo a b) (fmod a b)))"
-	// Always perform floating-point division to match Mochi semantics.
-	// Using quotient for two integers caused loss of precision in
-	// algorithms expecting real results (e.g. numerical analysis methods
-	// like Runge-Kutta). Use Scheme's `/` regardless of operand types.
-	prelude += "\n(define (_div a b) (/ a b))"
+	// Perform integer division when both operands are integers to mimic
+	// Mochi's semantics. Fall back to Scheme's `/` for cases requiring
+	// floating-point results.
+	prelude += "\n(define (_div a b) (if (and (integer? a) (integer? b) (exact? a) (exact? b)) (quotient a b) (/ a b)))"
 	prelude += "\n(define (_gt a b) (cond ((and (number? a) (number? b)) (> a b)) ((and (string? a) (string? b)) (string>? a b)) (else (> a b))))"
 	prelude += "\n(define (_lt a b) (cond ((and (number? a) (number? b)) (< a b)) ((and (string? a) (string? b)) (string<? a b)) (else (< a b))))"
 	prelude += "\n(define (_ge a b) (cond ((and (number? a) (number? b)) (>= a b)) ((and (string? a) (string? b)) (string>=? a b)) (else (>= a b))))"
@@ -422,6 +421,7 @@ func header() []byte {
   (cond ((string? x) (string-length x))
         ((hash-table? x) (hash-table-size x))
         (else (length x))))`
+	prelude += "\n(define (list-ref-safe lst idx) (if (and (integer? idx) (>= idx 0) (< idx (length lst))) (list-ref lst idx) '()))"
 	if usesInput {
 		prelude += "\n(define (_input)\n  (let ((l (read-line)))\n    (if (eof-object? l) \"\" l)))"
 	}
@@ -897,7 +897,7 @@ func convertStmt(st *parser.Statement) (Node, error) {
 				}
 				switch t := typ.(type) {
 				case types.ListType:
-					target = &List{Elems: []Node{Symbol("list-ref"), target, idxNode}}
+					target = &List{Elems: []Node{Symbol("list-ref-safe"), target, idxNode}}
 					typ = t.Elem
 				case types.MapType:
 					needHash = true
@@ -908,7 +908,7 @@ func convertStmt(st *parser.Statement) (Node, error) {
 						needHash = true
 						target = &List{Elems: []Node{Symbol("hash-table-ref"), target, idxNode}}
 					} else {
-						target = &List{Elems: []Node{Symbol("list-ref"), target, idxNode}}
+						target = &List{Elems: []Node{Symbol("list-ref-safe"), target, idxNode}}
 					}
 					typ = types.AnyType{}
 				}
@@ -3141,7 +3141,7 @@ func convertIndex(target Node, orig *parser.Primary, idx *parser.IndexOp) (Node,
 			case types.ListType:
 				// if slicing a list by one element, treat as index access
 				if isAddOne(end, start) {
-					return &List{Elems: []Node{Symbol("list-ref"), target, start}}, nil
+					return &List{Elems: []Node{Symbol("list-ref-safe"), target, start}}, nil
 				}
 				return &List{Elems: []Node{Symbol("take"), &List{Elems: []Node{Symbol("drop"), target, start}}, lenNode}}, nil
 			}
@@ -3166,7 +3166,7 @@ func convertIndex(target Node, orig *parser.Primary, idx *parser.IndexOp) (Node,
 			one := &List{Elems: []Node{Symbol("+"), in, IntLit(1)}}
 			return &List{Elems: []Node{Symbol("_substring"), target, in, one}}, nil
 		case types.ListType:
-			return &List{Elems: []Node{Symbol("list-ref"), target, in}}, nil
+			return &List{Elems: []Node{Symbol("list-ref-safe"), target, in}}, nil
 		case types.MapType:
 			needHash = true
 			return &List{Elems: []Node{Symbol("hash-table-ref/default"), target, in, voidSym()}}, nil
@@ -3176,6 +3176,6 @@ func convertIndex(target Node, orig *parser.Primary, idx *parser.IndexOp) (Node,
 		Symbol("cond"),
 		&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), target}}, &List{Elems: []Node{Symbol("_substring"), target, in, &List{Elems: []Node{Symbol("+"), in, IntLit(1)}}}}}},
 		&List{Elems: []Node{&List{Elems: []Node{Symbol("hash-table?"), target}}, &List{Elems: []Node{Symbol("hash-table-ref"), target, in}}}},
-		&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("list-ref"), target, in}}}},
+		&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("list-ref-safe"), target, in}}}},
 	}}, nil
 }
