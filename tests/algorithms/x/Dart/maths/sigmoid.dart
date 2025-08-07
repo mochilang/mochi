@@ -13,12 +13,14 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+
 double exp_approx(double x) {
   double sum = 1.0;
   double term = 1.0;
   int i = 1;
   while (i <= 10) {
-    term = term * x / (i as double);
+    term = term * x / ((i).toDouble());
     sum = sum + term;
     i = i + 1;
   }
@@ -38,6 +40,6 @@ List<double> sigmoid(List<double> vector) {
 }
 
 void main() {
-  print((sigmoid(List<double>.from([-1.0, 1.0, 2.0]))).toString());
-  print((sigmoid([0.0])).toString());
+  print(_str(sigmoid(List<double>.from([-1.0, 1.0, 2.0]))));
+  print(_str(sigmoid([0.0])));
 }
