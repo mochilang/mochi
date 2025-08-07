@@ -2626,13 +2626,13 @@ func gatherMutVars(stmts []Stmt, env *types.Env) []string {
 				if _, ok := locals[t.Name]; ok {
 					break
 				}
+				if isGlobalVar(t.Name) {
+					break
+				}
 				// If the variable exists in the current environment treat it as a local
 				// mutation, even if a global variable with the same name exists.
 				if _, err := env.IsMutable(t.Name); err == nil {
 					set[t.Name] = struct{}{}
-					break
-				}
-				if isGlobalVar(t.Name) {
 					break
 				}
 				set[t.Name] = struct{}{}
@@ -2641,15 +2641,16 @@ func gatherMutVars(stmts []Stmt, env *types.Env) []string {
 					if _, ok := locals[v]; ok {
 						continue
 					}
+					if isGlobalVar(v) {
+						continue
+					}
 					// Prefer a local variable in the current environment even if a global
 					// variable with the same name exists.
 					if _, err := env.IsMutable(v); err == nil {
 						set[v] = struct{}{}
 						continue
 					}
-					if !isGlobalVar(v) {
-						set[v] = struct{}{}
-					}
+					set[v] = struct{}{}
 				}
 				walk(t.Then)
 				walk(t.Else)
