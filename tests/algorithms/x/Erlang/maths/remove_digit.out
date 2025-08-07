@@ -1,0 +1,9 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/remove_digit.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/maths/remove_digit.erl:92:24: Warning: variable 'N_3' exported from 'case' (line 69, column 9)
+%   92| {Divisor_2, Max_val_3, N_3, Num} = Fun(Divisor, Max_val, N_3, Num),
+%     |                        ^
+
+52

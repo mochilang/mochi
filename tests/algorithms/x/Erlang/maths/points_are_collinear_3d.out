@@ -1,0 +1,6 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/points_are_collinear_3d.erl:39:1: Warning: function mochi_nth/2 is unused
+%   39| mochi_nth(I, L) ->
+%     | ^
+
+true
+false

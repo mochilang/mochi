@@ -1,0 +1,17 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/perfect_cube.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/maths/perfect_cube.erl:62:7: Warning: variable 'M_3' exported from 'case' (line 48, column 9)
+%   62| {I_2, M_3, N} = Fun(I, M_3, N),
+%     |       ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/maths/perfect_cube.erl:97:10: Warning: variable 'M_6' exported from 'case' (line 69, column 9)
+%   97| {Left_3, M_6, N_2, Right_3} = Fun_2(Left, M_6, N_2, Right),
+%     |          ^
+
+true
+false
+true
+true
+false

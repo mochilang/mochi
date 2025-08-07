@@ -1,0 +1,6 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/radix2_fft.erl:246:24: Warning: ambiguous call of overridden auto-imported BIF floor/1 --
+use erlang:floor/1 or "-compile({no_auto_import,[floor/1]})." to resolve name clash
+%  246|         mochi_safe_div(floor((mochi_safe_mul(X_4, M) + 0.5)), M)
+%     |                        ^
+
+"[0,  2,  3,  8,  6,  8]"

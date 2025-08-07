@@ -1,0 +1,12 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/radians.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/maths/radians.erl:61:1: Warning: function mochi_safe_mul/2 is unused
+%   61| mochi_safe_mul(A, B) ->
+%     | ^
+
+3.141592653589793
+1.6057029118347832
+4.782202150464463
+1.9167205845401725

@@ -1,0 +1,11 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/numerical_analysis/numerical_integration.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+"f(x) = x^3"
+"The area between the curve,  x = -10,  x = 10 and the x axis is:"
+"with 10 steps: 325.0"
+"with 100 steps: 312.6250000000002"
+"with 1000 steps: 312.50124999999076"
+"with 10000 steps: 312.500012499954"
+"with 100000 steps: 312.50000012559866"
