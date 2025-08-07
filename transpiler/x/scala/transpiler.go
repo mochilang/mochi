@@ -1399,9 +1399,24 @@ func (c *CastExpr) emit(w io.Writer) {
 		c.Value.emit(w)
 		fmt.Fprint(w, ")")
 	}
+	typ := inferType(c.Value)
 	switch c.Type {
 	case "float", "Double":
-		fmt.Fprint(w, ".toString.toDouble")
+		if typ == "BigInt" || typ == "Int" || typ == "int" || typ == "bigint" {
+			fmt.Fprint(w, ".toDouble")
+		} else if typ == "float" || typ == "Float" || typ == "Double" || typ == "double" {
+			fmt.Fprint(w, "")
+		} else if typ == "String" {
+			fmt.Fprint(w, ".toString.toDouble")
+		} else if typ == "Any" || typ == "" {
+			if isBigIntExpr(c.Value) {
+				fmt.Fprint(w, ".toDouble")
+			} else {
+				fmt.Fprint(w, ".toString.toDouble")
+			}
+		} else {
+			fmt.Fprint(w, ".toDouble")
+		}
 	case "string", "String":
 		if n, ok := c.Value.(*Name); ok && n.Name == "null" {
 			// keep null as-is

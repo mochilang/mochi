@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
-Completed programs: 517/1077
-Last updated: 2025-08-07 14:10 +0700
+Completed programs: 518/1077
+Last updated: 2025-08-07 16:09 +0700
 
 Checklist:
 
@@ -578,7 +578,7 @@ Checklist:
 | 569 | maths/find_max | ✓ | 6µs | 8.7 MB |
 | 570 | maths/find_min | ✓ | 6µs | 8.7 MB |
 | 571 | maths/floor | ✓ | 5µs | 8.7 MB |
-| 572 | maths/gamma |   |  |  |
+| 572 | maths/gamma | ✓ | 1.248ms | 8.7 MB |
 | 573 | maths/gaussian |   |  |  |
 | 574 | maths/gcd_of_n_numbers |   |  |  |
 | 575 | maths/geometric_mean |   |  |  |
