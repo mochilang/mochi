@@ -320,6 +320,7 @@ var phpReserved = map[string]struct{}{
 	"repeat":        {},
 	"rand":          {},
 	"random_int":    {},
+	"sqrt":          {},
 	"crc32":         {},
 	"xor":           {},
 	"base64_encode": {},
