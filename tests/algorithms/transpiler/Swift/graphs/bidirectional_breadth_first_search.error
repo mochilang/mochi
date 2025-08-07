@@ -1,0 +1,434 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:102:42: warning: forced cast of 'String' to same type has no effect
+100 |         var i: Int = 0
+101 |         while (i < Int(((s).count))) {
+102 |             let c = (String(Array(s)[i]) as! String)
+    |                                          `- warning: forced cast of 'String' to same type has no effect
+103 |             value = Int(((value &* 10) &+ Int(c)))
+104 |             i = Int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:103:43: error: value of optional type 'Int?' must be unwrapped to a value of type 'Int'
+101 |         while (i < Int(((s).count))) {
+102 |             let c = (String(Array(s)[i]) as! String)
+103 |             value = Int(((value &* 10) &+ Int(c)))
+    |                                           |- error: value of optional type 'Int?' must be unwrapped to a value of type 'Int'
+    |                                           |- note: coalesce using '??' to provide a default when the optional value contains 'nil'
+    |                                           `- note: force-unwrap using '!' to abort execution if the optional value contains 'nil'
+104 |             i = Int((i &+ 1))
+105 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:110:99: warning: forced cast of 'String' to same type has no effect
+108 |     func parse_key(_ k: String) -> [Int] {
+109 |         var idx: Int = 0
+110 |         while ((idx < Int(((k).count))) && (String(describing: String(Array(String(describing: (k as! String)))[idx..<(idx &+ 1)])) != ",")) {
+    |                                                                                                   `- warning: forced cast of 'String' to same type has no effect
+111 |             idx = Int((idx &+ 1))
+112 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:113:85: warning: forced cast of 'String' to same type has no effect
+111 |             idx = Int((idx &+ 1))
+112 |         }
+113 |         let y = Int(parse_int(String(describing: String(Array(String(describing: (k as! String)))[0..<idx]))))
+    |                                                                                     `- warning: forced cast of 'String' to same type has no effect
+114 |         let x = Int(parse_int(String(describing: String(Array(String(describing: (k as! String)))[(idx &+ 1)..<Int(((k).count))]))))
+115 |         return ([y, x] as! [Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:114:85: warning: forced cast of 'String' to same type has no effect
+112 |         }
+113 |         let y = Int(parse_int(String(describing: String(Array(String(describing: (k as! String)))[0..<idx]))))
+114 |         let x = Int(parse_int(String(describing: String(Array(String(describing: (k as! String)))[(idx &+ 1)..<Int(((k).count))]))))
+    |                                                                                     `- warning: forced cast of 'String' to same type has no effect
+115 |         return ([y, x] as! [Int])
+116 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:118:45: warning: forced cast of 'String' to same type has no effect
+116 |     }
+117 |     func neighbors(_ pos: String) -> [String] {
+118 |         let coords: [Int] = (parse_key((pos as! String)) as! [Int])
+    |                                             `- warning: forced cast of 'String' to same type has no effect
+119 |         let y = (coords[0] as? Int ?? 0)
+120 |         let x = (coords[1] as? Int ?? 0)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:118:58: warning: forced cast of '[Int]' to same type has no effect
+116 |     }
+117 |     func neighbors(_ pos: String) -> [String] {
+118 |         let coords: [Int] = (parse_key((pos as! String)) as! [Int])
+    |                                                          `- warning: forced cast of '[Int]' to same type has no effect
+119 |         let y = (coords[0] as? Int ?? 0)
+120 |         let x = (coords[1] as? Int ?? 0)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:119:28: warning: conditional cast from 'Int' to 'Int' always succeeds
+117 |     func neighbors(_ pos: String) -> [String] {
+118 |         let coords: [Int] = (parse_key((pos as! String)) as! [Int])
+119 |         let y = (coords[0] as? Int ?? 0)
+    |                            `- warning: conditional cast from 'Int' to 'Int' always succeeds
+120 |         let x = (coords[1] as? Int ?? 0)
+121 |         var res: [String] = ([] as! [String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:120:28: warning: conditional cast from 'Int' to 'Int' always succeeds
+118 |         let coords: [Int] = (parse_key((pos as! String)) as! [Int])
+119 |         let y = (coords[0] as? Int ?? 0)
+120 |         let x = (coords[1] as? Int ?? 0)
+    |                            `- warning: conditional cast from 'Int' to 'Int' always succeeds
+121 |         var res: [String] = ([] as! [String])
+122 |         var i: Int = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:124:41: warning: conditional cast from 'Int' to 'Int' always succeeds
+122 |         var i: Int = 0
+123 |         while (i < Int(((delta).count))) {
+124 |             let ny = (y &+ (delta[i][0] as? Int ?? 0))
+    |                                         `- warning: conditional cast from 'Int' to 'Int' always succeeds
+125 |             let nx = (x &+ (delta[i][1] as? Int ?? 0))
+126 |             if ((((ny >= 0) && (ny < Int(((grid).count)))) && (nx >= 0)) && (nx < Int((((grid[0] as! [Int])).count)))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:125:41: warning: conditional cast from 'Int' to 'Int' always succeeds
+123 |         while (i < Int(((delta).count))) {
+124 |             let ny = (y &+ (delta[i][0] as? Int ?? 0))
+125 |             let nx = (x &+ (delta[i][1] as? Int ?? 0))
+    |                                         `- warning: conditional cast from 'Int' to 'Int' always succeeds
+126 |             if ((((ny >= 0) && (ny < Int(((grid).count)))) && (nx >= 0)) && (nx < Int((((grid[0] as! [Int])).count)))) {
+127 |                 if ((grid[ny][nx] as? Int ?? 0) == 0) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:126:98: warning: forced cast of '[Int]' to same type has no effect
+124 |             let ny = (y &+ (delta[i][0] as? Int ?? 0))
+125 |             let nx = (x &+ (delta[i][1] as? Int ?? 0))
+126 |             if ((((ny >= 0) && (ny < Int(((grid).count)))) && (nx >= 0)) && (nx < Int((((grid[0] as! [Int])).count)))) {
+    |                                                                                                  `- warning: forced cast of '[Int]' to same type has no effect
+127 |                 if ((grid[ny][nx] as? Int ?? 0) == 0) {
+128 |                     res = (_append(res, String(describing: key(ny, nx))) as! [String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:127:35: warning: conditional cast from 'Int' to 'Int' always succeeds
+125 |             let nx = (x &+ (delta[i][1] as? Int ?? 0))
+126 |             if ((((ny >= 0) && (ny < Int(((grid).count)))) && (nx >= 0)) && (nx < Int((((grid[0] as! [Int])).count)))) {
+127 |                 if ((grid[ny][nx] as? Int ?? 0) == 0) {
+    |                                   `- warning: conditional cast from 'Int' to 'Int' always succeeds
+128 |                     res = (_append(res, String(describing: key(ny, nx))) as! [String])
+129 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:139:41: warning: forced cast of 'String' to same type has no effect
+137 |         var i: Int = (Int(((lst).count)) &- 1)
+138 |         while (i >= 0) {
+139 |             res = (_append(res, (lst[i] as! String)) as! [String])
+    |                                         `- warning: forced cast of 'String' to same type has no effect
+140 |             i = Int((i &- 1))
+141 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:150:37: warning: forced cast of 'Node' to same type has no effect
+148 |         var visited: [String: Bool] = (["start": true] as! [String: Bool])
+149 |         while (head < Int(((queue).count))) {
+150 |             let node = (queue[head] as! Node)
+    |                                     `- warning: forced cast of 'Node' to same type has no effect
+151 |             head = Int((head &+ 1))
+152 |             if (node.pos == goal) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:155:56: warning: forced cast of 'String' to same type has no effect
+153 |                 return node.path
+154 |             }
+155 |             let neigh: [String] = (neighbors((node.pos as! String)) as! [String])
+    |                                                        `- warning: forced cast of 'String' to same type has no effect
+156 |             var i: Int = 0
+157 |             while (i < Int(((neigh).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:155:69: warning: forced cast of '[String]' to same type has no effect
+153 |                 return node.path
+154 |             }
+155 |             let neigh: [String] = (neighbors((node.pos as! String)) as! [String])
+    |                                                                     `- warning: forced cast of '[String]' to same type has no effect
+156 |             var i: Int = 0
+157 |             while (i < Int(((neigh).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:158:38: warning: forced cast of 'String' to same type has no effect
+156 |             var i: Int = 0
+157 |             while (i < Int(((neigh).count))) {
+158 |                 let npos = (neigh[i] as! String)
+    |                                      `- warning: forced cast of 'String' to same type has no effect
+159 |                 if (!(visited[npos] != nil)) {
+160 |                     visited = _set(visited, String(describing: npos), true)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:179:43: warning: forced cast of 'Node' to same type has no effect
+177 |         var visited_b: [String: [String]] = (["goal": ([goal] as! [String])] as! [String: [String]])
+178 |         while ((head_f < Int(((queue_f).count))) && (head_b < Int(((queue_b).count)))) {
+179 |             let node_f = (queue_f[head_f] as! Node)
+    |                                           `- warning: forced cast of 'Node' to same type has no effect
+180 |             head_f = Int((head_f &+ 1))
+181 |             let neigh_f: [String] = (neighbors((node_f.pos as! String)) as! [String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:181:60: warning: forced cast of 'String' to same type has no effect
+179 |             let node_f = (queue_f[head_f] as! Node)
+180 |             head_f = Int((head_f &+ 1))
+181 |             let neigh_f: [String] = (neighbors((node_f.pos as! String)) as! [String])
+    |                                                            `- warning: forced cast of 'String' to same type has no effect
+182 |             var i: Int = 0
+183 |             while (i < Int(((neigh_f).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:181:73: warning: forced cast of '[String]' to same type has no effect
+179 |             let node_f = (queue_f[head_f] as! Node)
+180 |             head_f = Int((head_f &+ 1))
+181 |             let neigh_f: [String] = (neighbors((node_f.pos as! String)) as! [String])
+    |                                                                         `- warning: forced cast of '[String]' to same type has no effect
+182 |             var i: Int = 0
+183 |             while (i < Int(((neigh_f).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:184:40: warning: forced cast of 'String' to same type has no effect
+182 |             var i: Int = 0
+183 |             while (i < Int(((neigh_f).count))) {
+184 |                 let npos = (neigh_f[i] as! String)
+    |                                        `- warning: forced cast of 'String' to same type has no effect
+185 |                 if (!(visited_f[npos] != nil)) {
+186 |                     var new_path: [String] = (_append(node_f.path, npos) as! [String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:187:85: warning: forced cast of '[String]' to same type has no effect
+185 |                 if (!(visited_f[npos] != nil)) {
+186 |                     var new_path: [String] = (_append(node_f.path, npos) as! [String])
+187 |                     visited_f = _set(visited_f, String(describing: npos), (new_path as! [String]))
+    |                                                                                     `- warning: forced cast of '[String]' to same type has no effect
+188 |                     if (visited_b[npos] != nil) {
+189 |                         var rev: [String] = (reverse_list((visited_b[String(String(describing: npos))] as! [String])) as! [String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:189:104: warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+187 |                     visited_f = _set(visited_f, String(describing: npos), (new_path as! [String]))
+188 |                     if (visited_b[npos] != nil) {
+189 |                         var rev: [String] = (reverse_list((visited_b[String(String(describing: npos))] as! [String])) as! [String])
+    |                                                                                                        `- warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+190 |                         var j: Int = 1
+191 |                         while (j < Int(((rev).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:189:119: warning: forced cast of '[String]' to same type has no effect
+187 |                     visited_f = _set(visited_f, String(describing: npos), (new_path as! [String]))
+188 |                     if (visited_b[npos] != nil) {
+189 |                         var rev: [String] = (reverse_list((visited_b[String(String(describing: npos))] as! [String])) as! [String])
+    |                                                                                                                       `- warning: forced cast of '[String]' to same type has no effect
+190 |                         var j: Int = 1
+191 |                         while (j < Int(((rev).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:192:67: warning: forced cast of 'String' to same type has no effect
+190 |                         var j: Int = 1
+191 |                         while (j < Int(((rev).count))) {
+192 |                             new_path = (_append(new_path, (rev[j] as! String)) as! [String])
+    |                                                                   `- warning: forced cast of 'String' to same type has no effect
+193 |                             j = Int((j &+ 1))
+194 |                         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:201:43: warning: forced cast of 'Node' to same type has no effect
+199 |                 i = Int((i &+ 1))
+200 |             }
+201 |             let node_b = (queue_b[head_b] as! Node)
+    |                                           `- warning: forced cast of 'Node' to same type has no effect
+202 |             head_b = Int((head_b &+ 1))
+203 |             let neigh_b: [String] = (neighbors((node_b.pos as! String)) as! [String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:203:60: warning: forced cast of 'String' to same type has no effect
+201 |             let node_b = (queue_b[head_b] as! Node)
+202 |             head_b = Int((head_b &+ 1))
+203 |             let neigh_b: [String] = (neighbors((node_b.pos as! String)) as! [String])
+    |                                                            `- warning: forced cast of 'String' to same type has no effect
+204 |             var j: Int = 0
+205 |             while (j < Int(((neigh_b).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:203:73: warning: forced cast of '[String]' to same type has no effect
+201 |             let node_b = (queue_b[head_b] as! Node)
+202 |             head_b = Int((head_b &+ 1))
+203 |             let neigh_b: [String] = (neighbors((node_b.pos as! String)) as! [String])
+    |                                                                         `- warning: forced cast of '[String]' to same type has no effect
+204 |             var j: Int = 0
+205 |             while (j < Int(((neigh_b).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:206:41: warning: forced cast of 'String' to same type has no effect
+204 |             var j: Int = 0
+205 |             while (j < Int(((neigh_b).count))) {
+206 |                 let nposb = (neigh_b[j] as! String)
+    |                                         `- warning: forced cast of 'String' to same type has no effect
+207 |                 if (!(visited_b[nposb] != nil)) {
+208 |                     var new_path_b: [String] = (_append(node_b.path, nposb) as! [String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:209:88: warning: forced cast of '[String]' to same type has no effect
+207 |                 if (!(visited_b[nposb] != nil)) {
+208 |                     var new_path_b: [String] = (_append(node_b.path, nposb) as! [String])
+209 |                     visited_b = _set(visited_b, String(describing: nposb), (new_path_b as! [String]))
+    |                                                                                        `- warning: forced cast of '[String]' to same type has no effect
+210 |                     if (visited_f[nposb] != nil) {
+211 |                         var path_f: [String] = (visited_f[String(String(describing: nposb))] as! [String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:211:94: warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+209 |                     visited_b = _set(visited_b, String(describing: nposb), (new_path_b as! [String]))
+210 |                     if (visited_f[nposb] != nil) {
+211 |                         var path_f: [String] = (visited_f[String(String(describing: nposb))] as! [String])
+    |                                                                                              `- warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+212 |                         new_path_b = (reverse_list((new_path_b as! [String])) as! [String])
+213 |                         var t: Int = 1
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:212:64: warning: forced cast of '[String]' to same type has no effect
+210 |                     if (visited_f[nposb] != nil) {
+211 |                         var path_f: [String] = (visited_f[String(String(describing: nposb))] as! [String])
+212 |                         new_path_b = (reverse_list((new_path_b as! [String])) as! [String])
+    |                                                                `- warning: forced cast of '[String]' to same type has no effect
+213 |                         var t: Int = 1
+214 |                         while (t < Int(((new_path_b).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:212:79: warning: forced cast of '[String]' to same type has no effect
+210 |                     if (visited_f[nposb] != nil) {
+211 |                         var path_f: [String] = (visited_f[String(String(describing: nposb))] as! [String])
+212 |                         new_path_b = (reverse_list((new_path_b as! [String])) as! [String])
+    |                                                                               `- warning: forced cast of '[String]' to same type has no effect
+213 |                         var t: Int = 1
+214 |                         while (t < Int(((new_path_b).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:215:70: warning: forced cast of 'String' to same type has no effect
+213 |                         var t: Int = 1
+214 |                         while (t < Int(((new_path_b).count))) {
+215 |                             path_f = (_append(path_f, (new_path_b[t] as! String)) as! [String])
+    |                                                                      `- warning: forced cast of 'String' to same type has no effect
+216 |                             t = Int((t &+ 1))
+217 |                         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:231:48: warning: forced cast of 'String' to same type has no effect
+229 |             return "[]"
+230 |         }
+231 |         var first: [Int] = (parse_key((path[0] as! String)) as! [Int])
+    |                                                `- warning: forced cast of 'String' to same type has no effect
+232 |         var s: String = (((("[(" + _p((first[0] as? Int ?? 0))) + ", ") + _p((first[1] as? Int ?? 0))) + ")")
+233 |         var i: Int = 1
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:231:61: warning: forced cast of '[Int]' to same type has no effect
+229 |             return "[]"
+230 |         }
+231 |         var first: [Int] = (parse_key((path[0] as! String)) as! [Int])
+    |                                                             `- warning: forced cast of '[Int]' to same type has no effect
+232 |         var s: String = (((("[(" + _p((first[0] as? Int ?? 0))) + ", ") + _p((first[1] as? Int ?? 0))) + ")")
+233 |         var i: Int = 1
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:232:49: warning: conditional cast from 'Int' to 'Int' always succeeds
+230 |         }
+231 |         var first: [Int] = (parse_key((path[0] as! String)) as! [Int])
+232 |         var s: String = (((("[(" + _p((first[0] as? Int ?? 0))) + ", ") + _p((first[1] as? Int ?? 0))) + ")")
+    |                                                 `- warning: conditional cast from 'Int' to 'Int' always succeeds
+233 |         var i: Int = 1
+234 |         while (i < Int(((path).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:232:88: warning: conditional cast from 'Int' to 'Int' always succeeds
+230 |         }
+231 |         var first: [Int] = (parse_key((path[0] as! String)) as! [Int])
+232 |         var s: String = (((("[(" + _p((first[0] as? Int ?? 0))) + ", ") + _p((first[1] as? Int ?? 0))) + ")")
+    |                                                                                        `- warning: conditional cast from 'Int' to 'Int' always succeeds
+233 |         var i: Int = 1
+234 |         while (i < Int(((path).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:235:48: warning: forced cast of 'String' to same type has no effect
+233 |         var i: Int = 1
+234 |         while (i < Int(((path).count))) {
+235 |             let c: [Int] = (parse_key((path[i] as! String)) as! [Int])
+    |                                                `- warning: forced cast of 'String' to same type has no effect
+236 |             s = ((((((s + ", (") + _p((c[0] as? Int ?? 0))) + ", ") + _p((c[1] as? Int ?? 0))) + ")") as! String)
+237 |             i = Int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:235:61: warning: forced cast of '[Int]' to same type has no effect
+233 |         var i: Int = 1
+234 |         while (i < Int(((path).count))) {
+235 |             let c: [Int] = (parse_key((path[i] as! String)) as! [Int])
+    |                                                             `- warning: forced cast of '[Int]' to same type has no effect
+236 |             s = ((((((s + ", (") + _p((c[0] as? Int ?? 0))) + ", ") + _p((c[1] as? Int ?? 0))) + ")") as! String)
+237 |             i = Int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:236:45: warning: conditional cast from 'Int' to 'Int' always succeeds
+234 |         while (i < Int(((path).count))) {
+235 |             let c: [Int] = (parse_key((path[i] as! String)) as! [Int])
+236 |             s = ((((((s + ", (") + _p((c[0] as? Int ?? 0))) + ", ") + _p((c[1] as? Int ?? 0))) + ")") as! String)
+    |                                             `- warning: conditional cast from 'Int' to 'Int' always succeeds
+237 |             i = Int((i &+ 1))
+238 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:236:80: warning: conditional cast from 'Int' to 'Int' always succeeds
+234 |         while (i < Int(((path).count))) {
+235 |             let c: [Int] = (parse_key((path[i] as! String)) as! [Int])
+236 |             s = ((((((s + ", (") + _p((c[0] as? Int ?? 0))) + ", ") + _p((c[1] as? Int ?? 0))) + ")") as! String)
+    |                                                                                `- warning: conditional cast from 'Int' to 'Int' always succeeds
+237 |             i = Int((i &+ 1))
+238 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:236:103: warning: forced cast of 'String' to same type has no effect
+234 |         while (i < Int(((path).count))) {
+235 |             let c: [Int] = (parse_key((path[i] as! String)) as! [Int])
+236 |             s = ((((((s + ", (") + _p((c[0] as? Int ?? 0))) + ", ") + _p((c[1] as? Int ?? 0))) + ")") as! String)
+    |                                                                                                       `- warning: forced cast of 'String' to same type has no effect
+237 |             i = Int((i &+ 1))
+238 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:239:24: warning: forced cast of 'String' to same type has no effect
+237 |             i = Int((i &+ 1))
+238 |         }
+239 |         s = ((s + "]") as! String)
+    |                        `- warning: forced cast of 'String' to same type has no effect
+240 |         return s
+241 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:243:83: warning: forced cast of '[Int]' to same type has no effect
+241 |     }
+242 |     let start = String(describing: key(0, 0))
+243 |     let goal = String(describing: key((Int(((grid).count)) &- 1), (Int((((grid[0] as! [Int])).count)) &- 1)))
+    |                                                                                   `- warning: forced cast of '[Int]' to same type has no effect
+244 |     let path1: [String] = (bfs((start as! String), (goal as! String)) as! [String])
+245 |     print(_p(String(describing: path_to_string((path1 as! [String])))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:244:39: warning: forced cast of 'String' to same type has no effect
+242 |     let start = String(describing: key(0, 0))
+243 |     let goal = String(describing: key((Int(((grid).count)) &- 1), (Int((((grid[0] as! [Int])).count)) &- 1)))
+244 |     let path1: [String] = (bfs((start as! String), (goal as! String)) as! [String])
+    |                                       `- warning: forced cast of 'String' to same type has no effect
+245 |     print(_p(String(describing: path_to_string((path1 as! [String])))))
+246 |     let path2: [String] = (bidirectional_bfs((start as! String), (goal as! String)) as! [String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:244:58: warning: forced cast of 'String' to same type has no effect
+242 |     let start = String(describing: key(0, 0))
+243 |     let goal = String(describing: key((Int(((grid).count)) &- 1), (Int((((grid[0] as! [Int])).count)) &- 1)))
+244 |     let path1: [String] = (bfs((start as! String), (goal as! String)) as! [String])
+    |                                                          `- warning: forced cast of 'String' to same type has no effect
+245 |     print(_p(String(describing: path_to_string((path1 as! [String])))))
+246 |     let path2: [String] = (bidirectional_bfs((start as! String), (goal as! String)) as! [String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:244:71: warning: forced cast of '[String]' to same type has no effect
+242 |     let start = String(describing: key(0, 0))
+243 |     let goal = String(describing: key((Int(((grid).count)) &- 1), (Int((((grid[0] as! [Int])).count)) &- 1)))
+244 |     let path1: [String] = (bfs((start as! String), (goal as! String)) as! [String])
+    |                                                                       `- warning: forced cast of '[String]' to same type has no effect
+245 |     print(_p(String(describing: path_to_string((path1 as! [String])))))
+246 |     let path2: [String] = (bidirectional_bfs((start as! String), (goal as! String)) as! [String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:245:55: warning: forced cast of '[String]' to same type has no effect
+243 |     let goal = String(describing: key((Int(((grid).count)) &- 1), (Int((((grid[0] as! [Int])).count)) &- 1)))
+244 |     let path1: [String] = (bfs((start as! String), (goal as! String)) as! [String])
+245 |     print(_p(String(describing: path_to_string((path1 as! [String])))))
+    |                                                       `- warning: forced cast of '[String]' to same type has no effect
+246 |     let path2: [String] = (bidirectional_bfs((start as! String), (goal as! String)) as! [String])
+247 |     print(_p(String(describing: path_to_string((path2 as! [String])))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:246:53: warning: forced cast of 'String' to same type has no effect
+244 |     let path1: [String] = (bfs((start as! String), (goal as! String)) as! [String])
+245 |     print(_p(String(describing: path_to_string((path1 as! [String])))))
+246 |     let path2: [String] = (bidirectional_bfs((start as! String), (goal as! String)) as! [String])
+    |                                                     `- warning: forced cast of 'String' to same type has no effect
+247 |     print(_p(String(describing: path_to_string((path2 as! [String])))))
+248 |     let _benchEnd = _now()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:246:72: warning: forced cast of 'String' to same type has no effect
+244 |     let path1: [String] = (bfs((start as! String), (goal as! String)) as! [String])
+245 |     print(_p(String(describing: path_to_string((path1 as! [String])))))
+246 |     let path2: [String] = (bidirectional_bfs((start as! String), (goal as! String)) as! [String])
+    |                                                                        `- warning: forced cast of 'String' to same type has no effect
+247 |     print(_p(String(describing: path_to_string((path2 as! [String])))))
+248 |     let _benchEnd = _now()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:246:85: warning: forced cast of '[String]' to same type has no effect
+244 |     let path1: [String] = (bfs((start as! String), (goal as! String)) as! [String])
+245 |     print(_p(String(describing: path_to_string((path1 as! [String])))))
+246 |     let path2: [String] = (bidirectional_bfs((start as! String), (goal as! String)) as! [String])
+    |                                                                                     `- warning: forced cast of '[String]' to same type has no effect
+247 |     print(_p(String(describing: path_to_string((path2 as! [String])))))
+248 |     let _benchEnd = _now()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden401_graphs_bidirectional_breadth_first_search3372068653/001/main.swift:247:55: warning: forced cast of '[String]' to same type has no effect
+245 |     print(_p(String(describing: path_to_string((path1 as! [String])))))
+246 |     let path2: [String] = (bidirectional_bfs((start as! String), (goal as! String)) as! [String])
+247 |     print(_p(String(describing: path_to_string((path2 as! [String])))))
+    |                                                       `- warning: forced cast of '[String]' to same type has no effect
+248 |     let _benchEnd = _now()
+249 |     let _benchMemEnd = _mem()

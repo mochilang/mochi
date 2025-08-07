@@ -2,8 +2,8 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 333/1077
-Last updated: 2025-08-07 08:46 +0700
+Completed programs: 341/1077
+Last updated: 2025-08-07 09:47 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -406,18 +406,18 @@ Last updated: 2025-08-07 08:46 +0700
 | 397 | graphs/basic_graphs | ✓ | 891µs | 3.2 MB |
 | 398 | graphs/bellman_ford | ✓ | 244µs | 3.4 MB |
 | 399 | graphs/bi_directional_dijkstra | ✓ | 451µs | 3.2 MB |
-| 400 | graphs/bidirectional_a_star | ✓ | 1.011ms | 3.4 MB |
+| 400 | graphs/bidirectional_a_star | ✓ | 1.549ms | 3.4 MB |
 | 401 | graphs/bidirectional_breadth_first_search |   |  |  |
 | 402 | graphs/bidirectional_search |   |  |  |
 | 403 | graphs/boruvka |   |  |  |
-| 404 | graphs/breadth_first_search |   |  |  |
-| 405 | graphs/breadth_first_search_2 |   |  |  |
-| 406 | graphs/breadth_first_search_shortest_path |   |  |  |
-| 407 | graphs/breadth_first_search_shortest_path_2 |   |  |  |
-| 408 | graphs/breadth_first_search_zero_one_shortest_path |   |  |  |
-| 409 | graphs/check_bipatrite |   |  |  |
-| 410 | graphs/check_cycle |   |  |  |
-| 411 | graphs/connected_components |   |  |  |
+| 404 | graphs/breadth_first_search | ✓ | 791µs | 3.4 MB |
+| 405 | graphs/breadth_first_search_2 | ✓ | 533µs | 3.2 MB |
+| 406 | graphs/breadth_first_search_shortest_path | ✓ | 666µs | 3.2 MB |
+| 407 | graphs/breadth_first_search_shortest_path_2 | ✓ |  |  |
+| 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ |  |  |
+| 409 | graphs/check_bipatrite | ✓ |  |  |
+| 410 | graphs/check_cycle | ✓ |  |  |
+| 411 | graphs/connected_components | ✓ |  |  |
 | 412 | graphs/deep_clone_graph |   |  |  |
 | 413 | graphs/depth_first_search |   |  |  |
 | 414 | graphs/depth_first_search_2 |   |  |  |
