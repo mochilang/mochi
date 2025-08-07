@@ -1,0 +1,56 @@
+signal: illegal instruction
+Swift/ContiguousArrayBuffer.swift:690: Fatal error: Index out of range
+
+*** Signal 4: Backtracing from 0x7fe784da38f5... done ***
+
+*** Program crashed: Illegal instruction at 0x00007fe784da38f5 ***
+
+Thread 0 "main" crashed:
+
+ 0      0x00007fe784da38f5 closure #1 in closure #1 in closure #1 in _assertionFailure(_:_:file:line:flags:) + 309 in libswiftCore.so
+ 1 [ra] 0x00007fe784da36e5 closure #1 in closure #1 in _assertionFailure(_:_:file:line:flags:) + 324 in libswiftCore.so
+ 2 [ra] 0x00007fe784da355c closure #1 in _assertionFailure(_:_:file:line:flags:) + 379 in libswiftCore.so
+ 3 [ra] 0x00007fe784f19505 _assertionFailure(_:_:file:line:flags:) + 276 in libswiftCore.so
+ 4 [ra] 0x00007fe784db97bd Array.subscript.getter + 124 in libswiftCore.so
+ 5 [ra] 0x0000557637581311 insert #1 (_:_:_:) in  + 368 in main
+ 6 [ra] 0x0000557637582761 insert #1 (_:_:_:) in  + 5568 in main
+ 7 [ra] 0x0000557637589ffd insert_many #1 (_:_:) in  + 428 in main
+ 8 [ra] 0x00005576375839d8 main #1 () in  + 599 in main
+ 9 [ra] 0x0000557637588cc9 main + 152 in main
+10 [ra] 0x00007fe78372e1ca <unknown> in libc.so.6
+11 [ra] 0x00007fe78372e28b <unknown> in libc.so.6
+
+
+Registers:
+
+rax 0x0000000000000001  1
+rdx 0x0000000000000001  1
+rcx 0x0000000000000002  2
+rbx 0x0000557335ff4a07  93953315523079
+rsi 0x0000000000000001  1
+rdi 0x0000557662997450  48 76 6d 71 61 55 00 00 31 00 00 00 00 00 00 00  HvmqaU··1·······
+rbp 0x00007ffe8dae8fb0  f0 8f ae 8d fe 7f 00 00 e5 36 da 84 e7 7f 00 00  ð·®·þ···å6Ú·ç···
+rsp 0x00007ffe8dae8fa0  12 00 00 00 00 00 00 00 b2 02 00 00 00 00 00 00  ········²·······
+ r8 0x0000557662961010  01 00 02 00 05 00 04 00 07 00 06 00 00 00 02 00  ················
+ r9 0x0000000000000007  7
+r10 0x0000557662997460  07 4a ff 35 73 55 00 00 58 d6 6c 9e 8b ca 3f 65  ·Jÿ5sU··XÖl··Ê?e
+r11 0x653fca8b9e6cd658  7295772622370690648
+r12 0x0000000000000000  0
+r13 0x00007ffe8daea0d0  20 5d 99 62 76 55 00 00 62 61 6e 64 61 6e 61 73   ]·bvU··bandanas
+r14 0x0000000000000001  1
+r15 0x000000000000000b  11
+rip 0x00007fe784da38f5  0f 0b 48 83 ec 08 48 8d 05 be f8 45 00 48 8d 3d  ··H·ì·H··¾øE·H·=
+
+rflags 0x0000000000010206  PF
+
+cs 0x0033  fs 0x0000  gs 0x0000
+
+
+Images (48 omitted):
+
+0x000055763757b000–0x0000557637590d10 fe7e422757a55b0f69b4f69eed9a7c580790ba91 main            /tmp/TestSwiftTranspiler_Algorithms_Golden265_data_structures_trie_radix_tree1856428404/001/main
+0x00007fe783704000–0x00007fe7838b3cb9 282c2c16e7b6600b0b22ea0c99010d2795752b5f libc.so.6       /usr/lib/x86_64-linux-gnu/libc.so.6
+0x00007fe784c3d000–0x00007fe7851cc2d8 7bd479aa5e6f57e6772da70789dcdfa25d5e29b0 libswiftCore.so /root/.local/share/mise/installs/swift/6.1/usr/lib/swift/linux/libswiftCore.so
+
+Backtrace took 0.06s
+

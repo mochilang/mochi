@@ -1,0 +1,145 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden291_divide_and_conquer_heaps_algorithm_iterative1034620343/001/main.swift:85:47: warning: conditional downcast from 'Int?' to 'Int' does nothing
+ 83 |         var i: Int = 0
+ 84 |         while (i < Int(((arr).count))) {
+ 85 |             result = (_append(result, (arr[i] as? Int ?? 0)) as! [Int?])
+    |                                               `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+ 86 |             i = Int((i &+ 1))
+ 87 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden291_divide_and_conquer_heaps_algorithm_iterative1034620343/001/main.swift:93:53: warning: forced cast of '[Int?]' to same type has no effect
+ 91 |         if (Int(((arr).count)) <= 1) {
+ 92 |             let single: [[Int?]] = ([] as! [[Int?]])
+ 93 |             return (_append(single, (copy_list((arr as! [Int?])) as! [Int?])) as! [[Int?]])
+    |                                                     `- warning: forced cast of '[Int?]' to same type has no effect
+ 94 |         }
+ 95 |         let n = Int(((arr).count))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden291_divide_and_conquer_heaps_algorithm_iterative1034620343/001/main.swift:93:66: warning: forced cast of '[Int?]' to same type has no effect
+ 91 |         if (Int(((arr).count)) <= 1) {
+ 92 |             let single: [[Int?]] = ([] as! [[Int?]])
+ 93 |             return (_append(single, (copy_list((arr as! [Int?])) as! [Int?])) as! [[Int?]])
+    |                                                                  `- warning: forced cast of '[Int?]' to same type has no effect
+ 94 |         }
+ 95 |         let n = Int(((arr).count))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden291_divide_and_conquer_heaps_algorithm_iterative1034620343/001/main.swift:103:45: warning: forced cast of '[Int?]' to same type has no effect
+101 |         }
+102 |         var res: [[Int?]] = ([] as! [[Int?]])
+103 |         res = (_append(res, (copy_list((arr as! [Int?])) as! [Int?])) as! [[Int?]])
+    |                                             `- warning: forced cast of '[Int?]' to same type has no effect
+104 |         i = 0
+105 |         while (i < n) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden291_divide_and_conquer_heaps_algorithm_iterative1034620343/001/main.swift:103:58: warning: forced cast of '[Int?]' to same type has no effect
+101 |         }
+102 |         var res: [[Int?]] = ([] as! [[Int?]])
+103 |         res = (_append(res, (copy_list((arr as! [Int?])) as! [Int?])) as! [[Int?]])
+    |                                                          `- warning: forced cast of '[Int?]' to same type has no effect
+104 |         i = 0
+105 |         while (i < n) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden291_divide_and_conquer_heaps_algorithm_iterative1034620343/001/main.swift:106:23: warning: conditional downcast from 'Int?' to 'Int' does nothing
+104 |         i = 0
+105 |         while (i < n) {
+106 |             if ((c[i] as? Int ?? 0) < i) {
+    |                       `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+107 |                 if (((i % 2 + 2) % 2) == 0) {
+108 |                     let temp = (arr[0] as? Int ?? 0)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden291_divide_and_conquer_heaps_algorithm_iterative1034620343/001/main.swift:108:40: warning: conditional downcast from 'Int?' to 'Int' does nothing
+106 |             if ((c[i] as? Int ?? 0) < i) {
+107 |                 if (((i % 2 + 2) % 2) == 0) {
+108 |                     let temp = (arr[0] as? Int ?? 0)
+    |                                        `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+109 |                     arr = _set(arr, 0, (arr[i] as? Int ?? 0))
+110 |                     arr = _set(arr, i, (temp as! Int))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden291_divide_and_conquer_heaps_algorithm_iterative1034620343/001/main.swift:109:48: warning: conditional downcast from 'Int?' to 'Int' does nothing
+107 |                 if (((i % 2 + 2) % 2) == 0) {
+108 |                     let temp = (arr[0] as? Int ?? 0)
+109 |                     arr = _set(arr, 0, (arr[i] as? Int ?? 0))
+    |                                                `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+110 |                     arr = _set(arr, i, (temp as! Int))
+111 |                 } else {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden291_divide_and_conquer_heaps_algorithm_iterative1034620343/001/main.swift:110:46: warning: forced cast of 'Int' to same type has no effect
+108 |                     let temp = (arr[0] as? Int ?? 0)
+109 |                     arr = _set(arr, 0, (arr[i] as? Int ?? 0))
+110 |                     arr = _set(arr, i, (temp as! Int))
+    |                                              `- warning: forced cast of 'Int' to same type has no effect
+111 |                 } else {
+112 |                     let temp = (arr[(c[i] as? Int ?? 0)] as? Int ?? 0)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden291_divide_and_conquer_heaps_algorithm_iterative1034620343/001/main.swift:112:43: warning: conditional downcast from 'Int?' to 'Int' does nothing
+110 |                     arr = _set(arr, i, (temp as! Int))
+111 |                 } else {
+112 |                     let temp = (arr[(c[i] as? Int ?? 0)] as? Int ?? 0)
+    |                                           `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+113 |                     arr = _set(arr, (c[i] as? Int ?? 0), (arr[i] as? Int ?? 0))
+114 |                     arr = _set(arr, i, (temp as! Int))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden291_divide_and_conquer_heaps_algorithm_iterative1034620343/001/main.swift:112:58: warning: conditional downcast from 'Int?' to 'Int' does nothing
+110 |                     arr = _set(arr, i, (temp as! Int))
+111 |                 } else {
+112 |                     let temp = (arr[(c[i] as? Int ?? 0)] as? Int ?? 0)
+    |                                                          `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+113 |                     arr = _set(arr, (c[i] as? Int ?? 0), (arr[i] as? Int ?? 0))
+114 |                     arr = _set(arr, i, (temp as! Int))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden291_divide_and_conquer_heaps_algorithm_iterative1034620343/001/main.swift:113:43: warning: conditional downcast from 'Int?' to 'Int' does nothing
+111 |                 } else {
+112 |                     let temp = (arr[(c[i] as? Int ?? 0)] as? Int ?? 0)
+113 |                     arr = _set(arr, (c[i] as? Int ?? 0), (arr[i] as? Int ?? 0))
+    |                                           `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+114 |                     arr = _set(arr, i, (temp as! Int))
+115 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden291_divide_and_conquer_heaps_algorithm_iterative1034620343/001/main.swift:113:66: warning: conditional downcast from 'Int?' to 'Int' does nothing
+111 |                 } else {
+112 |                     let temp = (arr[(c[i] as? Int ?? 0)] as? Int ?? 0)
+113 |                     arr = _set(arr, (c[i] as? Int ?? 0), (arr[i] as? Int ?? 0))
+    |                                                                  `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+114 |                     arr = _set(arr, i, (temp as! Int))
+115 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden291_divide_and_conquer_heaps_algorithm_iterative1034620343/001/main.swift:114:46: warning: forced cast of 'Int' to same type has no effect
+112 |                     let temp = (arr[(c[i] as? Int ?? 0)] as? Int ?? 0)
+113 |                     arr = _set(arr, (c[i] as? Int ?? 0), (arr[i] as? Int ?? 0))
+114 |                     arr = _set(arr, i, (temp as! Int))
+    |                                              `- warning: forced cast of 'Int' to same type has no effect
+115 |                 }
+116 |                 res = (_append(res, (copy_list((arr as! [Int?])) as! [Int?])) as! [[Int?]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden291_divide_and_conquer_heaps_algorithm_iterative1034620343/001/main.swift:116:53: warning: forced cast of '[Int?]' to same type has no effect
+114 |                     arr = _set(arr, i, (temp as! Int))
+115 |                 }
+116 |                 res = (_append(res, (copy_list((arr as! [Int?])) as! [Int?])) as! [[Int?]])
+    |                                                     `- warning: forced cast of '[Int?]' to same type has no effect
+117 |                 c = _set(c, i, Int(((c[i] as? Int ?? 0) &+ 1)))
+118 |                 i = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden291_divide_and_conquer_heaps_algorithm_iterative1034620343/001/main.swift:116:66: warning: forced cast of '[Int?]' to same type has no effect
+114 |                     arr = _set(arr, i, (temp as! Int))
+115 |                 }
+116 |                 res = (_append(res, (copy_list((arr as! [Int?])) as! [Int?])) as! [[Int?]])
+    |                                                                  `- warning: forced cast of '[Int?]' to same type has no effect
+117 |                 c = _set(c, i, Int(((c[i] as? Int ?? 0) &+ 1)))
+118 |                 i = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden291_divide_and_conquer_heaps_algorithm_iterative1034620343/001/main.swift:117:43: warning: conditional downcast from 'Int?' to 'Int' does nothing
+115 |                 }
+116 |                 res = (_append(res, (copy_list((arr as! [Int?])) as! [Int?])) as! [[Int?]])
+117 |                 c = _set(c, i, Int(((c[i] as? Int ?? 0) &+ 1)))
+    |                                           `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+118 |                 i = 0
+119 |             } else {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden291_divide_and_conquer_heaps_algorithm_iterative1034620343/001/main.swift:128:18: error: cannot convert value of type '[Int]' to expected argument type '[Int?]'
+126 |     print(_p("[" + ({ () -> Any in
+127 |     var _tmp0 = [1, 2, 3]
+128 |     return heaps(&_tmp0)
+    |                  |- error: cannot convert value of type '[Int]' to expected argument type '[Int?]'
+    |                  `- note: arguments to generic parameter 'Element' ('Int' and 'Int?') are expected to be equal
+129 | }() as! [[Int?]]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+130 | let _benchEnd = _now()
