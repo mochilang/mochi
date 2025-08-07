@@ -1637,23 +1637,32 @@ func (fst *ForStmt) emit(w io.Writer) {
 	}
 	writeIndent(w)
 	io.WriteString(w, "for ")
-	if fst.End == nil && isMapType(inferType(fst.Start)) {
-		io.WriteString(w, "KeyValue(")
-		io.WriteString(w, fsIdent(fst.Name))
-		io.WriteString(w, ", _)")
+	if fst.End == nil {
+		if ix, ok := fst.Start.(*IndexExpr); ok && isMapType(inferType(ix)) {
+			io.WriteString(w, fsIdent(fst.Name))
+			io.WriteString(w, " in ")
+			ix.emit(w)
+			io.WriteString(w, ".Keys do\n")
+		} else if isMapType(inferType(fst.Start)) {
+			io.WriteString(w, "KeyValue(")
+			io.WriteString(w, fsIdent(fst.Name))
+			io.WriteString(w, ", _) in ")
+			fst.Start.emit(w)
+			io.WriteString(w, " do\n")
+		} else {
+			io.WriteString(w, fsIdent(fst.Name))
+			io.WriteString(w, " in ")
+			fst.Start.emit(w)
+			io.WriteString(w, " do\n")
+		}
 	} else {
 		io.WriteString(w, fsIdent(fst.Name))
-	}
-	io.WriteString(w, " in ")
-	if fst.End != nil {
+		io.WriteString(w, " in ")
 		fst.Start.emit(w)
 		io.WriteString(w, " .. (")
 		(&BinaryExpr{Left: fst.End, Op: "-", Right: &IntLit{Value: 1}}).emit(w)
-		io.WriteString(w, ")")
-	} else {
-		fst.Start.emit(w)
+		io.WriteString(w, ") do\n")
 	}
-	io.WriteString(w, " do\n")
 	indentLevel++
 	if fst.WithBreak {
 		writeIndent(w)
@@ -2289,6 +2298,11 @@ func inferType(e Expr) string {
 			return "int"
 		case "Seq.averageBy float", "List.averageBy float":
 			return "float"
+		case "_dictGet":
+			if len(v.Args) > 0 {
+				return mapValueType(inferType(v.Args[0]))
+			}
+			return "obj"
 		}
 		if strings.HasSuffix(v.Func, "FifteenPuzzleExample") {
 			return "string"
