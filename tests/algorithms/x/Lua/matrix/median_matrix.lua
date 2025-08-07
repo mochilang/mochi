@@ -39,8 +39,9 @@ do
   collectgarbage()
   local _bench_start_mem = collectgarbage('count') * 1024
   local _bench_start = os.clock()
-  function depth_first_search(grid, row, col, visit)
-    local row_length = (function(v)
+  function bubble_sort(a)
+    local arr = a
+    local n = (function(v)
     if type(v) == 'table' and v.items ~= nil then
       return #v.items
     elseif type(v) == 'table' and (v[1] == nil) then
@@ -56,8 +57,26 @@ do
           else
             return 0
           end
-        end)(grid)
-        local col_length = (function(v)
+        end)(arr)
+        local i = 0
+        while (i < n) do
+          local j = 0
+          while ((j + 1) < (n - i)) do
+            if (arr[j + 1] > arr[(j + 1) + 1]) then
+              local temp = arr[j + 1]
+              arr[j + 1] = arr[(j + 1) + 1]
+              arr[(j + 1) + 1] = temp
+            end
+            j = (j + 1)
+          end
+          i = (i + 1)
+        end
+        return arr
+      end
+      function median(matrix)
+        local linear = {}
+        local i = 0
+        while (i < (function(v)
         if type(v) == 'table' and v.items ~= nil then
           return #v.items
         elseif type(v) == 'table' and (v[1] == nil) then
@@ -73,88 +92,57 @@ do
               else
                 return 0
               end
-            end)(grid[0 + 1])
-            if ((((row < 0) or (col < 0)) or (row == row_length)) or (col == col_length)) then
-              return 0
-            end
-            if visit[row + 1][col + 1] then
-              return 0
-            end
-            if (grid[row + 1][col + 1] == 1) then
-              return 0
-            end
-            if ((row == (row_length - 1)) and (col == (col_length - 1))) then
-              return 1
-            end
-            visit[row + 1][col + 1] = true
-            local count = 0
-            count = (count + depth_first_search(grid, (row + 1), col, visit))
-            count = (count + depth_first_search(grid, (row - 1), col, visit))
-            count = (count + depth_first_search(grid, row, (col + 1), visit))
-            count = (count + depth_first_search(grid, row, (col - 1), visit))
-            visit[row + 1][col + 1] = false
-            return count
-          end
-          function count_paths(grid)
-            local rows = (function(v)
-            if type(v) == 'table' and v.items ~= nil then
-              return #v.items
-            elseif type(v) == 'table' and (v[1] == nil) then
-                local c = 0
-                for _ in pairs(v) do c = c + 1 end
-                return c
-              elseif type(v) == 'string' then
-                  local l = utf8.len(v)
-                  if l then return l end
-                  return #v
-                elseif type(v) == 'table' then
+            end)(matrix)) do
+              local row = matrix[i + 1]
+              local j = 0
+              while (j < (function(v)
+              if type(v) == 'table' and v.items ~= nil then
+                return #v.items
+              elseif type(v) == 'table' and (v[1] == nil) then
+                  local c = 0
+                  for _ in pairs(v) do c = c + 1 end
+                  return c
+                elseif type(v) == 'string' then
+                    local l = utf8.len(v)
+                    if l then return l end
                     return #v
-                  else
-                    return 0
-                  end
-                end)(grid)
-                local cols = (function(v)
-                if type(v) == 'table' and v.items ~= nil then
-                  return #v.items
-                elseif type(v) == 'table' and (v[1] == nil) then
-                    local c = 0
-                    for _ in pairs(v) do c = c + 1 end
-                    return c
-                  elseif type(v) == 'string' then
-                      local l = utf8.len(v)
-                      if l then return l end
+                  elseif type(v) == 'table' then
                       return #v
-                    elseif type(v) == 'table' then
-                        return #v
-                      else
-                        return 0
-                      end
-                    end)(grid[0 + 1])
-                    local visit = {}
-                    local i = 0
-                    while (i < rows) do
-                      local row_visit = {}
-                      local j = 0
-                      while (j < cols) do
-                        row_visit = (function(lst, item)
-                        local res = {table.unpack(lst or {})}
-                        table.insert(res, item)
-                        return res
-                      end)(row_visit, false)
-                      j = (j + 1)
+                    else
+                      return 0
                     end
-                    visit = (function(lst, item)
+                  end)(row)) do
+                    linear = (function(lst, item)
                     local res = {table.unpack(lst or {})}
                     table.insert(res, item)
                     return res
-                  end)(visit, row_visit)
-                  i = (i + 1)
+                  end)(linear, row[j + 1])
+                  j = (j + 1)
                 end
-                return depth_first_search(grid, 0, 0, visit)
+                i = (i + 1)
               end
-              function main()
-                local grid1 = {{0, 0, 0, 0}, {1, 1, 0, 0}, {0, 0, 0, 1}, {0, 1, 0, 0}}
-                print((((type(_str(count_paths(grid1))) == "table")) and (
+              local sorted = bubble_sort(linear)
+              local mid = (((function(v)
+              if type(v) == 'table' and v.items ~= nil then
+                return #v.items
+              elseif type(v) == 'table' and (v[1] == nil) then
+                  local c = 0
+                  for _ in pairs(v) do c = c + 1 end
+                  return c
+                elseif type(v) == 'string' then
+                    local l = utf8.len(v)
+                    if l then return l end
+                    return #v
+                  elseif type(v) == 'table' then
+                      return #v
+                    else
+                      return 0
+                    end
+                  end)(sorted) - 1) // 2)
+                  return sorted[mid + 1]
+                end
+                matrix1 = {{1, 3, 5}, {2, 6, 9}, {3, 6, 9}}
+                print((((type(_str(median(matrix1))) == "table")) and (
                 (function(v)
                 local function encode(x)
                 if type(x) == "table" then
@@ -198,9 +186,9 @@ do
                     end
                   end
                   return encode(v)
-                end)(_str(count_paths(grid1)))) or (_str(count_paths(grid1)))))
-                local grid2 = {{0, 0, 0, 0, 0}, {0, 1, 1, 1, 0}, {0, 1, 1, 1, 0}, {0, 0, 0, 0, 0}}
-                print((((type(_str(count_paths(grid2))) == "table")) and (
+                end)(_str(median(matrix1)))) or (_str(median(matrix1)))))
+                matrix2 = {{1, 2, 3}, {4, 5, 6}}
+                print((((type(_str(median(matrix2))) == "table")) and (
                 (function(v)
                 local function encode(x)
                 if type(x) == "table" then
@@ -244,13 +232,11 @@ do
                     end
                   end
                   return encode(v)
-                end)(_str(count_paths(grid2)))) or (_str(count_paths(grid2)))))
-              end
-              main()
-              local _bench_end = os.clock()
-              collectgarbage()
-              local _bench_end_mem = collectgarbage('count') * 1024
-              local _bench_duration_us = math.floor((_bench_end - _bench_start) * 1000000)
-              local _bench_mem = math.floor(math.max(0, _bench_end_mem - _bench_start_mem))
-              print('{\n  "duration_us": ' .. _bench_duration_us .. ',\n  "memory_bytes": ' .. _bench_mem .. ',\n  "name": "main"\n}')
-            end;
+                end)(_str(median(matrix2)))) or (_str(median(matrix2)))))
+                local _bench_end = os.clock()
+                collectgarbage()
+                local _bench_end_mem = collectgarbage('count') * 1024
+                local _bench_duration_us = math.floor((_bench_end - _bench_start) * 1000000)
+                local _bench_mem = math.floor(math.max(0, _bench_end_mem - _bench_start_mem))
+                print('{\n  "duration_us": ' .. _bench_duration_us .. ',\n  "memory_bytes": ' .. _bench_mem .. ',\n  "name": "main"\n}')
+              end;

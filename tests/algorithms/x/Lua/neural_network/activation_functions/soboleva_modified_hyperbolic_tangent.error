@@ -1,0 +1,8 @@
+run: exit status 1
+lua: ...ation_functions/soboleva_modified_hyperbolic_tangent.lua:38: attempt to call a nil value (global 'to_float')
+stack traceback:
+	...ation_functions/soboleva_modified_hyperbolic_tangent.lua:38: in function 'exp'
+	...ation_functions/soboleva_modified_hyperbolic_tangent.lua:65: in function 'soboleva_modified_hyperbolic_tangent'
+	...ation_functions/soboleva_modified_hyperbolic_tangent.lua:78: in function 'main'
+	...ation_functions/soboleva_modified_hyperbolic_tangent.lua:112: in main chunk
+	[C]: in ?

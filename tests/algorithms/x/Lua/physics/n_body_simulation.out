@@ -1,0 +1,4 @@
+{"y": 0.0, "x": 0.01, "__order": ["x", "y"], "__name": "GenType1"}
+{"vy": 0.0, "vx": 0.01, "__order": ["vx", "vy"], "__name": "GenType2"}
+{"y": 0.0, "x": -9.0, "__order": ["x", "y"], "__name": "GenType3"}
+{"vy": 0.0, "vx": 0.1, "__order": ["vx", "vy"], "__name": "GenType4"}

@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-07 10:52 GMT+7
+Last updated: 2025-08-07 12:13 GMT+7
 
-## Algorithms Golden Test Checklist (637/1077)
+## Algorithms Golden Test Checklist (731/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 216µs | 912 B |
@@ -707,105 +707,105 @@ Last updated: 2025-08-07 10:52 GMT+7
 | 698 | matrix/count_islands_in_matrix | error |  |  |
 | 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ |  |  |
 | 700 | matrix/count_paths | ✓ | 323µs | 2.8 KB |
-| 701 | matrix/cramers_rule_2x2 |   |  |  |
-| 702 | matrix/inverse_of_matrix |   |  |  |
-| 703 | matrix/largest_square_area_in_matrix |   |  |  |
-| 704 | matrix/matrix_based_game |   |  |  |
-| 705 | matrix/matrix_class |   |  |  |
-| 706 | matrix/matrix_equalization |   |  |  |
-| 707 | matrix/matrix_multiplication_recursion |   |  |  |
-| 708 | matrix/matrix_operation |   |  |  |
-| 709 | matrix/max_area_of_island |   |  |  |
-| 710 | matrix/median_matrix |   |  |  |
-| 711 | matrix/nth_fibonacci_using_matrix_exponentiation |   |  |  |
-| 712 | matrix/pascal_triangle |   |  |  |
-| 713 | matrix/rotate_matrix |   |  |  |
-| 714 | matrix/searching_in_sorted_matrix |   |  |  |
-| 715 | matrix/sherman_morrison |   |  |  |
-| 716 | matrix/spiral_print |   |  |  |
-| 717 | matrix/tests/test_matrix_operation |   |  |  |
-| 718 | matrix/validate_sudoku_board |   |  |  |
-| 719 | networking_flow/ford_fulkerson |   |  |  |
-| 720 | networking_flow/minimum_cut |   |  |  |
-| 721 | neural_network/activation_functions/binary_step |   |  |  |
-| 722 | neural_network/activation_functions/exponential_linear_unit |   |  |  |
-| 723 | neural_network/activation_functions/gaussian_error_linear_unit |   |  |  |
-| 724 | neural_network/activation_functions/leaky_rectified_linear_unit |   |  |  |
-| 725 | neural_network/activation_functions/mish |   |  |  |
-| 726 | neural_network/activation_functions/rectified_linear_unit |   |  |  |
-| 727 | neural_network/activation_functions/scaled_exponential_linear_unit |   |  |  |
-| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent |   |  |  |
-| 729 | neural_network/activation_functions/softplus |   |  |  |
-| 730 | neural_network/activation_functions/squareplus |   |  |  |
-| 731 | neural_network/activation_functions/swish |   |  |  |
-| 732 | neural_network/back_propagation_neural_network |   |  |  |
-| 733 | neural_network/convolution_neural_network |   |  |  |
-| 734 | neural_network/input_data |   |  |  |
-| 735 | neural_network/simple_neural_network |   |  |  |
-| 736 | neural_network/two_hidden_layers_neural_network |   |  |  |
-| 737 | other/activity_selection |   |  |  |
-| 738 | other/alternative_list_arrange |   |  |  |
-| 739 | other/bankers_algorithm |   |  |  |
-| 740 | other/davis_putnam_logemann_loveland |   |  |  |
-| 741 | other/doomsday |   |  |  |
-| 742 | other/fischer_yates_shuffle |   |  |  |
-| 743 | other/gauss_easter |   |  |  |
-| 744 | other/greedy |   |  |  |
-| 745 | other/guess_the_number_search |   |  |  |
-| 746 | other/h_index |   |  |  |
-| 747 | other/least_recently_used |   |  |  |
-| 748 | other/lfu_cache |   |  |  |
-| 749 | other/linear_congruential_generator |   |  |  |
-| 750 | other/lru_cache |   |  |  |
-| 751 | other/magicdiamondpattern |   |  |  |
-| 752 | other/majority_vote_algorithm |   |  |  |
-| 753 | other/maximum_subsequence |   |  |  |
-| 754 | other/nested_brackets |   |  |  |
-| 755 | other/number_container_system |   |  |  |
-| 756 | other/quine |   |  |  |
-| 757 | other/scoring_algorithm |   |  |  |
-| 758 | other/sdes |   |  |  |
-| 759 | other/tower_of_hanoi |   |  |  |
-| 760 | other/word_search |   |  |  |
-| 761 | physics/altitude_pressure |   |  |  |
-| 762 | physics/archimedes_principle_of_buoyant_force |   |  |  |
-| 763 | physics/basic_orbital_capture |   |  |  |
-| 764 | physics/casimir_effect |   |  |  |
-| 765 | physics/center_of_mass |   |  |  |
-| 766 | physics/centripetal_force |   |  |  |
-| 767 | physics/coulombs_law |   |  |  |
-| 768 | physics/doppler_frequency |   |  |  |
-| 769 | physics/escape_velocity |   |  |  |
-| 770 | physics/grahams_law |   |  |  |
-| 771 | physics/horizontal_projectile_motion |   |  |  |
-| 772 | physics/hubble_parameter |   |  |  |
-| 773 | physics/ideal_gas_law |   |  |  |
-| 774 | physics/in_static_equilibrium |   |  |  |
-| 775 | physics/kinetic_energy |   |  |  |
-| 776 | physics/lens_formulae |   |  |  |
-| 777 | physics/lorentz_transformation_four_vector |   |  |  |
-| 778 | physics/malus_law |   |  |  |
-| 779 | physics/mass_energy_equivalence |   |  |  |
-| 780 | physics/mirror_formulae |   |  |  |
-| 781 | physics/n_body_simulation |   |  |  |
-| 782 | physics/newtons_law_of_gravitation |   |  |  |
-| 783 | physics/newtons_second_law_of_motion |   |  |  |
-| 784 | physics/orbital_transfer_work |   |  |  |
-| 785 | physics/period_of_pendulum |   |  |  |
-| 786 | physics/photoelectric_effect |   |  |  |
-| 787 | physics/potential_energy |   |  |  |
-| 788 | physics/rainfall_intensity |   |  |  |
-| 789 | physics/reynolds_number |   |  |  |
-| 790 | physics/rms_speed_of_molecule |   |  |  |
-| 791 | physics/shear_stress |   |  |  |
-| 792 | physics/speed_of_sound |   |  |  |
-| 793 | physics/speeds_of_gas_molecules |   |  |  |
-| 794 | physics/terminal_velocity |   |  |  |
-| 795 | project_euler/problem_001/sol1 |   |  |  |
-| 796 | project_euler/problem_001/sol2 |   |  |  |
-| 797 | project_euler/problem_001/sol3 |   |  |  |
-| 798 | project_euler/problem_001/sol4 |   |  |  |
-| 799 | project_euler/problem_001/sol5 |   |  |  |
+| 701 | matrix/cramers_rule_2x2 | ✓ | 76µs | 1.0 KB |
+| 702 | matrix/inverse_of_matrix | ✓ | 212µs | 1.5 KB |
+| 703 | matrix/largest_square_area_in_matrix | ✓ | 117µs | 2.7 KB |
+| 704 | matrix/matrix_based_game | ✓ |  |  |
+| 705 | matrix/matrix_class | ✓ | 1.211ms | 1.7 KB |
+| 706 | matrix/matrix_equalization | ✓ | 461µs | 912 B |
+| 707 | matrix/matrix_multiplication_recursion | ✓ | 271µs | 26.6 KB |
+| 708 | matrix/matrix_operation | ✓ | 1.194ms | 1.2 KB |
+| 709 | matrix/max_area_of_island | ✓ | 381µs | 4.9 KB |
+| 710 | matrix/median_matrix | ✓ | 134µs | 1.6 KB |
+| 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ | 361µs | 1.2 KB |
+| 712 | matrix/pascal_triangle | ✓ | 251µs | 1.2 KB |
+| 713 | matrix/rotate_matrix | ✓ | 514µs | 3.6 KB |
+| 714 | matrix/searching_in_sorted_matrix | ✓ | 82µs | 960 B |
+| 715 | matrix/sherman_morrison | ✓ | 224µs | 1.3 KB |
+| 716 | matrix/spiral_print | ✓ | 179µs | 1.1 KB |
+| 717 | matrix/tests/test_matrix_operation | ✓ | 379µs | 1.1 KB |
+| 718 | matrix/validate_sudoku_board | ✓ | 458µs | 4.7 KB |
+| 719 | networking_flow/ford_fulkerson | ✓ | 249µs | 1.9 KB |
+| 720 | networking_flow/minimum_cut | ✓ | 255µs | 2.3 KB |
+| 721 | neural_network/activation_functions/binary_step | ✓ | 70µs | 912 B |
+| 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 96µs | 840 B |
+| 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 108µs | 984 B |
+| 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 80µs | 1.3 KB |
+| 725 | neural_network/activation_functions/mish | ✓ | 129µs | 1.1 KB |
+| 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 103µs | 808 B |
+| 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 95µs | 840 B |
+| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | error |  |  |
+| 729 | neural_network/activation_functions/softplus | error |  |  |
+| 730 | neural_network/activation_functions/squareplus | ✓ | 119µs | 944 B |
+| 731 | neural_network/activation_functions/swish | ✓ | 201µs | 1.2 KB |
+| 732 | neural_network/back_propagation_neural_network | ✓ | 2.702616s | 3.1 KB |
+| 733 | neural_network/convolution_neural_network | ✓ | 3.189ms | 1.6 KB |
+| 734 | neural_network/input_data | ✓ | 350µs | 968 B |
+| 735 | neural_network/simple_neural_network | ✓ | 218.408ms | 352 B |
+| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 1.303ms | 1.4 KB |
+| 737 | other/activity_selection | ✓ | 109µs | 1.1 KB |
+| 738 | other/alternative_list_arrange | ✓ | 356µs | 4.5 KB |
+| 739 | other/bankers_algorithm | ✓ | 523µs | 2.6 KB |
+| 740 | other/davis_putnam_logemann_loveland | ✓ | 73µs | 2.8 KB |
+| 741 | other/doomsday | ✓ | 25µs | 832 B |
+| 742 | other/fischer_yates_shuffle | ✓ | 200µs | 1.2 KB |
+| 743 | other/gauss_easter | ✓ | 117µs | 1.1 KB |
+| 744 | other/greedy | ✓ | 240µs | 3.4 KB |
+| 745 | other/guess_the_number_search | ✓ | 162µs | 1000 B |
+| 746 | other/h_index | ✓ | 207µs | 1.2 KB |
+| 747 | other/least_recently_used | ✓ | 123µs | 1.4 KB |
+| 748 | other/lfu_cache | ✓ | 142µs | 1.2 KB |
+| 749 | other/linear_congruential_generator | ✓ | 119µs | 920 B |
+| 750 | other/lru_cache | ✓ | 146µs | 1.3 KB |
+| 751 | other/magicdiamondpattern | ✓ | 36µs | 272 B |
+| 752 | other/majority_vote_algorithm | ✓ | 294µs | 1016 B |
+| 753 | other/maximum_subsequence | ✓ | 95µs | 888 B |
+| 754 | other/nested_brackets | ✓ | 330µs | 1.4 KB |
+| 755 | other/number_container_system | ✓ | 83µs | 1.3 KB |
+| 756 | other/quine | ✓ | 27µs |  |
+| 757 | other/scoring_algorithm | ✓ | 279µs | 1.5 KB |
+| 758 | other/sdes | ✓ | 253µs | 3.6 KB |
+| 759 | other/tower_of_hanoi | ✓ | 35µs | 976 B |
+| 760 | other/word_search | ✓ | 330µs | 1.2 KB |
+| 761 | physics/altitude_pressure | ✓ | 85µs | 1.1 KB |
+| 762 | physics/archimedes_principle_of_buoyant_force | ✓ |  | 120 B |
+| 763 | physics/basic_orbital_capture | error |  |  |
+| 764 | physics/casimir_effect | ✓ | 87µs | 992 B |
+| 765 | physics/center_of_mass | ✓ | 69µs | 1.2 KB |
+| 766 | physics/centripetal_force | ✓ | 88µs | 1.1 KB |
+| 767 | physics/coulombs_law | ✓ | 82µs | 944 B |
+| 768 | physics/doppler_frequency | ✓ | 69µs | 432 B |
+| 769 | physics/escape_velocity | ✓ | 68µs | 896 B |
+| 770 | physics/grahams_law | ✓ | 87µs | 1.1 KB |
+| 771 | physics/horizontal_projectile_motion | ✓ | 82µs | 1.2 KB |
+| 772 | physics/hubble_parameter | ✓ | 53µs | 1.1 KB |
+| 773 | physics/ideal_gas_law | ✓ | 72µs | 160 B |
+| 774 | physics/in_static_equilibrium | ✓ | 36µs | 3.9 KB |
+| 775 | physics/kinetic_energy | ✓ | 86µs | 80 B |
+| 776 | physics/lens_formulae | ✓ | 73µs | 864 B |
+| 777 | physics/lorentz_transformation_four_vector | ✓ | 185µs | 1.2 KB |
+| 778 | physics/malus_law | error |  |  |
+| 779 | physics/mass_energy_equivalence | ✓ | 138µs | 840 B |
+| 780 | physics/mirror_formulae | ✓ | 85µs | 1.3 KB |
+| 781 | physics/n_body_simulation | ✓ | 265µs | 2.4 KB |
+| 782 | physics/newtons_law_of_gravitation | ✓ | 76µs | 1.2 KB |
+| 783 | physics/newtons_second_law_of_motion | ✓ | 67µs | 736 B |
+| 784 | physics/orbital_transfer_work | error |  |  |
+| 785 | physics/period_of_pendulum | ✓ | 70µs | 824 B |
+| 786 | physics/photoelectric_effect | ✓ | 52µs | 824 B |
+| 787 | physics/potential_energy | ✓ | 49µs | 88 B |
+| 788 | physics/rainfall_intensity | ✓ | 80µs | 1.0 KB |
+| 789 | physics/reynolds_number | ✓ | 48µs | 184 B |
+| 790 | physics/rms_speed_of_molecule | ✓ | 49µs | 824 B |
+| 791 | physics/shear_stress | ✓ | 133µs | 1.2 KB |
+| 792 | physics/speed_of_sound | ✓ | 74µs | 824 B |
+| 793 | physics/speeds_of_gas_molecules | ✓ | 81µs | 872 B |
+| 794 | physics/terminal_velocity | ✓ | 46µs | 824 B |
+| 795 | project_euler/problem_001/sol1 | ✓ | 145µs | 736 B |
+| 796 | project_euler/problem_001/sol2 | ✓ | 116µs | 736 B |
+| 797 | project_euler/problem_001/sol3 | ✓ | 89µs | 736 B |
+| 798 | project_euler/problem_001/sol4 | ✓ | 14.447ms | 9.9 KB |
+| 799 | project_euler/problem_001/sol5 | ✓ | 148µs | 736 B |
 | 800 | project_euler/problem_001/sol6 |   |  |  |
 | 801 | project_euler/problem_001/sol7 |   |  |  |
 | 802 | project_euler/problem_002/sol1 |   |  |  |
