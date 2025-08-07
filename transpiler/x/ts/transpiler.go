@@ -3938,6 +3938,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("float expects one argument")
 			}
 			return &CallExpr{Func: "Number", Args: args}, nil
+		case "floor":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("floor expects one argument")
+			}
+			return &CallExpr{Func: "Math.floor", Args: args}, nil
 		case "split":
 			if transpileEnv != nil {
 				if _, ok := transpileEnv.GetFunc("split"); ok {
