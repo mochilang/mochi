@@ -6,6 +6,11 @@ using System.Text.Json;
 using System.Numerics;
 using System.Collections;
 
+class StackWithQueues {
+    public long[] main_queue;
+    public long[] temp_queue;
+    public override string ToString() => $"StackWithQueues {{main_queue = {main_queue}, temp_queue = {temp_queue}}}";
+}
 class Program {
     static bool seededNow = false;
     static long nowSeed = 0;
@@ -97,36 +102,55 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    static long[] price_8 = new long[]{10, 4, 5, 90, 120, 80};
-    static long[] spans_9 = Program.calculation_span(price_8);
-    public static long[] calculation_span(long[] price_0) {
-        long n_1 = price_0.Length;
-        long[] st_2 = new long[]{};
-        long[] span_3 = new long[]{};
-        st_2 = (Enumerable.ToArray(Enumerable.Append<long>(st_2, 0)));
-        span_3 = (Enumerable.ToArray(Enumerable.Append<long>(span_3, 1)));
-        for (var i_4 = 1; i_4 < n_1; i_4++) {
-            while (((st_2.Length > 0) && (price_0[(int)(st_2[(int)((st_2.Length - 1))])] <= price_0[(int)(i_4)]))) {
-                st_2 = st_2.Skip((int)(0)).Take((int)(((st_2.Length - 1) - 0))).ToArray();
-            }
-            long s_5 = ((st_2.Length <= 0) ? (i_4 + 1) : (i_4 - st_2[(int)((st_2.Length - 1))]));
-            span_3 = (Enumerable.ToArray(Enumerable.Append<long>(span_3, s_5)));
-            st_2 = (Enumerable.ToArray(Enumerable.Append<long>(st_2, i_4)));
-        };
-        return span_3;
+    static StackWithQueues stack_7 = Program.make_stack();
+    public static StackWithQueues make_stack() {
+        return new StackWithQueues{main_queue = new long[]{}, temp_queue = new long[]{}};
     }
 
-    public static void print_array(long[] arr_6) {
-        for (var i_7 = 0; i_7 < arr_6.Length; i_7++) {
-            Console.WriteLine(Program._fmtTop(arr_6[(int)(i_7)]));
+    public static void push(StackWithQueues s_0, long item_1) {
+        s_0.temp_queue = (Enumerable.ToArray(Enumerable.Append<long>(s_0.temp_queue, item_1)));
+        while ((s_0.main_queue.Length > 0)) {
+            s_0.temp_queue = (Enumerable.ToArray(Enumerable.Append<long>(s_0.temp_queue, s_0.main_queue[(int)(0)])));
+            s_0.main_queue = s_0.main_queue.Skip((int)(1)).Take((int)((s_0.main_queue.Length - 1))).ToArray();
         };
+        long[] new_main_2 = s_0.temp_queue;
+        s_0.temp_queue = s_0.main_queue;
+        s_0.main_queue = new_main_2;
+    }
+
+    public static long pop(StackWithQueues s_3) {
+        if ((s_3.main_queue.Length == 0)) {
+            throw new Exception("pop from empty stack");
+        };
+        long item_4 = s_3.main_queue[(int)(0)];
+        s_3.main_queue = s_3.main_queue.Skip((int)(1)).Take((int)((s_3.main_queue.Length - 1))).ToArray();
+        return item_4;
+    }
+
+    public static long peek(StackWithQueues s_5) {
+        if ((s_5.main_queue.Length == 0)) {
+            throw new Exception("peek from empty stack");
+        };
+        return s_5.main_queue[(int)(0)];
+    }
+
+    public static bool is_empty(StackWithQueues s_6) {
+        return (s_6.main_queue.Length == 0);
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            Program.print_array(spans_9);
+            Program.push(stack_7, 1);
+            Program.push(stack_7, 2);
+            Program.push(stack_7, 3);
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.peek(stack_7))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.pop(stack_7))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.peek(stack_7))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.pop(stack_7))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.pop(stack_7))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.is_empty(stack_7))));
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);

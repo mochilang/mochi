@@ -97,36 +97,89 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    static long[] price_8 = new long[]{10, 4, 5, 90, 120, 80};
-    static long[] spans_9 = Program.calculation_span(price_8);
-    public static long[] calculation_span(long[] price_0) {
-        long n_1 = price_0.Length;
-        long[] st_2 = new long[]{};
-        long[] span_3 = new long[]{};
-        st_2 = (Enumerable.ToArray(Enumerable.Append<long>(st_2, 0)));
-        span_3 = (Enumerable.ToArray(Enumerable.Append<long>(span_3, 1)));
-        for (var i_4 = 1; i_4 < n_1; i_4++) {
-            while (((st_2.Length > 0) && (price_0[(int)(st_2[(int)((st_2.Length - 1))])] <= price_0[(int)(i_4)]))) {
-                st_2 = st_2.Skip((int)(0)).Take((int)(((st_2.Length - 1) - 0))).ToArray();
+    static double[] arr_0 = new double[]{-10.0, -5.0, 0.0, 5.0, 5.1, 11.0, 13.0, 21.0, 3.0, 4.0, -21.0, -10.0, -5.0, -1.0, 0.0};
+    static double[] expected_1 = new double[]{-5.0, 0.0, 5.0, 5.1, 11.0, 13.0, 21.0, -1.0, 4.0, -1.0, -10.0, -5.0, -1.0, 0.0, -1.0};
+    public static double[] next_greatest_element_slow(double[] xs_2) {
+        double[] res_3 = new double[]{};
+        long i_4 = 0;
+        while ((i_4 < xs_2.Length)) {
+            double next_5 = -1.0;
+            long j_6 = (i_4 + 1);
+            while ((j_6 < xs_2.Length)) {
+                if ((xs_2[(int)(i_4)] < xs_2[(int)(j_6)])) {
+                    next_5 = xs_2[(int)(j_6)];
+                    break;
+                }
+                j_6 = (j_6 + 1);
             }
-            long s_5 = ((st_2.Length <= 0) ? (i_4 + 1) : (i_4 - st_2[(int)((st_2.Length - 1))]));
-            span_3 = (Enumerable.ToArray(Enumerable.Append<long>(span_3, s_5)));
-            st_2 = (Enumerable.ToArray(Enumerable.Append<long>(st_2, i_4)));
+            res_3 = (Enumerable.ToArray(Enumerable.Append<double>(res_3, next_5)));
+            i_4 = (i_4 + 1);
         };
-        return span_3;
+        return res_3;
     }
 
-    public static void print_array(long[] arr_6) {
-        for (var i_7 = 0; i_7 < arr_6.Length; i_7++) {
-            Console.WriteLine(Program._fmtTop(arr_6[(int)(i_7)]));
+    public static double[] next_greatest_element_fast(double[] xs_7) {
+        double[] res_8 = new double[]{};
+        long i_9 = 0;
+        while ((i_9 < xs_7.Length)) {
+            double next_10 = -1.0;
+            long j_11 = (i_9 + 1);
+            while ((j_11 < xs_7.Length)) {
+                double inner_12 = xs_7[(int)(j_11)];
+                if ((xs_7[(int)(i_9)] < inner_12)) {
+                    next_10 = inner_12;
+                    break;
+                }
+                j_11 = (j_11 + 1);
+            }
+            res_8 = (Enumerable.ToArray(Enumerable.Append<double>(res_8, next_10)));
+            i_9 = (i_9 + 1);
         };
+        return res_8;
+    }
+
+    public static double[] set_at_float(double[] xs_13, long idx_14, double value_15) {
+        long i_16 = 0;
+        double[] res_17 = new double[]{};
+        while ((i_16 < xs_13.Length)) {
+            if ((i_16 == idx_14)) {
+                res_17 = (Enumerable.ToArray(Enumerable.Append<double>(res_17, value_15)));
+            } else {
+                res_17 = (Enumerable.ToArray(Enumerable.Append<double>(res_17, xs_13[(int)(i_16)])));
+            }
+            i_16 = (i_16 + 1);
+        };
+        return res_17;
+    }
+
+    public static double[] next_greatest_element(double[] xs_18) {
+        double[] res_19 = new double[]{};
+        long k_20 = 0;
+        while ((k_20 < xs_18.Length)) {
+            res_19 = (Enumerable.ToArray(Enumerable.Append<double>(res_19, -1.0)));
+            k_20 = (k_20 + 1);
+        };
+        long[] stack_21 = new long[]{};
+        long i_22 = 0;
+        while ((i_22 < xs_18.Length)) {
+            while (((stack_21.Length > 0) && (xs_18[(int)(i_22)] > xs_18[(int)(stack_21[(int)((stack_21.Length - 1))])]))) {
+                long idx_23 = stack_21[(int)((stack_21.Length - 1))];
+                stack_21 = stack_21.Skip((int)(0)).Take((int)(((stack_21.Length - 1) - 0))).ToArray();
+                res_19 = Program.set_at_float(res_19, idx_23, xs_18[(int)(i_22)]);
+            }
+            stack_21 = (Enumerable.ToArray(Enumerable.Append<long>(stack_21, i_22)));
+            i_22 = (i_22 + 1);
+        };
+        return res_19;
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            Program.print_array(spans_9);
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.next_greatest_element_slow(arr_0))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.next_greatest_element_fast(arr_0))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.next_greatest_element(arr_0))));
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);

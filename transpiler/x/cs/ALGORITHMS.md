@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-07 16:46 GMT+7
+Last updated: 2025-08-07 23:31 GMT+7
 
-## Algorithms Golden Test Checklist (730/1077)
+## Algorithms Golden Test Checklist (734/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -259,20 +259,20 @@ Last updated: 2025-08-07 16:46 GMT+7
 | 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ | 1.0µs | 464B |
 | 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 3.0ms | 20.91KB |
 | 252 | data_structures/stacks/lexicographical_numbers | ✓ | 4.0ms | 72.69KB |
-| 253 | data_structures/stacks/next_greater_element | error |  |  |
+| 253 | data_structures/stacks/next_greater_element | ✓ | 5.0ms | 54.51KB |
 | 254 | data_structures/stacks/postfix_evaluation | ✓ | 3.0ms | 17.71KB |
 | 255 | data_structures/stacks/prefix_evaluation | ✓ | 4.0ms | 21.62KB |
-| 256 | data_structures/stacks/stack | error |  |  |
-| 257 | data_structures/stacks/stack_using_two_queues | error |  |  |
+| 256 | data_structures/stacks/stack | ✓ | 5.0ms | 17.80KB |
+| 257 | data_structures/stacks/stack_using_two_queues | ✓ | 4.0ms | 17.73KB |
 | 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 3.0ms | 17.95KB |
 | 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 3.0ms | 13.90KB |
-| 260 | data_structures/stacks/stock_span_problem | error |  |  |
+| 260 | data_structures/stacks/stock_span_problem | ✓ | 3.0ms | 18.34KB |
 | 261 | data_structures/suffix_tree/example/example_usage | error |  |  |
-| 262 | data_structures/suffix_tree/suffix_tree | error |  |  |
+| 262 | data_structures/suffix_tree/suffix_tree | error | 3.0ms | 24.79KB |
 | 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 3.0ms | 16.92KB |
 | 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 2.0ms | 15.18KB |
 | 265 | data_structures/trie/radix_tree | error |  |  |
-| 266 | data_structures/trie/trie | error |  |  |
+| 266 | data_structures/trie/trie | error | 4.0ms | 25.62KB |
 | 267 | digital_image_processing/change_brightness | ✓ | 3.0ms | 19.35KB |
 | 268 | digital_image_processing/change_contrast | ✓ | 3.0ms | 19.46KB |
 | 269 | digital_image_processing/convert_to_negative | ✓ | 3.0ms | 19.86KB |
@@ -290,15 +290,15 @@ Last updated: 2025-08-07 16:46 GMT+7
 | 281 | digital_image_processing/index_calculation | ✓ | 4.0ms | 14.17KB |
 | 282 | digital_image_processing/morphological_operations/dilation_operation | ✓ | 4.0ms | 25.59KB |
 | 283 | digital_image_processing/morphological_operations/erosion_operation | ✓ | 3.0ms | 18.62KB |
-| 284 | digital_image_processing/resize/resize | error |  |  |
+| 284 | digital_image_processing/resize/resize | error | 4.0ms | 30.70KB |
 | 285 | digital_image_processing/rotation/rotation | ✓ | 2.0ms | 20.89KB |
 | 286 | digital_image_processing/sepia | ✓ | 2.0ms | 19.42KB |
 | 287 | digital_image_processing/test_digital_image_processing | ✓ | 3.0ms | 55.20KB |
-| 288 | divide_and_conquer/closest_pair_of_points | error |  |  |
+| 288 | divide_and_conquer/closest_pair_of_points | error | 4.0ms | 14.68KB |
 | 289 | divide_and_conquer/convex_hull | ✓ | 1.0µs | 43.76KB |
 | 290 | divide_and_conquer/heaps_algorithm | ✓ | 3.0ms | 19.98KB |
 | 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 3.0ms | 21.48KB |
-| 292 | divide_and_conquer/inversions | error |  |  |
+| 292 | divide_and_conquer/inversions | error | 2.0ms | 29.23KB |
 | 293 | divide_and_conquer/kth_order_statistic | ✓ | 3.0ms | 22.13KB |
 | 294 | divide_and_conquer/max_difference_pair | ✓ | 3.0ms | 17.33KB |
 | 295 | divide_and_conquer/max_subarray | ✓ | 3.0ms | 20.69KB |
@@ -316,7 +316,7 @@ Last updated: 2025-08-07 16:46 GMT+7
 | 307 | dynamic_programming/edit_distance | ✓ | 3.0ms | 51.69KB |
 | 308 | dynamic_programming/factorial | ✓ | 3.0ms | 19.87KB |
 | 309 | dynamic_programming/fast_fibonacci | ✓ | 3.0ms | 18.49KB |
-| 310 | dynamic_programming/fibonacci | error |  |  |
+| 310 | dynamic_programming/fibonacci | error | 3.0ms | 20.79KB |
 | 311 | dynamic_programming/fizz_buzz | ✓ | 2.0ms | 19.84KB |
 | 312 | dynamic_programming/floyd_warshall | error |  |  |
 | 313 | dynamic_programming/integer_partition | ✓ | 5.0ms | 4.82MB |
