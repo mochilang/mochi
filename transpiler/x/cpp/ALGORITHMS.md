@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 344/1077
-Last updated: 2025-08-07 10:25 +0700
+Completed programs: 348/1077
+Last updated: 2025-08-07 11:03 +0700
 
 Checklist:
 
@@ -404,8 +404,8 @@ Checklist:
 | 395 | graphs/ant_colony_optimization_algorithms | ✓ | 18.0ms | 3.66MB |
 | 396 | graphs/articulation_points | ✓ | 347.0µs | 3.64MB |
 | 397 | graphs/basic_graphs | ✓ | 544.0µs | 3.55MB |
-| 398 | graphs/bellman_ford |   |  |  |
-| 399 | graphs/bi_directional_dijkstra |   |  |  |
+| 398 | graphs/bellman_ford | ✓ | 503.0µs | 3.74MB |
+| 399 | graphs/bi_directional_dijkstra | ✓ | 400.0µs | 3.80MB |
 | 400 | graphs/bidirectional_a_star |   |  |  |
 | 401 | graphs/bidirectional_breadth_first_search |   |  |  |
 | 402 | graphs/bidirectional_search |   |  |  |
@@ -416,12 +416,12 @@ Checklist:
 | 407 | graphs/breadth_first_search_shortest_path_2 |   |  |  |
 | 408 | graphs/breadth_first_search_zero_one_shortest_path |   |  |  |
 | 409 | graphs/check_bipatrite |   |  |  |
-| 410 | graphs/check_cycle |   |  |  |
+| 410 | graphs/check_cycle | ✓ | 247.0µs | 3.53MB |
 | 411 | graphs/connected_components |   |  |  |
 | 412 | graphs/deep_clone_graph |   |  |  |
 | 413 | graphs/depth_first_search |   |  |  |
 | 414 | graphs/depth_first_search_2 |   |  |  |
-| 415 | graphs/dijkstra |   |  |  |
+| 415 | graphs/dijkstra | ✓ | 301.0µs | 3.44MB |
 | 416 | graphs/dijkstra_2 |   |  |  |
 | 417 | graphs/dijkstra_algorithm |   |  |  |
 | 418 | graphs/dijkstra_alternate |   |  |  |

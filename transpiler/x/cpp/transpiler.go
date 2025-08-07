@@ -1426,12 +1426,12 @@ func (l *ListLit) emit(w io.Writer) {
 	io.WriteString(w, "}")
 }
 
-func (m *MapLit) emit(w io.Writer) {
+func (m *MapLit) emitWithType(w io.Writer, includeType bool) {
 	if len(m.Keys) == 0 {
-		if m.KeyType == "auto" && m.ValueType == "auto" {
-			io.WriteString(w, "{}")
-		} else {
+		if includeType && !(m.KeyType == "auto" && m.ValueType == "auto") {
 			fmt.Fprintf(w, "std::map<%s, %s>{}", m.KeyType, m.ValueType)
+		} else {
+			io.WriteString(w, "{}")
 		}
 		return
 	}
@@ -1444,10 +1444,23 @@ func (m *MapLit) emit(w io.Writer) {
 	if m.ValueType == "" || m.ValueType == "auto" {
 		m.ValueType = exprType(m.Values[0])
 	}
+	if strings.HasPrefix(m.ValueType, "std::vector<") {
+		elem := elementTypeFromListType(m.ValueType)
+		for i, v := range m.Values {
+			if ll, ok := v.(*ListLit); ok && len(ll.Elems) == 0 {
+				ll.ElemType = elem
+				m.Values[i] = ll
+			}
+		}
+	}
 	if m.ValueType == "std::any" && currentProgram != nil {
 		currentProgram.addInclude("<any>")
 	}
-	fmt.Fprintf(w, "std::map<%s, %s>{", m.KeyType, m.ValueType)
+	if includeType {
+		fmt.Fprintf(w, "std::map<%s, %s>{", m.KeyType, m.ValueType)
+	} else {
+		io.WriteString(w, "{")
+	}
 	for i := range m.Keys {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -1483,6 +1496,12 @@ func (m *MapLit) emit(w io.Writer) {
 	}
 	io.WriteString(w, "}")
 }
+
+func (m *MapLit) emit(w io.Writer) { m.emitWithType(w, true) }
+
+// emitInit emits the map literal without the surrounding std::map<...> type,
+// suitable for variable initialization when the type is already known.
+func (m *MapLit) emitInit(w io.Writer) { m.emitWithType(w, false) }
 
 func (mg *MapGetExpr) emit(w io.Writer) {
 	io.WriteString(w, "([&]{ auto &__map = ")
@@ -3006,10 +3025,10 @@ func (s *LetStmt) emit(w io.Writer, indent int) {
 				if len(parts) == 2 {
 					oldKT, oldVT := ml.KeyType, ml.ValueType
 					ml.KeyType, ml.ValueType = strings.TrimSpace(parts[0]), strings.TrimSpace(parts[1])
-					ml.emit(w)
+					ml.emitInit(w)
 					ml.KeyType, ml.ValueType = oldKT, oldVT
 				} else {
-					ml.emit(w)
+					ml.emitInit(w)
 				}
 			} else if _, ok := s.Value.(*NullLit); ok && declType != "" && declType != "std::any" {
 				io.WriteString(w, defaultValueForType(declType))
@@ -3978,26 +3997,14 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			if t := exprType(start); strings.HasPrefix(t, "std::map<") {
 				fs.IsMap = true
 			}
-			if _, ok := start.(*MapGetExpr); ok {
+			gtyp := exprType(start)
+			if _, ok := start.(*MapGetExpr); ok && !strings.HasPrefix(gtyp, "std::map<") {
 				fs.IsMap = false
 			}
-			if isIdx {
-				fs.IsMap = false
-			}
-			gtyp := guessType(stmt.For.Source)
 			if isIdx && strings.HasPrefix(gtyp, "std::map<") {
-				inner := strings.TrimSuffix(strings.TrimPrefix(gtyp, "std::map<"), ">")
-				parts := strings.SplitN(inner, ",", 2)
-				if len(parts) == 2 {
-					gtyp = strings.TrimSpace(parts[1])
-				}
-			}
-			if _, ok := start.(*MapGetExpr); ok && strings.HasPrefix(gtyp, "std::map<") {
-				inner := strings.TrimSuffix(strings.TrimPrefix(gtyp, "std::map<"), ">")
-				parts := strings.SplitN(inner, ",", 2)
-				if len(parts) == 2 {
-					gtyp = strings.TrimSpace(parts[1])
-				}
+				fs.IsMap = true
+			} else if isIdx {
+				fs.IsMap = false
 			}
 			if vr, ok := start.(*VarRef); ok {
 				if lt, ok2 := localTypes[vr.Name]; ok2 {
@@ -4008,18 +4015,21 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			if varType == "auto" {
 				varType = gtyp
 			}
-			if strings.HasPrefix(gtyp, "std::map<") && !isIdx {
-				fs.IsMap = true
+			if strings.HasPrefix(gtyp, "std::map<") {
 				inner := strings.TrimSuffix(strings.TrimPrefix(gtyp, "std::map<"), ">")
 				parts := strings.SplitN(inner, ",", 2)
 				if len(parts) == 2 {
-					varType = strings.TrimSpace(parts[0])
+					if fs.IsMap {
+						varType = strings.TrimSpace(parts[0])
+					} else {
+						varType = strings.TrimSpace(parts[1])
+					}
 				}
 			}
 			if gtyp == "std::string" {
 				varType = "char"
 			}
-			if isIdx {
+			if isIdx && !strings.HasPrefix(gtyp, "std::map<") {
 				fs.IsMap = false
 			}
 			fs.SrcType = gtyp
@@ -4338,7 +4348,7 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 					valType = ml.ValueType
 				}
 				for i, v := range ml.Values {
-					if ll, ok2 := v.(*ListLit); ok2 && len(ll.Elems) == 0 && ll.ElemType == "" {
+					if ll, ok2 := v.(*ListLit); ok2 && len(ll.Elems) == 0 {
 						ll.ElemType = elementTypeFromListType(valType)
 						ml.Values[i] = ll
 					}
@@ -4421,7 +4431,7 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 					valType = ml.ValueType
 				}
 				for i, v := range ml.Values {
-					if ll, ok2 := v.(*ListLit); ok2 && len(ll.Elems) == 0 && ll.ElemType == "" {
+					if ll, ok2 := v.(*ListLit); ok2 && len(ll.Elems) == 0 {
 						ll.ElemType = elementTypeFromListType(valType)
 						ml.Values[i] = ll
 					}
@@ -4577,23 +4587,14 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		if t := exprType(start); strings.HasPrefix(t, "std::map<") {
 			fs.IsMap = true
 		}
-		if _, ok := start.(*MapGetExpr); ok {
+		gtyp := exprType(start)
+		if _, ok := start.(*MapGetExpr); ok && !strings.HasPrefix(gtyp, "std::map<") {
 			fs.IsMap = false
 		}
-		gtyp := guessType(s.For.Source)
 		if isIndexExpr(s.For.Source) && strings.HasPrefix(gtyp, "std::map<") {
-			inner := strings.TrimSuffix(strings.TrimPrefix(gtyp, "std::map<"), ">")
-			parts := strings.SplitN(inner, ",", 2)
-			if len(parts) == 2 {
-				gtyp = strings.TrimSpace(parts[1])
-			}
-		}
-		if _, ok := start.(*MapGetExpr); ok && strings.HasPrefix(gtyp, "std::map<") {
-			inner := strings.TrimSuffix(strings.TrimPrefix(gtyp, "std::map<"), ">")
-			parts := strings.SplitN(inner, ",", 2)
-			if len(parts) == 2 {
-				gtyp = strings.TrimSpace(parts[1])
-			}
+			fs.IsMap = true
+		} else if isIndexExpr(s.For.Source) {
+			fs.IsMap = false
 		}
 		if vr, ok := start.(*VarRef); ok {
 			if lt, ok2 := localTypes[vr.Name]; ok2 {
@@ -4606,14 +4607,17 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			varType = gtyp
 		}
 		if strings.HasPrefix(gtyp, "std::map<") {
-			fs.IsMap = true
 			inner := strings.TrimSuffix(strings.TrimPrefix(gtyp, "std::map<"), ">")
 			parts := strings.SplitN(inner, ",", 2)
 			if len(parts) == 2 {
-				varType = strings.TrimSpace(parts[0])
+				if fs.IsMap {
+					varType = strings.TrimSpace(parts[0])
+				} else {
+					varType = strings.TrimSpace(parts[1])
+				}
 			}
 		}
-		if isIndexExpr(s.For.Source) {
+		if isIndexExpr(s.For.Source) && !strings.HasPrefix(gtyp, "std::map<") {
 			fs.IsMap = false
 		}
 		if vr, ok := start.(*VarRef); ok {
@@ -7455,7 +7459,7 @@ func exprType(e Expr) string {
 				et := elementTypeFromListType(first)
 				if et != "" {
 					for _, e := range v.Elems {
-						if ll, ok := e.(*ListLit); ok && len(ll.Elems) == 0 && ll.ElemType == "" {
+						if ll, ok := e.(*ListLit); ok && len(ll.Elems) == 0 {
 							ll.ElemType = et
 						}
 					}
