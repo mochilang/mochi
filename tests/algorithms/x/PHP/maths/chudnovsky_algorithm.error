@@ -1,0 +1,3 @@
+run: exit status 255
+
+Fatal error: Cannot redeclare function pi() in /workspace/mochi/tests/algorithms/x/PHP/maths/chudnovsky_algorithm.php on line 66

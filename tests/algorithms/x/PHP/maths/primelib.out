@@ -1,0 +1,17 @@
+true
+[2 3 5 7 11 13 17 19]
+[2 3 5 7 11 13 17 19]
+[7 41]
+41
+7
+40
+[5 23]
+23
+
+Warning: Undefined variable $panic in /workspace/mochi/tests/algorithms/x/PHP/maths/primelib.php on line 200
+
+Fatal error: Uncaught Error: Value of type null is not callable in /workspace/mochi/tests/algorithms/x/PHP/maths/primelib.php:200
+Stack trace:
+#0 /workspace/mochi/tests/algorithms/x/PHP/maths/primelib.php(296): get_primes_between(3, 20)
+#1 {main}
+  thrown in /workspace/mochi/tests/algorithms/x/PHP/maths/primelib.php on line 200

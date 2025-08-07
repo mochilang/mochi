@@ -1,0 +1,1 @@
+Fatal error: Cannot redeclare function log10() in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/mfcc.php on line 67

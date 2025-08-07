@@ -1,0 +1,8 @@
+Warning: Undefined variable $panic in /workspace/mochi/tests/algorithms/x/PHP/maths/sum_of_digits.php on line 85
+
+Fatal error: Uncaught Error: Value of type null is not callable in /workspace/mochi/tests/algorithms/x/PHP/maths/sum_of_digits.php:85
+Stack trace:
+#0 /workspace/mochi/tests/algorithms/x/PHP/maths/sum_of_digits.php(98): test_sum_of_digits()
+#1 /workspace/mochi/tests/algorithms/x/PHP/maths/sum_of_digits.php(101): main()
+#2 {main}
+  thrown in /workspace/mochi/tests/algorithms/x/PHP/maths/sum_of_digits.php on line 85

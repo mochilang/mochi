@@ -312,6 +312,7 @@ var phpReserved = map[string]struct{}{
 	"parseIntStr":   {},
 	"repeat":        {},
 	"rand":          {},
+	"random_int":    {},
 	"crc32":         {},
 	"xor":           {},
 	"base64_encode": {},

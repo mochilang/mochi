@@ -1,0 +1,1 @@
+Fatal error: Cannot redeclare function log10() in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/word_frequency_functions.php on line 168
