@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-07 08:21 GMT+7
+Last updated: 2025-08-07 10:19 GMT+7
 
-## Algorithms Golden Test Checklist (628/1077)
+## Algorithms Golden Test Checklist (630/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 117µs | 38.8 KB |
@@ -689,8 +689,8 @@ Last updated: 2025-08-07 08:21 GMT+7
 | 680 | maths/sum_of_arithmetic_series | ✓ | 101µs | 36.1 KB |
 | 681 | maths/sum_of_digits | error |  |  |
 | 682 | maths/sum_of_geometric_progression | ✓ | 43µs | 36.0 KB |
-| 683 | maths/sum_of_harmonic_series |   |  |  |
-| 684 | maths/sumset |   |  |  |
+| 683 | maths/sum_of_harmonic_series | ✓ | 102µs | 35.9 KB |
+| 684 | maths/sumset | ✓ | 148µs | 36.2 KB |
 | 685 | maths/sylvester_sequence |   |  |  |
 | 686 | maths/tanh |   |  |  |
 | 687 | maths/test_factorial |   |  |  |
