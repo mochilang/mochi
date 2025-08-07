@@ -74,6 +74,7 @@ var reserved = map[string]bool{
 	"wchar_t": true, "while": true, "xor": true, "xor_eq": true,
 	// avoid clashing with C standard library functions
 	"rand": true, "random": true, "time": true,
+	"NULL": true,
 }
 var currentReturnType string
 var inReturn bool
@@ -94,6 +95,14 @@ func isStructType(t string) bool {
 		return false
 	}
 	return t != ""
+}
+
+func isPrimitiveType(t string) bool {
+	switch t {
+	case "int64_t", "double", "bool", "char", "std::string":
+		return true
+	}
+	return false
 }
 
 // SetBenchMain configures whether the generated main function is wrapped in a
@@ -1136,7 +1145,7 @@ func (p *Program) write(w io.Writer) {
 					io.WriteString(w, "const "+typ+"&")
 				}
 			} else {
-				if p.ByVal {
+				if p.ByVal && !isPrimitiveType(typ) {
 					io.WriteString(w, typ+"&")
 				} else {
 					io.WriteString(w, typ)
@@ -1224,7 +1233,7 @@ func (f *Func) emit(w io.Writer) {
 					io.WriteString(w, "const "+typ+"& ")
 				}
 			} else {
-				if p.ByVal {
+				if p.ByVal && !isPrimitiveType(typ) {
 					io.WriteString(w, typ+"& ")
 				} else {
 					io.WriteString(w, typ+" ")
@@ -3762,7 +3771,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					lst.ElemType = "std::any"
 				}
 			}
-			globals = append(globals, &LetStmt{Name: stmt.Let.Name, Type: typ, Value: val})
+			globals = append(globals, &LetStmt{Name: stmt.Let.Name, Type: typ})
+			if val != nil {
+				body = append(body, &AssignStmt{Name: stmt.Let.Name, Value: val})
+			}
 			if cp.GlobalTypes != nil {
 				cp.GlobalTypes[stmt.Let.Name] = typ
 			}
@@ -3879,7 +3891,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					lst.ElemType = "std::any"
 				}
 			}
-			globals = append(globals, &LetStmt{Name: stmt.Var.Name, Type: typ, Value: val})
+			globals = append(globals, &LetStmt{Name: stmt.Var.Name, Type: typ})
+			if val != nil {
+				body = append(body, &AssignStmt{Name: stmt.Var.Name, Value: val})
+			}
 			if cp.GlobalTypes != nil {
 				cp.GlobalTypes[stmt.Var.Name] = typ
 			}
