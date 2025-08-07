@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Python`.
-Last updated: 2025-08-07 17:36 GMT+7
+Last updated: 2025-08-08 06:31 GMT+7
 
 ## Algorithms Golden Test Checklist (500/1077)
 | Index | Name | Status | Duration | Memory |
@@ -258,7 +258,7 @@ Last updated: 2025-08-07 17:36 GMT+7
 | 249 | data_structures/stacks/infix_to_postfix_conversion | ✓ | 92.0µs | 14.16MB |
 | 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ | 162.0µs | 13.80MB |
 | 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 52.0µs | 12.86MB |
-| 252 | data_structures/stacks/lexicographical_numbers | ✓ | 189.0µs | 12.72MB |
+| 252 | data_structures/stacks/lexicographical_numbers | ✓ | 149.0µs | 12.52MB |
 | 253 | data_structures/stacks/next_greater_element | error |  |  |
 | 254 | data_structures/stacks/postfix_evaluation | ✓ | 145.0µs | 13.74MB |
 | 255 | data_structures/stacks/prefix_evaluation | ✓ | 151.0µs | 13.54MB |

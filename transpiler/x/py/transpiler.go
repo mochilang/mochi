@@ -845,28 +845,28 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 		_, err := io.WriteString(w, "]")
 		return err
 	default:
-               lp := precedence(b.Op)
-               if lb, ok := b.Left.(*BinaryExpr); ok {
-                       if isCompareOp(b.Op) && isCompareOp(lb.Op) || precedence(lb.Op) > lp {
-                               if _, err := io.WriteString(w, "("); err != nil {
-                                       return err
-                               }
-                               if err := emitExpr(w, b.Left); err != nil {
-                                       return err
-                               }
-                               if _, err := io.WriteString(w, ")"); err != nil {
-                                       return err
-                               }
-                       } else {
-                               if err := emitExpr(w, b.Left); err != nil {
-                                       return err
-                               }
-                       }
-               } else {
-                       if err := emitExpr(w, b.Left); err != nil {
-                               return err
-                       }
-               }
+		lp := precedence(b.Op)
+		if lb, ok := b.Left.(*BinaryExpr); ok {
+			if isCompareOp(b.Op) && isCompareOp(lb.Op) || precedence(lb.Op) > lp {
+				if _, err := io.WriteString(w, "("); err != nil {
+					return err
+				}
+				if err := emitExpr(w, b.Left); err != nil {
+					return err
+				}
+				if _, err := io.WriteString(w, ")"); err != nil {
+					return err
+				}
+			} else {
+				if err := emitExpr(w, b.Left); err != nil {
+					return err
+				}
+			}
+		} else {
+			if err := emitExpr(w, b.Left); err != nil {
+				return err
+			}
+		}
 		op := b.Op
 		if op == "/" {
 			if isIntOnlyExpr(b.Left, currentEnv) && isIntOnlyExpr(b.Right, currentEnv) {
@@ -2878,12 +2878,12 @@ func precedence(op string) int {
 }
 
 func isCompareOp(op string) bool {
-        switch op {
-        case "<", "<=", ">", ">=", "==", "!=", "in":
-                return true
-        default:
-                return false
-        }
+	switch op {
+	case "<", "<=", ">", ">=", "==", "!=", "in":
+		return true
+	default:
+		return false
+	}
 }
 
 func hasImport(p *Program, mod string) bool {
@@ -2930,9 +2930,6 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 		}
 		if currentImports["hashlib"] && !hasImport(p, "hashlib") {
 			imports = append(imports, "import hashlib")
-		}
-		if currentImports["os"] && !hasImport(p, "os") {
-			imports = append(imports, "import os")
 		}
 		if currentImports["time"] && !hasImport(p, "time") {
 			imports = append(imports, "import time")
