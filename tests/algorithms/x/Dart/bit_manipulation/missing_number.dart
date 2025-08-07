@@ -36,11 +36,6 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
-
-void _json(dynamic v) {
-  print(jsonEncode(v));
-}
-
 int find_missing_number(List<int> nums) {
   int low = (nums.reduce((a, b) => a < b ? a : b)).toInt();
   int high = (nums.reduce((a, b) => a > b ? a : b)).toInt();

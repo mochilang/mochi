@@ -36,6 +36,8 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+
 String to_binary(int n) {
   if (n == 0) {
     return "0";
@@ -44,7 +46,7 @@ String to_binary(int n) {
   String res = "";
   while (_num > 0) {
     int bit = _num % 2;
-    res = (bit).toString() + res;
+    res = _str(bit) + res;
     _num = _num ~/ 2;
   }
   return res;

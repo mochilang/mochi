@@ -36,11 +36,13 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+
 String row_string(List<int> row) {
   String s = "[";
   int i = 0;
   while (i < row.length) {
-    s = s + (row[i]).toString();
+    s = s + _str(row[i]);
     if (i < row.length - 1) {
     s = s + ", ";
   }

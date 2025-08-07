@@ -36,10 +36,7 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
-
-void _json(dynamic v) {
-  print(jsonEncode(v));
-}
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
 
 int pow2(int exp) {
   int result = 1;
@@ -81,9 +78,9 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print((seq2).toString());
-  print((seq1).toString());
-  print((seq3).toString());
+  print(_str(seq2));
+  print(_str(seq1));
+  print(_str(seq3));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

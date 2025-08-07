@@ -36,6 +36,8 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+
 bool different_signs(int num1, int num2) {
   bool sign1 = num1 < 0;
   bool sign2 = num2 < 0;
@@ -49,13 +51,13 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print((different_signs(1, -1)).toString());
-  print((different_signs(1, 1)).toString());
-  print((different_signs(1000000000000000000, -1000000000000000000)).toString());
-  print((different_signs(-1000000000000000000, 1000000000000000000)).toString());
-  print((different_signs(50, 278)).toString());
-  print((different_signs(0, 2)).toString());
-  print((different_signs(2, 0)).toString());
+  print(_str(different_signs(1, -1)));
+  print(_str(different_signs(1, 1)));
+  print(_str(different_signs(1000000000000000000, -1000000000000000000)));
+  print(_str(different_signs(-1000000000000000000, 1000000000000000000)));
+  print(_str(different_signs(50, 278)));
+  print(_str(different_signs(0, 2)));
+  print(_str(different_signs(2, 0)));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

@@ -71,7 +71,7 @@ String encode(String word) {
   while (i < w.length) {
     String ch = _substr(w, i, i + 1);
     if (encode_map.containsKey(ch)) {
-    encoded = encoded + encode_map[ch]!;
+    encoded = encoded + (encode_map[ch] ?? "");
   } else {
     throw Exception("encode() accepts only letters of the alphabet and spaces");
   }
@@ -97,7 +97,7 @@ String decode(String coded) {
     int j = 0;
     while (j < word.length) {
     String segment = _substr(word, j, j + 5);
-    decoded = decoded + decode_map[segment]!;
+    decoded = decoded + (decode_map[segment] ?? "");
     j = j + 5;
   }
     if (w < words.length - 1) {

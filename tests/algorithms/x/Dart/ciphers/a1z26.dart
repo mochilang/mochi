@@ -36,6 +36,8 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+
 int indexOf(String s, String ch) {
   int i = 0;
   while (i < s.length) {
@@ -90,7 +92,7 @@ void _main() {
   print("-> ");
   String text = stdin.readLineSync() ?? ''.toLowerCase();
   List<int> enc = encode(text);
-  print("Encoded: " + (enc).toString());
+  print("Encoded: " + _str(enc));
   print("Decoded: " + decode(enc));
 }
 

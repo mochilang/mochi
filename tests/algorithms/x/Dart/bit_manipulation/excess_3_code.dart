@@ -36,11 +36,6 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
-
-void _json(dynamic v) {
-  print(jsonEncode(v));
-}
-
 String excess_3_code(int number) {
   int n = number;
   if (n < 0) {

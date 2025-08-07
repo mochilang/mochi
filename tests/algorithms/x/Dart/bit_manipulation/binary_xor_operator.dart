@@ -36,10 +36,7 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
-
-void _json(dynamic v) {
-  print(jsonEncode(v));
-}
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
 
 String int_to_binary(int n) {
   if (n == 0) {
@@ -48,7 +45,7 @@ String int_to_binary(int n) {
   String res = "";
   int _num = n;
   while (_num > 0) {
-    res = (_num % 2).toString() + res;
+    res = _str(_num % 2) + res;
     _num = _num ~/ 2;
   }
   return res;

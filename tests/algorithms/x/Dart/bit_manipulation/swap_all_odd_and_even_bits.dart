@@ -36,8 +36,10 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+
 String pad_left_num(int n) {
-  String s = (n).toString();
+  String s = _str(n);
   while (s.length < 5) {
     s = " " + s;
   }
@@ -53,7 +55,7 @@ String to_binary(int n) {
   }
   String bits = "";
   while (_num > 0) {
-    bits = (_num % 2).toString() + bits;
+    bits = _str(_num % 2) + bits;
     _num = (_num - _num % 2) ~/ 2;
   }
   if (bits == "") {

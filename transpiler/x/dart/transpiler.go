@@ -86,6 +86,12 @@ void _json(dynamic v) {
 }
 `
 
+const helperError = `
+Never _error(String msg) {
+  throw Exception(msg);
+}
+`
+
 // --- Struct tracking for generated classes ---
 type StructField struct {
 	Name string
@@ -113,6 +119,7 @@ var (
 	useSHA256         bool
 	useMD5            bool
 	useFetch          bool
+	useError          bool
 	useJSONPrint      bool
 	useEnv            bool
 	useSubprocess     bool
@@ -4340,6 +4347,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if useError {
+		if _, err := io.WriteString(w, helperError+"\n"); err != nil {
+			return err
+		}
+	}
 	if useJSONPrint {
 		if _, err := io.WriteString(w, helperJSONPrint+"\n"); err != nil {
 			return err
@@ -4540,6 +4552,8 @@ func Transpile(prog *parser.Program, env *types.Env, bench, wrapMain bool) (*Pro
 	useSHA256 = false
 	useMD5 = false
 	useFetch = false
+	useError = false
+	useJSONPrint = false
 	useEnv = false
 	useSubprocess = false
 	useSubstrClamp = false
@@ -5587,6 +5601,14 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			return &CallExpr{Func: &Name{Name: "_json"}, Args: []Expr{arg}}, nil
+		}
+		if p.Call.Func == "error" && len(p.Call.Args) == 1 {
+			useError = true
+			arg, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &CallExpr{Func: &Name{Name: "_error"}, Args: []Expr{arg}}, nil
 		}
 		if p.Call.Func == "values" && len(p.Call.Args) == 1 {
 			mp, err := convertExpr(p.Call.Args[0])

@@ -36,6 +36,8 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+
 String SYMBOLS = " !\"#\$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 int gcd(int a, int b) {
   int x = a;
@@ -50,7 +52,7 @@ int gcd(int a, int b) {
 
 int mod_inverse(int a, int m) {
   if (gcd(a, m) != 1) {
-    throw Exception("mod inverse of " + (a).toString() + " and " + (m).toString() + " does not exist");
+    throw Exception("mod inverse of " + _str(a) + " and " + _str(m) + " does not exist");
   }
   int u1 = 1;
   int u2 = 0;
@@ -99,10 +101,10 @@ dynamic check_keys(int key_a, int key_b, String mode) {
   };
   }
   if (key_a < 0 || key_b < 0 || key_b > m - 1) {
-    throw Exception("Key A must be greater than 0 and key B must be between 0 and " + (m - 1).toString());
+    throw Exception("Key A must be greater than 0 and key B must be between 0 and " + _str(m - 1));
   }
   if (gcd(key_a, m) != 1) {
-    throw Exception("Key A " + (key_a).toString() + " and the symbol set size " + (m).toString() + " are not relatively prime. Choose a different key.");
+    throw Exception("Key A " + _str(key_a) + " and the symbol set size " + _str(m) + " are not relatively prime. Choose a different key.");
   }
 }
 

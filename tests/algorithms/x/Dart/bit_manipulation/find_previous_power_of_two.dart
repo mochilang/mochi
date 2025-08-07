@@ -36,10 +36,7 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
-
-void _json(dynamic v) {
-  print(jsonEncode(v));
-}
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
 
 int find_previous_power_of_two(int number) {
   if (number < 0) {
@@ -66,7 +63,7 @@ void _main() {
     results = [...results, find_previous_power_of_two(i)];
     i = i + 1;
   }
-  print((results).toString());
+  print(_str(results));
 }
 
 void _start() {

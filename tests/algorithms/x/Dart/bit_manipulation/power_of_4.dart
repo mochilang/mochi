@@ -36,6 +36,8 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+
 bool power_of_4(int number) {
   if (number <= 0) {
     return false;
@@ -54,11 +56,11 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print((power_of_4(1)).toString());
-  print((power_of_4(2)).toString());
-  print((power_of_4(4)).toString());
-  print((power_of_4(6)).toString());
-  print((power_of_4(64)).toString());
+  print(_str(power_of_4(1)));
+  print(_str(power_of_4(2)));
+  print(_str(power_of_4(4)));
+  print(_str(power_of_4(6)));
+  print(_str(power_of_4(64)));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

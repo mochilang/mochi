@@ -96,8 +96,8 @@ void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
   while (time < 16) {
-    dynamic next = new_generation(cells, rules, time);
-    cells = [...cells, next];
+    List<int> next = new_generation(cells, rules, time);
+    cells = ([...cells, next] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
     time = time + 1;
   }
   while (t < cells.length) {

@@ -36,6 +36,8 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+
 int count_alive_neighbours(List<List<bool>> board, int row, int col) {
   int size = board.length;
   int alive = 0;
@@ -129,7 +131,7 @@ void main() {
   show(board);
   while (i < 4) {
     board = step(board);
-    print("\nStep " + (i + 1).toString());
+    print("\nStep " + _str(i + 1));
     show(board);
     i = i + 1;
   }
