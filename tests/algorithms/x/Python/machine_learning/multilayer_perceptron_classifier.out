@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/multilayer_perceptron_classifier.py", line 89, in <module>
+    train(4000, 0.5)
+  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/multilayer_perceptron_classifier.py", line 49, in train
+    z1 = w1[0][0] * x0 + w1[1][0] * x1 + b1[0]
+                                         ^^
+UnboundLocalError: cannot access local variable 'b1' where it is not associated with a value

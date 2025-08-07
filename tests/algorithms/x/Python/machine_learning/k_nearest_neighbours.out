@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/k_nearest_neighbours.py", line 109, in <module>
+    print(classify(knn, point, 5))
+          ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/k_nearest_neighbours.py", line 85, in classify
+    e18
+NameError: name 'e18' is not defined

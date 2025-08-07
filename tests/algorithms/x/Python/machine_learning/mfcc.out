@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/mfcc.py", line 167, in <module>
+    coeffs = mfcc(audio, 5, 3)
+             ^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/mfcc.py", line 145, in mfcc
+    norm = normalize(audio)
+           ^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/mfcc.py", line 79, in normalize
+    res = _append(res, audio[i] // max_val)
+                       ~~~~~~~~~^^~~~~~~~~
+ZeroDivisionError: float floor division by zero

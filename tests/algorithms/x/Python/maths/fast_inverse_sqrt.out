@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/fast_inverse_sqrt.py", line 122, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/fast_inverse_sqrt.py", line 116, in main
+    test_fast_inverse_sqrt()
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/fast_inverse_sqrt.py", line 103, in test_fast_inverse_sqrt
+    panic("fast_inverse_sqrt(10) failed")
+    ^^^^^
+NameError: name 'panic' is not defined
