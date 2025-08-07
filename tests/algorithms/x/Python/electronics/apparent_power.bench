@@ -1,0 +1,10 @@
+{
+  "duration_us": 115,
+  "memory_bytes": 14462976,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/electronics/apparent_power.py", line 86, in <module>
+    assert approx_equal(s, expected, 0.5)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

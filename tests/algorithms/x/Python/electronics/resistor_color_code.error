@@ -1,0 +1,6 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/electronics/resistor_color_code.py", line 109, in <module>
+    assert calculate_resistance(3, ["Black", "Blue", "Orange"]) == "6000Ω ±20% "
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError
