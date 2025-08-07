@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-07 17:48 GMT+7
+Last updated: 2025-08-07 23:25 GMT+7
 
-## Algorithms Golden Test Checklist (163/1077)
+## Algorithms Golden Test Checklist (200/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 50.25ms | 19.66MB |
@@ -55,7 +55,7 @@ Last updated: 2025-08-07 17:48 GMT+7
 | 46 | blockchain/diophantine_equation | ✓ | 76.324ms | 21.59MB |
 | 47 | boolean_algebra/and_gate | ✓ | 51.95ms | 19.10MB |
 | 48 | boolean_algebra/imply_gate | ✓ | 58.594ms | 20.46MB |
-| 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 58.286ms | 20.75MB |
+| 49 | boolean_algebra/karnaugh_map_simplification | error | 58.286ms | 20.75MB |
 | 50 | boolean_algebra/multiplexer | ✓ | 47.292ms | 19.04MB |
 | 51 | boolean_algebra/nand_gate | ✓ | 51.263ms | 18.62MB |
 | 52 | boolean_algebra/nimply_gate | ✓ | 48.457ms | 18.98MB |
@@ -72,10 +72,10 @@ Last updated: 2025-08-07 17:48 GMT+7
 | 63 | cellular_automata/one_dimensional | ✓ | 66.647ms | 23.04MB |
 | 64 | cellular_automata/wa_tor | ✓ | 222.553ms | 28.69MB |
 | 65 | ciphers/a1z26 | ✓ | 78.855ms | 21.28MB |
-| 66 | ciphers/affine_cipher | ✓ | 88.77ms | 23.08MB |
+| 66 | ciphers/affine_cipher | error | 88.77ms | 23.08MB |
 | 67 | ciphers/atbash | ✓ | 54.189ms | 19.86MB |
 | 68 | ciphers/autokey | ✓ | 65.221ms | 21.81MB |
-| 69 | ciphers/baconian_cipher | ✓ | 59.015ms | 22.05MB |
+| 69 | ciphers/baconian_cipher | error | 59.015ms | 22.05MB |
 | 70 | ciphers/base16 | error |  |  |
 | 71 | ciphers/base32 | ✓ | 94.663ms | 24.10MB |
 | 72 | ciphers/base64_cipher | ✓ | 57.056ms | 24.36MB |
@@ -258,56 +258,56 @@ Last updated: 2025-08-07 17:48 GMT+7
 | 249 | data_structures/stacks/infix_to_postfix_conversion |   |  |  |
 | 250 | data_structures/stacks/infix_to_prefix_conversion |   |  |  |
 | 251 | data_structures/stacks/largest_rectangle_histogram |   |  |  |
-| 252 | data_structures/stacks/lexicographical_numbers |   |  |  |
-| 253 | data_structures/stacks/next_greater_element |   |  |  |
-| 254 | data_structures/stacks/postfix_evaluation |   |  |  |
-| 255 | data_structures/stacks/prefix_evaluation |   |  |  |
-| 256 | data_structures/stacks/stack |   |  |  |
-| 257 | data_structures/stacks/stack_using_two_queues |   |  |  |
-| 258 | data_structures/stacks/stack_with_doubly_linked_list |   |  |  |
-| 259 | data_structures/stacks/stack_with_singly_linked_list |   |  |  |
-| 260 | data_structures/stacks/stock_span_problem |   |  |  |
-| 261 | data_structures/suffix_tree/example/example_usage |   |  |  |
-| 262 | data_structures/suffix_tree/suffix_tree |   |  |  |
-| 263 | data_structures/suffix_tree/suffix_tree_node |   |  |  |
-| 264 | data_structures/suffix_tree/tests/test_suffix_tree |   |  |  |
-| 265 | data_structures/trie/radix_tree |   |  |  |
-| 266 | data_structures/trie/trie |   |  |  |
-| 267 | digital_image_processing/change_brightness |   |  |  |
-| 268 | digital_image_processing/change_contrast |   |  |  |
-| 269 | digital_image_processing/convert_to_negative |   |  |  |
-| 270 | digital_image_processing/dithering/burkes |   |  |  |
-| 271 | digital_image_processing/edge_detection/canny |   |  |  |
-| 272 | digital_image_processing/filters/bilateral_filter |   |  |  |
-| 273 | digital_image_processing/filters/convolve |   |  |  |
-| 274 | digital_image_processing/filters/gabor_filter |   |  |  |
-| 275 | digital_image_processing/filters/gaussian_filter |   |  |  |
-| 276 | digital_image_processing/filters/laplacian_filter |   |  |  |
-| 277 | digital_image_processing/filters/local_binary_pattern |   |  |  |
-| 278 | digital_image_processing/filters/median_filter |   |  |  |
-| 279 | digital_image_processing/filters/sobel_filter |   |  |  |
-| 280 | digital_image_processing/histogram_equalization/histogram_stretch |   |  |  |
-| 281 | digital_image_processing/index_calculation |   |  |  |
-| 282 | digital_image_processing/morphological_operations/dilation_operation |   |  |  |
-| 283 | digital_image_processing/morphological_operations/erosion_operation |   |  |  |
-| 284 | digital_image_processing/resize/resize |   |  |  |
-| 285 | digital_image_processing/rotation/rotation |   |  |  |
-| 286 | digital_image_processing/sepia |   |  |  |
-| 287 | digital_image_processing/test_digital_image_processing |   |  |  |
-| 288 | divide_and_conquer/closest_pair_of_points |   |  |  |
-| 289 | divide_and_conquer/convex_hull |   |  |  |
-| 290 | divide_and_conquer/heaps_algorithm |   |  |  |
-| 291 | divide_and_conquer/heaps_algorithm_iterative |   |  |  |
-| 292 | divide_and_conquer/inversions |   |  |  |
-| 293 | divide_and_conquer/kth_order_statistic |   |  |  |
-| 294 | divide_and_conquer/max_difference_pair |   |  |  |
-| 295 | divide_and_conquer/max_subarray |   |  |  |
-| 296 | divide_and_conquer/mergesort |   |  |  |
-| 297 | divide_and_conquer/peak |   |  |  |
-| 298 | divide_and_conquer/power |   |  |  |
-| 299 | divide_and_conquer/strassen_matrix_multiplication |   |  |  |
-| 300 | docs/conf |   |  |  |
-| 301 | dynamic_programming/abbreviation |   |  |  |
+| 252 | data_structures/stacks/lexicographical_numbers | ✓ | 82.352ms | 19.77MB |
+| 253 | data_structures/stacks/next_greater_element | ✓ | 77.613ms | 22.37MB |
+| 254 | data_structures/stacks/postfix_evaluation | ✓ | 68.42ms | 24.36MB |
+| 255 | data_structures/stacks/prefix_evaluation | ✓ | 67.796ms | 23.77MB |
+| 256 | data_structures/stacks/stack | error |  |  |
+| 257 | data_structures/stacks/stack_using_two_queues | error |  |  |
+| 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 56.35ms | 22.16MB |
+| 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 56.624ms | 21.04MB |
+| 260 | data_structures/stacks/stock_span_problem | error |  |  |
+| 261 | data_structures/suffix_tree/example/example_usage | error |  |  |
+| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 75.196ms | 22.77MB |
+| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 82.84ms | 20.40MB |
+| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 55.454ms | 20.41MB |
+| 265 | data_structures/trie/radix_tree | ✓ | 81.786ms | 28.61MB |
+| 266 | data_structures/trie/trie | ✓ | 62.014ms | 25.21MB |
+| 267 | digital_image_processing/change_brightness | ✓ | 81.859ms | 19.75MB |
+| 268 | digital_image_processing/change_contrast | ✓ | 54.541ms | 20.38MB |
+| 269 | digital_image_processing/convert_to_negative | ✓ | 70.672ms | 19.57MB |
+| 270 | digital_image_processing/dithering/burkes | ✓ | 61.689ms | 23.85MB |
+| 271 | digital_image_processing/edge_detection/canny | error |  |  |
+| 272 | digital_image_processing/filters/bilateral_filter | ✓ | 47.169ms | 26.13MB |
+| 273 | digital_image_processing/filters/convolve | error |  |  |
+| 274 | digital_image_processing/filters/gabor_filter | ✓ | 72.759ms | 23.40MB |
+| 275 | digital_image_processing/filters/gaussian_filter | ✓ | 71.783ms | 22.57MB |
+| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 62.063ms | 23.34MB |
+| 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 61.507ms | 23.11MB |
+| 278 | digital_image_processing/filters/median_filter | ✓ | 75.14ms | 21.31MB |
+| 279 | digital_image_processing/filters/sobel_filter | ✓ | 85.733ms | 30.31MB |
+| 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 72.778ms | 21.19MB |
+| 281 | digital_image_processing/index_calculation | error |  |  |
+| 282 | digital_image_processing/morphological_operations/dilation_operation | ✓ | 56.586ms | 24.63MB |
+| 283 | digital_image_processing/morphological_operations/erosion_operation | ✓ | 72.677ms | 23.00MB |
+| 284 | digital_image_processing/resize/resize | ✓ | 110.417ms | 20.80MB |
+| 285 | digital_image_processing/rotation/rotation | error |  |  |
+| 286 | digital_image_processing/sepia | error |  |  |
+| 287 | digital_image_processing/test_digital_image_processing | error |  |  |
+| 288 | divide_and_conquer/closest_pair_of_points | ✓ | 72.7ms | 24.10MB |
+| 289 | divide_and_conquer/convex_hull | ✓ | 55.696ms | 22.60MB |
+| 290 | divide_and_conquer/heaps_algorithm | ✓ | 96.537ms | 20.15MB |
+| 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 79.728ms | 20.38MB |
+| 292 | divide_and_conquer/inversions | ✓ | 64.143ms | 22.28MB |
+| 293 | divide_and_conquer/kth_order_statistic | ✓ | 60.63ms | 19.55MB |
+| 294 | divide_and_conquer/max_difference_pair | ✓ | 89.61ms | 21.27MB |
+| 295 | divide_and_conquer/max_subarray | ✓ | 78.732ms | 21.74MB |
+| 296 | divide_and_conquer/mergesort | ✓ | 91.744ms | 20.61MB |
+| 297 | divide_and_conquer/peak | ✓ | 56.215ms | 19.32MB |
+| 298 | divide_and_conquer/power | ✓ | 52.714ms | 19.63MB |
+| 299 | divide_and_conquer/strassen_matrix_multiplication | ✓ | 343.308ms | 27.82MB |
+| 300 | docs/conf | ✓ | 46.759ms | 19.81MB |
+| 301 | dynamic_programming/abbreviation | ✓ | 63.999ms | 22.72MB |
 | 302 | dynamic_programming/all_construct |   |  |  |
 | 303 | dynamic_programming/bitmask |   |  |  |
 | 304 | dynamic_programming/catalan_numbers |   |  |  |

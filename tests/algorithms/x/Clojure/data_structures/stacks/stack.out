@@ -1,0 +1,6 @@
+true
+Execution error at main/peek (stack.clj:52).
+peek from empty stack
+
+Full report at:
+/tmp/clojure-13697680879023281066.edn
