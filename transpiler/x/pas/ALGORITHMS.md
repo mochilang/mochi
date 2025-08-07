@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-07 08:12 GMT+7
+Last updated: 2025-08-07 10:31 GMT+7
 
-## Algorithms Golden Test Checklist (91/1077)
+## Algorithms Golden Test Checklist (93/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -110,8 +110,8 @@ Last updated: 2025-08-07 08:12 GMT+7
 | 101 | ciphers/rsa_key_generator | ✓ | 0ns | 256B |
 | 102 | ciphers/running_key_cipher | ✓ | 0ns | 0B |
 | 103 | ciphers/shuffled_shift_cipher |   |  |  |
-| 104 | ciphers/simple_keyword_cypher |   |  |  |
-| 105 | ciphers/simple_substitution_cipher |   |  |  |
+| 104 | ciphers/simple_keyword_cypher | ✓ | 1.0µs | 6.56KB |
+| 105 | ciphers/simple_substitution_cipher | ✓ | 0ns | 0B |
 | 106 | ciphers/transposition_cipher |   |  |  |
 | 107 | ciphers/transposition_cipher_encrypt_decrypt_file |   |  |  |
 | 108 | ciphers/trifid_cipher |   |  |  |
