@@ -1,0 +1,6 @@
+/workspace/mochi/tests/algorithms/x/Erlang/hashes/sdbm.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+1462174910723540325254304520539387479031000036
+730247649148944819640658295400555317318720608290373040936089

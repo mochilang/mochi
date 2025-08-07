@@ -1,0 +1,12 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/average_absolute_deviation.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/maths/average_absolute_deviation.erl:46:1: Warning: function mochi_safe_mul/2 is unused
+%   46| mochi_safe_mul(A, B) ->
+%     | ^
+
+0.0
+1.0
+20.0
+16.25

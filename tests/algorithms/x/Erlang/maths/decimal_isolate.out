@@ -1,0 +1,18 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/decimal_isolate.erl:39:1: Warning: function mochi_nth/2 is unused
+%   39| mochi_nth(I, L) ->
+%     | ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/maths/decimal_isolate.erl:93:24: Warning: ambiguous call of overridden auto-imported BIF floor/1 --
+use erlang:floor/1 or "-compile({no_auto_import,[floor/1]})." to resolve name clash
+%   93|         mochi_safe_div(floor((mochi_safe_mul(X_2, M) + 0.5)), M)
+%     |                        ^
+
+0.53
+0.3
+0.34
+0.345
+-0.789
+0.0
+-0.1
+-0.12
+-0.123

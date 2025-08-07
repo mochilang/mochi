@@ -1,0 +1,9 @@
+/workspace/mochi/tests/algorithms/x/Erlang/machine_learning/gradient_boosting_classifier.erl:239:126: Warning: variable 'Left_val_3' exported from 'case' (line 212, column 13)
+%  239| {Best_error, Best_feature, Best_left, Best_right, Best_threshold, Count_left_3, Count_right_3, Error_2, Features_3, I_14, J, Left_val_3, N_features, N_samples, Residuals_3, Right_val_3, Sum_left_3, Sum_right_3, T_2, T_index} = Fun_8(Best_error, Best_feature, Best_left, Best_right, Best_threshold, Count_left_3, Count_right_3, Error, Features_3, I_13, J, Left_val_3, N_features, N_samples, Residuals_3, Right_val_3, Sum_left_3, Sum_right_3, T_2, T_index),
+%     |                                                                                                                              ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/machine_learning/gradient_boosting_classifier.erl:239:174: Warning: variable 'Right_val_3' exported from 'case' (line 218, column 13)
+%  239| {Best_error, Best_feature, Best_left, Best_right, Best_threshold, Count_left_3, Count_right_3, Error_2, Features_3, I_14, J, Left_val_3, N_features, N_samples, Residuals_3, Right_val_3, Sum_left_3, Sum_right_3, T_2, T_index} = Fun_8(Best_error, Best_feature, Best_left, Best_right, Best_threshold, Count_left_3, Count_right_3, Error, Features_3, I_13, J, Left_val_3, N_features, N_samples, Residuals_3, Right_val_3, Sum_left_3, Sum_right_3, T_2, T_index),
+%     |                                                                                                                                                                              ^
+
+"Accuracy: 1.0"

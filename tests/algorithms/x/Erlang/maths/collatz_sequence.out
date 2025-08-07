@@ -1,0 +1,6 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/collatz_sequence.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+[11 34 17 52 26 13 40 20 10 5 16 8 4 2 1]
+"Collatz sequence from 11 took 15 steps."

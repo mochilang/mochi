@@ -1,0 +1,7 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/average_mean.erl:46:1: Warning: function mochi_safe_mul/2 is unused
+%   46| mochi_safe_mul(A, B) ->
+%     | ^
+
+12.0
+20.0
+4.5

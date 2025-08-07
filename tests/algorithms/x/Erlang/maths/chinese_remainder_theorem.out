@@ -1,0 +1,12 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/chinese_remainder_theorem.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+"-1, 2"
+"-2, 3"
+31
+14
+3
+1
+31
+14

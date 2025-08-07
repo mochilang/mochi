@@ -1,0 +1,10 @@
+run: exit status 127
+/workspace/mochi/tests/algorithms/x/Erlang/machine_learning/sequential_minimum_optimization.erl:246:29: variable 'B1' unsafe in 'try' (line 151, column 13)
+%  246|                 {break, B0, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11} -> {B0, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11}
+%     |                             ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/machine_learning/sequential_minimum_optimization.erl:246:33: variable 'B2' unsafe in 'try' (line 151, column 13)
+%  246|                 {break, B0, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11} -> {B0, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11}
+%     |                                 ^
+
+escript: There were compilation errors.

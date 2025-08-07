@@ -1,0 +1,5 @@
+/workspace/mochi/tests/algorithms/x/Erlang/machine_learning/local_weighted_learning/local_weighted_learning.erl:77:2: Warning: variable 'Half_2' exported from 'case' (line 58, column 9)
+%   77| {Half_2, N_2, Sum_2, Term_2, X} = Fun(Half_2, N, Sum, Term, X),
+%     |  ^
+
+[1.061875,1.6595114135742222,3.4997216796874966]

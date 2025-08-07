@@ -1,0 +1,27 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/area.erl:39:1: Warning: function mochi_nth/2 is unused
+%   39| mochi_nth(I, L) ->
+%     | ^
+
+"[DEMO] Areas of various geometric shapes:"
+"Rectangle: 200.0"
+"Square: 100.0"
+"Triangle: 50.0"
+"Triangle Three Sides: 30.0"
+"Parallelogram: 200.0"
+"Rhombus: 100.0"
+"Trapezium: 450.0"
+"Circle: 1256.6370614359173"
+"Ellipse: 628.3185307179587"
+[]
+"Surface Areas of various geometric shapes:"
+"Cube: 2.4e3"
+"Cuboid: 2.2e3"
+"Sphere: 5026.548245743669"
+"Hemisphere: 3769.9111843077517"
+"Cone: 1016.640738463052"
+"Conical Frustum: 4551.1728065337265"
+"Cylinder: 1884.9555921538758"
+"Torus: 7895.683520871487"
+"Equilateral Triangle: 43.2984080494353"
+"Square: 99.99953970830809"
+"Regular Pentagon: 172.04762476804"

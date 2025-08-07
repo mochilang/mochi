@@ -1,0 +1,10 @@
+/workspace/mochi/tests/algorithms/x/Erlang/machine_learning/logistic_regression.erl:77:2: Warning: variable 'Is_neg_3' exported from 'case' (line 56, column 9)
+%   77| {Is_neg_3, N_2, Sum_2, Term_2, X, Y_3} = Fun(Is_neg_3, N, Sum, Term, X, Y_3),
+%     |  ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/machine_learning/logistic_regression.erl:77:35: Warning: variable 'Y_3' exported from 'case' (line 56, column 9)
+%   77| {Is_neg_3, N_2, Sum_2, Term_2, X, Y_3} = Fun(Is_neg_3, N, Sum, Term, X, Y_3),
+%     |                                   ^
+
+0.221462389069814
+0.22146238906981394

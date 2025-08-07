@@ -1,0 +1,12 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/binary_exponentiation.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/maths/binary_exponentiation.erl:49:1: Warning: function mochi_safe_div/2 is unused
+%   49| mochi_safe_div(A, B) ->
+%     | ^
+
+243.0
+5.0625
+1
+4
