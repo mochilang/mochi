@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-07 15:09 GMT+7
+Last updated: 2025-08-07 16:46 GMT+7
 
-## Algorithms Golden Test Checklist (705/1077)
+## Algorithms Golden Test Checklist (730/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -478,31 +478,31 @@ Last updated: 2025-08-07 15:09 GMT+7
 | 469 | hashes/enigma_machine | ✓ | 1.0ms | 455.48KB |
 | 470 | hashes/fletcher16 | ✓ | 1.0µs | 43.66KB |
 | 471 | hashes/hamming_code | error |  |  |
-| 472 | hashes/luhn |   |  |  |
-| 473 | hashes/md5 |   |  |  |
-| 474 | hashes/sdbm |   |  |  |
-| 475 | hashes/sha1 |   |  |  |
-| 476 | hashes/sha256 |   |  |  |
-| 477 | knapsack/greedy_knapsack |   |  |  |
-| 478 | knapsack/knapsack |   |  |  |
-| 479 | knapsack/recursive_approach_knapsack |   |  |  |
-| 480 | knapsack/tests/test_greedy_knapsack |   |  |  |
-| 481 | knapsack/tests/test_knapsack |   |  |  |
-| 482 | linear_algebra/gaussian_elimination |   |  |  |
-| 483 | linear_algebra/jacobi_iteration_method |   |  |  |
-| 484 | linear_algebra/lu_decomposition |   |  |  |
-| 485 | linear_algebra/matrix_inversion |   |  |  |
-| 486 | linear_algebra/src/conjugate_gradient |   |  |  |
-| 487 | linear_algebra/src/gaussian_elimination_pivoting |   |  |  |
-| 488 | linear_algebra/src/lib |   |  |  |
-| 489 | linear_algebra/src/polynom_for_points |   |  |  |
-| 490 | linear_algebra/src/power_iteration |   |  |  |
-| 491 | linear_algebra/src/rank_of_matrix |   |  |  |
-| 492 | linear_algebra/src/rayleigh_quotient |   |  |  |
-| 493 | linear_algebra/src/schur_complement |   |  |  |
-| 494 | linear_algebra/src/test_linear_algebra |   |  |  |
-| 495 | linear_algebra/src/transformations_2d |   |  |  |
-| 496 | linear_programming/simplex |   |  |  |
+| 472 | hashes/luhn | ✓ | 6.0ms | 84.91KB |
+| 473 | hashes/md5 | ✓ | 1.0µs | 43.60KB |
+| 474 | hashes/sdbm | ✓ | 2.0ms | 55.54KB |
+| 475 | hashes/sha1 | ✓ | 2.0ms | 108.66KB |
+| 476 | hashes/sha256 | ✓ | 3.0ms | 42.55KB |
+| 477 | knapsack/greedy_knapsack | ✓ | 2.0ms | 15.38KB |
+| 478 | knapsack/knapsack | ✓ | 2.0ms | 16.57KB |
+| 479 | knapsack/recursive_approach_knapsack | ✓ | 2.0ms | 16.86KB |
+| 480 | knapsack/tests/test_greedy_knapsack | ✓ | 2.0ms | 15.38KB |
+| 481 | knapsack/tests/test_knapsack | ✓ | 2.0ms | 13.51KB |
+| 482 | linear_algebra/gaussian_elimination | ✓ | 3.0ms | 22.12KB |
+| 483 | linear_algebra/jacobi_iteration_method | ✓ | 2.0ms | 15.83KB |
+| 484 | linear_algebra/lu_decomposition | ✓ | 2.0ms | 18.34KB |
+| 485 | linear_algebra/matrix_inversion | ✓ | 2.0ms | 17.40KB |
+| 486 | linear_algebra/src/conjugate_gradient | ✓ | 2.0ms | 95.18KB |
+| 487 | linear_algebra/src/gaussian_elimination_pivoting | ✓ | 2.0ms | 20.96KB |
+| 488 | linear_algebra/src/lib | ✓ | 2.0ms | 15.03KB |
+| 489 | linear_algebra/src/polynom_for_points | ✓ | 3.0ms | 39.37KB |
+| 490 | linear_algebra/src/power_iteration | ✓ | 2.0ms | 32.05KB |
+| 491 | linear_algebra/src/rank_of_matrix | ✓ | 1.0µs | 43.78KB |
+| 492 | linear_algebra/src/rayleigh_quotient | ✓ | 2.0ms | 19.18KB |
+| 493 | linear_algebra/src/schur_complement | ✓ | 3.0ms | 19.02KB |
+| 494 | linear_algebra/src/test_linear_algebra | ✓ | 2.0ms | 46.48KB |
+| 495 | linear_algebra/src/transformations_2d | ✓ | 2.0ms | 21.05KB |
+| 496 | linear_programming/simplex | ✓ | 2.0ms | 21.93KB |
 | 497 | machine_learning/apriori_algorithm |   |  |  |
 | 498 | machine_learning/astar |   |  |  |
 | 499 | machine_learning/automatic_differentiation |   |  |  |
