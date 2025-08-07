@@ -1,0 +1,59 @@
+run: exit status 1
+     error: undefined variable "nodes"
+     │
+ 102 │         {i, nodes}
+     │             ^^^^^
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/avl_tree.exs:102:13: Main.insert_node/2
+
+    error: undefined variable "nodes"
+    │
+ 93 │         {i, nodes}
+    │             ^^^^^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/avl_tree.exs:93:13: Main.insert_node/2
+
+    warning: variable "nodes" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 85 │       {i, nodes} = if value < Enum.at(Process.get(:nodes), i)["data"] do
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/avl_tree.exs:85:11: Main.insert_node/2
+
+     error: undefined variable "nodes"
+     │
+ 158 │             {i, nodes}
+     │                 ^^^^^
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/avl_tree.exs:158:17: Main.del_node/2
+
+     error: undefined variable "nodes"
+     │
+ 149 │             {i, nodes}
+     │                 ^^^^^
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/avl_tree.exs:149:17: Main.del_node/2
+
+     error: undefined variable "nodes"
+     │
+ 143 │           {i, nodes}
+     │               ^^^^^
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/avl_tree.exs:143:15: Main.del_node/2
+
+     error: undefined variable "nodes"
+     │
+ 139 │         {i, nodes}
+     │             ^^^^^
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/avl_tree.exs:139:13: Main.del_node/2
+
+     warning: variable "nodes" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 137 │       {i, nodes} = if value < Enum.at(Process.get(:nodes), i)["data"] do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/avl_tree.exs:137:11: Main.del_node/2
+
+** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/avl_tree.exs: cannot compile module Main (errors have been logged)
+

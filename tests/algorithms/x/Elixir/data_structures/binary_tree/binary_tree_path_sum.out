@@ -1,0 +1,162 @@
+warning: variable "empty" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+  6 │   empty -> 0
+    │   ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_path_sum.exs:6:3: Main.dfs/3
+
+    warning: variable "empty" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 16 │   empty -> 0
+    │   ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_path_sum.exs:16:3: Main.path_sum/2
+
+    warning: variable "v" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 17 │   %{left: l, value: v, right: r} -> dfs(node_, target, 0) + path_sum(l, target) + path_sum(r, target)
+    │                     ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_path_sum.exs:17:21: Main.path_sum/2
+
+    error: undefined variable "empty"
+    │
+ 25 │       throw {:return, %{value: 10, left: %{value: 5, left: %{value: 3, left: %{value: 3, left: empty, right: empty}, right: %{value: -2, left: empty, right: empty}}, right: %{value: 2, left: empty, right: %{value: 1, left: empty, right: empty}}}, right: %{value: -3, left: empty, right: %{value: 11, left: empty, right: empty}}}}
+    │                                                                                                ^^^^^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_path_sum.exs:25:96: Main.sample_tree_one/0
+
+    error: undefined variable "empty"
+    │
+ 25 │       throw {:return, %{value: 10, left: %{value: 5, left: %{value: 3, left: %{value: 3, left: empty, right: empty}, right: %{value: -2, left: empty, right: empty}}, right: %{value: 2, left: empty, right: %{value: 1, left: empty, right: empty}}}, right: %{value: -3, left: empty, right: %{value: 11, left: empty, right: empty}}}}
+    │                                                                                                              ^^^^^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_path_sum.exs:25:110: Main.sample_tree_one/0
+
+    error: undefined variable "empty"
+    │
+ 25 │       throw {:return, %{value: 10, left: %{value: 5, left: %{value: 3, left: %{value: 3, left: empty, right: empty}, right: %{value: -2, left: empty, right: empty}}, right: %{value: 2, left: empty, right: %{value: 1, left: empty, right: empty}}}, right: %{value: -3, left: empty, right: %{value: 11, left: empty, right: empty}}}}
+    │                                                                                                                                                ^^^^^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_path_sum.exs:25:144: Main.sample_tree_one/0
+
+    error: undefined variable "empty"
+    │
+ 25 │       throw {:return, %{value: 10, left: %{value: 5, left: %{value: 3, left: %{value: 3, left: empty, right: empty}, right: %{value: -2, left: empty, right: empty}}, right: %{value: 2, left: empty, right: %{value: 1, left: empty, right: empty}}}, right: %{value: -3, left: empty, right: %{value: 11, left: empty, right: empty}}}}
+    │                                                                                                                                                              ^^^^^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_path_sum.exs:25:158: Main.sample_tree_one/0
+
+    error: undefined variable "empty"
+    │
+ 25 │       throw {:return, %{value: 10, left: %{value: 5, left: %{value: 3, left: %{value: 3, left: empty, right: empty}, right: %{value: -2, left: empty, right: empty}}, right: %{value: 2, left: empty, right: %{value: 1, left: empty, right: empty}}}, right: %{value: -3, left: empty, right: %{value: 11, left: empty, right: empty}}}}
+    │                                                                                                                                                                                                ^^^^^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_path_sum.exs:25:192: Main.sample_tree_one/0
+
+    error: undefined variable "empty"
+    │
+ 25 │       throw {:return, %{value: 10, left: %{value: 5, left: %{value: 3, left: %{value: 3, left: empty, right: empty}, right: %{value: -2, left: empty, right: empty}}, right: %{value: 2, left: empty, right: %{value: 1, left: empty, right: empty}}}, right: %{value: -3, left: empty, right: %{value: 11, left: empty, right: empty}}}}
+    │                                                                                                                                                                                                                                ^^^^^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_path_sum.exs:25:224: Main.sample_tree_one/0
+
+    error: undefined variable "empty"
+    │
+ 25 │       throw {:return, %{value: 10, left: %{value: 5, left: %{value: 3, left: %{value: 3, left: empty, right: empty}, right: %{value: -2, left: empty, right: empty}}, right: %{value: 2, left: empty, right: %{value: 1, left: empty, right: empty}}}, right: %{value: -3, left: empty, right: %{value: 11, left: empty, right: empty}}}}
+    │                                                                                                                                                                                                                                              ^^^^^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_path_sum.exs:25:238: Main.sample_tree_one/0
+
+    error: undefined variable "empty"
+    │
+ 25 │       throw {:return, %{value: 10, left: %{value: 5, left: %{value: 3, left: %{value: 3, left: empty, right: empty}, right: %{value: -2, left: empty, right: empty}}, right: %{value: 2, left: empty, right: %{value: 1, left: empty, right: empty}}}, right: %{value: -3, left: empty, right: %{value: 11, left: empty, right: empty}}}}
+    │                                                                                                                                                                                                                                                                                  ^^^^^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_path_sum.exs:25:274: Main.sample_tree_one/0
+
+    error: undefined variable "empty"
+    │
+ 25 │       throw {:return, %{value: 10, left: %{value: 5, left: %{value: 3, left: %{value: 3, left: empty, right: empty}, right: %{value: -2, left: empty, right: empty}}, right: %{value: 2, left: empty, right: %{value: 1, left: empty, right: empty}}}, right: %{value: -3, left: empty, right: %{value: 11, left: empty, right: empty}}}}
+    │                                                                                                                                                                                                                                                                                                                   ^^^^^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_path_sum.exs:25:307: Main.sample_tree_one/0
+
+    error: undefined variable "empty"
+    │
+ 25 │       throw {:return, %{value: 10, left: %{value: 5, left: %{value: 3, left: %{value: 3, left: empty, right: empty}, right: %{value: -2, left: empty, right: empty}}, right: %{value: 2, left: empty, right: %{value: 1, left: empty, right: empty}}}, right: %{value: -3, left: empty, right: %{value: 11, left: empty, right: empty}}}}
+    │                                                                                                                                                                                                                                                                                                                                 ^^^^^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_path_sum.exs:25:321: Main.sample_tree_one/0
+
+    error: undefined variable "empty"
+    │
+ 32 │       throw {:return, %{value: 10, left: %{value: 5, left: %{value: 3, left: %{value: 3, left: empty, right: empty}, right: %{value: -2, left: empty, right: empty}}, right: %{value: 2, left: empty, right: %{value: 1, left: empty, right: empty}}}, right: %{value: -3, left: empty, right: %{value: 10, left: empty, right: empty}}}}
+    │                                                                                                ^^^^^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_path_sum.exs:32:96: Main.sample_tree_two/0
+
+    error: undefined variable "empty"
+    │
+ 32 │       throw {:return, %{value: 10, left: %{value: 5, left: %{value: 3, left: %{value: 3, left: empty, right: empty}, right: %{value: -2, left: empty, right: empty}}, right: %{value: 2, left: empty, right: %{value: 1, left: empty, right: empty}}}, right: %{value: -3, left: empty, right: %{value: 10, left: empty, right: empty}}}}
+    │                                                                                                              ^^^^^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_path_sum.exs:32:110: Main.sample_tree_two/0
+
+    error: undefined variable "empty"
+    │
+ 32 │       throw {:return, %{value: 10, left: %{value: 5, left: %{value: 3, left: %{value: 3, left: empty, right: empty}, right: %{value: -2, left: empty, right: empty}}, right: %{value: 2, left: empty, right: %{value: 1, left: empty, right: empty}}}, right: %{value: -3, left: empty, right: %{value: 10, left: empty, right: empty}}}}
+    │                                                                                                                                                ^^^^^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_path_sum.exs:32:144: Main.sample_tree_two/0
+
+    error: undefined variable "empty"
+    │
+ 32 │       throw {:return, %{value: 10, left: %{value: 5, left: %{value: 3, left: %{value: 3, left: empty, right: empty}, right: %{value: -2, left: empty, right: empty}}, right: %{value: 2, left: empty, right: %{value: 1, left: empty, right: empty}}}, right: %{value: -3, left: empty, right: %{value: 10, left: empty, right: empty}}}}
+    │                                                                                                                                                              ^^^^^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_path_sum.exs:32:158: Main.sample_tree_two/0
+
+    error: undefined variable "empty"
+    │
+ 32 │       throw {:return, %{value: 10, left: %{value: 5, left: %{value: 3, left: %{value: 3, left: empty, right: empty}, right: %{value: -2, left: empty, right: empty}}, right: %{value: 2, left: empty, right: %{value: 1, left: empty, right: empty}}}, right: %{value: -3, left: empty, right: %{value: 10, left: empty, right: empty}}}}
+    │                                                                                                                                                                                                ^^^^^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_path_sum.exs:32:192: Main.sample_tree_two/0
+
+    error: undefined variable "empty"
+    │
+ 32 │       throw {:return, %{value: 10, left: %{value: 5, left: %{value: 3, left: %{value: 3, left: empty, right: empty}, right: %{value: -2, left: empty, right: empty}}, right: %{value: 2, left: empty, right: %{value: 1, left: empty, right: empty}}}, right: %{value: -3, left: empty, right: %{value: 10, left: empty, right: empty}}}}
+    │                                                                                                                                                                                                                                ^^^^^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_path_sum.exs:32:224: Main.sample_tree_two/0
+
+    error: undefined variable "empty"
+    │
+ 32 │       throw {:return, %{value: 10, left: %{value: 5, left: %{value: 3, left: %{value: 3, left: empty, right: empty}, right: %{value: -2, left: empty, right: empty}}, right: %{value: 2, left: empty, right: %{value: 1, left: empty, right: empty}}}, right: %{value: -3, left: empty, right: %{value: 10, left: empty, right: empty}}}}
+    │                                                                                                                                                                                                                                              ^^^^^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_path_sum.exs:32:238: Main.sample_tree_two/0
+
+    error: undefined variable "empty"
+    │
+ 32 │       throw {:return, %{value: 10, left: %{value: 5, left: %{value: 3, left: %{value: 3, left: empty, right: empty}, right: %{value: -2, left: empty, right: empty}}, right: %{value: 2, left: empty, right: %{value: 1, left: empty, right: empty}}}, right: %{value: -3, left: empty, right: %{value: 10, left: empty, right: empty}}}}
+    │                                                                                                                                                                                                                                                                                  ^^^^^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_path_sum.exs:32:274: Main.sample_tree_two/0
+
+    error: undefined variable "empty"
+    │
+ 32 │       throw {:return, %{value: 10, left: %{value: 5, left: %{value: 3, left: %{value: 3, left: empty, right: empty}, right: %{value: -2, left: empty, right: empty}}, right: %{value: 2, left: empty, right: %{value: 1, left: empty, right: empty}}}, right: %{value: -3, left: empty, right: %{value: 10, left: empty, right: empty}}}}
+    │                                                                                                                                                                                                                                                                                                                   ^^^^^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_path_sum.exs:32:307: Main.sample_tree_two/0
+
+    error: undefined variable "empty"
+    │
+ 32 │       throw {:return, %{value: 10, left: %{value: 5, left: %{value: 3, left: %{value: 3, left: empty, right: empty}, right: %{value: -2, left: empty, right: empty}}, right: %{value: 2, left: empty, right: %{value: 1, left: empty, right: empty}}}, right: %{value: -3, left: empty, right: %{value: 10, left: empty, right: empty}}}}
+    │                                                                                                                                                                                                                                                                                                                                 ^^^^^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_path_sum.exs:32:321: Main.sample_tree_two/0
+
+** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_path_sum.exs: cannot compile module Main (errors have been logged)

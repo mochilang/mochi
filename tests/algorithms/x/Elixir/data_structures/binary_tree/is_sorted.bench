@@ -1,0 +1,15 @@
+error: undefined variable "concat"
+    │
+ 17 │         res = concat.(res, inorder(tree, left_idx))
+    │               ^^^^^^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/is_sorted.exs:17:15: Main.inorder/2
+
+    error: undefined variable "concat"
+    │
+ 25 │         res = concat.(res, inorder(tree, right_idx))
+    │               ^^^^^^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/is_sorted.exs:25:15: Main.inorder/2
+
+** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/is_sorted.exs: cannot compile module Main (errors have been logged)

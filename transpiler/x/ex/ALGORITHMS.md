@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-06 23:19 GMT+7
+Last updated: 2025-08-07 08:42 GMT+7
 
-## Algorithms Golden Test Checklist (136/1077)
+## Algorithms Golden Test Checklist (152/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -176,27 +176,27 @@ Last updated: 2025-08-06 23:19 GMT+7
 | 167 | data_structures/arrays/prefix_sum |   |  |  |
 | 168 | data_structures/arrays/product_sum |   |  |  |
 | 169 | data_structures/arrays/sparse_table |   |  |  |
-| 170 | data_structures/arrays/sudoku_solver |   |  |  |
-| 171 | data_structures/binary_tree/avl_tree |   |  |  |
-| 172 | data_structures/binary_tree/basic_binary_tree |   |  |  |
-| 173 | data_structures/binary_tree/binary_search_tree |   |  |  |
-| 174 | data_structures/binary_tree/binary_search_tree_recursive |   |  |  |
-| 175 | data_structures/binary_tree/binary_tree_mirror |   |  |  |
-| 176 | data_structures/binary_tree/binary_tree_node_sum |   |  |  |
-| 177 | data_structures/binary_tree/binary_tree_path_sum |   |  |  |
-| 178 | data_structures/binary_tree/diff_views_of_binary_tree |   |  |  |
-| 179 | data_structures/binary_tree/distribute_coins |   |  |  |
-| 180 | data_structures/binary_tree/fenwick_tree |   |  |  |
-| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist |   |  |  |
-| 182 | data_structures/binary_tree/floor_and_ceiling |   |  |  |
-| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 |   |  |  |
-| 184 | data_structures/binary_tree/is_sorted |   |  |  |
-| 185 | data_structures/binary_tree/is_sum_tree |   |  |  |
-| 186 | data_structures/binary_tree/lazy_segment_tree |   |  |  |
-| 187 | data_structures/binary_tree/lowest_common_ancestor |   |  |  |
-| 188 | data_structures/binary_tree/maximum_fenwick_tree |   |  |  |
-| 189 | data_structures/binary_tree/maximum_sum_bst |   |  |  |
-| 190 | data_structures/binary_tree/merge_two_binary_trees |   |  |  |
+| 170 | data_structures/arrays/sudoku_solver | ✓ | 7.56ms | 110.6 MB |
+| 171 | data_structures/binary_tree/avl_tree | error |  |  |
+| 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 9.66ms | 17.3 MB |
+| 173 | data_structures/binary_tree/binary_search_tree | ✓ | 8.26ms | 12.5 MB |
+| 174 | data_structures/binary_tree/binary_search_tree_recursive | error |  |  |
+| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 4.60ms | 32.7 MB |
+| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 7.38ms | 17.3 MB |
+| 177 | data_structures/binary_tree/binary_tree_path_sum | error |  |  |
+| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 9.02ms | 17.3 MB |
+| 179 | data_structures/binary_tree/distribute_coins | ✓ | 5.08ms | 32.7 MB |
+| 180 | data_structures/binary_tree/fenwick_tree | ✓ | 11.25ms | 25.0 MB |
+| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 176us | 17.3 MB |
+| 182 | data_structures/binary_tree/floor_and_ceiling | error |  |  |
+| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 | ✓ | 5.67ms | 25.0 MB |
+| 184 | data_structures/binary_tree/is_sorted | error |  |  |
+| 185 | data_structures/binary_tree/is_sum_tree | ✓ | 1us | 0 B |
+| 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 7.14ms | 32.7 MB |
+| 187 | data_structures/binary_tree/lowest_common_ancestor | ✓ | 5.73ms | 57.7 MB |
+| 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 306.28ms | 1.5 GB |
+| 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 5.60ms | 25.0 MB |
+| 190 | data_structures/binary_tree/merge_two_binary_trees | ✓ | 129us | 0 B |
 | 191 | data_structures/binary_tree/mirror_binary_tree |   |  |  |
 | 192 | data_structures/binary_tree/non_recursive_segment_tree |   |  |  |
 | 193 | data_structures/binary_tree/number_of_possible_binary_trees |   |  |  |

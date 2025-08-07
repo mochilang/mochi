@@ -1,0 +1,15 @@
+error: undefined variable "concat"
+    │
+ 17 │       result = concat.(result, inorder(nodes, node_.right))
+    │                ^^^^^^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/floor_and_ceiling.exs:17:16: Main.inorder/2
+
+    warning: variable "current" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 53 │       {ceiling_val, current, floor_val} = try do
+    │                     ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/floor_and_ceiling.exs:53:21: Main.floor_ceiling/3
+
+** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/floor_and_ceiling.exs: cannot compile module Main (errors have been logged)

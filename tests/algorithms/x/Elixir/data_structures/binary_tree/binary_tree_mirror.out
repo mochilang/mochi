@@ -1,0 +1,9 @@
+warning: function _len/1 is unused
+    │
+  3 │   defp _len(x) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/binary_tree_mirror.exs:3:8: Main (module)
+
+Binary tree: %{1 => [2, 3], 2 => [4, 5], 3 => [6, 7], 7 => ~c"\b\t"}
+Binary tree mirror: %{1 => [2, 3], 2 => [4, 5], 3 => [6, 7], 7 => ~c"\b\t"}
