@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-07 00:26 GMT+7
+Last updated: 2025-08-07 00:46 GMT+7
 
-## Algorithms Golden Test Checklist (374/1077)
+## Algorithms Golden Test Checklist (377/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -429,10 +429,10 @@ Last updated: 2025-08-07 00:26 GMT+7
 | 420 | graphs/dinic | ✓ | 2.0ms | 109.60KB |
 | 421 | graphs/directed_and_undirected_weighted_graph | ✓ | 5.0ms | 26.59KB |
 | 422 | graphs/edmonds_karp_multiple_source_and_sink |   |  |  |
-| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph |   |  |  |
-| 424 | graphs/even_tree |   |  |  |
-| 425 | graphs/finding_bridges |   |  |  |
-| 426 | graphs/frequent_pattern_graph_miner |   |  |  |
+| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 3.0ms | 85.02KB |
+| 424 | graphs/even_tree | ✓ | 5.0ms | 21.21KB |
+| 425 | graphs/finding_bridges | error |  |  |
+| 426 | graphs/frequent_pattern_graph_miner | ✓ | 5.0ms | 79.49KB |
 | 427 | graphs/g_topological_sort |   |  |  |
 | 428 | graphs/gale_shapley_bigraph |   |  |  |
 | 429 | graphs/graph_adjacency_list |   |  |  |

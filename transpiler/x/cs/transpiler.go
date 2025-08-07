@@ -4022,6 +4022,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			case 2:
 				return &CallExpr{Func: "Convert.ToInt64", Args: []Expr{args[0], args[1]}}, nil
 			}
+		case "toi":
+			if len(args) == 1 {
+				return &CallExpr{Func: "Convert.ToInt64", Args: []Expr{args[0]}}, nil
+			}
 		case "sha256":
 			if len(args) == 1 {
 				usesSHA256 = true
