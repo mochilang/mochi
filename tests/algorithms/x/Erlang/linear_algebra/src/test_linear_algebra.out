@@ -1,0 +1,38 @@
+/workspace/mochi/tests/algorithms/x/Erlang/linear_algebra/src/test_linear_algebra.erl:105:5: Warning: variable 'Neg_3' exported from 'case' (line 85, column 9)
+%  105| {N, Neg_3, Num_4, Res_2} = Fun(N, Neg_3, Num_3, Res),
+%     |     ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/linear_algebra/src/test_linear_algebra.erl:144:30: Warning: variable 'Neg_6' exported from 'case' (line 118, column 9)
+%  144| {Dec, Frac_3, I_2, Int_part, Neg_6, Num_7, Res_7, X} = Fun_2(Dec, Frac, I, Int_part, Neg_6, Num_7, Res_6, X),
+%     |                              ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/linear_algebra/src/test_linear_algebra.erl:144:37: Warning: variable 'Num_7' exported from 'case' (line 118, column 9)
+%  144| {Dec, Frac_3, I_2, Int_part, Neg_6, Num_7, Res_7, X} = Fun_2(Dec, Frac, I, Int_part, Neg_6, Num_7, Res_6, X),
+%     |                                     ^
+
+"component0 ok"
+"component2 ok"
+"str_vector ok"
+"size ok"
+"add0 ok"
+"add1 ok"
+"add2 ok"
+"sub0 ok"
+"sub1 ok"
+"sub2 ok"
+"scalar_mul ok"
+"dot_product ok"
+"zero_vector ok"
+"unit_basis ok"
+"axpy ok"
+"copy ok"
+"change_component ok"
+"matrix_str ok"
+"determinant ok"
+"matrix_vec_mul ok"
+"matrix_scalar_mul ok"
+"change_component_matrix ok"
+"matrix_component ok"
+"matrix_add ok"
+"matrix_sub ok"
+"square_zero_matrix ok"

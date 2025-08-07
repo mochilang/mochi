@@ -1,0 +1,6 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/dodecahedron.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+516.1432201766901
+957.8898700780791

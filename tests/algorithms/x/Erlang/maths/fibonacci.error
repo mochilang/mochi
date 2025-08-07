@@ -1,0 +1,7 @@
+run: exit status 127
+escript: exception error: no function clause matching lists:sublist(#{},2) (lists.erl, line 592)
+  in function  main:fib_recursive_cached_term/1 (/workspace/mochi/tests/algorithms/x/Erlang/maths/fibonacci.erl, line 197)
+  in call from main:'-fib_recursive_cached/1-Fun_5_loop/3-0-'/3 (/workspace/mochi/tests/algorithms/x/Erlang/maths/fibonacci.erl, line 213)
+  in call from main:fib_recursive_cached/1 (/workspace/mochi/tests/algorithms/x/Erlang/maths/fibonacci.erl, line 219)
+  in call from main:run_tests/0 (/workspace/mochi/tests/algorithms/x/Erlang/maths/fibonacci.erl, line 340)
+  in call from main:main/1 (/workspace/mochi/tests/algorithms/x/Erlang/maths/fibonacci.erl, line 376)

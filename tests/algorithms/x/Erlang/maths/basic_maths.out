@@ -1,0 +1,8 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/basic_maths.erl:66:1: Warning: function mochi_safe_mul/2 is unused
+%   66| mochi_safe_mul(A, B) ->
+%     | ^
+
+[2 2 5 5]
+9
+217
+40

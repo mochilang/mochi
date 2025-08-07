@@ -1,0 +1,8 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/binary_multiplication.erl:39:1: Warning: function mochi_nth/2 is unused
+%   39| mochi_nth(I, L) ->
+%     | ^
+
+6
+0
+1
+11

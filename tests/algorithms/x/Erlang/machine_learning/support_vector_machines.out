@@ -1,0 +1,7 @@
+/workspace/mochi/tests/algorithms/x/Erlang/machine_learning/support_vector_machines.erl:49:1: Warning: function mochi_safe_div/2 is unused
+%   49| mochi_safe_div(A, B) ->
+%     | ^
+
+1
+-1
+-1

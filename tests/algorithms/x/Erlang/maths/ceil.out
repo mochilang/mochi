@@ -1,0 +1,18 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/ceil.erl:39:1: Warning: function mochi_nth/2 is unused
+%   39| mochi_nth(I, L) ->
+%     | ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/maths/ceil.erl:74:44: Warning: ambiguous call of overridden auto-imported BIF ceil/1 --
+use erlang:ceil/1 or "-compile({no_auto_import,[ceil/1]})." to resolve name clash
+%   74|             io:format("~ts~n", [mochi_repr(ceil(V))]),
+%     |                                            ^
+
+1
+-1
+0
+0
+2
+-1
+1
+-1
+1000000000

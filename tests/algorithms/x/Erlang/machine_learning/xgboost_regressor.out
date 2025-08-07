@@ -1,0 +1,14 @@
+/workspace/mochi/tests/algorithms/x/Erlang/machine_learning/xgboost_regressor.erl:158:68: Warning: variable 'Left_value_3' exported from 'case' (line 132, column 13)
+%  158| {Est, Features, I_2, J_8, Learning_rate, Left_count_3, Left_sum_3, Left_value_3, N_estimators, Predictions_5, Residuals_2, Right_count_3, Right_sum_3, Right_value_3, Sum_feat_2, Target, Test_features, Threshold, Trees} = Fun_5(Est, Features, I_2, J_7, Learning_rate, Left_count_3, Left_sum_3, Left_value_3, N_estimators, Predictions_2, Residuals_2, Right_count_3, Right_sum_3, Right_value_3, Sum_feat_2, Target, Test_features, Threshold, Trees),
+%     |                                                                    ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/machine_learning/xgboost_regressor.erl:158:152: Warning: variable 'Right_value_3' exported from 'case' (line 138, column 13)
+%  158| {Est, Features, I_2, J_8, Learning_rate, Left_count_3, Left_sum_3, Left_value_3, N_estimators, Predictions_5, Residuals_2, Right_count_3, Right_sum_3, Right_value_3, Sum_feat_2, Target, Test_features, Threshold, Trees} = Fun_5(Est, Features, I_2, J_7, Learning_rate, Left_count_3, Left_sum_3, Left_value_3, N_estimators, Predictions_2, Residuals_2, Right_count_3, Right_sum_3, Right_value_3, Sum_feat_2, Target, Test_features, Threshold, Trees),
+%     |                                                                                                                                                        ^
+
+"Predictions:"
+[2.1875, 3.9375]
+"Mean Absolute Error:"
+0.4375
+"Mean Square Error:"
+0.20703125

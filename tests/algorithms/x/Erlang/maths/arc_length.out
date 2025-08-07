@@ -1,0 +1,7 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/arc_length.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+3.9269908169872414
+31.415926535897928
+15.707963267948966

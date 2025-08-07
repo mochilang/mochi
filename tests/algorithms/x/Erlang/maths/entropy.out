@@ -1,0 +1,10 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/entropy.erl:39:1: Warning: function mochi_nth/2 is unused
+%   39| mochi_nth(I, L) ->
+%     | ^
+
+"4.0"
+"6.0"
+"2.0"
+"4.0"
+"7.0"
+"3.0"

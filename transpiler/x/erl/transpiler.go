@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -169,9 +170,19 @@ mochi_safe_fmod(A, B) ->
     try math:fmod(A, B) catch _:_ -> 0.0 end.
 `
 const helperMod = `
-mochi_mod(A, B) when B =/= 0 ->
-    ((A rem B) + B) rem B;
-mochi_mod(_, _) -> 0.
+mochi_mod(A, B) ->
+    A1 = case erlang:is_float(A) of
+        true -> trunc(A);
+        _ -> A
+    end,
+    B1 = case erlang:is_float(B) of
+        true -> trunc(B);
+        _ -> B
+    end,
+    case B1 of
+        0 -> 0;
+        _ -> ((A1 rem B1) + B1) rem B1
+    end.
 `
 const helperBigRat = `
 mochi_gcd(A, B) ->
@@ -1345,6 +1356,17 @@ func isIntExpr(e Expr, env *types.Env, ctx *context) bool {
 				}
 			}
 		}
+		if env != nil {
+			if fn, ok := env.GetFunc(v.Func); ok && fn.Return != nil {
+				if fn.Return.Simple != nil && *fn.Return.Simple == "int" {
+					return true
+				}
+				if fn.Return.Generic != nil && fn.Return.Generic.Name == "int" {
+					return true
+				}
+			}
+		}
+		return false
 	case *NameRef:
 		name := v.Name
 		if ctx != nil {
@@ -2455,13 +2477,9 @@ func (a *ApplyExpr) emit(w io.Writer) {
 func (i *IntLit) emit(w io.Writer) { fmt.Fprintf(w, "%d", i.Value) }
 
 func (f *FloatLit) emit(w io.Writer) {
-	s := fmt.Sprintf("%g", f.Value)
-	if strings.Contains(s, "e") {
-		parts := strings.SplitN(s, "e", 2)
-		if !strings.Contains(parts[0], ".") {
-			parts[0] = parts[0] + ".0"
-		}
-		s = parts[0] + "e" + parts[1]
+	s := strconv.FormatFloat(f.Value, 'f', -1, 64)
+	if !strings.Contains(s, ".") {
+		s += ".0"
 	}
 	io.WriteString(w, s)
 }

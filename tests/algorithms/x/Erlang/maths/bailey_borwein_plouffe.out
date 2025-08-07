@@ -1,0 +1,6 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/bailey_borwein_plouffe.erl:119:10: Warning: variable 'Exp_3' exported from 'case' (line 104, column 9)
+%  119| {Base_2, Exp_3, Exponent_2, I_2, Result_5} = Fun_2(Base_2, Exp_3, Exponent_2, I, Result_4),
+%     |          ^
+
+"243f6a8885"
+"6"

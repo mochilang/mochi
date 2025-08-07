@@ -1,0 +1,21 @@
+/workspace/mochi/tests/algorithms/x/Erlang/machine_learning/loss_functions.erl:382:2: Warning: variable 'A_5' exported from 'case' (line 299, column 9)
+%  382| {A_5, Alpha_2, Cols, Epsilon_4, Gamma_2, I_12, J_11, Rows_2, Tmp_3, Total_6, Y_pred_4, Y_true_4} = Fun_14(A_5, Alpha_2, Cols, Epsilon_4, Gamma_2, I_11, J_7, Rows_2, Tmp_3, Total_5, Y_pred_4, Y_true_4),
+%     |  ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/machine_learning/loss_functions.erl:382:62: Warning: variable 'Tmp_3' exported from 'case' (line 299, column 9)
+%  382| {A_5, Alpha_2, Cols, Epsilon_4, Gamma_2, I_12, J_11, Rows_2, Tmp_3, Total_6, Y_pred_4, Y_true_4} = Fun_14(A_5, Alpha_2, Cols, Epsilon_4, Gamma_2, I_11, J_7, Rows_2, Tmp_3, Total_5, Y_pred_4, Y_true_4),
+%     |                                                              ^
+
+0.2529995012327421
+0.008257977659239775
+0.567395975254385
+0.0025966118981496423
+1.52
+2.1020000000000003
+14.693999999999999
+2.4200000000000004
+0.5148197818297712
+0.13125
+4.910896104886998
+0.012500000000000022
+0.03047875403547204
