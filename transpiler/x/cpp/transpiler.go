@@ -3029,15 +3029,19 @@ func (s *LetStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, " = {}")
 		} else {
 			io.WriteString(w, " = ")
-			if ml, ok := s.Value.(*MapLit); ok && declType != "" && strings.HasPrefix(declType, "std::map<") && strings.HasSuffix(declType, ">") {
-				parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(declType, "std::map<"), ">"), ",", 2)
-				if len(parts) == 2 {
-					oldKT, oldVT := ml.KeyType, ml.ValueType
-					ml.KeyType, ml.ValueType = strings.TrimSpace(parts[0]), strings.TrimSpace(parts[1])
-					ml.emitInit(w)
-					ml.KeyType, ml.ValueType = oldKT, oldVT
+			if ml, ok := s.Value.(*MapLit); ok {
+				if declType != "" && strings.HasPrefix(declType, "std::map<") && strings.HasSuffix(declType, ">") {
+					parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(declType, "std::map<"), ">"), ",", 2)
+					if len(parts) == 2 {
+						oldKT, oldVT := ml.KeyType, ml.ValueType
+						ml.KeyType, ml.ValueType = strings.TrimSpace(parts[0]), strings.TrimSpace(parts[1])
+						ml.emitInit(w)
+						ml.KeyType, ml.ValueType = oldKT, oldVT
+					} else {
+						ml.emitInit(w)
+					}
 				} else {
-					ml.emitInit(w)
+					ml.emit(w)
 				}
 			} else if _, ok := s.Value.(*NullLit); ok && declType != "" && declType != "std::any" {
 				io.WriteString(w, defaultValueForType(declType))
@@ -3272,7 +3276,7 @@ func (a *AssignFieldStmt) emit(w io.Writer, indent int) {
 }
 
 func (e *ExprStmt) emit(w io.Writer, indent int) {
-	if ce, ok := e.Expr.(*CallExpr); ok && ce.Name == "panic" && len(ce.Args) == 1 {
+	if ce, ok := e.Expr.(*CallExpr); ok && ce.Name == "panic" && len(ce.Args) == 1 && findFunc("panic") == nil {
 		for i := 0; i < indent; i++ {
 			io.WriteString(w, "    ")
 		}
@@ -3771,10 +3775,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					lst.ElemType = "std::any"
 				}
 			}
-			globals = append(globals, &LetStmt{Name: stmt.Let.Name, Type: typ})
-			if val != nil {
-				body = append(body, &AssignStmt{Name: stmt.Let.Name, Value: val})
-			}
+			globals = append(globals, &LetStmt{Name: stmt.Let.Name, Type: typ, Value: val})
 			if cp.GlobalTypes != nil {
 				cp.GlobalTypes[stmt.Let.Name] = typ
 			}
@@ -5830,6 +5831,14 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 							if paramNames[vr.Name] {
 								mutatedParams[vr.Name] = true
 							}
+						}
+					}
+				}
+			} else {
+				for _, a := range args {
+					if vr, ok := a.(*VarRef); ok {
+						if paramNames[vr.Name] {
+							mutatedParams[vr.Name] = true
 						}
 					}
 				}
