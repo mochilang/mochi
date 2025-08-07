@@ -1,0 +1,6 @@
+** (ArithmeticError) bad argument in arithmetic expression: nil - 0
+    :erlang.-(nil, 0)
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/avl_tree.exs:93: Main.insert_node/2
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/avl_tree.exs:223: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/avl_tree.exs:239: Main.bench_main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/avl_tree.exs:248: (file)
