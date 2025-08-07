@@ -1,0 +1,8 @@
+run: exit status 1
+[0m[1m[31merror[0m: Uncaught (in promise) NotFound: No such file or directory (os error 2): readfile 'tests/github/TheAlgorithms/Mochi/web_programming/giphy.json'
+  let gifs: Gif[] = JSON.parse(Deno.readTextFileSync("tests/github/TheAlgorithms/Mochi/web_programming/giphy.json"));
+[0m[31m                                    ^[0m
+    at [0m[1m[3mObject.readTextFileSync[0m ([0m[36mext:deno_fs/30_fs.js[0m:[0m[33m770[0m:[0m[33m10[0m)
+    at [0m[1m[3mget_gifs[0m ([0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/web_programming/giphy.ts[0m:[0m[33m32[0m:[0m[33m37[0m)
+    at [0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/web_programming/giphy.ts[0m:[0m[33m96[0m:[0m[33m25[0m
+    at [0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/web_programming/giphy.ts[0m:[0m[33m108[0m:[0m[33m2[0m

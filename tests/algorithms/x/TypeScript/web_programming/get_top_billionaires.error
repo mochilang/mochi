@@ -1,0 +1,12 @@
+run: exit status 1
+{
+  "duration_us": 3274,
+  "memory_bytes": 55144,
+  "name": "main"
+}
+[0m[1m[31merror[0m: Uncaught (in promise) TypeError: list is not iterable
+  for (const b of list) {
+[0m[31m                  ^[0m
+    at [0m[1m[3mdisplay_billionaires[0m ([0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/web_programming/get_top_billionaires.ts[0m:[0m[33m33[0m:[0m[33m19[0m)
+    at [0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/web_programming/get_top_billionaires.ts[0m:[0m[33m109[0m:[0m[33m3[0m
+    at [0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/web_programming/get_top_billionaires.ts[0m:[0m[33m121[0m:[0m[33m2[0m

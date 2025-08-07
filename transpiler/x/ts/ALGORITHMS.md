@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-07 01:26 UTC
+Last updated: 2025-08-07 01:57 UTC
 
-## Algorithms Golden Test Checklist (832/1077)
+## Algorithms Golden Test Checklist (993/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 645µs | 22.6 KB |
@@ -910,177 +910,177 @@ Last updated: 2025-08-07 01:26 UTC
 | 901 | project_euler/problem_072/sol1 | ✓ | 290.688ms | 32.7 MB |
 | 902 | project_euler/problem_072/sol2 | ✓ | 1.558ms | 53.8 KB |
 | 903 | project_euler/problem_073/sol1 | ✓ | 560.225ms | 52.0 KB |
-| 904 | project_euler/problem_074/sol1 |   |  |  |
-| 905 | project_euler/problem_074/sol2 |   |  |  |
-| 906 | project_euler/problem_075/sol1 |   |  |  |
-| 907 | project_euler/problem_076/sol1 |   |  |  |
-| 908 | project_euler/problem_077/sol1 |   |  |  |
-| 909 | project_euler/problem_078/sol1 |   |  |  |
-| 910 | project_euler/problem_079/sol1 |   |  |  |
-| 911 | project_euler/problem_092/sol1 |   |  |  |
-| 912 | project_euler/problem_116/sol1 |   |  |  |
-| 913 | project_euler/problem_345/sol1 |   |  |  |
-| 914 | quantum/q_fourier_transform |   |  |  |
-| 915 | scheduling/job_sequence_with_deadline |   |  |  |
-| 916 | scheduling/job_sequencing_with_deadline |   |  |  |
-| 917 | scheduling/multi_level_feedback_queue |   |  |  |
-| 918 | scheduling/non_preemptive_shortest_job_first |   |  |  |
-| 919 | scheduling/round_robin |   |  |  |
-| 920 | scheduling/shortest_job_first |   |  |  |
-| 921 | scripts/build_directory_md |   |  |  |
-| 922 | scripts/validate_filenames |   |  |  |
-| 923 | scripts/validate_solutions |   |  |  |
-| 924 | searches/binary_search |   |  |  |
-| 925 | searches/double_linear_search |   |  |  |
-| 926 | searches/double_linear_search_recursion |   |  |  |
-| 927 | searches/exponential_search |   |  |  |
-| 928 | searches/fibonacci_search |   |  |  |
-| 929 | searches/hill_climbing |   |  |  |
-| 930 | searches/interpolation_search |   |  |  |
-| 931 | searches/jump_search |   |  |  |
-| 932 | searches/linear_search |   |  |  |
-| 933 | searches/median_of_medians |   |  |  |
-| 934 | searches/quick_select |   |  |  |
-| 935 | searches/sentinel_linear_search |   |  |  |
-| 936 | searches/simple_binary_search |   |  |  |
-| 937 | searches/simulated_annealing |   |  |  |
-| 938 | searches/tabu_search |   |  |  |
-| 939 | searches/ternary_search |   |  |  |
-| 940 | sorts/bead_sort |   |  |  |
-| 941 | sorts/binary_insertion_sort |   |  |  |
-| 942 | sorts/bitonic_sort |   |  |  |
-| 943 | sorts/bogo_sort |   |  |  |
-| 944 | sorts/bubble_sort |   |  |  |
-| 945 | sorts/bucket_sort |   |  |  |
-| 946 | sorts/circle_sort |   |  |  |
-| 947 | sorts/cocktail_shaker_sort |   |  |  |
-| 948 | sorts/comb_sort |   |  |  |
-| 949 | sorts/counting_sort |   |  |  |
-| 950 | sorts/cycle_sort |   |  |  |
-| 951 | sorts/double_sort |   |  |  |
-| 952 | sorts/dutch_national_flag_sort |   |  |  |
-| 953 | sorts/exchange_sort |   |  |  |
-| 954 | sorts/external_sort |   |  |  |
-| 955 | sorts/gnome_sort |   |  |  |
-| 956 | sorts/heap_sort |   |  |  |
-| 957 | sorts/insertion_sort |   |  |  |
-| 958 | sorts/intro_sort |   |  |  |
-| 959 | sorts/iterative_merge_sort |   |  |  |
-| 960 | sorts/merge_insertion_sort |   |  |  |
-| 961 | sorts/merge_sort |   |  |  |
-| 962 | sorts/msd_radix_sort |   |  |  |
-| 963 | sorts/natural_sort |   |  |  |
-| 964 | sorts/odd_even_sort |   |  |  |
-| 965 | sorts/odd_even_transposition_parallel |   |  |  |
-| 966 | sorts/odd_even_transposition_single_threaded |   |  |  |
-| 967 | sorts/pancake_sort |   |  |  |
-| 968 | sorts/patience_sort |   |  |  |
-| 969 | sorts/pigeon_sort |   |  |  |
-| 970 | sorts/pigeonhole_sort |   |  |  |
-| 971 | sorts/quick_sort |   |  |  |
-| 972 | sorts/quick_sort_3_partition |   |  |  |
-| 973 | sorts/radix_sort |   |  |  |
-| 974 | sorts/recursive_insertion_sort |   |  |  |
-| 975 | sorts/recursive_mergesort_array |   |  |  |
-| 976 | sorts/recursive_quick_sort |   |  |  |
-| 977 | sorts/selection_sort |   |  |  |
-| 978 | sorts/shell_sort |   |  |  |
-| 979 | sorts/shrink_shell_sort |   |  |  |
-| 980 | sorts/slowsort |   |  |  |
-| 981 | sorts/stooge_sort |   |  |  |
-| 982 | sorts/strand_sort |   |  |  |
-| 983 | sorts/tim_sort |   |  |  |
-| 984 | sorts/topological_sort |   |  |  |
-| 985 | sorts/tree_sort |   |  |  |
+| 904 | project_euler/problem_074/sol1 | ✓ | 12.652ms | 641.9 KB |
+| 905 | project_euler/problem_074/sol2 | ✓ | 6.197272s | 1.9 MB |
+| 906 | project_euler/problem_075/sol1 | ✓ | 368.925ms | 45.6 MB |
+| 907 | project_euler/problem_076/sol1 | ✓ | 4.647ms | 379.0 KB |
+| 908 | project_euler/problem_077/sol1 | ✓ | 760.223ms | 1.4 MB |
+| 909 | project_euler/problem_078/sol1 | ✓ | 195.92ms | 1.3 MB |
+| 910 | project_euler/problem_079/sol1 | ✓ | 13.716ms | 97.5 KB |
+| 911 | project_euler/problem_092/sol1 | ✓ | 2.875ms | 253.6 KB |
+| 912 | project_euler/problem_116/sol1 | ✓ | 1.574ms | 74.5 KB |
+| 913 | project_euler/problem_345/sol1 | ✓ | 23.636ms | 521.2 KB |
+| 914 | quantum/q_fourier_transform | ✓ | 568µs | 19.4 KB |
+| 915 | scheduling/job_sequence_with_deadline | ✓ | 768µs | 534.6 KB |
+| 916 | scheduling/job_sequencing_with_deadline | ✓ | 932µs | 533.8 KB |
+| 917 | scheduling/multi_level_feedback_queue | ✓ | 1.72ms | 33.7 KB |
+| 918 | scheduling/non_preemptive_shortest_job_first | ✓ | 2.859ms | 305.8 KB |
+| 919 | scheduling/round_robin | ✓ | 989µs | 44.8 KB |
+| 920 | scheduling/shortest_job_first | ✓ | 1.931ms | 325.3 KB |
+| 921 | scripts/build_directory_md | ✓ | 1.837ms | 61.4 KB |
+| 922 | scripts/validate_filenames | ✓ | 1.741ms | 56.2 KB |
+| 923 | scripts/validate_solutions | ✓ | 3.207ms | 43.5 KB |
+| 924 | searches/binary_search | ✓ | 1.137ms | 608.0 KB |
+| 925 | searches/double_linear_search | ✓ | 568µs | 17.9 KB |
+| 926 | searches/double_linear_search_recursion | ✓ | 577µs | 26.5 KB |
+| 927 | searches/exponential_search | ✓ | 6µs | 3.3 KB |
+| 928 | searches/fibonacci_search | ✓ | 730µs | 26.5 KB |
+| 929 | searches/hill_climbing | ✓ | 15.916ms | 762.8 KB |
+| 930 | searches/interpolation_search | ✓ | 754µs | 27.1 KB |
+| 931 | searches/jump_search | ✓ | 635µs | 23.9 KB |
+| 932 | searches/linear_search | ✓ | 679µs | 35.5 KB |
+| 933 | searches/median_of_medians | ✓ | 1.172ms | 26.5 KB |
+| 934 | searches/quick_select | ✓ | 1.072ms | 39.7 KB |
+| 935 | searches/sentinel_linear_search | ✓ | 681µs | 25.1 KB |
+| 936 | searches/simple_binary_search | ✓ | 801µs | 30.9 KB |
+| 937 | searches/simulated_annealing | ✓ | 18.541ms | 1.0 MB |
+| 938 | searches/tabu_search | ✓ | 2.173ms | 68.8 KB |
+| 939 | searches/ternary_search | ✓ | 685µs | 24.2 KB |
+| 940 | sorts/bead_sort | ✓ | 824µs | 31.7 KB |
+| 941 | sorts/binary_insertion_sort | ✓ | 1.105ms | 533.9 KB |
+| 942 | sorts/bitonic_sort | ✓ | 1.038ms | 542.8 KB |
+| 943 | sorts/bogo_sort | ✓ | 618µs | 16.8 KB |
+| 944 | sorts/bubble_sort | ✓ | 993µs | 534.9 KB |
+| 945 | sorts/bucket_sort | ✓ | 2.461ms | 312.5 KB |
+| 946 | sorts/circle_sort | ✓ | 1.241ms | 534.3 KB |
+| 947 | sorts/cocktail_shaker_sort | ✓ | 624µs | 22.0 KB |
+| 948 | sorts/comb_sort | ✓ | 1.236ms | 31.0 KB |
+| 949 | sorts/counting_sort | ✓ | 1.881ms | 543.0 KB |
+| 950 | sorts/cycle_sort | ✓ | 732µs | 21.3 KB |
+| 951 | sorts/double_sort | ✓ | 1.362ms | 36.3 KB |
+| 952 | sorts/dutch_national_flag_sort | ✓ | 1.109ms | 24.0 KB |
+| 953 | sorts/exchange_sort | ✓ | 729µs | 26.7 KB |
+| 954 | sorts/external_sort | ✓ | 1.421ms | 32.7 KB |
+| 955 | sorts/gnome_sort | ✓ | 1.642ms | 29.7 KB |
+| 956 | sorts/heap_sort | ✓ | 752µs | 529.2 KB |
+| 957 | sorts/insertion_sort | ✓ | 687µs | 23.5 KB |
+| 958 | sorts/intro_sort | ✓ | 1.002ms | 532.3 KB |
+| 959 | sorts/iterative_merge_sort | ✓ | 1.456ms | 54.2 KB |
+| 960 | sorts/merge_insertion_sort | ✓ | 873µs | 26.3 KB |
+| 961 | sorts/merge_sort | ✓ | 1.332ms | 34.4 KB |
+| 962 | sorts/msd_radix_sort | ✓ | 1.042ms | 64.4 KB |
+| 963 | sorts/natural_sort | ✓ | 2.186ms | 44.0 KB |
+| 964 | sorts/odd_even_sort | ✓ | 1.397ms | 532.7 KB |
+| 965 | sorts/odd_even_transposition_parallel | ✓ | 1.09ms | 24.4 KB |
+| 966 | sorts/odd_even_transposition_single_threaded | ✓ | 2.15ms | 285.6 KB |
+| 967 | sorts/pancake_sort | ✓ | 874µs | 23.4 KB |
+| 968 | sorts/patience_sort | ✓ | 1.056ms | 40.1 KB |
+| 969 | sorts/pigeon_sort | ✓ | 1.059ms | 25.4 KB |
+| 970 | sorts/pigeonhole_sort | ✓ | 1.048ms | 529.7 KB |
+| 971 | sorts/quick_sort | ✓ | 1.139ms | 24.5 KB |
+| 972 | sorts/quick_sort_3_partition | ✓ | 1.777ms | 66.8 KB |
+| 973 | sorts/radix_sort | ✓ | 921µs | 48.8 KB |
+| 974 | sorts/recursive_insertion_sort | ✓ | 886µs | 25.6 KB |
+| 975 | sorts/recursive_mergesort_array | ✓ | 1.043ms | 48.2 KB |
+| 976 | sorts/recursive_quick_sort | ✓ | 844µs | 23.4 KB |
+| 977 | sorts/selection_sort | ✓ | 862µs | 27.8 KB |
+| 978 | sorts/shell_sort | ✓ | 1.375ms | 30.3 KB |
+| 979 | sorts/shrink_shell_sort | ✓ | 586µs | 21.3 KB |
+| 980 | sorts/slowsort | ✓ | 1.238ms | 38.1 KB |
+| 981 | sorts/stooge_sort | ✓ | 1.014ms | 528.0 KB |
+| 982 | sorts/strand_sort | ✓ | 738µs | 22.6 KB |
+| 983 | sorts/tim_sort | ✓ | 987µs | 47.1 KB |
+| 984 | sorts/topological_sort | ✓ | 1.054ms | 273.9 KB |
+| 985 | sorts/tree_sort | ✓ | 1.36ms | 41.3 KB |
 | 986 | sorts/unknown_sort |   |  |  |
-| 987 | sorts/wiggle_sort |   |  |  |
-| 988 | strings/aho_corasick |   |  |  |
-| 989 | strings/alternative_string_arrange |   |  |  |
+| 987 | sorts/wiggle_sort | ✓ | 2.111ms | 292.3 KB |
+| 988 | strings/aho_corasick | ✓ | 1.148ms | 27.9 KB |
+| 989 | strings/alternative_string_arrange | ✓ | 524µs | 23.0 KB |
 | 990 | strings/anagrams |   |  |  |
-| 991 | strings/autocomplete_using_trie |   |  |  |
-| 992 | strings/barcode_validator |   |  |  |
-| 993 | strings/bitap_string_match |   |  |  |
+| 991 | strings/autocomplete_using_trie | ✓ | 560µs | 15.5 KB |
+| 992 | strings/barcode_validator | ✓ | 997µs | 42.8 KB |
+| 993 | strings/bitap_string_match | ✓ | 1.442ms | 45.1 KB |
 | 994 | strings/boyer_moore_search |   |  |  |
-| 995 | strings/camel_case_to_snake_case |   |  |  |
-| 996 | strings/can_string_be_rearranged_as_palindrome |   |  |  |
-| 997 | strings/capitalize |   |  |  |
-| 998 | strings/check_anagrams |   |  |  |
-| 999 | strings/count_vowels |   |  |  |
-| 1000 | strings/credit_card_validator |   |  |  |
-| 1001 | strings/damerau_levenshtein_distance |   |  |  |
-| 1002 | strings/detecting_english_programmatically |   |  |  |
-| 1003 | strings/dna |   |  |  |
-| 1004 | strings/edit_distance |   |  |  |
-| 1005 | strings/frequency_finder |   |  |  |
-| 1006 | strings/hamming_distance |   |  |  |
-| 1007 | strings/indian_phone_validator |   |  |  |
-| 1008 | strings/is_contains_unique_chars |   |  |  |
-| 1009 | strings/is_isogram |   |  |  |
-| 1010 | strings/is_pangram |   |  |  |
-| 1011 | strings/is_polish_national_id |   |  |  |
-| 1012 | strings/is_spain_national_id |   |  |  |
-| 1013 | strings/is_srilankan_phone_number |   |  |  |
-| 1014 | strings/is_valid_email_address |   |  |  |
-| 1015 | strings/jaro_winkler |   |  |  |
-| 1016 | strings/join |   |  |  |
-| 1017 | strings/knuth_morris_pratt |   |  |  |
-| 1018 | strings/levenshtein_distance |   |  |  |
-| 1019 | strings/lower |   |  |  |
-| 1020 | strings/manacher |   |  |  |
-| 1021 | strings/min_cost_string_conversion |   |  |  |
-| 1022 | strings/naive_string_search |   |  |  |
-| 1023 | strings/ngram |   |  |  |
-| 1024 | strings/palindrome |   |  |  |
-| 1025 | strings/pig_latin |   |  |  |
-| 1026 | strings/prefix_function |   |  |  |
-| 1027 | strings/rabin_karp |   |  |  |
-| 1028 | strings/remove_duplicate |   |  |  |
-| 1029 | strings/reverse_letters |   |  |  |
-| 1030 | strings/reverse_words |   |  |  |
-| 1031 | strings/snake_case_to_camel_pascal_case |   |  |  |
+| 995 | strings/camel_case_to_snake_case | ✓ | 2.304ms | 34.4 KB |
+| 996 | strings/can_string_be_rearranged_as_palindrome | ✓ | 1.953ms | 27.6 KB |
+| 997 | strings/capitalize | ✓ | 852µs | 26.1 KB |
+| 998 | strings/check_anagrams | ✓ | 1.11ms | 288.9 KB |
+| 999 | strings/count_vowels | ✓ | 1.739ms | 31.9 KB |
+| 1000 | strings/credit_card_validator | ✓ | 781µs | 532.4 KB |
+| 1001 | strings/damerau_levenshtein_distance | ✓ | 1.266ms | 549.5 KB |
+| 1002 | strings/detecting_english_programmatically | ✓ | 2.102ms | 36.0 KB |
+| 1003 | strings/dna | ✓ | 1.157ms | 26.7 KB |
+| 1004 | strings/edit_distance | ✓ | 9.015ms | 372.4 KB |
+| 1005 | strings/frequency_finder | ✓ | 2.89ms | 553.9 KB |
+| 1006 | strings/hamming_distance | ✓ | 635µs | 20.4 KB |
+| 1007 | strings/indian_phone_validator | ✓ | 723µs | 29.9 KB |
+| 1008 | strings/is_contains_unique_chars | ✓ | 1.986ms | 118.3 KB |
+| 1009 | strings/is_isogram | ✓ | 1.928ms | 27.6 KB |
+| 1010 | strings/is_pangram | ✓ | 947µs | 35.5 KB |
+| 1011 | strings/is_polish_national_id | ✓ | 1.234ms | 30.3 KB |
+| 1012 | strings/is_spain_national_id | ✓ | 1.977ms | 38.2 KB |
+| 1013 | strings/is_srilankan_phone_number | ✓ | 555µs | 16.2 KB |
+| 1014 | strings/is_valid_email_address | ✓ | 4.384ms | 653.9 KB |
+| 1015 | strings/jaro_winkler | ✓ | 886µs | 578.2 KB |
+| 1016 | strings/join | ✓ | 777µs | 30.0 KB |
+| 1017 | strings/knuth_morris_pratt | ✓ | 707µs | 528.7 KB |
+| 1018 | strings/levenshtein_distance | ✓ | 2.018ms | 537.1 KB |
+| 1019 | strings/lower | ✓ | 554µs | 24.7 KB |
+| 1020 | strings/manacher | ✓ | 843µs | 31.1 KB |
+| 1021 | strings/min_cost_string_conversion | ✓ | 1.854ms | 108.4 KB |
+| 1022 | strings/naive_string_search | ✓ | 1.098ms | 527.9 KB |
+| 1023 | strings/ngram | ✓ | 639µs | 21.8 KB |
+| 1024 | strings/palindrome | ✓ | 1.46ms | 44.6 KB |
+| 1025 | strings/pig_latin | ✓ | 602µs | 21.4 KB |
+| 1026 | strings/prefix_function | ✓ | 904µs | 37.4 KB |
+| 1027 | strings/rabin_karp | ✓ | 1.902ms | 29.4 KB |
+| 1028 | strings/remove_duplicate | ✓ | 1.714ms | 31.5 KB |
+| 1029 | strings/reverse_letters | ✓ | 772µs | 533.3 KB |
+| 1030 | strings/reverse_words | ✓ | 731µs | 19.8 KB |
+| 1031 | strings/snake_case_to_camel_pascal_case | ✓ | 781µs | 25.8 KB |
 | 1032 | strings/split |   |  |  |
-| 1033 | strings/string_switch_case |   |  |  |
-| 1034 | strings/strip |   |  |  |
-| 1035 | strings/text_justification |   |  |  |
-| 1036 | strings/title |   |  |  |
-| 1037 | strings/top_k_frequent_words |   |  |  |
-| 1038 | strings/upper |   |  |  |
-| 1039 | strings/wave_string |   |  |  |
-| 1040 | strings/wildcard_pattern_matching |   |  |  |
-| 1041 | strings/word_occurrence |   |  |  |
-| 1042 | strings/word_patterns |   |  |  |
-| 1043 | strings/z_function |   |  |  |
-| 1044 | web_programming/co2_emission |   |  |  |
-| 1045 | web_programming/covid_stats_via_xpath |   |  |  |
-| 1046 | web_programming/crawl_google_results |   |  |  |
-| 1047 | web_programming/crawl_google_scholar_citation |   |  |  |
-| 1048 | web_programming/currency_converter |   |  |  |
-| 1049 | web_programming/current_stock_price |   |  |  |
-| 1050 | web_programming/current_weather |   |  |  |
-| 1051 | web_programming/daily_horoscope |   |  |  |
+| 1033 | strings/string_switch_case | ✓ | 2.005ms | 65.9 KB |
+| 1034 | strings/strip | ✓ | 1.26ms | 537.1 KB |
+| 1035 | strings/text_justification | ✓ | 837µs | 25.3 KB |
+| 1036 | strings/title | ✓ | 1.829ms | 48.0 KB |
+| 1037 | strings/top_k_frequent_words | ✓ | 1.313ms | 30.6 KB |
+| 1038 | strings/upper | ✓ | 496µs | 21.8 KB |
+| 1039 | strings/wave_string | ✓ | 723µs | 22.9 KB |
+| 1040 | strings/wildcard_pattern_matching | ✓ | 1.213ms | 576.0 KB |
+| 1041 | strings/word_occurrence | ✓ | 807µs | 27.0 KB |
+| 1042 | strings/word_patterns | ✓ | 1.341ms | 31.5 KB |
+| 1043 | strings/z_function | ✓ | 1.137ms | 549.3 KB |
+| 1044 | web_programming/co2_emission | ✓ | 4.198ms | 83.8 KB |
+| 1045 | web_programming/covid_stats_via_xpath | ✓ | 1.338ms | 536.3 KB |
+| 1046 | web_programming/crawl_google_results | ✓ | 773µs | 27.5 KB |
+| 1047 | web_programming/crawl_google_scholar_citation | ✓ | 677µs | 530.2 KB |
+| 1048 | web_programming/currency_converter | ✓ | 434µs | 15.1 KB |
+| 1049 | web_programming/current_stock_price | ✓ | 726µs | 33.9 KB |
+| 1050 | web_programming/current_weather | ✓ | 513µs | 17.0 KB |
+| 1051 | web_programming/daily_horoscope | ✓ | 510µs | 15.2 KB |
 | 1052 | web_programming/download_images_from_google_query |   |  |  |
-| 1053 | web_programming/emails_from_url |   |  |  |
-| 1054 | web_programming/fetch_anime_and_play |   |  |  |
-| 1055 | web_programming/fetch_bbc_news |   |  |  |
-| 1056 | web_programming/fetch_github_info |   |  |  |
-| 1057 | web_programming/fetch_jobs |   |  |  |
+| 1053 | web_programming/emails_from_url | ✓ | 2.289ms | 34.8 KB |
+| 1054 | web_programming/fetch_anime_and_play | ✓ | 691µs | 23.1 KB |
+| 1055 | web_programming/fetch_bbc_news | ✓ |  |  |
+| 1056 | web_programming/fetch_github_info | ✓ | 4.994ms | 66.1 KB |
+| 1057 | web_programming/fetch_jobs | ✓ | 687µs | 20.6 KB |
 | 1058 | web_programming/fetch_quotes |   |  |  |
-| 1059 | web_programming/fetch_well_rx_price |   |  |  |
-| 1060 | web_programming/get_amazon_product_data |   |  |  |
-| 1061 | web_programming/get_imdb_top_250_movies_csv |   |  |  |
-| 1062 | web_programming/get_ip_geolocation |   |  |  |
+| 1059 | web_programming/fetch_well_rx_price | ✓ | 1.269ms | 531.7 KB |
+| 1060 | web_programming/get_amazon_product_data | ✓ | 2.414ms | 34.3 KB |
+| 1061 | web_programming/get_imdb_top_250_movies_csv | ✓ | 561µs | 23.7 KB |
+| 1062 | web_programming/get_ip_geolocation | ✓ | 3.446ms | 70.8 KB |
 | 1063 | web_programming/get_top_billionaires |   |  |  |
-| 1064 | web_programming/get_top_hn_posts |   |  |  |
+| 1064 | web_programming/get_top_hn_posts | ✓ | 3.45ms | 62.2 KB |
 | 1065 | web_programming/giphy |   |  |  |
-| 1066 | web_programming/instagram_crawler |   |  |  |
+| 1066 | web_programming/instagram_crawler | ✓ | 3.238ms | 631.3 KB |
 | 1067 | web_programming/instagram_pic |   |  |  |
-| 1068 | web_programming/instagram_video |   |  |  |
+| 1068 | web_programming/instagram_video | ✓ | 526µs | 14.5 KB |
 | 1069 | web_programming/nasa_data |   |  |  |
-| 1070 | web_programming/open_google_results |   |  |  |
-| 1071 | web_programming/random_anime_character |   |  |  |
-| 1072 | web_programming/recaptcha_verification |   |  |  |
+| 1070 | web_programming/open_google_results | ✓ | 710µs | 19.1 KB |
+| 1071 | web_programming/random_anime_character | ✓ | 574µs | 26.0 KB |
+| 1072 | web_programming/recaptcha_verification | ✓ | 512µs | 21.3 KB |
 | 1073 | web_programming/reddit |   |  |  |
-| 1074 | web_programming/search_books_by_isbn |   |  |  |
+| 1074 | web_programming/search_books_by_isbn | ✓ | 3.563ms | 89.2 KB |
 | 1075 | web_programming/slack_message |   |  |  |
-| 1076 | web_programming/test_fetch_github_info |   |  |  |
+| 1076 | web_programming/test_fetch_github_info | ✓ | 714µs | 19.8 KB |
 | 1077 | web_programming/world_covid19_stats |   |  |  |
