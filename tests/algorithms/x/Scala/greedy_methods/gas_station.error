@@ -1,0 +1,14 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/greedy_methods/gas_station.scala:50: error: Main.GasStation does not take parameters
+    total_gas = total_gas + gas_stations((i.toInt).toInt)("gas_quantity")
+                                                         ^
+/workspace/mochi/tests/algorithms/x/Scala/greedy_methods/gas_station.scala:51: error: Main.GasStation does not take parameters
+    total_cost = total_cost + gas_stations((i.toInt).toInt)("cost")
+                                                           ^
+/workspace/mochi/tests/algorithms/x/Scala/greedy_methods/gas_station.scala:62: error: Main.GasStation does not take parameters
+    net = net + station("gas_quantity") - station("cost")
+                       ^
+/workspace/mochi/tests/algorithms/x/Scala/greedy_methods/gas_station.scala:62: error: Main.GasStation does not take parameters
+    net = net + station("gas_quantity") - station("cost")
+                                                 ^
+four errors found

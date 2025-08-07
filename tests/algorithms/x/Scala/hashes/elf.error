@@ -1,0 +1,8 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/hashes/elf.scala:95: error: illegal start of simple pattern
+  var hash_: BigInt = BigInt(0)
+                    ^
+/workspace/mochi/tests/algorithms/x/Scala/hashes/elf.scala:96: error: '=' expected but ';' found.
+  var i: BigInt = BigInt(0)
+^
+two errors found

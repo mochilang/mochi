@@ -1,0 +1,8 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/graphs/frequent_pattern_graph_miner.scala:116: error: not found: value toi
+      if ((toi(table((j.toInt).toInt).getOrElse("count", "").asInstanceOf[String])).toString > (toi(table((max_i.toInt).toInt).getOrElse("count", "").asInstanceOf[String])).toString) {
+           ^
+/workspace/mochi/tests/algorithms/x/Scala/graphs/frequent_pattern_graph_miner.scala:116: error: not found: value toi
+      if ((toi(table((j.toInt).toInt).getOrElse("count", "").asInstanceOf[String])).toString > (toi(table((max_i.toInt).toInt).getOrElse("count", "").asInstanceOf[String])).toString) {
+                                                                                                ^
+two errors found

@@ -1,0 +1,20 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/graphs/even_tree.scala:68: error: overloaded method value apply with alternatives:
+  (x: java.math.BigInteger)scala.math.BigInt <and>
+  (x: String)scala.math.BigInt <and>
+  (x: Array[Byte])scala.math.BigInt <and>
+  (l: Long)scala.math.BigInt <and>
+  (i: Int)scala.math.BigInt
+ cannot be applied to (scala.math.BigInt)
+    tree.update(u, tree.getOrElse(u, ArrayBuffer[BigInt]()).asInstanceOf[ArrayBuffer[BigInt]] :+ BigInt(v))
+                                                                                                 ^
+/workspace/mochi/tests/algorithms/x/Scala/graphs/even_tree.scala:69: error: overloaded method value apply with alternatives:
+  (x: java.math.BigInteger)scala.math.BigInt <and>
+  (x: String)scala.math.BigInt <and>
+  (x: Array[Byte])scala.math.BigInt <and>
+  (l: Long)scala.math.BigInt <and>
+  (i: Int)scala.math.BigInt
+ cannot be applied to (scala.math.BigInt)
+    tree.update(v, tree.getOrElse(v, ArrayBuffer[BigInt]()).asInstanceOf[ArrayBuffer[BigInt]] :+ BigInt(u))
+                                                                                                 ^
+two errors found
