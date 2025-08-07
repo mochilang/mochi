@@ -1,0 +1,9 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/graphs/strongly_connected_components.scala:79: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Any]
+ required: scala.collection.mutable.ArrayBuffer[Boolean]
+Note: Any >: Boolean, but class ArrayBuffer is invariant in type A.
+You may wish to investigate a wildcard type such as `_ >: Boolean`. (SLS 3.2.10)
+    visited = visited :+ false.asInstanceOf[Any]
+                      ^
+one error found

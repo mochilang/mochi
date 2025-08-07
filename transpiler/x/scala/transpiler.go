@@ -1014,16 +1014,12 @@ type IntLit struct {
 }
 
 func (i *IntLit) emit(w io.Writer) {
-	if i.Value > math.MaxInt32 || i.Value < math.MinInt32 || i.Long {
-		needsBigInt = true
-		if i.Value > math.MaxInt32 || i.Value < math.MinInt32 {
-			fmt.Fprintf(w, "BigInt(\"%d\")", i.Value)
-		} else {
-			fmt.Fprintf(w, "BigInt(%d)", i.Value)
-		}
-	} else {
-		fmt.Fprintf(w, "%d", i.Value)
-	}
+        needsBigInt = true
+        if i.Value > math.MaxInt32 || i.Value < math.MinInt32 {
+                fmt.Fprintf(w, "BigInt(\"%d\")", i.Value)
+                return
+        }
+        fmt.Fprintf(w, "BigInt(%d)", i.Value)
 }
 
 type BoolLit struct{ Value bool }
@@ -1317,18 +1313,22 @@ type CastExpr struct {
 }
 
 func (c *CastExpr) emit(w io.Writer) {
-	if strings.HasPrefix(c.Type, "ArrayBuffer[") {
-		if ll, ok := c.Value.(*ListLit); ok {
-			elem := strings.TrimSuffix(strings.TrimPrefix(c.Type, "ArrayBuffer["), "]")
-			for i, e := range ll.Elems {
-				if inferType(e) != elem {
-					ll.Elems[i] = &CastExpr{Value: e, Type: elem}
-				}
-			}
-			ll.emit(w)
-			return
-		}
-	}
+       if strings.HasPrefix(c.Type, "ArrayBuffer[") {
+               if ll, ok := c.Value.(*ListLit); ok {
+                       elem := strings.TrimSuffix(strings.TrimPrefix(c.Type, "ArrayBuffer["), "]")
+                       if len(ll.Elems) == 0 {
+                               fmt.Fprintf(w, "ArrayBuffer[%s]()", elem)
+                               return
+                       }
+                       for i, e := range ll.Elems {
+                               if inferType(e) != elem {
+                                       ll.Elems[i] = &CastExpr{Value: e, Type: elem}
+                               }
+                       }
+                       ll.emit(w)
+                       return
+               }
+       }
 	switch c.Type {
 	case "Int", "int":
 		// Mochi ints are arbitrary precision. Treat casts to int as BigInt
@@ -2238,13 +2238,14 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				typ = t
 			}
 		}
-		if typ != "" {
-			localVarTypes[st.Let.Name] = typ
-		}
-		if ml, ok := e.(*MapLit); ok {
-			mt := make(map[string]string)
-			for _, it := range ml.Items {
-				if k, ok := it.Key.(*StringLit); ok {
+               if typ != "" {
+                       localVarTypes[st.Let.Name] = typ
+               }
+               e = castListElems(e, typ)
+               if ml, ok := e.(*MapLit); ok {
+                       mt := make(map[string]string)
+                       for _, it := range ml.Items {
+                               if k, ok := it.Key.(*StringLit); ok {
 					if it.Type != "" && it.Type != "Any" {
 						mt[k.Value] = it.Type
 					}
@@ -4929,20 +4930,26 @@ func inferType(e Expr) string {
 			return t
 		}
 		return ""
-	case *ListLit:
-		if len(ex.Elems) == 0 {
-			return "ArrayBuffer[Any]"
-		}
-		t := inferType(ex.Elems[0])
-		if t == "" {
-			return "ArrayBuffer[Any]"
-		}
-		for _, e := range ex.Elems[1:] {
-			if inferType(e) != t {
-				return "ArrayBuffer[Any]"
-			}
-		}
-		return fmt.Sprintf("ArrayBuffer[%s]", t)
+       case *ListLit:
+               if len(ex.Elems) == 0 {
+                       return "ArrayBuffer[Any]"
+               }
+               var t string
+               for _, e := range ex.Elems {
+                       et := inferType(e)
+                       if et == "" || et == "Any" || et == "ArrayBuffer[Any]" {
+                               continue
+                       }
+                       if t == "" {
+                               t = et
+                       } else if t != et {
+                               return "ArrayBuffer[Any]"
+                       }
+               }
+               if t == "" {
+                       return "ArrayBuffer[Any]"
+               }
+               return fmt.Sprintf("ArrayBuffer[%s]", t)
 	case *MapLit:
 		if len(ex.Items) == 0 {
 			return "Map[Any,Any]"
@@ -5115,6 +5122,22 @@ func inferType(e Expr) string {
 		_ = ex
 	}
 	return ""
+}
+
+func castListElems(e Expr, typ string) Expr {
+        if strings.HasPrefix(typ, "ArrayBuffer[") && strings.HasSuffix(typ, "]") {
+                if ll, ok := e.(*ListLit); ok {
+                        elem := strings.TrimSuffix(strings.TrimPrefix(typ, "ArrayBuffer["), "]")
+                        for i, el := range ll.Elems {
+                                ll.Elems[i] = castListElems(el, elem)
+                        }
+                        if len(ll.Elems) == 0 {
+                                return &CastExpr{Value: ll, Type: typ}
+                        }
+                        return ll
+                }
+        }
+        return e
 }
 
 func inferTypeWithEnv(e Expr, env *types.Env) string {

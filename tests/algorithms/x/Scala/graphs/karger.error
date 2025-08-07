@@ -1,0 +1,7 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/graphs/karger.scala:79: error: polymorphic expression cannot be instantiated to expected type;
+ found   : [B >: String]Seq[String]
+ required: scala.collection.mutable.ArrayBuffer[String]
+  var nodes: ArrayBuffer[String] = graph_copy.keys.toSeq.sorted
+                                                         ^
+one error found

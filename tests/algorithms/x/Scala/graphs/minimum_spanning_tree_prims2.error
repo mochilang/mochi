@@ -1,0 +1,5 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/graphs/minimum_spanning_tree_prims2.scala:148: error: not found: value res
+val dist: scala.collection.mutable.Map[String,BigInt] = res.dist
+                                                        ^
+one error found
