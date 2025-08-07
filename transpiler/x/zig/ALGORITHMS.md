@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-07 08:48 +0700
+Last updated: 2025-08-07 09:53 +0700
 
-## Program Checklist (113/1077)
+## Program Checklist (117/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.114ms | 512.0 KB |
@@ -175,10 +175,10 @@ Last updated: 2025-08-07 08:48 +0700
 | 166 | data_structures/arrays/permutations | ✓ | 4.407ms | 1.0 MB |
 | 167 | data_structures/arrays/prefix_sum | ✓ | 1.336ms | 384.0 KB |
 | 168 | data_structures/arrays/product_sum | ✓ | 541µs | 384.0 KB |
-| 169 | data_structures/arrays/sparse_table |   |  |  |
-| 170 | data_structures/arrays/sudoku_solver |   |  |  |
-| 171 | data_structures/binary_tree/avl_tree |   |  |  |
-| 172 | data_structures/binary_tree/basic_binary_tree |   |  |  |
+| 169 | data_structures/arrays/sparse_table | ✓ | 1.286ms | 512.0 KB |
+| 170 | data_structures/arrays/sudoku_solver | ✓ | 10.001ms | 3.1 MB |
+| 171 | data_structures/binary_tree/avl_tree | ✓ | 669µs | 256.0 KB |
+| 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 961µs | 512.0 KB |
 | 173 | data_structures/binary_tree/binary_search_tree |   |  |  |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive |   |  |  |
 | 175 | data_structures/binary_tree/binary_tree_mirror |   |  |  |
