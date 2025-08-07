@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-07 16:06 GMT+7
+Last updated: 2025-08-07 16:50 GMT+7
 
-## Algorithms Golden Test Checklist (98/1077)
+## Algorithms Golden Test Checklist (109/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -204,18 +204,18 @@ Last updated: 2025-08-07 16:06 GMT+7
 | 195 | data_structures/binary_tree/segment_tree | ✓ | 1.0µs | 384B |
 | 196 | data_structures/binary_tree/segment_tree_other | ✓ | 4.0µs | 128B |
 | 197 | data_structures/binary_tree/serialize_deserialize_binary_tree | error |  |  |
-| 198 | data_structures/binary_tree/symmetric_tree |   |  |  |
-| 199 | data_structures/binary_tree/treap |   |  |  |
-| 200 | data_structures/binary_tree/wavelet_tree |   |  |  |
-| 201 | data_structures/disjoint_set/alternate_disjoint_set |   |  |  |
-| 202 | data_structures/disjoint_set/disjoint_set |   |  |  |
-| 203 | data_structures/hashing/bloom_filter |   |  |  |
-| 204 | data_structures/hashing/double_hash |   |  |  |
-| 205 | data_structures/hashing/hash_map |   |  |  |
-| 206 | data_structures/hashing/hash_table |   |  |  |
-| 207 | data_structures/hashing/hash_table_with_linked_list |   |  |  |
-| 208 | data_structures/hashing/number_theory/prime_numbers |   |  |  |
-| 209 | data_structures/hashing/quadratic_probing |   |  |  |
+| 198 | data_structures/binary_tree/symmetric_tree | ✓ | 0ns | 1.19KB |
+| 199 | data_structures/binary_tree/treap | ✓ | 0ns | 416B |
+| 200 | data_structures/binary_tree/wavelet_tree | ✓ | 1.0µs | 1.78KB |
+| 201 | data_structures/disjoint_set/alternate_disjoint_set | ✓ | 0ns | 192B |
+| 202 | data_structures/disjoint_set/disjoint_set | ✓ | 0ns | 384B |
+| 203 | data_structures/hashing/bloom_filter | ✓ | 0ns | 0B |
+| 204 | data_structures/hashing/double_hash | ✓ | 0ns | 448B |
+| 205 | data_structures/hashing/hash_map | ✓ | 0ns | 160B |
+| 206 | data_structures/hashing/hash_table | ✓ | 0ns | 0B |
+| 207 | data_structures/hashing/hash_table_with_linked_list | ✓ | 0ns | 320B |
+| 208 | data_structures/hashing/number_theory/prime_numbers | ✓ | 0ns | 0B |
+| 209 | data_structures/hashing/quadratic_probing | error |  |  |
 | 210 | data_structures/hashing/tests/test_hash_map |   |  |  |
 | 211 | data_structures/heap/binomial_heap |   |  |  |
 | 212 | data_structures/heap/heap |   |  |  |
