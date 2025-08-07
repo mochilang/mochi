@@ -26,6 +26,7 @@ fun dfs(graph: map<int, list<int>>, at: int, parent: int, visited: list<bool>, i
   for to in graph[at] {
     if to == parent {
       // skip the edge leading back to parent
+      continue
     } else if !visited[to] {
       let result = dfs(graph, to, at, visited, ids, low, current_id, res_bridges)
       current_id = result.id
