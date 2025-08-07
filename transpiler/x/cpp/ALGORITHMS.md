@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 363/1077
-Last updated: 2025-08-07 15:36 +0700
+Completed programs: 364/1077
+Last updated: 2025-08-07 16:40 +0700
 
 Checklist:
 
@@ -259,18 +259,18 @@ Checklist:
 | 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ | 1.0µs | 3.54MB |
 | 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 256.0µs | 3.73MB |
 | 252 | data_structures/stacks/lexicographical_numbers | ✓ | 405.0µs | 3.56MB |
-| 253 | data_structures/stacks/next_greater_element |   |  |  |
-| 254 | data_structures/stacks/postfix_evaluation | ✓ | 340.0µs | 3.66MB |
-| 255 | data_structures/stacks/prefix_evaluation | ✓ | 543.0µs | 3.77MB |
-| 256 | data_structures/stacks/stack | ✓ | 236.0µs | 3.65MB |
-| 257 | data_structures/stacks/stack_using_two_queues | ✓ | 289.0µs | 3.56MB |
-| 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 214.0µs | 3.70MB |
-| 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 204.0µs | 3.49MB |
-| 260 | data_structures/stacks/stock_span_problem | ✓ | 117.0µs | 3.58MB |
-| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 202.0µs | 3.61MB |
-| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 241.0µs | 3.73MB |
-| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 228.0µs | 3.79MB |
-| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 235.0µs | 3.55MB |
+| 253 | data_structures/stacks/next_greater_element | ✓ | 518.0µs | 3.85MB |
+| 254 | data_structures/stacks/postfix_evaluation | ✓ | 516.0µs | 3.75MB |
+| 255 | data_structures/stacks/prefix_evaluation | ✓ | 497.0µs | 3.73MB |
+| 256 | data_structures/stacks/stack | ✓ | 236.0µs | 3.70MB |
+| 257 | data_structures/stacks/stack_using_two_queues | ✓ | 343.0µs | 3.69MB |
+| 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 301.0µs | 3.67MB |
+| 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 407.0µs | 3.45MB |
+| 260 | data_structures/stacks/stock_span_problem | ✓ | 110.0µs | 3.47MB |
+| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 339.0µs | 3.66MB |
+| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 283.0µs | 3.74MB |
+| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 213.0µs | 3.55MB |
+| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 225.0µs | 3.54MB |
 | 265 | data_structures/trie/radix_tree |   |  |  |
 | 266 | data_structures/trie/trie |   |  |  |
 | 267 | digital_image_processing/change_brightness | ✓ | 201.0µs | 3.58MB |

@@ -1,1 +1,19 @@
-run: signal: segmentation fault
+compile: exit status 1
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/trie/trie.cpp:82:215: warning: multi-character character constant [-Wmultichar]
+   82 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/trie/trie.cpp:82:251: warning: multi-character character constant [-Wmultichar]
+   82 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/trie/trie.cpp:131:152: warning: multi-character character constant [-Wmultichar]
+  131 |     os << '{' << "'children': "<< "{"; bool first_0=true; for(const auto& p: v.children){ if(!first_0) os << ", "; first_0=false; os << p.first; os << ': '; os << p.second; } os << "}"
+      |                                                                                                                                                        ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/trie/trie.cpp: In function ‘void _delete(const Trie&, std::string)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/trie/trie.cpp:254:18: error: passing ‘const std::vector<Node>’ as ‘this’ argument discards qualifiers [-fpermissive]
+  254 |     trie.nodes = nodes;
+      |                  ^~~~~
+In file included from /usr/include/c++/13/vector:72,
+                 from /workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/trie/trie.cpp:4:
+/usr/include/c++/13/bits/vector.tcc:210:5: note:   in call to ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(const std::vector<_Tp, _Alloc>&) [with _Tp = Node; _Alloc = std::allocator<Node>]’
+  210 |     vector<_Tp, _Alloc>::
+      |     ^~~~~~~~~~~~~~~~~~~
