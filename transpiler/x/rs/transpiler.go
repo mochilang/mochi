@@ -1601,10 +1601,33 @@ func (s *StringCastExpr) emit(w io.Writer) {
 	} else if strings.HasPrefix(t, "&") {
 		t = strings.TrimPrefix(t, "&")
 	}
+	if ll, ok := s.Expr.(*ListLit); ok {
+		io.WriteString(w, "format!(\"[{}]\", vec![")
+		for i, el := range ll.Elems {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			(&StringCastExpr{Expr: el}).emit(w)
+		}
+		io.WriteString(w, "].join(\", \"))")
+		return
+	}
 	if strings.HasPrefix(t, "Vec<") || strings.HasPrefix(t, "HashMap<") {
 		io.WriteString(w, "format!(\"{:?}\", ")
 		s.Expr.emit(w)
 		io.WriteString(w, ")")
+		return
+	}
+	if nl, ok := s.Expr.(*NumberLit); ok && strings.HasPrefix(nl.Value, "-") {
+		io.WriteString(w, "(")
+		nl.emit(w)
+		io.WriteString(w, ").to_string()")
+		return
+	}
+	if ue, ok := s.Expr.(*UnaryExpr); ok && ue.Op == "-" {
+		io.WriteString(w, "(")
+		ue.emit(w)
+		io.WriteString(w, ").to_string()")
 		return
 	}
 	s.Expr.emit(w)
@@ -1850,7 +1873,7 @@ func (v *VarDecl) emit(w io.Writer) {
 				return
 			}
 			if _, ok := v.Expr.(*NameRef); ok && v.Type != "" && !strings.HasPrefix(v.Type, "&") {
-				if _, ok2 := structTypes[v.Type]; ok2 {
+				if _, ok2 := structTypes[v.Type]; ok2 || strings.HasPrefix(v.Type, "Vec<") || strings.HasPrefix(v.Type, "HashMap") || v.Type == "String" {
 					v.Expr.emit(w)
 					io.WriteString(w, ".clone()")
 					return

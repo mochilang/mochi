@@ -1,0 +1,522 @@
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:113:2
+    |
+113 | };
+    |  ^ help: remove this semicolon
+    |
+    = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:129:2
+    |
+129 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:132:2
+    |
+132 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:145:2
+    |
+145 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:154:2
+    |
+154 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:161:2
+    |
+161 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:164:2
+    |
+164 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:173:2
+    |
+173 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:100:8
+    |
+100 |     if (op == 0) {
+    |        ^       ^
+    |
+    = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+    |
+100 -     if (op == 0) {
+100 +     if op == 0 {
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:101:16
+    |
+101 |         return (a + b)
+    |                ^     ^
+    |
+help: remove these parentheses
+    |
+101 -         return (a + b)
+101 +         return a + b
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:103:8
+    |
+103 |     if (op == 1) {
+    |        ^       ^
+    |
+help: remove these parentheses
+    |
+103 -     if (op == 1) {
+103 +     if op == 1 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:104:12
+    |
+104 |         if (a > b) {
+    |            ^     ^
+    |
+help: remove these parentheses
+    |
+104 -         if (a > b) {
+104 +         if a > b {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:109:8
+    |
+109 |     if (a < b) {
+    |        ^     ^
+    |
+help: remove these parentheses
+    |
+109 -     if (a < b) {
+109 +     if a < b {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:115:8
+    |
+115 |     if (start == end) {
+    |        ^            ^
+    |
+help: remove these parentheses
+    |
+115 -     if (start == end) {
+115 +     if start == end {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:120:24
+    |
+120 |     let mut mid: i64 = ((start + end) / 2);
+    |                        ^                 ^
+    |
+help: remove these parentheses
+    |
+120 -     let mut mid: i64 = ((start + end) / 2);
+120 +     let mut mid: i64 = (start + end) / 2;
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:122:86
+    |
+122 |     let mut right_res: BuildResult = build_tree(left_res.nodes.clone(), arr.clone(), (mid + 1), end, op);
+    |                                                                                      ^       ^
+    |
+help: remove these parentheses
+    |
+122 -     let mut right_res: BuildResult = build_tree(left_res.nodes.clone(), arr.clone(), (mid + 1), end, op);
+122 +     let mut right_res: BuildResult = build_tree(left_res.nodes.clone(), arr.clone(), mid + 1, end, op);
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:136:11
+    |
+136 |     while (idx < (tree.arr.clone().len() as i64)) {
+    |           ^                                     ^
+    |
+help: remove these parentheses
+    |
+136 -     while (idx < (tree.arr.clone().len() as i64)) {
+136 +     while idx < (tree.arr.clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:137:12
+    |
+137 |         if (idx == i) {
+    |            ^        ^
+    |
+help: remove these parentheses
+    |
+137 -         if (idx == i) {
+137 +         if idx == i {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:142:15
+    |
+142 |         idx = (idx + 1);
+    |               ^       ^
+    |
+help: remove these parentheses
+    |
+142 -         idx = (idx + 1);
+142 +         idx = idx + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:148:24
+    |
+148 |     let mut idx: i64 = (i + 1);
+    |                        ^     ^
+    |
+help: remove these parentheses
+    |
+148 -     let mut idx: i64 = (i + 1);
+148 +     let mut idx: i64 = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:149:11
+    |
+149 |     while (idx <= j) {
+    |           ^        ^
+    |
+help: remove these parentheses
+    |
+149 -     while (idx <= j) {
+149 +     while idx <= j {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:151:15
+    |
+151 |         idx = (idx + 1);
+    |               ^       ^
+    |
+help: remove these parentheses
+    |
+151 -         idx = (idx + 1);
+151 +         idx = idx + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:156:8
+    |
+156 |     if ((tree.arr.clone().len() as i64) == 0) {
+    |        ^                                    ^
+    |
+help: remove these parentheses
+    |
+156 -     if ((tree.arr.clone().len() as i64) == 0) {
+156 +     if (tree.arr.clone().len() as i64) == 0 {
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:159:80
+    |
+159 |     let mut res: BuildResult = build_tree(vec![], tree.arr.clone().clone(), 0, ((tree.arr.clone().len() as i64) - 1), tree.op);
+    |                                                                                ^                                   ^
+    |
+help: remove these parentheses
+    |
+159 -     let mut res: BuildResult = build_tree(vec![], tree.arr.clone().clone(), 0, ((tree.arr.clone().len() as i64) - 1), tree.op);
+159 +     let mut res: BuildResult = build_tree(vec![], tree.arr.clone().clone(), 0, (tree.arr.clone().len() as i64) - 1, tree.op);
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:168:11
+    |
+168 |     while (i < (nodes.len() as i64)) {
+    |           ^                        ^
+    |
+help: remove these parentheses
+    |
+168 -     while (i < (nodes.len() as i64)) {
+168 +     while i < (nodes.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:170:13
+    |
+170 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+170 -         i = (i + 1);
+170 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:186:32
+    |
+186 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+186 -         let duration_us: i64 = ((_end - _start) / 1000);
+186 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:99:27
+   |
+99 |         unsafe fn combine(mut a: i64, mut b: i64, mut op: i64) -> i64 {
+   |                           ----^
+   |                           |
+   |                           help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:99:39
+   |
+99 |         unsafe fn combine(mut a: i64, mut b: i64, mut op: i64) -> i64 {
+   |                                       ----^
+   |                                       |
+   |                                       help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:99:51
+   |
+99 |         unsafe fn combine(mut a: i64, mut b: i64, mut op: i64) -> i64 {
+   |                                                   ----^^
+   |                                                   |
+   |                                                   help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:114:30
+    |
+114 |         unsafe fn build_tree(mut nodes: Vec<Node>, mut arr: Vec<i64>, mut start: i64, mut end: i64, mut op: i64) -> BuildResult {
+    |                              ----^^^^^
+    |                              |
+    |                              help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:114:52
+    |
+114 |         unsafe fn build_tree(mut nodes: Vec<Node>, mut arr: Vec<i64>, mut start: i64, mut end: i64, mut op: i64) -> BuildResult {
+    |                                                    ----^^^
+    |                                                    |
+    |                                                    help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:114:71
+    |
+114 |         unsafe fn build_tree(mut nodes: Vec<Node>, mut arr: Vec<i64>, mut start: i64, mut end: i64, mut op: i64) -> BuildResult {
+    |                                                                       ----^^^^^
+    |                                                                       |
+    |                                                                       help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:114:87
+    |
+114 |         unsafe fn build_tree(mut nodes: Vec<Node>, mut arr: Vec<i64>, mut start: i64, mut end: i64, mut op: i64) -> BuildResult {
+    |                                                                                       ----^^^
+    |                                                                                       |
+    |                                                                                       help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:114:101
+    |
+114 |         unsafe fn build_tree(mut nodes: Vec<Node>, mut arr: Vec<i64>, mut start: i64, mut end: i64, mut op: i64) -> BuildResult {
+    |                                                                                                     ----^^
+    |                                                                                                     |
+    |                                                                                                     help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:116:13
+    |
+116 |         let mut node: Node = Node {start: start, end: end, val: arr[start as usize], mid: start, left: -1, right: -1};
+    |             ----^^^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:117:13
+    |
+117 |         let mut new_nodes: Vec<Node> = { let mut _v = nodes.clone(); _v.push(node.clone()); _v };
+    |             ----^^^^^^^^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:120:9
+    |
+120 |     let mut mid: i64 = ((start + end) / 2);
+    |         ----^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:121:9
+    |
+121 |     let mut left_res: BuildResult = build_tree(nodes.clone(), arr.clone(), start, mid, op);
+    |         ----^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:122:9
+    |
+122 |     let mut right_res: BuildResult = build_tree(left_res.nodes.clone(), arr.clone(), (mid + 1), end, op);
+    |         ----^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:123:9
+    |
+123 |     let mut left_node: Node = right_res.nodes[left_res.idx as usize].clone();
+    |         ----^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:124:9
+    |
+124 |     let mut right_node: Node = right_res.nodes[right_res.idx as usize].clone();
+    |         ----^^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:125:9
+    |
+125 |     let mut val: i64 = combine(left_node.val, right_node.val, op);
+    |         ----^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:126:9
+    |
+126 |     let mut parent: Node = Node {start: start, end: end, val: val, mid: mid, left: left_res.idx, right: right_res.idx};
+    |         ----^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:127:9
+    |
+127 |     let mut new_nodes: Vec<Node> = { let mut _v = right_res.nodes.clone(); _v.push(parent.clone()); _v };
+    |         ----^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+error[E0382]: borrow of moved value: `new_nodes`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:118:54
+    |
+117 |         let mut new_nodes: Vec<Node> = { let mut _v = nodes.clone(); _v.push(node.clone()); _v };
+    |             ------------- move occurs because `new_nodes` has type `Vec<Node>`, which does not implement the `Copy` trait
+118 |         return BuildResult {nodes: new_nodes, idx: ((new_nodes.len() as i64) - 1)}
+    |                                    ---------         ^^^^^^^^^ value borrowed here after move
+    |                                    |
+    |                                    value moved here
+    |
+help: consider cloning the value if the performance cost is acceptable
+    |
+118 |         return BuildResult {nodes: new_nodes.clone(), idx: ((new_nodes.len() as i64) - 1)}
+    |                                             ++++++++
+
+error[E0382]: borrow of moved value: `new_nodes`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:128:50
+    |
+127 |     let mut new_nodes: Vec<Node> = { let mut _v = right_res.nodes.clone(); _v.push(parent.clone()); _v };
+    |         ------------- move occurs because `new_nodes` has type `Vec<Node>`, which does not implement the `Copy` trait
+128 |     return BuildResult {nodes: new_nodes, idx: ((new_nodes.len() as i64) - 1)}
+    |                                ---------         ^^^^^^^^^ value borrowed here after move
+    |                                |
+    |                                value moved here
+    |
+help: consider cloning the value if the performance cost is acceptable
+    |
+128 |     return BuildResult {nodes: new_nodes.clone(), idx: ((new_nodes.len() as i64) - 1)}
+    |                                         ++++++++
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:130:36
+    |
+130 |         unsafe fn new_segment_tree(mut collection: Vec<i64>, mut op: i64) -> SegmentTree {
+    |                                    ----^^^^^^^^^^
+    |                                    |
+    |                                    help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:130:62
+    |
+130 |         unsafe fn new_segment_tree(mut collection: Vec<i64>, mut op: i64) -> SegmentTree {
+    |                                                              ----^^
+    |                                                              |
+    |                                                              help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:133:46
+    |
+133 |         unsafe fn update(tree: &SegmentTree, mut i: i64, mut val: i64) -> SegmentTree {
+    |                                              ----^
+    |                                              |
+    |                                              help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:133:58
+    |
+133 |         unsafe fn update(tree: &SegmentTree, mut i: i64, mut val: i64) -> SegmentTree {
+    |                                                          ----^^^
+    |                                                          |
+    |                                                          help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:146:51
+    |
+146 |         unsafe fn query_range(tree: &SegmentTree, mut i: i64, mut j: i64) -> i64 {
+    |                                                   ----^
+    |                                                   |
+    |                                                   help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:146:63
+    |
+146 |         unsafe fn query_range(tree: &SegmentTree, mut i: i64, mut j: i64) -> i64 {
+    |                                                               ----^
+    |                                                               |
+    |                                                               help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:159:9
+    |
+159 |     let mut res: BuildResult = build_tree(vec![], tree.arr.clone().clone(), 0, ((tree.arr.clone().len() as i64) - 1), tree.op);
+    |         ----^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/segment_tree_other.rs:166:9
+    |
+166 |     let mut nodes: Vec<Node> = traverse(tree);
+    |         ----^^^^^
+    |         |
+    |         help: remove this `mut`
+
+error: aborting due to 2 previous errors; 53 warnings emitted
+
+For more information about this error, try `rustc --explain E0382`.

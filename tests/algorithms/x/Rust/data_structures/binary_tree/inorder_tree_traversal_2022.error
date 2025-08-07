@@ -1,0 +1,5 @@
+run: exit status 101
+
+thread 'main' panicked at /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/inorder_tree_traversal_2022.rs:84:35:
+index out of bounds: the len is 1 but the index is 1
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

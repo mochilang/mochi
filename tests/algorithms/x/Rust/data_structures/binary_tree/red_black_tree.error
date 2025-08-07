@@ -1,0 +1,563 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:69:2
+   |
+69 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:91:2
+   |
+91 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:113:2
+    |
+113 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:167:2
+    |
+167 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:194:2
+    |
+194 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:203:2
+    |
+203 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:215:2
+    |
+215 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:75:8
+   |
+75 |     if (yLeft != g_NEG_ONE) {
+   |        ^                  ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+75 -     if (yLeft != g_NEG_ONE) {
+75 +     if yLeft != g_NEG_ONE {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:80:8
+   |
+80 |     if (xParent == g_NEG_ONE) {
+   |        ^                    ^
+   |
+help: remove these parentheses
+   |
+80 -     if (xParent == g_NEG_ONE) {
+80 +     if xParent == g_NEG_ONE {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:82:15
+   |
+82 |     } else if (x == nodes[xParent as usize].clone()[g_LEFT as usize]) {
+   |               ^                                                     ^
+   |
+help: remove these parentheses
+   |
+82 -     } else if (x == nodes[xParent as usize].clone()[g_LEFT as usize]) {
+82 +     } else if x == nodes[xParent as usize].clone()[g_LEFT as usize] {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:97:8
+   |
+97 |     if (yRight != g_NEG_ONE) {
+   |        ^                   ^
+   |
+help: remove these parentheses
+   |
+97 -     if (yRight != g_NEG_ONE) {
+97 +     if yRight != g_NEG_ONE {
+   |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:102:8
+    |
+102 |     if (xParent == g_NEG_ONE) {
+    |        ^                    ^
+    |
+help: remove these parentheses
+    |
+102 -     if (xParent == g_NEG_ONE) {
+102 +     if xParent == g_NEG_ONE {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:104:15
+    |
+104 |     } else if (x == nodes[xParent as usize].clone()[g_RIGHT as usize]) {
+    |               ^                                                      ^
+    |
+help: remove these parentheses
+    |
+104 -     } else if (x == nodes[xParent as usize].clone()[g_RIGHT as usize]) {
+104 +     } else if x == nodes[xParent as usize].clone()[g_RIGHT as usize] {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:116:11
+    |
+116 |     while ((z != t.root) && (nodes[nodes[z as usize].clone()[g_PARENT as usize] as usize].clone()[g_COLOR as usize] == 1)) {
+    |           ^                                                                                                              ^
+    |
+help: remove these parentheses
+    |
+116 -     while ((z != t.root) && (nodes[nodes[z as usize].clone()[g_PARENT as usize] as usize].clone()[g_COLOR as usize] == 1)) {
+116 +     while (z != t.root) && (nodes[nodes[z as usize].clone()[g_PARENT as usize] as usize].clone()[g_COLOR as usize] == 1) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:117:12
+    |
+117 | ...if (nodes[z as usize].clone()[g_PARENT as usize] == nodes[nodes[nodes[z as usize].clone()[g_PARENT as usize] as usize].clone()[g_PARENT as usize] as usize].clone()[g_LEFT as usize]) {
+    |       ^                                                                                                                                                                                ^
+    |
+help: remove these parentheses
+    |
+117 -         if (nodes[z as usize].clone()[g_PARENT as usize] == nodes[nodes[nodes[z as usize].clone()[g_PARENT as usize] as usize].clone()[g_PARENT as usize] as usize].clone()[g_LEFT as usize]) {
+117 +         if nodes[z as usize].clone()[g_PARENT as usize] == nodes[nodes[nodes[z as usize].clone()[g_PARENT as usize] as usize].clone()[g_PARENT as usize] as usize].clone()[g_LEFT as usize] {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:119:16
+    |
+119 |             if ((y != g_NEG_ONE) && (nodes[y as usize].clone()[g_COLOR as usize] == 1)) {
+    |                ^                                                                      ^
+    |
+help: remove these parentheses
+    |
+119 -             if ((y != g_NEG_ONE) && (nodes[y as usize].clone()[g_COLOR as usize] == 1)) {
+119 +             if (y != g_NEG_ONE) && (nodes[y as usize].clone()[g_COLOR as usize] == 1) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:126:20
+    |
+126 |                 if (z == nodes[nodes[z as usize].clone()[g_PARENT as usize] as usize].clone()[g_RIGHT as usize]) {
+    |                    ^                                                                                           ^
+    |
+help: remove these parentheses
+    |
+126 -                 if (z == nodes[nodes[z as usize].clone()[g_PARENT as usize] as usize].clone()[g_RIGHT as usize]) {
+126 +                 if z == nodes[nodes[z as usize].clone()[g_PARENT as usize] as usize].clone()[g_RIGHT as usize] {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:141:16
+    |
+141 |             if ((y != g_NEG_ONE) && (nodes[y as usize].clone()[g_COLOR as usize] == 1)) {
+    |                ^                                                                      ^
+    |
+help: remove these parentheses
+    |
+141 -             if ((y != g_NEG_ONE) && (nodes[y as usize].clone()[g_COLOR as usize] == 1)) {
+141 +             if (y != g_NEG_ONE) && (nodes[y as usize].clone()[g_COLOR as usize] == 1) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:148:20
+    |
+148 |                 if (z == nodes[nodes[z as usize].clone()[g_PARENT as usize] as usize].clone()[g_LEFT as usize]) {
+    |                    ^                                                                                          ^
+    |
+help: remove these parentheses
+    |
+148 -                 if (z == nodes[nodes[z as usize].clone()[g_PARENT as usize] as usize].clone()[g_LEFT as usize]) {
+148 +                 if z == nodes[nodes[z as usize].clone()[g_PARENT as usize] as usize].clone()[g_LEFT as usize] {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:172:24
+    |
+172 |     let mut idx: i64 = ((nodes.len() as i64) - 1);
+    |                        ^                        ^
+    |
+help: remove these parentheses
+    |
+172 -     let mut idx: i64 = ((nodes.len() as i64) - 1);
+172 +     let mut idx: i64 = (nodes.len() as i64) - 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:175:11
+    |
+175 |     while (x != g_NEG_ONE) {
+    |           ^              ^
+    |
+help: remove these parentheses
+    |
+175 -     while (x != g_NEG_ONE) {
+175 +     while x != g_NEG_ONE {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:177:12
+    |
+177 |         if (v < nodes[x as usize].clone()[g_LABEL as usize]) {
+    |            ^                                               ^
+    |
+help: remove these parentheses
+    |
+177 -         if (v < nodes[x as usize].clone()[g_LABEL as usize]) {
+177 +         if v < nodes[x as usize].clone()[g_LABEL as usize] {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:184:8
+    |
+184 |     if (y == g_NEG_ONE) {
+    |        ^              ^
+    |
+help: remove these parentheses
+    |
+184 -     if (y == g_NEG_ONE) {
+184 +     if y == g_NEG_ONE {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:186:15
+    |
+186 |     } else if (v < nodes[y as usize].clone()[g_LABEL as usize]) {
+    |               ^                                               ^
+    |
+help: remove these parentheses
+    |
+186 -     } else if (v < nodes[y as usize].clone()[g_LABEL as usize]) {
+186 +     } else if v < nodes[y as usize].clone()[g_LABEL as usize] {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:196:8
+    |
+196 |     if (x == g_NEG_ONE) {
+    |        ^              ^
+    |
+help: remove these parentheses
+    |
+196 -     if (x == g_NEG_ONE) {
+196 +     if x == g_NEG_ONE {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:208:11
+    |
+208 |     while (i < (values.len() as i64)) {
+    |           ^                         ^
+    |
+help: remove these parentheses
+    |
+208 -     while (i < (values.len() as i64)) {
+208 +     while i < (values.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:210:13
+    |
+210 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+210 -         i = (i + 1);
+210 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:218:32
+    |
+218 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+218 -         let duration_us: i64 = ((_end - _start) / 1000);
+218 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:70:46
+   |
+70 |         unsafe fn rotate_left(mut t: RBTree, mut x: i64) -> RBTree {
+   |                                              ----^
+   |                                              |
+   |                                              help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:72:9
+   |
+72 |     let mut y: i64 = nodes[x as usize].clone()[g_RIGHT as usize];
+   |         ----^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:73:9
+   |
+73 |     let mut yLeft: i64 = nodes[y as usize].clone()[g_LEFT as usize];
+   |         ----^^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:78:9
+   |
+78 |     let mut xParent: i64 = nodes[x as usize].clone()[g_PARENT as usize];
+   |         ----^^^^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:92:47
+   |
+92 |         unsafe fn rotate_right(mut t: RBTree, mut x: i64) -> RBTree {
+   |                                               ----^
+   |                                               |
+   |                                               help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:94:9
+   |
+94 |     let mut y: i64 = nodes[x as usize].clone()[g_LEFT as usize];
+   |         ----^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:95:9
+   |
+95 |     let mut yRight: i64 = nodes[y as usize].clone()[g_RIGHT as usize];
+   |         ----^^^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:100:9
+    |
+100 |     let mut xParent: i64 = nodes[x as usize].clone()[g_PARENT as usize];
+    |         ----^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:118:17
+    |
+118 | ...   let mut y: i64 = nodes[nodes[nodes[z as usize].clone()[g_PARENT as usize] as usize].clone()[g_PARENT as usize] as usize].clone()[g_...
+    |           ----^
+    |           |
+    |           help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:122:21
+    |
+122 |                 let mut gp: i64 = nodes[nodes[z as usize].clone()[g_PARENT as usize] as usize].clone()[g_PARENT as usize];
+    |                     ----^^
+    |                     |
+    |                     help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:133:21
+    |
+133 |                 let mut gp: i64 = nodes[nodes[z as usize].clone()[g_PARENT as usize] as usize].clone()[g_PARENT as usize];
+    |                     ----^^
+    |                     |
+    |                     help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:140:17
+    |
+140 | ...   let mut y: i64 = nodes[nodes[nodes[z as usize].clone()[g_PARENT as usize] as usize].clone()[g_PARENT as usize] as usize].clone()[g_...
+    |           ----^
+    |           |
+    |           help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:144:21
+    |
+144 |                 let mut gp: i64 = nodes[nodes[z as usize].clone()[g_PARENT as usize] as usize].clone()[g_PARENT as usize];
+    |                     ----^^
+    |                     |
+    |                     help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:155:21
+    |
+155 |                 let mut gp: i64 = nodes[nodes[z as usize].clone()[g_PARENT as usize] as usize].clone()[g_PARENT as usize];
+    |                     ----^^
+    |                     |
+    |                     help: remove this `mut`
+
+error[E0502]: cannot borrow `nodes` as immutable because it is also borrowed as mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:120:23
+    |
+120 |                 nodes[nodes[z as usize][g_PARENT as usize] as usize][g_COLOR as usize] = 0;
+    |                 ------^^^^^-----------------------------------------
+    |                 |    ||
+    |                 |    |immutable borrow occurs here
+    |                 |    mutable borrow later used here
+    |                 mutable borrow occurs here
+    |
+    = help: use `.split_at_mut(position)` to obtain two mutable non-overlapping sub-slices
+help: try adding a local storing this...
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:120:28
+    |
+120 |                 nodes[nodes[z as usize][g_PARENT as usize] as usize][g_COLOR as usize] = 0;
+    |                            ^^^^^^^^^^^^
+help: ...and then using that local here
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:120:22
+    |
+120 |                 nodes[nodes[z as usize][g_PARENT as usize] as usize][g_COLOR as usize] = 0;
+    |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0502]: cannot borrow `nodes` as immutable because it is also borrowed as mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:132:23
+    |
+132 |                 nodes[nodes[z as usize][g_PARENT as usize] as usize][g_COLOR as usize] = 0;
+    |                 ------^^^^^-----------------------------------------
+    |                 |    ||
+    |                 |    |immutable borrow occurs here
+    |                 |    mutable borrow later used here
+    |                 mutable borrow occurs here
+    |
+    = help: use `.split_at_mut(position)` to obtain two mutable non-overlapping sub-slices
+help: try adding a local storing this...
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:132:28
+    |
+132 |                 nodes[nodes[z as usize][g_PARENT as usize] as usize][g_COLOR as usize] = 0;
+    |                            ^^^^^^^^^^^^
+help: ...and then using that local here
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:132:22
+    |
+132 |                 nodes[nodes[z as usize][g_PARENT as usize] as usize][g_COLOR as usize] = 0;
+    |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0502]: cannot borrow `nodes` as immutable because it is also borrowed as mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:142:23
+    |
+142 |                 nodes[nodes[z as usize][g_PARENT as usize] as usize][g_COLOR as usize] = 0;
+    |                 ------^^^^^-----------------------------------------
+    |                 |    ||
+    |                 |    |immutable borrow occurs here
+    |                 |    mutable borrow later used here
+    |                 mutable borrow occurs here
+    |
+    = help: use `.split_at_mut(position)` to obtain two mutable non-overlapping sub-slices
+help: try adding a local storing this...
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:142:28
+    |
+142 |                 nodes[nodes[z as usize][g_PARENT as usize] as usize][g_COLOR as usize] = 0;
+    |                            ^^^^^^^^^^^^
+help: ...and then using that local here
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:142:22
+    |
+142 |                 nodes[nodes[z as usize][g_PARENT as usize] as usize][g_COLOR as usize] = 0;
+    |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0502]: cannot borrow `nodes` as immutable because it is also borrowed as mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:154:23
+    |
+154 |                 nodes[nodes[z as usize][g_PARENT as usize] as usize][g_COLOR as usize] = 0;
+    |                 ------^^^^^-----------------------------------------
+    |                 |    ||
+    |                 |    |immutable borrow occurs here
+    |                 |    mutable borrow later used here
+    |                 mutable borrow occurs here
+    |
+    = help: use `.split_at_mut(position)` to obtain two mutable non-overlapping sub-slices
+help: try adding a local storing this...
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:154:28
+    |
+154 |                 nodes[nodes[z as usize][g_PARENT as usize] as usize][g_COLOR as usize] = 0;
+    |                            ^^^^^^^^^^^^
+help: ...and then using that local here
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:154:22
+    |
+154 |                 nodes[nodes[z as usize][g_PARENT as usize] as usize][g_COLOR as usize] = 0;
+    |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0382]: use of moved value: `t.nodes`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:163:13
+    |
+115 |     let mut nodes: Vec<Vec<i64>> = t.nodes;
+    |                                    ------- value moved here
+...
+163 |     nodes = t.nodes;
+    |             ^^^^^^^ value used here after move
+    |
+    = note: move occurs because `t.nodes` has type `Vec<Vec<i64>>`, which does not implement the `Copy` trait
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:168:46
+    |
+168 |         unsafe fn tree_insert(mut t: RBTree, mut v: i64) -> RBTree {
+    |                                              ----^
+    |                                              |
+    |                                              help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:170:9
+    |
+170 |     let mut node: Vec<i64> = vec![v, 1, -1, -1, -1];
+    |         ----^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:172:9
+    |
+172 |     let mut idx: i64 = ((nodes.len() as i64) - 1);
+    |         ----^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:195:43
+    |
+195 |         unsafe fn inorder(t: &mut RBTree, mut x: i64, mut acc: Vec<i64>) -> Vec<i64> {
+    |                                           ----^
+    |                                           |
+    |                                           help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:206:9
+    |
+206 |     let mut values: Vec<i64> = vec![10, 20, 30, 15, 25, 5, 1];
+    |         ----^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+error[E0503]: cannot use `t.root` because it was mutably borrowed
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/red_black_tree.rs:213:27
+    |
+213 |     res = inorder(&mut t, t.root, res.clone());
+    |           ------- ------  ^^^^^^ use of borrowed `t`
+    |           |       |
+    |           |       `t` is borrowed here
+    |           borrow later used by call
+
+error: aborting due to 6 previous errors; 47 warnings emitted
+
+Some errors have detailed explanations: E0382, E0502, E0503.
+For more information about an error, try `rustc --explain E0382`.

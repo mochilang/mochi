@@ -1,0 +1,416 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:70:2
+   |
+70 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:85:2
+   |
+85 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:102:2
+    |
+102 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:105:2
+    |
+105 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:115:2
+    |
+115 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:120:2
+    |
+120 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:127:2
+    |
+127 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:136:2
+    |
+136 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:63:11
+   |
+63 |     while (i < (digits.len() as i64)) {
+   |           ^                         ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+63 -     while (i < (digits.len() as i64)) {
+63 +     while i < (digits.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:67:13
+   |
+67 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+67 -         i = (i + 1);
+67 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:74:8
+   |
+74 | ...if (((s.len() as i64) > 0) && ({ let tmp = &s; tmp.chars().skip(0 as usize).take((1 - 0) as usize).collect::<String>() }.as_str() == "-")) {
+   |       ^                                                                                                                                     ^
+   |
+help: remove these parentheses
+   |
+74 -     if (((s.len() as i64) > 0) && ({ let tmp = &s; tmp.chars().skip(0 as usize).take((1 - 0) as usize).collect::<String>() }.as_str() == "-")) {
+74 +     if ((s.len() as i64) > 0) && ({ let tmp = &s; tmp.chars().skip(0 as usize).take((1 - 0) as usize).collect::<String>() }.as_str() == "-") {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:79:11
+   |
+79 |     while (i < (s.len() as i64)) {
+   |           ^                    ^
+   |
+help: remove these parentheses
+   |
+79 -     while (i < (s.len() as i64)) {
+79 +     while i < (s.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:81:15
+   |
+81 |         num = ((num * 10) + digit(&ch));
+   |               ^                       ^
+   |
+help: remove these parentheses
+   |
+81 -         num = ((num * 10) + digit(&ch));
+81 +         num = (num * 10) + digit(&ch);
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:82:13
+   |
+82 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+82 -         i = (i + 1);
+82 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:84:12
+   |
+84 |     return (sign * num)
+   |            ^          ^
+   |
+help: remove these parentheses
+   |
+84 -     return (sign * num)
+84 +     return sign * num
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:90:11
+   |
+90 |     while (i < (s.len() as i64)) {
+   |           ^                    ^
+   |
+help: remove these parentheses
+   |
+90 -     while (i < (s.len() as i64)) {
+90 +     while i < (s.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:92:12
+   |
+92 |         if (ch == sep) {
+   |            ^         ^
+   |
+help: remove these parentheses
+   |
+92 -         if (ch == sep) {
+92 +         if ch == sep {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:98:13
+   |
+98 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+98 -         i = (i + 1);
+98 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:108:8
+    |
+108 |     if (value.as_str() == "null") {
+    |        ^                        ^
+    |
+help: remove these parentheses
+    |
+108 -     if (value.as_str() == "null") {
+108 +     if value.as_str() == "null" {
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:111:58
+    |
+111 |     let mut left_res: BuildResult = build(nodes.clone(), (idx + 1));
+    |                                                          ^       ^
+    |
+help: remove these parentheses
+    |
+111 -     let mut left_res: BuildResult = build(nodes.clone(), (idx + 1));
+111 +     let mut left_res: BuildResult = build(nodes.clone(), idx + 1);
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:135:23
+    |
+135 |     println!("{}", if (serial.as_str() == serial2.as_str()) { 1 } else { 0 });
+    |                       ^                                   ^
+    |
+help: remove these parentheses
+    |
+135 -     println!("{}", if (serial.as_str() == serial2.as_str()) { 1 } else { 0 });
+135 +     println!("{}", if serial.as_str() == serial2.as_str() { 1 } else { 0 });
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:139:28
+    |
+139 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+139 -     let duration_us: i64 = ((_end - _start) / 1000);
+139 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0277]: the trait bound `TreeNode: Default` is not satisfied
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:45:5
+   |
+43 | #[derive(Debug, Clone, Default)]
+   |                        ------- in this derive macro expansion
+44 | struct BuildResult {
+45 |     node: TreeNode,
+   |     ^^^^^^^^^^^^^^ the trait `Default` is not implemented for `TreeNode`
+
+error[E0277]: `TreeNode` doesn't implement `std::fmt::Display`
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:51:35
+   |
+51 |         write!(f, "\"node\": {}", self.node)?;
+   |                                   ^^^^^^^^^ `TreeNode` cannot be formatted with the default formatter
+   |
+   = help: the trait `std::fmt::Display` is not implemented for `TreeNode`
+   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
+   = note: this error originates in the macro `$crate::format_args` which comes from the expansion of the macro `write` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:104:170
+    |
+104 | ...!("{}{}", format!("{}{}", format!("{}{}", *v.to_string(), ","), serialize(l)), ","), serialize(r)), }.to_string().clone()
+    |                                       --     ^^^^^^^^^^^^^^ doesn't have a size known at compile-time
+    |                                       |
+    |                                       required by a bound introduced by this call
+    |
+    = help: the trait `Sized` is not implemented for `str`
+note: required by an implicit `Sized` bound in `core::fmt::rt::Argument::<'_>::new_display`
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/fmt/rt.rs:116:5
+    = note: this error originates in the macro `$crate::__export::format_args` which comes from the expansion of the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:61:9
+   |
+61 |     let mut digits: String = String::from("0123456789").clone();
+   |         ----^^^^^^
+   |         |
+   |         help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:71:15
+   |
+71 |     fn to_int(mut s: String) -> i64 {
+   |               ----^
+   |               |
+   |               help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:80:13
+   |
+80 |         let mut ch: String = { let tmp = &s; tmp.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>() }.clone();
+   |             ----^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:91:13
+   |
+91 |         let mut ch: String = { let tmp = &s; tmp.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>() }.clone();
+   |             ----^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:106:14
+    |
+106 |     fn build(mut nodes: Vec<String>, mut idx: i64) -> BuildResult {
+    |              ----^^^^^
+    |              |
+    |              help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:106:38
+    |
+106 |     fn build(mut nodes: Vec<String>, mut idx: i64) -> BuildResult {
+    |                                      ----^^^
+    |                                      |
+    |                                      help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:107:9
+    |
+107 |     let mut value: String = nodes[idx as usize].clone().clone();
+    |         ----^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:111:9
+    |
+111 |     let mut left_res: BuildResult = build(nodes.clone(), (idx + 1));
+    |         ----^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:112:9
+    |
+112 |     let mut right_res: BuildResult = build(nodes.clone(), left_res.next);
+    |         ----^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:113:9
+    |
+113 |     let mut node: TreeNode = TreeNode::Node { left: Box::new(left_res.node.clone()), value: to_int(value.clone()), right: Box::new(right_...
+    |         ----^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:117:9
+    |
+117 |     let mut nodes = data.split(",").map(|x| x.to_string()).collect::<Vec<String>>();
+    |         ----^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:118:9
+    |
+118 |     let mut res: BuildResult = build(nodes.clone(), 0);
+    |         ----^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:122:9
+    |
+122 |     let mut left_child: TreeNode = TreeNode::Node { value: 2, left: Box::new(TreeNode::Empty.clone()), right: Box::new(TreeNode::Empty.cl...
+    |         ----^^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:123:9
+    |
+123 |     let mut right_left: TreeNode = TreeNode::Node { value: 4, left: Box::new(TreeNode::Empty.clone()), right: Box::new(TreeNode::Empty.cl...
+    |         ----^^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:124:9
+    |
+124 |     let mut right_right: TreeNode = TreeNode::Node { value: 5, left: Box::new(TreeNode::Empty.clone()), right: Box::new(TreeNode::Empty.c...
+    |         ----^^^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:125:9
+    |
+125 |     let mut right_child: TreeNode = TreeNode::Node { value: 3, left: Box::new(right_left.clone()), right: Box::new(right_right.clone()) };
+    |         ----^^^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:129:9
+    |
+129 |     let mut root: TreeNode = five_tree();
+    |         ----^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:130:9
+    |
+130 |     let mut serial: String = serialize(&root).clone();
+    |         ----^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:132:9
+    |
+132 |     let mut rebuilt: TreeNode = deserialize(&serial);
+    |         ----^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/serialize_deserialize_binary_tree.rs:133:9
+    |
+133 |     let mut serial2: String = serialize(&rebuilt).clone();
+    |         ----^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+error: aborting due to 3 previous errors; 42 warnings emitted
+
+For more information about this error, try `rustc --explain E0277`.

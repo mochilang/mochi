@@ -1,0 +1,488 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:41:2
+   |
+41 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:52:2
+   |
+52 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:64:2
+   |
+64 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:72:2
+   |
+72 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:79:2
+   |
+79 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:86:2
+   |
+86 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:107:2
+    |
+107 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:121:2
+    |
+121 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:46:8
+   |
+46 |     if (value < node[0 as usize].clone()) {
+   |        ^                                ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+46 -     if (value < node[0 as usize].clone()) {
+46 +     if value < node[0 as usize].clone() {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:48:15
+   |
+48 |     } else if (value > node[0 as usize].clone()) {
+   |               ^                                ^
+   |
+help: remove these parentheses
+   |
+48 -     } else if (value > node[0 as usize].clone()) {
+48 +     } else if value > node[0 as usize].clone() {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:57:8
+   |
+57 |     if (value == node[0 as usize].clone()) {
+   |        ^                                 ^
+   |
+help: remove these parentheses
+   |
+57 -     if (value == node[0 as usize].clone()) {
+57 +     if value == node[0 as usize].clone() {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:60:8
+   |
+60 |     if (value < node[0 as usize].clone()) {
+   |        ^                                ^
+   |
+help: remove these parentheses
+   |
+60 -     if (value < node[0 as usize].clone()) {
+60 +     if value < node[0 as usize].clone() {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:91:8
+   |
+91 |     if (value < node[0 as usize].clone()) {
+   |        ^                                ^
+   |
+help: remove these parentheses
+   |
+91 -     if (value < node[0 as usize].clone()) {
+91 +     if value < node[0 as usize].clone() {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:93:15
+   |
+93 |     } else if (value > node[0 as usize].clone()) {
+   |               ^                                ^
+   |
+help: remove these parentheses
+   |
+93 -     } else if (value > node[0 as usize].clone()) {
+93 +     } else if value > node[0 as usize].clone() {
+   |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:124:28
+    |
+124 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+124 -     let duration_us: i64 = ((_end - _start) / 1000);
+124 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:40:17
+   |
+40 |     return vec![value, Default::default(), Default::default()]
+   |                 ^^^^^- help: try using a conversion method: `.to_string()`
+   |                 |
+   |                 expected `String`, found `i64`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:46:17
+   |
+46 |     if (value < node[0 as usize].clone()) {
+   |         -----   ^^^^^^^^^^^^^^^^^^^^^^^^ expected `i64`, found `String`
+   |         |
+   |         expected because this is `i64`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:47:35
+   |
+47 |         node[1 as usize] = insert(node[1 as usize].clone(), value);
+   |                            ------ ^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<String>`, found `String`
+   |                            |
+   |                            arguments to this function are incorrect
+   |
+   = note: expected struct `Vec<String>`
+              found struct `String`
+note: function defined here
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:42:8
+   |
+42 |     fn insert(mut node: Vec<String>, mut value: i64) -> Vec<String> {
+   |        ^^^^^^ ---------------------
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:47:28
+   |
+47 |         node[1 as usize] = insert(node[1 as usize].clone(), value);
+   |         ----------------   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `String`, found `Vec<String>`
+   |         |
+   |         expected due to the type of this binding
+   |
+   = note: expected struct `String`
+              found struct `Vec<String>`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:48:24
+   |
+48 |     } else if (value > node[0 as usize].clone()) {
+   |                -----   ^^^^^^^^^^^^^^^^^^^^^^^^ expected `i64`, found `String`
+   |                |
+   |                expected because this is `i64`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:49:35
+   |
+49 |         node[2 as usize] = insert(node[2 as usize].clone(), value);
+   |                            ------ ^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<String>`, found `String`
+   |                            |
+   |                            arguments to this function are incorrect
+   |
+   = note: expected struct `Vec<String>`
+              found struct `String`
+note: function defined here
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:42:8
+   |
+42 |     fn insert(mut node: Vec<String>, mut value: i64) -> Vec<String> {
+   |        ^^^^^^ ---------------------
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:49:28
+   |
+49 |         node[2 as usize] = insert(node[2 as usize].clone(), value);
+   |         ----------------   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `String`, found `Vec<String>`
+   |         |
+   |         expected due to the type of this binding
+   |
+   = note: expected struct `String`
+              found struct `Vec<String>`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:57:18
+   |
+57 |     if (value == node[0 as usize].clone()) {
+   |         -----    ^^^^^^^^^^^^^^^^^^^^^^^^ expected `i64`, found `String`
+   |         |
+   |         expected because this is `i64`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:60:17
+   |
+60 |     if (value < node[0 as usize].clone()) {
+   |         -----   ^^^^^^^^^^^^^^^^^^^^^^^^ expected `i64`, found `String`
+   |         |
+   |         expected because this is `i64`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:61:23
+   |
+61 |         return search(node[1 as usize].clone(), value)
+   |                ------ ^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<String>`, found `String`
+   |                |
+   |                arguments to this function are incorrect
+   |
+   = note: expected struct `Vec<String>`
+              found struct `String`
+note: function defined here
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:53:8
+   |
+53 |     fn search(mut node: Vec<String>, mut value: i64) -> bool {
+   |        ^^^^^^ ---------------------
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:63:19
+   |
+63 |     return search(node[2 as usize].clone(), value)
+   |            ------ ^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<String>`, found `String`
+   |            |
+   |            arguments to this function are incorrect
+   |
+   = note: expected struct `Vec<String>`
+              found struct `String`
+note: function defined here
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:53:8
+   |
+53 |     fn search(mut node: Vec<String>, mut value: i64) -> bool {
+   |        ^^^^^^ ---------------------
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:69:42
+   |
+69 |     let mut left_acc: Vec<i64> = inorder(node[1 as usize].clone(), acc.clone());
+   |                                  ------- ^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<String>`, found `String`
+   |                                  |
+   |                                  arguments to this function are incorrect
+   |
+   = note: expected struct `Vec<String>`
+              found struct `String`
+note: function defined here
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:65:8
+   |
+65 |     fn inorder(mut node: Vec<String>, mut acc: Vec<i64>) -> Vec<i64> {
+   |        ^^^^^^^ ---------------------
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:70:76
+   |
+70 |     let mut with_node: Vec<i64> = { let mut _v = left_acc.clone(); _v.push(node[0 as usize].clone()); _v };
+   |                                                                       ---- ^^^^^^^^^^^^^^^^^^^^^^^^ expected `i64`, found `String`
+   |                                                                       |
+   |                                                                       arguments to this method are incorrect
+   |
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:71:20
+   |
+71 |     return inorder(node[2 as usize].clone(), with_node.clone())
+   |            ------- ^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<String>`, found `String`
+   |            |
+   |            arguments to this function are incorrect
+   |
+   = note: expected struct `Vec<String>`
+              found struct `String`
+note: function defined here
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:65:8
+   |
+65 |     fn inorder(mut node: Vec<String>, mut acc: Vec<i64>) -> Vec<i64> {
+   |        ^^^^^^^ ---------------------
+
+error[E0599]: no method named `chars` found for struct `Vec<String>` in the current scope
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:75:20
+   |
+75 |     while !current.chars().nth(1 as usize).unwrap().to_string().is_empty() {
+   |                    ^^^^^ method not found in `Vec<String>`
+
+error[E0599]: no method named `chars` found for struct `Vec<String>` in the current scope
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:76:43
+   |
+76 |         let mut current: String = current.chars().nth(1 as usize).unwrap().to_string();
+   |                                           ^^^^^ method not found in `Vec<String>`
+
+error[E0599]: no method named `chars` found for struct `Vec<String>` in the current scope
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:78:20
+   |
+78 |     return current.chars().nth(0 as usize).unwrap().to_string()
+   |                    ^^^^^ method not found in `Vec<String>`
+
+error[E0599]: no method named `chars` found for struct `Vec<String>` in the current scope
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:82:20
+   |
+82 |     while !current.chars().nth(2 as usize).unwrap().to_string().is_empty() {
+   |                    ^^^^^ method not found in `Vec<String>`
+
+error[E0599]: no method named `chars` found for struct `Vec<String>` in the current scope
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:83:43
+   |
+83 |         let mut current: String = current.chars().nth(2 as usize).unwrap().to_string();
+   |                                           ^^^^^ method not found in `Vec<String>`
+
+error[E0599]: no method named `chars` found for struct `Vec<String>` in the current scope
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:85:20
+   |
+85 |     return current.chars().nth(0 as usize).unwrap().to_string()
+   |                    ^^^^^ method not found in `Vec<String>`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:91:17
+   |
+91 |     if (value < node[0 as usize].clone()) {
+   |         -----   ^^^^^^^^^^^^^^^^^^^^^^^^ expected `i64`, found `String`
+   |         |
+   |         expected because this is `i64`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:92:35
+   |
+92 |         node[1 as usize] = delete(node[1 as usize].clone(), value);
+   |                            ------ ^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<String>`, found `String`
+   |                            |
+   |                            arguments to this function are incorrect
+   |
+   = note: expected struct `Vec<String>`
+              found struct `String`
+note: function defined here
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:87:8
+   |
+87 |     fn delete(mut node: Vec<String>, mut value: i64) -> Vec<String> {
+   |        ^^^^^^ ---------------------
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:92:28
+   |
+92 |         node[1 as usize] = delete(node[1 as usize].clone(), value);
+   |         ----------------   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `String`, found `Vec<String>`
+   |         |
+   |         expected due to the type of this binding
+   |
+   = note: expected struct `String`
+              found struct `Vec<String>`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:93:24
+   |
+93 |     } else if (value > node[0 as usize].clone()) {
+   |                -----   ^^^^^^^^^^^^^^^^^^^^^^^^ expected `i64`, found `String`
+   |                |
+   |                expected because this is `i64`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:94:35
+   |
+94 |         node[2 as usize] = delete(node[2 as usize].clone(), value);
+   |                            ------ ^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<String>`, found `String`
+   |                            |
+   |                            arguments to this function are incorrect
+   |
+   = note: expected struct `Vec<String>`
+              found struct `String`
+note: function defined here
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:87:8
+   |
+87 |     fn delete(mut node: Vec<String>, mut value: i64) -> Vec<String> {
+   |        ^^^^^^ ---------------------
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:94:28
+   |
+94 |         node[2 as usize] = delete(node[2 as usize].clone(), value);
+   |         ----------------   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `String`, found `Vec<String>`
+   |         |
+   |         expected due to the type of this binding
+   |
+   = note: expected struct `String`
+              found struct `Vec<String>`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:97:20
+   |
+87 |     fn delete(mut node: Vec<String>, mut value: i64) -> Vec<String> {
+   |                                                         ----------- expected `Vec<String>` because of return type
+...
+97 |             return node[2 as usize].clone()
+   |                    ^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<String>`, found `String`
+   |
+   = note: expected struct `Vec<String>`
+              found struct `String`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:102:41
+    |
+102 |         let mut min_val: i64 = find_min(node[2 as usize].clone());
+    |                                -------- ^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<String>`, found `String`
+    |                                |
+    |                                arguments to this function are incorrect
+    |
+    = note: expected struct `Vec<String>`
+               found struct `String`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:73:8
+    |
+73  |     fn find_min(mut node: Vec<String>) -> i64 {
+    |        ^^^^^^^^ ---------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:103:28
+    |
+103 |         node[0 as usize] = min_val;
+    |         ----------------   ^^^^^^^- help: try using a conversion method: `.to_string()`
+    |         |                  |
+    |         |                  expected `String`, found `i64`
+    |         expected due to the type of this binding
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:104:35
+    |
+104 |         node[2 as usize] = delete(node[2 as usize].clone(), min_val);
+    |                            ------ ^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<String>`, found `String`
+    |                            |
+    |                            arguments to this function are incorrect
+    |
+    = note: expected struct `Vec<String>`
+               found struct `String`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:87:8
+    |
+87  |     fn delete(mut node: Vec<String>, mut value: i64) -> Vec<String> {
+    |        ^^^^^^ ---------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:104:28
+    |
+104 |         node[2 as usize] = delete(node[2 as usize].clone(), min_val);
+    |         ----------------   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `String`, found `Vec<String>`
+    |         |
+    |         expected due to the type of this binding
+    |
+    = note: expected struct `String`
+               found struct `Vec<String>`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/binary_search_tree.rs:110:9
+    |
+110 |     let mut nums: Vec<i64> = vec![8, 3, 6, 1, 10, 14, 13, 4, 7];
+    |         ----^^^^
+    |         |
+    |         help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` on by default
+
+error: aborting due to 31 previous errors; 16 warnings emitted
+
+Some errors have detailed explanations: E0308, E0599.
+For more information about an error, try `rustc --explain E0308`.

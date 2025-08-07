@@ -1,0 +1,196 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/mirror_binary_tree.rs:69:2
+   |
+69 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/mirror_binary_tree.rs:73:2
+   |
+73 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/mirror_binary_tree.rs:81:2
+   |
+81 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/mirror_binary_tree.rs:84:2
+   |
+84 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/mirror_binary_tree.rs:87:2
+   |
+87 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/mirror_binary_tree.rs:90:2
+   |
+90 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/mirror_binary_tree.rs:102:2
+    |
+102 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/mirror_binary_tree.rs:61:8
+   |
+61 |     if (idx == -1) {
+   |        ^         ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+61 -     if (idx == -1) {
+61 +     if idx == -1 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/mirror_binary_tree.rs:75:8
+   |
+75 |     if (idx == -1) {
+   |        ^         ^
+   |
+help: remove these parentheses
+   |
+75 -     if (idx == -1) {
+75 +     if idx == -1 {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/mirror_binary_tree.rs:95:11
+   |
+95 |     while (i < (trees.len() as i64)) {
+   |           ^                        ^
+   |
+help: remove these parentheses
+   |
+95 -     while (i < (trees.len() as i64)) {
+95 +     while i < (trees.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/mirror_binary_tree.rs:100:13
+    |
+100 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+100 -         i = (i + 1);
+100 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/mirror_binary_tree.rs:105:28
+    |
+105 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+105 -     let duration_us: i64 = ((_end - _start) / 1000);
+105 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/mirror_binary_tree.rs:72:12
+   |
+70 |     fn mirror(tree: &Tree) -> Tree {
+   |                               ---- expected `Tree` because of return type
+71 |     mirror_node(&mut tree.left.clone(), &mut tree.right.clone(), tree.root);
+72 |     return tree
+   |            ^^^^ expected `Tree`, found `&Tree`
+   |
+help: consider using clone here
+   |
+72 |     return tree.clone()
+   |                ++++++++
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/mirror_binary_tree.rs:60:63
+   |
+60 |     fn mirror_node(left: &mut Vec<i64>, right: &mut Vec<i64>, mut idx: i64) {
+   |                                                               ----^^^
+   |                                                               |
+   |                                                               help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/mirror_binary_tree.rs:64:9
+   |
+64 |     let mut temp: i64 = left[idx as usize];
+   |         ----^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/mirror_binary_tree.rs:74:29
+   |
+74 |     fn inorder(tree: &Tree, mut idx: i64) -> Vec<i64> {
+   |                             ----^^^
+   |                             |
+   |                             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/mirror_binary_tree.rs:78:9
+   |
+78 |     let mut left_vals: Vec<i64> = inorder(tree, tree.left.clone()[idx as usize]);
+   |         ----^^^^^^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/mirror_binary_tree.rs:79:9
+   |
+79 |     let mut right_vals: Vec<i64> = inorder(tree, tree.right.clone()[idx as usize]);
+   |         ----^^^^^^^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/mirror_binary_tree.rs:92:9
+   |
+92 |     let mut names: Vec<String> = vec![String::from("zero").clone(), String::from("seven").clone(), String::from("nine").clone()];
+   |         ----^^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/mirror_binary_tree.rs:93:9
+   |
+93 |     let mut trees: Vec<Tree> = vec![make_tree_zero(), make_tree_seven(), make_tree_nine()];
+   |         ----^^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/mirror_binary_tree.rs:96:13
+   |
+96 |         let mut tree: Tree = trees[i as usize].clone();
+   |             ----^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/mirror_binary_tree.rs:98:13
+   |
+98 |         let mut mirrored: Tree = mirror(&tree);
+   |             ----^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+
+error: aborting due to 1 previous error; 21 warnings emitted
+
+For more information about this error, try `rustc --explain E0308`.
