@@ -1,0 +1,6 @@
+../../../tests/algorithms/x/Dart/web_programming/slack_message.dart:47:28: Error: Member not found: 'String.fromJson'.
+  String response = String.fromJson(_fetch(slack_url as String));
+                           ^^^^^^^^
+../../../tests/algorithms/x/Dart/web_programming/slack_message.dart:49:5: Error: Method not found: 'error'.
+    error("Request to slack returned an error: " + response);
+    ^^^^^

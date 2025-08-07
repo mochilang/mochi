@@ -1,0 +1,8 @@
+Unhandled exception:
+type '_Map<String, dynamic>' is not a subtype of type 'Story' in type cast
+#0      get_hackernews_story (file:///workspace/mochi/tests/algorithms/x/Dart/web_programming/get_top_hn_posts.dart:56:29)
+#1      hackernews_top_stories (file:///workspace/mochi/tests/algorithms/x/Dart/web_programming/get_top_hn_posts.dart:70:28)
+#2      hackernews_top_stories_as_markdown (file:///workspace/mochi/tests/algorithms/x/Dart/web_programming/get_top_hn_posts.dart:77:25)
+#3      main (file:///workspace/mochi/tests/algorithms/x/Dart/web_programming/get_top_hn_posts.dart:94:9)
+#4      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#5      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

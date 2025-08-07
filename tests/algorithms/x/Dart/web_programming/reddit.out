@@ -1,0 +1,6 @@
+Unhandled exception:
+type 'String' is not a subtype of type 'Map<String, dynamic>'
+#0      get_subreddit_data (file:///workspace/mochi/tests/algorithms/x/Dart/web_programming/reddit.dart:110:35)
+#1      main (file:///workspace/mochi/tests/algorithms/x/Dart/web_programming/reddit.dart:145:9)
+#2      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#3      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

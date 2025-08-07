@@ -1,0 +1,6 @@
+../../../tests/algorithms/x/Dart/web_programming/nasa_data.dart:116:24: Error: Method not found: 'first'.
+  dynamic first_item = first(items);
+                       ^^^^^
+../../../tests/algorithms/x/Dart/web_programming/nasa_data.dart:117:24: Error: Method not found: 'first'.
+  dynamic first_data = first(first_item.data);
+                       ^^^^^

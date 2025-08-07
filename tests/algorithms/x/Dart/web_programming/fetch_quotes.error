@@ -1,0 +1,10 @@
+run: exit status 255
+Unhandled exception:
+type '_Map<String, dynamic>' is not a subtype of type 'Quote'
+#0      new List.from (dart:core-patch/array_patch.dart:30:5)
+#1      random_quotes (file:///workspace/mochi/tests/algorithms/x/Dart/web_programming/fetch_quotes.dart:78:10)
+#2      response (file:///workspace/mochi/tests/algorithms/x/Dart/web_programming/fetch_quotes.dart:81:24)
+#3      response (file:///workspace/mochi/tests/algorithms/x/Dart/web_programming/fetch_quotes.dart)
+#4      main (file:///workspace/mochi/tests/algorithms/x/Dart/web_programming/fetch_quotes.dart:89:15)
+#5      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#6      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

@@ -1,0 +1,7 @@
+run: exit status 254
+../../../tests/algorithms/x/Dart/searches/hill_climbing.dart:84:5: Error: Undefined name 'e18'.
+    e18;
+    ^^^
+../../../tests/algorithms/x/Dart/searches/hill_climbing.dart:86:5: Error: Undefined name 'e18'.
+    e18;
+    ^^^

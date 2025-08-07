@@ -1,0 +1,91 @@
+../../../tests/algorithms/x/Dart/web_programming/fetch_well_rx_price.dart:57:20: Error: A comparison expression can't be an operand of another comparison expression.
+Try putting parentheses around one of the comparisons.
+    return List<Map<String, String>>?>.from(null);
+                   ^
+../../../tests/algorithms/x/Dart/web_programming/fetch_well_rx_price.dart:57:21: Error: Expected ';' after this.
+    return List<Map<String, String>>?>.from(null);
+                    ^^^^^^
+../../../tests/algorithms/x/Dart/web_programming/fetch_well_rx_price.dart:57:27: Error: Expected an identifier, but got ','.
+Try inserting an identifier before ','.
+    return List<Map<String, String>>?>.from(null);
+                          ^
+../../../tests/algorithms/x/Dart/web_programming/fetch_well_rx_price.dart:57:27: Error: Unexpected token ','.
+    return List<Map<String, String>>?>.from(null);
+                          ^
+../../../tests/algorithms/x/Dart/web_programming/fetch_well_rx_price.dart:57:37: Error: Expected an identifier, but got '?'.
+Try inserting an identifier before '?'.
+    return List<Map<String, String>>?>.from(null);
+                                    ^
+../../../tests/algorithms/x/Dart/web_programming/fetch_well_rx_price.dart:57:38: Error: Expected an identifier, but got '>'.
+Try inserting an identifier before '>'.
+    return List<Map<String, String>>?>.from(null);
+                                     ^
+../../../tests/algorithms/x/Dart/web_programming/fetch_well_rx_price.dart:57:39: Error: This requires the experimental 'dot-shorthands' language feature to be enabled.
+Try passing the '--enable-experiment=dot-shorthands' command line option.
+    return List<Map<String, String>>?>.from(null);
+                                      ^
+../../../tests/algorithms/x/Dart/web_programming/fetch_well_rx_price.dart:57:50: Error: Expected ':' before this.
+    return List<Map<String, String>>?>.from(null);
+                                                 ^
+../../../tests/algorithms/x/Dart/web_programming/fetch_well_rx_price.dart:57:50: Error: Expected an identifier, but got ';'.
+Try inserting an identifier before ';'.
+    return List<Map<String, String>>?>.from(null);
+                                                 ^
+../../../tests/algorithms/x/Dart/web_programming/fetch_well_rx_price.dart:92:18: Error: A comparison expression can't be an operand of another comparison expression.
+Try putting parentheses around one of the comparisons.
+  return List<Map<String, String>>?>.from(results);
+                 ^
+../../../tests/algorithms/x/Dart/web_programming/fetch_well_rx_price.dart:92:19: Error: Expected ';' after this.
+  return List<Map<String, String>>?>.from(results);
+                  ^^^^^^
+../../../tests/algorithms/x/Dart/web_programming/fetch_well_rx_price.dart:92:25: Error: Expected an identifier, but got ','.
+Try inserting an identifier before ','.
+  return List<Map<String, String>>?>.from(results);
+                        ^
+../../../tests/algorithms/x/Dart/web_programming/fetch_well_rx_price.dart:92:25: Error: Unexpected token ';'.
+  return List<Map<String, String>>?>.from(results);
+                        ^
+../../../tests/algorithms/x/Dart/web_programming/fetch_well_rx_price.dart:92:35: Error: Expected an identifier, but got '?'.
+Try inserting an identifier before '?'.
+  return List<Map<String, String>>?>.from(results);
+                                  ^
+../../../tests/algorithms/x/Dart/web_programming/fetch_well_rx_price.dart:92:36: Error: Expected an identifier, but got '>'.
+Try inserting an identifier before '>'.
+  return List<Map<String, String>>?>.from(results);
+                                   ^
+../../../tests/algorithms/x/Dart/web_programming/fetch_well_rx_price.dart:92:37: Error: This requires the experimental 'dot-shorthands' language feature to be enabled.
+Try passing the '--enable-experiment=dot-shorthands' command line option.
+  return List<Map<String, String>>?>.from(results);
+                                    ^
+../../../tests/algorithms/x/Dart/web_programming/fetch_well_rx_price.dart:92:51: Error: Expected ':' before this.
+  return List<Map<String, String>>?>.from(results);
+                                                  ^
+../../../tests/algorithms/x/Dart/web_programming/fetch_well_rx_price.dart:92:51: Error: Expected an identifier, but got ';'.
+Try inserting an identifier before ';'.
+  return List<Map<String, String>>?>.from(results);
+                                                  ^
+../../../tests/algorithms/x/Dart/web_programming/fetch_well_rx_price.dart:57:16: Error: The operator '<' isn't defined for the class 'Type'.
+ - 'Type' is from 'dart:core'.
+Try correcting the operator to an existing operator, or defining a '<' operator.
+    return List<Map<String, String>>?>.from(null);
+               ^
+../../../tests/algorithms/x/Dart/web_programming/fetch_well_rx_price.dart:57:35: Error: The operator '>>' isn't defined for the class 'Type'.
+ - 'Type' is from 'dart:core'.
+Try correcting the operator to an existing operator, or defining a '>>' operator.
+    return List<Map<String, String>>?>.from(null);
+                                  ^^
+../../../tests/algorithms/x/Dart/web_programming/fetch_well_rx_price.dart:92:14: Error: The operator '<' isn't defined for the class 'Type'.
+ - 'Type' is from 'dart:core'.
+Try correcting the operator to an existing operator, or defining a '<' operator.
+  return List<Map<String, String>>?>.from(results);
+             ^
+../../../tests/algorithms/x/Dart/web_programming/fetch_well_rx_price.dart:92:33: Error: The operator '>>' isn't defined for the class 'Type'.
+ - 'Type' is from 'dart:core'.
+Try correcting the operator to an existing operator, or defining a '>>' operator.
+  return List<Map<String, String>>?>.from(results);
+                                ^^
+../../../tests/algorithms/x/Dart/web_programming/fetch_well_rx_price.dart:95:49: Error: A value of type 'List<Map<String, String>>?' can't be assigned to a variable of type 'List<Map<String, String>>' because 'List<Map<String, String>>?' is nullable and 'List<Map<String, String>>' isn't.
+ - 'List' is from 'dart:core'.
+ - 'Map' is from 'dart:core'.
+List<Map<String, String>> pharmacy_price_list = fetch_pharmacy_and_price_list("aspirin", "30303");
+                                                ^

@@ -1,0 +1,7 @@
+run: exit status 254
+../../../tests/algorithms/x/Dart/strings/is_valid_email_address.dart:110:7: Error: 'i' is already declared in this scope.
+  int i = 0;
+      ^
+../../../tests/algorithms/x/Dart/strings/is_valid_email_address.dart:97:7: Context: Previous declaration of 'i'.
+  int i = 0;
+      ^
