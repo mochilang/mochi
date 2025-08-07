@@ -1251,13 +1251,18 @@ func (c *CastExpr) emit(w io.Writer) {
 				return
 			}
 			if _, ok := c.Expr.(*NameExpr); ok {
-				// Use Int(...) constructor for simple variable casts to
-				// avoid runtime crashes when the underlying value is
-				// a Double. The forced cast "as! Int" traps with an
-				// illegal instruction if the value isn't already an Int.
+				// When casting a simple variable to Int, prefer the
+				// generic _int helper which handles strings, numbers
+				// and optionals without producing an optional result.
+				// If the cast explicitly originates from a string
+				// literal (e.g. via FromString), force unwrap the
+				// standard Int initializer instead.
 				fmt.Fprint(w, "Int(")
 				c.Expr.emit(w)
 				fmt.Fprint(w, ")")
+				if c.FromString {
+					fmt.Fprint(w, "!")
+				}
 				return
 			}
 			if force {
@@ -1305,6 +1310,14 @@ func (c *CastExpr) emit(w io.Writer) {
 		if ce, ok := c.Expr.(*CallExpr); ok && t == "String" && ce.Func == "str" {
 			c.Expr.emit(w)
 			return
+		}
+		if t == "Bool" && force {
+			if _, ok := c.Expr.(*IndexExpr); ok {
+				fmt.Fprint(w, "(")
+				c.Expr.emit(w)
+				fmt.Fprint(w, " as? Bool ?? false)")
+				return
+			}
 		}
 		if t == "Double" {
 			fmt.Fprint(w, "Double(")
