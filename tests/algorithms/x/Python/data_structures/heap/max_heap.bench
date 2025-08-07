@@ -1,0 +1,14 @@
+{
+  "duration_us": 10,
+  "memory_bytes": 13651968,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/heap/max_heap.py", line 97, in <module>
+    insert(6)
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/heap/max_heap.py", line 62, in insert
+    swap_up(size)
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/heap/max_heap.py", line 51, in swap_up
+    temp = heap[i]
+           ^^^^
+UnboundLocalError: cannot access local variable 'heap' where it is not associated with a value

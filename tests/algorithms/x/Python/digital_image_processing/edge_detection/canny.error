@@ -1,0 +1,20 @@
+run: exit status 1
+{
+  "duration_us": 161,
+  "memory_bytes": 15044608,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/digital_image_processing/edge_detection/canny.py", line 213, in <module>
+    edges = canny(image, 20.0, 40.0, 128.0, 255.0)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/digital_image_processing/edge_detection/canny.py", line 193, in canny
+    sob = sobel_filter(blurred)
+          ^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/digital_image_processing/edge_detection/canny.py", line 131, in sobel_filter
+    grad[i][j] = sqrtApprox(gxx * gxx + gyy * gyy)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/digital_image_processing/edge_detection/canny.py", line 53, in sqrtApprox
+    guess = (guess + x // guess) / 2.0
+                     ~~^^~~~~~~
+ZeroDivisionError: float floor division by zero

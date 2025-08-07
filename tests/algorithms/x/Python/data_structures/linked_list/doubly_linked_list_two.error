@@ -1,0 +1,29 @@
+run: exit status 1
+-1
+-1
+True
+10
+10
+10
+20
+1000
+10
+20
+2000
+False
+1000
+10
+20
+2000
+{
+  "duration_us": 68,
+  "memory_bytes": 15089664,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/linked_list/doubly_linked_list_two.py", line 262, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/linked_list/doubly_linked_list_two.py", line 231, in main
+    print(str(10 in ll))
+              ^^^^^^^^
+TypeError: argument of type 'LinkedList' is not iterable

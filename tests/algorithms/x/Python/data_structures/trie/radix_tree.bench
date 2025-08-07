@@ -1,0 +1,18 @@
+{
+  "duration_us": 63,
+  "memory_bytes": 15052800,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/radix_tree.py", line 261, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/radix_tree.py", line 253, in main
+    insert_many(tree, words)
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/radix_tree.py", line 87, in insert_many
+    insert(tree, 0, w)
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/radix_tree.py", line 122, in insert
+    insert(tree, new_idx, res.rem_word)
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/radix_tree.py", line 90, in insert
+    node = nodes[idx]
+           ~~~~~^^^^^
+IndexError: list index out of range

@@ -1,0 +1,18 @@
+run: exit status 1
+{
+  "duration_us": 1550,
+  "memory_bytes": 14725120,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/trie.py", line 171, in <module>
+    print_results("Testing trie functionality", test_trie())
+                                                ^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/trie.py", line 146, in test_trie
+    insert_many(trie, words)
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/trie.py", line 94, in insert_many
+    insert(trie, w)
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/trie.py", line 74, in insert
+    children = nodes[curr].get("children")
+               ^^^^^^^^^^^^^^^
+AttributeError: 'Node' object has no attribute 'get'

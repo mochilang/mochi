@@ -1,0 +1,17 @@
+run: exit status 1
+NDVI=0.0
+{
+  "duration_us": 31,
+  "memory_bytes": 13422592,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/digital_image_processing/index_calculation.py", line 82, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/digital_image_processing/index_calculation.py", line 76, in main
+    print("CCCI=" + str(ccci(red, redEdge, nir)))
+                        ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/digital_image_processing/index_calculation.py", line 41, in ccci
+    return ndre(redEdge, nir) / ndvi(red, nir)
+           ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~
+ZeroDivisionError: float division by zero
