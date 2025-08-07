@@ -1,0 +1,8 @@
+run: exit status 1
+lua: /workspace/mochi/tests/algorithms/x/Lua/maths/fibonacci.lua:119: attempt to perform arithmetic on a nil value
+stack traceback:
+	/workspace/mochi/tests/algorithms/x/Lua/maths/fibonacci.lua:119: in function 'fib_recursive_cached_term'
+	/workspace/mochi/tests/algorithms/x/Lua/maths/fibonacci.lua:134: in function 'fib_recursive_cached'
+	/workspace/mochi/tests/algorithms/x/Lua/maths/fibonacci.lua:223: in function 'run_tests'
+	/workspace/mochi/tests/algorithms/x/Lua/maths/fibonacci.lua:249: in main chunk
+	[C]: in ?

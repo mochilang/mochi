@@ -1,0 +1,7 @@
+f(x) = x^3
+The area between the curve, x = -10, x = 10 and the x axis is:
+with 10 steps: 325.0
+with 100 steps: 312.625
+with 1000 steps: 312.50124999999
+with 10000 steps: 312.50001249995
+with 100000 steps: 312.5000001256

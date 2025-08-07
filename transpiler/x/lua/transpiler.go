@@ -174,6 +174,13 @@ local function _environ()
 end
 `
 
+const helperPanic = `
+local function _panic(msg)
+  io.stderr:write(tostring(msg))
+  os.exit(1)
+end
+`
+
 const helperIndexOf = `
 local function _indexOf(s, ch)
   if type(s) == 'string' then
@@ -1336,16 +1343,20 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, " + 1)")
 		io.WriteString(w, ")")
 	case "list", "list_elem":
-		// Heuristic: if the index expression is not numeric, assume
-		// this is a map access and emit direct indexing without the
-		// list offset. This handles expressions like map[key] where the
-		// map was misclassified as a list.
+		// If the target is known to be a list, always apply the
+		// +1 offset for Lua's 1-based indexing. Only fall back to a
+		// plain map lookup when the index is non-numeric **and** we
+		// cannot determine that the target is a list. This prevents
+		// expressions such as xs[j] from being treated as map access
+		// when the type information for j isn't available.
 		if !isIntExpr(ix.Index) && !isFloatExpr(ix.Index) {
-			ix.Target.emit(w)
-			io.WriteString(w, "[")
-			ix.Index.emit(w)
-			io.WriteString(w, "]")
-			return
+			if _, ok := exprType(ix.Target).(types.ListType); !ok {
+				ix.Target.emit(w)
+				io.WriteString(w, "[")
+				ix.Index.emit(w)
+				io.WriteString(w, "]")
+				return
+			}
 		}
 		ix.Target.emit(w)
 		io.WriteString(w, "[")
@@ -2669,6 +2680,8 @@ func collectHelpers(p *Program) map[string]bool {
 				used["fetch"] = true
 			case "_environ":
 				used["environ"] = true
+			case "_panic":
+				used["panic"] = true
 			}
 			for _, a := range ex.Args {
 				walkExpr(a)
@@ -2864,6 +2877,9 @@ func Emit(p *Program) []byte {
 	}
 	if used["environ"] {
 		b.WriteString(helperEnviron)
+	}
+	if used["panic"] {
+		b.WriteString(helperPanic)
 	}
 	if used["exists"] {
 		b.WriteString(helperExists)
@@ -3316,6 +3332,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		switch p.Call.Func {
 		case "append", "avg", "sum", "contains", "len", "count", "now", "sha256", "indexOf", "parseIntStr", "repeat", "_environ", "int", "float", "str":
 			// handled during emission
+			return ce, nil
+		case "panic":
+			if len(p.Call.Args) != 1 {
+				return nil, fmt.Errorf("panic expects 1 arg")
+			}
+			ce.Func = "_panic"
 			return ce, nil
 		case "substr":
 			ce.Func = "substring"
