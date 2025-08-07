@@ -1,0 +1,11 @@
+exit status 1
+panic: peek from empty stack
+
+goroutine 1 [running]:
+main.peek(...)
+	/workspace/mochi/tests/algorithms/transpiler/Go/data_structures/stacks/stack_using_two_queues.go:71
+main.main.func1()
+	/workspace/mochi/tests/algorithms/transpiler/Go/data_structures/stacks/stack_using_two_queues.go:92 +0xe98
+main.main()
+	/workspace/mochi/tests/algorithms/transpiler/Go/data_structures/stacks/stack_using_two_queues.go:104 +0xf
+exit status 2

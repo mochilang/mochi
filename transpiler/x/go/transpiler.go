@@ -2095,9 +2095,9 @@ func (o *OuterJoinExpr) emit(w io.Writer) {
 type AtoiExpr struct{ Expr Expr }
 
 func (a *AtoiExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "func() int { n, _ := strconv.Atoi(")
+	fmt.Fprint(w, "func() int { n, _ := strconv.Atoi(fmt.Sprint(")
 	a.Expr.emit(w)
-	fmt.Fprint(w, "); return n }()")
+	fmt.Fprint(w, ")); return n }()")
 }
 
 // AssertExpr performs a type assertion on the wrapped expression.
@@ -2358,9 +2358,15 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 				}
 			}
 			initTypes[vd.Name] = vd.Type
-			if ll, ok2 := vd.Value.(*ListLit); ok2 && ll.ElemType == "any" && len(ll.Elems) == 0 {
+			if ll, ok2 := vd.Value.(*ListLit); ok2 && (ll.ElemType == "" || ll.ElemType == "any") && len(ll.Elems) == 0 {
 				if strings.HasPrefix(vd.Type, "[]") && vd.Type != "[]any" {
 					ll.ElemType = strings.TrimPrefix(vd.Type, "[]")
+				}
+			} else if ae, ok2 := vd.Value.(*AssertExpr); ok2 {
+				if ll, ok3 := ae.Expr.(*ListLit); ok3 && (ll.ElemType == "" || ll.ElemType == "any") && len(ll.Elems) == 0 {
+					if strings.HasPrefix(vd.Type, "[]") && vd.Type != "[]any" {
+						ll.ElemType = strings.TrimPrefix(vd.Type, "[]")
+					}
 				}
 			}
 			if vd.Value != nil {
@@ -2389,9 +2395,15 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 			if typ, ok2 := initTypes[as.Name]; ok2 {
 				t := toTypeFromGoType(typ)
 				applyType(as.Value, t)
-				if ll, ok3 := as.Value.(*ListLit); ok3 && ll.ElemType == "any" && len(ll.Elems) == 0 {
+				if ll, ok3 := as.Value.(*ListLit); ok3 && (ll.ElemType == "" || ll.ElemType == "any") && len(ll.Elems) == 0 {
 					if strings.HasPrefix(typ, "[]") && typ != "[]any" {
 						ll.ElemType = strings.TrimPrefix(typ, "[]")
+					}
+				} else if ae, ok3 := as.Value.(*AssertExpr); ok3 {
+					if ll, ok4 := ae.Expr.(*ListLit); ok4 && (ll.ElemType == "" || ll.ElemType == "any") && len(ll.Elems) == 0 {
+						if strings.HasPrefix(typ, "[]") && typ != "[]any" {
+							ll.ElemType = strings.TrimPrefix(typ, "[]")
+						}
 					}
 				}
 			}
@@ -2828,6 +2840,14 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 						if _, ok3 := lt.Elem.(types.AnyType); ok3 {
 							valType = types.ListType{Elem: toTypeFromGoType(ll.ElemType)}
 						}
+					}
+				} else if strings.HasPrefix(typ, "[]") && typ != "[]any" {
+					ll.ElemType = strings.TrimPrefix(typ, "[]")
+				}
+			} else if ae, ok := e.(*AssertExpr); ok {
+				if ll, ok2 := ae.Expr.(*ListLit); ok2 && (ll.ElemType == "" || ll.ElemType == "any") {
+					if strings.HasPrefix(typ, "[]") && typ != "[]any" {
+						ll.ElemType = strings.TrimPrefix(typ, "[]")
 					}
 				}
 			}
@@ -5494,7 +5514,8 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 						usesBigInt = true
 						expr = &BigIntToIntExpr{Value: expr}
 					case types.AnyType:
-						expr = &AssertExpr{Expr: expr, Type: "int"}
+						usesStrconv = true
+						expr = &AtoiExpr{Expr: expr}
 					default:
 						if _, ok := expr.(*BigBinaryExpr); ok {
 							usesBigInt = true
@@ -5789,6 +5810,9 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			bexpr := &BinaryExpr{Left: &CallExpr{Func: "len", Args: []Expr{args[0]}}, Op: ">", Right: &IntLit{Value: 0}}
 			return &ExistsExpr{Expr: bexpr}, nil
 		case "contains":
+			if _, ok := env.GetFunc("contains"); ok {
+				return &CallExpr{Func: "contains", Args: args}, nil
+			}
 			at := types.TypeOfExpr(p.Call.Args[0], env)
 			var kind, et string
 			switch mt := at.(type) {
