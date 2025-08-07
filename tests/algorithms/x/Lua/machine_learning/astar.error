@@ -1,0 +1,7 @@
+run: exit status 1
+path from (0, 0) to (4, 4)
+lua: .../mochi/tests/algorithms/x/Lua/machine_learning/astar.lua:255: attempt to index a nil value (field '?')
+stack traceback:
+	.../mochi/tests/algorithms/x/Lua/machine_learning/astar.lua:255: in function 'mark_path'
+	.../mochi/tests/algorithms/x/Lua/machine_learning/astar.lua:358: in main chunk
+	[C]: in ?

@@ -1,0 +1,8 @@
+run: exit status 1
+[3, 2, 4, 1, 0, 5, 7, 6, 8]
+lua: ...chi/tests/algorithms/x/Lua/graphs/g_topological_sort.lua:189: attempt to concatenate a nil value (field '?')
+stack traceback:
+	...chi/tests/algorithms/x/Lua/graphs/g_topological_sort.lua:189: in function 'print_stack'
+	...chi/tests/algorithms/x/Lua/graphs/g_topological_sort.lua:331: in function 'main'
+	...chi/tests/algorithms/x/Lua/graphs/g_topological_sort.lua:333: in main chunk
+	[C]: in ?

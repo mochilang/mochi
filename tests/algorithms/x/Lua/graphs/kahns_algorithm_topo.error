@@ -1,0 +1,7 @@
+run: exit status 1
+lua: ...i/tests/algorithms/x/Lua/graphs/kahns_algorithm_topo.lua:91: attempt to perform arithmetic on a nil value (local 'v')
+stack traceback:
+	...i/tests/algorithms/x/Lua/graphs/kahns_algorithm_topo.lua:91: in function 'topological_sort'
+	...i/tests/algorithms/x/Lua/graphs/kahns_algorithm_topo.lua:249: in function 'main'
+	...i/tests/algorithms/x/Lua/graphs/kahns_algorithm_topo.lua:297: in main chunk
+	[C]: in ?

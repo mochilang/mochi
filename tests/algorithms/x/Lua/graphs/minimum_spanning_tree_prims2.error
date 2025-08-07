@@ -1,0 +1,6 @@
+run: exit status 1
+lua: ...algorithms/x/Lua/graphs/minimum_spanning_tree_prims2.lua:124: attempt to perform arithmetic on a table value (local 'w')
+stack traceback:
+	...algorithms/x/Lua/graphs/minimum_spanning_tree_prims2.lua:124: in function 'prims_algo'
+	...algorithms/x/Lua/graphs/minimum_spanning_tree_prims2.lua:270: in main chunk
+	[C]: in ?

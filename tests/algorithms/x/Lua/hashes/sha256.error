@@ -1,0 +1,7 @@
+run: exit status 1
+lua: /workspace/mochi/tests/algorithms/x/Lua/hashes/sha256.lua:34: bad argument #1 to 'char' (number expected, got nil)
+stack traceback:
+	[C]: in function 'string.char'
+	/workspace/mochi/tests/algorithms/x/Lua/hashes/sha256.lua:34: in local '_sha256'
+	/workspace/mochi/tests/algorithms/x/Lua/hashes/sha256.lua:83: in main chunk
+	[C]: in ?

@@ -1,0 +1,25 @@
+run: exit status 1
+lua: ...lgorithms/x/Lua/graphs/strongly_connected_components.lua:57: stack overflow
+stack traceback:
+	...lgorithms/x/Lua/graphs/strongly_connected_components.lua:57: in function 'find_component'
+	...lgorithms/x/Lua/graphs/strongly_connected_components.lua:65: in function 'find_component'
+	...lgorithms/x/Lua/graphs/strongly_connected_components.lua:65: in function 'find_component'
+	...lgorithms/x/Lua/graphs/strongly_connected_components.lua:65: in function 'find_component'
+	...lgorithms/x/Lua/graphs/strongly_connected_components.lua:65: in function 'find_component'
+	...lgorithms/x/Lua/graphs/strongly_connected_components.lua:65: in function 'find_component'
+	...lgorithms/x/Lua/graphs/strongly_connected_components.lua:65: in function 'find_component'
+	...lgorithms/x/Lua/graphs/strongly_connected_components.lua:65: in function 'find_component'
+	...lgorithms/x/Lua/graphs/strongly_connected_components.lua:65: in function 'find_component'
+	...lgorithms/x/Lua/graphs/strongly_connected_components.lua:65: in function 'find_component'
+	...	(skipping 76902 levels)
+	...lgorithms/x/Lua/graphs/strongly_connected_components.lua:65: in function 'find_component'
+	...lgorithms/x/Lua/graphs/strongly_connected_components.lua:65: in function 'find_component'
+	...lgorithms/x/Lua/graphs/strongly_connected_components.lua:65: in function 'find_component'
+	...lgorithms/x/Lua/graphs/strongly_connected_components.lua:65: in function 'find_component'
+	...lgorithms/x/Lua/graphs/strongly_connected_components.lua:65: in function 'find_component'
+	...lgorithms/x/Lua/graphs/strongly_connected_components.lua:65: in function 'find_component'
+	...lgorithms/x/Lua/graphs/strongly_connected_components.lua:65: in function 'find_component'
+	...lgorithms/x/Lua/graphs/strongly_connected_components.lua:138: in function 'strongly_connected_components'
+	...lgorithms/x/Lua/graphs/strongly_connected_components.lua:196: in function 'main'
+	...lgorithms/x/Lua/graphs/strongly_connected_components.lua:507: in main chunk
+	[C]: in ?

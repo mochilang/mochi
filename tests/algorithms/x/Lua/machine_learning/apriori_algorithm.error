@@ -1,0 +1,8 @@
+run: exit status 1
+lua: attempt to index a nil value
+stack traceback:
+	[C]: in for iterator 'for iterator'
+	.../algorithms/x/Lua/machine_learning/apriori_algorithm.lua:45: in function 'is_subset'
+	.../algorithms/x/Lua/machine_learning/apriori_algorithm.lua:401: in function 'apriori'
+	.../algorithms/x/Lua/machine_learning/apriori_algorithm.lua:468: in main chunk
+	[C]: in ?
