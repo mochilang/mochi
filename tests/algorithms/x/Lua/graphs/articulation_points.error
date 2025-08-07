@@ -1,0 +1,26 @@
+run: exit status 1
+0
+lua: ...hi/tests/algorithms/x/Lua/graphs/articulation_points.lua:36: stack overflow
+stack traceback:
+	...hi/tests/algorithms/x/Lua/graphs/articulation_points.lua:36: in function 'dfs_skip'
+	...hi/tests/algorithms/x/Lua/graphs/articulation_points.lua:41: in function 'dfs_skip'
+	...hi/tests/algorithms/x/Lua/graphs/articulation_points.lua:41: in function 'dfs_skip'
+	...hi/tests/algorithms/x/Lua/graphs/articulation_points.lua:41: in function 'dfs_skip'
+	...hi/tests/algorithms/x/Lua/graphs/articulation_points.lua:41: in function 'dfs_skip'
+	...hi/tests/algorithms/x/Lua/graphs/articulation_points.lua:41: in function 'dfs_skip'
+	...hi/tests/algorithms/x/Lua/graphs/articulation_points.lua:41: in function 'dfs_skip'
+	...hi/tests/algorithms/x/Lua/graphs/articulation_points.lua:41: in function 'dfs_skip'
+	...hi/tests/algorithms/x/Lua/graphs/articulation_points.lua:41: in function 'dfs_skip'
+	...hi/tests/algorithms/x/Lua/graphs/articulation_points.lua:41: in function 'dfs_skip'
+	...	(skipping 83312 levels)
+	...hi/tests/algorithms/x/Lua/graphs/articulation_points.lua:41: in function 'dfs_skip'
+	...hi/tests/algorithms/x/Lua/graphs/articulation_points.lua:41: in function 'dfs_skip'
+	...hi/tests/algorithms/x/Lua/graphs/articulation_points.lua:41: in function 'dfs_skip'
+	...hi/tests/algorithms/x/Lua/graphs/articulation_points.lua:41: in function 'dfs_skip'
+	...hi/tests/algorithms/x/Lua/graphs/articulation_points.lua:41: in function 'dfs_skip'
+	...hi/tests/algorithms/x/Lua/graphs/articulation_points.lua:41: in function 'dfs_skip'
+	...hi/tests/algorithms/x/Lua/graphs/articulation_points.lua:41: in function 'dfs_skip'
+	...hi/tests/algorithms/x/Lua/graphs/articulation_points.lua:82: in function 'articulation_points'
+	...hi/tests/algorithms/x/Lua/graphs/articulation_points.lua:97: in function 'main'
+	...hi/tests/algorithms/x/Lua/graphs/articulation_points.lua:99: in main chunk
+	[C]: in ?

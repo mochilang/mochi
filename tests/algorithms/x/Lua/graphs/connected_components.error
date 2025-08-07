@@ -1,0 +1,25 @@
+run: exit status 1
+lua: ...i/tests/algorithms/x/Lua/graphs/connected_components.lua:36: stack overflow
+stack traceback:
+	...i/tests/algorithms/x/Lua/graphs/connected_components.lua:36: in function 'dfs'
+	...i/tests/algorithms/x/Lua/graphs/connected_components.lua:44: in function 'dfs'
+	...i/tests/algorithms/x/Lua/graphs/connected_components.lua:44: in function 'dfs'
+	...i/tests/algorithms/x/Lua/graphs/connected_components.lua:44: in function 'dfs'
+	...i/tests/algorithms/x/Lua/graphs/connected_components.lua:44: in function 'dfs'
+	...i/tests/algorithms/x/Lua/graphs/connected_components.lua:44: in function 'dfs'
+	...i/tests/algorithms/x/Lua/graphs/connected_components.lua:44: in function 'dfs'
+	...i/tests/algorithms/x/Lua/graphs/connected_components.lua:44: in function 'dfs'
+	...i/tests/algorithms/x/Lua/graphs/connected_components.lua:44: in function 'dfs'
+	...i/tests/algorithms/x/Lua/graphs/connected_components.lua:44: in function 'dfs'
+	...	(skipping 76901 levels)
+	...i/tests/algorithms/x/Lua/graphs/connected_components.lua:44: in function 'dfs'
+	...i/tests/algorithms/x/Lua/graphs/connected_components.lua:44: in function 'dfs'
+	...i/tests/algorithms/x/Lua/graphs/connected_components.lua:44: in function 'dfs'
+	...i/tests/algorithms/x/Lua/graphs/connected_components.lua:44: in function 'dfs'
+	...i/tests/algorithms/x/Lua/graphs/connected_components.lua:44: in function 'dfs'
+	...i/tests/algorithms/x/Lua/graphs/connected_components.lua:44: in function 'dfs'
+	...i/tests/algorithms/x/Lua/graphs/connected_components.lua:44: in function 'dfs'
+	...i/tests/algorithms/x/Lua/graphs/connected_components.lua:44: in function 'dfs'
+	...i/tests/algorithms/x/Lua/graphs/connected_components.lua:84: in function 'connected_components'
+	...i/tests/algorithms/x/Lua/graphs/connected_components.lua:140: in main chunk
+	[C]: in ?

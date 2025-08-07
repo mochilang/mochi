@@ -1,0 +1,6 @@
+run: exit status 1
+lua: .../algorithms/x/Lua/dynamic_programming/smith_waterman.lua:109: attempt to index a nil value (field '?')
+stack traceback:
+	.../algorithms/x/Lua/dynamic_programming/smith_waterman.lua:109: in function 'smith_waterman'
+	.../algorithms/x/Lua/dynamic_programming/smith_waterman.lua:206: in main chunk
+	[C]: in ?

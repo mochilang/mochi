@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-07 00:14 GMT+7
+Last updated: 2025-08-07 08:26 GMT+7
 
-## Algorithms Golden Test Checklist (251/1077)
+## Algorithms Golden Test Checklist (382/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 216µs | 912 B |
@@ -281,149 +281,149 @@ Last updated: 2025-08-07 00:14 GMT+7
 | 272 | digital_image_processing/filters/bilateral_filter | ✓ | 231µs | 1.6 KB |
 | 273 | digital_image_processing/filters/convolve |   |  |  |
 | 274 | digital_image_processing/filters/gabor_filter | ✓ | 114µs | 1.5 KB |
-| 275 | digital_image_processing/filters/gaussian_filter |   |  |  |
-| 276 | digital_image_processing/filters/laplacian_filter |   |  |  |
-| 277 | digital_image_processing/filters/local_binary_pattern |   |  |  |
-| 278 | digital_image_processing/filters/median_filter |   |  |  |
-| 279 | digital_image_processing/filters/sobel_filter |   |  |  |
-| 280 | digital_image_processing/histogram_equalization/histogram_stretch |   |  |  |
-| 281 | digital_image_processing/index_calculation |   |  |  |
-| 282 | digital_image_processing/morphological_operations/dilation_operation |   |  |  |
-| 283 | digital_image_processing/morphological_operations/erosion_operation |   |  |  |
-| 284 | digital_image_processing/resize/resize |   |  |  |
-| 285 | digital_image_processing/rotation/rotation |   |  |  |
-| 286 | digital_image_processing/sepia |   |  |  |
-| 287 | digital_image_processing/test_digital_image_processing |   |  |  |
-| 288 | divide_and_conquer/closest_pair_of_points |   |  |  |
-| 289 | divide_and_conquer/convex_hull |   |  |  |
-| 290 | divide_and_conquer/heaps_algorithm |   |  |  |
-| 291 | divide_and_conquer/heaps_algorithm_iterative |   |  |  |
-| 292 | divide_and_conquer/inversions |   |  |  |
-| 293 | divide_and_conquer/kth_order_statistic |   |  |  |
-| 294 | divide_and_conquer/max_difference_pair |   |  |  |
-| 295 | divide_and_conquer/max_subarray |   |  |  |
-| 296 | divide_and_conquer/mergesort |   |  |  |
-| 297 | divide_and_conquer/peak |   |  |  |
-| 298 | divide_and_conquer/power |   |  |  |
-| 299 | divide_and_conquer/strassen_matrix_multiplication |   |  |  |
-| 300 | docs/conf |   |  |  |
-| 301 | dynamic_programming/abbreviation |   |  |  |
-| 302 | dynamic_programming/all_construct |   |  |  |
-| 303 | dynamic_programming/bitmask |   |  |  |
-| 304 | dynamic_programming/catalan_numbers |   |  |  |
-| 305 | dynamic_programming/climbing_stairs |   |  |  |
-| 306 | dynamic_programming/combination_sum_iv |   |  |  |
-| 307 | dynamic_programming/edit_distance |   |  |  |
-| 308 | dynamic_programming/factorial |   |  |  |
-| 309 | dynamic_programming/fast_fibonacci |   |  |  |
-| 310 | dynamic_programming/fibonacci |   |  |  |
-| 311 | dynamic_programming/fizz_buzz |   |  |  |
-| 312 | dynamic_programming/floyd_warshall |   |  |  |
-| 313 | dynamic_programming/integer_partition |   |  |  |
-| 314 | dynamic_programming/iterating_through_submasks |   |  |  |
-| 315 | dynamic_programming/k_means_clustering_tensorflow |   |  |  |
-| 316 | dynamic_programming/knapsack |   |  |  |
-| 317 | dynamic_programming/largest_divisible_subset |   |  |  |
-| 318 | dynamic_programming/longest_common_subsequence |   |  |  |
-| 319 | dynamic_programming/longest_common_substring |   |  |  |
-| 320 | dynamic_programming/longest_increasing_subsequence |   |  |  |
-| 321 | dynamic_programming/longest_increasing_subsequence_iterative |   |  |  |
-| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn |   |  |  |
-| 323 | dynamic_programming/longest_palindromic_subsequence |   |  |  |
-| 324 | dynamic_programming/matrix_chain_multiplication |   |  |  |
-| 325 | dynamic_programming/matrix_chain_order |   |  |  |
-| 326 | dynamic_programming/max_non_adjacent_sum |   |  |  |
-| 327 | dynamic_programming/max_product_subarray |   |  |  |
-| 328 | dynamic_programming/max_subarray_sum |   |  |  |
-| 329 | dynamic_programming/min_distance_up_bottom |   |  |  |
-| 330 | dynamic_programming/minimum_coin_change |   |  |  |
-| 331 | dynamic_programming/minimum_cost_path |   |  |  |
-| 332 | dynamic_programming/minimum_partition |   |  |  |
-| 333 | dynamic_programming/minimum_size_subarray_sum |   |  |  |
-| 334 | dynamic_programming/minimum_squares_to_represent_a_number |   |  |  |
-| 335 | dynamic_programming/minimum_steps_to_one |   |  |  |
-| 336 | dynamic_programming/minimum_tickets_cost |   |  |  |
-| 337 | dynamic_programming/optimal_binary_search_tree |   |  |  |
-| 338 | dynamic_programming/palindrome_partitioning |   |  |  |
-| 339 | dynamic_programming/range_sum_query |   |  |  |
-| 340 | dynamic_programming/regex_match |   |  |  |
-| 341 | dynamic_programming/rod_cutting |   |  |  |
-| 342 | dynamic_programming/smith_waterman |   |  |  |
-| 343 | dynamic_programming/subset_generation |   |  |  |
-| 344 | dynamic_programming/sum_of_subset |   |  |  |
-| 345 | dynamic_programming/trapped_water |   |  |  |
-| 346 | dynamic_programming/tribonacci |   |  |  |
-| 347 | dynamic_programming/viterbi |   |  |  |
-| 348 | dynamic_programming/wildcard_matching |   |  |  |
-| 349 | dynamic_programming/word_break |   |  |  |
-| 350 | electronics/apparent_power |   |  |  |
-| 351 | electronics/builtin_voltage |   |  |  |
-| 352 | electronics/capacitor_equivalence |   |  |  |
-| 353 | electronics/carrier_concentration |   |  |  |
-| 354 | electronics/charging_capacitor |   |  |  |
-| 355 | electronics/charging_inductor |   |  |  |
-| 356 | electronics/circular_convolution |   |  |  |
-| 357 | electronics/coulombs_law |   |  |  |
-| 358 | electronics/electric_conductivity |   |  |  |
-| 359 | electronics/electric_power |   |  |  |
-| 360 | electronics/electrical_impedance |   |  |  |
-| 361 | electronics/ic_555_timer |   |  |  |
-| 362 | electronics/ind_reactance |   |  |  |
-| 363 | electronics/ohms_law |   |  |  |
-| 364 | electronics/real_and_reactive_power |   |  |  |
-| 365 | electronics/resistor_color_code |   |  |  |
-| 366 | electronics/resistor_equivalence |   |  |  |
-| 367 | electronics/resonant_frequency |   |  |  |
-| 368 | electronics/wheatstone_bridge |   |  |  |
-| 369 | file_transfer/receive_file |   |  |  |
-| 370 | file_transfer/send_file |   |  |  |
-| 371 | file_transfer/tests/test_send_file |   |  |  |
-| 372 | financial/equated_monthly_installments |   |  |  |
-| 373 | financial/exponential_moving_average |   |  |  |
-| 374 | financial/interest |   |  |  |
-| 375 | financial/present_value |   |  |  |
-| 376 | financial/price_plus_tax |   |  |  |
-| 377 | financial/simple_moving_average |   |  |  |
-| 378 | financial/straight_line_depreciation |   |  |  |
-| 379 | financial/time_and_half_pay |   |  |  |
-| 380 | fractals/julia_sets |   |  |  |
-| 381 | fractals/koch_snowflake |   |  |  |
-| 382 | fractals/mandelbrot |   |  |  |
-| 383 | fractals/sierpinski_triangle |   |  |  |
-| 384 | fractals/vicsek |   |  |  |
-| 385 | fuzzy_logic/fuzzy_operations |   |  |  |
-| 386 | genetic_algorithm/basic_string |   |  |  |
-| 387 | geodesy/haversine_distance |   |  |  |
-| 388 | geodesy/lamberts_ellipsoidal_distance |   |  |  |
-| 389 | geometry/geometry |   |  |  |
-| 390 | graphics/bezier_curve |   |  |  |
-| 391 | graphics/butterfly_pattern |   |  |  |
-| 392 | graphics/digital_differential_analyzer_line |   |  |  |
-| 393 | graphics/vector3_for_2d_rendering |   |  |  |
-| 394 | graphs/a_star |   |  |  |
-| 395 | graphs/ant_colony_optimization_algorithms |   |  |  |
-| 396 | graphs/articulation_points |   |  |  |
-| 397 | graphs/basic_graphs |   |  |  |
-| 398 | graphs/bellman_ford |   |  |  |
-| 399 | graphs/bi_directional_dijkstra |   |  |  |
-| 400 | graphs/bidirectional_a_star |   |  |  |
-| 401 | graphs/bidirectional_breadth_first_search |   |  |  |
-| 402 | graphs/bidirectional_search |   |  |  |
-| 403 | graphs/boruvka |   |  |  |
-| 404 | graphs/breadth_first_search |   |  |  |
-| 405 | graphs/breadth_first_search_2 |   |  |  |
-| 406 | graphs/breadth_first_search_shortest_path |   |  |  |
-| 407 | graphs/breadth_first_search_shortest_path_2 |   |  |  |
-| 408 | graphs/breadth_first_search_zero_one_shortest_path |   |  |  |
-| 409 | graphs/check_bipatrite |   |  |  |
-| 410 | graphs/check_cycle |   |  |  |
-| 411 | graphs/connected_components |   |  |  |
-| 412 | graphs/deep_clone_graph |   |  |  |
-| 413 | graphs/depth_first_search |   |  |  |
-| 414 | graphs/depth_first_search_2 |   |  |  |
-| 415 | graphs/dijkstra |   |  |  |
-| 416 | graphs/dijkstra_2 |   |  |  |
-| 417 | graphs/dijkstra_algorithm |   |  |  |
+| 275 | digital_image_processing/filters/gaussian_filter | ✓ | 255µs | 2.4 KB |
+| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 243µs | 2.8 KB |
+| 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 644µs | 1.7 KB |
+| 278 | digital_image_processing/filters/median_filter | ✓ | 406µs | 1016 B |
+| 279 | digital_image_processing/filters/sobel_filter | ✓ | 795µs | 1.5 KB |
+| 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 1.776ms | 5.1 KB |
+| 281 | digital_image_processing/index_calculation | ✓ | 299µs | 1.1 KB |
+| 282 | digital_image_processing/morphological_operations/dilation_operation | ✓ | 374µs | 1.0 KB |
+| 283 | digital_image_processing/morphological_operations/erosion_operation | ✓ | 347µs | 2.0 KB |
+| 284 | digital_image_processing/resize/resize | ✓ | 451µs | 1.1 KB |
+| 285 | digital_image_processing/rotation/rotation | ✓ | 219µs | 2.6 KB |
+| 286 | digital_image_processing/sepia | ✓ | 186µs | 1.6 KB |
+| 287 | digital_image_processing/test_digital_image_processing | ✓ | 1.037ms | 5.4 KB |
+| 288 | divide_and_conquer/closest_pair_of_points | error |  |  |
+| 289 | divide_and_conquer/convex_hull | ✓ | 3µs | 112 B |
+| 290 | divide_and_conquer/heaps_algorithm | ✓ | 219µs | 1.1 KB |
+| 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 309µs | 912 B |
+| 292 | divide_and_conquer/inversions | ✓ | 537µs | 1.2 KB |
+| 293 | divide_and_conquer/kth_order_statistic | ✓ | 394µs | 840 B |
+| 294 | divide_and_conquer/max_difference_pair | ✓ | 269µs | 1.1 KB |
+| 295 | divide_and_conquer/max_subarray | error |  |  |
+| 296 | divide_and_conquer/mergesort | ✓ | 591µs | 1.1 KB |
+| 297 | divide_and_conquer/peak | ✓ | 152µs | 912 B |
+| 298 | divide_and_conquer/power | ✓ | 293µs | 336 B |
+| 299 | divide_and_conquer/strassen_matrix_multiplication | ✓ | 18.719ms | 2.8 KB |
+| 300 | docs/conf | ✓ | 103µs | 853 B |
+| 301 | dynamic_programming/abbreviation | ✓ | 647µs | 1.2 KB |
+| 302 | dynamic_programming/all_construct | ✓ | 2.184ms | 872 B |
+| 303 | dynamic_programming/bitmask | ✓ | 310µs | 1.1 KB |
+| 304 | dynamic_programming/catalan_numbers | ✓ | 207µs | 848 B |
+| 305 | dynamic_programming/climbing_stairs | ✓ | 127µs | 40 B |
+| 306 | dynamic_programming/combination_sum_iv | ✓ | 420µs | 1.2 KB |
+| 307 | dynamic_programming/edit_distance | error |  |  |
+| 308 | dynamic_programming/factorial | ✓ | 260µs | 1.4 KB |
+| 309 | dynamic_programming/fast_fibonacci | ✓ | 266µs | 400 B |
+| 310 | dynamic_programming/fibonacci | ✓ | 257µs | 944 B |
+| 311 | dynamic_programming/fizz_buzz | ✓ | 145µs | 744 B |
+| 312 | dynamic_programming/floyd_warshall | ✓ | 379µs | 2.1 KB |
+| 313 | dynamic_programming/integer_partition | ✓ | 21.984ms | 2.0 KB |
+| 314 | dynamic_programming/iterating_through_submasks | ✓ | 389µs | 840 B |
+| 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 552µs | 1.0 KB |
+| 316 | dynamic_programming/knapsack | error |  |  |
+| 317 | dynamic_programming/largest_divisible_subset | ✓ | 219µs | 1016 B |
+| 318 | dynamic_programming/longest_common_subsequence | ✓ | 335µs | 1.0 KB |
+| 319 | dynamic_programming/longest_common_substring | ✓ | 795µs | 856 B |
+| 320 | dynamic_programming/longest_increasing_subsequence | ✓ | 1µs | 88 B |
+| 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 2.205ms | 888 B |
+| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | ✓ | 316µs | 944 B |
+| 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 627µs | 944 B |
+| 324 | dynamic_programming/matrix_chain_multiplication | ✓ | 17µs | 40 B |
+| 325 | dynamic_programming/matrix_chain_order | ✓ | 346µs | 1.1 KB |
+| 326 | dynamic_programming/max_non_adjacent_sum | ✓ | 202µs | 808 B |
+| 327 | dynamic_programming/max_product_subarray | ✓ | 150µs | 808 B |
+| 328 | dynamic_programming/max_subarray_sum | ✓ | 270µs | 864 B |
+| 329 | dynamic_programming/min_distance_up_bottom | ✓ | 1.36ms | 6.3 KB |
+| 330 | dynamic_programming/minimum_coin_change | ✓ | 513µs | 2.0 KB |
+| 331 | dynamic_programming/minimum_cost_path | ✓ | 255µs | 1.6 KB |
+| 332 | dynamic_programming/minimum_partition | ✓ | 4.221ms | 2.0 KB |
+| 333 | dynamic_programming/minimum_size_subarray_sum | ✓ | 191µs | 808 B |
+| 334 | dynamic_programming/minimum_squares_to_represent_a_number | ✓ | 345µs | 944 B |
+| 335 | dynamic_programming/minimum_steps_to_one | ✓ | 282µs | 944 B |
+| 336 | dynamic_programming/minimum_tickets_cost | ✓ | 913µs | 1016 B |
+| 337 | dynamic_programming/optimal_binary_search_tree | ✓ | 393µs | 2.5 KB |
+| 338 | dynamic_programming/palindrome_partitioning | ✓ | 566µs | 808 B |
+| 339 | dynamic_programming/range_sum_query | ✓ | 277µs | 1.9 KB |
+| 340 | dynamic_programming/regex_match | ✓ | 762µs | 1.1 KB |
+| 341 | dynamic_programming/rod_cutting | ✓ | 277µs | 1.1 KB |
+| 342 | dynamic_programming/smith_waterman | error |  |  |
+| 343 | dynamic_programming/subset_generation | ✓ | 417µs | 912 B |
+| 344 | dynamic_programming/sum_of_subset | ✓ | 410µs | 912 B |
+| 345 | dynamic_programming/trapped_water | ✓ | 294µs | 912 B |
+| 346 | dynamic_programming/tribonacci | ✓ | 212µs | 808 B |
+| 347 | dynamic_programming/viterbi | ✓ | 107µs | 3.0 KB |
+| 348 | dynamic_programming/wildcard_matching | ✓ | 547µs | 1.0 KB |
+| 349 | dynamic_programming/word_break | ✓ | 277µs | 888 B |
+| 350 | electronics/apparent_power | ✓ | 4µs | 288 B |
+| 351 | electronics/builtin_voltage | ✓ | 172µs | 272 B |
+| 352 | electronics/capacitor_equivalence | ✓ | 101µs | 952 B |
+| 353 | electronics/carrier_concentration | ✓ | 281µs | 448 B |
+| 354 | electronics/charging_capacitor | ✓ | 151µs | 816 B |
+| 355 | electronics/charging_inductor | ✓ | 109µs | 1.5 KB |
+| 356 | electronics/circular_convolution | ✓ | 672µs | 1.7 KB |
+| 357 | electronics/coulombs_law | ✓ | 281µs | 848 B |
+| 358 | electronics/electric_conductivity | ✓ | 115µs | 352 B |
+| 359 | electronics/electric_power | error |  |  |
+| 360 | electronics/electrical_impedance | ✓ | 285µs | 840 B |
+| 361 | electronics/ic_555_timer | ✓ | 117µs | 80 B |
+| 362 | electronics/ind_reactance | ✓ | 126µs | 808 B |
+| 363 | electronics/ohms_law | ✓ | 227µs | 936 B |
+| 364 | electronics/real_and_reactive_power | ✓ | 140µs | 176 B |
+| 365 | electronics/resistor_color_code | ✓ | 12µs | 3.1 KB |
+| 366 | electronics/resistor_equivalence | ✓ | 153µs | 952 B |
+| 367 | electronics/resonant_frequency | ✓ | 110µs | 136 B |
+| 368 | electronics/wheatstone_bridge | ✓ | 345µs | 40 B |
+| 369 | file_transfer/receive_file | ✓ | 75µs | 912 B |
+| 370 | file_transfer/send_file | ✓ | 84µs | 856 B |
+| 371 | file_transfer/tests/test_send_file | ✓ | 50µs | 1.4 KB |
+| 372 | financial/equated_monthly_installments | ✓ | 160µs | 136 B |
+| 373 | financial/exponential_moving_average | ✓ | 243µs | 1.1 KB |
+| 374 | financial/interest | ✓ | 606µs | 1.0 KB |
+| 375 | financial/present_value | ✓ | 165µs | 880 B |
+| 376 | financial/price_plus_tax | ✓ | 105µs | 32 B |
+| 377 | financial/simple_moving_average | ✓ | 493µs | 2.3 KB |
+| 378 | financial/straight_line_depreciation | ✓ | 661µs | 808 B |
+| 379 | financial/time_and_half_pay | ✓ | 263µs | 136 B |
+| 380 | fractals/julia_sets | ✓ | 3.854ms | 1.3 KB |
+| 381 | fractals/koch_snowflake | ✓ | 617µs | 2.2 KB |
+| 382 | fractals/mandelbrot | ✓ | 1.071ms | 37.5 KB |
+| 383 | fractals/sierpinski_triangle | ✓ | 468µs | 1008 B |
+| 384 | fractals/vicsek | ✓ | 196µs | 1.1 KB |
+| 385 | fuzzy_logic/fuzzy_operations | ✓ | 207µs | 1.8 KB |
+| 386 | genetic_algorithm/basic_string | ✓ | 188µs | 1.0 KB |
+| 387 | geodesy/haversine_distance | ✓ | 108µs | 1.3 KB |
+| 388 | geodesy/lamberts_ellipsoidal_distance | ✓ | 180µs | 240 B |
+| 389 | geometry/geometry | ✓ | 150µs | 1.6 KB |
+| 390 | graphics/bezier_curve | ✓ | 366µs | 1.2 KB |
+| 391 | graphics/butterfly_pattern | ✓ | 173µs | 840 B |
+| 392 | graphics/digital_differential_analyzer_line | ✓ | 181µs | 1.1 KB |
+| 393 | graphics/vector3_for_2d_rendering | ✓ | 162µs | 1.0 KB |
+| 394 | graphs/a_star | ✓ | 965µs | 1.4 KB |
+| 395 | graphs/ant_colony_optimization_algorithms | error |  |  |
+| 396 | graphs/articulation_points | error |  |  |
+| 397 | graphs/basic_graphs | ✓ |  |  |
+| 398 | graphs/bellman_ford | ✓ | 199µs | 1.7 KB |
+| 399 | graphs/bi_directional_dijkstra | ✓ | 474µs | 5.1 KB |
+| 400 | graphs/bidirectional_a_star | ✓ | 10.565ms | 5.0 KB |
+| 401 | graphs/bidirectional_breadth_first_search | ✓ | 2.765ms | 4.3 KB |
+| 402 | graphs/bidirectional_search | ✓ | 241µs | 1.2 KB |
+| 403 | graphs/boruvka | error |  |  |
+| 404 | graphs/breadth_first_search | ✓ |  |  |
+| 405 | graphs/breadth_first_search_2 | ✓ | 321µs | 1.8 KB |
+| 406 | graphs/breadth_first_search_shortest_path | ✓ | 68µs | 2.6 KB |
+| 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 6µs | 1.4 KB |
+| 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ | 779µs | 3.6 KB |
+| 409 | graphs/check_bipatrite | ✓ |  |  |
+| 410 | graphs/check_cycle | ✓ | 300µs | 2.0 KB |
+| 411 | graphs/connected_components | error |  |  |
+| 412 | graphs/deep_clone_graph | error |  |  |
+| 413 | graphs/depth_first_search | ✓ | 155µs | 2.3 KB |
+| 414 | graphs/depth_first_search_2 | ✓ | 430µs | 1.7 KB |
+| 415 | graphs/dijkstra | error |  |  |
+| 416 | graphs/dijkstra_2 | ✓ | 185µs | 1.0 KB |
+| 417 | graphs/dijkstra_algorithm | ✓ | 208µs | 2.7 KB |
 | 418 | graphs/dijkstra_alternate |   |  |  |
 | 419 | graphs/dijkstra_binary_grid |   |  |  |
 | 420 | graphs/dinic |   |  |  |
