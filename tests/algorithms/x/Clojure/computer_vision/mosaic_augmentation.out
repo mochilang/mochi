@@ -1,0 +1,5 @@
+Execution error (ClassCastException) at main/update-image-and-anno (mosaic_augmentation.clj:150).
+class clojure.lang.PersistentList cannot be cast to class clojure.lang.Associative (clojure.lang.PersistentList and clojure.lang.Associative are in unnamed module of loader 'app')
+
+Full report at:
+/tmp/clojure-3172947775544547864.edn

@@ -1,0 +1,5 @@
+Syntax error compiling at (/workspace/mochi/tests/algorithms/x/Clojure/data_structures/binary_tree/serialize_deserialize_binary_tree.clj:79:43).
+Unable to resolve symbol: serialize_Empty in this context
+
+Full report at:
+/tmp/clojure-10243849258566962641.edn

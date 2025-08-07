@@ -1,0 +1,8 @@
+run: exit status 1
+[5 -523 -1 34 0]
+[5 -523 -1 34 0]
+Execution error (ClassCastException) at main/index-2d-array-in-1d (index_2d_array_in_1d.clj:31).
+class clojure.lang.Ratio cannot be cast to class java.lang.String (clojure.lang.Ratio is in unnamed module of loader 'app'; java.lang.String is in module java.base of loader 'bootstrap')
+
+Full report at:
+/tmp/clojure-13569680007336709150.edn

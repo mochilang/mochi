@@ -1,0 +1,5 @@
+Execution error (UnsupportedOperationException) at main/product-sum (product_sum.clj:30).
+count not supported on this type: Long
+
+Full report at:
+/tmp/clojure-1729387370008776359.edn

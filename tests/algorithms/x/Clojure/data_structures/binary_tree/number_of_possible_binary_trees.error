@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error (NumberFormatException) at java.lang.Integer/parseInt (Integer.java:624).
+Cannot parse null string
+
+Full report at:
+/tmp/clojure-5320595394382218987.edn

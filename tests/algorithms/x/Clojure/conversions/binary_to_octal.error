@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error at main/bin-to-octal (binary_to_octal.clj:42).
+Non-binary value was passed to the function
+
+Full report at:
+/tmp/clojure-4821235875042888666.edn

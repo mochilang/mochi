@@ -1,0 +1,5 @@
+Execution error (NullPointerException) at main/to-binary (lempel_ziv.clj:42).
+Cannot invoke "Object.getClass()" because "x" is null
+
+Full report at:
+/tmp/clojure-10212620006849779618.edn

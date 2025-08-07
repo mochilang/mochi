@@ -1,0 +1,5 @@
+Execution error (UnsupportedOperationException) at main/breadth-first-search (lowest_common_ancestor.clj:83).
+nth not supported on this type: PersistentHashMap
+
+Full report at:
+/tmp/clojure-2953336856180146885.edn
