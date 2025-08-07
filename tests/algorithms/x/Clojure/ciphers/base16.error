@@ -1,6 +1,9 @@
 run: exit status 1
-Execution error (ClassCastException) at main/excel-title-to-column (excel_title_to_column.clj:36).
+48656C6C6F20576F726C6421
+48454C4C4F20574F524C4421
+
+Execution error (ClassCastException) at main/base16-decode (base16.clj:56).
 class java.lang.String cannot be cast to class clojure.lang.IPersistentVector (java.lang.String is in module java.base of loader 'bootstrap'; clojure.lang.IPersistentVector is in unnamed module of loader 'app')
 
 Full report at:
-/tmp/clojure-1041156159283007393.edn
+/tmp/clojure-2592561679121696170.edn

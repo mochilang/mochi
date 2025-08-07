@@ -1,0 +1,6 @@
+run: exit status 1
+Syntax error (UnsupportedOperationException) compiling recur at (/workspace/mochi/tests/algorithms/x/Clojure/ciphers/fractionated_morse_cipher.clj:104:4302).
+Can only recur from tail position
+
+Full report at:
+/tmp/clojure-3285491746540454863.edn

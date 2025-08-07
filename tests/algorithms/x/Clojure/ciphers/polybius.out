@@ -1,0 +1,7 @@
+000000000000000000000000
+000000000000000000000000
+Execution error (IndexOutOfBoundsException) at main/numbers-to-letter (polybius.clj:51).
+null
+
+Full report at:
+/tmp/clojure-15456923576796712840.edn

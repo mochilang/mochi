@@ -3,4 +3,4 @@ Execution error (ClassCastException) at main/convert-small-number (convert_numbe
 class java.lang.String cannot be cast to class java.lang.Number (java.lang.String and java.lang.Number are in module java.base of loader 'bootstrap')
 
 Full report at:
-/tmp/clojure-7375775788281530682.edn
+/tmp/clojure-16654940362769893946.edn
