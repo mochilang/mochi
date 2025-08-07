@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-07 08:09 +0700
+Last updated: 2025-08-07 08:48 +0700
 
-## Program Checklist (112/1077)
+## Program Checklist (113/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.114ms | 512.0 KB |
@@ -174,7 +174,7 @@ Last updated: 2025-08-07 08:09 +0700
 | 165 | data_structures/arrays/pairs_with_given_sum | ✓ | 1.3ms | 128.0 KB |
 | 166 | data_structures/arrays/permutations | ✓ | 4.407ms | 1.0 MB |
 | 167 | data_structures/arrays/prefix_sum | ✓ | 1.336ms | 384.0 KB |
-| 168 | data_structures/arrays/product_sum |   |  |  |
+| 168 | data_structures/arrays/product_sum | ✓ | 541µs | 384.0 KB |
 | 169 | data_structures/arrays/sparse_table |   |  |  |
 | 170 | data_structures/arrays/sudoku_solver |   |  |  |
 | 171 | data_structures/binary_tree/avl_tree |   |  |  |
