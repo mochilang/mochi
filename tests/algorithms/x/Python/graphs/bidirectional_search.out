@@ -1,15 +1,3 @@
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/algorithms/x/Python/graphs/bidirectional_search.py", line 151, in <module>
-    main()
-  File "/workspace/mochi/tests/algorithms/x/Python/graphs/bidirectional_search.py", line 147, in main
-    print_path(graph, 0, 11)
-  File "/workspace/mochi/tests/algorithms/x/Python/graphs/bidirectional_search.py", line 140, in print_path
-    res = bidirectional_search(g, s, t)
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/mochi/tests/algorithms/x/Python/graphs/bidirectional_search.py", line 94, in bidirectional_search
-    res = expand_search(g, forward_queue, forward_head, forward_parents, forward_visited, backward_visited)
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/mochi/tests/algorithms/x/Python/graphs/bidirectional_search.py", line 48, in expand_search
-    if v[neighbor]:
-       ~^^^^^^^^^^
-KeyError: 1
+Path from 0 to 11: [0, 1, 3, 7, 11]
+Path from 5 to 5: [5]
+Path from 0 to 3: None
