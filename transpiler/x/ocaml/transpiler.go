@@ -2187,6 +2187,24 @@ func isUnderscoreExpr(e *parser.Expr) bool {
 	return p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0
 }
 
+func simpleIdent(e *parser.Expr) (string, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Selector == nil {
+		return "", false
+	}
+	if len(p.Target.Selector.Tail) != 0 {
+		return "", false
+	}
+	return p.Target.Selector.Root, true
+}
+
 func (mu *MapUpdateExpr) emit(w io.Writer) {
 	io.WriteString(w, "(")
 	io.WriteString(w, "(")
@@ -4068,6 +4086,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			structFields[st.Type.Name] = fields
 		}
 		if len(st.Type.Variants) > 0 {
+			structFields[st.Type.Name] = map[string]string{}
 			for _, v := range st.Type.Variants {
 				fields := map[string]string{}
 				for _, f := range v.Fields {
@@ -5339,38 +5358,76 @@ func convertMatch(m *parser.MatchExpr, env *types.Env, vars map[string]VarInfo) 
 	arms := make([]MatchArm, len(m.Cases))
 	var typ string
 	for i, c := range m.Cases {
+		armVars := make(map[string]VarInfo)
+		for k, v := range vars {
+			armVars[k] = v
+		}
 		var pat Expr
 		var guard Expr
 		if !isUnderscoreExpr(c.Pattern) {
-			p, _, err := convertExpr(c.Pattern, env, vars)
-			if err != nil {
-				return nil, "", err
-			}
-			// detect struct patterns with tag string
-			if ml, ok := p.(*MapLit); ok {
-				for j, it := range ml.Items {
-					if ks, ok := it.Key.(*StringLit); ok && ks.Value == "tag" {
-						if vs, ok := it.Value.(*StringLit); ok {
-							tagVar := fmt.Sprintf("__tag%d", i)
-							ml.Items[j].Value = &Name{Ident: tagVar}
-							guard = &BinaryExpr{
-								Left:  &FuncCall{Name: "__str", Args: []Expr{&Name{Ident: tagVar}}, Ret: "string"},
-								Op:    "=",
-								Right: &StringLit{Value: vs.Value},
-								Typ:   "bool",
-								Ltyp:  "string",
-								Rtyp:  "string",
+			if ident, ok := simpleIdent(c.Pattern); ok {
+				if _, ok := env.FindUnionByVariant(ident); ok {
+					tagVar := fmt.Sprintf("__tag%d", i)
+					pat = &MapLit{Items: []MapEntry{{Key: &StringLit{Value: "tag"}, Value: &Name{Ident: tagVar}}}}
+					guard = &BinaryExpr{
+						Left:  &FuncCall{Name: "__str", Args: []Expr{&Name{Ident: tagVar}}, Ret: "string"},
+						Op:    "=",
+						Right: &StringLit{Value: ident},
+						Typ:   "bool",
+						Ltyp:  "string",
+						Rtyp:  "string",
+					}
+				} else {
+					p, _, err := convertExpr(c.Pattern, env, vars)
+					if err != nil {
+						return nil, "", err
+					}
+					pat = p
+				}
+			} else {
+				p, _, err := convertExpr(c.Pattern, env, vars)
+				if err != nil {
+					return nil, "", err
+				}
+				if ml, ok := p.(*MapLit); ok {
+					for j, it := range ml.Items {
+						if ks, ok := it.Key.(*StringLit); ok && ks.Value == "tag" {
+							if vs, ok := it.Value.(*StringLit); ok {
+								variant := vs.Value
+								tagVar := fmt.Sprintf("__tag%d", i)
+								ml.Items[j].Value = &Name{Ident: tagVar}
+								guard = &BinaryExpr{
+									Left:  &FuncCall{Name: "__str", Args: []Expr{&Name{Ident: tagVar}}, Ret: "string"},
+									Op:    "=",
+									Right: &StringLit{Value: variant},
+									Typ:   "bool",
+									Ltyp:  "string",
+									Rtyp:  "string",
+								}
+								if fields, ok := structFields[variant]; ok {
+									for _, it2 := range ml.Items {
+										if k, ok := it2.Key.(*StringLit); ok {
+											if nm, ok := it2.Value.(*Name); ok {
+												ft := fields[k.Value]
+												armVars[nm.Ident] = VarInfo{typ: ft}
+											}
+										}
+									}
+								}
 							}
+							break
 						}
-						break
 					}
 				}
+				pat = p
 			}
-			pat = p
 		}
-		res, rtyp, err := convertExpr(c.Result, env, vars)
+		res, rtyp, err := convertExpr(c.Result, env, armVars)
 		if err != nil {
 			return nil, "", err
+		}
+		if rtyp != "" {
+			res = &CastExpr{Expr: res, Type: "obj_to_" + rtyp}
 		}
 		if i == 0 {
 			typ = rtyp
