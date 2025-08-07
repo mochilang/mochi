@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-06 23:47 GMT+7
+Last updated: 2025-08-07 15:16 GMT+7
 
-## Algorithms Golden Test Checklist (83/1077)
+## Algorithms Golden Test Checklist (85/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 30.54ms | 124.45KiB |
@@ -107,9 +107,9 @@ Last updated: 2025-08-06 23:47 GMT+7
 | 98 | ciphers/rot13 | ✓ | 17.21ms | 131.19KiB |
 | 99 | ciphers/rsa_cipher | error |  |  |
 | 100 | ciphers/rsa_factorization | ✓ | 32.38ms | 114.70KiB |
-| 101 | ciphers/rsa_key_generator |   |  |  |
-| 102 | ciphers/running_key_cipher |   |  |  |
-| 103 | ciphers/shuffled_shift_cipher |   |  |  |
+| 101 | ciphers/rsa_key_generator | ✓ | 6.44ms | 133.55KiB |
+| 102 | ciphers/running_key_cipher | ✓ | 6.88ms | 134.18KiB |
+| 103 | ciphers/shuffled_shift_cipher | error |  |  |
 | 104 | ciphers/simple_keyword_cypher |   |  |  |
 | 105 | ciphers/simple_substitution_cipher |   |  |  |
 | 106 | ciphers/transposition_cipher |   |  |  |
