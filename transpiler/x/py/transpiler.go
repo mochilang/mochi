@@ -511,12 +511,14 @@ func (d *DictLit) emit(w io.Writer) error {
 }
 
 type IndexExpr struct {
-	Target Expr
-	Index  Expr
+	Target  Expr
+	Index   Expr
+	Map     bool
+	Default Expr
 }
 
 func (i *IndexExpr) emit(w io.Writer) error {
-	if _, ok := inferPyType(i.Target, currentEnv).(types.MapType); ok {
+	if i.Map {
 		if err := emitExpr(w, i.Target); err != nil {
 			return err
 		}
@@ -525,6 +527,14 @@ func (i *IndexExpr) emit(w io.Writer) error {
 		}
 		if err := emitExpr(w, i.Index); err != nil {
 			return err
+		}
+		if i.Default != nil {
+			if _, err := io.WriteString(w, ", "); err != nil {
+				return err
+			}
+			if err := emitExpr(w, i.Default); err != nil {
+				return err
+			}
 		}
 		if _, err := io.WriteString(w, ")"); err != nil {
 			return err
@@ -4646,7 +4656,9 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				if err != nil {
 					return nil, err
 				}
-				if s, ok := idx.(*StringLit); ok {
+				if mp, ok := inferPyType(expr, currentEnv).(types.MapType); ok {
+					expr = &IndexExpr{Target: expr, Index: idx, Map: true, Default: zeroValueExpr(mp.Value)}
+				} else if s, ok := idx.(*StringLit); ok {
 					if st, ok2 := inferPyType(expr, currentEnv).(types.StructType); ok2 {
 						if _, ok3 := st.Fields[s.Value]; ok3 {
 							expr = &FieldExpr{Target: expr, Name: s.Value}

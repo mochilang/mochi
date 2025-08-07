@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Python`.
-Last updated: 2025-08-07 08:50 GMT+7
+Last updated: 2025-08-07 09:06 GMT+7
 
-## Algorithms Golden Test Checklist (382/1077)
+## Algorithms Golden Test Checklist (388/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 63.0µs | 12.88MB |
@@ -408,7 +408,7 @@ Last updated: 2025-08-07 08:50 GMT+7
 | 399 | graphs/bi_directional_dijkstra | ✓ | 2.0ms | 13.66MB |
 | 400 | graphs/bidirectional_a_star | ✓ | 3.0ms | 14.39MB |
 | 401 | graphs/bidirectional_breadth_first_search | ✓ | 1.0ms | 14.30MB |
-| 402 | graphs/bidirectional_search | error |  |  |
+| 402 | graphs/bidirectional_search | ✓ | 141.0µs | 14.11MB |
 | 403 | graphs/boruvka | error |  |  |
 | 404 | graphs/breadth_first_search | ✓ | 42.0µs | 12.86MB |
 | 405 | graphs/breadth_first_search_2 | ✓ | 68.0µs | 13.39MB |
@@ -501,11 +501,11 @@ Last updated: 2025-08-07 08:50 GMT+7
 | 492 | linear_algebra/src/rayleigh_quotient |   |  |  |
 | 493 | linear_algebra/src/schur_complement |   |  |  |
 | 494 | linear_algebra/src/test_linear_algebra |   |  |  |
-| 495 | linear_algebra/src/transformations_2d |   |  |  |
-| 496 | linear_programming/simplex |   |  |  |
-| 497 | machine_learning/apriori_algorithm |   |  |  |
-| 498 | machine_learning/astar |   |  |  |
-| 499 | machine_learning/automatic_differentiation |   |  |  |
+| 495 | linear_algebra/src/transformations_2d | ✓ | 93.0µs | 13.74MB |
+| 496 | linear_programming/simplex | ✓ | 123.0µs | 13.75MB |
+| 497 | machine_learning/apriori_algorithm | ✓ | 1.0ms | 13.94MB |
+| 498 | machine_learning/astar | ✓ | 2.0ms | 14.21MB |
+| 499 | machine_learning/automatic_differentiation | ✓ | 41.0µs | 12.75MB |
 | 500 | machine_learning/data_transformations |   |  |  |
 | 501 | machine_learning/decision_tree |   |  |  |
 | 502 | machine_learning/dimensionality_reduction |   |  |  |
