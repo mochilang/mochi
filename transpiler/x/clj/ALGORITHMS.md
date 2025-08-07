@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-07 10:44 GMT+7
+Last updated: 2025-08-07 11:13 GMT+7
 
-## Algorithms Golden Test Checklist (78/1077)
+## Algorithms Golden Test Checklist (81/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 50.25ms | 19.66MB |
@@ -207,9 +207,9 @@ Last updated: 2025-08-07 10:44 GMT+7
 | 198 | data_structures/binary_tree/symmetric_tree | ✓ | 52.192ms | 21.09MB |
 | 199 | data_structures/binary_tree/treap | error |  |  |
 | 200 | data_structures/binary_tree/wavelet_tree | ✓ | 30.993ms | 26.32MB |
-| 201 | data_structures/disjoint_set/alternate_disjoint_set |   |  |  |
-| 202 | data_structures/disjoint_set/disjoint_set |   |  |  |
-| 203 | data_structures/hashing/bloom_filter |   |  |  |
+| 201 | data_structures/disjoint_set/alternate_disjoint_set | ✓ | 49.402ms | 21.63MB |
+| 202 | data_structures/disjoint_set/disjoint_set | ✓ | 56.673ms | 22.10MB |
+| 203 | data_structures/hashing/bloom_filter | ✓ | 118.774ms | 25.46MB |
 | 204 | data_structures/hashing/double_hash |   |  |  |
 | 205 | data_structures/hashing/hash_map |   |  |  |
 | 206 | data_structures/hashing/hash_table |   |  |  |

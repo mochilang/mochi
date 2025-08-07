@@ -1499,9 +1499,17 @@ func isStringNode(n Node) bool {
 			}
 		}
 		if transpileEnv != nil {
-			if typ, err := transpileEnv.GetVar(string(t)); err == nil {
+			name := string(t)
+			if typ, err := transpileEnv.GetVar(name); err == nil {
 				if _, ok := typ.(types.StringType); ok {
 					return true
+				}
+			}
+			if i := strings.Index(name, "_"); i >= 0 {
+				if typ, err := transpileEnv.GetVar(name[i+1:]); err == nil {
+					if _, ok := typ.(types.StringType); ok {
+						return true
+					}
 				}
 			}
 		}
