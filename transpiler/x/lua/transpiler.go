@@ -2904,7 +2904,11 @@ func Emit(p *Program) []byte {
 		b.WriteString(";\n")
 	}
 	currentEnv = prevEnv
-	return formatLua(b.Bytes())
+	code := formatLua(b.Bytes())
+	if len(code) == 0 || code[len(code)-1] != '\n' {
+		code = append(code, '\n')
+	}
+	return code
 }
 
 func convertExpr(e *parser.Expr) (Expr, error) {
