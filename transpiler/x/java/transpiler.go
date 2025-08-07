@@ -37,6 +37,7 @@ var needNow bool
 var needAppendBool bool
 var needAppendObj bool
 var needConcat bool
+var needConcatBool bool
 var needNetLookupHost bool
 var needEnviron bool
 var needMem bool
@@ -815,6 +816,19 @@ func inferType(e Expr) string {
 		return "java.util.List"
 	case *KeysExpr:
 		return "java.util.List"
+	case *ConcatExpr:
+		t := arrayElemType(ex.Left)
+		if t == "" {
+			t = arrayElemType(ex.Right)
+		}
+		if t == "" {
+			t = "Object"
+		}
+		jt := javaType(t)
+		if jt == "" {
+			jt = t
+		}
+		return jt + "[]"
 	case *AppendExpr:
 		t := inferType(ex.Value)
 		if t == "" || t == "void" {
@@ -2628,6 +2642,9 @@ type ExceptExpr struct{ Left, Right Expr }
 // IntersectExpr returns common elements of Left and Right.
 type IntersectExpr struct{ Left, Right Expr }
 
+// ConcatExpr joins two arrays end-to-end.
+type ConcatExpr struct{ Left, Right Expr }
+
 func (v *ValuesExpr) emit(w io.Writer) {
 	if ve, ok := v.Map.(*VarExpr); ok {
 		if t, ok2 := varTypes[ve.Name]; ok2 {
@@ -2939,6 +2956,44 @@ func (i *IntersectExpr) emit(w io.Writer) {
 	default:
 		fmt.Fprintf(w, "%s[]::new", jt)
 	}
+	fmt.Fprint(w, ")")
+}
+
+func (c *ConcatExpr) emit(w io.Writer) {
+	elem := arrayElemType(c.Left)
+	if elem == "" {
+		elem = arrayElemType(c.Right)
+	}
+	if elem == "int" {
+		fmt.Fprint(w, "java.util.stream.IntStream.concat(java.util.Arrays.stream(")
+		c.Left.emit(w)
+		fmt.Fprint(w, "), java.util.Arrays.stream(")
+		c.Right.emit(w)
+		fmt.Fprint(w, ")).toArray()")
+		return
+	}
+	if elem == "double" {
+		fmt.Fprint(w, "java.util.stream.DoubleStream.concat(java.util.Arrays.stream(")
+		c.Left.emit(w)
+		fmt.Fprint(w, "), java.util.Arrays.stream(")
+		c.Right.emit(w)
+		fmt.Fprint(w, ")).toArray()")
+		return
+	}
+	if elem == "boolean" {
+		needConcatBool = true
+		fmt.Fprint(w, "concatBool(")
+		c.Left.emit(w)
+		fmt.Fprint(w, ", ")
+		c.Right.emit(w)
+		fmt.Fprint(w, ")")
+		return
+	}
+	needConcat = true
+	fmt.Fprint(w, "concat(")
+	c.Left.emit(w)
+	fmt.Fprint(w, ", ")
+	c.Right.emit(w)
 	fmt.Fprint(w, ")")
 }
 
@@ -3401,7 +3456,7 @@ func isArrayExpr(e Expr) bool {
 		return true
 	case *AppendExpr:
 		return true
-	case *UnionExpr, *UnionAllExpr, *ExceptExpr, *IntersectExpr:
+	case *UnionExpr, *UnionAllExpr, *ExceptExpr, *IntersectExpr, *ConcatExpr:
 		return true
 	case *SliceExpr:
 		if !isStringExpr(ex.Value) {
@@ -3449,6 +3504,12 @@ func arrayElemType(e Expr) string {
 		}
 		return t
 	case *UnionAllExpr:
+		t := arrayElemType(ex.Left)
+		if t == "" {
+			t = arrayElemType(ex.Right)
+		}
+		return t
+	case *ConcatExpr:
 		t := arrayElemType(ex.Left)
 		if t == "" {
 			t = arrayElemType(ex.Right)
@@ -3627,6 +3688,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	needSaveJsonl = false
 	needAppendObj = false
 	needConcat = false
+	needConcatBool = false
 	needNetLookupHost = false
 	needEnviron = false
 	needRepeat = false
@@ -5341,8 +5403,17 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			return &CallExpr{Func: "_max", Args: args}, nil
 		}
 		if name == "concat" && len(args) == 2 {
-			needConcat = true
-			return &CallExpr{Func: "concat", Args: args}, nil
+			et := arrayElemType(args[0])
+			if et == "" {
+				et = arrayElemType(args[1])
+			}
+			switch et {
+			case "int", "double", "boolean":
+				return &ConcatExpr{Left: args[0], Right: args[1]}, nil
+			default:
+				needConcat = true
+				return &CallExpr{Func: "concat", Args: args}, nil
+			}
 		}
 		if name == "json" && len(args) == 1 {
 			needJSON = true
@@ -6491,6 +6562,13 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("        return out;\n")
 		buf.WriteString("    }\n")
 	}
+	if needConcatBool {
+		buf.WriteString("\n    static boolean[] concatBool(boolean[] a, boolean[] b) {\n")
+		buf.WriteString("        boolean[] out = java.util.Arrays.copyOf(a, a.length + b.length);\n")
+		buf.WriteString("        System.arraycopy(b, 0, out, a.length, b.length);\n")
+		buf.WriteString("        return out;\n")
+		buf.WriteString("    }\n")
+	}
 	if needConcat {
 		buf.WriteString("\n    static <T> T[] concat(T[] a, T[] b) {\n")
 		buf.WriteString("        T[] out = java.util.Arrays.copyOf(a, a.length + b.length);\n")
@@ -7044,6 +7122,8 @@ func renameVar(e Expr, oldName, newName string) Expr {
 		return &KeysExpr{Map: renameVar(ex.Map, oldName, newName)}
 	case *AppendExpr:
 		return &AppendExpr{List: renameVar(ex.List, oldName, newName), Value: renameVar(ex.Value, oldName, newName), ElemType: ex.ElemType}
+	case *ConcatExpr:
+		return &ConcatExpr{Left: renameVar(ex.Left, oldName, newName), Right: renameVar(ex.Right, oldName, newName)}
 	case *IntCastExpr:
 		return &IntCastExpr{Value: renameVar(ex.Value, oldName, newName)}
 	case *FloatCastExpr:

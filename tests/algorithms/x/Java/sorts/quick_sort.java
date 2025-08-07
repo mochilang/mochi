@@ -17,7 +17,7 @@ public class Main {
             }
             i = i + 1;
         }
-        return concat(concat(quick_sort(((int[])(lesser))), new int[]{pivot}), quick_sort(((int[])(greater))));
+        return java.util.stream.IntStream.concat(java.util.Arrays.stream(java.util.stream.IntStream.concat(java.util.Arrays.stream(quick_sort(((int[])(lesser)))), java.util.Arrays.stream(new int[]{pivot})).toArray()), java.util.Arrays.stream(quick_sort(((int[])(greater))))).toArray();
     }
     public static void main(String[] args) {
         {
@@ -57,11 +57,5 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
-    }
-
-    static <T> T[] concat(T[] a, T[] b) {
-        T[] out = java.util.Arrays.copyOf(a, a.length + b.length);
-        System.arraycopy(b, 0, out, a.length, b.length);
-        return out;
     }
 }

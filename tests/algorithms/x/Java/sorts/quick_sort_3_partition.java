@@ -85,73 +85,33 @@ arr[store_index] = temp_3;
         }
         int[] sorted_less = ((int[])(three_way_radix_quicksort(((int[])(less)))));
         int[] sorted_greater = ((int[])(three_way_radix_quicksort(((int[])(greater)))));
-        Object result = concat(sorted_less, equal);
-        result = concat(result, sorted_greater);
+        int[] result = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(sorted_less), java.util.Arrays.stream(equal)).toArray()));
+        result = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(result), java.util.Arrays.stream(sorted_greater)).toArray()));
         return result;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            array1 = ((int[])(new int[]{5, -1, -1, 5, 5, 24, 0}));
-            array1 = ((int[])(quick_sort_3partition(((int[])(array1)), 0, array1.length - 1)));
-            System.out.println(_p(array1));
-            array2 = ((int[])(new int[]{9, 0, 2, 6}));
-            array2 = ((int[])(quick_sort_3partition(((int[])(array2)), 0, array2.length - 1)));
-            System.out.println(_p(array2));
-            array3 = ((int[])(new int[]{}));
-            array3 = ((int[])(quick_sort_3partition(((int[])(array3)), 0, array3.length - 1)));
-            System.out.println(_p(array3));
-            nums1 = ((int[])(new int[]{0, 5, 3, 1, 2}));
-            nums1 = ((int[])(quick_sort_lomuto_partition(((int[])(nums1)), 0, nums1.length - 1)));
-            System.out.println(_p(nums1));
-            nums2 = ((int[])(new int[]{}));
-            nums2 = ((int[])(quick_sort_lomuto_partition(((int[])(nums2)), 0, nums2.length - 1)));
-            System.out.println(_p(nums2));
-            nums3 = ((int[])(new int[]{-2, 5, 0, -4}));
-            nums3 = ((int[])(quick_sort_lomuto_partition(((int[])(nums3)), 0, nums3.length - 1)));
-            System.out.println(_p(nums3));
-            System.out.println(_p(three_way_radix_quicksort(((int[])(new int[]{})))));
-            System.out.println(_p(three_way_radix_quicksort(((int[])(new int[]{1})))));
-            System.out.println(_p(three_way_radix_quicksort(((int[])(new int[]{-5, -2, 1, -2, 0, 1})))));
-            System.out.println(_p(three_way_radix_quicksort(((int[])(new int[]{1, 2, 5, 1, 2, 0, 0, 5, 2, -1})))));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
-    }
-
-    static <T> T[] concat(T[] a, T[] b) {
-        T[] out = java.util.Arrays.copyOf(a, a.length + b.length);
-        System.arraycopy(b, 0, out, a.length, b.length);
-        return out;
+        array1 = ((int[])(new int[]{5, -1, -1, 5, 5, 24, 0}));
+        array1 = ((int[])(quick_sort_3partition(((int[])(array1)), 0, array1.length - 1)));
+        System.out.println(_p(array1));
+        array2 = ((int[])(new int[]{9, 0, 2, 6}));
+        array2 = ((int[])(quick_sort_3partition(((int[])(array2)), 0, array2.length - 1)));
+        System.out.println(_p(array2));
+        array3 = ((int[])(new int[]{}));
+        array3 = ((int[])(quick_sort_3partition(((int[])(array3)), 0, array3.length - 1)));
+        System.out.println(_p(array3));
+        nums1 = ((int[])(new int[]{0, 5, 3, 1, 2}));
+        nums1 = ((int[])(quick_sort_lomuto_partition(((int[])(nums1)), 0, nums1.length - 1)));
+        System.out.println(_p(nums1));
+        nums2 = ((int[])(new int[]{}));
+        nums2 = ((int[])(quick_sort_lomuto_partition(((int[])(nums2)), 0, nums2.length - 1)));
+        System.out.println(_p(nums2));
+        nums3 = ((int[])(new int[]{-2, 5, 0, -4}));
+        nums3 = ((int[])(quick_sort_lomuto_partition(((int[])(nums3)), 0, nums3.length - 1)));
+        System.out.println(_p(nums3));
+        System.out.println(_p(three_way_radix_quicksort(((int[])(new int[]{})))));
+        System.out.println(_p(three_way_radix_quicksort(((int[])(new int[]{1})))));
+        System.out.println(_p(three_way_radix_quicksort(((int[])(new int[]{-5, -2, 1, -2, 0, 1})))));
+        System.out.println(_p(three_way_radix_quicksort(((int[])(new int[]{1, 2, 5, 1, 2, 0, 0, 5, 2, -1})))));
     }
 
     static String _p(Object v) {
