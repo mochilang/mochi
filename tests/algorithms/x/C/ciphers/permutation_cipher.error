@@ -1,0 +1,14 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/ciphers/permutation_cipher.c: In function ‘str_list_int’:
+/workspace/mochi/tests/algorithms/x/C/ciphers/permutation_cipher.c:35:38: warning: format ‘%d’ expects argument of type ‘int’, but argument 4 has type ‘long long int’ [-Wformat=]
+   35 |         snprintf(tmp, sizeof(tmp), "%d", arr[i]);
+      |                                     ~^   ~~~~~~
+      |                                      |      |
+      |                                      int    long long int
+      |                                     %lld
+/workspace/mochi/tests/algorithms/x/C/ciphers/permutation_cipher.c: In function ‘decrypt’:
+/workspace/mochi/tests/algorithms/x/C/ciphers/permutation_cipher.c:200:28: error: ‘_substring_len’ undeclared (first use in this function); did you mean ‘_substring’?
+  200 |             original_len = _substring_len;
+      |                            ^~~~~~~~~~~~~~
+      |                            _substring
+/workspace/mochi/tests/algorithms/x/C/ciphers/permutation_cipher.c:200:28: note: each undeclared identifier is reported only once for each function it appears in
