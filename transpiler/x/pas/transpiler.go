@@ -366,18 +366,38 @@ func (f *FunDecl) emit(out io.Writer) {
 	} else {
 		fmt.Fprintf(out, "): %s;\n", rt)
 	}
-	if len(f.Locals) > 0 {
-		io.WriteString(out, "var\n")
-		for _, v := range f.Locals {
-			typ := v.Type
-			if typ == "" {
-				typ = "integer"
-			} else {
-				typ = pasType(typ)
-			}
-			fmt.Fprintf(out, "  %s: %s;\n", v.Name, typ)
-		}
-	}
+        if len(f.Locals) > 0 {
+                seen := map[string]bool{}
+                params := map[string]bool{}
+                for _, p := range f.Params {
+                        if idx := strings.Index(p, ":"); idx != -1 {
+                                params[strings.ToLower(strings.TrimSpace(p[:idx]))] = true
+                        } else {
+                                params[strings.ToLower(p)] = true
+                        }
+                }
+                var locals []VarDecl
+                for _, v := range f.Locals {
+                        key := strings.ToLower(v.Name)
+                        if params[key] || seen[key] {
+                                continue
+                        }
+                        seen[key] = true
+                        locals = append(locals, v)
+                }
+                if len(locals) > 0 {
+                        io.WriteString(out, "var\n")
+                        for _, v := range locals {
+                                typ := v.Type
+                                if typ == "" {
+                                        typ = "integer"
+                                } else {
+                                        typ = pasType(typ)
+                                }
+                                fmt.Fprintf(out, "  %s: %s;\n", v.Name, typ)
+                        }
+                }
+        }
 	for _, s := range f.Body {
 		if nf, ok := s.(*NestedFunDecl); ok {
 			io.WriteString(out, "  ")
@@ -1976,19 +1996,21 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					}
 					funcReturns[fn.Name] = rt
 				}
-				for _, p := range st.Fun.Params {
-					typ := "integer"
-					if p.Type != nil {
-						typ = typeFromRef(p.Type)
-					}
-					if strings.HasPrefix(typ, "array of ") {
-						elem := strings.TrimPrefix(typ, "array of ")
-						typ = currProg.addArrayAlias(elem)
-					}
-					name := sanitize(p.Name)
-					local[name] = typ
-					currentScope()[p.Name] = name
-				}
+                                paramNames := map[string]string{}
+                                for _, p := range st.Fun.Params {
+                                        typ := "integer"
+                                        if p.Type != nil {
+                                                typ = typeFromRef(p.Type)
+                                        }
+                                        if strings.HasPrefix(typ, "array of ") {
+                                                elem := strings.TrimPrefix(typ, "array of ")
+                                                typ = currProg.addArrayAlias(elem)
+                                        }
+                                        name := sanitize(p.Name)
+                                        paramNames[p.Name] = name
+                                        local[name] = typ
+                                        currentScope()[p.Name] = name
+                                }
 				fnBody, err := convertBody(env, st.Fun.Body, local)
 				if err != nil {
 					return nil, err
@@ -1999,19 +2021,19 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				popScope()
 				locals := append([]VarDecl(nil), currProg.Vars[startVarCount:]...)
 				currProg.Vars = currProg.Vars[:startVarCount]
-				var params []string
-				for _, p := range st.Fun.Params {
-					typ := "integer"
-					if p.Type != nil {
-						typ = typeFromRef(p.Type)
-					}
-					if strings.HasPrefix(typ, "array of ") {
-						elem := strings.TrimPrefix(typ, "array of ")
-						typ = currProg.addArrayAlias(elem)
-					}
-					name := sanitize(p.Name)
-					params = append(params, formatParam(name, typ))
-				}
+                                var params []string
+                                for _, p := range st.Fun.Params {
+                                        typ := "integer"
+                                        if p.Type != nil {
+                                                typ = typeFromRef(p.Type)
+                                        }
+                                        if strings.HasPrefix(typ, "array of ") {
+                                                elem := strings.TrimPrefix(typ, "array of ")
+                                                typ = currProg.addArrayAlias(elem)
+                                        }
+                                        name := paramNames[p.Name]
+                                        params = append(params, formatParam(name, typ))
+                                }
 				if rt == "" {
 					for _, st := range fnBody {
 						if ret, ok := st.(*ReturnStmt); ok && ret.Expr != nil {
@@ -2193,20 +2215,20 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 				out = append(out, &AssignStmt{Name: name, Expr: val})
 			case *SelectorExpr:
 				out = append(out, &SetStmt{Target: t, Expr: val})
-			case *IndexExpr:
-				if inner, ok := t.Target.(*VarRef); ok {
-					name := sanitize(inner.Name)
-					out = append(out, &IndexAssignStmt{Name: name, Index: t.Index, Expr: val})
-				} else if innerIdx, ok := t.Target.(*IndexExpr); ok {
-					if base, ok := innerIdx.Target.(*VarRef); ok {
-						name := sanitize(base.Name)
-						out = append(out, &DoubleIndexAssignStmt{Name: name, Index1: innerIdx.Index, Index2: t.Index, Expr: val})
-					} else {
-						return nil, fmt.Errorf("unsupported assignment target")
-					}
-				} else {
-					return nil, fmt.Errorf("unsupported assignment target")
-				}
+                               case *IndexExpr:
+                                if inner, ok := t.Target.(*VarRef); ok {
+                                        name := inner.Name
+                                        out = append(out, &IndexAssignStmt{Name: name, Index: t.Index, Expr: val})
+                                } else if innerIdx, ok := t.Target.(*IndexExpr); ok {
+                                        if base, ok := innerIdx.Target.(*VarRef); ok {
+                                                name := base.Name
+                                                out = append(out, &DoubleIndexAssignStmt{Name: name, Index1: innerIdx.Index, Index2: t.Index, Expr: val})
+                                        } else {
+                                                return nil, fmt.Errorf("unsupported assignment target")
+                                        }
+                                } else {
+                                        return nil, fmt.Errorf("unsupported assignment target")
+                                }
 			default:
 				return nil, fmt.Errorf("unsupported assignment target")
 			}
@@ -4483,9 +4505,14 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			currProg.NeedPadStart = true
 			currProg.UseSysUtils = true
 			return &CallExpr{Name: "padStart", Args: args}, nil
-		} else if name == "append" && len(args) == 2 {
-			return &CallExpr{Name: "concat", Args: []Expr{args[0], &ListLit{Elems: []Expr{args[1]}}}}, nil
-		} else if name == "float" && len(args) == 1 {
+                } else if name == "append" && len(args) == 2 {
+                        t := resolveAlias(inferType(args[0]))
+                        if strings.HasPrefix(t, "array of ") {
+                                elem := strings.TrimPrefix(t, "array of ")
+                                _ = currProg.addArrayAlias(elem)
+                        }
+                        return &CallExpr{Name: "concat", Args: []Expr{args[0], &ListLit{Elems: []Expr{args[1]}}}}, nil
+                } else if name == "float" && len(args) == 1 {
 			return &CallExpr{Name: "Double", Args: args}, nil
 		} else if name == "contains" && len(args) == 2 {
 			if _, ok := funcNames[name]; ok {
