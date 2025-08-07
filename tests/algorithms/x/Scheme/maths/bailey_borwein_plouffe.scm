@@ -1,0 +1,946 @@
+;; Generated on 2025-08-07 10:06 +0700
+(import (scheme base))
+(import (scheme time))
+(import (chibi string))
+(import (only (scheme char) string-upcase string-downcase))
+(import (srfi 69))
+(import (srfi 1))
+(define _list list)
+(import (chibi time))
+(define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))
+(import (chibi json))
+(define (to-str x)
+  (cond ((pair? x)
+         (string-append "[" (string-join (map to-str x) ", ") "]"))
+        ((hash-table? x)
+         (let* ((ks (hash-table-keys x))
+                (pairs (map (lambda (k)
+                              (string-append (to-str k) ": " (to-str (hash-table-ref x k))))
+                            ks)))
+           (string-append "{" (string-join pairs ", ") "}")))
+        ((null? x) "[]")
+        ((string? x) (let ((out (open-output-string))) (json-write x out) (get-output-string out)))
+        ((boolean? x) (if x "true" "false"))
+        (else (number->string x))))
+(define (to-str-space x)
+  (cond ((pair? x)
+         (string-append "[" (string-join (map to-str-space x) " ") "]"))
+        ((string? x) x)
+        (else (to-str x))))
+(define (upper s) (string-upcase s))
+(define (lower s) (string-downcase s))
+(define (fmod a b) (- a (* (floor (/ a b)) b)))
+(define (_mod a b) (if (and (integer? a) (integer? b)) (modulo a b) (fmod a b)))
+(define (_div a b) (if (and (integer? a) (integer? b)) (quotient a b) (/ a b)))
+(define (_gt a b) (cond ((and (number? a) (number? b)) (> a b)) ((and (string? a) (string? b)) (string>? a b)) (else (> a b))))
+(define (_lt a b) (cond ((and (number? a) (number? b)) (< a b)) ((and (string? a) (string? b)) (string<? a b)) (else (< a b))))
+(define (_ge a b) (cond ((and (number? a) (number? b)) (>= a b)) ((and (string? a) (string? b)) (string>=? a b)) (else (>= a b))))
+(define (_le a b) (cond ((and (number? a) (number? b)) (<= a b)) ((and (string? a) (string? b)) (string<=? a b)) (else (<= a b))))
+(define (_add a b)
+  (cond ((and (number? a) (number? b)) (+ a b))
+        ((string? a) (string-append a (to-str b)))
+        ((string? b) (string-append (to-str a) b))
+        ((and (list? a) (list? b)) (append a b))
+        (else (+ a b))))
+(define (indexOf s sub) (let ((cur (string-contains s sub)))   (if cur (string-cursor->index s cur) -1)))
+(define (_display . args) (apply display args))
+(define (panic msg) (error msg))
+(define (padStart s width pad)
+  (let loop ((out s))
+    (if (< (string-length out) width)
+        (loop (string-append pad out))
+        out)))
+(define (_substring s start end)
+  (let* ((len (string-length s))
+         (s0 (max 0 (min len start)))
+         (e0 (max s0 (min len end))))
+    (substring s s0 e0)))
+(define (_repeat s n)
+  (let loop ((i 0) (out ""))
+    (if (< i n)
+        (loop (+ i 1) (string-append out s))
+        out)))
+(define (slice seq start end)
+  (let* ((len (if (string? seq) (string-length seq) (length seq)))
+         (s (if (< start 0) (+ len start) start))
+         (e (if (< end 0) (+ len end) end)))
+    (set! s (max 0 (min len s)))
+    (set! e (max 0 (min len e)))
+    (when (< e s) (set! e s))
+    (if (string? seq)
+        (_substring seq s e)
+        (take (drop seq s) (- e s)))))
+(define (_parseIntStr s base)
+  (let* ((b (if (number? base) base 10))
+         (n (string->number (if (list? s) (list->string s) s) b)))
+    (if n (inexact->exact (truncate n)) 0)))
+(define (_split s sep)
+  (let* ((str (if (string? s) s (list->string s)))
+         (del (cond ((char? sep) sep)
+                     ((string? sep) (if (= (string-length sep) 1)
+                                       (string-ref sep 0)
+                                       sep))
+                     (else sep))))
+    (cond
+     ((and (string? del) (string=? del ""))
+      (map string (string->list str)))
+     ((char? del)
+      (string-split str del))
+     (else
+        (let loop ((r str) (acc '()))
+          (let ((cur (string-contains r del)))
+            (if cur
+                (let ((idx (string-cursor->index r cur)))
+                  (loop (_substring r (+ idx (string-length del)) (string-length r))
+                        (cons (_substring r 0 idx) acc)))
+                (reverse (cons r acc)))))))))
+(define (_len x)
+  (cond ((string? x) (string-length x))
+        ((hash-table? x) (hash-table-size x))
+        (else (length x))))
+(
+  let (
+    (
+      start17 (
+        current-jiffy
+      )
+    )
+     (
+      jps20 (
+        jiffies-per-second
+      )
+    )
+  )
+   (
+    begin (
+      define (
+        mod_pow base exponent modulus
+      )
+       (
+        call/cc (
+          lambda (
+            ret1
+          )
+           (
+            let (
+              (
+                result 1
+              )
+            )
+             (
+              begin (
+                let (
+                  (
+                    b (
+                      _mod base modulus
+                    )
+                  )
+                )
+                 (
+                  begin (
+                    let (
+                      (
+                        e exponent
+                      )
+                    )
+                     (
+                      begin (
+                        call/cc (
+                          lambda (
+                            break3
+                          )
+                           (
+                            letrec (
+                              (
+                                loop2 (
+                                  lambda (
+                                    
+                                  )
+                                   (
+                                    if (
+                                      > e 0
+                                    )
+                                     (
+                                      begin (
+                                        if (
+                                          equal? (
+                                            _mod e 2
+                                          )
+                                           1
+                                        )
+                                         (
+                                          begin (
+                                            set! result (
+                                              _mod (
+                                                * result b
+                                              )
+                                               modulus
+                                            )
+                                          )
+                                        )
+                                         (
+                                          quote (
+                                            
+                                          )
+                                        )
+                                      )
+                                       (
+                                        set! b (
+                                          _mod (
+                                            * b b
+                                          )
+                                           modulus
+                                        )
+                                      )
+                                       (
+                                        set! e (
+                                          _div e 2
+                                        )
+                                      )
+                                       (
+                                        loop2
+                                      )
+                                    )
+                                     (
+                                      quote (
+                                        
+                                      )
+                                    )
+                                  )
+                                )
+                              )
+                            )
+                             (
+                              loop2
+                            )
+                          )
+                        )
+                      )
+                       (
+                        ret1 result
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+     (
+      define (
+        pow_float base exponent
+      )
+       (
+        call/cc (
+          lambda (
+            ret4
+          )
+           (
+            let (
+              (
+                exp exponent
+              )
+            )
+             (
+              begin (
+                let (
+                  (
+                    result 1.0
+                  )
+                )
+                 (
+                  begin (
+                    if (
+                      < exp 0
+                    )
+                     (
+                      begin (
+                        set! exp (
+                          - exp
+                        )
+                      )
+                    )
+                     (
+                      quote (
+                        
+                      )
+                    )
+                  )
+                   (
+                    let (
+                      (
+                        i 0
+                      )
+                    )
+                     (
+                      begin (
+                        call/cc (
+                          lambda (
+                            break6
+                          )
+                           (
+                            letrec (
+                              (
+                                loop5 (
+                                  lambda (
+                                    
+                                  )
+                                   (
+                                    if (
+                                      < i exp
+                                    )
+                                     (
+                                      begin (
+                                        set! result (
+                                          * result base
+                                        )
+                                      )
+                                       (
+                                        set! i (
+                                          + i 1
+                                        )
+                                      )
+                                       (
+                                        loop5
+                                      )
+                                    )
+                                     (
+                                      quote (
+                                        
+                                      )
+                                    )
+                                  )
+                                )
+                              )
+                            )
+                             (
+                              loop5
+                            )
+                          )
+                        )
+                      )
+                       (
+                        if (
+                          < exponent 0
+                        )
+                         (
+                          begin (
+                            set! result (
+                              _div 1.0 result
+                            )
+                          )
+                        )
+                         (
+                          quote (
+                            
+                          )
+                        )
+                      )
+                       (
+                        ret4 result
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+     (
+      define (
+        hex_digit n
+      )
+       (
+        call/cc (
+          lambda (
+            ret7
+          )
+           (
+            begin (
+              if (
+                < n 10
+              )
+               (
+                begin (
+                  ret7 (
+                    to-str-space n
+                  )
+                )
+              )
+               (
+                quote (
+                  
+                )
+              )
+            )
+             (
+              let (
+                (
+                  letters (
+                    _list "a" "b" "c" "d" "e" "f"
+                  )
+                )
+              )
+               (
+                begin (
+                  ret7 (
+                    list-ref letters (
+                      - n 10
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+     (
+      define (
+        floor_float x
+      )
+       (
+        call/cc (
+          lambda (
+            ret8
+          )
+           (
+            let (
+              (
+                i (
+                  let (
+                    (
+                      v9 x
+                    )
+                  )
+                   (
+                    cond (
+                      (
+                        string? v9
+                      )
+                       (
+                        inexact->exact (
+                          floor (
+                            string->number v9
+                          )
+                        )
+                      )
+                    )
+                     (
+                      (
+                        boolean? v9
+                      )
+                       (
+                        if v9 1 0
+                      )
+                    )
+                     (
+                      else (
+                        inexact->exact (
+                          floor v9
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            )
+             (
+              begin (
+                if (
+                  > (
+                    + 0.0 i
+                  )
+                   x
+                )
+                 (
+                  begin (
+                    set! i (
+                      - i 1
+                    )
+                  )
+                )
+                 (
+                  quote (
+                    
+                  )
+                )
+              )
+               (
+                ret8 (
+                  + 0.0 i
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+     (
+      define (
+        subsum digit_pos_to_extract denominator_addend precision
+      )
+       (
+        call/cc (
+          lambda (
+            ret10
+          )
+           (
+            let (
+              (
+                total 0.0
+              )
+            )
+             (
+              begin (
+                let (
+                  (
+                    sum_index 0
+                  )
+                )
+                 (
+                  begin (
+                    call/cc (
+                      lambda (
+                        break12
+                      )
+                       (
+                        letrec (
+                          (
+                            loop11 (
+                              lambda (
+                                
+                              )
+                               (
+                                if (
+                                  < sum_index (
+                                    + digit_pos_to_extract precision
+                                  )
+                                )
+                                 (
+                                  begin (
+                                    let (
+                                      (
+                                        denominator (
+                                          + (
+                                            * 8 sum_index
+                                          )
+                                           denominator_addend
+                                        )
+                                      )
+                                    )
+                                     (
+                                      begin (
+                                        if (
+                                          < sum_index digit_pos_to_extract
+                                        )
+                                         (
+                                          begin (
+                                            let (
+                                              (
+                                                exponent (
+                                                  - (
+                                                    - digit_pos_to_extract 1
+                                                  )
+                                                   sum_index
+                                                )
+                                              )
+                                            )
+                                             (
+                                              begin (
+                                                let (
+                                                  (
+                                                    exponential_term (
+                                                      mod_pow 16 exponent denominator
+                                                    )
+                                                  )
+                                                )
+                                                 (
+                                                  begin (
+                                                    set! total (
+                                                      _add total (
+                                                        _div (
+                                                          + 0.0 exponential_term
+                                                        )
+                                                         (
+                                                          + 0.0 denominator
+                                                        )
+                                                      )
+                                                    )
+                                                  )
+                                                )
+                                              )
+                                            )
+                                          )
+                                        )
+                                         (
+                                          begin (
+                                            let (
+                                              (
+                                                exponent (
+                                                  - (
+                                                    - digit_pos_to_extract 1
+                                                  )
+                                                   sum_index
+                                                )
+                                              )
+                                            )
+                                             (
+                                              begin (
+                                                let (
+                                                  (
+                                                    exponential_term (
+                                                      pow_float 16.0 exponent
+                                                    )
+                                                  )
+                                                )
+                                                 (
+                                                  begin (
+                                                    set! total (
+                                                      _add total (
+                                                        _div exponential_term (
+                                                          + 0.0 denominator
+                                                        )
+                                                      )
+                                                    )
+                                                  )
+                                                )
+                                              )
+                                            )
+                                          )
+                                        )
+                                      )
+                                       (
+                                        set! sum_index (
+                                          + sum_index 1
+                                        )
+                                      )
+                                    )
+                                  )
+                                   (
+                                    loop11
+                                  )
+                                )
+                                 (
+                                  quote (
+                                    
+                                  )
+                                )
+                              )
+                            )
+                          )
+                        )
+                         (
+                          loop11
+                        )
+                      )
+                    )
+                  )
+                   (
+                    ret10 total
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+     (
+      define (
+        bailey_borwein_plouffe digit_position precision
+      )
+       (
+        call/cc (
+          lambda (
+            ret13
+          )
+           (
+            begin (
+              if (
+                <= digit_position 0
+              )
+               (
+                begin (
+                  panic "Digit position must be a positive integer"
+                )
+              )
+               (
+                quote (
+                  
+                )
+              )
+            )
+             (
+              if (
+                < precision 0
+              )
+               (
+                begin (
+                  panic "Precision must be a nonnegative integer"
+                )
+              )
+               (
+                quote (
+                  
+                )
+              )
+            )
+             (
+              let (
+                (
+                  sum_result (
+                    - (
+                      - (
+                        - (
+                          * 4.0 (
+                            subsum digit_position 1 precision
+                          )
+                        )
+                         (
+                          * 2.0 (
+                            subsum digit_position 4 precision
+                          )
+                        )
+                      )
+                       (
+                        * 1.0 (
+                          subsum digit_position 5 precision
+                        )
+                      )
+                    )
+                     (
+                      * 1.0 (
+                        subsum digit_position 6 precision
+                      )
+                    )
+                  )
+                )
+              )
+               (
+                begin (
+                  let (
+                    (
+                      fraction (
+                        - sum_result (
+                          floor_float sum_result
+                        )
+                      )
+                    )
+                  )
+                   (
+                    begin (
+                      let (
+                        (
+                          digit (
+                            let (
+                              (
+                                v14 (
+                                  * fraction 16.0
+                                )
+                              )
+                            )
+                             (
+                              cond (
+                                (
+                                  string? v14
+                                )
+                                 (
+                                  inexact->exact (
+                                    floor (
+                                      string->number v14
+                                    )
+                                  )
+                                )
+                              )
+                               (
+                                (
+                                  boolean? v14
+                                )
+                                 (
+                                  if v14 1 0
+                                )
+                              )
+                               (
+                                else (
+                                  inexact->exact (
+                                    floor v14
+                                  )
+                                )
+                              )
+                            )
+                          )
+                        )
+                      )
+                       (
+                        begin (
+                          let (
+                            (
+                              hd (
+                                hex_digit digit
+                              )
+                            )
+                          )
+                           (
+                            begin (
+                              ret13 hd
+                            )
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+     (
+      let (
+        (
+          digits ""
+        )
+      )
+       (
+        begin (
+          let (
+            (
+              i 1
+            )
+          )
+           (
+            begin (
+              call/cc (
+                lambda (
+                  break16
+                )
+                 (
+                  letrec (
+                    (
+                      loop15 (
+                        lambda (
+                          
+                        )
+                         (
+                          if (
+                            <= i 10
+                          )
+                           (
+                            begin (
+                              set! digits (
+                                string-append digits (
+                                  bailey_borwein_plouffe i 1000
+                                )
+                              )
+                            )
+                             (
+                              set! i (
+                                + i 1
+                              )
+                            )
+                             (
+                              loop15
+                            )
+                          )
+                           (
+                            quote (
+                              
+                            )
+                          )
+                        )
+                      )
+                    )
+                  )
+                   (
+                    loop15
+                  )
+                )
+              )
+            )
+             (
+              _display (
+                if (
+                  string? digits
+                )
+                 digits (
+                  to-str digits
+                )
+              )
+            )
+             (
+              newline
+            )
+             (
+              _display (
+                if (
+                  string? (
+                    bailey_borwein_plouffe 5 10000
+                  )
+                )
+                 (
+                  bailey_borwein_plouffe 5 10000
+                )
+                 (
+                  to-str (
+                    bailey_borwein_plouffe 5 10000
+                  )
+                )
+              )
+            )
+             (
+              newline
+            )
+          )
+        )
+      )
+    )
+     (
+      let (
+        (
+          end18 (
+            current-jiffy
+          )
+        )
+      )
+       (
+        let (
+          (
+            dur19 (
+              quotient (
+                * (
+                  - end18 start17
+                )
+                 1000000
+              )
+               jps20
+            )
+          )
+        )
+         (
+          begin (
+            _display (
+              string-append "{\n  \"duration_us\": " (
+                number->string dur19
+              )
+               ",\n  \"memory_bytes\": " (
+                number->string (
+                  _mem
+                )
+              )
+               ",\n  \"name\": \"main\"\n}"
+            )
+          )
+           (
+            newline
+          )
+        )
+      )
+    )
+  )
+)
