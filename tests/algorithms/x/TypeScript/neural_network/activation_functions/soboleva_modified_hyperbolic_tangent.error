@@ -1,0 +1,9 @@
+run: exit status 1
+[0m[1m[31merror[0m: Uncaught (in promise) ReferenceError: to_float is not defined
+    term = ((term * x) / to_float(n));
+[0m[31m             ^[0m
+    at [0m[1m[3mexp[0m ([0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/neural_network/activation_functions/soboleva_modified_hyperbolic_tangent.ts[0m:[0m[33m8[0m:[0m[33m14[0m)
+    at [0m[1m[3msoboleva_modified_hyperbolic_tangent[0m ([0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/neural_network/activation_functions/soboleva_modified_hyperbolic_tangent.ts[0m:[0m[33m19[0m:[0m[33m30[0m)
+    at [0m[1m[3mmain[0m ([0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/neural_network/activation_functions/soboleva_modified_hyperbolic_tangent.ts[0m:[0m[33m28[0m:[0m[33m23[0m)
+    at [0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/neural_network/activation_functions/soboleva_modified_hyperbolic_tangent.ts[0m:[0m[33m79[0m:[0m[33m3[0m
+    at [0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/neural_network/activation_functions/soboleva_modified_hyperbolic_tangent.ts[0m:[0m[33m91[0m:[0m[33m2[0m

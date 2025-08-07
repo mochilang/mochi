@@ -3672,11 +3672,13 @@ func convertPostfix(p *parser.PostfixExpr) (expr Expr, err error) {
 					}
 					switch e := expr.(type) {
 					case *SliceExpr, *MethodCallExpr, *SubstringExpr:
-						expr = &MethodCallExpr{Target: expr, Method: "charCodeAt", Args: []Expr{&NumberLit{Value: "0"}}}
+						useParseIntStr = true
+						expr = &CallExpr{Func: "parseIntStr", Args: []Expr{expr, &NumberLit{Value: "10"}}}
 					case *IndexExpr:
 						if ct := curType; ct != nil {
 							if _, ok := ct.(types.StringType); ok {
-								expr = &MethodCallExpr{Target: expr, Method: "charCodeAt", Args: []Expr{&NumberLit{Value: "0"}}}
+								useParseIntStr = true
+								expr = &CallExpr{Func: "parseIntStr", Args: []Expr{e, &NumberLit{Value: "10"}}}
 							} else {
 								expr = &CallExpr{Func: "Math.trunc", Args: []Expr{e}}
 							}
