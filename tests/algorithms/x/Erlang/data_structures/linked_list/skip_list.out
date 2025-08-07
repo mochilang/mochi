@@ -1,0 +1,21 @@
+/workspace/mochi/tests/algorithms/x/Erlang/data_structures/linked_list/skip_list.erl:42:1: Warning: function mochi_safe_mul/2 is unused
+%   42| mochi_safe_mul(A, B) ->
+%     | ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/data_structures/linked_list/skip_list.erl:155:24: Warning: variable 'Node_vals_tmp_2' exported from 'case' (line 136, column 9)
+%  155| {I_6, J_2, Key, Lvl_3, Node_vals_tmp_2, Update_4, Value, X_3} = Fun_6(I_6, J, Key, Lvl_3, Node_vals_tmp_2, Update_3, Value, X_3),
+%     |                        ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/data_structures/linked_list/skip_list.erl:180:24: Warning: variable 'J_3' exported from 'case' (line 144, column 9)
+%  180| {Forwards_2, I_8, Idx, J_3, Key, Lvl_3, Node_vals_tmp_2, Update_5, Value, X_3} = Fun_8(Forwards, I_7, Idx, J_3, Key, Lvl_3, Node_vals_tmp_2, Update_5, Value, X_3),
+%     |                        ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/data_structures/linked_list/skip_list.erl:180:41: Warning: variable 'Node_vals_tmp_2' exported from 'case' (line 136, column 9)
+%  180| {Forwards_2, I_8, Idx, J_3, Key, Lvl_3, Node_vals_tmp_2, Update_5, Value, X_3} = Fun_8(Forwards, I_7, Idx, J_3, Key, Lvl_3, Node_vals_tmp_2, Update_5, Value, X_3),
+%     |                                         ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/data_structures/linked_list/skip_list.erl:180:58: Warning: variable 'Update_5' exported from 'case' (line 144, column 9)
+%  180| {Forwards_2, I_8, Idx, J_3, Key, Lvl_3, Node_vals_tmp_2, Update_5, Value, X_3} = Fun_8(Forwards, I_7, Idx, J_3, Key, Lvl_3, Node_vals_tmp_2, Update_5, Value, X_3),
+%     |                                                          ^
+
+"2:2 -> 6:4 -> 8:4 -> 9:4"
