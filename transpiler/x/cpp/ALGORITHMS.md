@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 364/1077
-Last updated: 2025-08-07 16:40 +0700
+Completed programs: 365/1077
+Last updated: 2025-08-07 17:30 +0700
 
 Checklist:
 
@@ -260,17 +260,17 @@ Checklist:
 | 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 256.0µs | 3.73MB |
 | 252 | data_structures/stacks/lexicographical_numbers | ✓ | 405.0µs | 3.56MB |
 | 253 | data_structures/stacks/next_greater_element | ✓ | 518.0µs | 3.85MB |
-| 254 | data_structures/stacks/postfix_evaluation | ✓ | 516.0µs | 3.75MB |
-| 255 | data_structures/stacks/prefix_evaluation | ✓ | 497.0µs | 3.73MB |
-| 256 | data_structures/stacks/stack | ✓ | 236.0µs | 3.70MB |
-| 257 | data_structures/stacks/stack_using_two_queues | ✓ | 343.0µs | 3.69MB |
-| 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 301.0µs | 3.67MB |
-| 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 407.0µs | 3.45MB |
-| 260 | data_structures/stacks/stock_span_problem | ✓ | 110.0µs | 3.47MB |
-| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 339.0µs | 3.66MB |
-| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 283.0µs | 3.74MB |
-| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 213.0µs | 3.55MB |
-| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 225.0µs | 3.54MB |
+| 254 | data_structures/stacks/postfix_evaluation | ✓ | 340.0µs | 3.66MB |
+| 255 | data_structures/stacks/prefix_evaluation | ✓ | 543.0µs | 3.77MB |
+| 256 | data_structures/stacks/stack | ✓ | 236.0µs | 3.65MB |
+| 257 | data_structures/stacks/stack_using_two_queues | ✓ | 289.0µs | 3.56MB |
+| 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 214.0µs | 3.70MB |
+| 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 204.0µs | 3.49MB |
+| 260 | data_structures/stacks/stock_span_problem | ✓ | 117.0µs | 3.58MB |
+| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 202.0µs | 3.61MB |
+| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 241.0µs | 3.73MB |
+| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 228.0µs | 3.79MB |
+| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 235.0µs | 3.55MB |
 | 265 | data_structures/trie/radix_tree |   |  |  |
 | 266 | data_structures/trie/trie |   |  |  |
 | 267 | digital_image_processing/change_brightness | ✓ | 201.0µs | 3.58MB |
@@ -279,7 +279,7 @@ Checklist:
 | 270 | digital_image_processing/dithering/burkes | ✓ | 276.0µs | 3.62MB |
 | 271 | digital_image_processing/edge_detection/canny | ✓ | 216.0µs | 3.58MB |
 | 272 | digital_image_processing/filters/bilateral_filter | ✓ | 392.0µs | 3.79MB |
-| 273 | digital_image_processing/filters/convolve |   |  |  |
+| 273 | digital_image_processing/filters/convolve | ✓ | 295.0µs | 3.50MB |
 | 274 | digital_image_processing/filters/gabor_filter | ✓ | 332.0µs | 3.80MB |
 | 275 | digital_image_processing/filters/gaussian_filter | ✓ | 81.0µs | 3.45MB |
 | 276 | digital_image_processing/filters/laplacian_filter | ✓ | 224.0µs | 3.71MB |
@@ -292,7 +292,7 @@ Checklist:
 | 283 | digital_image_processing/morphological_operations/erosion_operation | ✓ | 421.0µs | 3.70MB |
 | 284 | digital_image_processing/resize/resize | ✓ | 308.0µs | 3.63MB |
 | 285 | digital_image_processing/rotation/rotation | ✓ | 175.0µs | 3.51MB |
-| 286 | digital_image_processing/sepia | ✓ | 242.0µs | 3.62MB |
+| 286 | digital_image_processing/sepia | ✓ | 370.0µs | 3.55MB |
 | 287 | digital_image_processing/test_digital_image_processing | ✓ | 455.0µs | 3.76MB |
 | 288 | divide_and_conquer/closest_pair_of_points |   |  |  |
 | 289 | divide_and_conquer/convex_hull | ✓ | 2.0µs | 3.61MB |

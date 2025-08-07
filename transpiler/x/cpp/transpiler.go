@@ -1647,11 +1647,21 @@ func (s *SelectorExpr) emit(w io.Writer) {
 func (i *IndexExpr) emit(w io.Writer) {
 	t := exprType(i.Target)
 	if t == "std::string" {
-		io.WriteString(w, "std::string(1, ")
-		i.Target.emit(w)
-		io.WriteString(w, "[")
-		emitIndex(w, i.Index)
-		io.WriteString(w, "])")
+		idxType := exprType(i.Index)
+		if idxType == "int64_t" {
+			io.WriteString(w, "([&](const auto& __s){ auto __i = ")
+			i.Index.emit(w)
+			io.WriteString(w, "; if (__i < 0) __i += __s.size(); return std::string(1, __s[static_cast<size_t>(__i)]); })")
+			io.WriteString(w, "(")
+			i.Target.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			io.WriteString(w, "std::string(1, ")
+			i.Target.emit(w)
+			io.WriteString(w, "[")
+			emitIndex(w, i.Index)
+			io.WriteString(w, "])")
+		}
 		return
 	}
 	if t == "std::any" {
@@ -1736,10 +1746,20 @@ func (i *IndexExpr) emit(w io.Writer) {
 			return
 		}
 	}
-	i.Target.emit(w)
-	io.WriteString(w, "[")
-	emitIndex(w, i.Index)
-	io.WriteString(w, "]")
+	idxType := exprType(i.Index)
+	if idxType == "int64_t" {
+		io.WriteString(w, "([&](const auto& __v){ auto __i = ")
+		i.Index.emit(w)
+		io.WriteString(w, "; if (__i < 0) __i += __v.size(); return __v[static_cast<size_t>(__i)]; })")
+		io.WriteString(w, "(")
+		i.Target.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		i.Target.emit(w)
+		io.WriteString(w, "[")
+		emitIndex(w, i.Index)
+		io.WriteString(w, "]")
+	}
 }
 
 func (s *SliceExpr) emit(w io.Writer) {
@@ -3898,9 +3918,15 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					lst.ElemType = "std::any"
 				}
 			}
-			globals = append(globals, &LetStmt{Name: stmt.Var.Name, Type: typ})
 			if val != nil {
-				body = append(body, &AssignStmt{Name: stmt.Var.Name, Value: val})
+				if _, ok := val.(*ListLit); ok {
+					globals = append(globals, &LetStmt{Name: stmt.Var.Name, Type: typ, Value: val})
+				} else {
+					globals = append(globals, &LetStmt{Name: stmt.Var.Name, Type: typ})
+					body = append(body, &AssignStmt{Name: stmt.Var.Name, Value: val})
+				}
+			} else {
+				globals = append(globals, &LetStmt{Name: stmt.Var.Name, Type: typ})
 			}
 			if cp.GlobalTypes != nil {
 				cp.GlobalTypes[stmt.Var.Name] = typ
