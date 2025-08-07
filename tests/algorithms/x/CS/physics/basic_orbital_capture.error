@@ -1,0 +1,5 @@
+exit status 134
+Unhandled exception. System.Exception: capture_area failed
+   at Program.run_tests() in /tmp/TestCSTranspiler_Algorithms_Golden001_physics_basic_orbital_capture2387454769/001/Program.cs:line 158
+   at Program.main() in /tmp/TestCSTranspiler_Algorithms_Golden001_physics_basic_orbital_capture2387454769/001/Program.cs:line 163
+   at Program.Main() in /tmp/TestCSTranspiler_Algorithms_Golden001_physics_basic_orbital_capture2387454769/001/Program.cs:line 173
