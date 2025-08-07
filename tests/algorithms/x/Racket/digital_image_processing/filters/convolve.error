@@ -1,0 +1,8 @@
+run: exit status 1
+list-ref: index -1 is not an exact nonnegative integer
+  context...:
+   /workspace/mochi/tests/algorithms/x/Racket/digital_image_processing/filters/convolve.rkt:90:22
+   /workspace/mochi/tests/algorithms/x/Racket/digital_image_processing/filters/convolve.rkt:77:23
+   /workspace/mochi/tests/algorithms/x/Racket/digital_image_processing/filters/convolve.rkt:69:2
+   /workspace/mochi/tests/algorithms/x/Racket/digital_image_processing/filters/convolve.rkt:172:2
+   body of "/workspace/mochi/tests/algorithms/x/Racket/digital_image_processing/filters/convolve.rkt"

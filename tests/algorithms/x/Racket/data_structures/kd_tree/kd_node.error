@@ -1,0 +1,6 @@
+run: exit status 1
+list-ref: index too large for list
+  index: 0
+  in: '()
+  context...:
+   body of "/workspace/mochi/tests/algorithms/x/Racket/data_structures/kd_tree/kd_node.rkt"

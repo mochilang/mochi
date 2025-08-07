@@ -1,0 +1,11 @@
+run: exit status 1
+list-ref: index -1 is not an exact nonnegative integer
+  context...:
+   /workspace/mochi/tests/algorithms/x/Racket/data_structures/heap/randomized_heap.rkt:133:2
+   /workspace/mochi/tests/algorithms/x/Racket/data_structures/heap/randomized_heap.rkt:157:2
+   /workspace/mochi/tests/algorithms/x/Racket/data_structures/heap/randomized_heap.rkt:156:0
+   body of "/workspace/mochi/tests/algorithms/x/Racket/data_structures/heap/randomized_heap.rkt"
+(1 1)
+(-1 0 1)
+1
+3

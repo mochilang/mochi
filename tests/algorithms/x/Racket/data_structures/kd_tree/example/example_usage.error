@@ -1,0 +1,6 @@
+run: exit status 1
+/workspace/mochi/tests/algorithms/x/Racket/data_structures/kd_tree/example/example_usage.rkt:118:9: module: identifier already defined
+  at: sublist
+  in: (define-values (sublist) (lambda (arr start end) (let/ec _return (begin (define res (list)) (define i start) (let/ec _break (let loop () (if (< i end) (let/ec _cont (set! res (append res (list (if arr (if (hash? arr) (hash-ref arr i #f) (list-ref arr (i...
+  location...:
+   /workspace/mochi/tests/algorithms/x/Racket/data_structures/kd_tree/example/example_usage.rkt:118:9

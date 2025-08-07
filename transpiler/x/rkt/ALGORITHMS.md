@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Racket code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Racket`.
-Last updated: 2025-08-07 03:03 UTC
+Last updated: 2025-08-07 08:21 UTC
 
-## Algorithms Golden Test Checklist (208/1077)
+## Algorithms Golden Test Checklist (310/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 9m31.223891s | 18.0 KB |
@@ -220,118 +220,118 @@ Last updated: 2025-08-07 03:03 UTC
 | 211 | data_structures/heap/binomial_heap | ✓ | 9m31.223891s | 13.9 KB |
 | 212 | data_structures/heap/heap | ✓ | 9m31.223891s | 84.4 KB |
 | 213 | data_structures/heap/heap_generic | ✓ | 9m31.223891s | 36.2 KB |
-| 214 | data_structures/heap/max_heap |   |  |  |
-| 215 | data_structures/heap/min_heap |   |  |  |
+| 214 | data_structures/heap/max_heap | ✓ | 9m31.223891s | 18.8 KB |
+| 215 | data_structures/heap/min_heap | ✓ | 9m31.223891s | 16.9 KB |
 | 216 | data_structures/heap/randomized_heap |   |  |  |
-| 217 | data_structures/kd_tree/build_kdtree |   |  |  |
+| 217 | data_structures/kd_tree/build_kdtree | ✓ | 9m31.223891s | 12.5 KB |
 | 218 | data_structures/kd_tree/example/example_usage |   |  |  |
-| 219 | data_structures/kd_tree/example/hypercube_points |   |  |  |
+| 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 9m31.223891s | 7.2 KB |
 | 220 | data_structures/kd_tree/kd_node |   |  |  |
-| 221 | data_structures/kd_tree/nearest_neighbour_search |   |  |  |
-| 222 | data_structures/kd_tree/tests/test_kdtree |   |  |  |
-| 223 | data_structures/linked_list/circular_linked_list |   |  |  |
-| 224 | data_structures/linked_list/deque_doubly |   |  |  |
-| 225 | data_structures/linked_list/doubly_linked_list |   |  |  |
-| 226 | data_structures/linked_list/doubly_linked_list_two |   |  |  |
-| 227 | data_structures/linked_list/floyds_cycle_detection |   |  |  |
-| 228 | data_structures/linked_list/from_sequence |   |  |  |
-| 229 | data_structures/linked_list/has_loop |   |  |  |
-| 230 | data_structures/linked_list/is_palindrome |   |  |  |
-| 231 | data_structures/linked_list/merge_two_lists |   |  |  |
-| 232 | data_structures/linked_list/middle_element_of_linked_list |   |  |  |
-| 233 | data_structures/linked_list/print_reverse |   |  |  |
-| 234 | data_structures/linked_list/reverse_k_group |   |  |  |
-| 235 | data_structures/linked_list/rotate_to_the_right |   |  |  |
-| 236 | data_structures/linked_list/singly_linked_list |   |  |  |
-| 237 | data_structures/linked_list/skip_list |   |  |  |
-| 238 | data_structures/linked_list/swap_nodes |   |  |  |
-| 239 | data_structures/queues/circular_queue |   |  |  |
-| 240 | data_structures/queues/circular_queue_linked_list |   |  |  |
-| 241 | data_structures/queues/double_ended_queue |   |  |  |
+| 221 | data_structures/kd_tree/nearest_neighbour_search | ✓ | 9m31.223891s | 42.5 KB |
+| 222 | data_structures/kd_tree/tests/test_kdtree | ✓ | 9m31.223891s | 128.8 KB |
+| 223 | data_structures/linked_list/circular_linked_list | ✓ | 9m31.223891s | 49.1 KB |
+| 224 | data_structures/linked_list/deque_doubly | ✓ | 9m31.223891s | 13.4 KB |
+| 225 | data_structures/linked_list/doubly_linked_list | ✓ | 9m31.223891s | 36.8 KB |
+| 226 | data_structures/linked_list/doubly_linked_list_two | ✓ | 9m31.223891s | 50.0 KB |
+| 227 | data_structures/linked_list/floyds_cycle_detection | ✓ | 9m31.223891s | 16.4 KB |
+| 228 | data_structures/linked_list/from_sequence | ✓ | 9m31.223891s | 15.3 KB |
+| 229 | data_structures/linked_list/has_loop | ✓ | 9m31.223891s | 15.8 KB |
+| 230 | data_structures/linked_list/is_palindrome | ✓ | 9m31.223891s | 12.0 KB |
+| 231 | data_structures/linked_list/merge_two_lists | ✓ | 9m31.223891s | 150.8 KB |
+| 232 | data_structures/linked_list/middle_element_of_linked_list | ✓ | 9m31.223891s | 41.4 KB |
+| 233 | data_structures/linked_list/print_reverse | ✓ | 9m31.223891s | 13.9 KB |
+| 234 | data_structures/linked_list/reverse_k_group | ✓ | 9m31.223891s | 16.1 KB |
+| 235 | data_structures/linked_list/rotate_to_the_right | ✓ | 9m31.223891s | 12.5 KB |
+| 236 | data_structures/linked_list/singly_linked_list | ✓ | 9m31.223891s | 43.8 KB |
+| 237 | data_structures/linked_list/skip_list | ✓ | 9m31.223891s | 100.2 KB |
+| 238 | data_structures/linked_list/swap_nodes | ✓ | 9m31.223891s | 12.9 KB |
+| 239 | data_structures/queues/circular_queue | ✓ | 9m31.223891s | 13.0 KB |
+| 240 | data_structures/queues/circular_queue_linked_list | ✓ | 9m31.223891s | 13.2 KB |
+| 241 | data_structures/queues/double_ended_queue | ✓ | 9m31.223891s | 19.8 KB |
 | 242 | data_structures/queues/linked_queue |   |  |  |
-| 243 | data_structures/queues/priority_queue_using_list |   |  |  |
+| 243 | data_structures/queues/priority_queue_using_list | ✓ | 9m31.223891s | 113.6 KB |
 | 244 | data_structures/queues/queue_by_list |   |  |  |
-| 245 | data_structures/queues/queue_by_two_stacks |   |  |  |
-| 246 | data_structures/queues/queue_on_pseudo_stack |   |  |  |
-| 247 | data_structures/stacks/balanced_parentheses |   |  |  |
-| 248 | data_structures/stacks/dijkstras_two_stack_algorithm |   |  |  |
-| 249 | data_structures/stacks/infix_to_postfix_conversion |   |  |  |
-| 250 | data_structures/stacks/infix_to_prefix_conversion |   |  |  |
-| 251 | data_structures/stacks/largest_rectangle_histogram |   |  |  |
-| 252 | data_structures/stacks/lexicographical_numbers |   |  |  |
-| 253 | data_structures/stacks/next_greater_element |   |  |  |
-| 254 | data_structures/stacks/postfix_evaluation |   |  |  |
-| 255 | data_structures/stacks/prefix_evaluation |   |  |  |
+| 245 | data_structures/queues/queue_by_two_stacks | ✓ | 9m31.223891s | 2.7 KB |
+| 246 | data_structures/queues/queue_on_pseudo_stack | ✓ | 9m31.223891s | 30.8 KB |
+| 247 | data_structures/stacks/balanced_parentheses | ✓ | 9m31.223891s | 37.3 KB |
+| 248 | data_structures/stacks/dijkstras_two_stack_algorithm | ✓ | 9m31.223891s | 41.7 KB |
+| 249 | data_structures/stacks/infix_to_postfix_conversion | ✓ | 9m31.223891s | 69.9 KB |
+| 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ | 9m31.223891s | 384 B |
+| 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 9m31.223891s | 27.5 KB |
+| 252 | data_structures/stacks/lexicographical_numbers | ✓ | 9m31.223891s | 17.9 KB |
+| 253 | data_structures/stacks/next_greater_element | ✓ | 9m31.223891s | 195.2 KB |
+| 254 | data_structures/stacks/postfix_evaluation | ✓ | 9m31.223891s | 56.2 KB |
+| 255 | data_structures/stacks/prefix_evaluation | ✓ | 9m31.223891s | 98.3 KB |
 | 256 | data_structures/stacks/stack |   |  |  |
 | 257 | data_structures/stacks/stack_using_two_queues |   |  |  |
-| 258 | data_structures/stacks/stack_with_doubly_linked_list |   |  |  |
-| 259 | data_structures/stacks/stack_with_singly_linked_list |   |  |  |
-| 260 | data_structures/stacks/stock_span_problem |   |  |  |
-| 261 | data_structures/suffix_tree/example/example_usage |   |  |  |
-| 262 | data_structures/suffix_tree/suffix_tree |   |  |  |
-| 263 | data_structures/suffix_tree/suffix_tree_node |   |  |  |
+| 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 9m31.223891s | 17.4 KB |
+| 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 9m31.223891s | 11.0 KB |
+| 260 | data_structures/stacks/stock_span_problem | ✓ | 9m31.223891s | 2.7 KB |
+| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 9m31.223891s | 26.6 KB |
+| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 9m31.223891s | 12.8 KB |
+| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 9m31.223891s | 1.9 KB |
 | 264 | data_structures/suffix_tree/tests/test_suffix_tree |   |  |  |
-| 265 | data_structures/trie/radix_tree |   |  |  |
-| 266 | data_structures/trie/trie |   |  |  |
-| 267 | digital_image_processing/change_brightness |   |  |  |
-| 268 | digital_image_processing/change_contrast |   |  |  |
-| 269 | digital_image_processing/convert_to_negative |   |  |  |
-| 270 | digital_image_processing/dithering/burkes |   |  |  |
-| 271 | digital_image_processing/edge_detection/canny |   |  |  |
-| 272 | digital_image_processing/filters/bilateral_filter |   |  |  |
+| 265 | data_structures/trie/radix_tree | ✓ | 9m31.223891s | 28.0 KB |
+| 266 | data_structures/trie/trie | ✓ | 9m31.223891s | 60.2 KB |
+| 267 | digital_image_processing/change_brightness | ✓ | 9m31.223891s | 13.6 KB |
+| 268 | digital_image_processing/change_contrast | ✓ | 9m31.223891s | 15.7 KB |
+| 269 | digital_image_processing/convert_to_negative | ✓ | 9m31.223891s | 6.9 KB |
+| 270 | digital_image_processing/dithering/burkes | ✓ | 9m31.223891s | 78.1 KB |
+| 271 | digital_image_processing/edge_detection/canny | ✓ | 9m31.223891s | 18.0 KB |
+| 272 | digital_image_processing/filters/bilateral_filter | ✓ | 9m31.223891s | 1.7 KB |
 | 273 | digital_image_processing/filters/convolve |   |  |  |
-| 274 | digital_image_processing/filters/gabor_filter |   |  |  |
-| 275 | digital_image_processing/filters/gaussian_filter |   |  |  |
-| 276 | digital_image_processing/filters/laplacian_filter |   |  |  |
-| 277 | digital_image_processing/filters/local_binary_pattern |   |  |  |
-| 278 | digital_image_processing/filters/median_filter |   |  |  |
-| 279 | digital_image_processing/filters/sobel_filter |   |  |  |
-| 280 | digital_image_processing/histogram_equalization/histogram_stretch |   |  |  |
-| 281 | digital_image_processing/index_calculation |   |  |  |
-| 282 | digital_image_processing/morphological_operations/dilation_operation |   |  |  |
-| 283 | digital_image_processing/morphological_operations/erosion_operation |   |  |  |
-| 284 | digital_image_processing/resize/resize |   |  |  |
-| 285 | digital_image_processing/rotation/rotation |   |  |  |
-| 286 | digital_image_processing/sepia |   |  |  |
-| 287 | digital_image_processing/test_digital_image_processing |   |  |  |
-| 288 | divide_and_conquer/closest_pair_of_points |   |  |  |
-| 289 | divide_and_conquer/convex_hull |   |  |  |
-| 290 | divide_and_conquer/heaps_algorithm |   |  |  |
-| 291 | divide_and_conquer/heaps_algorithm_iterative |   |  |  |
-| 292 | divide_and_conquer/inversions |   |  |  |
-| 293 | divide_and_conquer/kth_order_statistic |   |  |  |
-| 294 | divide_and_conquer/max_difference_pair |   |  |  |
-| 295 | divide_and_conquer/max_subarray |   |  |  |
-| 296 | divide_and_conquer/mergesort |   |  |  |
-| 297 | divide_and_conquer/peak |   |  |  |
-| 298 | divide_and_conquer/power |   |  |  |
-| 299 | divide_and_conquer/strassen_matrix_multiplication |   |  |  |
-| 300 | docs/conf |   |  |  |
-| 301 | dynamic_programming/abbreviation |   |  |  |
-| 302 | dynamic_programming/all_construct |   |  |  |
-| 303 | dynamic_programming/bitmask |   |  |  |
-| 304 | dynamic_programming/catalan_numbers |   |  |  |
-| 305 | dynamic_programming/climbing_stairs |   |  |  |
-| 306 | dynamic_programming/combination_sum_iv |   |  |  |
-| 307 | dynamic_programming/edit_distance |   |  |  |
-| 308 | dynamic_programming/factorial |   |  |  |
-| 309 | dynamic_programming/fast_fibonacci |   |  |  |
-| 310 | dynamic_programming/fibonacci |   |  |  |
-| 311 | dynamic_programming/fizz_buzz |   |  |  |
-| 312 | dynamic_programming/floyd_warshall |   |  |  |
-| 313 | dynamic_programming/integer_partition |   |  |  |
-| 314 | dynamic_programming/iterating_through_submasks |   |  |  |
-| 315 | dynamic_programming/k_means_clustering_tensorflow |   |  |  |
+| 274 | digital_image_processing/filters/gabor_filter | ✓ | 9m31.223891s | 8.2 KB |
+| 275 | digital_image_processing/filters/gaussian_filter | ✓ | 9m31.223891s | 5.5 KB |
+| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 9m31.223891s | 18.5 KB |
+| 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 9m31.223891s | 207.8 KB |
+| 278 | digital_image_processing/filters/median_filter | ✓ | 9m31.223891s | 186.0 KB |
+| 279 | digital_image_processing/filters/sobel_filter | ✓ | 9m31.223891s | 1.1 MB |
+| 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 9m31.223891s | 4.0 KB |
+| 281 | digital_image_processing/index_calculation | ✓ | 9m31.223891s | 6.5 KB |
+| 282 | digital_image_processing/morphological_operations/dilation_operation | ✓ | 9m31.223891s | 114.9 KB |
+| 283 | digital_image_processing/morphological_operations/erosion_operation | ✓ | 9m31.223891s | 43.5 KB |
+| 284 | digital_image_processing/resize/resize | ✓ | 9m31.223891s | 56.2 KB |
+| 285 | digital_image_processing/rotation/rotation | ✓ | 9m31.223891s | 1.9 KB |
+| 286 | digital_image_processing/sepia | ✓ | 9m31.223891s | 2.6 KB |
+| 287 | digital_image_processing/test_digital_image_processing | ✓ | 9m31.223891s | 11.6 KB |
+| 288 | divide_and_conquer/closest_pair_of_points | ✓ | 9m31.223891s | 67.3 KB |
+| 289 | divide_and_conquer/convex_hull | ✓ | 9m31.223891s | 384 B |
+| 290 | divide_and_conquer/heaps_algorithm | ✓ | 9m31.223891s | 13.5 KB |
+| 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 9m31.223891s | 25.3 KB |
+| 292 | divide_and_conquer/inversions | ✓ | 9m31.223891s | 2.3 KB |
+| 293 | divide_and_conquer/kth_order_statistic | ✓ | 9m31.223891s | 40.1 KB |
+| 294 | divide_and_conquer/max_difference_pair | ✓ | 9m31.223891s | 25.1 KB |
+| 295 | divide_and_conquer/max_subarray | ✓ | 9m31.223891s | 84.5 KB |
+| 296 | divide_and_conquer/mergesort | ✓ | 9m31.223891s | 80.2 KB |
+| 297 | divide_and_conquer/peak | ✓ | 9m31.223891s | 11.3 KB |
+| 298 | divide_and_conquer/power | ✓ | 9m31.223891s | 12.0 KB |
+| 299 | divide_and_conquer/strassen_matrix_multiplication | ✓ | 9m31.223891s | 2.2 MB |
+| 300 | docs/conf | ✓ | 9m31.223891s | 544 B |
+| 301 | dynamic_programming/abbreviation | ✓ | 9m31.223891s | 221.5 KB |
+| 302 | dynamic_programming/all_construct | ✓ | 9m31.223891s | 247.6 KB |
+| 303 | dynamic_programming/bitmask | ✓ | 9m31.223891s | 29.3 KB |
+| 304 | dynamic_programming/catalan_numbers | ✓ | 9m31.223891s | 16.1 KB |
+| 305 | dynamic_programming/climbing_stairs | ✓ | 9m31.223891s | 2.9 KB |
+| 306 | dynamic_programming/combination_sum_iv | ✓ | 9m31.223891s | 94.5 KB |
+| 307 | dynamic_programming/edit_distance | ✓ | 9m31.223891s | 1.5 MB |
+| 308 | dynamic_programming/factorial | ✓ | 9m31.223891s | 16.8 KB |
+| 309 | dynamic_programming/fast_fibonacci | ✓ | 9m31.223891s | 45.0 KB |
+| 310 | dynamic_programming/fibonacci | ✓ | 9m31.223891s | 16.5 KB |
+| 311 | dynamic_programming/fizz_buzz | ✓ | 9m31.223891s | 14.6 KB |
+| 312 | dynamic_programming/floyd_warshall | ✓ | 9m31.223891s | 85.1 KB |
+| 313 | dynamic_programming/integer_partition | ✓ | 9m31.223891s | 1.3 MB |
+| 314 | dynamic_programming/iterating_through_submasks | ✓ | 9m31.223891s | 69.1 KB |
+| 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 9m31.223891s | 242.4 KB |
 | 316 | dynamic_programming/knapsack |   |  |  |
-| 317 | dynamic_programming/largest_divisible_subset |   |  |  |
-| 318 | dynamic_programming/longest_common_subsequence |   |  |  |
-| 319 | dynamic_programming/longest_common_substring |   |  |  |
-| 320 | dynamic_programming/longest_increasing_subsequence |   |  |  |
-| 321 | dynamic_programming/longest_increasing_subsequence_iterative |   |  |  |
-| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn |   |  |  |
-| 323 | dynamic_programming/longest_palindromic_subsequence |   |  |  |
-| 324 | dynamic_programming/matrix_chain_multiplication |   |  |  |
-| 325 | dynamic_programming/matrix_chain_order |   |  |  |
+| 317 | dynamic_programming/largest_divisible_subset | ✓ | 9m31.223891s | 27.0 KB |
+| 318 | dynamic_programming/longest_common_subsequence | ✓ | 9m31.223891s | 864 B |
+| 319 | dynamic_programming/longest_common_substring | ✓ | 9m31.223891s | 159.3 KB |
+| 320 | dynamic_programming/longest_increasing_subsequence | ✓ | 9m31.223891s | 384 B |
+| 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 9m31.223891s | 241.1 KB |
+| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | ✓ | 9m31.223891s | 54.3 KB |
+| 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 9m31.223891s | 195.7 KB |
+| 324 | dynamic_programming/matrix_chain_multiplication | ✓ | 9m31.223891s | 384 B |
+| 325 | dynamic_programming/matrix_chain_order | ✓ | 9m31.223891s | 104.7 KB |
 | 326 | dynamic_programming/max_non_adjacent_sum |   |  |  |
 | 327 | dynamic_programming/max_product_subarray |   |  |  |
 | 328 | dynamic_programming/max_subarray_sum |   |  |  |

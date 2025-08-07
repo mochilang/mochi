@@ -1,0 +1,8 @@
+Stack operations using Doubly LinkedList
+stack elements are:
+7->6->5->4->
+Top element is 7
+Size of the stack is 4
+stack elements are:
+5->4->
+stack is empty: #f
