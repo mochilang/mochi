@@ -3266,7 +3266,7 @@ let rec __show v =
 and __show_list l =
   match l with
   | [] -> "[]"
-  | _ -> "[" ^ String.concat " " (List.map __show l) ^ "]"
+  | _ -> "[" ^ String.concat ", " (List.map __show l) ^ "]"
 and __str v =
   let open Obj in
   let r = repr v in
@@ -3281,7 +3281,7 @@ and __str v =
 and __str_list l =
   match l with
   | [] -> "[]"
-  | _ -> "[" ^ String.concat " " (List.map __str l) ^ "]"
+  | _ -> "[" ^ String.concat ", " (List.map __str l) ^ "]"
 `
 
 func gitTimestamp() string {
