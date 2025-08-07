@@ -3088,8 +3088,10 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				}
 				varTypes[s.Var.Name] = list.ElemType
 			} else if len(list.Elems) == 0 {
-				list.ElemType = "object[]"
-				varTypes[s.Var.Name] = "object[]"
+				if list.ElemType == "" {
+					list.ElemType = "object[]"
+				}
+				varTypes[s.Var.Name] = list.ElemType
 			}
 			_ = list // do not convert mutable vars to structs
 		}
@@ -4902,23 +4904,23 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\t}\n")
 	}
 	if usesSHA256 {
-               buf.WriteString("\tstatic long[] _sha256(long[] bs) {\n")
-               buf.WriteString("\t\tusing var sha = System.Security.Cryptography.SHA256.Create();\n")
-               buf.WriteString("\t\tvar bytes = new byte[bs.Length];\n")
-               buf.WriteString("\t\tfor (int i = 0; i < bs.Length; i++) bytes[i] = (byte)bs[i];\n")
-               buf.WriteString("\t\tvar hash = sha.ComputeHash(bytes);\n")
-               buf.WriteString("\t\tvar res = new long[hash.Length];\n")
-               buf.WriteString("\t\tfor (int i = 0; i < hash.Length; i++) res[i] = hash[i];\n")
-               buf.WriteString("\t\treturn res;\n")
-               buf.WriteString("\t}\n")
-               buf.WriteString("\tstatic long[] _sha256(string s) {\n")
-               buf.WriteString("\t\tusing var sha = System.Security.Cryptography.SHA256.Create();\n")
-               buf.WriteString("\t\tvar bytes = System.Text.Encoding.UTF8.GetBytes(s);\n")
-               buf.WriteString("\t\tvar hash = sha.ComputeHash(bytes);\n")
-               buf.WriteString("\t\tvar res = new long[hash.Length];\n")
-               buf.WriteString("\t\tfor (int i = 0; i < hash.Length; i++) res[i] = hash[i];\n")
-               buf.WriteString("\t\treturn res;\n")
-               buf.WriteString("\t}\n")
+		buf.WriteString("\tstatic long[] _sha256(long[] bs) {\n")
+		buf.WriteString("\t\tusing var sha = System.Security.Cryptography.SHA256.Create();\n")
+		buf.WriteString("\t\tvar bytes = new byte[bs.Length];\n")
+		buf.WriteString("\t\tfor (int i = 0; i < bs.Length; i++) bytes[i] = (byte)bs[i];\n")
+		buf.WriteString("\t\tvar hash = sha.ComputeHash(bytes);\n")
+		buf.WriteString("\t\tvar res = new long[hash.Length];\n")
+		buf.WriteString("\t\tfor (int i = 0; i < hash.Length; i++) res[i] = hash[i];\n")
+		buf.WriteString("\t\treturn res;\n")
+		buf.WriteString("\t}\n")
+		buf.WriteString("\tstatic long[] _sha256(string s) {\n")
+		buf.WriteString("\t\tusing var sha = System.Security.Cryptography.SHA256.Create();\n")
+		buf.WriteString("\t\tvar bytes = System.Text.Encoding.UTF8.GetBytes(s);\n")
+		buf.WriteString("\t\tvar hash = sha.ComputeHash(bytes);\n")
+		buf.WriteString("\t\tvar res = new long[hash.Length];\n")
+		buf.WriteString("\t\tfor (int i = 0; i < hash.Length; i++) res[i] = hash[i];\n")
+		buf.WriteString("\t\treturn res;\n")
+		buf.WriteString("\t}\n")
 	}
 	if usesInput {
 		buf.WriteString("\tstatic string[] inputLines;\n")

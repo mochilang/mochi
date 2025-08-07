@@ -6,6 +6,11 @@ using System.Text.Json;
 using System.Numerics;
 using System.Collections;
 
+class Stack {
+    public long[] items;
+    public long limit;
+    public override string ToString() => $"Stack {{items = {items}, limit = {limit}}}";
+}
 class Program {
     static bool seededNow = false;
     static long nowSeed = 0;
@@ -97,36 +102,85 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    static long[] price_8 = new long[]{10, 4, 5, 90, 120, 80};
-    static long[] spans_9 = Program.calculation_span(price_8);
-    public static long[] calculation_span(long[] price_0) {
-        long n_1 = price_0.Length;
-        long[] st_2 = new long[]{};
-        long[] span_3 = new long[]{};
-        st_2 = (Enumerable.ToArray(Enumerable.Append<long>(st_2, 0)));
-        span_3 = (Enumerable.ToArray(Enumerable.Append<long>(span_3, 1)));
-        for (var i_4 = 1; i_4 < n_1; i_4++) {
-            while (((st_2.Length > 0) && (price_0[(int)(st_2[(int)((st_2.Length - 1))])] <= price_0[(int)(i_4)]))) {
-                st_2 = st_2.Skip((int)(0)).Take((int)(((st_2.Length - 1) - 0))).ToArray();
-            }
-            long s_5 = ((st_2.Length <= 0) ? (i_4 + 1) : (i_4 - st_2[(int)((st_2.Length - 1))]));
-            span_3 = (Enumerable.ToArray(Enumerable.Append<long>(span_3, s_5)));
-            st_2 = (Enumerable.ToArray(Enumerable.Append<long>(st_2, i_4)));
-        };
-        return span_3;
+    public static Stack make_stack(long limit_0) {
+        return new Stack{items = new long[]{}, limit = limit_0};
     }
 
-    public static void print_array(long[] arr_6) {
-        for (var i_7 = 0; i_7 < arr_6.Length; i_7++) {
-            Console.WriteLine(Program._fmtTop(arr_6[(int)(i_7)]));
+    public static bool is_empty(Stack s_1) {
+        return (s_1.items.Length == 0);
+    }
+
+    public static long size(Stack s_2) {
+        return s_2.items.Length;
+    }
+
+    public static bool is_full(Stack s_3) {
+        return (s_3.items.Length >= s_3.limit);
+    }
+
+    public static void push(Stack s_4, long item_5) {
+        if (Program.is_full(s_4)) {
+            throw new Exception("stack overflow");
         };
+        s_4.items = (Enumerable.ToArray(Enumerable.Append<long>(s_4.items, item_5)));
+    }
+
+    public static long pop(Stack s_6) {
+        if (Program.is_empty(s_6)) {
+            throw new Exception("stack underflow");
+        };
+        long n_7 = s_6.items.Length;
+        long val_8 = s_6.items[(int)((n_7 - 1))];
+        s_6.items = s_6.items.Skip((int)(0)).Take((int)(((n_7 - 1) - 0))).ToArray();
+        return val_8;
+    }
+
+    public static long peek(Stack s_9) {
+        if (Program.is_empty(s_9)) {
+            throw new Exception("peek from empty stack");
+        };
+        return s_9.items[(int)((s_9.items.Length - 1))];
+    }
+
+    public static bool contains(Stack s_10, long item_11) {
+        long i_12 = 0;
+        while ((i_12 < s_10.items.Length)) {
+            if ((s_10.items[(int)(i_12)] == item_11)) {
+                return true;
+            }
+            i_12 = (i_12 + 1);
+        };
+        return false;
+    }
+
+    public static string stack_repr(Stack s_13) {
+        return _fmtStr(s_13.items);
+    }
+
+    public static void main() {
+        Stack s_14 = Program.make_stack(5);
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.is_empty(s_14))));
+        Program.push(s_14, 0);
+        Program.push(s_14, 1);
+        Program.push(s_14, 2);
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.peek(s_14))));
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.size(s_14))));
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.is_full(s_14))));
+        Program.push(s_14, 3);
+        Program.push(s_14, 4);
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.is_full(s_14))));
+        Console.WriteLine(Program._fmtTop(Program.stack_repr(s_14)));
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.pop(s_14))));
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.peek(s_14))));
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.contains(s_14, 1))));
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.contains(s_14, 9))));
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            Program.print_array(spans_9);
+            Program.main();
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);
