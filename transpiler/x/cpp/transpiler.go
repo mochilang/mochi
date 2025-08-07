@@ -54,29 +54,26 @@ var useExists bool
 var useAnyVec bool
 var inStr bool
 var reserved = map[string]bool{
-	"this":   true,
-	"new":    true,
-	"double": true,
-	"char":   true,
-	"div":    true,
-	"exp":    true,
-	"and":    true,
-	"and_eq": true,
-	"bitand": true,
-	"bitor":  true,
-	"compl":  true,
-	"not":    true,
-	"not_eq": true,
-	"or":     true,
-	"or_eq":  true,
-	"xor":    true,
-	"xor_eq": true,
-	"asm":    true,
-	// avoid clashing with C standard library functions
-	"rand":   true,
-	"random": true,
-	"time":   true,
-	"delete": true,
+       // C++ keywords
+       "alignas": true, "alignof": true, "and": true, "and_eq": true, "asm": true, "auto": true,
+       "bitand": true, "bitor": true, "bool": true, "break": true, "case": true, "catch": true,
+       "char": true, "char8_t": true, "char16_t": true, "char32_t": true, "class": true, "compl": true,
+       "concept": true, "const": true, "consteval": true, "constexpr": true, "constinit": true,
+       "const_cast": true, "continue": true, "co_await": true, "co_return": true, "co_yield": true,
+       "decltype": true, "default": true, "delete": true, "do": true, "double": true,
+       "dynamic_cast": true, "else": true, "enum": true, "explicit": true, "export": true,
+       "extern": true, "false": true, "float": true, "for": true, "friend": true, "goto": true,
+       "if": true, "inline": true, "int": true, "long": true, "mutable": true, "namespace": true,
+       "new": true, "noexcept": true, "not": true, "not_eq": true, "nullptr": true, "operator": true,
+       "or": true, "or_eq": true, "private": true, "protected": true, "public": true,
+       "register": true, "reinterpret_cast": true, "requires": true, "return": true, "short": true,
+       "signed": true, "sizeof": true, "static": true, "static_assert": true, "static_cast": true,
+       "struct": true, "switch": true, "template": true, "this": true, "thread_local": true,
+       "throw": true, "true": true, "try": true, "typedef": true, "typeid": true, "typename": true,
+       "union": true, "unsigned": true, "using": true, "virtual": true, "void": true, "volatile": true,
+       "wchar_t": true, "while": true, "xor": true, "xor_eq": true,
+       // avoid clashing with C standard library functions
+       "rand": true, "random": true, "time": true,
 }
 var currentReturnType string
 var inReturn bool
@@ -4232,139 +4229,190 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		}
 		return &ExprStmt{Expr: expr}, nil
 	case s.Let != nil:
-		var val Expr
-		var err error
-		typ := ""
-		if s.Let.Type != nil {
-			if s.Let.Type.Simple != nil {
-				typ = cppType(*s.Let.Type.Simple)
-			} else if s.Let.Type.Generic != nil {
-				typ = cppType(typeRefString(&parser.TypeRef{Generic: s.Let.Type.Generic}))
-			}
-		}
-		if s.Let.Value != nil {
-			if f := fetchExprOnly(s.Let.Value); f != nil {
-				urlExpr, err2 := convertExpr(f.URL)
-				if err2 != nil {
-					return nil, err2
-				}
-				useFetch = true
-				if typ != "" {
-					if fetchStructs == nil {
-						fetchStructs = map[string]bool{}
-					}
-					fetchStructs[typ] = true
-					val = &CallExpr{Name: "_fetch_" + typ, Args: []Expr{urlExpr}}
-				} else {
-					val = &CallExpr{Name: "_fetch", Args: []Expr{urlExpr}}
-				}
-			} else {
-				val, err = convertExpr(s.Let.Value)
-				if err != nil {
-					return nil, err
-				}
-			}
-		}
-		if typ == "" && s.Let.Value != nil {
-			typ = exprType(val)
-			if idx, ok := val.(*IndexExpr); ok {
-				t := exprType(idx.Target)
-				if strings.HasPrefix(t, "std::vector<std::unique_ptr<") {
-					elem := strings.TrimSuffix(strings.TrimPrefix(t, "std::vector<std::unique_ptr<"), ">>")
-					typ = elem + "*"
-					val = &PtrGetExpr{Target: val}
-				} else if strings.HasPrefix(t, "std::vector<std::shared_ptr<") {
-					elem := strings.TrimSuffix(strings.TrimPrefix(t, "std::vector<std::shared_ptr<"), ">>")
-					typ = fmt.Sprintf("std::shared_ptr<%s>", elem)
-				}
-			}
-			typ = exprType(val)
-			if typ == "auto" || typ == "" {
-				t := guessType(s.Let.Value)
-				if t != "" && t != "auto" {
-					typ = t
-				}
-			}
-		}
-		if localTypes == nil {
-			localTypes = map[string]string{}
-		}
-		if typ != "" {
-			localTypes[s.Let.Name] = typ
-		} else {
-			localTypes[s.Let.Name] = "auto"
-		}
-		ls := &LetStmt{Name: s.Let.Name, Type: typ, Value: val}
-		if currentVarDecls != nil {
-			currentVarDecls[s.Let.Name] = ls
-		}
-		return ls, nil
-	case s.Var != nil:
-		var val Expr
-		var err error
-		if s.Var.Value != nil {
-			val, err = convertExpr(s.Var.Value)
-			if err != nil {
-				return nil, err
-			}
-		}
-		typ := ""
-		if s.Var.Type != nil {
-			if s.Var.Type.Simple != nil {
-				typ = cppType(*s.Var.Type.Simple)
-			} else if s.Var.Type.Generic != nil {
-				typ = cppType(typeRefString(&parser.TypeRef{Generic: s.Var.Type.Generic}))
-			}
-		}
-		if typ == "" && s.Var.Value != nil {
-			typ = exprType(val)
-			if idx, ok := val.(*IndexExpr); ok {
-				t := exprType(idx.Target)
-				if strings.HasPrefix(t, "std::vector<std::unique_ptr<") {
-					elem := strings.TrimSuffix(strings.TrimPrefix(t, "std::vector<std::unique_ptr<"), ">>")
-					typ = elem + "*"
-					val = &PtrGetExpr{Target: val}
-				} else if strings.HasPrefix(t, "std::vector<std::shared_ptr<") {
-					elem := strings.TrimSuffix(strings.TrimPrefix(t, "std::vector<std::shared_ptr<"), ">>")
-					typ = fmt.Sprintf("std::shared_ptr<%s>", elem)
-				}
-			}
-			if typ == "auto" || typ == "" {
-				typ = guessType(s.Var.Value)
-				if typ == "" {
-					if _, ok := val.(*StringLit); ok {
-						typ = "std::string"
-					}
-				}
-			}
-		}
-		if localTypes == nil {
-			localTypes = map[string]string{}
-		}
-		if typ != "" {
-			localTypes[s.Var.Name] = typ
-		} else {
-			localTypes[s.Var.Name] = "auto"
-		}
-		if ml, ok := val.(*MapLit); ok && typ != "" && strings.HasPrefix(typ, "std::map<") && strings.HasSuffix(typ, ">") {
-			parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(typ, "std::map<"), ">"), ",", 2)
-			if len(parts) == 2 {
-				if ml.KeyType == "auto" {
-					ml.KeyType = strings.TrimSpace(parts[0])
-				}
-				if ml.ValueType == "auto" {
-					ml.ValueType = strings.TrimSpace(parts[1])
-				}
-			}
-		}
-		if ll, ok := val.(*ListLit); ok && len(ll.Elems) == 0 && typ != "" {
-			ll.ElemType = elementTypeFromListType(typ)
-		}
-		ls := &LetStmt{Name: s.Var.Name, Type: typ, Value: val}
-		if currentVarDecls != nil {
-			currentVarDecls[s.Var.Name] = ls
-		}
-		return ls, nil
+               if paramNames != nil && paramNames[s.Let.Name] {
+                       val, err := convertExpr(s.Let.Value)
+                       if err != nil {
+                               return nil, err
+                       }
+                       delete(paramNames, s.Let.Name)
+                       return &AssignStmt{Name: s.Let.Name, Value: val}, nil
+               }
+               var val Expr
+               var err error
+               typ := ""
+               if s.Let.Type != nil {
+                       if s.Let.Type.Simple != nil {
+                               typ = cppType(*s.Let.Type.Simple)
+                       } else if s.Let.Type.Generic != nil {
+                               typ = cppType(typeRefString(&parser.TypeRef{Generic: s.Let.Type.Generic}))
+                       }
+               }
+               if s.Let.Value != nil {
+                       if f := fetchExprOnly(s.Let.Value); f != nil {
+                               urlExpr, err2 := convertExpr(f.URL)
+                               if err2 != nil {
+                                       return nil, err2
+                               }
+                               useFetch = true
+                               if typ != "" {
+                                       if fetchStructs == nil {
+                                               fetchStructs = map[string]bool{}
+                                       }
+                                       fetchStructs[typ] = true
+                                       val = &CallExpr{Name: "_fetch_" + typ, Args: []Expr{urlExpr}}
+                               } else {
+                                       val = &CallExpr{Name: "_fetch", Args: []Expr{urlExpr}}
+                               }
+                       } else {
+                               val, err = convertExpr(s.Let.Value)
+                               if err != nil {
+                                       return nil, err
+                               }
+                       }
+               }
+               if typ == "" && s.Let.Value != nil {
+                       typ = exprType(val)
+                       if idx, ok := val.(*IndexExpr); ok {
+                               t := exprType(idx.Target)
+                               if strings.HasPrefix(t, "std::vector<std::unique_ptr<") {
+                                       elem := strings.TrimSuffix(strings.TrimPrefix(t, "std::vector<std::unique_ptr<"), ">>")
+                                       typ = elem + "*"
+                                       val = &PtrGetExpr{Target: val}
+                               } else if strings.HasPrefix(t, "std::vector<std::shared_ptr<") {
+                                       elem := strings.TrimSuffix(strings.TrimPrefix(t, "std::vector<std::shared_ptr<"), ">>")
+                                       typ = fmt.Sprintf("std::shared_ptr<%s>", elem)
+                               }
+                       }
+                       typ = exprType(val)
+                       if typ == "auto" || typ == "" {
+                               t := guessType(s.Let.Value)
+                               if t != "" && t != "auto" {
+                                       typ = t
+                               }
+                       }
+               }
+               if localTypes == nil {
+                       localTypes = map[string]string{}
+               }
+               if typ != "" {
+                       localTypes[s.Let.Name] = typ
+               } else {
+                       localTypes[s.Let.Name] = "auto"
+               }
+               if ml, ok := val.(*MapLit); ok && typ != "" && strings.HasPrefix(typ, "std::map<") && strings.HasSuffix(typ, ">") {
+                       parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(typ, "std::map<"), ">"), ",", 2)
+                       if len(parts) == 2 {
+                               valType := strings.TrimSpace(parts[1])
+                               if ml.KeyType == "auto" || ml.KeyType == "" {
+                                       ml.KeyType = strings.TrimSpace(parts[0])
+                               }
+                               if ml.ValueType == "auto" || ml.ValueType == "std::any" || ml.ValueType == "" {
+                                       ml.ValueType = valType
+                               } else {
+                                       valType = ml.ValueType
+                               }
+                               for i, v := range ml.Values {
+                                       if ll, ok2 := v.(*ListLit); ok2 && len(ll.Elems) == 0 && ll.ElemType == "" {
+                                               ll.ElemType = elementTypeFromListType(valType)
+                                               ml.Values[i] = ll
+                                       }
+                               }
+                       }
+               }
+               ls := &LetStmt{Name: s.Let.Name, Type: typ, Value: val}
+               if currentVarDecls != nil {
+                       currentVarDecls[s.Let.Name] = ls
+               }
+               if paramNames != nil {
+                       delete(paramNames, s.Let.Name)
+               }
+               return ls, nil
+        case s.Var != nil:
+               if paramNames != nil && paramNames[s.Var.Name] {
+                       val, err := convertExpr(s.Var.Value)
+                       if err != nil {
+                               return nil, err
+                       }
+                       delete(paramNames, s.Var.Name)
+                       return &AssignStmt{Name: s.Var.Name, Value: val}, nil
+               }
+               var val Expr
+               var err error
+               if s.Var.Value != nil {
+                       val, err = convertExpr(s.Var.Value)
+                       if err != nil {
+                               return nil, err
+                       }
+               }
+               typ := ""
+               if s.Var.Type != nil {
+                       if s.Var.Type.Simple != nil {
+                               typ = cppType(*s.Var.Type.Simple)
+                       } else if s.Var.Type.Generic != nil {
+                               typ = cppType(typeRefString(&parser.TypeRef{Generic: s.Var.Type.Generic}))
+                       }
+               }
+               if typ == "" && s.Var.Value != nil {
+                       typ = exprType(val)
+                       if idx, ok := val.(*IndexExpr); ok {
+                               t := exprType(idx.Target)
+                               if strings.HasPrefix(t, "std::vector<std::unique_ptr<") {
+                                       elem := strings.TrimSuffix(strings.TrimPrefix(t, "std::vector<std::unique_ptr<"), ">>")
+                                       typ = elem + "*"
+                                       val = &PtrGetExpr{Target: val}
+                               } else if strings.HasPrefix(t, "std::vector<std::shared_ptr<") {
+                                       elem := strings.TrimSuffix(strings.TrimPrefix(t, "std::vector<std::shared_ptr<"), ">>")
+                                       typ = fmt.Sprintf("std::shared_ptr<%s>", elem)
+                               }
+                       }
+                       if typ == "auto" || typ == "" {
+                               typ = guessType(s.Var.Value)
+                               if typ == "" {
+                                       if _, ok := val.(*StringLit); ok {
+                                               typ = "std::string"
+                                       }
+                               }
+                       }
+               }
+               if localTypes == nil {
+                       localTypes = map[string]string{}
+               }
+               if typ != "" {
+                       localTypes[s.Var.Name] = typ
+               } else {
+                       localTypes[s.Var.Name] = "auto"
+               }
+               if ml, ok := val.(*MapLit); ok && typ != "" && strings.HasPrefix(typ, "std::map<") && strings.HasSuffix(typ, ">") {
+                       parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(typ, "std::map<"), ">"), ",", 2)
+                       if len(parts) == 2 {
+                               valType := strings.TrimSpace(parts[1])
+                               if ml.KeyType == "auto" || ml.KeyType == "" {
+                                       ml.KeyType = strings.TrimSpace(parts[0])
+                               }
+                               if ml.ValueType == "auto" || ml.ValueType == "std::any" || ml.ValueType == "" {
+                                       ml.ValueType = valType
+                               } else {
+                                       valType = ml.ValueType
+                               }
+                               for i, v := range ml.Values {
+                                       if ll, ok2 := v.(*ListLit); ok2 && len(ll.Elems) == 0 && ll.ElemType == "" {
+                                               ll.ElemType = elementTypeFromListType(valType)
+                                               ml.Values[i] = ll
+                                       }
+                               }
+                       }
+               }
+               if ll, ok := val.(*ListLit); ok && len(ll.Elems) == 0 && typ != "" {
+                       ll.ElemType = elementTypeFromListType(typ)
+               }
+               ls := &LetStmt{Name: s.Var.Name, Type: typ, Value: val}
+               if currentVarDecls != nil {
+                       currentVarDecls[s.Var.Name] = ls
+               }
+               if paramNames != nil {
+                       delete(paramNames, s.Var.Name)
+               }
+               return ls, nil
 	case s.Assign != nil:
 		val, err := convertExpr(s.Assign.Value)
 		if err != nil {
@@ -5801,29 +5849,36 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		if currentProgram != nil {
 			currentProgram.addInclude("<vector>")
 		}
-		var elems []Expr
-		for _, e := range p.List.Elems {
-			ce, err := convertExpr(e)
-			if err != nil {
-				return nil, err
-			}
-			elems = append(elems, ce)
-		}
-		elemType := ""
-		if len(elems) > 0 {
-			first := exprType(elems[0])
-			uniform := true
-			for _, el := range elems[1:] {
-				if exprType(el) != first {
-					uniform = false
-					break
-				}
-			}
-			if uniform {
-				elemType = first
-			}
-		}
-		return &ListLit{Elems: elems, ElemType: elemType}, nil
+               var elems []Expr
+               for _, e := range p.List.Elems {
+                       ce, err := convertExpr(e)
+                       if err != nil {
+                               return nil, err
+                       }
+                       elems = append(elems, ce)
+               }
+               elemType := ""
+               if len(elems) > 0 {
+                       first := exprType(elems[0])
+                       if first == "" || first == "auto" {
+                               first = guessType(p.List.Elems[0])
+                       }
+                       uniform := true
+                       for i, el := range elems[1:] {
+                               t := exprType(el)
+                               if t == "" || t == "auto" {
+                                       t = guessType(p.List.Elems[i+1])
+                               }
+                               if t != first {
+                                       uniform = false
+                                       break
+                               }
+                       }
+                       if uniform {
+                               elemType = first
+                       }
+               }
+               return &ListLit{Elems: elems, ElemType: elemType}, nil
 	case p.Map != nil:
 		if currentProgram != nil {
 			currentProgram.addInclude("<map>")
