@@ -1,0 +1,6 @@
+run: exit status 1
+Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index -1 out of bounds for length 5
+	at Main.is_safe(Main.java:7)
+	at Main.dfs(Main.java:21)
+	at Main.count_islands(Main.java:49)
+	at Main.main(Main.java:63)

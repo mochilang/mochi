@@ -1,0 +1,14 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden750_lru_cache3389645379/001/Main.java:161: error: incompatible types: String cannot be converted to int
+cache_1["list"].nodes = nodes_3;
+        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden750_lru_cache3389645379/001/Main.java:161: error: array required, but LRUCache found
+cache_1["list"].nodes = nodes_3;
+       ^
+/tmp/TestJavaTranspiler_Algorithms_Golden750_lru_cache3389645379/001/Main.java:174: error: incompatible types: String cannot be converted to int
+cache_1["list"].nodes = nodes_4;
+        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden750_lru_cache3389645379/001/Main.java:174: error: array required, but LRUCache found
+cache_1["list"].nodes = nodes_4;
+       ^
+4 errors

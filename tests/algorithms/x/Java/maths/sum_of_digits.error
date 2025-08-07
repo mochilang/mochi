@@ -1,0 +1,6 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden681_sum_of_digits719056396/001/Main.java:33: error: incompatible types: possible lossy conversion from long to int
+            res_1 = res_1 + (s.substring(i, i+1));
+                                         ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+1 error

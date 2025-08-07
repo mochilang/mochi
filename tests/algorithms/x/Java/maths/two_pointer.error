@@ -1,0 +1,5 @@
+run: exit status 1
+Exception in thread "main" java.lang.RuntimeException: case1
+	at Main.test_two_pointer(Main.java:22)
+	at Main.main(Main.java:48)
+	at Main.main(Main.java:55)

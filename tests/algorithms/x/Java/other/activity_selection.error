@@ -1,0 +1,7 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden737_activity_selection817404481/001/Main.java:5: error: cannot find symbol
+    static unit print_max_activities(int[] start, int[] finish) {
+           ^
+  symbol:   class unit
+  location: class Main
+1 error

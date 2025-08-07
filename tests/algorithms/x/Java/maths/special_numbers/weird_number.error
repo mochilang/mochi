@@ -1,0 +1,49 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden679_weird_number3726369497/001/Main.java:10: error: incompatible types: possible lossy conversion from long to int
+                if (arr[j] > arr[j + 1]) {
+                        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden679_weird_number3726369497/001/Main.java:10: error: incompatible types: possible lossy conversion from long to int
+                if (arr[j] > arr[j + 1]) {
+                                   ^
+/tmp/TestJavaTranspiler_Algorithms_Golden679_weird_number3726369497/001/Main.java:11: error: incompatible types: possible lossy conversion from long to int
+                    long tmp = arr[j];
+                                   ^
+/tmp/TestJavaTranspiler_Algorithms_Golden679_weird_number3726369497/001/Main.java:12: error: incompatible types: possible lossy conversion from long to int
+arr[j] = arr[j + 1];
+    ^
+/tmp/TestJavaTranspiler_Algorithms_Golden679_weird_number3726369497/001/Main.java:12: error: incompatible types: possible lossy conversion from long to int
+arr[j] = arr[j + 1];
+               ^
+/tmp/TestJavaTranspiler_Algorithms_Golden679_weird_number3726369497/001/Main.java:13: error: incompatible types: possible lossy conversion from long to int
+arr[j + 1] = tmp;
+      ^
+/tmp/TestJavaTranspiler_Algorithms_Golden679_weird_number3726369497/001/Main.java:27: error: no suitable method found for of(long)
+                values = ((long[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(values), java.util.stream.IntStream.of(i_1)).toArray()));
+                                                                                                                                ^
+    method IntStream.of(int) is not applicable
+      (argument mismatch; possible lossy conversion from long to int)
+    method IntStream.of(int...) is not applicable
+      (varargs mismatch; possible lossy conversion from long to int)
+/tmp/TestJavaTranspiler_Algorithms_Golden679_weird_number3726369497/001/Main.java:30: error: incompatible types: LongStream cannot be converted to IntStream
+                    values = ((long[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(values), java.util.stream.IntStream.of(((Number)(d)).intValue())).toArray()));
+                                                                                                ^
+/tmp/TestJavaTranspiler_Algorithms_Golden679_weird_number3726369497/001/Main.java:42: error: incompatible types: possible lossy conversion from long to int
+            total = total + xs[i_2];
+                               ^
+/tmp/TestJavaTranspiler_Algorithms_Golden679_weird_number3726369497/001/Main.java:65: error: incompatible types: possible lossy conversion from long to int
+            long v = values_1[idx];
+                              ^
+/tmp/TestJavaTranspiler_Algorithms_Golden679_weird_number3726369497/001/Main.java:68: error: incompatible types: possible lossy conversion from long to int
+                if (((Boolean)(possible[s - v]))) {
+                                          ^
+/tmp/TestJavaTranspiler_Algorithms_Golden679_weird_number3726369497/001/Main.java:69: error: incompatible types: possible lossy conversion from long to int
+possible[s] = true;
+         ^
+/tmp/TestJavaTranspiler_Algorithms_Golden679_weird_number3726369497/001/Main.java:75: error: incompatible types: possible lossy conversion from long to int
+        return possible[number];
+                        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden679_weird_number3726369497/001/Main.java:135: error: incompatible types: possible lossy conversion from long to int
+            long n_1 = nums[i_3];
+                            ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+14 errors

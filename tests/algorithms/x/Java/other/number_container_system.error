@@ -1,0 +1,8 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden755_number_container_system909325515/001/Main.java:72: error: incompatible types: Object cannot be converted to int
+            if (arr_1[mid_1] == index) {
+                      ^
+/tmp/TestJavaTranspiler_Algorithms_Golden755_number_container_system909325515/001/Main.java:75: error: incompatible types: Object cannot be converted to int
+            } else             if (arr_1[mid_1] < index) {
+                                         ^
+2 errors
