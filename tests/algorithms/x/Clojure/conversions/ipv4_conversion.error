@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error at main/ipv4-to-decimal (ipv4_conversion.clj:91).
+Invalid IPv4 address format
+
+Full report at:
+/tmp/clojure-4166925128664601859.edn

@@ -1,0 +1,6 @@
+run: exit status 1
+Syntax error compiling at (/workspace/mochi/tests/algorithms/x/Clojure/data_structures/binary_tree/binary_tree_path_sum.clj:26:43).
+Unable to resolve symbol: dfs_Empty in this context
+
+Full report at:
+/tmp/clojure-17547956867410880238.edn

@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error (ClassCastException) at main/round-to-int (molecular_chemistry.clj:22).
+class java.lang.Double cannot be cast to class java.lang.String (java.lang.Double and java.lang.String are in module java.base of loader 'bootstrap')
+
+Full report at:
+/tmp/clojure-3551055856132628507.edn

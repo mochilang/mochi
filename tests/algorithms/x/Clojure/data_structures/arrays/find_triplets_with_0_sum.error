@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error (IllegalArgumentException) at main/contains-triplet (find_triplets_with_0_sum.clj:63).
+Don't know how to create ISeq from: java.lang.Integer
+
+Full report at:
+/tmp/clojure-15858499948997077198.edn

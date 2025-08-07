@@ -1,0 +1,5 @@
+Execution error (IndexOutOfBoundsException) at main/insert-node (avl_tree.clj:96).
+null
+
+Full report at:
+/tmp/clojure-5723233254061554558.edn

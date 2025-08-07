@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error at main/bin-to-hexadecimal (binary_to_hexadecimal.clj:76).
+Non-binary value was passed to the function
+
+Full report at:
+/tmp/clojure-4493980527365756650.edn
