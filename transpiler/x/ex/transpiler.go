@@ -4135,10 +4135,10 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		}
 		var expr Expr = &VarRef{Name: p.Selector.Root}
 		if len(p.Selector.Tail) == 0 {
-			if _, err := env.GetVar(p.Selector.Root); err == nil {
-				// variable takes precedence
-			} else if fn, ok := env.GetFunc(p.Selector.Root); ok {
+			if fn, ok := env.GetFunc(p.Selector.Root); ok {
 				expr = &FuncRef{Name: sanitizeFuncName(p.Selector.Root), Arity: len(fn.Params)}
+			} else if _, err := env.GetVar(p.Selector.Root); err == nil {
+				// variable takes precedence if function not found
 			} else if isZeroVariant(p.Selector.Root, env) {
 				expr = &AtomLit{Name: ":" + p.Selector.Root}
 			}
