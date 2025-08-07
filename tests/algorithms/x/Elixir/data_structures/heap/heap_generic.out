@@ -1,0 +1,49 @@
+warning: variable "h" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 58 │       h = Map.put(h, :arr, arr)
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/heap/heap_generic.exs:58:7: Main.swap/3
+
+     warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 107 │       {idx, p} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/heap/heap_generic.exs:107:8: Main.heapify_up/2
+
+     warning: variable "p" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 107 │       {idx, p} = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/heap/heap_generic.exs:107:13: Main.heapify_up/2
+
+     warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 131 │       {idx, vp} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/heap/heap_generic.exs:131:8: Main.heapify_down/2
+
+     warning: variable "vp" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 131 │       {idx, vp} = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/heap/heap_generic.exs:131:13: Main.heapify_down/2
+
+[]
+[]
+[]
+[]
+[]
+[]
+[]
+[]
+[]
+** (ArithmeticError) bad argument in arithmetic expression: nil - 1
+    :erlang.-(nil, 1)
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/heap/heap_generic.exs:147: Main.update_item/3
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/heap/heap_generic.exs:265: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/heap/heap_generic.exs:271: (file)

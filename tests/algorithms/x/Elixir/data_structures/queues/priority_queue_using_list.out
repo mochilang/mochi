@@ -1,0 +1,96 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 62 │             {j, new_q} = try do
+    │              ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/priority_queue_using_list.exs:62:14: Main.fpq_dequeue/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 81 │       {fpq, i, qs} = try do
+    │             ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/priority_queue_using_list.exs:81:13: Main.fpq_dequeue/1
+
+    warning: variable "qs" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 81 │       {fpq, i, qs} = try do
+    │                ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/priority_queue_using_list.exs:81:16: Main.fpq_dequeue/1
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 117 │           {j, q_str} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/priority_queue_using_list.exs:117:12: Main.fpq_to_string/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 131 │       {i, lines} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/priority_queue_using_list.exs:131:8: Main.fpq_to_string/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 154 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/priority_queue_using_list.exs:154:8: Main.fpq_to_string/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 209 │       {i, idx, min_val} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/priority_queue_using_list.exs:209:8: Main.epq_dequeue/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 231 │       {i, new_q} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/priority_queue_using_list.exs:231:8: Main.epq_dequeue/1
+
+     warning: variable "fpq" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 292 │       fpq = res.queue
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/priority_queue_using_list.exs:292:7: Main.fixed_priority_queue/0
+
+     warning: variable "epq" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 340 │       epq = res.queue
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/queues/priority_queue_using_list.exs:340:7: Main.element_priority_queue/0
+
+"Priority 0: [10, 100, 128]\nPriority 1: [70, 7, 64]\nPriority 2: [1, 5, 4]"
+10
+100
+128
+70
+7
+"Priority 0: []\nPriority 1: [64]\nPriority 2: [1, 5, 4]"
+64
+1
+5
+4
+All queues are empty
+0
+"[10 70 100 1 5 7 4 64 128]"
+1
+4
+5
+7
+10
+"[70 100 64 128]"
+64
+70
+100
+128
+The queue is empty
+0

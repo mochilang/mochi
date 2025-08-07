@@ -1,0 +1,24 @@
+run: exit status 1
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 60 │       {i, idx1, idx2} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/swap_nodes.exs:60:8: Main.swap_nodes/3
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 98 │       {i, ll} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/swap_nodes.exs:98:8: Main.main/0
+
+    error: imported Kernel.to_string/1 conflicts with local function
+    │
+ 78 │   def to_string(list) do
+    │       ^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/swap_nodes.exs:78:7: Main (module)
+
+** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/swap_nodes.exs: cannot compile module Main (errors have been logged)
+

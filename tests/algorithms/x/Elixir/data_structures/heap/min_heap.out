@@ -1,0 +1,69 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 61 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/heap/min_heap.exs:61:8: Main.slice_without_last/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 111 │       {heap, i, idx_map} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/heap/min_heap.exs:111:14: Main.sift_down/2
+
+     warning: variable "mh" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 118 │       mh = Map.put(mh, :idx_of_element, idx_map)
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/heap/min_heap.exs:118:7: Main.sift_down/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 143 │       {heap, i, idx_map, p} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/heap/min_heap.exs:143:14: Main.sift_up/2
+
+     warning: variable "mh" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 150 │       mh = Map.put(mh, :idx_of_element, idx_map)
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/heap/min_heap.exs:150:7: Main.sift_up/2
+
+     warning: variable "p" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 143 │       {heap, i, idx_map, p} = try do
+     │                          ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/heap/min_heap.exs:143:26: Main.sift_up/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 172 │       {i, idx_map, val_map} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/heap/min_heap.exs:172:8: Main.new_min_heap/1
+
+     warning: variable "start" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 189 │       start = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/heap/min_heap.exs:189:7: Main.new_min_heap/1
+
+Min Heap - before decrease key
+"Node(R, -1)"
+"Node(B, 6)"
+"Node(A, 3)"
+"Node(X, 1)"
+"Node(E, 4)"
+Min Heap - After decrease key of node [B -> -17]
+"Node(R, -1)"
+"Node(B, 6)"
+"Node(A, 3)"
+"Node(X, 1)"
+"Node(E, 4)"
+6

@@ -1,0 +1,36 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 51 │       {i, new_nexts} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/floyds_cycle_detection.exs:51:8: Main.add_node/2
+
+    warning: variable "value" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 17 │   def add_node(list, value) do
+    │                      ~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/floyds_cycle_detection.exs:17:22: Main.add_node/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 76 │       {i, new_nexts} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/floyds_cycle_detection.exs:76:8: Main.set_next/3
+
+     warning: variable "fast" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 107 │       {fast, slow} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/floyds_cycle_detection.exs:107:8: Main.detect_cycle/1
+
+     warning: variable "slow" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 107 │       {fast, slow} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/floyds_cycle_detection.exs:107:14: Main.detect_cycle/1
+
+true

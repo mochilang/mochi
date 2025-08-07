@@ -1,0 +1,25 @@
+warning: variable "current" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 31 │       {current, i} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/from_sequence.exs:31:8: Main.make_linked_list/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 31 │       {current, i} = try do
+    │                 ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/from_sequence.exs:31:17: Main.make_linked_list/1
+
+    warning: variable "index" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 56 │       {index, s} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/linked_list/from_sequence.exs:56:8: Main.node_to_string/1
+
+List: [1 3 5 32 44 12 43]
+Creating Linked List from List.
+Linked List:
+"<1> ---> <3> ---> <5> ---> <32> ---> <44> ---> <12> ---> <43> ---> <END>"

@@ -2287,6 +2287,32 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 			return &AssignStmt{Name: st.Assign.Name, Value: call}, nil
 		}
+		if len(st.Assign.Index) == 1 && len(st.Assign.Field) == 1 {
+			idx, err := compileExpr(st.Assign.Index[0].Start, env)
+			if err != nil {
+				return nil, err
+			}
+			val, err := compileExpr(st.Assign.Value, env)
+			if err != nil {
+				return nil, err
+			}
+			field := &AtomLit{Name: ":" + st.Assign.Field[0].Name}
+			t, _ := env.GetVar(st.Assign.Name)
+			if lt, ok := t.(types.ListType); ok {
+				switch lt.Elem.(type) {
+				case types.StructType, types.MapType:
+					elem := &CallExpr{Func: "Enum.at", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx}}
+					elemUpdate := &CallExpr{Func: "Map.put", Args: []Expr{elem, field, val}}
+					call := &CallExpr{Func: "List.replace_at", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx, elemUpdate}}
+					return &AssignStmt{Name: st.Assign.Name, Value: call}, nil
+				}
+			}
+			// Fallback when type info is unavailable
+			elem := &CallExpr{Func: "Enum.at", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx}}
+			elemUpdate := &CallExpr{Func: "Map.put", Args: []Expr{elem, field, val}}
+			call := &CallExpr{Func: "List.replace_at", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx, elemUpdate}}
+			return &AssignStmt{Name: st.Assign.Name, Value: call}, nil
+		}
 		if len(st.Assign.Index) == 2 && len(st.Assign.Field) == 0 {
 			idx0, err := compileExpr(st.Assign.Index[0].Start, env)
 			if err != nil {

@@ -1,0 +1,30 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 59 │           {arr, j} = try do
+    │                 ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/kd_tree/build_kdtree.exs:59:17: Main.sort_points/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 71 │       {arr, i} = try do
+    │             ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/kd_tree/build_kdtree.exs:71:13: Main.sort_points/2
+
+** (ArgumentError) cannot convert the given list to a string.
+
+To be converted to a string, a list must either be empty or only
+contain the following elements:
+
+  * strings
+  * integers representing Unicode code points
+  * a list containing one of these three elements
+
+Please check the given list or call inspect/1 to get the list representation, got:
+
+[%{left: 1, right: 4, point: [7.0, 2.0]}, %{left: 2, right: 3, point: [5.0, 4.0]}, %{left: -1, right: -1, point: [2.0, 3.0]}, %{left: -1, right: -1, point: [4.0, 7.0]}, %{left: 5, right: -1, point: [9.0, 6.0]}, %{left: -1, right: -1, point: [8.0, 1.0]}]
+
+    (elixir 1.18.3) lib/list.ex:1124: List.to_string/1
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/kd_tree/build_kdtree.exs:113: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/kd_tree/build_kdtree.exs:122: (file)

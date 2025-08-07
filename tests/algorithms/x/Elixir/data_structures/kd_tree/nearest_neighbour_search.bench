@@ -1,0 +1,24 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 30 │       {i, total} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/kd_tree/nearest_neighbour_search.exs:30:8: Main.square_distance/2
+
+** (ArgumentError) cannot convert the given list to a string.
+
+To be converted to a string, a list must either be empty or only
+contain the following elements:
+
+  * strings
+  * integers representing Unicode code points
+  * a list containing one of these three elements
+
+Please check the given list or call inspect/1 to get the list representation, got:
+
+[9.0, 1.0]
+
+    (elixir 1.18.3) lib/list.ex:1124: List.to_string/1
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/kd_tree/nearest_neighbour_search.exs:100: anonymous fn/1 in Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/kd_tree/nearest_neighbour_search.exs:108: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/kd_tree/nearest_neighbour_search.exs:120: (file)

@@ -1,0 +1,18 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 26 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/number_theory/prime_numbers.exs:26:7: Main.isPrime/1
+
+false
+false
+true
+true
+false
+false
+true
+true
+false
+17
+13
