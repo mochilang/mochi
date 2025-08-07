@@ -39,13 +39,13 @@ fun bad_character_heuristic(text: string, pat: string): list<int> {
   var i = 0
   while i <= textLen - patLen {
     let mismatch_index = mismatch_in_text(text, pat, i)
-    if mismatch_index == -1 {
+    if mismatch_index < 0 {
       positions = append(positions, i)
       i = i + 1
     } else {
       let ch = substring(text, mismatch_index, mismatch_index + 1)
       let match_index = match_in_pattern(pat, ch)
-      if match_index == -1 {
+      if match_index < 0 {
         i = mismatch_index + 1
       } else {
         i = mismatch_index - match_index
