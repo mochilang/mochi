@@ -1,0 +1,6 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/series/hexagonal_numbers.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+[0 1 6 15 28]
+[0 1 6 15 28 45 66 91 120 153]

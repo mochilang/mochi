@@ -1,0 +1,9 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/sum_of_geometric_progression.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/maths/sum_of_geometric_progression.erl:104:13: Warning: variable 'Exponent_3' exported from 'case' (line 71, column 9)
+%  104| {Base, Exp, Exponent_3, I_5, Result_4} = Fun_3(Base, Exp, Exponent_3, I_4, Result_3),
+%     |             ^
+
+1023.0

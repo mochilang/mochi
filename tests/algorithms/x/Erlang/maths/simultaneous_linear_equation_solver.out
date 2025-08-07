@@ -1,0 +1,15 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/simultaneous_linear_equation_solver.erl:108:24: Warning: ambiguous call of overridden auto-imported BIF floor/1 --
+use erlang:floor/1 or "-compile({no_auto_import,[floor/1]})." to resolve name clash
+%  108|         mochi_safe_div(floor((mochi_safe_mul(X_2, M) + 0.5)), M)
+%     |                        ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/maths/simultaneous_linear_equation_solver.erl:201:67: Warning: variable 'Temp_2' exported from 'case' (line 181, column 13)
+%  201| {A_5, Col_2, Equations, I_9, M_2, N_3, Pivot_2, Pivot_val, Row_3, Temp_2} = Fun_6(A_4, Col, Equations, I_9, M_2, N_3, Pivot_2, Pivot_val, Row_3, Temp_2),
+%     |                                                                   ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/maths/simultaneous_linear_equation_solver.erl:233:72: Warning: variable 'Temp_2' exported from 'case' (line 181, column 13)
+%  233| {A_7, Col_2, Equations, I_9, M_2, N_3, Pivot_2, Pivot_val, R_2, Row_3, Temp_2} = Fun_9(A_5, Col_2, Equations, I_9, M_2, N_3, Pivot_2, Pivot_val, R, Row_3, Temp_2),
+%     |                                                                        ^
+
+[-1.0 0.0 1.0 2.0 3.0]
+[0.5]

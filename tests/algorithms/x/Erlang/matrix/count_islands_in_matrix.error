@@ -1,0 +1,15 @@
+run: exit status 127
+escript: exception error: no match of right hand side value 
+                 [[true,false,false,false,false],
+                  [false,false,false,false,false],
+                  [false,false,false,false,false],
+                  [false,false,false,false,false],
+                  [false,false,false,false,false]]
+  in function  main:'-count_islands/1-Fun_4_loop/7-3-'/7 (/workspace/mochi/tests/algorithms/x/Erlang/matrix/count_islands_in_matrix.erl, line 134)
+  in call from main:'-count_islands/1-Fun_5_loop/6-2-'/6 (/workspace/mochi/tests/algorithms/x/Erlang/matrix/count_islands_in_matrix.erl, line 148)
+  in call from main:count_islands/1 (/workspace/mochi/tests/algorithms/x/Erlang/matrix/count_islands_in_matrix.erl, line 154)
+  in call from main:main/1 (/workspace/mochi/tests/algorithms/x/Erlang/matrix/count_islands_in_matrix.erl, line 162)
+  in call from escript:run/2 (escript.erl, line 904)
+  in call from escript:start/1 (escript.erl, line 418)
+  in call from init:start_it/1 
+  in call from init:start_em/1

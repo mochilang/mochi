@@ -1,0 +1,6 @@
+/workspace/mochi/tests/algorithms/x/Erlang/maths/sock_merchant.erl:52:1: Warning: function mochi_safe_mul/2 is unused
+%   52| mochi_safe_mul(A, B) ->
+%     | ^
+
+3
+2
