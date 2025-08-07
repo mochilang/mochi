@@ -1,0 +1,136 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/arrays/product_sum.rs:55:2
+   |
+55 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/arrays/product_sum.rs:59:2
+   |
+59 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/arrays/product_sum.rs:45:11
+   |
+45 |     while (i < (arr.len() as i64)) {
+   |           ^                      ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+45 -     while (i < (arr.len() as i64)) {
+45 +     while i < (arr.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/arrays/product_sum.rs:48:21
+   |
+48 |             total = (total + product_sum(el.clone(), (depth + 1)));
+   |                     ^                                            ^
+   |
+help: remove these parentheses
+   |
+48 -             total = (total + product_sum(el.clone(), (depth + 1)));
+48 +             total = total + product_sum(el.clone(), (depth + 1));
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/arrays/product_sum.rs:48:54
+   |
+48 |             total = (total + product_sum(el.clone(), (depth + 1)));
+   |                                                      ^         ^
+   |
+help: remove these parentheses
+   |
+48 -             total = (total + product_sum(el.clone(), (depth + 1)));
+48 +             total = (total + product_sum(el.clone(), depth + 1));
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/arrays/product_sum.rs:50:21
+   |
+50 |             total = (total + { let n: i64 = el.parse().unwrap(); n });
+   |                     ^                                               ^
+   |
+help: remove these parentheses
+   |
+50 -             total = (total + { let n: i64 = el.parse().unwrap(); n });
+50 +             total = total + { let n: i64 = el.parse().unwrap(); n };
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/arrays/product_sum.rs:52:13
+   |
+52 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+52 -         i = (i + 1);
+52 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/arrays/product_sum.rs:54:12
+   |
+54 |     return (total * depth)
+   |            ^             ^
+   |
+help: remove these parentheses
+   |
+54 -     return (total * depth)
+54 +     return total * depth
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/arrays/product_sum.rs:62:32
+   |
+62 |         let duration_us: i64 = ((_end - _start) / 1000);
+   |                                ^                      ^
+   |
+help: remove these parentheses
+   |
+62 -         let duration_us: i64 = ((_end - _start) / 1000);
+62 +         let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/arrays/product_sum.rs:48:42
+   |
+48 |             total = (total + product_sum(el.clone(), (depth + 1)));
+   |                              ----------- ^^^^^^^^^^ expected `Vec<String>`, found `String`
+   |                              |
+   |                              arguments to this function are incorrect
+   |
+   = note: expected struct `Vec<String>`
+              found struct `String`
+note: function defined here
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/arrays/product_sum.rs:42:19
+   |
+42 |         unsafe fn product_sum(mut arr: Vec<String>, mut depth: i64) -> i64 {
+   |                   ^^^^^^^^^^^ --------------------
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/arrays/product_sum.rs:56:37
+   |
+56 |         unsafe fn product_sum_array(mut array: Vec<String>) -> i64 {
+   |                                     ----^^^^^
+   |                                     |
+   |                                     help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/arrays/product_sum.rs:57:9
+   |
+57 |     let mut res: i64 = product_sum(array.clone(), 1);
+   |         ----^^^
+   |         |
+   |         help: remove this `mut`
+
+error: aborting due to 1 previous error; 11 warnings emitted
+
+For more information about this error, try `rustc --explain E0308`.

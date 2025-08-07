@@ -1,0 +1,702 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:67:2
+   |
+67 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:75:2
+   |
+75 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:104:2
+    |
+104 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:107:2
+    |
+107 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:114:2
+    |
+114 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:121:2
+    |
+121 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:49:17
+   |
+49 |     let mut n = (arr.len() as i64);
+   |                 ^                ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+49 -     let mut n = (arr.len() as i64);
+49 +     let mut n = arr.len() as i64;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:52:11
+   |
+52 |     while (i < (2 * n)) {
+   |           ^           ^
+   |
+help: remove these parentheses
+   |
+52 -     while (i < (2 * n)) {
+52 +     while i < (2 * n) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:54:13
+   |
+54 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+54 -         i = (i + 1);
+54 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:57:11
+   |
+57 |     while (i < n) {
+   |           ^     ^
+   |
+help: remove these parentheses
+   |
+57 -     while (i < n) {
+57 +     while i < n {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:59:13
+   |
+59 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+59 -         i = (i + 1);
+59 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:61:9
+   |
+61 |     i = (n - 1);
+   |         ^     ^
+   |
+help: remove these parentheses
+   |
+61 -     i = (n - 1);
+61 +     i = n - 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:62:11
+   |
+62 |     while (i > 0) {
+   |           ^     ^
+   |
+help: remove these parentheses
+   |
+62 -     while (i > 0) {
+62 +     while i > 0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:64:13
+   |
+64 |         i = (i - 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+64 -         i = (i - 1);
+64 +         i = i - 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:69:24
+   |
+69 |     let mut idx: i64 = (p + n);
+   |                        ^     ^
+   |
+help: remove these parentheses
+   |
+69 -     let mut idx: i64 = (p + n);
+69 +     let mut idx: i64 = p + n;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:71:11
+   |
+71 |     while (idx > 1) {
+   |           ^       ^
+   |
+help: remove these parentheses
+   |
+71 -     while (idx > 1) {
+71 +     while idx > 1 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:72:15
+   |
+72 |         idx = (idx / 2);
+   |               ^       ^
+   |
+help: remove these parentheses
+   |
+72 -         idx = (idx / 2);
+72 +         idx = idx / 2;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:77:22
+   |
+77 |     let mut l: i64 = (left + n);
+   |                      ^        ^
+   |
+help: remove these parentheses
+   |
+77 -     let mut l: i64 = (left + n);
+77 +     let mut l: i64 = left + n;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:78:22
+   |
+78 |     let mut r: i64 = (right + n);
+   |                      ^         ^
+   |
+help: remove these parentheses
+   |
+78 -     let mut r: i64 = (right + n);
+78 +     let mut r: i64 = right + n;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:81:11
+   |
+81 |     while (l <= r) {
+   |           ^      ^
+   |
+help: remove these parentheses
+   |
+81 -     while (l <= r) {
+81 +     while l <= r {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:82:12
+   |
+82 |         if ((l % 2) == 1) {
+   |            ^            ^
+   |
+help: remove these parentheses
+   |
+82 -         if ((l % 2) == 1) {
+82 +         if (l % 2) == 1 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:89:17
+   |
+89 |             l = (l + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+89 -             l = (l + 1);
+89 +             l = l + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:91:12
+   |
+91 |         if ((r % 2) == 0) {
+   |            ^            ^
+   |
+help: remove these parentheses
+   |
+91 -         if ((r % 2) == 0) {
+91 +         if (r % 2) == 0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:98:17
+   |
+98 |             r = (r - 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+98 -             r = (r - 1);
+98 +             r = r - 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:100:13
+    |
+100 |         l = (l / 2);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+100 -         l = (l / 2);
+100 +         l = l / 2;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:101:13
+    |
+101 |         r = (r / 2);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+101 -         r = (r / 2);
+101 +         r = r / 2;
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:106:12
+    |
+106 |     return (a + b)
+    |            ^     ^
+    |
+help: remove these parentheses
+    |
+106 -     return (a + b)
+106 +     return a + b
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:109:8
+    |
+109 |     if (a < b) {
+    |        ^     ^
+    |
+help: remove these parentheses
+    |
+109 -     if (a < b) {
+109 +     if a < b {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:116:8
+    |
+116 |     if (a > b) {
+    |        ^     ^
+    |
+help: remove these parentheses
+    |
+116 -     if (a > b) {
+116 +     if a > b {
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:123:43
+    |
+123 |         println!("{}", query(st1.clone(), (g_arr1.clone().len() as i64), &mut add, 0, 2).to_string());
+    |                                           ^                           ^
+    |
+help: remove these parentheses
+    |
+123 -         println!("{}", query(st1.clone(), (g_arr1.clone().len() as i64), &mut add, 0, 2).to_string());
+123 +         println!("{}", query(st1.clone(), g_arr1.clone().len() as i64, &mut add, 0, 2).to_string());
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:125:43
+    |
+125 |         println!("{}", query(st2.clone(), (g_arr2.clone().len() as i64), &mut min_int, 0, 2).to_string());
+    |                                           ^                           ^
+    |
+help: remove these parentheses
+    |
+125 -         println!("{}", query(st2.clone(), (g_arr2.clone().len() as i64), &mut min_int, 0, 2).to_string());
+125 +         println!("{}", query(st2.clone(), g_arr2.clone().len() as i64, &mut min_int, 0, 2).to_string());
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:127:43
+    |
+127 |         println!("{}", query(st3.clone(), (g_arr3.clone().len() as i64), &mut max_int, 0, 2).to_string());
+    |                                           ^                           ^
+    |
+help: remove these parentheses
+    |
+127 -         println!("{}", query(st3.clone(), (g_arr3.clone().len() as i64), &mut max_int, 0, 2).to_string());
+127 +         println!("{}", query(st3.clone(), g_arr3.clone().len() as i64, &mut max_int, 0, 2).to_string());
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:128:27
+    |
+128 |         let mut n4: i64 = (g_arr4.clone().len() as i64);
+    |                           ^                           ^
+    |
+help: remove these parentheses
+    |
+128 -         let mut n4: i64 = (g_arr4.clone().len() as i64);
+128 +         let mut n4: i64 = g_arr4.clone().len() as i64;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:137:32
+    |
+137 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+137 -         let duration_us: i64 = ((_end - _start) / 1000);
+137 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0277]: expected a `FnMut(i64, i64)` closure, found `unsafe fn(i64, i64) -> i64 {main::add}`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:122:63
+    |
+122 |         let mut st1: Vec<i64> = build(g_arr1.clone().clone(), &mut add);
+    |                                 -----                         ^^^^^^^^ call the function in a closure: `|| unsafe { /* code */ }`
+    |                                 |
+    |                                 required by a bound introduced by this call
+    |
+    = help: the trait `FnMut(i64, i64)` is not implemented for fn item `unsafe fn(i64, i64) -> i64 {main::add}`
+    = note: unsafe function cannot be called generically without an unsafe block
+note: required by a bound in `build`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:48:63
+    |
+48  |         unsafe fn build(mut arr: Vec<i64>, combine: &mut impl FnMut(i64, i64) -> i64) -> Vec<i64> {
+    |                                                               ^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `build`
+
+error[E0277]: expected a `FnMut(i64, i64)` closure, found `unsafe fn(i64, i64) -> i64 {main::add}`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:123:74
+    |
+123 |         println!("{}", query(st1.clone(), (g_arr1.clone().len() as i64), &mut add, 0, 2).to_string());
+    |                        ----- required by a bound introduced by this call ^^^^^^^^ call the function in a closure: `|| unsafe { /* code */ }`
+    |
+    = help: the trait `FnMut(i64, i64)` is not implemented for fn item `unsafe fn(i64, i64) -> i64 {main::add}`
+    = note: unsafe function cannot be called generically without an unsafe block
+note: required by a bound in `query`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:76:74
+    |
+76  |         unsafe fn query(mut st: Vec<i64>, mut n: i64, combine: &mut impl FnMut(i64, i64) -> i64, mut left: i64, mut right: i64) -> i64 {
+    |                                                                          ^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `query`
+
+error[E0277]: expected a `FnMut(i64, i64)` closure, found `unsafe fn(i64, i64) -> i64 {min_int}`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:124:63
+    |
+124 |         let mut st2: Vec<i64> = build(g_arr2.clone().clone(), &mut min_int);
+    |                                 -----                         ^^^^^^^^^^^^ call the function in a closure: `|| unsafe { /* code */ }`
+    |                                 |
+    |                                 required by a bound introduced by this call
+    |
+    = help: the trait `FnMut(i64, i64)` is not implemented for fn item `unsafe fn(i64, i64) -> i64 {min_int}`
+    = note: unsafe function cannot be called generically without an unsafe block
+note: required by a bound in `build`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:48:63
+    |
+48  |         unsafe fn build(mut arr: Vec<i64>, combine: &mut impl FnMut(i64, i64) -> i64) -> Vec<i64> {
+    |                                                               ^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `build`
+
+error[E0277]: expected a `FnMut(i64, i64)` closure, found `unsafe fn(i64, i64) -> i64 {min_int}`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:125:74
+    |
+125 |         println!("{}", query(st2.clone(), (g_arr2.clone().len() as i64), &mut min_int, 0, 2).to_string());
+    |                        ----- required by a bound introduced by this call ^^^^^^^^^^^^ call the function in a closure: `|| unsafe { /* code */ }`
+    |
+    = help: the trait `FnMut(i64, i64)` is not implemented for fn item `unsafe fn(i64, i64) -> i64 {min_int}`
+    = note: unsafe function cannot be called generically without an unsafe block
+note: required by a bound in `query`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:76:74
+    |
+76  |         unsafe fn query(mut st: Vec<i64>, mut n: i64, combine: &mut impl FnMut(i64, i64) -> i64, mut left: i64, mut right: i64) -> i64 {
+    |                                                                          ^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `query`
+
+error[E0277]: expected a `FnMut(i64, i64)` closure, found `unsafe fn(i64, i64) -> i64 {max_int}`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:126:63
+    |
+126 |         let mut st3: Vec<i64> = build(g_arr3.clone().clone(), &mut max_int);
+    |                                 -----                         ^^^^^^^^^^^^ call the function in a closure: `|| unsafe { /* code */ }`
+    |                                 |
+    |                                 required by a bound introduced by this call
+    |
+    = help: the trait `FnMut(i64, i64)` is not implemented for fn item `unsafe fn(i64, i64) -> i64 {max_int}`
+    = note: unsafe function cannot be called generically without an unsafe block
+note: required by a bound in `build`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:48:63
+    |
+48  |         unsafe fn build(mut arr: Vec<i64>, combine: &mut impl FnMut(i64, i64) -> i64) -> Vec<i64> {
+    |                                                               ^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `build`
+
+error[E0277]: expected a `FnMut(i64, i64)` closure, found `unsafe fn(i64, i64) -> i64 {max_int}`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:127:74
+    |
+127 |         println!("{}", query(st3.clone(), (g_arr3.clone().len() as i64), &mut max_int, 0, 2).to_string());
+    |                        ----- required by a bound introduced by this call ^^^^^^^^^^^^ call the function in a closure: `|| unsafe { /* code */ }`
+    |
+    = help: the trait `FnMut(i64, i64)` is not implemented for fn item `unsafe fn(i64, i64) -> i64 {max_int}`
+    = note: unsafe function cannot be called generically without an unsafe block
+note: required by a bound in `query`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:76:74
+    |
+76  |         unsafe fn query(mut st: Vec<i64>, mut n: i64, combine: &mut impl FnMut(i64, i64) -> i64, mut left: i64, mut right: i64) -> i64 {
+    |                                                                          ^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `query`
+
+error[E0277]: expected a `FnMut(i64, i64)` closure, found `unsafe fn(i64, i64) -> i64 {main::add}`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:129:63
+    |
+129 |         let mut st4: Vec<i64> = build(g_arr4.clone().clone(), &mut add);
+    |                                 -----                         ^^^^^^^^ call the function in a closure: `|| unsafe { /* code */ }`
+    |                                 |
+    |                                 required by a bound introduced by this call
+    |
+    = help: the trait `FnMut(i64, i64)` is not implemented for fn item `unsafe fn(i64, i64) -> i64 {main::add}`
+    = note: unsafe function cannot be called generically without an unsafe block
+note: required by a bound in `build`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:48:63
+    |
+48  |         unsafe fn build(mut arr: Vec<i64>, combine: &mut impl FnMut(i64, i64) -> i64) -> Vec<i64> {
+    |                                                               ^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `build`
+
+error[E0277]: expected a `FnMut(i64, i64)` closure, found `unsafe fn(i64, i64) -> i64 {main::add}`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:130:30
+    |
+130 |         update(&mut st4, n4, &mut add, 1, -1);
+    |         ------               ^^^^^^^^ call the function in a closure: `|| unsafe { /* code */ }`
+    |         |
+    |         required by a bound introduced by this call
+    |
+    = help: the trait `FnMut(i64, i64)` is not implemented for fn item `unsafe fn(i64, i64) -> i64 {main::add}`
+    = note: unsafe function cannot be called generically without an unsafe block
+note: required by a bound in `update`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:68:76
+    |
+68  |         unsafe fn update(st: &mut Vec<i64>, mut n: i64, combine: &mut impl FnMut(i64, i64) -> i64, mut p: i64, mut v: i64) {
+    |                                                                            ^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `update`
+
+error[E0277]: expected a `FnMut(i64, i64)` closure, found `unsafe fn(i64, i64) -> i64 {main::add}`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:131:30
+    |
+131 |         update(&mut st4, n4, &mut add, 2, 3);
+    |         ------               ^^^^^^^^ call the function in a closure: `|| unsafe { /* code */ }`
+    |         |
+    |         required by a bound introduced by this call
+    |
+    = help: the trait `FnMut(i64, i64)` is not implemented for fn item `unsafe fn(i64, i64) -> i64 {main::add}`
+    = note: unsafe function cannot be called generically without an unsafe block
+note: required by a bound in `update`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:68:76
+    |
+68  |         unsafe fn update(st: &mut Vec<i64>, mut n: i64, combine: &mut impl FnMut(i64, i64) -> i64, mut p: i64, mut v: i64) {
+    |                                                                            ^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `update`
+
+error[E0277]: expected a `FnMut(i64, i64)` closure, found `unsafe fn(i64, i64) -> i64 {main::add}`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:132:47
+    |
+132 |         println!("{}", query(st4.clone(), n4, &mut add, 1, 2).to_string());
+    |                        -----                  ^^^^^^^^ call the function in a closure: `|| unsafe { /* code */ }`
+    |                        |
+    |                        required by a bound introduced by this call
+    |
+    = help: the trait `FnMut(i64, i64)` is not implemented for fn item `unsafe fn(i64, i64) -> i64 {main::add}`
+    = note: unsafe function cannot be called generically without an unsafe block
+note: required by a bound in `query`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:76:74
+    |
+76  |         unsafe fn query(mut st: Vec<i64>, mut n: i64, combine: &mut impl FnMut(i64, i64) -> i64, mut left: i64, mut right: i64) -> i64 {
+    |                                                                          ^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `query`
+
+error[E0277]: expected a `FnMut(i64, i64)` closure, found `unsafe fn(i64, i64) -> i64 {main::add}`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:133:47
+    |
+133 |         println!("{}", query(st4.clone(), n4, &mut add, 1, 1).to_string());
+    |                        -----                  ^^^^^^^^ call the function in a closure: `|| unsafe { /* code */ }`
+    |                        |
+    |                        required by a bound introduced by this call
+    |
+    = help: the trait `FnMut(i64, i64)` is not implemented for fn item `unsafe fn(i64, i64) -> i64 {main::add}`
+    = note: unsafe function cannot be called generically without an unsafe block
+note: required by a bound in `query`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:76:74
+    |
+76  |         unsafe fn query(mut st: Vec<i64>, mut n: i64, combine: &mut impl FnMut(i64, i64) -> i64, mut left: i64, mut right: i64) -> i64 {
+    |                                                                          ^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `query`
+
+error[E0277]: expected a `FnMut(i64, i64)` closure, found `unsafe fn(i64, i64) -> i64 {main::add}`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:134:30
+    |
+134 |         update(&mut st4, n4, &mut add, 4, 1);
+    |         ------               ^^^^^^^^ call the function in a closure: `|| unsafe { /* code */ }`
+    |         |
+    |         required by a bound introduced by this call
+    |
+    = help: the trait `FnMut(i64, i64)` is not implemented for fn item `unsafe fn(i64, i64) -> i64 {main::add}`
+    = note: unsafe function cannot be called generically without an unsafe block
+note: required by a bound in `update`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:68:76
+    |
+68  |         unsafe fn update(st: &mut Vec<i64>, mut n: i64, combine: &mut impl FnMut(i64, i64) -> i64, mut p: i64, mut v: i64) {
+    |                                                                            ^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `update`
+
+error[E0277]: expected a `FnMut(i64, i64)` closure, found `unsafe fn(i64, i64) -> i64 {main::add}`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:135:47
+    |
+135 |         println!("{}", query(st4.clone(), n4, &mut add, 3, 4).to_string());
+    |                        -----                  ^^^^^^^^ call the function in a closure: `|| unsafe { /* code */ }`
+    |                        |
+    |                        required by a bound introduced by this call
+    |
+    = help: the trait `FnMut(i64, i64)` is not implemented for fn item `unsafe fn(i64, i64) -> i64 {main::add}`
+    = note: unsafe function cannot be called generically without an unsafe block
+note: required by a bound in `query`
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:76:74
+    |
+76  |         unsafe fn query(mut st: Vec<i64>, mut n: i64, combine: &mut impl FnMut(i64, i64) -> i64, mut left: i64, mut right: i64) -> i64 {
+    |                                                                          ^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `query`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:48:25
+   |
+48 |         unsafe fn build(mut arr: Vec<i64>, combine: &mut impl FnMut(i64, i64) -> i64) -> Vec<i64> {
+   |                         ----^^^
+   |                         |
+   |                         help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:49:9
+   |
+49 |     let mut n = (arr.len() as i64);
+   |         ----^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:68:45
+   |
+68 |         unsafe fn update(st: &mut Vec<i64>, mut n: i64, combine: &mut impl FnMut(i64, i64) -> i64, mut p: i64, mut v: i64) {
+   |                                             ----^
+   |                                             |
+   |                                             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:68:100
+   |
+68 |         unsafe fn update(st: &mut Vec<i64>, mut n: i64, combine: &mut impl FnMut(i64, i64) -> i64, mut p: i64, mut v: i64) {
+   |                                                                                                    ----^
+   |                                                                                                    |
+   |                                                                                                    help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:68:112
+   |
+68 |         unsafe fn update(st: &mut Vec<i64>, mut n: i64, combine: &mut impl FnMut(i64, i64) -> i64, mut p: i64, mut v: i64) {
+   |                                                                                                                ----^
+   |                                                                                                                |
+   |                                                                                                                help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:76:25
+   |
+76 |         unsafe fn query(mut st: Vec<i64>, mut n: i64, combine: &mut impl FnMut(i64, i64) -> i64, mut left: i64, mut right: i64) -> i64 {
+   |                         ----^^
+   |                         |
+   |                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:76:43
+   |
+76 |         unsafe fn query(mut st: Vec<i64>, mut n: i64, combine: &mut impl FnMut(i64, i64) -> i64, mut left: i64, mut right: i64) -> i64 {
+   |                                           ----^
+   |                                           |
+   |                                           help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:76:98
+   |
+76 |         unsafe fn query(mut st: Vec<i64>, mut n: i64, combine: &mut impl FnMut(i64, i64) -> i64, mut left: i64, mut right: i64) -> i64 {
+   |                                                                                                  ----^^^^
+   |                                                                                                  |
+   |                                                                                                  help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:76:113
+   |
+76 |         unsafe fn query(mut st: Vec<i64>, mut n: i64, combine: &mut impl FnMut(i64, i64) -> i64, mut left: i64, mut right: i64) -> i64 {
+   |                                                                                                                 ----^^^^^
+   |                                                                                                                 |
+   |                                                                                                                 help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:105:23
+    |
+105 |         unsafe fn add(mut a: i64, mut b: i64) -> i64 {
+    |                       ----^
+    |                       |
+    |                       help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:105:35
+    |
+105 |         unsafe fn add(mut a: i64, mut b: i64) -> i64 {
+    |                                   ----^
+    |                                   |
+    |                                   help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:108:27
+    |
+108 |         unsafe fn min_int(mut a: i64, mut b: i64) -> i64 {
+    |                           ----^
+    |                           |
+    |                           help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:108:39
+    |
+108 |         unsafe fn min_int(mut a: i64, mut b: i64) -> i64 {
+    |                                       ----^
+    |                                       |
+    |                                       help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:115:27
+    |
+115 |         unsafe fn max_int(mut a: i64, mut b: i64) -> i64 {
+    |                           ----^
+    |                           |
+    |                           help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/non_recursive_segment_tree.rs:115:39
+    |
+115 |         unsafe fn max_int(mut a: i64, mut b: i64) -> i64 {
+    |                                       ----^
+    |                                       |
+    |                                       help: remove this `mut`
+
+error: aborting due to 13 previous errors; 49 warnings emitted
+
+For more information about this error, try `rustc --explain E0277`.

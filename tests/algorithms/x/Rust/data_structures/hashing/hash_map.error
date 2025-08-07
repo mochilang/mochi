@@ -1,0 +1,831 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:93:2
+   |
+93 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:96:2
+   |
+96 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:103:2
+    |
+103 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:106:2
+    |
+106 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:122:2
+    |
+122 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:126:2
+    |
+126 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:133:2
+    |
+133 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:146:2
+    |
+146 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:149:2
+    |
+149 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:152:2
+    |
+152 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:163:2
+    |
+163 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:169:2
+    |
+169 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:186:2
+    |
+186 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:209:2
+    |
+209 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:212:2
+    |
+212 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:231:2
+    |
+231 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:88:11
+   |
+88 |     while (i < n) {
+   |           ^     ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+88 -     while (i < n) {
+88 +     while i < n {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:90:13
+   |
+90 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+90 -         i = (i + 1);
+90 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:98:24
+   |
+98 |     let mut ind: i64 = (key % (hm.buckets.clone().len() as i64));
+   |                        ^                                       ^
+   |
+help: remove these parentheses
+   |
+98 -     let mut ind: i64 = (key % (hm.buckets.clone().len() as i64));
+98 +     let mut ind: i64 = key % (hm.buckets.clone().len() as i64);
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:99:8
+   |
+99 |     if (ind < 0) {
+   |        ^       ^
+   |
+help: remove these parentheses
+   |
+99 -     if (ind < 0) {
+99 +     if ind < 0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:100:15
+    |
+100 |         ind = (ind + (hm.buckets.clone().len() as i64));
+    |               ^                                       ^
+    |
+help: remove these parentheses
+    |
+100 -         ind = (ind + (hm.buckets.clone().len() as i64));
+100 +         ind = ind + (hm.buckets.clone().len() as i64);
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:105:12
+    |
+105 |     return ((ind + 1) % (hm.buckets.clone().len() as i64))
+    |            ^                                             ^
+    |
+help: remove these parentheses
+    |
+105 -     return ((ind + 1) % (hm.buckets.clone().len() as i64))
+105 +     return (ind + 1) % (hm.buckets.clone().len() as i64)
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:110:8
+    |
+110 |     if ((b.state == 0) || (b.state == 2)) {
+    |        ^                                ^
+    |
+help: remove these parentheses
+    |
+110 -     if ((b.state == 0) || (b.state == 2)) {
+110 +     if (b.state == 0) || (b.state == 2) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:113:21
+    |
+113 |         (*hm).len = (hm.len + 1);
+    |                     ^          ^
+    |
+help: remove these parentheses
+    |
+113 -         (*hm).len = (hm.len + 1);
+113 +         (*hm).len = hm.len + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:116:8
+    |
+116 |     if (b.key == key) {
+    |        ^            ^
+    |
+help: remove these parentheses
+    |
+116 -     if (b.key == key) {
+116 +     if b.key == key {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:124:21
+    |
+124 |     let mut limit = (((hm.buckets.clone().len() as i64) * hm.cap_num) / hm.cap_den);
+    |                     ^                                                             ^
+    |
+help: remove these parentheses
+    |
+124 -     let mut limit = (((hm.buckets.clone().len() as i64) * hm.cap_num) / hm.cap_den);
+124 +     let mut limit = ((hm.buckets.clone().len() as i64) * hm.cap_num) / hm.cap_den;
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:125:12
+    |
+125 |     return (hm.len >= limit)
+    |            ^               ^
+    |
+help: remove these parentheses
+    |
+125 -     return (hm.len >= limit)
+125 +     return hm.len >= limit
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:128:8
+    |
+128 |     if ((hm.buckets.clone().len() as i64) <= hm.initial_size) {
+    |        ^                                                    ^
+    |
+help: remove these parentheses
+    |
+128 -     if ((hm.buckets.clone().len() as i64) <= hm.initial_size) {
+128 +     if (hm.buckets.clone().len() as i64) <= hm.initial_size {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:131:21
+    |
+131 |     let mut limit = (((hm.buckets.clone().len() as i64) * hm.cap_num) / (2 * hm.cap_den));
+    |                     ^                                                                   ^
+    |
+help: remove these parentheses
+    |
+131 -     let mut limit = (((hm.buckets.clone().len() as i64) * hm.cap_num) / (2 * hm.cap_den));
+131 +     let mut limit = ((hm.buckets.clone().len() as i64) * hm.cap_num) / (2 * hm.cap_den);
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:132:12
+    |
+132 |     return (hm.len < limit)
+    |            ^              ^
+    |
+help: remove these parentheses
+    |
+132 -     return (hm.len < limit)
+132 +     return hm.len < limit
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:139:11
+    |
+139 |     while (i < (old.len() as i64)) {
+    |           ^                      ^
+    |
+help: remove these parentheses
+    |
+139 -     while (i < (old.len() as i64)) {
+139 +     while i < (old.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:141:12
+    |
+141 |         if (it.state == 1) {
+    |            ^             ^
+    |
+help: remove these parentheses
+    |
+141 -         if (it.state == 1) {
+141 +         if it.state == 1 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:144:13
+    |
+144 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+144 -         i = (i + 1);
+144 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:148:16
+    |
+148 |     resize(hm, ((hm.buckets.clone().len() as i64) * 2));
+    |                ^                                     ^
+    |
+help: remove these parentheses
+    |
+148 -     resize(hm, ((hm.buckets.clone().len() as i64) * 2));
+148 +     resize(hm, (hm.buckets.clone().len() as i64) * 2);
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:151:16
+    |
+151 |     resize(hm, ((hm.buckets.clone().len() as i64) / 2));
+    |                ^                                     ^
+    |
+help: remove these parentheses
+    |
+151 -     resize(hm, ((hm.buckets.clone().len() as i64) / 2));
+151 +     resize(hm, (hm.buckets.clone().len() as i64) / 2);
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:156:11
+    |
+156 |     while (i < (hm.buckets.clone().len() as i64)) {
+    |           ^                                     ^
+    |
+help: remove these parentheses
+    |
+156 -     while (i < (hm.buckets.clone().len() as i64)) {
+156 +     while i < (hm.buckets.clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:161:13
+    |
+161 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+161 -         i = (i + 1);
+161 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:174:11
+    |
+174 |     while (i < (buckets.len() as i64)) {
+    |           ^                          ^
+    |
+help: remove these parentheses
+    |
+174 -     while (i < (buckets.len() as i64)) {
+174 +     while i < (buckets.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:176:12
+    |
+176 |         if (it.state == 0) {
+    |            ^             ^
+    |
+help: remove these parentheses
+    |
+176 -         if (it.state == 0) {
+176 +         if it.state == 0 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:179:12
+    |
+179 |         if ((it.state == 1) && (it.key == key)) {
+    |            ^                                  ^
+    |
+help: remove these parentheses
+    |
+179 -         if ((it.state == 1) && (it.key == key)) {
+179 +         if (it.state == 1) && (it.key == key) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:183:13
+    |
+183 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+183 -         i = (i + 1);
+183 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:191:11
+    |
+191 |     while (i < (buckets.len() as i64)) {
+    |           ^                          ^
+    |
+help: remove these parentheses
+    |
+191 -     while (i < (buckets.len() as i64)) {
+191 +     while i < (buckets.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:193:12
+    |
+193 |         if (it.state == 0) {
+    |            ^             ^
+    |
+help: remove these parentheses
+    |
+193 -         if (it.state == 0) {
+193 +         if it.state == 0 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:197:12
+    |
+197 |         if ((it.state == 1) && (it.key == key)) {
+    |            ^                                  ^
+    |
+help: remove these parentheses
+    |
+197 -         if ((it.state == 1) && (it.key == key)) {
+197 +         if (it.state == 1) && (it.key == key) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:200:25
+    |
+200 |             (*hm).len = (hm.len - 1);
+    |                         ^          ^
+    |
+help: remove these parentheses
+    |
+200 -             (*hm).len = (hm.len - 1);
+200 +             (*hm).len = hm.len - 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:204:13
+    |
+204 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+204 -         i = (i + 1);
+204 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:217:11
+    |
+217 |     while (i < (hm.buckets.clone().len() as i64)) {
+    |           ^                                     ^
+    |
+help: remove these parentheses
+    |
+217 -     while (i < (hm.buckets.clone().len() as i64)) {
+217 +     while i < (hm.buckets.clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:219:12
+    |
+219 |         if (b.state == 1) {
+    |            ^            ^
+    |
+help: remove these parentheses
+    |
+219 -         if (b.state == 1) {
+219 +         if b.state == 1 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:227:13
+    |
+227 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+227 -         i = (i + 1);
+227 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:241:32
+    |
+241 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+241 -         let duration_us: i64 = ((_end - _start) / 1000);
+241 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0425]: cannot find function `hashmap_new` in this scope
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:81:69
+   |
+81 | static g_hm: LazyLock<Mutex<HashMap>> = LazyLock::new(|| Mutex::new(hashmap_new(5)));
+   |                                                                     ^^^^^^^^^^^ not found in this scope
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:232:21
+    |
+232 |         hashmap_set(&mut g_hm, 1, 10);
+    |         ----------- ^^^^^^^^^ expected `&mut HashMap`, found `&mut LazyLock<Mutex<HashMap>>`
+    |         |
+    |         arguments to this function are incorrect
+    |
+    = note: expected mutable reference `&mut HashMap`
+               found mutable reference `&mut LazyLock<Mutex<HashMap>>`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:164:19
+    |
+164 |         unsafe fn hashmap_set(hm: &mut HashMap, mut key: i64, mut val: i64) {
+    |                   ^^^^^^^^^^^ ----------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:233:21
+    |
+233 |         hashmap_set(&mut g_hm, 2, 20);
+    |         ----------- ^^^^^^^^^ expected `&mut HashMap`, found `&mut LazyLock<Mutex<HashMap>>`
+    |         |
+    |         arguments to this function are incorrect
+    |
+    = note: expected mutable reference `&mut HashMap`
+               found mutable reference `&mut LazyLock<Mutex<HashMap>>`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:164:19
+    |
+164 |         unsafe fn hashmap_set(hm: &mut HashMap, mut key: i64, mut val: i64) {
+    |                   ^^^^^^^^^^^ ----------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:234:21
+    |
+234 |         hashmap_set(&mut g_hm, 3, 30);
+    |         ----------- ^^^^^^^^^ expected `&mut HashMap`, found `&mut LazyLock<Mutex<HashMap>>`
+    |         |
+    |         arguments to this function are incorrect
+    |
+    = note: expected mutable reference `&mut HashMap`
+               found mutable reference `&mut LazyLock<Mutex<HashMap>>`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:164:19
+    |
+164 |         unsafe fn hashmap_set(hm: &mut HashMap, mut key: i64, mut val: i64) {
+    |                   ^^^^^^^^^^^ ----------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:235:37
+    |
+235 |         println!("{}", hashmap_repr(&g_hm));
+    |                        ------------ ^^^^^ expected `&HashMap`, found `&LazyLock<Mutex<HashMap>>`
+    |                        |
+    |                        arguments to this function are incorrect
+    |
+    = note: expected reference `&HashMap`
+               found reference `&LazyLock<Mutex<HashMap>>`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:213:19
+    |
+213 |         unsafe fn hashmap_repr(hm: &HashMap) -> String {
+    |                   ^^^^^^^^^^^^ ------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:236:36
+    |
+236 |         println!("{}", hashmap_get(&mut g_hm, 2).to_string());
+    |                        ----------- ^^^^^^^^^ expected `&mut HashMap`, found `&mut LazyLock<Mutex<HashMap>>`
+    |                        |
+    |                        arguments to this function are incorrect
+    |
+    = note: expected mutable reference `&mut HashMap`
+               found mutable reference `&mut LazyLock<Mutex<HashMap>>`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:170:19
+    |
+170 |         unsafe fn hashmap_get(hm: &mut HashMap, mut key: i64) -> i64 {
+    |                   ^^^^^^^^^^^ ----------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:237:21
+    |
+237 |         hashmap_del(&mut g_hm, 1);
+    |         ----------- ^^^^^^^^^ expected `&mut HashMap`, found `&mut LazyLock<Mutex<HashMap>>`
+    |         |
+    |         arguments to this function are incorrect
+    |
+    = note: expected mutable reference `&mut HashMap`
+               found mutable reference `&mut LazyLock<Mutex<HashMap>>`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:187:19
+    |
+187 |         unsafe fn hashmap_del(hm: &mut HashMap, mut key: i64) {
+    |                   ^^^^^^^^^^^ ----------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:238:37
+    |
+238 |         println!("{}", hashmap_repr(&g_hm));
+    |                        ------------ ^^^^^ expected `&HashMap`, found `&LazyLock<Mutex<HashMap>>`
+    |                        |
+    |                        arguments to this function are incorrect
+    |
+    = note: expected reference `&HashMap`
+               found reference `&LazyLock<Mutex<HashMap>>`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:213:19
+    |
+213 |         unsafe fn hashmap_repr(hm: &HashMap) -> String {
+    |                   ^^^^^^^^^^^^ ------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:239:36
+    |
+239 |         println!("{}", hashmap_len(&g_hm).to_string());
+    |                        ----------- ^^^^^ expected `&HashMap`, found `&LazyLock<Mutex<HashMap>>`
+    |                        |
+    |                        arguments to this function are incorrect
+    |
+    = note: expected reference `&HashMap`
+               found reference `&LazyLock<Mutex<HashMap>>`
+note: function defined here
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:210:19
+    |
+210 |         unsafe fn hashmap_len(hm: &HashMap) -> i64 {
+    |                   ^^^^^^^^^^^ ------------
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:85:32
+   |
+85 |         unsafe fn make_buckets(mut n: i64) -> Vec<Bucket> {
+   |                                ----^
+   |                                |
+   |                                help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:94:31
+   |
+94 |         unsafe fn hashmap_new(mut initial_size: i64) -> HashMap {
+   |                               ----^^^^^^^^^^^^
+   |                               |
+   |                               help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:97:46
+   |
+97 |         unsafe fn bucket_index(hm: &HashMap, mut key: i64) -> i64 {
+   |                                              ----^^^
+   |                                              |
+   |                                              help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:104:44
+    |
+104 |         unsafe fn next_index(hm: &HashMap, mut ind: i64) -> i64 {
+    |                                            ----^^^
+    |                                            |
+    |                                            help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:107:45
+    |
+107 |         unsafe fn try_set(hm: &mut HashMap, mut ind: i64, mut key: i64, mut val: i64) -> bool {
+    |                                             ----^^^
+    |                                             |
+    |                                             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:107:59
+    |
+107 |         unsafe fn try_set(hm: &mut HashMap, mut ind: i64, mut key: i64, mut val: i64) -> bool {
+    |                                                           ----^^^
+    |                                                           |
+    |                                                           help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:107:73
+    |
+107 |         unsafe fn try_set(hm: &mut HashMap, mut ind: i64, mut key: i64, mut val: i64) -> bool {
+    |                                                                         ----^^^
+    |                                                                         |
+    |                                                                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:109:9
+    |
+109 |     let mut b: Bucket = buckets[ind as usize].clone();
+    |         ----^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:124:9
+    |
+124 |     let mut limit = (((hm.buckets.clone().len() as i64) * hm.cap_num) / hm.cap_den);
+    |         ----^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:131:9
+    |
+131 |     let mut limit = (((hm.buckets.clone().len() as i64) * hm.cap_num) / (2 * hm.cap_den));
+    |         ----^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:134:44
+    |
+134 |         unsafe fn resize(hm: &mut HashMap, mut new_size: i64) {
+    |                                            ----^^^^^^^^
+    |                                            |
+    |                                            help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:135:9
+    |
+135 |     let mut old: Vec<Bucket> = hm.buckets.clone();
+    |         ----^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:140:13
+    |
+140 |         let mut it: Bucket = old[i as usize].clone();
+    |             ----^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:153:46
+    |
+153 |         unsafe fn add_item(hm: &mut HashMap, mut key: i64, mut val: i64) {
+    |                                              ----^^^
+    |                                              |
+    |                                              help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:153:60
+    |
+153 |         unsafe fn add_item(hm: &mut HashMap, mut key: i64, mut val: i64) {
+    |                                                            ----^^^
+    |                                                            |
+    |                                                            help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:164:49
+    |
+164 |         unsafe fn hashmap_set(hm: &mut HashMap, mut key: i64, mut val: i64) {
+    |                                                 ----^^^
+    |                                                 |
+    |                                                 help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:164:63
+    |
+164 |         unsafe fn hashmap_set(hm: &mut HashMap, mut key: i64, mut val: i64) {
+    |                                                               ----^^^
+    |                                                               |
+    |                                                               help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:170:49
+    |
+170 |         unsafe fn hashmap_get(hm: &mut HashMap, mut key: i64) -> i64 {
+    |                                                 ----^^^
+    |                                                 |
+    |                                                 help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:171:9
+    |
+171 |     let mut buckets: Vec<Bucket> = hm.buckets.clone();
+    |         ----^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:175:13
+    |
+175 |         let mut it: Bucket = buckets[ind as usize].clone();
+    |             ----^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:187:49
+    |
+187 |         unsafe fn hashmap_del(hm: &mut HashMap, mut key: i64) {
+    |                                                 ----^^^
+    |                                                 |
+    |                                                 help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:192:13
+    |
+192 |         let mut it: Bucket = buckets[ind as usize].clone();
+    |             ----^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/hashing/hash_map.rs:218:13
+    |
+218 |         let mut b: Bucket = hm.buckets.clone()[i as usize].clone();
+    |             ----^
+    |             |
+    |             help: remove this `mut`
+
+error: aborting due to 9 previous errors; 73 warnings emitted
+
+Some errors have detailed explanations: E0308, E0425.
+For more information about an error, try `rustc --explain E0308`.

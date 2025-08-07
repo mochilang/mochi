@@ -1,0 +1,197 @@
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/treap.rs:65:28
+   |
+65 |         let mut NIL: i64 = (0 - 1);
+   |                            ^     ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+65 -         let mut NIL: i64 = (0 - 1);
+65 +         let mut NIL: i64 = 0 - 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/treap.rs:67:14
+   |
+67 |     g_seed = (((g_seed * 13) + 7) % 100);
+   |              ^                         ^
+   |
+help: remove these parentheses
+   |
+67 -     g_seed = (((g_seed * 13) + 7) % 100);
+67 +     g_seed = ((g_seed * 13) + 7) % 100;
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/treap.rs:68:12
+   |
+68 |     return ((g_seed as f64) / 100.0)
+   |            ^                       ^
+   |
+help: remove these parentheses
+   |
+68 -     return ((g_seed as f64) / 100.0)
+68 +     return (g_seed as f64) / 100.0
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/treap.rs:75:12
+   |
+75 |     return ((g_node_values.clone().len() as i64) - 1)
+   |            ^                                        ^
+   |
+help: remove these parentheses
+   |
+75 -     return ((g_node_values.clone().len() as i64) - 1)
+75 +     return (g_node_values.clone().len() as i64) - 1
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/treap.rs:78:8
+   |
+78 |     if (root == NIL) {
+   |        ^           ^
+   |
+help: remove these parentheses
+   |
+78 -     if (root == NIL) {
+78 +     if root == NIL {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/treap.rs:81:8
+   |
+81 |     if (value < g_node_values.clone()[root as usize]) {
+   |        ^                                            ^
+   |
+help: remove these parentheses
+   |
+81 -     if (value < g_node_values.clone()[root as usize]) {
+81 +     if value < g_node_values.clone()[root as usize] {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/treap.rs:91:8
+   |
+91 |     if (left == NIL) {
+   |        ^           ^
+   |
+help: remove these parentheses
+   |
+91 -     if (left == NIL) {
+91 +     if left == NIL {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/treap.rs:94:8
+   |
+94 |     if (right == NIL) {
+   |        ^            ^
+   |
+help: remove these parentheses
+   |
+94 -     if (right == NIL) {
+94 +     if right == NIL {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/treap.rs:97:8
+   |
+97 |     if (g_node_priors.clone()[left as usize] < g_node_priors.clone()[right as usize]) {
+   |        ^                                                                            ^
+   |
+help: remove these parentheses
+   |
+97 -     if (g_node_priors.clone()[left as usize] < g_node_priors.clone()[right as usize]) {
+97 +     if g_node_priors.clone()[left as usize] < g_node_priors.clone()[right as usize] {
+   |
+
+warning: unnecessary parentheses around method argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/treap.rs:110:31
+    |
+110 |     let mut res1 = root.split((value - 1)).map(|x| x.to_string()).collect::<Vec<String>>();
+    |                               ^         ^
+    |
+help: remove these parentheses
+    |
+110 -     let mut res1 = root.split((value - 1)).map(|x| x.to_string()).collect::<Vec<String>>();
+110 +     let mut res1 = root.split(value - 1).map(|x| x.to_string()).collect::<Vec<String>>();
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/treap.rs:115:8
+    |
+115 |     if (i == NIL) {
+    |        ^        ^
+    |
+help: remove these parentheses
+    |
+115 -     if (i == NIL) {
+115 +     if i == NIL {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/treap.rs:146:32
+    |
+146 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+146 -         let duration_us: i64 = ((_end - _start) / 1000);
+146 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0599]: no method named `split` found for type `i64` in the current scope
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/treap.rs:82:59
+   |
+82 |         let mut res = g_node_lefts.clone()[root as usize].split(value).map(|x| x.to_string()).collect::<Vec<String>>();
+   |                                                           ^^^^^ method not found in `i64`
+
+error[E0599]: no method named `split` found for type `i64` in the current scope
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/treap.rs:86:56
+   |
+86 |     let mut res = g_node_rights.clone()[root as usize].split(value).map(|x| x.to_string()).collect::<Vec<String>>();
+   |                                                        ^^^^^ method not found in `i64`
+
+error[E0425]: cannot find function `merge` in this scope
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/treap.rs:98:40
+   |
+98 |         g_node_rights[left as usize] = merge(g_node_rights.clone()[left as usize], right);
+   |                                        ^^^^^ not found in this scope
+
+error[E0425]: cannot find function `merge` in this scope
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/treap.rs:101:36
+    |
+101 |     g_node_lefts[right as usize] = merge(left, g_node_lefts.clone()[right as usize]);
+    |                                    ^^^^^ not found in this scope
+
+error[E0599]: no method named `split` found for type `i64` in the current scope
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/treap.rs:106:24
+    |
+106 |     let mut res = root.split(value).map(|x| x.to_string()).collect::<Vec<String>>();
+    |                        ^^^^^ method not found in `i64`
+
+error[E0599]: no method named `split` found for type `i64` in the current scope
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/treap.rs:110:25
+    |
+110 |     let mut res1 = root.split((value - 1)).map(|x| x.to_string()).collect::<Vec<String>>();
+    |                         ^^^^^ method not found in `i64`
+
+error[E0425]: cannot find function `inorder` in this scope
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/treap.rs:118:34
+    |
+118 |     let mut left_acc: Vec<i64> = inorder(g_node_lefts.clone()[i as usize], acc.clone());
+    |                                  ^^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `inorder` in this scope
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/treap.rs:120:12
+    |
+120 |     return inorder(g_node_rights.clone()[i as usize], with_node.clone())
+    |            ^^^^^^^ not found in this scope
+
+error: aborting due to 8 previous errors; 12 warnings emitted
+
+Some errors have detailed explanations: E0425, E0599.
+For more information about an error, try `rustc --explain E0425`.

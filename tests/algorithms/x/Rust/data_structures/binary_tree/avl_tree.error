@@ -1,0 +1,358 @@
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:43:28
+   |
+43 |         let mut NIL: i64 = (0 - 1);
+   |                            ^     ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+43 -         let mut NIL: i64 = (0 - 1);
+43 +         let mut NIL: i64 = 0 - 1;
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:47:12
+   |
+47 |     return ((g_nodes.clone().len() as i64) - 1)
+   |            ^                                  ^
+   |
+help: remove these parentheses
+   |
+47 -     return ((g_nodes.clone().len() as i64) - 1)
+47 +     return (g_nodes.clone().len() as i64) - 1
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:50:8
+   |
+50 |     if (i == NIL) {
+   |        ^        ^
+   |
+help: remove these parentheses
+   |
+50 -     if (i == NIL) {
+50 +     if i == NIL {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:56:8
+   |
+56 |     if (a > b) {
+   |        ^     ^
+   |
+help: remove these parentheses
+   |
+56 -     if (a > b) {
+56 +     if a > b {
+   |
+
+warning: unnecessary parentheses around method argument
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:62:56
+   |
+62 | ...), (my_max(get_height(g_nodes.clone()[i as usize].clone()["left"]), get_height(g_nodes.clone()[i as usize].clone()["right"])) + 1));
+   |       ^                                                                                                                             ^
+   |
+help: remove these parentheses
+   |
+62 -     g_nodes[i as usize].insert(String::from("height"), (my_max(get_height(g_nodes.clone()[i as usize].clone()["left"]), get_height(g_nodes.clone()[i as usize].clone()["right"])) + 1));
+62 +     g_nodes[i as usize].insert(String::from("height"), my_max(get_height(g_nodes.clone()[i as usize].clone()["left"]), get_height(g_nodes.clone()[i as usize].clone()["right"])) + 1);
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:89:8
+   |
+89 |     if (i == NIL) {
+   |        ^        ^
+   |
+help: remove these parentheses
+   |
+89 -     if (i == NIL) {
+89 +     if i == NIL {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:92:8
+   |
+92 |     if (value < g_nodes.clone()[i as usize].clone()["data"]) {
+   |        ^                                                   ^
+   |
+help: remove these parentheses
+   |
+92 -     if (value < g_nodes.clone()[i as usize].clone()["data"]) {
+92 +     if value < g_nodes.clone()[i as usize].clone()["data"] {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:94:12
+   |
+94 |         if ((get_height(g_nodes.clone()[i as usize].clone()["left"]) - get_height(g_nodes.clone()[i as usize].clone()["right"])) == 2) {
+   |            ^                                                                                                                         ^
+   |
+help: remove these parentheses
+   |
+94 -         if ((get_height(g_nodes.clone()[i as usize].clone()["left"]) - get_height(g_nodes.clone()[i as usize].clone()["right"])) == 2) {
+94 +         if (get_height(g_nodes.clone()[i as usize].clone()["left"]) - get_height(g_nodes.clone()[i as usize].clone()["right"])) == 2 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:95:16
+   |
+95 |             if (value < g_nodes.clone()[g_nodes.clone()[i as usize].clone()["left"] as usize].clone()["data"]) {
+   |                ^                                                                                             ^
+   |
+help: remove these parentheses
+   |
+95 -             if (value < g_nodes.clone()[g_nodes.clone()[i as usize].clone()["left"] as usize].clone()["data"]) {
+95 +             if value < g_nodes.clone()[g_nodes.clone()[i as usize].clone()["left"] as usize].clone()["data"] {
+   |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:103:12
+    |
+103 |         if ((get_height(g_nodes.clone()[i as usize].clone()["right"]) - get_height(g_nodes.clone()[i as usize].clone()["left"])) == 2) {
+    |            ^                                                                                                                         ^
+    |
+help: remove these parentheses
+    |
+103 -         if ((get_height(g_nodes.clone()[i as usize].clone()["right"]) - get_height(g_nodes.clone()[i as usize].clone()["left"])) == 2) {
+103 +         if (get_height(g_nodes.clone()[i as usize].clone()["right"]) - get_height(g_nodes.clone()[i as usize].clone()["left"])) == 2 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:104:16
+    |
+104 |             if (value < g_nodes.clone()[g_nodes.clone()[i as usize].clone()["right"] as usize].clone()["data"]) {
+    |                ^                                                                                              ^
+    |
+help: remove these parentheses
+    |
+104 -             if (value < g_nodes.clone()[g_nodes.clone()[i as usize].clone()["right"] as usize].clone()["data"]) {
+104 +             if value < g_nodes.clone()[g_nodes.clone()[i as usize].clone()["right"] as usize].clone()["data"] {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:116:11
+    |
+116 |     while (g_nodes.clone()[cur as usize].clone()["left"] != NIL) {
+    |           ^                                                    ^
+    |
+help: remove these parentheses
+    |
+116 -     while (g_nodes.clone()[cur as usize].clone()["left"] != NIL) {
+116 +     while g_nodes.clone()[cur as usize].clone()["left"] != NIL {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:122:8
+    |
+122 |     if (i == NIL) {
+    |        ^        ^
+    |
+help: remove these parentheses
+    |
+122 -     if (i == NIL) {
+122 +     if i == NIL {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:125:8
+    |
+125 |     if (value < g_nodes.clone()[i as usize].clone()["data"]) {
+    |        ^                                                   ^
+    |
+help: remove these parentheses
+    |
+125 -     if (value < g_nodes.clone()[i as usize].clone()["data"]) {
+125 +     if value < g_nodes.clone()[i as usize].clone()["data"] {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:127:15
+    |
+127 |     } else if (value > g_nodes.clone()[i as usize].clone()["data"]) {
+    |               ^                                                   ^
+    |
+help: remove these parentheses
+    |
+127 -     } else if (value > g_nodes.clone()[i as usize].clone()["data"]) {
+127 +     } else if value > g_nodes.clone()[i as usize].clone()["data"] {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:130:12
+    |
+130 |         if ((g_nodes.clone()[i as usize].clone()["left"] != NIL) && (g_nodes.clone()[i as usize].clone()["right"] != NIL)) {
+    |            ^                                                                                                             ^
+    |
+help: remove these parentheses
+    |
+130 -         if ((g_nodes.clone()[i as usize].clone()["left"] != NIL) && (g_nodes.clone()[i as usize].clone()["right"] != NIL)) {
+130 +         if (g_nodes.clone()[i as usize].clone()["left"] != NIL) && (g_nodes.clone()[i as usize].clone()["right"] != NIL) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:134:19
+    |
+134 |         } else if (g_nodes.clone()[i as usize].clone()["left"] != NIL) {
+    |                   ^                                                  ^
+    |
+help: remove these parentheses
+    |
+134 -         } else if (g_nodes.clone()[i as usize].clone()["left"] != NIL) {
+134 +         } else if g_nodes.clone()[i as usize].clone()["left"] != NIL {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:140:8
+    |
+140 |     if (i == NIL) {
+    |        ^        ^
+    |
+help: remove these parentheses
+    |
+140 -     if (i == NIL) {
+140 +     if i == NIL {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:145:8
+    |
+145 |     if ((rh - lh) == 2) {
+    |        ^              ^
+    |
+help: remove these parentheses
+    |
+145 -     if ((rh - lh) == 2) {
+145 +     if (rh - lh) == 2 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:146:12
+    |
+146 | ...if (get_height(g_nodes.clone()[g_nodes.clone()[i as usize].clone()["right"] as usize].clone()["right"]) > get_height(g_nodes.clone()[g_nodes.clone()[i as usize].clone()["right"] as usize].clone()["left"])) {
+    |       ^                                                                                                                                                                                                        ^
+    |
+help: remove these parentheses
+    |
+146 -         if (get_height(g_nodes.clone()[g_nodes.clone()[i as usize].clone()["right"] as usize].clone()["right"]) > get_height(g_nodes.clone()[g_nodes.clone()[i as usize].clone()["right"] as usize].clone()["left"])) {
+146 +         if get_height(g_nodes.clone()[g_nodes.clone()[i as usize].clone()["right"] as usize].clone()["right"]) > get_height(g_nodes.clone()[g_nodes.clone()[i as usize].clone()["right"] as usize].clone()["left"]) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:151:15
+    |
+151 |     } else if ((lh - rh) == 2) {
+    |               ^              ^
+    |
+help: remove these parentheses
+    |
+151 -     } else if ((lh - rh) == 2) {
+151 +     } else if (lh - rh) == 2 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:152:12
+    |
+152 | ...if (get_height(g_nodes.clone()[g_nodes.clone()[i as usize].clone()["left"] as usize].clone()["left"]) > get_height(g_nodes.clone()[g_nodes.clone()[i as usize].clone()["left"] as usize].clone()["right"])) {
+    |       ^                                                                                                                                                                                                      ^
+    |
+help: remove these parentheses
+    |
+152 -         if (get_height(g_nodes.clone()[g_nodes.clone()[i as usize].clone()["left"] as usize].clone()["left"]) > get_height(g_nodes.clone()[g_nodes.clone()[i as usize].clone()["left"] as usize].clone()["right"])) {
+152 +         if get_height(g_nodes.clone()[g_nodes.clone()[i as usize].clone()["left"] as usize].clone()["left"]) > get_height(g_nodes.clone()[g_nodes.clone()[i as usize].clone()["left"] as usize].clone()["right"]) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:162:8
+    |
+162 |     if (i == NIL) {
+    |        ^        ^
+    |
+help: remove these parentheses
+    |
+162 -     if (i == NIL) {
+162 +     if i == NIL {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:168:8
+    |
+168 |     if (left.as_str() != "") {
+    |        ^                   ^
+    |
+help: remove these parentheses
+    |
+168 -     if (left.as_str() != "") {
+168 +     if left.as_str() != "" {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:171:8
+    |
+171 |     if (right.as_str() != "") {
+    |        ^                    ^
+    |
+help: remove these parentheses
+    |
+171 -     if (right.as_str() != "") {
+171 +     if right.as_str() != "" {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:189:32
+    |
+189 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+189 -         let duration_us: i64 = ((_end - _start) / 1000);
+189 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0425]: cannot find function `insert_node` in this scope
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:93:58
+   |
+93 |         g_nodes[i as usize].insert(String::from("left"), insert_node(g_nodes.clone()[i as usize].clone()["left"], value));
+   |                                                          ^^^^^^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `insert_node` in this scope
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:102:59
+    |
+102 |         g_nodes[i as usize].insert(String::from("right"), insert_node(g_nodes.clone()[i as usize].clone()["right"], value));
+    |                                                           ^^^^^^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `del_node` in this scope
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:126:58
+    |
+126 |         g_nodes[i as usize].insert(String::from("left"), del_node(g_nodes.clone()[i as usize].clone()["left"], value));
+    |                                                          ^^^^^^^^ help: a local variable with a similar name exists: `new_node`
+
+error[E0425]: cannot find function `del_node` in this scope
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:128:59
+    |
+128 |         g_nodes[i as usize].insert(String::from("right"), del_node(g_nodes.clone()[i as usize].clone()["right"], value));
+    |                                                           ^^^^^^^^ help: a local variable with a similar name exists: `new_node`
+
+error[E0425]: cannot find function `del_node` in this scope
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:133:63
+    |
+133 |             g_nodes[i as usize].insert(String::from("right"), del_node(g_nodes.clone()[i as usize].clone()["right"], temp));
+    |                                                               ^^^^^^^^ help: a local variable with a similar name exists: `new_node`
+
+error[E0425]: cannot find function `inorder` in this scope
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:165:28
+    |
+165 |     let mut left: String = inorder(g_nodes.clone()[i as usize].clone()["left"]).clone();
+    |                            ^^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `inorder` in this scope
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/avl_tree.rs:166:29
+    |
+166 |     let mut right: String = inorder(g_nodes.clone()[i as usize].clone()["right"]).clone();
+    |                             ^^^^^^^ not found in this scope
+
+error: aborting due to 7 previous errors; 26 warnings emitted
+
+For more information about this error, try `rustc --explain E0425`.

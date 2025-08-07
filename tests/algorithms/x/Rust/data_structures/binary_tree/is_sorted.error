@@ -1,0 +1,148 @@
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/is_sorted.rs:57:25
+   |
+57 |     let mut NONE: i64 = (0 - 1);
+   |                         ^     ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+57 -     let mut NONE: i64 = (0 - 1);
+57 +     let mut NONE: i64 = 0 - 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/is_sorted.rs:60:8
+   |
+60 |     if (index == NONE) {
+   |        ^             ^
+   |
+help: remove these parentheses
+   |
+60 -     if (index == NONE) {
+60 +     if index == NONE {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/is_sorted.rs:64:8
+   |
+64 |     if (left_idx != NONE) {
+   |        ^                ^
+   |
+help: remove these parentheses
+   |
+64 -     if (left_idx != NONE) {
+64 +     if left_idx != NONE {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/is_sorted.rs:69:8
+   |
+69 |     if (right_idx != NONE) {
+   |        ^                 ^
+   |
+help: remove these parentheses
+   |
+69 -     if (right_idx != NONE) {
+69 +     if right_idx != NONE {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/is_sorted.rs:75:8
+   |
+75 |     if (index == NONE) {
+   |        ^             ^
+   |
+help: remove these parentheses
+   |
+75 -     if (index == NONE) {
+75 +     if index == NONE {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/is_sorted.rs:79:8
+   |
+79 |     if (left_idx != NONE) {
+   |        ^                ^
+   |
+help: remove these parentheses
+   |
+79 -     if (left_idx != NONE) {
+79 +     if left_idx != NONE {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/is_sorted.rs:80:12
+   |
+80 |         if (tree.data[index as usize] < tree.data[left_idx as usize]) {
+   |            ^                                                        ^
+   |
+help: remove these parentheses
+   |
+80 -         if (tree.data[index as usize] < tree.data[left_idx as usize]) {
+80 +         if tree.data[index as usize] < tree.data[left_idx as usize] {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/is_sorted.rs:88:8
+   |
+88 |     if (right_idx != NONE) {
+   |        ^                 ^
+   |
+help: remove these parentheses
+   |
+88 -     if (right_idx != NONE) {
+88 +     if right_idx != NONE {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/is_sorted.rs:89:12
+   |
+89 |         if (tree.data[index as usize] > tree.data[right_idx as usize]) {
+   |            ^                                                         ^
+   |
+help: remove these parentheses
+   |
+89 -         if (tree.data[index as usize] > tree.data[right_idx as usize]) {
+89 +         if tree.data[index as usize] > tree.data[right_idx as usize] {
+   |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/is_sorted.rs:105:28
+    |
+105 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+105 -     let duration_us: i64 = ((_end - _start) / 1000);
+105 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0425]: cannot find function `inorder` in this scope
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/is_sorted.rs:65:25
+   |
+65 |         res = vec![res, inorder(&mut tree, left_idx)].concat();
+   |                         ^^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `inorder` in this scope
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/is_sorted.rs:70:25
+   |
+70 |         res = vec![res, inorder(&mut tree, right_idx)].concat();
+   |                         ^^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `is_sorted` in this scope
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/is_sorted.rs:83:13
+   |
+83 |         if !is_sorted(&mut tree, left_idx) {
+   |             ^^^^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `is_sorted` in this scope
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/is_sorted.rs:92:13
+   |
+92 |         if !is_sorted(&mut tree, right_idx) {
+   |             ^^^^^^^^^ not found in this scope
+
+error: aborting due to 4 previous errors; 10 warnings emitted
+
+For more information about this error, try `rustc --explain E0425`.

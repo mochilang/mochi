@@ -1,0 +1,136 @@
+error: expected pattern, found `*`
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/merge_two_binary_trees.rs:46:96
+   |
+46 |     return match t1 { Leaf => t2, Tree::Node { left: l1, value: v1, right: r1 } => match t2 { (*Leaf).clone() => t1, Tree::Node { left: l...
+   |                                                                                                ^ expected pattern
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/merge_two_binary_trees.rs:47:2
+   |
+47 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/merge_two_binary_trees.rs:50:2
+   |
+50 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/merge_two_binary_trees.rs:53:2
+   |
+53 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/merge_two_binary_trees.rs:56:2
+   |
+56 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/merge_two_binary_trees.rs:59:2
+   |
+59 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/merge_two_binary_trees.rs:69:2
+   |
+69 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/merge_two_binary_trees.rs:80:28
+   |
+80 |     let duration_us: i64 = ((_end - _start) / 1000);
+   |                            ^                      ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+80 -     let duration_us: i64 = ((_end - _start) / 1000);
+80 +     let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/merge_two_binary_trees.rs:46:31
+   |
+45 |     fn merge_two_binary_trees(t1: &Tree, t2: &Tree) -> Tree {
+   |                                                        ---- expected `Tree` because of return type
+46 |     return match t1 { Leaf => t2, Tree::Node { left: l1, value: v1, right: r1 } => match t2 { (*Leaf).clone() => t1, Tree::Node { left: l...
+   |                               ^^ expected `Tree`, found `&Tree`
+   |
+help: consider using clone here
+   |
+46 |     return match t1 { Leaf => t2.clone(), Tree::Node { left: l1, value: v1, right: r1 } => match t2 { (*Leaf).clone() => t1, Tree::Node { left: l2, value: v2, right: r2 } => Tree::Node { left: Box::new(merge_two_binary_trees(l1, l2).clone()), value: (*v1 + *v2), right: Box::new(merge_two_binary_trees(r1, r2).clone()) }, }, }
+   |                                 ++++++++
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/merge_two_binary_trees.rs:52:68
+   |
+51 |     fn get_left(t: &Tree) -> Tree {
+   |                              ---- expected `Tree` because of return type
+52 |     return match t { Tree::Node { left: l, value: _, right: _ } => l, _ => Tree::Leaf, }
+   |                                                                    ^ expected `Tree`, found `&Box<Tree>`
+   |
+   = note:   expected enum `Tree`
+           found reference `&Box<Tree>`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/merge_two_binary_trees.rs:55:68
+   |
+54 |     fn get_right(t: &Tree) -> Tree {
+   |                               ---- expected `Tree` because of return type
+55 |     return match t { Tree::Node { left: _, value: _, right: r } => r, _ => Tree::Leaf, }
+   |                                                                    ^ expected `Tree`, found `&Box<Tree>`
+   |
+   = note:   expected enum `Tree`
+           found reference `&Box<Tree>`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/merge_two_binary_trees.rs:61:20
+   |
+61 |       if !is_leaf(t) {
+   |  ____________________^
+62 | |         let mut v: i64 = get_value(t);
+63 | |         let mut l: Tree = get_left(t);
+64 | |         let mut r: Tree = get_right(t);
+...  |
+67 | |         print_preorder(&mut r);
+   | |                               - help: remove this semicolon to return this value
+68 | |     }
+   | |_____^ expected `i64`, found `()`
+
+error[E0170]: pattern binding `Leaf` is named the same as one of the variants of the type `Tree`
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/merge_two_binary_trees.rs:49:22
+   |
+49 |     return match t { Leaf => true, _ => false, }
+   |                      ^^^^ help: to match on the variant, qualify the path: `Tree::Leaf`
+   |
+   = note: `#[deny(bindings_with_variant_name)]` on by default
+
+warning: unreachable pattern
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/merge_two_binary_trees.rs:49:36
+   |
+49 |     return match t { Leaf => true, _ => false, }
+   |                      ----          ^ no value can reach this
+   |                      |
+   |                      matches any value
+   |
+   = note: `#[warn(unreachable_patterns)]` on by default
+
+warning: unused variable: `Leaf`
+  --> /workspace/mochi/tests/algorithms/x/Rust/data_structures/binary_tree/merge_two_binary_trees.rs:49:22
+   |
+49 |     return match t { Leaf => true, _ => false, }
+   |                      ^^^^ help: if this is intentional, prefix it with an underscore: `_Leaf`
+   |
+   = note: `#[warn(unused_variables)]` on by default
+
+error: aborting due to 6 previous errors; 9 warnings emitted
+
+Some errors have detailed explanations: E0170, E0308.
+For more information about an error, try `rustc --explain E0170`.
