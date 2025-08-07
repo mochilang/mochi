@@ -1,0 +1,25 @@
+20.0
+0.53
+60.0
+0.20666666666666664
+1.52
+2.1020000000000003
+14.693999999999999
+2.4200000000000004
+0.0
+0.75
+228152458.75893378
+0.0
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/loss_functions.py", line 318, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/loss_functions.py", line 317, in main
+    print(kullback_leibler_divergence(y_true_kl, y_pred_kl))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/loss_functions.py", line 284, in kullback_leibler_divergence
+    total = total + y_true[i] * ln(y_true[i] // y_pred[i])
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/loss_functions.py", line 39, in ln
+    panic("ln domain error")
+    ^^^^^
+NameError: name 'panic' is not defined

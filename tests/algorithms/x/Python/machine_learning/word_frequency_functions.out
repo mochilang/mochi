@@ -1,0 +1,13 @@
+2
+[1, 3]
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/word_frequency_functions.py", line 155, in <module>
+    idf_val = inverse_document_frequency(1, 3, False)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/word_frequency_functions.py", line 143, in inverse_document_frequency
+    l = log10(ratio)
+        ^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/word_frequency_functions.py", line 106, in log10
+    return ln(x) / ln(10.0)
+           ~~~~~~^~~~~~~~~~
+ZeroDivisionError: float division by zero

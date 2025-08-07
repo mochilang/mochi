@@ -1,0 +1,14 @@
+{
+  "duration_us": 10,
+  "memory_bytes": 12877824,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/dodecahedron.py", line 77, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/dodecahedron.py", line 70, in main
+    test_dodecahedron()
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/dodecahedron.py", line 59, in test_dodecahedron
+    panic("surface area 5 failed")
+    ^^^^^
+NameError: name 'panic' is not defined

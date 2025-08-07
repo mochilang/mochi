@@ -1,0 +1,14 @@
+{
+  "duration_us": 58,
+  "memory_bytes": 14675968,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/fast_inverse_sqrt.py", line 152, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/fast_inverse_sqrt.py", line 142, in main
+    test_fast_inverse_sqrt()
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/fast_inverse_sqrt.py", line 126, in test_fast_inverse_sqrt
+    panic("fast_inverse_sqrt(10) failed")
+    ^^^^^
+NameError: name 'panic' is not defined

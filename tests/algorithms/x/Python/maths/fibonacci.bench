@@ -1,0 +1,13 @@
+{
+  "duration_us": 106,
+  "memory_bytes": 15458304,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/fibonacci.py", line 191, in <module>
+    print(str(run_tests()))
+              ^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/fibonacci.py", line 187, in run_tests
+    panic("binet failed")
+    ^^^^^
+NameError: name 'panic' is not defined

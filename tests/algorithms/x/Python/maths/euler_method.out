@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/euler_method.py", line 57, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/euler_method.py", line 53, in main
+    test_explicit_euler()
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/euler_method.py", line 51, in test_explicit_euler
+    panic("explicit_euler failed")
+    ^^^^^
+NameError: name 'panic' is not defined

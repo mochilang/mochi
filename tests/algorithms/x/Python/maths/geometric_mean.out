@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/geometric_mean.py", line 73, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/geometric_mean.py", line 71, in main
+    test_compute_geometric_mean()
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/geometric_mean.py", line 66, in test_compute_geometric_mean
+    panic("test4 failed")
+    ^^^^^
+NameError: name 'panic' is not defined

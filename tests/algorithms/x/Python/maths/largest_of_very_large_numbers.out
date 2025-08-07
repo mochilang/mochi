@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/largest_of_very_large_numbers.py", line 48, in <module>
+    test_res()
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/largest_of_very_large_numbers.py", line 34, in test_res
+    if absf(res(5, 7) - 4.892790030352132) > 1e-07:
+            ^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/largest_of_very_large_numbers.py", line 32, in res
+    return (float(y)) * log10(float(x))
+                        ^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/largest_of_very_large_numbers.py", line 20, in log10
+    return ln(x) / ln(10.0)
+           ~~~~~~^~~~~~~~~~
+ZeroDivisionError: float division by zero
