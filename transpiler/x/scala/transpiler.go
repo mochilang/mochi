@@ -1129,40 +1129,40 @@ type AppendExpr struct {
 }
 
 func (a *AppendExpr) emit(w io.Writer) {
-       a.List.emit(w)
-       fmt.Fprint(w, " :+ ")
-       lt := inferTypeWithEnv(a.List, nil)
-       if strings.HasPrefix(lt, "ArrayBuffer[") {
-               elem := strings.TrimSuffix(strings.TrimPrefix(lt, "ArrayBuffer["), "]")
-               if elem == "BigInt" && inferType(a.Elem) != "BigInt" {
-                       needsBigInt = true
-                       fmt.Fprint(w, "BigInt(")
-                       a.Elem.emit(w)
-                       fmt.Fprint(w, ")")
-                       return
-               }
-       }
-       if ie, ok := a.Elem.(*IfExpr); ok {
-               if inferTypeWithEnv(ie.Then, nil) == "BigInt" && inferTypeWithEnv(ie.Else, nil) == "BigInt" {
-                       needsBigInt = true
-                       fmt.Fprint(w, "BigInt(")
-                       a.Elem.emit(w)
-                       fmt.Fprint(w, ")")
-                       return
-               }
-       }
-       if be, ok := a.Elem.(*BinaryExpr); ok {
-               if il, ok2 := be.Left.(*IntLit); ok2 && il.Value == 0 && be.Op == "-" {
-                       if _, ok3 := be.Right.(*IntLit); ok3 {
-                               needsBigInt = true
-                               fmt.Fprint(w, "BigInt(")
-                               be.emit(w)
-                               fmt.Fprint(w, ")")
-                               return
-                       }
-               }
-       }
-       a.Elem.emit(w)
+	a.List.emit(w)
+	fmt.Fprint(w, " :+ ")
+	lt := inferTypeWithEnv(a.List, nil)
+	if strings.HasPrefix(lt, "ArrayBuffer[") {
+		elem := strings.TrimSuffix(strings.TrimPrefix(lt, "ArrayBuffer["), "]")
+		if elem == "BigInt" && inferType(a.Elem) != "BigInt" {
+			needsBigInt = true
+			fmt.Fprint(w, "BigInt(")
+			a.Elem.emit(w)
+			fmt.Fprint(w, ")")
+			return
+		}
+	}
+	if ie, ok := a.Elem.(*IfExpr); ok {
+		if inferTypeWithEnv(ie.Then, nil) == "BigInt" && inferTypeWithEnv(ie.Else, nil) == "BigInt" {
+			needsBigInt = true
+			fmt.Fprint(w, "BigInt(")
+			a.Elem.emit(w)
+			fmt.Fprint(w, ")")
+			return
+		}
+	}
+	if be, ok := a.Elem.(*BinaryExpr); ok {
+		if il, ok2 := be.Left.(*IntLit); ok2 && il.Value == 0 && be.Op == "-" {
+			if _, ok3 := be.Right.(*IntLit); ok3 {
+				needsBigInt = true
+				fmt.Fprint(w, "BigInt(")
+				be.emit(w)
+				fmt.Fprint(w, ")")
+				return
+			}
+		}
+	}
+	a.Elem.emit(w)
 }
 
 // SpreadExpr represents `seq: _*` used for varargs.
@@ -2269,30 +2269,30 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		}
 		// Defer global-hoisting decision to a later pass.
 		return &LetStmt{Name: st.Let.Name, Type: typ, Value: e, Global: false}, nil
-        case st.Var != nil:
-                if st.Var.Type != nil && env != nil {
-                        env.SetVar(st.Var.Name, types.ResolveTypeRef(st.Var.Type, env), true)
-                }
-                var e Expr
-                var err error
-                if st.Var.Value != nil {
-                        e, err = convertExpr(st.Var.Value, env)
-                        if err != nil {
-                                return nil, err
-                        }
-                }
-               typ := toScalaType(st.Var.Type)
-               if _, ok := localVarTypes[st.Var.Name]; ok {
-                       if e == nil {
-                               e = &Name{Name: "null"}
-                       }
-                       return &AssignStmt{Target: &Name{Name: st.Var.Name}, Value: e}, nil
-               }
-                if typ == "" {
-                        typ = inferTypeWithEnv(e, env)
-                        if typ == "Any" {
-                                typ = ""
-                        }
+	case st.Var != nil:
+		if st.Var.Type != nil && env != nil {
+			env.SetVar(st.Var.Name, types.ResolveTypeRef(st.Var.Type, env), true)
+		}
+		var e Expr
+		var err error
+		if st.Var.Value != nil {
+			e, err = convertExpr(st.Var.Value, env)
+			if err != nil {
+				return nil, err
+			}
+		}
+		typ := toScalaType(st.Var.Type)
+		if _, ok := localVarTypes[st.Var.Name]; ok {
+			if e == nil {
+				e = &Name{Name: "null"}
+			}
+			return &AssignStmt{Target: &Name{Name: st.Var.Name}, Value: e}, nil
+		}
+		if typ == "" {
+			typ = inferTypeWithEnv(e, env)
+			if typ == "Any" {
+				typ = ""
+			}
 			if b, ok := e.(*BinaryExpr); ok && b.Op == "+" {
 				lt := inferTypeWithEnv(b.Left, env)
 				rt := inferTypeWithEnv(b.Right, env)
@@ -2597,11 +2597,9 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 				lt := inferTypeWithEnv(left, env)
 				rt := inferTypeWithEnv(right, env)
 				if (lt == "" || lt == "Any") && isBigIntExpr(left) {
-					left = &CastExpr{Value: left, Type: "BigInt"}
 					lt = "BigInt"
 				}
 				if (rt == "" || rt == "Any") && isBigIntExpr(right) {
-					right = &CastExpr{Value: right, Type: "BigInt"}
 					rt = "BigInt"
 				}
 				if lt == "BigRat" || rt == "BigRat" {
@@ -3481,22 +3479,22 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 			toStr := &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "toString"}}
 			return &FieldExpr{Receiver: toStr, Name: "toDouble"}, nil
 		}
-        case "abs":
-               if len(args) == 1 {
-                       if inferTypeWithEnv(args[0], env) == "BigInt" {
-                               return &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "abs"}}, nil
-                       }
-                       return &CallExpr{Fn: &FieldExpr{Receiver: &Name{Name: "Math"}, Name: "abs"}, Args: args}, nil
-               }
-       case "floor":
-               if len(args) == 1 {
-                       return &CallExpr{Fn: &FieldExpr{Receiver: &Name{Name: "Math"}, Name: "floor"}, Args: args}, nil
-               }
-        case "input":
-                if len(args) == 0 {
-                        call := &CallExpr{Fn: &Name{Name: "scala.io.StdIn.readLine"}, Args: nil}
-                        opt := &CallExpr{Fn: &Name{Name: "Option"}, Args: []Expr{call}}
-                        return &CallExpr{Fn: &FieldExpr{Receiver: opt, Name: "getOrElse"}, Args: []Expr{&StringLit{Value: "q"}}}, nil
+	case "abs":
+		if len(args) == 1 {
+			if inferTypeWithEnv(args[0], env) == "BigInt" {
+				return &FieldExpr{Receiver: args[0], Name: "abs"}, nil
+			}
+			return &CallExpr{Fn: &FieldExpr{Receiver: &Name{Name: "Math"}, Name: "abs"}, Args: args}, nil
+		}
+	case "floor":
+		if len(args) == 1 {
+			return &CallExpr{Fn: &FieldExpr{Receiver: &Name{Name: "Math"}, Name: "floor"}, Args: args}, nil
+		}
+	case "input":
+		if len(args) == 0 {
+			call := &CallExpr{Fn: &Name{Name: "scala.io.StdIn.readLine"}, Args: nil}
+			opt := &CallExpr{Fn: &Name{Name: "Option"}, Args: []Expr{call}}
+			return &CallExpr{Fn: &FieldExpr{Receiver: opt, Name: "getOrElse"}, Args: []Expr{&StringLit{Value: "q"}}}, nil
 		}
 		if len(args) == 1 {
 			call := &CallExpr{Fn: &Name{Name: "scala.io.StdIn.readLine"}, Args: args}
@@ -3504,23 +3502,23 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 			return &CallExpr{Fn: &FieldExpr{Receiver: opt, Name: "getOrElse"}, Args: []Expr{&StringLit{Value: "q"}}}, nil
 		}
 	case "append":
-               if len(args) == 2 {
-                       if be, ok := args[1].(*BinaryExpr); ok && be.Op == "-" {
-                               if il0, ok0 := be.Left.(*IntLit); ok0 && il0.Value == 0 {
-                                       if il1, ok1 := be.Right.(*IntLit); ok1 {
-                                               args[1] = &UnaryExpr{Op: "-", Expr: il1}
-                                       }
-                               }
-                       }
-                       if ie, ok := args[1].(*IfExpr); ok {
-                               if inferTypeWithEnv(ie.Then, env) == "Int" && inferTypeWithEnv(ie.Else, env) == "Int" {
-                                       args[1] = &CastExpr{Value: args[1], Type: "BigInt"}
-                               }
-                       }
-                       listType := inferTypeWithEnv(args[0], env)
-                       if strings.HasPrefix(listType, "ArrayBuffer[") {
-                               elemTyp := strings.TrimSuffix(strings.TrimPrefix(listType, "ArrayBuffer["), "]")
-                               if elemTyp != "" {
+		if len(args) == 2 {
+			if be, ok := args[1].(*BinaryExpr); ok && be.Op == "-" {
+				if il0, ok0 := be.Left.(*IntLit); ok0 && il0.Value == 0 {
+					if il1, ok1 := be.Right.(*IntLit); ok1 {
+						args[1] = &UnaryExpr{Op: "-", Expr: il1}
+					}
+				}
+			}
+			if ie, ok := args[1].(*IfExpr); ok {
+				if inferTypeWithEnv(ie.Then, env) == "Int" && inferTypeWithEnv(ie.Else, env) == "Int" {
+					args[1] = &CastExpr{Value: args[1], Type: "BigInt"}
+				}
+			}
+			listType := inferTypeWithEnv(args[0], env)
+			if strings.HasPrefix(listType, "ArrayBuffer[") {
+				elemTyp := strings.TrimSuffix(strings.TrimPrefix(listType, "ArrayBuffer["), "]")
+				if elemTyp != "" {
 					if _, ok := args[1].(*ListLit); ok {
 						args[1] = &CastExpr{Value: args[1], Type: elemTyp}
 					} else if elemTyp == "BigInt" {
@@ -3545,45 +3543,45 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 					}
 				}
 			}
-                       if lt := inferTypeWithEnv(args[0], env); strings.HasPrefix(lt, "ArrayBuffer[") && strings.HasSuffix(lt, "]") {
-                               elem := strings.TrimSuffix(strings.TrimPrefix(lt, "ArrayBuffer["), "]")
-                               if elem == "BigInt" {
-                                       if et := inferTypeWithEnv(args[1], env); et == "Int" || et == "" {
-                                               args[1] = &CastExpr{Value: args[1], Type: "BigInt"}
-                                       }
-                               }
-                       }
-                       if be, ok := args[1].(*BinaryExpr); ok {
-                               if il, ok2 := be.Left.(*IntLit); ok2 && il.Value == 0 && be.Op == "-" {
-                                       if _, ok3 := be.Right.(*IntLit); ok3 {
-                                               args[1] = &CastExpr{Value: args[1], Type: "BigInt"}
-                                       }
-                               }
-                       }
-                       if n, ok := args[0].(*Name); ok {
-                               var ml *MapLit
-                               switch v := args[1].(type) {
-                               case *MapLit:
-                                       ml = v
-                               case *CastExpr:
-                                       if m2, ok := v.Value.(*MapLit); ok {
-                                               ml = m2
-                                       }
-                               }
-                               if ml != nil {
-                                       mt := make(map[string]string)
-                                       for _, it := range ml.Items {
-                                               if k, ok3 := it.Key.(*StringLit); ok3 {
-                                                       if it.Type != "" && it.Type != "Any" {
-                                                               mt[k.Value] = it.Type
-                                                       }
-                                               }
-                                       }
-                                       mapEntryTypes[n.Name] = mt
-                               }
-                       }
-                       return &AppendExpr{List: args[0], Elem: args[1]}, nil
-               }
+			if lt := inferTypeWithEnv(args[0], env); strings.HasPrefix(lt, "ArrayBuffer[") && strings.HasSuffix(lt, "]") {
+				elem := strings.TrimSuffix(strings.TrimPrefix(lt, "ArrayBuffer["), "]")
+				if elem == "BigInt" {
+					if et := inferTypeWithEnv(args[1], env); et == "Int" || et == "" {
+						args[1] = &CastExpr{Value: args[1], Type: "BigInt"}
+					}
+				}
+			}
+			if be, ok := args[1].(*BinaryExpr); ok {
+				if il, ok2 := be.Left.(*IntLit); ok2 && il.Value == 0 && be.Op == "-" {
+					if _, ok3 := be.Right.(*IntLit); ok3 {
+						args[1] = &CastExpr{Value: args[1], Type: "BigInt"}
+					}
+				}
+			}
+			if n, ok := args[0].(*Name); ok {
+				var ml *MapLit
+				switch v := args[1].(type) {
+				case *MapLit:
+					ml = v
+				case *CastExpr:
+					if m2, ok := v.Value.(*MapLit); ok {
+						ml = m2
+					}
+				}
+				if ml != nil {
+					mt := make(map[string]string)
+					for _, it := range ml.Items {
+						if k, ok3 := it.Key.(*StringLit); ok3 {
+							if it.Type != "" && it.Type != "Any" {
+								mt[k.Value] = it.Type
+							}
+						}
+					}
+					mapEntryTypes[n.Name] = mt
+				}
+			}
+			return &AppendExpr{List: args[0], Elem: args[1]}, nil
+		}
 	case "concat":
 		if len(args) == 2 {
 			return &BinaryExpr{Left: args[0], Op: "++", Right: args[1]}, nil
@@ -4501,13 +4499,13 @@ func convertFunStmt(fs *parser.FunStmt, env *types.Env) (Stmt, error) {
 		typ := toScalaType(p.Type)
 		name := p.Name
 		if mutated[name] {
-                       paramName := "_" + name
-                       fn.Params = append(fn.Params, Param{Name: paramName, Type: typ})
-                       init = append(init, &VarStmt{Name: name, Type: typ, Value: &Name{Name: paramName}})
-                       localVarTypes[name] = typ
-               } else {
-                       fn.Params = append(fn.Params, Param{Name: name, Type: typ})
-               }
+			paramName := "_" + name
+			fn.Params = append(fn.Params, Param{Name: paramName, Type: typ})
+			init = append(init, &VarStmt{Name: name, Type: typ, Value: &Name{Name: paramName}})
+			localVarTypes[name] = typ
+		} else {
+			fn.Params = append(fn.Params, Param{Name: name, Type: typ})
+		}
 	}
 	fn.Return = toScalaType(fs.Return)
 	returnTypeStack = append(returnTypeStack, fn.Return)
@@ -4557,22 +4555,22 @@ func convertReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 }
 
 func convertWhileStmt(ws *parser.WhileStmt, env *types.Env) (Stmt, error) {
-       cond, err := convertExpr(ws.Cond, env)
-       if err != nil {
-               return nil, err
-       }
-       saved := localVarTypes
-       localVarTypes = copyMap(localVarTypes)
-       defer func() { localVarTypes = saved }()
-       var body []Stmt
-       for _, st := range ws.Body {
-               s, err := convertStmt(st, env)
-               if err != nil {
-                       return nil, err
-               }
-               body = append(body, s)
-       }
-       return &WhileStmt{Cond: cond, Body: body}, nil
+	cond, err := convertExpr(ws.Cond, env)
+	if err != nil {
+		return nil, err
+	}
+	saved := localVarTypes
+	localVarTypes = copyMap(localVarTypes)
+	defer func() { localVarTypes = saved }()
+	var body []Stmt
+	for _, st := range ws.Body {
+		s, err := convertStmt(st, env)
+		if err != nil {
+			return nil, err
+		}
+		body = append(body, s)
+	}
+	return &WhileStmt{Cond: cond, Body: body}, nil
 }
 
 func convertForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
@@ -5278,19 +5276,19 @@ func isBigIntExpr(e Expr) bool {
 		return v.Value > math.MaxInt32 || v.Value < math.MinInt32 || v.Long
 	case *Name:
 		return localVarTypes[v.Name] == "BigInt"
-       case *IndexExpr:
-               if strings.Contains(v.Container, "BigInt") {
-                       return true
-               }
-               return isBigIntExpr(v.Value)
-       case *LenExpr:
-               return true
-       case *FieldExpr:
-               if v.Name == "abs" && isBigIntExpr(v.Receiver) {
-                       return true
-               }
-               return isBigIntExpr(v.Receiver)
-       case *BinaryExpr:
+	case *IndexExpr:
+		if strings.Contains(v.Container, "BigInt") {
+			return true
+		}
+		return isBigIntExpr(v.Value)
+	case *LenExpr:
+		return true
+	case *FieldExpr:
+		if v.Name == "abs" && isBigIntExpr(v.Receiver) {
+			return true
+		}
+		return isBigIntExpr(v.Receiver)
+	case *BinaryExpr:
 		if v.Op == "+" || v.Op == "-" || v.Op == "*" || v.Op == "/" || v.Op == "%" {
 			lt := inferType(v.Left)
 			rt := inferType(v.Right)
@@ -5304,11 +5302,21 @@ func isBigIntExpr(e Expr) bool {
 		}
 		return isBigIntExpr(v.Left) || isBigIntExpr(v.Right)
 	case *CallExpr:
-		if n, ok := v.Fn.(*Name); ok && n.Name == "BigInt" {
-			return true
+		if n, ok := v.Fn.(*Name); ok {
+			if n.Name == "BigInt" {
+				return true
+			}
+			if n.Name == "abs" && len(v.Args) == 1 && isBigIntExpr(v.Args[0]) {
+				return true
+			}
 		}
-		if n, ok := v.Fn.(*FieldExpr); ok && n.Name == "BigInt" {
-			return true
+		if n, ok := v.Fn.(*FieldExpr); ok {
+			if n.Name == "BigInt" {
+				return true
+			}
+			if n.Name == "abs" && len(v.Args) == 0 && isBigIntExpr(n.Receiver) {
+				return true
+			}
 		}
 		// Do not inspect call arguments as they may be BigInt even when
 		// the function returns a non-BigInt value.
