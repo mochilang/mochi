@@ -134,6 +134,21 @@ func (l *LetExpr) emit(w io.Writer) {
 	io.WriteString(w, ")")
 }
 
+// MapLitExpr represents a map literal.
+type MapLitExpr struct{ Items []Expr }
+
+func (m *MapLitExpr) emit(w io.Writer) {
+	io.WriteString(w, "(let ([h (make-hash)]) ")
+	for i := 0; i < len(m.Items); i += 2 {
+		io.WriteString(w, "(hash-set! h ")
+		m.Items[i].emit(w)
+		io.WriteString(w, " ")
+		m.Items[i+1].emit(w)
+		io.WriteString(w, ")")
+	}
+	io.WriteString(w, " h)")
+}
+
 // RawStmt emits raw Racket code as-is.
 type RawStmt struct{ Code string }
 
@@ -205,11 +220,16 @@ type MapAssignStmt struct {
 
 func (m *MapAssignStmt) emit(w io.Writer) {
 	name := sanitizeName(m.Name)
-	fmt.Fprintf(w, "(set! %s (hash-set (or %s (hash)) ", name, name)
+	io.WriteString(w, "(when (not ")
+	io.WriteString(w, name)
+	io.WriteString(w, ") (set! ")
+	io.WriteString(w, name)
+	io.WriteString(w, " (make-hash)))\n")
+	fmt.Fprintf(w, "(hash-set! %s ", name)
 	m.Key.emit(w)
 	io.WriteString(w, " ")
 	m.Expr.emit(w)
-	io.WriteString(w, "))\n")
+	io.WriteString(w, ")\n")
 }
 
 type DoubleListAssignStmt struct {
@@ -1436,6 +1456,7 @@ func header() string {
 	hdr += "(define nowSeed (let ([s (getenv \"MOCHI_NOW_SEED\")]) (and s (string->number s))))\n"
 	hdr += "(define (now)\n  (if nowSeed\n      (begin (set! nowSeed (modulo (+ (* nowSeed 1664525) 1013904223) 2147483647)) nowSeed)\n      (inexact->exact (floor (* (current-inexact-milliseconds) 1000)))))\n"
 	hdr += "(define (int x)\n  (cond\n    [(number? x) (inexact->exact (truncate x))]\n    [(string? x) (let ([n (string->number x)]) (if n (inexact->exact (truncate n)) 0))]\n    [else 0]))\n"
+	hdr += "(define (toi x) (int x))\n"
 	hdr += "(define (float x)\n  (cond\n    [(number? x) (exact->inexact x)]\n    [(string? x) (let ([n (string->number x)]) (if n (exact->inexact n) 0.0))]\n    [else 0.0]))\n"
 	hdr += "(define (input) (let ([ln (read-line)]) (if (eof-object? ln) \"\" ln)))\n"
 	hdr += "(define (upper s) (string-upcase s))\n"
@@ -2158,7 +2179,7 @@ func convertForStmt(n *parser.ForStmt, env *types.Env) (Stmt, error) {
 	// detect leading if statements that contain only continue/break
 	for len(bodyStmts) > 0 {
 		st := bodyStmts[0]
-		if st.If != nil && len(st.If.Then) == 1 && len(st.If.Else) == 0 {
+		if st.If != nil && st.If.ElseIf == nil && len(st.If.Then) == 1 && len(st.If.Else) == 0 {
 			if st.If.Then[0].Continue != nil {
 				c, err := convertExpr(st.If.Cond, child)
 				if err != nil {
@@ -3048,7 +3069,7 @@ func convertMap(m *parser.MapLiteral, env *types.Env) (Expr, error) {
 		}
 		args = append(args, k, v)
 	}
-	return &CallExpr{Func: "hash", Args: args}, nil
+	return &MapLitExpr{Items: args}, nil
 }
 
 func convertMatchExpr(m *parser.MatchExpr, env *types.Env) (Expr, error) {

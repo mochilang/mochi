@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Racket code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Racket`.
-Last updated: 2025-08-07 09:19 UTC
+Last updated: 2025-08-07 09:56 UTC
 
-## Algorithms Golden Test Checklist (399/1077)
+## Algorithms Golden Test Checklist (400/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 9m31.223891s | 18.0 KB |
@@ -335,7 +335,7 @@ Last updated: 2025-08-07 09:19 UTC
 | 326 | dynamic_programming/max_non_adjacent_sum | ✓ | 9m31.223891s | 11.6 KB |
 | 327 | dynamic_programming/max_product_subarray | ✓ | 9m31.223891s | 4.7 KB |
 | 328 | dynamic_programming/max_subarray_sum | ✓ | 9m31.223891s | 22.6 KB |
-| 329 | dynamic_programming/min_distance_up_bottom | ✓ |  |  |
+| 329 | dynamic_programming/min_distance_up_bottom |   |  |  |
 | 330 | dynamic_programming/minimum_coin_change | ✓ | 9m31.223891s | 288.2 KB |
 | 331 | dynamic_programming/minimum_cost_path | ✓ | 9m31.223891s | 16.8 KB |
 | 332 | dynamic_programming/minimum_partition | ✓ | 9m31.223891s |  |
@@ -431,8 +431,8 @@ Last updated: 2025-08-07 09:19 UTC
 | 422 | graphs/edmonds_karp_multiple_source_and_sink |   |  |  |
 | 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 9m31.223891s | 416.8 KB |
 | 424 | graphs/even_tree | ✓ | 9m31.223891s | 28.0 KB |
-| 425 | graphs/finding_bridges |   |  |  |
-| 426 | graphs/frequent_pattern_graph_miner |   |  |  |
+| 425 | graphs/finding_bridges | ✓ | 9m31.223891s | 2.0 MB |
+| 426 | graphs/frequent_pattern_graph_miner | ✓ | 9m31.223891s | 1.4 MB |
 | 427 | graphs/g_topological_sort |   |  |  |
 | 428 | graphs/gale_shapley_bigraph |   |  |  |
 | 429 | graphs/graph_adjacency_list |   |  |  |
