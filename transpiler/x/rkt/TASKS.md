@@ -1,3 +1,8 @@
+## Progress (2025-08-07 00:00 +0700)
+- Commit 671cdbfe6a: rkt: support assignment via postfix target
+- Generated Racket for 98/100 programs
+- Updated README checklist
+
 ## Progress (2025-08-02 14:39 +0700)
 - Commit 828374b57a: transpiler(rkt): compile department-numbers
 - Generated Racket for 98/100 programs

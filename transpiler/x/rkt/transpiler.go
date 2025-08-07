@@ -1715,6 +1715,20 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	return r, nil
 }
 
+func assignTargetPostfix(a *parser.AssignStmt) *parser.PostfixExpr {
+	if a == nil {
+		return nil
+	}
+	pf := &parser.PostfixExpr{Target: &parser.Primary{Selector: &parser.SelectorExpr{Root: a.Name}}}
+	for _, idx := range a.Index {
+		pf.Ops = append(pf.Ops, &parser.PostfixOp{Index: idx})
+	}
+	for _, fld := range a.Field {
+		pf.Ops = append(pf.Ops, &parser.PostfixOp{Field: fld})
+	}
+	return pf
+}
+
 func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 	switch {
 	case st.Let != nil:
@@ -1792,7 +1806,7 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		pf := st.Assign.Target
+		pf := assignTargetPostfix(st.Assign)
 		if pf == nil || pf.Target == nil || pf.Target.Selector == nil {
 			return nil, fmt.Errorf("unsupported assignment")
 		}
@@ -2315,7 +2329,8 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 	ops := []string{}
 	leftType := types.TypeOfUnary(b.Left, env)
 	for _, part := range b.Right {
-		right, err := convertUnary(part.Right, env)
+		rightUnary := &parser.Unary{Value: part.Right}
+		right, err := convertUnary(rightUnary, env)
 		if err != nil {
 			return nil, err
 		}
@@ -2334,14 +2349,14 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 		}
 		currLeft := exprs[len(exprs)-1]
 		if op == "==" || op == "!=" {
-			if (types.IsStringType(leftType) || types.IsStringUnary(part.Right, env)) && !isBoolExpr(currLeft) && !isBoolExpr(right) {
+			if (types.IsStringType(leftType) || types.IsStringUnary(rightUnary, env)) && !isBoolExpr(currLeft) && !isBoolExpr(right) {
 				if op == "==" {
 					op = "string=?"
 				} else {
 					op = "string!="
 				}
 				leftIsStr := types.IsStringType(leftType)
-				rightIsStr := types.IsStringUnary(part.Right, env)
+				rightIsStr := types.IsStringUnary(rightUnary, env)
 				if leftIsStr && !rightIsStr {
 					if n, ok := right.(*Name); ok {
 						if n.Name == "#t" {
@@ -2383,7 +2398,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 			}
 			stringRight := false
 			listRight := false
-			if t := types.TypeOfPostfixBasic(part.Right, env); t != nil {
+			if t := types.TypeOfPostfixBasic(rightUnary, env); t != nil {
 				if _, ok := t.(types.StringType); ok {
 					stringRight = true
 				} else if _, ok := t.(types.ListType); ok {
@@ -2427,7 +2442,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 		}
 		if op == "/" {
 			ltInt := exprIsInt(currLeft, env) || heuristicInt(currLeft, env)
-			rt := types.TypeOfUnary(part.Right, env)
+			rt := types.TypeOfUnary(rightUnary, env)
 			rtInt := types.IsIntType(rt) || types.IsInt64Type(rt) || types.IsBigIntType(rt)
 			if types.IsFloatType(leftType) || types.IsFloatType(rt) {
 				op = "/"
@@ -2437,7 +2452,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 				op = "quotient"
 			} else {
 				lt := leftType
-				if literalIntPostfix(part.Right.Value) && !types.IsFloatType(lt) {
+				if literalIntPostfix(rightUnary.Value) && !types.IsFloatType(lt) {
 					op = "quotient"
 				} else if (types.IsIntType(lt) || types.IsInt64Type(lt) || types.IsBigIntType(lt)) && rtInt {
 					op = "quotient"
@@ -2447,22 +2462,22 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 			}
 		}
 		if op == "in" {
-			isStr := types.IsStringUnary(part.Right, env)
-			isMap := types.IsMapUnary(part.Right, env)
+			isStr := types.IsStringUnary(rightUnary, env)
+			isMap := types.IsMapUnary(rightUnary, env)
 			if !isMap {
-				if call := part.Right.Value.Target.Call; call != nil {
+				if call := rightUnary.Value.Target.Call; call != nil {
 					if call.Func == "hash-ref" || call.Func == "hash-keys" {
 						isMap = true
 					}
 				}
 			}
-			if !isMap && len(part.Right.Value.Ops) == 1 && part.Right.Value.Ops[0].Field != nil {
-				if types.IsMapPrimary(part.Right.Value.Target, env) {
+			if !isMap && len(rightUnary.Value.Ops) == 1 && rightUnary.Value.Ops[0].Field != nil {
+				if types.IsMapPrimary(rightUnary.Value.Target, env) {
 					isMap = true
 				}
 			}
 			if !isMap {
-				if types.IsMapType(types.TypeOfUnary(part.Right, env)) {
+				if types.IsMapType(types.TypeOfUnary(rightUnary, env)) {
 					isMap = true
 				}
 			}
@@ -2481,7 +2496,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 				leftIsString = true
 			}
 			rightIsString := false
-			if _, ok := types.TypeOfUnary(part.Right, env).(types.StringType); ok {
+			if _, ok := types.TypeOfUnary(rightUnary, env).(types.StringType); ok {
 				rightIsString = true
 			}
 			if leftIsString || rightIsString {
@@ -2499,7 +2514,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 		}
 		if op == "%" {
 			lt := leftType
-			rt := types.TypeOfUnary(part.Right, env)
+			rt := types.TypeOfUnary(rightUnary, env)
 			if types.IsFloatType(lt) || types.IsFloatType(rt) {
 				left := exprs[len(exprs)-1]
 				exprs[len(exprs)-1] = &BinaryExpr{Op: "fmod", Left: left, Right: right}
