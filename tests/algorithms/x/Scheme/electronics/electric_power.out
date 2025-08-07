@@ -1,0 +1,5 @@
+Result(name='voltage', value=2.0)
+Result(name='power', value=4.0)
+Result(name='power', value=6.0)
+Result(name='power', value=4.0)
+Result(name='current', value=3.0)
