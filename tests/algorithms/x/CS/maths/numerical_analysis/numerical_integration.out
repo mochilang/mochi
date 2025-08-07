@@ -1,4 +1,4 @@
-/tmp/TestCSTranspiler_Algorithms_Golden001_maths_numerical_analysis_numerical_integration2248096800/001/Program.cs(100,9): warning CS0162: Unreachable code detected [/tmp/TestCSTranspiler_Algorithms_Golden001_maths_numerical_analysis_numerical_integration2248096800/001/app.csproj]
+/tmp/TestCSTranspiler_Algorithms_Golden001_maths_numerical_analysis_numerical_integration4008144350/001/Program.cs(99,9): warning CS0162: Unreachable code detected [/tmp/TestCSTranspiler_Algorithms_Golden001_maths_numerical_analysis_numerical_integration4008144350/001/app.csproj]
 f(x) = x^3
 The area between the curve, x = -10, x = 10 and the x axis is:
 with 10 steps: 325

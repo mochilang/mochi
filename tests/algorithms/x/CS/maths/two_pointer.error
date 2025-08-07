@@ -1,0 +1,5 @@
+exit status 134
+Unhandled exception. System.Exception: case1
+   at Program.test_two_pointer() in /tmp/TestCSTranspiler_Algorithms_Golden001_maths_two_pointer2451619982/001/Program.cs:line 118
+   at Program.main() in /tmp/TestCSTranspiler_Algorithms_Golden001_maths_two_pointer2451619982/001/Program.cs:line 144
+   at Program.Main() in /tmp/TestCSTranspiler_Algorithms_Golden001_maths_two_pointer2451619982/001/Program.cs:line 152

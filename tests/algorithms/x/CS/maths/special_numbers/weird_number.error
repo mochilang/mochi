@@ -1,0 +1,5 @@
+exit status 134
+Unhandled exception. System.Exception: factors 12 failed
+   at Program.run_tests() in /tmp/TestCSTranspiler_Algorithms_Golden001_maths_special_numbers_weird_number2192840057/001/Program.cs:line 187
+   at Program.main() in /tmp/TestCSTranspiler_Algorithms_Golden001_maths_special_numbers_weird_number2192840057/001/Program.cs:line 234
+   at Program.Main() in /tmp/TestCSTranspiler_Algorithms_Golden001_maths_special_numbers_weird_number2192840057/001/Program.cs:line 252

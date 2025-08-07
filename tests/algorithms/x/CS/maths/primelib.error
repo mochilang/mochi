@@ -1,0 +1,13 @@
+exit status 134
+true
+[2 3 5 7 11 13 17 19]
+[2 3 5 7 11 13 17 19]
+[7 41]
+41
+7
+40
+[5 23]
+23
+Unhandled exception. System.Exception: arguments must be prime and p1 < p2
+   at Program.get_primes_between(Int64 p1_43, Int64 p2_44) in /tmp/TestCSTranspiler_Algorithms_Golden001_maths_primelib153326299/001/Program.cs:line 288
+   at Program.Main() in /tmp/TestCSTranspiler_Algorithms_Golden001_maths_primelib153326299/001/Program.cs:line 394

@@ -1,0 +1,4 @@
+exit status 134
+Unhandled exception. System.Exception: hexagonal_numbers(5) failed
+   at Program.test_hexagonal_numbers() in /tmp/TestCSTranspiler_Algorithms_Golden001_maths_series_hexagonal_numbers2383026295/001/Program.cs:line 111
+   at Program.Main() in /tmp/TestCSTranspiler_Algorithms_Golden001_maths_series_hexagonal_numbers2383026295/001/Program.cs:line 124
