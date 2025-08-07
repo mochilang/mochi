@@ -1,0 +1,7 @@
+Fatal error: Uncaught TypeError: Unsupported operand types: float / string in /workspace/mochi/tests/algorithms/x/PHP/physics/mirror_formulae.php:42
+Stack trace:
+#0 /workspace/mochi/tests/algorithms/x/PHP/physics/mirror_formulae.php(61): object_distance(30.0, 20.0)
+#1 /workspace/mochi/tests/algorithms/x/PHP/physics/mirror_formulae.php(82): test_object_distance()
+#2 /workspace/mochi/tests/algorithms/x/PHP/physics/mirror_formulae.php(88): main()
+#3 {main}
+  thrown in /workspace/mochi/tests/algorithms/x/PHP/physics/mirror_formulae.php on line 42

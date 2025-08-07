@@ -24,7 +24,7 @@ var builtinNames = map[string]struct{}{
 	"print": {}, "len": {}, "substring": {}, "count": {}, "sum": {}, "avg": {},
 	"str": {}, "min": {}, "max": {}, "append": {}, "json": {}, "exists": {},
 	"values": {}, "keys": {}, "load": {}, "save": {}, "now": {}, "input": {},
-	"upper": {}, "lower": {}, "num": {}, "denom": {}, "indexOf": {}, "repeat": {}, "parseIntStr": {}, "slice": {}, "split": {}, "contains": {}, "substr": {}, "pow": {}, "getoutput": {}, "intval": {}, "floatval": {}, "int": {}, "float": {},
+	"upper": {}, "lower": {}, "num": {}, "denom": {}, "indexOf": {}, "repeat": {}, "parseIntStr": {}, "slice": {}, "split": {}, "contains": {}, "substr": {}, "pow": {}, "getoutput": {}, "intval": {}, "floatval": {}, "int": {}, "float": {}, "to_float": {},
 	"concat": {}, "panic": {},
 }
 
@@ -3079,6 +3079,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		} else if name == "float" {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("float expects 1 arg")
+			}
+			return &CallExpr{Func: "floatval", Args: args}, nil
+		} else if name == "to_float" {
+			if len(args) != 1 {
+				return nil, fmt.Errorf("to_float expects 1 arg")
 			}
 			return &CallExpr{Func: "floatval", Args: args}, nil
 		} else if name == "parseIntStr" {

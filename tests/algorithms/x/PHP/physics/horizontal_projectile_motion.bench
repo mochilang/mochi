@@ -1,0 +1,1 @@
+Fatal error: Cannot redeclare function sin() in /workspace/mochi/tests/algorithms/x/PHP/physics/horizontal_projectile_motion.php on line 31

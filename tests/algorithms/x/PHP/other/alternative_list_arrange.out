@@ -1,0 +1,8 @@
+Warning: Undefined variable $Int in /workspace/mochi/tests/algorithms/x/PHP/other/alternative_list_arrange.php on line 34
+
+Fatal error: Uncaught Error: Value of type null is not callable in /workspace/mochi/tests/algorithms/x/PHP/other/alternative_list_arrange.php:34
+Stack trace:
+#0 /workspace/mochi/tests/algorithms/x/PHP/other/alternative_list_arrange.php(61): item_to_string(Array)
+#1 /workspace/mochi/tests/algorithms/x/PHP/other/alternative_list_arrange.php(71): list_to_string(Array)
+#2 {main}
+  thrown in /workspace/mochi/tests/algorithms/x/PHP/other/alternative_list_arrange.php on line 34

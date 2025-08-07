@@ -1,0 +1,113 @@
+<?php
+ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
+function _str($x) {
+    if (is_array($x)) {
+        $isList = array_keys($x) === range(0, count($x) - 1);
+        if ($isList) {
+            $parts = [];
+            foreach ($x as $v) { $parts[] = _str($v); }
+            return '[' . implode(' ', $parts) . ']';
+        }
+        $parts = [];
+        foreach ($x as $k => $v) { $parts[] = _str($k) . ':' . _str($v); }
+        return 'map[' . implode(' ', $parts) . ']';
+    }
+    if (is_bool($x)) return $x ? 'true' : 'false';
+    if ($x === null) return 'null';
+    return strval($x);
+}
+function _append($arr, $x) {
+    $arr[] = $x;
+    return $arr;
+}
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function is_valid_matrix($matrix) {
+  if (count($matrix) == 0) {
+  return false;
+}
+  $cols = count($matrix[0]);
+  foreach ($matrix as $row) {
+  if (count($row) != $cols) {
+  return false;
+}
+};
+  return true;
+};
+  function spiral_traversal($matrix) {
+  if (!is_valid_matrix($matrix)) {
+  return [];
+}
+  $rows = count($matrix);
+  $cols = count($matrix[0]);
+  $top = 0;
+  $bottom = $rows - 1;
+  $left = 0;
+  $right = $cols - 1;
+  $result = [];
+  while ($left <= $right && $top <= $bottom) {
+  $i = $left;
+  while ($i <= $right) {
+  $result = _append($result, $matrix[$top][$i]);
+  $i = $i + 1;
+};
+  $top = $top + 1;
+  $i = $top;
+  while ($i <= $bottom) {
+  $result = _append($result, $matrix[$i][$right]);
+  $i = $i + 1;
+};
+  $right = $right - 1;
+  if ($top <= $bottom) {
+  $i = $right;
+  while ($i >= $left) {
+  $result = _append($result, $matrix[$bottom][$i]);
+  $i = $i - 1;
+};
+  $bottom = $bottom - 1;
+}
+  if ($left <= $right) {
+  $i = $bottom;
+  while ($i >= $top) {
+  $result = _append($result, $matrix[$i][$left]);
+  $i = $i - 1;
+};
+  $left = $left + 1;
+}
+};
+  return $result;
+};
+  function spiral_print_clockwise($matrix) {
+  foreach (spiral_traversal($matrix) as $value) {
+  echo rtrim(_str($value)), PHP_EOL;
+};
+};
+  function main() {
+  $a = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]];
+  spiral_print_clockwise($a);
+  echo rtrim(_str(spiral_traversal($a))), PHP_EOL;
+};
+  main();
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

@@ -1,0 +1,33 @@
+Warning: Undefined array key 144 in /workspace/mochi/tests/algorithms/x/PHP/other/sdes.php on line 97
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/other/sdes.php on line 97
+
+Warning: Undefined array key 147 in /workspace/mochi/tests/algorithms/x/PHP/other/sdes.php on line 97
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/other/sdes.php on line 97
+
+Warning: Undefined array key 146 in /workspace/mochi/tests/algorithms/x/PHP/other/sdes.php on line 97
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/other/sdes.php on line 97
+
+Warning: Undefined array key 146 in /workspace/mochi/tests/algorithms/x/PHP/other/sdes.php on line 97
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/other/sdes.php on line 97
+Cipher text is: 11010111
+
+Warning: Undefined array key 146 in /workspace/mochi/tests/algorithms/x/PHP/other/sdes.php on line 97
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/other/sdes.php on line 97
+
+Warning: Undefined array key 146 in /workspace/mochi/tests/algorithms/x/PHP/other/sdes.php on line 97
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/other/sdes.php on line 97
+
+Warning: Undefined array key 144 in /workspace/mochi/tests/algorithms/x/PHP/other/sdes.php on line 97
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/other/sdes.php on line 97
+
+Warning: Undefined array key 147 in /workspace/mochi/tests/algorithms/x/PHP/other/sdes.php on line 97
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/other/sdes.php on line 97
+Plain text after decypting is: 11010111
