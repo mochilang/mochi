@@ -1670,15 +1670,19 @@ func (c *CallExpr) emit(w io.Writer) {
 			fmt.Fprint(w, ")!")
 			return
 		}
-	case "contains":
-		if len(c.Args) == 2 {
-			fmt.Fprint(w, "(")
-			c.Args[0].emit(w)
-			fmt.Fprint(w, ".contains(")
-			c.Args[1].emit(w)
-			fmt.Fprint(w, "))")
-			return
-		}
+       case "contains":
+               if _, ok := funcMutParams[c.Func]; !ok {
+                       if _, ok2 := funcInOutParams[c.Func]; !ok2 {
+                               if len(c.Args) == 2 {
+                                       fmt.Fprint(w, "(")
+                                       c.Args[0].emit(w)
+                                       fmt.Fprint(w, ".contains(")
+                                       c.Args[1].emit(w)
+                                       fmt.Fprint(w, "))")
+                                       return
+                               }
+                       }
+               }
 	case "now":
 		if len(c.Args) == 0 {
 			fmt.Fprint(w, "_now()")
@@ -2916,22 +2920,19 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 				lhs = &IndexExpr{Base: lhs, Index: ix}
 			}
 		}
-		for _, f := range st.Assign.Field {
-			if stt, ok := cur.(types.StructType); ok {
-				if ft, ok := stt.Fields[f.Name]; ok {
-					cur = ft
-				}
-				if ie, ok := lhs.(*IndexExpr); ok && !ie.Force {
-					ie.Force = true
-				}
-				lhs = &FieldExpr{Target: lhs, Name: f.Name}
-			} else {
-				lhs = &IndexExpr{Base: lhs, Index: &LitExpr{Value: f.Name, IsString: true}, Force: true}
-				if mt, ok := cur.(types.MapType); ok {
-					cur = mt.Value
-				}
-			}
-		}
+               for _, f := range st.Assign.Field {
+                       if stt, ok := cur.(types.StructType); ok {
+                               if ft, ok := stt.Fields[f.Name]; ok {
+                                       cur = ft
+                               }
+                               lhs = &FieldExpr{Target: lhs, Name: f.Name}
+                       } else {
+                               lhs = &IndexExpr{Base: lhs, Index: &LitExpr{Value: f.Name, IsString: true}, Force: true}
+                               if mt, ok := cur.(types.MapType); ok {
+                                       cur = mt.Value
+                               }
+                       }
+               }
 		val, err := convertExpr(env, st.Assign.Value)
 		if err != nil {
 			return nil, err
@@ -5145,13 +5146,17 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			usesRepeat = true
 			return &CallExpr{Func: "_repeat", Args: []Expr{a0, a1}}, nil
 		}
-		if pr.Call.Func == "panic" && len(pr.Call.Args) == 1 {
-			arg, err := convertExpr(env, pr.Call.Args[0])
-			if err != nil {
-				return nil, err
-			}
-			return &CallExpr{Func: "fatalError", Args: []Expr{arg}}, nil
-		}
+               if pr.Call.Func == "panic" && len(pr.Call.Args) == 1 {
+                       if _, ok := funcMutParams[pr.Call.Func]; !ok {
+                               if _, ok2 := funcInOutParams[pr.Call.Func]; !ok2 {
+                                       arg, err := convertExpr(env, pr.Call.Args[0])
+                                       if err != nil {
+                                               return nil, err
+                                       }
+                                       return &CallExpr{Func: "fatalError", Args: []Expr{arg}}, nil
+                               }
+                       }
+               }
 		if pr.Call.Func == "error" && len(pr.Call.Args) == 1 {
 			arg, err := convertExpr(env, pr.Call.Args[0])
 			if err != nil {
@@ -5351,21 +5356,34 @@ func convertStructLiteral(env *types.Env, sl *parser.StructLiteral) (Expr, error
 	var fields []FieldInit
 	var keys []Expr
 	var vals []Expr
-	for _, f := range sl.Fields {
-		v, err := convertExpr(env, f.Value)
-		if err != nil {
-			return nil, err
-		}
-		fields = append(fields, FieldInit{Name: f.Name, Value: v})
-		keys = append(keys, &LitExpr{Value: f.Name, IsString: true})
-		vals = append(vals, v)
-	}
-	if sl.Name != "" {
-		if ut, ok := env.FindUnionByVariant(sl.Name); ok {
-			return &UnionInit{Union: ut.Name, Variant: sl.Name, Fields: fields}, nil
-		}
-		return &StructInit{Name: sl.Name, Fields: fields}, nil
-	}
+       var stt types.StructType
+       var stOk bool
+       if sl.Name != "" {
+               stt, stOk = env.GetStruct(sl.Name)
+       }
+       for _, f := range sl.Fields {
+               v, err := convertExpr(env, f.Value)
+               if err != nil {
+                       return nil, err
+               }
+               if stOk {
+                       if ft, ok := stt.Fields[f.Name]; ok {
+                               typ := swiftTypeOf(ft)
+                               if typ != "Any" && typ != "Any?" {
+                                       v = &CastExpr{Expr: v, Type: typ}
+                               }
+                       }
+               }
+               fields = append(fields, FieldInit{Name: f.Name, Value: v})
+               keys = append(keys, &LitExpr{Value: f.Name, IsString: true})
+               vals = append(vals, v)
+       }
+       if sl.Name != "" {
+               if ut, ok := env.FindUnionByVariant(sl.Name); ok {
+                       return &UnionInit{Union: ut.Name, Variant: sl.Name, Fields: fields}, nil
+               }
+               return &StructInit{Name: sl.Name, Fields: fields}, nil
+       }
 	return &MapLit{Keys: keys, Values: vals}, nil
 }
 

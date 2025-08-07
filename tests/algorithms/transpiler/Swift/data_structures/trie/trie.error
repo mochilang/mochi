@@ -1,376 +1,408 @@
 exit status 1
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:109:94: warning: conditional downcast from 'Int?' to 'Int' does nothing
-107 |         for key in m.keys.sorted() {
-108 |             if (key != k) {
-109 |                 out = _set(out, String(describing: key), (m[String(String(describing: key))] as? Int ?? 0))
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:116:94: warning: conditional downcast from 'Int?' to 'Int' does nothing
+114 |         for key in m.keys.sorted() {
+115 |             if (key != k) {
+116 |                 out = _set(out, String(describing: key), (m[String(String(describing: key))] as? Int ?? 0))
     |                                                                                              `- warning: conditional downcast from 'Int?' to 'Int' does nothing
-110 |             }
-111 |         }
+117 |             }
+118 |         }
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:119:46: warning: forced cast of 'String' to same type has no effect
-117 |         var i: Int = 0
-118 |         while (i < Int(((word).count))) {
-119 |             let ch = (String(Array(word)[i]) as! String)
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:126:46: warning: forced cast of 'String' to same type has no effect
+124 |         var i: Int = 0
+125 |         while (i < _int(((word).count))) {
+126 |             let ch = (String(Array(word)[i]) as! String)
     |                                              `- warning: forced cast of 'String' to same type has no effect
-120 |             var child_idx: Any? = -1
-121 |             let children = (nodes[curr] as! Node).children
+127 |             var child_idx: Int = -1
+128 |             let children = nodes[curr].children
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:121:41: warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
-119 |             let ch = (String(Array(word)[i]) as! String)
-120 |             var child_idx: Any? = -1
-121 |             let children = (nodes[curr] as! Node).children
-    |                                         `- warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
-122 |             if (children[ch] != nil) {
-123 |                 child_idx = children[ch]!
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:130:44: warning: conditional cast from 'Int' to 'Int' always succeeds
+128 |             let children = nodes[curr].children
+129 |             if (children[ch] != nil) {
+130 |                 child_idx = (children[ch]! as? Int ?? 0)
+    |                                            `- warning: conditional cast from 'Int' to 'Int' always succeeds
+131 |             } else {
+132 |                 let new_node = Node(children: ([:] as! [String: Int]), is_leaf: false)
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:129:37: error: cannot convert value of type 'Any?' to expected argument type '[String : Any?]'
-127 |                 child_idx = (Int(((nodes).count)) &- 1)
-128 |                 var new_children: Any? = children
-129 |                 new_children = _set(new_children, ch, child_idx)
-    |                                     `- error: cannot convert value of type 'Any?' to expected argument type '[String : Any?]'
-130 |                 var node: Node = (nodes[curr] as! Node)
-131 |                 node.children = (new_children as! [String: Int])
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:135:42: error: cannot convert value of type '[String : Int]' to specified type 'Node'
+133 |                 nodes = (_append(nodes, new_node) as! [Node])
+134 |                 child_idx = _int((_int(((nodes).count)) &- 1))
+135 |                 var new_children: Node = children
+    |                                          `- error: cannot convert value of type '[String : Int]' to specified type 'Node'
+136 |                 new_children = _set(new_children, ch, (child_idx as! Node))
+137 |                 var node: Node = (nodes[curr] as! Node)
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:130:47: warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
-128 |                 var new_children: Any? = children
-129 |                 new_children = _set(new_children, ch, child_idx)
-130 |                 var node: Node = (nodes[curr] as! Node)
-    |                                               `- warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
-131 |                 node.children = (new_children as! [String: Int])
-132 |                 nodes = _set(nodes, curr, (node as! Node))
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:136:32: error: cannot assign value of type '[String : Node]' to type 'Node'
+134 |                 child_idx = _int((_int(((nodes).count)) &- 1))
+135 |                 var new_children: Node = children
+136 |                 new_children = _set(new_children, ch, (child_idx as! Node))
+    |                                `- error: cannot assign value of type '[String : Node]' to type 'Node'
+137 |                 var node: Node = (nodes[curr] as! Node)
+138 |                 node.children = (new_children as! [String: Int])
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:132:49: warning: forced cast of 'Node' to same type has no effect
-130 |                 var node: Node = (nodes[curr] as! Node)
-131 |                 node.children = (new_children as! [String: Int])
-132 |                 nodes = _set(nodes, curr, (node as! Node))
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:136:37: error: cannot convert value of type 'Node' to expected argument type '[String : Node]'
+134 |                 child_idx = _int((_int(((nodes).count)) &- 1))
+135 |                 var new_children: Node = children
+136 |                 new_children = _set(new_children, ch, (child_idx as! Node))
+    |                                     `- error: cannot convert value of type 'Node' to expected argument type '[String : Node]'
+137 |                 var node: Node = (nodes[curr] as! Node)
+138 |                 node.children = (new_children as! [String: Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:136:66: warning: cast from 'Int' to unrelated type 'Node' always fails
+134 |                 child_idx = _int((_int(((nodes).count)) &- 1))
+135 |                 var new_children: Node = children
+136 |                 new_children = _set(new_children, ch, (child_idx as! Node))
+    |                                                                  `- warning: cast from 'Int' to unrelated type 'Node' always fails
+137 |                 var node: Node = (nodes[curr] as! Node)
+138 |                 node.children = (new_children as! [String: Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:137:47: warning: forced cast of 'Node' to same type has no effect
+135 |                 var new_children: Node = children
+136 |                 new_children = _set(new_children, ch, (child_idx as! Node))
+137 |                 var node: Node = (nodes[curr] as! Node)
+    |                                               `- warning: forced cast of 'Node' to same type has no effect
+138 |                 node.children = (new_children as! [String: Int])
+139 |                 nodes = _set(nodes, curr, (node as! Node))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:138:47: warning: cast from 'Node' to unrelated type '[String : Int]' always fails
+136 |                 new_children = _set(new_children, ch, (child_idx as! Node))
+137 |                 var node: Node = (nodes[curr] as! Node)
+138 |                 node.children = (new_children as! [String: Int])
+    |                                               `- warning: cast from 'Node' to unrelated type '[String : Int]' always fails
+139 |                 nodes = _set(nodes, curr, (node as! Node))
+140 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:139:49: warning: forced cast of 'Node' to same type has no effect
+137 |                 var node: Node = (nodes[curr] as! Node)
+138 |                 node.children = (new_children as! [String: Int])
+139 |                 nodes = _set(nodes, curr, (node as! Node))
     |                                                 `- warning: forced cast of 'Node' to same type has no effect
-133 |             }
-134 |             curr = (child_idx as! Int)
+140 |             }
+141 |             curr = Int(child_idx)
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:137:39: warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
-135 |             i = Int((i &+ 1))
-136 |         }
-137 |         var node: Node = (nodes[curr] as! Node)
-    |                                       `- warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
-138 |         node.is_leaf = true
-139 |         nodes = _set(nodes, curr, (node as! Node))
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:144:39: warning: forced cast of 'Node' to same type has no effect
+142 |             i = _int((i &+ 1))
+143 |         }
+144 |         var node: Node = (nodes[curr] as! Node)
+    |                                       `- warning: forced cast of 'Node' to same type has no effect
+145 |         node.is_leaf = true
+146 |         nodes = _set(nodes, curr, (node as! Node))
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:139:41: warning: forced cast of 'Node' to same type has no effect
-137 |         var node: Node = (nodes[curr] as! Node)
-138 |         node.is_leaf = true
-139 |         nodes = _set(nodes, curr, (node as! Node))
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:146:41: warning: forced cast of 'Node' to same type has no effect
+144 |         var node: Node = (nodes[curr] as! Node)
+145 |         node.is_leaf = true
+146 |         nodes = _set(nodes, curr, (node as! Node))
     |                                         `- warning: forced cast of 'Node' to same type has no effect
-140 |         trie.nodes = (nodes as! [Node?])
-141 |     }
+147 |         trie.nodes = (nodes as! [Node])
+148 |     }
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:140:29: warning: forced cast of '[Node?]' to same type has no effect
-138 |         node.is_leaf = true
-139 |         nodes = _set(nodes, curr, (node as! Node))
-140 |         trie.nodes = (nodes as! [Node?])
-    |                             `- warning: forced cast of '[Node?]' to same type has no effect
-141 |     }
-142 |     func insert_many(_ trie: inout Trie, _ words: [String?]) {
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:147:29: warning: forced cast of '[Node]' to same type has no effect
+145 |         node.is_leaf = true
+146 |         nodes = _set(nodes, curr, (node as! Node))
+147 |         trie.nodes = (nodes as! [Node])
+    |                             `- warning: forced cast of '[Node]' to same type has no effect
+148 |     }
+149 |     func insert_many(_ trie: inout Trie, _ words: [String]) {
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:144:34: warning: forced cast from 'String?' to 'String' only unwraps optionals; did you mean to use '!'?
-142 |     func insert_many(_ trie: inout Trie, _ words: [String?]) {
-143 |         for w in words {
-144 |             _ = insert(&trie, (w as! String))
-    |                                  `- warning: forced cast from 'String?' to 'String' only unwraps optionals; did you mean to use '!'?
-145 |         }
-146 |     }
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:151:34: warning: forced cast of 'String' to same type has no effect
+149 |     func insert_many(_ trie: inout Trie, _ words: [String]) {
+150 |         for w in words {
+151 |             _ = insert(&trie, (w as! String))
+    |                                  `- warning: forced cast of 'String' to same type has no effect
+152 |         }
+153 |     }
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:144:13: warning: using '_' to ignore the result of a Void-returning function is redundant
-142 |     func insert_many(_ trie: inout Trie, _ words: [String?]) {
-143 |         for w in words {
-144 |             _ = insert(&trie, (w as! String))
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:151:13: warning: using '_' to ignore the result of a Void-returning function is redundant
+149 |     func insert_many(_ trie: inout Trie, _ words: [String]) {
+150 |         for w in words {
+151 |             _ = insert(&trie, (w as! String))
     |             `- warning: using '_' to ignore the result of a Void-returning function is redundant
-145 |         }
-146 |     }
+152 |         }
+153 |     }
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:152:46: warning: forced cast of 'String' to same type has no effect
-150 |         var i: Int = 0
-151 |         while (i < Int(((word).count))) {
-152 |             let ch = (String(Array(word)[i]) as! String)
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:159:46: warning: forced cast of 'String' to same type has no effect
+157 |         var i: Int = 0
+158 |         while (i < _int(((word).count))) {
+159 |             let ch = (String(Array(word)[i]) as! String)
     |                                              `- warning: forced cast of 'String' to same type has no effect
-153 |             let children = (nodes[(curr as! Int)] as! Node).children
-154 |             if (!(children[ch] != nil)) {
+160 |             let children = nodes[curr].children
+161 |             if (!(children[ch] != nil)) {
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:153:51: warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
-151 |         while (i < Int(((word).count))) {
-152 |             let ch = (String(Array(word)[i]) as! String)
-153 |             let children = (nodes[(curr as! Int)] as! Node).children
-    |                                                   `- warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
-154 |             if (!(children[ch] != nil)) {
-155 |                 return false
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:164:35: warning: conditional cast from 'Int' to 'Int' always succeeds
+162 |                 return false
+163 |             }
+164 |             curr = (children[ch]! as? Int ?? 0)
+    |                                   `- warning: conditional cast from 'Int' to 'Int' always succeeds
+165 |             i = _int((i &+ 1))
+166 |         }
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:160:43: warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
-158 |             i = Int((i &+ 1))
-159 |         }
-160 |         let node = (nodes[(curr as! Int)] as! Node)
-    |                                           `- warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
-161 |         return node.is_leaf
-162 |     }
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:167:33: warning: forced cast of 'Node' to same type has no effect
+165 |             i = _int((i &+ 1))
+166 |         }
+167 |         let node = (nodes[curr] as! Node)
+    |                                 `- warning: forced cast of 'Node' to same type has no effect
+168 |         return node.is_leaf
+169 |     }
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:167:46: warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
-165 |         func _delete(_ idx: Int, _ pos: Int) -> Bool {
-166 |             if (pos == Int(((word).count))) {
-167 |                 var node: Node = (nodes[idx] as! Node)
-    |                                              `- warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
-168 |                 if (node.is_leaf == false) {
-169 |                     return false
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:174:46: warning: forced cast of 'Node' to same type has no effect
+172 |         func _delete(_ idx: Int, _ pos: Int) -> Bool {
+173 |             if (pos == _int(((word).count))) {
+174 |                 var node: Node = (nodes[idx] as! Node)
+    |                                              `- warning: forced cast of 'Node' to same type has no effect
+175 |                 if (node.is_leaf == false) {
+176 |                     return false
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:172:48: warning: forced cast of 'Node' to same type has no effect
-170 |                 }
-171 |                 node.is_leaf = false
-172 |                 nodes = _set(nodes, idx, (node as! Node))
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:179:48: warning: forced cast of 'Node' to same type has no effect
+177 |                 }
+178 |                 node.is_leaf = false
+179 |                 nodes = _set(nodes, idx, (node as! Node))
     |                                                `- warning: forced cast of 'Node' to same type has no effect
-173 |                 return (Int(((node.children).count)) == 0)
-174 |             }
+180 |                 return (_int(((node.children).count)) == 0)
+181 |             }
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:175:42: warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
-173 |                 return (Int(((node.children).count)) == 0)
-174 |             }
-175 |             var node: Node = (nodes[idx] as! Node)
-    |                                          `- warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
-176 |             let children: [String: Int] = node.children
-177 |             let ch = (String(Array(word)[pos]) as! String)
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:182:42: warning: forced cast of 'Node' to same type has no effect
+180 |                 return (_int(((node.children).count)) == 0)
+181 |             }
+182 |             var node: Node = (nodes[idx] as! Node)
+    |                                          `- warning: forced cast of 'Node' to same type has no effect
+183 |             let children: [String: Int] = node.children
+184 |             let ch = (String(Array(word)[pos]) as! String)
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:177:48: warning: forced cast of 'String' to same type has no effect
-175 |             var node: Node = (nodes[idx] as! Node)
-176 |             let children: [String: Int] = node.children
-177 |             let ch = (String(Array(word)[pos]) as! String)
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:184:48: warning: forced cast of 'String' to same type has no effect
+182 |             var node: Node = (nodes[idx] as! Node)
+183 |             let children: [String: Int] = node.children
+184 |             let ch = (String(Array(word)[pos]) as! String)
     |                                                `- warning: forced cast of 'String' to same type has no effect
-178 |             if (!(children[ch] != nil)) {
-179 |                 return false
+185 |             if (!(children[ch] != nil)) {
+186 |                 return false
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:181:71: warning: conditional downcast from 'Int?' to 'Int' does nothing
-179 |                 return false
-180 |             }
-181 |             let child_idx = (children[String(String(describing: ch))] as? Int ?? 0)
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:188:71: warning: conditional downcast from 'Int?' to 'Int' does nothing
+186 |                 return false
+187 |             }
+188 |             let child_idx = (children[String(String(describing: ch))] as? Int ?? 0)
     |                                                                       `- warning: conditional downcast from 'Int?' to 'Int' does nothing
-182 |             let should_delete = _delete(child_idx, (pos &+ 1))
-183 |             node = (nodes[idx] as! Node)
+189 |             let should_delete = _delete(child_idx, (pos &+ 1))
+190 |             node = (nodes[idx] as! Node)
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:183:32: warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
-181 |             let child_idx = (children[String(String(describing: ch))] as? Int ?? 0)
-182 |             let should_delete = _delete(child_idx, (pos &+ 1))
-183 |             node = (nodes[idx] as! Node)
-    |                                `- warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
-184 |             if should_delete {
-185 |                 var new_children: [String: Int] = (remove_key((node.children as! [String: Int]), (ch as! String)) as! [String: Int])
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:190:32: warning: forced cast of 'Node' to same type has no effect
+188 |             let child_idx = (children[String(String(describing: ch))] as? Int ?? 0)
+189 |             let should_delete = _delete(child_idx, (pos &+ 1))
+190 |             node = (nodes[idx] as! Node)
+    |                                `- warning: forced cast of 'Node' to same type has no effect
+191 |             if should_delete {
+192 |                 var new_children: [String: Int] = (remove_key((node.children as! [String: Int]), (ch as! String)) as! [String: Int])
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:185:78: warning: forced cast of '[String : Int]' to same type has no effect
-183 |             node = (nodes[idx] as! Node)
-184 |             if should_delete {
-185 |                 var new_children: [String: Int] = (remove_key((node.children as! [String: Int]), (ch as! String)) as! [String: Int])
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:192:78: warning: forced cast of '[String : Int]' to same type has no effect
+190 |             node = (nodes[idx] as! Node)
+191 |             if should_delete {
+192 |                 var new_children: [String: Int] = (remove_key((node.children as! [String: Int]), (ch as! String)) as! [String: Int])
     |                                                                              `- warning: forced cast of '[String : Int]' to same type has no effect
-186 |                 node.children = (new_children as! [String: Int])
-187 |                 nodes = _set(nodes, idx, (node as! Node))
+193 |                 node.children = (new_children as! [String: Int])
+194 |                 nodes = _set(nodes, idx, (node as! Node))
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:185:102: warning: forced cast of 'String' to same type has no effect
-183 |             node = (nodes[idx] as! Node)
-184 |             if should_delete {
-185 |                 var new_children: [String: Int] = (remove_key((node.children as! [String: Int]), (ch as! String)) as! [String: Int])
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:192:102: warning: forced cast of 'String' to same type has no effect
+190 |             node = (nodes[idx] as! Node)
+191 |             if should_delete {
+192 |                 var new_children: [String: Int] = (remove_key((node.children as! [String: Int]), (ch as! String)) as! [String: Int])
     |                                                                                                      `- warning: forced cast of 'String' to same type has no effect
-186 |                 node.children = (new_children as! [String: Int])
-187 |                 nodes = _set(nodes, idx, (node as! Node))
+193 |                 node.children = (new_children as! [String: Int])
+194 |                 nodes = _set(nodes, idx, (node as! Node))
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:185:115: warning: forced cast of '[String : Int]' to same type has no effect
-183 |             node = (nodes[idx] as! Node)
-184 |             if should_delete {
-185 |                 var new_children: [String: Int] = (remove_key((node.children as! [String: Int]), (ch as! String)) as! [String: Int])
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:192:115: warning: forced cast of '[String : Int]' to same type has no effect
+190 |             node = (nodes[idx] as! Node)
+191 |             if should_delete {
+192 |                 var new_children: [String: Int] = (remove_key((node.children as! [String: Int]), (ch as! String)) as! [String: Int])
     |                                                                                                                   `- warning: forced cast of '[String : Int]' to same type has no effect
-186 |                 node.children = (new_children as! [String: Int])
-187 |                 nodes = _set(nodes, idx, (node as! Node))
+193 |                 node.children = (new_children as! [String: Int])
+194 |                 nodes = _set(nodes, idx, (node as! Node))
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:186:47: warning: forced cast of '[String : Int]' to same type has no effect
-184 |             if should_delete {
-185 |                 var new_children: [String: Int] = (remove_key((node.children as! [String: Int]), (ch as! String)) as! [String: Int])
-186 |                 node.children = (new_children as! [String: Int])
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:193:47: warning: forced cast of '[String : Int]' to same type has no effect
+191 |             if should_delete {
+192 |                 var new_children: [String: Int] = (remove_key((node.children as! [String: Int]), (ch as! String)) as! [String: Int])
+193 |                 node.children = (new_children as! [String: Int])
     |                                               `- warning: forced cast of '[String : Int]' to same type has no effect
-187 |                 nodes = _set(nodes, idx, (node as! Node))
-188 |                 return ((Int(((new_children).count)) == 0) && (node.is_leaf == false))
+194 |                 nodes = _set(nodes, idx, (node as! Node))
+195 |                 return ((_int(((new_children).count)) == 0) && (node.is_leaf == false))
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:187:48: warning: forced cast of 'Node' to same type has no effect
-185 |                 var new_children: [String: Int] = (remove_key((node.children as! [String: Int]), (ch as! String)) as! [String: Int])
-186 |                 node.children = (new_children as! [String: Int])
-187 |                 nodes = _set(nodes, idx, (node as! Node))
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:194:48: warning: forced cast of 'Node' to same type has no effect
+192 |                 var new_children: [String: Int] = (remove_key((node.children as! [String: Int]), (ch as! String)) as! [String: Int])
+193 |                 node.children = (new_children as! [String: Int])
+194 |                 nodes = _set(nodes, idx, (node as! Node))
     |                                                `- warning: forced cast of 'Node' to same type has no effect
-188 |                 return ((Int(((new_children).count)) == 0) && (node.is_leaf == false))
-189 |             }
+195 |                 return ((_int(((new_children).count)) == 0) && (node.is_leaf == false))
+196 |             }
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:190:44: warning: forced cast of 'Node' to same type has no effect
-188 |                 return ((Int(((new_children).count)) == 0) && (node.is_leaf == false))
-189 |             }
-190 |             nodes = _set(nodes, idx, (node as! Node))
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:197:44: warning: forced cast of 'Node' to same type has no effect
+195 |                 return ((_int(((new_children).count)) == 0) && (node.is_leaf == false))
+196 |             }
+197 |             nodes = _set(nodes, idx, (node as! Node))
     |                                            `- warning: forced cast of 'Node' to same type has no effect
-191 |             return false
-192 |         }
+198 |             return false
+199 |         }
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:194:29: warning: forced cast of '[Node?]' to same type has no effect
-192 |         }
-193 |         _ = _delete(0, 0)
-194 |         trie.nodes = (nodes as! [Node?])
-    |                             `- warning: forced cast of '[Node?]' to same type has no effect
-195 |     }
-196 |     func print_words(_ trie: Trie) {
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:201:29: warning: forced cast of '[Node]' to same type has no effect
+199 |         }
+200 |         _ = _delete(0, 0)
+201 |         trie.nodes = (nodes as! [Node])
+    |                             `- warning: forced cast of '[Node]' to same type has no effect
+202 |     }
+203 |     func print_words(_ trie: Trie) {
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:198:41: warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
-196 |     func print_words(_ trie: Trie) {
-197 |         func dfs(_ idx: Int, _ word: String) {
-198 |             let node = (trie.nodes[idx] as! Node)
-    |                                         `- warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
-199 |             if node.is_leaf {
-200 |                 print(_p(word))
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:205:41: warning: forced cast of 'Node' to same type has no effect
+203 |     func print_words(_ trie: Trie) {
+204 |         func dfs(_ idx: Int, _ word: String) {
+205 |             let node = (trie.nodes[idx] as! Node)
+    |                                         `- warning: forced cast of 'Node' to same type has no effect
+206 |             if node.is_leaf {
+207 |                 print(_p(word))
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:203:73: warning: conditional downcast from 'Int?' to 'Int' does nothing
-201 |             }
-202 |             for key in node.children.keys.sorted() {
-203 |                 _ = dfs((node.children[String(String(describing: key))] as? Int ?? 0), ((word + key) as! String))
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:210:73: warning: conditional downcast from 'Int?' to 'Int' does nothing
+208 |             }
+209 |             for key in node.children.keys.sorted() {
+210 |                 _ = dfs((node.children[String(String(describing: key))] as? Int ?? 0), ((word + key) as! String))
     |                                                                         `- warning: conditional downcast from 'Int?' to 'Int' does nothing
-204 |             }
-205 |         }
+211 |             }
+212 |         }
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:203:102: warning: forced cast of 'String' to same type has no effect
-201 |             }
-202 |             for key in node.children.keys.sorted() {
-203 |                 _ = dfs((node.children[String(String(describing: key))] as? Int ?? 0), ((word + key) as! String))
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:210:102: warning: forced cast of 'String' to same type has no effect
+208 |             }
+209 |             for key in node.children.keys.sorted() {
+210 |                 _ = dfs((node.children[String(String(describing: key))] as? Int ?? 0), ((word + key) as! String))
     |                                                                                                      `- warning: forced cast of 'String' to same type has no effect
-204 |             }
-205 |         }
+211 |             }
+212 |         }
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:203:17: warning: using '_' to ignore the result of a Void-returning function is redundant
-201 |             }
-202 |             for key in node.children.keys.sorted() {
-203 |                 _ = dfs((node.children[String(String(describing: key))] as? Int ?? 0), ((word + key) as! String))
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:210:17: warning: using '_' to ignore the result of a Void-returning function is redundant
+208 |             }
+209 |             for key in node.children.keys.sorted() {
+210 |                 _ = dfs((node.children[String(String(describing: key))] as? Int ?? 0), ((word + key) as! String))
     |                 `- warning: using '_' to ignore the result of a Void-returning function is redundant
-204 |             }
-205 |         }
+211 |             }
+212 |         }
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:206:9: warning: using '_' to ignore the result of a Void-returning function is redundant
-204 |             }
-205 |         }
-206 |         _ = dfs(0, "")
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:213:9: warning: using '_' to ignore the result of a Void-returning function is redundant
+211 |             }
+212 |         }
+213 |         _ = dfs(0, "")
     |         `- warning: using '_' to ignore the result of a Void-returning function is redundant
-207 |     }
-208 |     func test_trie() -> Bool {
+214 |     }
+215 |     func test_trie() -> Bool {
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:211:39: warning: forced cast of '[String?]' to same type has no effect
-209 |         let words: [String?] = (["banana", "bananas", "bandana", "band", "apple", "all", "beast"] as! [String?])
-210 |         var trie = new_trie()
-211 |         _ = insert_many(&trie, (words as! [String?]))
-    |                                       `- warning: forced cast of '[String?]' to same type has no effect
-212 |         var ok: Bool = true
-213 |         for w in words {
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:218:39: warning: forced cast of '[String]' to same type has no effect
+216 |         let words: [String] = (["banana", "bananas", "bandana", "band", "apple", "all", "beast"] as! [String])
+217 |         var trie = new_trie()
+218 |         _ = insert_many(&trie, (words as! [String]))
+    |                                       `- warning: forced cast of '[String]' to same type has no effect
+219 |         var ok: Bool = true
+220 |         for w in words {
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:211:9: warning: using '_' to ignore the result of a Void-returning function is redundant
-209 |         let words: [String?] = (["banana", "bananas", "bandana", "band", "apple", "all", "beast"] as! [String?])
-210 |         var trie = new_trie()
-211 |         _ = insert_many(&trie, (words as! [String?]))
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:218:9: warning: using '_' to ignore the result of a Void-returning function is redundant
+216 |         let words: [String] = (["banana", "bananas", "bandana", "band", "apple", "all", "beast"] as! [String])
+217 |         var trie = new_trie()
+218 |         _ = insert_many(&trie, (words as! [String]))
     |         `- warning: using '_' to ignore the result of a Void-returning function is redundant
-212 |         var ok: Bool = true
-213 |         for w in words {
+219 |         var ok: Bool = true
+220 |         for w in words {
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:214:36: warning: forced cast of 'Trie' to same type has no effect
-212 |         var ok: Bool = true
-213 |         for w in words {
-214 |             ok = (ok && find((trie as! Trie), (w as! String)))
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:221:36: warning: forced cast of 'Trie' to same type has no effect
+219 |         var ok: Bool = true
+220 |         for w in words {
+221 |             ok = (ok && find((trie as! Trie), (w as! String)))
     |                                    `- warning: forced cast of 'Trie' to same type has no effect
-215 |         }
-216 |         ok = (ok && find((trie as! Trie), "banana"))
+222 |         }
+223 |         ok = (ok && find((trie as! Trie), "banana"))
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:214:50: warning: forced cast from 'String?' to 'String' only unwraps optionals; did you mean to use '!'?
-212 |         var ok: Bool = true
-213 |         for w in words {
-214 |             ok = (ok && find((trie as! Trie), (w as! String)))
-    |                                                  `- warning: forced cast from 'String?' to 'String' only unwraps optionals; did you mean to use '!'?
-215 |         }
-216 |         ok = (ok && find((trie as! Trie), "banana"))
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:221:50: warning: forced cast of 'String' to same type has no effect
+219 |         var ok: Bool = true
+220 |         for w in words {
+221 |             ok = (ok && find((trie as! Trie), (w as! String)))
+    |                                                  `- warning: forced cast of 'String' to same type has no effect
+222 |         }
+223 |         ok = (ok && find((trie as! Trie), "banana"))
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:216:32: warning: forced cast of 'Trie' to same type has no effect
-214 |             ok = (ok && find((trie as! Trie), (w as! String)))
-215 |         }
-216 |         ok = (ok && find((trie as! Trie), "banana"))
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:223:32: warning: forced cast of 'Trie' to same type has no effect
+221 |             ok = (ok && find((trie as! Trie), (w as! String)))
+222 |         }
+223 |         ok = (ok && find((trie as! Trie), "banana"))
     |                                `- warning: forced cast of 'Trie' to same type has no effect
-217 |         var t: Bool = find((trie as! Trie), "bandanas")
-218 |         ok = (ok && (t == false))
+224 |         var t: Bool = find((trie as! Trie), "bandanas")
+225 |         ok = (ok && (t == false))
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:217:34: warning: forced cast of 'Trie' to same type has no effect
-215 |         }
-216 |         ok = (ok && find((trie as! Trie), "banana"))
-217 |         var t: Bool = find((trie as! Trie), "bandanas")
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:224:34: warning: forced cast of 'Trie' to same type has no effect
+222 |         }
+223 |         ok = (ok && find((trie as! Trie), "banana"))
+224 |         var t: Bool = find((trie as! Trie), "bandanas")
     |                                  `- warning: forced cast of 'Trie' to same type has no effect
-218 |         ok = (ok && (t == false))
-219 |         var t2: Bool = find((trie as! Trie), "apps")
+225 |         ok = (ok && (t == false))
+226 |         var t2: Bool = find((trie as! Trie), "apps")
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:219:35: warning: forced cast of 'Trie' to same type has no effect
-217 |         var t: Bool = find((trie as! Trie), "bandanas")
-218 |         ok = (ok && (t == false))
-219 |         var t2: Bool = find((trie as! Trie), "apps")
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:226:35: warning: forced cast of 'Trie' to same type has no effect
+224 |         var t: Bool = find((trie as! Trie), "bandanas")
+225 |         ok = (ok && (t == false))
+226 |         var t2: Bool = find((trie as! Trie), "apps")
     |                                   `- warning: forced cast of 'Trie' to same type has no effect
-220 |         ok = (ok && (t2 == false))
-221 |         ok = (ok && find((trie as! Trie), "apple"))
+227 |         ok = (ok && (t2 == false))
+228 |         ok = (ok && find((trie as! Trie), "apple"))
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:221:32: warning: forced cast of 'Trie' to same type has no effect
-219 |         var t2: Bool = find((trie as! Trie), "apps")
-220 |         ok = (ok && (t2 == false))
-221 |         ok = (ok && find((trie as! Trie), "apple"))
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:228:32: warning: forced cast of 'Trie' to same type has no effect
+226 |         var t2: Bool = find((trie as! Trie), "apps")
+227 |         ok = (ok && (t2 == false))
+228 |         ok = (ok && find((trie as! Trie), "apple"))
     |                                `- warning: forced cast of 'Trie' to same type has no effect
-222 |         ok = (ok && find((trie as! Trie), "all"))
-223 |         _ = delete(&trie, "all")
+229 |         ok = (ok && find((trie as! Trie), "all"))
+230 |         _ = delete(&trie, "all")
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:222:32: warning: forced cast of 'Trie' to same type has no effect
-220 |         ok = (ok && (t2 == false))
-221 |         ok = (ok && find((trie as! Trie), "apple"))
-222 |         ok = (ok && find((trie as! Trie), "all"))
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:229:32: warning: forced cast of 'Trie' to same type has no effect
+227 |         ok = (ok && (t2 == false))
+228 |         ok = (ok && find((trie as! Trie), "apple"))
+229 |         ok = (ok && find((trie as! Trie), "all"))
     |                                `- warning: forced cast of 'Trie' to same type has no effect
-223 |         _ = delete(&trie, "all")
-224 |         var t3: Bool = find((trie as! Trie), "all")
+230 |         _ = delete(&trie, "all")
+231 |         var t3: Bool = find((trie as! Trie), "all")
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:223:9: warning: using '_' to ignore the result of a Void-returning function is redundant
-221 |         ok = (ok && find((trie as! Trie), "apple"))
-222 |         ok = (ok && find((trie as! Trie), "all"))
-223 |         _ = delete(&trie, "all")
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:230:9: warning: using '_' to ignore the result of a Void-returning function is redundant
+228 |         ok = (ok && find((trie as! Trie), "apple"))
+229 |         ok = (ok && find((trie as! Trie), "all"))
+230 |         _ = delete(&trie, "all")
     |         `- warning: using '_' to ignore the result of a Void-returning function is redundant
-224 |         var t3: Bool = find((trie as! Trie), "all")
-225 |         ok = (ok && (t3 == false))
+231 |         var t3: Bool = find((trie as! Trie), "all")
+232 |         ok = (ok && (t3 == false))
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:224:35: warning: forced cast of 'Trie' to same type has no effect
-222 |         ok = (ok && find((trie as! Trie), "all"))
-223 |         _ = delete(&trie, "all")
-224 |         var t3: Bool = find((trie as! Trie), "all")
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:231:35: warning: forced cast of 'Trie' to same type has no effect
+229 |         ok = (ok && find((trie as! Trie), "all"))
+230 |         _ = delete(&trie, "all")
+231 |         var t3: Bool = find((trie as! Trie), "all")
     |                                   `- warning: forced cast of 'Trie' to same type has no effect
-225 |         ok = (ok && (t3 == false))
-226 |         _ = delete(&trie, "banana")
+232 |         ok = (ok && (t3 == false))
+233 |         _ = delete(&trie, "banana")
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:226:9: warning: using '_' to ignore the result of a Void-returning function is redundant
-224 |         var t3: Bool = find((trie as! Trie), "all")
-225 |         ok = (ok && (t3 == false))
-226 |         _ = delete(&trie, "banana")
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:233:9: warning: using '_' to ignore the result of a Void-returning function is redundant
+231 |         var t3: Bool = find((trie as! Trie), "all")
+232 |         ok = (ok && (t3 == false))
+233 |         _ = delete(&trie, "banana")
     |         `- warning: using '_' to ignore the result of a Void-returning function is redundant
-227 |         var t4: Bool = find((trie as! Trie), "banana")
-228 |         ok = (ok && (t4 == false))
+234 |         var t4: Bool = find((trie as! Trie), "banana")
+235 |         ok = (ok && (t4 == false))
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:227:35: warning: forced cast of 'Trie' to same type has no effect
-225 |         ok = (ok && (t3 == false))
-226 |         _ = delete(&trie, "banana")
-227 |         var t4: Bool = find((trie as! Trie), "banana")
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:234:35: warning: forced cast of 'Trie' to same type has no effect
+232 |         ok = (ok && (t3 == false))
+233 |         _ = delete(&trie, "banana")
+234 |         var t4: Bool = find((trie as! Trie), "banana")
     |                                   `- warning: forced cast of 'Trie' to same type has no effect
-228 |         ok = (ok && (t4 == false))
-229 |         ok = (ok && find((trie as! Trie), "bananas"))
+235 |         ok = (ok && (t4 == false))
+236 |         ok = (ok && find((trie as! Trie), "bananas"))
 
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:229:32: warning: forced cast of 'Trie' to same type has no effect
-227 |         var t4: Bool = find((trie as! Trie), "banana")
-228 |         ok = (ok && (t4 == false))
-229 |         ok = (ok && find((trie as! Trie), "bananas"))
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:236:32: warning: forced cast of 'Trie' to same type has no effect
+234 |         var t4: Bool = find((trie as! Trie), "banana")
+235 |         ok = (ok && (t4 == false))
+236 |         ok = (ok && find((trie as! Trie), "bananas"))
     |                                `- warning: forced cast of 'Trie' to same type has no effect
-230 |         return ok
-231 |     }
-
-/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie2426366057/001/main.swift:240:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+237 |         return ok
 238 |     }
-239 |     var trie = new_trie()
-240 |     _ = print_results("Testing trie functionality", test_trie())
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden266_data_structures_trie_trie3763191764/001/main.swift:247:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+245 |     }
+246 |     var trie = new_trie()
+247 |     _ = print_results("Testing trie functionality", test_trie())
     |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
-241 |     let _benchEnd = _now()
-242 |     let _benchMemEnd = _mem()
+248 |     let _benchEnd = _now()
+249 |     let _benchMemEnd = _mem()

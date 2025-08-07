@@ -1,43 +1,43 @@
 signal: illegal instruction
 Swift/ContiguousArrayBuffer.swift:690: Fatal error: Index out of range
 
-*** Signal 4: Backtracing from 0x7f9820e118f5... done ***
+*** Signal 4: Backtracing from 0x7f594a4dc8f5... done ***
 
-*** Program crashed: Illegal instruction at 0x00007f9820e118f5 ***
+*** Program crashed: Illegal instruction at 0x00007f594a4dc8f5 ***
 
 Thread 0 "main" crashed:
 
-0      0x00007f9820e118f5 closure #1 in closure #1 in closure #1 in _assertionFailure(_:_:file:line:flags:) + 309 in libswiftCore.so
-1 [ra] 0x00007f9820e116e5 closure #1 in closure #1 in _assertionFailure(_:_:file:line:flags:) + 324 in libswiftCore.so
-2 [ra] 0x00007f9820e1155c closure #1 in _assertionFailure(_:_:file:line:flags:) + 379 in libswiftCore.so
-3 [ra] 0x00007f9820f87505 _assertionFailure(_:_:file:line:flags:) + 276 in libswiftCore.so
-4 [ra] 0x00007f9820e277bd Array.subscript.getter + 124 in libswiftCore.so
-5 [ra] 0x0000560b766deb09 pad_edge #1 (_:_:) in  + 920 in main
-6 [ra] 0x0000560b766dc97b img_convolve #1 (_:_:) in  + 602 in main
-7 [ra] 0x0000560b766de43e main + 1341 in main
-8 [ra] 0x00007f981f79c1ca <unknown> in libc.so.6
-9 [ra] 0x00007f981f79c28b <unknown> in libc.so.6
+0      0x00007f594a4dc8f5 closure #1 in closure #1 in closure #1 in _assertionFailure(_:_:file:line:flags:) + 309 in libswiftCore.so
+1 [ra] 0x00007f594a4dc6e5 closure #1 in closure #1 in _assertionFailure(_:_:file:line:flags:) + 324 in libswiftCore.so
+2 [ra] 0x00007f594a4dc55c closure #1 in _assertionFailure(_:_:file:line:flags:) + 379 in libswiftCore.so
+3 [ra] 0x00007f594a652505 _assertionFailure(_:_:file:line:flags:) + 276 in libswiftCore.so
+4 [ra] 0x00007f594a4f27bd Array.subscript.getter + 124 in libswiftCore.so
+5 [ra] 0x000055f400a28285 pad_edge #1 (_:_:) in  + 1268 in main
+6 [ra] 0x000055f400a25fab img_convolve #1 (_:_:) in  + 714 in main
+7 [ra] 0x000055f400a27aa6 main + 981 in main
+8 [ra] 0x00007f5948e671ca <unknown> in libc.so.6
+9 [ra] 0x00007f5948e6728b <unknown> in libc.so.6
 
 
 Registers:
 
 rax 0x0000000000000001  1
 rdx 0x0000000000000001  1
-rcx 0x0000000000000006  6
-rbx 0x0000560eec1d5b09  94622090877705
-rsi 0x0000000000000005  5
-rdi 0x0000560b8ca590a0  00 00 00 00 00 00 00 00 31 00 00 00 00 00 00 00  ········1·······
-rbp 0x00007ffc6700fc20  60 fc 00 67 fc 7f 00 00 e5 16 e1 20 98 7f 00 00  `ü·gü···å·á ····
-rsp 0x00007ffc6700fc10  12 00 00 00 00 00 00 00 b2 02 00 00 00 00 00 00  ········²·······
- r8 0x0000560b8ca24010  07 00 06 00 04 00 05 00 04 00 07 00 00 00 03 00  ················
+rcx 0x0000000000000007  7
+rbx 0x000055f176bf9e80  94495567748736
+rsi 0x0000000000000006  6
+rdi 0x000055f429fd01b0  00 00 00 00 00 00 00 00 31 00 00 00 00 00 00 00  ········1·······
+rbp 0x00007ffc22147c80  c0 7c 14 22 fc 7f 00 00 e5 c6 4d 4a 59 7f 00 00  À|·"ü···åÆMJY···
+rsp 0x00007ffc22147c70  12 00 00 00 00 00 00 00 b2 02 00 00 00 00 00 00  ········²·······
+ r8 0x000055f429f9b010  07 00 07 00 02 00 07 00 07 00 07 00 02 00 02 00  ················
  r9 0x0000000000000007  7
-r10 0x0000560b8ca590b0  09 5b 1d ec 0e 56 00 00 0e 81 85 b8 55 46 72 43  ·[·ì·V·····¸UFrC
-r11 0x43724655b885810e  4860024281868108046
+r10 0x000055f429fd01c0  80 9e bf 76 f1 55 00 00 0d 11 ea 93 c8 c9 4a b8  ··¿vñU····ê·ÈÉJ¸
+r11 0xb84ac9c893ea110d  13279648314567561485
 r12 0x0000000000000001  1
-r13 0x00007f982086f068  00 00 00 00 00 00 00 00 50 88 87 20 98 7f 00 00  ········P·· ····
+r13 0x00007f5949f3a068  00 00 00 00 00 00 00 00 50 38 f4 49 59 7f 00 00  ········P8ôIY···
 r14 0x0000000000000001  1
 r15 0x000000000000000b  11
-rip 0x00007f9820e118f5  0f 0b 48 83 ec 08 48 8d 05 be f8 45 00 48 8d 3d  ··H·ì·H··¾øE·H·=
+rip 0x00007f594a4dc8f5  0f 0b 48 83 ec 08 48 8d 05 be f8 45 00 48 8d 3d  ··H·ì·H··¾øE·H·=
 
 rflags 0x0000000000010202  
 
@@ -46,9 +46,9 @@ cs 0x0033  fs 0x0000  gs 0x0000
 
 Images (48 omitted):
 
-0x0000560b766d9000–0x0000560b766e0550 c5fe36691bc8652fbeeaec00865ed499a9872ddd main            /tmp/TestSwiftTranspiler_Algorithms_Golden273_digital_image_processing_filters_convolve4074884038/001/main
-0x00007f981f772000–0x00007f981f921cb9 282c2c16e7b6600b0b22ea0c99010d2795752b5f libc.so.6       /usr/lib/x86_64-linux-gnu/libc.so.6
-0x00007f9820cab000–0x00007f982123a2d8 7bd479aa5e6f57e6772da70789dcdfa25d5e29b0 libswiftCore.so /root/.local/share/mise/installs/swift/6.1/usr/lib/swift/linux/libswiftCore.so
+0x000055f400a22000–0x000055f400a29f98 e953557518047fecd5191861f5919638154f1422 main            /tmp/TestSwiftTranspiler_Algorithms_Golden273_digital_image_processing_filters_convolve3896853406/001/main
+0x00007f5948e3d000–0x00007f5948feccb9 282c2c16e7b6600b0b22ea0c99010d2795752b5f libc.so.6       /usr/lib/x86_64-linux-gnu/libc.so.6
+0x00007f594a376000–0x00007f594a9052d8 7bd479aa5e6f57e6772da70789dcdfa25d5e29b0 libswiftCore.so /root/.local/share/mise/installs/swift/6.1/usr/lib/swift/linux/libswiftCore.so
 
-Backtrace took 0.06s
+Backtrace took 0.12s
 
