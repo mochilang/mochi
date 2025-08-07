@@ -1,0 +1,7 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/digital_image_processing/morphological_operations/erosion_operation.scala:115: error: type mismatch;
+ found   : Boolean
+ required: scala.collection.mutable.ArrayBuffer[Boolean]
+      row_out = row_out :+ sum == 5
+                               ^
+one error found

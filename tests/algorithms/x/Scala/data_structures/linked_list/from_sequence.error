@@ -1,0 +1,16 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/linked_list/from_sequence.scala:40: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Any]
+ required: scala.collection.mutable.ArrayBuffer[Main.Node]
+Note: Any >: Main.Node, but class ArrayBuffer is invariant in type A.
+You may wish to investigate a wildcard type such as `_ >: Main.Node`. (SLS 3.2.10)
+  nodes = nodes :+ (Node(elements((0.toInt).toInt), NIL)).asInstanceOf[Any]
+                ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/linked_list/from_sequence.scala:45: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Any]
+ required: scala.collection.mutable.ArrayBuffer[Main.Node]
+Note: Any >: Main.Node, but class ArrayBuffer is invariant in type A.
+You may wish to investigate a wildcard type such as `_ >: Main.Node`. (SLS 3.2.10)
+    nodes = nodes :+ (Node(elements((i.toInt).toInt), NIL)).asInstanceOf[Any]
+                  ^
+two errors found

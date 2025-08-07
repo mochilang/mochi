@@ -60,6 +60,22 @@ func SetBenchMain(v bool) { benchMain = v }
 
 func BuiltinAliases() map[string]string { return builtinAliases }
 
+func fieldType(name string) string {
+	if stName, ok := fieldStructs[name]; ok && stName != "" {
+		for _, td := range typeDecls {
+			if td.Name == stName {
+				for _, f := range td.Fields {
+					if f.Name == name && f.Type != "" {
+						return f.Type
+					}
+				}
+				break
+			}
+		}
+	}
+	return ""
+}
+
 func isDeclaredType(name string) bool {
 	for _, td := range typeDecls {
 		if td.Name == name {
@@ -2344,6 +2360,14 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		}
 		if e != nil {
 			valType := inferTypeWithEnv(e, env)
+			if (typ == "" || typ == "Any") && (valType == "" || valType == "Any") {
+				if fe, ok := e.(*FieldExpr); ok {
+					if ft := fieldType(fe.Name); ft != "" {
+						typ = ft
+						valType = ft
+					}
+				}
+			}
 			if (typ == "" || typ == "Any") && valType != "" && valType != "Any" {
 				typ = valType
 			}
@@ -2406,6 +2430,13 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 			}
 		}
+		for _, f := range td.Fields {
+			if prev, ok := fieldStructs[f.Name]; ok && prev != td.Name {
+				fieldStructs[f.Name] = ""
+			} else if !ok {
+				fieldStructs[f.Name] = td.Name
+			}
+		}
 		return nil, nil
 	case st.Assign != nil:
 		target := Expr(&Name{Name: st.Assign.Name})
@@ -2430,13 +2461,6 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				e = &CastExpr{Value: &Name{Name: "null"}, Type: targetType}
 				valType = targetType
 			} else {
-				if n, ok := target.(*Name); ok {
-					if vs, ok2 := varDecls[n.Name]; ok2 {
-						vs.Type = "Any"
-						localVarTypes[n.Name] = "Any"
-						targetType = "Any"
-					}
-				}
 				if targetType != "Any" {
 					e = &CastExpr{Value: e, Type: targetType}
 				}
@@ -5044,6 +5068,9 @@ func inferTypeWithEnv(e Expr, env *types.Env) string {
 					}
 				}
 			}
+		}
+		if ft := fieldType(ex.Name); ft != "" {
+			return ft
 		}
 	case *UnaryExpr:
 		return inferTypeWithEnv(ex.Expr, env)
