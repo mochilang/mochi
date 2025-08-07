@@ -1,17 +1,3 @@
-compile: exit status 1
-/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/trie/radix_tree.cpp:81:215: warning: multi-character character constant [-Wmultichar]
-   81 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
-      |                                                                                                                                                                                                                       ^~~~
-/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/trie/radix_tree.cpp:81:251: warning: multi-character character constant [-Wmultichar]
-   81 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
-      |                                                                                                                                                                                                                                                           ^~~~
-/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/trie/radix_tree.cpp:142:147: warning: multi-character character constant [-Wmultichar]
-  142 |  << ", " << "'children': "<< "{"; bool first_2=true; for(const auto& p: v.children){ if(!first_2) os << ", "; first_2=false; os << p.first; os << ': '; os << p.second; } os << "}"
-      |                                                                                                                                                   ^~~~
-/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/trie/radix_tree.cpp: In function ‘void insert_many(const RadixTree&, const std::vector<std::__cxx11::basic_string<char> >&)’:
-/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/trie/radix_tree.cpp:206:16: error: binding reference of type ‘RadixTree&’ to ‘const RadixTree’ discards qualifiers
-  206 |         insert(tree, int64_t(0), w);
-      |                ^~~~
-/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/trie/radix_tree.cpp:165:24: note:   initializing argument 1 of ‘void insert(RadixTree&, int64_t, std::string)’
-  165 | void insert(RadixTree& tree, int64_t idx, std::string word);
-      |             ~~~~~~~~~~~^~~~
+run: signal: aborted
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc

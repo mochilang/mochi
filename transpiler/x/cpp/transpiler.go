@@ -1839,9 +1839,15 @@ func (a *AppendExpr) emit(w io.Writer) {
 	if !inFunction {
 		cap = "[]"
 	}
-	io.WriteString(w, "("+cap+"{ auto __tmp = ")
-	a.List.emit(w)
-	io.WriteString(w, "; __tmp.push_back(")
+	if _, ok := a.List.(*VarRef); ok {
+		io.WriteString(w, "("+cap+"{ auto& __tmp = ")
+		a.List.emit(w)
+		io.WriteString(w, "; __tmp.push_back(")
+	} else {
+		io.WriteString(w, "("+cap+"{ auto __tmp = ")
+		a.List.emit(w)
+		io.WriteString(w, "; __tmp.push_back(")
+	}
 	if strings.HasPrefix(elemType, "std::shared_ptr<") {
 		if sl, ok := elem.(*StructLit); ok {
 			fmt.Fprintf(w, "std::make_shared<%s>(", sl.Name)
@@ -5190,7 +5196,9 @@ func convertWhileStmt(ws *parser.WhileStmt) (*WhileStmt, error) {
 func convertFun(fn *parser.FunStmt) (*Func, error) {
 	prev := inFunction
 	inFunction = true
+	prevParams := paramNames
 	paramNames = map[string]bool{}
+	prevMut := mutatedParams
 	mutatedParams = map[string]bool{}
 	for _, p := range fn.Params {
 		paramNames[p.Name] = true
@@ -5256,8 +5264,8 @@ func convertFun(fn *parser.FunStmt) (*Func, error) {
 		params = append(params, Param{Name: p.Name, Type: typ, ByVal: mutatedParams[p.Name]})
 	}
 	defer func() { currentReturnType = prevRet }()
-	paramNames = nil
-	mutatedParams = nil
+	paramNames = prevParams
+	mutatedParams = prevMut
 	f := &Func{Name: fn.Name, Params: params, ReturnType: ret, Body: body}
 	if currentReceiver != "" {
 		f.Receiver = currentReceiver
