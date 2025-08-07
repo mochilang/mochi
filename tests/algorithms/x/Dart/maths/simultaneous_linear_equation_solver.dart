@@ -13,12 +13,14 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+
 double floor(double x) {
-  int i = x as int;
-  if ((i as double) > x) {
+  int i = (x).toInt();
+  if (((i).toDouble()) > x) {
     i = i - 1;
   }
-  return i as double;
+  return (i).toDouble();
 }
 
 double pow10(int n) {
@@ -125,8 +127,8 @@ void test_solver() {
 void _main() {
   test_solver();
   List<List<double>> eq = [[2.0, 1.0, 1.0, 1.0, 1.0, 4.0], [1.0, 2.0, 1.0, 1.0, 1.0, 5.0], [1.0, 1.0, 2.0, 1.0, 1.0, 6.0], [1.0, 1.0, 1.0, 2.0, 1.0, 7.0], [1.0, 1.0, 1.0, 1.0, 2.0, 8.0]];
-  print((solve_simultaneous(eq)).toString());
-  print((solve_simultaneous([[4.0, 2.0]])).toString());
+  print(_str(solve_simultaneous(eq)));
+  print(_str(solve_simultaneous([[4.0, 2.0]])));
 }
 
 void _start() {

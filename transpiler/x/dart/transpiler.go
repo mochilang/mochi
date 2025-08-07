@@ -2719,7 +2719,7 @@ func (c *CastExpr) emit(w io.Writer) error {
 		return err
 	}
 
-	if c.Type == "int" && (valType == "num" || valType == "double") {
+	if c.Type == "int" && (valType == "num" || valType == "double" || valType == "dynamic") {
 		if _, err := io.WriteString(w, "("); err != nil {
 			return err
 		}

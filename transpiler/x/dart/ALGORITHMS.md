@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-07 17:11 GMT+7
+Last updated: 2025-08-07 17:37 GMT+7
 
-## Algorithms Golden Test Checklist (653/1077)
+## Algorithms Golden Test Checklist (654/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 11.075ms | 3.5 MB |
@@ -663,7 +663,7 @@ Last updated: 2025-08-07 17:11 GMT+7
 | 654 | maths/sieve_of_eratosthenes | ✓ | 13.931ms | 4.6 MB |
 | 655 | maths/sigmoid | ✓ | 28.625ms | 9.4 MB |
 | 656 | maths/signum | ✓ | 19.34ms | 10.3 MB |
-| 657 | maths/simultaneous_linear_equation_solver | error |  |  |
+| 657 | maths/simultaneous_linear_equation_solver | ✓ | 19.308ms | 4.5 MB |
 | 658 | maths/sin | error |  |  |
 | 659 | maths/sock_merchant | ✓ | 14.546ms | 2.5 MB |
 | 660 | maths/softmax | error |  |  |
