@@ -1659,7 +1659,14 @@ func (s *AssignStmt) emit(w io.Writer, indentLevel int) {
 	} else {
 		typ = guessType(&VarRef{Name: s.Name})
 	}
-	if guessType(s.Value) == "Long" && typ != "Long" {
+	valType := guessType(s.Value)
+	if typ == "Long" && valType != "Long" {
+		io.WriteString(w, "(")
+		s.Value.emit(w)
+		io.WriteString(w, ").toLong()")
+		return
+	}
+	if valType == "Long" && typ != "Long" && typ != "" {
 		io.WriteString(w, "(")
 		s.Value.emit(w)
 		io.WriteString(w, ").toInt()")
@@ -2189,7 +2196,7 @@ func (s *SubstringExpr) emit(w io.Writer) {
 		s.Value.emit(w)
 		io.WriteString(w, ".substring(")
 	}
-	if guessType(s.Start) == "BigInteger" {
+	if t := guessType(s.Start); t == "BigInteger" || t == "Long" {
 		io.WriteString(w, "(")
 		s.Start.emit(w)
 		io.WriteString(w, ").toInt()")
@@ -2197,7 +2204,7 @@ func (s *SubstringExpr) emit(w io.Writer) {
 		s.Start.emit(w)
 	}
 	io.WriteString(w, ", ")
-	if guessType(s.End) == "BigInteger" {
+	if t := guessType(s.End); t == "BigInteger" || t == "Long" {
 		io.WriteString(w, "(")
 		s.End.emit(w)
 		io.WriteString(w, ").toInt()")
