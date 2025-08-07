@@ -2,8 +2,8 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 281/1077
-Last updated: 2025-08-07 00:25 +0700
+Completed programs: 293/1077
+Last updated: 2025-08-07 08:27 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -355,18 +355,18 @@ Last updated: 2025-08-07 00:25 +0700
 | 346 | dynamic_programming/tribonacci | ✓ | 332µs | 3.2 MB |
 | 347 | dynamic_programming/viterbi |   |  |  |
 | 348 | dynamic_programming/wildcard_matching | ✓ | 449µs | 3.1 MB |
-| 349 | dynamic_programming/word_break |   |  |  |
-| 350 | electronics/apparent_power |   |  |  |
-| 351 | electronics/builtin_voltage |   |  |  |
-| 352 | electronics/capacitor_equivalence |   |  |  |
-| 353 | electronics/carrier_concentration |   |  |  |
-| 354 | electronics/charging_capacitor |   |  |  |
-| 355 | electronics/charging_inductor |   |  |  |
-| 356 | electronics/circular_convolution |   |  |  |
-| 357 | electronics/coulombs_law |   |  |  |
-| 358 | electronics/electric_conductivity |   |  |  |
-| 359 | electronics/electric_power |   |  |  |
-| 360 | electronics/electrical_impedance |   |  |  |
+| 349 | dynamic_programming/word_break | ✓ | 829µs | 3.2 MB |
+| 350 | electronics/apparent_power | ✓ | 229µs | 2.7 MB |
+| 351 | electronics/builtin_voltage | ✓ | 370µs | 3.2 MB |
+| 352 | electronics/capacitor_equivalence | ✓ | 330µs | 3.4 MB |
+| 353 | electronics/carrier_concentration | ✓ | 348µs | 3.4 MB |
+| 354 | electronics/charging_capacitor | ✓ | 348µs | 3.2 MB |
+| 355 | electronics/charging_inductor | ✓ | 357µs | 3.3 MB |
+| 356 | electronics/circular_convolution | ✓ | 1.494ms | 3.7 MB |
+| 357 | electronics/coulombs_law | ✓ | 838µs | 3.3 MB |
+| 358 | electronics/electric_conductivity | ✓ | 392µs | 3.2 MB |
+| 359 | electronics/electric_power | ✓ | 333µs | 3.4 MB |
+| 360 | electronics/electrical_impedance | ✓ | 657µs | 3.4 MB |
 | 361 | electronics/ic_555_timer |   |  |  |
 | 362 | electronics/ind_reactance |   |  |  |
 | 363 | electronics/ohms_law |   |  |  |
