@@ -1,0 +1,38 @@
+warning: variable "leaf" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+  6 │   leaf -> t2
+    │   ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/merge_two_binary_trees.exs:6:3: Main.merge_two_binary_trees/2
+
+    warning: variable "leaf" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+  8 │   leaf -> t1
+    │   ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/merge_two_binary_trees.exs:8:3: Main.merge_two_binary_trees/2
+
+    warning: variable "leaf" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 19 │   leaf -> true
+    │   ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/merge_two_binary_trees.exs:19:3: Main.is_leaf/1
+
+    warning: this clause cannot match because a previous clause at line 6 always matches
+    │
+  7 │   %{left: l1, value: v1, right: r1} -> case t2 do
+    │                                     ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/merge_two_binary_trees.exs:7:37
+
+    warning: this clause cannot match because a previous clause at line 19 always matches
+    │
+ 20 │   _ -> false
+    │     ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/merge_two_binary_trees.exs:20:5
+
+Tree1 is:
+Tree2 is:
+Merged Tree is:

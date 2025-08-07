@@ -1,0 +1,110 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 23 │       {buckets, i} = try do
+    │                 ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_map.exs:23:17: Main.make_buckets/1
+
+    warning: variable "hm" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 69 │         hm = Map.put(hm, :len, hm.len + 1)
+    │         ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_map.exs:69:9: Main.try_set/4
+
+    warning: variable "hm" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 77 │         hm = Map.put(hm, :buckets, buckets)
+    │         ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_map.exs:77:9: Main.try_set/4
+
+    warning: variable "buckets" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 75 │       {buckets} = if b.key == key do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_map.exs:75:8: Main.try_set/4
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 125 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_map.exs:125:7: Main.resize/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 165 │       {i, ind} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_map.exs:165:8: Main.add_item/3
+
+     warning: variable "ind" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 165 │       {i, ind} = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_map.exs:165:11: Main.add_item/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 206 │       {i, ind} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_map.exs:206:8: Main.hashmap_get/2
+
+     warning: variable "ind" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 206 │       {i, ind} = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_map.exs:206:11: Main.hashmap_get/2
+
+     warning: variable "hm" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 232 │             hm = Map.put(hm, :len, hm.len - 1)
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_map.exs:232:13: Main.hashmap_del/2
+
+     warning: variable "buckets" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 245 │       {buckets, i, ind} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_map.exs:245:8: Main.hashmap_del/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 245 │       {buckets, i, ind} = try do
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_map.exs:245:17: Main.hashmap_del/2
+
+     warning: variable "ind" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 245 │       {buckets, i, ind} = try do
+     │                    ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_map.exs:245:20: Main.hashmap_del/2
+
+     warning: variable "first" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 292 │       {first, i, out} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_map.exs:292:8: Main.hashmap_repr/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 292 │       {first, i, out} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/hashing/hash_map.exs:292:15: Main.hashmap_repr/1
+
+"HashMap()"
+0
+KeyError: 1
+"HashMap()"
+0

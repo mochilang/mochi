@@ -2210,6 +2210,13 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			case "map":
 				val = &MapLit{}
 			}
+		} else if st.Var.Type != nil && st.Var.Type.Generic != nil {
+			switch st.Var.Type.Generic.Name {
+			case "list":
+				val = &ListLit{}
+			case "map":
+				val = &MapLit{}
+			}
 		}
 		if _, err := env.GetVar(st.Var.Name); err != nil {
 			if _, ok := val.(*AnonFun); ok {
@@ -3922,6 +3929,10 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 					name = "map_size"
 				}
 			}
+		case "concat":
+			if len(args) == 2 {
+				return &CallExpr{Func: "Enum.concat", Args: args}, nil
+			}
 		case "sum":
 			name = "Enum.sum"
 		case "min":
@@ -4128,10 +4139,12 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		}
 		var expr Expr = &VarRef{Name: p.Selector.Root}
 		if len(p.Selector.Tail) == 0 {
-			if _, err := env.GetVar(p.Selector.Root); err == nil {
-				// variable takes precedence
-			} else if fn, ok := env.GetFunc(p.Selector.Root); ok {
-				expr = &FuncRef{Name: sanitizeFuncName(p.Selector.Root), Arity: len(fn.Params)}
+			if t, err := env.GetVar(p.Selector.Root); err == nil {
+				if ft, ok := t.(types.FuncType); ok {
+					if _, ok := definedFuncs[p.Selector.Root]; ok {
+						expr = &FuncRef{Name: sanitizeFuncName(p.Selector.Root), Arity: len(ft.Params)}
+					}
+				}
 			} else if isZeroVariant(p.Selector.Root, env) {
 				expr = &AtomLit{Name: ":" + p.Selector.Root}
 			}

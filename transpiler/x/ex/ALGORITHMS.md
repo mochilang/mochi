@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-06 23:19 GMT+7
+Last updated: 2025-08-07 08:50 GMT+7
 
-## Algorithms Golden Test Checklist (136/1077)
+## Algorithms Golden Test Checklist (156/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -194,26 +194,26 @@ Last updated: 2025-08-06 23:19 GMT+7
 | 185 | data_structures/binary_tree/is_sum_tree |   |  |  |
 | 186 | data_structures/binary_tree/lazy_segment_tree |   |  |  |
 | 187 | data_structures/binary_tree/lowest_common_ancestor |   |  |  |
-| 188 | data_structures/binary_tree/maximum_fenwick_tree |   |  |  |
-| 189 | data_structures/binary_tree/maximum_sum_bst |   |  |  |
-| 190 | data_structures/binary_tree/merge_two_binary_trees |   |  |  |
-| 191 | data_structures/binary_tree/mirror_binary_tree |   |  |  |
-| 192 | data_structures/binary_tree/non_recursive_segment_tree |   |  |  |
-| 193 | data_structures/binary_tree/number_of_possible_binary_trees |   |  |  |
-| 194 | data_structures/binary_tree/red_black_tree |   |  |  |
-| 195 | data_structures/binary_tree/segment_tree |   |  |  |
-| 196 | data_structures/binary_tree/segment_tree_other |   |  |  |
-| 197 | data_structures/binary_tree/serialize_deserialize_binary_tree |   |  |  |
-| 198 | data_structures/binary_tree/symmetric_tree |   |  |  |
-| 199 | data_structures/binary_tree/treap |   |  |  |
-| 200 | data_structures/binary_tree/wavelet_tree |   |  |  |
-| 201 | data_structures/disjoint_set/alternate_disjoint_set |   |  |  |
-| 202 | data_structures/disjoint_set/disjoint_set |   |  |  |
-| 203 | data_structures/hashing/bloom_filter |   |  |  |
-| 204 | data_structures/hashing/double_hash |   |  |  |
-| 205 | data_structures/hashing/hash_map |   |  |  |
-| 206 | data_structures/hashing/hash_table |   |  |  |
-| 207 | data_structures/hashing/hash_table_with_linked_list |   |  |  |
+| 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 313.87ms | 1.5 GB |
+| 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 5.26ms | 25.0 MB |
+| 190 | data_structures/binary_tree/merge_two_binary_trees | ✓ | 159us | 0 B |
+| 191 | data_structures/binary_tree/mirror_binary_tree | ✓ | 5.95ms | 25.0 MB |
+| 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 4.90ms | 17.4 MB |
+| 193 | data_structures/binary_tree/number_of_possible_binary_trees | ✓ | 9.29ms | 25.0 MB |
+| 194 | data_structures/binary_tree/red_black_tree | ✓ | 379us | 12.6 MB |
+| 195 | data_structures/binary_tree/segment_tree | ✓ | 6.57ms | 17.3 MB |
+| 196 | data_structures/binary_tree/segment_tree_other | ✓ | 9.16ms | 25.0 MB |
+| 197 | data_structures/binary_tree/serialize_deserialize_binary_tree | ✓ | 2.38ms | 17.3 MB |
+| 198 | data_structures/binary_tree/symmetric_tree | ✓ |  |  |
+| 199 | data_structures/binary_tree/treap | ✓ | 7.73ms | 17.3 MB |
+| 200 | data_structures/binary_tree/wavelet_tree | ✓ | 5.85ms | 17.3 MB |
+| 201 | data_structures/disjoint_set/alternate_disjoint_set | ✓ | 9.62ms | 17.3 MB |
+| 202 | data_structures/disjoint_set/disjoint_set | ✓ | 268us | 25.0 MB |
+| 203 | data_structures/hashing/bloom_filter | ✓ | 122.37ms | 37.5 MB |
+| 204 | data_structures/hashing/double_hash | ✓ | 7.74ms | 25.0 MB |
+| 205 | data_structures/hashing/hash_map | ✓ | 9.94ms | 17.3 MB |
+| 206 | data_structures/hashing/hash_table | ✓ | 6.09ms | 17.3 MB |
+| 207 | data_structures/hashing/hash_table_with_linked_list | ✓ | 6.48ms | 32.7 MB |
 | 208 | data_structures/hashing/number_theory/prime_numbers |   |  |  |
 | 209 | data_structures/hashing/quadratic_probing |   |  |  |
 | 210 | data_structures/hashing/tests/test_hash_map |   |  |  |

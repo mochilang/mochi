@@ -1,0 +1,29 @@
+warning: variable "nodes" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 154 │       {nodes, t, z} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/red_black_tree.exs:154:8: Main.insert_fix/2
+
+     warning: variable "z" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 154 │       {nodes, t, z} = try do
+     │                  ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/red_black_tree.exs:154:18: Main.insert_fix/2
+
+     warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 185 │       {x, y} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/red_black_tree.exs:185:8: Main.tree_insert/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 239 │       {i, t} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/binary_tree/red_black_tree.exs:239:8: Main.main/0
+
+[1 5 10 15 20 25 30]
