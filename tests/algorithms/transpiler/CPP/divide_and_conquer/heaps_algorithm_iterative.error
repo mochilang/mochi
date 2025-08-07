@@ -1,0 +1,14 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/transpiler/CPP/divide_and_conquer/heaps_algorithm_iterative.cpp:80:215: warning: multi-character character constant [-Wmultichar]
+   80 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/divide_and_conquer/heaps_algorithm_iterative.cpp:80:251: warning: multi-character character constant [-Wmultichar]
+   80 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/divide_and_conquer/heaps_algorithm_iterative.cpp: In lambda function:
+/workspace/mochi/tests/algorithms/transpiler/CPP/divide_and_conquer/heaps_algorithm_iterative.cpp:174:77: error: cannot bind non-const lvalue reference of type ‘std::vector<long int>&’ to an rvalue of type ‘std::vector<long int>’
+  174 |         std::cout << ([&]{ std::ostringstream ss; { auto __tmp = heaps(std::vector<int64_t>{int64_t(1), int64_t(2), int64_t(3)}); ss << "["; for(size_t i=0;i<__tmp.size();++i){ if(i>0) ss << ' '; { std::ostringstream __ss; __ss << __tmp[static_cast<size_t>(i)];
+      |                                                                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/divide_and_conquer/heaps_algorithm_iterative.cpp:125:63: note:   initializing argument 1 of ‘std::vector<std::vector<long int> > heaps(std::vector<long int>&)’
+  125 | std::vector<std::vector<int64_t>> heaps(std::vector<int64_t>& arr) {
+      |                                         ~~~~~~~~~~~~~~~~~~~~~~^~~
