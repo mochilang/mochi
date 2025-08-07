@@ -1,0 +1,20 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/machine_learning/support_vector_machines.scala:73: error: not found: value k
+        k = BigInt(0)
+        ^
+/workspace/mochi/tests/algorithms/x/Scala/machine_learning/support_vector_machines.scala:74: error: not found: value k
+        while (k < BigInt((w).size)) {
+               ^
+/workspace/mochi/tests/algorithms/x/Scala/machine_learning/support_vector_machines.scala:75: error: not found: value k
+          w((k).toInt) = w((k.toInt).toInt) - model.lr * (2.0 * model.lambda * w((k.toInt).toInt))
+             ^
+/workspace/mochi/tests/algorithms/x/Scala/machine_learning/support_vector_machines.scala:75: error: not found: value k
+          w((k).toInt) = w((k.toInt).toInt) - model.lr * (2.0 * model.lambda * w((k.toInt).toInt))
+                            ^
+/workspace/mochi/tests/algorithms/x/Scala/machine_learning/support_vector_machines.scala:75: error: not found: value k
+          w((k).toInt) = w((k.toInt).toInt) - model.lr * (2.0 * model.lambda * w((k.toInt).toInt))
+                                                                                  ^
+/workspace/mochi/tests/algorithms/x/Scala/machine_learning/support_vector_machines.scala:76: error: not found: value k
+          k = k + BigInt(1)
+          ^
+6 errors found

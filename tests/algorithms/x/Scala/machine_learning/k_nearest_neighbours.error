@@ -1,0 +1,10 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/machine_learning/k_nearest_neighbours.scala:94: error: type mismatch;
+ found   : scala.math.BigInt
+ required: Double
+    distances((min_index).toInt).asInstanceOf[DistLabel].dist = BigInt(1)
+                                                                      ^
+/workspace/mochi/tests/algorithms/x/Scala/machine_learning/k_nearest_neighbours.scala:95: error: not found: value e18
+    e18
+    ^
+two errors found

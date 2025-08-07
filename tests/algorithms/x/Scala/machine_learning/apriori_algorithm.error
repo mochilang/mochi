@@ -1,0 +1,46 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/machine_learning/apriori_algorithm.scala:185: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[scala.collection.mutable.ArrayBuffer[String]]
+ required: scala.collection.mutable.ArrayBuffer[scala.collection.mutable.ArrayBuffer[scala.collection.mutable.ArrayBuffer[String]]]
+  var itemset: ArrayBuffer[ArrayBuffer[ArrayBuffer[String]]] = ArrayBuffer[ArrayBuffer[String]]()
+                                                                                               ^
+/workspace/mochi/tests/algorithms/x/Scala/machine_learning/apriori_algorithm.scala:191: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[scala.collection.mutable.ArrayBuffer[_ >: scala.collection.mutable.ArrayBuffer[String] with String <: java.io.Serializable]]
+ required: scala.collection.mutable.ArrayBuffer[scala.collection.mutable.ArrayBuffer[scala.collection.mutable.ArrayBuffer[String]]]
+Note: scala.collection.mutable.ArrayBuffer[_ >: scala.collection.mutable.ArrayBuffer[String] with String <: java.io.Serializable] >: scala.collection.mutable.ArrayBuffer[scala.collection.mutable.ArrayBuffer[String]], but class ArrayBuffer is invariant in type A.
+You may wish to investigate a wildcard type such as `_ >: scala.collection.mutable.ArrayBuffer[scala.collection.mutable.ArrayBuffer[String]]`. (SLS 3.2.10)
+    itemset = itemset :+ t
+                      ^
+/workspace/mochi/tests/algorithms/x/Scala/machine_learning/apriori_algorithm.scala:205: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[scala.collection.mutable.ArrayBuffer[String]]
+ required: scala.collection.mutable.ArrayBuffer[String]
+        val candidate: ArrayBuffer[String] = itemset((j.toInt).toInt)
+                                                    ^
+/workspace/mochi/tests/algorithms/x/Scala/machine_learning/apriori_algorithm.scala:216: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[scala.collection.mutable.ArrayBuffer[_ >: String with scala.collection.mutable.ArrayBuffer[String] <: java.io.Serializable]]
+ required: scala.collection.mutable.ArrayBuffer[scala.collection.mutable.ArrayBuffer[String]]
+Note: scala.collection.mutable.ArrayBuffer[_ >: String with scala.collection.mutable.ArrayBuffer[String] <: java.io.Serializable] >: scala.collection.mutable.ArrayBuffer[String], but class ArrayBuffer is invariant in type A.
+You may wish to investigate a wildcard type such as `_ >: scala.collection.mutable.ArrayBuffer[String]`. (SLS 3.2.10)
+        new_itemset = new_itemset :+ itemset((k.toInt).toInt)
+                                  ^
+/workspace/mochi/tests/algorithms/x/Scala/machine_learning/apriori_algorithm.scala:220: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[scala.collection.mutable.ArrayBuffer[String]]
+ required: scala.collection.mutable.ArrayBuffer[scala.collection.mutable.ArrayBuffer[scala.collection.mutable.ArrayBuffer[String]]]
+    itemset = new_itemset
+              ^
+/workspace/mochi/tests/algorithms/x/Scala/machine_learning/apriori_algorithm.scala:223: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[scala.collection.mutable.ArrayBuffer[String]]
+ required: scala.collection.mutable.ArrayBuffer[String]
+      var sorted_item: ArrayBuffer[String] = sort_strings(itemset((m.toInt).toInt))
+                                                                 ^
+/workspace/mochi/tests/algorithms/x/Scala/machine_learning/apriori_algorithm.scala:228: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[scala.collection.mutable.ArrayBuffer[scala.collection.mutable.ArrayBuffer[String]]]
+ required: scala.collection.mutable.ArrayBuffer[scala.collection.mutable.ArrayBuffer[String]]
+    val combos: ArrayBuffer[ArrayBuffer[ArrayBuffer[String]]] = combinations_lists(itemset, length)
+                                                                                   ^
+/workspace/mochi/tests/algorithms/x/Scala/machine_learning/apriori_algorithm.scala:229: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[scala.collection.mutable.ArrayBuffer[scala.collection.mutable.ArrayBuffer[String]]]
+ required: scala.collection.mutable.ArrayBuffer[scala.collection.mutable.ArrayBuffer[String]]
+    itemset = prune(itemset, combos, length)
+                    ^
+8 errors found
