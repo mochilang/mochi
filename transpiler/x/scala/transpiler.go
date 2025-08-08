@@ -594,10 +594,28 @@ func (s *AssignStmt) emit(w io.Writer) {
 			fmt.Fprint(w, ")")
 			return
 		}
+		emitIndexLValue(w, ix)
+		fmt.Fprint(w, " = ")
+		s.Value.emit(w)
+		return
 	}
 	s.Target.emit(w)
 	fmt.Fprint(w, " = ")
-	if ll, ok := s.Value.(*ListLit); ok && len(ll.Elems) == 0 {
+	valExpr := s.Value
+	if c, ok := valExpr.(*CastExpr); ok {
+		valExpr = c.Value
+	}
+	if func() bool {
+		if ll, ok := valExpr.(*ListLit); ok && len(ll.Elems) == 0 {
+			return true
+		}
+		if ce, ok := valExpr.(*CallExpr); ok {
+			if n, ok2 := ce.Fn.(*Name); ok2 && n.Name == "ArrayBuffer" && len(ce.Args) == 0 {
+				return true
+			}
+		}
+		return false
+	}() {
 		typ := ""
 		if n, ok2 := s.Target.(*Name); ok2 {
 			if t, ok3 := localVarTypes[n.Name]; ok3 {
@@ -607,8 +625,8 @@ func (s *AssignStmt) emit(w io.Writer) {
 		if typ == "" {
 			typ = inferTypeWithEnv(s.Target, nil)
 		}
-		if strings.HasPrefix(typ, "ArrayBuffer[") {
-			elem := strings.TrimSuffix(strings.TrimPrefix(typ, "ArrayBuffer["), "]")
+		if idx := strings.Index(typ, "ArrayBuffer["); idx >= 0 {
+			elem := strings.TrimSuffix(typ[idx+len("ArrayBuffer["):], "]")
 			fmt.Fprintf(w, "ArrayBuffer[%s]()", elem)
 			return
 		}
@@ -1273,11 +1291,18 @@ func (idx *IndexExpr) emit(w io.Writer) {
 		} else {
 			idx.Value.emit(w)
 			if idx.Type != "" {
-				fmt.Fprintf(w, ".asInstanceOf[ArrayBuffer[%s]](", idx.Type)
+				fmt.Fprintf(w, ".asInstanceOf[ArrayBuffer[%s]]", idx.Type)
 			} else {
-				fmt.Fprint(w, ".asInstanceOf[ArrayBuffer[Any]](")
+				fmt.Fprint(w, ".asInstanceOf[ArrayBuffer[Any]]")
 			}
+			fmt.Fprint(w, ".lift(")
 			emitIndex()
+			fmt.Fprint(w, ").getOrElse(")
+			if def := defaultExpr(idx.Type); def != nil {
+				def.emit(w)
+			} else {
+				fmt.Fprint(w, "null")
+			}
 			fmt.Fprint(w, ")")
 		}
 	} else if container == "String" {
@@ -1289,8 +1314,14 @@ func (idx *IndexExpr) emit(w io.Writer) {
 		fmt.Fprint(w, " + 1)")
 	} else {
 		idx.Value.emit(w)
-		fmt.Fprint(w, "(")
+		fmt.Fprint(w, ".lift(")
 		emitIndex()
+		fmt.Fprint(w, ").getOrElse(")
+		if def := defaultExpr(idx.Type); def != nil {
+			def.emit(w)
+		} else {
+			fmt.Fprint(w, "null")
+		}
 		fmt.Fprint(w, ")")
 	}
 	if idx.Type != "" && idx.Type != "Any" &&
@@ -1298,6 +1329,25 @@ func (idx *IndexExpr) emit(w io.Writer) {
 		!strings.HasPrefix(idx.Type, "ArrayBuffer[") && !strings.HasPrefix(idx.Type, "Map[") {
 		fmt.Fprintf(w, ".asInstanceOf[%s]", idx.Type)
 	}
+}
+
+func emitIndexLValue(w io.Writer, ix *IndexExpr) {
+	if inner, ok := ix.Value.(*IndexExpr); ok {
+		emitIndexLValue(w, inner)
+	} else {
+		ix.Value.emit(w)
+	}
+	fmt.Fprint(w, "(")
+	idxType := inferTypeWithEnv(ix.Index, nil)
+	castIndex := strings.HasPrefix(ix.Container, "ArrayBuffer[") || ix.Container == "String" || (ix.Container == "Any" && !ix.ForceMap && idxType != "BigInt")
+	if castIndex {
+		fmt.Fprint(w, "(")
+		ix.Index.emit(w)
+		fmt.Fprint(w, ").toInt")
+	} else {
+		ix.Index.emit(w)
+	}
+	fmt.Fprint(w, ")")
 }
 
 // SliceExpr represents x[a:b] which becomes x.slice(a, b).
