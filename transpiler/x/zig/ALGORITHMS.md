@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-08 11:16 +0700
+Last updated: 2025-08-08 15:49 +0700
 
-## Program Checklist (157/1077)
+## Program Checklist (158/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.114ms | 512.0 KB |
@@ -182,7 +182,7 @@ Last updated: 2025-08-08 11:16 +0700
 | 173 | data_structures/binary_tree/binary_search_tree |   |  |  |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive |   |  |  |
 | 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 1.137ms | 384.0 KB |
-| 176 | data_structures/binary_tree/binary_tree_node_sum |   |  |  |
+| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 436µs | 128.0 KB |
 | 177 | data_structures/binary_tree/binary_tree_path_sum |   |  |  |
 | 178 | data_structures/binary_tree/diff_views_of_binary_tree |   |  |  |
 | 179 | data_structures/binary_tree/distribute_coins |   |  |  |
