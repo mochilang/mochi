@@ -25,7 +25,7 @@ var builtinNames = map[string]struct{}{
 	"str": {}, "min": {}, "max": {}, "append": {}, "json": {}, "exists": {},
 	"values": {}, "keys": {}, "load": {}, "save": {}, "now": {}, "input": {},
 	"upper": {}, "lower": {}, "num": {}, "denom": {}, "indexOf": {}, "repeat": {}, "parseIntStr": {}, "slice": {}, "split": {}, "contains": {}, "substr": {}, "pow": {}, "getoutput": {}, "intval": {}, "floatval": {}, "int": {}, "float": {}, "to_float": {},
-	"concat": {}, "panic": {},
+	"concat": {}, "panic": {}, "ceil": {}, "floor": {},
 }
 
 const helperLookupHost = `function _lookup_host($host) {
@@ -314,6 +314,7 @@ var phpReserved = map[string]struct{}{
 	"exp":           {},
 	"hypot":         {},
 	"floor":         {},
+	"ceil":          {},
 	"round":         {},
 	"fmod":          {},
 	"parseIntStr":   {},
