@@ -129,7 +129,7 @@ end
 `
 
 const helperSplit = `
-def _split(s, sep)
+def _split(s, sep = ' ')
   s.to_s.split(sep.to_s)
 end
 `
@@ -4439,17 +4439,19 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			usesRepeat = true
 			return &CallExpr{Func: "_repeat", Args: args}, nil
-		case "split":
-			if len(args) != 2 {
-				return nil, fmt.Errorf("split expects 2 args")
-			}
-			if currentEnv != nil {
-				if _, ok := currentEnv.GetFunc(name); ok {
-					return &CallExpr{Func: name, Args: args}, nil
-				}
-			}
-			usesSplit = true
-			return &CallExpr{Func: "_split", Args: args}, nil
+               case "split":
+                       if currentEnv != nil {
+                               if _, ok := currentEnv.GetFunc(name); ok {
+                                       return &CallExpr{Func: name, Args: args}, nil
+                               }
+                       }
+                       if len(args) == 1 {
+                               args = append(args, &StringLit{Value: " "})
+                       } else if len(args) != 2 {
+                               return nil, fmt.Errorf("split expects 1 or 2 args")
+                       }
+                       usesSplit = true
+                       return &CallExpr{Func: "_split", Args: args}, nil
 		case "parseIntStr":
 			usesParseIntStr = true
 			switch len(args) {
