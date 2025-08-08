@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 232/1077
-Last updated: 2025-08-08 10:08 +0700
+Completed programs: 233/1077
+Last updated: 2025-08-08 11:10 +0700
 
 Checklist:
 
@@ -211,8 +211,8 @@ Checklist:
 | 202 | data_structures/disjoint_set/disjoint_set |   |  |  |
 | 203 | data_structures/hashing/bloom_filter |   |  |  |
 | 204 | data_structures/hashing/double_hash |   |  |  |
-| 205 | data_structures/hashing/hash_map |   |  |  |
-| 206 | data_structures/hashing/hash_table | ✓ | 172.0µs | 3.62KB |
+| 205 | data_structures/hashing/hash_map | ✓ | 174.0µs | 2.02KB |
+| 206 | data_structures/hashing/hash_table | ✓ | 198.0µs | 3.62KB |
 | 207 | data_structures/hashing/hash_table_with_linked_list |   |  |  |
 | 208 | data_structures/hashing/number_theory/prime_numbers |   |  |  |
 | 209 | data_structures/hashing/quadratic_probing |   |  |  |

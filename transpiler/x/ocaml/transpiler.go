@@ -1331,7 +1331,7 @@ func (a *AppendBuiltin) emit(w io.Writer) {
 }
 
 func (a *AppendBuiltin) emitPrint(w io.Writer) {
-	io.WriteString(w, "(\"[\" ^ String.concat \", \" (List.map string_of_int (")
+	io.WriteString(w, "(\"[\" ^ String.concat \" \" (List.map string_of_int (")
 	a.emit(w)
 	io.WriteString(w, ")) ^ \"]\")")
 }
@@ -1440,7 +1440,7 @@ func (u *UnionExpr) emit(w io.Writer) {
 }
 
 func (u *UnionExpr) emitPrint(w io.Writer) {
-	io.WriteString(w, "(\"[\" ^ String.concat \", \" (List.map string_of_int (")
+	io.WriteString(w, "(\"[\" ^ String.concat \" \" (List.map string_of_int (")
 	u.emit(w)
 	io.WriteString(w, ")) ^ \"]\")")
 }
@@ -1457,7 +1457,7 @@ func (u *UnionAllExpr) emit(w io.Writer) {
 }
 
 func (u *UnionAllExpr) emitPrint(w io.Writer) {
-	io.WriteString(w, "(\"[\" ^ String.concat \", \" (List.map string_of_int (")
+	io.WriteString(w, "(\"[\" ^ String.concat \" \" (List.map string_of_int (")
 	u.emit(w)
 	io.WriteString(w, ")) ^ \"]\")")
 }
@@ -1474,7 +1474,7 @@ func (e *ExceptExpr) emit(w io.Writer) {
 }
 
 func (e *ExceptExpr) emitPrint(w io.Writer) {
-	io.WriteString(w, "(\"[\" ^ String.concat \", \" (List.map string_of_int (")
+	io.WriteString(w, "(\"[\" ^ String.concat \" \" (List.map string_of_int (")
 	e.emit(w)
 	io.WriteString(w, ")) ^ \"]\")")
 }
@@ -1491,7 +1491,7 @@ func (i *IntersectExpr) emit(w io.Writer) {
 }
 
 func (i *IntersectExpr) emitPrint(w io.Writer) {
-	io.WriteString(w, "(\"[\" ^ String.concat \", \" (List.map string_of_int (")
+	io.WriteString(w, "(\"[\" ^ String.concat \" \" (List.map string_of_int (")
 	i.emit(w)
 	io.WriteString(w, ")) ^ \"]\")")
 }
@@ -1701,7 +1701,7 @@ func (l *ListLit) emitPrint(w io.Writer) {
 		l.emit(w)
 		io.WriteString(w, ")")
 	} else {
-		io.WriteString(w, "(\"[\" ^ String.concat \", \" (List.map string_of_int (")
+		io.WriteString(w, "(\"[\" ^ String.concat \" \" (List.map string_of_int (")
 		l.emit(w)
 		io.WriteString(w, ")) ^ \"]\")")
 	}
@@ -3273,7 +3273,7 @@ let rec __show v =
 and __show_list l =
   match l with
   | [] -> "[]"
-  | _ -> "[" ^ String.concat ", " (List.map __show l) ^ "]"
+  | _ -> "[" ^ String.concat " " (List.map __show l) ^ "]"
 and __str v =
   let open Obj in
   let r = repr v in
@@ -3288,7 +3288,7 @@ and __str v =
 and __str_list l =
   match l with
   | [] -> "[]"
-  | _ -> "[" ^ String.concat ", " (List.map __str l) ^ "]"
+  | _ -> "[" ^ String.concat " " (List.map __str l) ^ "]"
 `
 
 func gitTimestamp() string {
