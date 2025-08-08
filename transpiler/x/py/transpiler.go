@@ -876,13 +876,15 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 			}
 		}
 		op := b.Op
-		if op == "/" {
-			if isIntOnlyExpr(b.Left, currentEnv) && isIntOnlyExpr(b.Right, currentEnv) {
-				op = "//"
-			} else if isIntLike(inferPyType(b.Left, currentEnv)) && isIntLike(inferPyType(b.Right, currentEnv)) {
-				op = "//"
-			}
-		}
+               if op == "/" {
+                       if isIntOnlyExpr(b.Left, currentEnv) && isIntOnlyExpr(b.Right, currentEnv) {
+                               op = "//"
+                       } else if isIntLike(inferPyType(b.Left, currentEnv)) && isIntLike(inferPyType(b.Right, currentEnv)) {
+                               op = "//"
+                       } else if isLikelyIntExpr(b.Left) && isLikelyIntExpr(b.Right) {
+                               op = "//"
+                       }
+               }
 		switch op {
 		case "&&":
 			op = "and"
@@ -1825,6 +1827,39 @@ func isIntOnlyExpr(e Expr, env *types.Env) bool {
 	default:
 		return false
 	}
+}
+
+// isLikelyIntExpr provides a best-effort check to determine whether an
+// expression consists solely of integer values without relying on the type
+// environment. It treats all names as integers and rejects expressions that
+// obviously involve floats or division results.
+func isLikelyIntExpr(e Expr) bool {
+        switch ex := e.(type) {
+        case *IntLit:
+                return true
+        case *Name:
+                return true
+       case *CallExpr:
+               if n, ok := ex.Func.(*Name); ok && n.Name == "len" {
+                       return true
+               }
+               return false
+        case *BinaryExpr:
+                if ex.Op == "/" {
+                        return false
+                }
+                switch ex.Op {
+                case "+", "-", "*", "%", "//":
+                        return isLikelyIntExpr(ex.Left) && isLikelyIntExpr(ex.Right)
+                }
+                return false
+        case *UnaryExpr:
+                return isLikelyIntExpr(ex.Expr)
+        case *ParenExpr:
+                return isLikelyIntExpr(ex.Expr)
+        default:
+                return false
+        }
 }
 
 func isListOfStrings(t types.Type) bool {

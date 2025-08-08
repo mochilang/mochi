@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Python`.
-Last updated: 2025-08-08 17:00 GMT+7
+Last updated: 2025-08-08 17:27 GMT+7
 
-## Algorithms Golden Test Checklist (620/1077)
+## Algorithms Golden Test Checklist (669/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 63.0µs | 12.88MB |
@@ -676,56 +676,56 @@ Last updated: 2025-08-08 17:00 GMT+7
 | 667 | maths/special_numbers/catalan_number | ✓ | 17.0µs | 12.77MB |
 | 668 | maths/special_numbers/hamming_numbers | ✓ | 63.0µs | 13.25MB |
 | 669 | maths/special_numbers/happy_number | ✓ | 28.0µs | 13.18MB |
-| 670 | maths/special_numbers/harshad_numbers |   |  |  |
-| 671 | maths/special_numbers/hexagonal_number |   |  |  |
-| 672 | maths/special_numbers/krishnamurthy_number |   |  |  |
-| 673 | maths/special_numbers/perfect_number |   |  |  |
-| 674 | maths/special_numbers/polygonal_numbers |   |  |  |
-| 675 | maths/special_numbers/pronic_number |   |  |  |
-| 676 | maths/special_numbers/proth_number |   |  |  |
-| 677 | maths/special_numbers/triangular_numbers |   |  |  |
-| 678 | maths/special_numbers/ugly_numbers |   |  |  |
-| 679 | maths/special_numbers/weird_number |   |  |  |
-| 680 | maths/sum_of_arithmetic_series |   |  |  |
-| 681 | maths/sum_of_digits |   |  |  |
-| 682 | maths/sum_of_geometric_progression |   |  |  |
-| 683 | maths/sum_of_harmonic_series |   |  |  |
-| 684 | maths/sumset |   |  |  |
-| 685 | maths/sylvester_sequence |   |  |  |
-| 686 | maths/tanh |   |  |  |
-| 687 | maths/test_factorial |   |  |  |
-| 688 | maths/test_prime_check |   |  |  |
-| 689 | maths/three_sum |   |  |  |
-| 690 | maths/trapezoidal_rule |   |  |  |
-| 691 | maths/triplet_sum |   |  |  |
-| 692 | maths/twin_prime |   |  |  |
-| 693 | maths/two_pointer |   |  |  |
-| 694 | maths/two_sum |   |  |  |
-| 695 | maths/volume |   |  |  |
-| 696 | maths/zellers_congruence |   |  |  |
-| 697 | matrix/binary_search_matrix |   |  |  |
-| 698 | matrix/count_islands_in_matrix |   |  |  |
-| 699 | matrix/count_negative_numbers_in_sorted_matrix |   |  |  |
-| 700 | matrix/count_paths |   |  |  |
-| 701 | matrix/cramers_rule_2x2 |   |  |  |
-| 702 | matrix/inverse_of_matrix |   |  |  |
-| 703 | matrix/largest_square_area_in_matrix |   |  |  |
-| 704 | matrix/matrix_based_game |   |  |  |
-| 705 | matrix/matrix_class |   |  |  |
-| 706 | matrix/matrix_equalization |   |  |  |
-| 707 | matrix/matrix_multiplication_recursion |   |  |  |
-| 708 | matrix/matrix_operation |   |  |  |
-| 709 | matrix/max_area_of_island |   |  |  |
-| 710 | matrix/median_matrix |   |  |  |
-| 711 | matrix/nth_fibonacci_using_matrix_exponentiation |   |  |  |
-| 712 | matrix/pascal_triangle |   |  |  |
-| 713 | matrix/rotate_matrix |   |  |  |
-| 714 | matrix/searching_in_sorted_matrix |   |  |  |
-| 715 | matrix/sherman_morrison |   |  |  |
-| 716 | matrix/spiral_print |   |  |  |
-| 717 | matrix/tests/test_matrix_operation |   |  |  |
-| 718 | matrix/validate_sudoku_board |   |  |  |
-| 719 | networking_flow/ford_fulkerson |   |  |  |
+| 670 | maths/special_numbers/harshad_numbers | ✓ | 180.0µs | 13.46MB |
+| 671 | maths/special_numbers/hexagonal_number | ✓ | 19.0µs | 12.74MB |
+| 672 | maths/special_numbers/krishnamurthy_number | ✓ | 26.0µs | 12.60MB |
+| 673 | maths/special_numbers/perfect_number | ✓ | 431.0µs | 12.70MB |
+| 674 | maths/special_numbers/polygonal_numbers | ✓ | 20.0µs | 12.57MB |
+| 675 | maths/special_numbers/pronic_number | ✓ | 5.0ms | 12.28MB |
+| 676 | maths/special_numbers/proth_number | ✓ | 112.0µs | 12.86MB |
+| 677 | maths/special_numbers/triangular_numbers | ✓ | 22.0µs | 12.16MB |
+| 678 | maths/special_numbers/ugly_numbers | ✓ | 398.0µs | 12.48MB |
+| 679 | maths/special_numbers/weird_number | ✓ | 306.0µs | 13.77MB |
+| 680 | maths/sum_of_arithmetic_series | ✓ | 21.0µs | 12.64MB |
+| 681 | maths/sum_of_digits | ✓ | 106.0µs | 12.94MB |
+| 682 | maths/sum_of_geometric_progression | ✓ | 28.0µs | 12.42MB |
+| 683 | maths/sum_of_harmonic_series | ✓ | 39.0µs | 12.37MB |
+| 684 | maths/sumset | ✓ | 43.0µs | 12.86MB |
+| 685 | maths/sylvester_sequence | ✓ | 20.0µs | 12.35MB |
+| 686 | maths/tanh | ✓ | 158.0µs | 12.82MB |
+| 687 | maths/test_factorial | ✓ | 24.0µs | 12.24MB |
+| 688 | maths/test_prime_check | ✓ | 37.0µs | 12.18MB |
+| 689 | maths/three_sum | ✓ | 42.0µs | 12.96MB |
+| 690 | maths/trapezoidal_rule | ✓ | 50.0µs | 12.80MB |
+| 691 | maths/triplet_sum | ✓ | 76.0µs | 14.21MB |
+| 692 | maths/twin_prime | ✓ | 28.0µs | 12.67MB |
+| 693 | maths/two_pointer | ✓ | 30.0µs | 13.04MB |
+| 694 | maths/two_sum | ✓ | 25.0µs | 12.48MB |
+| 695 | maths/volume | ✓ | 65.0µs | 13.76MB |
+| 696 | maths/zellers_congruence | ✓ | 140.0µs | 13.75MB |
+| 697 | matrix/binary_search_matrix | ✓ | 34.0µs | 12.53MB |
+| 698 | matrix/count_islands_in_matrix | error |  |  |
+| 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 5.74s | 79.83MB |
+| 700 | matrix/count_paths | ✓ | 69.0µs | 12.99MB |
+| 701 | matrix/cramers_rule_2x2 | ✓ | 33.0µs | 12.92MB |
+| 702 | matrix/inverse_of_matrix | ✓ | 52.0µs | 14.34MB |
+| 703 | matrix/largest_square_area_in_matrix | ✓ | 57.0µs | 14.04MB |
+| 704 | matrix/matrix_based_game | ✓ | 289.0µs | 14.05MB |
+| 705 | matrix/matrix_class | ✓ | 415.0µs | 13.94MB |
+| 706 | matrix/matrix_equalization | ✓ | 80.0µs | 12.61MB |
+| 707 | matrix/matrix_multiplication_recursion | ✓ | 178.0µs | 13.69MB |
+| 708 | matrix/matrix_operation | ✓ | 332.0µs | 13.99MB |
+| 709 | matrix/max_area_of_island | ✓ | 171.0µs | 13.80MB |
+| 710 | matrix/median_matrix | ✓ | 42.0µs | 12.18MB |
+| 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ | 507.0µs | 13.36MB |
+| 712 | matrix/pascal_triangle | ✓ | 74.0µs | 12.45MB |
+| 713 | matrix/rotate_matrix | ✓ | 175.0µs | 13.86MB |
+| 714 | matrix/searching_in_sorted_matrix | ✓ | 42.0µs | 12.37MB |
+| 715 | matrix/sherman_morrison | ✓ | 104.0µs | 14.17MB |
+| 716 | matrix/spiral_print | ✓ | 49.0µs | 12.79MB |
+| 717 | matrix/tests/test_matrix_operation | ✓ | 172.0µs | 13.83MB |
+| 718 | matrix/validate_sudoku_board | ✓ | 122.0µs | 13.75MB |
+| 719 | networking_flow/ford_fulkerson | ✓ | 73.0µs | 13.52MB |
 | 720 | networking_flow/minimum_cut |   |  |  |
 | 721 | neural_network/activation_functions/binary_step |   |  |  |
 | 722 | neural_network/activation_functions/exponential_linear_unit |   |  |  |

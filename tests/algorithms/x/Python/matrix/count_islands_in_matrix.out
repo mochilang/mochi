@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/matrix/count_islands_in_matrix.py", line 69, in <module>
+    print(count_islands(grid))
+          ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/matrix/count_islands_in_matrix.py", line 63, in count_islands
+    dfs(grid, visited, i, j)
+  File "/workspace/mochi/tests/algorithms/x/Python/matrix/count_islands_in_matrix.py", line 41, in dfs
+    if is_safe(grid, visited, new_row, new_col):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/matrix/count_islands_in_matrix.py", line 29, in is_safe
+    visited_cell = visited[row][col]
+                   ~~~~~~~~~~~~^^^^^
+IndexError: list index out of range
