@@ -1,0 +1,10 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/divide_and_conquer/strassen_matrix_multiplication.go:255:9: cannot convert _index(func(v any) []any {…}(matrix_dimensions(func(v any) [][]int {…}(matrix_a))), 0) (value of interface type any) to type int: need type assertion
+../../../tests/algorithms/transpiler/Go/divide_and_conquer/strassen_matrix_multiplication.go:3734:42: in call to _concat, cannot infer T (declared at ../../../tests/algorithms/transpiler/Go/divide_and_conquer/strassen_matrix_multiplication.go:51:14)
+../../../tests/algorithms/transpiler/Go/divide_and_conquer/strassen_matrix_multiplication.go:3773:42: in call to _concat, cannot infer T (declared at ../../../tests/algorithms/transpiler/Go/divide_and_conquer/strassen_matrix_multiplication.go:51:14)
+../../../tests/algorithms/transpiler/Go/divide_and_conquer/strassen_matrix_multiplication.go:4174:8: invalid operation: n > m (operator > not defined on interface)
+../../../tests/algorithms/transpiler/Go/divide_and_conquer/strassen_matrix_multiplication.go:4178:11: cannot use m (variable of interface type any) as int value in return statement: need type assertion
+../../../tests/algorithms/transpiler/Go/divide_and_conquer/strassen_matrix_multiplication.go:4411:14: cannot convert _index(func(v any) []any {…}(dims1), 0) (value of interface type any) to type int: need type assertion
+../../../tests/algorithms/transpiler/Go/divide_and_conquer/strassen_matrix_multiplication.go:4433:15: cannot convert _index(func(v any) []any {…}(dims2), 1) (value of interface type any) to type int: need type assertion
+../../../tests/algorithms/transpiler/Go/divide_and_conquer/strassen_matrix_multiplication.go:4451:26: cannot convert _index(func(v any) []any {…}(_index(func(v any) []any {…}(result_padded), i)), j) (value of interface type any) to type int: need type assertion

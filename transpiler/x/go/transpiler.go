@@ -5140,6 +5140,18 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 								typesList[i] = types.FloatType{}
 							}
 						}
+						if ops[i].Op == "/" {
+							if isFloatType(typesList[i]) {
+								if ce, ok := left.(*CallExpr); !(ok && ce.Func == "float64") {
+									left = &CallExpr{Func: "float64", Args: []Expr{left}}
+								}
+							}
+							if isFloatType(typesList[i+1]) {
+								if ce, ok := right.(*CallExpr); !(ok && ce.Func == "float64") {
+									right = &CallExpr{Func: "float64", Args: []Expr{right}}
+								}
+							}
+						}
 					}
 					if newExpr == nil {
 						if ops[i].Op == "/" {
@@ -5661,6 +5673,7 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 					} else {
 						expr = &CallExpr{Func: "float64", Args: []Expr{expr}}
 					}
+					t = types.FloatType{}
 				} else if name == "string" {
 					expr = &AssertExpr{Expr: expr, Type: "string"}
 					t = types.StringType{}

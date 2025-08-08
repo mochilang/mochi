@@ -1,0 +1,5 @@
+[94;1mtests/github/TheAlgorithms/Mochi/dynamic_programming/matrix_chain_multiplication.mochi[0;22m
+   [33mtest[0m example                   ... [32mok[0m (1.0ms)
+   [33mtest[0m single matrix                   ... [32mok[0m (1.0ms)
+   [33mtest[0m two matrices                   ... [32mok[0m (1.0ms)
+   [33mtest[0m cost calculation                   ... [32mok[0m (1.0ms)

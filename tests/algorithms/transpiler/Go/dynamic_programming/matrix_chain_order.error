@@ -1,0 +1,4 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/dynamic_programming/matrix_chain_order.go:211:10: invalid operation: (((("( " + fmt.Sprint(left)) + " ") + fmt.Sprint(right)) + " )") (value of type string) is not an interface
+../../../tests/algorithms/transpiler/Go/dynamic_programming/matrix_chain_order.go:304:12: cannot use (n - 1) (value of type int) as string value in map index

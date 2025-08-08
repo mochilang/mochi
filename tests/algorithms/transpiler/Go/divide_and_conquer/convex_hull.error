@@ -1,0 +1,3 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/divide_and_conquer/convex_hull.go:234:28: invalid operation: _toFloat(hull) == []Point{…} (mismatched types float64 and []Point)

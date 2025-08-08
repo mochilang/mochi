@@ -1,0 +1,4 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/digital_image_processing/test_digital_image_processing.go:304:26: cannot convert _index(func(v any) []any {…}(sorted), (_len(sorted) / 2)) (value of interface type any) to type int: need type assertion
+../../../tests/algorithms/transpiler/Go/digital_image_processing/test_digital_image_processing.go:570:10: cannot convert _index(func(v any) []any {…}(neighbors), i) (value of interface type any) to type int: need type assertion

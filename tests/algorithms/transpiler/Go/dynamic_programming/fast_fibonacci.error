@@ -1,0 +1,6 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/dynamic_programming/fast_fibonacci.go:84:9: cannot use c (variable of type float64) as int value in struct literal
+../../../tests/algorithms/transpiler/Go/dynamic_programming/fast_fibonacci.go:85:9: cannot use d (variable of type float64) as int value in struct literal
+../../../tests/algorithms/transpiler/Go/dynamic_programming/fast_fibonacci.go:89:8: cannot use d (variable of type float64) as int value in struct literal
+../../../tests/algorithms/transpiler/Go/dynamic_programming/fast_fibonacci.go:90:8: cannot use (_toFloat(c) + _toFloat(d)) (value of type float64) as int value in struct literal
