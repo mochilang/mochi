@@ -28,11 +28,11 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
-    static long _mod(long a, long b) {
-        if (b == 0) return 0;
-        var r = a % b;
-        if ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;
-        return r;
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
     }
     static string _substr(string s, long start, long end) {
         if (start < 0) start = 0;
@@ -97,36 +97,82 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
+    public static bool is_sorted(long[] arr_0) {
+        long i_1 = 1;
+        while ((i_1 < arr_0.Length)) {
+            if ((arr_0[(int)((i_1 - 1))] > arr_0[(int)(i_1)])) {
+                return false;
+            }
+            i_1 = (i_1 + 1);
         };
-        return x_2;
+        return true;
     }
 
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
-                }
-                n_8 = (n_8 + 1);
-            }
-            d_7 = (d_7 + 1);
+    public static long binary_search(long[] sorted_collection_2, long item_3) {
+        if ((!Program.is_sorted(sorted_collection_2))) {
+            return -1;
         };
-        return fractions_number_6;
+        long left_4 = 0;
+        long right_5 = (sorted_collection_2.Length - 1);
+        while ((left_4 <= right_5)) {
+            long midpoint_6 = (left_4 + ((right_5 - left_4) / 2));
+            long current_item_7 = sorted_collection_2[(int)(midpoint_6)];
+            if ((current_item_7 == item_3)) {
+                return midpoint_6;
+            }
+            if ((item_3 < current_item_7)) {
+                right_5 = (midpoint_6 - 1);
+            } else {
+                left_4 = (midpoint_6 + 1);
+            }
+        };
+        return -1;
+    }
+
+    public static long binary_search_by_recursion(long[] sorted_collection_8, long item_9, long left_10, long right_11) {
+        if ((right_11 < left_10)) {
+            return -1;
+        };
+        long midpoint_12 = (left_10 + ((right_11 - left_10) / 2));
+        if ((sorted_collection_8[(int)(midpoint_12)] == item_9)) {
+            return midpoint_12;
+        };
+        if ((sorted_collection_8[(int)(midpoint_12)] > item_9)) {
+            return Program.binary_search_by_recursion(sorted_collection_8, item_9, left_10, (midpoint_12 - 1));
+        };
+        return Program.binary_search_by_recursion(sorted_collection_8, item_9, (midpoint_12 + 1), right_11);
+    }
+
+    public static long exponential_search(long[] sorted_collection_13, long item_14) {
+        if ((!Program.is_sorted(sorted_collection_13))) {
+            return -1;
+        };
+        if ((sorted_collection_13.Length == 0)) {
+            return -1;
+        };
+        long bound_15 = 1;
+        while (((bound_15 < sorted_collection_13.Length) && (sorted_collection_13[(int)(bound_15)] < item_14))) {
+            bound_15 = (bound_15 * 2);
+        };
+        long left_16 = (bound_15 / 2);
+        long right_17 = (new long[]{bound_15, (sorted_collection_13.Length - 1)}.Min());
+        return Program.binary_search_by_recursion(sorted_collection_13, item_14, left_16, right_17);
     }
 
     public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+        long[] data_18 = new long[]{0, 5, 7, 10, 15};
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.binary_search(data_18, 0))));
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.binary_search(data_18, 15))));
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.binary_search(data_18, 5))));
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.binary_search(data_18, 6))));
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.binary_search_by_recursion(data_18, 0, 0, (data_18.Length - 1)))));
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.binary_search_by_recursion(data_18, 15, 0, (data_18.Length - 1)))));
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.binary_search_by_recursion(data_18, 5, 0, (data_18.Length - 1)))));
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.binary_search_by_recursion(data_18, 6, 0, (data_18.Length - 1)))));
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.exponential_search(data_18, 0))));
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.exponential_search(data_18, 15))));
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.exponential_search(data_18, 5))));
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.exponential_search(data_18, 6))));
     }
 
     static void Main() {

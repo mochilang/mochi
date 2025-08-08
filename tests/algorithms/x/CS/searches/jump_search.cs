@@ -28,11 +28,11 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
-    static long _mod(long a, long b) {
-        if (b == 0) return 0;
-        var r = a % b;
-        if ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;
-        return r;
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
     }
     static string _substr(string s, long start, long end) {
         if (start < 0) start = 0;
@@ -97,36 +97,43 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
+    public static long int_sqrt(long n_0) {
+        long x_1 = 0;
+        while ((((x_1 + 1) * (x_1 + 1)) <= n_0)) {
+            x_1 = (x_1 + 1);
         };
-        return x_2;
+        return x_1;
     }
 
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
-                }
-                n_8 = (n_8 + 1);
+    public static long jump_search(long[] arr_2, long item_3) {
+        long arr_size_4 = arr_2.Length;
+        long block_size_5 = Program.int_sqrt(arr_size_4);
+        long prev_6 = 0;
+        long step_7 = block_size_5;
+        while (((step_7 < arr_size_4) && (arr_2[(int)((step_7 - 1))] < item_3))) {
+            prev_6 = step_7;
+            step_7 = (step_7 + block_size_5);
+            if ((prev_6 >= arr_size_4)) {
+                return -1;
             }
-            d_7 = (d_7 + 1);
         };
-        return fractions_number_6;
+        while (((prev_6 < arr_size_4) && (arr_2[(int)(prev_6)] < item_3))) {
+            prev_6 = (prev_6 + 1);
+            if ((prev_6 == step_7)) {
+                return -1;
+            }
+        };
+        if (((prev_6 < arr_size_4) && (arr_2[(int)(prev_6)] == item_3))) {
+            return prev_6;
+        };
+        return -1;
     }
 
     public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.jump_search(new long[]{0, 1, 2, 3, 4, 5}, 3))));
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.jump_search(new long[]{-5, -2, -1}, -1))));
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.jump_search(new long[]{0, 5, 10, 20}, 8))));
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.jump_search(new long[]{0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610}, 55))));
     }
 
     static void Main() {

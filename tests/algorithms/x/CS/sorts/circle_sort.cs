@@ -28,11 +28,11 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
-    static long _mod(long a, long b) {
-        if (b == 0) return 0;
-        var r = a % b;
-        if ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;
-        return r;
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
     }
     static string _substr(string s, long start, long end) {
         if (start < 0) start = 0;
@@ -97,43 +97,58 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
+    public static bool circle_sort_util(long[] collection_0, long low_1, long high_2) {
+        bool swapped_3 = false;
+        if ((low_1 == high_2)) {
+            return swapped_3;
         };
-        return x_2;
-    }
-
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
-                }
-                n_8 = (n_8 + 1);
+        long left_4 = low_1;
+        long right_5 = high_2;
+        while ((left_4 < right_5)) {
+            if ((collection_0[(int)(left_4)] > collection_0[(int)(right_5)])) {
+                long tmp_6 = collection_0[(int)(left_4)];
+                collection_0[left_4] = collection_0[(int)(right_5)];
+                collection_0[right_5] = tmp_6;
+                swapped_3 = true;
             }
-            d_7 = (d_7 + 1);
+            left_4 = (left_4 + 1);
+            right_5 = (right_5 - 1);
         };
-        return fractions_number_6;
+        if (((left_4 == right_5) && (collection_0[(int)(left_4)] > collection_0[(int)((right_5 + 1))]))) {
+            long tmp2_7 = collection_0[(int)(left_4)];
+            collection_0[left_4] = collection_0[(int)((right_5 + 1))];
+            collection_0[(right_5 + 1)] = tmp2_7;
+            swapped_3 = true;
+        };
+        long mid_8 = (low_1 + ((high_2 - low_1) / 2));
+        bool left_swap_9 = Program.circle_sort_util(collection_0, low_1, mid_8);
+        bool right_swap_10 = Program.circle_sort_util(collection_0, (mid_8 + 1), high_2);
+        if (((swapped_3 || left_swap_9) || right_swap_10)) {
+            return true;
+        } else {
+            return false;
+        };
+        return default(bool);
     }
 
-    public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+    public static long[] circle_sort(long[] collection_11) {
+        if ((collection_11.Length < 2)) {
+            return collection_11;
+        };
+        bool is_not_sorted_12 = true;
+        while (is_not_sorted_12) {
+            is_not_sorted_12 = Program.circle_sort_util(collection_11, 0, (collection_11.Length - 1));
+        };
+        return collection_11;
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            Program.main();
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.circle_sort(new long[]{0, 5, 3, 2, 2}))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.circle_sort(new long[]{}))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.circle_sort(new long[]{-2, 5, 0, -45}))));
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);

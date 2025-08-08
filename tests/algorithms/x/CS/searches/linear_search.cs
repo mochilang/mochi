@@ -28,11 +28,11 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
-    static long _mod(long a, long b) {
-        if (b == 0) return 0;
-        var r = a % b;
-        if ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;
-        return r;
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
     }
     static string _substr(string s, long start, long end) {
         if (start < 0) start = 0;
@@ -97,43 +97,45 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
-        };
-        return x_2;
-    }
-
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
-                }
-                n_8 = (n_8 + 1);
+    public static long linear_search(long[] sequence_0, long target_1) {
+        long i_2 = 0;
+        while ((i_2 < sequence_0.Length)) {
+            if ((sequence_0[(int)(i_2)] == target_1)) {
+                return i_2;
             }
-            d_7 = (d_7 + 1);
+            i_2 = (i_2 + 1);
         };
-        return fractions_number_6;
+        return -1;
     }
 
-    public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+    public static long rec_linear_search(long[] sequence_3, long low_4, long high_5, long target_6) {
+        if ((!((((0 <= high_5) && (high_5 < sequence_3.Length)) && (0 <= low_4)) && (low_4 < sequence_3.Length)))) {
+            throw new Exception("Invalid upper or lower bound!");
+        };
+        if ((high_5 < low_4)) {
+            return -1;
+        };
+        if ((sequence_3[(int)(low_4)] == target_6)) {
+            return low_4;
+        };
+        if ((sequence_3[(int)(high_5)] == target_6)) {
+            return high_5;
+        };
+        return Program.rec_linear_search(sequence_3, (low_4 + 1), (high_5 - 1), target_6);
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            Program.main();
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.linear_search(new long[]{0, 5, 7, 10, 15}, 0))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.linear_search(new long[]{0, 5, 7, 10, 15}, 15))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.linear_search(new long[]{0, 5, 7, 10, 15}, 5))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.linear_search(new long[]{0, 5, 7, 10, 15}, 6))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.rec_linear_search(new long[]{0, 30, 500, 100, 700}, 0, 4, 0))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.rec_linear_search(new long[]{0, 30, 500, 100, 700}, 0, 4, 700))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.rec_linear_search(new long[]{0, 30, 500, 100, 700}, 0, 4, 30))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.rec_linear_search(new long[]{0, 30, 500, 100, 700}, 0, 4, -6))));
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);

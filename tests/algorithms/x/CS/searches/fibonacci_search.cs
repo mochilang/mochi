@@ -28,11 +28,11 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
-    static long _mod(long a, long b) {
-        if (b == 0) return 0;
-        var r = a % b;
-        if ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;
-        return r;
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
     }
     static string _substr(string s, long start, long end) {
         if (start < 0) start = 0;
@@ -97,43 +97,65 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
+    static long[] example1_14 = new long[]{4, 5, 6, 7};
+    static long[] example2_15 = new long[]{-18, 2};
+    static long[] example3_16 = new long[]{0, 5, 10, 15, 20, 25, 30};
+    public static long fibonacci(long k_0) {
+        if ((k_0 < 0)) {
+            throw new Exception("k must be >= 0");
         };
-        return x_2;
+        long a_1 = 0;
+        long b_2 = 1;
+        long i_3 = 0;
+        while ((i_3 < k_0)) {
+            long tmp_4 = (a_1 + b_2);
+            a_1 = b_2;
+            b_2 = tmp_4;
+            i_3 = (i_3 + 1);
+        };
+        return a_1;
     }
 
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
-                }
-                n_8 = (n_8 + 1);
+    public static long min_int(long a_5, long b_6) {
+        if ((a_5 < b_6)) {
+            return a_5;
+        } else {
+            return b_6;
+        };
+        return default(long);
+    }
+
+    public static long fibonacci_search(long[] arr_7, long val_8) {
+        long n_9 = arr_7.Length;
+        long m_10 = 0;
+        while ((Program.fibonacci(m_10) < n_9)) {
+            m_10 = (m_10 + 1);
+        };
+        long offset_11 = 0;
+        while ((m_10 > 0)) {
+            long i_12 = Program.min_int((offset_11 + Program.fibonacci((m_10 - 1))), (n_9 - 1));
+            long item_13 = arr_7[(int)(i_12)];
+            if ((item_13 == val_8)) {
+                return i_12;
+            } else if ((val_8 < item_13)) {
+                m_10 = (m_10 - 1);
+            } else {
+                offset_11 = (offset_11 + Program.fibonacci((m_10 - 1)));
+                m_10 = (m_10 - 2);
             }
-            d_7 = (d_7 + 1);
         };
-        return fractions_number_6;
-    }
-
-    public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+        return -1;
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            Program.main();
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.fibonacci_search(example1_14, 4))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.fibonacci_search(example1_14, -10))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.fibonacci_search(example2_15, -18))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.fibonacci_search(example3_16, 15))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.fibonacci_search(example3_16, 17))));
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);

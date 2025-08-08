@@ -28,6 +28,12 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
+    }
     static long _mod(long a, long b) {
         if (b == 0) return 0;
         var r = a % b;
@@ -97,36 +103,41 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
-        };
-        return x_2;
-    }
-
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
+    public static long solution(long number_0) {
+        long[] partitions_1 = new long[]{1};
+        long i_2 = partitions_1.Length;
+        while (true) {
+            long item_3 = 0;
+            long j_4 = 1;
+            while (true) {
+                long sign_5 = ((_mod(j_4, 2) == 0) ? -1 : 1);
+                long index_6 = ((((j_4 * j_4) * 3) - j_4) / 2);
+                if ((index_6 > i_2)) {
+                    break;
                 }
-                n_8 = (n_8 + 1);
+                item_3 = (item_3 + (partitions_1[(int)((i_2 - index_6))] * sign_5));
+                item_3 = _mod(item_3, number_0);
+                index_6 = (index_6 + j_4);
+                if ((index_6 > i_2)) {
+                    break;
+                }
+                item_3 = (item_3 + (partitions_1[(int)((i_2 - index_6))] * sign_5));
+                item_3 = _mod(item_3, number_0);
+                j_4 = (j_4 + 1);
             }
-            d_7 = (d_7 + 1);
+            if ((item_3 == 0)) {
+                return i_2;
+            }
+            partitions_1 = (Enumerable.ToArray(Enumerable.Append<long>(partitions_1, item_3)));
+            i_2 = (i_2 + 1);
         };
-        return fractions_number_6;
+        return 0;
     }
 
     public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.solution(1))));
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.solution(9))));
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.solution(1000000))));
     }
 
     static void Main() {

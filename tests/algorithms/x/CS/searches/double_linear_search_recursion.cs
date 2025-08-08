@@ -28,11 +28,11 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
-    static long _mod(long a, long b) {
-        if (b == 0) return 0;
-        var r = a % b;
-        if ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;
-        return r;
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
     }
     static string _substr(string s, long start, long end) {
         if (start < 0) start = 0;
@@ -97,36 +97,29 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
+    public static long search(long[] list_data_0, long key_1, long left_2, long right_3) {
+        long r_4 = right_3;
+        if ((r_4 == 0)) {
+            r_4 = (list_data_0.Length - 1);
         };
-        return x_2;
-    }
-
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
-                }
-                n_8 = (n_8 + 1);
-            }
-            d_7 = (d_7 + 1);
+        if ((left_2 > r_4)) {
+            return -1;
+        } else if ((list_data_0[(int)(left_2)] == key_1)) {
+            return left_2;
+        } else if ((list_data_0[(int)(r_4)] == key_1)) {
+            return r_4;
+        } else {
+            return Program.search(list_data_0, key_1, (left_2 + 1), (r_4 - 1));
         };
-        return fractions_number_6;
+        return default(long);
     }
 
     public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+        Console.WriteLine(Program._fmtTop(Program.search(new long[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 5, 0, 0)));
+        Console.WriteLine(Program._fmtTop(Program.search(new long[]{1, 2, 4, 5, 3}, 4, 0, 0)));
+        Console.WriteLine(Program._fmtTop(Program.search(new long[]{1, 2, 4, 5, 3}, 6, 0, 0)));
+        Console.WriteLine(Program._fmtTop(Program.search(new long[]{5}, 5, 0, 0)));
+        Console.WriteLine(Program._fmtTop(Program.search(new long[]{}, 1, 0, 0)));
     }
 
     static void Main() {

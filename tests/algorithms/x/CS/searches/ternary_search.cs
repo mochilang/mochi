@@ -28,11 +28,11 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
-    static long _mod(long a, long b) {
-        if (b == 0) return 0;
-        var r = a % b;
-        if ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;
-        return r;
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
     }
     static string _substr(string s, long start, long end) {
         if (start < 0) start = 0;
@@ -97,36 +97,77 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
+    static long precision_0 = 10;
+    public static long lin_search(long left_1, long right_2, long[] array_3, long target_4) {
+        long i_5 = left_1;
+        while ((i_5 < right_2)) {
+            if ((array_3[(int)(i_5)] == target_4)) {
+                return i_5;
+            }
+            i_5 = (i_5 + 1);
         };
-        return x_2;
+        return -1;
     }
 
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
-                }
-                n_8 = (n_8 + 1);
+    public static long ite_ternary_search(long[] array_6, long target_7) {
+        long left_8 = 0;
+        long right_9 = (array_6.Length - 1);
+        while ((left_8 <= right_9)) {
+            if (((right_9 - left_8) < precision_0)) {
+                long idx_10 = Program.lin_search(left_8, (right_9 + 1), array_6, target_7);
+                return idx_10;
             }
-            d_7 = (d_7 + 1);
+            long one_third_11 = (left_8 + ((right_9 - left_8) / 3));
+            long two_third_12 = (right_9 - ((right_9 - left_8) / 3));
+            if ((array_6[(int)(one_third_11)] == target_7)) {
+                return one_third_11;
+            }
+            if ((array_6[(int)(two_third_12)] == target_7)) {
+                return two_third_12;
+            }
+            if ((target_7 < array_6[(int)(one_third_11)])) {
+                right_9 = (one_third_11 - 1);
+            } else if ((array_6[(int)(two_third_12)] < target_7)) {
+                left_8 = (two_third_12 + 1);
+            } else {
+                left_8 = (one_third_11 + 1);
+                right_9 = (two_third_12 - 1);
+            }
         };
-        return fractions_number_6;
+        return -1;
+    }
+
+    public static long rec_ternary_search(long left_13, long right_14, long[] array_15, long target_16) {
+        if ((left_13 <= right_14)) {
+            if (((right_14 - left_13) < precision_0)) {
+                long idx_17 = Program.lin_search(left_13, (right_14 + 1), array_15, target_16);
+                return idx_17;
+            }
+            long one_third_18 = (left_13 + ((right_14 - left_13) / 3));
+            long two_third_19 = (right_14 - ((right_14 - left_13) / 3));
+            if ((array_15[(int)(one_third_18)] == target_16)) {
+                return one_third_18;
+            }
+            if ((array_15[(int)(two_third_19)] == target_16)) {
+                return two_third_19;
+            }
+            if ((target_16 < array_15[(int)(one_third_18)])) {
+                return Program.rec_ternary_search(left_13, (one_third_18 - 1), array_15, target_16);
+            }
+            if ((array_15[(int)(two_third_19)] < target_16)) {
+                return Program.rec_ternary_search((two_third_19 + 1), right_14, array_15, target_16);
+            }
+            return Program.rec_ternary_search((one_third_18 + 1), (two_third_19 - 1), array_15, target_16);
+        };
+        return -1;
     }
 
     public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+        long[] test_list_20 = new long[]{0, 1, 2, 8, 13, 17, 19, 32, 42};
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.ite_ternary_search(test_list_20, 3))));
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.ite_ternary_search(test_list_20, 13))));
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.rec_ternary_search(0, (test_list_20.Length - 1), test_list_20, 3))));
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.rec_ternary_search(0, (test_list_20.Length - 1), test_list_20, 13))));
     }
 
     static void Main() {

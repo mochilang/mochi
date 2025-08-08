@@ -28,11 +28,11 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
-    static long _mod(long a, long b) {
-        if (b == 0) return 0;
-        var r = a % b;
-        if ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;
-        return r;
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
     }
     static string _substr(string s, long start, long end) {
         if (start < 0) start = 0;
@@ -97,36 +97,47 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
+    public static long[] max_tasks(long[][] tasks_info_0) {
+        long[] order_1 = new long[]{};
+        long i_2 = 0;
+        while ((i_2 < tasks_info_0.Length)) {
+            order_1 = (Enumerable.ToArray(Enumerable.Append<long>(order_1, i_2)));
+            i_2 = (i_2 + 1);
         };
-        return x_2;
-    }
-
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
+        long n_3 = order_1.Length;
+        i_2 = 0;
+        while ((i_2 < n_3)) {
+            long j_4 = (i_2 + 1);
+            while ((j_4 < n_3)) {
+                if ((tasks_info_0[(int)(order_1[(int)(j_4)])][(int)(1)] > tasks_info_0[(int)(order_1[(int)(i_2)])][(int)(1)])) {
+                    long tmp_5 = order_1[(int)(i_2)];
+                    order_1[i_2] = order_1[(int)(j_4)];
+                    order_1[j_4] = tmp_5;
                 }
-                n_8 = (n_8 + 1);
+                j_4 = (j_4 + 1);
             }
-            d_7 = (d_7 + 1);
+            i_2 = (i_2 + 1);
         };
-        return fractions_number_6;
+        long[] result_6 = new long[]{};
+        long pos_7 = 1;
+        i_2 = 0;
+        while ((i_2 < n_3)) {
+            long id_8 = order_1[(int)(i_2)];
+            long deadline_9 = tasks_info_0[(int)(id_8)][(int)(0)];
+            if ((deadline_9 >= pos_7)) {
+                result_6 = (Enumerable.ToArray(Enumerable.Append<long>(result_6, id_8)));
+            }
+            i_2 = (i_2 + 1);
+            pos_7 = (pos_7 + 1);
+        };
+        return result_6;
     }
 
     public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+        long[][] ex1_10 = new long[][]{new long[]{4, 20}, new long[]{1, 10}, new long[]{1, 40}, new long[]{1, 30}};
+        long[][] ex2_11 = new long[][]{new long[]{1, 10}, new long[]{2, 20}, new long[]{3, 30}, new long[]{2, 40}};
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.max_tasks(ex1_10))));
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.max_tasks(ex2_11))));
     }
 
     static void Main() {

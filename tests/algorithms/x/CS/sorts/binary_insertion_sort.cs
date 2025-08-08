@@ -28,11 +28,11 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
-    static long _mod(long a, long b) {
-        if (b == 0) return 0;
-        var r = a % b;
-        if ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;
-        return r;
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
     }
     static string _substr(string s, long start, long end) {
         if (start < 0) start = 0;
@@ -97,36 +97,38 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
-        };
-        return x_2;
-    }
-
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
+    public static long[] binary_insertion_sort(long[] arr_0) {
+        long i_1 = 1;
+        while ((i_1 < arr_0.Length)) {
+            long value_2 = arr_0[(int)(i_1)];
+            long low_3 = 0;
+            long high_4 = (i_1 - 1);
+            while ((low_3 <= high_4)) {
+                long mid_5 = ((low_3 + high_4) / 2);
+                if ((value_2 < arr_0[(int)(mid_5)])) {
+                    high_4 = (mid_5 - 1);
+                } else {
+                    low_3 = (mid_5 + 1);
                 }
-                n_8 = (n_8 + 1);
             }
-            d_7 = (d_7 + 1);
+            long j_6 = i_1;
+            while ((j_6 > low_3)) {
+                arr_0[j_6] = arr_0[(int)((j_6 - 1))];
+                j_6 = (j_6 - 1);
+            }
+            arr_0[low_3] = value_2;
+            i_1 = (i_1 + 1);
         };
-        return fractions_number_6;
+        return arr_0;
     }
 
     public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+        long[] example1_7 = new long[]{5, 2, 4, 6, 1, 3};
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.binary_insertion_sort(example1_7))));
+        long[] example2_8 = new long[]{};
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.binary_insertion_sort(example2_8))));
+        long[] example3_9 = new long[]{4, 2, 4, 1, 3};
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.binary_insertion_sort(example3_9))));
     }
 
     static void Main() {

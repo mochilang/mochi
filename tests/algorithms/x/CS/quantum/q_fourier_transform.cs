@@ -97,43 +97,47 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
+    public static string to_bits(long n_0, long width_1) {
+        string res_2 = "";
+        long num_3 = n_0;
+        long w_4 = width_1;
+        while ((w_4 > 0)) {
+            res_2 = (_fmtStr(_mod(num_3, 2)) + res_2);
+            num_3 = (num_3 / 2);
+            w_4 = (w_4 - 1);
         };
-        return x_2;
+        return res_2;
     }
 
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
-                }
-                n_8 = (n_8 + 1);
-            }
-            d_7 = (d_7 + 1);
+    public static Dictionary<string, long> quantum_fourier_transform(long number_of_qubits_5) {
+        if ((number_of_qubits_5 <= 0)) {
+            throw new Exception("number of qubits must be > 0.");
         };
-        return fractions_number_6;
-    }
-
-    public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+        if ((number_of_qubits_5 > 10)) {
+            throw new Exception("number of qubits too large to simulate(>10).");
+        };
+        long shots_6 = 10000;
+        long states_7 = 1;
+        long p_8 = 0;
+        while ((p_8 < number_of_qubits_5)) {
+            states_7 = (states_7 * 2);
+            p_8 = (p_8 + 1);
+        };
+        long per_state_9 = (shots_6 / states_7);
+        Dictionary<string, long> counts_10 = new Dictionary<string, long>{};
+        long i_11 = 0;
+        while ((i_11 < states_7)) {
+            counts_10[Program.to_bits(i_11, number_of_qubits_5)] = per_state_9;
+            i_11 = (i_11 + 1);
+        };
+        return counts_10;
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            Program.main();
+            Console.WriteLine(Program._fmtTop(("Total count for quantum fourier transform state is: " + _fmtStr(Program.quantum_fourier_transform(3)))));
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);

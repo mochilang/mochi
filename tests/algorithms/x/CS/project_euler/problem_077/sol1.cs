@@ -28,11 +28,11 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
-    static long _mod(long a, long b) {
-        if (b == 0) return 0;
-        var r = a % b;
-        if ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;
-        return r;
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
     }
     static string _substr(string s, long start, long end) {
         if (start < 0) start = 0;
@@ -97,43 +97,96 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
+    static long NUM_PRIMES_0 = 100;
+    static long[] primes_6 = Program.generate_primes(NUM_PRIMES_0);
+    static Dictionary<long, long[]> partition_cache_10 = new Dictionary<long, long[]>{};
+    static long result_20 = Program.solution(5000);
+    public static long[] generate_primes(long limit_1) {
+        bool[] is_prime_2 = new bool[]{};
+        long i_3 = 0;
+        while ((i_3 <= limit_1)) {
+            is_prime_2 = (Enumerable.ToArray(Enumerable.Append<bool>(is_prime_2, true)));
+            i_3 = (i_3 + 1);
         };
-        return x_2;
-    }
-
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
+        is_prime_2[0] = false;
+        is_prime_2[1] = false;
+        i_3 = 2;
+        while (((i_3 * i_3) <= limit_1)) {
+            if (is_prime_2[(int)(i_3)]) {
+                long j_4 = (i_3 * i_3);
+                while ((j_4 <= limit_1)) {
+                    is_prime_2[j_4] = false;
+                    j_4 = (j_4 + i_3);
                 }
-                n_8 = (n_8 + 1);
             }
-            d_7 = (d_7 + 1);
+            i_3 = (i_3 + 1);
         };
-        return fractions_number_6;
+        long[] primes_5 = new long[]{};
+        i_3 = 2;
+        while ((i_3 <= limit_1)) {
+            if (is_prime_2[(int)(i_3)]) {
+                primes_5 = (Enumerable.ToArray(Enumerable.Append<long>(primes_5, i_3)));
+            }
+            i_3 = (i_3 + 1);
+        };
+        return primes_5;
     }
 
-    public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+    public static bool contains(long[] xs_7, long value_8) {
+        long i_9 = 0;
+        while ((i_9 < xs_7.Length)) {
+            if ((xs_7[(int)(i_9)] == value_8)) {
+                return true;
+            }
+            i_9 = (i_9 + 1);
+        };
+        return false;
+    }
+
+    public static long[] partition(long n_11) {
+        if ((n_11 < 0)) {
+            return new long[]{};
+        };
+        if ((n_11 == 0)) {
+            return new long[]{1};
+        };
+        if ((partition_cache_10.ContainsKey(n_11))) {
+            return (partition_cache_10.ContainsKey(n_11) ? partition_cache_10[n_11] : null);
+        };
+        long[] ret_12 = new long[]{};
+        foreach (long prime_13 in primes_6) {
+            if ((prime_13 > n_11)) {
+                continue;
+            }
+            long[] subs_14 = Program.partition((n_11 - prime_13));
+            foreach (long sub_15 in subs_14) {
+                long prod_16 = (sub_15 * prime_13);
+                if ((!Program.contains(ret_12, prod_16))) {
+                    ret_12 = (Enumerable.ToArray(Enumerable.Append<long>(ret_12, prod_16)));
+                }
+            }
+        };
+        partition_cache_10[n_11] = ret_12;
+        return ret_12;
+    }
+
+    public static long solution(long threshold_17) {
+        long number_to_partition_18 = 1;
+        while ((number_to_partition_18 < NUM_PRIMES_0)) {
+            long[] parts_19 = Program.partition(number_to_partition_18);
+            if ((parts_19.Length > threshold_17)) {
+                return number_to_partition_18;
+            }
+            number_to_partition_18 = (number_to_partition_18 + 1);
+        };
+        return 0;
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            Program.main();
+            Console.WriteLine(Program._fmtTop(("solution() = " + _fmtStr(result_20))));
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);

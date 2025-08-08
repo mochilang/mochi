@@ -28,11 +28,11 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
-    static long _mod(long a, long b) {
-        if (b == 0) return 0;
-        var r = a % b;
-        if ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;
-        return r;
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
     }
     static string _substr(string s, long start, long end) {
         if (start < 0) start = 0;
@@ -97,43 +97,40 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
-        };
-        return x_2;
-    }
-
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
-                }
-                n_8 = (n_8 + 1);
+    static long[] arr1_6 = new long[]{0, 1, 2, 8, 13, 17, 19, 32, 42};
+    public static bool binary_search(long[] arr_0, long item_1) {
+        long low_2 = 0;
+        long high_3 = (arr_0.Length - 1);
+        while ((low_2 <= high_3)) {
+            long mid_4 = ((low_2 + high_3) / 2);
+            long val_5 = arr_0[(int)(mid_4)];
+            if ((val_5 == item_1)) {
+                return true;
             }
-            d_7 = (d_7 + 1);
+            if ((item_1 < val_5)) {
+                high_3 = (mid_4 - 1);
+            } else {
+                low_2 = (mid_4 + 1);
+            }
         };
-        return fractions_number_6;
-    }
-
-    public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+        return false;
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            Program.main();
+            Console.WriteLine(Program._fmtTop(Program.binary_search(arr1_6, 3)));
+            Console.WriteLine(Program._fmtTop(Program.binary_search(arr1_6, 13)));
+            long[] arr2_7 = new long[]{4, 4, 5, 6, 7};
+            Console.WriteLine(Program._fmtTop(Program.binary_search(arr2_7, 4)));
+            Console.WriteLine(Program._fmtTop(Program.binary_search(arr2_7, -10)));
+            long[] arr3_8 = new long[]{-18, 2};
+            Console.WriteLine(Program._fmtTop(Program.binary_search(arr3_8, -18)));
+            long[] arr4_9 = new long[]{5};
+            Console.WriteLine(Program._fmtTop(Program.binary_search(arr4_9, 5)));
+            long[] arr5_10 = new long[]{};
+            Console.WriteLine(Program._fmtTop(Program.binary_search(arr5_10, 1)));
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);
