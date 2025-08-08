@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-08 16:02 GMT+7
+Last updated: 2025-08-08 16:16 GMT+7
 
-## Algorithms Golden Test Checklist (146/1077)
+## Algorithms Golden Test Checklist (147/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 30.54ms | 124.45KiB |
@@ -168,7 +168,7 @@ Last updated: 2025-08-08 16:02 GMT+7
 | 159 | data_structures/arrays/equilibrium_index_in_array | ✓ | 11.01ms | 133.85KiB |
 | 160 | data_structures/arrays/find_triplets_with_0_sum | ✓ | 25.12ms | 122.58KiB |
 | 161 | data_structures/arrays/index_2d_array_in_1d | ✓ | 27.59ms | 123.07KiB |
-| 162 | data_structures/arrays/kth_largest_element |   |  |  |
+| 162 | data_structures/arrays/kth_largest_element | ✓ | 10.29ms | 125.08KiB |
 | 163 | data_structures/arrays/median_two_array |   |  |  |
 | 164 | data_structures/arrays/monotonic_array |   |  |  |
 | 165 | data_structures/arrays/pairs_with_given_sum |   |  |  |
