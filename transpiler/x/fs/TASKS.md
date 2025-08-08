@@ -1,3 +1,7 @@
+## Progress (2025-08-08 17:07 +0700)
+- go transpiler: fix any casts in slices and if expressions
+- Generated F# for 103/105 programs (103 passing)
+
 ## Progress (2025-08-08 16:34 +0700)
 - fs: add adler32 outputs
 - Generated F# for 103/105 programs (103 passing)
