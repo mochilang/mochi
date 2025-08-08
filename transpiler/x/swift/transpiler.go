@@ -52,6 +52,7 @@ var currentUpdated map[string]bool
 var currentAnyUpdated map[string]bool
 var classStructs map[string]bool
 var nonCodableStructs map[string]bool
+var tmpVarCounter int
 
 var swiftKeywords = map[string]struct{}{
 	"associatedtype": {}, "class": {}, "deinit": {}, "enum": {}, "extension": {},
@@ -164,6 +165,16 @@ type FieldExpr struct {
 }
 
 func (fe *FieldExpr) emit(w io.Writer) {
+	if ie, ok := fe.Target.(*IndexExpr); ok && !ie.Force && !ie.KeyString && !ie.KeyAny {
+		fmt.Fprint(w, "(")
+		fmt.Fprint(w, "_idx(")
+		ie.Base.emit(w)
+		fmt.Fprint(w, ", ")
+		ie.Index.emit(w)
+		fmt.Fprint(w, ")!")
+		fmt.Fprintf(w, ".%s)", fe.Name)
+		return
+	}
 	fe.Target.emit(w)
 	fmt.Fprintf(w, ".%s", fe.Name)
 }
@@ -1150,7 +1161,12 @@ func (ie *IndexExpr) emit(w io.Writer) {
 	}
 	if !ie.Force && !ie.KeyString && !ie.KeyAny {
 		fmt.Fprint(w, "_idx(")
-		ie.Base.emit(w)
+		if be, ok := ie.Base.(*IndexExpr); ok {
+			be.emit(w)
+			fmt.Fprint(w, "!")
+		} else {
+			ie.Base.emit(w)
+		}
 		fmt.Fprint(w, ", ")
 		ie.Index.emit(w)
 		fmt.Fprint(w, ")")
@@ -1684,12 +1700,14 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 	case "contains":
 		if len(c.Args) == 2 {
-			fmt.Fprint(w, "(")
-			c.Args[0].emit(w)
-			fmt.Fprint(w, ".contains(")
-			c.Args[1].emit(w)
-			fmt.Fprint(w, "))")
-			return
+			if funcParamTypes == nil || funcParamTypes["contains"] == nil {
+				fmt.Fprint(w, "(")
+				c.Args[0].emit(w)
+				fmt.Fprint(w, ".contains(")
+				c.Args[1].emit(w)
+				fmt.Fprint(w, "))")
+				return
+			}
 		}
 	case "now":
 		if len(c.Args) == 0 {
@@ -2912,6 +2930,7 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 				cur = t
 			}
 		}
+		var outerType types.Type
 		for j, idx := range st.Assign.Index {
 			if idx.Start == nil || idx.Colon != nil || idx.End != nil || idx.Colon2 != nil || idx.Step != nil {
 				return nil, fmt.Errorf("unsupported index")
@@ -2939,12 +2958,16 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 						ix = &CastExpr{Expr: ix, Type: "Int!"}
 					}
 				}
+				if j == len(st.Assign.Index)-2 {
+					outerType = lt.Elem
+				}
 				cur = lt.Elem
 				lhs = &IndexExpr{Base: lhs, Index: ix}
 			} else {
 				lhs = &IndexExpr{Base: lhs, Index: ix}
 			}
 		}
+		nodeType := cur
 		for _, f := range st.Assign.Field {
 			if stt, ok := cur.(types.StructType); ok {
 				if ft, ok := stt.Fields[f.Name]; ok {
@@ -2972,7 +2995,31 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 				}
 			}
 		}
+		if fe, ok := lhs.(*FieldExpr); ok {
+			if ie, ok2 := fe.Target.(*IndexExpr); ok2 {
+				if be, ok3 := ie.Base.(*NameExpr); ok3 {
+					usesSet = true
+					tmpVarCounter++
+					tmpName := fmt.Sprintf("_tmp%d", tmpVarCounter)
+					varDecl := &VarDecl{Name: tmpName, Expr: &CastExpr{Expr: &CallExpr{Func: "_idx", Args: []Expr{ie.Base, ie.Index}}, Type: swiftTypeOf(nodeType) + "!"}}
+					fieldAssign := &IndexAssignStmt{Target: &FieldExpr{Target: &NameExpr{Name: tmpName}, Name: fe.Name}, Value: val}
+					arrAssign := &AssignStmt{Name: be.Name, Expr: &CallExpr{Func: "_set", Args: []Expr{ie.Base, ie.Index, &CastExpr{Expr: &NameExpr{Name: tmpName}, Type: swiftTypeOf(nodeType) + "!"}}}}
+					return &BlockStmt{Stmts: []Stmt{varDecl, fieldAssign, arrAssign}}, nil
+				}
+			}
+		}
 		if ie, ok := lhs.(*IndexExpr); ok {
+			if outer, ok2 := ie.Base.(*IndexExpr); ok2 {
+				if be, ok3 := outer.Base.(*NameExpr); ok3 {
+					usesSet = true
+					tmpVarCounter++
+					tmpName := fmt.Sprintf("_tmp%d", tmpVarCounter)
+					varDecl := &VarDecl{Name: tmpName, Expr: &CastExpr{Expr: &CallExpr{Func: "_idx", Args: []Expr{outer.Base, outer.Index}}, Type: swiftTypeOf(outerType) + "!"}}
+					setInner := &AssignStmt{Name: tmpName, Expr: &CallExpr{Func: "_set", Args: []Expr{&NameExpr{Name: tmpName}, ie.Index, val}}}
+					arrAssign := &AssignStmt{Name: be.Name, Expr: &CallExpr{Func: "_set", Args: []Expr{outer.Base, outer.Index, &CastExpr{Expr: &NameExpr{Name: tmpName}, Type: swiftTypeOf(outerType) + "!"}}}}
+					return &BlockStmt{Stmts: []Stmt{varDecl, setInner, arrAssign}}, nil
+				}
+			}
 			if be, ok2 := ie.Base.(*NameExpr); ok2 {
 				usesSet = true
 				return &AssignStmt{Name: be.Name, Expr: &CallExpr{Func: "_set", Args: []Expr{ie.Base, ie.Index, val}}}, nil

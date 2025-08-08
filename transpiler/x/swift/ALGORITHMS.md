@@ -2,8 +2,8 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 408/1077
-Last updated: 2025-08-08 16:17 +0700
+Completed programs: 425/1077
+Last updated: 2025-08-08 16:57 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -232,23 +232,23 @@ Last updated: 2025-08-08 16:17 +0700
 | 223 | data_structures/linked_list/circular_linked_list | ✓ | 350µs | 3.1 MB |
 | 224 | data_structures/linked_list/deque_doubly | ✓ | 461µs | 3.2 MB |
 | 225 | data_structures/linked_list/doubly_linked_list | ✓ | 325µs | 2.9 MB |
-| 226 | data_structures/linked_list/doubly_linked_list_two |   |  |  |
-| 227 | data_structures/linked_list/floyds_cycle_detection |   |  |  |
-| 228 | data_structures/linked_list/from_sequence |   |  |  |
-| 229 | data_structures/linked_list/has_loop |   |  |  |
-| 230 | data_structures/linked_list/is_palindrome |   |  |  |
-| 231 | data_structures/linked_list/merge_two_lists |   |  |  |
-| 232 | data_structures/linked_list/middle_element_of_linked_list |   |  |  |
-| 233 | data_structures/linked_list/print_reverse |   |  |  |
-| 234 | data_structures/linked_list/reverse_k_group |   |  |  |
-| 235 | data_structures/linked_list/rotate_to_the_right |   |  |  |
-| 236 | data_structures/linked_list/singly_linked_list |   |  |  |
-| 237 | data_structures/linked_list/skip_list |   |  |  |
-| 238 | data_structures/linked_list/swap_nodes |   |  |  |
-| 239 | data_structures/queues/circular_queue |   |  |  |
-| 240 | data_structures/queues/circular_queue_linked_list |   |  |  |
-| 241 | data_structures/queues/double_ended_queue |   |  |  |
-| 242 | data_structures/queues/linked_queue |   |  |  |
+| 226 | data_structures/linked_list/doubly_linked_list_two | ✓ | 645µs | 3.1 MB |
+| 227 | data_structures/linked_list/floyds_cycle_detection | ✓ | 370µs | 3.1 MB |
+| 228 | data_structures/linked_list/from_sequence | ✓ | 1.647ms | 3.7 MB |
+| 229 | data_structures/linked_list/has_loop | ✓ | 503µs | 3.1 MB |
+| 230 | data_structures/linked_list/is_palindrome | ✓ | 473µs | 3.3 MB |
+| 231 | data_structures/linked_list/merge_two_lists | ✓ | 647µs | 3.2 MB |
+| 232 | data_structures/linked_list/middle_element_of_linked_list | ✓ | 512µs | 3.2 MB |
+| 233 | data_structures/linked_list/print_reverse | ✓ | 818µs | 3.2 MB |
+| 234 | data_structures/linked_list/reverse_k_group | ✓ | 395µs | 2.9 MB |
+| 235 | data_structures/linked_list/rotate_to_the_right | ✓ | 487µs | 3.3 MB |
+| 236 | data_structures/linked_list/singly_linked_list | ✓ | 465µs | 2.9 MB |
+| 237 | data_structures/linked_list/skip_list | ✓ | 526µs | 3.2 MB |
+| 238 | data_structures/linked_list/swap_nodes | ✓ | 1.113ms | 3.5 MB |
+| 239 | data_structures/queues/circular_queue | ✓ | 485µs | 3.2 MB |
+| 240 | data_structures/queues/circular_queue_linked_list | ✓ | 639µs | 3.2 MB |
+| 241 | data_structures/queues/double_ended_queue | ✓ | 511µs | 2.9 MB |
+| 242 | data_structures/queues/linked_queue | ✓ | 415µs | 3.1 MB |
 | 243 | data_structures/queues/priority_queue_using_list |   |  |  |
 | 244 | data_structures/queues/queue_by_list |   |  |  |
 | 245 | data_structures/queues/queue_by_two_stacks |   |  |  |
