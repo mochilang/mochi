@@ -1,0 +1,228 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden491_linear_algebra_src_rank_of_matrix2760563243/001/main.swift:94:54: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+ 92 |             return 0
+ 93 |         }
+ 94 |         let columns = _int(((_int((((_idx(matrix, 0) as! [Double])).count)) > 0) ? _int((((_idx(matrix, 0) as! [Double])).count)) : 0))
+    |                                                      `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+ 95 |         var rank: Int = _int(((rows < columns) ? rows : columns))
+ 96 |         var row: Int = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden491_linear_algebra_src_rank_of_matrix2760563243/001/main.swift:94:108: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+ 92 |             return 0
+ 93 |         }
+ 94 |         let columns = _int(((_int((((_idx(matrix, 0) as! [Double])).count)) > 0) ? _int((((_idx(matrix, 0) as! [Double])).count)) : 0))
+    |                                                                                                            `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+ 95 |         var rank: Int = _int(((rows < columns) ? rows : columns))
+ 96 |         var row: Int = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden491_linear_algebra_src_rank_of_matrix2760563243/001/main.swift:98:29: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+ 96 |         var row: Int = 0
+ 97 |         while (row < rank) {
+ 98 |             if (Double(_idx(_idx(matrix, row), row)) != 0.0) {
+    |                             `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+ 99 |                 var col: Int = (row &+ 1)
+100 |                 while (col < rows) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden491_linear_algebra_src_rank_of_matrix2760563243/001/main.swift:101:45: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+ 99 |                 var col: Int = (row &+ 1)
+100 |                 while (col < rows) {
+101 |                     let mult = (Double(_idx(_idx(matrix, col), row)) / Double(_idx(_idx(matrix, row), row)))
+    |                                             `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+102 |                     var i: Int = row
+103 |                     while (i < columns) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden491_linear_algebra_src_rank_of_matrix2760563243/001/main.swift:101:84: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+ 99 |                 var col: Int = (row &+ 1)
+100 |                 while (col < rows) {
+101 |                     let mult = (Double(_idx(_idx(matrix, col), row)) / Double(_idx(_idx(matrix, row), row)))
+    |                                                                                    `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+102 |                     var i: Int = row
+103 |                     while (i < columns) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden491_linear_algebra_src_rank_of_matrix2760563243/001/main.swift:104:30: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+102 |                     var i: Int = row
+103 |                     while (i < columns) {
+104 |                         _idx(_idx(matrix, col), i) = Double((Double(_idx(_idx(matrix, col), i)) - (mult * Double(_idx(_idx(matrix, row), i)))))
+    |                              `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+105 |                         i = _int((i &+ 1))
+106 |                     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden491_linear_algebra_src_rank_of_matrix2760563243/001/main.swift:104:74: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+102 |                     var i: Int = row
+103 |                     while (i < columns) {
+104 |                         _idx(_idx(matrix, col), i) = Double((Double(_idx(_idx(matrix, col), i)) - (mult * Double(_idx(_idx(matrix, row), i)))))
+    |                                                                          `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+105 |                         i = _int((i &+ 1))
+106 |                     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden491_linear_algebra_src_rank_of_matrix2760563243/001/main.swift:104:119: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+102 |                     var i: Int = row
+103 |                     while (i < columns) {
+104 |                         _idx(_idx(matrix, col), i) = Double((Double(_idx(_idx(matrix, col), i)) - (mult * Double(_idx(_idx(matrix, row), i)))))
+    |                                                                                                                       `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+105 |                         i = _int((i &+ 1))
+106 |                     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden491_linear_algebra_src_rank_of_matrix2760563243/001/main.swift:104:54: error: cannot assign value of type 'Double' to type '[Double]?'
+102 |                     var i: Int = row
+103 |                     while (i < columns) {
+104 |                         _idx(_idx(matrix, col), i) = Double((Double(_idx(_idx(matrix, col), i)) - (mult * Double(_idx(_idx(matrix, row), i)))))
+    |                                                      `- error: cannot assign value of type 'Double' to type '[Double]?'
+105 |                         i = _int((i &+ 1))
+106 |                     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden491_linear_algebra_src_rank_of_matrix2760563243/001/main.swift:113:37: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+111 |                 var i: Int = (row &+ 1)
+112 |                 while (i < rows) {
+113 |                     if (Double(_idx(_idx(matrix, i), row)) != 0.0) {
+    |                                     `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+114 |                         let temp: [Double] = (_idx(matrix, row) as! [Double])
+115 |                         matrix = _set(matrix, row, (_idx(matrix, i) as! [Double]))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden491_linear_algebra_src_rank_of_matrix2760563243/001/main.swift:114:65: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+112 |                 while (i < rows) {
+113 |                     if (Double(_idx(_idx(matrix, i), row)) != 0.0) {
+114 |                         let temp: [Double] = (_idx(matrix, row) as! [Double])
+    |                                                                 `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+115 |                         matrix = _set(matrix, row, (_idx(matrix, i) as! [Double]))
+116 |                         matrix = _set(matrix, i, (temp as! [Double]))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden491_linear_algebra_src_rank_of_matrix2760563243/001/main.swift:115:69: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+113 |                     if (Double(_idx(_idx(matrix, i), row)) != 0.0) {
+114 |                         let temp: [Double] = (_idx(matrix, row) as! [Double])
+115 |                         matrix = _set(matrix, row, (_idx(matrix, i) as! [Double]))
+    |                                                                     `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+116 |                         matrix = _set(matrix, i, (temp as! [Double]))
+117 |                         reduce = false
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden491_linear_algebra_src_rank_of_matrix2760563243/001/main.swift:116:56: warning: forced cast of '[Double]' to same type has no effect
+114 |                         let temp: [Double] = (_idx(matrix, row) as! [Double])
+115 |                         matrix = _set(matrix, row, (_idx(matrix, i) as! [Double]))
+116 |                         matrix = _set(matrix, i, (temp as! [Double]))
+    |                                                        `- warning: forced cast of '[Double]' to same type has no effect
+117 |                         reduce = false
+118 |                         break
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden491_linear_algebra_src_rank_of_matrix2760563243/001/main.swift:126:30: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+124 |                     var j: Int = 0
+125 |                     while (j < rows) {
+126 |                         _idx(_idx(matrix, j), row) = Double(_idx(_idx(matrix, j), rank))
+    |                              `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+127 |                         j = _int((j &+ 1))
+128 |                     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden491_linear_algebra_src_rank_of_matrix2760563243/001/main.swift:126:54: error: cannot assign value of type 'Double' to type '[Double]?'
+124 |                     var j: Int = 0
+125 |                     while (j < rows) {
+126 |                         _idx(_idx(matrix, j), row) = Double(_idx(_idx(matrix, j), rank))
+    |                                                      `- error: cannot assign value of type 'Double' to type '[Double]?'
+127 |                         j = _int((j &+ 1))
+128 |                     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden491_linear_algebra_src_rank_of_matrix2760563243/001/main.swift:126:66: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+124 |                     var j: Int = 0
+125 |                     while (j < rows) {
+126 |                         _idx(_idx(matrix, j), row) = Double(_idx(_idx(matrix, j), rank))
+    |                                                                  `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+127 |                         j = _int((j &+ 1))
+128 |                     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden491_linear_algebra_src_rank_of_matrix2760563243/001/main.swift:138:37: error: cannot pass immutable value as inout argument: 'matrix1' is a 'let' constant
+135 |     }
+136 |     do {
+137 |         let matrix1: [[Double]] = ([([1.0, 2.0, 3.0] as! [Double]), ([4.0, 5.0, 6.0] as! [Double]), ([7.0, 8.0, 9.0] as! [Double])] as! [[Double]])
+    |         `- note: change 'let' to 'var' to make it mutable
+138 |         assert((_int(rank_of_matrix(&matrix1)) == 2))
+    |                                     `- error: cannot pass immutable value as inout argument: 'matrix1' is a 'let' constant
+139 |     }
+140 |     do {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden491_linear_algebra_src_rank_of_matrix2760563243/001/main.swift:142:37: error: cannot pass immutable value as inout argument: 'matrix2' is a 'let' constant
+139 |     }
+140 |     do {
+141 |         let matrix2: [[Double]] = ([([1.0, 0.0, 0.0] as! [Double]), ([0.0, 1.0, 0.0] as! [Double]), ([0.0, 0.0, 0.0] as! [Double])] as! [[Double]])
+    |         `- note: change 'let' to 'var' to make it mutable
+142 |         assert((_int(rank_of_matrix(&matrix2)) == 2))
+    |                                     `- error: cannot pass immutable value as inout argument: 'matrix2' is a 'let' constant
+143 |     }
+144 |     do {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden491_linear_algebra_src_rank_of_matrix2760563243/001/main.swift:146:37: error: cannot pass immutable value as inout argument: 'matrix3' is a 'let' constant
+143 |     }
+144 |     do {
+145 |         let matrix3: [[Double]] = ([([1.0, 2.0, 3.0, 4.0] as! [Double]), ([5.0, 6.0, 7.0, 8.0] as! [Double]), ([9.0, 10.0, 11.0, 12.0] as! [Double])] as! [[Double]])
+    |         `- note: change 'let' to 'var' to make it mutable
+146 |         assert((_int(rank_of_matrix(&matrix3)) == 2))
+    |                                     `- error: cannot pass immutable value as inout argument: 'matrix3' is a 'let' constant
+147 |     }
+148 |     do {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden491_linear_algebra_src_rank_of_matrix2760563243/001/main.swift:150:37: error: cannot pass immutable value as inout argument: 'matrix4' is a 'let' constant
+147 |     }
+148 |     do {
+149 |         let matrix4: [[Double]] = ([([2.0, 3.0, -1.0, -1.0] as! [Double]), ([1.0, -1.0, -2.0, 4.0] as! [Double]), ([3.0, 1.0, 3.0, -2.0] as! [Double]), ([6.0, 3.0, 0.0, -7.0] as! [Double])] as! [[Double]])
+    |         `- note: change 'let' to 'var' to make it mutable
+150 |         assert((_int(rank_of_matrix(&matrix4)) == 4))
+    |                                     `- error: cannot pass immutable value as inout argument: 'matrix4' is a 'let' constant
+151 |     }
+152 |     do {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden491_linear_algebra_src_rank_of_matrix2760563243/001/main.swift:154:37: error: cannot pass immutable value as inout argument: 'matrix5' is a 'let' constant
+151 |     }
+152 |     do {
+153 |         let matrix5: [[Double]] = ([([2.0, 1.0, -3.0, -6.0] as! [Double]), ([3.0, -3.0, 1.0, 2.0] as! [Double]), ([1.0, 1.0, 1.0, 2.0] as! [Double])] as! [[Double]])
+    |         `- note: change 'let' to 'var' to make it mutable
+154 |         assert((_int(rank_of_matrix(&matrix5)) == 3))
+    |                                     `- error: cannot pass immutable value as inout argument: 'matrix5' is a 'let' constant
+155 |     }
+156 |     do {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden491_linear_algebra_src_rank_of_matrix2760563243/001/main.swift:158:37: error: cannot pass immutable value as inout argument: 'matrix6' is a 'let' constant
+155 |     }
+156 |     do {
+157 |         let matrix6: [[Double]] = ([([2.0, -1.0, 0.0] as! [Double]), ([1.0, 3.0, 4.0] as! [Double]), ([4.0, 1.0, -3.0] as! [Double])] as! [[Double]])
+    |         `- note: change 'let' to 'var' to make it mutable
+158 |         assert((_int(rank_of_matrix(&matrix6)) == 3))
+    |                                     `- error: cannot pass immutable value as inout argument: 'matrix6' is a 'let' constant
+159 |     }
+160 |     do {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden491_linear_algebra_src_rank_of_matrix2760563243/001/main.swift:162:37: error: cannot pass immutable value as inout argument: 'matrix7' is a 'let' constant
+159 |     }
+160 |     do {
+161 |         let matrix7: [[Double]] = ([([3.0, 2.0, 1.0] as! [Double]), ([-6.0, -4.0, -2.0] as! [Double])] as! [[Double]])
+    |         `- note: change 'let' to 'var' to make it mutable
+162 |         assert((_int(rank_of_matrix(&matrix7)) == 1))
+    |                                     `- error: cannot pass immutable value as inout argument: 'matrix7' is a 'let' constant
+163 |     }
+164 |     do {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden491_linear_algebra_src_rank_of_matrix2760563243/001/main.swift:166:37: error: cannot pass immutable value as inout argument: 'matrix8' is a 'let' constant
+163 |     }
+164 |     do {
+165 |         let matrix8: [[Double]] = (([[], []] as! [[Any?]]) as! [[Double]])
+    |         `- note: change 'let' to 'var' to make it mutable
+166 |         assert((_int(rank_of_matrix(&matrix8)) == 0))
+    |                                     `- error: cannot pass immutable value as inout argument: 'matrix8' is a 'let' constant
+167 |     }
+168 |     do {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden491_linear_algebra_src_rank_of_matrix2760563243/001/main.swift:170:37: error: cannot pass immutable value as inout argument: 'matrix9' is a 'let' constant
+167 |     }
+168 |     do {
+169 |         let matrix9: [[Double]] = ([([1.0] as! [Double])] as! [[Double]])
+    |         `- note: change 'let' to 'var' to make it mutable
+170 |         assert((_int(rank_of_matrix(&matrix9)) == 1))
+    |                                     `- error: cannot pass immutable value as inout argument: 'matrix9' is a 'let' constant
+171 |     }
+172 |     do {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden491_linear_algebra_src_rank_of_matrix2760563243/001/main.swift:174:37: error: cannot pass immutable value as inout argument: 'matrix10' is a 'let' constant
+171 |     }
+172 |     do {
+173 |         let matrix10: [[Double]] = (([[]] as! [[Any?]]) as! [[Double]])
+    |         `- note: change 'let' to 'var' to make it mutable
+174 |         assert((_int(rank_of_matrix(&matrix10)) == 0))
+    |                                     `- error: cannot pass immutable value as inout argument: 'matrix10' is a 'let' constant
+175 |     }
+176 |     let _benchEnd = _now()

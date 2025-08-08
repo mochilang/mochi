@@ -1,0 +1,127 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden512_machine_learning_logistic_regression1580810758/001/main.swift:121:37: warning: expression implicitly coerced from 'Double?' to 'Any'
+119 |         var i: Int = 0
+120 |         while (i < _int(((a).count))) {
+121 |             s = Double((s + (Double(_idx(a, i)) * Double(_idx(b, i)))))
+    |                                     |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                     |- note: provide a default value to avoid this warning
+    |                                     |- note: force-unwrap the value to avoid this warning
+    |                                     `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+122 |             i = _int((i &+ 1))
+123 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden512_machine_learning_logistic_regression1580810758/001/main.swift:121:58: warning: expression implicitly coerced from 'Double?' to 'Any'
+119 |         var i: Int = 0
+120 |         while (i < _int(((a).count))) {
+121 |             s = Double((s + (Double(_idx(a, i)) * Double(_idx(b, i)))))
+    |                                                          |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                                          |- note: provide a default value to avoid this warning
+    |                                                          |- note: force-unwrap the value to avoid this warning
+    |                                                          `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+122 |             i = _int((i &+ 1))
+123 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden512_machine_learning_logistic_regression1580810758/001/main.swift:137:36: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+135 |     func logistic_reg(_ alpha: Double, _ x: [[Double]], _ y: [Double], _ iterations: Int) -> [Double] {
+136 |         let m = _int(((x).count))
+137 |         let n = _int((((_idx(x, 0) as! [Double])).count))
+    |                                    `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+138 |         var theta: [Double] = (zeros(n) as! [Double])
+139 |         var iter: Int = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden512_machine_learning_logistic_regression1580810758/001/main.swift:138:41: warning: forced cast of '[Double]' to same type has no effect
+136 |         let m = _int(((x).count))
+137 |         let n = _int((((_idx(x, 0) as! [Double])).count))
+138 |         var theta: [Double] = (zeros(n) as! [Double])
+    |                                         `- warning: forced cast of '[Double]' to same type has no effect
+139 |         var iter: Int = 0
+140 |         while (iter < iterations) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden512_machine_learning_logistic_regression1580810758/001/main.swift:141:44: warning: forced cast of '[Double]' to same type has no effect
+139 |         var iter: Int = 0
+140 |         while (iter < iterations) {
+141 |             var grad: [Double] = (zeros(n) as! [Double])
+    |                                            `- warning: forced cast of '[Double]' to same type has no effect
+142 |             var i: Int = 0
+143 |             while (i < m) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden512_machine_learning_logistic_regression1580810758/001/main.swift:144:48: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+142 |             var i: Int = 0
+143 |             while (i < m) {
+144 |                 let z = Double(dot((_idx(x, i) as! [Double]), (theta as! [Double])))
+    |                                                `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+145 |                 let h = Double(sigmoid(Double(z)))
+146 |                 var k: Int = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden512_machine_learning_logistic_regression1580810758/001/main.swift:144:70: warning: forced cast of '[Double]' to same type has no effect
+142 |             var i: Int = 0
+143 |             while (i < m) {
+144 |                 let z = Double(dot((_idx(x, i) as! [Double]), (theta as! [Double])))
+    |                                                                      `- warning: forced cast of '[Double]' to same type has no effect
+145 |                 let h = Double(sigmoid(Double(z)))
+146 |                 var k: Int = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden512_machine_learning_logistic_regression1580810758/001/main.swift:148:122: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+146 |                 var k: Int = 0
+147 |                 while (k < n) {
+148 |                     grad = _set(grad, k, Double((Double(_idx(grad, k)) + (Double((h - Double(_idx(y, i)))) * Double(_idx(_idx(x, i), k))))))
+    |                                                                                                                          `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+149 |                     k = _int((k &+ 1))
+150 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden512_machine_learning_logistic_regression1580810758/001/main.swift:155:56: warning: expression implicitly coerced from 'Double?' to 'Any'
+153 |             var k2: Int = 0
+154 |             while (k2 < n) {
+155 |                 theta = _set(theta, k2, Double((Double(_idx(theta, k2)) - ((alpha * Double(_idx(grad, k2))) / Double(m)))))
+    |                                                        |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                                        |- note: provide a default value to avoid this warning
+    |                                                        |- note: force-unwrap the value to avoid this warning
+    |                                                        `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+156 |                 k2 = _int((k2 &+ 1))
+157 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden512_machine_learning_logistic_regression1580810758/001/main.swift:155:92: warning: expression implicitly coerced from 'Double?' to 'Any'
+153 |             var k2: Int = 0
+154 |             while (k2 < n) {
+155 |                 theta = _set(theta, k2, Double((Double(_idx(theta, k2)) - ((alpha * Double(_idx(grad, k2))) / Double(m)))))
+    |                                                                                            |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                                                                            |- note: provide a default value to avoid this warning
+    |                                                                                            |- note: force-unwrap the value to avoid this warning
+    |                                                                                            `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+156 |                 k2 = _int((k2 &+ 1))
+157 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden512_machine_learning_logistic_regression1580810758/001/main.swift:166:59: warning: forced cast of '[[Double]]' to same type has no effect
+164 |     let alpha = 0.1
+165 |     let iterations = 1000
+166 |     var theta: [Double] = (logistic_reg(Double(alpha), (x as! [[Double]]), (y as! [Double]), iterations) as! [Double])
+    |                                                           `- warning: forced cast of '[[Double]]' to same type has no effect
+167 |     for i in 0..<_int(((theta).count)) {
+168 |         print(_p(Double(_idx(theta, i))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden512_machine_learning_logistic_regression1580810758/001/main.swift:166:79: warning: forced cast of '[Double]' to same type has no effect
+164 |     let alpha = 0.1
+165 |     let iterations = 1000
+166 |     var theta: [Double] = (logistic_reg(Double(alpha), (x as! [[Double]]), (y as! [Double]), iterations) as! [Double])
+    |                                                                               `- warning: forced cast of '[Double]' to same type has no effect
+167 |     for i in 0..<_int(((theta).count)) {
+168 |         print(_p(Double(_idx(theta, i))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden512_machine_learning_logistic_regression1580810758/001/main.swift:166:106: warning: forced cast of '[Double]' to same type has no effect
+164 |     let alpha = 0.1
+165 |     let iterations = 1000
+166 |     var theta: [Double] = (logistic_reg(Double(alpha), (x as! [[Double]]), (y as! [Double]), iterations) as! [Double])
+    |                                                                                                          `- warning: forced cast of '[Double]' to same type has no effect
+167 |     for i in 0..<_int(((theta).count)) {
+168 |         print(_p(Double(_idx(theta, i))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden512_machine_learning_logistic_regression1580810758/001/main.swift:168:25: warning: expression implicitly coerced from 'Double?' to 'Any'
+166 |     var theta: [Double] = (logistic_reg(Double(alpha), (x as! [[Double]]), (y as! [Double]), iterations) as! [Double])
+167 |     for i in 0..<_int(((theta).count)) {
+168 |         print(_p(Double(_idx(theta, i))))
+    |                         |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                         |- note: provide a default value to avoid this warning
+    |                         |- note: force-unwrap the value to avoid this warning
+    |                         `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+169 |     }
+170 |     let _benchEnd = _now()

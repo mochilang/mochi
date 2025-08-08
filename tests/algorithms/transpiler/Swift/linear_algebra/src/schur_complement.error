@@ -1,0 +1,426 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:132:41: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+130 |     func transpose(_ mat: [[Double]]) -> [[Double]] {
+131 |         let rows = _int(((mat).count))
+132 |         let cols = _int((((_idx(mat, 0) as! [Double])).count))
+    |                                         `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+133 |         var res: [[Double]] = ([] as! [[Double]])
+134 |         var j: Int = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:139:49: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+137 |             var i: Int = 0
+138 |             while (i < rows) {
+139 |                 row = (_append(row, Double(_idx(_idx(mat, i), j))) as! [Double])
+    |                                                 `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+140 |                 i = _int((i &+ 1))
+141 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:149:39: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+147 |     func matmul(_ a: [[Double]], _ b: [[Double]]) -> [[Double]] {
+148 |         let rows = _int(((a).count))
+149 |         let cols = _int((((_idx(b, 0) as! [Double])).count))
+    |                                       `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+150 |         let inner = _int((((_idx(a, 0) as! [Double])).count))
+151 |         var res: [[Double]] = ([] as! [[Double]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:150:40: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+148 |         let rows = _int(((a).count))
+149 |         let cols = _int((((_idx(b, 0) as! [Double])).count))
+150 |         let inner = _int((((_idx(a, 0) as! [Double])).count))
+    |                                        `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+151 |         var res: [[Double]] = ([] as! [[Double]])
+152 |         var i: Int = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:160:54: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+158 |                 var k: Int = 0
+159 |                 while (k < inner) {
+160 |                     sum = Double((sum + (Double(_idx(_idx(a, i), k)) * Double(_idx(_idx(b, k), j)))))
+    |                                                      `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+161 |                     k = _int((k &+ 1))
+162 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:160:84: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+158 |                 var k: Int = 0
+159 |                 while (k < inner) {
+160 |                     sum = Double((sum + (Double(_idx(_idx(a, i), k)) * Double(_idx(_idx(b, k), j)))))
+    |                                                                                    `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+161 |                     k = _int((k &+ 1))
+162 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:173:39: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+171 |     func mat_sub(_ a: [[Double]], _ b: [[Double]]) -> [[Double]] {
+172 |         let rows = _int(((a).count))
+173 |         let cols = _int((((_idx(a, 0) as! [Double])).count))
+    |                                       `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+174 |         var res: [[Double]] = ([] as! [[Double]])
+175 |         var i: Int = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:180:50: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+178 |             var j: Int = 0
+179 |             while (j < cols) {
+180 |                 row = (_append(row, (Double(_idx(_idx(a, i), j)) - Double(_idx(_idx(b, i), j)))) as! [Double])
+    |                                                  `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+181 |                 j = _int((j &+ 1))
+182 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:180:80: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+178 |             var j: Int = 0
+179 |             while (j < cols) {
+180 |                 row = (_append(row, (Double(_idx(_idx(a, i), j)) - Double(_idx(_idx(b, i), j)))) as! [Double])
+    |                                                                                `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+181 |                 j = _int((j &+ 1))
+182 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:190:43: warning: forced cast of '[[Double]]' to same type has no effect
+188 |     func inverse(_ mat: [[Double]]) -> [[Double]] {
+189 |         let n = _int(((mat).count))
+190 |         let id: [[Double]] = (identity(n) as! [[Double]])
+    |                                           `- warning: forced cast of '[[Double]]' to same type has no effect
+191 |         var aug: [[Double]] = ([] as! [[Double]])
+192 |         var i: Int = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:194:54: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+192 |         var i: Int = 0
+193 |         while (i < n) {
+194 |             let row: [Any?] = (_concat((_idx(mat, i) as! [Double]), (_idx(id, i) as! [Double])) as! [Any?])
+    |                                                      `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+195 |             aug = ((_append(aug, row) as! [Any?]) as! [[Double]])
+196 |             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:194:82: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+192 |         var i: Int = 0
+193 |         while (i < n) {
+194 |             let row: [Any?] = (_concat((_idx(mat, i) as! [Double]), (_idx(id, i) as! [Double])) as! [Any?])
+    |                                                                                  `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+195 |             aug = ((_append(aug, row) as! [Any?]) as! [[Double]])
+196 |             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:200:55: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+198 |         var col: Int = 0
+199 |         while (col < n) {
+200 |             var pivot_row: [Double] = (_idx(aug, col) as! [Double])
+    |                                                       `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+201 |             let pivot = Double(_idx(pivot_row, col))
+202 |             if (pivot == 0.0) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:201:32: warning: expression implicitly coerced from 'Double?' to 'Any'
+199 |         while (col < n) {
+200 |             var pivot_row: [Double] = (_idx(aug, col) as! [Double])
+201 |             let pivot = Double(_idx(pivot_row, col))
+    |                                |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                |- note: provide a default value to avoid this warning
+    |                                |- note: force-unwrap the value to avoid this warning
+    |                                `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+202 |             if (pivot == 0.0) {
+203 |                 _ = fatalError("matrix is singular")
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:207:63: warning: expression implicitly coerced from 'Double?' to 'Any'
+205 |             var j: Int = 0
+206 |             while (j < (2 &* n)) {
+207 |                 pivot_row = _set(pivot_row, j, Double((Double(_idx(pivot_row, j)) / pivot)))
+    |                                                               |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                                               |- note: provide a default value to avoid this warning
+    |                                                               |- note: force-unwrap the value to avoid this warning
+    |                                                               `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+208 |                 j = _int((j &+ 1))
+209 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:210:45: warning: forced cast of '[Double]' to same type has no effect
+208 |                 j = _int((j &+ 1))
+209 |             }
+210 |             aug = _set(aug, col, (pivot_row as! [Double]))
+    |                                             `- warning: forced cast of '[Double]' to same type has no effect
+211 |             var r: Int = 0
+212 |             while (r < n) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:214:57: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+212 |             while (r < n) {
+213 |                 if (r != col) {
+214 |                     var row_r: [Double] = (_idx(aug, r) as! [Double])
+    |                                                         `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+215 |                     let factor = Double(_idx(row_r, col))
+216 |                     j = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:215:41: warning: expression implicitly coerced from 'Double?' to 'Any'
+213 |                 if (r != col) {
+214 |                     var row_r: [Double] = (_idx(aug, r) as! [Double])
+215 |                     let factor = Double(_idx(row_r, col))
+    |                                         |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                         |- note: provide a default value to avoid this warning
+    |                                         |- note: force-unwrap the value to avoid this warning
+    |                                         `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+216 |                     j = 0
+217 |                     while (j < (2 &* n)) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:218:63: warning: expression implicitly coerced from 'Double?' to 'Any'
+216 |                     j = 0
+217 |                     while (j < (2 &* n)) {
+218 |                         row_r = _set(row_r, j, Double((Double(_idx(row_r, j)) - (factor * Double(_idx(pivot_row, j))))))
+    |                                                               |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                                               |- note: provide a default value to avoid this warning
+    |                                                               |- note: force-unwrap the value to avoid this warning
+    |                                                               `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+219 |                         j = _int((j &+ 1))
+220 |                     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:218:98: warning: expression implicitly coerced from 'Double?' to 'Any'
+216 |                     j = 0
+217 |                     while (j < (2 &* n)) {
+218 |                         row_r = _set(row_r, j, Double((Double(_idx(row_r, j)) - (factor * Double(_idx(pivot_row, j))))))
+    |                                                                                                  |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                                                                                  |- note: provide a default value to avoid this warning
+    |                                                                                                  |- note: force-unwrap the value to avoid this warning
+    |                                                                                                  `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+219 |                         j = _int((j &+ 1))
+220 |                     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:221:47: warning: forced cast of '[Double]' to same type has no effect
+219 |                         j = _int((j &+ 1))
+220 |                     }
+221 |                     aug = _set(aug, r, (row_r as! [Double]))
+    |                                               `- warning: forced cast of '[Double]' to same type has no effect
+222 |                 }
+223 |                 r = _int((r &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:233:49: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+231 |             var c: Int = n
+232 |             while (c < (2 &* n)) {
+233 |                 row = (_append(row, Double(_idx(_idx(aug, r), c))) as! [Double])
+    |                                                 `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+234 |                 c = _int((c &+ 1))
+235 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:243:45: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+241 |     func schur_complement(_ mat_a: [[Double]], _ mat_b: [[Double]], _ mat_c: [[Double]], _ pseudo_inv: OptionMatrix) -> [[Double]] {
+242 |         let a_rows = _int(((mat_a).count))
+243 |         let a_cols = _int((((_idx(mat_a, 0) as! [Double])).count))
+    |                                             `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+244 |         if (a_rows != a_cols) {
+245 |             _ = fatalError("Matrix A must be square")
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:250:36: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+248 |             _ = fatalError("Expected the same number of rows for A and B")
+249 |         }
+250 |         if (_int((((_idx(mat_b, 0) as! [Double])).count)) != _int((((_idx(mat_c, 0) as! [Double])).count))) {
+    |                                    `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+251 |             _ = fatalError("Expected the same number of columns for B and C")
+252 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:250:85: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+248 |             _ = fatalError("Expected the same number of rows for A and B")
+249 |         }
+250 |         if (_int((((_idx(mat_b, 0) as! [Double])).count)) != _int((((_idx(mat_c, 0) as! [Double])).count))) {
+    |                                                                                     `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+251 |             _ = fatalError("Expected the same number of columns for B and C")
+252 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:255:39: warning: forced cast of '[[Double]]' to same type has no effect
+253 |         var a_inv: [[Double]] = []
+254 |         if pseudo_inv.ok {
+255 |             a_inv = (pseudo_inv.value as! [[Double]])
+    |                                       `- warning: forced cast of '[[Double]]' to same type has no effect
+256 |         } else {
+257 |             a_inv = (inverse((mat_a as! [[Double]])) as! [[Double]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:257:37: warning: forced cast of '[[Double]]' to same type has no effect
+255 |             a_inv = (pseudo_inv.value as! [[Double]])
+256 |         } else {
+257 |             a_inv = (inverse((mat_a as! [[Double]])) as! [[Double]])
+    |                                     `- warning: forced cast of '[[Double]]' to same type has no effect
+258 |         }
+259 |         let bt: [[Double]] = (transpose((mat_b as! [[Double]])) as! [[Double]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:257:54: warning: forced cast of '[[Double]]' to same type has no effect
+255 |             a_inv = (pseudo_inv.value as! [[Double]])
+256 |         } else {
+257 |             a_inv = (inverse((mat_a as! [[Double]])) as! [[Double]])
+    |                                                      `- warning: forced cast of '[[Double]]' to same type has no effect
+258 |         }
+259 |         let bt: [[Double]] = (transpose((mat_b as! [[Double]])) as! [[Double]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:259:48: warning: forced cast of '[[Double]]' to same type has no effect
+257 |             a_inv = (inverse((mat_a as! [[Double]])) as! [[Double]])
+258 |         }
+259 |         let bt: [[Double]] = (transpose((mat_b as! [[Double]])) as! [[Double]])
+    |                                                `- warning: forced cast of '[[Double]]' to same type has no effect
+260 |         let a_inv_b: [[Double]] = (matmul((a_inv as! [[Double]]), (mat_b as! [[Double]])) as! [[Double]])
+261 |         let bt_a_inv_b: [[Double]] = (matmul((bt as! [[Double]]), (a_inv_b as! [[Double]])) as! [[Double]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:259:65: warning: forced cast of '[[Double]]' to same type has no effect
+257 |             a_inv = (inverse((mat_a as! [[Double]])) as! [[Double]])
+258 |         }
+259 |         let bt: [[Double]] = (transpose((mat_b as! [[Double]])) as! [[Double]])
+    |                                                                 `- warning: forced cast of '[[Double]]' to same type has no effect
+260 |         let a_inv_b: [[Double]] = (matmul((a_inv as! [[Double]]), (mat_b as! [[Double]])) as! [[Double]])
+261 |         let bt_a_inv_b: [[Double]] = (matmul((bt as! [[Double]]), (a_inv_b as! [[Double]])) as! [[Double]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:260:50: warning: forced cast of '[[Double]]' to same type has no effect
+258 |         }
+259 |         let bt: [[Double]] = (transpose((mat_b as! [[Double]])) as! [[Double]])
+260 |         let a_inv_b: [[Double]] = (matmul((a_inv as! [[Double]]), (mat_b as! [[Double]])) as! [[Double]])
+    |                                                  `- warning: forced cast of '[[Double]]' to same type has no effect
+261 |         let bt_a_inv_b: [[Double]] = (matmul((bt as! [[Double]]), (a_inv_b as! [[Double]])) as! [[Double]])
+262 |         return (mat_sub((mat_c as! [[Double]]), (bt_a_inv_b as! [[Double]])) as! [[Double]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:260:74: warning: forced cast of '[[Double]]' to same type has no effect
+258 |         }
+259 |         let bt: [[Double]] = (transpose((mat_b as! [[Double]])) as! [[Double]])
+260 |         let a_inv_b: [[Double]] = (matmul((a_inv as! [[Double]]), (mat_b as! [[Double]])) as! [[Double]])
+    |                                                                          `- warning: forced cast of '[[Double]]' to same type has no effect
+261 |         let bt_a_inv_b: [[Double]] = (matmul((bt as! [[Double]]), (a_inv_b as! [[Double]])) as! [[Double]])
+262 |         return (mat_sub((mat_c as! [[Double]]), (bt_a_inv_b as! [[Double]])) as! [[Double]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:260:91: warning: forced cast of '[[Double]]' to same type has no effect
+258 |         }
+259 |         let bt: [[Double]] = (transpose((mat_b as! [[Double]])) as! [[Double]])
+260 |         let a_inv_b: [[Double]] = (matmul((a_inv as! [[Double]]), (mat_b as! [[Double]])) as! [[Double]])
+    |                                                                                           `- warning: forced cast of '[[Double]]' to same type has no effect
+261 |         let bt_a_inv_b: [[Double]] = (matmul((bt as! [[Double]]), (a_inv_b as! [[Double]])) as! [[Double]])
+262 |         return (mat_sub((mat_c as! [[Double]]), (bt_a_inv_b as! [[Double]])) as! [[Double]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:261:50: warning: forced cast of '[[Double]]' to same type has no effect
+259 |         let bt: [[Double]] = (transpose((mat_b as! [[Double]])) as! [[Double]])
+260 |         let a_inv_b: [[Double]] = (matmul((a_inv as! [[Double]]), (mat_b as! [[Double]])) as! [[Double]])
+261 |         let bt_a_inv_b: [[Double]] = (matmul((bt as! [[Double]]), (a_inv_b as! [[Double]])) as! [[Double]])
+    |                                                  `- warning: forced cast of '[[Double]]' to same type has no effect
+262 |         return (mat_sub((mat_c as! [[Double]]), (bt_a_inv_b as! [[Double]])) as! [[Double]])
+263 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:261:76: warning: forced cast of '[[Double]]' to same type has no effect
+259 |         let bt: [[Double]] = (transpose((mat_b as! [[Double]])) as! [[Double]])
+260 |         let a_inv_b: [[Double]] = (matmul((a_inv as! [[Double]]), (mat_b as! [[Double]])) as! [[Double]])
+261 |         let bt_a_inv_b: [[Double]] = (matmul((bt as! [[Double]]), (a_inv_b as! [[Double]])) as! [[Double]])
+    |                                                                            `- warning: forced cast of '[[Double]]' to same type has no effect
+262 |         return (mat_sub((mat_c as! [[Double]]), (bt_a_inv_b as! [[Double]])) as! [[Double]])
+263 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:261:93: warning: forced cast of '[[Double]]' to same type has no effect
+259 |         let bt: [[Double]] = (transpose((mat_b as! [[Double]])) as! [[Double]])
+260 |         let a_inv_b: [[Double]] = (matmul((a_inv as! [[Double]]), (mat_b as! [[Double]])) as! [[Double]])
+261 |         let bt_a_inv_b: [[Double]] = (matmul((bt as! [[Double]]), (a_inv_b as! [[Double]])) as! [[Double]])
+    |                                                                                             `- warning: forced cast of '[[Double]]' to same type has no effect
+262 |         return (mat_sub((mat_c as! [[Double]]), (bt_a_inv_b as! [[Double]])) as! [[Double]])
+263 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:262:32: warning: forced cast of '[[Double]]' to same type has no effect
+260 |         let a_inv_b: [[Double]] = (matmul((a_inv as! [[Double]]), (mat_b as! [[Double]])) as! [[Double]])
+261 |         let bt_a_inv_b: [[Double]] = (matmul((bt as! [[Double]]), (a_inv_b as! [[Double]])) as! [[Double]])
+262 |         return (mat_sub((mat_c as! [[Double]]), (bt_a_inv_b as! [[Double]])) as! [[Double]])
+    |                                `- warning: forced cast of '[[Double]]' to same type has no effect
+263 |     }
+264 |     func print_matrix(_ mat: [[Double]]) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:262:61: warning: forced cast of '[[Double]]' to same type has no effect
+260 |         let a_inv_b: [[Double]] = (matmul((a_inv as! [[Double]]), (mat_b as! [[Double]])) as! [[Double]])
+261 |         let bt_a_inv_b: [[Double]] = (matmul((bt as! [[Double]]), (a_inv_b as! [[Double]])) as! [[Double]])
+262 |         return (mat_sub((mat_c as! [[Double]]), (bt_a_inv_b as! [[Double]])) as! [[Double]])
+    |                                                             `- warning: forced cast of '[[Double]]' to same type has no effect
+263 |     }
+264 |     func print_matrix(_ mat: [[Double]]) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:262:78: warning: forced cast of '[[Double]]' to same type has no effect
+260 |         let a_inv_b: [[Double]] = (matmul((a_inv as! [[Double]]), (mat_b as! [[Double]])) as! [[Double]])
+261 |         let bt_a_inv_b: [[Double]] = (matmul((bt as! [[Double]]), (a_inv_b as! [[Double]])) as! [[Double]])
+262 |         return (mat_sub((mat_c as! [[Double]]), (bt_a_inv_b as! [[Double]])) as! [[Double]])
+    |                                                                              `- warning: forced cast of '[[Double]]' to same type has no effect
+263 |     }
+264 |     func print_matrix(_ mat: [[Double]]) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:269:47: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+267 |             var line: String = ""
+268 |             var j: Int = 0
+269 |             let row: [Double] = (_idx(mat, i) as! [Double])
+    |                                               `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+270 |             while (j < _int(((row).count))) {
+271 |                 line = ((line + _p(Double(_idx(row, j)))) as! String)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:271:59: warning: forced cast of 'String' to same type has no effect
+269 |             let row: [Double] = (_idx(mat, i) as! [Double])
+270 |             while (j < _int(((row).count))) {
+271 |                 line = ((line + _p(Double(_idx(row, j)))) as! String)
+    |                                                           `- warning: forced cast of 'String' to same type has no effect
+272 |                 if ((j &+ 1) < _int(((row).count))) {
+273 |                     line = ((line + " ") as! String)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:271:43: warning: expression implicitly coerced from 'Double?' to 'Any'
+269 |             let row: [Double] = (_idx(mat, i) as! [Double])
+270 |             while (j < _int(((row).count))) {
+271 |                 line = ((line + _p(Double(_idx(row, j)))) as! String)
+    |                                           |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                           |- note: provide a default value to avoid this warning
+    |                                           |- note: force-unwrap the value to avoid this warning
+    |                                           `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+272 |                 if ((j &+ 1) < _int(((row).count))) {
+273 |                     line = ((line + " ") as! String)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:273:42: warning: forced cast of 'String' to same type has no effect
+271 |                 line = ((line + _p(Double(_idx(row, j)))) as! String)
+272 |                 if ((j &+ 1) < _int(((row).count))) {
+273 |                     line = ((line + " ") as! String)
+    |                                          `- warning: forced cast of 'String' to same type has no effect
+274 |                 }
+275 |                 j = _int((j &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:286:50: warning: forced cast of '[[Double]]' to same type has no effect
+284 |         let c: [[Double]] = ([([2.0, 1.0] as! [Double]), ([6.0, 3.0] as! [Double])] as! [[Double]])
+285 |         let none = OptionMatrix(value: [], ok: false)
+286 |         let s: [[Double]] = (schur_complement((a as! [[Double]]), (b as! [[Double]]), (c as! [[Double]]), (none as! OptionMatrix)) as! [[Double]])
+    |                                                  `- warning: forced cast of '[[Double]]' to same type has no effect
+287 |         _ = print_matrix((s as! [[Double]]))
+288 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:286:70: warning: forced cast of '[[Double]]' to same type has no effect
+284 |         let c: [[Double]] = ([([2.0, 1.0] as! [Double]), ([6.0, 3.0] as! [Double])] as! [[Double]])
+285 |         let none = OptionMatrix(value: [], ok: false)
+286 |         let s: [[Double]] = (schur_complement((a as! [[Double]]), (b as! [[Double]]), (c as! [[Double]]), (none as! OptionMatrix)) as! [[Double]])
+    |                                                                      `- warning: forced cast of '[[Double]]' to same type has no effect
+287 |         _ = print_matrix((s as! [[Double]]))
+288 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:286:90: warning: forced cast of '[[Double]]' to same type has no effect
+284 |         let c: [[Double]] = ([([2.0, 1.0] as! [Double]), ([6.0, 3.0] as! [Double])] as! [[Double]])
+285 |         let none = OptionMatrix(value: [], ok: false)
+286 |         let s: [[Double]] = (schur_complement((a as! [[Double]]), (b as! [[Double]]), (c as! [[Double]]), (none as! OptionMatrix)) as! [[Double]])
+    |                                                                                          `- warning: forced cast of '[[Double]]' to same type has no effect
+287 |         _ = print_matrix((s as! [[Double]]))
+288 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:286:113: warning: forced cast of 'OptionMatrix' to same type has no effect
+284 |         let c: [[Double]] = ([([2.0, 1.0] as! [Double]), ([6.0, 3.0] as! [Double])] as! [[Double]])
+285 |         let none = OptionMatrix(value: [], ok: false)
+286 |         let s: [[Double]] = (schur_complement((a as! [[Double]]), (b as! [[Double]]), (c as! [[Double]]), (none as! OptionMatrix)) as! [[Double]])
+    |                                                                                                                 `- warning: forced cast of 'OptionMatrix' to same type has no effect
+287 |         _ = print_matrix((s as! [[Double]]))
+288 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:286:132: warning: forced cast of '[[Double]]' to same type has no effect
+284 |         let c: [[Double]] = ([([2.0, 1.0] as! [Double]), ([6.0, 3.0] as! [Double])] as! [[Double]])
+285 |         let none = OptionMatrix(value: [], ok: false)
+286 |         let s: [[Double]] = (schur_complement((a as! [[Double]]), (b as! [[Double]]), (c as! [[Double]]), (none as! OptionMatrix)) as! [[Double]])
+    |                                                                                                                                    `- warning: forced cast of '[[Double]]' to same type has no effect
+287 |         _ = print_matrix((s as! [[Double]]))
+288 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:287:29: warning: forced cast of '[[Double]]' to same type has no effect
+285 |         let none = OptionMatrix(value: [], ok: false)
+286 |         let s: [[Double]] = (schur_complement((a as! [[Double]]), (b as! [[Double]]), (c as! [[Double]]), (none as! OptionMatrix)) as! [[Double]])
+287 |         _ = print_matrix((s as! [[Double]]))
+    |                             `- warning: forced cast of '[[Double]]' to same type has no effect
+288 |     }
+289 |     _ = main()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:287:9: warning: using '_' to ignore the result of a Void-returning function is redundant
+285 |         let none = OptionMatrix(value: [], ok: false)
+286 |         let s: [[Double]] = (schur_complement((a as! [[Double]]), (b as! [[Double]]), (c as! [[Double]]), (none as! OptionMatrix)) as! [[Double]])
+287 |         _ = print_matrix((s as! [[Double]]))
+    |         `- warning: using '_' to ignore the result of a Void-returning function is redundant
+288 |     }
+289 |     _ = main()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden493_linear_algebra_src_schur_complement4105839938/001/main.swift:289:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+287 |         _ = print_matrix((s as! [[Double]]))
+288 |     }
+289 |     _ = main()
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+290 |     let _benchEnd = _now()
+291 |     let _benchMemEnd = _mem()

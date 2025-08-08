@@ -1,0 +1,274 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:142:49: warning: conditional downcast from 'Int?' to 'Int' does nothing
+140 |         while (k < class_count) {
+141 |             var i: Int = 0
+142 |             while (i < (_idx(instance_count, k) as? Int ?? 0)) {
+    |                                                 `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+143 |                 res = (_append(res, k) as! [Int])
+144 |                 i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:154:44: warning: expression implicitly coerced from 'Double?' to 'Any'
+152 |         var i: Int = 0
+153 |         while (i < instance_count) {
+154 |             total = Double((total + Double(_idx(items, i))))
+    |                                            |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                            |- note: provide a default value to avoid this warning
+    |                                            |- note: force-unwrap the value to avoid this warning
+    |                                            `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+155 |             i = _int((i &+ 1))
+156 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:167:47: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+165 |         while (i < _int(((items).count))) {
+166 |             var j: Int = 0
+167 |             while (j < _int((((_idx(items, i) as! [Double])).count))) {
+    |                                               `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+168 |                 let diff = (Double(_idx(_idx(items, i), j)) - Double(_idx(means, i)))
+169 |                 squared_diff = (_append(squared_diff, (diff * diff)) as! [Double])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:168:41: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+166 |             var j: Int = 0
+167 |             while (j < _int((((_idx(items, i) as! [Double])).count))) {
+168 |                 let diff = (Double(_idx(_idx(items, i), j)) - Double(_idx(means, i)))
+    |                                         `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+169 |                 squared_diff = (_append(squared_diff, (diff * diff)) as! [Double])
+170 |                 j = _int((j &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:169:61: error: cannot convert value of type 'Duration' to expected argument type 'Double'
+167 |             while (j < _int((((_idx(items, i) as! [Double])).count))) {
+168 |                 let diff = (Double(_idx(_idx(items, i), j)) - Double(_idx(means, i)))
+169 |                 squared_diff = (_append(squared_diff, (diff * diff)) as! [Double])
+    |                                                             `- error: cannot convert value of type 'Duration' to expected argument type 'Double'
+170 |                 j = _int((j &+ 1))
+171 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:177:46: warning: expression implicitly coerced from 'Double?' to 'Any'
+175 |         var k: Int = 0
+176 |         while (k < _int(((squared_diff).count))) {
+177 |             sum_sq = Double((sum_sq + Double(_idx(squared_diff, k))))
+    |                                              |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                              |- note: provide a default value to avoid this warning
+    |                                              |- note: force-unwrap the value to avoid this warning
+    |                                              `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+178 |             k = _int((k &+ 1))
+179 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:188:49: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+186 |         while (i < _int(((x_items).count))) {
+187 |             var j: Int = 0
+188 |             while (j < _int((((_idx(x_items, i) as! [Double])).count))) {
+    |                                                 `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+189 |                 var temp: [Double] = ([] as! [Double])
+190 |                 var k: Int = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:192:48: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+190 |                 var k: Int = 0
+191 |                 while (k < _int(((x_items).count))) {
+192 |                     let discr = (((Double(_idx(_idx(x_items, i), j)) * Double((Double(_idx(means, k)) / variance))) - (Double((Double(_idx(means, k)) * Double(_idx(means, k)))) / Double((2.0 * variance)))) + Double(ln(Double(_idx(probabilities, k)))))
+    |                                                `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+193 |                     temp = (_append(temp, discr) as! [Double])
+194 |                     k = _int((k &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:197:46: warning: expression implicitly coerced from 'Double?' to 'Any'
+195 |                 }
+196 |                 var max_idx: Int = 0
+197 |                 var max_val: Double = Double(_idx(temp, 0))
+    |                                              |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                              |- note: provide a default value to avoid this warning
+    |                                              |- note: force-unwrap the value to avoid this warning
+    |                                              `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+198 |                 var t: Int = 1
+199 |                 while (t < _int(((temp).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:200:32: warning: expression implicitly coerced from 'Double?' to 'Any'
+198 |                 var t: Int = 1
+199 |                 while (t < _int(((temp).count))) {
+200 |                     if (Double(_idx(temp, t)) > max_val) {
+    |                                |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                |- note: provide a default value to avoid this warning
+    |                                |- note: force-unwrap the value to avoid this warning
+    |                                `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+201 |                         max_val = Double(_idx(temp, t))
+202 |                         max_idx = Int(t)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:201:42: warning: expression implicitly coerced from 'Double?' to 'Any'
+199 |                 while (t < _int(((temp).count))) {
+200 |                     if (Double(_idx(temp, t)) > max_val) {
+201 |                         max_val = Double(_idx(temp, t))
+    |                                          |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                          |- note: provide a default value to avoid this warning
+    |                                          |- note: force-unwrap the value to avoid this warning
+    |                                          `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+202 |                         max_idx = Int(t)
+203 |                     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:217:36: warning: conditional downcast from 'Int?' to 'Int' does nothing
+215 |         var i: Int = 0
+216 |         while (i < _int(((actual_y).count))) {
+217 |             if ((_idx(actual_y, i) as? Int ?? 0) == (_idx(predicted_y, i) as? Int ?? 0)) {
+    |                                    `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+218 |                 correct = _int((correct &+ 1))
+219 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:217:75: warning: conditional downcast from 'Int?' to 'Int' does nothing
+215 |         var i: Int = 0
+216 |         while (i < _int(((actual_y).count))) {
+217 |             if ((_idx(actual_y, i) as? Int ?? 0) == (_idx(predicted_y, i) as? Int ?? 0)) {
+    |                                                                           `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+218 |                 correct = _int((correct &+ 1))
+219 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:232:110: warning: conditional downcast from 'Int?' to 'Int' does nothing
+230 |         var i: Int = 0
+231 |         while (i < _int(((counts).count))) {
+232 |             x = (_append(x, (gaussian_distribution(Double(_idx(means, i)), Double(std_dev), (_idx(counts, i) as? Int ?? 0)) as! [Double])) as! [[Double]])
+    |                                                                                                              `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+233 |             i = _int((i &+ 1))
+234 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:232:125: warning: forced cast of '[Double]' to same type has no effect
+230 |         var i: Int = 0
+231 |         while (i < _int(((counts).count))) {
+232 |             x = (_append(x, (gaussian_distribution(Double(_idx(means, i)), Double(std_dev), (_idx(counts, i) as? Int ?? 0)) as! [Double])) as! [[Double]])
+    |                                                                                                                             `- warning: forced cast of '[Double]' to same type has no effect
+233 |             i = _int((i &+ 1))
+234 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:232:59: warning: expression implicitly coerced from 'Double?' to 'Any'
+230 |         var i: Int = 0
+231 |         while (i < _int(((counts).count))) {
+232 |             x = (_append(x, (gaussian_distribution(Double(_idx(means, i)), Double(std_dev), (_idx(counts, i) as? Int ?? 0)) as! [Double])) as! [[Double]])
+    |                                                           |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                                           |- note: provide a default value to avoid this warning
+    |                                                           |- note: force-unwrap the value to avoid this warning
+    |                                                           `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+233 |             i = _int((i &+ 1))
+234 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:235:69: warning: forced cast of '[Int]' to same type has no effect
+233 |             i = _int((i &+ 1))
+234 |         }
+235 |         let y: [Int] = (y_generator(_int(((counts).count)), (counts as! [Int])) as! [Int])
+    |                                                                     `- warning: forced cast of '[Int]' to same type has no effect
+236 |         var actual_means: [Double] = ([] as! [Double])
+237 |         i = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:235:81: warning: forced cast of '[Int]' to same type has no effect
+233 |             i = _int((i &+ 1))
+234 |         }
+235 |         let y: [Int] = (y_generator(_int(((counts).count)), (counts as! [Int])) as! [Int])
+    |                                                                                 `- warning: forced cast of '[Int]' to same type has no effect
+236 |         var actual_means: [Double] = ([] as! [Double])
+237 |         i = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:239:90: warning: conditional downcast from 'Int?' to 'Int' does nothing
+237 |         i = 0
+238 |         while (i < _int(((counts).count))) {
+239 |             actual_means = (_append(actual_means, Double(calculate_mean((_idx(counts, i) as? Int ?? 0), (_idx(x, i) as! [Double])))) as! [Double])
+    |                                                                                          `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+240 |             i = _int((i &+ 1))
+241 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:239:117: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+237 |         i = 0
+238 |         while (i < _int(((counts).count))) {
+239 |             actual_means = (_append(actual_means, Double(calculate_mean((_idx(counts, i) as? Int ?? 0), (_idx(x, i) as! [Double])))) as! [Double])
+    |                                                                                                                     `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+240 |             i = _int((i &+ 1))
+241 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:245:65: warning: conditional downcast from 'Int?' to 'Int' does nothing
+243 |         i = 0
+244 |         while (i < _int(((counts).count))) {
+245 |             total_count = _int((total_count &+ (_idx(counts, i) as? Int ?? 0)))
+    |                                                                 `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+246 |             i = _int((i &+ 1))
+247 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:251:101: warning: conditional downcast from 'Int?' to 'Int' does nothing
+249 |         i = 0
+250 |         while (i < _int(((counts).count))) {
+251 |             probabilities = (_append(probabilities, Double(calculate_probabilities((_idx(counts, i) as? Int ?? 0), total_count))) as! [Double])
+    |                                                                                                     `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+252 |             i = _int((i &+ 1))
+253 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:254:53: warning: forced cast of '[[Double]]' to same type has no effect
+252 |             i = _int((i &+ 1))
+253 |         }
+254 |         let variance = Double(calculate_variance((x as! [[Double]]), (actual_means as! [Double]), total_count))
+    |                                                     `- warning: forced cast of '[[Double]]' to same type has no effect
+255 |         let predicted: [Int] = (predict_y_values((x as! [[Double]]), (actual_means as! [Double]), Double(variance), (probabilities as! [Double])) as! [Int])
+256 |         print(_p("[" + predicted.map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: ", ") + "]"))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:254:84: warning: forced cast of '[Double]' to same type has no effect
+252 |             i = _int((i &+ 1))
+253 |         }
+254 |         let variance = Double(calculate_variance((x as! [[Double]]), (actual_means as! [Double]), total_count))
+    |                                                                                    `- warning: forced cast of '[Double]' to same type has no effect
+255 |         let predicted: [Int] = (predict_y_values((x as! [[Double]]), (actual_means as! [Double]), Double(variance), (probabilities as! [Double])) as! [Int])
+256 |         print(_p("[" + predicted.map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: ", ") + "]"))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:255:53: warning: forced cast of '[[Double]]' to same type has no effect
+253 |         }
+254 |         let variance = Double(calculate_variance((x as! [[Double]]), (actual_means as! [Double]), total_count))
+255 |         let predicted: [Int] = (predict_y_values((x as! [[Double]]), (actual_means as! [Double]), Double(variance), (probabilities as! [Double])) as! [Int])
+    |                                                     `- warning: forced cast of '[[Double]]' to same type has no effect
+256 |         print(_p("[" + predicted.map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: ", ") + "]"))
+257 |         print(_p(Double(accuracy((y as! [Int]), (predicted as! [Int])))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:255:84: warning: forced cast of '[Double]' to same type has no effect
+253 |         }
+254 |         let variance = Double(calculate_variance((x as! [[Double]]), (actual_means as! [Double]), total_count))
+255 |         let predicted: [Int] = (predict_y_values((x as! [[Double]]), (actual_means as! [Double]), Double(variance), (probabilities as! [Double])) as! [Int])
+    |                                                                                    `- warning: forced cast of '[Double]' to same type has no effect
+256 |         print(_p("[" + predicted.map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: ", ") + "]"))
+257 |         print(_p(Double(accuracy((y as! [Int]), (predicted as! [Int])))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:255:132: warning: forced cast of '[Double]' to same type has no effect
+253 |         }
+254 |         let variance = Double(calculate_variance((x as! [[Double]]), (actual_means as! [Double]), total_count))
+255 |         let predicted: [Int] = (predict_y_values((x as! [[Double]]), (actual_means as! [Double]), Double(variance), (probabilities as! [Double])) as! [Int])
+    |                                                                                                                                    `- warning: forced cast of '[Double]' to same type has no effect
+256 |         print(_p("[" + predicted.map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: ", ") + "]"))
+257 |         print(_p(Double(accuracy((y as! [Int]), (predicted as! [Int])))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:255:147: warning: forced cast of '[Int]' to same type has no effect
+253 |         }
+254 |         let variance = Double(calculate_variance((x as! [[Double]]), (actual_means as! [Double]), total_count))
+255 |         let predicted: [Int] = (predict_y_values((x as! [[Double]]), (actual_means as! [Double]), Double(variance), (probabilities as! [Double])) as! [Int])
+    |                                                                                                                                                   `- warning: forced cast of '[Int]' to same type has no effect
+256 |         print(_p("[" + predicted.map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: ", ") + "]"))
+257 |         print(_p(Double(accuracy((y as! [Int]), (predicted as! [Int])))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:256:53: warning: cast from 'Int' to unrelated type 'String' always fails
+254 |         let variance = Double(calculate_variance((x as! [[Double]]), (actual_means as! [Double]), total_count))
+255 |         let predicted: [Int] = (predict_y_values((x as! [[Double]]), (actual_means as! [Double]), Double(variance), (probabilities as! [Double])) as! [Int])
+256 |         print(_p("[" + predicted.map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: ", ") + "]"))
+    |                                                     `- warning: cast from 'Int' to unrelated type 'String' always fails
+257 |         print(_p(Double(accuracy((y as! [Int]), (predicted as! [Int])))))
+258 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:257:37: warning: forced cast of '[Int]' to same type has no effect
+255 |         let predicted: [Int] = (predict_y_values((x as! [[Double]]), (actual_means as! [Double]), Double(variance), (probabilities as! [Double])) as! [Int])
+256 |         print(_p("[" + predicted.map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: ", ") + "]"))
+257 |         print(_p(Double(accuracy((y as! [Int]), (predicted as! [Int])))))
+    |                                     `- warning: forced cast of '[Int]' to same type has no effect
+258 |     }
+259 |     _ = main()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:257:60: warning: forced cast of '[Int]' to same type has no effect
+255 |         let predicted: [Int] = (predict_y_values((x as! [[Double]]), (actual_means as! [Double]), Double(variance), (probabilities as! [Double])) as! [Int])
+256 |         print(_p("[" + predicted.map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: ", ") + "]"))
+257 |         print(_p(Double(accuracy((y as! [Int]), (predicted as! [Int])))))
+    |                                                            `- warning: forced cast of '[Int]' to same type has no effect
+258 |     }
+259 |     _ = main()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden509_machine_learning_linear_discriminant_analysis1241725580/001/main.swift:259:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+257 |         print(_p(Double(accuracy((y as! [Int]), (predicted as! [Int])))))
+258 |     }
+259 |     _ = main()
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+260 |     let _benchEnd = _now()
+261 |     let _benchMemEnd = _mem()

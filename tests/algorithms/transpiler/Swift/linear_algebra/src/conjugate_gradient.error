@@ -1,0 +1,382 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:92:41: warning: expression implicitly coerced from 'Double?' to 'Any'
+ 90 |         var i: Int = 0
+ 91 |         while (i < _int(((a).count))) {
+ 92 |             sum = Double((sum + (Double(_idx(a, i)) * Double(_idx(b, i)))))
+    |                                         |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                         |- note: provide a default value to avoid this warning
+    |                                         |- note: force-unwrap the value to avoid this warning
+    |                                         `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+ 93 |             i = _int((i &+ 1))
+ 94 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:92:62: warning: expression implicitly coerced from 'Double?' to 'Any'
+ 90 |         var i: Int = 0
+ 91 |         while (i < _int(((a).count))) {
+ 92 |             sum = Double((sum + (Double(_idx(a, i)) * Double(_idx(b, i)))))
+    |                                                              |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                                              |- note: provide a default value to avoid this warning
+    |                                                              |- note: force-unwrap the value to avoid this warning
+    |                                                              `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+ 93 |             i = _int((i &+ 1))
+ 94 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:103:43: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+101 |             var s: Double = 0.0
+102 |             var j: Int = 0
+103 |             while (j < _int((((_idx(m, i) as! [Double])).count))) {
+    |                                           `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+104 |                 s = Double((s + (Double(_idx(_idx(m, i), j)) * Double(_idx(v, j)))))
+105 |                 j = _int((j &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:104:46: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+102 |             var j: Int = 0
+103 |             while (j < _int((((_idx(m, i) as! [Double])).count))) {
+104 |                 s = Double((s + (Double(_idx(_idx(m, i), j)) * Double(_idx(v, j)))))
+    |                                              `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+105 |                 j = _int((j &+ 1))
+106 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:116:41: warning: expression implicitly coerced from 'Double?' to 'Any'
+114 |         var i: Int = 0
+115 |         while (i < _int(((a).count))) {
+116 |             res = (_append(res, (Double(_idx(a, i)) + Double(_idx(b, i)))) as! [Double])
+    |                                         |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                         |- note: provide a default value to avoid this warning
+    |                                         |- note: force-unwrap the value to avoid this warning
+    |                                         `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+117 |             i = _int((i &+ 1))
+118 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:116:62: warning: expression implicitly coerced from 'Double?' to 'Any'
+114 |         var i: Int = 0
+115 |         while (i < _int(((a).count))) {
+116 |             res = (_append(res, (Double(_idx(a, i)) + Double(_idx(b, i)))) as! [Double])
+    |                                                              |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                                              |- note: provide a default value to avoid this warning
+    |                                                              |- note: force-unwrap the value to avoid this warning
+    |                                                              `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+117 |             i = _int((i &+ 1))
+118 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:125:41: warning: expression implicitly coerced from 'Double?' to 'Any'
+123 |         var i: Int = 0
+124 |         while (i < _int(((a).count))) {
+125 |             res = (_append(res, (Double(_idx(a, i)) - Double(_idx(b, i)))) as! [Double])
+    |                                         |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                         |- note: provide a default value to avoid this warning
+    |                                         |- note: force-unwrap the value to avoid this warning
+    |                                         `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+126 |             i = _int((i &+ 1))
+127 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:125:62: warning: expression implicitly coerced from 'Double?' to 'Any'
+123 |         var i: Int = 0
+124 |         while (i < _int(((a).count))) {
+125 |             res = (_append(res, (Double(_idx(a, i)) - Double(_idx(b, i)))) as! [Double])
+    |                                                              |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                                              |- note: provide a default value to avoid this warning
+    |                                                              |- note: force-unwrap the value to avoid this warning
+    |                                                              `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+126 |             i = _int((i &+ 1))
+127 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:134:45: warning: expression implicitly coerced from 'Double?' to 'Any'
+132 |         var i: Int = 0
+133 |         while (i < _int(((v).count))) {
+134 |             res = (_append(res, (s * Double(_idx(v, i)))) as! [Double])
+    |                                             |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                             |- note: provide a default value to avoid this warning
+    |                                             |- note: force-unwrap the value to avoid this warning
+    |                                             `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+135 |             i = _int((i &+ 1))
+136 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:152:48: warning: forced cast of '[Double]' to same type has no effect
+150 |     }
+151 |     func norm(_ v: [Double]) -> Double {
+152 |         return Double(sqrtApprox(Double(dot((v as! [Double]), (v as! [Double])))))
+    |                                                `- warning: forced cast of '[Double]' to same type has no effect
+153 |     }
+154 |     func conjugate_gradient(_ A: [[Double]], _ b: [Double], _ max_iterations: Int, _ tol: Double) -> [Double] {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:152:66: warning: forced cast of '[Double]' to same type has no effect
+150 |     }
+151 |     func norm(_ v: [Double]) -> Double {
+152 |         return Double(sqrtApprox(Double(dot((v as! [Double]), (v as! [Double])))))
+    |                                                                  `- warning: forced cast of '[Double]' to same type has no effect
+153 |     }
+154 |     func conjugate_gradient(_ A: [[Double]], _ b: [Double], _ max_iterations: Int, _ tol: Double) -> [Double] {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:156:37: warning: forced cast of '[Double]' to same type has no effect
+154 |     func conjugate_gradient(_ A: [[Double]], _ b: [Double], _ max_iterations: Int, _ tol: Double) -> [Double] {
+155 |         let n = _int(((b).count))
+156 |         var x: [Double] = (zeros(n) as! [Double])
+    |                                     `- warning: forced cast of '[Double]' to same type has no effect
+157 |         var r: [Double] = (vec_sub((b as! [Double]), (mat_vec_mul((A as! [[Double]]), (x as! [Double])) as! [Double])) as! [Double])
+158 |         var p: [Double] = r
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:157:39: warning: forced cast of '[Double]' to same type has no effect
+155 |         let n = _int(((b).count))
+156 |         var x: [Double] = (zeros(n) as! [Double])
+157 |         var r: [Double] = (vec_sub((b as! [Double]), (mat_vec_mul((A as! [[Double]]), (x as! [Double])) as! [Double])) as! [Double])
+    |                                       `- warning: forced cast of '[Double]' to same type has no effect
+158 |         var p: [Double] = r
+159 |         var rs_old: Double = Double(dot((r as! [Double]), (r as! [Double])))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:157:70: warning: forced cast of '[[Double]]' to same type has no effect
+155 |         let n = _int(((b).count))
+156 |         var x: [Double] = (zeros(n) as! [Double])
+157 |         var r: [Double] = (vec_sub((b as! [Double]), (mat_vec_mul((A as! [[Double]]), (x as! [Double])) as! [Double])) as! [Double])
+    |                                                                      `- warning: forced cast of '[[Double]]' to same type has no effect
+158 |         var p: [Double] = r
+159 |         var rs_old: Double = Double(dot((r as! [Double]), (r as! [Double])))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:157:90: warning: forced cast of '[Double]' to same type has no effect
+155 |         let n = _int(((b).count))
+156 |         var x: [Double] = (zeros(n) as! [Double])
+157 |         var r: [Double] = (vec_sub((b as! [Double]), (mat_vec_mul((A as! [[Double]]), (x as! [Double])) as! [Double])) as! [Double])
+    |                                                                                          `- warning: forced cast of '[Double]' to same type has no effect
+158 |         var p: [Double] = r
+159 |         var rs_old: Double = Double(dot((r as! [Double]), (r as! [Double])))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:157:105: warning: forced cast of '[Double]' to same type has no effect
+155 |         let n = _int(((b).count))
+156 |         var x: [Double] = (zeros(n) as! [Double])
+157 |         var r: [Double] = (vec_sub((b as! [Double]), (mat_vec_mul((A as! [[Double]]), (x as! [Double])) as! [Double])) as! [Double])
+    |                                                                                                         `- warning: forced cast of '[Double]' to same type has no effect
+158 |         var p: [Double] = r
+159 |         var rs_old: Double = Double(dot((r as! [Double]), (r as! [Double])))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:157:120: warning: forced cast of '[Double]' to same type has no effect
+155 |         let n = _int(((b).count))
+156 |         var x: [Double] = (zeros(n) as! [Double])
+157 |         var r: [Double] = (vec_sub((b as! [Double]), (mat_vec_mul((A as! [[Double]]), (x as! [Double])) as! [Double])) as! [Double])
+    |                                                                                                                        `- warning: forced cast of '[Double]' to same type has no effect
+158 |         var p: [Double] = r
+159 |         var rs_old: Double = Double(dot((r as! [Double]), (r as! [Double])))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:159:44: warning: forced cast of '[Double]' to same type has no effect
+157 |         var r: [Double] = (vec_sub((b as! [Double]), (mat_vec_mul((A as! [[Double]]), (x as! [Double])) as! [Double])) as! [Double])
+158 |         var p: [Double] = r
+159 |         var rs_old: Double = Double(dot((r as! [Double]), (r as! [Double])))
+    |                                            `- warning: forced cast of '[Double]' to same type has no effect
+160 |         var i: Int = 0
+161 |         while (i < max_iterations) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:159:62: warning: forced cast of '[Double]' to same type has no effect
+157 |         var r: [Double] = (vec_sub((b as! [Double]), (mat_vec_mul((A as! [[Double]]), (x as! [Double])) as! [Double])) as! [Double])
+158 |         var p: [Double] = r
+159 |         var rs_old: Double = Double(dot((r as! [Double]), (r as! [Double])))
+    |                                                              `- warning: forced cast of '[Double]' to same type has no effect
+160 |         var i: Int = 0
+161 |         while (i < max_iterations) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:162:48: warning: forced cast of '[[Double]]' to same type has no effect
+160 |         var i: Int = 0
+161 |         while (i < max_iterations) {
+162 |             let Ap: [Double] = (mat_vec_mul((A as! [[Double]]), (p as! [Double])) as! [Double])
+    |                                                `- warning: forced cast of '[[Double]]' to same type has no effect
+163 |             let alpha = (rs_old / Double(dot((p as! [Double]), (Ap as! [Double]))))
+164 |             x = (vec_add((x as! [Double]), (scalar_mul(Double(alpha), (p as! [Double])) as! [Double])) as! [Double])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:162:68: warning: forced cast of '[Double]' to same type has no effect
+160 |         var i: Int = 0
+161 |         while (i < max_iterations) {
+162 |             let Ap: [Double] = (mat_vec_mul((A as! [[Double]]), (p as! [Double])) as! [Double])
+    |                                                                    `- warning: forced cast of '[Double]' to same type has no effect
+163 |             let alpha = (rs_old / Double(dot((p as! [Double]), (Ap as! [Double]))))
+164 |             x = (vec_add((x as! [Double]), (scalar_mul(Double(alpha), (p as! [Double])) as! [Double])) as! [Double])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:162:83: warning: forced cast of '[Double]' to same type has no effect
+160 |         var i: Int = 0
+161 |         while (i < max_iterations) {
+162 |             let Ap: [Double] = (mat_vec_mul((A as! [[Double]]), (p as! [Double])) as! [Double])
+    |                                                                                   `- warning: forced cast of '[Double]' to same type has no effect
+163 |             let alpha = (rs_old / Double(dot((p as! [Double]), (Ap as! [Double]))))
+164 |             x = (vec_add((x as! [Double]), (scalar_mul(Double(alpha), (p as! [Double])) as! [Double])) as! [Double])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:163:49: warning: forced cast of '[Double]' to same type has no effect
+161 |         while (i < max_iterations) {
+162 |             let Ap: [Double] = (mat_vec_mul((A as! [[Double]]), (p as! [Double])) as! [Double])
+163 |             let alpha = (rs_old / Double(dot((p as! [Double]), (Ap as! [Double]))))
+    |                                                 `- warning: forced cast of '[Double]' to same type has no effect
+164 |             x = (vec_add((x as! [Double]), (scalar_mul(Double(alpha), (p as! [Double])) as! [Double])) as! [Double])
+165 |             r = (vec_sub((r as! [Double]), (scalar_mul(Double(alpha), (Ap as! [Double])) as! [Double])) as! [Double])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:163:68: warning: forced cast of '[Double]' to same type has no effect
+161 |         while (i < max_iterations) {
+162 |             let Ap: [Double] = (mat_vec_mul((A as! [[Double]]), (p as! [Double])) as! [Double])
+163 |             let alpha = (rs_old / Double(dot((p as! [Double]), (Ap as! [Double]))))
+    |                                                                    `- warning: forced cast of '[Double]' to same type has no effect
+164 |             x = (vec_add((x as! [Double]), (scalar_mul(Double(alpha), (p as! [Double])) as! [Double])) as! [Double])
+165 |             r = (vec_sub((r as! [Double]), (scalar_mul(Double(alpha), (Ap as! [Double])) as! [Double])) as! [Double])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:164:29: warning: forced cast of '[Double]' to same type has no effect
+162 |             let Ap: [Double] = (mat_vec_mul((A as! [[Double]]), (p as! [Double])) as! [Double])
+163 |             let alpha = (rs_old / Double(dot((p as! [Double]), (Ap as! [Double]))))
+164 |             x = (vec_add((x as! [Double]), (scalar_mul(Double(alpha), (p as! [Double])) as! [Double])) as! [Double])
+    |                             `- warning: forced cast of '[Double]' to same type has no effect
+165 |             r = (vec_sub((r as! [Double]), (scalar_mul(Double(alpha), (Ap as! [Double])) as! [Double])) as! [Double])
+166 |             let rs_new = Double(dot((r as! [Double]), (r as! [Double])))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:164:74: warning: forced cast of '[Double]' to same type has no effect
+162 |             let Ap: [Double] = (mat_vec_mul((A as! [[Double]]), (p as! [Double])) as! [Double])
+163 |             let alpha = (rs_old / Double(dot((p as! [Double]), (Ap as! [Double]))))
+164 |             x = (vec_add((x as! [Double]), (scalar_mul(Double(alpha), (p as! [Double])) as! [Double])) as! [Double])
+    |                                                                          `- warning: forced cast of '[Double]' to same type has no effect
+165 |             r = (vec_sub((r as! [Double]), (scalar_mul(Double(alpha), (Ap as! [Double])) as! [Double])) as! [Double])
+166 |             let rs_new = Double(dot((r as! [Double]), (r as! [Double])))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:164:89: warning: forced cast of '[Double]' to same type has no effect
+162 |             let Ap: [Double] = (mat_vec_mul((A as! [[Double]]), (p as! [Double])) as! [Double])
+163 |             let alpha = (rs_old / Double(dot((p as! [Double]), (Ap as! [Double]))))
+164 |             x = (vec_add((x as! [Double]), (scalar_mul(Double(alpha), (p as! [Double])) as! [Double])) as! [Double])
+    |                                                                                         `- warning: forced cast of '[Double]' to same type has no effect
+165 |             r = (vec_sub((r as! [Double]), (scalar_mul(Double(alpha), (Ap as! [Double])) as! [Double])) as! [Double])
+166 |             let rs_new = Double(dot((r as! [Double]), (r as! [Double])))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:164:104: warning: forced cast of '[Double]' to same type has no effect
+162 |             let Ap: [Double] = (mat_vec_mul((A as! [[Double]]), (p as! [Double])) as! [Double])
+163 |             let alpha = (rs_old / Double(dot((p as! [Double]), (Ap as! [Double]))))
+164 |             x = (vec_add((x as! [Double]), (scalar_mul(Double(alpha), (p as! [Double])) as! [Double])) as! [Double])
+    |                                                                                                        `- warning: forced cast of '[Double]' to same type has no effect
+165 |             r = (vec_sub((r as! [Double]), (scalar_mul(Double(alpha), (Ap as! [Double])) as! [Double])) as! [Double])
+166 |             let rs_new = Double(dot((r as! [Double]), (r as! [Double])))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:165:29: warning: forced cast of '[Double]' to same type has no effect
+163 |             let alpha = (rs_old / Double(dot((p as! [Double]), (Ap as! [Double]))))
+164 |             x = (vec_add((x as! [Double]), (scalar_mul(Double(alpha), (p as! [Double])) as! [Double])) as! [Double])
+165 |             r = (vec_sub((r as! [Double]), (scalar_mul(Double(alpha), (Ap as! [Double])) as! [Double])) as! [Double])
+    |                             `- warning: forced cast of '[Double]' to same type has no effect
+166 |             let rs_new = Double(dot((r as! [Double]), (r as! [Double])))
+167 |             if (Double(sqrtApprox(Double(rs_new))) < tol) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:165:75: warning: forced cast of '[Double]' to same type has no effect
+163 |             let alpha = (rs_old / Double(dot((p as! [Double]), (Ap as! [Double]))))
+164 |             x = (vec_add((x as! [Double]), (scalar_mul(Double(alpha), (p as! [Double])) as! [Double])) as! [Double])
+165 |             r = (vec_sub((r as! [Double]), (scalar_mul(Double(alpha), (Ap as! [Double])) as! [Double])) as! [Double])
+    |                                                                           `- warning: forced cast of '[Double]' to same type has no effect
+166 |             let rs_new = Double(dot((r as! [Double]), (r as! [Double])))
+167 |             if (Double(sqrtApprox(Double(rs_new))) < tol) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:165:90: warning: forced cast of '[Double]' to same type has no effect
+163 |             let alpha = (rs_old / Double(dot((p as! [Double]), (Ap as! [Double]))))
+164 |             x = (vec_add((x as! [Double]), (scalar_mul(Double(alpha), (p as! [Double])) as! [Double])) as! [Double])
+165 |             r = (vec_sub((r as! [Double]), (scalar_mul(Double(alpha), (Ap as! [Double])) as! [Double])) as! [Double])
+    |                                                                                          `- warning: forced cast of '[Double]' to same type has no effect
+166 |             let rs_new = Double(dot((r as! [Double]), (r as! [Double])))
+167 |             if (Double(sqrtApprox(Double(rs_new))) < tol) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:165:105: warning: forced cast of '[Double]' to same type has no effect
+163 |             let alpha = (rs_old / Double(dot((p as! [Double]), (Ap as! [Double]))))
+164 |             x = (vec_add((x as! [Double]), (scalar_mul(Double(alpha), (p as! [Double])) as! [Double])) as! [Double])
+165 |             r = (vec_sub((r as! [Double]), (scalar_mul(Double(alpha), (Ap as! [Double])) as! [Double])) as! [Double])
+    |                                                                                                         `- warning: forced cast of '[Double]' to same type has no effect
+166 |             let rs_new = Double(dot((r as! [Double]), (r as! [Double])))
+167 |             if (Double(sqrtApprox(Double(rs_new))) < tol) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:166:40: warning: forced cast of '[Double]' to same type has no effect
+164 |             x = (vec_add((x as! [Double]), (scalar_mul(Double(alpha), (p as! [Double])) as! [Double])) as! [Double])
+165 |             r = (vec_sub((r as! [Double]), (scalar_mul(Double(alpha), (Ap as! [Double])) as! [Double])) as! [Double])
+166 |             let rs_new = Double(dot((r as! [Double]), (r as! [Double])))
+    |                                        `- warning: forced cast of '[Double]' to same type has no effect
+167 |             if (Double(sqrtApprox(Double(rs_new))) < tol) {
+168 |                 break
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:166:58: warning: forced cast of '[Double]' to same type has no effect
+164 |             x = (vec_add((x as! [Double]), (scalar_mul(Double(alpha), (p as! [Double])) as! [Double])) as! [Double])
+165 |             r = (vec_sub((r as! [Double]), (scalar_mul(Double(alpha), (Ap as! [Double])) as! [Double])) as! [Double])
+166 |             let rs_new = Double(dot((r as! [Double]), (r as! [Double])))
+    |                                                          `- warning: forced cast of '[Double]' to same type has no effect
+167 |             if (Double(sqrtApprox(Double(rs_new))) < tol) {
+168 |                 break
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:171:29: warning: forced cast of '[Double]' to same type has no effect
+169 |             }
+170 |             let beta = (rs_new / rs_old)
+171 |             p = (vec_add((r as! [Double]), (scalar_mul(Double(beta), (p as! [Double])) as! [Double])) as! [Double])
+    |                             `- warning: forced cast of '[Double]' to same type has no effect
+172 |             rs_old = Double(rs_new)
+173 |             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:171:73: warning: forced cast of '[Double]' to same type has no effect
+169 |             }
+170 |             let beta = (rs_new / rs_old)
+171 |             p = (vec_add((r as! [Double]), (scalar_mul(Double(beta), (p as! [Double])) as! [Double])) as! [Double])
+    |                                                                         `- warning: forced cast of '[Double]' to same type has no effect
+172 |             rs_old = Double(rs_new)
+173 |             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:171:88: warning: forced cast of '[Double]' to same type has no effect
+169 |             }
+170 |             let beta = (rs_new / rs_old)
+171 |             p = (vec_add((r as! [Double]), (scalar_mul(Double(beta), (p as! [Double])) as! [Double])) as! [Double])
+    |                                                                                        `- warning: forced cast of '[Double]' to same type has no effect
+172 |             rs_old = Double(rs_new)
+173 |             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:171:103: warning: forced cast of '[Double]' to same type has no effect
+169 |             }
+170 |             let beta = (rs_new / rs_old)
+171 |             p = (vec_add((r as! [Double]), (scalar_mul(Double(beta), (p as! [Double])) as! [Double])) as! [Double])
+    |                                                                                                       `- warning: forced cast of '[Double]' to same type has no effect
+172 |             rs_old = Double(rs_new)
+173 |             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:179:46: warning: forced cast of '[[Double]]' to same type has no effect
+177 |     let A: [[Double]] = ([([8.73256573, -5.02034289, -2.68709226] as! [Double]), ([-5.02034289, 3.78188322, 0.91980451] as! [Double]), ([-2.68709226, 0.91980451, 1.94746467] as! [Double])] as! [[Double]])
+178 |     let b: [Double] = ([-5.80872761, 3.23807431, 1.95381422] as! [Double])
+179 |     var x: [Double] = (conjugate_gradient((A as! [[Double]]), (b as! [Double]), 1000, 0.00000001) as! [Double])
+    |                                              `- warning: forced cast of '[[Double]]' to same type has no effect
+180 |     print(_p(_p(Double(_idx(x, 0)))))
+181 |     print(_p(_p(Double(_idx(x, 1)))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:179:66: warning: forced cast of '[Double]' to same type has no effect
+177 |     let A: [[Double]] = ([([8.73256573, -5.02034289, -2.68709226] as! [Double]), ([-5.02034289, 3.78188322, 0.91980451] as! [Double]), ([-2.68709226, 0.91980451, 1.94746467] as! [Double])] as! [[Double]])
+178 |     let b: [Double] = ([-5.80872761, 3.23807431, 1.95381422] as! [Double])
+179 |     var x: [Double] = (conjugate_gradient((A as! [[Double]]), (b as! [Double]), 1000, 0.00000001) as! [Double])
+    |                                                                  `- warning: forced cast of '[Double]' to same type has no effect
+180 |     print(_p(_p(Double(_idx(x, 0)))))
+181 |     print(_p(_p(Double(_idx(x, 1)))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:179:99: warning: forced cast of '[Double]' to same type has no effect
+177 |     let A: [[Double]] = ([([8.73256573, -5.02034289, -2.68709226] as! [Double]), ([-5.02034289, 3.78188322, 0.91980451] as! [Double]), ([-2.68709226, 0.91980451, 1.94746467] as! [Double])] as! [[Double]])
+178 |     let b: [Double] = ([-5.80872761, 3.23807431, 1.95381422] as! [Double])
+179 |     var x: [Double] = (conjugate_gradient((A as! [[Double]]), (b as! [Double]), 1000, 0.00000001) as! [Double])
+    |                                                                                                   `- warning: forced cast of '[Double]' to same type has no effect
+180 |     print(_p(_p(Double(_idx(x, 0)))))
+181 |     print(_p(_p(Double(_idx(x, 1)))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:180:24: warning: expression implicitly coerced from 'Double?' to 'Any'
+178 |     let b: [Double] = ([-5.80872761, 3.23807431, 1.95381422] as! [Double])
+179 |     var x: [Double] = (conjugate_gradient((A as! [[Double]]), (b as! [Double]), 1000, 0.00000001) as! [Double])
+180 |     print(_p(_p(Double(_idx(x, 0)))))
+    |                        |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                        |- note: provide a default value to avoid this warning
+    |                        |- note: force-unwrap the value to avoid this warning
+    |                        `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+181 |     print(_p(_p(Double(_idx(x, 1)))))
+182 |     print(_p(_p(Double(_idx(x, 2)))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:181:24: warning: expression implicitly coerced from 'Double?' to 'Any'
+179 |     var x: [Double] = (conjugate_gradient((A as! [[Double]]), (b as! [Double]), 1000, 0.00000001) as! [Double])
+180 |     print(_p(_p(Double(_idx(x, 0)))))
+181 |     print(_p(_p(Double(_idx(x, 1)))))
+    |                        |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                        |- note: provide a default value to avoid this warning
+    |                        |- note: force-unwrap the value to avoid this warning
+    |                        `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+182 |     print(_p(_p(Double(_idx(x, 2)))))
+183 |     let _benchEnd = _now()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden486_linear_algebra_src_conjugate_gradient1442960909/001/main.swift:182:24: warning: expression implicitly coerced from 'Double?' to 'Any'
+180 |     print(_p(_p(Double(_idx(x, 0)))))
+181 |     print(_p(_p(Double(_idx(x, 1)))))
+182 |     print(_p(_p(Double(_idx(x, 2)))))
+    |                        |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                        |- note: provide a default value to avoid this warning
+    |                        |- note: force-unwrap the value to avoid this warning
+    |                        `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+183 |     let _benchEnd = _now()
+184 |     let _benchMemEnd = _mem()

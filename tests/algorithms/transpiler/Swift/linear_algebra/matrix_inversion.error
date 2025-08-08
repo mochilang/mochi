@@ -1,0 +1,160 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden485_linear_algebra_matrix_inversion472254449/001/main.swift:102:49: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+100 |             var j: Int = 0
+101 |             while (j < n) {
+102 |                 row = (_append(row, Double(_idx(_idx(matrix, i), j))) as! [Double])
+    |                                                 `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+103 |                 j = _int((j &+ 1))
+104 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden485_linear_algebra_matrix_inversion472254449/001/main.swift:122:33: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+120 |             var r: Int = col
+121 |             while (r < n) {
+122 |                 if (Double(_idx(_idx(aug, r), col)) != 0.0) {
+    |                                 `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+123 |                     pivot_row = Int(r)
+124 |                     break
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden485_linear_algebra_matrix_inversion472254449/001/main.swift:128:29: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+126 |                 r = _int((r &+ 1))
+127 |             }
+128 |             if (Double(_idx(_idx(aug, pivot_row), col)) == 0.0) {
+    |                             `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+129 |                 _ = fatalError("Matrix is not invertible")
+130 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden485_linear_algebra_matrix_inversion472254449/001/main.swift:132:54: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+130 |             }
+131 |             if (pivot_row != col) {
+132 |                 let temp: [Double] = (_idx(aug, col) as! [Double])
+    |                                                      `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+133 |                 aug = _set(aug, col, (_idx(aug, pivot_row) as! [Double]))
+134 |                 aug = _set(aug, pivot_row, (temp as! [Double]))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden485_linear_algebra_matrix_inversion472254449/001/main.swift:133:60: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+131 |             if (pivot_row != col) {
+132 |                 let temp: [Double] = (_idx(aug, col) as! [Double])
+133 |                 aug = _set(aug, col, (_idx(aug, pivot_row) as! [Double]))
+    |                                                            `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+134 |                 aug = _set(aug, pivot_row, (temp as! [Double]))
+135 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden485_linear_algebra_matrix_inversion472254449/001/main.swift:134:50: warning: forced cast of '[Double]' to same type has no effect
+132 |                 let temp: [Double] = (_idx(aug, col) as! [Double])
+133 |                 aug = _set(aug, col, (_idx(aug, pivot_row) as! [Double]))
+134 |                 aug = _set(aug, pivot_row, (temp as! [Double]))
+    |                                                  `- warning: forced cast of '[Double]' to same type has no effect
+135 |             }
+136 |             let pivot = Double(_idx(_idx(aug, col), col))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden485_linear_algebra_matrix_inversion472254449/001/main.swift:136:37: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+134 |                 aug = _set(aug, pivot_row, (temp as! [Double]))
+135 |             }
+136 |             let pivot = Double(_idx(_idx(aug, col), col))
+    |                                     `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+137 |             var c: Int = 0
+138 |             while (c < (2 &* n)) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden485_linear_algebra_matrix_inversion472254449/001/main.swift:139:22: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+137 |             var c: Int = 0
+138 |             while (c < (2 &* n)) {
+139 |                 _idx(_idx(aug, col), c) = Double((Double(_idx(_idx(aug, col), c)) / pivot))
+    |                      `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+140 |                 c = _int((c &+ 1))
+141 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden485_linear_algebra_matrix_inversion472254449/001/main.swift:139:63: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+137 |             var c: Int = 0
+138 |             while (c < (2 &* n)) {
+139 |                 _idx(_idx(aug, col), c) = Double((Double(_idx(_idx(aug, col), c)) / pivot))
+    |                                                               `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+140 |                 c = _int((c &+ 1))
+141 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden485_linear_algebra_matrix_inversion472254449/001/main.swift:139:43: error: cannot assign value of type 'Double' to type '[Double]?'
+137 |             var c: Int = 0
+138 |             while (c < (2 &* n)) {
+139 |                 _idx(_idx(aug, col), c) = Double((Double(_idx(_idx(aug, col), c)) / pivot))
+    |                                           `- error: cannot assign value of type 'Double' to type '[Double]?'
+140 |                 c = _int((c &+ 1))
+141 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden485_linear_algebra_matrix_inversion472254449/001/main.swift:145:46: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+143 |             while (r2 < n) {
+144 |                 if (r2 != col) {
+145 |                     let factor = Double(_idx(_idx(aug, r2), col))
+    |                                              `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+146 |                     var c2: Int = 0
+147 |                     while (c2 < (2 &* n)) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden485_linear_algebra_matrix_inversion472254449/001/main.swift:148:30: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+146 |                     var c2: Int = 0
+147 |                     while (c2 < (2 &* n)) {
+148 |                         _idx(_idx(aug, r2), c2) = Double((Double(_idx(_idx(aug, r2), c2)) - (factor * Double(_idx(_idx(aug, col), c2)))))
+    |                              `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+149 |                         c2 = _int((c2 &+ 1))
+150 |                     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden485_linear_algebra_matrix_inversion472254449/001/main.swift:148:71: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+146 |                     var c2: Int = 0
+147 |                     while (c2 < (2 &* n)) {
+148 |                         _idx(_idx(aug, r2), c2) = Double((Double(_idx(_idx(aug, r2), c2)) - (factor * Double(_idx(_idx(aug, col), c2)))))
+    |                                                                       `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+149 |                         c2 = _int((c2 &+ 1))
+150 |                     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden485_linear_algebra_matrix_inversion472254449/001/main.swift:148:115: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+146 |                     var c2: Int = 0
+147 |                     while (c2 < (2 &* n)) {
+148 |                         _idx(_idx(aug, r2), c2) = Double((Double(_idx(_idx(aug, r2), c2)) - (factor * Double(_idx(_idx(aug, col), c2)))))
+    |                                                                                                                   `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+149 |                         c2 = _int((c2 &+ 1))
+150 |                     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden485_linear_algebra_matrix_inversion472254449/001/main.swift:148:51: error: cannot assign value of type 'Double' to type '[Double]?'
+146 |                     var c2: Int = 0
+147 |                     while (c2 < (2 &* n)) {
+148 |                         _idx(_idx(aug, r2), c2) = Double((Double(_idx(_idx(aug, r2), c2)) - (factor * Double(_idx(_idx(aug, col), c2)))))
+    |                                                   `- error: cannot assign value of type 'Double' to type '[Double]?'
+149 |                         c2 = _int((c2 &+ 1))
+150 |                     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden485_linear_algebra_matrix_inversion472254449/001/main.swift:162:49: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+160 |             var c3: Int = 0
+161 |             while (c3 < n) {
+162 |                 row = (_append(row, Double(_idx(_idx(aug, r3), (c3 &+ n)))) as! [Double])
+    |                                                 `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+163 |                 c3 = _int((c3 &+ 1))
+164 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden485_linear_algebra_matrix_inversion472254449/001/main.swift:172:43: warning: cast from '[Double]' to unrelated type 'String' always fails
+170 |     var mat: [[Double]] = ([([4.0, 7.0] as! [Double]), ([2.0, 6.0] as! [Double])] as! [[Double]])
+171 |     print(_p("Original Matrix:"))
+172 |     print(_p("[" + mat.map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: ", ") + "]"))
+    |                                           `- warning: cast from '[Double]' to unrelated type 'String' always fails
+173 |     print(_p("Inverted Matrix:"))
+174 |     print(_p("[" + (invert_matrix((mat as! [[Double]])) as! [[Double]]).map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: ", ") + "]"))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden485_linear_algebra_matrix_inversion472254449/001/main.swift:174:40: warning: forced cast of '[[Double]]' to same type has no effect
+172 |     print(_p("[" + mat.map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: ", ") + "]"))
+173 |     print(_p("Inverted Matrix:"))
+174 |     print(_p("[" + (invert_matrix((mat as! [[Double]])) as! [[Double]]).map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: ", ") + "]"))
+    |                                        `- warning: forced cast of '[[Double]]' to same type has no effect
+175 |     let _benchEnd = _now()
+176 |     let _benchMemEnd = _mem()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden485_linear_algebra_matrix_inversion472254449/001/main.swift:174:57: warning: forced cast of '[[Double]]' to same type has no effect
+172 |     print(_p("[" + mat.map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: ", ") + "]"))
+173 |     print(_p("Inverted Matrix:"))
+174 |     print(_p("[" + (invert_matrix((mat as! [[Double]])) as! [[Double]]).map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: ", ") + "]"))
+    |                                                         `- warning: forced cast of '[[Double]]' to same type has no effect
+175 |     let _benchEnd = _now()
+176 |     let _benchMemEnd = _mem()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden485_linear_algebra_matrix_inversion472254449/001/main.swift:174:92: warning: cast from '[Double]' to unrelated type 'String' always fails
+172 |     print(_p("[" + mat.map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: ", ") + "]"))
+173 |     print(_p("Inverted Matrix:"))
+174 |     print(_p("[" + (invert_matrix((mat as! [[Double]])) as! [[Double]]).map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: ", ") + "]"))
+    |                                                                                            `- warning: cast from '[Double]' to unrelated type 'String' always fails
+175 |     let _benchEnd = _now()
+176 |     let _benchMemEnd = _mem()

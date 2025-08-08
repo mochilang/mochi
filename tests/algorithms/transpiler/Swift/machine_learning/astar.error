@@ -1,0 +1,208 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden498_machine_learning_astar1280176284/001/main.swift:144:44: warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
+142 |         var closed: [Node] = ([] as! [Node])
+143 |         open = (_append(open, Node(pos: start, parent: Point(x: _int((0 &- 1)), y: _int((0 &- 1))), g: 0, h: 0, f: 0)) as! [Node])
+144 |         var current: Node = (_idx(open, 0) as! Node)
+    |                                            `- warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
+145 |         while (_int(((open).count)) > 0) {
+146 |             var min_index: Int = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden498_machine_learning_astar1280176284/001/main.swift:149:54: error: value of type 'Node?' has no member 'f'
+147 |             var i: Int = 1
+148 |             while (i < _int(((open).count))) {
+149 |                 if (String(describing: _idx(open, i).f) < String(describing: _idx(open, min_index).f)
+    |                                                      `- error: value of type 'Node?' has no member 'f'
+150 |                 ) {
+151 |                     min_index = Int(i)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden498_machine_learning_astar1280176284/001/main.swift:149:100: error: value of type 'Node?' has no member 'f'
+147 |             var i: Int = 1
+148 |             while (i < _int(((open).count))) {
+149 |                 if (String(describing: _idx(open, i).f) < String(describing: _idx(open, min_index).f)
+    |                                                                                                    `- error: value of type 'Node?' has no member 'f'
+150 |                 ) {
+151 |                     min_index = Int(i)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden498_machine_learning_astar1280176284/001/main.swift:155:46: warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
+153 |                 i = _int((i &+ 1))
+154 |             }
+155 |             current = (_idx(open, min_index) as! Node)
+    |                                              `- warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
+156 |             var new_open: [Node] = ([] as! [Node])
+157 |             var j: Int = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden498_machine_learning_astar1280176284/001/main.swift:160:66: warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
+158 |             while (j < _int(((open).count))) {
+159 |                 if (j != min_index) {
+160 |                     new_open = (_append(new_open, (_idx(open, j) as! Node)) as! [Node])
+    |                                                                  `- warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
+161 |                 }
+162 |                 j = _int((j &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden498_machine_learning_astar1280176284/001/main.swift:164:30: warning: forced cast of '[Node]' to same type has no effect
+162 |                 j = _int((j &+ 1))
+163 |             }
+164 |             open = (new_open as! [Node])
+    |                              `- warning: forced cast of '[Node]' to same type has no effect
+165 |             closed = (_append(closed, current) as! [Node])
+166 |             if ((current.pos.x == goal.x) && (current.pos.y == goal.y)) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden498_machine_learning_astar1280176284/001/main.swift:169:68: warning: forced cast of 'Point' to same type has no effect
+167 |                 break
+168 |             }
+169 |             let neighbours: [Point] = (get_neighbours((current.pos as! Point), x_limit, y_limit) as! [Point])
+    |                                                                    `- warning: forced cast of 'Point' to same type has no effect
+170 |             for np in neighbours {
+171 |                 if ((closed as! [Node]).contains((np as! Point))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden498_machine_learning_astar1280176284/001/main.swift:169:98: warning: forced cast of '[Point]' to same type has no effect
+167 |                 break
+168 |             }
+169 |             let neighbours: [Point] = (get_neighbours((current.pos as! Point), x_limit, y_limit) as! [Point])
+    |                                                                                                  `- warning: forced cast of '[Point]' to same type has no effect
+170 |             for np in neighbours {
+171 |                 if ((closed as! [Node]).contains((np as! Point))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden498_machine_learning_astar1280176284/001/main.swift:171:29: warning: forced cast of '[Node]' to same type has no effect
+169 |             let neighbours: [Point] = (get_neighbours((current.pos as! Point), x_limit, y_limit) as! [Point])
+170 |             for np in neighbours {
+171 |                 if ((closed as! [Node]).contains((np as! Point))) {
+    |                             `- warning: forced cast of '[Node]' to same type has no effect
+172 |                     continue
+173 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden498_machine_learning_astar1280176284/001/main.swift:171:50: error: missing argument label 'where:' in call
+169 |             let neighbours: [Point] = (get_neighbours((current.pos as! Point), x_limit, y_limit) as! [Point])
+170 |             for np in neighbours {
+171 |                 if ((closed as! [Node]).contains((np as! Point))) {
+    |                                                  `- error: missing argument label 'where:' in call
+172 |                     continue
+173 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden498_machine_learning_astar1280176284/001/main.swift:171:54: error: cannot convert value of type 'Point' to expected argument type '(Node) throws -> Bool'
+169 |             let neighbours: [Point] = (get_neighbours((current.pos as! Point), x_limit, y_limit) as! [Point])
+170 |             for np in neighbours {
+171 |                 if ((closed as! [Node]).contains((np as! Point))) {
+    |                                                      `- error: cannot convert value of type 'Point' to expected argument type '(Node) throws -> Bool'
+172 |                     continue
+173 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden498_machine_learning_astar1280176284/001/main.swift:171:54: warning: forced cast of 'Point' to same type has no effect
+169 |             let neighbours: [Point] = (get_neighbours((current.pos as! Point), x_limit, y_limit) as! [Point])
+170 |             for np in neighbours {
+171 |                 if ((closed as! [Node]).contains((np as! Point))) {
+    |                                                      `- warning: forced cast of 'Point' to same type has no effect
+172 |                     continue
+173 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden498_machine_learning_astar1280176284/001/main.swift:194:41: warning: forced cast of '[Node]' to same type has no effect
+192 |         path = (_append(path, current.pos) as! [Point])
+193 |         while (!((current.parent.x == _int((0 &- 1))) && (current.parent.y == _int((0 &- 1))))) {
+194 |             current = (get_node((closed as! [Node]), (current.parent as! Point)) as! Node)
+    |                                         `- warning: forced cast of '[Node]' to same type has no effect
+195 |             path = (_append(path, current.pos) as! [Point])
+196 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden498_machine_learning_astar1280176284/001/main.swift:194:70: warning: forced cast of 'Point' to same type has no effect
+192 |         path = (_append(path, current.pos) as! [Point])
+193 |         while (!((current.parent.x == _int((0 &- 1))) && (current.parent.y == _int((0 &- 1))))) {
+194 |             current = (get_node((closed as! [Node]), (current.parent as! Point)) as! Node)
+    |                                                                      `- warning: forced cast of 'Point' to same type has no effect
+195 |             path = (_append(path, current.pos) as! [Point])
+196 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden498_machine_learning_astar1280176284/001/main.swift:194:82: warning: forced cast of 'Node' to same type has no effect
+192 |         path = (_append(path, current.pos) as! [Point])
+193 |         while (!((current.parent.x == _int((0 &- 1))) && (current.parent.y == _int((0 &- 1))))) {
+194 |             current = (get_node((closed as! [Node]), (current.parent as! Point)) as! Node)
+    |                                                                                  `- warning: forced cast of 'Node' to same type has no effect
+195 |             path = (_append(path, current.pos) as! [Point])
+196 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden498_machine_learning_astar1280176284/001/main.swift:200:48: warning: forced cast from 'Point?' to 'Point' only unwraps optionals; did you mean to use '!'?
+198 |         var k: Int = (_int(((path).count)) &- 1)
+199 |         while (k >= 0) {
+200 |             rev = (_append(rev, (_idx(path, k) as! Point)) as! [Point])
+    |                                                `- warning: forced cast from 'Point?' to 'Point' only unwraps optionals; did you mean to use '!'?
+201 |             k = _int((k &- 1))
+202 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden498_machine_learning_astar1280176284/001/main.swift:222:18: error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+220 |     func mark_path(_ world: inout [[Int]], _ path: [Point]) {
+221 |         for p in path {
+222 |             _idx(_idx(world, p.x), p.y) = 1
+    |                  `- error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+223 |         }
+224 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden498_machine_learning_astar1280176284/001/main.swift:222:43: error: cannot assign value of type 'Int' to type '[Int]?'
+220 |     func mark_path(_ world: inout [[Int]], _ path: [Point]) {
+221 |         for p in path {
+222 |             _idx(_idx(world, p.x), p.y) = 1
+    |                                           `- error: cannot assign value of type 'Int' to type '[Int]?'
+223 |         }
+224 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden498_machine_learning_astar1280176284/001/main.swift:234:57: warning: forced cast of 'Point' to same type has no effect
+232 |     let start = Point(x: 0, y: 0)
+233 |     let goal = Point(x: 4, y: 4)
+234 |     var path: [Point] = (astar(world_x, world_y, (start as! Point), (goal as! Point)) as! [Point])
+    |                                                         `- warning: forced cast of 'Point' to same type has no effect
+235 |     print(_p((((((((("path from (" + _p(start.x)) + ", ") + _p(start.y)) + ") to (") + _p(goal.x)) + ", ") + _p(goal.y)) + ")")))
+236 |     var world: [[Int]] = (create_world(world_x, world_y) as! [[Int]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden498_machine_learning_astar1280176284/001/main.swift:234:75: warning: forced cast of 'Point' to same type has no effect
+232 |     let start = Point(x: 0, y: 0)
+233 |     let goal = Point(x: 4, y: 4)
+234 |     var path: [Point] = (astar(world_x, world_y, (start as! Point), (goal as! Point)) as! [Point])
+    |                                                                           `- warning: forced cast of 'Point' to same type has no effect
+235 |     print(_p((((((((("path from (" + _p(start.x)) + ", ") + _p(start.y)) + ") to (") + _p(goal.x)) + ", ") + _p(goal.y)) + ")")))
+236 |     var world: [[Int]] = (create_world(world_x, world_y) as! [[Int]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden498_machine_learning_astar1280176284/001/main.swift:234:87: warning: forced cast of '[Point]' to same type has no effect
+232 |     let start = Point(x: 0, y: 0)
+233 |     let goal = Point(x: 4, y: 4)
+234 |     var path: [Point] = (astar(world_x, world_y, (start as! Point), (goal as! Point)) as! [Point])
+    |                                                                                       `- warning: forced cast of '[Point]' to same type has no effect
+235 |     print(_p((((((((("path from (" + _p(start.x)) + ", ") + _p(start.y)) + ") to (") + _p(goal.x)) + ", ") + _p(goal.y)) + ")")))
+236 |     var world: [[Int]] = (create_world(world_x, world_y) as! [[Int]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden498_machine_learning_astar1280176284/001/main.swift:236:58: warning: forced cast of '[[Int]]' to same type has no effect
+234 |     var path: [Point] = (astar(world_x, world_y, (start as! Point), (goal as! Point)) as! [Point])
+235 |     print(_p((((((((("path from (" + _p(start.x)) + ", ") + _p(start.y)) + ") to (") + _p(goal.x)) + ", ") + _p(goal.y)) + ")")))
+236 |     var world: [[Int]] = (create_world(world_x, world_y) as! [[Int]])
+    |                                                          `- warning: forced cast of '[[Int]]' to same type has no effect
+237 |     _ = mark_path(&world, (path as! [Point]))
+238 |     _ = print_world((world as! [[Int]]))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden498_machine_learning_astar1280176284/001/main.swift:237:33: warning: forced cast of '[Point]' to same type has no effect
+235 |     print(_p((((((((("path from (" + _p(start.x)) + ", ") + _p(start.y)) + ") to (") + _p(goal.x)) + ", ") + _p(goal.y)) + ")")))
+236 |     var world: [[Int]] = (create_world(world_x, world_y) as! [[Int]])
+237 |     _ = mark_path(&world, (path as! [Point]))
+    |                                 `- warning: forced cast of '[Point]' to same type has no effect
+238 |     _ = print_world((world as! [[Int]]))
+239 |     let _benchEnd = _now()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden498_machine_learning_astar1280176284/001/main.swift:237:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+235 |     print(_p((((((((("path from (" + _p(start.x)) + ", ") + _p(start.y)) + ") to (") + _p(goal.x)) + ", ") + _p(goal.y)) + ")")))
+236 |     var world: [[Int]] = (create_world(world_x, world_y) as! [[Int]])
+237 |     _ = mark_path(&world, (path as! [Point]))
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+238 |     _ = print_world((world as! [[Int]]))
+239 |     let _benchEnd = _now()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden498_machine_learning_astar1280176284/001/main.swift:238:28: warning: forced cast of '[[Int]]' to same type has no effect
+236 |     var world: [[Int]] = (create_world(world_x, world_y) as! [[Int]])
+237 |     _ = mark_path(&world, (path as! [Point]))
+238 |     _ = print_world((world as! [[Int]]))
+    |                            `- warning: forced cast of '[[Int]]' to same type has no effect
+239 |     let _benchEnd = _now()
+240 |     let _benchMemEnd = _mem()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden498_machine_learning_astar1280176284/001/main.swift:238:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+236 |     var world: [[Int]] = (create_world(world_x, world_y) as! [[Int]])
+237 |     _ = mark_path(&world, (path as! [Point]))
+238 |     _ = print_world((world as! [[Int]]))
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+239 |     let _benchEnd = _now()
+240 |     let _benchMemEnd = _mem()
