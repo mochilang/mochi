@@ -1,0 +1,10 @@
+exit status 1
+Unhandled Exception:
+System.Exception: test4 failed
+  at Geometric_mean.test_compute_geometric_mean () [0x00211] in <6895d6ab3392de4ea7450383abd69568>:0 
+  at Geometric_mean.main () [0x000c2] in <6895d6ab3392de4ea7450383abd69568>:0 
+  at <StartupCode$geometric_mean>.$Geometric_mean.main@ () [0x00019] in <6895d6ab3392de4ea7450383abd69568>:0 
+[ERROR] FATAL UNHANDLED EXCEPTION: System.Exception: test4 failed
+  at Geometric_mean.test_compute_geometric_mean () [0x00211] in <6895d6ab3392de4ea7450383abd69568>:0 
+  at Geometric_mean.main () [0x000c2] in <6895d6ab3392de4ea7450383abd69568>:0 
+  at <StartupCode$geometric_mean>.$Geometric_mean.main@ () [0x00019] in <6895d6ab3392de4ea7450383abd69568>:0
