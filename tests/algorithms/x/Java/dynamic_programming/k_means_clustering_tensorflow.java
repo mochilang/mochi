@@ -45,7 +45,7 @@ public class Main {
         double[][] centroids = ((double[][])(new double[][]{}));
         int i_2 = 0;
         while (i_2 < k) {
-            centroids = ((double[][])(appendObj(centroids, vectors[i_2])));
+            centroids = ((double[][])(appendObj((double[][])centroids, vectors[i_2])));
             i_2 = i_2 + 1;
         }
         int[] assignments = ((int[])(new int[]{}));
@@ -79,7 +79,7 @@ assignments[v] = best;
                 int v2 = 0;
                 while (v2 < n) {
                     if (assignments[v2] == cIdx) {
-                        cluster = ((double[][])(appendObj(cluster, vectors[v2])));
+                        cluster = ((double[][])(appendObj((double[][])cluster, vectors[v2])));
                     }
                     v2 = v2 + 1;
                 }
@@ -100,41 +100,7 @@ centroids[cIdx] = ((double[])(mean(((double[][])(cluster)))));
         System.out.println(_p(result.assignments));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 
     static <T> T[] appendObj(T[] arr, T v) {

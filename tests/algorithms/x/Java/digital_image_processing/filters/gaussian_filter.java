@@ -31,7 +31,7 @@ public class Main {
                 row = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row), java.util.stream.DoubleStream.of(value)).toArray()));
                 j = j + 1;
             }
-            kernel = ((double[][])(appendObj(kernel, row)));
+            kernel = ((double[][])(appendObj((double[][])kernel, row)));
             i = i + 1;
         }
         return kernel;
@@ -62,7 +62,7 @@ public class Main {
                 row_1 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row_1), java.util.stream.IntStream.of(((Number)(sum_1)).intValue())).toArray()));
                 j_1 = j_1 + 1;
             }
-            dst = ((int[][])(appendObj(dst, row_1)));
+            dst = ((int[][])(appendObj((int[][])dst, row_1)));
             i_1 = i_1 + 1;
         }
         return dst;
@@ -76,46 +76,12 @@ public class Main {
         }
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            PI = 3.141592653589793;
-            img = ((int[][])(new int[][]{new int[]{52, 55, 61, 59, 79}, new int[]{62, 59, 55, 104, 94}, new int[]{63, 65, 66, 113, 144}, new int[]{68, 70, 70, 126, 154}, new int[]{70, 72, 69, 128, 155}}));
-            gaussian3 = ((int[][])(gaussian_filter(((int[][])(img)), 3, 1.0)));
-            gaussian5 = ((int[][])(gaussian_filter(((int[][])(img)), 5, 0.8)));
-            print_image(((int[][])(gaussian3)));
-            print_image(((int[][])(gaussian5)));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        PI = 3.141592653589793;
+        img = ((int[][])(new int[][]{new int[]{52, 55, 61, 59, 79}, new int[]{62, 59, 55, 104, 94}, new int[]{63, 65, 66, 113, 144}, new int[]{68, 70, 70, 126, 154}, new int[]{70, 72, 69, 128, 155}}));
+        gaussian3 = ((int[][])(gaussian_filter(((int[][])(img)), 3, 1.0)));
+        gaussian5 = ((int[][])(gaussian_filter(((int[][])(img)), 5, 0.8)));
+        print_image(((int[][])(gaussian3)));
+        print_image(((int[][])(gaussian5)));
     }
 
     static <T> T[] appendObj(T[] arr, T v) {

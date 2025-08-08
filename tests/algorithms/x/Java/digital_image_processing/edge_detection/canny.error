@@ -1,6 +1,0 @@
-compile: exit status 1
-/tmp/TestJavaTranspiler_Algorithms_Golden271_canny2600417073/001/Main.java:213: error: incompatible types: double[] cannot be converted to Object[]
-                line = line + _p(_geto(img[r_4], c_3)) + " ";
-                                          ^
-Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
-1 error

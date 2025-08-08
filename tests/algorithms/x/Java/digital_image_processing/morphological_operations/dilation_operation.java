@@ -14,7 +14,7 @@ public class Main {
                 row = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row), java.util.stream.DoubleStream.of(gray)).toArray()));
                 j = j + 1;
             }
-            result = ((double[][])(appendObj(result, row)));
+            result = ((double[][])(appendObj((double[][])result, row)));
             i = i + 1;
         }
         return result;
@@ -35,7 +35,7 @@ public class Main {
                 }
                 j_1 = j_1 + 1;
             }
-            result_1 = ((int[][])(appendObj(result_1, row_1)));
+            result_1 = ((int[][])(appendObj((int[][])result_1, row_1)));
             i_1 = i_1 + 1;
         }
         return result_1;
@@ -59,7 +59,7 @@ public class Main {
                 row_2 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row_2), java.util.stream.IntStream.of(0)).toArray()));
                 j_2 = j_2 + 1;
             }
-            padded = ((int[][])(appendObj(padded, row_2)));
+            padded = ((int[][])(appendObj((int[][])padded, row_2)));
             i_2 = i_2 + 1;
         }
         i_2 = 0;
@@ -96,7 +96,7 @@ padded[pad_h + i_2][pad_w + j_3] = image[i_2][j_3];
                 }
                 j_4 = j_4 + 1;
             }
-            output = ((int[][])(appendObj(output, row_3)));
+            output = ((int[][])(appendObj((int[][])output, row_3)));
             i_2 = i_2 + 1;
         }
         return output;
@@ -108,7 +108,7 @@ padded[pad_h + i_2][pad_w + j_3] = image[i_2][j_3];
             String line = "";
             int j_5 = 0;
             while (j_5 < mat[i_3].length) {
-                line = line + _p(_geto(mat[i_3], j_5));
+                line = line + _p(_getd(mat[i_3], j_5));
                 if (j_5 < mat[i_3].length - 1) {
                     line = line + " ";
                 }
@@ -146,41 +146,7 @@ padded[pad_h + i_2][pad_w + j_3] = image[i_2][j_3];
         print_int_matrix(((int[][])(dilation(((int[][])(binary_image)), ((int[][])(kernel))))));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 
     static <T> T[] appendObj(T[] arr, T v) {
@@ -209,7 +175,7 @@ padded[pad_h + i_2][pad_w + j_3] = image[i_2][j_3];
         return (i >= 0 && i < a.length) ? a[i] : null;
     }
 
-    static Object _geto(Object[] a, int i) {
+    static Double _getd(double[] a, int i) {
         return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }

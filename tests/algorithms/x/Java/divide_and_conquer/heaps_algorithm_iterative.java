@@ -13,7 +13,7 @@ public class Main {
     static int[][] heaps(int[] arr) {
         if (arr.length <= 1) {
             int[][] single = ((int[][])(new int[][]{}));
-            return appendObj(single, copy_list(((int[])(arr))));
+            return appendObj((int[][])single, copy_list(((int[])(arr))));
         }
         int n = arr.length;
         int[] c = ((int[])(new int[]{}));
@@ -23,7 +23,7 @@ public class Main {
             i_1 = i_1 + 1;
         }
         int[][] res = ((int[][])(new int[][]{}));
-        res = ((int[][])(appendObj(res, copy_list(((int[])(arr))))));
+        res = ((int[][])(appendObj((int[][])res, copy_list(((int[])(arr))))));
         i_1 = 0;
         while (i_1 < n) {
             if (c[i_1] < i_1) {
@@ -36,7 +36,7 @@ arr[i_1] = temp;
 arr[c[i_1]] = arr[i_1];
 arr[i_1] = temp_1;
                 }
-                res = ((int[][])(appendObj(res, copy_list(((int[])(arr))))));
+                res = ((int[][])(appendObj((int[][])res, copy_list(((int[])(arr))))));
 c[i_1] = c[i_1] + 1;
                 i_1 = 0;
             } else {
@@ -47,41 +47,7 @@ c[i_1] = 0;
         return res;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(_p(heaps(((int[])(new int[]{1, 2, 3})))));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println(_p(heaps(((int[])(new int[]{1, 2, 3})))));
     }
 
     static <T> T[] appendObj(T[] arr, T v) {

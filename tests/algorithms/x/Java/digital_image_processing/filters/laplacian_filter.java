@@ -13,7 +13,7 @@ public class Main {
                 row = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row), java.util.stream.IntStream.of(value)).toArray()));
                 j = j + 1;
             }
-            result = ((int[][])(appendObj(result, row)));
+            result = ((int[][])(appendObj((int[][])result, row)));
             i = i + 1;
         }
         return result;
@@ -65,57 +65,23 @@ output[i_1][j_1] = sum;
         return output;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            image = ((int[][])(new int[][]{new int[]{0, 0, 0, 0, 0}, new int[]{0, 10, 10, 10, 0}, new int[]{0, 10, 10, 10, 0}, new int[]{0, 10, 10, 10, 0}, new int[]{0, 0, 0, 0, 0}}));
-            result_1 = ((int[][])(my_laplacian(((int[][])(image)), 3)));
-            r = 0;
-            while (r < result_1.length) {
-                String row_str = "[";
-                int c = 0;
-                while (c < result_1[r].length) {
-                    row_str = row_str + _p(_geti(result_1[r], c));
-                    if (c + 1 < result_1[r].length) {
-                        row_str = row_str + ", ";
-                    }
-                    c = c + 1;
+        image = ((int[][])(new int[][]{new int[]{0, 0, 0, 0, 0}, new int[]{0, 10, 10, 10, 0}, new int[]{0, 10, 10, 10, 0}, new int[]{0, 10, 10, 10, 0}, new int[]{0, 0, 0, 0, 0}}));
+        result_1 = ((int[][])(my_laplacian(((int[][])(image)), 3)));
+        r = 0;
+        while (r < result_1.length) {
+            String row_str = "[";
+            int c = 0;
+            while (c < result_1[r].length) {
+                row_str = row_str + _p(_geti(result_1[r], c));
+                if (c + 1 < result_1[r].length) {
+                    row_str = row_str + ", ";
                 }
-                row_str = row_str + "]";
-                System.out.println(row_str);
-                r = r + 1;
+                c = c + 1;
             }
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
+            row_str = row_str + "]";
+            System.out.println(row_str);
+            r = r + 1;
         }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
     }
 
     static <T> T[] appendObj(T[] arr, T v) {
