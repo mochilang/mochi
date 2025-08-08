@@ -876,15 +876,15 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 			}
 		}
 		op := b.Op
-               if op == "/" {
-                       if isIntOnlyExpr(b.Left, currentEnv) && isIntOnlyExpr(b.Right, currentEnv) {
-                               op = "//"
-                       } else if isIntLike(inferPyType(b.Left, currentEnv)) && isIntLike(inferPyType(b.Right, currentEnv)) {
-                               op = "//"
-                       } else if isLikelyIntExpr(b.Left) && isLikelyIntExpr(b.Right) {
-                               op = "//"
-                       }
-               }
+		if op == "/" {
+			if isIntOnlyExpr(b.Left, currentEnv) && isIntOnlyExpr(b.Right, currentEnv) {
+				op = "//"
+			} else if isIntLike(inferPyType(b.Left, currentEnv)) && isIntLike(inferPyType(b.Right, currentEnv)) {
+				op = "//"
+			} else if isLikelyIntExpr(b.Left) && isLikelyIntExpr(b.Right) {
+				op = "//"
+			}
+		}
 		switch op {
 		case "&&":
 			op = "and"
@@ -1834,32 +1834,37 @@ func isIntOnlyExpr(e Expr, env *types.Env) bool {
 // environment. It treats all names as integers and rejects expressions that
 // obviously involve floats or division results.
 func isLikelyIntExpr(e Expr) bool {
-        switch ex := e.(type) {
-        case *IntLit:
-                return true
-        case *Name:
-                return true
-       case *CallExpr:
-               if n, ok := ex.Func.(*Name); ok && n.Name == "len" {
-                       return true
-               }
-               return false
-        case *BinaryExpr:
-                if ex.Op == "/" {
-                        return false
-                }
-                switch ex.Op {
-                case "+", "-", "*", "%", "//":
-                        return isLikelyIntExpr(ex.Left) && isLikelyIntExpr(ex.Right)
-                }
-                return false
-        case *UnaryExpr:
-                return isLikelyIntExpr(ex.Expr)
-        case *ParenExpr:
-                return isLikelyIntExpr(ex.Expr)
-        default:
-                return false
-        }
+	switch ex := e.(type) {
+	case *IntLit:
+		return true
+	case *Name:
+		if currentEnv != nil {
+			if t, err := currentEnv.GetVar(ex.Name); err == nil {
+				return isIntLike(t)
+			}
+		}
+		return false
+	case *CallExpr:
+		if n, ok := ex.Func.(*Name); ok && n.Name == "len" {
+			return true
+		}
+		return false
+	case *BinaryExpr:
+		if ex.Op == "/" {
+			return false
+		}
+		switch ex.Op {
+		case "+", "-", "*", "%", "//":
+			return isLikelyIntExpr(ex.Left) && isLikelyIntExpr(ex.Right)
+		}
+		return false
+	case *UnaryExpr:
+		return isLikelyIntExpr(ex.Expr)
+	case *ParenExpr:
+		return isLikelyIntExpr(ex.Expr)
+	default:
+		return false
+	}
 }
 
 func isListOfStrings(t types.Type) bool {
@@ -5056,6 +5061,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		case "parseIntStr":
 			if len(args) == 2 {
 				return &CallExpr{Func: &Name{Name: "int"}, Args: []Expr{args[0], args[1]}}, nil
+			}
+		case "to_float":
+			if len(args) == 1 {
+				return &CallExpr{Func: &Name{Name: "float"}, Args: args}, nil
 			}
 		case "sha256":
 			if len(args) == 1 {
