@@ -1,0 +1,5 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/data_structures/hashing/bloom_filter.go:192:37: cannot convert _index(func(v any) []any {…}(pos), i) (value of interface type any) to type int: need type assertion
+../../../tests/algorithms/transpiler/Go/data_structures/hashing/bloom_filter.go:226:37: cannot convert _index(func(v any) []any {…}(pos), i) (value of interface type any) to type int: need type assertion
+../../../tests/algorithms/transpiler/Go/data_structures/hashing/bloom_filter.go:278:37: cannot convert _index(func(v any) []any {…}(pos), i) (value of interface type any) to type int: need type assertion

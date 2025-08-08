@@ -1,0 +1,8 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/data_structures/disjoint_set/disjoint_set.go:151:7: cannot use x_root (variable of type int) as string value in map index
+../../../tests/algorithms/transpiler/Go/data_structures/disjoint_set/disjoint_set.go:159:7: cannot use y_root (variable of type int) as string value in map index
+../../../tests/algorithms/transpiler/Go/data_structures/disjoint_set/disjoint_set.go:171:8: cannot use x_root (variable of type int) as string value in map index
+../../../tests/algorithms/transpiler/Go/data_structures/disjoint_set/disjoint_set.go:179:8: cannot use y_root (variable of type int) as string value in map index
+../../../tests/algorithms/transpiler/Go/data_structures/disjoint_set/disjoint_set.go:180:21: cannot convert func(v any) map[string]any {…}(r)[y_root] (map index expression of interface type any) to type int: need type assertion
+../../../tests/algorithms/transpiler/Go/data_structures/disjoint_set/disjoint_set.go:188:9: cannot use y_root (variable of type int) as string value in map index
