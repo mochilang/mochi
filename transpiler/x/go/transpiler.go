@@ -41,6 +41,8 @@ type Program struct {
 	UseMod       bool
 	UseFloatConv bool
 	UsePadStart  bool
+	UseIndex     bool
+	UseSetIndex  bool
 	UseSHA256    bool
 	UseBigInt    bool
 	UseBigRat    bool
@@ -71,6 +73,8 @@ var (
 	usesMod            bool
 	usesFloatConv      bool
 	usesPadStart       bool
+	usesIndex          bool
+	usesSetIndex       bool
 	usesSHA256         bool
 	usesBigInt         bool
 	usesBigRat         bool
@@ -170,8 +174,8 @@ func safeName(name string) string {
 func emitCastAnyToType(w io.Writer, typ, v string) {
 	if strings.HasPrefix(typ, "[]") {
 		elem := typ[2:]
+		usesReflect = true
 		if typ == "[]any" {
-			usesReflect = true
 			fmt.Fprintf(w, "func(v any) []any { if v == nil { return nil }; if arr, ok := v.([]any); ok { return arr }; rv := reflect.ValueOf(v); if rv.Kind() != reflect.Slice { return v.([]any) }; n := rv.Len(); out := make([]any, n); for i := 0; i < n; i++ { out[i] = rv.Index(i).Interface() }; return out }(%s)", v)
 			return
 		}
@@ -393,6 +397,16 @@ type SetStmt struct {
 }
 
 func (s *SetStmt) emit(w io.Writer) {
+	if ix, ok := s.Target.(*IndexExpr); ok && ix.AllowNegative {
+		fmt.Fprint(w, "_setIndex(")
+		ix.X.emit(w)
+		fmt.Fprint(w, ", ")
+		ix.Index.emit(w)
+		fmt.Fprint(w, ", ")
+		s.Value.emit(w)
+		fmt.Fprint(w, ")")
+		return
+	}
 	s.Target.emit(w)
 	fmt.Fprint(w, " = ")
 	s.Value.emit(w)
@@ -913,11 +927,22 @@ func (s *StructLit) emitBare(w io.Writer) {
 
 // IndexExpr represents `X[i]`.
 type IndexExpr struct {
-	X     Expr
-	Index Expr
+	X             Expr
+	Index         Expr
+	AllowNegative bool
 }
 
 func (ix *IndexExpr) emit(w io.Writer) {
+	if ix.AllowNegative {
+		fmt.Fprint(w, "_index(")
+		ix.X.emit(w)
+		fmt.Fprint(w, ", ")
+		if ix.Index != nil {
+			ix.Index.emit(w)
+		}
+		fmt.Fprint(w, ")")
+		return
+	}
 	ix.X.emit(w)
 	fmt.Fprint(w, "[")
 	if ix.Index != nil {
@@ -1075,12 +1100,22 @@ func (fe *ForEachStmt) emit(w io.Writer) {
 
 // IndexAssignStmt represents assignment to a list element.
 type IndexAssignStmt struct {
-	Name  string
-	Index Expr
-	Value Expr
+	Name          string
+	Index         Expr
+	Value         Expr
+	AllowNegative bool
 }
 
 func (ias *IndexAssignStmt) emit(w io.Writer) {
+	if ias.AllowNegative {
+		fmt.Fprint(w, "_setIndex(")
+		fmt.Fprintf(w, "%s, ", ias.Name)
+		ias.Index.emit(w)
+		fmt.Fprint(w, ", ")
+		ias.Value.emit(w)
+		fmt.Fprint(w, ")")
+		return
+	}
 	fmt.Fprintf(w, "%s[", ias.Name)
 	ias.Index.emit(w)
 	fmt.Fprint(w, "] = ")
@@ -2265,6 +2300,8 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	usesMod = false
 	usesFloatConv = false
 	usesPadStart = false
+	usesIndex = false
+	usesSetIndex = false
 	usesSHA256 = false
 	usesBigInt = false
 	usesBigRat = false
@@ -2325,6 +2362,8 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	gp.UseMod = usesMod
 	gp.UseFloatConv = usesFloatConv
 	gp.UsePadStart = usesPadStart
+	gp.UseIndex = usesIndex
+	gp.UseSetIndex = usesSetIndex
 	gp.UseRepeat = usesRepeat
 	gp.UseConcat = usesConcat
 	gp.UseMapConv = usesMapConv
@@ -2581,9 +2620,13 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				typ = fetchType
 				valType = types.StructType{Name: fetchType}
 			} else if typ == "" {
-				valType = types.TypeOfExpr(st.Let.Value, env)
-				if types.IsAnyType(valType) {
-					valType = types.TypeOfExprBasic(st.Let.Value, env)
+				valType = types.TypeOfExprBasic(st.Let.Value, env)
+				if fe, ok := e.(*FieldExpr); ok {
+					if st, ok2 := valType.(types.StructType); ok2 {
+						if ft, ok3 := st.Fields[fe.Name]; ok3 {
+							valType = ft
+						}
+					}
 				}
 				typ = toGoTypeFromType(valType)
 				if _, ok := valType.(types.FuncType); ok {
@@ -2592,7 +2635,15 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					}
 				}
 			} else {
-				valType = types.TypeOfExpr(st.Let.Value, env)
+				valType = types.TypeOfExprBasic(st.Let.Value, env)
+				if fe, ok := e.(*FieldExpr); ok {
+					if st, ok2 := valType.(types.StructType); ok2 {
+						if ft, ok3 := st.Fields[fe.Name]; ok3 {
+							valType = ft
+						}
+					}
+				}
+				typ = toGoTypeFromType(valType)
 			}
 			if as, ok := e.(*AssertExpr); ok && (typ == "" || typ == "any") && types.IsAnyType(valType) {
 				typ = as.Type
@@ -3023,9 +3074,12 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+			allowNeg := false
 			// attempt to refine list element type on assignment
 			if vt, err := env.GetVar(st.Assign.Name); err == nil {
 				if lt, ok := vt.(types.ListType); ok {
+					allowNeg = true
+					usesSetIndex = true
 					elemT := types.TypeOfExpr(st.Assign.Value, env)
 					if types.IsAnyType(elemT) {
 						elemT = types.TypeOfExprBasic(st.Assign.Value, env)
@@ -3050,7 +3104,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			if rn, ok := varNameMap[name]; ok {
 				name = rn
 			}
-			return &IndexAssignStmt{Name: name, Index: idx, Value: val}, nil
+			return &IndexAssignStmt{Name: name, Index: idx, Value: val, AllowNegative: allowNeg}, nil
 		}
 		if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
 			e, err := compileExpr(st.Assign.Value, env, st.Assign.Name)
@@ -3120,6 +3174,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		}
 		if as, ok := target.(*AssertExpr); ok {
 			target = as.Expr
+		}
+		if ix, ok := target.(*IndexExpr); ok && ix.AllowNegative {
+			usesSetIndex = true
 		}
 		val, err := compileExpr(st.Assign.Value, env, "")
 		if err != nil {
@@ -5358,10 +5415,12 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 				}
 				switch tt := t.(type) {
 				case types.StringType:
-					expr = &CallExpr{Func: "string", Args: []Expr{&IndexExpr{X: &RuneSliceExpr{Expr: expr}, Index: iex}}}
+					usesIndex = true
+					expr = &CallExpr{Func: "string", Args: []Expr{&IndexExpr{X: &RuneSliceExpr{Expr: expr}, Index: iex, AllowNegative: true}}}
 					t = types.StringType{}
 				case types.ListType:
-					expr = &IndexExpr{X: expr, Index: iex}
+					usesIndex = true
+					expr = &IndexExpr{X: expr, Index: iex, AllowNegative: true}
 					t = tt.Elem
 				case types.MapType:
 					expr = &IndexExpr{X: expr, Index: iex}
@@ -5395,7 +5454,8 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 				default:
 					if types.IsAnyType(t) {
 						if _, ok2 := types.TypeOfExpr(idx.Start, env).(types.IntType); ok2 {
-							expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "[]any"}, Index: iex}
+							usesIndex = true
+							expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "[]any"}, Index: iex, AllowNegative: true}
 						} else {
 							expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "map[string]any"}, Index: iex}
 						}
@@ -6805,6 +6865,18 @@ func Emit(prog *Program, bench bool) []byte {
 		buf.WriteString("    if start > len(s) { start = len(s) }\n")
 		buf.WriteString("    if end < start { end = start }\n")
 		buf.WriteString("    return s[start:end]\n")
+		buf.WriteString("}\n\n")
+	}
+	if prog.UseIndex {
+		buf.WriteString("func _index[T any](s []T, i int) T {\n")
+		buf.WriteString("    if i < 0 { i += len(s) }\n")
+		buf.WriteString("    return s[i]\n")
+		buf.WriteString("}\n\n")
+	}
+	if prog.UseSetIndex {
+		buf.WriteString("func _setIndex[T any](s []T, i int, v T) {\n")
+		buf.WriteString("    if i < 0 { i += len(s) }\n")
+		buf.WriteString("    s[i] = v\n")
 		buf.WriteString("}\n\n")
 	}
 	if prog.UseSplit {
