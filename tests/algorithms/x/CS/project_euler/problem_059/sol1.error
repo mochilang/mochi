@@ -1,0 +1,5 @@
+exit status 1
+/tmp/TestCSTranspiler_Algorithms_Golden001_project_euler_problem_059_sol1908309132/001/Program.cs(251,24): error CS0103: The name 'COMMON_WORDS_15' does not exist in the current context [/tmp/TestCSTranspiler_Algorithms_Golden001_project_euler_problem_059_sol1908309132/001/app.csproj]
+/tmp/TestCSTranspiler_Algorithms_Golden001_project_euler_problem_059_sol1908309132/001/Program.cs(252,30): error CS0103: The name 'COMMON_WORDS_15' does not exist in the current context [/tmp/TestCSTranspiler_Algorithms_Golden001_project_euler_problem_059_sol1908309132/001/app.csproj]
+
+The build failed. Fix the build errors and run again.

@@ -1,0 +1,9 @@
+exit status 134
+Unhandled exception. System.FormatException: The input string '-' was not in a correct format.
+   at System.Number.ThrowFormatException[TChar](ReadOnlySpan`1 value)
+   at System.Int64.Parse(String s)
+   at Program.digital_sum(Int64 n_4) in /tmp/TestCSTranspiler_Algorithms_Golden001_project_euler_problem_056_sol12944200338/001/Program.cs:line 115
+   at Program.solution(Int64 a_8, Int64 b_9) in /tmp/TestCSTranspiler_Algorithms_Golden001_project_euler_problem_056_sol12944200338/001/Program.cs:line 128
+   at Program.test_solution() in /tmp/TestCSTranspiler_Algorithms_Golden001_project_euler_problem_056_sol12944200338/001/Program.cs:line 143
+   at Program.main() in /tmp/TestCSTranspiler_Algorithms_Golden001_project_euler_problem_056_sol12944200338/001/Program.cs:line 152
+   at Program.Main() in /tmp/TestCSTranspiler_Algorithms_Golden001_project_euler_problem_056_sol12944200338/001/Program.cs:line 160

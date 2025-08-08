@@ -1,0 +1,4 @@
+exit status 134
+Unhandled exception. System.Exception: 330 should be pentagonal
+   at Program.test_is_pentagonal() in /tmp/TestCSTranspiler_Algorithms_Golden001_project_euler_problem_045_sol12721762438/001/Program.cs:line 155
+   at Program.Main() in /tmp/TestCSTranspiler_Algorithms_Golden001_project_euler_problem_045_sol12721762438/001/Program.cs:line 176
