@@ -1,0 +1,11 @@
+WARNING: Implicit use of clojure.main with options is deprecated, use -M
+true
+true
+true
+false
+true
+true
+true
+true
+false
+true

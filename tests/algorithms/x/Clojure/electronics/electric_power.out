@@ -1,0 +1,6 @@
+WARNING: Implicit use of clojure.main with options is deprecated, use -M
+Syntax error compiling at (/workspace/mochi/tests/algorithms/x/Clojure/electronics/electric_power.clj:38:110).
+Unable to resolve symbol: floor in this context
+
+Full report at:
+/tmp/clojure-9608477173966628824.edn
