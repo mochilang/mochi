@@ -208,6 +208,7 @@ const helperJSON = `let json (arr:obj) =
 
 const helperStr = `let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -1489,8 +1490,14 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 			io.WriteString(w, name)
 			io.WriteString(w, " <- _arrset ")
 			io.WriteString(w, name)
-			io.WriteString(w, " (")
-			indices[0].emit(w)
+			io.WriteString(w, " (int ")
+			if needsParen(indices[0]) {
+				io.WriteString(w, "(")
+				indices[0].emit(w)
+				io.WriteString(w, ")")
+			} else {
+				indices[0].emit(w)
+			}
 			io.WriteString(w, ") (")
 			s.Value.emit(w)
 			io.WriteString(w, ")")
@@ -1500,8 +1507,14 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 			writeIndent(w)
 			io.WriteString(w, name)
 			for _, ix := range indices {
-				io.WriteString(w, ".[")
-				ix.emit(w)
+				io.WriteString(w, ".[int ")
+				if needsParen(ix) {
+					io.WriteString(w, "(")
+					ix.emit(w)
+					io.WriteString(w, ")")
+				} else {
+					ix.emit(w)
+				}
 				io.WriteString(w, "]")
 			}
 			io.WriteString(w, " <- ")
@@ -2450,7 +2463,11 @@ func (c *CallExpr) emit(w io.Writer) {
 	if name == "mod" {
 		name = "``mod``"
 	}
-	io.WriteString(w, name)
+	if strings.Contains(name, " ") {
+		io.WriteString(w, name)
+	} else {
+		io.WriteString(w, fsIdent(name))
+	}
 	if len(c.Args) == 0 {
 		io.WriteString(w, "()")
 		return
@@ -2518,8 +2535,14 @@ func (i *IndexExpr) emit(w io.Writer) {
 		} else {
 			i.Target.emit(w)
 		}
-		io.WriteString(w, " (")
-		i.Index.emit(w)
+		io.WriteString(w, " (int ")
+		if needsParen(i.Index) {
+			io.WriteString(w, "(")
+			i.Index.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			i.Index.emit(w)
+		}
 		io.WriteString(w, ")")
 		return
 	}
@@ -3044,6 +3067,28 @@ func (c *CastExpr) emit(w io.Writer) {
 			io.WriteString(w, ")")
 		} else {
 			c.Expr.emit(w)
+		}
+	case "int array":
+		if ll, ok := c.Expr.(*ListLit); ok && len(ll.Elems) == 0 {
+			io.WriteString(w, "Array.empty<int>")
+		} else if valueType(c.Expr) == "int64 array" {
+			io.WriteString(w, "Array.map int ")
+			if needsParen(c.Expr) {
+				io.WriteString(w, "(")
+				c.Expr.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				c.Expr.emit(w)
+			}
+		} else {
+			io.WriteString(w, "unbox<int array> ")
+			if needsParen(c.Expr) {
+				io.WriteString(w, "(")
+				c.Expr.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				c.Expr.emit(w)
+			}
 		}
 	default:
 		if ll, ok := c.Expr.(*ListLit); ok && c.Type == "obj array" {

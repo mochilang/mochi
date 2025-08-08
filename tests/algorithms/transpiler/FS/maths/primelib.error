@@ -1,0 +1,18 @@
+exit status 1
+true
+[2 3 5 7 11 13 17 19]
+[2 3 5 7 11 13 17 19]
+[7 41]
+41
+7
+40
+[5 23]
+23
+
+Unhandled Exception:
+System.Exception: arguments must be prime and p1 < p2
+  at Primelib.get_primes_between (System.Int32 p1, System.Int32 p2) [0x0021e] in <6895de93dd49c992a745038393de9568>:0 
+  at <StartupCode$primelib>.$Primelib.main@ () [0x00205] in <6895de93dd49c992a745038393de9568>:0 
+[ERROR] FATAL UNHANDLED EXCEPTION: System.Exception: arguments must be prime and p1 < p2
+  at Primelib.get_primes_between (System.Int32 p1, System.Int32 p2) [0x0021e] in <6895de93dd49c992a745038393de9568>:0 
+  at <StartupCode$primelib>.$Primelib.main@ () [0x00205] in <6895de93dd49c992a745038393de9568>:0
