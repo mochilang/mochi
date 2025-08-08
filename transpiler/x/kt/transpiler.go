@@ -144,6 +144,11 @@ func init() {
     is Map<*, *> -> v.size
     else -> v.toString().length
 }`,
+		"_exists": `fun _exists(v: Any?): Boolean {
+    if (v == null) return false
+    if (v is Collection<*>) return true
+    return v.javaClass.isArray
+}`,
 		"expect":       `fun expect(cond: Boolean) { if (!cond) throw RuntimeException("expect failed") }`,
 		"panic":        `fun panic(msg: String): Nothing { throw RuntimeException(msg) }`,
 		"input":        `fun input(): String = readLine() ?: ""`,
@@ -222,8 +227,8 @@ val res = mutableListOf<Int>()
 for (b in hash) res.add((b.toInt() and 0xff))
 return res
 }`,
-		"pow2": `fun pow2(n: Int): Long {
-var v = 1L
+		"pow2": `fun pow2(n: Int): Int {
+var v = 1
 var i = 0
 while (i < n) {
 v *= 2
@@ -232,10 +237,10 @@ i++
 return v
 }`,
 		"lshift": `fun lshift(x: Int, n: Int): Int {
-return (x.toLong() * pow2(n)).toInt()
+return x * pow2(n)
 }`,
 		"rshift": `fun rshift(x: Int, n: Int): Int {
-return (x.toLong() / pow2(n)).toInt()
+return x / pow2(n)
 }`,
 		"split": `fun split(s: String, sep: String): MutableList<String> {
     return s.split(sep).toMutableList()
@@ -2268,8 +2273,9 @@ func (pse *PadStartExpr) emit(w io.Writer) {
 type ExistsExpr struct{ Value Expr }
 
 func (e *ExistsExpr) emit(w io.Writer) {
+	io.WriteString(w, "_exists(")
 	e.Value.emit(w)
-	io.WriteString(w, ".isNotEmpty()")
+	io.WriteString(w, ")")
 }
 
 // SortQueryExpr represents a sorted list comprehension.
@@ -3102,6 +3108,11 @@ func guessType(e Expr) string {
 		if v.Type != "" {
 			return v.Type
 		}
+		if vs, ok := varDecls[v.Name]; ok {
+			if vs.Type != "" {
+				return vs.Type
+			}
+		}
 		return "Any"
 	case *CallExpr:
 		if ret, ok := funcRets[v.Func]; ok {
@@ -3646,7 +3657,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			if st.Fun.Name == "pow2" || st.Fun.Name == "lshift" || st.Fun.Name == "rshift" {
 				switch st.Fun.Name {
 				case "pow2":
-					funcRets[st.Fun.Name] = "Long"
+					funcRets[st.Fun.Name] = "Int"
 				default:
 					funcRets[st.Fun.Name] = "Int"
 				}
@@ -5691,6 +5702,7 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
+			useHelper("_exists")
 			return &ExistsExpr{Value: arg}, nil
 		case "contains":
 			if len(p.Call.Args) != 2 {
