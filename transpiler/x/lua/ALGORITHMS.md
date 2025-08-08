@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-08 19:04 GMT+7
+Last updated: 2025-08-08 19:25 GMT+7
 
-## Algorithms Golden Test Checklist (989/1077)
+## Algorithms Golden Test Checklist (990/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 270µs | 912 B |
@@ -57,56 +57,56 @@ Last updated: 2025-08-08 19:04 GMT+7
 | 48 | boolean_algebra/imply_gate | ✓ | 153µs | 32 B |
 | 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 194µs | 1.3 KB |
 | 50 | boolean_algebra/multiplexer | ✓ | 172µs | 80 B |
-| 51 | boolean_algebra/nand_gate | ✓ | 158µs | 32 B |
-| 52 | boolean_algebra/nimply_gate | ✓ | 173µs | 32 B |
-| 53 | boolean_algebra/nor_gate | ✓ | 173µs | 1.0 KB |
-| 54 | boolean_algebra/not_gate | ✓ | 109µs | 32 B |
-| 55 | boolean_algebra/or_gate | ✓ | 106µs | 808 B |
-| 56 | boolean_algebra/quine_mc_cluskey | ✓ | 264µs | 1.4 KB |
-| 57 | boolean_algebra/xnor_gate | ✓ | 157µs | 32 B |
-| 58 | boolean_algebra/xor_gate | ✓ | 194µs | 32 B |
-| 59 | cellular_automata/conways_game_of_life | ✓ | 743µs | 3.0 KB |
-| 60 | cellular_automata/game_of_life | ✓ | 544µs | 2.8 KB |
+| 51 | boolean_algebra/nand_gate | ✓ | 72µs | 32 B |
+| 52 | boolean_algebra/nimply_gate | ✓ | 73µs | 32 B |
+| 53 | boolean_algebra/nor_gate | ✓ | 119µs | 1.1 KB |
+| 54 | boolean_algebra/not_gate | ✓ | 93µs | 32 B |
+| 55 | boolean_algebra/or_gate | ✓ | 61µs | 808 B |
+| 56 | boolean_algebra/quine_mc_cluskey | ✓ | 201µs | 1.5 KB |
+| 57 | boolean_algebra/xnor_gate | ✓ | 72µs | 32 B |
+| 58 | boolean_algebra/xor_gate | ✓ | 79µs | 32 B |
+| 59 | cellular_automata/conways_game_of_life | ✓ | 419µs | 3.0 KB |
+| 60 | cellular_automata/game_of_life | ✓ | 315µs | 2.8 KB |
 | 61 | cellular_automata/langtons_ant | ✓ | 2µs | 112 B |
-| 62 | cellular_automata/nagel_schrekenberg | ✓ | 294µs | 1.3 KB |
-| 63 | cellular_automata/one_dimensional | ✓ | 1.741ms | 10.4 KB |
-| 64 | cellular_automata/wa_tor | ✓ | 1.341ms | 10.7 KB |
-| 65 | ciphers/a1z26 | ✓ | 50µs | 1.1 KB |
-| 66 | ciphers/affine_cipher | ✓ | 9.146ms | 1.1 KB |
-| 67 | ciphers/atbash | ✓ | 1.163ms | 912 B |
-| 68 | ciphers/autokey | ✓ | 1.467ms | 1.0 KB |
-| 69 | ciphers/baconian_cipher | ✓ | 433µs | 2.5 KB |
-| 70 | ciphers/base16 | ✓ | 440µs | 1.3 KB |
-| 71 | ciphers/base32 | ✓ | 10.163ms | 1.2 KB |
-| 72 | ciphers/base64_cipher | ✓ | 736µs | 1.2 KB |
-| 73 | ciphers/base85 | ✓ | 1.174ms | 1.5 KB |
-| 74 | ciphers/beaufort_cipher | ✓ | 237µs | 1.1 KB |
-| 75 | ciphers/bifid | ✓ | 2.242ms | 1.9 KB |
-| 76 | ciphers/brute_force_caesar_cipher | ✓ | 4.835ms | 968 B |
-| 77 | ciphers/caesar_cipher | ✓ | 39.649ms | 2.4 KB |
-| 78 | ciphers/cryptomath_module | ✓ | 102µs | 136 B |
-| 79 | ciphers/decrypt_caesar_with_chi_squared | error |  |  |
-| 80 | ciphers/deterministic_miller_rabin | ✓ | 299µs | 840 B |
-| 81 | ciphers/diffie | ✓ | 279µs | 880 B |
-| 82 | ciphers/diffie_hellman | ✓ | 50µs | 904 B |
-| 83 | ciphers/elgamal_key_generator | ✓ | 84µs | 1.8 KB |
-| 84 | ciphers/enigma_machine2 | ✓ | 14.707ms | 1.8 KB |
-| 85 | ciphers/fractionated_morse_cipher | ✓ | 675µs | 3.4 KB |
-| 86 | ciphers/gronsfeld_cipher | ✓ | 3.915ms | 1.1 KB |
-| 87 | ciphers/hill_cipher | ✓ | 2.777ms | 1.9 KB |
-| 88 | ciphers/mixed_keyword_cypher | ✓ | 765µs | 1.1 KB |
-| 89 | ciphers/mono_alphabetic_ciphers | ✓ | 174µs | 1.0 KB |
-| 90 | ciphers/morse_code | ✓ | 499µs | 2.3 KB |
-| 91 | ciphers/onepad_cipher | ✓ | 338µs | 1.5 KB |
-| 92 | ciphers/permutation_cipher | ✓ | 197µs | 1.4 KB |
-| 93 | ciphers/playfair_cipher | ✓ | 655µs | 1.2 KB |
-| 94 | ciphers/polybius | ✓ | 412µs | 1.8 KB |
-| 95 | ciphers/porta_cipher | ✓ | 955µs | 1.6 KB |
-| 96 | ciphers/rabin_miller | ✓ | 436µs | 1.1 KB |
-| 97 | ciphers/rail_fence_cipher | ✓ | 441µs | 1.5 KB |
-| 98 | ciphers/rot13 | ✓ | 5.022ms | 1.0 KB |
-| 99 | ciphers/rsa_cipher | ✓ | 168µs | 1.2 KB |
-| 100 | ciphers/rsa_factorization | ✓ | 126µs | 872 B |
+| 62 | cellular_automata/nagel_schrekenberg | ✓ | 188µs | 1.3 KB |
+| 63 | cellular_automata/one_dimensional | ✓ | 652µs | 10.4 KB |
+| 64 | cellular_automata/wa_tor | ✓ | 734µs | 10.7 KB |
+| 65 | ciphers/a1z26 | ✓ | 103µs | 1.2 KB |
+| 66 | ciphers/affine_cipher | ✓ | 6.036ms | 1.2 KB |
+| 67 | ciphers/atbash | ✓ | 650µs | 912 B |
+| 68 | ciphers/autokey | ✓ | 806µs | 1.1 KB |
+| 69 | ciphers/baconian_cipher | ✓ | 290µs | 2.5 KB |
+| 70 | ciphers/base16 | ✓ | 266µs | 1.4 KB |
+| 71 | ciphers/base32 | ✓ | 3.189ms | 1.2 KB |
+| 72 | ciphers/base64_cipher | ✓ | 298µs | 1.3 KB |
+| 73 | ciphers/base85 | ✓ | 1.533ms | 1.5 KB |
+| 74 | ciphers/beaufort_cipher | ✓ | 203µs | 1.1 KB |
+| 75 | ciphers/bifid | ✓ | 1.633ms | 1.9 KB |
+| 76 | ciphers/brute_force_caesar_cipher | ✓ | 2.726ms | 1016 B |
+| 77 | ciphers/caesar_cipher | ✓ | 26.577ms | 1.2 KB |
+| 78 | ciphers/cryptomath_module | ✓ | 81µs | 824 B |
+| 79 | ciphers/decrypt_caesar_with_chi_squared | ✓ | 39.291ms | 1.6 KB |
+| 80 | ciphers/deterministic_miller_rabin | ✓ | 251µs | 888 B |
+| 81 | ciphers/diffie | ✓ | 194µs | 880 B |
+| 82 | ciphers/diffie_hellman | ✓ | 49µs | 904 B |
+| 83 | ciphers/elgamal_key_generator | ✓ | 144µs | 1.9 KB |
+| 84 | ciphers/enigma_machine2 | ✓ | 13.701ms | 1.9 KB |
+| 85 | ciphers/fractionated_morse_cipher | ✓ | 252µs | 3.4 KB |
+| 86 | ciphers/gronsfeld_cipher | ✓ | 2.56ms | 1.1 KB |
+| 87 | ciphers/hill_cipher | ✓ | 2.053ms | 1.9 KB |
+| 88 | ciphers/mixed_keyword_cypher | ✓ | 665µs | 1.1 KB |
+| 89 | ciphers/mono_alphabetic_ciphers | ✓ | 198µs | 1.0 KB |
+| 90 | ciphers/morse_code | ✓ | 497µs | 2.3 KB |
+| 91 | ciphers/onepad_cipher | ✓ | 264µs | 1.5 KB |
+| 92 | ciphers/permutation_cipher | ✓ | 115µs | 1.4 KB |
+| 93 | ciphers/playfair_cipher | ✓ | 615µs | 1.2 KB |
+| 94 | ciphers/polybius | ✓ | 401µs | 1.8 KB |
+| 95 | ciphers/porta_cipher | ✓ | 984µs | 1.6 KB |
+| 96 | ciphers/rabin_miller | ✓ | 475µs | 1.1 KB |
+| 97 | ciphers/rail_fence_cipher | ✓ | 351µs | 1.6 KB |
+| 98 | ciphers/rot13 | ✓ | 3.781ms | 1.1 KB |
+| 99 | ciphers/rsa_cipher | ✓ | 108µs | 1.2 KB |
+| 100 | ciphers/rsa_factorization | ✓ | 108µs | 872 B |
 | 101 | ciphers/rsa_key_generator | ✓ | 94µs | 752 B |
 | 102 | ciphers/running_key_cipher | ✓ | 495µs | 1.2 KB |
 | 103 | ciphers/shuffled_shift_cipher | ✓ | 2.433ms | 7.2 KB |

@@ -30,6 +30,13 @@ var funcDepth int
 var benchMainFlag bool
 var currentStruct string
 
+func init() {
+	v := os.Getenv("MOCHI_BENCHMARK")
+	if strings.EqualFold(v, "true") || v == "1" {
+		benchMainFlag = true
+	}
+}
+
 // SetBenchMain configures whether the generated main function is wrapped in a
 // benchmark block when emitting code. When enabled, programs print a JSON
 // object with duration and memory statistics on completion.
@@ -2689,14 +2696,14 @@ func dataExprFromFile(path, format string, typ *parser.TypeRef) (Expr, error) {
 // collectHelpers traverses the program and returns a set of helper names that
 // are required by the emitted Lua code.
 func collectHelpers(p *Program) map[string]bool {
-        used := map[string]bool{}
+	used := map[string]bool{}
 
-        prevEnv := currentEnv
-        currentEnv = p.Env
-        defer func() { currentEnv = prevEnv }()
+	prevEnv := currentEnv
+	currentEnv = p.Env
+	defer func() { currentEnv = prevEnv }()
 
-        var walkStmt func(Stmt)
-        var walkExpr func(Expr)
+	var walkStmt func(Stmt)
+	var walkExpr func(Expr)
 	walkExpr = func(e Expr) {
 		switch ex := e.(type) {
 		case *CallExpr:
