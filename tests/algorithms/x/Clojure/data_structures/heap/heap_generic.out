@@ -1,0 +1,14 @@
+[]
+[]
+[]
+[]
+[]
+[]
+[]
+[]
+[]
+Execution error (NullPointerException) at main/update-item (heap_generic.clj:115).
+Cannot invoke "Object.getClass()" because "x" is null
+
+Full report at:
+/tmp/clojure-12706274277378843511.edn

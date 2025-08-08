@@ -1,0 +1,5 @@
+Execution error (ArityException) at main/new-queue (queue_by_two_stacks.clj:56).
+Wrong number of args (2) passed to: main/get
+
+Full report at:
+/tmp/clojure-16445074784070675098.edn

@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error (IndexOutOfBoundsException) at jdk.internal.reflect.DirectMethodHandleAccessor/null (DirectMethodHandleAccessor.java:103).
+null
+
+Full report at:
+/tmp/clojure-2191219915130464743.edn

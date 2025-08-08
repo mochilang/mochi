@@ -1,0 +1,5 @@
+Execution error (ClassCastException) at main/shift-nodes (example_usage.clj:135).
+class clojure.lang.LazySeq cannot be cast to class clojure.lang.Associative (clojure.lang.LazySeq and clojure.lang.Associative are in unnamed module of loader 'app')
+
+Full report at:
+/tmp/clojure-10190900266408417562.edn

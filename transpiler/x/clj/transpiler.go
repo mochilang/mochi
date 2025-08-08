@@ -81,6 +81,17 @@ func (f FloatLit) Emit(w io.Writer) {
 	io.WriteString(w, s)
 }
 
+// BoolLit represents a boolean literal.
+type BoolLit bool
+
+func (b BoolLit) Emit(w io.Writer) {
+	if b {
+		io.WriteString(w, "true")
+	} else {
+		io.WriteString(w, "false")
+	}
+}
+
 // List represents a Clojure list form: (elem1 elem2 ...)
 type List struct {
 	Elems []Node
@@ -1653,6 +1664,9 @@ func isMapNode(n Node) bool {
 					}
 				}
 			}
+			if strings.HasSuffix(name, "_pm") || strings.Contains(name, "pos_map") {
+				return true
+			}
 		}
 	}
 	return false
@@ -2573,10 +2587,7 @@ func transpileLiteral(l *parser.Literal) (Node, error) {
 	case l.Float != nil:
 		return FloatLit(*l.Float), nil
 	case l.Bool != nil:
-		if bool(*l.Bool) {
-			return Symbol("true"), nil
-		}
-		return Symbol("false"), nil
+		return BoolLit(*l.Bool), nil
 	case l.Null:
 		return Symbol("nil"), nil
 	default:

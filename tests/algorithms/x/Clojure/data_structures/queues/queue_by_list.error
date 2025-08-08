@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error (ArityException) at main/new-queue (queue_by_list.clj:46).
+Wrong number of args (2) passed to: main/get
+
+Full report at:
+/tmp/clojure-8294448279107318509.edn
