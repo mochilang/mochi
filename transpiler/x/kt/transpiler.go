@@ -3201,13 +3201,8 @@ func envTypeName(env *types.Env, name string) string {
 }
 
 func localTypeName(env *types.Env, name string) string {
-	if env == nil {
-		return ""
-	}
-	if t, ok := env.Types()[name]; ok {
-		if _, ok := t.(types.FuncType); !ok {
-			return kotlinTypeFromType(t)
-		}
+	if v, ok := varDecls[name]; ok && v.Type != "" {
+		return v.Type
 	}
 	return ""
 }
@@ -3412,6 +3407,11 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						if typ == "" || typ == "Any" || typ == "Any?" {
 							typ = "Pixel"
 						}
+					}
+				}
+				if st.Let.Type == nil {
+					if gt := guessType(val); gt != "" && gt != typ {
+						typ = gt
 					}
 				}
 			}
@@ -5391,6 +5391,10 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				}
 			case *StringLit:
 				isStr = true
+			case *FieldExpr:
+				if v.Type == "String" || v.Type == "String?" {
+					isStr = true
+				}
 			}
 			if endExpr == nil {
 				endExpr = &LenExpr{Value: expr, IsString: isStr}
