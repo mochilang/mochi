@@ -4078,12 +4078,10 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				usedHelpers["input"] = true
 				return &CallExpr{Func: "_input", Args: nil}, nil
 			}
-		case "values":
-			if len(args) == 1 {
-				inner := &CallExpr{Func: "Map.values", Args: []Expr{args[0]}}
-				sort := &CallExpr{Func: "Enum.sort", Args: []Expr{inner}}
-				return &CallExpr{Func: "Enum.join", Args: []Expr{sort, &StringLit{Value: " "}}}, nil
-			}
+               case "values":
+                       if len(args) == 1 {
+                               return &CallExpr{Func: "Map.values", Args: []Expr{args[0]}}, nil
+                       }
 		case "substring", "substr", "slice":
 			if len(args) == 3 {
 				diff := &BinaryExpr{Left: args[2], Op: "-", Right: &GroupExpr{Expr: args[1]}}

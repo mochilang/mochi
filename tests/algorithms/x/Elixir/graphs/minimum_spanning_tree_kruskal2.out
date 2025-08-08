@@ -1,0 +1,39 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 54 │       {i, parent, rank} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_kruskal2.exs:54:8: Main.make_ds/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 146 │       {arr, i} = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_kruskal2.exs:146:13: Main.sort_edges/1
+
+     warning: variable "added" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 187 │       {added, ds, i, mst_edges} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_kruskal2.exs:187:8: Main.kruskal/1
+
+     warning: variable "ds" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 187 │       {added, ds, i, mst_edges} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_kruskal2.exs:187:15: Main.kruskal/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 187 │       {added, ds, i, mst_edges} = try do
+     │                   ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_kruskal2.exs:187:19: Main.kruskal/1
+
+1-2:1
+3-4:1
+2-3:2
+4-5:5

@@ -1,0 +1,50 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 30 │       {i, s} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_prims.exs:30:8: Main.pairs_to_string/1
+
+    warning: variable "v" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 88 │           {min_val, u, v} = try do
+    │                        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_prims.exs:88:24: Main.prim_mst/1
+
+     warning: variable "count" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 120 │       {count, dist, parent, result, visited} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_prims.exs:120:8: Main.prim_mst/1
+
+     warning: variable "dist" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 120 │       {count, dist, parent, result, visited} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_prims.exs:120:15: Main.prim_mst/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 59 │       {dist, i, parent, visited} = try do
+    │              ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_prims.exs:59:14: Main.prim_mst/1
+
+     warning: variable "parent" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 120 │       {count, dist, parent, result, visited} = try do
+     │                     ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_prims.exs:120:21: Main.prim_mst/1
+
+     warning: variable "visited" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 120 │       {count, dist, parent, result, visited} = try do
+     │                                     ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_prims.exs:120:37: Main.prim_mst/1
+
+"[(0, 1), (1, 4), (4, 3), (4, 5), (5, 2)]"

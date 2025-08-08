@@ -1,0 +1,119 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 37 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/greedy_best_first.exs:37:8: Main.clone_path/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 77 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/greedy_best_first.exs:77:7: Main.contains/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 125 │       {arr, i} = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/greedy_best_first.exs:125:13: Main.sort_nodes/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 159 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/greedy_best_first.exs:159:8: Main.get_successors/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 219 │           {i, open_nodes} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/greedy_best_first.exs:219:12: Main.greedy_best_first/3
+
+     warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 191 │           {idx, new_open} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/greedy_best_first.exs:191:12: Main.greedy_best_first/3
+
+     warning: variable "closed_nodes" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 230 │       {closed_nodes, open_nodes} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/greedy_best_first.exs:230:8: Main.greedy_best_first/3
+
+     warning: variable "open_nodes" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 230 │       {closed_nodes, open_nodes} = try do
+     │                      ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/greedy_best_first.exs:230:22: Main.greedy_best_first/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 254 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/greedy_best_first.exs:254:7: Main.print_grid/1
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 287 │           {grid, j} = try do
+     │                  ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/greedy_best_first.exs:287:18: Main.main/0
+
+     warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 300 │       idx = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/greedy_best_first.exs:300:7: Main.main/0
+
+==grid-1==
+[0 0 0 0 0 0 0]
+[0 1 0 0 0 0 0]
+[0 0 0 0 0 0 0]
+[0 0 1 0 0 0 0]
+[1 0 1 0 0 0 0]
+[0 0 0 0 0 0 0]
+[0 0 0 0 1 0 0]
+------
+[2 0 0 0 0 0 0]
+[2 1 0 0 0 0 0]
+[2 0 0 0 0 0 0]
+[2 2 1 0 0 0 0]
+[1 2 1 0 0 0 0]
+[0 2 0 2 2 2 0]
+[0 2 2 2 1 2 2]
+==grid-2==
+[0 0 0 1 1 0 0]
+[0 0 0 0 1 0 1]
+[0 0 0 1 1 0 0]
+[0 1 0 0 1 0 0]
+[1 0 0 1 1 0 1]
+[0 0 0 0 0 0 0]
+------
+[2 0 0 1 1 0 0]
+[2 0 0 0 1 0 1]
+[2 2 2 1 1 0 0]
+[0 1 2 0 1 0 0]
+[1 0 2 1 1 0 1]
+[0 0 2 2 2 2 2]
+==grid-3==
+[0 0 1 0 0]
+[0 1 0 0 0]
+[0 0 1 0 1]
+[1 0 0 1 1]
+[0 0 0 0 0]
+------
+[2 0 1 0 0]
+[2 1 0 0 0]
+[2 2 1 0 1]
+[1 2 0 1 1]
+[0 2 2 2 2]

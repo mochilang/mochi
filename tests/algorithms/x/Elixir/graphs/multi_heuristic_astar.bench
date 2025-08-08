@@ -1,0 +1,137 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 46 │       {guess, i} = try do
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/multi_heuristic_astar.exs:46:15: Main.sqrtApprox/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 136 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/multi_heuristic_astar.exs:136:7: Main.in_blocks/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 171 │       {i, pq, updated} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/multi_heuristic_astar.exs:171:8: Main.pq_put/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 211 │       {i, m} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/multi_heuristic_astar.exs:211:8: Main.pq_minkey/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 242 │       {best, i, idx} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/multi_heuristic_astar.exs:242:14: Main.pq_pop_min/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 264 │       {i, new_pq} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/multi_heuristic_astar.exs:264:8: Main.pq_pop_min/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 293 │       {i, new_pq} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/multi_heuristic_astar.exs:293:8: Main.pq_remove/2
+
+     warning: variable "current" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 320 │       {current, key, path} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/multi_heuristic_astar.exs:320:8: Main.reconstruct/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 337 │       {i, rev} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/multi_heuristic_astar.exs:337:8: Main.reconstruct/3
+
+     warning: variable "key" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 320 │       {current, key, path} = try do
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/multi_heuristic_astar.exs:320:17: Main.reconstruct/3
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 459 │               j = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/multi_heuristic_astar.exs:459:15: Main.multi_a_star/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 408 │             {chosen, i} = try do
+     │                      ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/multi_heuristic_astar.exs:408:22: Main.multi_a_star/3
+
+     warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 509 │             {back_pointer, g_function, i, k, open_list} = try do
+     │                                           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/multi_heuristic_astar.exs:509:43: Main.multi_a_star/3
+
+     warning: variable "back_pointer" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 524 │       {back_pointer, g_function, i, open_list, visited} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/multi_heuristic_astar.exs:524:8: Main.multi_a_star/3
+
+     warning: variable "g_function" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 524 │       {back_pointer, g_function, i, open_list, visited} = try do
+     │                      ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/multi_heuristic_astar.exs:524:22: Main.multi_a_star/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 524 │       {back_pointer, g_function, i, open_list, visited} = try do
+     │                                  ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/multi_heuristic_astar.exs:524:34: Main.multi_a_star/3
+
+     warning: variable "open_list" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 524 │       {back_pointer, g_function, i, open_list, visited} = try do
+     │                                     ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/multi_heuristic_astar.exs:524:37: Main.multi_a_star/3
+
+     warning: variable "visited" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 524 │       {back_pointer, g_function, i, open_list, visited} = try do
+     │                                                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/multi_heuristic_astar.exs:524:48: Main.multi_a_star/3
+
+** (KeyError) key :x not found in: nil
+
+If you are using the dot syntax, such as map.field, make sure the left-hand side of the dot is a map
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/multi_heuristic_astar.exs:18: Main.pos_equal/2
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/multi_heuristic_astar.exs:281: anonymous fn/5 in Main.pq_remove/2
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/multi_heuristic_astar.exs:294: Main.pq_remove/2
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/multi_heuristic_astar.exs:424: anonymous fn/6 in Main.multi_a_star/3
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/multi_heuristic_astar.exs:436: anonymous fn/9 in Main.multi_a_star/3
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/multi_heuristic_astar.exs:525: Main.multi_a_star/3
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/multi_heuristic_astar.exs:548: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/multi_heuristic_astar.exs:556: (file)

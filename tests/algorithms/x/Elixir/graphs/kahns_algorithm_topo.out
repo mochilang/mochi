@@ -1,0 +1,51 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 41 │         {indegree, j} = try do
+    │                    ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/kahns_algorithm_topo.exs:41:20: Main.topological_sort/1
+
+    warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 98 │           {indegree, k, queue} = try do
+    │                      ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/kahns_algorithm_topo.exs:98:22: Main.topological_sort/1
+
+     warning: variable "head" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 109 │       {head, indegree, order, processed, queue} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/kahns_algorithm_topo.exs:109:8: Main.topological_sort/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 23 │       {i, indegree} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/kahns_algorithm_topo.exs:23:8: Main.topological_sort/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 65 │       {i, queue} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/kahns_algorithm_topo.exs:65:8: Main.topological_sort/1
+
+     warning: variable "indegree" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 109 │       {head, indegree, order, processed, queue} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/kahns_algorithm_topo.exs:109:14: Main.topological_sort/1
+
+     warning: variable "queue" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 109 │       {head, indegree, order, processed, queue} = try do
+     │                                          ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/kahns_algorithm_topo.exs:109:42: Main.topological_sort/1
+
+[0, 1, 2, 3, 4, 5]
+nil

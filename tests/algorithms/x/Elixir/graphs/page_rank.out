@@ -1,0 +1,48 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 49 │       {i, ranks} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/page_rank.exs:49:8: Main.page_rank/3
+
+    warning: variable "ci" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 88 │         ci = try do
+    │         ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/page_rank.exs:88:9: Main.main/0
+
+======= Nodes =======
+%{name: "A", inbound: ["C"], outbound: ["B", "C"]}
+%{name: "B", inbound: ["A"], outbound: ["C"]}
+%{name: "C", inbound: ["A", "B"], outbound: ["A"]}
+======= Iteration 1 =======
+%{"A" => 1.0, "B" => 0.575, "C" => 1.06375}
+======= Iteration 2 =======
+%{"A" => 1.0541874999999998, "B" => 0.5980296875, "C" => 1.106354921875}
+======= Iteration 3 =======
+%{"A" => 1.09040168359375, "B" => 0.6134207155273438, "C" => 1.134828323725586}
+    warning: incompatible types given to Kernel.++/2:
+
+        <<"<node=", n.name::binary, " inbound=">> ++ n.inbound
+
+    given types:
+
+        -binary()-, dynamic()
+
+    but expected one of:
+
+        list(term()), term()
+
+    where "n" was given the type:
+
+        # type: dynamic()
+        # from: /workspace/mochi/tests/algorithms/x/Elixir/graphs/page_rank.exs:10:22
+        n
+
+    typing violation found at:
+    │
+ 12 │       throw {:return, (((((("<node=" <> n.name) <> " inbound=") ++ n.inbound) <> " outbound=") ++ n.outbound) <> ">")}
+    │                                                                 ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/page_rank.exs:12:65: Main.node_to_string/1

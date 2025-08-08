@@ -1,0 +1,52 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 25 │       {i, p, r} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_boruvka.exs:25:8: Main.uf_make/1
+
+    warning: variable "p" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 39 │       {p} = if Enum.at(p, x) != x do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_boruvka.exs:39:8: Main.uf_find/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 103 │           {cheap, i} = try do
+     │                   ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_boruvka.exs:103:19: Main.boruvka/2
+
+     warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 142 │           {cheap, idx, uf} = try do
+     │                   ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_boruvka.exs:142:19: Main.boruvka/2
+
+     warning: variable "v" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 178 │           {mst, num_components, uf, v} = try do
+     │                                     ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_boruvka.exs:178:37: Main.boruvka/2
+
+     warning: variable "num_components" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 189 │       {mst, num_components, uf} = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_boruvka.exs:189:13: Main.boruvka/2
+
+     warning: variable "uf" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 189 │       {mst, num_components, uf} = try do
+     │                             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_boruvka.exs:189:29: Main.boruvka/2
+
+0 - 2 : 2
+0 - 1 : 1
+2 - 3 : 3

@@ -1,0 +1,36 @@
+warning: variable "cell_n" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 31 │       {cell_n, current_row} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_path_sum.exs:31:8: Main.fill_row/2
+
+    warning: variable "cell_n" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 57 │       {cell_n, grid} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_path_sum.exs:57:8: Main.min_path_sum/1
+
+    warning: variable "row_above" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 76 │       {grid, row_above, row_n} = try do
+    │              ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_path_sum.exs:76:14: Main.min_path_sum/1
+
+    warning: variable "row_n" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 76 │       {grid, row_above, row_n} = try do
+    │                         ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_path_sum.exs:76:25: Main.min_path_sum/1
+
+    error: undefined function error/1 (expected Main to define such a function or for it to be imported, but none are available)
+    │
+ 45 │         error("The grid does not contain the appropriate information")
+    │         ^^^^^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_path_sum.exs:45:9: Main.min_path_sum/1
+
+** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_path_sum.exs: cannot compile module Main (errors have been logged)

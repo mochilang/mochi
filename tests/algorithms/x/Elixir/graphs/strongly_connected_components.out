@@ -1,0 +1,9 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 100 │       {components, i} = try do
+     │                    ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/strongly_connected_components.exs:100:20: Main.strongly_connected_components/1
+
+[[0, 1, 2], [3, 0, 1, 2], [4, 3, 0, 1, 2], [2, 0, 1], [1, 2, 0]]
+[[3, 0, 2, 1, 5, 4], [4, 3, 0, 2, 1, 5], [5, 4, 3, 0, 2, 1], [2, 0, 1, 0], [1, 0, 2], [2, 0, 1, 0]]
