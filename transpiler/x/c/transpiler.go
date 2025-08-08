@@ -3422,11 +3422,16 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("}\n\n")
 	}
 	if needMapSetSI {
-		buf.WriteString("static void map_set_si(const char *keys[], int vals[], size_t *len, const char *key, int val) {\n")
-		buf.WriteString("    for (size_t i = 0; i < *len; i++) {\n")
-		buf.WriteString("        if (strcmp(keys[i], key) == 0) { vals[i] = val; return; }\n")
+		buf.WriteString("static void map_set_si(MapSI *m, const char *key, int val) {\n")
+		buf.WriteString("    for (size_t i = 0; i < m->len; i++) {\n")
+		buf.WriteString("        if (strcmp(m->keys[i], key) == 0) { m->vals[i] = val; return; }\n")
 		buf.WriteString("    }\n")
-		buf.WriteString("    keys[*len] = key; vals[*len] = val; (*len)++;\n")
+		buf.WriteString("    if (m->len >= m->cap) {\n")
+		buf.WriteString("        m->cap = m->cap ? m->cap * 2 : 16;\n")
+		buf.WriteString("        m->keys = realloc((void*)m->keys, m->cap * sizeof(char*));\n")
+		buf.WriteString("        m->vals = realloc(m->vals, m->cap * sizeof(int));\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    m->keys[m->len] = key; m->vals[m->len] = val; m->len++;\n")
 		buf.WriteString("}\n\n")
 	}
 	if needMapGetSD {
@@ -4944,11 +4949,15 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				env.SetVar(s.Var.Name, types.IntType{}, true)
 			}
 		}
-		if _, ok := valExpr.(*FieldExpr); ok && (declType == "MapSS" || declType == "MapSL" || declType == "MapSD" || declType == "MapIS") {
+		if _, ok := valExpr.(*FieldExpr); ok && (declType == "MapSS" || declType == "MapSL" || declType == "MapSD" || declType == "MapIS" || declType == "MapSI") {
 			if declType == "MapIS" {
 				mapKeyTypes[s.Var.Name] = "int"
 				mapValTypes[s.Var.Name] = "const char*"
 				needMapGetIS = true
+			} else if declType == "MapSI" {
+				mapKeyTypes[s.Var.Name] = "const char*"
+				mapValTypes[s.Var.Name] = "int"
+				needMapGetSI = true
 			} else {
 				mapKeyTypes[s.Var.Name] = "const char*"
 				if declType == "MapSS" {
@@ -5197,16 +5206,9 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			if keyT == "const char*" && valT == "int" {
 				needMapSetSI = true
 				var buf bytes.Buffer
-				buf.WriteString("map_set_si(")
-				if varTypes[s.Assign.Name] == "MapSL" || varTypes[s.Assign.Name] == "MapSS" || varTypes[s.Assign.Name] == "MapSI" || varTypes[s.Assign.Name] == "MapSD" || varTypes[s.Assign.Name] == "MapIS" {
-					buf.WriteString(s.Assign.Name + ".keys, ")
-					buf.WriteString(s.Assign.Name + ".vals, &")
-					buf.WriteString(s.Assign.Name + ".len, ")
-				} else {
-					buf.WriteString(s.Assign.Name + "_keys, ")
-					buf.WriteString(s.Assign.Name + "_vals, &")
-					buf.WriteString(s.Assign.Name + "_len, ")
-				}
+				buf.WriteString("map_set_si(&")
+				buf.WriteString(s.Assign.Name)
+				buf.WriteString(", ")
 				idxs[0].emitExpr(&buf)
 				buf.WriteString(", ")
 				if valT == "const char*" {
@@ -6066,9 +6068,11 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 	for i := range params {
 		if mutated[params[i].Name] && !strings.HasSuffix(params[i].Type, "*") {
 			if _, ok := structTypes[params[i].Type]; ok {
-				params[i].Type = params[i].Type + "*"
-				paramTypes[i] = params[i].Type
-				varTypes[params[i].Name] = params[i].Type
+				if params[i].Type != ret {
+					params[i].Type = params[i].Type + "*"
+					paramTypes[i] = params[i].Type
+					varTypes[params[i].Name] = params[i].Type
+				}
 			}
 		}
 	}
@@ -6938,6 +6942,52 @@ func convertUnary(u *parser.Unary) Expr {
 				}
 				return &IntLit{Value: 0}
 			}
+		}
+		if call.Func == "slice" && len(call.Args) == 3 {
+			arg0 := convertExpr(call.Args[0])
+			arg1 := convertExpr(call.Args[1])
+			arg2 := convertExpr(call.Args[2])
+			if arg0 == nil || arg1 == nil || arg2 == nil {
+				return nil
+			}
+			typ := inferExprType(currentEnv, arg0)
+			switch v := arg0.(type) {
+			case *VarRef:
+				lenVar := &VarRef{Name: v.Name + "_len"}
+				if typ == "int[]" || typ == "long long[]" {
+					needSliceInt = true
+					funcReturnTypes["_slice_int"] = typ
+					return &CallExpr{Func: "_slice_int", Args: []Expr{arg0, lenVar, arg1, arg2, &UnaryExpr{Op: "&", Expr: &VarRef{Name: "_slice_int_len"}}}}
+				}
+				if typ == "double[]" {
+					needSliceDouble = true
+					funcReturnTypes["_slice_double"] = "double[]"
+					return &CallExpr{Func: "_slice_double", Args: []Expr{arg0, lenVar, arg1, arg2, &UnaryExpr{Op: "&", Expr: &VarRef{Name: "_slice_double_len"}}}}
+				}
+				if typ == "const char*[]" {
+					needSliceStr = true
+					funcReturnTypes["_slice_str"] = "const char*[]"
+					return &CallExpr{Func: "_slice_str", Args: []Expr{arg0, lenVar, arg1, arg2, &UnaryExpr{Op: "&", Expr: &VarRef{Name: "_slice_str_len"}}}}
+				}
+			case *FieldExpr:
+				lenField := &FieldExpr{Target: v.Target, Name: v.Name + "_len"}
+				if typ == "int[]" || typ == "long long[]" {
+					needSliceInt = true
+					funcReturnTypes["_slice_int"] = typ
+					return &CallExpr{Func: "_slice_int", Args: []Expr{arg0, lenField, arg1, arg2, &UnaryExpr{Op: "&", Expr: &VarRef{Name: "_slice_int_len"}}}}
+				}
+				if typ == "double[]" {
+					needSliceDouble = true
+					funcReturnTypes["_slice_double"] = "double[]"
+					return &CallExpr{Func: "_slice_double", Args: []Expr{arg0, lenField, arg1, arg2, &UnaryExpr{Op: "&", Expr: &VarRef{Name: "_slice_double_len"}}}}
+				}
+				if typ == "const char*[]" {
+					needSliceStr = true
+					funcReturnTypes["_slice_str"] = "const char*[]"
+					return &CallExpr{Func: "_slice_str", Args: []Expr{arg0, lenField, arg1, arg2, &UnaryExpr{Op: "&", Expr: &VarRef{Name: "_slice_str_len"}}}}
+				}
+			}
+			return nil
 		}
 		if (call.Func == "substring" || call.Func == "substr") && len(call.Args) == 3 {
 			arg0 := convertExpr(call.Args[0])

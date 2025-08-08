@@ -1,0 +1,32 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/data_structures/suffix_tree/suffix_tree_node.c: In function ‘empty_suffix_tree_node’:
+/workspace/mochi/tests/algorithms/x/C/data_structures/suffix_tree/suffix_tree_node.c:98:33: error: expected expression before ‘{’ token
+   98 |     return new_suffix_tree_node({  }, 0LL, -1LL, -1LL, -1LL);
+      |                                 ^
+/workspace/mochi/tests/algorithms/x/C/data_structures/suffix_tree/suffix_tree_node.c:98:12: error: too few arguments to function ‘new_suffix_tree_node’
+   98 |     return new_suffix_tree_node({  }, 0LL, -1LL, -1LL, -1LL);
+      |            ^~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/data_structures/suffix_tree/suffix_tree_node.c:93:16: note: declared here
+   93 | SuffixTreeNode new_suffix_tree_node(MapSI children, long long is_end_of_string, long long start, long long end, long long suffix_link) {
+      |                ^~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/data_structures/suffix_tree/suffix_tree_node.c: In function ‘main’:
+/workspace/mochi/tests/algorithms/x/C/data_structures/suffix_tree/suffix_tree_node.c:114:50: warning: initialization of ‘const char *’ from ‘long long int’ makes pointer from integer without a cast [-Wint-conversion]
+  114 |         root = new_suffix_tree_node((Anon1){.a = 1LL}, 0LL, -1LL, -1LL, -1LL);
+      |                                                  ^~~
+/workspace/mochi/tests/algorithms/x/C/data_structures/suffix_tree/suffix_tree_node.c:114:50: note: (near initialization for ‘(anonymous).a’)
+/workspace/mochi/tests/algorithms/x/C/data_structures/suffix_tree/suffix_tree_node.c:114:44: error: incompatible type for argument 1 of ‘new_suffix_tree_node’
+  114 |         root = new_suffix_tree_node((Anon1){.a = 1LL}, 0LL, -1LL, -1LL, -1LL);
+      |                                            ^~~~~~~~~~
+      |                                            |
+      |                                            Anon1
+/workspace/mochi/tests/algorithms/x/C/data_structures/suffix_tree/suffix_tree_node.c:93:43: note: expected ‘MapSI’ but argument is of type ‘Anon1’
+   93 | SuffixTreeNode new_suffix_tree_node(MapSI children, long long is_end_of_string, long long start, long long end, long long suffix_link) {
+      |                                     ~~~~~~^~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/data_structures/suffix_tree/suffix_tree_node.c:115:44: error: incompatible type for argument 1 of ‘new_suffix_tree_node’
+  115 |         leaf = new_suffix_tree_node((Anon2){}, 1LL, 0LL, 2LL, 0LL);
+      |                                            ^~
+      |                                            |
+      |                                            Anon2
+/workspace/mochi/tests/algorithms/x/C/data_structures/suffix_tree/suffix_tree_node.c:93:43: note: expected ‘MapSI’ but argument is of type ‘Anon2’
+   93 | SuffixTreeNode new_suffix_tree_node(MapSI children, long long is_end_of_string, long long start, long long end, long long suffix_link) {
+      |                                     ~~~~~~^~~~~~~~
