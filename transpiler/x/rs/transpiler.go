@@ -1200,6 +1200,18 @@ func (f *FieldExpr) emit(w io.Writer) {
 					}
 				}
 			}
+		} else if st, ok3 := structTypes[inferType(f.Receiver)]; ok3 {
+			if ft, ok4 := st.Fields[f.Name]; ok4 {
+				if !indexLHS && !types.IsNumericType(ft) && !types.IsBoolType(ft) {
+					io.WriteString(w, ".clone()")
+				}
+			}
+		}
+	} else if st, ok := structTypes[inferType(f.Receiver)]; ok {
+		if ft, ok2 := st.Fields[f.Name]; ok2 {
+			if !indexLHS && !types.IsNumericType(ft) && !types.IsBoolType(ft) {
+				io.WriteString(w, ".clone()")
+			}
 		}
 	}
 }
@@ -3235,7 +3247,7 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			typ = inferType(e)
 		}
 		vd := &VarDecl{Name: stmt.Var.Name, Expr: e, Type: typ, Mutable: true}
-		if funcDepth == 0 && len(localVarStack) == 0 {
+		if funcDepth == 0 && len(localVarStack) == 0 && isConstExpr(e) {
 			vd.Global = true
 			newName := "g_" + stmt.Var.Name
 			globalRenames[stmt.Var.Name] = newName
@@ -3248,6 +3260,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 				useRefCell = true
 			}
 		} else {
+			if funcDepth == 0 && len(localVarStack) == 0 {
+				topLevelNonConstLet = true
+			}
 			if len(localVarStack) > 0 {
 				localVarStack[len(localVarStack)-1][stmt.Var.Name] = true
 			}
@@ -4309,7 +4324,11 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 					expr = &IndexExpr{Target: expr, Index: idx}
 				}
 			default:
-				expr = &IndexExpr{Target: expr, Index: idx}
+				if inferType(expr) == "String" {
+					expr = &StringIndexExpr{Str: expr, Index: idx}
+				} else {
+					expr = &IndexExpr{Target: expr, Index: idx}
+				}
 			}
 		case op.Field != nil:
 			expr = &FieldExpr{Receiver: expr, Name: op.Field.Name}
@@ -4724,6 +4743,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &ListLit{Elems: elems}, nil
 	case p.Map != nil:
+		if len(p.Map.Items) == 0 {
+			usesHashMap = true
+			return &MapLit{Items: nil}, nil
+		}
 		if forceMap[p.Map] {
 			entries := make([]MapEntry, len(p.Map.Items))
 			for i, it := range p.Map.Items {
