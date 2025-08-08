@@ -1,0 +1,6 @@
+/workspace/mochi/tests/algorithms/x/Erlang/strings/credit_card_validator.erl:39:1: Warning: function mochi_nth/2 is unused
+%   39| mochi_nth(I, L) ->
+%     | ^
+
+"4111111111111111 is a valid credit card number."
+"32323 is an invalid credit card number because of its length."

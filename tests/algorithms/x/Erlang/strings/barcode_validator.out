@@ -1,0 +1,13 @@
+/workspace/mochi/tests/algorithms/x/Erlang/strings/barcode_validator.erl:39:1: Warning: function mochi_nth/2 is unused
+%   39| mochi_nth(I, L) ->
+%     | ^
+
+9
+5
+9
+[0, 7, 4, 1, 8, 5, 2, 9, 6, 3]
+true
+false
+false
+false
+8718452538119
