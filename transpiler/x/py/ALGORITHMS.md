@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Python`.
-Last updated: 2025-08-08 09:30 GMT+7
+Last updated: 2025-08-08 10:14 GMT+7
 
 ## Algorithms Golden Test Checklist (504/1077)
 | Index | Name | Status | Duration | Memory |
@@ -266,57 +266,57 @@ Last updated: 2025-08-08 09:30 GMT+7
 | 257 | data_structures/stacks/stack_using_two_queues | ✓ | 680.0µs | 12.43MB |
 | 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 40.0µs | 13.64MB |
 | 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 29.0µs | 12.91MB |
-| 260 | data_structures/stacks/stock_span_problem | ✓ | 22.0µs | 13.24MB |
-| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 44.0µs | 13.06MB |
-| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 1.0ms | 13.12MB |
-| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 992.0µs | 13.03MB |
-| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 697.0µs | 12.86MB |
+| 260 | data_structures/stacks/stock_span_problem | ✓ | 31.0µs | 12.36MB |
+| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 35.0µs | 13.04MB |
+| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 1.0ms | 13.46MB |
+| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 1.0ms | 12.99MB |
+| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 942.0µs | 12.49MB |
 | 265 | data_structures/trie/radix_tree | error |  |  |
-| 266 | data_structures/trie/trie | ✓ | 1.0ms | 13.75MB |
-| 267 | digital_image_processing/change_brightness | ✓ | 22.0µs | 12.42MB |
-| 268 | digital_image_processing/change_contrast | ✓ | 36.0µs | 12.55MB |
-| 269 | digital_image_processing/convert_to_negative | ✓ | 19.0µs | 12.36MB |
-| 270 | digital_image_processing/dithering/burkes | ✓ | 81.0µs | 13.22MB |
+| 266 | data_structures/trie/trie | ✓ | 1.0ms | 13.68MB |
+| 267 | digital_image_processing/change_brightness | ✓ | 49.0µs | 12.32MB |
+| 268 | digital_image_processing/change_contrast | ✓ | 46.0µs | 12.67MB |
+| 269 | digital_image_processing/convert_to_negative | ✓ | 28.0µs | 12.38MB |
+| 270 | digital_image_processing/dithering/burkes | ✓ | 100.0µs | 13.71MB |
 | 271 | digital_image_processing/edge_detection/canny | error |  |  |
-| 272 | digital_image_processing/filters/bilateral_filter | ✓ | 101.0µs | 13.92MB |
-| 273 | digital_image_processing/filters/convolve | ✓ | 154.0µs | 14.06MB |
-| 274 | digital_image_processing/filters/gabor_filter | ✓ | 148.0µs | 13.54MB |
-| 275 | digital_image_processing/filters/gaussian_filter | ✓ | 112.0µs | 13.84MB |
-| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 135.0µs | 13.84MB |
-| 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 110.0µs | 12.97MB |
-| 278 | digital_image_processing/filters/median_filter | ✓ | 66.0µs | 12.92MB |
-| 279 | digital_image_processing/filters/sobel_filter | ✓ | 352.0µs | 13.76MB |
-| 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 478.0µs | 12.66MB |
+| 272 | digital_image_processing/filters/bilateral_filter | ✓ | 130.0µs | 13.32MB |
+| 273 | digital_image_processing/filters/convolve | ✓ | 218.0µs | 13.69MB |
+| 274 | digital_image_processing/filters/gabor_filter | ✓ | 157.0µs | 12.60MB |
+| 275 | digital_image_processing/filters/gaussian_filter | ✓ | 186.0µs | 13.60MB |
+| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 139.0µs | 13.61MB |
+| 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 181.0µs | 12.62MB |
+| 278 | digital_image_processing/filters/median_filter | ✓ | 138.0µs | 12.17MB |
+| 279 | digital_image_processing/filters/sobel_filter | ✓ | 472.0µs | 14.36MB |
+| 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 709.0µs | 12.75MB |
 | 281 | digital_image_processing/index_calculation | error |  |  |
-| 282 | digital_image_processing/morphological_operations/dilation_operation | ✓ | 72.0µs | 13.95MB |
-| 283 | digital_image_processing/morphological_operations/erosion_operation | ✓ | 42.0µs | 13.75MB |
-| 284 | digital_image_processing/resize/resize | ✓ | 68.0µs | 12.89MB |
-| 285 | digital_image_processing/rotation/rotation | ✓ | 38.0µs | 13.99MB |
-| 286 | digital_image_processing/sepia | ✓ | 25.0µs | 13.38MB |
-| 287 | digital_image_processing/test_digital_image_processing | ✓ | 294.0µs | 14.75MB |
-| 288 | divide_and_conquer/closest_pair_of_points | ✓ | 44.0µs | 13.75MB |
-| 289 | divide_and_conquer/convex_hull | ✓ | 708.0µs | 13.46MB |
-| 290 | divide_and_conquer/heaps_algorithm | ✓ | 24.0µs | 13.05MB |
-| 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 31.0µs | 12.41MB |
-| 292 | divide_and_conquer/inversions | ✓ | 843.0µs | 13.38MB |
-| 293 | divide_and_conquer/kth_order_statistic | ✓ | 35.0µs | 12.29MB |
-| 294 | divide_and_conquer/max_difference_pair | ✓ | 21.0µs | 12.25MB |
-| 295 | divide_and_conquer/max_subarray | ✓ | 79.0µs | 13.60MB |
-| 296 | divide_and_conquer/mergesort | ✓ | 77.0µs | 12.52MB |
-| 297 | divide_and_conquer/peak | ✓ | 16.0µs | 12.61MB |
-| 298 | divide_and_conquer/power | ✓ | 27.0µs | 12.74MB |
-| 299 | divide_and_conquer/strassen_matrix_multiplication | ✓ | 4.0ms | 13.99MB |
-| 300 | docs/conf | ✓ | 13.0µs | 12.80MB |
-| 301 | dynamic_programming/abbreviation | ✓ | 79.0µs | 13.21MB |
-| 302 | dynamic_programming/all_construct | ✓ | 143.0µs | 12.77MB |
-| 303 | dynamic_programming/bitmask | ✓ | 31.0µs | 12.95MB |
-| 304 | dynamic_programming/catalan_numbers | ✓ | 30.0µs | 12.73MB |
-| 305 | dynamic_programming/climbing_stairs | ✓ | 17.0µs | 12.30MB |
-| 306 | dynamic_programming/combination_sum_iv | ✓ | 45.0µs | 13.43MB |
-| 307 | dynamic_programming/edit_distance | ✓ | 169.0µs | 13.73MB |
-| 308 | dynamic_programming/factorial | ✓ | 45.0µs | 12.41MB |
-| 309 | dynamic_programming/fast_fibonacci | ✓ | 1.0ms | 12.48MB |
-| 310 | dynamic_programming/fibonacci | ✓ | 40.0µs | 12.86MB |
+| 282 | digital_image_processing/morphological_operations/dilation_operation | ✓ | 143.0µs | 13.86MB |
+| 283 | digital_image_processing/morphological_operations/erosion_operation | ✓ | 86.0µs | 13.47MB |
+| 284 | digital_image_processing/resize/resize | ✓ | 61.0µs | 12.74MB |
+| 285 | digital_image_processing/rotation/rotation | ✓ | 70.0µs | 14.00MB |
+| 286 | digital_image_processing/sepia | ✓ | 47.0µs | 12.71MB |
+| 287 | digital_image_processing/test_digital_image_processing | ✓ | 455.0µs | 14.10MB |
+| 288 | divide_and_conquer/closest_pair_of_points | ✓ | 64.0µs | 13.84MB |
+| 289 | divide_and_conquer/convex_hull | ✓ | 966.0µs | 13.12MB |
+| 290 | divide_and_conquer/heaps_algorithm | ✓ | 44.0µs | 12.93MB |
+| 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 37.0µs | 12.77MB |
+| 292 | divide_and_conquer/inversions | ✓ | 1.0ms | 12.74MB |
+| 293 | divide_and_conquer/kth_order_statistic | ✓ | 48.0µs | 13.17MB |
+| 294 | divide_and_conquer/max_difference_pair | ✓ | 36.0µs | 12.66MB |
+| 295 | divide_and_conquer/max_subarray | ✓ | 118.0µs | 13.49MB |
+| 296 | divide_and_conquer/mergesort | ✓ | 78.0µs | 12.61MB |
+| 297 | divide_and_conquer/peak | ✓ | 29.0µs | 12.63MB |
+| 298 | divide_and_conquer/power | ✓ | 48.0µs | 12.18MB |
+| 299 | divide_and_conquer/strassen_matrix_multiplication | ✓ | 4.0ms | 13.96MB |
+| 300 | docs/conf | ✓ | 18.0µs | 12.29MB |
+| 301 | dynamic_programming/abbreviation | ✓ | 130.0µs | 13.58MB |
+| 302 | dynamic_programming/all_construct | ✓ | 248.0µs | 12.60MB |
+| 303 | dynamic_programming/bitmask | ✓ | 30.0µs | 12.66MB |
+| 304 | dynamic_programming/catalan_numbers | ✓ | 29.0µs | 12.41MB |
+| 305 | dynamic_programming/climbing_stairs | ✓ | 14.0µs | 12.74MB |
+| 306 | dynamic_programming/combination_sum_iv | ✓ | 43.0µs | 13.20MB |
+| 307 | dynamic_programming/edit_distance | ✓ | 234.0µs | 13.74MB |
+| 308 | dynamic_programming/factorial | ✓ | 43.0µs | 12.22MB |
+| 309 | dynamic_programming/fast_fibonacci | ✓ | 917.0µs | 13.05MB |
+| 310 | dynamic_programming/fibonacci | ✓ | 46.0µs | 12.53MB |
 | 311 | dynamic_programming/fizz_buzz | ✓ | 28.0µs | 12.87MB |
 | 312 | dynamic_programming/floyd_warshall | ✓ | 951.0µs | 13.18MB |
 | 313 | dynamic_programming/integer_partition | ✓ | 9.0ms | 12.73MB |

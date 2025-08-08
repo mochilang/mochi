@@ -1,14 +1,19 @@
 run: exit status 1
+{
+  "duration_us": 31,
+  "memory_bytes": 15138816,
+  "name": "main"
+}
 Traceback (most recent call last):
-  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/radix_tree.py", line 236, in <module>
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/radix_tree.py", line 264, in <module>
     main()
-  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/radix_tree.py", line 232, in main
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/radix_tree.py", line 256, in main
     insert_many(tree, words)
-  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/radix_tree.py", line 69, in insert_many
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/radix_tree.py", line 90, in insert_many
     insert(tree, 0, w)
-  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/radix_tree.py", line 104, in insert
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/radix_tree.py", line 125, in insert
     insert(tree, new_idx, res.rem_word)
-  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/radix_tree.py", line 72, in insert
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/radix_tree.py", line 93, in insert
     node = nodes[idx]
            ~~~~~^^^^^
 IndexError: list index out of range
