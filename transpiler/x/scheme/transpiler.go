@@ -79,6 +79,102 @@ func popLoop() {
 func currentBreak() Symbol  { return breakStack[len(breakStack)-1] }
 func currentContinue() Node { return continueStack[len(continueStack)-1] }
 
+func hasBreakOrContinue(stmts []*parser.Statement) bool {
+	for _, st := range stmts {
+		switch {
+		case st.Break != nil || st.Continue != nil:
+			return true
+		case st.If != nil:
+			if ifHasBreakOrContinue(st.If) {
+				return true
+			}
+		case st.While != nil:
+			if hasBreakOrContinue(st.While.Body) {
+				return true
+			}
+		case st.For != nil:
+			if hasBreakOrContinue(st.For.Body) {
+				return true
+			}
+		case st.Bench != nil:
+			if hasBreakOrContinue(st.Bench.Body) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func ifHasBreakOrContinue(is *parser.IfStmt) bool {
+	if hasBreakOrContinue(is.Then) {
+		return true
+	}
+	if is.ElseIf != nil && ifHasBreakOrContinue(is.ElseIf) {
+		return true
+	}
+	if hasBreakOrContinue(is.Else) {
+		return true
+	}
+	return false
+}
+
+func scanReturn(stmts []*parser.Statement, tail bool) (has, early bool) {
+	for i, st := range stmts {
+		tailPos := tail && i == len(stmts)-1
+		switch {
+		case st.Return != nil:
+			has = true
+			if !tailPos {
+				early = true
+			}
+		case st.If != nil:
+			h, e := scanIfReturn(st.If, tailPos)
+			has = has || h
+			early = early || e
+		case st.While != nil:
+			h, e := scanReturn(st.While.Body, false)
+			has = has || h
+			early = early || e
+		case st.For != nil:
+			h, e := scanReturn(st.For.Body, false)
+			has = has || h
+			early = early || e
+		case st.Bench != nil:
+			h, e := scanReturn(st.Bench.Body, false)
+			has = has || h
+			early = early || e
+		}
+	}
+	return
+}
+
+func scanIfReturn(is *parser.IfStmt, tail bool) (has, early bool) {
+	h, e := scanReturn(is.Then, tail)
+	has = has || h
+	early = early || e
+	if is.ElseIf != nil {
+		h2, e2 := scanIfReturn(is.ElseIf, tail)
+		has = has || h2
+		early = early || e2
+	}
+	if len(is.Else) > 0 {
+		h3, e3 := scanReturn(is.Else, tail)
+		has = has || h3
+		early = early || e3
+	}
+	return
+}
+
+func hasEarlyReturn(stmts []*parser.Statement) bool {
+	_, early := scanReturn(stmts, true)
+	return early
+}
+
+func hasReturn(stmts []*parser.Statement) bool {
+	has, _ := scanReturn(stmts, true)
+	return has
+}
+
 func gensym(prefix string) Symbol {
 	gensymCounter++
 	return Symbol(fmt.Sprintf("%s%d", prefix, gensymCounter))
@@ -583,6 +679,23 @@ func convertWhileStmt(ws *parser.WhileStmt) (Node, error) {
 	if err != nil {
 		return nil, err
 	}
+	if !hasBreakOrContinue(ws.Body) {
+		loopSym := gensym("loop")
+		body, err := convertStmts(ws.Body)
+		if err != nil {
+			return nil, err
+		}
+		body = append(body, &List{Elems: []Node{loopSym}})
+		bodyNode := &List{Elems: append([]Node{Symbol("begin")}, body...)}
+		return &List{Elems: []Node{
+			Symbol("letrec"),
+			&List{Elems: []Node{
+				&List{Elems: []Node{loopSym, &List{Elems: []Node{Symbol("lambda"), &List{Elems: []Node{}},
+					&List{Elems: []Node{Symbol("if"), cond, bodyNode, voidSym()}}}}}},
+			}},
+			&List{Elems: []Node{loopSym}},
+		}}, nil
+	}
 	loopSym := gensym("loop")
 	breakSym := gensym("break")
 	pushLoop(breakSym, &List{Elems: []Node{loopSym}})
@@ -739,10 +852,41 @@ func convertFuncStmt(fs *parser.FunStmt, name string, withSelf bool) (Node, erro
 		}
 		childEnv.SetVar(p.Name, pt, true)
 	}
-	retSym := gensym("ret")
-	pushReturn(retSym)
-	bodyForms, err := convertStmts(fs.Body)
-	popReturn()
+	_, earlyRet := scanReturn(fs.Body, true)
+	var bodyForms []Node
+	var err error
+	if earlyRet {
+		retSym := gensym("ret")
+		pushReturn(retSym)
+		bodyForms, err = convertStmts(fs.Body)
+		popReturn()
+		currentEnv = prevEnv
+		if prevEnv != nil {
+			prevEnv.SetVar(name, types.AnyType{}, false)
+		}
+		if err != nil {
+			return nil, err
+		}
+		var body Node
+		if len(bodyForms) == 1 {
+			body = bodyForms[0]
+		} else {
+			body = &List{Elems: append([]Node{Symbol("begin")}, bodyForms...)}
+		}
+		wrapped := &List{Elems: []Node{
+			Symbol("call/cc"),
+			&List{Elems: []Node{
+				Symbol("lambda"), &List{Elems: []Node{retSym}},
+				body,
+			}},
+		}}
+		return &List{Elems: []Node{
+			Symbol("define"),
+			&List{Elems: append([]Node{Symbol(name)}, params...)},
+			wrapped,
+		}}, nil
+	}
+	bodyForms, err = convertStmts(fs.Body)
 	currentEnv = prevEnv
 	if prevEnv != nil {
 		prevEnv.SetVar(name, types.AnyType{}, false)
@@ -756,17 +900,10 @@ func convertFuncStmt(fs *parser.FunStmt, name string, withSelf bool) (Node, erro
 	} else {
 		body = &List{Elems: append([]Node{Symbol("begin")}, bodyForms...)}
 	}
-	wrapped := &List{Elems: []Node{
-		Symbol("call/cc"),
-		&List{Elems: []Node{
-			Symbol("lambda"), &List{Elems: []Node{retSym}},
-			body,
-		}},
-	}}
 	return &List{Elems: []Node{
 		Symbol("define"),
 		&List{Elems: append([]Node{Symbol(name)}, params...)},
-		wrapped,
+		body,
 	}}, nil
 }
 
@@ -2585,7 +2722,7 @@ func makeBinary(op string, left, right Node) Node {
 					}
 				}
 			}
-                       return &List{Elems: []Node{Symbol("equal?"), left, right}}
+			return &List{Elems: []Node{Symbol("equal?"), left, right}}
 		}
 		return &List{Elems: []Node{Symbol("equal?"), left, right}}
 	case "!=":
@@ -2608,7 +2745,7 @@ func makeBinary(op string, left, right Node) Node {
 					}
 				}
 			}
-                       return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("equal?"), left, right}}}}
+			return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("equal?"), left, right}}}}
 		}
 		return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("equal?"), left, right}}}}
 	case "&&":
@@ -2692,10 +2829,10 @@ func makeBinaryTyped(op string, left, right Node, lt, rt types.Type) Node {
 			return &List{Elems: []Node{Symbol("string>?"), left, right}}
 		case ">=":
 			return &List{Elems: []Node{Symbol("string>=?"), left, right}}
-                  case "==":
-                          return &List{Elems: []Node{Symbol("equal?"), left, right}}
-                  case "!=":
-                          return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("equal?"), left, right}}}}
+		case "==":
+			return &List{Elems: []Node{Symbol("equal?"), left, right}}
+		case "!=":
+			return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("equal?"), left, right}}}}
 		}
 	}
 
