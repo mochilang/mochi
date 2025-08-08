@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-08 18:29 GMT+7
+Last updated: 2025-08-08 19:22 GMT+7
 
-## Algorithms Golden Test Checklist (157/1077)
+## Algorithms Golden Test Checklist (165/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 30.54ms | 124.45KiB |
@@ -178,24 +178,24 @@ Last updated: 2025-08-08 18:29 GMT+7
 | 169 | data_structures/arrays/sparse_table | ✓ | 5.62ms | 28.84KiB |
 | 170 | data_structures/arrays/sudoku_solver | ✓ | 13.25ms | 32.46KiB |
 | 171 | data_structures/binary_tree/avl_tree |   |  |  |
-| 172 | data_structures/binary_tree/basic_binary_tree |   |  |  |
-| 173 | data_structures/binary_tree/binary_search_tree |   |  |  |
+| 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 9.61ms | 133.72KiB |
+| 173 | data_structures/binary_tree/binary_search_tree | error |  |  |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive | error |  |  |
 | 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 28.59ms | 120.59KiB |
 | 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 8.43ms | 134.14KiB |
 | 177 | data_structures/binary_tree/binary_tree_path_sum |   |  |  |
 | 178 | data_structures/binary_tree/diff_views_of_binary_tree | error |  |  |
-| 179 | data_structures/binary_tree/distribute_coins |   |  |  |
-| 180 | data_structures/binary_tree/fenwick_tree |   |  |  |
-| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist |   |  |  |
-| 182 | data_structures/binary_tree/floor_and_ceiling |   |  |  |
-| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 |   |  |  |
-| 184 | data_structures/binary_tree/is_sorted |   |  |  |
-| 185 | data_structures/binary_tree/is_sum_tree |   |  |  |
-| 186 | data_structures/binary_tree/lazy_segment_tree |   |  |  |
-| 187 | data_structures/binary_tree/lowest_common_ancestor |   |  |  |
-| 188 | data_structures/binary_tree/maximum_fenwick_tree |   |  |  |
-| 189 | data_structures/binary_tree/maximum_sum_bst |   |  |  |
+| 179 | data_structures/binary_tree/distribute_coins | ✓ | 18.49ms | 123.51KiB |
+| 180 | data_structures/binary_tree/fenwick_tree | ✓ | 7.44ms | 125.13KiB |
+| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 7.32ms | 132.70KiB |
+| 182 | data_structures/binary_tree/floor_and_ceiling | error |  |  |
+| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 | error |  |  |
+| 184 | data_structures/binary_tree/is_sorted | error |  |  |
+| 185 | data_structures/binary_tree/is_sum_tree | ✓ | 16.78ms | 123.95KiB |
+| 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 6.41ms | 133.59KiB |
+| 187 | data_structures/binary_tree/lowest_common_ancestor | ✓ | 17.89ms | 123.01KiB |
+| 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 622.22ms | 818.32KiB |
+| 189 | data_structures/binary_tree/maximum_sum_bst | error |  |  |
 | 190 | data_structures/binary_tree/merge_two_binary_trees |   |  |  |
 | 191 | data_structures/binary_tree/mirror_binary_tree |   |  |  |
 | 192 | data_structures/binary_tree/non_recursive_segment_tree |   |  |  |

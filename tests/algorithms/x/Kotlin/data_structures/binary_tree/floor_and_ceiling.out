@@ -1,0 +1,7 @@
+[3, 5, 7, 10, 15, 20, 25]
+[7, 10]
+[10, 15]
+Exception in thread "main" kotlin.TypeCastException: null cannot be cast to non-null type kotlin.Int
+	at Floor_and_ceilingKt.floor_ceiling(floor_and_ceiling.kt:40)
+	at Floor_and_ceilingKt.main(floor_and_ceiling.kt:47)
+	at Floor_and_ceilingKt.main(floor_and_ceiling.kt)
