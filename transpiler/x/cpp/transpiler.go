@@ -74,7 +74,7 @@ var reserved = map[string]bool{
 	"union": true, "unsigned": true, "using": true, "virtual": true, "void": true, "volatile": true,
 	"wchar_t": true, "while": true, "xor": true, "xor_eq": true,
 	// avoid clashing with C standard library functions
-	"ceil": true, "rand": true, "random": true, "time": true,
+        "ceil": true, "floor": true, "rand": true, "random": true, "time": true,
 	"NULL": true,
 }
 var currentReturnType string
@@ -1049,29 +1049,29 @@ func (p *Program) write(w io.Writer) {
 		if st.Abstract {
 			fmt.Fprintf(w, "    virtual ~%s() = default;\n", st.Name)
 		}
-		for _, f := range st.Fields {
-			fmt.Fprintf(w, "    %s %s;\n", f.Type, f.Name)
-		}
+                for _, f := range st.Fields {
+                        fmt.Fprintf(w, "    %s %s;\n", f.Type, safeName(f.Name))
+                }
 		if !st.Abstract {
 			if st.Base != "" && len(st.Fields) > 0 {
 				fmt.Fprintf(w, "    %s(", st.Name)
-				for i, f := range st.Fields {
-					if i > 0 {
-						io.WriteString(w, ", ")
-					}
-					fmt.Fprintf(w, "%s %s_", f.Type, f.Name)
-				}
-				io.WriteString(w, ") : ")
-				for i, f := range st.Fields {
-					if i > 0 {
-						io.WriteString(w, ", ")
-					}
-					if strings.HasPrefix(f.Type, "std::unique_ptr<") || strings.HasPrefix(f.Type, "std::shared_ptr<") {
-						fmt.Fprintf(w, "%s(std::move(%s_))", f.Name, f.Name)
-					} else {
-						fmt.Fprintf(w, "%s(%s_)", f.Name, f.Name)
-					}
-				}
+                                for i, f := range st.Fields {
+                                        if i > 0 {
+                                                io.WriteString(w, ", ")
+                                        }
+                                        fmt.Fprintf(w, "%s %s_", f.Type, safeName(f.Name))
+                                }
+                                io.WriteString(w, ") : ")
+                                for i, f := range st.Fields {
+                                        if i > 0 {
+                                                io.WriteString(w, ", ")
+                                        }
+                                        if strings.HasPrefix(f.Type, "std::unique_ptr<") || strings.HasPrefix(f.Type, "std::shared_ptr<") {
+                                                fmt.Fprintf(w, "%s(std::move(%s_))", safeName(f.Name), safeName(f.Name))
+                                        } else {
+                                                fmt.Fprintf(w, "%s(%s_)", safeName(f.Name), safeName(f.Name))
+                                        }
+                                }
 				fmt.Fprintln(w, " {}")
 			}
 			fmt.Fprintf(w, "    auto operator<=>(const %s&) const = default;\n", st.Name)
@@ -1602,18 +1602,18 @@ func (n *NullLit) emit(w io.Writer) {
 }
 
 func (s *StructLit) emit(w io.Writer) {
-	io.WriteString(w, safeName(s.Name))
-	io.WriteString(w, "{")
-	for i, f := range s.Fields {
-		if i > 0 {
-			io.WriteString(w, ", ")
-		}
-		if f.Name != "" {
-			io.WriteString(w, "."+f.Name+" = ")
-		}
-		f.Value.emit(w)
-	}
-	io.WriteString(w, "}")
+        io.WriteString(w, safeName(s.Name))
+        io.WriteString(w, "{")
+        for i, f := range s.Fields {
+                if i > 0 {
+                        io.WriteString(w, ", ")
+                }
+                if f.Name != "" {
+                        io.WriteString(w, "."+safeName(f.Name)+" = ")
+                }
+                f.Value.emit(w)
+        }
+        io.WriteString(w, "}")
 }
 
 func (u *UnaryExpr) emit(w io.Writer) {
@@ -1673,15 +1673,15 @@ func (s *SelectorExpr) emit(w io.Writer) {
 		io.WriteString(w, "[\"")
 		io.WriteString(w, s.Field)
 		io.WriteString(w, "\"]")
-	} else if strings.HasPrefix(t, "std::optional<") || strings.HasSuffix(t, "*") || strings.HasPrefix(t, "std::unique_ptr<") || strings.HasPrefix(t, "std::shared_ptr<") {
-		s.Target.emit(w)
-		io.WriteString(w, "->")
-		io.WriteString(w, s.Field)
-	} else {
-		s.Target.emit(w)
-		io.WriteString(w, ".")
-		io.WriteString(w, s.Field)
-	}
+        } else if strings.HasPrefix(t, "std::optional<") || strings.HasSuffix(t, "*") || strings.HasPrefix(t, "std::unique_ptr<") || strings.HasPrefix(t, "std::shared_ptr<") {
+                s.Target.emit(w)
+                io.WriteString(w, "->")
+                io.WriteString(w, safeName(s.Field))
+        } else {
+                s.Target.emit(w)
+                io.WriteString(w, ".")
+                io.WriteString(w, safeName(s.Field))
+        }
 }
 
 func (i *IndexExpr) emit(w io.Writer) {
@@ -4052,11 +4052,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 						}
 						target = &IndexExpr{Target: target, Index: id}
 					}
-					for _, f := range stmt.Assign.Field[:len(stmt.Assign.Field)-1] {
-						target = &SelectorExpr{Target: target, Field: f.Name}
-					}
-					fld := stmt.Assign.Field[len(stmt.Assign.Field)-1].Name
-					body = append(body, &AssignFieldStmt{Target: target, Field: fld, Value: val})
+                                        for _, f := range stmt.Assign.Field[:len(stmt.Assign.Field)-1] {
+                                                target = &SelectorExpr{Target: target, Field: safeName(f.Name)}
+                                        }
+                                        fld := safeName(stmt.Assign.Field[len(stmt.Assign.Field)-1].Name)
+                                        body = append(body, &AssignFieldStmt{Target: target, Field: fld, Value: val})
 				} else {
 					if parts[len(parts)-1].Colon != nil {
 						return nil, fmt.Errorf("unsupported index assignment")
@@ -4080,7 +4080,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			} else if len(stmt.Assign.Field) > 0 {
 				var target Expr = &VarRef{Name: stmt.Assign.Name}
 				for _, f := range stmt.Assign.Field[:len(stmt.Assign.Field)-1] {
-					target = &SelectorExpr{Target: target, Field: f.Name}
+                                       target = &SelectorExpr{Target: target, Field: safeName(f.Name)}
 				}
 				fld := stmt.Assign.Field[len(stmt.Assign.Field)-1].Name
 				body = append(body, &AssignFieldStmt{Target: target, Field: fld, Value: val})
@@ -4626,10 +4626,10 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 					target = &IndexExpr{Target: target, Index: id}
 				}
 				for _, f := range s.Assign.Field[:len(s.Assign.Field)-1] {
-					target = &SelectorExpr{Target: target, Field: f.Name}
+                               target = &SelectorExpr{Target: target, Field: safeName(f.Name)}
 				}
-				fld := s.Assign.Field[len(s.Assign.Field)-1].Name
-				sel := &SelectorExpr{Target: target, Field: fld}
+                                fld := safeName(s.Assign.Field[len(s.Assign.Field)-1].Name)
+                                sel := &SelectorExpr{Target: target, Field: safeName(fld)}
 				if ll, ok := val.(*ListLit); ok && len(ll.Elems) == 0 {
 					baseType := exprType(sel)
 					if strings.HasPrefix(baseType, "std::vector<") {
@@ -4674,11 +4674,11 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 				mutatedParams[s.Assign.Name] = true
 			}
 			var target Expr = &VarRef{Name: s.Assign.Name}
-			for _, f := range s.Assign.Field[:len(s.Assign.Field)-1] {
-				target = &SelectorExpr{Target: target, Field: f.Name}
-			}
-			fld := s.Assign.Field[len(s.Assign.Field)-1].Name
-			sel := &SelectorExpr{Target: target, Field: fld}
+                        for _, f := range s.Assign.Field[:len(s.Assign.Field)-1] {
+                                target = &SelectorExpr{Target: target, Field: safeName(f.Name)}
+                        }
+                        fld := safeName(s.Assign.Field[len(s.Assign.Field)-1].Name)
+                        sel := &SelectorExpr{Target: target, Field: safeName(fld)}
 			if ll, ok := val.(*ListLit); ok && len(ll.Elems) == 0 {
 				baseType := exprType(sel)
 				if strings.HasPrefix(baseType, "std::vector<") {
@@ -5053,14 +5053,14 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				if sl, ok := idx.(*StringLit); ok {
 					t := exprType(expr)
 					if ft := structFieldType(t, sl.Value); ft != "" {
-						expr = &SelectorExpr{Target: expr, Field: sl.Value}
+                                           expr = &SelectorExpr{Target: expr, Field: safeName(sl.Value)}
 						continue
 					}
 				}
 				expr = &IndexExpr{Target: expr, Index: idx}
 			}
 		case op.Field != nil:
-			expr = &SelectorExpr{Target: expr, Field: op.Field.Name}
+                   expr = &SelectorExpr{Target: expr, Field: safeName(op.Field.Name)}
 		case op.Call != nil:
 			var args []Expr
 			for _, a := range op.Call.Args {
@@ -6008,9 +6008,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 		}
 		expr := Expr(&VarRef{Name: alias})
-		for _, f := range p.Selector.Tail {
-			expr = &SelectorExpr{Target: expr, Field: f}
-		}
+                for _, f := range p.Selector.Tail {
+                        expr = &SelectorExpr{Target: expr, Field: safeName(f)}
+                }
 		return expr, nil
 	case p.If != nil:
 		return convertIfExpr(p.If)
@@ -6443,7 +6443,7 @@ func convertSimpleQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, s
 							typ = t
 						}
 					}
-					fields[i] = Param{Name: k, Type: typ}
+                                   fields[i] = Param{Name: safeName(k), Type: typ}
 					flds[i] = FieldLit{Name: k, Value: ml.Values[i]}
 				}
 				body = &StructLit{Name: structName, Fields: flds}
@@ -6491,7 +6491,7 @@ func convertSimpleQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, s
 						}
 					}
 					names[i] = n
-					fields[i] = Param{Name: n, Type: typ}
+                                   fields[i] = Param{Name: safeName(n), Type: typ}
 					flds[i] = FieldLit{Name: n, Value: ml.Values[i]}
 				}
 				if names != nil {
@@ -6517,7 +6517,7 @@ func convertSimpleQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, s
 		} else {
 			pfields := make([]Param, len(vars))
 			for i, v := range vars {
-				pfields[i] = Param{Name: v, Type: qTypes[v]}
+                           pfields[i] = Param{Name: safeName(v), Type: qTypes[v]}
 			}
 			if currentProgram != nil {
 				currentProgram.Structs = append(currentProgram.Structs, StructDef{Name: pairName, Fields: pfields})
@@ -6562,7 +6562,7 @@ func convertSimpleQuery(q *parser.QueryExpr, target string) (Expr, *StructDef, s
 								typ = t
 							}
 						}
-						fields2[i] = Param{Name: k, Type: typ}
+                                           fields2[i] = Param{Name: safeName(k), Type: typ}
 						flds2[i] = FieldLit{Name: k, Value: ml.Values[i]}
 					}
 					body = &StructLit{Name: structName2, Fields: flds2}
@@ -6723,7 +6723,7 @@ func convertLeftJoinGroupQuery(q *parser.QueryExpr, target string) (Expr, *Struc
 							typ = t
 						}
 					}
-					fields[i] = Param{Name: k, Type: typ}
+                                   fields[i] = Param{Name: safeName(k), Type: typ}
 					flds[i] = FieldLit{Name: k, Value: ml.Values[i]}
 				}
 				body = &StructLit{Name: structName, Fields: flds}
@@ -6809,7 +6809,7 @@ func convertLeftJoinQuery(q *parser.QueryExpr, target string) (Expr, *StructDef,
 							typ = t
 						}
 					}
-					fields[i] = Param{Name: k, Type: typ}
+                                   fields[i] = Param{Name: safeName(k), Type: typ}
 					flds[i] = FieldLit{Name: k, Value: ml.Values[i]}
 				}
 				body = &StructLit{Name: structName, Fields: flds}
@@ -6915,7 +6915,7 @@ func convertJoinLeftJoinQuery(q *parser.QueryExpr, target string) (Expr, *Struct
 							typ = t
 						}
 					}
-					fields[i] = Param{Name: k, Type: typ}
+                                   fields[i] = Param{Name: safeName(k), Type: typ}
 					flds[i] = FieldLit{Name: k, Value: ml.Values[i]}
 				}
 				body = &StructLit{Name: structName, Fields: flds}
@@ -7010,7 +7010,7 @@ func convertRightJoinQuery(q *parser.QueryExpr, target string) (Expr, *StructDef
 						typ = optRightType
 						ml.Values[i] = &CallExpr{Name: optRightType, Args: []Expr{vr}}
 					}
-					fields[i] = Param{Name: k, Type: typ}
+                                   fields[i] = Param{Name: safeName(k), Type: typ}
 					flds[i] = FieldLit{Name: k, Value: ml.Values[i]}
 				}
 				body = &StructLit{Name: structName, Fields: flds}
@@ -7102,7 +7102,7 @@ func convertOuterJoinQuery(q *parser.QueryExpr, target string) (Expr, *StructDef
 							typ = t
 						}
 					}
-					fields[i] = Param{Name: k, Type: typ}
+                                   fields[i] = Param{Name: safeName(k), Type: typ}
 					flds[i] = FieldLit{Name: k, Value: ml.Values[i]}
 				}
 				body = &StructLit{Name: structName, Fields: flds}
@@ -7850,7 +7850,7 @@ func inferStructFromList(name string, l *ListLit) (*StructDef, string, bool) {
 	sname := strings.Title(name) + "Item"
 	fields := make([]Param, len(keys))
 	for i, k := range keys {
-		fields[i] = Param{Name: k, Type: exprType(first.Values[i])}
+           fields[i] = Param{Name: safeName(k), Type: exprType(first.Values[i])}
 	}
 	for i, e := range l.Elems {
 		m := e.(*MapLit)
@@ -7925,15 +7925,15 @@ func convertTypeDecl(td *parser.TypeDecl) (*StructDef, error) {
 		}
 		return nil, nil
 	}
-	st := &StructDef{Name: td.Name}
-	for _, m := range td.Members {
-		if m.Field != nil {
-			typ := "auto"
-			if m.Field.Type != nil {
-				typ = cppTypeFrom(types.ResolveTypeRef(m.Field.Type, currentEnv))
-			}
-			st.Fields = append(st.Fields, Param{Name: m.Field.Name, Type: typ})
-		} else if m.Method != nil {
+        st := &StructDef{Name: td.Name}
+        for _, m := range td.Members {
+                if m.Field != nil {
+                        typ := "auto"
+                        if m.Field.Type != nil {
+                                typ = cppTypeFrom(types.ResolveTypeRef(m.Field.Type, currentEnv))
+                        }
+                        st.Fields = append(st.Fields, Param{Name: safeName(m.Field.Name), Type: typ})
+                } else if m.Method != nil {
 			fn := *m.Method
 			fn.Name = td.Name + "_" + fn.Name
 			selfType := td.Name
@@ -7944,9 +7944,9 @@ func convertTypeDecl(td *parser.TypeDecl) (*StructDef, error) {
 				prevFields := currentReceiverFields
 				currentReceiver = td.Name
 				currentReceiverFields = map[string]bool{}
-				for _, f := range st.Fields {
-					currentReceiverFields[f.Name] = true
-				}
+                                for _, f := range st.Fields {
+                                        currentReceiverFields[f.Name] = true
+                                }
 				mf, err := convertFun(&fn)
 				if err != nil {
 					currentReceiver = prevRecv
@@ -7968,21 +7968,21 @@ func convertUnionDecl(td *parser.TypeDecl) (StructDef, []StructDef, error) {
 	base := StructDef{Name: td.Name, Abstract: true}
 	variants := make([]StructDef, 0, len(td.Variants))
 	for _, v := range td.Variants {
-		st := StructDef{Name: v.Name, Base: td.Name}
-		for _, f := range v.Fields {
-			typ := "auto"
-			if f.Type != nil {
-				typ = cppTypeFrom(types.ResolveTypeRef(f.Type, currentEnv))
-				if typ == td.Name {
-					typ = fmt.Sprintf("std::shared_ptr<%s>", td.Name)
-					if currentProgram != nil {
-						currentProgram.addInclude("<memory>")
-					}
-				}
-			}
-			st.Fields = append(st.Fields, Param{Name: f.Name, Type: typ})
-		}
-		variants = append(variants, st)
+                st := StructDef{Name: v.Name, Base: td.Name}
+                for _, f := range v.Fields {
+                        typ := "auto"
+                        if f.Type != nil {
+                                typ = cppTypeFrom(types.ResolveTypeRef(f.Type, currentEnv))
+                                if typ == td.Name {
+                                        typ = fmt.Sprintf("std::shared_ptr<%s>", td.Name)
+                                        if currentProgram != nil {
+                                                currentProgram.addInclude("<memory>")
+                                        }
+                                }
+                        }
+                        st.Fields = append(st.Fields, Param{Name: safeName(f.Name), Type: typ})
+                }
+                variants = append(variants, st)
 	}
 	return base, variants, nil
 }
@@ -8122,9 +8122,9 @@ func isIndexExpr(e *parser.Expr) bool {
 func substituteFieldRefs(e Expr, fields map[string]bool) Expr {
 	switch ex := e.(type) {
 	case *VarRef:
-		if fields[ex.Name] {
-			return &SelectorExpr{Target: &VarRef{Name: "item"}, Field: ex.Name}
-		}
+                if fields[ex.Name] {
+                        return &SelectorExpr{Target: &VarRef{Name: "item"}, Field: safeName(ex.Name)}
+                }
 		return ex
 	case *BinaryExpr:
 		return &BinaryExpr{Left: substituteFieldRefs(ex.Left, fields), Op: ex.Op, Right: substituteFieldRefs(ex.Right, fields)}
