@@ -1,0 +1,66 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 42 │           {j, row} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/gaussian_elimination_pivoting.exs:42:12: Main.copy_matrix/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 55 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/gaussian_elimination_pivoting.exs:55:8: Main.copy_matrix/1
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 120 │                 {ab, j} = try do
+     │                      ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/gaussian_elimination_pivoting.exs:120:22: Main.solve_linear_system/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 105 │           {ab, i} = if column_num != 0 do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/gaussian_elimination_pivoting.exs:105:16: Main.solve_linear_system/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 186 │           {ab, i} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/gaussian_elimination_pivoting.exs:186:16: Main.solve_linear_system/1
+
+     warning: variable "ab" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 198 │       {ab, column_num, x_lst} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/gaussian_elimination_pivoting.exs:198:8: Main.solve_linear_system/1
+
+     warning: variable "column_num" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 148 │       {ab, column_num} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/gaussian_elimination_pivoting.exs:148:12: Main.solve_linear_system/1
+
+     warning: variable "column_num" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 198 │       {ab, column_num, x_lst} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/gaussian_elimination_pivoting.exs:198:12: Main.solve_linear_system/1
+
+     warning: variable "t" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 165 │       {t, x_lst} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/gaussian_elimination_pivoting.exs:165:8: Main.solve_linear_system/1
+
+Matrix:
+[[5.0, -5.0, -3.0, 4.0, -11.0], [1.0, -4.0, 6.0, -4.0, -10.0], [-2.0, -5.0, 4.0, -5.0, -12.0], [-3.0, -3.0, 5.0, -5.0, 8.0]]
+[-12.823529411764705, -2.294117647058823, 11.764705882352937, 19.235294117647054]

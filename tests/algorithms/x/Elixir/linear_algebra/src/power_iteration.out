@@ -1,0 +1,58 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 33 │       {guess, i} = try do
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/power_iteration.exs:33:15: Main.sqrtApprox/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 57 │       {i, sum} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/power_iteration.exs:57:8: Main.dot/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 81 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/power_iteration.exs:81:8: Main.mat_vec_mult/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 105 │       {i, sum} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/power_iteration.exs:105:8: Main.norm/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 131 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/power_iteration.exs:131:8: Main.normalize/1
+
+     warning: variable "err" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 164 │       {err, iterations, lambda, lambda_prev, v} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/power_iteration.exs:164:8: Main.power_iteration/4
+
+     warning: variable "iterations" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 164 │       {err, iterations, lambda, lambda_prev, v} = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/power_iteration.exs:164:13: Main.power_iteration/4
+
+     warning: variable "lambda_prev" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 164 │       {err, iterations, lambda, lambda_prev, v} = try do
+     │                                 ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/src/power_iteration.exs:164:33: Main.power_iteration/4
+
+79.66086378788381
+[0.4447272554261974, 0.46209842008899027, 0.7672566183698522]

@@ -1,0 +1,16 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 44 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sdbm.exs:44:7: Main.ord/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 69 │       {hash_value, i} = try do
+    │                    ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/hashes/sdbm.exs:69:20: Main.sdbm/1
+
+1462174910723540325254304520539387479031000036
+730247649148944819640658295400555317318720608290373040936089

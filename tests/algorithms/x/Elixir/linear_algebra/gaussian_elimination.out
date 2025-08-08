@@ -1,0 +1,72 @@
+warning: variable "c" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 46 │           {c, total} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/gaussian_elimination.exs:46:12: Main.retroactive_resolution/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 26 │       {i, x} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/gaussian_elimination.exs:26:8: Main.retroactive_resolution/2
+
+    warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 59 │       {r, x} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/gaussian_elimination.exs:59:8: Main.retroactive_resolution/2
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 92 │           {j, row} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/gaussian_elimination.exs:92:12: Main.gaussian_elimination/2
+
+     warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 130 │               {augmented, k} = try do
+     │                           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/gaussian_elimination.exs:130:27: Main.gaussian_elimination/2
+
+     warning: variable "col" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 142 │           {augmented, col} = try do
+     │                       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/gaussian_elimination.exs:142:23: Main.gaussian_elimination/2
+
+     warning: variable "c" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 176 │           {c, row} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/gaussian_elimination.exs:176:12: Main.gaussian_elimination/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 106 │       {augmented, i} = try do
+     │                   ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/gaussian_elimination.exs:106:19: Main.gaussian_elimination/2
+
+     warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 190 │       {coeffs, r, vec} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/gaussian_elimination.exs:190:16: Main.gaussian_elimination/2
+
+     warning: variable "row_idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 154 │       {augmented, row_idx} = try do
+     │                   ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/gaussian_elimination.exs:154:19: Main.gaussian_elimination/2
+
+[[2.3], [-1.7], [5.55]]
+[[0.0], [2.5]]

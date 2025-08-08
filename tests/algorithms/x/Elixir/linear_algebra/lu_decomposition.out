@@ -1,0 +1,69 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 38 │           {j, lrow, urow} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/lu_decomposition.exs:38:12: Main.lu_decomposition/1
+
+    warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 75 │               {k, total} = try do
+    │                ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/lu_decomposition.exs:75:16: Main.lu_decomposition/1
+
+     warning: variable "k2" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 112 │               {k2, total2} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/lu_decomposition.exs:112:16: Main.lu_decomposition/1
+
+    warning: variable "j1" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 91 │           {j1, lower} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/lu_decomposition.exs:91:12: Main.lu_decomposition/1
+
+     warning: variable "j2" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 125 │           {j2, upper} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/lu_decomposition.exs:125:12: Main.lu_decomposition/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 52 │       {i, lower, upper} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/lu_decomposition.exs:52:8: Main.lu_decomposition/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 137 │       {i, lower, upper} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/lu_decomposition.exs:137:8: Main.lu_decomposition/1
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 170 │           {j, line} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/lu_decomposition.exs:170:12: Main.print_matrix/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 183 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/lu_decomposition.exs:183:7: Main.print_matrix/1
+
+1.0 0.0 0.0
+0.0 1.0 0.0
+2.5 8.0 1.0
+2.0 -2.0 1.0
+0.0 1.0 2.0
+0.0 0.0 -17.5

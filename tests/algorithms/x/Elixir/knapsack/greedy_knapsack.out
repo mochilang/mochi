@@ -1,0 +1,52 @@
+warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 86 │           {k, maxIndex, maxRatio} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/knapsack/greedy_knapsack.exs:86:12: Main.calc_profit/3
+
+    warning: variable "maxRatio" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 86 │           {k, maxIndex, maxRatio} = try do
+    │                         ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/knapsack/greedy_knapsack.exs:86:25: Main.calc_profit/3
+
+     warning: variable "count" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 111 │       {count, gain, limit, used} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/knapsack/greedy_knapsack.exs:111:8: Main.calc_profit/3
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 33 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/knapsack/greedy_knapsack.exs:33:7: Main.calc_profit/3
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 51 │       {j, used} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/knapsack/greedy_knapsack.exs:51:8: Main.calc_profit/3
+
+     warning: variable "limit" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 111 │       {count, gain, limit, used} = try do
+     │                     ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/knapsack/greedy_knapsack.exs:111:21: Main.calc_profit/3
+
+     warning: variable "used" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 111 │       {count, gain, limit, used} = try do
+     │                            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/knapsack/greedy_knapsack.exs:111:28: Main.calc_profit/3
+
+6.0
+27.0
+14.5
