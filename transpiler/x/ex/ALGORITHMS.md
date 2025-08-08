@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-08 11:37 GMT+7
+Last updated: 2025-08-08 15:53 GMT+7
 
-## Algorithms Golden Test Checklist (268/1077)
+## Algorithms Golden Test Checklist (269/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -336,7 +336,7 @@ Last updated: 2025-08-08 11:37 GMT+7
 | 327 | dynamic_programming/max_product_subarray | ✓ | 14.21ms | 25.0 MB |
 | 328 | dynamic_programming/max_subarray_sum | ✓ | 15.37ms | 32.9 MB |
 | 329 | dynamic_programming/min_distance_up_bottom | ✓ |  |  |
-| 330 | dynamic_programming/minimum_coin_change |   |  |  |
+| 330 | dynamic_programming/minimum_coin_change | ✓ |  |  |
 | 331 | dynamic_programming/minimum_cost_path |   |  |  |
 | 332 | dynamic_programming/minimum_partition |   |  |  |
 | 333 | dynamic_programming/minimum_size_subarray_sum |   |  |  |
