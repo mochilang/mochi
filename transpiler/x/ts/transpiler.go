@@ -3476,7 +3476,8 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 					operands[i+1] = &CallExpr{Func: "BigInt", Args: []Expr{operands[i+1]}}
 					typesArr[i+1] = types.BigIntType{}
 				}
-			} else if ops[i] == "%" && isIntType(typesArr[i]) && isIntType(typesArr[i+1]) && containsLargeIntMul(operands[i]) {
+			} else if ops[i] == "%" && isIntType(typesArr[i]) && isIntType(typesArr[i+1]) &&
+				(containsLargeIntMul(operands[i]) || containsLargeInt(operands[i]) || containsLargeInt(operands[i+1])) {
 				operands[i] = toBigIntExpr(operands[i])
 				operands[i+1] = toBigIntExpr(operands[i+1])
 				expr := &BinaryExpr{Left: operands[i], Op: "%", Right: operands[i+1]}
@@ -4705,6 +4706,19 @@ func isLargeIntOperand(e Expr) bool {
 		}
 	}
 	return false
+}
+
+func containsLargeInt(e Expr) bool {
+	switch v := e.(type) {
+	case *NumberLit:
+		return isLargeIntOperand(v)
+	case *BinaryExpr:
+		return containsLargeInt(v.Left) || containsLargeInt(v.Right)
+	case *IntDivExpr:
+		return containsLargeInt(v.Left) || containsLargeInt(v.Right)
+	default:
+		return false
+	}
 }
 
 func toBigIntExpr(e Expr) Expr {
