@@ -1,0 +1,8 @@
+parse: error[P999]: /workspace/mochi/tests/github/TheAlgorithms/Mochi/graphs/edmonds_karp_multiple_source_and_sink.mochi:152:28: unexpected token "-" (expected PostfixExpr)
+  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/graphs/edmonds_karp_multiple_source_and_sink.mochi:152:28
+
+152 |           if min_height == -1 || heights[nb] < min_height {
+    |                            ^
+
+help:
+  Parse error occurred. Check syntax near this location.
