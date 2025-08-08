@@ -2810,6 +2810,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	funParams = make(map[string]int)
 	funParamTypes = make(map[string][]string)
 	funReturns = make(map[string]string)
+	cloneVars = make(map[string]bool)
 	boxVars = make(map[string]bool)
 	mainFuncName = ""
 	globalVars = make(map[string]bool)
@@ -3382,14 +3383,15 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			}
 			if nr, ok := val.(*NameRef); ok {
 				typ := nr.Type
-				if typ == "" {
-					if pt, ok := currentParamTypes[nr.Name]; ok {
-						typ = pt
-					} else {
-						typ = varTypes[nr.Name]
-					}
+				if pt, ok := currentParamTypes[nr.Name]; ok {
+					typ = pt
+				} else if typ == "" {
+					typ = varTypes[nr.Name]
 				}
 				if strings.HasPrefix(typ, "&") {
+					if cloneVars == nil {
+						cloneVars = make(map[string]bool)
+					}
 					cloneVars[nr.Name] = true
 					nr.Type = typ
 				}
@@ -4597,16 +4599,18 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			return &ParseIntStrExpr{Str: args[0], Base: base}, nil
 		}
 		if name == "contains" && len(args) == 2 {
-			funReturns[name] = "bool"
-			recv := args[0]
-			arg := args[1]
-			rt := inferType(recv)
-			if strings.HasPrefix(rt, "Vec<") {
-				arg = &UnaryExpr{Op: "&", Expr: arg}
-			} else if inferType(arg) == "String" {
-				arg = &MethodCallExpr{Receiver: arg, Name: "as_str"}
+			if _, ok := funParamTypes[name]; !ok {
+				funReturns[name] = "bool"
+				recv := args[0]
+				arg := args[1]
+				rt := inferType(recv)
+				if strings.HasPrefix(rt, "Vec<") {
+					arg = &UnaryExpr{Op: "&", Expr: arg}
+				} else if inferType(arg) == "String" {
+					arg = &MethodCallExpr{Receiver: arg, Name: "as_str"}
+				}
+				return &MethodCallExpr{Receiver: recv, Name: "contains", Args: []Expr{arg}}, nil
 			}
-			return &MethodCallExpr{Receiver: recv, Name: "contains", Args: []Expr{arg}}, nil
 		}
 		if name == "concat" && len(args) == 2 {
 			return &MethodCallExpr{Receiver: &ListLit{Elems: []Expr{args[0], args[1]}}, Name: "concat"}, nil
