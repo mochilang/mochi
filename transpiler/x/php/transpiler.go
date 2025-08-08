@@ -24,7 +24,7 @@ var builtinNames = map[string]struct{}{
 	"print": {}, "len": {}, "substring": {}, "count": {}, "sum": {}, "avg": {},
 	"str": {}, "min": {}, "max": {}, "append": {}, "json": {}, "exists": {},
 	"values": {}, "keys": {}, "load": {}, "save": {}, "now": {}, "input": {},
-	"upper": {}, "lower": {}, "num": {}, "denom": {}, "indexOf": {}, "repeat": {}, "parseIntStr": {}, "slice": {}, "split": {}, "contains": {}, "substr": {}, "pow": {}, "getoutput": {}, "intval": {}, "floatval": {}, "int": {}, "float": {}, "to_float": {},
+	"upper": {}, "lower": {}, "num": {}, "denom": {}, "indexOf": {}, "repeat": {}, "parseIntStr": {}, "slice": {}, "split": {}, "contains": {}, "substr": {}, "pow": {}, "getoutput": {}, "intval": {}, "floatval": {}, "int": {}, "float": {}, "to_float": {}, "ord": {}, "ctype_digit": {},
 	"concat": {}, "panic": {}, "error": {}, "ceil": {}, "floor": {},
 }
 
@@ -2848,7 +2848,11 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			switch *op.Cast.Type.Simple {
 			case "int":
 				if isCharExpr(e) {
-					e = &CallExpr{Func: "ord", Args: []Expr{e}}
+					e = &CondExpr{
+						Cond: &CallExpr{Func: "ctype_digit", Args: []Expr{e}},
+						Then: &CallExpr{Func: "intval", Args: []Expr{e}},
+						Else: &CallExpr{Func: "ord", Args: []Expr{e}},
+					}
 				} else {
 					e = &CallExpr{Func: "intval", Args: []Expr{e}}
 				}
