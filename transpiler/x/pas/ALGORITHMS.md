@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-08 15:55 GMT+7
+Last updated: 2025-08-08 16:16 GMT+7
 
-## Algorithms Golden Test Checklist (154/1077)
+## Algorithms Golden Test Checklist (158/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -143,12 +143,12 @@ Last updated: 2025-08-08 15:55 GMT+7
 | 134 | conversions/ipv4_conversion |   |  |  |
 | 135 | conversions/length_conversion | ✓ | 0ns | 0B |
 | 136 | conversions/molecular_chemistry | ✓ | 0ns | 64B |
-| 137 | conversions/octal_to_binary |   |  |  |
-| 138 | conversions/octal_to_decimal |   |  |  |
-| 139 | conversions/octal_to_hexadecimal |   |  |  |
-| 140 | conversions/prefix_conversions |   |  |  |
-| 141 | conversions/prefix_conversions_string |   |  |  |
-| 142 | conversions/pressure_conversions |   |  |  |
+| 137 | conversions/octal_to_binary | ✓ | 0ns | 0B |
+| 138 | conversions/octal_to_decimal | ✓ | 0ns | 0B |
+| 139 | conversions/octal_to_hexadecimal | ✓ | 0ns | 1.31KB |
+| 140 | conversions/prefix_conversions | error |  |  |
+| 141 | conversions/prefix_conversions_string | ✓ | 0ns | 7.28KB |
+| 142 | conversions/pressure_conversions | error |  |  |
 | 143 | conversions/rectangular_to_polar |   |  |  |
 | 144 | conversions/rgb_cmyk_conversion |   |  |  |
 | 145 | conversions/rgb_hsv_conversion |   |  |  |
