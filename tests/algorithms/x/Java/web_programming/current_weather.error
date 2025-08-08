@@ -1,0 +1,32 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden1050_current_weather2794571551/001/Main.java:18: error: incompatible types: Map<String,Object> cannot be converted to Map<String,String>
+            java.util.Map<String,String> response_openweathermap = http_get(OPENWEATHERMAP_URL_BASE, params_openweathermap);
+                                                                                                     ^
+/tmp/TestJavaTranspiler_Algorithms_Golden1050_current_weather2794571551/001/Main.java:19: error: method appendObj in class Main cannot be applied to given types;
+            weather_data = appendObj(weather_data, new java.util.LinkedHashMap<String, java.util.Map<String,String>>(java.util.Map.ofEntries(java.util.Map.entry("OpenWeatherMap", response_openweathermap))));
+                           ^
+  required: T[],T
+  found:    Object,LinkedHashMap<String,Map<String,String>>
+  reason: cannot infer type-variable(s) T
+    (argument mismatch; Object cannot be converted to T[])
+  where T is a type-variable:
+    T extends Object declared in method <T>appendObj(T[],T)
+/tmp/TestJavaTranspiler_Algorithms_Golden1050_current_weather2794571551/001/Main.java:23: error: incompatible types: Map<String,Object> cannot be converted to Map<String,String>
+            java.util.Map<String,String> response_weatherstack = http_get(WEATHERSTACK_URL_BASE, params_weatherstack);
+                                                                                                 ^
+/tmp/TestJavaTranspiler_Algorithms_Golden1050_current_weather2794571551/001/Main.java:24: error: method appendObj in class Main cannot be applied to given types;
+            weather_data = appendObj(weather_data, new java.util.LinkedHashMap<String, java.util.Map<String,String>>(java.util.Map.ofEntries(java.util.Map.entry("Weatherstack", response_weatherstack))));
+                           ^
+  required: T[],T
+  found:    Object,LinkedHashMap<String,Map<String,String>>
+  reason: cannot infer type-variable(s) T
+    (argument mismatch; Object cannot be converted to T[])
+  where T is a type-variable:
+    T extends Object declared in method <T>appendObj(T[],T)
+/tmp/TestJavaTranspiler_Algorithms_Golden1050_current_weather2794571551/001/Main.java:29: error: incompatible types: Object cannot be converted to Map<String,Map<String,String>>[]
+        return weather_data;
+               ^
+Note: /tmp/TestJavaTranspiler_Algorithms_Golden1050_current_weather2794571551/001/Main.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+5 errors

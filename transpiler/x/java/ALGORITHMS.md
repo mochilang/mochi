@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-08 10:53 GMT+7
+Last updated: 2025-08-08 11:19 GMT+7
 
-## Algorithms Golden Test Checklist (875/1077)
+## Algorithms Golden Test Checklist (895/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -998,7 +998,7 @@ Last updated: 2025-08-08 10:53 GMT+7
 | 989 | strings/alternative_string_arrange | ✓ | 19.0ms | 33.07KB |
 | 990 | strings/anagrams | error |  |  |
 | 991 | strings/autocomplete_using_trie | ✓ | 25.0ms | 53.36KB |
-| 992 | strings/barcode_validator | ✓ |  |  |
+| 992 | strings/barcode_validator |   |  |  |
 | 993 | strings/bitap_string_match | ✓ | 27.0ms | 46.46KB |
 | 994 | strings/boyer_moore_search | ✓ | 29.0ms | 0B |
 | 995 | strings/camel_case_to_snake_case | ✓ | 56.0ms | 80.21KB |
@@ -1041,46 +1041,46 @@ Last updated: 2025-08-08 10:53 GMT+7
 | 1032 | strings/split | ✓ | 26.0ms | 46.19KB |
 | 1033 | strings/string_switch_case | error |  |  |
 | 1034 | strings/strip | ✓ | 17.0ms | 920B |
-| 1035 | strings/text_justification |   |  |  |
-| 1036 | strings/title |   |  |  |
-| 1037 | strings/top_k_frequent_words |   |  |  |
-| 1038 | strings/upper |   |  |  |
-| 1039 | strings/wave_string |   |  |  |
-| 1040 | strings/wildcard_pattern_matching |   |  |  |
-| 1041 | strings/word_occurrence |   |  |  |
-| 1042 | strings/word_patterns |   |  |  |
-| 1043 | strings/z_function |   |  |  |
-| 1044 | web_programming/co2_emission |   |  |  |
-| 1045 | web_programming/covid_stats_via_xpath |   |  |  |
-| 1046 | web_programming/crawl_google_results |   |  |  |
-| 1047 | web_programming/crawl_google_scholar_citation |   |  |  |
-| 1048 | web_programming/currency_converter |   |  |  |
-| 1049 | web_programming/current_stock_price |   |  |  |
-| 1050 | web_programming/current_weather |   |  |  |
-| 1051 | web_programming/daily_horoscope |   |  |  |
-| 1052 | web_programming/download_images_from_google_query |   |  |  |
-| 1053 | web_programming/emails_from_url |   |  |  |
-| 1054 | web_programming/fetch_anime_and_play |   |  |  |
-| 1055 | web_programming/fetch_bbc_news |   |  |  |
-| 1056 | web_programming/fetch_github_info |   |  |  |
-| 1057 | web_programming/fetch_jobs |   |  |  |
-| 1058 | web_programming/fetch_quotes |   |  |  |
-| 1059 | web_programming/fetch_well_rx_price |   |  |  |
-| 1060 | web_programming/get_amazon_product_data |   |  |  |
-| 1061 | web_programming/get_imdb_top_250_movies_csv |   |  |  |
-| 1062 | web_programming/get_ip_geolocation |   |  |  |
-| 1063 | web_programming/get_top_billionaires |   |  |  |
-| 1064 | web_programming/get_top_hn_posts |   |  |  |
-| 1065 | web_programming/giphy |   |  |  |
-| 1066 | web_programming/instagram_crawler |   |  |  |
-| 1067 | web_programming/instagram_pic |   |  |  |
-| 1068 | web_programming/instagram_video |   |  |  |
-| 1069 | web_programming/nasa_data |   |  |  |
-| 1070 | web_programming/open_google_results |   |  |  |
-| 1071 | web_programming/random_anime_character |   |  |  |
-| 1072 | web_programming/recaptcha_verification |   |  |  |
-| 1073 | web_programming/reddit |   |  |  |
-| 1074 | web_programming/search_books_by_isbn |   |  |  |
-| 1075 | web_programming/slack_message |   |  |  |
-| 1076 | web_programming/test_fetch_github_info |   |  |  |
-| 1077 | web_programming/world_covid19_stats |   |  |  |
+| 1035 | strings/text_justification | ✓ | 44.0ms | 106.70KB |
+| 1036 | strings/title | ✓ | 28.0ms | 54.99KB |
+| 1037 | strings/top_k_frequent_words | error |  |  |
+| 1038 | strings/upper | ✓ | 16.0ms | 2.29KB |
+| 1039 | strings/wave_string | ✓ | 41.0ms | 98.71KB |
+| 1040 | strings/wildcard_pattern_matching | error |  |  |
+| 1041 | strings/word_occurrence | ✓ | 34.0ms | 79.03KB |
+| 1042 | strings/word_patterns | ✓ | 29.0ms | 56.09KB |
+| 1043 | strings/z_function | ✓ | 28.0ms | 51.91KB |
+| 1044 | web_programming/co2_emission | error |  |  |
+| 1045 | web_programming/covid_stats_via_xpath | ✓ | 37.0ms | 55.20KB |
+| 1046 | web_programming/crawl_google_results | ✓ | 22.0ms | 38.55KB |
+| 1047 | web_programming/crawl_google_scholar_citation | error |  |  |
+| 1048 | web_programming/currency_converter | ✓ | 14.0ms | 11.29KB |
+| 1049 | web_programming/current_stock_price | ✓ | 36.0ms | 78.64KB |
+| 1050 | web_programming/current_weather | error |  |  |
+| 1051 | web_programming/daily_horoscope | ✓ | 30.0ms | 78.43KB |
+| 1052 | web_programming/download_images_from_google_query | error |  |  |
+| 1053 | web_programming/emails_from_url | ✓ | 47.0ms | 103.94KB |
+| 1054 | web_programming/fetch_anime_and_play | error |  |  |
+| 1055 | web_programming/fetch_bbc_news | error |  |  |
+| 1056 | web_programming/fetch_github_info | error |  |  |
+| 1057 | web_programming/fetch_jobs | ✓ | 41.0ms | 103.17KB |
+| 1058 | web_programming/fetch_quotes | error |  |  |
+| 1059 | web_programming/fetch_well_rx_price | error |  |  |
+| 1060 | web_programming/get_amazon_product_data | ✓ | 53.0ms | 125.43KB |
+| 1061 | web_programming/get_imdb_top_250_movies_csv | ✓ | 34.0ms | 88.28KB |
+| 1062 | web_programming/get_ip_geolocation | error |  |  |
+| 1063 | web_programming/get_top_billionaires | error |  |  |
+| 1064 | web_programming/get_top_hn_posts | error |  |  |
+| 1065 | web_programming/giphy | error |  |  |
+| 1066 | web_programming/instagram_crawler | error |  |  |
+| 1067 | web_programming/instagram_pic | error |  |  |
+| 1068 | web_programming/instagram_video | ✓ | 30.0ms | 38.27KB |
+| 1069 | web_programming/nasa_data | error |  |  |
+| 1070 | web_programming/open_google_results | ✓ | 33.0ms | 72.58KB |
+| 1071 | web_programming/random_anime_character | ✓ | 21.0ms | 38.56KB |
+| 1072 | web_programming/recaptcha_verification | ✓ | 22.0ms | 39.31KB |
+| 1073 | web_programming/reddit | error |  |  |
+| 1074 | web_programming/search_books_by_isbn | error |  |  |
+| 1075 | web_programming/slack_message | error |  |  |
+| 1076 | web_programming/test_fetch_github_info | ✓ | 25.0ms | 38.78KB |
+| 1077 | web_programming/world_covid19_stats | error |  |  |

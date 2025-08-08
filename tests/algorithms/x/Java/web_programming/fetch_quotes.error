@@ -1,0 +1,8 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden1058_fetch_quotes235260699/001/Main.java:20: error: incompatible types: Object cannot be converted to Quote[]
+        return _fetch("https://zenquotes.io/api/today");
+                     ^
+/tmp/TestJavaTranspiler_Algorithms_Golden1058_fetch_quotes235260699/001/Main.java:24: error: incompatible types: Object cannot be converted to Quote[]
+        return _fetch("https://zenquotes.io/api/random");
+                     ^
+2 errors

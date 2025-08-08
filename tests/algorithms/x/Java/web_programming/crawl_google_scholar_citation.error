@@ -1,0 +1,12 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden1047_crawl_google_scholar_citation2247298634/001/Main.java:58: error: cannot find symbol
+        if (((Number)(__name__)).intValue() == "__main__") {
+                      ^
+  symbol:   variable __name__
+  location: class Main
+/tmp/TestJavaTranspiler_Algorithms_Golden1047_crawl_google_scholar_citation2247298634/001/Main.java:58: error: bad operand types for binary operator '=='
+        if (((Number)(__name__)).intValue() == "__main__") {
+                                            ^
+  first type:  int
+  second type: String
+2 errors

@@ -1,0 +1,16 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden1059_fetch_well_rx_price65007201/001/Main.java:54: error: method appendObj in class Main cannot be applied to given types;
+            results = appendObj(results, new java.util.LinkedHashMap<String, String>(java.util.Map.ofEntries(java.util.Map.entry("pharmacy_name", name), java.util.Map.entry("price", price))));
+                      ^
+  required: T[],T
+  found:    Object,LinkedHashMap<String,String>
+  reason: cannot infer type-variable(s) T
+    (argument mismatch; Object cannot be converted to T[])
+  where T is a type-variable:
+    T extends Object declared in method <T>appendObj(T[],T)
+/tmp/TestJavaTranspiler_Algorithms_Golden1059_fetch_well_rx_price65007201/001/Main.java:57: error: incompatible types: Object cannot be converted to Map<String,String>[]
+        return results;
+               ^
+Note: /tmp/TestJavaTranspiler_Algorithms_Golden1059_fetch_well_rx_price65007201/001/Main.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+2 errors
