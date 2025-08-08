@@ -2217,19 +2217,19 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "]")
 		return
 	}
-	if strings.HasSuffix(targetType, "[]") {
-		ix.Target.emit(w)
-		fmt.Fprint(w, "[")
-		if idxType != "int" {
-			fmt.Fprint(w, "(int)(")
-			ix.Index.emit(w)
-			fmt.Fprint(w, ")")
-		} else {
-			ix.Index.emit(w)
-		}
-		fmt.Fprint(w, "]")
-		return
-	}
+       if strings.HasSuffix(targetType, "[]") {
+               ix.Target.emit(w)
+               fmt.Fprint(w, "[(int)(")
+               ix.Index.emit(w)
+               fmt.Fprint(w, " < 0 ? ")
+               ix.Target.emit(w)
+               fmt.Fprint(w, ".Length + (")
+               ix.Index.emit(w)
+               fmt.Fprint(w, ") : ")
+               ix.Index.emit(w)
+               fmt.Fprint(w, ")]" )
+               return
+       }
 	if targetType == "string" {
 		ix.Target.emit(w)
 		fmt.Fprint(w, ".Substring(")
@@ -3269,15 +3269,26 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				varTypes[name] = tt
 				finalVarTypes[name] = tt
 			}
-			if l, ok := val.(*ListLit); ok && len(l.Elems) == 0 {
-				if prev != "" && strings.HasSuffix(prev, "[]") {
-					l.ElemType = prev
-					varTypes[name] = prev
-					finalVarTypes[name] = prev
-				}
-			}
-			mutatedVars[name] = true
-			return &AssignStmt{Name: name, Value: val}, nil
+                        if l, ok := val.(*ListLit); ok && len(l.Elems) == 0 {
+                                if prev != "" && strings.HasSuffix(prev, "[]") {
+                                        l.ElemType = prev
+                                        varTypes[name] = prev
+                                        finalVarTypes[name] = prev
+                                }
+                        } else if mp, ok := val.(*MapLit); ok && len(mp.Items) == 0 {
+                                if prev != "" && strings.HasPrefix(prev, "Dictionary<") {
+                                        inside := strings.TrimPrefix(strings.TrimSuffix(prev, ">"), "Dictionary<")
+                                        parts := strings.Split(inside, ",")
+                                        if len(parts) == 2 {
+                                                mp.KeyType = strings.TrimSpace(parts[0])
+                                                mp.ValType = strings.TrimSpace(parts[1])
+                                                varTypes[name] = prev
+                                                finalVarTypes[name] = prev
+                                        }
+                                }
+                        }
+                        mutatedVars[name] = true
+                        return &AssignStmt{Name: name, Value: val}, nil
 		case *IndexExpr:
 			if l, ok := val.(*ListLit); ok && len(l.Elems) == 0 {
 				if tt := typeOfExpr(t.Target); strings.HasPrefix(tt, "Dictionary<") {

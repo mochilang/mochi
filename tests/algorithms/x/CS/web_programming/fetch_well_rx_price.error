@@ -1,0 +1,5 @@
+exit status 134
+Unhandled exception. System.ArgumentNullException: Value cannot be null. (Parameter 'second')
+   at System.Linq.ThrowHelper.ThrowArgumentNullException(ExceptionArgument argument)
+   at System.Linq.Enumerable.SequenceEqual[TSource](IEnumerable`1 first, IEnumerable`1 second, IEqualityComparer`1 comparer)
+   at Program.Main() in /tmp/TestCSTranspiler_Algorithms_Golden001_web_programming_fetch_well_rx_price3972233586/001/Program.cs:line 161
