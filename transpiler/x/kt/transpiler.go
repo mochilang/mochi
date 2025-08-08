@@ -26,7 +26,8 @@ var (
 	funcRets       map[string]string
 	builtinAliases map[string]string
 	reserved       map[string]bool
-	currentRetType string
+        currentRetType string
+        overrideRetType string
 	benchMain      bool
 	unusedCounter  int
 )
@@ -528,7 +529,7 @@ func (s *StructLit) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
-		io.WriteString(w, s.Names[i]+" = ")
+               io.WriteString(w, safeName(s.Names[i])+" = ")
 		f.emit(w)
 	}
 	io.WriteString(w, ")")
@@ -565,7 +566,7 @@ func (d *DataClass) emit(w io.Writer, indentLevel int) {
 					typ += "?"
 				}
 			}
-			io.WriteString(w, "var "+f.Name+": "+typ)
+                       io.WriteString(w, "var "+safeName(f.Name)+": "+typ)
 			if f.Default != "" {
 				io.WriteString(w, " = "+f.Default)
 			}
@@ -3626,25 +3627,31 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			}
 			p.Stmts = append(p.Stmts, stmt)
 			seenStmt = true
-		case st.Return != nil:
-			var val Expr
-			if st.Return.Value != nil {
-				var err error
-				val, err = convertExpr(env, st.Return.Value)
-				if err != nil {
-					return nil, err
-				}
-			}
-			if _, ok := val.(*NullLit); ok && (currentRetType == "" || currentRetType == "Unit") {
-				val = nil
-			}
-			if currentRetType != "" && currentRetType != "Any" && val != nil {
-				if guessType(val) != currentRetType {
-					val = &CastExpr{Value: val, Type: currentRetType}
-				}
-			}
-			p.Stmts = append(p.Stmts, &ReturnStmt{Value: val})
-			seenStmt = true
+               case st.Return != nil:
+                       var val Expr
+                       if st.Return.Value != nil {
+                               var err error
+                               val, err = convertExpr(env, st.Return.Value)
+                               if err != nil {
+                                       return nil, err
+                               }
+                       }
+                       if _, ok := val.(*NullLit); ok && (currentRetType == "" || currentRetType == "Unit") {
+                               val = nil
+                       }
+                       if currentRetType != "" && currentRetType != "Any" && val != nil {
+                               valType := guessType(val)
+                               if valType != currentRetType {
+                                       if strings.HasPrefix(currentRetType, "MutableList<") && valType == "MutableList<Any?>" {
+                                               currentRetType = "MutableList<Any?>"
+                                               overrideRetType = currentRetType
+                                       } else {
+                                               val = &CastExpr{Value: val, Type: currentRetType}
+                                       }
+                               }
+                       }
+                       p.Stmts = append(p.Stmts, &ReturnStmt{Value: val})
+                       seenStmt = true
 		case st.Fun != nil:
 			bodyEnv := types.NewEnv(env)
 			ftParams := make([]types.Type, 0, len(st.Fun.Params))
@@ -3684,20 +3691,26 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			if fname == "main" {
 				fname = "user_main"
 			}
-			funcRets[fname] = ret
-			body, err := convertStmts(bodyEnv, st.Fun.Body)
-			currentRetType = prevRet
-			if err != nil {
-				return nil, err
-			}
-			var params []string
-			for _, p0 := range st.Fun.Params {
-				typ := kotlinType(p0.Type)
-				if typ == "" {
-					typ = "Any"
-				}
-				params = append(params, fmt.Sprintf("%s: %s", p0.Name, typ))
-			}
+                       body, err := convertStmts(bodyEnv, st.Fun.Body)
+                       if overrideRetType != "" {
+                               ret = overrideRetType
+                               funcRets[fname] = ret
+                               overrideRetType = ""
+                       } else {
+                               funcRets[fname] = ret
+                       }
+                       currentRetType = prevRet
+                       if err != nil {
+                               return nil, err
+                       }
+                       var params []string
+                       for _, p0 := range st.Fun.Params {
+                               typ := kotlinType(p0.Type)
+                               if typ == "" {
+                                       typ = "Any"
+                               }
+                               params = append(params, fmt.Sprintf("%s: %s", safeName(p0.Name), typ))
+                       }
 			// insert mutable parameter locals if assigned
 			for i, p0 := range st.Fun.Params {
 				if paramAssigned(p0.Name, body) {

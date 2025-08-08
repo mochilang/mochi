@@ -1,0 +1,11 @@
+Exception in thread "main" java.lang.IndexOutOfBoundsException: Index 1 out of bounds for length 1
+	at java.base/jdk.internal.util.Preconditions.outOfBounds(Preconditions.java:100)
+	at java.base/jdk.internal.util.Preconditions.outOfBoundsCheckIndex(Preconditions.java:106)
+	at java.base/jdk.internal.util.Preconditions.checkIndex(Preconditions.java:302)
+	at java.base/java.util.Objects.checkIndex(Objects.java:385)
+	at java.base/java.util.ArrayList.get(ArrayList.java:427)
+	at Inorder_tree_traversal_2022Kt.insert(inorder_tree_traversal_2022.kt:20)
+	at Inorder_tree_traversal_2022Kt.make_tree(inorder_tree_traversal_2022.kt:62)
+	at Inorder_tree_traversal_2022Kt.user_main(inorder_tree_traversal_2022.kt:70)
+	at Inorder_tree_traversal_2022Kt.main(inorder_tree_traversal_2022.kt:81)
+	at Inorder_tree_traversal_2022Kt.main(inorder_tree_traversal_2022.kt)
