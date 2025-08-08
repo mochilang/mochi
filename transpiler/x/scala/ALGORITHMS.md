@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
-Completed programs: 643/1077
-Last updated: 2025-08-08 16:19 +0700
+Completed programs: 665/1077
+Last updated: 2025-08-08 16:58 +0700
 
 Checklist:
 
@@ -683,83 +683,83 @@ Checklist:
 | 674 | maths/special_numbers/polygonal_numbers | ✓ | 7µs | 8.7 MB |
 | 675 | maths/special_numbers/pronic_number | ✓ | 45µs | 8.7 MB |
 | 676 | maths/special_numbers/proth_number | ✓ | 6µs | 8.7 MB |
-| 677 | maths/special_numbers/triangular_numbers | ✓ | 3µs | 8.7 MB |
-| 678 | maths/special_numbers/ugly_numbers | ✓ | 9µs | 8.7 MB |
-| 679 | maths/special_numbers/weird_number | ✓ | 9µs | 8.7 MB |
-| 680 | maths/sum_of_arithmetic_series | ✓ | 3µs | 8.7 MB |
-| 681 | maths/sum_of_digits | ✓ | 5µs | 8.7 MB |
-| 682 | maths/sum_of_geometric_progression | ✓ | 6µs | 8.7 MB |
-| 683 | maths/sum_of_harmonic_series | ✓ | 4µs | 8.7 MB |
-| 684 | maths/sumset | ✓ | 5µs | 8.7 MB |
-| 685 | maths/sylvester_sequence | ✓ | 3µs | 8.7 MB |
-| 686 | maths/tanh | ✓ | 9µs | 8.7 MB |
-| 687 | maths/test_factorial | ✓ | 3µs | 8.7 MB |
-| 688 | maths/test_prime_check | ✓ | 3µs | 8.7 MB |
-| 689 | maths/three_sum | ✓ | 4µs | 8.7 MB |
-| 690 | maths/trapezoidal_rule | ✓ | 2µs | 8.7 MB |
-| 691 | maths/triplet_sum | ✓ | 5µs | 8.7 MB |
-| 692 | maths/twin_prime | ✓ | 4µs | 8.7 MB |
-| 693 | maths/two_pointer | ✓ | 4µs | 8.7 MB |
-| 694 | maths/two_sum | ✓ | 4µs | 8.7 MB |
-| 695 | maths/volume | ✓ | 3µs | 8.7 MB |
-| 696 | maths/zellers_congruence | ✓ | 7µs | 8.7 MB |
-| 697 | matrix/binary_search_matrix | ✓ | 7µs | 8.7 MB |
-| 698 | matrix/count_islands_in_matrix | error |  |  |
-| 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 246µs | 170.3 MB |
-| 700 | matrix/count_paths | ✓ | 5µs | 8.7 MB |
-| 701 | matrix/cramers_rule_2x2 | ✓ | 4µs | 8.7 MB |
-| 702 | matrix/inverse_of_matrix | ✓ | 3µs | 8.7 MB |
-| 703 | matrix/largest_square_area_in_matrix | error |  |  |
-| 704 | matrix/matrix_based_game |   |  |  |
-| 705 | matrix/matrix_class |   |  |  |
-| 706 | matrix/matrix_equalization |   |  |  |
-| 707 | matrix/matrix_multiplication_recursion |   |  |  |
-| 708 | matrix/matrix_operation |   |  |  |
-| 709 | matrix/max_area_of_island |   |  |  |
-| 710 | matrix/median_matrix |   |  |  |
-| 711 | matrix/nth_fibonacci_using_matrix_exponentiation |   |  |  |
-| 712 | matrix/pascal_triangle |   |  |  |
-| 713 | matrix/rotate_matrix |   |  |  |
-| 714 | matrix/searching_in_sorted_matrix |   |  |  |
-| 715 | matrix/sherman_morrison |   |  |  |
-| 716 | matrix/spiral_print |   |  |  |
-| 717 | matrix/tests/test_matrix_operation |   |  |  |
-| 718 | matrix/validate_sudoku_board |   |  |  |
-| 719 | networking_flow/ford_fulkerson |   |  |  |
-| 720 | networking_flow/minimum_cut |   |  |  |
-| 721 | neural_network/activation_functions/binary_step |   |  |  |
-| 722 | neural_network/activation_functions/exponential_linear_unit |   |  |  |
-| 723 | neural_network/activation_functions/gaussian_error_linear_unit |   |  |  |
-| 724 | neural_network/activation_functions/leaky_rectified_linear_unit |   |  |  |
-| 725 | neural_network/activation_functions/mish |   |  |  |
-| 726 | neural_network/activation_functions/rectified_linear_unit |   |  |  |
-| 727 | neural_network/activation_functions/scaled_exponential_linear_unit |   |  |  |
-| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent |   |  |  |
-| 729 | neural_network/activation_functions/softplus |   |  |  |
-| 730 | neural_network/activation_functions/squareplus |   |  |  |
-| 731 | neural_network/activation_functions/swish |   |  |  |
-| 732 | neural_network/back_propagation_neural_network |   |  |  |
-| 733 | neural_network/convolution_neural_network |   |  |  |
-| 734 | neural_network/input_data |   |  |  |
-| 735 | neural_network/simple_neural_network |   |  |  |
-| 736 | neural_network/two_hidden_layers_neural_network |   |  |  |
-| 737 | other/activity_selection |   |  |  |
-| 738 | other/alternative_list_arrange |   |  |  |
-| 739 | other/bankers_algorithm |   |  |  |
-| 740 | other/davis_putnam_logemann_loveland |   |  |  |
-| 741 | other/doomsday |   |  |  |
-| 742 | other/fischer_yates_shuffle |   |  |  |
-| 743 | other/gauss_easter |   |  |  |
-| 744 | other/greedy |   |  |  |
-| 745 | other/guess_the_number_search |   |  |  |
-| 746 | other/h_index |   |  |  |
-| 747 | other/least_recently_used |   |  |  |
-| 748 | other/lfu_cache |   |  |  |
-| 749 | other/linear_congruential_generator |   |  |  |
-| 750 | other/lru_cache |   |  |  |
-| 751 | other/magicdiamondpattern |   |  |  |
-| 752 | other/majority_vote_algorithm |   |  |  |
-| 753 | other/maximum_subsequence |   |  |  |
+| 677 | maths/special_numbers/triangular_numbers |   |  |  |
+| 678 | maths/special_numbers/ugly_numbers |   |  |  |
+| 679 | maths/special_numbers/weird_number |   |  |  |
+| 680 | maths/sum_of_arithmetic_series |   |  |  |
+| 681 | maths/sum_of_digits |   |  |  |
+| 682 | maths/sum_of_geometric_progression |   |  |  |
+| 683 | maths/sum_of_harmonic_series |   |  |  |
+| 684 | maths/sumset |   |  |  |
+| 685 | maths/sylvester_sequence |   |  |  |
+| 686 | maths/tanh |   |  |  |
+| 687 | maths/test_factorial |   |  |  |
+| 688 | maths/test_prime_check |   |  |  |
+| 689 | maths/three_sum |   |  |  |
+| 690 | maths/trapezoidal_rule |   |  |  |
+| 691 | maths/triplet_sum |   |  |  |
+| 692 | maths/twin_prime |   |  |  |
+| 693 | maths/two_pointer |   |  |  |
+| 694 | maths/two_sum |   |  |  |
+| 695 | maths/volume |   |  |  |
+| 696 | maths/zellers_congruence |   |  |  |
+| 697 | matrix/binary_search_matrix |   |  |  |
+| 698 | matrix/count_islands_in_matrix |   |  |  |
+| 699 | matrix/count_negative_numbers_in_sorted_matrix |   |  |  |
+| 700 | matrix/count_paths |   |  |  |
+| 701 | matrix/cramers_rule_2x2 |   |  |  |
+| 702 | matrix/inverse_of_matrix |   |  |  |
+| 703 | matrix/largest_square_area_in_matrix |   |  |  |
+| 704 | matrix/matrix_based_game | ✓ | 9µs | 8.7 MB |
+| 705 | matrix/matrix_class | ✓ | 12µs | 8.7 MB |
+| 706 | matrix/matrix_equalization | ✓ | 5µs | 8.7 MB |
+| 707 | matrix/matrix_multiplication_recursion | ✓ | 4µs | 8.7 MB |
+| 708 | matrix/matrix_operation | ✓ | 10µs | 8.7 MB |
+| 709 | matrix/max_area_of_island | ✓ | 6µs | 8.7 MB |
+| 710 | matrix/median_matrix | ✓ | 3µs | 8.7 MB |
+| 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ | 12µs | 8.7 MB |
+| 712 | matrix/pascal_triangle | ✓ | 5µs | 8.7 MB |
+| 713 | matrix/rotate_matrix | ✓ | 7µs | 8.7 MB |
+| 714 | matrix/searching_in_sorted_matrix | ✓ | 4µs | 8.8 MB |
+| 715 | matrix/sherman_morrison | ✓ | 5µs | 8.7 MB |
+| 716 | matrix/spiral_print | ✓ | 6µs | 8.7 MB |
+| 717 | matrix/tests/test_matrix_operation | ✓ | 5µs | 8.7 MB |
+| 718 | matrix/validate_sudoku_board | ✓ | 10µs | 8.7 MB |
+| 719 | networking_flow/ford_fulkerson | ✓ | 6µs | 8.7 MB |
+| 720 | networking_flow/minimum_cut | ✓ | 3µs | 8.7 MB |
+| 721 | neural_network/activation_functions/binary_step | ✓ | 4µs | 8.7 MB |
+| 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 8µs | 8.7 MB |
+| 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 6µs | 8.8 MB |
+| 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 4µs | 8.7 MB |
+| 725 | neural_network/activation_functions/mish | ✓ | 12µs | 8.7 MB |
+| 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 5µs | 8.7 MB |
+| 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 4µs | 8.7 MB |
+| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 11µs | 8.8 MB |
+| 729 | neural_network/activation_functions/softplus | error |  |  |
+| 730 | neural_network/activation_functions/squareplus | ✓ | 6µs | 8.7 MB |
+| 731 | neural_network/activation_functions/swish | ✓ | 11µs | 8.7 MB |
+| 732 | neural_network/back_propagation_neural_network | ✓ | 948µs | 8.7 MB |
+| 733 | neural_network/convolution_neural_network | ✓ | 44µs | 8.7 MB |
+| 734 | neural_network/input_data | ✓ | 5µs | 8.7 MB |
+| 735 | neural_network/simple_neural_network | ✓ | 3µs | 8.8 MB |
+| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 36µs | 8.8 MB |
+| 737 | other/activity_selection | ✓ | 3µs | 8.8 MB |
+| 738 | other/alternative_list_arrange | error |  |  |
+| 739 | other/bankers_algorithm | ✓ | 7µs | 8.7 MB |
+| 740 | other/davis_putnam_logemann_loveland | ✓ | 2µs | 8.7 MB |
+| 741 | other/doomsday | ✓ | 4µs | 8.7 MB |
+| 742 | other/fischer_yates_shuffle | ✓ | 6µs | 8.7 MB |
+| 743 | other/gauss_easter | ✓ | 6µs | 8.8 MB |
+| 744 | other/greedy | ✓ | 3µs | 8.7 MB |
+| 745 | other/guess_the_number_search | ✓ | 5µs | 8.7 MB |
+| 746 | other/h_index | ✓ | 5µs | 8.7 MB |
+| 747 | other/least_recently_used | error |  |  |
+| 748 | other/lfu_cache | ✓ | 4µs | 8.7 MB |
+| 749 | other/linear_congruential_generator | ✓ | 6µs | 8.7 MB |
+| 750 | other/lru_cache | ✓ | 7µs | 8.7 MB |
+| 751 | other/magicdiamondpattern | ✓ | 3µs | 8.7 MB |
+| 752 | other/majority_vote_algorithm | ✓ | 6µs | 8.7 MB |
+| 753 | other/maximum_subsequence | ✓ | 6µs | 8.7 MB |
 | 754 | other/nested_brackets |   |  |  |
 | 755 | other/number_container_system |   |  |  |
 | 756 | other/quine |   |  |  |
