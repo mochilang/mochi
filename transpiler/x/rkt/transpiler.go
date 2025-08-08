@@ -363,16 +363,17 @@ func (b *BenchStmt) emit(w io.Writer) {
 			body = append(body, st)
 		}
 	}
-	fmt.Fprintln(w, "(let* ([_start_mem (current-memory-use)] [_start (now)])")
+	// Use real time for benchmark measurements to reflect actual runtime
+	fmt.Fprintln(w, "(let* ([_start_mem (current-memory-use)] [_start (current-inexact-milliseconds)])")
 	fmt.Fprintln(w, "  (let/ec _return (begin")
 	for _, st := range body {
 		st.emit(w)
 	}
 	fmt.Fprintln(w, "    (void)")
 	fmt.Fprintln(w, "  ))")
-	fmt.Fprintln(w, "  (let* ([_end (now)] [_end_mem (current-memory-use)]")
+	fmt.Fprintln(w, "  (let* ([_end (current-inexact-milliseconds)] [_end_mem (current-memory-use)]")
 	fmt.Fprintln(w, "         [_dur (- _end _start)]")
-	fmt.Fprintln(w, "         [_dur_us _dur]")
+	fmt.Fprintln(w, "         [_dur_us (inexact->exact (round (* _dur 1000)))]")
 	fmt.Fprintln(w, "         [_mem (max 0 (- _end_mem _start_mem))])")
 	io.WriteString(w, "    (displayln \"{\")\n")
 	io.WriteString(w, "    (displayln (format \"  \\\"duration_us\\\": ~a,\" _dur_us))\n")
