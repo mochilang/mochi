@@ -3761,7 +3761,8 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 				upd := buildMapUpdate(mapExpr, keys, valExpr, info.typ)
 				return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
 			}
-			indices := make([]Expr, len(st.Assign.Index))
+			total := len(st.Assign.Index) + len(st.Assign.Field)
+			indices := make([]Expr, total)
 			for i, ix := range st.Assign.Index {
 				if ix.Colon != nil || ix.Colon2 != nil || ix.End != nil || ix.Step != nil {
 					return nil, fmt.Errorf("slice assignment not supported")
@@ -3771,6 +3772,9 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 					return nil, err
 				}
 				indices[i] = idx
+			}
+			for j, f := range st.Assign.Field {
+				indices[len(st.Assign.Index)+j] = &StringLit{Value: f.Name}
 			}
 			listExpr := Expr(&Name{Ident: st.Assign.Name, Typ: info.typ, Ref: true})
 			upd := buildListUpdate(listExpr, indices, valExpr)

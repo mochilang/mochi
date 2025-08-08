@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 185/1077
-Last updated: 2025-08-07 17:13 +0700
+Completed programs: 232/1077
+Last updated: 2025-08-08 10:08 +0700
 
 Checklist:
 
@@ -266,56 +266,56 @@ Checklist:
 | 257 | data_structures/stacks/stack_using_two_queues |   |  |  |
 | 258 | data_structures/stacks/stack_with_doubly_linked_list |   |  |  |
 | 259 | data_structures/stacks/stack_with_singly_linked_list |   |  |  |
-| 260 | data_structures/stacks/stock_span_problem |   |  |  |
-| 261 | data_structures/suffix_tree/example/example_usage |   |  |  |
-| 262 | data_structures/suffix_tree/suffix_tree |   |  |  |
-| 263 | data_structures/suffix_tree/suffix_tree_node |   |  |  |
-| 264 | data_structures/suffix_tree/tests/test_suffix_tree |   |  |  |
-| 265 | data_structures/trie/radix_tree |   |  |  |
-| 266 | data_structures/trie/trie |   |  |  |
-| 267 | digital_image_processing/change_brightness |   |  |  |
-| 268 | digital_image_processing/change_contrast |   |  |  |
-| 269 | digital_image_processing/convert_to_negative |   |  |  |
-| 270 | digital_image_processing/dithering/burkes |   |  |  |
-| 271 | digital_image_processing/edge_detection/canny |   |  |  |
-| 272 | digital_image_processing/filters/bilateral_filter |   |  |  |
+| 260 | data_structures/stacks/stock_span_problem | ✓ | 141.0µs | 448B |
+| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 72.0µs | 1.45KB |
+| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 324.0µs | 34.88KB |
+| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 183.0µs | 952B |
+| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 105.0µs | 1.77KB |
+| 265 | data_structures/trie/radix_tree | ✓ | 86.0µs | 5.98KB |
+| 266 | data_structures/trie/trie | ✓ | 218.0µs | 22.68KB |
+| 267 | digital_image_processing/change_brightness | ✓ | 218.0µs | 2.15KB |
+| 268 | digital_image_processing/change_contrast | ✓ | 230.0µs | 3.26KB |
+| 269 | digital_image_processing/convert_to_negative | ✓ | 171.0µs | 2.67KB |
+| 270 | digital_image_processing/dithering/burkes | ✓ | 699.0µs | 66.66KB |
+| 271 | digital_image_processing/edge_detection/canny | ✓ | 189.0µs | 5.40KB |
+| 272 | digital_image_processing/filters/bilateral_filter | ✓ | 449.0µs | 26.34KB |
 | 273 | digital_image_processing/filters/convolve |   |  |  |
-| 274 | digital_image_processing/filters/gabor_filter |   |  |  |
-| 275 | digital_image_processing/filters/gaussian_filter |   |  |  |
-| 276 | digital_image_processing/filters/laplacian_filter |   |  |  |
-| 277 | digital_image_processing/filters/local_binary_pattern |   |  |  |
-| 278 | digital_image_processing/filters/median_filter |   |  |  |
-| 279 | digital_image_processing/filters/sobel_filter |   |  |  |
-| 280 | digital_image_processing/histogram_equalization/histogram_stretch |   |  |  |
-| 281 | digital_image_processing/index_calculation |   |  |  |
-| 282 | digital_image_processing/morphological_operations/dilation_operation |   |  |  |
-| 283 | digital_image_processing/morphological_operations/erosion_operation |   |  |  |
+| 274 | digital_image_processing/filters/gabor_filter | ✓ | 226.0µs | 1.94KB |
+| 275 | digital_image_processing/filters/gaussian_filter | ✓ | 278.0µs | 1.80KB |
+| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 288.0µs | 4.27KB |
+| 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 766.0µs | 28.47KB |
+| 278 | digital_image_processing/filters/median_filter | ✓ | 697.0µs | 59.10KB |
+| 279 | digital_image_processing/filters/sobel_filter | ✓ | 2.0ms | 292.33KB |
+| 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 214.0µs | 856B |
+| 281 | digital_image_processing/index_calculation | ✓ | 403.0µs | 2.07KB |
+| 282 | digital_image_processing/morphological_operations/dilation_operation | ✓ | 460.0µs | 16.73KB |
+| 283 | digital_image_processing/morphological_operations/erosion_operation | ✓ | 315.0µs | 6.47KB |
 | 284 | digital_image_processing/resize/resize |   |  |  |
-| 285 | digital_image_processing/rotation/rotation |   |  |  |
-| 286 | digital_image_processing/sepia |   |  |  |
-| 287 | digital_image_processing/test_digital_image_processing |   |  |  |
-| 288 | divide_and_conquer/closest_pair_of_points |   |  |  |
-| 289 | divide_and_conquer/convex_hull |   |  |  |
-| 290 | divide_and_conquer/heaps_algorithm |   |  |  |
-| 291 | divide_and_conquer/heaps_algorithm_iterative |   |  |  |
-| 292 | divide_and_conquer/inversions |   |  |  |
-| 293 | divide_and_conquer/kth_order_statistic |   |  |  |
-| 294 | divide_and_conquer/max_difference_pair |   |  |  |
-| 295 | divide_and_conquer/max_subarray |   |  |  |
-| 296 | divide_and_conquer/mergesort |   |  |  |
-| 297 | divide_and_conquer/peak |   |  |  |
-| 298 | divide_and_conquer/power |   |  |  |
-| 299 | divide_and_conquer/strassen_matrix_multiplication |   |  |  |
-| 300 | docs/conf |   |  |  |
-| 301 | dynamic_programming/abbreviation |   |  |  |
+| 285 | digital_image_processing/rotation/rotation | ✓ | 151.0µs | 968B |
+| 286 | digital_image_processing/sepia | ✓ | 250.0µs | 1.55KB |
+| 287 | digital_image_processing/test_digital_image_processing | ✓ | 438.0µs | 6.42KB |
+| 288 | divide_and_conquer/closest_pair_of_points | ✓ | 369.0µs | 17.68KB |
+| 289 | divide_and_conquer/convex_hull | ✓ | 2.0µs | 208B |
+| 290 | divide_and_conquer/heaps_algorithm | ✓ | 261.0µs | 6.97KB |
+| 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 205.0µs | 7.20KB |
+| 292 | divide_and_conquer/inversions | ✓ | 252.0µs | 12.53KB |
+| 293 | divide_and_conquer/kth_order_statistic | ✓ | 160.0µs | 4.05KB |
+| 294 | divide_and_conquer/max_difference_pair | ✓ | 191.0µs | 2.53KB |
+| 295 | divide_and_conquer/max_subarray | ✓ | 410.0µs | 12.48KB |
+| 296 | divide_and_conquer/mergesort | ✓ | 312.0µs | 7.30KB |
+| 297 | divide_and_conquer/peak | ✓ | 171.0µs | 1.05KB |
+| 298 | divide_and_conquer/power | ✓ | 298.0µs | 2.85KB |
+| 299 | divide_and_conquer/strassen_matrix_multiplication | ✓ | 19.0ms | 2.15MB |
+| 300 | docs/conf | ✓ | 105.0µs | 1.58KB |
+| 301 | dynamic_programming/abbreviation | ✓ | 188.0µs | 13.87KB |
 | 302 | dynamic_programming/all_construct |   |  |  |
-| 303 | dynamic_programming/bitmask |   |  |  |
-| 304 | dynamic_programming/catalan_numbers |   |  |  |
-| 305 | dynamic_programming/climbing_stairs |   |  |  |
-| 306 | dynamic_programming/combination_sum_iv |   |  |  |
-| 307 | dynamic_programming/edit_distance |   |  |  |
-| 308 | dynamic_programming/factorial |   |  |  |
-| 309 | dynamic_programming/fast_fibonacci |   |  |  |
+| 303 | dynamic_programming/bitmask | ✓ | 240.0µs | 2.30KB |
+| 304 | dynamic_programming/catalan_numbers | ✓ | 220.0µs | 2.14KB |
+| 305 | dynamic_programming/climbing_stairs | ✓ | 138.0µs | 240B |
+| 306 | dynamic_programming/combination_sum_iv | ✓ | 261.0µs | 6.98KB |
+| 307 | dynamic_programming/edit_distance | ✓ | 1.0ms | 127.11KB |
+| 308 | dynamic_programming/factorial | ✓ | 167.0µs | 3.73KB |
+| 309 | dynamic_programming/fast_fibonacci | ✓ | 174.0µs | 5.09KB |
 | 310 | dynamic_programming/fibonacci |   |  |  |
 | 311 | dynamic_programming/fizz_buzz |   |  |  |
 | 312 | dynamic_programming/floyd_warshall |   |  |  |
