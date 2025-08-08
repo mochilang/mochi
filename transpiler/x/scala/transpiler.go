@@ -590,6 +590,22 @@ func (s *AssignStmt) emit(w io.Writer) {
 	}
 	s.Target.emit(w)
 	fmt.Fprint(w, " = ")
+	if ll, ok := s.Value.(*ListLit); ok && len(ll.Elems) == 0 {
+		typ := ""
+		if n, ok2 := s.Target.(*Name); ok2 {
+			if t, ok3 := localVarTypes[n.Name]; ok3 {
+				typ = t
+			}
+		}
+		if typ == "" {
+			typ = inferTypeWithEnv(s.Target, nil)
+		}
+		if strings.HasPrefix(typ, "ArrayBuffer[") {
+			elem := strings.TrimSuffix(strings.TrimPrefix(typ, "ArrayBuffer["), "]")
+			fmt.Fprintf(w, "ArrayBuffer[%s]()", elem)
+			return
+		}
+	}
 	s.Value.emit(w)
 }
 
@@ -1131,17 +1147,6 @@ type AppendExpr struct {
 func (a *AppendExpr) emit(w io.Writer) {
 	a.List.emit(w)
 	fmt.Fprint(w, " :+ ")
-	lt := inferTypeWithEnv(a.List, nil)
-	if strings.HasPrefix(lt, "ArrayBuffer[") {
-		elem := strings.TrimSuffix(strings.TrimPrefix(lt, "ArrayBuffer["), "]")
-		if elem == "BigInt" && inferType(a.Elem) != "BigInt" {
-			needsBigInt = true
-			fmt.Fprint(w, "BigInt(")
-			a.Elem.emit(w)
-			fmt.Fprint(w, ")")
-			return
-		}
-	}
 	if ie, ok := a.Elem.(*IfExpr); ok {
 		if inferTypeWithEnv(ie.Then, nil) == "BigInt" && inferTypeWithEnv(ie.Else, nil) == "BigInt" {
 			needsBigInt = true
@@ -1162,7 +1167,9 @@ func (a *AppendExpr) emit(w io.Writer) {
 			}
 		}
 	}
+	fmt.Fprint(w, "(")
 	a.Elem.emit(w)
+	fmt.Fprint(w, ")")
 }
 
 // SpreadExpr represents `seq: _*` used for varargs.

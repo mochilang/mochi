@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
-Completed programs: 617/1077
-Last updated: 2025-08-08 15:49 +0700
+Completed programs: 643/1077
+Last updated: 2025-08-08 16:19 +0700
 
 Checklist:
 
@@ -682,34 +682,34 @@ Checklist:
 | 673 | maths/special_numbers/perfect_number | ✓ | 18µs | 8.7 MB |
 | 674 | maths/special_numbers/polygonal_numbers | ✓ | 7µs | 8.7 MB |
 | 675 | maths/special_numbers/pronic_number | ✓ | 45µs | 8.7 MB |
-| 676 | maths/special_numbers/proth_number |   |  |  |
-| 677 | maths/special_numbers/triangular_numbers |   |  |  |
-| 678 | maths/special_numbers/ugly_numbers |   |  |  |
-| 679 | maths/special_numbers/weird_number |   |  |  |
-| 680 | maths/sum_of_arithmetic_series |   |  |  |
-| 681 | maths/sum_of_digits |   |  |  |
-| 682 | maths/sum_of_geometric_progression |   |  |  |
-| 683 | maths/sum_of_harmonic_series |   |  |  |
-| 684 | maths/sumset |   |  |  |
-| 685 | maths/sylvester_sequence |   |  |  |
-| 686 | maths/tanh |   |  |  |
-| 687 | maths/test_factorial |   |  |  |
-| 688 | maths/test_prime_check |   |  |  |
-| 689 | maths/three_sum |   |  |  |
-| 690 | maths/trapezoidal_rule |   |  |  |
-| 691 | maths/triplet_sum |   |  |  |
-| 692 | maths/twin_prime |   |  |  |
-| 693 | maths/two_pointer |   |  |  |
-| 694 | maths/two_sum |   |  |  |
-| 695 | maths/volume |   |  |  |
-| 696 | maths/zellers_congruence |   |  |  |
-| 697 | matrix/binary_search_matrix |   |  |  |
-| 698 | matrix/count_islands_in_matrix |   |  |  |
-| 699 | matrix/count_negative_numbers_in_sorted_matrix |   |  |  |
-| 700 | matrix/count_paths |   |  |  |
-| 701 | matrix/cramers_rule_2x2 |   |  |  |
-| 702 | matrix/inverse_of_matrix |   |  |  |
-| 703 | matrix/largest_square_area_in_matrix |   |  |  |
+| 676 | maths/special_numbers/proth_number | ✓ | 6µs | 8.7 MB |
+| 677 | maths/special_numbers/triangular_numbers | ✓ | 3µs | 8.7 MB |
+| 678 | maths/special_numbers/ugly_numbers | ✓ | 9µs | 8.7 MB |
+| 679 | maths/special_numbers/weird_number | ✓ | 9µs | 8.7 MB |
+| 680 | maths/sum_of_arithmetic_series | ✓ | 3µs | 8.7 MB |
+| 681 | maths/sum_of_digits | ✓ | 5µs | 8.7 MB |
+| 682 | maths/sum_of_geometric_progression | ✓ | 6µs | 8.7 MB |
+| 683 | maths/sum_of_harmonic_series | ✓ | 4µs | 8.7 MB |
+| 684 | maths/sumset | ✓ | 5µs | 8.7 MB |
+| 685 | maths/sylvester_sequence | ✓ | 3µs | 8.7 MB |
+| 686 | maths/tanh | ✓ | 9µs | 8.7 MB |
+| 687 | maths/test_factorial | ✓ | 3µs | 8.7 MB |
+| 688 | maths/test_prime_check | ✓ | 3µs | 8.7 MB |
+| 689 | maths/three_sum | ✓ | 4µs | 8.7 MB |
+| 690 | maths/trapezoidal_rule | ✓ | 2µs | 8.7 MB |
+| 691 | maths/triplet_sum | ✓ | 5µs | 8.7 MB |
+| 692 | maths/twin_prime | ✓ | 4µs | 8.7 MB |
+| 693 | maths/two_pointer | ✓ | 4µs | 8.7 MB |
+| 694 | maths/two_sum | ✓ | 4µs | 8.7 MB |
+| 695 | maths/volume | ✓ | 3µs | 8.7 MB |
+| 696 | maths/zellers_congruence | ✓ | 7µs | 8.7 MB |
+| 697 | matrix/binary_search_matrix | ✓ | 7µs | 8.7 MB |
+| 698 | matrix/count_islands_in_matrix | error |  |  |
+| 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 246µs | 170.3 MB |
+| 700 | matrix/count_paths | ✓ | 5µs | 8.7 MB |
+| 701 | matrix/cramers_rule_2x2 | ✓ | 4µs | 8.7 MB |
+| 702 | matrix/inverse_of_matrix | ✓ | 3µs | 8.7 MB |
+| 703 | matrix/largest_square_area_in_matrix | error |  |  |
 | 704 | matrix/matrix_based_game |   |  |  |
 | 705 | matrix/matrix_class |   |  |  |
 | 706 | matrix/matrix_equalization |   |  |  |
