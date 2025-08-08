@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-08 10:38 UTC
+Last updated: 2025-08-08 11:07 UTC
 
 ## Algorithms Golden Test Checklist (1050/1077)
 | Index | Name | Status | Duration | Memory |
@@ -356,57 +356,57 @@ Last updated: 2025-08-08 10:38 UTC
 | 347 | dynamic_programming/viterbi | ✓ | 1.154ms | 23.5 KB |
 | 348 | dynamic_programming/wildcard_matching | ✓ | 2.693ms | 41.7 KB |
 | 349 | dynamic_programming/word_break | ✓ | 1.495ms | 32.2 KB |
-| 350 | electronics/apparent_power | ✓ | 6µs | 3.3 KB |
-| 351 | electronics/builtin_voltage | ✓ | 823µs | 18.2 KB |
-| 352 | electronics/capacitor_equivalence | ✓ | 879µs | 18.7 KB |
-| 353 | electronics/carrier_concentration | ✓ | 950µs | 22.5 KB |
-| 354 | electronics/charging_capacitor | ✓ | 958µs | 29.0 KB |
-| 355 | electronics/charging_inductor | ✓ | 887µs | 24.5 KB |
-| 356 | electronics/circular_convolution | ✓ | 4.342ms | 297.1 KB |
-| 357 | electronics/coulombs_law | ✓ | 876µs | 24.0 KB |
-| 358 | electronics/electric_conductivity | ✓ | 738µs | 21.3 KB |
+| 350 | electronics/apparent_power | ✓ | 571.223ms | 2.7 KB |
+| 351 | electronics/builtin_voltage | ✓ | 571.223ms | 17.7 KB |
+| 352 | electronics/capacitor_equivalence | ✓ | 571.223ms | 19.4 KB |
+| 353 | electronics/carrier_concentration | ✓ | 571.223ms | 22.0 KB |
+| 354 | electronics/charging_capacitor | ✓ | 571.223ms | 28.4 KB |
+| 355 | electronics/charging_inductor | ✓ | 571.223ms | 23.7 KB |
+| 356 | electronics/circular_convolution | ✓ | 571.223ms | 318.7 KB |
+| 357 | electronics/coulombs_law | ✓ | 571.223ms | 23.3 KB |
+| 358 | electronics/electric_conductivity | ✓ | 571.223ms | 20.7 KB |
 | 359 | electronics/electric_power | ✓ | 571.223ms | 28.0 KB |
-| 360 | electronics/electrical_impedance | ✓ | 935µs | 24.1 KB |
-| 361 | electronics/ic_555_timer | ✓ | 628µs | 17.5 KB |
-| 362 | electronics/ind_reactance | ✓ | 646µs | 21.2 KB |
-| 363 | electronics/ohms_law | ✓ | 920µs | 20.3 KB |
-| 364 | electronics/real_and_reactive_power | ✓ | 911µs | 30.2 KB |
-| 365 | electronics/resistor_color_code | ✓ | 8µs | 3.3 KB |
-| 366 | electronics/resistor_equivalence | ✓ | 884µs | 18.7 KB |
-| 367 | electronics/resonant_frequency | ✓ | 751µs | 15.8 KB |
-| 368 | electronics/wheatstone_bridge | ✓ | 717µs | 17.1 KB |
-| 369 | file_transfer/receive_file | ✓ | 815µs | 26.2 KB |
-| 370 | file_transfer/send_file | ✓ | 993µs | 25.4 KB |
-| 371 | file_transfer/tests/test_send_file | ✓ | 927µs | 21.1 KB |
-| 372 | financial/equated_monthly_installments | ✓ | 788µs | 20.2 KB |
-| 373 | financial/exponential_moving_average | ✓ | 2.435ms | 272.0 KB |
-| 374 | financial/interest | ✓ | 3.088ms | 312.2 KB |
-| 375 | financial/present_value | ✓ | 903µs | 22.6 KB |
-| 376 | financial/price_plus_tax | ✓ | 2.067ms | 273.1 KB |
-| 377 | financial/simple_moving_average | ✓ | 2.826ms | 811.9 KB |
-| 378 | financial/straight_line_depreciation | ✓ | 1.074ms | 28.0 KB |
-| 379 | financial/time_and_half_pay | ✓ | 2.695ms | 276.0 KB |
-| 380 | fractals/julia_sets | ✓ | 6.59ms | 613.8 KB |
-| 381 | fractals/koch_snowflake | ✓ | 2.388ms | 277.2 KB |
-| 382 | fractals/mandelbrot | ✓ | 3.827ms | 287.4 KB |
-| 383 | fractals/sierpinski_triangle | ✓ | 3.31ms | 328.5 KB |
-| 384 | fractals/vicsek | ✓ | 2.72ms | 107.5 KB |
-| 385 | fuzzy_logic/fuzzy_operations | ✓ | 2.146ms | 292.2 KB |
-| 386 | genetic_algorithm/basic_string | ✓ | 1.036ms | 24.8 KB |
-| 387 | geodesy/haversine_distance | ✓ | 931µs | 25.3 KB |
-| 388 | geodesy/lamberts_ellipsoidal_distance | ✓ | 796µs | 26.5 KB |
-| 389 | geometry/geometry | ✓ | 4.309ms | 322.5 KB |
-| 390 | graphics/bezier_curve | ✓ | 1.033ms | 25.0 KB |
-| 391 | graphics/butterfly_pattern | ✓ | 876µs | 21.9 KB |
-| 392 | graphics/digital_differential_analyzer_line | ✓ | 831µs | 16.4 KB |
-| 393 | graphics/vector3_for_2d_rendering | ✓ | 2.591ms | 279.0 KB |
-| 394 | graphs/a_star | ✓ | 2.766ms | 142.6 KB |
-| 395 | graphs/ant_colony_optimization_algorithms | ✓ | 21.795ms | 533.6 KB |
-| 396 | graphs/articulation_points | ✓ | 1.259ms | 42.5 KB |
-| 397 | graphs/basic_graphs | ✓ | 3.16ms | 154.8 KB |
-| 398 | graphs/bellman_ford | ✓ | 1.601ms | 529.8 KB |
-| 399 | graphs/bi_directional_dijkstra | ✓ | 2.001ms | 35.5 KB |
-| 400 | graphs/bidirectional_a_star | ✓ | 9.108ms | 1013.6 KB |
+| 360 | electronics/electrical_impedance | ✓ | 571.223ms | 23.5 KB |
+| 361 | electronics/ic_555_timer | ✓ | 571.223ms | 16.9 KB |
+| 362 | electronics/ind_reactance | ✓ | 571.223ms | 20.7 KB |
+| 363 | electronics/ohms_law | ✓ | 571.223ms | 19.8 KB |
+| 364 | electronics/real_and_reactive_power | ✓ | 571.223ms | 29.7 KB |
+| 365 | electronics/resistor_color_code | ✓ | 571.223ms | 2.7 KB |
+| 366 | electronics/resistor_equivalence | ✓ | 571.223ms | 19.4 KB |
+| 367 | electronics/resonant_frequency | ✓ | 571.223ms | 15.3 KB |
+| 368 | electronics/wheatstone_bridge | ✓ | 571.223ms | 16.5 KB |
+| 369 | file_transfer/receive_file | ✓ | 571.223ms | 26.2 KB |
+| 370 | file_transfer/send_file | ✓ | 571.223ms | 24.8 KB |
+| 371 | file_transfer/tests/test_send_file | ✓ | 571.223ms | 21.1 KB |
+| 372 | financial/equated_monthly_installments | ✓ | 571.223ms | 19.7 KB |
+| 373 | financial/exponential_moving_average | ✓ | 571.223ms | 272.3 KB |
+| 374 | financial/interest | ✓ | 571.223ms | 318.7 KB |
+| 375 | financial/present_value | ✓ | 571.223ms | 23.4 KB |
+| 376 | financial/price_plus_tax | ✓ | 571.223ms | 272.6 KB |
+| 377 | financial/simple_moving_average | ✓ | 571.223ms | 813.7 KB |
+| 378 | financial/straight_line_depreciation | ✓ | 571.223ms | 27.5 KB |
+| 379 | financial/time_and_half_pay | ✓ | 571.223ms | 275.4 KB |
+| 380 | fractals/julia_sets | ✓ | 571.223ms | 627.1 KB |
+| 381 | fractals/koch_snowflake | ✓ | 571.223ms | 278.6 KB |
+| 382 | fractals/mandelbrot | ✓ | 571.223ms | 344.0 KB |
+| 383 | fractals/sierpinski_triangle | ✓ | 571.223ms | 327.9 KB |
+| 384 | fractals/vicsek | ✓ | 571.223ms | 117.7 KB |
+| 385 | fuzzy_logic/fuzzy_operations | ✓ | 571.223ms | 291.7 KB |
+| 386 | genetic_algorithm/basic_string | ✓ | 571.223ms | 24.6 KB |
+| 387 | geodesy/haversine_distance | ✓ | 571.223ms | 25.0 KB |
+| 388 | geodesy/lamberts_ellipsoidal_distance | ✓ | 571.223ms | 26.0 KB |
+| 389 | geometry/geometry | ✓ | 571.223ms | 565.8 KB |
+| 390 | graphics/bezier_curve | ✓ | 571.223ms | 28.7 KB |
+| 391 | graphics/butterfly_pattern | ✓ | 571.223ms | 22.8 KB |
+| 392 | graphics/digital_differential_analyzer_line | ✓ | 571.223ms | 16.3 KB |
+| 393 | graphics/vector3_for_2d_rendering | ✓ | 571.223ms | 278.3 KB |
+| 394 | graphs/a_star | ✓ | 571.223ms | 241.3 KB |
+| 395 | graphs/ant_colony_optimization_algorithms | ✓ | 445.369ms | 1.0 MB |
+| 396 | graphs/articulation_points | ✓ | 571.223ms | 66.8 KB |
+| 397 | graphs/basic_graphs | ✓ | 571.223ms | 230.1 KB |
+| 398 | graphs/bellman_ford | ✓ | 571.223ms | 37.4 KB |
+| 399 | graphs/bi_directional_dijkstra | ✓ | 571.223ms | 545.6 KB |
+| 400 | graphs/bidirectional_a_star | ✓ | 571.223ms | 1.3 MB |
 | 401 | graphs/bidirectional_breadth_first_search | ✓ | 5.063ms | 149.4 KB |
 | 402 | graphs/bidirectional_search | ✓ | 1.454ms | 42.3 KB |
 | 403 | graphs/boruvka |   |  |  |
