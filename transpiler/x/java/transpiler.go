@@ -3405,7 +3405,7 @@ func (ix *IndexExpr) emit(w io.Writer) {
 	}
 }
 
-// SliceExpr represents s[a:b]. Only strings are currently supported.
+// SliceExpr represents s[a:b] for strings, arrays, and lists.
 type SliceExpr struct {
 	Value Expr
 	Start Expr
@@ -3429,6 +3429,14 @@ func (sli *SliceExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ", ")
 		sli.End.emit(w)
 		fmt.Fprint(w, ")")
+	case isListExpr(sli.Value):
+		fmt.Fprint(w, "new java.util.ArrayList<>(")
+		sli.Value.emit(w)
+		fmt.Fprint(w, ".subList(")
+		sli.Start.emit(w)
+		fmt.Fprint(w, ", ")
+		sli.End.emit(w)
+		fmt.Fprint(w, "))")
 	default:
 		sli.Value.emit(w)
 	}
