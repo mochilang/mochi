@@ -1,0 +1,2 @@
+run: exit status 1
+lua: /workspace/mochi/tests/algorithms/x/Lua/strings/split.lua:340: unexpected symbol near ')'

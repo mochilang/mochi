@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-08 16:18 GMT+7
+Last updated: 2025-08-08 16:49 GMT+7
 
-## Algorithms Golden Test Checklist (883/1077)
+## Algorithms Golden Test Checklist (977/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 216µs | 912 B |
@@ -965,106 +965,106 @@ Last updated: 2025-08-08 16:18 GMT+7
 | 956 | sorts/heap_sort | ✓ | 107µs | 1.1 KB |
 | 957 | sorts/insertion_sort | ✓ | 157µs | 808 B |
 | 958 | sorts/intro_sort | ✓ | 129µs | 1.6 KB |
-| 959 | sorts/iterative_merge_sort |   |  |  |
-| 960 | sorts/merge_insertion_sort |   |  |  |
-| 961 | sorts/merge_sort |   |  |  |
-| 962 | sorts/msd_radix_sort |   |  |  |
-| 963 | sorts/natural_sort |   |  |  |
-| 964 | sorts/odd_even_sort |   |  |  |
-| 965 | sorts/odd_even_transposition_parallel |   |  |  |
-| 966 | sorts/odd_even_transposition_single_threaded |   |  |  |
-| 967 | sorts/pancake_sort |   |  |  |
-| 968 | sorts/patience_sort |   |  |  |
-| 969 | sorts/pigeon_sort |   |  |  |
-| 970 | sorts/pigeonhole_sort |   |  |  |
-| 971 | sorts/quick_sort |   |  |  |
-| 972 | sorts/quick_sort_3_partition |   |  |  |
-| 973 | sorts/radix_sort |   |  |  |
-| 974 | sorts/recursive_insertion_sort |   |  |  |
-| 975 | sorts/recursive_mergesort_array |   |  |  |
-| 976 | sorts/recursive_quick_sort |   |  |  |
-| 977 | sorts/selection_sort |   |  |  |
-| 978 | sorts/shell_sort |   |  |  |
-| 979 | sorts/shrink_shell_sort |   |  |  |
-| 980 | sorts/slowsort |   |  |  |
-| 981 | sorts/stooge_sort |   |  |  |
-| 982 | sorts/strand_sort |   |  |  |
-| 983 | sorts/tim_sort |   |  |  |
-| 984 | sorts/topological_sort |   |  |  |
-| 985 | sorts/tree_sort |   |  |  |
-| 986 | sorts/unknown_sort |   |  |  |
-| 987 | sorts/wiggle_sort |   |  |  |
-| 988 | strings/aho_corasick |   |  |  |
-| 989 | strings/alternative_string_arrange |   |  |  |
-| 990 | strings/anagrams |   |  |  |
-| 991 | strings/autocomplete_using_trie |   |  |  |
-| 992 | strings/barcode_validator |   |  |  |
-| 993 | strings/bitap_string_match |   |  |  |
-| 994 | strings/boyer_moore_search |   |  |  |
-| 995 | strings/camel_case_to_snake_case |   |  |  |
-| 996 | strings/can_string_be_rearranged_as_palindrome |   |  |  |
-| 997 | strings/capitalize |   |  |  |
-| 998 | strings/check_anagrams |   |  |  |
-| 999 | strings/count_vowels |   |  |  |
-| 1000 | strings/credit_card_validator |   |  |  |
-| 1001 | strings/damerau_levenshtein_distance |   |  |  |
-| 1002 | strings/detecting_english_programmatically |   |  |  |
-| 1003 | strings/dna |   |  |  |
-| 1004 | strings/edit_distance |   |  |  |
-| 1005 | strings/frequency_finder |   |  |  |
-| 1006 | strings/hamming_distance |   |  |  |
-| 1007 | strings/indian_phone_validator |   |  |  |
-| 1008 | strings/is_contains_unique_chars |   |  |  |
-| 1009 | strings/is_isogram |   |  |  |
-| 1010 | strings/is_pangram |   |  |  |
-| 1011 | strings/is_polish_national_id |   |  |  |
-| 1012 | strings/is_spain_national_id |   |  |  |
-| 1013 | strings/is_srilankan_phone_number |   |  |  |
-| 1014 | strings/is_valid_email_address |   |  |  |
-| 1015 | strings/jaro_winkler |   |  |  |
-| 1016 | strings/join |   |  |  |
-| 1017 | strings/knuth_morris_pratt |   |  |  |
-| 1018 | strings/levenshtein_distance |   |  |  |
-| 1019 | strings/lower |   |  |  |
-| 1020 | strings/manacher |   |  |  |
-| 1021 | strings/min_cost_string_conversion |   |  |  |
-| 1022 | strings/naive_string_search |   |  |  |
-| 1023 | strings/ngram |   |  |  |
-| 1024 | strings/palindrome |   |  |  |
-| 1025 | strings/pig_latin |   |  |  |
-| 1026 | strings/prefix_function |   |  |  |
-| 1027 | strings/rabin_karp |   |  |  |
-| 1028 | strings/remove_duplicate |   |  |  |
-| 1029 | strings/reverse_letters |   |  |  |
-| 1030 | strings/reverse_words |   |  |  |
-| 1031 | strings/snake_case_to_camel_pascal_case |   |  |  |
-| 1032 | strings/split |   |  |  |
-| 1033 | strings/string_switch_case |   |  |  |
-| 1034 | strings/strip |   |  |  |
-| 1035 | strings/text_justification |   |  |  |
-| 1036 | strings/title |   |  |  |
-| 1037 | strings/top_k_frequent_words |   |  |  |
-| 1038 | strings/upper |   |  |  |
-| 1039 | strings/wave_string |   |  |  |
-| 1040 | strings/wildcard_pattern_matching |   |  |  |
-| 1041 | strings/word_occurrence |   |  |  |
-| 1042 | strings/word_patterns |   |  |  |
-| 1043 | strings/z_function |   |  |  |
-| 1044 | web_programming/co2_emission |   |  |  |
-| 1045 | web_programming/covid_stats_via_xpath |   |  |  |
-| 1046 | web_programming/crawl_google_results |   |  |  |
-| 1047 | web_programming/crawl_google_scholar_citation |   |  |  |
-| 1048 | web_programming/currency_converter |   |  |  |
-| 1049 | web_programming/current_stock_price |   |  |  |
-| 1050 | web_programming/current_weather |   |  |  |
-| 1051 | web_programming/daily_horoscope |   |  |  |
-| 1052 | web_programming/download_images_from_google_query |   |  |  |
-| 1053 | web_programming/emails_from_url |   |  |  |
-| 1054 | web_programming/fetch_anime_and_play |   |  |  |
-| 1055 | web_programming/fetch_bbc_news |   |  |  |
-| 1056 | web_programming/fetch_github_info |   |  |  |
-| 1057 | web_programming/fetch_jobs |   |  |  |
-| 1058 | web_programming/fetch_quotes |   |  |  |
+| 959 | sorts/iterative_merge_sort | ✓ | 767µs | 1000 B |
+| 960 | sorts/merge_insertion_sort | ✓ | 297µs | 1.2 KB |
+| 961 | sorts/merge_sort | ✓ | 315µs | 1.1 KB |
+| 962 | sorts/msd_radix_sort | ✓ | 573µs | 4.2 KB |
+| 963 | sorts/natural_sort | ✓ | 3.265ms | 1.6 KB |
+| 964 | sorts/odd_even_sort | ✓ | 158µs | 1.1 KB |
+| 965 | sorts/odd_even_transposition_parallel | ✓ | 221µs | 912 B |
+| 966 | sorts/odd_even_transposition_single_threaded | ✓ | 188µs | 808 B |
+| 967 | sorts/pancake_sort | ✓ | 128µs | 976 B |
+| 968 | sorts/patience_sort | ✓ | 364µs | 952 B |
+| 969 | sorts/pigeon_sort | ✓ | 320µs | 992 B |
+| 970 | sorts/pigeonhole_sort | ✓ | 145µs | 1.0 KB |
+| 971 | sorts/quick_sort | ✓ | 402µs | 2.3 KB |
+| 972 | sorts/quick_sort_3_partition | ✓ | 565µs | 1.6 KB |
+| 973 | sorts/radix_sort | ✓ | 524µs | 952 B |
+| 974 | sorts/recursive_insertion_sort | ✓ | 166µs | 1.1 KB |
+| 975 | sorts/recursive_mergesort_array | ✓ | 656µs | 912 B |
+| 976 | sorts/recursive_quick_sort | ✓ | 205µs | 976 B |
+| 977 | sorts/selection_sort | ✓ | 125µs | 808 B |
+| 978 | sorts/shell_sort | ✓ | 386µs | 808 B |
+| 979 | sorts/shrink_shell_sort | ✓ | 137µs | 912 B |
+| 980 | sorts/slowsort | ✓ | 232µs | 2.2 KB |
+| 981 | sorts/stooge_sort | ✓ | 140µs | 976 B |
+| 982 | sorts/strand_sort | ✓ | 331µs | 952 B |
+| 983 | sorts/tim_sort | ✓ | 401µs | 1.9 KB |
+| 984 | sorts/topological_sort | ✓ | 69µs | 3.2 KB |
+| 985 | sorts/tree_sort | ✓ | 434µs | 992 B |
+| 986 | sorts/unknown_sort | ✓ | 255µs | 1.3 KB |
+| 987 | sorts/wiggle_sort | ✓ | 375µs | 912 B |
+| 988 | strings/aho_corasick | ✓ | 340µs | 1.0 KB |
+| 989 | strings/alternative_string_arrange | ✓ | 53µs | 808 B |
+| 990 | strings/anagrams | error |  |  |
+| 991 | strings/autocomplete_using_trie | ✓ | 92µs | 960 B |
+| 992 | strings/barcode_validator | ✓ | 231µs | 1.4 KB |
+| 993 | strings/bitap_string_match | ✓ | 674µs | 1.1 KB |
+| 994 | strings/boyer_moore_search | ✓ | 3µs | 184 B |
+| 995 | strings/camel_case_to_snake_case | ✓ | 5.797ms | 1.3 KB |
+| 996 | strings/can_string_be_rearranged_as_palindrome | ✓ | 824µs | 1.1 KB |
+| 997 | strings/capitalize | ✓ | 135µs | 968 B |
+| 998 | strings/check_anagrams | ✓ | 268µs | 952 B |
+| 999 | strings/count_vowels | ✓ | 1.05ms | 1.0 KB |
+| 1000 | strings/credit_card_validator | ✓ | 86µs | 1.1 KB |
+| 1001 | strings/damerau_levenshtein_distance | error |  |  |
+| 1002 | strings/detecting_english_programmatically | ✓ | 1.886ms | 1.6 KB |
+| 1003 | strings/dna | ✓ | 74µs | 968 B |
+| 1004 | strings/edit_distance | ✓ | 159.194ms | 3.1 KB |
+| 1005 | strings/frequency_finder | ✓ | 13.252ms | 1.2 KB |
+| 1006 | strings/hamming_distance | ✓ | 195µs | 856 B |
+| 1007 | strings/indian_phone_validator | ✓ | 177µs | 960 B |
+| 1008 | strings/is_contains_unique_chars | ✓ | 1.445ms | 976 B |
+| 1009 | strings/is_isogram | ✓ | 1.446ms | 1.2 KB |
+| 1010 | strings/is_pangram | ✓ | 806µs | 888 B |
+| 1011 | strings/is_polish_national_id | ✓ | 217µs | 960 B |
+| 1012 | strings/is_spain_national_id | ✓ | 1.727ms | 1.2 KB |
+| 1013 | strings/is_srilankan_phone_number | ✓ | 57µs | 1008 B |
+| 1014 | strings/is_valid_email_address | ✓ | 21.288ms | 1.5 KB |
+| 1015 | strings/jaro_winkler | ✓ | 144µs | 1.0 KB |
+| 1016 | strings/join | ✓ | 133µs | 912 B |
+| 1017 | strings/knuth_morris_pratt | ✓ | 175µs | 968 B |
+| 1018 | strings/levenshtein_distance | ✓ | 438µs | 1.1 KB |
+| 1019 | strings/lower | ✓ | 87µs | 80 B |
+| 1020 | strings/manacher | ✓ | 140µs | 960 B |
+| 1021 | strings/min_cost_string_conversion | ✓ | 503µs | 3.1 KB |
+| 1022 | strings/naive_string_search | ✓ | 164µs | 808 B |
+| 1023 | strings/ngram | ✓ | 164µs | 856 B |
+| 1024 | strings/palindrome | ✓ | 133µs | 2.2 KB |
+| 1025 | strings/pig_latin | ✓ | 161µs | 1016 B |
+| 1026 | strings/prefix_function | ✓ | 329µs | 1.3 KB |
+| 1027 | strings/rabin_karp | ✓ | 2.949ms | 1.1 KB |
+| 1028 | strings/remove_duplicate | ✓ | 358µs | 1.1 KB |
+| 1029 | strings/reverse_letters | ✓ | 173µs | 1.3 KB |
+| 1030 | strings/reverse_words | ✓ | 154µs | 1016 B |
+| 1031 | strings/snake_case_to_camel_pascal_case | ✓ | 227µs | 1.0 KB |
+| 1032 | strings/split | error |  |  |
+| 1033 | strings/string_switch_case | ✓ | 453µs | 1.3 KB |
+| 1034 | strings/strip | ✓ | 86µs | 1.2 KB |
+| 1035 | strings/text_justification | ✓ | 296µs | 984 B |
+| 1036 | strings/title | ✓ | 1.556ms | 1.0 KB |
+| 1037 | strings/top_k_frequent_words | ✓ | 132µs | 1.2 KB |
+| 1038 | strings/upper | ✓ | 46µs | 80 B |
+| 1039 | strings/wave_string | ✓ | 430µs | 1.1 KB |
+| 1040 | strings/wildcard_pattern_matching | ✓ | 771µs | 1.1 KB |
+| 1041 | strings/word_occurrence | ✓ | 123µs | 1008 B |
+| 1042 | strings/word_patterns | ✓ | 578µs | 1.0 KB |
+| 1043 | strings/z_function | ✓ | 605µs | 1.4 KB |
+| 1044 | web_programming/co2_emission | error |  |  |
+| 1045 | web_programming/covid_stats_via_xpath | ✓ | 460µs | 1.2 KB |
+| 1046 | web_programming/crawl_google_results | ✓ | 371µs | 1.0 KB |
+| 1047 | web_programming/crawl_google_scholar_citation | ✓ | 2µs | 160 B |
+| 1048 | web_programming/currency_converter | ✓ | 90µs | 1.5 KB |
+| 1049 | web_programming/current_stock_price | ✓ | 231µs | 968 B |
+| 1050 | web_programming/current_weather | ✓ | 63µs | 1.1 KB |
+| 1051 | web_programming/daily_horoscope | ✓ | 94µs | 1.3 KB |
+| 1052 | web_programming/download_images_from_google_query | error |  |  |
+| 1053 | web_programming/emails_from_url | ✓ | 1.004ms | 2.0 KB |
+| 1054 | web_programming/fetch_anime_and_play | ✓ | 92µs | 3.1 KB |
+| 1055 | web_programming/fetch_bbc_news | ✓ | 468µs | 952 B |
+| 1056 | web_programming/fetch_github_info | error |  |  |
+| 1057 | web_programming/fetch_jobs | ✓ | 47µs | 1.2 KB |
+| 1058 | web_programming/fetch_quotes | ✓ | 601µs | 1.2 KB |
 | 1059 | web_programming/fetch_well_rx_price |   |  |  |
 | 1060 | web_programming/get_amazon_product_data |   |  |  |
 | 1061 | web_programming/get_imdb_top_250_movies_csv |   |  |  |
