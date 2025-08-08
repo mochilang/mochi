@@ -1,0 +1,12 @@
+/workspace/mochi/tests/algorithms/x/Erlang/neural_network/activation_functions/mish.erl:93:7: Warning: variable 'Neg_3' exported from 'case' (line 72, column 9)
+%   93| {N_2, Neg_3, Sum_2, Term_2, X, Y_3} = Fun(N, Neg_3, Sum, Term, X, Y_3),
+%     |       ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/neural_network/activation_functions/mish.erl:93:32: Warning: variable 'Y_3' exported from 'case' (line 72, column 9)
+%   93| {N_2, Neg_3, Sum_2, Term_2, X, Y_3} = Fun(N, Neg_3, Sum, Term, X, Y_3),
+%     |                                ^
+
+[2.2618413410438882 0.46613648068150837 -0.25250148269570927 
+ -0.08405830799581313]
+[-9.295155767333973e-4 -0.15113317713830784 0.3315201351111517 
+ -0.047457445633133886]

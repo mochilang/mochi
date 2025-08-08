@@ -1,0 +1,7 @@
+/workspace/mochi/tests/algorithms/x/Erlang/physics/archimedes_principle_of_buoyant_force.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/physics/archimedes_principle_of_buoyant_force.erl:56:1: Warning: function mochi_safe_div/2 is unused
+%   56| mochi_safe_div(A, B) ->
+%     | ^

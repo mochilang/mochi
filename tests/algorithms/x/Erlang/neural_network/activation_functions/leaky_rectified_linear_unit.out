@@ -1,0 +1,6 @@
+/workspace/mochi/tests/algorithms/x/Erlang/neural_network/activation_functions/leaky_rectified_linear_unit.erl:56:1: Warning: function mochi_safe_div/2 is unused
+%   56| mochi_safe_div(A, B) ->
+%     | ^
+
+[2.3 0.6 -0.6 -1.14]
+[-0.6164 -0.0201 0.45 -0.30552]

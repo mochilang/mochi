@@ -1,0 +1,6 @@
+/workspace/mochi/tests/algorithms/x/Erlang/matrix/validate_sudoku_board.erl:74:1: Warning: function mochi_safe_mul/2 is unused
+%   74| mochi_safe_mul(A, B) ->
+%     | ^
+
+true
+false

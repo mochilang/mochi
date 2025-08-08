@@ -1,0 +1,8 @@
+/workspace/mochi/tests/algorithms/x/Erlang/matrix/largest_square_area_in_matrix.erl:105:57: Warning: the result of evaluating operator '++'/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%  105|             Dp_array_2 = lists:sublist(Dp_array, Row_2) ++ [lists:sublist(lists:nth(Row_2 + 1, Dp_array), Col_2) ++ [Sub_3] ++ lists:nthtail(Col_2 + 1, lists:nth(Row_2 + 1, Dp_array))] ++ lists:nthtail(Row_2 + 1, Dp_array),
+%     |                                                         ^
+
+0
+0
+2
+2

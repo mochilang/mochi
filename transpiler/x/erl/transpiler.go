@@ -4574,7 +4574,18 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 		return nil, fmt.Errorf("nil postfix")
 	}
 	if pf.Target != nil && pf.Target.Selector != nil && len(pf.Ops) == 1 && pf.Ops[0].Call != nil {
-		if mod, ok := ctx.autoModule(pf.Target.Selector.Root); ok && mod == "mochi/runtime/ffi/go/testpkg" && len(pf.Target.Selector.Tail) == 1 {
+		name := pf.Target.Selector.Root
+		if name == "to_float" && len(pf.Target.Selector.Tail) == 0 {
+			if len(pf.Ops[0].Call.Args) != 1 {
+				return nil, fmt.Errorf("to_float expects 1 arg")
+			}
+			arg, err := convertExpr(pf.Ops[0].Call.Args[0], env, ctx)
+			if err != nil {
+				return nil, err
+			}
+			return &CallExpr{Func: "float", Args: []Expr{arg}}, nil
+		}
+		if mod, ok := ctx.autoModule(name); ok && mod == "mochi/runtime/ffi/go/testpkg" && len(pf.Target.Selector.Tail) == 1 {
 			f := pf.Target.Selector.Tail[0]
 			switch f {
 			case "Add":
@@ -4680,8 +4691,15 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 					args[j] = ae
 				}
 				if nr, ok := expr.(*NameRef); ok {
-					ce := &CallExpr{Func: nr.Name, Args: args}
-					expr = ce
+					if nr.Name == "to_float" {
+						if len(args) != 1 {
+							return nil, fmt.Errorf("to_float expects 1 arg")
+						}
+						expr = &CallExpr{Func: "float", Args: args}
+					} else {
+						ce := &CallExpr{Func: nr.Name, Args: args}
+						expr = ce
+					}
 				} else {
 					expr = &ApplyExpr{Fun: expr, Args: args}
 				}
