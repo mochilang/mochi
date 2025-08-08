@@ -2449,7 +2449,21 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		}
 		typeStr := tsType(t)
 		if transpileEnv != nil {
+			if len(paramStack) > 0 {
+				for i := len(paramStack) - 1; i >= 0; i-- {
+					if paramStack[i][s.Let.Name] {
+						transpileEnv.SetVarDeep(s.Let.Name, t, false)
+						if q, ok := e.(*QueryExprJS); ok && q.ElemType != "" {
+							typeStr = q.ElemType + "[]"
+						}
+						return &AssignStmt{Name: s.Let.Name, Expr: e}, nil
+					}
+				}
+			}
 			transpileEnv.SetVar(s.Let.Name, t, false)
+			if len(paramStack) > 0 {
+				paramStack[len(paramStack)-1][s.Let.Name] = true
+			}
 		}
 		if q, ok := e.(*QueryExprJS); ok && q.ElemType != "" {
 			typeStr = q.ElemType + "[]"
@@ -2501,13 +2515,17 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		}
 		typeStr := tsType(t)
 		if transpileEnv != nil {
-			// If the name matches a function parameter, we cannot re-declare it.
-			if len(paramStack) > 0 && paramStack[len(paramStack)-1][s.Var.Name] {
-				transpileEnv.SetVarDeep(s.Var.Name, t, true)
-				if q, ok := e.(*QueryExprJS); ok && q.ElemType != "" {
-					typeStr = q.ElemType + "[]"
+			// If the name matches a function parameter or outer variable, we cannot re-declare it.
+			if len(paramStack) > 0 {
+				for i := len(paramStack) - 1; i >= 0; i-- {
+					if paramStack[i][s.Var.Name] {
+						transpileEnv.SetVarDeep(s.Var.Name, t, true)
+						if q, ok := e.(*QueryExprJS); ok && q.ElemType != "" {
+							typeStr = q.ElemType + "[]"
+						}
+						return &AssignStmt{Name: s.Var.Name, Expr: e}, nil
+					}
 				}
-				return &AssignStmt{Name: s.Var.Name, Expr: e}, nil
 			}
 			transpileEnv.SetVar(s.Var.Name, t, true)
 			if len(paramStack) > 0 {
@@ -2808,7 +2826,7 @@ func convertForStmt(f *parser.ForStmt, env *types.Env) (Stmt, error) {
 			env.SetVar(f.Name, elemType, true)
 		}
 	}
-	if !keys {
+	if !keys && env == nil {
 		if ie, ok := iterable.(*IndexExpr); ok && ie.Raw {
 			keys = true
 		}
