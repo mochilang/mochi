@@ -41,6 +41,7 @@ var usesSet bool
 var usesIndex bool
 var usesLen bool
 var usesSplit bool
+var usesSlice bool
 var usesFetch bool
 var usesJSON bool
 var usesExists bool
@@ -90,6 +91,7 @@ type Program struct {
 	UseIndex      bool
 	UseLen        bool
 	UseSplit      bool
+	UseSlice      bool
 	UseFetch      bool
 	UseJSON       bool
 	UseExists     bool
@@ -750,6 +752,32 @@ func (a *ArrayLit) emit(w io.Writer) {
 	fmt.Fprint(w, "]")
 }
 
+// ArrayBuild builds an array using _append to reduce expression complexity.
+type ArrayBuild struct {
+	Elems []Expr
+	Type  string
+}
+
+func (a *ArrayBuild) emit(w io.Writer) {
+	fmt.Fprint(w, "{\n")
+	fmt.Fprintf(w, "var _arr: [%s] = []\n", a.Type)
+	for _, e := range a.Elems {
+		fmt.Fprint(w, "_arr = _append(_arr, ")
+		e.emit(w)
+		fmt.Fprint(w, ")\n")
+	}
+	fmt.Fprint(w, "return _arr\n}()")
+}
+
+func isSimpleExpr(e Expr) bool {
+	switch e.(type) {
+	case *LitExpr, *NameExpr:
+		return true
+	default:
+		return false
+	}
+}
+
 // MapLit represents a dictionary literal.
 type MapLit struct {
 	Keys   []Expr
@@ -1194,15 +1222,15 @@ func (ie *IndexExpr) emit(w io.Writer) {
 
 func (s *SliceExpr) emit(w io.Writer) {
 	if s.AsString {
-		fmt.Fprint(w, "String(Array(")
+		fmt.Fprint(w, "String(_slice(Array(")
 		s.Base.emit(w)
-		fmt.Fprint(w, ")[")
+		fmt.Fprint(w, "), ")
 		if s.Start != nil {
 			s.Start.emit(w)
 		} else {
 			fmt.Fprint(w, "0")
 		}
-		fmt.Fprint(w, "..<")
+		fmt.Fprint(w, ", ")
 		if s.End != nil {
 			s.End.emit(w)
 		} else {
@@ -1210,25 +1238,27 @@ func (s *SliceExpr) emit(w io.Writer) {
 			s.Base.emit(w)
 			fmt.Fprint(w, ").count")
 		}
-		fmt.Fprint(w, "])")
+		fmt.Fprint(w, "))")
+		usesSlice = true
 		return
 	}
-	fmt.Fprint(w, "Array(")
+	fmt.Fprint(w, "_slice(Array(")
 	s.Base.emit(w)
-	fmt.Fprint(w, "[")
+	fmt.Fprint(w, "), ")
 	if s.Start != nil {
 		s.Start.emit(w)
 	} else {
 		fmt.Fprint(w, "0")
 	}
-	fmt.Fprint(w, "..<")
+	fmt.Fprint(w, ", ")
 	if s.End != nil {
 		s.End.emit(w)
 	} else {
 		s.Base.emit(w)
 		fmt.Fprint(w, ".count")
 	}
-	fmt.Fprint(w, "])")
+	fmt.Fprint(w, ")")
+	usesSlice = true
 }
 
 func (c *CastExpr) emit(w io.Writer) {
@@ -2095,13 +2125,13 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    }\n")
 		buf.WriteString("    return 0\n}\n")
 	}
-       if p.UseIndex {
-               buf.WriteString("func _idx<T>(_ xs: [T], _ i: Int) -> T? {\n")
-               buf.WriteString("    var idx = i\n")
-               buf.WriteString("    if idx < 0 { idx += xs.count }\n")
-               buf.WriteString("    if idx >= 0 && idx < xs.count { return xs[idx] }\n")
-               buf.WriteString("    return xs.first\n}\n")
-       }
+	if p.UseIndex {
+		buf.WriteString("func _idx<T>(_ xs: [T], _ i: Int) -> T? {\n")
+		buf.WriteString("    var idx = i\n")
+		buf.WriteString("    if idx < 0 { idx += xs.count }\n")
+		buf.WriteString("    if idx >= 0 && idx < xs.count { return xs[idx] }\n")
+		buf.WriteString("    return xs.first\n}\n")
+	}
 	if p.UseRat {
 		buf.WriteString("func _rat_num(_ v: Double) -> Int {\n")
 		buf.WriteString("    if v.isNaN { return 0 }\n")
@@ -2165,6 +2195,16 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("func _split(_ s: String, _ sep: String) -> [String] {\n")
 		buf.WriteString("    let d = sep.isEmpty ? \" \" : sep\n")
 		buf.WriteString("    return s.components(separatedBy: d)\n")
+		buf.WriteString("}\n")
+	}
+	if p.UseSlice {
+		buf.WriteString("func _slice<T>(_ xs: [T], _ start: Int, _ end: Int) -> [T] {\n")
+		buf.WriteString("    var s = start\n")
+		buf.WriteString("    var e = end\n")
+		buf.WriteString("    if s < 0 { s = 0 }\n")
+		buf.WriteString("    if e > xs.count { e = xs.count }\n")
+		buf.WriteString("    if s > e { s = e }\n")
+		buf.WriteString("    return Array(xs[s..<e])\n")
 		buf.WriteString("}\n")
 	}
 	if p.UseFetch {
@@ -2346,6 +2386,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	usesIndex = false
 	usesLen = false
 	usesSplit = false
+	usesSlice = false
 	usesFetch = false
 	usesJSON = false
 	usesExists = false
@@ -2390,6 +2431,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	p.UseIndex = usesIndex
 	p.UseLen = usesLen
 	p.UseSplit = usesSplit
+	p.UseSlice = usesSlice
 	p.UseFetch = usesFetch
 	p.UseJSON = usesJSON
 	p.UseExists = usesExists
@@ -2874,10 +2916,10 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 				}
 			}
 		}
-               if st.Var.Type == nil {
-                       typ = ""
-               }
-               return &VarDecl{Name: st.Var.Name, Const: false, Type: typ, Expr: ex}, nil
+		if st.Var.Type == nil {
+			typ = ""
+		}
+		return &VarDecl{Name: st.Var.Name, Const: false, Type: typ, Expr: ex}, nil
 	case st.Type != nil:
 		def, err := convertTypeDecl(env, st.Type)
 		if err != nil {
@@ -4320,6 +4362,7 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 						}
 					}
 				}
+				usesSlice = true
 				expr = &SliceExpr{Base: expr, Start: start, End: end, AsString: isStr}
 				if env != nil {
 					if lt, ok := baseType.(types.ListType); ok {
@@ -5080,6 +5123,21 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			}
 			elems = append(elems, ce)
 		}
+		complex := false
+		for _, e := range elems {
+			if !isSimpleExpr(e) {
+				complex = true
+				break
+			}
+		}
+		if complex {
+			typ := "Any"
+			if env != nil && len(pr.List.Elems) > 0 {
+				typ = swiftTypeOf(types.TypeOfExpr(pr.List.Elems[0], env))
+			}
+			usesAppend = true
+			return &ArrayBuild{Elems: elems, Type: typ}, nil
+		}
 		return &ArrayLit{Elems: elems}, nil
 	case pr.Map != nil:
 		var keys []Expr
@@ -5316,6 +5374,7 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 					asStr = true
 				}
 			}
+			usesSlice = true
 			return &SliceExpr{Base: base, Start: start, End: end, AsString: asStr}, nil
 		}
 		ce := &CallExpr{Func: pr.Call.Func}
