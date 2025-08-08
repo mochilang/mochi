@@ -2529,9 +2529,13 @@ func (sli *SliceExpr) emit(w io.Writer) {
 
 func (c *CastExpr) emit(w io.Writer) {
 	if strings.HasPrefix(c.Type, "[]") {
-		if l, ok := c.Value.(*ListLit); ok && l.ElemType == "" {
-			l.ElemType = c.Type[2:]
+		if l, ok := c.Value.(*ListLit); ok {
+			if l.ElemType == "" {
+				l.ElemType = c.Type[2:]
+			}
+			io.WriteString(w, "@constCast((&(")
 			l.emit(w)
+			io.WriteString(w, "))[0..])")
 			return
 		}
 	}

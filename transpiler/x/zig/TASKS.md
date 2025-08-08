@@ -1,3 +1,268 @@
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 19:10 +0700)
+- Commit 659f5dbfa9: zig transpiler: handle inline list slices
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-08-08 11:16 +0700)
 - Commit 9fc9647438: c transpiler: print nested lists
 - Generated Zig for 98/105 programs
