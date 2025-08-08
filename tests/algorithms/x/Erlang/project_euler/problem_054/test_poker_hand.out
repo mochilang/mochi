@@ -1,0 +1,29 @@
+/workspace/mochi/tests/algorithms/x/Erlang/project_euler/problem_054/test_poker_hand.erl:223:35: Warning: variable 'Is_straight_6' exported from 'case' (line 175, column 9)
+%  223| {Counts_3, Hand, I_6, Is_flush_3, Is_straight_6, J_3, S0, Suits_2, T_2, V_3, Vals_8} = Fun_8(Counts_3, Hand, I_6, Is_flush, Is_straight_6, J_3, S0, Suits_2, T, V_3, Vals_8),
+%     |                                   ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/project_euler/problem_054/test_poker_hand.erl:223:50: Warning: variable 'J_3' exported from 'case' (line 175, column 9)
+%  223| {Counts_3, Hand, I_6, Is_flush_3, Is_straight_6, J_3, S0, Suits_2, T_2, V_3, Vals_8} = Fun_8(Counts_3, Hand, I_6, Is_flush, Is_straight_6, J_3, S0, Suits_2, T, V_3, Vals_8),
+%     |                                                  ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/project_euler/problem_054/test_poker_hand.erl:223:78: Warning: variable 'Vals_8' exported from 'case' (line 175, column 9)
+%  223| {Counts_3, Hand, I_6, Is_flush_3, Is_straight_6, J_3, S0, Suits_2, T_2, V_3, Vals_8} = Fun_8(Counts_3, Hand, I_6, Is_flush, Is_straight_6, J_3, S0, Suits_2, T, V_3, Vals_8),
+%     |                                                                              ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/project_euler/problem_054/test_poker_hand.erl:257:47: Warning: variable 'Is_straight_6' exported from 'case' (line 175, column 9)
+%  257| {Counts_3, Four_val_3, Hand, I_6, Is_flush_3, Is_straight_6, J_3, Pair_vals_5, S0, Suits_2, T_2, Three_val_4, V_5, Vals_8} = Fun_9(Counts_3, Four_val, Hand, I_6, Is_flush_3, Is_straight_6, J_3, Pair_vals, S0, Suits_2, T_2, Three_val, V_4, Vals_8),
+%     |                                               ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/project_euler/problem_054/test_poker_hand.erl:257:62: Warning: variable 'J_3' exported from 'case' (line 175, column 9)
+%  257| {Counts_3, Four_val_3, Hand, I_6, Is_flush_3, Is_straight_6, J_3, Pair_vals_5, S0, Suits_2, T_2, Three_val_4, V_5, Vals_8} = Fun_9(Counts_3, Four_val, Hand, I_6, Is_flush_3, Is_straight_6, J_3, Pair_vals, S0, Suits_2, T_2, Three_val, V_4, Vals_8),
+%     |                                                              ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/project_euler/problem_054/test_poker_hand.erl:257:116: Warning: variable 'Vals_8' exported from 'case' (line 175, column 9)
+%  257| {Counts_3, Four_val_3, Hand, I_6, Is_flush_3, Is_straight_6, J_3, Pair_vals_5, S0, Suits_2, T_2, Three_val_4, V_5, Vals_8} = Fun_9(Counts_3, Four_val, Hand, I_6, Is_flush_3, Is_straight_6, J_3, Pair_vals, S0, Suits_2, T_2, Three_val, V_4, Vals_8),
+%     |                                                                                                                    ^
+
+"Loss expected Loss"
+"Win expected Win"
+"Win expected Win"
+"Loss expected Loss"
+"Win expected Win"

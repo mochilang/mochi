@@ -1,0 +1,9 @@
+/workspace/mochi/tests/algorithms/x/Erlang/project_euler/problem_070/sol1.erl:53:1: Warning: function mochi_safe_mul/2 is unused
+%   53| mochi_safe_mul(A, B) ->
+%     | ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/project_euler/problem_070/sol1.erl:167:12: Warning: variable 'Count2_4' exported from 'case' (line 152, column 9)
+%  167| {Count1_5, Count2_4, I_6, N1_2, N2, Num1, Num2} = Fun_6(Count1_4, Count2_4, I_6, N1, N2, Num1, Num2),
+%     |            ^
+
+4435

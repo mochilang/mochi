@@ -1,0 +1,17 @@
+/workspace/mochi/tests/algorithms/x/Erlang/project_euler/problem_068/sol1.erl:53:1: Warning: function mochi_safe_mul/2 is unused
+%   53| mochi_safe_mul(A, B) ->
+%     | ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/project_euler/problem_068/sol1.erl:292:33: Warning: variable 'K_6' exported from 'case' (line 239, column 9)
+%  292| {Current_max, Gon_side_2, I_15, K_6, Nums, Res_15, Ring_2, S_4, Start_3} = Fun_11(Current_max, Gon_side_2, I_14, K_6, Nums, Res_13, Ring_2, S_4, Start_3),
+%     |                                 ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/project_euler/problem_068/sol1.erl:292:52: Warning: variable 'Ring_2' exported from 'case' (line 239, column 9)
+%  292| {Current_max, Gon_side_2, I_15, K_6, Nums, Res_15, Ring_2, S_4, Start_3} = Fun_11(Current_max, Gon_side_2, I_14, K_6, Nums, Res_13, Ring_2, S_4, Start_3),
+%     |                                                    ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/project_euler/problem_068/sol1.erl:292:60: Warning: variable 'S_4' exported from 'case' (line 239, column 9)
+%  292| {Current_max, Gon_side_2, I_15, K_6, Nums, Res_15, Ring_2, S_4, Start_3} = Fun_11(Current_max, Gon_side_2, I_14, K_6, Nums, Res_13, Ring_2, S_4, Start_3),
+%     |                                                            ^
+
+"6531031914842725"
