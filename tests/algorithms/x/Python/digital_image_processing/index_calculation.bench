@@ -1,7 +1,7 @@
 NDVI=0.0
 {
-  "duration_us": 12,
-  "memory_bytes": 13754368,
+  "duration_us": 18,
+  "memory_bytes": 13676544,
   "name": "main"
 }
 Traceback (most recent call last):
