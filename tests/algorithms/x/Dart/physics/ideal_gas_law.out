@@ -1,0 +1,16 @@
+../../../tests/algorithms/x/Dart/physics/ideal_gas_law.dart:19:10: Error: Missing expression after 'throw'.
+Add an expression after 'throw' or use 'rethrow' to throw a caught exception
+    throw;
+         ^
+../../../tests/algorithms/x/Dart/physics/ideal_gas_law.dart:27:10: Error: Missing expression after 'throw'.
+Add an expression after 'throw' or use 'rethrow' to throw a caught exception
+    throw;
+         ^
+../../../tests/algorithms/x/Dart/physics/ideal_gas_law.dart:35:10: Error: Missing expression after 'throw'.
+Add an expression after 'throw' or use 'rethrow' to throw a caught exception
+    throw;
+         ^
+../../../tests/algorithms/x/Dart/physics/ideal_gas_law.dart:43:10: Error: Missing expression after 'throw'.
+Add an expression after 'throw' or use 'rethrow' to throw a caught exception
+    throw;
+         ^
