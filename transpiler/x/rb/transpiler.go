@@ -3305,7 +3305,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		addVar(st.Var.Name)
-		return &VarStmt{Name: st.Var.Name, Value: v, Clone: true}, nil
+		return &VarStmt{Name: st.Var.Name, Value: v}, nil
 	case st.Assign != nil:
 		v, err := convertExpr(st.Assign.Value)
 		if err != nil {
@@ -3360,7 +3360,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			return &IndexAssignStmt{Target: target, Index: idx, Value: v}, nil
 		}
 		if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
-			return &AssignStmt{Name: identName(st.Assign.Name), Value: v, Clone: true}, nil
+			return &AssignStmt{Name: identName(st.Assign.Name), Value: v}, nil
 		}
 		return nil, fmt.Errorf("unsupported assignment")
 	case st.If != nil:
