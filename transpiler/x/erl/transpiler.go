@@ -6488,15 +6488,19 @@ func (p *Program) Emit() []byte {
 		f.emit(&buf)
 	}
 	buf.WriteString("main(_) ->\n")
+	buf.WriteString("    try\n")
 	for i, s := range p.Stmts {
-		buf.WriteString("    ")
+		buf.WriteString("        ")
 		s.emit(&buf)
 		if i < len(p.Stmts)-1 {
 			buf.WriteString(",\n")
 		} else {
-			buf.WriteString(".\n")
+			buf.WriteString("\n")
 		}
 	}
+	buf.WriteString("    catch\n")
+	buf.WriteString("        _:Err -> io:format(\"~s~n\", [mochi_str(Err)])\n")
+	buf.WriteString("    end.\n")
 	return buf.Bytes()
 }
 
