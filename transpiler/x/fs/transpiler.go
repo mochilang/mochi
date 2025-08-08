@@ -1353,6 +1353,12 @@ func (a *AppendExpr) emit(w io.Writer) {
 	elemType := elemTypeOf(a.List)
 	if elemType != "" {
 		it := inferType(a.Elem)
+		if elemType == "int" && it == "int64" {
+			io.WriteString(w, "int (")
+			a.Elem.emit(w)
+			io.WriteString(w, ")|]")
+			return
+		}
 		if it == "obj" || it == "" {
 			io.WriteString(w, "unbox<")
 			io.WriteString(w, elemType)
@@ -1961,12 +1967,24 @@ func (b *BinaryExpr) emit(w io.Writer) {
 				b.Left.emit(w)
 			}
 			io.WriteString(w, " ")
-			if needsParen(b.Right) {
-				io.WriteString(w, "(")
-				b.Right.emit(w)
+			if elemTypeOf(b.Left) == "int" {
+				io.WriteString(w, "(Array.map int ")
+				if needsParen(b.Right) {
+					io.WriteString(w, "(")
+					b.Right.emit(w)
+					io.WriteString(w, ")")
+				} else {
+					b.Right.emit(w)
+				}
 				io.WriteString(w, ")")
 			} else {
-				b.Right.emit(w)
+				if needsParen(b.Right) {
+					io.WriteString(w, "(")
+					b.Right.emit(w)
+					io.WriteString(w, ")")
+				} else {
+					b.Right.emit(w)
+				}
 			}
 			return
 		}
@@ -2516,6 +2534,10 @@ func (i *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, " (")
 		if mapKeyType(t) == "string" {
 			io.WriteString(w, "(string (")
+			i.Index.emit(w)
+			io.WriteString(w, "))")
+		} else if mapKeyType(t) == "int" && inferType(i.Index) == "int64" {
+			io.WriteString(w, "(int (")
 			i.Index.emit(w)
 			io.WriteString(w, "))")
 		} else {

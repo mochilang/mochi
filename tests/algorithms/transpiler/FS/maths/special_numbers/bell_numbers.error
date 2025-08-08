@@ -1,0 +1,5 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/algorithms/transpiler/FS/maths/special_numbers/bell_numbers.fs(94,110): error FS0001: The type 'int' does not match the type 'int64'
