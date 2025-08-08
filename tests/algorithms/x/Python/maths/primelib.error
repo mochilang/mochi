@@ -1,0 +1,24 @@
+run: exit status 1
+True
+[2, 3, 5, 7, 11, 13, 17, 19]
+[2, 3, 5, 7, 11, 13, 17, 19]
+[7, 41]
+41
+7
+40
+[5, 23]
+23
+{
+  "duration_us": 233,
+  "memory_bytes": 15618048,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/primelib.py", line 255, in <module>
+    print(_str(get_primes_between(3, 20)))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/primelib.py", line 182, in get_primes_between
+    panic("arguments must be prime and p1 < p2")
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/primelib.py", line 15, in panic
+    raise RuntimeError(msg)
+RuntimeError: arguments must be prime and p1 < p2

@@ -43,6 +43,7 @@ var (
 	usesFetch         bool
 	usesAppend        bool
 	usesConcat        bool
+	usesStr           bool
 	usesSetIndex      bool
 	funcDepth         int
 )
@@ -139,7 +140,14 @@ def _set_index(lst, idx, val):
 
 const helperPanic = `
 def panic(msg):
-    raise Exception(msg)
+    raise RuntimeError(msg)
+`
+
+const helperStr = `
+def _str(v):
+    if isinstance(v, float) and v.is_integer():
+        return str(int(v))
+    return str(v)
 `
 
 var pyKeywords = map[string]bool{
@@ -3012,6 +3020,11 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 			return err
 		}
 	}
+	if usesStr {
+		if _, err := io.WriteString(w, helperStr+"\n"); err != nil {
+			return err
+		}
+	}
 	if usesSetIndex {
 		if _, err := io.WriteString(w, helperSetIndex+"\n"); err != nil {
 			return err
@@ -3294,6 +3307,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	usesFetch = false
 	usesAppend = false
 	usesConcat = false
+	usesStr = false
 	usesSetIndex = false
 	p := &Program{}
 	for _, st := range prog.Statements {
@@ -4980,6 +4994,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		case "min", "max":
 			if len(args) == 1 {
 				return &CallExpr{Func: &Name{Name: p.Call.Func}, Args: args}, nil
+			}
+		case "str":
+			if len(args) == 1 {
+				usesStr = true
+				return &CallExpr{Func: &Name{Name: "_str"}, Args: args}, nil
 			}
 		case "split":
 			if len(args) == 2 {

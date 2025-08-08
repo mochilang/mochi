@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/segmented_sieve.py", line 112, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/segmented_sieve.py", line 110, in main
+    test_sieve()
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/segmented_sieve.py", line 103, in test_sieve
+    e1 = sieve(8)
+         ^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/segmented_sieve.py", line 82, in sieve
+    tempSeg[j2 - low] = 0
+    ~~~~~~~^^^^^^^^^^
+TypeError: list indices must be integers or slices, not float

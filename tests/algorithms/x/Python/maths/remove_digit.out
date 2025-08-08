@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/remove_digit.py", line 39, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/remove_digit.py", line 37, in main
+    test_remove_digit()
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/remove_digit.py", line 29, in test_remove_digit
+    panic("remove_digit(152) failed")
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/remove_digit.py", line 11, in panic
+    raise RuntimeError(msg)
+RuntimeError: remove_digit(152) failed
