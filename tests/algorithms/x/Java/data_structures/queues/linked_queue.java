@@ -69,7 +69,7 @@ q.rear = 0 - 1;
         int idx_2 = q.front;
         while (idx_2 != 0 - 1) {
             count = count + 1;
-            idx_2 = ((Number)(q.nodes[idx_2].next)).intValue();
+            idx_2 = q.nodes[idx_2].next;
         }
         return count;
     }
@@ -97,18 +97,52 @@ q.front = 0 - 1;
 q.rear = 0 - 1;
     }
     public static void main(String[] args) {
-        queue = new_queue();
-        System.out.println(_p(is_empty(queue)));
-        put(queue, "5");
-        put(queue, "9");
-        put(queue, "python");
-        System.out.println(_p(is_empty(queue)));
-        System.out.println(get(queue));
-        put(queue, "algorithms");
-        System.out.println(get(queue));
-        System.out.println(get(queue));
-        System.out.println(get(queue));
-        System.out.println(_p(is_empty(queue)));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            queue = new_queue();
+            System.out.println(_p(is_empty(queue)));
+            put(queue, "5");
+            put(queue, "9");
+            put(queue, "python");
+            System.out.println(_p(is_empty(queue)));
+            System.out.println(get(queue));
+            put(queue, "algorithms");
+            System.out.println(get(queue));
+            System.out.println(get(queue));
+            System.out.println(get(queue));
+            System.out.println(_p(is_empty(queue)));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {

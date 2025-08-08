@@ -42,7 +42,7 @@ public class Main {
                 operand_stack = ((int[])(slice_without_last_int(((int[])(operand_stack)))));
                 int num2 = operand_stack[operand_stack.length - 1];
                 operand_stack = ((int[])(slice_without_last_int(((int[])(operand_stack)))));
-                int total = (opr.equals("+")) ? num2 + num1 : (opr.equals("-")) ? num2 - num1 : (opr.equals("*")) ? num2 * num1 : num2 / num1;
+                int total = (opr.equals("+")) ? num2 + num1 : (opr.equals("-")) ? num2 - num1 : (opr.equals("*")) ? num2 * num1 : Math.floorDiv(num2, num1);
                 operand_stack = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(operand_stack), java.util.stream.IntStream.of(total)).toArray()));
             }
             idx = idx + 1;
@@ -50,8 +50,42 @@ public class Main {
         return operand_stack[operand_stack.length - 1];
     }
     public static void main(String[] args) {
-        equation = "(5 + ((4 * 2) * (2 + 3)))";
-        System.out.println(equation + " = " + _p(dijkstras_two_stack_algorithm(equation)));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            equation = "(5 + ((4 * 2) * (2 + 3)))";
+            System.out.println(equation + " = " + _p(dijkstras_two_stack_algorithm(equation)));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static int _runeLen(String s) {

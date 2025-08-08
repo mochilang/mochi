@@ -43,7 +43,7 @@ arr[j + 1] = ((double[])(tmp));
         int k = points[0].length;
         int axis = Math.floorMod(depth, k);
         double[][] sorted = ((double[][])(sort_points(((double[][])(points)), axis)));
-        int median_idx = sorted.length / 2;
+        int median_idx = Math.floorDiv(sorted.length, 2);
         double[][] left_points = ((double[][])(java.util.Arrays.copyOfRange(sorted, 0, median_idx)));
         double[][] right_points = ((double[][])(java.util.Arrays.copyOfRange(sorted, median_idx + 1, sorted.length)));
         int idx = tree.length;
@@ -57,11 +57,45 @@ tree[idx] = node;
         return idx;
     }
     public static void main(String[] args) {
-        tree = ((KDNode[])(new KDNode[]{}));
-        pts = ((double[][])(new double[][]{new double[]{2.0, 3.0}, new double[]{5.0, 4.0}, new double[]{9.0, 6.0}, new double[]{4.0, 7.0}, new double[]{8.0, 1.0}, new double[]{7.0, 2.0}}));
-        root = build_kdtree(((double[][])(pts)), 0);
-        System.out.println(_p(tree));
-        System.out.println(root);
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            tree = ((KDNode[])(new KDNode[]{}));
+            pts = ((double[][])(new double[][]{new double[]{2.0, 3.0}, new double[]{5.0, 4.0}, new double[]{9.0, 6.0}, new double[]{4.0, 7.0}, new double[]{8.0, 1.0}, new double[]{7.0, 2.0}}));
+            root = build_kdtree(((double[][])(pts)), 0);
+            System.out.println(_p(tree));
+            System.out.println(root);
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {

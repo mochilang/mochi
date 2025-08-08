@@ -163,7 +163,7 @@ public class Main {
         int i_6 = 0;
         while (i_6 < ht.values.length) {
             if (ht.filled[i_6]) {
-                res_4 = ((int[][])(appendObj(res_4, new int[]{i_6, ht.values[i_6]})));
+                res_4 = ((int[][])(appendObj((int[][])res_4, new int[]{i_6, ht.values[i_6]})));
             }
             i_6 = i_6 + 1;
         }
@@ -175,10 +175,44 @@ public class Main {
         ht = insert_data(ht, 17);
         ht = insert_data(ht, 18);
         ht = insert_data(ht, 99);
-        System.out.println(("[" + ((java.util.List<?>)new java.util.ArrayList<>(ht.keySet())).stream().map(String::valueOf).collect(java.util.stream.Collectors.joining(", ")) + "]"));
+        System.out.println(keys(ht));
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static boolean[] appendBool(boolean[] arr, boolean v) {

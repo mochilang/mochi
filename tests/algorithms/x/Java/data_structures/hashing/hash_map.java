@@ -50,51 +50,51 @@ public class Main {
     }
 
     static int bucket_index(HashMap hm, int key) {
-        int ind = Math.floorMod(key, ((Bucket[]) (hm.get("buckets"))).length);
+        int ind = Math.floorMod(key, hm.buckets.length);
         if (ind < 0) {
-            ind = ind + ((Bucket[]) (hm.get("buckets"))).length;
+            ind = ind + hm.buckets.length;
         }
         return ind;
     }
 
     static int next_index(HashMap hm, int ind) {
-        return Math.floorMod((ind + 1), ((Bucket[]) (hm.get("buckets"))).length);
+        return Math.floorMod((ind + 1), hm.buckets.length);
     }
 
     static boolean try_set(HashMap hm, int ind, int key, int val) {
-        Bucket[] buckets_1 = (Bucket[])(((Bucket[]) (hm.get("buckets"))));
+        Bucket[] buckets_1 = ((Bucket[])(hm.buckets));
         Bucket b = buckets_1[ind];
         if (b.state == 0 || b.state == 2) {
 buckets_1[ind] = new Bucket(1, key, val);
-hm.put("buckets", buckets_1);
-hm.put("len", (int)(((int) (hm.get("len")))) + 1);
+hm.buckets = buckets_1;
+hm.len = hm.len + 1;
             return true;
         }
         if (b.key == key) {
 buckets_1[ind] = new Bucket(1, key, val);
-hm.put("buckets", buckets_1);
+hm.buckets = buckets_1;
             return true;
         }
         return false;
     }
 
     static boolean is_full(HashMap hm) {
-        int limit = ((Bucket[]) (hm.get("buckets"))).length * (int)(((int) (hm.get("cap_num")))) / (int)(((int) (hm.get("cap_den"))));
-        return (int)(((int) (hm.get("len")))) >= limit;
+        Object limit = Math.floorDiv(hm.buckets.length * hm.cap_num, hm.cap_den);
+        return hm.len >= ((Number)(limit)).intValue();
     }
 
     static boolean is_sparse(HashMap hm) {
-        if (((Bucket[]) (hm.get("buckets"))).length <= (int)(((int) (hm.get("initial_size"))))) {
+        if (hm.buckets.length <= hm.initial_size) {
             return false;
         }
-        int limit_1 = ((Bucket[]) (hm.get("buckets"))).length * (int)(((int) (hm.get("cap_num")))) / (2 * (int)(((int) (hm.get("cap_den")))));
-        return (int)(((int) (hm.get("len")))) < limit_1;
+        Object limit_1 = Math.floorDiv(hm.buckets.length * hm.cap_num, (2 * hm.cap_den));
+        return hm.len < ((Number)(limit_1)).intValue();
     }
 
     static void resize(HashMap hm, int new_size) {
-        Bucket[] old = (Bucket[])(((Bucket[]) (hm.get("buckets"))));
-hm.put("buckets", make_buckets(new_size));
-hm.put("len", 0);
+        Bucket[] old = ((Bucket[])(hm.buckets));
+hm.buckets = make_buckets(new_size);
+hm.len = 0;
         int i_1 = 0;
         while (i_1 < old.length) {
             Bucket it = old[i_1];
@@ -106,17 +106,17 @@ hm.put("len", 0);
     }
 
     static void size_up(HashMap hm) {
-        resize(hm, ((Bucket[]) (hm.get("buckets"))).length * 2);
+        resize(hm, hm.buckets.length * 2);
     }
 
     static void size_down(HashMap hm) {
-        resize(hm, ((Bucket[]) (hm.get("buckets"))).length / 2);
+        resize(hm, Math.floorDiv(hm.buckets.length, 2));
     }
 
     static void add_item(HashMap hm, int key, int val) {
         int ind_1 = bucket_index(hm, key);
         int i_2 = 0;
-        while (i_2 < ((Bucket[]) (hm.get("buckets"))).length) {
+        while (i_2 < hm.buckets.length) {
             if (((Boolean)(try_set(hm, ind_1, key, val)))) {
                 break;
             }
@@ -133,7 +133,7 @@ hm.put("len", 0);
     }
 
     static int hashmap_get(HashMap hm, int key) {
-        Bucket[] buckets_2 = (Bucket[])(((Bucket[]) (hm.get("buckets"))));
+        Bucket[] buckets_2 = ((Bucket[])(hm.buckets));
         int ind_2 = bucket_index(hm, key);
         int i_3 = 0;
         while (i_3 < buckets_2.length) {
@@ -151,7 +151,7 @@ hm.put("len", 0);
     }
 
     static void hashmap_del(HashMap hm, int key) {
-        Bucket[] buckets_3 = (Bucket[])(((Bucket[]) (hm.get("buckets"))));
+        Bucket[] buckets_3 = ((Bucket[])(hm.buckets));
         int ind_3 = bucket_index(hm, key);
         int i_4 = 0;
         while (i_4 < buckets_3.length) {
@@ -162,8 +162,8 @@ hm.put("len", 0);
             }
             if (it_2.state == 1 && it_2.key == key) {
 buckets_3[ind_3] = new Bucket(2, 0, 0);
-hm.put("buckets", buckets_3);
-hm.put("len", (int)(((int) (hm.get("len")))) - 1);
+hm.buckets = buckets_3;
+hm.len = hm.len - 1;
                 break;
             }
             ind_3 = next_index(hm, ind_3);
@@ -175,15 +175,15 @@ hm.put("len", (int)(((int) (hm.get("len")))) - 1);
     }
 
     static int hashmap_len(HashMap hm) {
-        return ((int) (hm.get("len")));
+        return hm.len;
     }
 
     static String hashmap_repr(HashMap hm) {
         String out = "HashMap(";
         boolean first = true;
         int i_5 = 0;
-        while (i_5 < ((Bucket[]) (hm.get("buckets"))).length) {
-            Bucket b_1 = ((Bucket[]) (hm.get("buckets")))[i_5];
+        while (i_5 < hm.buckets.length) {
+            Bucket b_1 = hm.buckets[i_5];
             if (b_1.state == 1) {
                 if (!(Boolean)first) {
                     out = out + ", ";
@@ -198,15 +198,49 @@ hm.put("len", (int)(((int) (hm.get("len")))) - 1);
         return out;
     }
     public static void main(String[] args) {
-        hm = hashmap_new(5);
-        hashmap_set(hm, 1, 10);
-        hashmap_set(hm, 2, 20);
-        hashmap_set(hm, 3, 30);
-        System.out.println(hashmap_repr(hm));
-        System.out.println(_p(hashmap_get(hm, 2)));
-        hashmap_del(hm, 1);
-        System.out.println(hashmap_repr(hm));
-        System.out.println(_p(hashmap_len(hm)));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            hm = hashmap_new(5);
+            hashmap_set(hm, 1, 10);
+            hashmap_set(hm, 2, 20);
+            hashmap_set(hm, 3, 30);
+            System.out.println(hashmap_repr(hm));
+            System.out.println(_p(hashmap_get(hm, 2)));
+            hashmap_del(hm, 1);
+            System.out.println(hashmap_repr(hm));
+            System.out.println(_p(hashmap_len(hm)));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {

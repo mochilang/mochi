@@ -45,7 +45,7 @@ nodes[r1]["left"] = merge((int)(((int)(((java.util.Map)nodes[r1])).getOrDefault(
 
     static void insert(int value) {
         java.util.Map<String,Integer> node = ((java.util.Map<String,Integer>)(new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("value", value), java.util.Map.entry("left", NIL), java.util.Map.entry("right", NIL)))));
-        nodes = ((java.util.Map<String,Integer>[])(appendObj(nodes, node)));
+        nodes = ((java.util.Map<String,Integer>[])(appendObj((java.util.Map<String,Integer>[])nodes, node)));
         int idx = nodes.length - 1;
         root = merge(root, idx);
     }
@@ -77,33 +77,67 @@ nodes[r1]["left"] = merge((int)(((int)(((java.util.Map)nodes[r1])).getOrDefault(
         return res;
     }
     public static void main(String[] args) {
-        NIL = 0 - 1;
-        seed = 1;
-        nodes = ((java.util.Map<String,Integer>[])((java.util.Map<String,Integer>[])new java.util.Map[]{}));
-        root = NIL;
-        set_seed(1);
-        new_heap();
-        insert(2);
-        insert(3);
-        insert(1);
-        insert(5);
-        insert(1);
-        insert(7);
-        System.out.println(to_sorted_list());
-        new_heap();
-        insert(1);
-        insert(-1);
-        insert(0);
-        System.out.println(to_sorted_list());
-        new_heap();
-        insert(3);
-        insert(1);
-        insert(3);
-        insert(7);
-        System.out.println(pop());
-        System.out.println(pop());
-        System.out.println(pop());
-        System.out.println(pop());
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            NIL = 0 - 1;
+            seed = 1;
+            nodes = ((java.util.Map<String,Integer>[])((java.util.Map<String,Integer>[])new java.util.Map[]{}));
+            root = NIL;
+            set_seed(1);
+            new_heap();
+            insert(2);
+            insert(3);
+            insert(1);
+            insert(5);
+            insert(1);
+            insert(7);
+            System.out.println(to_sorted_list());
+            new_heap();
+            insert(1);
+            insert(-1);
+            insert(0);
+            System.out.println(to_sorted_list());
+            new_heap();
+            insert(3);
+            insert(1);
+            insert(3);
+            insert(7);
+            System.out.println(pop());
+            System.out.println(pop());
+            System.out.println(pop());
+            System.out.println(pop());
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static <T> T[] appendObj(T[] arr, T v) {

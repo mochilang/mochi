@@ -5,12 +5,12 @@ public class Main {
     static void swap_up(int i) {
         int temp = heap[i];
         int idx = i;
-        while (idx / 2 > 0) {
-            if (heap[idx] > heap[idx / 2]) {
-heap[idx] = heap[idx / 2];
-heap[idx / 2] = temp;
+        while (Math.floorDiv(idx, 2) > 0) {
+            if (heap[idx] > heap[Math.floorDiv(idx, 2)]) {
+heap[idx] = heap[Math.floorDiv(idx, 2)];
+heap[Math.floorDiv(idx, 2)] = temp;
             }
-            idx = idx / 2;
+            idx = Math.floorDiv(idx, 2);
         }
     }
 
@@ -66,15 +66,49 @@ heap[1] = heap[size];
         return size;
     }
     public static void main(String[] args) {
-        heap = ((int[])(new int[]{0}));
-        size = 0;
-        insert(6);
-        insert(10);
-        insert(15);
-        insert(12);
-        System.out.println(pop());
-        System.out.println(pop());
-        System.out.println(get_list());
-        System.out.println(len());
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            heap = ((int[])(new int[]{0}));
+            size = 0;
+            insert(6);
+            insert(10);
+            insert(15);
+            insert(12);
+            System.out.println(pop());
+            System.out.println(pop());
+            System.out.println(get_list());
+            System.out.println(len());
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 }

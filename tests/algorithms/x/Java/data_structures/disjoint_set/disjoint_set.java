@@ -79,48 +79,82 @@ r_1[y_root] = r_1[y_root] + 1;
         return false;
     }
     public static void main(String[] args) {
-        ds = new DS(new int[]{}, new int[]{});
-        i = 0;
-        while (i < 6) {
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            ds = new DS(new int[]{}, new int[]{});
+            i = 0;
+            while (i < 6) {
 ds.parent = java.util.stream.IntStream.concat(java.util.Arrays.stream(ds.parent), java.util.stream.IntStream.of(0)).toArray();
 ds.rank = java.util.stream.IntStream.concat(java.util.Arrays.stream(ds.rank), java.util.stream.IntStream.of(0)).toArray();
-            ds = make_set(ds, i);
-            i = i + 1;
-        }
-        ds = union_set(ds, 0, 1);
-        ds = union_set(ds, 1, 2);
-        ds = union_set(ds, 3, 4);
-        ds = union_set(ds, 3, 5);
-        i = 0;
-        while (i < 6) {
-            int j = 0;
-            while (j < 6) {
-                FindResult res_i = find_set(ds, i);
-                ds = res_i.ds;
-                int root_i = res_i.root;
-                FindResult res_j = find_set(ds, j);
-                ds = res_j.ds;
-                int root_j = res_j.root;
-                boolean same = same_python_set(i, j);
-                boolean root_same = root_i == root_j;
-                if (((Boolean)(same))) {
-                    if (!root_same) {
-                        throw new RuntimeException(String.valueOf("nodes should be in same set"));
-                    }
-                } else                 if (root_same) {
-                    throw new RuntimeException(String.valueOf("nodes should be in different sets"));
-                }
-                j = j + 1;
+                ds = make_set(ds, i);
+                i = i + 1;
             }
-            i = i + 1;
+            ds = union_set(ds, 0, 1);
+            ds = union_set(ds, 1, 2);
+            ds = union_set(ds, 3, 4);
+            ds = union_set(ds, 3, 5);
+            i = 0;
+            while (i < 6) {
+                int j = 0;
+                while (j < 6) {
+                    FindResult res_i = find_set(ds, i);
+                    ds = res_i.ds;
+                    int root_i = res_i.root;
+                    FindResult res_j = find_set(ds, j);
+                    ds = res_j.ds;
+                    int root_j = res_j.root;
+                    boolean same = same_python_set(i, j);
+                    boolean root_same = root_i == root_j;
+                    if (((Boolean)(same))) {
+                        if (!root_same) {
+                            throw new RuntimeException(String.valueOf("nodes should be in same set"));
+                        }
+                    } else                     if (root_same) {
+                        throw new RuntimeException(String.valueOf("nodes should be in different sets"));
+                    }
+                    j = j + 1;
+                }
+                i = i + 1;
+            }
+            i = 0;
+            while (i < 6) {
+                FindResult res_1 = find_set(ds, i);
+                ds = res_1.ds;
+                System.out.println(_p(res_1.root));
+                i = i + 1;
+            }
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
         }
-        i = 0;
-        while (i < 6) {
-            FindResult res_1 = find_set(ds, i);
-            ds = res_1.ds;
-            System.out.println(_p(res_1.root));
-            i = i + 1;
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
         }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {

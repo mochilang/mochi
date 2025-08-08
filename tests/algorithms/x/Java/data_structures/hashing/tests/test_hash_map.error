@@ -1,25 +1,25 @@
 compile: exit status 1
-/tmp/TestJavaTranspiler_Algorithms_Golden210_test_hash_map3428971901/001/Main.java:58: error: cannot find symbol
+/tmp/TestJavaTranspiler_Algorithms_Golden210_test_hash_map4238821896/001/Main.java:58: error: cannot find symbol
         return ((Entry[]) (m.get("entries"))).length;
                             ^
   symbol:   method get(String)
   location: variable m of type HashMap
-/tmp/TestJavaTranspiler_Algorithms_Golden210_test_hash_map3428971901/001/Main.java:62: error: cannot find symbol
+/tmp/TestJavaTranspiler_Algorithms_Golden210_test_hash_map4238821896/001/Main.java:62: error: cannot find symbol
         Entry[] entries = (Entry[])(((Entry[]) (m.get("entries"))));
                                                  ^
   symbol:   method get(String)
   location: variable m of type HashMap
-/tmp/TestJavaTranspiler_Algorithms_Golden210_test_hash_map3428971901/001/Main.java:84: error: cannot find symbol
+/tmp/TestJavaTranspiler_Algorithms_Golden210_test_hash_map4238821896/001/Main.java:84: error: cannot find symbol
         while (i_1 < ((Entry[]) (m.get("entries"))).length) {
                                   ^
   symbol:   method get(String)
   location: variable m of type HashMap
-/tmp/TestJavaTranspiler_Algorithms_Golden210_test_hash_map3428971901/001/Main.java:85: error: cannot find symbol
+/tmp/TestJavaTranspiler_Algorithms_Golden210_test_hash_map4238821896/001/Main.java:85: error: cannot find symbol
             Entry e_1 = ((Entry[]) (m.get("entries")))[i_1];
                                      ^
   symbol:   method get(String)
   location: variable m of type HashMap
-/tmp/TestJavaTranspiler_Algorithms_Golden210_test_hash_map3428971901/001/Main.java:95: error: cannot find symbol
+/tmp/TestJavaTranspiler_Algorithms_Golden210_test_hash_map4238821896/001/Main.java:95: error: cannot find symbol
         Entry[] entries_1 = (Entry[])(((Entry[]) (m.get("entries"))));
                                                    ^
   symbol:   method get(String)

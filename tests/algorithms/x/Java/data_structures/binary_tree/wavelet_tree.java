@@ -62,13 +62,13 @@ public class Main {
             nodes = ((Node[])(java.util.stream.Stream.concat(java.util.Arrays.stream(nodes), java.util.stream.Stream.of(n)).toArray(Node[]::new)));
             return nodes.length - 1;
         }
-        int pivot = (n.minn + n.maxx) / 2;
+        Object pivot = Math.floorDiv((n.minn + n.maxx), 2);
         int[] left_arr = ((int[])(new int[]{}));
         int[] right_arr = ((int[])(new int[]{}));
         int i_3 = 0;
         while (i_3 < arr.length) {
             int num = arr[i_3];
-            if (num <= pivot) {
+            if (num <= ((Number)(pivot)).intValue()) {
                 left_arr = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(left_arr), java.util.stream.IntStream.of(num)).toArray()));
             } else {
                 right_arr = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(right_arr), java.util.stream.IntStream.of(num)).toArray()));
@@ -100,8 +100,8 @@ n.right = build_tree(((int[])(right_arr)));
                 return 0;
             }
         }
-        int pivot_1 = (node.minn + node.maxx) / 2;
-        if (num <= pivot_1) {
+        Object pivot_1 = Math.floorDiv((node.minn + node.maxx), 2);
+        if (num <= ((Number)(pivot_1)).intValue()) {
             return rank_till_index(node.left, num, node.map_left[index] - 1);
         } else {
             return rank_till_index(node.right, num, index - node.map_left[index]);
@@ -150,13 +150,47 @@ n.right = build_tree(((int[])(right_arr)));
         return left + right;
     }
     public static void main(String[] args) {
-        nodes = ((Node[])(new Node[]{}));
-        test_array = ((int[])(new int[]{2, 1, 4, 5, 6, 0, 8, 9, 1, 2, 0, 6, 4, 2, 0, 6, 5, 3, 2, 7}));
-        root = build_tree(((int[])(test_array)));
-        System.out.println("rank_till_index 6 at 6 -> " + _p(rank_till_index(root, 6, 6)));
-        System.out.println("rank 6 in [3,13] -> " + _p(rank(root, 6, 3, 13)));
-        System.out.println("quantile index 2 in [2,5] -> " + _p(quantile(root, 2, 2, 5)));
-        System.out.println("range_counting [3,7] in [1,10] -> " + _p(range_counting(root, 1, 10, 3, 7)));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            nodes = ((Node[])(new Node[]{}));
+            test_array = ((int[])(new int[]{2, 1, 4, 5, 6, 0, 8, 9, 1, 2, 0, 6, 4, 2, 0, 6, 5, 3, 2, 7}));
+            root = build_tree(((int[])(test_array)));
+            System.out.println("rank_till_index 6 at 6 -> " + _p(rank_till_index(root, 6, 6)));
+            System.out.println("rank 6 in [3,13] -> " + _p(rank(root, 6, 3, 13)));
+            System.out.println("quantile index 2 in [2,5] -> " + _p(quantile(root, 2, 2, 5)));
+            System.out.println("range_counting [3,7] in [1,10] -> " + _p(range_counting(root, 1, 10, 3, 7)));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {

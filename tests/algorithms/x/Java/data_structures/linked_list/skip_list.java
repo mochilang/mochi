@@ -78,7 +78,7 @@ forwards[i_1] = node_forwards[update[i_1]][i_1];
 node_forwards[update[i_1]][i_1] = idx;
             i_1 = i_1 + 1;
         }
-        node_forwards = ((int[][])(appendObj(node_forwards, forwards)));
+        node_forwards = ((int[][])(appendObj((int[][])node_forwards, forwards)));
     }
 
     static int find(int key) {
@@ -154,15 +154,49 @@ node_forwards[update_1[i_3]][i_3] = node_forwards[x_2][i_3];
         System.out.println(to_string());
     }
     public static void main(String[] args) {
-        NIL = 0 - 1;
-        MAX_LEVEL = 6;
-        P = 0.5;
-        seed = 1;
-        node_keys = ((int[])(new int[]{}));
-        node_vals = ((int[])(new int[]{}));
-        node_forwards = ((int[][])(new int[][]{}));
-        level = 1;
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            NIL = 0 - 1;
+            MAX_LEVEL = 6;
+            P = 0.5;
+            seed = 1;
+            node_keys = ((int[])(new int[]{}));
+            node_vals = ((int[])(new int[]{}));
+            node_forwards = ((int[][])(new int[][]{}));
+            level = 1;
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static <T> T[] appendObj(T[] arr, T v) {

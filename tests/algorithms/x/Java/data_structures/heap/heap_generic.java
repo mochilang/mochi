@@ -24,7 +24,7 @@ public class Main {
 
     static int parent(int i) {
         if (i > 0) {
-            return (i - 1) / 2;
+            return ((int)(Math.floorDiv((i - 1), 2)));
         }
         return -1;
     }
@@ -67,11 +67,11 @@ h.arr = arr;
     static int get_valid_parent(Heap h, int i) {
         int vp = i;
         int l_1 = left(i, h.size);
-        if (l_1 != 0 - 1 && cmp(h, l_1, vp) == false) {
+        if (l_1 != 0 - 1 && ((Boolean)(cmp(h, l_1, vp))) == false) {
             vp = l_1;
         }
         int r_1 = right(i, h.size);
-        if (r_1 != 0 - 1 && cmp(h, r_1, vp) == false) {
+        if (r_1 != 0 - 1 && ((Boolean)(cmp(h, r_1, vp))) == false) {
             vp = r_1;
         }
         return vp;
@@ -80,7 +80,7 @@ h.arr = arr;
     static void heapify_up(Heap h, int index) {
         int idx = index;
         int p = parent(idx);
-        while (p != 0 - 1 && cmp(h, idx, p) == false) {
+        while (p != 0 - 1 && ((Boolean)(cmp(h, idx, p))) == false) {
             swap(h, idx, p);
             idx = p;
             p = parent(p);
@@ -138,7 +138,7 @@ h.pos_map = pm_2;
         Object arr_4 = h.arr;
         int arr_len = arr_4.length;
         if (arr_len == h.size) {
-            arr_4 = appendObj(arr_4, new int[]{item, h.key.apply(item_value)});
+            arr_4 = appendObj((int[][])arr_4, new int[]{item, h.key.apply(item_value)});
         } else {
 arr_4[h.size] = new Object[]{item, h.key.apply(item_value)};
         }
@@ -174,30 +174,64 @@ h.pos_map = pm_3;
         return 0 - x;
     }
     public static void main(String[] args) {
-        h = new_heap(Main::identity);
-        insert_item(h, 5, 34);
-        insert_item(h, 6, 31);
-        insert_item(h, 7, 37);
-        System.out.println(_p(get_top(h)));
-        System.out.println(_p(extract_top(h)));
-        System.out.println(_p(extract_top(h)));
-        System.out.println(_p(extract_top(h)));
-        h = new_heap(Main::negate);
-        insert_item(h, 5, 34);
-        insert_item(h, 6, 31);
-        insert_item(h, 7, 37);
-        System.out.println(_p(get_top(h)));
-        System.out.println(_p(extract_top(h)));
-        System.out.println(_p(extract_top(h)));
-        System.out.println(_p(extract_top(h)));
-        insert_item(h, 8, 45);
-        insert_item(h, 9, 40);
-        insert_item(h, 10, 50);
-        System.out.println(_p(get_top(h)));
-        update_item(h, 10, 30);
-        System.out.println(_p(get_top(h)));
-        delete_item(h, 10);
-        System.out.println(_p(get_top(h)));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            h = new_heap(Main::identity);
+            insert_item(h, 5, 34);
+            insert_item(h, 6, 31);
+            insert_item(h, 7, 37);
+            System.out.println(_p(get_top(h)));
+            System.out.println(_p(extract_top(h)));
+            System.out.println(_p(extract_top(h)));
+            System.out.println(_p(extract_top(h)));
+            h = new_heap(Main::negate);
+            insert_item(h, 5, 34);
+            insert_item(h, 6, 31);
+            insert_item(h, 7, 37);
+            System.out.println(_p(get_top(h)));
+            System.out.println(_p(extract_top(h)));
+            System.out.println(_p(extract_top(h)));
+            System.out.println(_p(extract_top(h)));
+            insert_item(h, 8, 45);
+            insert_item(h, 9, 40);
+            insert_item(h, 10, 50);
+            System.out.println(_p(get_top(h)));
+            update_item(h, 10, 30);
+            System.out.println(_p(get_top(h)));
+            delete_item(h, 10);
+            System.out.println(_p(get_top(h)));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static <T> T[] appendObj(T[] arr, T v) {
