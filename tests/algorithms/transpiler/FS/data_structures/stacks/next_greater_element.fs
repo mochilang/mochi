@@ -1,4 +1,4 @@
-// Generated 2025-08-07 14:57 +0700
+// Generated 2025-08-08 11:10 +0700
 
 exception Break
 exception Continue
@@ -22,8 +22,20 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
+    d.[k] <- v
+    d
+let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
+    let d = System.Collections.Generic.Dictionary<'K, 'V>()
+    for (k, v) in pairs do
+        d.[k] <- v
+    upcast d
+let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
+    match d.TryGetValue(k) with
+    | true, v -> v
+    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
-    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+    if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
     s.Replace("[|", "[")
@@ -122,7 +134,7 @@ let rec set_at_float (xs: float array) (idx: int) (value: float) =
             if i = idx then
                 res <- Array.append res [|value|]
             else
-                res <- Array.append res [|_idx xs (i)|]
+                res <- Array.append res [|(_idx xs (i))|]
             i <- i + 1
         __ret <- res
         raise Return
@@ -136,7 +148,7 @@ let rec next_greatest_element (xs: float array) =
         let mutable res: float array = [||]
         let mutable k: int = 0
         while k < (Seq.length (xs)) do
-            res <- Array.append res [|-1.0|]
+            res <- Array.append res [|(-1.0)|]
             k <- k + 1
         let mutable stack: int array = [||]
         let mutable i: int = 0

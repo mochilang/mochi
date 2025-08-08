@@ -1,4 +1,4 @@
-// Generated 2025-08-07 14:57 +0700
+// Generated 2025-08-08 11:10 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -27,8 +27,12 @@ let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collec
     for (k, v) in pairs do
         d.[k] <- v
     upcast d
+let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
+    match d.TryGetValue(k) with
+    | true, v -> v
+    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
-    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+    if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
 open System.Collections.Generic
@@ -40,7 +44,7 @@ let rec pop_last (xs: string array) =
         let mutable res: string array = [||]
         let mutable i: int = 0
         while i < ((Seq.length (xs)) - 1) do
-            res <- Array.append res [|_idx xs (i)|]
+            res <- Array.append res [|(_idx xs (i))|]
             i <- i + 1
         __ret <- res
         raise Return
@@ -64,7 +68,7 @@ let rec balanced_parentheses (s: string) =
                         __ret <- false
                         raise Return
                     let top: string = _idx stack ((Seq.length (stack)) - 1)
-                    if (pairs.[(string (top))]) <> ch then
+                    if (_dictGet pairs ((string (top)))) <> ch then
                         __ret <- false
                         raise Return
                     stack <- pop_last (stack)

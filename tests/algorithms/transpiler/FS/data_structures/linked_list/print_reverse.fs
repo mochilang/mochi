@@ -1,4 +1,4 @@
-// Generated 2025-08-07 14:57 +0700
+// Generated 2025-08-08 11:10 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,8 +19,20 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
+    d.[k] <- v
+    d
+let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
+    let d = System.Collections.Generic.Dictionary<'K, 'V>()
+    for (k, v) in pairs do
+        d.[k] <- v
+    upcast d
+let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
+    match d.TryGetValue(k) with
+    | true, v -> v
+    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
-    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+    if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
     s.Replace("[|", "[")
@@ -29,12 +41,12 @@ let rec _str v =
      .Replace(";", "")
      .Replace("\"", "")
 type LinkedList = {
-    data: int array
+    mutable _data: int array
 }
 let rec empty_list () =
     let mutable __ret : LinkedList = Unchecked.defaultof<LinkedList>
     try
-        __ret <- { data = [||] }
+        __ret <- { _data = [||] }
         raise Return
         __ret
     with
@@ -44,9 +56,9 @@ and append_value (list: LinkedList) (value: int) =
     let mutable list = list
     let mutable value = value
     try
-        let mutable d: int array = list.data
+        let mutable d: int array = list._data
         d <- Array.append d [|value|]
-        __ret <- { data = d }
+        __ret <- { _data = d }
         raise Return
         __ret
     with
@@ -70,13 +82,13 @@ and to_string (list: LinkedList) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable list = list
     try
-        if (Seq.length (list.data)) = 0 then
+        if (Seq.length (list._data)) = 0 then
             __ret <- ""
             raise Return
-        let mutable s: string = _str (_idx (list.data) (0))
+        let mutable s: string = _str (_idx (list._data) (0))
         let mutable i: int = 1
-        while i < (Seq.length (list.data)) do
-            s <- (s + " -> ") + (_str (_idx (list.data) (i)))
+        while i < (Seq.length (list._data)) do
+            s <- (s + " -> ") + (_str (_idx (list._data) (i)))
             i <- i + 1
         __ret <- s
         raise Return
@@ -100,14 +112,14 @@ and in_reverse (list: LinkedList) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable list = list
     try
-        if (Seq.length (list.data)) = 0 then
+        if (Seq.length (list._data)) = 0 then
             __ret <- ""
             raise Return
-        let mutable i: int = (Seq.length (list.data)) - 1
-        let mutable s: string = _str (_idx (list.data) (i))
+        let mutable i: int = (Seq.length (list._data)) - 1
+        let mutable s: string = _str (_idx (list._data) (i))
         i <- i - 1
         while i >= 0 do
-            s <- (s + " <- ") + (_str (_idx (list.data) (i)))
+            s <- (s + " <- ") + (_str (_idx (list._data) (i)))
             i <- i - 1
         __ret <- s
         raise Return

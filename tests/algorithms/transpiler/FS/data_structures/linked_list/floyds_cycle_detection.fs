@@ -1,4 +1,4 @@
-// Generated 2025-08-07 14:57 +0700
+// Generated 2025-08-08 11:10 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,17 +19,29 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
+    d.[k] <- v
+    d
+let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
+    let d = System.Collections.Generic.Dictionary<'K, 'V>()
+    for (k, v) in pairs do
+        d.[k] <- v
+    upcast d
+let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
+    match d.TryGetValue(k) with
+    | true, v -> v
+    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
-    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+    if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 type LinkedList = {
-    next: int array
-    head: int
+    mutable _next: int array
+    mutable _head: int
 }
 let NULL: int = 0 - 1
 let rec empty_list () =
     let mutable __ret : LinkedList = Unchecked.defaultof<LinkedList>
     try
-        __ret <- { next = Array.empty<int>; head = NULL }
+        __ret <- { _next = Array.empty<int>; _head = NULL }
         raise Return
         __ret
     with
@@ -39,13 +51,13 @@ and add_node (list: LinkedList) (value: int) =
     let mutable list = list
     let mutable value = value
     try
-        let mutable nexts: int array = list.next
+        let mutable nexts: int array = list._next
         let new_index: int = Seq.length (nexts)
         nexts <- Array.append nexts [|NULL|]
-        if (list.head) = NULL then
-            __ret <- { next = nexts; head = new_index }
+        if (list._head) = NULL then
+            __ret <- { _next = nexts; _head = new_index }
             raise Return
-        let mutable last: int = list.head
+        let mutable last: int = list._head
         while (_idx nexts (last)) <> NULL do
             last <- _idx nexts (last)
         let mutable new_nexts: int array = Array.empty<int>
@@ -54,9 +66,9 @@ and add_node (list: LinkedList) (value: int) =
             if i = last then
                 new_nexts <- Array.append new_nexts [|new_index|]
             else
-                new_nexts <- Array.append new_nexts [|_idx nexts (i)|]
+                new_nexts <- Array.append new_nexts [|(_idx nexts (i))|]
             i <- i + 1
-        __ret <- { next = new_nexts; head = list.head }
+        __ret <- { _next = new_nexts; _head = list._head }
         raise Return
         __ret
     with
@@ -67,16 +79,16 @@ and set_next (list: LinkedList) (index: int) (next_index: int) =
     let mutable index = index
     let mutable next_index = next_index
     try
-        let mutable nexts: int array = list.next
+        let mutable nexts: int array = list._next
         let mutable new_nexts: int array = Array.empty<int>
         let mutable i: int = 0
         while i < (Seq.length (nexts)) do
             if i = index then
                 new_nexts <- Array.append new_nexts [|next_index|]
             else
-                new_nexts <- Array.append new_nexts [|_idx nexts (i)|]
+                new_nexts <- Array.append new_nexts [|(_idx nexts (i))|]
             i <- i + 1
-        __ret <- { next = new_nexts; head = list.head }
+        __ret <- { _next = new_nexts; _head = list._head }
         raise Return
         __ret
     with
@@ -85,12 +97,12 @@ and detect_cycle (list: LinkedList) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable list = list
     try
-        if (list.head) = NULL then
+        if (list._head) = NULL then
             __ret <- false
             raise Return
-        let mutable nexts: int array = list.next
-        let mutable slow: int = list.head
-        let mutable fast: int = list.head
+        let mutable nexts: int array = list._next
+        let mutable slow: int = list._head
+        let mutable fast: int = list._head
         while (fast <> NULL) && ((_idx nexts (fast)) <> NULL) do
             slow <- _idx nexts (slow)
             fast <- _idx nexts (_idx nexts (fast))

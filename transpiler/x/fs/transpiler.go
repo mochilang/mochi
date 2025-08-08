@@ -447,6 +447,12 @@ func fsIdent(name string) string {
 	if name == "seed" {
 		return "_seed"
 	}
+	if name == "front" {
+		return "_front"
+	}
+	if _, ok := structWithField(name); ok {
+		return "_" + name
+	}
 	return name
 }
 
@@ -474,7 +480,7 @@ func inferStructFromMapVars(ml *parser.MapLiteral) ([]StructField, bool) {
 		}
 		fieldName := tgt.Selector.Tail[len(tgt.Selector.Tail)-1]
 		if ft, ok := structFieldType(vtype, fieldName); ok {
-			fields[i] = StructField{Name: key, Type: ft, Mut: false}
+			fields[i] = StructField{Name: key, Type: ft, Mut: true}
 		} else {
 			return nil, false
 		}
@@ -529,7 +535,7 @@ func structWithField(field string) (string, bool) {
 func addStructDef(name string, st types.StructType) {
 	def := StructDef{Name: name}
 	for _, f := range st.Order {
-		def.Fields = append(def.Fields, StructField{Name: f, Type: fsType(st.Fields[f]), Mut: false})
+		def.Fields = append(def.Fields, StructField{Name: f, Type: fsType(st.Fields[f]), Mut: true})
 	}
 	structDefs = append(structDefs, def)
 }
@@ -1503,32 +1509,46 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 			return
 		}
 	}
-	if f, ok := s.Target.(*FieldExpr); ok && len(indices) == 0 {
-		if id, ok2 := f.Target.(*IdentExpr); ok2 {
+	if f, ok := s.Target.(*FieldExpr); ok {
+		base := f.Target
+		sub := []Expr{}
+		for {
+			if ix, ok := base.(*IndexExpr); ok {
+				sub = append([]Expr{ix.Index}, sub...)
+				base = ix.Target
+			} else {
+				break
+			}
+		}
+		if id, ok2 := base.(*IdentExpr); ok2 {
 			writeIndent(w)
 			name := fsIdent(id.Name)
 			io.WriteString(w, name)
-			io.WriteString(w, " <- { ")
-			io.WriteString(w, name)
-			io.WriteString(w, " with ")
+			for _, ix := range sub {
+				io.WriteString(w, ".[")
+				ix.emit(w)
+				io.WriteString(w, "]")
+			}
+			io.WriteString(w, ".")
 			io.WriteString(w, fsIdent(f.Name))
-			io.WriteString(w, " = ")
+			io.WriteString(w, " <- ")
 			s.Value.emit(w)
-			io.WriteString(w, " }")
 			return
 		}
-		if ce, ok2 := f.Target.(*CastExpr); ok2 {
+		if ce, ok2 := base.(*CastExpr); ok2 {
 			if id, ok3 := ce.Expr.(*IdentExpr); ok3 {
 				writeIndent(w)
 				name := fsIdent(id.Name)
 				io.WriteString(w, name)
-				io.WriteString(w, " <- { ")
-				io.WriteString(w, name)
-				io.WriteString(w, " with ")
+				for _, ix := range sub {
+					io.WriteString(w, ".[")
+					ix.emit(w)
+					io.WriteString(w, "]")
+				}
+				io.WriteString(w, ".")
 				io.WriteString(w, fsIdent(f.Name))
-				io.WriteString(w, " = ")
+				io.WriteString(w, " <- ")
 				s.Value.emit(w)
-				io.WriteString(w, " }")
 				return
 			}
 		}
@@ -5269,7 +5289,7 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 			if t, ok := varTypes[n]; ok {
 				typ = fsTypeFromString(strings.TrimSuffix(strings.TrimPrefix(strings.TrimSuffix(t, " list"), "list<"), ">"))
 			}
-			itemFields[i] = StructField{Name: n, Type: typ, Mut: false}
+			itemFields[i] = StructField{Name: n, Type: typ, Mut: true}
 		}
 		structCount++
 		itemName := fmt.Sprintf("Anon%d", structCount)
@@ -5280,7 +5300,7 @@ func convertQueryExpr(q *parser.QueryExpr) (Expr, error) {
 		} else if kt := inferType(key); kt != "" {
 			keyType = fsTypeFromString(strings.TrimSuffix(kt, " list"))
 		}
-		groupFields := []StructField{{Name: "key", Type: keyType, Mut: false}, {Name: "items", Type: itemName + " list", Mut: false}}
+		groupFields := []StructField{{Name: "key", Type: keyType, Mut: true}, {Name: "items", Type: itemName + " list", Mut: true}}
 		structCount++
 		groupName := fmt.Sprintf("Anon%d", structCount)
 		structDefs = append(structDefs, StructDef{Name: groupName, Fields: groupFields})

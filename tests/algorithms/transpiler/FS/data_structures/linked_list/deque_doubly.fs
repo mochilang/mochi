@@ -1,4 +1,4 @@
-// Generated 2025-08-07 14:57 +0700
+// Generated 2025-08-08 11:10 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,8 +19,28 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
+    d.[k] <- v
+    d
+let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
+    let d = System.Collections.Generic.Dictionary<'K, 'V>()
+    for (k, v) in pairs do
+        d.[k] <- v
+    upcast d
+let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
+    match d.TryGetValue(k) with
+    | true, v -> v
+    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
-    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+    if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
+    let mutable a = arr
+    if i >= a.Length then
+        let na = Array.zeroCreate<'a> (i + 1)
+        Array.blit a 0 na 0 a.Length
+        a <- na
+    a.[i] <- v
+    a
 let rec _str v =
     let s = sprintf "%A" v
     s.Replace("[|", "[")
@@ -29,27 +49,27 @@ let rec _str v =
      .Replace(";", "")
      .Replace("\"", "")
 type Node = {
-    data: string
-    prev: int
-    next: int
+    mutable _data: string
+    mutable _prev: int
+    mutable _next: int
 }
 type LinkedDeque = {
-    nodes: Node array
-    header: int
-    trailer: int
-    size: int
+    mutable _nodes: Node array
+    mutable _header: int
+    mutable _trailer: int
+    mutable _size: int
 }
 type DeleteResult = {
-    deque: LinkedDeque
-    value: string
+    mutable _deque: LinkedDeque
+    mutable _value: string
 }
 let rec new_deque () =
     let mutable __ret : LinkedDeque = Unchecked.defaultof<LinkedDeque>
     try
-        let mutable nodes: Node array = [||]
-        nodes <- Array.append nodes [|{ data = ""; prev = -1; next = 1 }|]
-        nodes <- Array.append nodes [|{ data = ""; prev = 0; next = -1 }|]
-        __ret <- { nodes = nodes; header = 0; trailer = 1; size = 0 }
+        let mutable _nodes: Node array = [||]
+        _nodes <- Array.append _nodes [|{ _data = ""; _prev = -1; _next = 1 }|]
+        _nodes <- Array.append _nodes [|{ _data = ""; _prev = 0; _next = -1 }|]
+        __ret <- { _nodes = _nodes; _header = 0; _trailer = 1; _size = 0 }
         raise Return
         __ret
     with
@@ -58,21 +78,21 @@ and is_empty (d: LinkedDeque) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable d = d
     try
-        __ret <- (d.size) = 0
+        __ret <- (d._size) = 0
         raise Return
         __ret
     with
         | Return -> __ret
-and front (d: LinkedDeque) =
+and _front (d: LinkedDeque) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable d = d
     try
         if is_empty (d) then
             failwith ("List is empty")
-        let head: Node = _idx (d.nodes) (d.header)
-        let idx: int = head.next
-        let node: Node = _idx (d.nodes) (idx)
-        __ret <- node.data
+        let head: Node = _idx (d._nodes) (d._header)
+        let idx: int = head._next
+        let node: Node = _idx (d._nodes) (idx)
+        __ret <- node._data
         raise Return
         __ret
     with
@@ -83,32 +103,32 @@ and back (d: LinkedDeque) =
     try
         if is_empty (d) then
             failwith ("List is empty")
-        let tail: Node = _idx (d.nodes) (d.trailer)
-        let idx: int = tail.prev
-        let node: Node = _idx (d.nodes) (idx)
-        __ret <- node.data
+        let tail: Node = _idx (d._nodes) (d._trailer)
+        let idx: int = tail._prev
+        let node: Node = _idx (d._nodes) (idx)
+        __ret <- node._data
         raise Return
         __ret
     with
         | Return -> __ret
-and insert (d: LinkedDeque) (pred: int) (value: string) (succ: int) =
+and insert (d: LinkedDeque) (pred: int) (_value: string) (succ: int) =
     let mutable __ret : LinkedDeque = Unchecked.defaultof<LinkedDeque>
     let mutable d = d
     let mutable pred = pred
-    let mutable value = value
+    let mutable _value = _value
     let mutable succ = succ
     try
-        let mutable nodes: Node array = d.nodes
-        let new_idx: int = Seq.length (nodes)
-        nodes <- Array.append nodes [|{ data = value; prev = pred; next = succ }|]
-        let mutable pred_node: Node = _idx nodes (pred)
-        pred_node <- { pred_node with next = new_idx }
-        nodes.[pred] <- pred_node
-        let mutable succ_node: Node = _idx nodes (succ)
-        succ_node <- { succ_node with prev = new_idx }
-        nodes.[succ] <- succ_node
-        d <- { d with nodes = nodes }
-        d <- { d with size = (d.size) + 1 }
+        let mutable _nodes: Node array = d._nodes
+        let new_idx: int = Seq.length (_nodes)
+        _nodes <- Array.append _nodes [|{ _data = _value; _prev = pred; _next = succ }|]
+        let mutable pred_node: Node = _idx _nodes (pred)
+        pred_node._next <- new_idx
+        _nodes.[pred] <- pred_node
+        let mutable succ_node: Node = _idx _nodes (succ)
+        succ_node._prev <- new_idx
+        _nodes.[succ] <- succ_node
+        d._nodes <- _nodes
+        d._size <- (d._size) + 1
         __ret <- d
         raise Return
         __ret
@@ -119,44 +139,44 @@ and delete (d: LinkedDeque) (idx: int) =
     let mutable d = d
     let mutable idx = idx
     try
-        let mutable nodes: Node array = d.nodes
-        let node: Node = _idx nodes (idx)
-        let pred: int = node.prev
-        let succ: int = node.next
-        let mutable pred_node: Node = _idx nodes (pred)
-        pred_node <- { pred_node with next = succ }
-        nodes.[pred] <- pred_node
-        let mutable succ_node: Node = _idx nodes (succ)
-        succ_node <- { succ_node with prev = pred }
-        nodes.[succ] <- succ_node
-        let ``val``: string = node.data
-        d <- { d with nodes = nodes }
-        d <- { d with size = (d.size) - 1 }
-        __ret <- { deque = d; value = ``val`` }
+        let mutable _nodes: Node array = d._nodes
+        let node: Node = _idx _nodes (idx)
+        let pred: int = node._prev
+        let succ: int = node._next
+        let mutable pred_node: Node = _idx _nodes (pred)
+        pred_node._next <- succ
+        _nodes.[pred] <- pred_node
+        let mutable succ_node: Node = _idx _nodes (succ)
+        succ_node._prev <- pred
+        _nodes.[succ] <- succ_node
+        let ``val``: string = node._data
+        d._nodes <- _nodes
+        d._size <- (d._size) - 1
+        __ret <- { _deque = d; _value = ``val`` }
         raise Return
         __ret
     with
         | Return -> __ret
-and add_first (d: LinkedDeque) (value: string) =
+and add_first (d: LinkedDeque) (_value: string) =
     let mutable __ret : LinkedDeque = Unchecked.defaultof<LinkedDeque>
     let mutable d = d
-    let mutable value = value
+    let mutable _value = _value
     try
-        let head: Node = _idx (d.nodes) (d.header)
-        let succ: int = head.next
-        __ret <- insert (d) (d.header) (value) (succ)
+        let head: Node = _idx (d._nodes) (d._header)
+        let succ: int = head._next
+        __ret <- insert (d) (d._header) (_value) (succ)
         raise Return
         __ret
     with
         | Return -> __ret
-and add_last (d: LinkedDeque) (value: string) =
+and add_last (d: LinkedDeque) (_value: string) =
     let mutable __ret : LinkedDeque = Unchecked.defaultof<LinkedDeque>
     let mutable d = d
-    let mutable value = value
+    let mutable _value = _value
     try
-        let tail: Node = _idx (d.nodes) (d.trailer)
-        let pred: int = tail.prev
-        __ret <- insert (d) (pred) (value) (d.trailer)
+        let tail: Node = _idx (d._nodes) (d._trailer)
+        let pred: int = tail._prev
+        __ret <- insert (d) (pred) (_value) (d._trailer)
         raise Return
         __ret
     with
@@ -167,8 +187,8 @@ and remove_first (d: LinkedDeque) =
     try
         if is_empty (d) then
             failwith ("remove_first from empty list")
-        let head: Node = _idx (d.nodes) (d.header)
-        let idx: int = head.next
+        let head: Node = _idx (d._nodes) (d._header)
+        let idx: int = head._next
         __ret <- delete (d) (idx)
         raise Return
         __ret
@@ -180,8 +200,8 @@ and remove_last (d: LinkedDeque) =
     try
         if is_empty (d) then
             failwith ("remove_first from empty list")
-        let tail: Node = _idx (d.nodes) (d.trailer)
-        let idx: int = tail.prev
+        let tail: Node = _idx (d._nodes) (d._trailer)
+        let idx: int = tail._prev
         __ret <- delete (d) (idx)
         raise Return
         __ret
@@ -194,15 +214,15 @@ and main () =
         let __mem_start = System.GC.GetTotalMemory(true)
         let mutable d: LinkedDeque = new_deque()
         d <- add_first (d) ("A")
-        printfn "%s" (front (d))
+        printfn "%A" (_front (d))
         d <- add_last (d) ("B")
         printfn "%s" (back (d))
         let mutable r: DeleteResult = remove_first (d)
-        d <- r.deque
-        printfn "%s" (r.value)
+        d <- r._deque
+        printfn "%s" (r._value)
         r <- remove_last (d)
-        d <- r.deque
-        printfn "%s" (r.value)
+        d <- r._deque
+        printfn "%s" (r._value)
         printfn "%s" (_str (is_empty (d)))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)

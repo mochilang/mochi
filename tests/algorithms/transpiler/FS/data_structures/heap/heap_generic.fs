@@ -1,4 +1,4 @@
-// Generated 2025-08-07 14:57 +0700
+// Generated 2025-08-08 11:10 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,8 +19,28 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
+    d.[k] <- v
+    d
+let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
+    let d = System.Collections.Generic.Dictionary<'K, 'V>()
+    for (k, v) in pairs do
+        d.[k] <- v
+    upcast d
+let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
+    match d.TryGetValue(k) with
+    | true, v -> v
+    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
-    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+    if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
+    let mutable a = arr
+    if i >= a.Length then
+        let na = Array.zeroCreate<'a> (i + 1)
+        Array.blit a 0 na 0 a.Length
+        a <- na
+    a.[i] <- v
+    a
 let rec _str v =
     let s = sprintf "%A" v
     s.Replace("[|", "[")
@@ -28,19 +48,23 @@ let rec _str v =
      .Replace("; ", " ")
      .Replace(";", "")
      .Replace("\"", "")
+let _floordiv (a:int) (b:int) : int =
+    let q = a / b
+    let r = a % b
+    if r <> 0 && ((a < 0) <> (b < 0)) then q - 1 else q
 type Heap = {
-    arr: int array array
-    pos_map: System.Collections.Generic.IDictionary<int, int>
-    size: int
-    key: int -> int
+    mutable _arr: int array array
+    mutable _pos_map: System.Collections.Generic.IDictionary<int, int>
+    mutable _size: int
+    mutable _key: int -> int
 }
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
-let rec new_heap (key: int -> int) =
+let rec new_heap (_key: int -> int) =
     let mutable __ret : Heap = Unchecked.defaultof<Heap>
-    let mutable key = key
+    let mutable _key = _key
     try
-        __ret <- { arr = [||]; pos_map = _dictCreate []; size = 0; key = key }
+        __ret <- { _arr = [||]; _pos_map = _dictCreate []; _size = 0; _key = _key }
         raise Return
         __ret
     with
@@ -49,18 +73,18 @@ let rec parent (i: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable i = i
     try
-        __ret <- if i > 0 then ((i - 1) / 2) else (-1)
+        __ret <- if i > 0 then (_floordiv (i - 1) 2) else (-1)
         raise Return
         __ret
     with
         | Return -> __ret
-let rec left (i: int) (size: int) =
+let rec left (i: int) (_size: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable i = i
-    let mutable size = size
+    let mutable _size = _size
     try
         let l: int = (2 * i) + 1
-        if l < size then
+        if l < _size then
             __ret <- l
             raise Return
         __ret <- -1
@@ -68,13 +92,13 @@ let rec left (i: int) (size: int) =
         __ret
     with
         | Return -> __ret
-let rec right (i: int) (size: int) =
+let rec right (i: int) (_size: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable i = i
-    let mutable size = size
+    let mutable _size = _size
     try
         let r: int = (2 * i) + 2
-        if r < size then
+        if r < _size then
             __ret <- r
             raise Return
         __ret <- -1
@@ -88,17 +112,17 @@ let rec swap (h: Heap) (i: int) (j: int) =
     let mutable i = i
     let mutable j = j
     try
-        let mutable arr: int array array = h.arr
-        let item_i: int = _idx (_idx arr (i)) (0)
-        let item_j: int = _idx (_idx arr (j)) (0)
-        let mutable pm: System.Collections.Generic.IDictionary<int, int> = h.pos_map
+        let mutable _arr: int array array = h._arr
+        let item_i: int = _idx (_idx _arr (i)) (0)
+        let item_j: int = _idx (_idx _arr (j)) (0)
+        let mutable pm: System.Collections.Generic.IDictionary<int, int> = h._pos_map
         pm.[item_i] <- j + 1
         pm.[item_j] <- i + 1
-        h <- { h with pos_map = pm }
-        let tmp: int array = _idx arr (i)
-        arr.[i] <- _idx arr (j)
-        arr.[j] <- tmp
-        h <- { h with arr = arr }
+        h._pos_map <- pm
+        let tmp: int array = _idx _arr (i)
+        _arr.[i] <- _idx _arr (j)
+        _arr.[j] <- tmp
+        h._arr <- _arr
         __ret
     with
         | Return -> __ret
@@ -108,8 +132,8 @@ let rec cmp (h: Heap) (i: int) (j: int) =
     let mutable i = i
     let mutable j = j
     try
-        let mutable arr: int array array = h.arr
-        __ret <- (_idx (_idx arr (i)) (1)) < (_idx (_idx arr (j)) (1))
+        let mutable _arr: int array array = h._arr
+        __ret <- (_idx (_idx _arr (i)) (1)) < (_idx (_idx _arr (j)) (1))
         raise Return
         __ret
     with
@@ -120,10 +144,10 @@ let rec get_valid_parent (h: Heap) (i: int) =
     let mutable i = i
     try
         let mutable vp: int = i
-        let l: int = left (i) (h.size)
+        let l: int = left (i) (h._size)
         if (l <> (0 - 1)) && ((cmp (h) (l) (vp)) = false) then
             vp <- l
-        let r: int = right (i) (h.size)
+        let r: int = right (i) (h._size)
         if (r <> (0 - 1)) && ((cmp (h) (r) (vp)) = false) then
             vp <- r
         __ret <- vp
@@ -165,15 +189,15 @@ let rec update_item (h: Heap) (item: int) (item_value: int) =
     let mutable item = item
     let mutable item_value = item_value
     try
-        let mutable pm: System.Collections.Generic.IDictionary<int, int> = h.pos_map
-        if (pm.[item]) = 0 then
+        let mutable pm: System.Collections.Generic.IDictionary<int, int> = h._pos_map
+        if (_dictGet pm (item)) = 0 then
             __ret <- ()
             raise Return
-        let index: int = (pm.[item]) - 1
-        let mutable arr: int array array = h.arr
-        arr.[index] <- [|item; h.key item_value|]
-        h <- { h with arr = arr }
-        h <- { h with pos_map = pm }
+        let index: int = (_dictGet pm (item)) - 1
+        let mutable _arr: int array array = h._arr
+        _arr.[index] <- [|item; h._key item_value|]
+        h._arr <- _arr
+        h._pos_map <- pm
         heapify_up (h) (index)
         heapify_down (h) (index)
         __ret
@@ -184,22 +208,22 @@ let rec delete_item (h: Heap) (item: int) =
     let mutable h = h
     let mutable item = item
     try
-        let mutable pm: System.Collections.Generic.IDictionary<int, int> = h.pos_map
-        if (pm.[item]) = 0 then
+        let mutable pm: System.Collections.Generic.IDictionary<int, int> = h._pos_map
+        if (_dictGet pm (item)) = 0 then
             __ret <- ()
             raise Return
-        let index: int = (pm.[item]) - 1
+        let index: int = (_dictGet pm (item)) - 1
         pm.[item] <- 0
-        let mutable arr: int array array = h.arr
-        let last_index: int = (h.size) - 1
+        let mutable _arr: int array array = h._arr
+        let last_index: int = (h._size) - 1
         if index <> last_index then
-            arr.[index] <- _idx arr (last_index)
-            let moved: int = _idx (_idx arr (index)) (0)
+            _arr.[index] <- _idx _arr (last_index)
+            let moved: int = _idx (_idx _arr (index)) (0)
             pm.[moved] <- index + 1
-        h <- { h with size = (h.size) - 1 }
-        h <- { h with arr = arr }
-        h <- { h with pos_map = pm }
-        if (h.size) > index then
+        h._size <- (h._size) - 1
+        h._arr <- _arr
+        h._pos_map <- pm
+        if (h._size) > index then
             heapify_up (h) (index)
             heapify_down (h) (index)
         __ret
@@ -211,18 +235,18 @@ let rec insert_item (h: Heap) (item: int) (item_value: int) =
     let mutable item = item
     let mutable item_value = item_value
     try
-        let mutable arr: int array array = h.arr
-        let arr_len: int = Seq.length (arr)
-        if arr_len = (h.size) then
-            arr <- Array.append arr [|[|item; h.key item_value|]|]
+        let mutable _arr: int array array = h._arr
+        let arr_len: int = Seq.length (_arr)
+        if arr_len = (h._size) then
+            _arr <- Array.append _arr [|[|item; h._key item_value|]|]
         else
-            arr.[h.size] <- [|item; h.key item_value|]
-        let mutable pm: System.Collections.Generic.IDictionary<int, int> = h.pos_map
-        pm.[item] <- (h.size) + 1
-        h <- { h with size = (h.size) + 1 }
-        h <- { h with arr = arr }
-        h <- { h with pos_map = pm }
-        heapify_up (h) ((h.size) - 1)
+            _arr.[h._size] <- [|item; h._key item_value|]
+        let mutable pm: System.Collections.Generic.IDictionary<int, int> = h._pos_map
+        pm.[item] <- (h._size) + 1
+        h._size <- (h._size) + 1
+        h._arr <- _arr
+        h._pos_map <- pm
+        heapify_up (h) ((h._size) - 1)
         __ret
     with
         | Return -> __ret
@@ -230,9 +254,9 @@ let rec get_top (h: Heap) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable h = h
     try
-        let mutable arr: int array array = h.arr
-        if (h.size) > 0 then
-            __ret <- _idx arr (0)
+        let mutable _arr: int array array = h._arr
+        if (h._size) > 0 then
+            __ret <- _idx _arr (0)
             raise Return
         __ret <- Array.empty<int>
         raise Return

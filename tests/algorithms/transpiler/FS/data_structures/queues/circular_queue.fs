@@ -1,4 +1,4 @@
-// Generated 2025-08-07 14:57 +0700
+// Generated 2025-08-08 11:10 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,29 +19,49 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
+    d.[k] <- v
+    d
+let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
+    let d = System.Collections.Generic.Dictionary<'K, 'V>()
+    for (k, v) in pairs do
+        d.[k] <- v
+    upcast d
+let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
+    match d.TryGetValue(k) with
+    | true, v -> v
+    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
-    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+    if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
+    let mutable a = arr
+    if i >= a.Length then
+        let na = Array.zeroCreate<'a> (i + 1)
+        Array.blit a 0 na 0 a.Length
+        a <- na
+    a.[i] <- v
+    a
 type CircularQueue = {
-    data: int array
-    front: int
-    rear: int
-    size: int
-    capacity: int
+    mutable _data: int array
+    mutable _front: int
+    mutable _rear: int
+    mutable _size: int
+    mutable _capacity: int
 }
 type DequeueResult = {
-    queue: CircularQueue
-    value: int
+    mutable _queue: CircularQueue
+    mutable _value: int
 }
-let rec create_queue (capacity: int) =
+let rec create_queue (_capacity: int) =
     let mutable __ret : CircularQueue = Unchecked.defaultof<CircularQueue>
-    let mutable capacity = capacity
+    let mutable _capacity = _capacity
     try
         let mutable arr: int array = [||]
         let mutable i: int = 0
-        while i < capacity do
+        while i < _capacity do
             arr <- Array.append arr [|0|]
             i <- i + 1
-        __ret <- { data = arr; front = 0; rear = 0; size = 0; capacity = capacity }
+        __ret <- { _data = arr; _front = 0; _rear = 0; _size = 0; _capacity = _capacity }
         raise Return
         __ret
     with
@@ -50,7 +70,7 @@ and length (q: CircularQueue) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable q = q
     try
-        __ret <- q.size
+        __ret <- q._size
         raise Return
         __ret
     with
@@ -59,32 +79,32 @@ and is_empty (q: CircularQueue) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable q = q
     try
-        __ret <- (q.size) = 0
+        __ret <- (q._size) = 0
         raise Return
         __ret
     with
         | Return -> __ret
-and front (q: CircularQueue) =
+and _front (q: CircularQueue) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable q = q
     try
-        __ret <- if is_empty (q) then 0 else (_idx (q.data) (q.front))
+        __ret <- if is_empty (q) then 0 else (_idx (q._data) (q._front))
         raise Return
         __ret
     with
         | Return -> __ret
-and enqueue (q: CircularQueue) (value: int) =
+and enqueue (q: CircularQueue) (_value: int) =
     let mutable __ret : CircularQueue = Unchecked.defaultof<CircularQueue>
     let mutable q = q
-    let mutable value = value
+    let mutable _value = _value
     try
-        if (q.size) >= (q.capacity) then
+        if (q._size) >= (q._capacity) then
             failwith ("QUEUE IS FULL")
-        let mutable arr: int array = q.data
-        arr.[q.rear] <- value
-        q <- { q with data = arr }
-        q <- { q with rear = ((((q.rear) + 1) % (q.capacity) + (q.capacity)) % (q.capacity)) }
-        q <- { q with size = (q.size) + 1 }
+        let mutable arr: int array = q._data
+        arr.[q._rear] <- _value
+        q._data <- arr
+        q._rear <- ((((q._rear) + 1) % (q._capacity) + (q._capacity)) % (q._capacity))
+        q._size <- (q._size) + 1
         __ret <- q
         raise Return
         __ret
@@ -94,15 +114,15 @@ and dequeue (q: CircularQueue) =
     let mutable __ret : DequeueResult = Unchecked.defaultof<DequeueResult>
     let mutable q = q
     try
-        if (q.size) = 0 then
+        if (q._size) = 0 then
             failwith ("UNDERFLOW")
-        let value: int = _idx (q.data) (q.front)
-        let mutable arr2: int array = q.data
-        arr2.[q.front] <- 0
-        q <- { q with data = arr2 }
-        q <- { q with front = ((((q.front) + 1) % (q.capacity) + (q.capacity)) % (q.capacity)) }
-        q <- { q with size = (q.size) - 1 }
-        __ret <- { queue = q; value = value }
+        let _value: int = _idx (q._data) (q._front)
+        let mutable arr2: int array = q._data
+        arr2.[q._front] <- 0
+        q._data <- arr2
+        q._front <- ((((q._front) + 1) % (q._capacity) + (q._capacity)) % (q._capacity))
+        q._size <- (q._size) - 1
+        __ret <- { _queue = q; _value = _value }
         raise Return
         __ret
     with
@@ -118,11 +138,11 @@ and main () =
         printfn "%b" (is_empty (q))
         q <- enqueue (q) (20)
         q <- enqueue (q) (30)
-        printfn "%d" (front (q))
+        printfn "%A" (_front (q))
         let mutable r: DequeueResult = dequeue (q)
-        q <- r.queue
-        printfn "%d" (r.value)
-        printfn "%d" (front (q))
+        q <- r._queue
+        printfn "%d" (r._value)
+        printfn "%A" (_front (q))
         printfn "%d" (length (q))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)

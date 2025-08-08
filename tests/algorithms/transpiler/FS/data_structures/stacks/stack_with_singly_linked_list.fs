@@ -1,4 +1,4 @@
-// Generated 2025-08-07 14:57 +0700
+// Generated 2025-08-08 11:10 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,82 +19,94 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
+    d.[k] <- v
+    d
+let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
+    let d = System.Collections.Generic.Dictionary<'K, 'V>()
+    for (k, v) in pairs do
+        d.[k] <- v
+    upcast d
+let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
+    match d.TryGetValue(k) with
+    | true, v -> v
+    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
-    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+    if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 type Node = {
-    value: string
-    next: int
+    mutable value: string
+    mutable _next: int
 }
 type Stack = {
-    nodes: Node array
-    top: int
+    mutable _nodes: Node array
+    mutable _top: int
 }
 type PopResult = {
-    stack: Stack
-    value: string
+    mutable _stack: Stack
+    mutable value: string
 }
 let rec empty_stack () =
     let mutable __ret : Stack = Unchecked.defaultof<Stack>
     try
-        __ret <- { nodes = [||]; top = -1 }
+        __ret <- { _nodes = [||]; _top = -1 }
         raise Return
         __ret
     with
         | Return -> __ret
-and is_empty (stack: Stack) =
+and is_empty (_stack: Stack) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
-    let mutable stack = stack
+    let mutable _stack = _stack
     try
-        __ret <- (stack.top) = (-1)
+        __ret <- (_stack._top) = (-1)
         raise Return
         __ret
     with
         | Return -> __ret
-and push (stack: Stack) (item: string) =
+and push (_stack: Stack) (item: string) =
     let mutable __ret : Stack = Unchecked.defaultof<Stack>
-    let mutable stack = stack
+    let mutable _stack = _stack
     let mutable item = item
     try
-        let new_node: Node = { value = item; next = stack.top }
-        let mutable new_nodes: Node array = stack.nodes
+        let new_node: Node = { value = item; _next = _stack._top }
+        let mutable new_nodes: Node array = _stack._nodes
         new_nodes <- Array.append new_nodes [|new_node|]
         let new_top: int = (Seq.length (new_nodes)) - 1
-        __ret <- { nodes = new_nodes; top = new_top }
+        __ret <- { _nodes = new_nodes; _top = new_top }
         raise Return
         __ret
     with
         | Return -> __ret
-and pop (stack: Stack) =
+and pop (_stack: Stack) =
     let mutable __ret : PopResult = Unchecked.defaultof<PopResult>
-    let mutable stack = stack
+    let mutable _stack = _stack
     try
-        if (stack.top) = (-1) then
+        if (_stack._top) = (-1) then
             failwith ("pop from empty stack")
-        let node: Node = _idx (stack.nodes) (stack.top)
-        let new_top: int = node.next
-        let new_stack: Stack = { nodes = stack.nodes; top = new_top }
-        __ret <- { stack = new_stack; value = node.value }
+        let node: Node = _idx (_stack._nodes) (_stack._top)
+        let new_top: int = node._next
+        let new_stack: Stack = { _nodes = _stack._nodes; _top = new_top }
+        __ret <- { _stack = new_stack; value = node.value }
         raise Return
         __ret
     with
         | Return -> __ret
-and peek (stack: Stack) =
+and peek (_stack: Stack) =
     let mutable __ret : string = Unchecked.defaultof<string>
-    let mutable stack = stack
+    let mutable _stack = _stack
     try
-        if (stack.top) = (-1) then
+        if (_stack._top) = (-1) then
             failwith ("peek from empty stack")
-        let node: Node = _idx (stack.nodes) (stack.top)
+        let node: Node = _idx (_stack._nodes) (_stack._top)
         __ret <- node.value
         raise Return
         __ret
     with
         | Return -> __ret
-and clear (stack: Stack) =
+and clear (_stack: Stack) =
     let mutable __ret : Stack = Unchecked.defaultof<Stack>
-    let mutable stack = stack
+    let mutable _stack = _stack
     try
-        __ret <- { nodes = [||]; top = -1 }
+        __ret <- { _nodes = [||]; _top = -1 }
         raise Return
         __ret
     with
@@ -104,26 +116,26 @@ and main () =
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        let mutable stack: Stack = empty_stack()
-        printfn "%b" (is_empty (stack))
-        stack <- push (stack) ("5")
-        stack <- push (stack) ("9")
-        stack <- push (stack) ("python")
-        printfn "%b" (is_empty (stack))
-        let mutable res: PopResult = pop (stack)
-        stack <- res.stack
+        let mutable _stack: Stack = empty_stack()
+        printfn "%b" (is_empty (_stack))
+        _stack <- push (_stack) ("5")
+        _stack <- push (_stack) ("9")
+        _stack <- push (_stack) ("python")
+        printfn "%b" (is_empty (_stack))
+        let mutable res: PopResult = pop (_stack)
+        _stack <- res._stack
         printfn "%s" (res.value)
-        stack <- push (stack) ("algorithms")
-        res <- pop (stack)
-        stack <- res.stack
+        _stack <- push (_stack) ("algorithms")
+        res <- pop (_stack)
+        _stack <- res._stack
         printfn "%s" (res.value)
-        res <- pop (stack)
-        stack <- res.stack
+        res <- pop (_stack)
+        _stack <- res._stack
         printfn "%s" (res.value)
-        res <- pop (stack)
-        stack <- res.stack
+        res <- pop (_stack)
+        _stack <- res._stack
         printfn "%s" (res.value)
-        printfn "%b" (is_empty (stack))
+        printfn "%b" (is_empty (_stack))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

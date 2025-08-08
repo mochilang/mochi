@@ -1,4 +1,4 @@
-// Generated 2025-08-07 14:57 +0700
+// Generated 2025-08-08 11:10 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,8 +19,20 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
+    d.[k] <- v
+    d
+let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
+    let d = System.Collections.Generic.Dictionary<'K, 'V>()
+    for (k, v) in pairs do
+        d.[k] <- v
+    upcast d
+let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
+    match d.TryGetValue(k) with
+    | true, v -> v
+    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
-    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+    if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
     s.Replace("[|", "[")
@@ -29,19 +41,19 @@ let rec _str v =
      .Replace(";", "")
      .Replace("\"", "")
 type LinkedList = {
-    data: int array
+    mutable _data: int array
 }
 let rec to_string (list: LinkedList) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable list = list
     try
-        if (Seq.length (list.data)) = 0 then
+        if (Seq.length (list._data)) = 0 then
             __ret <- ""
             raise Return
-        let mutable s: string = _str (_idx (list.data) (0))
+        let mutable s: string = _str (_idx (list._data) (0))
         let mutable i: int = 1
-        while i < (Seq.length (list.data)) do
-            s <- (s + " -> ") + (_str (_idx (list.data) (i)))
+        while i < (Seq.length (list._data)) do
+            s <- (s + " -> ") + (_str (_idx (list._data) (i)))
             i <- i + 1
         __ret <- s
         raise Return
@@ -58,24 +70,24 @@ and reverse_k_nodes (list: LinkedList) (k: int) =
             raise Return
         let mutable res: int array = [||]
         let mutable i: int = 0
-        while i < (Seq.length (list.data)) do
+        while i < (Seq.length (list._data)) do
             let mutable j: int = 0
             let mutable group: int array = [||]
-            while (j < k) && ((i + j) < (Seq.length (list.data))) do
-                group <- Array.append group [|_idx (list.data) (i + j)|]
+            while (j < k) && ((i + j) < (Seq.length (list._data))) do
+                group <- Array.append group [|(_idx (list._data) (i + j))|]
                 j <- j + 1
             if (Seq.length (group)) = k then
                 let mutable g: int = k - 1
                 while g >= 0 do
-                    res <- Array.append res [|_idx group (g)|]
+                    res <- Array.append res [|(_idx group (g))|]
                     g <- g - 1
             else
                 let mutable g: int = 0
                 while g < (Seq.length (group)) do
-                    res <- Array.append res [|_idx group (g)|]
+                    res <- Array.append res [|(_idx group (g))|]
                     g <- g + 1
             i <- i + k
-        __ret <- { data = res }
+        __ret <- { _data = res }
         raise Return
         __ret
     with
@@ -85,7 +97,7 @@ and main () =
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        let mutable ll: LinkedList = { data = [|1; 2; 3; 4; 5|] }
+        let mutable ll: LinkedList = { _data = [|1; 2; 3; 4; 5|] }
         printfn "%s" ("Original Linked List: " + (to_string (ll)))
         let mutable k: int = 2
         ll <- reverse_k_nodes (ll) (k)

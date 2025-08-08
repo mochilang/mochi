@@ -1,4 +1,4 @@
-// Generated 2025-08-07 14:57 +0700
+// Generated 2025-08-08 11:10 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,8 +19,20 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
+    d.[k] <- v
+    d
+let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
+    let d = System.Collections.Generic.Dictionary<'K, 'V>()
+    for (k, v) in pairs do
+        d.[k] <- v
+    upcast d
+let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
+    match d.TryGetValue(k) with
+    | true, v -> v
+    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
-    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+    if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
     s.Replace("[|", "[")
@@ -29,41 +41,41 @@ let rec _str v =
      .Replace(";", "")
      .Replace("\"", "")
 type Deque = {
-    data: int array
+    mutable _data: int array
 }
 type PopResult = {
-    deque: Deque
-    value: int
+    mutable _deque: Deque
+    mutable _value: int
 }
 let rec empty_deque () =
     let mutable __ret : Deque = Unchecked.defaultof<Deque>
     try
-        __ret <- { data = [||] }
+        __ret <- { _data = [||] }
         raise Return
         __ret
     with
         | Return -> __ret
-and push_back (dq: Deque) (value: int) =
+and push_back (dq: Deque) (_value: int) =
     let mutable __ret : Deque = Unchecked.defaultof<Deque>
     let mutable dq = dq
-    let mutable value = value
+    let mutable _value = _value
     try
-        __ret <- { data = Array.append (dq.data) [|value|] }
+        __ret <- { _data = Array.append (dq._data) [|_value|] }
         raise Return
         __ret
     with
         | Return -> __ret
-and push_front (dq: Deque) (value: int) =
+and push_front (dq: Deque) (_value: int) =
     let mutable __ret : Deque = Unchecked.defaultof<Deque>
     let mutable dq = dq
-    let mutable value = value
+    let mutable _value = _value
     try
-        let mutable res: int array = [|value|]
+        let mutable res: int array = [|_value|]
         let mutable i: int = 0
-        while i < (Seq.length (dq.data)) do
-            res <- Array.append res [|_idx (dq.data) (i)|]
+        while i < (Seq.length (dq._data)) do
+            res <- Array.append res [|(_idx (dq._data) (i))|]
             i <- i + 1
-        __ret <- { data = res }
+        __ret <- { _data = res }
         raise Return
         __ret
     with
@@ -73,12 +85,12 @@ and extend_back (dq: Deque) (values: int array) =
     let mutable dq = dq
     let mutable values = values
     try
-        let mutable res: int array = dq.data
+        let mutable res: int array = dq._data
         let mutable i: int = 0
         while i < (Seq.length (values)) do
-            res <- Array.append res [|_idx values (i)|]
+            res <- Array.append res [|(_idx values (i))|]
             i <- i + 1
-        __ret <- { data = res }
+        __ret <- { _data = res }
         raise Return
         __ret
     with
@@ -91,13 +103,13 @@ and extend_front (dq: Deque) (values: int array) =
         let mutable res: int array = [||]
         let mutable i: int = (Seq.length (values)) - 1
         while i >= 0 do
-            res <- Array.append res [|_idx values (i)|]
+            res <- Array.append res [|(_idx values (i))|]
             i <- i - 1
         let mutable j: int = 0
-        while j < (Seq.length (dq.data)) do
-            res <- Array.append res [|_idx (dq.data) (j)|]
+        while j < (Seq.length (dq._data)) do
+            res <- Array.append res [|(_idx (dq._data) (j))|]
             j <- j + 1
-        __ret <- { data = res }
+        __ret <- { _data = res }
         raise Return
         __ret
     with
@@ -106,14 +118,14 @@ and pop_back (dq: Deque) =
     let mutable __ret : PopResult = Unchecked.defaultof<PopResult>
     let mutable dq = dq
     try
-        if (Seq.length (dq.data)) = 0 then
+        if (Seq.length (dq._data)) = 0 then
             failwith ("pop from empty deque")
         let mutable res: int array = [||]
         let mutable i: int = 0
-        while i < ((Seq.length (dq.data)) - 1) do
-            res <- Array.append res [|_idx (dq.data) (i)|]
+        while i < ((Seq.length (dq._data)) - 1) do
+            res <- Array.append res [|(_idx (dq._data) (i))|]
             i <- i + 1
-        __ret <- { deque = { data = res }; value = _idx (dq.data) ((Seq.length (dq.data)) - 1) }
+        __ret <- { _deque = { _data = res }; _value = _idx (dq._data) ((Seq.length (dq._data)) - 1) }
         raise Return
         __ret
     with
@@ -122,14 +134,14 @@ and pop_front (dq: Deque) =
     let mutable __ret : PopResult = Unchecked.defaultof<PopResult>
     let mutable dq = dq
     try
-        if (Seq.length (dq.data)) = 0 then
+        if (Seq.length (dq._data)) = 0 then
             failwith ("popleft from empty deque")
         let mutable res: int array = [||]
         let mutable i: int = 1
-        while i < (Seq.length (dq.data)) do
-            res <- Array.append res [|_idx (dq.data) (i)|]
+        while i < (Seq.length (dq._data)) do
+            res <- Array.append res [|(_idx (dq._data) (i))|]
             i <- i + 1
-        __ret <- { deque = { data = res }; value = _idx (dq.data) (0) }
+        __ret <- { _deque = { _data = res }; _value = _idx (dq._data) (0) }
         raise Return
         __ret
     with
@@ -138,7 +150,7 @@ and is_empty (dq: Deque) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable dq = dq
     try
-        __ret <- (Seq.length (dq.data)) = 0
+        __ret <- (Seq.length (dq._data)) = 0
         raise Return
         __ret
     with
@@ -147,7 +159,7 @@ and length (dq: Deque) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable dq = dq
     try
-        __ret <- Seq.length (dq.data)
+        __ret <- Seq.length (dq._data)
         raise Return
         __ret
     with
@@ -156,13 +168,13 @@ and to_string (dq: Deque) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable dq = dq
     try
-        if (Seq.length (dq.data)) = 0 then
+        if (Seq.length (dq._data)) = 0 then
             __ret <- "[]"
             raise Return
-        let mutable s: string = "[" + (_str (_idx (dq.data) (0)))
+        let mutable s: string = "[" + (_str (_idx (dq._data) (0)))
         let mutable i: int = 1
-        while i < (Seq.length (dq.data)) do
-            s <- (s + ", ") + (_str (_idx (dq.data) (i)))
+        while i < (Seq.length (dq._data)) do
+            s <- (s + ", ") + (_str (_idx (dq._data) (i)))
             i <- i + 1
         __ret <- s + "]"
         raise Return
@@ -181,11 +193,11 @@ and main () =
         dq <- extend_front (dq) (unbox<int array> [|0|])
         printfn "%s" (to_string (dq))
         let mutable r: PopResult = pop_back (dq)
-        dq <- r.deque
-        printfn "%d" (r.value)
+        dq <- r._deque
+        printfn "%d" (r._value)
         r <- pop_front (dq)
-        dq <- r.deque
-        printfn "%d" (r.value)
+        dq <- r._deque
+        printfn "%d" (r._value)
         printfn "%s" (to_string (dq))
         printfn "%b" (is_empty (empty_deque()))
         let __bench_end = _now()

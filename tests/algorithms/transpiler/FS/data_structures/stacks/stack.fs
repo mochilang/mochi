@@ -1,4 +1,4 @@
-// Generated 2025-08-07 14:57 +0700
+// Generated 2025-08-08 11:10 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,8 +19,20 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
+    d.[k] <- v
+    d
+let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
+    let d = System.Collections.Generic.Dictionary<'K, 'V>()
+    for (k, v) in pairs do
+        d.[k] <- v
+    upcast d
+let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
+    match d.TryGetValue(k) with
+    | true, v -> v
+    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
-    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+    if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
     s.Replace("[|", "[")
@@ -29,14 +41,14 @@ let rec _str v =
      .Replace(";", "")
      .Replace("\"", "")
 type Stack = {
-    items: int array
-    limit: int
+    mutable _items: int array
+    mutable _limit: int
 }
-let rec make_stack (limit: int) =
+let rec make_stack (_limit: int) =
     let mutable __ret : Stack = Unchecked.defaultof<Stack>
-    let mutable limit = limit
+    let mutable _limit = _limit
     try
-        __ret <- { items = [||]; limit = limit }
+        __ret <- { _items = [||]; _limit = _limit }
         raise Return
         __ret
     with
@@ -45,7 +57,7 @@ and is_empty (s: Stack) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable s = s
     try
-        __ret <- (Seq.length (s.items)) = 0
+        __ret <- (Seq.length (s._items)) = 0
         raise Return
         __ret
     with
@@ -54,7 +66,7 @@ and size (s: Stack) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable s = s
     try
-        __ret <- Seq.length (s.items)
+        __ret <- Seq.length (s._items)
         raise Return
         __ret
     with
@@ -63,7 +75,7 @@ and is_full (s: Stack) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable s = s
     try
-        __ret <- (Seq.length (s.items)) >= (s.limit)
+        __ret <- (Seq.length (s._items)) >= (s._limit)
         raise Return
         __ret
     with
@@ -75,7 +87,7 @@ and push (s: Stack) (item: int) =
     try
         if is_full (s) then
             failwith ("stack overflow")
-        s <- { s with items = Array.append (s.items) [|item|] }
+        s._items <- Array.append (s._items) [|item|]
         __ret
     with
         | Return -> __ret
@@ -85,9 +97,9 @@ and pop (s: Stack) =
     try
         if is_empty (s) then
             failwith ("stack underflow")
-        let n: int = Seq.length (s.items)
-        let ``val``: int = _idx (s.items) (n - 1)
-        s <- { s with items = Array.sub s.items 0 ((n - 1) - 0) }
+        let n: int = Seq.length (s._items)
+        let ``val``: int = _idx (s._items) (n - 1)
+        s._items <- Array.sub s._items 0 ((n - 1) - 0)
         __ret <- ``val``
         raise Return
         __ret
@@ -99,7 +111,7 @@ and peek (s: Stack) =
     try
         if is_empty (s) then
             failwith ("peek from empty stack")
-        __ret <- _idx (s.items) ((Seq.length (s.items)) - 1)
+        __ret <- _idx (s._items) ((Seq.length (s._items)) - 1)
         raise Return
         __ret
     with
@@ -110,8 +122,8 @@ and contains (s: Stack) (item: int) =
     let mutable item = item
     try
         let mutable i: int = 0
-        while i < (Seq.length (s.items)) do
-            if (_idx (s.items) (i)) = item then
+        while i < (Seq.length (s._items)) do
+            if (_idx (s._items) (i)) = item then
                 __ret <- true
                 raise Return
             i <- i + 1
@@ -124,7 +136,7 @@ and stack_repr (s: Stack) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable s = s
     try
-        __ret <- _str (s.items)
+        __ret <- _str (s._items)
         raise Return
         __ret
     with

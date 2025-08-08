@@ -1,4 +1,4 @@
-// Generated 2025-08-07 14:57 +0700
+// Generated 2025-08-08 11:10 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,8 +19,28 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
+    d.[k] <- v
+    d
+let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
+    let d = System.Collections.Generic.Dictionary<'K, 'V>()
+    for (k, v) in pairs do
+        d.[k] <- v
+    upcast d
+let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
+    match d.TryGetValue(k) with
+    | true, v -> v
+    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
-    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+    if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
+    let mutable a = arr
+    if i >= a.Length then
+        let na = Array.zeroCreate<'a> (i + 1)
+        Array.blit a 0 na 0 a.Length
+        a <- na
+    a.[i] <- v
+    a
 let rec _str v =
     let s = sprintf "%A" v
     s.Replace("[|", "[")
@@ -29,7 +49,7 @@ let rec _str v =
      .Replace(";", "")
      .Replace("\"", "")
 type SortedLinkedList = {
-    values: int array
+    mutable _values: int array
 }
 let rec sort_list (nums: int array) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
@@ -38,7 +58,7 @@ let rec sort_list (nums: int array) =
         let mutable arr: int array = [||]
         let mutable i: int = 0
         while i < (Seq.length (nums)) do
-            arr <- Array.append arr [|_idx nums (i)|]
+            arr <- Array.append arr [|(_idx nums (i))|]
             i <- i + 1
         let mutable j: int = 0
         while j < (Seq.length (arr)) do
@@ -59,7 +79,7 @@ and make_sorted_linked_list (ints: int array) =
     let mutable __ret : SortedLinkedList = Unchecked.defaultof<SortedLinkedList>
     let mutable ints = ints
     try
-        __ret <- { values = sort_list (ints) }
+        __ret <- { _values = sort_list (ints) }
         raise Return
         __ret
     with
@@ -68,7 +88,7 @@ and len_sll (sll: SortedLinkedList) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable sll = sll
     try
-        __ret <- Seq.length (sll.values)
+        __ret <- Seq.length (sll._values)
         raise Return
         __ret
     with
@@ -79,9 +99,9 @@ and str_sll (sll: SortedLinkedList) =
     try
         let mutable res: string = ""
         let mutable i: int = 0
-        while i < (Seq.length (sll.values)) do
-            res <- res + (_str (_idx (sll.values) (i)))
-            if (i + 1) < (Seq.length (sll.values)) then
+        while i < (Seq.length (sll._values)) do
+            res <- res + (_str (_idx (sll._values) (i)))
+            if (i + 1) < (Seq.length (sll._values)) then
                 res <- res + " -> "
             i <- i + 1
         __ret <- res
@@ -96,12 +116,12 @@ and merge_lists (a: SortedLinkedList) (b: SortedLinkedList) =
     try
         let mutable combined: int array = [||]
         let mutable i: int = 0
-        while i < (Seq.length (a.values)) do
-            combined <- Array.append combined [|_idx (a.values) (i)|]
+        while i < (Seq.length (a._values)) do
+            combined <- Array.append combined [|(_idx (a._values) (i))|]
             i <- i + 1
         i <- 0
-        while i < (Seq.length (b.values)) do
-            combined <- Array.append combined [|_idx (b.values) (i)|]
+        while i < (Seq.length (b._values)) do
+            combined <- Array.append combined [|(_idx (b._values) (i))|]
             i <- i + 1
         __ret <- make_sorted_linked_list (combined)
         raise Return

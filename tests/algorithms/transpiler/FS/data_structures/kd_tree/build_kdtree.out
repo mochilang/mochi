@@ -1,0 +1,15 @@
+[{_point = [7.0 2.0]
+   _left = 1
+   _right = 4} {_point = [5.0 4.0]
+                  _left = 2
+                  _right = 3} {_point = [2.0 3.0]
+                                 _left = -1
+                                 _right = -1} {_point = [4.0 7.0]
+                                                 _left = -1
+                                                 _right = -1}
+  {_point = [9.0 6.0]
+   _left = 5
+   _right = -1} {_point = [8.0 1.0]
+                   _left = -1
+                   _right = -1}]
+0
