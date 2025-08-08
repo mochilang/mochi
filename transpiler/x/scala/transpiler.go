@@ -1387,11 +1387,29 @@ func (c *CastExpr) emit(w io.Writer) {
 			} else if typ != "Int" && typ != "BigInt" && typ != "String" {
 				fmt.Fprint(w, ".toInt")
 			}
-			fmt.Fprint(w, ")")
-		}
-		return
-	}
-	switch c.Value.(type) {
+                fmt.Fprint(w, ")")
+        }
+        return
+}
+if strings.Contains(c.Type, "=>") {
+        switch c.Value.(type) {
+        case *Name:
+                fmt.Fprintf(w, "(%s _)", c.Value.(*Name).Name)
+        case *FieldExpr:
+                fmt.Fprint(w, "(")
+                c.Value.emit(w)
+                fmt.Fprint(w, " _)")
+        default:
+                fmt.Fprint(w, "(")
+                c.Value.emit(w)
+                fmt.Fprint(w, ")")
+        }
+        if c.Type != "" {
+                fmt.Fprintf(w, ".asInstanceOf[%s]", c.Type)
+        }
+        return
+}
+switch c.Value.(type) {
 	case *Name, *IntLit, *StringLit, *BoolLit, *FloatLit:
 		c.Value.emit(w)
 	default:
@@ -1577,16 +1595,16 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		if sl, ok := left.(*StringLit); ok && len(sl.Value) == 1 {
 			t := inferTypeWithEnv(rightExpr, nil)
 			if t == "String" || t == "" {
-				left = &CharLit{Value: sl.Value}
-				rightExpr = &CallExpr{Fn: &FieldExpr{Receiver: rightExpr, Name: "charAt"}, Args: []Expr{&IntLit{Value: 0}}}
+                               left = &CharLit{Value: sl.Value}
+                               rightExpr = &CallExpr{Fn: &FieldExpr{Receiver: rightExpr, Name: "charAt"}, Args: []Expr{&FieldExpr{Receiver: &IntLit{Value: 0}, Name: "toInt"}}}
 			} else {
 				left = &CharLit{Value: sl.Value}
 			}
 		} else if sl, ok := rightExpr.(*StringLit); ok && len(sl.Value) == 1 {
 			t := inferTypeWithEnv(left, nil)
 			if t == "String" || t == "" {
-				rightExpr = &CharLit{Value: sl.Value}
-				left = &CallExpr{Fn: &FieldExpr{Receiver: left, Name: "charAt"}, Args: []Expr{&IntLit{Value: 0}}}
+                               rightExpr = &CharLit{Value: sl.Value}
+                               left = &CallExpr{Fn: &FieldExpr{Receiver: left, Name: "charAt"}, Args: []Expr{&FieldExpr{Receiver: &IntLit{Value: 0}, Name: "toInt"}}}
 			} else {
 				rightExpr = &CharLit{Value: sl.Value}
 			}
