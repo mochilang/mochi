@@ -1,0 +1,14 @@
+/tmp/TestCSTranspiler_Algorithms_Golden001_web_programming_search_books_by_isbn2360339662/001/Program.cs(19,21): warning CS0649: Field 'BookData.isbn_10' is never assigned to, and will always have its default value null [/tmp/TestCSTranspiler_Algorithms_Golden001_web_programming_search_books_by_isbn2360339662/001/app.csproj]
+/tmp/TestCSTranspiler_Algorithms_Golden001_web_programming_search_books_by_isbn2360339662/001/Program.cs(18,17): warning CS0649: Field 'BookData.number_of_pages' is never assigned to, and will always have its default value 0 [/tmp/TestCSTranspiler_Algorithms_Golden001_web_programming_search_books_by_isbn2360339662/001/app.csproj]
+/tmp/TestCSTranspiler_Algorithms_Golden001_web_programming_search_books_by_isbn2360339662/001/Program.cs(20,21): warning CS0649: Field 'BookData.isbn_13' is never assigned to, and will always have its default value null [/tmp/TestCSTranspiler_Algorithms_Golden001_web_programming_search_books_by_isbn2360339662/001/app.csproj]
+/tmp/TestCSTranspiler_Algorithms_Golden001_web_programming_search_books_by_isbn2360339662/001/Program.cs(16,19): warning CS0649: Field 'BookData.publish_date' is never assigned to, and will always have its default value null [/tmp/TestCSTranspiler_Algorithms_Golden001_web_programming_search_books_by_isbn2360339662/001/app.csproj]
+/tmp/TestCSTranspiler_Algorithms_Golden001_web_programming_search_books_by_isbn2360339662/001/Program.cs(15,19): warning CS0649: Field 'BookData.title' is never assigned to, and will always have its default value null [/tmp/TestCSTranspiler_Algorithms_Golden001_web_programming_search_books_by_isbn2360339662/001/app.csproj]
+/tmp/TestCSTranspiler_Algorithms_Golden001_web_programming_search_books_by_isbn2360339662/001/Program.cs(17,24): warning CS0649: Field 'BookData.authors' is never assigned to, and will always have its default value null [/tmp/TestCSTranspiler_Algorithms_Golden001_web_programming_search_books_by_isbn2360339662/001/app.csproj]
+/tmp/TestCSTranspiler_Algorithms_Golden001_web_programming_search_books_by_isbn2360339662/001/Program.cs(11,19): warning CS0649: Field 'AuthorRef.key' is never assigned to, and will always have its default value null [/tmp/TestCSTranspiler_Algorithms_Golden001_web_programming_search_books_by_isbn2360339662/001/app.csproj]
+/tmp/TestCSTranspiler_Algorithms_Golden001_web_programming_search_books_by_isbn2360339662/001/Program.cs(24,19): warning CS0649: Field 'AuthorData.name' is never assigned to, and will always have its default value null [/tmp/TestCSTranspiler_Algorithms_Golden001_web_programming_search_books_by_isbn2360339662/001/app.csproj]
+Title: Fantastic Mr. Fox
+Publish date: October 1, 1988
+Authors: Roald Dahl
+Number of pages: 96
+ISBN (10): 0140328726
+ISBN (13): 9780140328721

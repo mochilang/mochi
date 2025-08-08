@@ -1,0 +1,2 @@
+/tmp/TestCSTranspiler_Algorithms_Golden001_web_programming_slack_message2000543918/001/Program.cs(62,35): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context. [/tmp/TestCSTranspiler_Algorithms_Golden001_web_programming_slack_message2000543918/001/app.csproj]
+Message sent
