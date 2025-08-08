@@ -2847,6 +2847,7 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			}
 			switch *op.Cast.Type.Simple {
 			case "int":
+				e = replaceStringNamesWithVars(e)
 				if isCharExpr(e) {
 					e = &CondExpr{
 						Cond: &CallExpr{Func: "ctype_digit", Args: []Expr{e}},
@@ -4614,6 +4615,10 @@ func replaceStringNamesWithVars(e Expr) Expr {
 		for i := range v.Args {
 			v.Args[i] = replaceStringNamesWithVars(v.Args[i])
 		}
+	case *CondExpr:
+		v.Cond = replaceStringNamesWithVars(v.Cond)
+		v.Then = replaceStringNamesWithVars(v.Then)
+		v.Else = replaceStringNamesWithVars(v.Else)
 	case *BinaryExpr:
 		v.Left = replaceStringNamesWithVars(v.Left)
 		v.Right = replaceStringNamesWithVars(v.Right)
