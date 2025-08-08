@@ -1280,13 +1280,17 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	if b.Op == "%" {
 		if b.FloatOp || isFloat(b.Left) || isFloat(b.Right) {
 			io.WriteString(w, ":math.fmod(")
+			b.Left.emit(w)
+			io.WriteString(w, " * 1.0, ")
+			b.Right.emit(w)
+			io.WriteString(w, " * 1.0)")
 		} else {
 			io.WriteString(w, "rem(")
+			b.Left.emit(w)
+			io.WriteString(w, ", ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
 		}
-		b.Left.emit(w)
-		io.WriteString(w, ", ")
-		b.Right.emit(w)
-		io.WriteString(w, ")")
 		return
 	}
 	if b.Op == "+" && (b.StrConcat || isString(b.Left) || isString(b.Right)) {

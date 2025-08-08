@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-08 16:40 GMT+7
+Last updated: 2025-08-08 17:20 GMT+7
 
-## Algorithms Golden Test Checklist (314/1077)
+## Algorithms Golden Test Checklist (315/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -388,7 +388,7 @@ Last updated: 2025-08-08 16:40 GMT+7
 | 379 | financial/time_and_half_pay | ✓ | 7.04ms | 25.1 MB |
 | 380 | fractals/julia_sets | ✓ | 11.73ms | 25.0 MB |
 | 381 | fractals/koch_snowflake | ✓ | 6.62ms | 17.3 MB |
-| 382 | fractals/mandelbrot |   |  |  |
+| 382 | fractals/mandelbrot | ✓ | 16.99ms | 33.5 MB |
 | 383 | fractals/sierpinski_triangle |   |  |  |
 | 384 | fractals/vicsek |   |  |  |
 | 385 | fuzzy_logic/fuzzy_operations |   |  |  |
