@@ -466,6 +466,20 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 			return
 		}
 	}
+	if typ == "int" {
+		if isStringExpr(e) {
+			fmt.Fprint(w, "Integer.parseInt(")
+			e.emit(w)
+			fmt.Fprint(w, ")")
+			return
+		}
+		if ix, ok := e.(*IndexExpr); ok && isStringExpr(ix.Target) {
+			fmt.Fprint(w, "Integer.parseInt(")
+			e.emit(w)
+			fmt.Fprint(w, ")")
+			return
+		}
+	}
 	if typ == "int" || typ == "double" || typ == "float" || typ == "float64" {
 		it := inferType(e)
 		if typ == "int" && it == "java.math.BigInteger" {
@@ -1603,12 +1617,14 @@ type ExprStmt struct{ Expr Expr }
 
 func (s *ExprStmt) emit(w io.Writer, indent string) {
 	if call, ok := s.Expr.(*CallExpr); ok && (call.Func == "panic" || call.Func == "error") && len(call.Args) == 1 {
-		fmt.Fprint(w, indent)
-		fmt.Fprint(w, "throw new RuntimeException(String.valueOf(")
-		call.Args[0].emit(w)
-		fmt.Fprint(w, "));")
-		fmt.Fprint(w, "\n")
-		return
+		if funcRet == nil || funcRet[call.Func] == "" {
+			fmt.Fprint(w, indent)
+			fmt.Fprint(w, "throw new RuntimeException(String.valueOf(")
+			call.Args[0].emit(w)
+			fmt.Fprint(w, "));")
+			fmt.Fprint(w, "\n")
+			return
+		}
 	}
 	fmt.Fprint(w, indent)
 	s.Expr.emit(w)
@@ -5217,6 +5233,10 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 			if fe, ok := expr.(*FieldExpr); ok {
 				if fe.Name == "keys" && len(args) == 0 && (isMapExpr(fe.Target) || strings.Contains(inferType(fe.Target), "Map")) {
 					expr = &MethodCallExpr{Target: fe.Target, Name: "keySet", Args: nil}
+				} else if v, ok2 := fe.Target.(*VarExpr); ok2 && v.Name == "Object" && fe.Name == "keys" && len(args) == 1 {
+					expr = &MethodCallExpr{Target: args[0], Name: "keySet", Args: nil}
+				} else if fe.Name == "join" && len(args) == 1 {
+					expr = &CallExpr{Func: "String.join", Args: []Expr{args[0], fe.Target}}
 				} else if v, ok2 := fe.Target.(*VarExpr); ok2 && (pyMathAliases[v.Name] || v.Name == "Math") {
 					expr = &CallExpr{Func: "Math." + fe.Name, Args: args}
 					if funcRet != nil {

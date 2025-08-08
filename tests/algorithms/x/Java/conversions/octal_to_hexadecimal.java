@@ -21,7 +21,7 @@ public class Main {
         int decimal = 0;
         int k = 0;
         while (k < _runeLen(s)) {
-            int d = s.substring(k, k+1);
+            int d = Integer.parseInt(s.substring(k, k+1));
             decimal = decimal * 8 + d;
             k = k + 1;
         }
@@ -33,18 +33,52 @@ public class Main {
         while (decimal > 0) {
             int idx = Math.floorMod(decimal, 16);
             hex = hex_chars.substring(idx, idx+1) + hex;
-            decimal = decimal / 16;
+            decimal = Math.floorDiv(decimal, 16);
         }
         return "0x" + hex;
     }
     public static void main(String[] args) {
-        nums = ((String[])(new String[]{"030", "100", "247", "235", "007"}));
-        t = 0;
-        while (t < nums.length) {
-            String num = nums[t];
-            System.out.println(octal_to_hex(num));
-            t = t + 1;
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            nums = ((String[])(new String[]{"030", "100", "247", "235", "007"}));
+            t = 0;
+            while (t < nums.length) {
+                String num = nums[t];
+                System.out.println(octal_to_hex(num));
+                t = t + 1;
+            }
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
         }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static int _runeLen(String s) {
