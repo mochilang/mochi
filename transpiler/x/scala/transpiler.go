@@ -48,6 +48,7 @@ var needsStr bool
 var mapEntryTypes map[string]map[string]string
 var builtinAliases map[string]string
 var localVarTypes map[string]string
+var allVarTypes map[string]string
 var fieldStructs map[string]string
 var varDecls map[string]*VarStmt
 var returnTypeStack []string
@@ -622,6 +623,10 @@ func (s *AssignStmt) emit(w io.Writer) {
 		if n, ok2 := s.Target.(*Name); ok2 {
 			if t, ok3 := localVarTypes[n.Name]; ok3 {
 				typ = t
+			} else if t, ok4 := allVarTypes[n.Name]; ok4 {
+				typ = t
+			} else if vs, ok5 := varDecls[n.Name]; ok5 && vs.Type != "" {
+				typ = vs.Type
 			}
 		}
 		if typ == "" {
@@ -2153,8 +2158,9 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useLookupHost = false
 	needsSubprocess = false
 	mapEntryTypes = make(map[string]map[string]string)
-	builtinAliases = map[string]string{"Object": "js_object"}
+	builtinAliases = map[string]string{"Object": "js_object", "ln": "Math.log", "exp": "Math.exp"}
 	localVarTypes = make(map[string]string)
+	allVarTypes = make(map[string]string)
 	fieldStructs = make(map[string]string)
 	varDecls = make(map[string]*VarStmt)
 	assignedVars = make(map[string]bool)
@@ -2507,6 +2513,7 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		}
 		if typ != "" {
 			localVarTypes[st.Var.Name] = typ
+			allVarTypes[st.Var.Name] = typ
 		}
 		if e != nil {
 			valType := inferTypeWithEnv(e, env)
@@ -2618,8 +2625,9 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		} else if targetType == "Int" && valType == "BigInt" {
 			e = &FieldExpr{Receiver: e, Name: "toInt"}
 		}
-		if n, ok := target.(*Name); ok && valType != "" && valType != "Any" {
+		if n, ok := target.(*Name); ok && valType != "" && valType != "Any" && valType != "ArrayBuffer[Any]" {
 			localVarTypes[n.Name] = valType
+			allVarTypes[n.Name] = valType
 			if vs, ok2 := varDecls[n.Name]; ok2 {
 				vs.Type = valType
 			}
@@ -3572,6 +3580,14 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		if len(args) == 0 {
 			useNow = true
 			return &NowExpr{}, nil
+		}
+	case "ln":
+		if len(args) == 1 {
+			return &CallExpr{Fn: &FieldExpr{Receiver: &Name{Name: "Math"}, Name: "log"}, Args: args}, nil
+		}
+	case "exp":
+		if len(args) == 1 {
+			return &CallExpr{Fn: &FieldExpr{Receiver: &Name{Name: "Math"}, Name: "exp"}, Args: args}, nil
 		}
 	case "str":
 		if len(args) == 1 {
@@ -5028,6 +5044,11 @@ func toScalaTypeFromType(t types.Type) string {
 		}
 		return fmt.Sprintf("(%s) => %s", strings.Join(parts, ", "), ret)
 	case types.StructType:
+		if tt.Name != "" {
+			return tt.Name
+		}
+		return "Any"
+	case types.UnionType:
 		if tt.Name != "" {
 			return tt.Name
 		}

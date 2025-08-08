@@ -1,3 +1,239 @@
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-08 18:51 +0700)
+- zig transpiler: support mutable slices and const folding
+- Regenerated golden files - 93/105 vm valid programs passing
+
 ## Progress (2025-08-05 01:41 +0700)
 - scala: handle dynamic field access
 - Regenerated golden files - 93/105 vm valid programs passing
