@@ -2585,11 +2585,16 @@ func makeBinary(op string, left, right Node) Node {
 					}
 				}
 			}
-			return &List{Elems: []Node{Symbol("string=?"), left, right}}
-		}
-		return &List{Elems: []Node{Symbol("equal?"), left, right}}
-	case "!=":
-		if isStr(left) || isStr(right) {
+                       return &List{Elems: []Node{
+                               Symbol("and"),
+                               &List{Elems: []Node{Symbol("string?"), left}},
+                               &List{Elems: []Node{Symbol("string?"), right}},
+                               &List{Elems: []Node{Symbol("string=?"), left, right}},
+                       }}
+               }
+               return &List{Elems: []Node{Symbol("equal?"), left, right}}
+       case "!=":
+               if isStr(left) || isStr(right) {
 			if isStr(left) {
 				if b, ok := right.(BoolLit); ok {
 					if bool(b) {
@@ -2608,9 +2613,18 @@ func makeBinary(op string, left, right Node) Node {
 					}
 				}
 			}
-			return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("string=?"), left, right}}}}
-		}
-		return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("equal?"), left, right}}}}
+                       return &List{Elems: []Node{
+                               Symbol("if"),
+                               &List{Elems: []Node{
+                                       Symbol("and"),
+                                       &List{Elems: []Node{Symbol("string?"), left}},
+                                       &List{Elems: []Node{Symbol("string?"), right}},
+                               }},
+                               &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("string=?"), left, right}}}},
+                               BoolLit(true),
+                       }}
+               }
+               return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("equal?"), left, right}}}}
 	case "&&":
 		return &List{Elems: []Node{Symbol("and"), left, right}}
 	case "||":
