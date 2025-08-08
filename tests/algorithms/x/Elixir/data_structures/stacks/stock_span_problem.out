@@ -1,0 +1,13 @@
+warning: variable "st" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 37 │       {span, st} = Enum.reduce((1..(n - 1)), {span, st}, fn i, {span, st} ->
+    │              ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/stock_span_problem.exs:37:14: Main.calculation_span/1
+
+1
+1
+2
+4
+5
+1

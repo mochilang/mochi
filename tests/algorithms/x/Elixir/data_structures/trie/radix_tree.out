@@ -1,0 +1,65 @@
+warning: variable "tree" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 142 │       tree = Map.put(tree, :nodes, nodes)
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/trie/radix_tree.exs:142:7: Main.insert/3
+
+     warning: variable "only_key" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 262 │           {only_key} = Enum.reduce(Map.keys(child.children), {only_key}, fn k, {only_key} ->
+     │                                                                                 ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/trie/radix_tree.exs:262:81: Main.delete/3
+
+     warning: variable "only_key" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 238 │           {only_key} = Enum.reduce(Map.keys(children), {only_key}, fn k, {only_key} ->
+     │                                                                           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/trie/radix_tree.exs:238:75: Main.delete/3
+
+     warning: variable "child" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 231 │       {child, children, node_, nodes, tree} = if map_size(Map.get(child, :children, [])) == 0 do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/trie/radix_tree.exs:231:8: Main.delete/3
+
+     warning: variable "children" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 231 │       {child, children, node_, nodes, tree} = if map_size(Map.get(child, :children, [])) == 0 do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/trie/radix_tree.exs:231:15: Main.delete/3
+
+     warning: variable "node_" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 231 │       {child, children, node_, nodes, tree} = if map_size(Map.get(child, :children, [])) == 0 do
+     │                         ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/trie/radix_tree.exs:231:25: Main.delete/3
+
+     warning: variable "nodes" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 231 │       {child, children, node_, nodes, tree} = if map_size(Map.get(child, :children, [])) == 0 do
+     │                                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/trie/radix_tree.exs:231:32: Main.delete/3
+
+     warning: variable "tree" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 231 │       {child, children, node_, nodes, tree} = if map_size(Map.get(child, :children, [])) == 0 do
+     │                                       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/trie/radix_tree.exs:231:39: Main.delete/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 298 │         {i, line} = try do
+     │          ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/trie/radix_tree.exs:298:10: Main.print_tree/3
+
+Words: bananabananasbandanasbandanabandappleallbeast
+Tree:

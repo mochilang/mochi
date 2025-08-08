@@ -1,0 +1,43 @@
+warning: variable "contrasted" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 23 │               contrasted = (fn v -> if is_binary(v), do: String.to_integer(v), else: trunc(v) end).((128.0 + factor * ((:erlang.float(c)) - 128.0)))
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/change_contrast.exs:23:15: Main.change_contrast/2
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 32 │           {j, new_row} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/change_contrast.exs:32:12: Main.change_contrast/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 45 │       {i, result} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/change_contrast.exs:45:8: Main.change_contrast/2
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 73 │           {j, line} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/change_contrast.exs:73:12: Main.print_image/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 86 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/change_contrast.exs:86:7: Main.print_image/1
+
+Original image:
+100 125 150 
+175 200 225 
+50 75 100 
+After contrast:
+255 255 255 
+255 255 255 
+255 255 255

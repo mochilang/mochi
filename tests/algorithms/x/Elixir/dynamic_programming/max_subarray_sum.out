@@ -1,0 +1,44 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 66 │         {curr_sum, i, max_sum} = try do
+    │                    ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/max_subarray_sum.exs:66:20: Main.max_subarray_sum/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 38 │         {curr_sum, i, max_sum} = try do
+    │                    ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/max_subarray_sum.exs:38:20: Main.max_subarray_sum/2
+
+    warning: variable "curr_sum" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 16 │       curr_sum = 0.0
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/max_subarray_sum.exs:16:7: Main.max_subarray_sum/2
+
+    warning: variable "curr_sum" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 17 │       {curr_sum, max_sum} = if allow_empty do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/max_subarray_sum.exs:17:8: Main.max_subarray_sum/2
+
+    warning: variable "max_sum" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 15 │       max_sum = 0.0
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/max_subarray_sum.exs:15:7: Main.max_subarray_sum/2
+
+19.0
+0.0
+1.0
+10.0
+6.0
+8.0
+-1.0
+0.0
+0.0

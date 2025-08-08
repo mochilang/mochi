@@ -1,0 +1,95 @@
+run: exit status 1
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 30 │       {i, sum} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/k_means_clustering_tensorflow.exs:30:8: Main.distance_sq/2
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 59 │           {j, total} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/k_means_clustering_tensorflow.exs:59:12: Main.mean/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 72 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/k_means_clustering_tensorflow.exs:72:8: Main.mean/1
+
+     warning: variable "bestDist" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 145 │               {best, bestDist, c} = try do
+     │                      ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/k_means_clustering_tensorflow.exs:145:22: Main.k_means/3
+
+     warning: variable "c" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 145 │               {best, bestDist, c} = try do
+     │                                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/k_means_clustering_tensorflow.exs:145:32: Main.k_means/3
+
+     warning: variable "v2" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 183 │               {cluster, v2} = try do
+     │                         ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/k_means_clustering_tensorflow.exs:183:25: Main.k_means/3
+
+     warning: variable "cIdx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 201 │           {cIdx, centroids} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/k_means_clustering_tensorflow.exs:201:12: Main.k_means/3
+
+     warning: variable "v" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 158 │           {assignments, v} = try do
+     │                         ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/k_means_clustering_tensorflow.exs:158:25: Main.k_means/3
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 96 │       {centroids, i} = try do
+    │                   ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/k_means_clustering_tensorflow.exs:96:19: Main.k_means/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 114 │       {assignments, i} = try do
+     │                     ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/k_means_clustering_tensorflow.exs:114:21: Main.k_means/3
+
+     warning: variable "it" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 213 │       {assignments, centroids, it} = try do
+     │                                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/k_means_clustering_tensorflow.exs:213:32: Main.k_means/3
+
+** (ArgumentError) cannot convert the given list to a string.
+
+To be converted to a string, a list must either be empty or only
+contain the following elements:
+
+  * strings
+  * integers representing Unicode code points
+  * a list containing one of these three elements
+
+Please check the given list or call inspect/1 to get the list representation, got:
+
+[[1.1666666666666667, 1.4666666666666666], [7.333333333333333, 9.0]]
+
+    (elixir 1.18.3) lib/list.ex:1124: List.to_string/1
+    /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/k_means_clustering_tensorflow.exs:228: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/k_means_clustering_tensorflow.exs:238: Main.bench_main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/k_means_clustering_tensorflow.exs:246: (file)

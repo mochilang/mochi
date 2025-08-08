@@ -1,0 +1,39 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 52 │           {j, row} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/longest_common_substring.exs:52:12: Main.longest_common_substring/2
+
+    warning: variable "jj" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 98 │           {dp, end_pos, jj, max_len} = try do
+    │                         ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/longest_common_substring.exs:98:25: Main.longest_common_substring/2
+
+     warning: variable "dp" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 110 │       {dp, end_pos, ii, max_len} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/longest_common_substring.exs:110:8: Main.longest_common_substring/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 65 │       {dp, i} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/longest_common_substring.exs:65:12: Main.longest_common_substring/2
+
+     warning: variable "ii" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 110 │       {dp, end_pos, ii, max_len} = try do
+     │                     ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/longest_common_substring.exs:110:21: Main.longest_common_substring/2
+
+"ab"
+
+
+"abcdez"

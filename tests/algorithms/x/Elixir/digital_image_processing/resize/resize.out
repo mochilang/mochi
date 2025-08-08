@@ -1,0 +1,36 @@
+warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 31 │               {k, pixel} = try do
+    │                ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/resize/resize.exs:31:16: Main.zeros3d/3
+
+    warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 44 │           {row, x} = try do
+    │                 ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/resize/resize.exs:44:17: Main.zeros3d/3
+
+    warning: variable "y" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 57 │       {arr, y} = try do
+    │             ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/resize/resize.exs:57:13: Main.zeros3d/3
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 91 │           {j, out} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/resize/resize.exs:91:12: Main.resize_nn/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 103 │       {i, out} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/resize/resize.exs:103:8: Main.resize_nn/3
+
+[[[0, 0, 0], [0, 0, 0], [255, 255, 255], [255, 255, 255]], [[0, 0, 0], [0, 0, 0], [255, 255, 255], [255, 255, 255]], [[255, 0, 0], [255, 0, 0], [0, 255, 0], [0, 255, 0]], [[255, 0, 0], [255, 0, 0], [0, 255, 0], [0, 255, 0]]]

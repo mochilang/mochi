@@ -1,0 +1,38 @@
+warning: variable "m" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 78 │                       {combination, m} = try do
+    │                                     ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/all_construct.exs:78:37: Main.allConstruct/2
+
+    warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 93 │                   {k, table} = try do
+    │                    ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/all_construct.exs:93:20: Main.allConstruct/2
+
+     warning: variable "w" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 109 │             {table, w} = try do
+     │                     ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/all_construct.exs:109:21: Main.allConstruct/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 125 │       {i, table} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/all_construct.exs:125:8: Main.allConstruct/2
+
+    warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 45 │       {idx, table} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/all_construct.exs:45:8: Main.allConstruct/2
+
+[["jwa", "j", "a", "lapa"], ["j", "w", "a", "j", "a", "lapa"]]
+[["raj", "amat", "i"], ["raja", "ma", "t", "i"]]
+[["hex", "ago", "no", "s", "auru", "s"], ["h", "ex", "ago", "no", "s", "auru", "s"], ["hex", "ag", "o", "no", "s", "auru", "s"], ["h", "ex", "ag", "o", "no", "s", "auru", "s"]]

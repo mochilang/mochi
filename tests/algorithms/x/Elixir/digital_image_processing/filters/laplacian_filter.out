@@ -1,0 +1,79 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 27 │           {j, row} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/filters/laplacian_filter.exs:27:12: Main.make_matrix/3
+
+    warning: variable "result" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 33 │           result = (result ++ [row])
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/filters/laplacian_filter.exs:33:11: Main.make_matrix/3
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 40 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/filters/laplacian_filter.exs:40:7: Main.make_matrix/3
+
+     warning: variable "kj" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 113 │                   {kj, sum} = try do
+     │                    ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/filters/laplacian_filter.exs:113:20: Main.my_laplacian/2
+
+     warning: variable "ki" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 125 │               {ki, sum} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/filters/laplacian_filter.exs:125:16: Main.my_laplacian/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 138 │           {j, output} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/filters/laplacian_filter.exs:138:12: Main.my_laplacian/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 150 │       {i, output} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/filters/laplacian_filter.exs:150:8: Main.my_laplacian/2
+
+     warning: variable "c" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 184 │         {c, row_str} = try do
+     │          ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/filters/laplacian_filter.exs:184:10: Main.main/0
+
+** (FunctionClauseError) no function clause matching in List.replace_at/3    
+    
+    The following arguments were given to List.replace_at/3:
+    
+        # 1
+        nil
+    
+        # 2
+        0
+    
+        # 3
+        0
+    
+    Attempted function clauses (showing 1 out of 1):
+    
+        def replace_at(+list+, +index+, +value+) when -is_list(list)- and +is_integer(index)+
+    
+    (elixir 1.18.3) lib/list.ex:814: List.replace_at/3
+    /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/filters/laplacian_filter.exs:131: anonymous fn/10 in Main.my_laplacian/2
+    /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/filters/laplacian_filter.exs:139: anonymous fn/9 in Main.my_laplacian/2
+    /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/filters/laplacian_filter.exs:151: Main.my_laplacian/2
+    /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/filters/laplacian_filter.exs:164: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/filters/laplacian_filter.exs:206: (file)

@@ -1,0 +1,11 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 31 │       {i, max_excluding, max_including} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/max_non_adjacent_sum.exs:31:8: Main.maximum_non_adjacent_sum/1
+
+4
+18
+0
+500
