@@ -1,0 +1,110 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden448_graphs_page_rank2986728715/001/main.swift:104:16: error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+102 |     let _benchStart = _now()
+103 |     func node_to_string(_ n: Node) -> String {
+104 |         return ((((((("<node=" + n.name) + " inbound=") + n.inbound) + " outbound=") + n.outbound) + ">") as! String)
+    |                `- error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+105 |     }
+106 |     func page_rank(_ nodes: [Node], _ limit: Int, _ d: Double) -> [String: Double] {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden448_graphs_page_rank2986728715/001/main.swift:121:57: warning: expression implicitly coerced from 'Double?' to 'Any'
+119 |                 var sum_val: Double = 0.0
+120 |                 for ib in n.inbound {
+121 |                     sum_val = Double((sum_val + (Double(ranks[String(String(describing: ib))]) / Double(outbounds[String(String(describing: ib))]))))
+    |                                                         |    |- note: provide a default value to avoid this warning
+    |                                                         |    |- note: force-unwrap the value to avoid this warning
+    |                                                         |    `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+    |                                                         `- warning: expression implicitly coerced from 'Double?' to 'Any'
+122 |                 }
+123 |                 ranks = _set(ranks, String(describing: n.name), Double((Double((1.0 - d)) + (d * sum_val))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden448_graphs_page_rank2986728715/001/main.swift:121:105: warning: expression implicitly coerced from 'Double?' to 'Any'
+119 |                 var sum_val: Double = 0.0
+120 |                 for ib in n.inbound {
+121 |                     sum_val = Double((sum_val + (Double(ranks[String(String(describing: ib))]) / Double(outbounds[String(String(describing: ib))]))))
+    |                                                                                                         |        |- note: provide a default value to avoid this warning
+    |                                                                                                         |        |- note: force-unwrap the value to avoid this warning
+    |                                                                                                         |        `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+    |                                                                                                         `- warning: expression implicitly coerced from 'Double?' to 'Any'
+122 |                 }
+123 |                 ranks = _set(ranks, String(describing: n.name), Double((Double((1.0 - d)) + (d * sum_val))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden448_graphs_page_rank2986728715/001/main.swift:138:37: warning: forced cast of '[Int]' to same type has no effect
+136 |     var ri: Int = 0
+137 |     while (ri < _int(((graph).count))) {
+138 |         var row: [Int] = (graph[ri] as! [Int])
+    |                                     `- warning: forced cast of '[Int]' to same type has no effect
+139 |         var ci: Int = 0
+140 |         while (ci < _int(((row).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden448_graphs_page_rank2986728715/001/main.swift:141:26: warning: conditional cast from 'Int' to 'Int' always succeeds
+139 |         var ci: Int = 0
+140 |         while (ci < _int(((row).count))) {
+141 |             if ((row[ci] as? Int ?? 0) == 1) {
+    |                          `- warning: conditional cast from 'Int' to 'Int' always succeeds
+142 |                 var n_in: Node = (nodes[ci] as! Node)
+143 |                 n_in.inbound = (_append(n_in.inbound, (names[ri] as! String)) as! [String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden448_graphs_page_rank2986728715/001/main.swift:142:45: warning: forced cast of 'Node' to same type has no effect
+140 |         while (ci < _int(((row).count))) {
+141 |             if ((row[ci] as? Int ?? 0) == 1) {
+142 |                 var n_in: Node = (nodes[ci] as! Node)
+    |                                             `- warning: forced cast of 'Node' to same type has no effect
+143 |                 n_in.inbound = (_append(n_in.inbound, (names[ri] as! String)) as! [String])
+144 |                 nodes = _set(nodes, ci, (n_in as! Node))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden448_graphs_page_rank2986728715/001/main.swift:143:66: warning: forced cast of 'String' to same type has no effect
+141 |             if ((row[ci] as? Int ?? 0) == 1) {
+142 |                 var n_in: Node = (nodes[ci] as! Node)
+143 |                 n_in.inbound = (_append(n_in.inbound, (names[ri] as! String)) as! [String])
+    |                                                                  `- warning: forced cast of 'String' to same type has no effect
+144 |                 nodes = _set(nodes, ci, (n_in as! Node))
+145 |                 var n_out: Node = (nodes[ri] as! Node)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden448_graphs_page_rank2986728715/001/main.swift:144:47: warning: forced cast of 'Node' to same type has no effect
+142 |                 var n_in: Node = (nodes[ci] as! Node)
+143 |                 n_in.inbound = (_append(n_in.inbound, (names[ri] as! String)) as! [String])
+144 |                 nodes = _set(nodes, ci, (n_in as! Node))
+    |                                               `- warning: forced cast of 'Node' to same type has no effect
+145 |                 var n_out: Node = (nodes[ri] as! Node)
+146 |                 n_out.outbound = (_append(n_out.outbound, (names[ci] as! String)) as! [String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden448_graphs_page_rank2986728715/001/main.swift:145:46: warning: forced cast of 'Node' to same type has no effect
+143 |                 n_in.inbound = (_append(n_in.inbound, (names[ri] as! String)) as! [String])
+144 |                 nodes = _set(nodes, ci, (n_in as! Node))
+145 |                 var n_out: Node = (nodes[ri] as! Node)
+    |                                              `- warning: forced cast of 'Node' to same type has no effect
+146 |                 n_out.outbound = (_append(n_out.outbound, (names[ci] as! String)) as! [String])
+147 |                 nodes = _set(nodes, ri, (n_out as! Node))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden448_graphs_page_rank2986728715/001/main.swift:146:70: warning: forced cast of 'String' to same type has no effect
+144 |                 nodes = _set(nodes, ci, (n_in as! Node))
+145 |                 var n_out: Node = (nodes[ri] as! Node)
+146 |                 n_out.outbound = (_append(n_out.outbound, (names[ci] as! String)) as! [String])
+    |                                                                      `- warning: forced cast of 'String' to same type has no effect
+147 |                 nodes = _set(nodes, ri, (n_out as! Node))
+148 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden448_graphs_page_rank2986728715/001/main.swift:147:48: warning: forced cast of 'Node' to same type has no effect
+145 |                 var n_out: Node = (nodes[ri] as! Node)
+146 |                 n_out.outbound = (_append(n_out.outbound, (names[ci] as! String)) as! [String])
+147 |                 nodes = _set(nodes, ri, (n_out as! Node))
+    |                                                `- warning: forced cast of 'Node' to same type has no effect
+148 |             }
+149 |             ci = _int((ci &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden448_graphs_page_rank2986728715/001/main.swift:157:27: warning: forced cast of '[Node]' to same type has no effect
+155 |         print(_p(String(describing: n)))
+156 |     }
+157 |     _ = (page_rank((nodes as! [Node]), 3, 0.85) as! [String: Double])
+    |                           `- warning: forced cast of '[Node]' to same type has no effect
+158 |     let _benchEnd = _now()
+159 |     let _benchMemEnd = _mem()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden448_graphs_page_rank2986728715/001/main.swift:157:49: warning: forced cast of '[String : Double]' to same type has no effect
+155 |         print(_p(String(describing: n)))
+156 |     }
+157 |     _ = (page_rank((nodes as! [Node]), 3, 0.85) as! [String: Double])
+    |                                                 `- warning: forced cast of '[String : Double]' to same type has no effect
+158 |     let _benchEnd = _now()
+159 |     let _benchMemEnd = _mem()

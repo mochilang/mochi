@@ -1,0 +1,112 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden436_graphs_kahns_algorithm_topo1548416823/001/main.swift:95:23: error: cannot find 'values' in scope
+ 93 |             i = _int((i &+ 1))
+ 94 |         }
+ 95 |         for edges in (values((graph as! [AnyHashable: Any?])) as! [[Int]]) {
+    |                       `- error: cannot find 'values' in scope
+ 96 |             var j: Int = 0
+ 97 |             while (j < _int(((edges).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden436_graphs_kahns_algorithm_topo1548416823/001/main.swift:95:37: warning: forced cast from '[Int : [Int]]' to '[AnyHashable : Any?]' always succeeds; did you mean to use 'as'?
+ 93 |             i = _int((i &+ 1))
+ 94 |         }
+ 95 |         for edges in (values((graph as! [AnyHashable: Any?])) as! [[Int]]) {
+    |                                     `- warning: forced cast from '[Int : [Int]]' to '[AnyHashable : Any?]' always succeeds; did you mean to use 'as'?
+ 96 |             var j: Int = 0
+ 97 |             while (j < _int(((edges).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden436_graphs_kahns_algorithm_topo1548416823/001/main.swift:106:30: warning: conditional cast from 'Int' to 'Int' always succeeds
+104 |         i = 0
+105 |         while (i < _int(((indegree).count))) {
+106 |             if ((indegree[i] as? Int ?? 0) == 0) {
+    |                              `- warning: conditional cast from 'Int' to 'Int' always succeeds
+107 |                 queue = (_append(queue, i) as! [Int])
+108 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden436_graphs_kahns_algorithm_topo1548416823/001/main.swift:115:34: warning: conditional cast from 'Int' to 'Int' always succeeds
+113 |         var processed: Int = 0
+114 |         while (head < _int(((queue).count))) {
+115 |             let v = (queue[head] as? Int ?? 0)
+    |                                  `- warning: conditional cast from 'Int' to 'Int' always succeeds
+116 |             head = _int((head &+ 1))
+117 |             processed = _int((processed &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden436_graphs_kahns_algorithm_topo1548416823/001/main.swift:119:46: warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
+117 |             processed = _int((processed &+ 1))
+118 |             order = (_append(order, v) as! [Int])
+119 |             let neighbors: [Int] = (graph[v] as! [Int])
+    |                                              `- warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
+120 |             var k: Int = 0
+121 |             while (k < _int(((neighbors).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden436_graphs_kahns_algorithm_topo1548416823/001/main.swift:122:40: warning: conditional cast from 'Int' to 'Int' always succeeds
+120 |             var k: Int = 0
+121 |             while (k < _int(((neighbors).count))) {
+122 |                 let nb = (neighbors[k] as? Int ?? 0)
+    |                                        `- warning: conditional cast from 'Int' to 'Int' always succeeds
+123 |                 indegree = _set(indegree, nb, _int(((indegree[nb] as? Int ?? 0) &- 1)))
+124 |                 if ((indegree[nb] as? Int ?? 0) == 0) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden436_graphs_kahns_algorithm_topo1548416823/001/main.swift:123:67: warning: conditional cast from 'Int' to 'Int' always succeeds
+121 |             while (k < _int(((neighbors).count))) {
+122 |                 let nb = (neighbors[k] as? Int ?? 0)
+123 |                 indegree = _set(indegree, nb, _int(((indegree[nb] as? Int ?? 0) &- 1)))
+    |                                                                   `- warning: conditional cast from 'Int' to 'Int' always succeeds
+124 |                 if ((indegree[nb] as? Int ?? 0) == 0) {
+125 |                     queue = (_append(queue, nb) as! [Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden436_graphs_kahns_algorithm_topo1548416823/001/main.swift:124:35: warning: conditional cast from 'Int' to 'Int' always succeeds
+122 |                 let nb = (neighbors[k] as? Int ?? 0)
+123 |                 indegree = _set(indegree, nb, _int(((indegree[nb] as? Int ?? 0) &- 1)))
+124 |                 if ((indegree[nb] as? Int ?? 0) == 0) {
+    |                                   `- warning: conditional cast from 'Int' to 'Int' always succeeds
+125 |                     queue = (_append(queue, nb) as! [Int])
+126 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden436_graphs_kahns_algorithm_topo1548416823/001/main.swift:133:23: warning: forced cast from '[Int]' to '[Int]?' always succeeds; did you mean to use 'as'?
+131 |             return nil
+132 |         }
+133 |         return (order as! [Int]?)
+    |                       `- warning: forced cast from '[Int]' to '[Int]?' always succeeds; did you mean to use 'as'?
+134 |     }
+135 |     func main() {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden436_graphs_kahns_algorithm_topo1548416823/001/main.swift:137:43: warning: forced cast of '[Int : [Int]]' to same type has no effect
+135 |     func main() {
+136 |         let graph: [Int: [Int]] = ([0: ([1, 2] as! [Int]), 1: ([3] as! [Int]), 2: ([3] as! [Int]), 3: ([4, 5] as! [Int]), 4: [] as [Any], 5: [] as [Any]] as! [Int: [Int]])
+137 |         print(_p((topological_sort((graph as! [Int: [Int]])) as! [Int])))
+    |                                           `- warning: forced cast of '[Int : [Int]]' to same type has no effect
+138 |         let cyclic: [Int: [Int]] = ([0: ([1] as! [Int]), 1: ([2] as! [Int]), 2: ([0] as! [Int])] as! [Int: [Int]])
+139 |         print(_p((topological_sort((cyclic as! [Int: [Int]])) as! [Int])))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden436_graphs_kahns_algorithm_topo1548416823/001/main.swift:137:62: warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
+135 |     func main() {
+136 |         let graph: [Int: [Int]] = ([0: ([1, 2] as! [Int]), 1: ([3] as! [Int]), 2: ([3] as! [Int]), 3: ([4, 5] as! [Int]), 4: [] as [Any], 5: [] as [Any]] as! [Int: [Int]])
+137 |         print(_p((topological_sort((graph as! [Int: [Int]])) as! [Int])))
+    |                                                              `- warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
+138 |         let cyclic: [Int: [Int]] = ([0: ([1] as! [Int]), 1: ([2] as! [Int]), 2: ([0] as! [Int])] as! [Int: [Int]])
+139 |         print(_p((topological_sort((cyclic as! [Int: [Int]])) as! [Int])))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden436_graphs_kahns_algorithm_topo1548416823/001/main.swift:139:44: warning: forced cast of '[Int : [Int]]' to same type has no effect
+137 |         print(_p((topological_sort((graph as! [Int: [Int]])) as! [Int])))
+138 |         let cyclic: [Int: [Int]] = ([0: ([1] as! [Int]), 1: ([2] as! [Int]), 2: ([0] as! [Int])] as! [Int: [Int]])
+139 |         print(_p((topological_sort((cyclic as! [Int: [Int]])) as! [Int])))
+    |                                            `- warning: forced cast of '[Int : [Int]]' to same type has no effect
+140 |     }
+141 |     _ = main()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden436_graphs_kahns_algorithm_topo1548416823/001/main.swift:139:63: warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
+137 |         print(_p((topological_sort((graph as! [Int: [Int]])) as! [Int])))
+138 |         let cyclic: [Int: [Int]] = ([0: ([1] as! [Int]), 1: ([2] as! [Int]), 2: ([0] as! [Int])] as! [Int: [Int]])
+139 |         print(_p((topological_sort((cyclic as! [Int: [Int]])) as! [Int])))
+    |                                                               `- warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
+140 |     }
+141 |     _ = main()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden436_graphs_kahns_algorithm_topo1548416823/001/main.swift:141:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+139 |         print(_p((topological_sort((cyclic as! [Int: [Int]])) as! [Int])))
+140 |     }
+141 |     _ = main()
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+142 |     let _benchEnd = _now()
+143 |     let _benchMemEnd = _mem()

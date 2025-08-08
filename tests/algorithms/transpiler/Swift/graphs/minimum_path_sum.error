@@ -1,0 +1,146 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3886627453/001/main.swift:84:66: warning: conditional cast from 'Int' to 'Int' always succeeds
+ 82 |     let _benchStart = _now()
+ 83 |     func fill_row(_ current_row: inout [Int], _ row_above: [Int]) -> [Int] {
+ 84 |         current_row = _set(current_row, 0, _int(((current_row[0] as? Int ?? 0) &+ (row_above[0] as? Int ?? 0))))
+    |                                                                  `- warning: conditional cast from 'Int' to 'Int' always succeeds
+ 85 |         var cell_n: Int = 1
+ 86 |         while (cell_n < _int(((current_row).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3886627453/001/main.swift:84:97: warning: conditional cast from 'Int' to 'Int' always succeeds
+ 82 |     let _benchStart = _now()
+ 83 |     func fill_row(_ current_row: inout [Int], _ row_above: [Int]) -> [Int] {
+ 84 |         current_row = _set(current_row, 0, _int(((current_row[0] as? Int ?? 0) &+ (row_above[0] as? Int ?? 0))))
+    |                                                                                                 `- warning: conditional cast from 'Int' to 'Int' always succeeds
+ 85 |         var cell_n: Int = 1
+ 86 |         while (cell_n < _int(((current_row).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3886627453/001/main.swift:87:52: warning: conditional cast from 'Int' to 'Int' always succeeds
+ 85 |         var cell_n: Int = 1
+ 86 |         while (cell_n < _int(((current_row).count))) {
+ 87 |             let left = (current_row[(cell_n &- 1)] as? Int ?? 0)
+    |                                                    `- warning: conditional cast from 'Int' to 'Int' always succeeds
+ 88 |             let up = (row_above[cell_n] as? Int ?? 0)
+ 89 |             if (left < up) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3886627453/001/main.swift:88:41: warning: conditional cast from 'Int' to 'Int' always succeeds
+ 86 |         while (cell_n < _int(((current_row).count))) {
+ 87 |             let left = (current_row[(cell_n &- 1)] as? Int ?? 0)
+ 88 |             let up = (row_above[cell_n] as? Int ?? 0)
+    |                                         `- warning: conditional cast from 'Int' to 'Int' always succeeds
+ 89 |             if (left < up) {
+ 90 |                 current_row = _set(current_row, cell_n, _int(((current_row[cell_n] as? Int ?? 0) &+ left)))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3886627453/001/main.swift:90:84: warning: conditional cast from 'Int' to 'Int' always succeeds
+ 88 |             let up = (row_above[cell_n] as? Int ?? 0)
+ 89 |             if (left < up) {
+ 90 |                 current_row = _set(current_row, cell_n, _int(((current_row[cell_n] as? Int ?? 0) &+ left)))
+    |                                                                                    `- warning: conditional cast from 'Int' to 'Int' always succeeds
+ 91 |             } else {
+ 92 |                 current_row = _set(current_row, cell_n, _int(((current_row[cell_n] as? Int ?? 0) &+ up)))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3886627453/001/main.swift:92:84: warning: conditional cast from 'Int' to 'Int' always succeeds
+ 90 |                 current_row = _set(current_row, cell_n, _int(((current_row[cell_n] as? Int ?? 0) &+ left)))
+ 91 |             } else {
+ 92 |                 current_row = _set(current_row, cell_n, _int(((current_row[cell_n] as? Int ?? 0) &+ up)))
+    |                                                                                    `- warning: conditional cast from 'Int' to 'Int' always succeeds
+ 93 |             }
+ 94 |             cell_n = _int((cell_n &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3886627453/001/main.swift:99:61: warning: forced cast of '[Int]' to same type has no effect
+ 97 |     }
+ 98 |     func min_path_sum(_ grid: inout [[Int]]) -> Int {
+ 99 |         if ((_int(((grid).count)) == 0) || (_int((((grid[0] as! [Int])).count)) == 0)) {
+    |                                                             `- warning: forced cast of '[Int]' to same type has no effect
+100 |             _ = fatalError("The grid does not contain the appropriate information")
+101 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3886627453/001/main.swift:103:41: warning: forced cast of '[Int]' to same type has no effect
+101 |         }
+102 |         var cell_n: Int = 1
+103 |         while (cell_n < _int((((grid[0] as! [Int])).count))) {
+    |                                         `- warning: forced cast of '[Int]' to same type has no effect
+104 |             grid[0][cell_n] = _int(((grid[0][cell_n] as? Int ?? 0) &+ (grid[0][(cell_n &- 1)] as? Int ?? 0)))
+105 |             cell_n = _int((cell_n &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3886627453/001/main.swift:104:54: warning: conditional cast from 'Int' to 'Int' always succeeds
+102 |         var cell_n: Int = 1
+103 |         while (cell_n < _int((((grid[0] as! [Int])).count))) {
+104 |             grid[0][cell_n] = _int(((grid[0][cell_n] as? Int ?? 0) &+ (grid[0][(cell_n &- 1)] as? Int ?? 0)))
+    |                                                      `- warning: conditional cast from 'Int' to 'Int' always succeeds
+105 |             cell_n = _int((cell_n &+ 1))
+106 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3886627453/001/main.swift:104:95: warning: conditional cast from 'Int' to 'Int' always succeeds
+102 |         var cell_n: Int = 1
+103 |         while (cell_n < _int((((grid[0] as! [Int])).count))) {
+104 |             grid[0][cell_n] = _int(((grid[0][cell_n] as? Int ?? 0) &+ (grid[0][(cell_n &- 1)] as? Int ?? 0)))
+    |                                                                                               `- warning: conditional cast from 'Int' to 'Int' always succeeds
+105 |             cell_n = _int((cell_n &+ 1))
+106 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3886627453/001/main.swift:107:41: warning: forced cast of '[Int]' to same type has no effect
+105 |             cell_n = _int((cell_n &+ 1))
+106 |         }
+107 |         var row_above: [Int] = (grid[0] as! [Int])
+    |                                         `- warning: forced cast of '[Int]' to same type has no effect
+108 |         var row_n: Int = 1
+109 |         while (row_n < _int(((grid).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3886627453/001/main.swift:110:51: warning: forced cast of '[Int]' to same type has no effect
+108 |         var row_n: Int = 1
+109 |         while (row_n < _int(((grid).count))) {
+110 |             let current_row: [Int] = (grid[row_n] as! [Int])
+    |                                                   `- warning: forced cast of '[Int]' to same type has no effect
+111 |             grid = _set(grid, row_n, (fill_row(&current_row, (row_above as! [Int])) as! [Int]))
+112 |             row_above = (grid[row_n] as! [Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3886627453/001/main.swift:111:48: error: cannot pass immutable value as inout argument: 'current_row' is a 'let' constant
+108 |         var row_n: Int = 1
+109 |         while (row_n < _int(((grid).count))) {
+110 |             let current_row: [Int] = (grid[row_n] as! [Int])
+    |             `- note: change 'let' to 'var' to make it mutable
+111 |             grid = _set(grid, row_n, (fill_row(&current_row, (row_above as! [Int])) as! [Int]))
+    |                                                `- error: cannot pass immutable value as inout argument: 'current_row' is a 'let' constant
+112 |             row_above = (grid[row_n] as! [Int])
+113 |             row_n = _int((row_n &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3886627453/001/main.swift:111:73: warning: forced cast of '[Int]' to same type has no effect
+109 |         while (row_n < _int(((grid).count))) {
+110 |             let current_row: [Int] = (grid[row_n] as! [Int])
+111 |             grid = _set(grid, row_n, (fill_row(&current_row, (row_above as! [Int])) as! [Int]))
+    |                                                                         `- warning: forced cast of '[Int]' to same type has no effect
+112 |             row_above = (grid[row_n] as! [Int])
+113 |             row_n = _int((row_n &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3886627453/001/main.swift:111:85: warning: forced cast of '[Int]' to same type has no effect
+109 |         while (row_n < _int(((grid).count))) {
+110 |             let current_row: [Int] = (grid[row_n] as! [Int])
+111 |             grid = _set(grid, row_n, (fill_row(&current_row, (row_above as! [Int])) as! [Int]))
+    |                                                                                     `- warning: forced cast of '[Int]' to same type has no effect
+112 |             row_above = (grid[row_n] as! [Int])
+113 |             row_n = _int((row_n &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3886627453/001/main.swift:112:38: warning: forced cast of '[Int]' to same type has no effect
+110 |             let current_row: [Int] = (grid[row_n] as! [Int])
+111 |             grid = _set(grid, row_n, (fill_row(&current_row, (row_above as! [Int])) as! [Int]))
+112 |             row_above = (grid[row_n] as! [Int])
+    |                                      `- warning: forced cast of '[Int]' to same type has no effect
+113 |             row_n = _int((row_n &+ 1))
+114 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3886627453/001/main.swift:115:68: warning: forced cast of '[Int]' to same type has no effect
+113 |             row_n = _int((row_n &+ 1))
+114 |         }
+115 |         return (grid[(_int(((grid).count)) &- 1)][(_int((((grid[0] as! [Int])).count)) &- 1)] as? Int ?? 0)
+    |                                                                    `- warning: forced cast of '[Int]' to same type has no effect
+116 |     }
+117 |     var grid1: [[Int]] = ([([1, 3, 1] as! [Int]), ([1, 5, 1] as! [Int]), ([4, 2, 1] as! [Int])] as! [[Int]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden441_graphs_minimum_path_sum3886627453/001/main.swift:115:95: warning: conditional cast from 'Int' to 'Int' always succeeds
+113 |             row_n = _int((row_n &+ 1))
+114 |         }
+115 |         return (grid[(_int(((grid).count)) &- 1)][(_int((((grid[0] as! [Int])).count)) &- 1)] as? Int ?? 0)
+    |                                                                                               `- warning: conditional cast from 'Int' to 'Int' always succeeds
+116 |     }
+117 |     var grid1: [[Int]] = ([([1, 3, 1] as! [Int]), ([1, 5, 1] as! [Int]), ([4, 2, 1] as! [Int])] as! [[Int]])
