@@ -1,0 +1,5 @@
+Execution error (ClassCastException) at main/-main (dijkstra.clj:95).
+class clojure.lang.MapEntry cannot be cast to class java.lang.Number (clojure.lang.MapEntry is in unnamed module of loader 'app'; java.lang.Number is in module java.base of loader 'bootstrap')
+
+Full report at:
+/tmp/clojure-8385947178379835446.edn

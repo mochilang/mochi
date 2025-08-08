@@ -1,0 +1,5 @@
+Execution error at main/get-shortest-path (breadth_first_search_zero_one_shortest_path.clj:79).
+No path from start_vertex to finish_vertex.
+
+Full report at:
+/tmp/clojure-6733739861705660748.edn

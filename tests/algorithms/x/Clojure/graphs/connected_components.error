@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error (UnsupportedOperationException) at main/dfs (connected_components.clj:38).
+nth not supported on this type: PersistentArrayMap
+
+Full report at:
+/tmp/clojure-15052468936301239979.edn

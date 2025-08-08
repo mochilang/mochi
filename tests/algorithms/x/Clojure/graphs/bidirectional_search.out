@@ -1,0 +1,5 @@
+Execution error (UnsupportedOperationException) at main/expand-search (bidirectional_search.clj:88).
+nth not supported on this type: PersistentHashMap
+
+Full report at:
+/tmp/clojure-16883347833665700817.edn

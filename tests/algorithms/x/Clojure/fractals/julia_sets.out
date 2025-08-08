@@ -1,0 +1,5 @@
+Execution error (ArithmeticException) at main/sqrtApprox (julia_sets.clj:104).
+Divide by zero
+
+Full report at:
+/tmp/clojure-16829205444520337752.edn

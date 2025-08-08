@@ -1,0 +1,5 @@
+Execution error (UnsupportedOperationException) at main/bfs (breadth_first_search.clj:52).
+nth not supported on this type: PersistentArrayMap
+
+Full report at:
+/tmp/clojure-1666252563168504007.edn

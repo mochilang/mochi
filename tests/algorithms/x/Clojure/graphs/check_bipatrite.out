@@ -1,0 +1,5 @@
+Execution error (UnsupportedOperationException) at main/is-bipartite-bfs (check_bipatrite.clj:28).
+nth not supported on this type: PersistentArrayMap
+
+Full report at:
+/tmp/clojure-10148670748905237354.edn
