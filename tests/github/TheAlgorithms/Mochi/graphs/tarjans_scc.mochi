@@ -23,8 +23,8 @@ fun tarjan(g: list<list<int>>): list<list<int>> {
   var i = 0
   while i < n {
     on_stack = append(on_stack, false)
-    index_of = append(index_of, -1)
-    lowlink_of = append(lowlink_of, -1)
+    index_of = append(index_of, 0 - 1)
+    lowlink_of = append(lowlink_of, 0 - 1)
     i = i + 1
   }
   var components: list<list<int>> = []
@@ -36,7 +36,7 @@ fun tarjan(g: list<list<int>>): list<list<int>> {
     stack = append(stack, v)
     on_stack[v] = true
     for w in g[v] {
-      if index_of[w] == -1 {
+      if index_of[w] == 0 - 1 {
         current_index = strong_connect(w, current_index)
         if lowlink_of[w] < lowlink_of[v] { lowlink_of[v] = lowlink_of[w] }
       } else if on_stack[w] {
@@ -62,7 +62,7 @@ fun tarjan(g: list<list<int>>): list<list<int>> {
 
   var v = 0
   while v < n {
-    if index_of[v] == -1 { strong_connect(v, 0) }
+    if index_of[v] == 0 - 1 { strong_connect(v, 0) }
     v = v + 1
   }
   return components

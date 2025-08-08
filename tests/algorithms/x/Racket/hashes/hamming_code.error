@@ -1,0 +1,12 @@
+run: exit status 1
+list-ref: index too large for list
+  index: 4
+  in: '(1 1 1 1)
+  context...:
+   /workspace/mochi/tests/algorithms/x/Racket/hashes/hamming_code.rkt:284:150
+   /workspace/mochi/tests/algorithms/x/Racket/hashes/hamming_code.rkt:245:2
+   /workspace/mochi/tests/algorithms/x/Racket/hashes/hamming_code.rkt:327:2
+   /workspace/mochi/tests/algorithms/x/Racket/hashes/hamming_code.rkt:356:2
+   /workspace/mochi/tests/algorithms/x/Racket/hashes/hamming_code.rkt:355:0
+   body of "/workspace/mochi/tests/algorithms/x/Racket/hashes/hamming_code.rkt"
+Text input in binary is '010011010110010101110011011100110110000101100111011001010000000000000000'
