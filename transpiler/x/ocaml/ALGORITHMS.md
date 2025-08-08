@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 290/1077
-Last updated: 2025-08-08 18:26 +0700
+Completed programs: 291/1077
+Last updated: 2025-08-08 19:02 +0700
 
 Checklist:
 
@@ -320,7 +320,7 @@ Checklist:
 | 311 | dynamic_programming/fizz_buzz | ✓ | 160.0µs | 1.95KB |
 | 312 | dynamic_programming/floyd_warshall | ✓ | 270.0µs | 28.22KB |
 | 313 | dynamic_programming/integer_partition | ✓ | 284.0ms | 83.95MB |
-| 314 | dynamic_programming/iterating_through_submasks |   |  |  |
+| 314 | dynamic_programming/iterating_through_submasks | ✓ | 277.0µs | 4.76KB |
 | 315 | dynamic_programming/k_means_clustering_tensorflow |   |  |  |
 | 316 | dynamic_programming/knapsack |   |  |  |
 | 317 | dynamic_programming/largest_divisible_subset |   |  |  |
