@@ -1,3 +1,13 @@
+## Progress (2025-08-08 11:16 +0700)
+- Commit 9fc9647438: c transpiler: print nested lists
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 11:16 +0700)
+- Commit 9fc9647438: c transpiler: print nested lists
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-08-04 16:06 +0700)
 - Commit c4a6f3adf1: rkt: handle method field calls
 - Generated Zig for 98/105 programs

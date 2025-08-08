@@ -1,3 +1,0 @@
-exit status 1
-/workspace/mochi/tests/algorithms/transpiler/Zig/ciphers/baconian_cipher.zig:14:10: error: type 'hash_map.HashMap([]const u8,[]const u8,hash_map.StringContext,80)' is not indexable and not a range
-/workspace/mochi/tests/algorithms/transpiler/Zig/ciphers/baconian_cipher.zig:14:10: note: for loop operand must be a range, array, slice, tuple, or vector
