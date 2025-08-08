@@ -1,7 +1,7 @@
 # Ruby Algorithms Transpiler Output
 
-Completed programs: 1044/1077
-Last updated: 2025-08-08 16:53 +0700
+Completed programs: 1045/1077
+Last updated: 2025-08-08 17:15 +0700
 
 Checklist:
 
@@ -1002,56 +1002,56 @@ Checklist:
 | 993 | strings/bitap_string_match | ✓ | 1ms | 33.2 KB |
 | 994 | strings/boyer_moore_search |   |  |  |
 | 995 | strings/camel_case_to_snake_case | ✓ | 1ms | 210.3 KB |
-| 996 | strings/can_string_be_rearranged_as_palindrome | ✓ | 1ms | 54.3 KB |
-| 997 | strings/capitalize | ✓ | 1ms | 14.8 KB |
-| 998 | strings/check_anagrams | ✓ | 1ms | 30.8 KB |
+| 996 | strings/can_string_be_rearranged_as_palindrome | ✓ | 1ms | 53.4 KB |
+| 997 | strings/capitalize | ✓ | 1ms | 14.9 KB |
+| 998 | strings/check_anagrams | ✓ | 1ms | 26.5 KB |
 | 999 | strings/count_vowels | ✓ | 1ms | 39.5 KB |
-| 1000 | strings/credit_card_validator | ✓ | 1ms | 14.8 KB |
-| 1001 | strings/damerau_levenshtein_distance | ✓ | 1ms | 73.6 KB |
-| 1002 | strings/detecting_english_programmatically | ✓ | 1ms | 144.7 KB |
-| 1003 | strings/dna | ✓ | 1ms | 15.4 KB |
-| 1004 | strings/edit_distance | ✓ | 1ms | 103.0 KB |
-| 1005 | strings/frequency_finder | ✓ | 1ms | 122.8 KB |
-| 1006 | strings/hamming_distance | ✓ | 1ms | 10.8 KB |
-| 1007 | strings/indian_phone_validator | ✓ | 1ms | 16.9 KB |
-| 1008 | strings/is_contains_unique_chars | ✓ | 1ms | 241.0 KB |
-| 1009 | strings/is_isogram | ✓ | 1ms | 72.3 KB |
-| 1010 | strings/is_pangram | ✓ | 1ms | 69.1 KB |
+| 1000 | strings/credit_card_validator | ✓ | 1ms | 15.1 KB |
+| 1001 | strings/damerau_levenshtein_distance | ✓ | 1ms | 62.0 KB |
+| 1002 | strings/detecting_english_programmatically | ✓ | 1ms | 138.9 KB |
+| 1003 | strings/dna | ✓ | 1ms | 14.9 KB |
+| 1004 | strings/edit_distance | ✓ | 1ms | 114.7 KB |
+| 1005 | strings/frequency_finder | ✓ | 1ms | 114.6 KB |
+| 1006 | strings/hamming_distance | ✓ | 1ms | 10.7 KB |
+| 1007 | strings/indian_phone_validator | ✓ | 1ms | 16.2 KB |
+| 1008 | strings/is_contains_unique_chars | ✓ | 1ms | 241.2 KB |
+| 1009 | strings/is_isogram | ✓ | 1ms | 71.5 KB |
+| 1010 | strings/is_pangram | ✓ | 1ms | 66.0 KB |
 | 1011 | strings/is_polish_national_id | ✓ | 1ms | 15.5 KB |
-| 1012 | strings/is_spain_national_id | ✓ | 1ms | 84.4 KB |
-| 1013 | strings/is_srilankan_phone_number | ✓ | 1ms | 11.2 KB |
-| 1014 | strings/is_valid_email_address | ✓ | 1ms | 119.4 KB |
-| 1015 | strings/jaro_winkler | ✓ | 1ms | 13.7 KB |
-| 1016 | strings/join | ✓ | 1ms | 13.2 KB |
-| 1017 | strings/knuth_morris_pratt | ✓ | 1ms | 15.1 KB |
-| 1018 | strings/levenshtein_distance | ✓ | 1ms | 19.5 KB |
-| 1019 | strings/lower | ✓ | 1ms | 8.9 KB |
-| 1020 | strings/manacher | ✓ | 1ms | 21.6 KB |
-| 1021 | strings/min_cost_string_conversion | ✓ | 1ms | 46.8 KB |
-| 1022 | strings/naive_string_search | ✓ | 1ms | 12.0 KB |
-| 1023 | strings/ngram | ✓ | 1ms | 18.2 KB |
-| 1024 | strings/palindrome | ✓ | 1ms | 28.2 KB |
-| 1025 | strings/pig_latin | ✓ | 1ms | 14.8 KB |
-| 1026 | strings/prefix_function | ✓ | 1ms | 23.1 KB |
-| 1027 | strings/rabin_karp | ✓ | 1ms | 269.2 KB |
-| 1028 | strings/remove_duplicate | ✓ | 1ms | 31.8 KB |
-| 1029 | strings/reverse_letters | ✓ | 1ms | 35.5 KB |
-| 1030 | strings/reverse_words | ✓ | 1ms | 15.9 KB |
-| 1031 | strings/snake_case_to_camel_pascal_case | ✓ | 1ms | 33.3 KB |
-| 1032 | strings/split | ✓ | 1ms | 18.6 KB |
-| 1033 | strings/string_switch_case | ✓ | 1ms | 78.5 KB |
-| 1034 | strings/strip | ✓ | 1ms | 15.6 KB |
-| 1035 | strings/text_justification | ✓ | 1ms | 34.5 KB |
-| 1036 | strings/title | ✓ | 1ms | 74.2 KB |
-| 1037 | strings/top_k_frequent_words | ✓ | 1ms | 17.8 KB |
-| 1038 | strings/upper | ✓ | 1ms | 8.8 KB |
+| 1012 | strings/is_spain_national_id | ✓ | 1ms | 78.8 KB |
+| 1013 | strings/is_srilankan_phone_number | ✓ | 1ms | 11.0 KB |
+| 1014 | strings/is_valid_email_address | ✓ | 1ms | 119.8 KB |
+| 1015 | strings/jaro_winkler | ✓ | 1ms | 13.4 KB |
+| 1016 | strings/join | ✓ | 1ms | 11.5 KB |
+| 1017 | strings/knuth_morris_pratt | ✓ | 1ms | 15.0 KB |
+| 1018 | strings/levenshtein_distance | ✓ | 1ms | 16.5 KB |
+| 1019 | strings/lower | ✓ | 1ms | 8.7 KB |
+| 1020 | strings/manacher | ✓ | 1ms | 19.7 KB |
+| 1021 | strings/min_cost_string_conversion | ✓ | 1ms | 34.0 KB |
+| 1022 | strings/naive_string_search | ✓ | 1ms | 11.8 KB |
+| 1023 | strings/ngram | ✓ | 1ms | 17.8 KB |
+| 1024 | strings/palindrome | ✓ | 1ms | 25.2 KB |
+| 1025 | strings/pig_latin | ✓ | 1ms | 14.9 KB |
+| 1026 | strings/prefix_function | ✓ | 1ms | 20.7 KB |
+| 1027 | strings/rabin_karp | ✓ | 1ms | 269.6 KB |
+| 1028 | strings/remove_duplicate | ✓ | 1ms | 25.9 KB |
+| 1029 | strings/reverse_letters | ✓ | 1ms | 25.6 KB |
+| 1030 | strings/reverse_words | ✓ | 1ms | 14.0 KB |
+| 1031 | strings/snake_case_to_camel_pascal_case | ✓ | 1ms | 26.8 KB |
+| 1032 | strings/split | ✓ | 1ms | 18.0 KB |
+| 1033 | strings/string_switch_case | ✓ | 1ms | 60.1 KB |
+| 1034 | strings/strip | ✓ | 1ms | 15.7 KB |
+| 1035 | strings/text_justification | ✓ | 1ms | 27.2 KB |
+| 1036 | strings/title | ✓ | 1ms | 69.0 KB |
+| 1037 | strings/top_k_frequent_words | ✓ | 1ms | 17.3 KB |
+| 1038 | strings/upper | ✓ | 1ms | 8.6 KB |
 | 1039 | strings/wave_string | ✓ | 1ms | 30.8 KB |
-| 1040 | strings/wildcard_pattern_matching | ✓ | 1ms | 80.1 KB |
-| 1041 | strings/word_occurrence | ✓ | 1ms | 12.4 KB |
-| 1042 | strings/word_patterns | ✓ | 1ms | 29.1 KB |
-| 1043 | strings/z_function | ✓ | 1ms | 28.3 KB |
-| 1044 | web_programming/co2_emission |   |  |  |
-| 1045 | web_programming/covid_stats_via_xpath | ✓ | 1ms | 41.2 KB |
+| 1040 | strings/wildcard_pattern_matching | ✓ | 1ms | 64.8 KB |
+| 1041 | strings/word_occurrence | ✓ | 1ms | 11.7 KB |
+| 1042 | strings/word_patterns | ✓ | 1ms | 19.8 KB |
+| 1043 | strings/z_function | ✓ | 1ms | 25.0 KB |
+| 1044 | web_programming/co2_emission | ✓ | 1ms | 1.1 MB |
+| 1045 | web_programming/covid_stats_via_xpath | ✓ | 1ms | 41.1 KB |
 | 1046 | web_programming/crawl_google_results | ✓ | 1ms | 25.1 KB |
 | 1047 | web_programming/crawl_google_scholar_citation |   |  |  |
 | 1048 | web_programming/currency_converter | ✓ | 1ms | 11.8 KB |

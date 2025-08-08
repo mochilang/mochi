@@ -109,6 +109,12 @@ def _padStart(s, len, ch)
 end
 `
 
+const helperPadEnd = `
+def _padEnd(s, len, ch)
+  s.to_s.ljust(len, ch)
+end
+`
+
 const helperIndexOf = `
 def _indexOf(s, ch)
   idx = s.index(ch)
@@ -2390,6 +2396,16 @@ func (m *MethodCallExpr) emit(e *emitter) {
 		io.WriteString(e.w, ")")
 		return
 	}
+	if m.Method == "padEnd" && len(m.Args) == 2 {
+		io.WriteString(e.w, "_padEnd(")
+		m.Target.emit(e)
+		io.WriteString(e.w, ", ")
+		m.Args[0].emit(e)
+		io.WriteString(e.w, ", ")
+		m.Args[1].emit(e)
+		io.WriteString(e.w, ")")
+		return
+	}
 	switch m.Target.(type) {
 	case *Ident, *FieldExpr:
 		m.Target.emit(e)
@@ -3067,6 +3083,9 @@ func Emit(w io.Writer, p *Program) error {
 		return err
 	}
 	if _, err := io.WriteString(w, helperPadStart+"\n"); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, helperPadEnd+"\n"); err != nil {
 		return err
 	}
 	if _, err := io.WriteString(w, helperStr+"\n"); err != nil {
@@ -4229,6 +4248,8 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 					}
 					if method == "padStart" && len(args) == 2 {
 						expr = &CallExpr{Func: "_padStart", Args: append([]Expr{expr}, args...)}
+					} else if method == "padEnd" && len(args) == 2 {
+						expr = &CallExpr{Func: "_padEnd", Args: append([]Expr{expr}, args...)}
 					} else if method == "get" && len(args) == 2 {
 						expr = &MapGetExpr{Map: expr, Key: args[0], Default: args[1]}
 					} else {
@@ -4481,6 +4502,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("padStart expects 3 args")
 			}
 			return &CallExpr{Func: "_padStart", Args: args}, nil
+		case "padEnd":
+			if len(args) != 3 {
+				return nil, fmt.Errorf("padEnd expects 3 args")
+			}
+			return &CallExpr{Func: "_padEnd", Args: args}, nil
 		case "toi":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("toi expects 1 arg")
