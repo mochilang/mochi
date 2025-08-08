@@ -1,0 +1,49 @@
+warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 84 │           {idx, k, max_ratio} = try do
+    │                 ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/knapsack/tests/test_greedy_knapsack.exs:84:17: Main.calc_profit/3
+
+    warning: variable "max_ratio" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 84 │           {idx, k, max_ratio} = try do
+    │                    ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/knapsack/tests/test_greedy_knapsack.exs:84:20: Main.calc_profit/3
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 33 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/knapsack/tests/test_greedy_knapsack.exs:33:7: Main.calc_profit/3
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 50 │       {j, used} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/knapsack/tests/test_greedy_knapsack.exs:50:8: Main.calc_profit/3
+
+     warning: variable "limit" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 108 │       {gain, limit, used} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/knapsack/tests/test_greedy_knapsack.exs:108:14: Main.calc_profit/3
+
+     warning: variable "used" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 108 │       {gain, limit, used} = try do
+     │                     ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/knapsack/tests/test_greedy_knapsack.exs:108:21: Main.calc_profit/3
+
+true
+true
+true
+true
+true
+true
+true

@@ -1363,12 +1363,12 @@ func isStringExpr(e Expr) bool {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
-	if c.Var && c.Func == "str" && len(c.Args) == 1 {
-		io.WriteString(w, "Kernel.to_string(")
-		c.Args[0].emit(w)
-		io.WriteString(w, ")")
-		return
-	}
+       if c.Var && c.Func == "str" && len(c.Args) == 1 {
+               io.WriteString(w, "Kernel.inspect(")
+               c.Args[0].emit(w)
+               io.WriteString(w, ")")
+               return
+       }
 	if c.Func == "" {
 		if len(c.Args) == 0 {
 			io.WriteString(w, "()")
@@ -4561,13 +4561,13 @@ func bigRatHelper(indent int) string {
 }
 
 func sha256Helper(indent int) string {
-	var buf bytes.Buffer
-	pad := strings.Repeat("  ", indent)
-	buf.WriteString(pad + "defp _sha256(bs) do\n")
-	buf.WriteString(pad + "  bin = :erlang.list_to_binary(bs)\n")
-	buf.WriteString(pad + "  :crypto.hash(:sha256, bin) |> :erlang.binary_to_list()\n")
-	buf.WriteString(pad + "end\n")
-	return buf.String()
+        var buf bytes.Buffer
+        pad := strings.Repeat("  ", indent)
+        buf.WriteString(pad + "defp _sha256(bs) do\n")
+       buf.WriteString(pad + "  bin = if is_binary(bs), do: bs, else: :erlang.list_to_binary(bs)\n")
+        buf.WriteString(pad + "  :crypto.hash(:sha256, bin) |> :erlang.binary_to_list()\n")
+        buf.WriteString(pad + "end\n")
+        return buf.String()
 }
 
 func getenvHelper(indent int) string {

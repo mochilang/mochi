@@ -1,0 +1,74 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 28 │           {j, row} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/matrix_inversion.exs:28:12: Main.invert_matrix/1
+
+    warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 44 │           {k, row} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/matrix_inversion.exs:44:12: Main.invert_matrix/1
+
+     warning: variable "c2" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 132 │                 {aug, c2} = try do
+     │                       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/matrix_inversion.exs:132:23: Main.invert_matrix/1
+
+     warning: variable "c" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 111 │           {aug, c} = try do
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/matrix_inversion.exs:111:17: Main.invert_matrix/1
+
+    warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 83 │           {pivot_row, r} = try do
+    │                       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/matrix_inversion.exs:83:23: Main.invert_matrix/1
+
+     warning: variable "r2" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 148 │           {aug, r2} = try do
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/matrix_inversion.exs:148:17: Main.invert_matrix/1
+
+     warning: variable "c3" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 181 │           {c3, row} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/matrix_inversion.exs:181:12: Main.invert_matrix/1
+
+     warning: variable "col" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 160 │       {aug, col} = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/matrix_inversion.exs:160:13: Main.invert_matrix/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 57 │       {aug, i} = try do
+    │             ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/matrix_inversion.exs:57:13: Main.invert_matrix/1
+
+     warning: variable "r3" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 194 │       {inv, r3} = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/matrix_inversion.exs:194:13: Main.invert_matrix/1
+
+Original Matrix:
+[[4.0, 7.0], [2.0, 6.0]]
+Inverted Matrix:
+[[0.6000000000000001, -0.7000000000000001], [-0.2, 0.4]]

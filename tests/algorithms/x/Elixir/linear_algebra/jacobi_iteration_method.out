@@ -1,0 +1,43 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 39 │           {j, sum} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/jacobi_iteration_method.exs:39:12: Main.strictly_diagonally_dominant/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 54 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/jacobi_iteration_method.exs:54:7: Main.strictly_diagonally_dominant/1
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 123 │               {j, sum} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/jacobi_iteration_method.exs:123:16: Main.jacobi_iteration_method/4
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 137 │           {i, new_x} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/jacobi_iteration_method.exs:137:12: Main.jacobi_iteration_method/4
+
+     warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 150 │       {k, x} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/jacobi_iteration_method.exs:150:8: Main.jacobi_iteration_method/4
+
+    warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 89 │       r = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_algebra/jacobi_iteration_method.exs:89:7: Main.jacobi_iteration_method/4
+
+[0.909375, -1.14375, -0.7484375]
