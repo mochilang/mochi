@@ -3,14 +3,14 @@ public class Main {
     static java.util.Map<String,String> ASSOCIATIVITIES;
 
     static int precedence(String ch) {
-        if (((Boolean)(PRECEDENCES.containsKey(ch)))) {
+        if (PRECEDENCES.containsKey(ch)) {
             return ((int)(PRECEDENCES).getOrDefault(ch, 0));
         }
         return -1;
     }
 
     static String associativity(String ch) {
-        if (((Boolean)(ASSOCIATIVITIES.containsKey(ch)))) {
+        if (ASSOCIATIVITIES.containsKey(ch)) {
             return ((String)(ASSOCIATIVITIES).get(ch));
         }
         return "";
@@ -48,7 +48,7 @@ public class Main {
     }
 
     static String infix_to_postfix(String expression) {
-        if (balanced_parentheses(expression) == false) {
+        if (((Boolean)(balanced_parentheses(expression))) == false) {
             throw new RuntimeException(String.valueOf("Mismatched parentheses"));
         }
         String[] stack = ((String[])(new String[]{}));
@@ -118,9 +118,43 @@ public class Main {
         System.out.println(infix_to_postfix(expression));
     }
     public static void main(String[] args) {
-        PRECEDENCES = ((java.util.Map<String,Integer>)(new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("+", 1), java.util.Map.entry("-", 1), java.util.Map.entry("*", 2), java.util.Map.entry("/", 2), java.util.Map.entry("^", 3)))));
-        ASSOCIATIVITIES = ((java.util.Map<String,String>)(new java.util.LinkedHashMap<String, String>(java.util.Map.ofEntries(java.util.Map.entry("+", "LR"), java.util.Map.entry("-", "LR"), java.util.Map.entry("*", "LR"), java.util.Map.entry("/", "LR"), java.util.Map.entry("^", "RL")))));
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            PRECEDENCES = ((java.util.Map<String,Integer>)(new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("+", 1), java.util.Map.entry("-", 1), java.util.Map.entry("*", 2), java.util.Map.entry("/", 2), java.util.Map.entry("^", 3)))));
+            ASSOCIATIVITIES = ((java.util.Map<String,String>)(new java.util.LinkedHashMap<String, String>(java.util.Map.ofEntries(java.util.Map.entry("+", "LR"), java.util.Map.entry("-", "LR"), java.util.Map.entry("*", "LR"), java.util.Map.entry("/", "LR"), java.util.Map.entry("^", "RL")))));
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static int _runeLen(String s) {

@@ -1,7 +1,0 @@
-compile: exit status 1
-/tmp/TestJavaTranspiler_Algorithms_Golden206_hash_table2782245981/001/Main.java:178: error: cannot find symbol
-        System.out.println(("[" + ((java.util.List<?>)new java.util.ArrayList<>(ht.keySet())).stream().map(String::valueOf).collect(java.util.stream.Collectors.joining(", ")) + "]"));
-                                                                                  ^
-  symbol:   method keySet()
-  location: variable ht of type HashTable
-1 error

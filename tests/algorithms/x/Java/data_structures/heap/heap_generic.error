@@ -1,25 +1,16 @@
 compile: exit status 1
-/tmp/TestJavaTranspiler_Algorithms_Golden213_heap_generic2550376492/001/Main.java:107: error: incompatible types: Object[] cannot be converted to int[]
+/tmp/TestJavaTranspiler_Algorithms_Golden213_heap_generic2296078255/001/Main.java:107: error: incompatible types: Object[] cannot be converted to int[]
 arr_2[index] = ((int[])(new Object[]{item, h.key.apply(item_value)}));
                        ^
-/tmp/TestJavaTranspiler_Algorithms_Golden213_heap_generic2550376492/001/Main.java:139: error: cannot find symbol
+/tmp/TestJavaTranspiler_Algorithms_Golden213_heap_generic2296078255/001/Main.java:139: error: cannot find symbol
         int arr_len = arr_4.length;
                            ^
   symbol:   variable length
   location: variable arr_4 of type Object
-/tmp/TestJavaTranspiler_Algorithms_Golden213_heap_generic2550376492/001/Main.java:141: error: method appendObj in class Main cannot be applied to given types;
-            arr_4 = appendObj(arr_4, new int[]{item, h.key.apply(item_value)});
-                    ^
-  required: T[],T
-  found:    Object,int[]
-  reason: cannot infer type-variable(s) T
-    (argument mismatch; Object cannot be converted to T[])
-  where T is a type-variable:
-    T extends Object declared in method <T>appendObj(T[],T)
-/tmp/TestJavaTranspiler_Algorithms_Golden213_heap_generic2550376492/001/Main.java:143: error: array required, but Object found
+/tmp/TestJavaTranspiler_Algorithms_Golden213_heap_generic2296078255/001/Main.java:143: error: array required, but Object found
 arr_4[h.size] = new Object[]{item, h.key.apply(item_value)};
      ^
-/tmp/TestJavaTranspiler_Algorithms_Golden213_heap_generic2550376492/001/Main.java:148: error: incompatible types: Object cannot be converted to int[][]
+/tmp/TestJavaTranspiler_Algorithms_Golden213_heap_generic2296078255/001/Main.java:148: error: incompatible types: Object cannot be converted to int[][]
 h.arr = arr_4;
         ^
-5 errors
+4 errors

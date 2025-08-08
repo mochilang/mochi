@@ -1,27 +1,55 @@
 compile: exit status 1
-/tmp/TestJavaTranspiler_Algorithms_Golden209_quadratic_probing3953285501/001/Main.java:37: error: bad operand types for binary operator '=='
+/tmp/TestJavaTranspiler_Algorithms_Golden209_quadratic_probing1107810431/001/Main.java:23: error: no suitable method found for stream(Object)
+            vals = java.util.stream.Stream.concat(java.util.Arrays.stream(vals), java.util.stream.Stream.of(null)).toArray(Integer[]::new);
+                                                                  ^
+    method Arrays.<T#1>stream(T#1[]) is not applicable
+      (cannot infer type-variable(s) T#1
+        (argument mismatch; Object cannot be converted to T#1[]))
+    method Arrays.<T#2>stream(T#2[],int,int) is not applicable
+      (cannot infer type-variable(s) T#2
+        (actual and formal argument lists differ in length))
+    method Arrays.stream(int[]) is not applicable
+      (argument mismatch; Object cannot be converted to int[])
+    method Arrays.stream(long[]) is not applicable
+      (argument mismatch; Object cannot be converted to long[])
+    method Arrays.stream(double[]) is not applicable
+      (argument mismatch; Object cannot be converted to double[])
+  where T#1,T#2 are type-variables:
+    T#1 extends Object declared in method <T#1>stream(T#1[])
+    T#2 extends Object declared in method <T#2>stream(T#2[],int,int)
+/tmp/TestJavaTranspiler_Algorithms_Golden209_quadratic_probing1107810431/001/Main.java:23: warning: non-varargs call of varargs method with inexact argument type for last parameter;
+            vals = java.util.stream.Stream.concat(java.util.Arrays.stream(vals), java.util.stream.Stream.of(null)).toArray(Integer[]::new);
+                                                                                                            ^
+  cast to Object for a varargs call
+  cast to Object[] for a non-varargs call and to suppress this warning
+/tmp/TestJavaTranspiler_Algorithms_Golden209_quadratic_probing1107810431/001/Main.java:26: error: incompatible types: Object cannot be converted to int[]
+        return new HashTable(size, vals, 0.75);
+                                   ^
+/tmp/TestJavaTranspiler_Algorithms_Golden209_quadratic_probing1107810431/001/Main.java:37: error: bad operand types for binary operator '=='
             if (!(table.values[i_1] == null)) {
                                     ^
   first type:  int
   second type: <null>
-/tmp/TestJavaTranspiler_Algorithms_Golden209_quadratic_probing3953285501/001/Main.java:48: error: bad operand types for binary operator '=='
+/tmp/TestJavaTranspiler_Algorithms_Golden209_quadratic_probing1107810431/001/Main.java:48: error: bad operand types for binary operator '=='
         while (!(table.values[new_key] == null) && table.values[new_key] != key) {
                                        ^
   first type:  int
   second type: <null>
-/tmp/TestJavaTranspiler_Algorithms_Golden209_quadratic_probing3953285501/001/Main.java:61: error: bad operand types for binary operator '=='
+/tmp/TestJavaTranspiler_Algorithms_Golden209_quadratic_probing1107810431/001/Main.java:61: error: bad operand types for binary operator '=='
         if ((vals_1[key] == null)) {
                          ^
   first type:  int
   second type: <null>
-/tmp/TestJavaTranspiler_Algorithms_Golden209_quadratic_probing3953285501/001/Main.java:68: error: bad operand types for binary operator '=='
+/tmp/TestJavaTranspiler_Algorithms_Golden209_quadratic_probing1107810431/001/Main.java:68: error: bad operand types for binary operator '=='
             if (new_key_1 < vals_1.length && (vals_1[new_key_1] == null)) {
                                                                 ^
   first type:  int
   second type: <null>
-/tmp/TestJavaTranspiler_Algorithms_Golden209_quadratic_probing3953285501/001/Main.java:104: error: bad operand types for binary operator '=='
+/tmp/TestJavaTranspiler_Algorithms_Golden209_quadratic_probing1107810431/001/Main.java:104: error: bad operand types for binary operator '=='
             if (!(v == null)) {
                     ^
   first type:  int
   second type: <null>
-5 errors
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+7 errors
+1 warning

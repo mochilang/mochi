@@ -18,7 +18,7 @@ public class Main {
                 p = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(p), java.util.stream.DoubleStream.of(v)).toArray()));
                 j = j + 1;
             }
-            pts = ((double[][])(appendObj(pts, p)));
+            pts = ((double[][])(appendObj((double[][])pts, p)));
             i = i + 1;
         }
         return pts;
@@ -41,7 +41,7 @@ public class Main {
 
     static java.util.Map<String,Double> nearest_neighbour_search(double[][] points, double[] query) {
         if (points.length == 0) {
-            return new java.util.LinkedHashMap<String, Double>(java.util.Map.ofEntries(java.util.Map.entry("index", -1.0), java.util.Map.entry("dist", INF), java.util.Map.entry("visited", 0.0)));
+            return ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Object>(java.util.Map.ofEntries(java.util.Map.entry("index", (Object)(-1.0)), java.util.Map.entry("dist", (Object)(INF)), java.util.Map.entry("visited", (Object)(0.0))))));
         }
         int nearest_idx = 0;
         double nearest_dist = INF;
@@ -56,7 +56,7 @@ public class Main {
             }
             i_2 = i_2 + 1;
         }
-        return new java.util.LinkedHashMap<String, Double>(java.util.Map.ofEntries(java.util.Map.entry("index", ((Number)(nearest_idx)).doubleValue()), java.util.Map.entry("dist", nearest_dist), java.util.Map.entry("visited", ((Number)(visited)).doubleValue())));
+        return ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Object>(java.util.Map.ofEntries(java.util.Map.entry("index", (Object)(((Number)(nearest_idx)).doubleValue())), java.util.Map.entry("dist", (Object)(nearest_dist)), java.util.Map.entry("visited", (Object)(((Number)(visited)).doubleValue()))))));
     }
 
     static void test_build_cases() {
@@ -114,9 +114,43 @@ public class Main {
         test_edge();
     }
     public static void main(String[] args) {
-        INF = 1000000000.0;
-        seed = 1;
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            INF = 1000000000.0;
+            seed = 1;
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static <T> T[] appendObj(T[] arr, T v) {

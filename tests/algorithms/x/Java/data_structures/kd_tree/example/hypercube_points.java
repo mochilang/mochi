@@ -22,15 +22,49 @@ public class Main {
                 point = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(point), java.util.stream.DoubleStream.of(value)).toArray()));
                 j = j + 1;
             }
-            points = ((double[][])(appendObj(points, point)));
+            points = ((double[][])(appendObj((double[][])points, point)));
             i = i + 1;
         }
         return points;
     }
     public static void main(String[] args) {
-        seed = 1;
-        pts = ((double[][])(hypercube_points(3, 1.0, 2)));
-        System.out.println(java.util.Arrays.deepToString(pts));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            seed = 1;
+            pts = ((double[][])(hypercube_points(3, 1.0, 2)));
+            System.out.println(java.util.Arrays.deepToString(pts));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static <T> T[] appendObj(T[] arr, T v) {

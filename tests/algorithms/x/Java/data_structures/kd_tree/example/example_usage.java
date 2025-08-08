@@ -63,7 +63,7 @@ public class Main {
                 p = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(p), java.util.stream.DoubleStream.of(cube_size * random())).toArray()));
                 j = j + 1;
             }
-            pts = ((double[][])(appendObj(pts, p)));
+            pts = ((double[][])(appendObj((double[][])pts, p)));
             i = i + 1;
         }
         return pts;
@@ -89,7 +89,7 @@ points[j_1 + 1] = ((double[])(key));
         double[][] res = ((double[][])(new double[][]{}));
         int i_2 = start;
         while (i_2 < end) {
-            res = ((double[][])(appendObj(res, arr[i_2])));
+            res = ((double[][])(appendObj((double[][])res, arr[i_2])));
             i_2 = i_2 + 1;
         }
         return res;
@@ -98,9 +98,9 @@ points[j_1 + 1] = ((double[])(key));
     static Node[] shift_nodes(Node[] nodes, int offset) {
         int i_3 = 0;
         while (i_3 < nodes.length) {
-            if (((Number)(nodes[i_3].left)).intValue() != 0 - 1) {
+            if (nodes[i_3].left != 0 - 1) {
             }
-            if (((Number)(nodes[i_3].right)).intValue() != 0 - 1) {
+            if (nodes[i_3].right != 0 - 1) {
             }
             i_3 = i_3 + 1;
         }
@@ -114,7 +114,7 @@ points[j_1 + 1] = ((double[])(key));
         int k = points[0].length;
         int axis = Math.floorMod(depth, k);
         points = ((double[][])(sort_points(((double[][])(points)), axis)));
-        int median = points.length / 2;
+        int median = Math.floorDiv(points.length, 2);
         double[][] left_points = ((double[][])(sublist(((double[][])(points)), 0, median)));
         double[][] right_points = ((double[][])(sublist(((double[][])(points)), median + 1, points.length)));
         BuildResult left_res = build_kdtree(((double[][])(left_points)), depth + 1);
@@ -163,7 +163,7 @@ points[j_1 + 1] = ((double[])(key));
         String s = "[";
         int i_6 = 0;
         while (i_6 < arr.length) {
-            s = s + _p(_geto(arr, i_6));
+            s = s + _p(_getd(arr, i_6));
             if (i_6 < arr.length - 1) {
                 s = s + ", ";
             }
@@ -193,8 +193,42 @@ points[j_1 + 1] = ((double[])(key));
         System.out.println("Nodes visited: " + _p(res_1.visited));
     }
     public static void main(String[] args) {
-        seed = 1;
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            seed = 1;
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static <T> T[] appendObj(T[] arr, T v) {
@@ -225,7 +259,7 @@ points[j_1 + 1] = ((double[])(key));
         return String.valueOf(v);
     }
 
-    static Object _geto(Object[] a, int i) {
+    static Double _getd(double[] a, int i) {
         return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }

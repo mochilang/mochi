@@ -5,7 +5,7 @@ public class Main {
 
     static int parent_index(int child_idx) {
         if (child_idx > 0) {
-            return (child_idx - 1) / 2;
+            return ((int)(Math.floorDiv((child_idx - 1), 2)));
         }
         return -1;
     }
@@ -38,7 +38,7 @@ h[largest] = temp;
 
     static int build_max_heap(double[] h) {
         int heap_size = h.length;
-        int i = heap_size / 2 - 1;
+        int i = Math.floorDiv(heap_size, 2) - 1;
         while (i >= 0) {
             max_heapify(((double[])(h)), heap_size, i);
             i = i - 1;
@@ -60,10 +60,10 @@ h[heap_size] = value;
             h = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(h), java.util.stream.DoubleStream.of(value)).toArray()));
         }
         heap_size = heap_size + 1;
-        int idx = (heap_size - 1) / 2;
+        int idx = Math.floorDiv((heap_size - 1), 2);
         while (idx >= 0) {
             max_heapify(((double[])(h)), heap_size, idx);
-            idx = (idx - 1) / 2;
+            idx = Math.floorDiv((idx - 1), 2);
         }
         return heap_size;
     }
@@ -85,7 +85,7 @@ h[j] = temp_1;
         String s = "[";
         int i_1 = 0;
         while (i_1 < heap_size) {
-            s = s + _p(_geto(h, i_1));
+            s = s + _p(_getd(h, i_1));
             if (i_1 < heap_size - 1) {
                 s = s + ", ";
             }
@@ -95,17 +95,51 @@ h[j] = temp_1;
         return s;
     }
     public static void main(String[] args) {
-        heap = ((double[])(new double[]{103.0, 9.0, 1.0, 7.0, 11.0, 15.0, 25.0, 201.0, 209.0, 107.0, 5.0}));
-        size_1 = build_max_heap(((double[])(heap)));
-        System.out.println(heap_to_string(((double[])(heap)), size_1));
-        m = extract_max(((double[])(heap)), size_1);
-        size_1 = size_1 - 1;
-        System.out.println(_p(m));
-        System.out.println(heap_to_string(((double[])(heap)), size_1));
-        size_1 = insert(((double[])(heap)), size_1, 100.0);
-        System.out.println(heap_to_string(((double[])(heap)), size_1));
-        heap_sort(((double[])(heap)), size_1);
-        System.out.println(heap_to_string(((double[])(heap)), size_1));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            heap = ((double[])(new double[]{103.0, 9.0, 1.0, 7.0, 11.0, 15.0, 25.0, 201.0, 209.0, 107.0, 5.0}));
+            size_1 = build_max_heap(((double[])(heap)));
+            System.out.println(heap_to_string(((double[])(heap)), size_1));
+            m = extract_max(((double[])(heap)), size_1);
+            size_1 = size_1 - 1;
+            System.out.println(_p(m));
+            System.out.println(heap_to_string(((double[])(heap)), size_1));
+            size_1 = insert(((double[])(heap)), size_1, 100.0);
+            System.out.println(heap_to_string(((double[])(heap)), size_1));
+            heap_sort(((double[])(heap)), size_1);
+            System.out.println(heap_to_string(((double[])(heap)), size_1));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {
@@ -124,7 +158,7 @@ h[j] = temp_1;
         return String.valueOf(v);
     }
 
-    static Object _geto(Object[] a, int i) {
+    static Double _getd(double[] a, int i) {
         return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }

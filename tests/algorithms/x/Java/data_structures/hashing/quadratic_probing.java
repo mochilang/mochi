@@ -17,10 +17,10 @@ public class Main {
     static HashTable qp;
 
     static HashTable create_hash_table(int size) {
-        int[] vals = ((int[])(new int[]{}));
+        Object vals = new Integer[]{};
         int i = 0;
         while (i < size) {
-            vals = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(vals), java.util.stream.IntStream.of(((Number)(null)).intValue())).toArray()));
+            vals = java.util.stream.Stream.concat(java.util.Arrays.stream(vals), java.util.stream.Stream.of(null)).toArray(Integer[]::new);
             i = i + 1;
         }
         return new HashTable(size, vals, 0.75);
@@ -87,7 +87,7 @@ table.values = vals_1;
             int digit = Math.floorMod(num, 10);
             String ch = _substr("0123456789", digit, digit + 1);
             res = ch + res;
-            num = num / 10;
+            num = Math.floorDiv(num, 10);
         }
         if (neg) {
             res = "-" + res;

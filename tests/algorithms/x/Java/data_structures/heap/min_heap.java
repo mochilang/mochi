@@ -35,7 +35,7 @@ public class Main {
     static MinHeap my_min_heap = null;
 
     static int get_parent_idx(int idx) {
-        return (idx - 1) / 2;
+        return ((int)(Math.floorDiv((idx - 1), 2)));
     }
 
     static int get_left_child_idx(int idx) {
@@ -49,7 +49,7 @@ public class Main {
     static java.util.Map<String,Integer> remove_key(java.util.Map<String,Integer> m, String k) {
         java.util.Map<String,Integer> out = ((java.util.Map<String,Integer>)(new java.util.LinkedHashMap<String, Integer>()));
         for (String key : m.keySet()) {
-            if (((Number)(key)).intValue() != k) {
+            if (!(key.equals(k))) {
 out.put(key, (int)(((int)(m).getOrDefault(key, 0))));
             }
         }
@@ -74,10 +74,10 @@ out.put(key, (int)(((int)(m).getOrDefault(key, 0))));
             int left = get_left_child_idx(i_1);
             int right = get_right_child_idx(i_1);
             int smallest = i_1;
-            if (left < heap.length && String.valueOf(heap[left].val).compareTo(String.valueOf(heap[smallest].val)) < 0) {
+            if (left < heap.length && heap[left].val < heap[smallest].val) {
                 smallest = left;
             }
-            if (right < heap.length && String.valueOf(heap[right].val).compareTo(String.valueOf(heap[smallest].val)) < 0) {
+            if (right < heap.length && heap[right].val < heap[smallest].val) {
                 smallest = right;
             }
             if (smallest != i_1) {
@@ -100,7 +100,7 @@ mh.idx_of_element = idx_map;
         java.util.Map<String,Integer> idx_map_1 = mh.idx_of_element;
         int i_2 = idx;
         int p = get_parent_idx(i_2);
-        while (p >= 0 && String.valueOf(heap_1[p].val).compareTo(String.valueOf(heap_1[i_2].val)) > 0) {
+        while (p >= 0 && heap_1[p].val > heap_1[i_2].val) {
             Node tmp_1 = heap_1[p];
 heap_1[p] = heap_1[i_2];
 heap_1[i_2] = tmp_1;
@@ -185,7 +185,7 @@ mh.heap_dict = val_map_2;
         java.util.Map<String,Integer> val_map_3 = mh.heap_dict;
         java.util.Map<String,Integer> idx_map_5 = mh.idx_of_element;
         int idx_1 = (int)(((int)(idx_map_5).getOrDefault(node.name, 0)));
-        if (!(((Number)(heap_5[idx_1].val)).intValue() > new_value)) {
+        if (!(heap_5[idx_1].val > new_value)) {
             throw new RuntimeException(String.valueOf("newValue must be less than current value"));
         }
 node.val = new_value;
@@ -199,22 +199,56 @@ mh.heap_dict = val_map_3;
         return "Node(" + n.name + ", " + _p(n.val) + ")";
     }
     public static void main(String[] args) {
-        r = new Node("R", -1);
-        b = new Node("B", 6);
-        a = new Node("A", 3);
-        x = new Node("X", 1);
-        e = new Node("E", 4);
-        my_min_heap = new_min_heap(((Node[])(new Node[]{r, b, a, x, e})));
-        System.out.println("Min Heap - before decrease key");
-        for (Node n : my_min_heap.heap) {
-            System.out.println(node_to_string(n));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            r = new Node("R", -1);
+            b = new Node("B", 6);
+            a = new Node("A", 3);
+            x = new Node("X", 1);
+            e = new Node("E", 4);
+            my_min_heap = new_min_heap(((Node[])(new Node[]{r, b, a, x, e})));
+            System.out.println("Min Heap - before decrease key");
+            for (Node n : my_min_heap.heap) {
+                System.out.println(node_to_string(n));
+            }
+            System.out.println("Min Heap - After decrease key of node [B -> -17]");
+            decrease_key(my_min_heap, b, -17);
+            for (Node n : my_min_heap.heap) {
+                System.out.println(node_to_string(n));
+            }
+            System.out.println(_p(get_value(my_min_heap, "B")));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
         }
-        System.out.println("Min Heap - After decrease key of node [B -> -17]");
-        decrease_key(my_min_heap, b, -17);
-        for (Node n : my_min_heap.heap) {
-            System.out.println(node_to_string(n));
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
         }
-        System.out.println(_p(get_value(my_min_heap, "B")));
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {

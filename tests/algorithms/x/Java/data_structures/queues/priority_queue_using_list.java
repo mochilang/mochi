@@ -58,11 +58,11 @@ public class Main {
 
     static FixedPriorityQueue fpq_enqueue(FixedPriorityQueue fpq, int priority, int data) {
         if (priority < 0 || priority >= fpq.queues.length) {
-            throw new RuntimeException(String.valueOf("Valid priorities are 0, 1, and 2"));
+            panic("Valid priorities are 0, 1, and 2");
             return fpq;
         }
         if (fpq.queues[priority].length >= 100) {
-            throw new RuntimeException(String.valueOf("Maximum queue size is 100"));
+            panic("Maximum queue size is 100");
             return fpq;
         }
         int[][] qs = ((int[][])(fpq.queues));
@@ -90,7 +90,7 @@ fpq.queues = qs_1;
             }
             i = i + 1;
         }
-        throw new RuntimeException(String.valueOf("All queues are empty"));
+        panic("All queues are empty");
         return new FPQDequeueResult(fpq, 0);
     }
 
@@ -130,7 +130,7 @@ fpq.queues = qs_1;
 
     static ElementPriorityQueue epq_enqueue(ElementPriorityQueue epq, int data) {
         if (epq.queue.length >= 100) {
-            throw new RuntimeException(String.valueOf("Maximum queue size is 100"));
+            panic("Maximum queue size is 100");
             return epq;
         }
 epq.queue = java.util.stream.IntStream.concat(java.util.Arrays.stream(epq.queue), java.util.stream.IntStream.of(data)).toArray();
@@ -139,7 +139,7 @@ epq.queue = java.util.stream.IntStream.concat(java.util.Arrays.stream(epq.queue)
 
     static EPQDequeueResult epq_dequeue(ElementPriorityQueue epq) {
         if (epq.queue.length == 0) {
-            throw new RuntimeException(String.valueOf("The queue is empty"));
+            panic("The queue is empty");
             return new EPQDequeueResult(epq, 0);
         }
         int min_val = epq.queue[0];
@@ -264,7 +264,41 @@ epq.queue = new_q_1;
         element_priority_queue();
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {

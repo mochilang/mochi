@@ -2814,6 +2814,17 @@ func (a *AppendExpr) emit(w io.Writer) {
 	if jt == "" {
 		jt = elem
 	}
+	if _, ok := a.Value.(*NullLit); ok {
+		switch elem {
+		case "int":
+			elem = "Integer"
+		case "double":
+			elem = "Double"
+		case "boolean":
+			elem = "Boolean"
+		}
+		jt = javaType(elem)
+	}
 	if elem == "boolean" {
 		needAppendBool = true
 		fmt.Fprint(w, "appendBool(")
@@ -3512,7 +3523,7 @@ func isMapExpr(e Expr) bool {
 			if strings.HasSuffix(ex.Type, "[]") {
 				break
 			}
-			if ex.Type == "map" || strings.Contains(ex.Type, "Map") {
+			if ex.Type == "map" || (strings.Contains(ex.Type, "Map") && !isStructType(ex.Type)) {
 				return true
 			}
 		}
@@ -3520,7 +3531,7 @@ func isMapExpr(e Expr) bool {
 			if strings.HasSuffix(t, "[]") {
 				break
 			}
-			if t == "map" || strings.Contains(t, "Map") {
+			if t == "map" || (strings.Contains(t, "Map") && !isStructType(t)) {
 				return true
 			}
 		}
@@ -3529,13 +3540,13 @@ func isMapExpr(e Expr) bool {
 		}
 	case *FieldExpr:
 		if t, ok := fieldTypeFromVar(ex.Target, ex.Name); ok {
-			if strings.Contains(t, "Map") {
+			if strings.Contains(t, "Map") && !isStructType(t) {
 				return true
 			}
 		}
 	}
 	t := inferType(e)
-	if t == "map" || (strings.Contains(t, "Map") && !strings.HasSuffix(t, "[]")) {
+	if t == "map" || (strings.Contains(t, "Map") && !strings.HasSuffix(t, "[]") && !isStructType(t)) {
 		return true
 	}
 	return false
@@ -4499,15 +4510,42 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				}
 			}
 			if ap, ok := e.(*AppendExpr); ok {
-				vt := inferType(ap.Value)
-				if vt != "" {
-					if cur, ok := varTypes[alias]; ok && (cur == "int[]" || cur == "Object[]") && vt == "boolean" {
-						newT := "boolean[]"
-						varTypes[alias] = newT
-						if vdecl != nil {
-							vdecl.Type = newT
-							if ll, ok3 := vdecl.Expr.(*ListLit); ok3 {
-								ll.ElemType = "boolean"
+				if _, isNull := ap.Value.(*NullLit); isNull {
+					if cur, ok := varTypes[alias]; ok {
+						var newT string
+						var elem string
+						switch cur {
+						case "int[]":
+							newT = "Integer[]"
+							elem = "Integer"
+						case "double[]":
+							newT = "Double[]"
+							elem = "Double"
+						case "boolean[]":
+							newT = "Boolean[]"
+							elem = "Boolean"
+						}
+						if newT != "" {
+							varTypes[alias] = newT
+							if vdecl != nil {
+								vdecl.Type = newT
+								if ll, ok3 := vdecl.Expr.(*ListLit); ok3 {
+									ll.ElemType = elem
+								}
+							}
+						}
+					}
+				} else {
+					vt := inferType(ap.Value)
+					if vt != "" {
+						if cur, ok := varTypes[alias]; ok && (cur == "int[]" || cur == "Object[]") && vt == "boolean" {
+							newT := "boolean[]"
+							varTypes[alias] = newT
+							if vdecl != nil {
+								vdecl.Type = newT
+								if ll, ok3 := vdecl.Expr.(*ListLit); ok3 {
+									ll.ElemType = "boolean"
+								}
 							}
 						}
 					}
@@ -5541,6 +5579,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			return &ValuesExpr{Map: args[0]}, nil
 		}
 		if name == "keys" && len(args) == 1 {
+			if topEnv != nil {
+				if _, ok := topEnv.GetFunc("keys"); ok {
+					return &CallExpr{Func: name, Args: args}, nil
+				}
+			}
 			return &KeysExpr{Map: args[0]}, nil
 		}
 		if name == "exists" && len(args) == 1 {
