@@ -1,8 +1,0 @@
-parse: error[P999]: /workspace/mochi/tests/github/TheAlgorithms/Mochi/web_programming/world_covid19_stats.mochi:39:17: unexpected token "-" (expected PostfixExpr)
-  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/web_programming/world_covid19_stats.mochi:39:17
-
- 39 |     if start == -1 { break }
-    |                 ^
-
-help:
-  Parse error occurred. Check syntax near this location.
