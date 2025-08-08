@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-08 16:42 GMT+7
+Last updated: 2025-08-08 17:11 GMT+7
 
-## Algorithms Golden Test Checklist (341/1077)
+## Algorithms Golden Test Checklist (342/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 50.25ms | 19.66MB |
@@ -429,7 +429,7 @@ Last updated: 2025-08-08 16:42 GMT+7
 | 420 | graphs/dinic | ✓ | 130.08ms | 26.16MB |
 | 421 | graphs/directed_and_undirected_weighted_graph | ✓ | 98.558ms | 17.89MB |
 | 422 | graphs/edmonds_karp_multiple_source_and_sink | error |  |  |
-| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph |   |  |  |
+| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 51.653ms | 21.06MB |
 | 424 | graphs/even_tree |   |  |  |
 | 425 | graphs/finding_bridges |   |  |  |
 | 426 | graphs/frequent_pattern_graph_miner |   |  |  |
