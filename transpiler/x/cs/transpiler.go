@@ -90,6 +90,9 @@ var usesInput bool
 var usesMem bool
 var usesBigInt bool
 var usesBigRat bool
+var usesFetch bool
+var fetchStructs map[string]bool
+var currentAssign string
 var currentReturnType string
 var currentReturnVoid bool
 var globalDecls map[string]*Global
@@ -2217,19 +2220,19 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "]")
 		return
 	}
-       if strings.HasSuffix(targetType, "[]") {
-               ix.Target.emit(w)
-               fmt.Fprint(w, "[(int)(")
-               ix.Index.emit(w)
-               fmt.Fprint(w, " < 0 ? ")
-               ix.Target.emit(w)
-               fmt.Fprint(w, ".Length + (")
-               ix.Index.emit(w)
-               fmt.Fprint(w, ") : ")
-               ix.Index.emit(w)
-               fmt.Fprint(w, ")]" )
-               return
-       }
+	if strings.HasSuffix(targetType, "[]") {
+		ix.Target.emit(w)
+		fmt.Fprint(w, "[(int)(")
+		ix.Index.emit(w)
+		fmt.Fprint(w, " < 0 ? ")
+		ix.Target.emit(w)
+		fmt.Fprint(w, ".Length + (")
+		ix.Index.emit(w)
+		fmt.Fprint(w, ") : ")
+		ix.Index.emit(w)
+		fmt.Fprint(w, ")]")
+		return
+	}
 	if targetType == "string" {
 		ix.Target.emit(w)
 		fmt.Fprint(w, ".Substring(")
@@ -2568,6 +2571,9 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesMod = false
 	usesBigInt = false
 	usesBigRat = false
+	usesFetch = false
+	fetchStructs = make(map[string]bool)
+	currentAssign = ""
 	globalDecls = make(map[string]*Global)
 	mutatedVars = make(map[string]bool)
 	importAliases = make(map[string]string)
@@ -2593,6 +2599,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	funRets["_denom"] = "BigInteger"
 	funRets["Convert.ToInt64"] = "long"
 	funRets["_atoi"] = "long"
+	funRets["_fetch"] = "object"
 	funRets["Convert.ToDouble"] = "double"
 	funRets["Convert.ToString"] = "string"
 	for _, st := range p.Statements {
@@ -2985,7 +2992,10 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			if s.Let.Value == nil {
 				return nil, fmt.Errorf("redeclare without value")
 			}
+			saved := currentAssign
+			currentAssign = s.Let.Name
 			val, err := compileExpr(s.Let.Value)
+			currentAssign = saved
 			if err != nil {
 				return nil, err
 			}
@@ -2994,12 +3004,15 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		var val Expr
 		var err error
 		if s.Let.Value != nil {
-			val, err = compileExpr(s.Let.Value)
-			if err != nil {
-				return nil, err
-			}
 			if s.Let.Type != nil {
 				varTypes[s.Let.Name] = csType(s.Let.Type)
+			}
+			saved := currentAssign
+			currentAssign = s.Let.Name
+			val, err = compileExpr(s.Let.Value)
+			currentAssign = saved
+			if err != nil {
+				return nil, err
 			}
 		} else if s.Let.Type != nil && s.Let.Type.Simple != nil {
 			switch *s.Let.Type.Simple {
@@ -3093,7 +3106,10 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			if s.Var.Value == nil {
 				return nil, fmt.Errorf("redeclare without value")
 			}
+			saved := currentAssign
+			currentAssign = s.Var.Name
 			val, err := compileExpr(s.Var.Value)
+			currentAssign = saved
 			if err != nil {
 				return nil, err
 			}
@@ -3106,12 +3122,15 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		var val Expr
 		var err error
 		if s.Var.Value != nil {
-			val, err = compileExpr(s.Var.Value)
-			if err != nil {
-				return nil, err
-			}
 			if s.Var.Type != nil {
 				varTypes[s.Var.Name] = csType(s.Var.Type)
+			}
+			saved := currentAssign
+			currentAssign = s.Var.Name
+			val, err = compileExpr(s.Var.Value)
+			currentAssign = saved
+			if err != nil {
+				return nil, err
 			}
 		} else if s.Var.Type != nil {
 			val = zeroExprForType(s.Var.Type)
@@ -3269,26 +3288,26 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				varTypes[name] = tt
 				finalVarTypes[name] = tt
 			}
-                        if l, ok := val.(*ListLit); ok && len(l.Elems) == 0 {
-                                if prev != "" && strings.HasSuffix(prev, "[]") {
-                                        l.ElemType = prev
-                                        varTypes[name] = prev
-                                        finalVarTypes[name] = prev
-                                }
-                        } else if mp, ok := val.(*MapLit); ok && len(mp.Items) == 0 {
-                                if prev != "" && strings.HasPrefix(prev, "Dictionary<") {
-                                        inside := strings.TrimPrefix(strings.TrimSuffix(prev, ">"), "Dictionary<")
-                                        parts := strings.Split(inside, ",")
-                                        if len(parts) == 2 {
-                                                mp.KeyType = strings.TrimSpace(parts[0])
-                                                mp.ValType = strings.TrimSpace(parts[1])
-                                                varTypes[name] = prev
-                                                finalVarTypes[name] = prev
-                                        }
-                                }
-                        }
-                        mutatedVars[name] = true
-                        return &AssignStmt{Name: name, Value: val}, nil
+			if l, ok := val.(*ListLit); ok && len(l.Elems) == 0 {
+				if prev != "" && strings.HasSuffix(prev, "[]") {
+					l.ElemType = prev
+					varTypes[name] = prev
+					finalVarTypes[name] = prev
+				}
+			} else if mp, ok := val.(*MapLit); ok && len(mp.Items) == 0 {
+				if prev != "" && strings.HasPrefix(prev, "Dictionary<") {
+					inside := strings.TrimPrefix(strings.TrimSuffix(prev, ">"), "Dictionary<")
+					parts := strings.Split(inside, ",")
+					if len(parts) == 2 {
+						mp.KeyType = strings.TrimSpace(parts[0])
+						mp.ValType = strings.TrimSpace(parts[1])
+						varTypes[name] = prev
+						finalVarTypes[name] = prev
+					}
+				}
+			}
+			mutatedVars[name] = true
+			return &AssignStmt{Name: name, Value: val}, nil
 		case *IndexExpr:
 			if l, ok := val.(*ListLit); ok && len(l.Elems) == 0 {
 				if tt := typeOfExpr(t.Target); strings.HasPrefix(tt, "Dictionary<") {
@@ -4220,6 +4239,16 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				usesLinq = true
 				return &ValuesExpr{Map: args[0]}, nil
 			}
+		case "first":
+			if len(args) == 1 {
+				t := typeOfExpr(args[0])
+				if strings.HasSuffix(t, "[]") {
+					elem := strings.TrimSuffix(t, "[]")
+					return &RawExpr{Code: fmt.Sprintf("%s[0]", exprString(args[0])), Type: elem}, nil
+				}
+				usesLinq = true
+				return &CallExpr{Func: "Enumerable.First", Args: args}, nil
+			}
 		case "json":
 			if len(args) == 1 {
 				usesJson = true
@@ -4228,6 +4257,28 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 		}
 		return &CallExpr{Func: name, Args: args}, nil
+	case p.Fetch != nil:
+		urlExpr, err := compileExpr(p.Fetch.URL)
+		if err != nil {
+			return nil, err
+		}
+		usesJson = true
+		usesFetch = true
+		if currentAssign != "" {
+			if t, ok := varTypes[currentAssign]; ok && t != "" && p.Fetch.With == nil {
+				fetchStructs[t] = true
+				funRets["_fetch_"+t] = t
+				return &CallExpr{Func: "_fetch_" + t, Args: []Expr{urlExpr}}, nil
+			}
+		}
+		if p.Fetch.With != nil {
+			withExpr, err := compileExpr(p.Fetch.With)
+			if err != nil {
+				return nil, err
+			}
+			return &CallExpr{Func: "_fetch", Args: []Expr{urlExpr, withExpr}}, nil
+		}
+		return &CallExpr{Func: "_fetch", Args: []Expr{urlExpr}}, nil
 	case p.Lit != nil && p.Lit.Str != nil:
 		return &StringLit{Value: *p.Lit.Str}, nil
 	case p.Lit != nil && p.Lit.Int != nil:
@@ -4881,6 +4932,9 @@ func Emit(prog *Program) []byte {
 	if usesJson {
 		buf.WriteString("using System.Text.Json;\n")
 	}
+	if usesFetch {
+		buf.WriteString("using System.Net.Http;\n")
+	}
 	if usesBigInt {
 		buf.WriteString("using System.Numerics;\n")
 	}
@@ -5078,6 +5132,28 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\t\tif ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;\n")
 		buf.WriteString("\t\treturn r;\n")
 		buf.WriteString("\t}\n")
+	}
+	if usesFetch {
+		buf.WriteString("\tstatic object _fetch(string url) {\n")
+		buf.WriteString("\t\tusing var client = new HttpClient();\n")
+		buf.WriteString("\t\tusing var stream = client.GetStreamAsync(url).Result;\n")
+		buf.WriteString("\t\tvar opts = new JsonSerializerOptions{ IncludeFields = true };\n")
+		buf.WriteString("\t\treturn JsonSerializer.Deserialize<object>(stream, opts);\n")
+		buf.WriteString("\t}\n")
+		names := make([]string, 0, len(fetchStructs))
+		for n := range fetchStructs {
+			names = append(names, n)
+		}
+		sort.Strings(names)
+		for _, n := range names {
+			buf.WriteString("\tstatic " + n + " _fetch_" + n + "(string url) {\n")
+			buf.WriteString("\t\tusing var client = new HttpClient();\n")
+			buf.WriteString("\t\tusing var stream = client.GetStreamAsync(url).Result;\n")
+			buf.WriteString("\t\tvar opts = new JsonSerializerOptions{ IncludeFields = true };\n")
+			buf.WriteString("\t\tvar res = JsonSerializer.Deserialize<" + n + ">(stream, opts);\n")
+			buf.WriteString("\t\treturn res == null ? new " + n + "() : res;\n")
+			buf.WriteString("\t}\n")
+		}
 	}
 	buf.WriteString("\tstatic string _substr(string s, long start, long end) {\n")
 	buf.WriteString("\t\tif (start < 0) start = 0;\n")
