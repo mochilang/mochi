@@ -1,0 +1,22 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 74 │       {i, new_vectors} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/fractals/koch_snowflake.exs:74:8: Main.iteration_step/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 99 │       {i, vectors} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/fractals/koch_snowflake.exs:99:8: Main.iterate/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 136 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/fractals/koch_snowflake.exs:136:8: Main.vec_list_to_string/1
+
+"[(0.0, 0.0), (0.3333333333333333, 0.0), (0.49998818844297094, 0.2886737572187908), (0.6666666666666666, 0.0), (1.0, 0.0)]"
