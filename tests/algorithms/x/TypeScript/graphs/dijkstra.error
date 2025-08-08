@@ -1,6 +1,0 @@
-run: exit status 1
-[0m[1m[31merror[0m: Uncaught (in promise) TypeError: G[(intermediate value)(intermediate value)(intermediate value)] is not iterable
-    for (const v of G[(u) < 0 ? G.length + (u) : u]) {
-[0m[31m                     ^[0m
-    at [0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/graphs/dijkstra.ts[0m:[0m[33m106[0m:[0m[33m22[0m
-    at [0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/graphs/dijkstra.ts[0m:[0m[33m204[0m:[0m[33m2[0m

@@ -353,6 +353,7 @@ type MapEntry struct {
 type IndexExpr struct {
 	Target Expr
 	Index  Expr
+	Raw    bool // if true, emit target[index] without negative index handling
 }
 
 // SliceExpr represents a[start:end] slicing.
@@ -713,13 +714,13 @@ func (e *IntersectExpr) emit(w io.Writer) {
 }
 
 func (f *FormatListExpr) emit(w io.Writer) {
-	io.WriteString(w, "\"[\" + (")
+	io.WriteString(w, "((v)=>v==null?\"nil\":\"[\" + v.join(' ') + \"]\")(")
 	if f.Value != nil {
 		f.Value.emit(w)
 	} else {
 		io.WriteString(w, "[]")
 	}
-	io.WriteString(w, `).join(' ') + "]"`)
+	io.WriteString(w, ")")
 }
 
 func (p *PrintExpr) emit(w io.Writer) {
@@ -821,11 +822,15 @@ func (i *IndexExpr) emit(w io.Writer) {
 	i.Target.emit(w)
 	io.WriteString(w, "[")
 	if i.Index != nil {
-		io.WriteString(w, "(()=>{const _mochi_idx = ")
-		i.Index.emit(w)
-		io.WriteString(w, "; return _mochi_idx < 0 ? ")
-		i.Target.emit(w)
-		io.WriteString(w, ".length + _mochi_idx : _mochi_idx;})()")
+		if i.Raw {
+			i.Index.emit(w)
+		} else {
+			io.WriteString(w, "(()=>{const _mochi_idx = ")
+			i.Index.emit(w)
+			io.WriteString(w, "; return _mochi_idx < 0 ? ")
+			i.Target.emit(w)
+			io.WriteString(w, ".length + _mochi_idx : _mochi_idx;})()")
+		}
 	}
 	io.WriteString(w, "]")
 }
@@ -2784,7 +2789,7 @@ func convertForStmt(f *parser.ForStmt, env *types.Env) (Stmt, error) {
 	var elemType types.Type
 	keys := false
 	if env != nil {
-		switch t := types.ExprType(f.Source, env).(type) {
+		switch t := types.CheckExprType(f.Source, env).(type) {
 		case types.MapType:
 			keys = true
 			elemType = t.Key
@@ -2801,6 +2806,11 @@ func convertForStmt(f *parser.ForStmt, env *types.Env) (Stmt, error) {
 		}
 		if elemType != nil {
 			env.SetVar(f.Name, elemType, true)
+		}
+	}
+	if !keys {
+		if ie, ok := iterable.(*IndexExpr); ok && ie.Raw {
+			keys = true
 		}
 	}
 	body, err := convertStmtList(f.Body)
@@ -3658,7 +3668,8 @@ func convertPostfix(p *parser.PostfixExpr) (expr Expr, err error) {
 				} else {
 					_ = keyStr // avoid unused variable warnings
 				}
-				expr = &IndexExpr{Target: expr, Index: idx}
+				raw := isMapExpr(partial) || isStructExpr(partial)
+				expr = &IndexExpr{Target: expr, Index: idx, Raw: raw}
 			}
 		case op.Call != nil:
 			args := make([]Expr, len(op.Call.Args))
@@ -3980,6 +3991,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("split expects two arguments")
 			}
 			return &MethodCallExpr{Target: args[0], Method: "split", Args: []Expr{args[1]}}, nil
+		case "toi":
+			if transpileEnv != nil {
+				if _, ok := transpileEnv.GetFunc("toi"); ok {
+					return &CallExpr{Func: "toi", Args: args}, nil
+				}
+			}
+			if len(args) != 1 {
+				return nil, fmt.Errorf("toi expects one argument")
+			}
+			return &CallExpr{Func: "parseInt", Args: []Expr{args[0], &NumberLit{Value: "10"}}}, nil
 		case "parseIntStr":
 			if transpileEnv != nil {
 				if _, ok := transpileEnv.GetFunc("parseIntStr"); ok {
