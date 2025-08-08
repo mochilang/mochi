@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-08 16:49 GMT+7
+Last updated: 2025-08-08 17:20 GMT+7
 
-## Algorithms Golden Test Checklist (977/1077)
+## Algorithms Golden Test Checklist (988/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 216µs | 912 B |
@@ -1065,22 +1065,22 @@ Last updated: 2025-08-08 16:49 GMT+7
 | 1056 | web_programming/fetch_github_info | error |  |  |
 | 1057 | web_programming/fetch_jobs | ✓ | 47µs | 1.2 KB |
 | 1058 | web_programming/fetch_quotes | ✓ | 601µs | 1.2 KB |
-| 1059 | web_programming/fetch_well_rx_price |   |  |  |
-| 1060 | web_programming/get_amazon_product_data |   |  |  |
-| 1061 | web_programming/get_imdb_top_250_movies_csv |   |  |  |
-| 1062 | web_programming/get_ip_geolocation |   |  |  |
-| 1063 | web_programming/get_top_billionaires |   |  |  |
-| 1064 | web_programming/get_top_hn_posts |   |  |  |
-| 1065 | web_programming/giphy |   |  |  |
-| 1066 | web_programming/instagram_crawler |   |  |  |
-| 1067 | web_programming/instagram_pic |   |  |  |
-| 1068 | web_programming/instagram_video |   |  |  |
-| 1069 | web_programming/nasa_data |   |  |  |
-| 1070 | web_programming/open_google_results |   |  |  |
-| 1071 | web_programming/random_anime_character |   |  |  |
-| 1072 | web_programming/recaptcha_verification |   |  |  |
-| 1073 | web_programming/reddit |   |  |  |
-| 1074 | web_programming/search_books_by_isbn |   |  |  |
-| 1075 | web_programming/slack_message |   |  |  |
-| 1076 | web_programming/test_fetch_github_info |   |  |  |
-| 1077 | web_programming/world_covid19_stats |   |  |  |
+| 1059 | web_programming/fetch_well_rx_price | ✓ | 780µs | 1.7 KB |
+| 1060 | web_programming/get_amazon_product_data | ✓ | 2.875ms | 1.4 KB |
+| 1061 | web_programming/get_imdb_top_250_movies_csv | ✓ | 141µs | 888 B |
+| 1062 | web_programming/get_ip_geolocation | ✓ | 510µs | 896 B |
+| 1063 | web_programming/get_top_billionaires | error |  |  |
+| 1064 | web_programming/get_top_hn_posts | ✓ | 1.044ms | 1.4 KB |
+| 1065 | web_programming/giphy | error |  |  |
+| 1066 | web_programming/instagram_crawler | ✓ | 5.971ms | 2.1 KB |
+| 1067 | web_programming/instagram_pic | error |  |  |
+| 1068 | web_programming/instagram_video | ✓ | 82µs | 169 B |
+| 1069 | web_programming/nasa_data | error |  |  |
+| 1070 | web_programming/open_google_results | ✓ | 98µs | 1.3 KB |
+| 1071 | web_programming/random_anime_character | ✓ | 35µs | 1.4 KB |
+| 1072 | web_programming/recaptcha_verification | ✓ | 37µs | 1.3 KB |
+| 1073 | web_programming/reddit | error |  |  |
+| 1074 | web_programming/search_books_by_isbn | error |  |  |
+| 1075 | web_programming/slack_message | error |  |  |
+| 1076 | web_programming/test_fetch_github_info | ✓ | 128µs | 1.2 KB |
+| 1077 | web_programming/world_covid19_stats | error |  |  |

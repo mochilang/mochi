@@ -1,0 +1,8 @@
+run: exit status 1
+curl: (22) The requested URL returned error: 405
+lua: ...tests/algorithms/x/Lua/web_programming/slack_message.lua:47: Request to slack returned an error: 
+stack traceback:
+	[C]: in function 'error'
+	...tests/algorithms/x/Lua/web_programming/slack_message.lua:47: in function 'send_slack_message'
+	...tests/algorithms/x/Lua/web_programming/slack_message.lua:52: in main chunk
+	[C]: in ?
