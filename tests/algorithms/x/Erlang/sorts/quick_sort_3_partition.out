@@ -1,0 +1,14 @@
+/workspace/mochi/tests/algorithms/x/Erlang/sorts/quick_sort_3_partition.erl:149:55: Warning: the result of evaluating operator '++'/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%  149|         Arr_19 = lists:sublist(Arr_18, Store_index_3) ++ [Temp_7] ++ lists:nthtail(Store_index_3 + 1, Arr_18),
+%     |                                                       ^
+
+[-1 -1 0 5 5 5 24]
+[0 2 6 9]
+[]
+[0 5 3 1 2]
+[]
+[-2 5 0 -4]
+[]
+[1]
+[-5 -2 -2 0 1 1]
+[-1 0 0 1 1 2 2 2 5 5]
