@@ -1,0 +1,5 @@
+Execution error (ClassCastException) at main/prims-algorithm (test_min_spanning_tree_prim.clj:63).
+class java.lang.Long cannot be cast to class java.lang.String (java.lang.Long and java.lang.String are in module java.base of loader 'bootstrap')
+
+Full report at:
+/tmp/clojure-3539494681622571648.edn

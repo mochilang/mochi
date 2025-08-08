@@ -1,0 +1,5 @@
+Execution error (ArityException) at main/strong-connect (tarjans_scc.clj:67).
+Wrong number of args (2) passed to: main/strong-connect
+
+Full report at:
+/tmp/clojure-12936273305749740554.edn

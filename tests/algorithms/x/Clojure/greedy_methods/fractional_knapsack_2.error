@@ -1,0 +1,6 @@
+run: exit status 1
+Syntax error (UnsupportedOperationException) compiling recur at (/workspace/mochi/tests/algorithms/x/Clojure/greedy_methods/fractional_knapsack_2.clj:56:2594).
+Can only recur from tail position
+
+Full report at:
+/tmp/clojure-17308495708433199942.edn
