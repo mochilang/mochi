@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (136/1077) - Last updated 2025-08-08 18:03 +0700:
+Checklist of programs that currently transpile and run (149/1077) - Last updated 2025-08-08 18:51 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -163,24 +163,24 @@ Checklist of programs that currently transpile and run (136/1077) - Last updated
 | 156 | data_compression/lz77 | ✓ | 723us | 1.4 MB |
 | 157 | data_compression/peak_signal_to_noise_ratio | ✓ | 4us | 1.4 MB |
 | 158 | data_compression/run_length_encoding | ✓ | 902us | 1.5 MB |
-| 159 | data_structures/arrays/equilibrium_index_in_array |  |  |  |
-| 160 | data_structures/arrays/find_triplets_with_0_sum |  |  |  |
-| 161 | data_structures/arrays/index_2d_array_in_1d |  |  |  |
-| 162 | data_structures/arrays/kth_largest_element |  |  |  |
-| 163 | data_structures/arrays/median_two_array |  |  |  |
-| 164 | data_structures/arrays/monotonic_array |  |  |  |
-| 165 | data_structures/arrays/pairs_with_given_sum |  |  |  |
-| 166 | data_structures/arrays/permutations |  |  |  |
-| 167 | data_structures/arrays/prefix_sum |  |  |  |
+| 159 | data_structures/arrays/equilibrium_index_in_array | ✓ | 326us | 1.4 MB |
+| 160 | data_structures/arrays/find_triplets_with_0_sum | ✓ | 262us | 1.5 MB |
+| 161 | data_structures/arrays/index_2d_array_in_1d | ✓ | 399us | 1.6 MB |
+| 162 | data_structures/arrays/kth_largest_element | ✓ | 684us | 1.6 MB |
+| 163 | data_structures/arrays/median_two_array | ✓ | 442us | 1.6 MB |
+| 164 | data_structures/arrays/monotonic_array | ✓ | 275us | 1.5 MB |
+| 165 | data_structures/arrays/pairs_with_given_sum | ✓ | 248us | 1.6 MB |
+| 166 | data_structures/arrays/permutations | ✓ | 707us | 1.5 MB |
+| 167 | data_structures/arrays/prefix_sum | ✓ | 459us | 1.6 MB |
 | 168 | data_structures/arrays/product_sum |  |  |  |
-| 169 | data_structures/arrays/sparse_table |  |  |  |
-| 170 | data_structures/arrays/sudoku_solver |  |  |  |
+| 169 | data_structures/arrays/sparse_table | ✓ | 316us | 1.5 MB |
+| 170 | data_structures/arrays/sudoku_solver | ✓ | 589us | 1.5 MB |
 | 171 | data_structures/binary_tree/avl_tree |  |  |  |
-| 172 | data_structures/binary_tree/basic_binary_tree |  |  |  |
+| 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 334us | 1.5 MB |
 | 173 | data_structures/binary_tree/binary_search_tree |  |  |  |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive |  |  |  |
 | 175 | data_structures/binary_tree/binary_tree_mirror |  |  |  |
-| 176 | data_structures/binary_tree/binary_tree_node_sum |  |  |  |
+| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 288us | 1.5 MB |
 | 177 | data_structures/binary_tree/binary_tree_path_sum |  |  |  |
 | 178 | data_structures/binary_tree/diff_views_of_binary_tree |  |  |  |
 | 179 | data_structures/binary_tree/distribute_coins |  |  |  |
