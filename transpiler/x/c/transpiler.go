@@ -381,6 +381,19 @@ func (p *PrintStmt) emit(w io.Writer, indent int) {
 			switch p.Types[i] {
 			case "list_int":
 				writeIndent(w, indent)
+				if ce, ok := a.(*CallExpr); ok {
+					if ret, ok2 := funcReturnTypes[ce.Func]; ok2 {
+						tmp := fmt.Sprintf("__tmp%d", tempCounter)
+						tempCounter++
+						decl := listPtrType(ret)
+						fmt.Fprintf(w, "%s %s = ", decl, tmp)
+						ce.emitExpr(w)
+						io.WriteString(w, ";\n")
+						writeIndent(w, indent)
+						fmt.Fprintf(w, "puts(str_list_int(%s, %s_len));\n", tmp, ce.Func)
+						continue
+					}
+				}
 				io.WriteString(w, "puts(str_list_int(")
 				a.emitExpr(w)
 				io.WriteString(w, ", ")
@@ -389,6 +402,19 @@ func (p *PrintStmt) emit(w io.Writer, indent int) {
 				continue
 			case "list_double":
 				writeIndent(w, indent)
+				if ce, ok := a.(*CallExpr); ok {
+					if ret, ok2 := funcReturnTypes[ce.Func]; ok2 {
+						tmp := fmt.Sprintf("__tmp%d", tempCounter)
+						tempCounter++
+						decl := listPtrType(ret)
+						fmt.Fprintf(w, "%s %s = ", decl, tmp)
+						ce.emitExpr(w)
+						io.WriteString(w, ";\n")
+						writeIndent(w, indent)
+						fmt.Fprintf(w, "puts(str_list_double(%s, %s_len));\n", tmp, ce.Func)
+						continue
+					}
+				}
 				io.WriteString(w, "puts(str_list_double(")
 				a.emitExpr(w)
 				io.WriteString(w, ", ")
@@ -397,6 +423,19 @@ func (p *PrintStmt) emit(w io.Writer, indent int) {
 				continue
 			case "list_str":
 				writeIndent(w, indent)
+				if ce, ok := a.(*CallExpr); ok {
+					if ret, ok2 := funcReturnTypes[ce.Func]; ok2 {
+						tmp := fmt.Sprintf("__tmp%d", tempCounter)
+						tempCounter++
+						decl := listPtrType(ret)
+						fmt.Fprintf(w, "%s %s = ", decl, tmp)
+						ce.emitExpr(w)
+						io.WriteString(w, ";\n")
+						writeIndent(w, indent)
+						fmt.Fprintf(w, "puts(str_list_str(%s, %s_len));\n", tmp, ce.Func)
+						continue
+					}
+				}
 				io.WriteString(w, "puts(str_list_str(")
 				a.emitExpr(w)
 				io.WriteString(w, ", ")
@@ -405,6 +444,19 @@ func (p *PrintStmt) emit(w io.Writer, indent int) {
 				continue
 			case "list_list_int":
 				writeIndent(w, indent)
+				if ce, ok := a.(*CallExpr); ok {
+					if ret, ok2 := funcReturnTypes[ce.Func]; ok2 {
+						tmp := fmt.Sprintf("__tmp%d", tempCounter)
+						tempCounter++
+						decl := listPtrType(ret)
+						fmt.Fprintf(w, "%s %s = ", decl, tmp)
+						ce.emitExpr(w)
+						io.WriteString(w, ";\n")
+						writeIndent(w, indent)
+						fmt.Fprintf(w, "puts(str_list_list_int(%s, %s_len, %s_lens));\n", tmp, ce.Func, ce.Func)
+						continue
+					}
+				}
 				io.WriteString(w, "puts(str_list_list_int(")
 				a.emitExpr(w)
 				io.WriteString(w, ", ")
@@ -415,6 +467,19 @@ func (p *PrintStmt) emit(w io.Writer, indent int) {
 				continue
 			case "list_list_double":
 				writeIndent(w, indent)
+				if ce, ok := a.(*CallExpr); ok {
+					if ret, ok2 := funcReturnTypes[ce.Func]; ok2 {
+						tmp := fmt.Sprintf("__tmp%d", tempCounter)
+						tempCounter++
+						decl := listPtrType(ret)
+						fmt.Fprintf(w, "%s %s = ", decl, tmp)
+						ce.emitExpr(w)
+						io.WriteString(w, ";\n")
+						writeIndent(w, indent)
+						fmt.Fprintf(w, "puts(str_list_list_double(%s, %s_len, %s_lens));\n", tmp, ce.Func, ce.Func)
+						continue
+					}
+				}
 				io.WriteString(w, "puts(str_list_list_double(")
 				a.emitExpr(w)
 				io.WriteString(w, ", ")
@@ -423,6 +488,26 @@ func (p *PrintStmt) emit(w io.Writer, indent int) {
 				emitLensExpr(w, a)
 				io.WriteString(w, "));\n")
 				continue
+			default:
+				if strings.HasSuffix(p.Types[i], "[]") {
+					base := strings.TrimSuffix(p.Types[i], "[]")
+					writeIndent(w, indent)
+					switch base {
+					case "long long":
+						io.WriteString(w, "puts(str_list_int(")
+					case "double":
+						io.WriteString(w, "puts(str_list_double(")
+					case "const char*":
+						io.WriteString(w, "puts(str_list_str(")
+					default:
+						fmt.Fprintf(w, "puts(str_list_%s(", sanitizeTypeName(base))
+					}
+					a.emitExpr(w)
+					io.WriteString(w, ", ")
+					emitLenExpr(w, a)
+					io.WriteString(w, "));\n")
+					continue
+				}
 			}
 			if p.Types[i] == "string" || exprIsString(a) {
 				format = append(format, "%s")
@@ -1944,6 +2029,19 @@ func (l *ListLit) emitExpr(w io.Writer) {
 	}
 	dims := strings.Count(elemType, "[]")
 	base := strings.TrimSuffix(elemType, strings.Repeat("[]", dims))
+	// When the element type has no array suffixes (i.e. dims == 0), this
+	// literal represents a 1-D list. Allocate its storage on the heap so the
+	// returned pointer remains valid after the expression finishes.
+	if dims == 0 {
+		fmt.Fprintf(w, "({%s *tmp = malloc(%d * sizeof(%s)); ", base, len(l.Elems), base)
+		for i, e := range l.Elems {
+			fmt.Fprintf(w, "tmp[%d] = ", i)
+			e.emitExpr(w)
+			io.WriteString(w, "; ")
+		}
+		io.WriteString(w, "tmp;})")
+		return
+	}
 	outType := base + strings.Repeat("*", dims)
 	fmt.Fprintf(w, "(%s[]){ ", outType)
 	for i, e := range l.Elems {
@@ -4697,6 +4795,19 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 						}
 					case strings.HasSuffix(ftc, "*"):
 						base := strings.TrimSuffix(ftc, "*")
+						switch base {
+						case "longlong":
+							tname = "list_int"
+							needStrListInt = true
+						case "double":
+							tname = "list_double"
+							needStrListDouble = true
+						case "constchar*":
+							tname = "list_str"
+							needStrListStr = true
+						}
+					case strings.HasSuffix(ftc, "[]"):
+						base := strings.TrimSuffix(ftc, "[]")
 						switch base {
 						case "longlong":
 							tname = "list_int"

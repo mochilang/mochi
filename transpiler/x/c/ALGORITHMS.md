@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (149/1077) - Last updated 2025-08-08 18:51 +0700:
+Checklist of programs that currently transpile and run (150/1077) - Last updated 2025-08-08 19:19 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -182,7 +182,7 @@ Checklist of programs that currently transpile and run (149/1077) - Last updated
 | 175 | data_structures/binary_tree/binary_tree_mirror |  |  |  |
 | 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 288us | 1.5 MB |
 | 177 | data_structures/binary_tree/binary_tree_path_sum |  |  |  |
-| 178 | data_structures/binary_tree/diff_views_of_binary_tree |  |  |  |
+| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 447us | 1.5 MB |
 | 179 | data_structures/binary_tree/distribute_coins |  |  |  |
 | 180 | data_structures/binary_tree/fenwick_tree |  |  |  |
 | 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist |  |  |  |
