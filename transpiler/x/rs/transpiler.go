@@ -6179,6 +6179,9 @@ func collectLocalNames(m map[string]bool, s Stmt) {
 			collectLocalNames(m, b)
 		}
 	case *ForStmt:
+		if st.Var != "" {
+			m[st.Var] = true
+		}
 		for _, b := range st.Body {
 			collectLocalNames(m, b)
 		}
