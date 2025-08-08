@@ -2484,7 +2484,7 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 			if err != nil {
 				return nil, err
 			}
-			return &List{Elems: []Node{Symbol("Integer/parseInt"), arg}}, nil
+			return &List{Elems: []Node{Symbol("int"), arg}}, nil
 		case "parseIntStr":
 			switch len(c.Args) {
 			case 1:

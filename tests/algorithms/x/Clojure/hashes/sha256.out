@@ -1,0 +1,5 @@
+Syntax error compiling at (/workspace/mochi/tests/algorithms/x/Clojure/hashes/sha256.clj:44:30).
+Unable to resolve symbol: sha256 in this context
+
+Full report at:
+/tmp/clojure-12243796582237203891.edn

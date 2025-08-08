@@ -1,0 +1,5 @@
+Syntax error compiling at (/workspace/mochi/tests/algorithms/x/Clojure/graphs/minimum_path_sum.clj:46:276).
+Unable to resolve symbol: error in this context
+
+Full report at:
+/tmp/clojure-16208747358155511482.edn

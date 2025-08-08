@@ -1,0 +1,5 @@
+Syntax error (UnsupportedOperationException) compiling recur at (/workspace/mochi/tests/algorithms/x/Clojure/knapsack/greedy_knapsack.clj:47:2404).
+Can only recur from tail position
+
+Full report at:
+/tmp/clojure-7803128610359249240.edn
