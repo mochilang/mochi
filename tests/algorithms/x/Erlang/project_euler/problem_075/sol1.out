@@ -1,0 +1,5 @@
+/workspace/mochi/tests/algorithms/x/Erlang/project_euler/problem_075/sol1.erl:129:27: Warning: variable 'N_3' exported from 'case' (line 107, column 17)
+%  129| {Frequencies_4, Limit, M, N_3, Perimeter_2, Primitive_perimeter} = Fun_2(Frequencies, Limit, M, N_3, Perimeter, Primitive_perimeter),
+%     |                           ^
+
+"solution() = 161667"

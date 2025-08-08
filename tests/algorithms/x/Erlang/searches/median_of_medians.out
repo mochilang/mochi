@@ -1,0 +1,6 @@
+/workspace/mochi/tests/algorithms/x/Erlang/searches/median_of_medians.erl:62:1: Warning: function mochi_safe_mul/2 is unused
+%   62| mochi_safe_mul(A, B) ->
+%     | ^
+
+4
+32

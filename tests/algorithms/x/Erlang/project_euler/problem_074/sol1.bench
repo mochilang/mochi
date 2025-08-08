@@ -1,0 +1,4 @@
+{Ahead_2, Chain, Current, I_5, Known_2, Loop_len, Loop_start, N_2, Seen, Total_3} = Fun_4(Ahead, Chain, Current, I_4, Known_2, Loop_len, Loop_start, N_2, Seen, Total_3),
+%     |                                                                          ^
+
+function_clause

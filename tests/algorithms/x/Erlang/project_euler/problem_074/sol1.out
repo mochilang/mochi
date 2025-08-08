@@ -1,0 +1,6 @@
+/workspace/mochi/tests/algorithms/x/Erlang/project_euler/problem_074/sol1.erl:156:32: Warning: variable 'Known_2' exported from 'case' (line 108, column 13)
+%  156| {Ahead_2, Chain, Current, I_5, Known_2, Loop_len, Loop_start, N_2, Seen, Total_3} = Fun_4(Ahead, Chain, Current, I_4, Known_2, Loop_len, Loop_start, N_2, Seen, Total_3),
+%     |                                ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/project_euler/problem_074/sol1.erl:156:74: Warning: variable 'Total_3' exported from 'case' (line 108, column 13)
+%  156|

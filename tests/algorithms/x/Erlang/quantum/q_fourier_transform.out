@@ -1,0 +1,9 @@
+/workspace/mochi/tests/algorithms/x/Erlang/quantum/q_fourier_transform.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/quantum/q_fourier_transform.erl:53:1: Warning: function mochi_safe_mul/2 is unused
+%   53| mochi_safe_mul(A, B) ->
+%     | ^
+
+"Total count for quantum fourier transform state is: #{000 => 1250 001 => 1250 010 => 1250 011 => 1250 100 => 1250 \n  101 => 1250 110 => 1250 111 => 1250}"

@@ -1,0 +1,9 @@
+/workspace/mochi/tests/algorithms/x/Erlang/searches/interpolation_search.erl:53:1: Warning: function mochi_safe_mul/2 is unused
+%   53| mochi_safe_mul(A, B) ->
+%     | ^
+
+1
+-1
+1
+-1
+-1

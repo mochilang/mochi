@@ -1,0 +1,11 @@
+/workspace/mochi/tests/algorithms/x/Erlang/sorts/comb_sort.erl:72:1: Warning: function mochi_safe_mul/2 is unused
+%   72| mochi_safe_mul(A, B) ->
+%     | ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/sorts/comb_sort.erl:125:23: Warning: variable 'Gap_4' exported from 'case' (line 96, column 13)
+%  125| {Completed_5, Data_4, Gap_4, Index_2, Shrink_factor} = Fun(Completed_3, Data, Gap_4, Index, Shrink_factor),
+%     |                       ^
+
+[0, 2, 2, 3, 5]
+[]
+[-15, -7, 0, 2, 3, 8, 45, 99]
