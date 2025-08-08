@@ -1,3 +1,7 @@
+## Progress (2025-08-08 10:32 +0700)
+- lua: regenerate docs conf
+- Generated F# for 103/105 programs (103 passing)
+
 ## Progress (2025-08-07 15:46 +0700)
 - Add F# transpiler outputs for data structures algorithms
 - Generated F# for 103/105 programs (103 passing)
