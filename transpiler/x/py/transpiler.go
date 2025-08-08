@@ -3351,6 +3351,9 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 			}
 		}
 	}
+	if _, err := io.WriteString(w, "\n"); err != nil {
+		return err
+	}
 	return nil
 }
 
