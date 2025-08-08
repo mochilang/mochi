@@ -750,17 +750,17 @@ func (c *CallExpr) emit(w io.Writer) {
 			c.Args[0].emit(w)
 		}
 		io.WriteString(w, ")")
-        case "append":
-                // Mutate the list in place so that existing references remain valid.
-                io.WriteString(w, "(function(lst, item)\n  lst = lst or {}\n  table.insert(lst, item)\n  return lst\nend)(")
-                if len(c.Args) > 0 {
-                        c.Args[0].emit(w)
-                }
-                io.WriteString(w, ", ")
-                if len(c.Args) > 1 {
-                        c.Args[1].emit(w)
-                }
-                io.WriteString(w, ")")
+	case "append":
+		// Mutate the list in place so that existing references remain valid.
+		io.WriteString(w, "(function(lst, item)\n  lst = lst or {}\n  table.insert(lst, item)\n  return lst\nend)(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ", ")
+		if len(c.Args) > 1 {
+			c.Args[1].emit(w)
+		}
+		io.WriteString(w, ")")
 	case "concat":
 		io.WriteString(w, "(function(a, b)\n  local res = {table.unpack(a or {})}\n  for _, v in ipairs(b or {}) do\n    res[#res+1] = v\n  end\n  return res\nend)(")
 		if len(c.Args) > 0 {
@@ -1415,13 +1415,10 @@ func (ix *IndexExpr) emit(w io.Writer) {
 				io.WriteString(w, ")")
 				return
 			}
-			if mt, ok := exprType(ix.Target).(types.MapType); ok {
+			if _, ok := exprType(ix.Target).(types.MapType); ok {
 				ix.Target.emit(w)
 				io.WriteString(w, "[")
 				ix.Index.emit(w)
-				if _, ok := mt.Key.(types.IntType); ok {
-					io.WriteString(w, " + 1")
-				}
 				io.WriteString(w, "]")
 				return
 			}
@@ -1459,24 +1456,20 @@ func (ix *IndexExpr) emit(w io.Writer) {
 			ix.Target.emit(w)
 			io.WriteString(w, ".")
 			io.WriteString(w, s.Value)
-                        } else {
-                                ix.Target.emit(w)
-                                io.WriteString(w, "[")
-                                ix.Index.emit(w)
-                                if mt, ok := exprType(ix.Target).(types.MapType); ok {
-                                        if _, ok := mt.Key.(types.IntType); ok {
-                                                io.WriteString(w, " + 1]")
-                                        } else {
-                                                io.WriteString(w, "]")
-                                        }
-                                } else {
-                                        // For struct fields or other non-map targets, no index offset
-                                        // is required. Use a direct lookup without the +1 adjustment.
-                                        io.WriteString(w, "]")
-                                }
-                        }
-                }
-        }
+		} else {
+			ix.Target.emit(w)
+			io.WriteString(w, "[")
+			ix.Index.emit(w)
+			if _, ok := exprType(ix.Target).(types.MapType); ok {
+				io.WriteString(w, "]")
+			} else {
+				// For struct fields or other non-map targets, no index offset
+				// is required. Use a direct lookup without the +1 adjustment.
+				io.WriteString(w, "]")
+			}
+		}
+	}
+}
 
 func (sx *SliceExpr) emit(w io.Writer) {
 	if sx.Kind == "string" {
