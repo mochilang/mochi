@@ -1,4 +1,4 @@
-// Generated 2025-08-07 14:57 +0700
+// Generated 2025-08-08 10:32 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,8 +19,28 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
+    d.[k] <- v
+    d
+let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
+    let d = System.Collections.Generic.Dictionary<'K, 'V>()
+    for (k, v) in pairs do
+        d.[k] <- v
+    upcast d
+let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
+    match d.TryGetValue(k) with
+    | true, v -> v
+    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
-    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+    if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
+    let mutable a = arr
+    if i >= a.Length then
+        let na = Array.zeroCreate<'a> (i + 1)
+        Array.blit a 0 na 0 a.Length
+        a <- na
+    a.[i] <- v
+    a
 let rec _str v =
     let s = sprintf "%A" v
     s.Replace("[|", "[")
@@ -28,13 +48,17 @@ let rec _str v =
      .Replace("; ", " ")
      .Replace(";", "")
      .Replace("\"", "")
+let _floordiv (a:int) (b:int) : int =
+    let q = a / b
+    let r = a % b
+    if r <> 0 && ((a < 0) <> (b < 0)) then q - 1 else q
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
 let rec parent_index (child_idx: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable child_idx = child_idx
     try
-        __ret <- if child_idx > 0 then ((child_idx - 1) / 2) else (-1)
+        __ret <- if child_idx > 0 then (_floordiv (child_idx - 1) 2) else (-1)
         raise Return
         __ret
     with
@@ -83,7 +107,7 @@ let rec build_max_heap (h: float array) =
     let mutable h = h
     try
         let mutable heap_size: int = Seq.length (h)
-        let mutable i: int = (heap_size / 2) - 1
+        let mutable i: int = (_floordiv heap_size 2) - 1
         while i >= 0 do
             max_heapify (h) (heap_size) (i)
             i <- i - 1
@@ -116,10 +140,10 @@ let rec insert (h: float array) (heap_size: int) (value: float) =
         else
             h <- Array.append h [|value|]
         heap_size <- heap_size + 1
-        let mutable idx: int = (heap_size - 1) / 2
+        let mutable idx: int = _floordiv (heap_size - 1) 2
         while idx >= 0 do
             max_heapify (h) (heap_size) (idx)
-            idx <- (idx - 1) / 2
+            idx <- _floordiv (idx - 1) 2
         __ret <- heap_size
         raise Return
         __ret

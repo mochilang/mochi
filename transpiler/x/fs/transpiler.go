@@ -63,6 +63,7 @@ type Program struct {
 	UseRepr        bool
 	UseArraySet    bool
 	UseJSON        bool
+	UseFloorDiv    bool
 }
 
 // varTypes holds the inferred type for each variable defined during
@@ -99,6 +100,7 @@ var (
 	usesRepr       bool
 	usesArraySet   bool
 	usesJSON       bool
+	usesFloorDiv   bool
 	funcHasNull    bool
 )
 
@@ -217,6 +219,11 @@ const helperRepr = `let _repr v =
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", ", ")`
+
+const helperFloorDiv = `let _floordiv (a:int) (b:int) : int =
+    let q = a / b
+    let r = a % b
+    if r <> 0 && ((a < 0) <> (b < 0)) then q - 1 else q`
 
 func writeIndent(w io.Writer) {
 	for i := 0; i < indentLevel; i++ {
@@ -1955,6 +1962,26 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	} else if rt == "bigint" && lt == "int" {
 		left = &CastExpr{Expr: left, Type: "bigint"}
 	}
+	if b.Op == "/" && lt == "int" && rt == "int" {
+		usesFloorDiv = true
+		io.WriteString(w, "_floordiv ")
+		if needsParen(left) {
+			io.WriteString(w, "(")
+			left.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			left.emit(w)
+		}
+		io.WriteString(w, " ")
+		if needsParen(right) {
+			io.WriteString(w, "(")
+			right.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			right.emit(w)
+		}
+		return
+	}
 	if needsParen(left) {
 		io.WriteString(w, "(")
 		left.emit(w)
@@ -3115,6 +3142,10 @@ func Emit(prog *Program) []byte {
 		buf.WriteString(helperRepr)
 		buf.WriteString("\n")
 	}
+	if prog.UseFloorDiv {
+		buf.WriteString(helperFloorDiv)
+		buf.WriteString("\n")
+	}
 	for _, a := range prog.Aliases {
 		fmt.Fprintf(&buf, "type %s = %s\n", fsIdent(a.Name), a.Type)
 	}
@@ -3219,6 +3250,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesRepr = false
 	usesArraySet = false
 	usesJSON = false
+	usesFloorDiv = false
 	funcHasNull = false
 	currentReturn = ""
 	funcDepth = 0
@@ -3290,6 +3322,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	p.UseRepr = usesRepr
 	p.UseArraySet = usesArraySet
 	p.UseJSON = usesJSON
+	p.UseFloorDiv = usesFloorDiv
 	return p, nil
 }
 
@@ -4026,6 +4059,9 @@ func convertExpr(e *parser.Expr) (Expr, error) {
 			exprs = exprs[:len(exprs)-1]
 			o := ops[len(ops)-1]
 			ops = ops[:len(ops)-1]
+			if o == "/" && inferType(l) == "int" && inferType(r) == "int" {
+				usesFloorDiv = true
+			}
 			exprs = append(exprs, &BinaryExpr{Left: l, Op: o, Right: r})
 		}
 		ops = append(ops, op.Op)
@@ -4038,6 +4074,9 @@ func convertExpr(e *parser.Expr) (Expr, error) {
 		exprs = exprs[:len(exprs)-1]
 		o := ops[len(ops)-1]
 		ops = ops[:len(ops)-1]
+		if o == "/" && inferType(l) == "int" && inferType(r) == "int" {
+			usesFloorDiv = true
+		}
 		exprs = append(exprs, &BinaryExpr{Left: l, Op: o, Right: r})
 	}
 	if len(exprs) != 1 {
