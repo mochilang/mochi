@@ -4384,7 +4384,14 @@ func Emit(w io.Writer, p *Program) error {
 		}
 	}
 	if useStr {
-		if _, err := io.WriteString(w, "String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }\n\n"); err != nil {
+		if _, err := io.WriteString(w, "String _str(dynamic v) {"+
+			" if (v is double && v == v.roundToDouble()) {"+
+			" var i = v.toInt();"+
+			" if (i == 0) return '0';"+
+			" return i.toString();"+
+			" }"+
+			" return v.toString();"+
+			" }\n\n"); err != nil {
 			return err
 		}
 	}
