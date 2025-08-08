@@ -1,0 +1,9 @@
+/workspace/mochi/tests/algorithms/x/Erlang/project_euler/problem_053/sol1.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/project_euler/problem_053/sol1.erl:75:20: Warning: variable 'R2_3' exported from 'case' (line 55, column 9)
+%   75| {K_2, Limit, N, R, R2_3, Result_2} = Fun(K, Limit, N, R, R2_3, Result),
+%     |                    ^
+
+4075
