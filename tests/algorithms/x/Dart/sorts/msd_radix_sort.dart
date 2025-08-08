@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,10 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
@@ -84,9 +87,9 @@ List<int> _msd_radix_sort(List<int> nums, int bit_position) {
   while (i < nums.length) {
     int _num = nums[i];
     if (get_bit(_num, bit_position - 1) == 1) {
-    ones = [...ones, _num];
+    ones = (ones..add(_num));
   } else {
-    zeros = [...zeros, _num];
+    zeros = (zeros..add(_num));
   }
     i = i + 1;
   }
@@ -95,7 +98,7 @@ List<int> _msd_radix_sort(List<int> nums, int bit_position) {
   List<int> res = zeros;
   i = 0;
   while (i < ones.length) {
-    res = [...res, ones[i]];
+    res = (res..add(ones[i]));
     i = i + 1;
   }
   return res;
@@ -108,7 +111,7 @@ List<int> msd_radix_sort(List<int> nums) {
   int i = 0;
   while (i < nums.length) {
     if (nums[i] < 0) {
-    throw Exception("All numbers must be positive");
+    ;
   }
     i = i + 1;
   }

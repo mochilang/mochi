@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,10 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
@@ -83,7 +86,7 @@ List<String> alphanum_key(String s) {
     i = i + 1;
   };
     String len_str = pad_left(_str(_num.length), 3);
-    key = [...key, "#" + len_str + _num];
+    key = (key..add("#" + len_str + _num));
   } else {
     String seg = "";
     while (i < s.length) {
@@ -93,7 +96,7 @@ List<String> alphanum_key(String s) {
     seg = seg + to_lower(s.substring(i, i + 1));
     i = i + 1;
   };
-    key = [...key, seg];
+    key = (key..add(seg));
   }
   }
   return key;
@@ -124,8 +127,8 @@ List<String> natural_sort(List<String> arr) {
   List<List<String>> keys = <List<String>>[];
   int k = 0;
   while (k < arr.length) {
-    res = [...res, arr[k]];
-    keys = ([...keys, alphanum_key(arr[k])] as List).map((e) => (List<String>.from(e) as List<String>)).toList();
+    res = (res..add(arr[k]));
+    keys = ((keys..add(alphanum_key(arr[k]))) as List).map((e) => (List<String>.from(e) as List<String>)).toList();
     k = k + 1;
   }
   int i = 1;
