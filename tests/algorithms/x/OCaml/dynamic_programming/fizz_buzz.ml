@@ -87,53 +87,43 @@ exception Continue
 
 exception Return
 
-let rec create_fibonacci () =
-  let __ret = ref ([] : (string * Obj.t) list) in
+let rec fizz_buzz number iterations =
+  let __ret = ref "" in
   (try
-  __ret := (Obj.magic ([(__str ("sequence"), Obj.repr ([0; 1]))]) : (string * Obj.t) list); raise Return
-  with Return -> !__ret)
-
-and fib_get f index =
-  let __ret = ref ([] : (string * Obj.t) list) in
-  (try
-  let index = (Obj.magic index : int) in
-  let seq = ref ((Obj.obj (List.assoc (__str ("sequence")) (!f) : Obj.t) : int list)) in
-  (try while (List.length (!seq) < index) do
+  let number = (Obj.magic number : int) in
+  let iterations = (Obj.magic iterations : int) in
+  if (number < 1) then (
+  (failwith ("starting number must be an integer and be more than 0"));
+  );
+  if (iterations < 1) then (
+  (failwith ("Iterations must be done more than 0 times to play FizzBuzz"));
+  );
+  let out = ref ("") in
+  let n = ref (number) in
+  (try while (!n <= iterations) do
     try
-  let next = (List.nth (!seq) ((List.length (!seq) - 1)) + List.nth (!seq) ((List.length (!seq) - 2))) in
-  seq := (List.append (!seq) [(Obj.magic (next) : int)]);
+  if (((!n mod 3 + 3) mod 3) = 0) then (
+  out := (!out ^ "Fizz");
+  );
+  if (((!n mod 5 + 5) mod 5) = 0) then (
+  out := (!out ^ "Buzz");
+  );
+  if ((((!n mod 3 + 3) mod 3) <> 0) && (((!n mod 5 + 5) mod 5) <> 0)) then (
+  out := (!out ^ (string_of_int (!n)));
+  );
+  out := (!out ^ " ");
+  n := (!n + 1);
     with Continue -> ()
   done with Break -> ());
-  f := ((__str ("sequence"), Obj.repr (!seq)) :: List.remove_assoc (__str ("sequence")) (Obj.magic (!f) : (string * Obj.t) list));
-  let result = ref (([] : (int) list)) in
-  let i = ref (0) in
-  (try while (!i < index) do
-    try
-  result := (List.append (!result) [(Obj.magic (List.nth (!seq) (!i)) : int)]);
-  i := (!i + 1);
-    with Continue -> ()
-  done with Break -> ());
-  __ret := (Obj.magic ([(__str ("fib"), Obj.repr (!f)); (__str ("values"), Obj.repr (!result))]) : (string * Obj.t) list); raise Return
-  with Return -> !__ret)
-
-and main () =
-  let __ret = ref (Obj.magic 0) in
-  (try
-  let fib = ref (create_fibonacci ()) in
-  let res = ref (fib_get (fib) (Obj.repr (10))) in
-  fib := (Obj.obj (List.assoc (__str ("fib")) (!res) : Obj.t) : ( string * Obj.t ) list);
-  print_endline ((__str ((Obj.obj (List.assoc (__str ("values")) (!res) : Obj.t) : int list))));
-  res := fib_get (fib) (Obj.repr (5));
-  fib := (Obj.obj (List.assoc (__str ("fib")) (!res) : Obj.t) : ( string * Obj.t ) list);
-  print_endline ((__str ((Obj.obj (List.assoc (__str ("values")) (!res) : Obj.t) : int list))));
-    !__ret
+  __ret := (Obj.magic (!out) : string); raise Return
   with Return -> !__ret)
 
 
 let () =
   let mem_start = _mem () in
   let start = _now () in
-  ignore (main ());
+  print_endline ((fizz_buzz (Obj.repr (1)) (Obj.repr (7))));
+  print_endline ((fizz_buzz (Obj.repr (1)) (Obj.repr (15))));
   let finish = _now () in
   let mem_end = _mem () in
   let dur = (finish - start) / 1000 in
