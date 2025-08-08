@@ -1,0 +1,7 @@
+run: exit status 1
+lua: ...thms/x/Lua/digital_image_processing/filters/convolve.lua:107: attempt to index a nil value (field '?')
+stack traceback:
+	...thms/x/Lua/digital_image_processing/filters/convolve.lua:107: in function 'pad_edge'
+	...thms/x/Lua/digital_image_processing/filters/convolve.lua:313: in function 'img_convolve'
+	...thms/x/Lua/digital_image_processing/filters/convolve.lua:435: in main chunk
+	[C]: in ?

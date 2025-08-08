@@ -1,9 +1,0 @@
-run: exit status 1
-5
-9
-0
-lua: ...s/algorithms/x/Lua/dynamic_programming/edit_distance.lua:180: attempt to index a nil value (field '?')
-stack traceback:
-	...s/algorithms/x/Lua/dynamic_programming/edit_distance.lua:180: in function 'min_dist_bottom_up'
-	...s/algorithms/x/Lua/dynamic_programming/edit_distance.lua:334: in main chunk
-	[C]: in ?

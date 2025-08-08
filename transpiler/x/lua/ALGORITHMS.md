@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-07 15:28 GMT+7
+Last updated: 2025-08-08 10:22 GMT+7
 
-## Algorithms Golden Test Checklist (823/1077)
+## Algorithms Golden Test Checklist (829/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 216µs | 912 B |
@@ -268,54 +268,54 @@ Last updated: 2025-08-07 15:28 GMT+7
 | 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 70µs | 1.1 KB |
 | 260 | data_structures/stacks/stock_span_problem | ✓ | 219µs | 1.2 KB |
 | 261 | data_structures/suffix_tree/example/example_usage | ✓ | 57µs | 944 B |
-| 262 | data_structures/suffix_tree/suffix_tree | error |  |  |
-| 263 | data_structures/suffix_tree/suffix_tree_node | error |  |  |
-| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 172µs | 1.2 KB |
-| 265 | data_structures/trie/radix_tree | error |  |  |
-| 266 | data_structures/trie/trie | ✓ | 566µs | 3.1 KB |
-| 267 | digital_image_processing/change_brightness | ✓ | 216µs | 1.1 KB |
-| 268 | digital_image_processing/change_contrast | ✓ | 299µs | 1.7 KB |
-| 269 | digital_image_processing/convert_to_negative | ✓ | 158µs | 1.0 KB |
-| 270 | digital_image_processing/dithering/burkes | ✓ | 205µs | 1.0 KB |
-| 271 | digital_image_processing/edge_detection/canny | ✓ | 312µs | 4.5 KB |
-| 272 | digital_image_processing/filters/bilateral_filter | ✓ | 231µs | 1.6 KB |
-| 273 | digital_image_processing/filters/convolve |   |  |  |
-| 274 | digital_image_processing/filters/gabor_filter | ✓ | 114µs | 1.5 KB |
-| 275 | digital_image_processing/filters/gaussian_filter | ✓ | 255µs | 2.4 KB |
-| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 243µs | 2.8 KB |
-| 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 644µs | 1.7 KB |
-| 278 | digital_image_processing/filters/median_filter | ✓ | 406µs | 1016 B |
-| 279 | digital_image_processing/filters/sobel_filter | ✓ | 795µs | 1.5 KB |
-| 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 1.776ms | 5.1 KB |
-| 281 | digital_image_processing/index_calculation | ✓ | 299µs | 1.1 KB |
-| 282 | digital_image_processing/morphological_operations/dilation_operation | ✓ | 374µs | 1.0 KB |
-| 283 | digital_image_processing/morphological_operations/erosion_operation | ✓ | 347µs | 2.0 KB |
-| 284 | digital_image_processing/resize/resize | ✓ | 451µs | 1.1 KB |
-| 285 | digital_image_processing/rotation/rotation | ✓ | 219µs | 2.6 KB |
-| 286 | digital_image_processing/sepia | ✓ | 186µs | 1.6 KB |
-| 287 | digital_image_processing/test_digital_image_processing | ✓ | 1.037ms | 5.4 KB |
-| 288 | divide_and_conquer/closest_pair_of_points | error |  |  |
+| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 382µs | 7.0 KB |
+| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 217µs | 1.6 KB |
+| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 174µs | 1.2 KB |
+| 265 | data_structures/trie/radix_tree | ✓ | 321µs | 2.9 KB |
+| 266 | data_structures/trie/trie | ✓ | 315µs | 3.1 KB |
+| 267 | digital_image_processing/change_brightness | ✓ | 208µs | 1.2 KB |
+| 268 | digital_image_processing/change_contrast | ✓ | 399µs | 1.8 KB |
+| 269 | digital_image_processing/convert_to_negative | ✓ | 201µs | 1.0 KB |
+| 270 | digital_image_processing/dithering/burkes | ✓ | 237µs | 1.1 KB |
+| 271 | digital_image_processing/edge_detection/canny | ✓ | 316µs | 4.6 KB |
+| 272 | digital_image_processing/filters/bilateral_filter | ✓ | 307µs | 1.6 KB |
+| 273 | digital_image_processing/filters/convolve | error |  |  |
+| 274 | digital_image_processing/filters/gabor_filter | ✓ | 210µs | 1.5 KB |
+| 275 | digital_image_processing/filters/gaussian_filter | ✓ | 217µs | 2.4 KB |
+| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 315µs | 2.9 KB |
+| 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 648µs | 1.7 KB |
+| 278 | digital_image_processing/filters/median_filter | ✓ | 446µs | 1016 B |
+| 279 | digital_image_processing/filters/sobel_filter | ✓ | 734µs | 1.6 KB |
+| 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 462µs | 1.3 KB |
+| 281 | digital_image_processing/index_calculation | ✓ | 245µs | 1.1 KB |
+| 282 | digital_image_processing/morphological_operations/dilation_operation | ✓ | 370µs | 1.1 KB |
+| 283 | digital_image_processing/morphological_operations/erosion_operation | ✓ | 281µs | 2.0 KB |
+| 284 | digital_image_processing/resize/resize | ✓ | 387µs | 1.1 KB |
+| 285 | digital_image_processing/rotation/rotation | ✓ | 257µs | 2.6 KB |
+| 286 | digital_image_processing/sepia | ✓ | 252µs | 1.6 KB |
+| 287 | digital_image_processing/test_digital_image_processing | ✓ | 1.07ms | 5.4 KB |
+| 288 | divide_and_conquer/closest_pair_of_points | ✓ | 356µs | 1.8 KB |
 | 289 | divide_and_conquer/convex_hull | ✓ | 3µs | 112 B |
-| 290 | divide_and_conquer/heaps_algorithm | ✓ | 219µs | 1.1 KB |
-| 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 309µs | 912 B |
-| 292 | divide_and_conquer/inversions | ✓ | 537µs | 1.2 KB |
-| 293 | divide_and_conquer/kth_order_statistic | ✓ | 394µs | 840 B |
-| 294 | divide_and_conquer/max_difference_pair | ✓ | 269µs | 1.1 KB |
-| 295 | divide_and_conquer/max_subarray | error |  |  |
-| 296 | divide_and_conquer/mergesort | ✓ | 591µs | 1.1 KB |
-| 297 | divide_and_conquer/peak | ✓ | 152µs | 912 B |
-| 298 | divide_and_conquer/power | ✓ | 293µs | 336 B |
-| 299 | divide_and_conquer/strassen_matrix_multiplication | ✓ | 18.719ms | 2.8 KB |
+| 290 | divide_and_conquer/heaps_algorithm | ✓ | 363µs | 1.1 KB |
+| 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 299µs | 912 B |
+| 292 | divide_and_conquer/inversions | ✓ | 793µs | 1.2 KB |
+| 293 | divide_and_conquer/kth_order_statistic | ✓ | 446µs | 840 B |
+| 294 | divide_and_conquer/max_difference_pair | ✓ | 182µs | 1.1 KB |
+| 295 | divide_and_conquer/max_subarray | ✓ | 223µs | 1.3 KB |
+| 296 | divide_and_conquer/mergesort | ✓ | 774µs | 1.1 KB |
+| 297 | divide_and_conquer/peak | ✓ | 233µs | 960 B |
+| 298 | divide_and_conquer/power | ✓ | 356µs | 976 B |
+| 299 | divide_and_conquer/strassen_matrix_multiplication | ✓ | 15.113ms | 2.8 KB |
 | 300 | docs/conf | ✓ | 103µs | 853 B |
-| 301 | dynamic_programming/abbreviation | ✓ | 647µs | 1.2 KB |
-| 302 | dynamic_programming/all_construct | ✓ | 2.184ms | 872 B |
-| 303 | dynamic_programming/bitmask | ✓ | 310µs | 1.1 KB |
-| 304 | dynamic_programming/catalan_numbers | ✓ | 207µs | 848 B |
-| 305 | dynamic_programming/climbing_stairs | ✓ | 127µs | 40 B |
-| 306 | dynamic_programming/combination_sum_iv | ✓ | 420µs | 1.2 KB |
-| 307 | dynamic_programming/edit_distance | error |  |  |
-| 308 | dynamic_programming/factorial | ✓ | 260µs | 1.4 KB |
-| 309 | dynamic_programming/fast_fibonacci | ✓ | 266µs | 400 B |
+| 301 | dynamic_programming/abbreviation | ✓ | 592µs | 1.2 KB |
+| 302 | dynamic_programming/all_construct | ✓ | 1.232ms | 872 B |
+| 303 | dynamic_programming/bitmask | ✓ | 234µs | 1.2 KB |
+| 304 | dynamic_programming/catalan_numbers | ✓ | 257µs | 896 B |
+| 305 | dynamic_programming/climbing_stairs | ✓ | 224µs | 80 B |
+| 306 | dynamic_programming/combination_sum_iv | ✓ | 375µs | 1.2 KB |
+| 307 | dynamic_programming/edit_distance | ✓ | 1.198ms | 3.0 KB |
+| 308 | dynamic_programming/factorial | ✓ | 251µs | 1.4 KB |
+| 309 | dynamic_programming/fast_fibonacci | ✓ | 490µs | 1.1 KB |
 | 310 | dynamic_programming/fibonacci | ✓ | 257µs | 944 B |
 | 311 | dynamic_programming/fizz_buzz | ✓ | 145µs | 744 B |
 | 312 | dynamic_programming/floyd_warshall | ✓ | 379µs | 2.1 KB |

@@ -1,9 +1,0 @@
-run: exit status 1
-true
-true
-0
-lua: ...s/x/Lua/data_structures/suffix_tree/suffix_tree_node.lua:187: attempt to add a 'string' with a 'number'
-stack traceback:
-	[C]: in metamethod 'add'
-	...s/x/Lua/data_structures/suffix_tree/suffix_tree_node.lua:187: in main chunk
-	[C]: in ?
