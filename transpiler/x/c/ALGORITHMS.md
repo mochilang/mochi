@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (117/1077) - Last updated 2025-08-08 09:18 +0700:
+Checklist of programs that currently transpile and run (119/1077) - Last updated 2025-08-08 10:43 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -121,8 +121,8 @@ Checklist of programs that currently transpile and run (117/1077) - Last updated
 | 114 | computer_vision/haralick_descriptors |  |  |  |
 | 115 | computer_vision/harris_corner |  |  |  |
 | 116 | computer_vision/horn_schunck |  |  |  |
-| 117 | computer_vision/intensity_based_segmentation |  |  |  |
-| 118 | computer_vision/mean_threshold |  |  |  |
+| 117 | computer_vision/intensity_based_segmentation | ✓ | 585us | 1.4 MB |
+| 118 | computer_vision/mean_threshold | ✓ | 424us | 1.4 MB |
 | 119 | computer_vision/mosaic_augmentation |  |  |  |
 | 120 | computer_vision/pooling_functions |  |  |  |
 | 121 | conversions/astronomical_length_scale_conversion |  |  |  |

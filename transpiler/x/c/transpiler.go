@@ -345,6 +345,28 @@ func (p *PrintStmt) emit(w io.Writer, indent int) {
 				fmt.Fprintf(w, "puts(\"%s\");\n", escape(strings.Join(parts, "")))
 				continue
 			}
+			switch p.Types[i] {
+			case "list_int":
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "puts(str_list_int(%s, %s_len));\n", v.Name, v.Name)
+				continue
+			case "list_double":
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "puts(str_list_double(%s, %s_len));\n", v.Name, v.Name)
+				continue
+			case "list_str":
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "puts(str_list_str(%s, %s_len));\n", v.Name, v.Name)
+				continue
+			case "list_list_int":
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "puts(str_list_list_int(%s, %s_len, %s_lens));\n", v.Name, v.Name, v.Name)
+				continue
+			case "list_list_double":
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "puts(str_list_list_double(%s, %s_len, %s_lens));\n", v.Name, v.Name, v.Name)
+				continue
+			}
 			if p.Types[i] == "string" || exprIsString(a) {
 				format = append(format, "%s")
 			} else if p.Types[i] == "float" || exprIsFloat(a) {
@@ -354,6 +376,52 @@ func (p *PrintStmt) emit(w io.Writer, indent int) {
 			}
 			exprs = append(exprs, a)
 		default:
+			switch p.Types[i] {
+			case "list_int":
+				writeIndent(w, indent)
+				io.WriteString(w, "puts(str_list_int(")
+				a.emitExpr(w)
+				io.WriteString(w, ", ")
+				emitLenExpr(w, a)
+				io.WriteString(w, "));\n")
+				continue
+			case "list_double":
+				writeIndent(w, indent)
+				io.WriteString(w, "puts(str_list_double(")
+				a.emitExpr(w)
+				io.WriteString(w, ", ")
+				emitLenExpr(w, a)
+				io.WriteString(w, "));\n")
+				continue
+			case "list_str":
+				writeIndent(w, indent)
+				io.WriteString(w, "puts(str_list_str(")
+				a.emitExpr(w)
+				io.WriteString(w, ", ")
+				emitLenExpr(w, a)
+				io.WriteString(w, "));\n")
+				continue
+			case "list_list_int":
+				writeIndent(w, indent)
+				io.WriteString(w, "puts(str_list_list_int(")
+				a.emitExpr(w)
+				io.WriteString(w, ", ")
+				emitLenExpr(w, a)
+				io.WriteString(w, ", ")
+				emitLensExpr(w, a)
+				io.WriteString(w, "));\n")
+				continue
+			case "list_list_double":
+				writeIndent(w, indent)
+				io.WriteString(w, "puts(str_list_list_double(")
+				a.emitExpr(w)
+				io.WriteString(w, ", ")
+				emitLenExpr(w, a)
+				io.WriteString(w, ", ")
+				emitLensExpr(w, a)
+				io.WriteString(w, "));\n")
+				continue
+			}
 			if p.Types[i] == "string" || exprIsString(a) {
 				format = append(format, "%s")
 			} else if p.Types[i] == "float" || exprIsFloat(a) {
@@ -4402,22 +4470,114 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 					return nil, fmt.Errorf("invalid print argument")
 				}
 				tname := ""
-				if exprIsString(ex) {
+				switch {
+				case exprIsString(ex):
 					tname = "string"
-				} else if _, ok := ex.(*FieldExpr); ok {
+				case func() bool { _, ok := ex.(*FieldExpr); return ok }():
 					ft := inferExprType(env, ex)
 					if ft == "const char*" {
 						tname = "string"
 					} else if ft == "double" {
 						tname = "float"
 					}
-				} else if v, ok := ex.(*VarRef); ok {
-					if t, err := env.GetVar(v.Name); err == nil {
+				case func() bool { _, ok := ex.(*VarRef); return ok }():
+					v := ex.(*VarRef)
+					if vt, ok := varTypes[v.Name]; ok {
+						switch {
+						case strings.HasSuffix(vt, "[][]"):
+							base := strings.TrimSuffix(vt, "[][]")
+							switch base {
+							case "int", "long long":
+								tname = "list_list_int"
+								needStrListListInt = true
+								needStrListInt = true
+							case "double":
+								tname = "list_list_double"
+								needStrListListDouble = true
+								needStrListDouble = true
+							case "const char*":
+								tname = "list_list_str"
+								needStrListStr = true
+							}
+						case strings.HasSuffix(vt, "[]"):
+							base := strings.TrimSuffix(vt, "[]")
+							switch base {
+							case "int", "long long":
+								tname = "list_int"
+								needStrListInt = true
+							case "double":
+								tname = "list_double"
+								needStrListDouble = true
+							case "const char*":
+								tname = "list_str"
+								needStrListStr = true
+							}
+						case vt == "const char*":
+							tname = "string"
+						case vt == "double":
+							tname = "float"
+						}
+					} else if t, err := env.GetVar(v.Name); err == nil {
 						switch t.(type) {
 						case types.StringType:
 							tname = "string"
 						case types.FloatType:
 							tname = "float"
+						}
+					}
+				case func() bool { _, ok := ex.(*IndexExpr); return ok }():
+					ix := ex.(*IndexExpr)
+					if v, ok := ix.Target.(*VarRef); ok {
+						if vt, ok2 := varTypes[v.Name]; ok2 {
+							if strings.HasSuffix(vt, "[][]") {
+								base := strings.TrimSuffix(vt, "[][]")
+								switch base {
+								case "int", "long long":
+									tname = "list_int"
+									needStrListInt = true
+								case "double":
+									tname = "list_double"
+									needStrListDouble = true
+								case "const char*":
+									tname = "list_str"
+									needStrListStr = true
+								}
+							}
+						}
+					}
+				default:
+					ft := inferExprType(env, ex)
+					ftc := strings.ReplaceAll(ft, " ", "")
+					switch {
+					case ftc == "double":
+						tname = "float"
+					case strings.HasSuffix(ftc, "**"):
+						base := strings.TrimSuffix(ftc, "**")
+						switch base {
+						case "longlong":
+							tname = "list_list_int"
+							needStrListListInt = true
+							needStrListInt = true
+						case "double":
+							tname = "list_list_double"
+							needStrListListDouble = true
+							needStrListDouble = true
+						case "constchar*":
+							tname = "list_list_str"
+							needStrListStr = true
+						}
+					case strings.HasSuffix(ftc, "*"):
+						base := strings.TrimSuffix(ftc, "*")
+						switch base {
+						case "longlong":
+							tname = "list_int"
+							needStrListInt = true
+						case "double":
+							tname = "list_double"
+							needStrListDouble = true
+						case "constchar*":
+							tname = "list_str"
+							needStrListStr = true
 						}
 					}
 				}
