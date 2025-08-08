@@ -1,7 +1,10 @@
-## Progress (2025-08-01 23:55 +0700)
-- transpiler/ocaml: update rosetta outputs for indices 184-233 (efa94d8a28)
+## Progress (2025-08-08 16:40 +0700)
+- ocaml: handle nested map updates (23572929fc)
 
 - VM valid programs compiled: 102/105
+
+- transpiler/ocaml: update rosetta outputs for indices 184-233 (efa94d8a28)
+
 
 - ocaml transpiler: add dynamic cast support (46914a16d7)
 
