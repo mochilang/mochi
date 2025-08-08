@@ -1,5 +1,21 @@
 # 📦 CHANGELOG.md
 
+## [0.10.61] – 2025-08-08T10:28:49+07:00
+
+### Added
+
+* Expanded slice and map support across multiple transpilers.
+* New algorithm examples including stock span and coloring problems.
+
+### Changed
+
+* Refreshed algorithm outputs and benchmarks for Java, Python, Go, F#, and more.
+
+### Fixed
+
+* Corrected list append evaluation and recursion issues in C++ and Dart transpilers.
+* Improved substring handling in Ruby and safer array indexing in Swift.
+
 ## [0.10.60] – 2025-08-07T07:42:09+00:00
 
 ### Added
