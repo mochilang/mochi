@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (131/1077) - Last updated 2025-08-08 17:27 +0700:
+Checklist of programs that currently transpile and run (136/1077) - Last updated 2025-08-08 18:03 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -158,11 +158,11 @@ Checklist of programs that currently transpile and run (131/1077) - Last updated
 | 151 | conversions/weight_conversion | ✓ | 230us | 1.6 MB |
 | 152 | data_compression/burrows_wheeler |  |  |  |
 | 153 | data_compression/huffman |  |  |  |
-| 154 | data_compression/lempel_ziv |  |  |  |
-| 155 | data_compression/lempel_ziv_decompress |  |  |  |
-| 156 | data_compression/lz77 |  |  |  |
-| 157 | data_compression/peak_signal_to_noise_ratio |  |  |  |
-| 158 | data_compression/run_length_encoding |  |  |  |
+| 154 | data_compression/lempel_ziv | ✓ | 641us | 1.4 MB |
+| 155 | data_compression/lempel_ziv_decompress | ✓ | 436us | 1.5 MB |
+| 156 | data_compression/lz77 | ✓ | 723us | 1.4 MB |
+| 157 | data_compression/peak_signal_to_noise_ratio | ✓ | 4us | 1.4 MB |
+| 158 | data_compression/run_length_encoding | ✓ | 902us | 1.5 MB |
 | 159 | data_structures/arrays/equilibrium_index_in_array |  |  |  |
 | 160 | data_structures/arrays/find_triplets_with_0_sum |  |  |  |
 | 161 | data_structures/arrays/index_2d_array_in_1d |  |  |  |

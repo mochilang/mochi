@@ -7315,6 +7315,7 @@ func convertUnary(u *parser.Unary) Expr {
 			arg := convertExpr(call.Args[0])
 			if inferExprType(currentEnv, arg) == "const char*" {
 				needAtoi = true
+				funcReturnTypes["_atoi"] = "long long"
 				return &CallExpr{Func: "_atoi", Args: []Expr{arg}}
 			}
 			return &UnaryExpr{Op: "(int)", Expr: arg}
