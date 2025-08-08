@@ -1,0 +1,58 @@
+warning: variable "b" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 20 │       b = 0.0
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/fractals/mandelbrot.exs:20:7: Main.hsv_to_rgb/3
+
+    warning: variable "g" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 19 │       g = 0.0
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/fractals/mandelbrot.exs:19:7: Main.hsv_to_rgb/3
+
+    warning: variable "r" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 18 │       r = 0.0
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/fractals/mandelbrot.exs:18:7: Main.hsv_to_rgb/3
+
+    warning: variable "a" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 88 │       {a, b, step} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/fractals/mandelbrot.exs:88:8: Main.get_distance/3
+
+    warning: variable "b" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 88 │       {a, b, step} = try do
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/fractals/mandelbrot.exs:88:11: Main.get_distance/3
+
+     warning: variable "rgb" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 135 │               rgb = nil
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/fractals/mandelbrot.exs:135:15: Main.get_image/7
+
+     warning: variable "image_x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 144 │           {image_x, row} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/fractals/mandelbrot.exs:144:12: Main.get_image/7
+
+     warning: variable "image_y" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 157 │       {image_y, img} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/fractals/mandelbrot.exs:157:8: Main.get_image/7
+
+"(255, 0, 0)"
+"(255, 255, 255)"
