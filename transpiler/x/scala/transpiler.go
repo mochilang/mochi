@@ -44,6 +44,7 @@ var needsParseIntStr bool
 var needsMD5 bool
 var needsEnviron bool
 var needsSubprocess bool
+var needsStr bool
 var mapEntryTypes map[string]map[string]string
 var builtinAliases map[string]string
 var localVarTypes map[string]string
@@ -1387,29 +1388,29 @@ func (c *CastExpr) emit(w io.Writer) {
 			} else if typ != "Int" && typ != "BigInt" && typ != "String" {
 				fmt.Fprint(w, ".toInt")
 			}
-                fmt.Fprint(w, ")")
-        }
-        return
-}
-if strings.Contains(c.Type, "=>") {
-        switch c.Value.(type) {
-        case *Name:
-                fmt.Fprintf(w, "(%s _)", c.Value.(*Name).Name)
-        case *FieldExpr:
-                fmt.Fprint(w, "(")
-                c.Value.emit(w)
-                fmt.Fprint(w, " _)")
-        default:
-                fmt.Fprint(w, "(")
-                c.Value.emit(w)
-                fmt.Fprint(w, ")")
-        }
-        if c.Type != "" {
-                fmt.Fprintf(w, ".asInstanceOf[%s]", c.Type)
-        }
-        return
-}
-switch c.Value.(type) {
+			fmt.Fprint(w, ")")
+		}
+		return
+	}
+	if strings.Contains(c.Type, "=>") {
+		switch c.Value.(type) {
+		case *Name:
+			fmt.Fprintf(w, "(%s _)", c.Value.(*Name).Name)
+		case *FieldExpr:
+			fmt.Fprint(w, "(")
+			c.Value.emit(w)
+			fmt.Fprint(w, " _)")
+		default:
+			fmt.Fprint(w, "(")
+			c.Value.emit(w)
+			fmt.Fprint(w, ")")
+		}
+		if c.Type != "" {
+			fmt.Fprintf(w, ".asInstanceOf[%s]", c.Type)
+		}
+		return
+	}
+	switch c.Value.(type) {
 	case *Name, *IntLit, *StringLit, *BoolLit, *FloatLit:
 		c.Value.emit(w)
 	default:
@@ -1595,16 +1596,16 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		if sl, ok := left.(*StringLit); ok && len(sl.Value) == 1 {
 			t := inferTypeWithEnv(rightExpr, nil)
 			if t == "String" || t == "" {
-                               left = &CharLit{Value: sl.Value}
-                               rightExpr = &CallExpr{Fn: &FieldExpr{Receiver: rightExpr, Name: "charAt"}, Args: []Expr{&FieldExpr{Receiver: &IntLit{Value: 0}, Name: "toInt"}}}
+				left = &CharLit{Value: sl.Value}
+				rightExpr = &CallExpr{Fn: &FieldExpr{Receiver: rightExpr, Name: "charAt"}, Args: []Expr{&FieldExpr{Receiver: &IntLit{Value: 0}, Name: "toInt"}}}
 			} else {
 				left = &CharLit{Value: sl.Value}
 			}
 		} else if sl, ok := rightExpr.(*StringLit); ok && len(sl.Value) == 1 {
 			t := inferTypeWithEnv(left, nil)
 			if t == "String" || t == "" {
-                               rightExpr = &CharLit{Value: sl.Value}
-                               left = &CallExpr{Fn: &FieldExpr{Receiver: left, Name: "charAt"}, Args: []Expr{&FieldExpr{Receiver: &IntLit{Value: 0}, Name: "toInt"}}}
+				rightExpr = &CharLit{Value: sl.Value}
+				left = &CallExpr{Fn: &FieldExpr{Receiver: left, Name: "charAt"}, Args: []Expr{&FieldExpr{Receiver: &IntLit{Value: 0}, Name: "toInt"}}}
 			} else {
 				rightExpr = &CharLit{Value: sl.Value}
 			}
@@ -1971,6 +1972,12 @@ func Emit(p *Program) []byte {
 	}
 	if needsRepeat {
 		buf.WriteString("  private def _repeat(s: String, n: BigInt): String = s * n.toInt\n\n")
+	}
+	if needsStr {
+		buf.WriteString("  private def _str(x: Any): String = x match {\n")
+		buf.WriteString("    case d: Double => if (d.isWhole()) d.toLong.toString else d.toString\n")
+		buf.WriteString("    case other => String.valueOf(other)\n")
+		buf.WriteString("  }\n\n")
 	}
 	if needsParseIntStr {
 		buf.WriteString("  private def _parseIntStr(s: String, base: BigInt): BigInt = BigInt(s, base.toInt)\n\n")
@@ -3500,7 +3507,8 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		}
 	case "str":
 		if len(args) == 1 {
-			name = "String.valueOf"
+			name = "_str"
+			needsStr = true
 		}
 	case "int":
 		if len(args) == 1 {
@@ -4789,29 +4797,50 @@ func convertIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
 	if inferTypeWithEnv(cond, env) != "Boolean" {
 		cond = &CastExpr{Value: cond, Type: "bool"}
 	}
+	savedDecls := varDecls
+	savedLocals := localVarTypes
 	var thenStmts []Stmt
+	varDecls = copyVarDecls(varDecls)
+	localVarTypes = copyMap(localVarTypes)
 	for _, st := range is.Then {
 		s, err := convertStmt(st, env)
 		if err != nil {
+			varDecls = savedDecls
+			localVarTypes = savedLocals
 			return nil, err
 		}
 		thenStmts = append(thenStmts, s)
 	}
+	varDecls = savedDecls
+	localVarTypes = savedLocals
+
 	var elseStmts []Stmt
 	if is.ElseIf != nil {
+		varDecls = copyVarDecls(savedDecls)
+		localVarTypes = copyMap(savedLocals)
 		s, err := convertIfStmt(is.ElseIf, env)
 		if err != nil {
+			varDecls = savedDecls
+			localVarTypes = savedLocals
 			return nil, err
 		}
 		elseStmts = []Stmt{s}
+		varDecls = savedDecls
+		localVarTypes = savedLocals
 	} else if len(is.Else) > 0 {
+		varDecls = copyVarDecls(savedDecls)
+		localVarTypes = copyMap(savedLocals)
 		for _, st := range is.Else {
 			s, err := convertStmt(st, env)
 			if err != nil {
+				varDecls = savedDecls
+				localVarTypes = savedLocals
 				return nil, err
 			}
 			elseStmts = append(elseStmts, s)
 		}
+		varDecls = savedDecls
+		localVarTypes = savedLocals
 	}
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
 }
