@@ -594,10 +594,6 @@ type VarStmt struct {
 }
 
 func (s *VarStmt) emit(w io.Writer) error {
-	if _, exists := localVarTypes[s.Name]; exists {
-		as := &AssignStmt{Target: &Name{Name: s.Name}, Value: s.Value}
-		return as.emit(w)
-	}
 	nextStructHint = s.Name
 	typ := s.Type
 	if typ == "" {
@@ -2417,22 +2413,19 @@ type AppendExpr struct {
 }
 
 func (a *AppendExpr) emit(w io.Writer) error {
-	if _, err := io.WriteString(w, "("); err != nil {
+	if _, err := io.WriteString(w, "[..."); err != nil {
 		return err
 	}
 	if err := a.List.emit(w); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, "..add("); err != nil {
+	if _, err := io.WriteString(w, ", "); err != nil {
 		return err
 	}
 	if err := a.Value.emit(w); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, ")"); err != nil {
-		return err
-	}
-	_, err := io.WriteString(w, ")")
+	_, err := io.WriteString(w, "]")
 	return err
 }
 
@@ -5087,6 +5080,9 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 		if _, ok := e.(*IndexExpr); ok && strings.HasSuffix(typ, "?") {
 			typ = strings.TrimSuffix(typ, "?")
 		}
+		if _, ok := localVarTypes[name]; ok {
+			return &AssignStmt{Target: &Name{Name: name}, Value: e}, nil
+		}
 		if typ != "" {
 			localVarTypes[name] = typ
 		}
@@ -5118,7 +5114,11 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 	case st.Fun != nil:
 		var params []string
 		paramTypes := make(map[string]string)
-		savedLocals := map[string]string{}
+		savedGlobals := localVarTypes
+		localVarTypes = map[string]string{}
+		for k, v := range savedGlobals {
+			localVarTypes[k] = v
+		}
 		for _, p := range st.Fun.Params {
 			typ := typeRefString(p.Type)
 			name := sanitize(p.Name)
@@ -5129,7 +5129,6 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 			}
 			if typ != "" {
 				paramTypes[name] = typ
-				savedLocals[name] = localVarTypes[name]
 				localVarTypes[name] = typ
 				params = append(params, fmt.Sprintf("%s %s", typ, name))
 			} else {
@@ -5149,22 +5148,10 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 		body, err := convertStmtList(st.Fun.Body)
 		convInFunc = savedConv
 		if err != nil {
-			for n, v := range savedLocals {
-				if v != "" {
-					localVarTypes[n] = v
-				} else {
-					delete(localVarTypes, n)
-				}
-			}
+			localVarTypes = savedGlobals
 			return nil, err
 		}
-		for n, v := range savedLocals {
-			if v != "" {
-				localVarTypes[n] = v
-			} else {
-				delete(localVarTypes, n)
-			}
-		}
+		localVarTypes = savedGlobals
 		fd := &FuncDecl{Name: name, Params: params, ParamTypes: paramTypes, Body: body}
 		return fd, nil
 	case st.While != nil:
@@ -5736,11 +5723,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			return &CallExpr{Func: &SelectorExpr{Receiver: v, Field: "abs"}}, nil
 		}
 		if p.Call.Func == "panic" && len(p.Call.Args) == 1 {
+			useError = true
 			arg, err := convertExpr(p.Call.Args[0])
 			if err != nil {
 				return nil, err
 			}
-			return &PanicExpr{Arg: arg}, nil
+			return &CallExpr{Func: &Name{Name: "_error"}, Args: []Expr{arg}}, nil
 		}
 		if p.Call.Func == "str" && len(p.Call.Args) == 1 {
 			v, err := convertExpr(p.Call.Args[0])
