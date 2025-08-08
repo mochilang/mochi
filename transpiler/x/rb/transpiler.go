@@ -71,6 +71,10 @@ def _add(a, b)
     a.join + b
   elsif a.is_a?(String) && b.is_a?(Array)
     a + b.join
+  elsif a.is_a?(Array) && !b.is_a?(Array)
+    a + [b]
+  elsif !a.is_a?(Array) && b.is_a?(Array)
+    [a] + b
   elsif a.is_a?(String) || b.is_a?(String)
     a.to_s + b.to_s
   else
