@@ -3242,6 +3242,9 @@ func localTypeName(env *types.Env, name string) string {
 	if v, ok := varDecls[name]; ok && v.Type != "" {
 		return v.Type
 	}
+	if t := envTypeName(env, name); t != "" {
+		return t
+	}
 	return ""
 }
 
@@ -6084,6 +6087,9 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			ex, err := convertExpr(env, e)
 			if err != nil {
 				return nil, err
+			}
+			if ce, ok := ex.(*CastExpr); ok && (ce.Type == "Any?" || ce.Type == "Any") {
+				ex = ce.Value
 			}
 			elems[i] = ex
 		}
