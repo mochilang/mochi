@@ -2585,7 +2585,7 @@ func makeBinary(op string, left, right Node) Node {
 					}
 				}
 			}
-			return &List{Elems: []Node{Symbol("string=?"), left, right}}
+                       return &List{Elems: []Node{Symbol("equal?"), left, right}}
 		}
 		return &List{Elems: []Node{Symbol("equal?"), left, right}}
 	case "!=":
@@ -2608,7 +2608,7 @@ func makeBinary(op string, left, right Node) Node {
 					}
 				}
 			}
-			return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("string=?"), left, right}}}}
+                       return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("equal?"), left, right}}}}
 		}
 		return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("equal?"), left, right}}}}
 	case "&&":
@@ -2692,10 +2692,10 @@ func makeBinaryTyped(op string, left, right Node, lt, rt types.Type) Node {
 			return &List{Elems: []Node{Symbol("string>?"), left, right}}
 		case ">=":
 			return &List{Elems: []Node{Symbol("string>=?"), left, right}}
-		case "==":
-			return &List{Elems: []Node{Symbol("string=?"), left, right}}
-		case "!=":
-			return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("string=?"), left, right}}}}
+                  case "==":
+                          return &List{Elems: []Node{Symbol("equal?"), left, right}}
+                  case "!=":
+                          return &List{Elems: []Node{Symbol("not"), &List{Elems: []Node{Symbol("equal?"), left, right}}}}
 		}
 	}
 
