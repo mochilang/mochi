@@ -2590,7 +2590,7 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 		typ := zigTypeFromExpr(f.Iterable)
 		typ = strings.TrimPrefix(typ, "*")
 		typ = strings.TrimPrefix(typ, "const ")
-		if strings.HasPrefix(typ, "std.AutoHashMap") {
+		if strings.HasPrefix(typ, "std.AutoHashMap") || strings.HasPrefix(typ, "std.StringHashMap") {
 			iterVar := fmt.Sprintf("__mapit%d", loopCounter)
 			loopCounter++
 			io.WriteString(w, "var ")
