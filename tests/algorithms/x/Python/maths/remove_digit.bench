@@ -1,0 +1,15 @@
+{
+  "duration_us": 12,
+  "memory_bytes": 13594624,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/remove_digit.py", line 68, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/remove_digit.py", line 62, in main
+    test_remove_digit()
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/remove_digit.py", line 51, in test_remove_digit
+    panic("remove_digit(152) failed")
+  File "/workspace/mochi/tests/algorithms/x/Python/maths/remove_digit.py", line 15, in panic
+    raise RuntimeError(msg)
+RuntimeError: remove_digit(152) failed
