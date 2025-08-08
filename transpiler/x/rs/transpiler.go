@@ -179,6 +179,47 @@ func castTypeFromExpr(e *parser.Expr, name string) string {
 	return ""
 }
 
+// cloneArgExpr clones references to the given variable name within an
+// expression. It replaces direct uses of the variable with `clone()` calls so
+// that the original variable can still be mutably borrowed elsewhere in the
+// same call.
+func cloneArgExpr(e Expr, name string) Expr {
+	switch ex := e.(type) {
+	case *NameRef:
+		if ex.Name == name {
+			return &MethodCallExpr{Receiver: ex, Name: "clone"}
+		}
+	case *IndexExpr:
+		ex.Target = cloneArgExpr(ex.Target, name)
+		ex.Index = cloneArgExpr(ex.Index, name)
+	case *SliceExpr:
+		ex.Target = cloneArgExpr(ex.Target, name)
+		if ex.Start != nil {
+			ex.Start = cloneArgExpr(ex.Start, name)
+		}
+		if ex.End != nil {
+			ex.End = cloneArgExpr(ex.End, name)
+		}
+	case *BinaryExpr:
+		ex.Left = cloneArgExpr(ex.Left, name)
+		ex.Right = cloneArgExpr(ex.Right, name)
+	case *CallExpr:
+		for i := range ex.Args {
+			ex.Args[i] = cloneArgExpr(ex.Args[i], name)
+		}
+	case *MethodCallExpr:
+		ex.Receiver = cloneArgExpr(ex.Receiver, name)
+		for i := range ex.Args {
+			ex.Args[i] = cloneArgExpr(ex.Args[i], name)
+		}
+	case *UnaryExpr:
+		ex.Expr = cloneArgExpr(ex.Expr, name)
+	case *FieldExpr:
+		ex.Receiver = cloneArgExpr(ex.Receiver, name)
+	}
+	return e
+}
+
 func handleImport(im *parser.ImportStmt, env *types.Env) bool {
 	if im.Lang == nil {
 		return false
@@ -1736,13 +1777,9 @@ func (a *AtoiExpr) emit(w io.Writer) {
 type FloatCastExpr struct{ Expr Expr }
 
 func (f *FloatCastExpr) emit(w io.Writer) {
-	if inferType(f.Expr) == "f64" {
-		f.Expr.emit(w)
-	} else {
-		io.WriteString(w, "(")
-		f.Expr.emit(w)
-		io.WriteString(w, " as f64)")
-	}
+	io.WriteString(w, "(")
+	f.Expr.emit(w)
+	io.WriteString(w, " as f64)")
 }
 
 // SomeExpr wraps a value in `Some(...)`.
@@ -2254,9 +2291,9 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			io.WriteString(w, ")")
 			return
 		}
-		if (lt == "f64" || containsFloat(b.Left)) && rt == "i64" {
+		if (lt == "f64" || containsFloat(b.Left)) && rt != "f64" {
 			b.Right = &FloatCastExpr{Expr: b.Right}
-		} else if (rt == "f64" || containsFloat(b.Right)) && lt == "i64" {
+		} else if (rt == "f64" || containsFloat(b.Right)) && lt != "f64" {
 			b.Left = &FloatCastExpr{Expr: b.Left}
 		}
 	}
@@ -4734,6 +4771,22 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		var paramTypes []string
 		if pts, ok := funParamTypes[name]; ok {
 			paramTypes = pts
+			// If a variable is passed as &mut and also used elsewhere in the
+			// argument list, clone it in the other positions to avoid Rust
+			// borrow checker conflicts.
+			for i := 0; i < len(args) && i < len(paramTypes); i++ {
+				if strings.HasPrefix(paramTypes[i], "&mut ") {
+					if nr, ok := args[i].(*NameRef); ok {
+						vname := nr.Name
+						for j := 0; j < len(args); j++ {
+							if j == i {
+								continue
+							}
+							args[j] = cloneArgExpr(args[j], vname)
+						}
+					}
+				}
+			}
 			for i := 0; i < len(args) && i < len(paramTypes); i++ {
 				if strings.HasPrefix(pts[i], "&mut ") {
 					if _, isUnary := args[i].(*UnaryExpr); !isUnary {

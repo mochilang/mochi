@@ -1,0 +1,746 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:47:2
+   |
+47 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:56:2
+   |
+56 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:61:2
+   |
+61 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:78:2
+   |
+78 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:93:2
+   |
+93 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:118:2
+    |
+118 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:143:2
+    |
+143 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:149:2
+    |
+149 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:43:8
+   |
+43 |     if (x < 0.0) {
+   |        ^       ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+43 -     if (x < 0.0) {
+43 +     if x < 0.0 {
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:44:16
+   |
+44 |         return (0.0 - x)
+   |                ^       ^
+   |
+help: remove these parentheses
+   |
+44 -         return (0.0 - x)
+44 +         return 0.0 - x
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:51:11
+   |
+51 |     while (i < 20) {
+   |           ^      ^
+   |
+help: remove these parentheses
+   |
+51 -     while (i < 20) {
+51 +     while i < 20 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:52:17
+   |
+52 |         guess = ((guess + (x / guess)) / 2.0);
+   |                 ^                           ^
+   |
+help: remove these parentheses
+   |
+52 -         guess = ((guess + (x / guess)) / 2.0);
+52 +         guess = (guess + (x / guess)) / 2.0;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:53:13
+   |
+53 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+53 -         i = (i + 1);
+53 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:58:23
+   |
+58 |     let mut dx: f64 = (p1[0 as usize] - p2[0 as usize]);
+   |                       ^                               ^
+   |
+help: remove these parentheses
+   |
+58 -     let mut dx: f64 = (p1[0 as usize] - p2[0 as usize]);
+58 +     let mut dx: f64 = p1[0 as usize] - p2[0 as usize];
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:59:23
+   |
+59 |     let mut dy: f64 = (p1[1 as usize] - p2[1 as usize]);
+   |                       ^                               ^
+   |
+help: remove these parentheses
+   |
+59 -     let mut dy: f64 = (p1[1 as usize] - p2[1 as usize]);
+59 +     let mut dy: f64 = p1[1 as usize] - p2[1 as usize];
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:60:12
+   |
+60 |     return ((dx * dx) + (dy * dy))
+   |            ^                     ^
+   |
+help: remove these parentheses
+   |
+60 -     return ((dx * dx) + (dy * dy))
+60 +     return (dx * dx) + (dy * dy)
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:65:11
+   |
+65 |     while (i < (points.len() as i64)) {
+   |           ^                         ^
+   |
+help: remove these parentheses
+   |
+65 -     while (i < (points.len() as i64)) {
+65 +     while i < (points.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:67:15
+   |
+67 |         while (j < ((points.len() as i64) - 1)) {
+   |               ^                               ^
+   |
+help: remove these parentheses
+   |
+67 -         while (j < ((points.len() as i64) - 1)) {
+67 +         while j < ((points.len() as i64) - 1) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:68:16
+   |
+68 |             if (points[j as usize].clone()[column as usize] > points[(j + 1) as usize].clone()[column as usize]) {
+   |                ^                                                                                               ^
+   |
+help: remove these parentheses
+   |
+68 -             if (points[j as usize].clone()[column as usize] > points[(j + 1) as usize].clone()[column as usize]) {
+68 +             if points[j as usize].clone()[column as usize] > points[(j + 1) as usize].clone()[column as usize] {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:73:17
+   |
+73 |             j = (j + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+73 -             j = (j + 1);
+73 +             j = j + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:75:13
+   |
+75 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+75 -         i = (i + 1);
+75 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:81:11
+   |
+81 |     while (i < (count - 1)) {
+   |           ^               ^
+   |
+help: remove these parentheses
+   |
+81 -     while (i < (count - 1)) {
+81 +     while i < (count - 1) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:82:26
+   |
+82 |         let mut j: i64 = (i + 1);
+   |                          ^     ^
+   |
+help: remove these parentheses
+   |
+82 -         let mut j: i64 = (i + 1);
+82 +         let mut j: i64 = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:83:15
+   |
+83 |         while (j < count) {
+   |               ^         ^
+   |
+help: remove these parentheses
+   |
+83 -         while (j < count) {
+83 +         while j < count {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:85:16
+   |
+85 |             if (current < min_dis) {
+   |                ^                 ^
+   |
+help: remove these parentheses
+   |
+85 -             if (current < min_dis) {
+85 +             if current < min_dis {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:88:17
+   |
+88 |             j = (j + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+88 -             j = (j + 1);
+88 +             j = j + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:90:13
+   |
+90 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+90 -         i = (i + 1);
+90 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:96:8
+   |
+96 |     if (6 < (count - 1)) {
+   |        ^               ^
+   |
+help: remove these parentheses
+   |
+96 -     if (6 < (count - 1)) {
+96 +     if 6 < (count - 1) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:99:19
+   |
+99 |         i_start = (count - 1);
+   |                   ^         ^
+   |
+help: remove these parentheses
+   |
+99 -         i_start = (count - 1);
+99 +         i_start = count - 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:102:11
+    |
+102 |     while (i < count) {
+    |           ^         ^
+    |
+help: remove these parentheses
+    |
+102 -     while (i < count) {
+102 +     while i < count {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:104:12
+    |
+104 |         if ((i - 6) > 0) {
+    |            ^           ^
+    |
+help: remove these parentheses
+    |
+104 -         if ((i - 6) > 0) {
+104 +         if (i - 6) > 0 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:105:23
+    |
+105 |             j_start = (i - 6);
+    |                       ^     ^
+    |
+help: remove these parentheses
+    |
+105 -             j_start = (i - 6);
+105 +             j_start = i - 6;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:108:15
+    |
+108 |         while (j < i) {
+    |               ^     ^
+    |
+help: remove these parentheses
+    |
+108 -         while (j < i) {
+108 +         while j < i {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:110:16
+    |
+110 |             if (current < min_dis) {
+    |                ^                 ^
+    |
+help: remove these parentheses
+    |
+110 -             if (current < min_dis) {
+110 +             if current < min_dis {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:113:17
+    |
+113 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+113 -             j = (j + 1);
+113 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:115:13
+    |
+115 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+115 -         i = (i + 1);
+115 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:120:8
+    |
+120 |     if (count <= 3) {
+    |        ^          ^
+    |
+help: remove these parentheses
+    |
+120 -     if (count <= 3) {
+120 +     if count <= 3 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:123:24
+    |
+123 |     let mut mid: i64 = (count / 2);
+    |                        ^         ^
+    |
+help: remove these parentheses
+    |
+123 -     let mut mid: i64 = (count / 2);
+123 +     let mut mid: i64 = count / 2;
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:125:113
+    |
+125 |     let mut right: f64 = closest_pair_of_points_sqr(&mut py, py.clone()[mid as usize..count as usize].to_vec(), (count - mid));
+    |                                                                                                                 ^           ^
+    |
+help: remove these parentheses
+    |
+125 -     let mut right: f64 = closest_pair_of_points_sqr(&mut py, py.clone()[mid as usize..count as usize].to_vec(), (count - mid));
+125 +     let mut right: f64 = closest_pair_of_points_sqr(&mut py, py.clone()[mid as usize..count as usize].to_vec(), count - mid);
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:127:8
+    |
+127 |     if (right < best) {
+    |        ^            ^
+    |
+help: remove these parentheses
+    |
+127 -     if (right < best) {
+127 +     if right < best {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:132:11
+    |
+132 |     while (i < (px.len() as i64)) {
+    |           ^                     ^
+    |
+help: remove these parentheses
+    |
+132 -     while (i < (px.len() as i64)) {
+132 +     while i < (px.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:133:12
+    |
+133 |         if (abs((px[i as usize].clone()[0 as usize] - px[mid as usize].clone()[0 as usize])) < best) {
+    |            ^                                                                                       ^
+    |
+help: remove these parentheses
+    |
+133 -         if (abs((px[i as usize].clone()[0 as usize] - px[mid as usize].clone()[0 as usize])) < best) {
+133 +         if abs((px[i as usize].clone()[0 as usize] - px[mid as usize].clone()[0 as usize])) < best {
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:133:17
+    |
+133 |         if (abs((px[i as usize].clone()[0 as usize] - px[mid as usize].clone()[0 as usize])) < best) {
+    |                 ^                                                                         ^
+    |
+help: remove these parentheses
+    |
+133 -         if (abs((px[i as usize].clone()[0 as usize] - px[mid as usize].clone()[0 as usize])) < best) {
+133 +         if (abs(px[i as usize].clone()[0 as usize] - px[mid as usize].clone()[0 as usize]) < best) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:136:13
+    |
+136 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+136 -         i = (i + 1);
+136 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:138:75
+    |
+138 |     let mut strip_best: f64 = dis_between_closest_in_strip(strip.clone(), (strip.len() as i64), best);
+    |                                                                           ^                  ^
+    |
+help: remove these parentheses
+    |
+138 -     let mut strip_best: f64 = dis_between_closest_in_strip(strip.clone(), (strip.len() as i64), best);
+138 +     let mut strip_best: f64 = dis_between_closest_in_strip(strip.clone(), strip.len() as i64, best);
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:139:8
+    |
+139 |     if (strip_best < best) {
+    |        ^                 ^
+    |
+help: remove these parentheses
+    |
+139 -     if (strip_best < best) {
+139 +     if strip_best < best {
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:150:103
+    |
+150 | ...   println!("{}", format!("{}{}", "Distance: ", closest_pair_of_points(g_points.clone().clone(), (g_points.clone().len() as i64)).to_s...
+    |                                                                                                     ^                             ^
+    |
+help: remove these parentheses
+    |
+150 -         println!("{}", format!("{}{}", "Distance: ", closest_pair_of_points(g_points.clone().clone(), (g_points.clone().len() as i64)).to_string()));
+150 +         println!("{}", format!("{}{}", "Distance: ", closest_pair_of_points(g_points.clone().clone(), g_points.clone().len() as i64).to_string()));
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:152:32
+    |
+152 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+152 -         let duration_us: i64 = ((_end - _start) / 1000);
+152 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:42:23
+   |
+42 |         unsafe fn abs(mut x: f64) -> f64 {
+   |                       ----^
+   |                       |
+   |                       help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:48:30
+   |
+48 |         unsafe fn sqrtApprox(mut x: f64) -> f64 {
+   |                              ----^
+   |                              |
+   |                              help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:57:42
+   |
+57 |         unsafe fn euclidean_distance_sqr(mut p1: Vec<f64>, mut p2: Vec<f64>) -> f64 {
+   |                                          ----^^
+   |                                          |
+   |                                          help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:57:60
+   |
+57 |         unsafe fn euclidean_distance_sqr(mut p1: Vec<f64>, mut p2: Vec<f64>) -> f64 {
+   |                                                            ----^^
+   |                                                            |
+   |                                                            help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:58:9
+   |
+58 |     let mut dx: f64 = (p1[0 as usize] - p2[0 as usize]);
+   |         ----^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:59:9
+   |
+59 |     let mut dy: f64 = (p1[1 as usize] - p2[1 as usize]);
+   |         ----^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:62:37
+   |
+62 |         unsafe fn column_based_sort(mut arr: Vec<Vec<f64>>, mut column: i64) -> Vec<Vec<f64>> {
+   |                                     ----^^^
+   |                                     |
+   |                                     help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:62:61
+   |
+62 |         unsafe fn column_based_sort(mut arr: Vec<Vec<f64>>, mut column: i64) -> Vec<Vec<f64>> {
+   |                                                             ----^^^^^^
+   |                                                             |
+   |                                                             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:69:21
+   |
+69 |                 let mut tmp: Vec<f64> = points[j as usize].clone();
+   |                     ----^^^
+   |                     |
+   |                     help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:79:44
+   |
+79 |         unsafe fn dis_between_closest_pair(mut points: Vec<Vec<f64>>, mut count: i64, mut min_dis: f64) -> f64 {
+   |                                            ----^^^^^^
+   |                                            |
+   |                                            help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:79:71
+   |
+79 |         unsafe fn dis_between_closest_pair(mut points: Vec<Vec<f64>>, mut count: i64, mut min_dis: f64) -> f64 {
+   |                                                                       ----^^^^^
+   |                                                                       |
+   |                                                                       help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:84:17
+   |
+84 |             let mut current: f64 = euclidean_distance_sqr(points[i as usize].clone(), points[j as usize].clone());
+   |                 ----^^^^^^^
+   |                 |
+   |                 help: remove this `mut`
+
+warning: value assigned to `i_start` is never read
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:95:13
+   |
+95 |     let mut i_start: i64 = 0;
+   |             ^^^^^^^
+   |
+   = help: maybe it is overwritten before being read?
+   = note: `#[warn(unused_assignments)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:94:48
+   |
+94 |         unsafe fn dis_between_closest_in_strip(mut points: Vec<Vec<f64>>, mut count: i64, mut min_dis: f64) -> f64 {
+   |                                                ----^^^^^^
+   |                                                |
+   |                                                help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:94:75
+   |
+94 |         unsafe fn dis_between_closest_in_strip(mut points: Vec<Vec<f64>>, mut count: i64, mut min_dis: f64) -> f64 {
+   |                                                                           ----^^^^^
+   |                                                                           |
+   |                                                                           help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:109:17
+    |
+109 |             let mut current: f64 = euclidean_distance_sqr(points[i as usize].clone(), points[j as usize].clone());
+    |                 ----^^^^^^^
+    |                 |
+    |                 help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:119:93
+    |
+119 |         unsafe fn closest_pair_of_points_sqr(px: &mut Vec<Vec<f64>>, mut py: Vec<Vec<f64>>, mut count: i64) -> f64 {
+    |                                                                                             ----^^^^^
+    |                                                                                             |
+    |                                                                                             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:123:9
+    |
+123 |     let mut mid: i64 = (count / 2);
+    |         ----^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:124:9
+    |
+124 |     let mut left: f64 = closest_pair_of_points_sqr(px, py[0 as usize..mid as usize].to_vec(), mid);
+    |         ----^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:125:9
+    |
+125 |     let mut right: f64 = closest_pair_of_points_sqr(&mut py, py.clone()[mid as usize..count as usize].to_vec(), (count - mid));
+    |         ----^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:138:9
+    |
+138 |     let mut strip_best: f64 = dis_between_closest_in_strip(strip.clone(), (strip.len() as i64), best);
+    |         ----^^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+error[E0502]: cannot borrow `py` as immutable because it is also borrowed as mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:125:62
+    |
+125 |     let mut right: f64 = closest_pair_of_points_sqr(&mut py, py.clone()[mid as usize..count as usize].to_vec(), (count - mid));
+    |                          -------------------------- -------  ^^ immutable borrow occurs here
+    |                          |                          |
+    |                          |                          mutable borrow occurs here
+    |                          mutable borrow later used by call
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:144:42
+    |
+144 |         unsafe fn closest_pair_of_points(mut points: Vec<Vec<f64>>, mut count: i64) -> f64 {
+    |                                          ----^^^^^^
+    |                                          |
+    |                                          help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:144:69
+    |
+144 |         unsafe fn closest_pair_of_points(mut points: Vec<Vec<f64>>, mut count: i64) -> f64 {
+    |                                                                     ----^^^^^
+    |                                                                     |
+    |                                                                     help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:146:9
+    |
+146 |     let mut points_sorted_on_y: Vec<Vec<f64>> = column_based_sort(points.clone(), 1);
+    |         ----^^^^^^^^^^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/divide_and_conquer/closest_pair_of_points.rs:147:9
+    |
+147 |     let mut dist_sqr: f64 = closest_pair_of_points_sqr(&mut points_sorted_on_x, points_sorted_on_y.clone(), count);
+    |         ----^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+error: aborting due to 1 previous error; 73 warnings emitted
+
+For more information about this error, try `rustc --explain E0502`.

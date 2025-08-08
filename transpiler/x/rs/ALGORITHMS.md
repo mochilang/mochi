@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-08 18:56 GMT+7
+Last updated: 2025-08-08 19:18 GMT+7
 
-## Algorithms Golden Test Checklist (252/1077)
+## Algorithms Golden Test Checklist (301/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -293,59 +293,59 @@ Last updated: 2025-08-08 18:56 GMT+7
 | 284 | digital_image_processing/resize/resize | ✓ | 60µs | 2.1 MB |
 | 285 | digital_image_processing/rotation/rotation | ✓ | 89µs | 2.2 MB |
 | 286 | digital_image_processing/sepia | ✓ | 29µs | 2.0 MB |
-| 287 | digital_image_processing/test_digital_image_processing |   |  |  |
-| 288 | divide_and_conquer/closest_pair_of_points |   |  |  |
-| 289 | divide_and_conquer/convex_hull |   |  |  |
-| 290 | divide_and_conquer/heaps_algorithm |   |  |  |
-| 291 | divide_and_conquer/heaps_algorithm_iterative |   |  |  |
-| 292 | divide_and_conquer/inversions |   |  |  |
-| 293 | divide_and_conquer/kth_order_statistic |   |  |  |
-| 294 | divide_and_conquer/max_difference_pair |   |  |  |
-| 295 | divide_and_conquer/max_subarray |   |  |  |
-| 296 | divide_and_conquer/mergesort |   |  |  |
-| 297 | divide_and_conquer/peak |   |  |  |
-| 298 | divide_and_conquer/power |   |  |  |
-| 299 | divide_and_conquer/strassen_matrix_multiplication |   |  |  |
-| 300 | docs/conf |   |  |  |
-| 301 | dynamic_programming/abbreviation |   |  |  |
-| 302 | dynamic_programming/all_construct |   |  |  |
-| 303 | dynamic_programming/bitmask |   |  |  |
-| 304 | dynamic_programming/catalan_numbers |   |  |  |
-| 305 | dynamic_programming/climbing_stairs |   |  |  |
-| 306 | dynamic_programming/combination_sum_iv |   |  |  |
-| 307 | dynamic_programming/edit_distance |   |  |  |
-| 308 | dynamic_programming/factorial |   |  |  |
-| 309 | dynamic_programming/fast_fibonacci |   |  |  |
-| 310 | dynamic_programming/fibonacci |   |  |  |
-| 311 | dynamic_programming/fizz_buzz |   |  |  |
-| 312 | dynamic_programming/floyd_warshall |   |  |  |
-| 313 | dynamic_programming/integer_partition |   |  |  |
-| 314 | dynamic_programming/iterating_through_submasks |   |  |  |
-| 315 | dynamic_programming/k_means_clustering_tensorflow |   |  |  |
-| 316 | dynamic_programming/knapsack |   |  |  |
-| 317 | dynamic_programming/largest_divisible_subset |   |  |  |
-| 318 | dynamic_programming/longest_common_subsequence |   |  |  |
-| 319 | dynamic_programming/longest_common_substring |   |  |  |
-| 320 | dynamic_programming/longest_increasing_subsequence |   |  |  |
-| 321 | dynamic_programming/longest_increasing_subsequence_iterative |   |  |  |
-| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn |   |  |  |
-| 323 | dynamic_programming/longest_palindromic_subsequence |   |  |  |
-| 324 | dynamic_programming/matrix_chain_multiplication |   |  |  |
-| 325 | dynamic_programming/matrix_chain_order |   |  |  |
-| 326 | dynamic_programming/max_non_adjacent_sum |   |  |  |
-| 327 | dynamic_programming/max_product_subarray |   |  |  |
-| 328 | dynamic_programming/max_subarray_sum |   |  |  |
-| 329 | dynamic_programming/min_distance_up_bottom |   |  |  |
-| 330 | dynamic_programming/minimum_coin_change |   |  |  |
-| 331 | dynamic_programming/minimum_cost_path |   |  |  |
-| 332 | dynamic_programming/minimum_partition |   |  |  |
-| 333 | dynamic_programming/minimum_size_subarray_sum |   |  |  |
-| 334 | dynamic_programming/minimum_squares_to_represent_a_number |   |  |  |
-| 335 | dynamic_programming/minimum_steps_to_one |   |  |  |
-| 336 | dynamic_programming/minimum_tickets_cost |   |  |  |
-| 337 | dynamic_programming/optimal_binary_search_tree |   |  |  |
-| 338 | dynamic_programming/palindrome_partitioning |   |  |  |
-| 339 | dynamic_programming/range_sum_query |   |  |  |
+| 287 | digital_image_processing/test_digital_image_processing | ✓ | 118µs | 2.1 MB |
+| 288 | divide_and_conquer/closest_pair_of_points | error |  |  |
+| 289 | divide_and_conquer/convex_hull | ✓ |  | 2.0 MB |
+| 290 | divide_and_conquer/heaps_algorithm | ✓ | 69µs | 2.1 MB |
+| 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 51µs | 2.1 MB |
+| 292 | divide_and_conquer/inversions | ✓ | 59µs | 2.1 MB |
+| 293 | divide_and_conquer/kth_order_statistic | ✓ | 60µs | 2.1 MB |
+| 294 | divide_and_conquer/max_difference_pair | ✓ | 32µs | 1.8 MB |
+| 295 | divide_and_conquer/max_subarray | ✓ | 40µs | 1.8 MB |
+| 296 | divide_and_conquer/mergesort | ✓ | 113µs | 2.1 MB |
+| 297 | divide_and_conquer/peak | ✓ | 36µs | 2.1 MB |
+| 298 | divide_and_conquer/power | ✓ | 43µs | 2.0 MB |
+| 299 | divide_and_conquer/strassen_matrix_multiplication | ✓ | 1.627ms | 2.1 MB |
+| 300 | docs/conf | ✓ | 19µs | 2.0 MB |
+| 301 | dynamic_programming/abbreviation | ✓ | 109µs | 1.9 MB |
+| 302 | dynamic_programming/all_construct | error |  |  |
+| 303 | dynamic_programming/bitmask | ✓ | 27µs | 2.0 MB |
+| 304 | dynamic_programming/catalan_numbers | ✓ | 66µs | 2.1 MB |
+| 305 | dynamic_programming/climbing_stairs | ✓ | 30µs | 1.9 MB |
+| 306 | dynamic_programming/combination_sum_iv | ✓ | 61µs | 1.8 MB |
+| 307 | dynamic_programming/edit_distance | ✓ | 130µs | 2.1 MB |
+| 308 | dynamic_programming/factorial | ✓ | 45µs | 2.0 MB |
+| 309 | dynamic_programming/fast_fibonacci | ✓ | 25µs | 1.8 MB |
+| 310 | dynamic_programming/fibonacci | ✓ | 90µs | 2.1 MB |
+| 311 | dynamic_programming/fizz_buzz | ✓ | 61µs | 2.2 MB |
+| 312 | dynamic_programming/floyd_warshall | ✓ | 64µs | 2.1 MB |
+| 313 | dynamic_programming/integer_partition | ✓ | 3.179ms | 2.5 MB |
+| 314 | dynamic_programming/iterating_through_submasks | ✓ | 48µs | 2.2 MB |
+| 315 | dynamic_programming/k_means_clustering_tensorflow | error |  |  |
+| 316 | dynamic_programming/knapsack | error |  |  |
+| 317 | dynamic_programming/largest_divisible_subset | ✓ | 112µs | 2.2 MB |
+| 318 | dynamic_programming/longest_common_subsequence | ✓ | 60µs | 2.0 MB |
+| 319 | dynamic_programming/longest_common_substring | ✓ | 79µs | 2.0 MB |
+| 320 | dynamic_programming/longest_increasing_subsequence | ✓ |  | 2.0 MB |
+| 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 80µs | 2.0 MB |
+| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | ✓ | 50µs | 2.1 MB |
+| 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 114µs | 2.2 MB |
+| 324 | dynamic_programming/matrix_chain_multiplication | ✓ |  | 2.0 MB |
+| 325 | dynamic_programming/matrix_chain_order | ✓ | 108µs | 2.1 MB |
+| 326 | dynamic_programming/max_non_adjacent_sum | ✓ | 40µs | 1.9 MB |
+| 327 | dynamic_programming/max_product_subarray | ✓ | 31µs | 1.8 MB |
+| 328 | dynamic_programming/max_subarray_sum | ✓ | 50µs | 2.0 MB |
+| 329 | dynamic_programming/min_distance_up_bottom | ✓ | 292µs | 2.1 MB |
+| 330 | dynamic_programming/minimum_coin_change | ✓ | 169µs | 2.1 MB |
+| 331 | dynamic_programming/minimum_cost_path | ✓ | 34µs | 1.8 MB |
+| 332 | dynamic_programming/minimum_partition | ✓ | 202µs | 2.1 MB |
+| 333 | dynamic_programming/minimum_size_subarray_sum | ✓ | 52µs | 1.8 MB |
+| 334 | dynamic_programming/minimum_squares_to_represent_a_number | ✓ | 76µs | 2.1 MB |
+| 335 | dynamic_programming/minimum_steps_to_one | ✓ | 38µs | 1.9 MB |
+| 336 | dynamic_programming/minimum_tickets_cost | ✓ | 88µs | 2.1 MB |
+| 337 | dynamic_programming/optimal_binary_search_tree | ✓ | 93µs | 2.2 MB |
+| 338 | dynamic_programming/palindrome_partitioning | ✓ | 90µs | 2.2 MB |
+| 339 | dynamic_programming/range_sum_query | ✓ | 47µs | 2.0 MB |
 | 340 | dynamic_programming/regex_match |   |  |  |
 | 341 | dynamic_programming/rod_cutting |   |  |  |
 | 342 | dynamic_programming/smith_waterman |   |  |  |
