@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-08 16:11 GMT+7
+Last updated: 2025-08-08 16:40 GMT+7
 
 ## Algorithms Golden Test Checklist (314/1077)
 | Index | Name | Status | Duration | Memory |
@@ -377,7 +377,7 @@ Last updated: 2025-08-08 16:11 GMT+7
 | 368 | electronics/wheatstone_bridge | ✓ | 6.99ms | 25.0 MB |
 | 369 | file_transfer/receive_file | ✓ | 251us | 0 B |
 | 370 | file_transfer/send_file | ✓ | 231us | 12.5 MB |
-| 371 | file_transfer/tests/test_send_file | ✓ |  |  |
+| 371 | file_transfer/tests/test_send_file |   |  |  |
 | 372 | financial/equated_monthly_installments | ✓ | 6.03ms | 25.0 MB |
 | 373 | financial/exponential_moving_average | ✓ | 2.29ms | 17.3 MB |
 | 374 | financial/interest | ✓ | 7.09ms | 15.4 MB |
@@ -387,7 +387,7 @@ Last updated: 2025-08-08 16:11 GMT+7
 | 378 | financial/straight_line_depreciation | ✓ | 8.01ms | 25.0 MB |
 | 379 | financial/time_and_half_pay | ✓ | 7.04ms | 25.1 MB |
 | 380 | fractals/julia_sets | ✓ | 11.73ms | 25.0 MB |
-| 381 | fractals/koch_snowflake |   |  |  |
+| 381 | fractals/koch_snowflake | ✓ | 6.62ms | 17.3 MB |
 | 382 | fractals/mandelbrot |   |  |  |
 | 383 | fractals/sierpinski_triangle |   |  |  |
 | 384 | fractals/vicsek |   |  |  |
