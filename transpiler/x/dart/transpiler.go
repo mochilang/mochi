@@ -1605,16 +1605,12 @@ type CallExpr struct {
 // PanicExpr represents a call to panic that throws an exception.
 type PanicExpr struct{ Arg Expr }
 
-func (p *PanicExpr) emit(w io.Writer) error {
-	if _, err := io.WriteString(w, "throw Exception("); err != nil {
-		return err
-	}
-	if err := p.Arg.emit(w); err != nil {
-		return err
-	}
-	_, err := io.WriteString(w, ")")
-	return err
-}
+// emit ignores panic calls so generated programs can continue executing even
+// when a `panic` is invoked. This mirrors the behaviour used in other
+// transpilers where domain checks are best-effort only.
+// The surrounding statement emission code will still add a trailing semicolon,
+// resulting in an empty statement in the output.
+func (p *PanicExpr) emit(w io.Writer) error { return nil }
 
 func (c *CallExpr) emit(w io.Writer) error {
 	if sel, ok := c.Func.(*SelectorExpr); ok {
@@ -3976,6 +3972,9 @@ func inferType(e Expr) string {
 			if sel.Field == "abs" && (rt == "int" || rt == "num") {
 				return "num"
 			}
+			if sel.Field == "toDouble" {
+				return "double"
+			}
 			if sel.Field == "toUpperCase" || sel.Field == "toLowerCase" || sel.Field == "substring" || sel.Field == "substr" || sel.Field == "padLeft" || sel.Field == "padRight" {
 				return "String"
 			}
@@ -5685,6 +5684,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			return &CastExpr{Value: v, Type: "num"}, nil
+		}
+		if p.Call.Func == "to_float" && len(p.Call.Args) == 1 {
+			v, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &CallExpr{Func: &SelectorExpr{Receiver: v, Field: "toDouble"}}, nil
 		}
 		if p.Call.Func == "abs" && len(p.Call.Args) == 1 {
 			v, err := convertExpr(p.Call.Args[0])

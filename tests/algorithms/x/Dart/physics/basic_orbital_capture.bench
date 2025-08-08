@@ -1,0 +1,8 @@
+Unhandled exception:
+Exception: capture_area failed
+#0      run_tests (file:///workspace/mochi/tests/algorithms/x/Dart/physics/basic_orbital_capture.dart:105:5)
+#1      _main (file:///workspace/mochi/tests/algorithms/x/Dart/physics/basic_orbital_capture.dart:110:3)
+#2      _start (file:///workspace/mochi/tests/algorithms/x/Dart/physics/basic_orbital_capture.dart:123:3)
+#3      main (file:///workspace/mochi/tests/algorithms/x/Dart/physics/basic_orbital_capture.dart:133:16)
+#4      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#5      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

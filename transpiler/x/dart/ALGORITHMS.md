@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-08 09:47 GMT+7
+Last updated: 2025-08-08 10:52 GMT+7
 
-## Algorithms Golden Test Checklist (668/1077)
+## Algorithms Golden Test Checklist (715/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 11.075ms | 3.5 MB |
@@ -722,56 +722,56 @@ Last updated: 2025-08-08 09:47 GMT+7
 | 713 | matrix/rotate_matrix | ✓ | 11.539ms | 4.5 MB |
 | 714 | matrix/searching_in_sorted_matrix | ✓ | 22.705ms | 10.7 MB |
 | 715 | matrix/sherman_morrison | ✓ | 19.248ms | 4.0 MB |
-| 716 | matrix/spiral_print |   |  |  |
-| 717 | matrix/tests/test_matrix_operation |   |  |  |
-| 718 | matrix/validate_sudoku_board |   |  |  |
-| 719 | networking_flow/ford_fulkerson |   |  |  |
-| 720 | networking_flow/minimum_cut |   |  |  |
-| 721 | neural_network/activation_functions/binary_step |   |  |  |
-| 722 | neural_network/activation_functions/exponential_linear_unit |   |  |  |
-| 723 | neural_network/activation_functions/gaussian_error_linear_unit |   |  |  |
-| 724 | neural_network/activation_functions/leaky_rectified_linear_unit |   |  |  |
-| 725 | neural_network/activation_functions/mish |   |  |  |
-| 726 | neural_network/activation_functions/rectified_linear_unit |   |  |  |
-| 727 | neural_network/activation_functions/scaled_exponential_linear_unit |   |  |  |
-| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent |   |  |  |
-| 729 | neural_network/activation_functions/softplus |   |  |  |
-| 730 | neural_network/activation_functions/squareplus |   |  |  |
-| 731 | neural_network/activation_functions/swish |   |  |  |
-| 732 | neural_network/back_propagation_neural_network |   |  |  |
-| 733 | neural_network/convolution_neural_network |   |  |  |
-| 734 | neural_network/input_data |   |  |  |
-| 735 | neural_network/simple_neural_network |   |  |  |
-| 736 | neural_network/two_hidden_layers_neural_network |   |  |  |
-| 737 | other/activity_selection |   |  |  |
-| 738 | other/alternative_list_arrange |   |  |  |
-| 739 | other/bankers_algorithm |   |  |  |
-| 740 | other/davis_putnam_logemann_loveland |   |  |  |
-| 741 | other/doomsday |   |  |  |
-| 742 | other/fischer_yates_shuffle |   |  |  |
-| 743 | other/gauss_easter |   |  |  |
-| 744 | other/greedy |   |  |  |
-| 745 | other/guess_the_number_search |   |  |  |
-| 746 | other/h_index |   |  |  |
-| 747 | other/least_recently_used |   |  |  |
-| 748 | other/lfu_cache |   |  |  |
-| 749 | other/linear_congruential_generator |   |  |  |
-| 750 | other/lru_cache |   |  |  |
-| 751 | other/magicdiamondpattern |   |  |  |
-| 752 | other/majority_vote_algorithm |   |  |  |
-| 753 | other/maximum_subsequence |   |  |  |
-| 754 | other/nested_brackets |   |  |  |
-| 755 | other/number_container_system |   |  |  |
-| 756 | other/quine |   |  |  |
-| 757 | other/scoring_algorithm |   |  |  |
-| 758 | other/sdes |   |  |  |
-| 759 | other/tower_of_hanoi |   |  |  |
-| 760 | other/word_search |   |  |  |
-| 761 | physics/altitude_pressure |   |  |  |
-| 762 | physics/archimedes_principle_of_buoyant_force |   |  |  |
-| 763 | physics/basic_orbital_capture |   |  |  |
-| 764 | physics/casimir_effect |   |  |  |
-| 765 | physics/center_of_mass |   |  |  |
+| 716 | matrix/spiral_print | ✓ | 13.958ms | 3.0 MB |
+| 717 | matrix/tests/test_matrix_operation | ✓ | 12.311ms | 4.5 MB |
+| 718 | matrix/validate_sudoku_board | ✓ | 14.016ms | 2.7 MB |
+| 719 | networking_flow/ford_fulkerson | ✓ | 8.647ms | 3.1 MB |
+| 720 | networking_flow/minimum_cut | ✓ | 11.668ms | 4.2 MB |
+| 721 | neural_network/activation_functions/binary_step | ✓ | 13.318ms | 2.4 MB |
+| 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 19.545ms | 9.7 MB |
+| 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 18.029ms | 10.1 MB |
+| 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 13.17ms | 2.1 MB |
+| 725 | neural_network/activation_functions/mish | ✓ | 20.871ms | 10.2 MB |
+| 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 9.077ms | 3.5 MB |
+| 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 15.731ms | 10.6 MB |
+| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 16.764ms | 10.6 MB |
+| 729 | neural_network/activation_functions/softplus | ✓ | 14.247ms | 2.4 MB |
+| 730 | neural_network/activation_functions/squareplus | ✓ | 19.653ms | 10.4 MB |
+| 731 | neural_network/activation_functions/swish | ✓ | 10.346ms | 4.0 MB |
+| 732 | neural_network/back_propagation_neural_network | ✓ | 262.235ms | 51.2 MB |
+| 733 | neural_network/convolution_neural_network | ✓ | 27.195ms | 6.5 MB |
+| 734 | neural_network/input_data | ✓ | 13.26ms | 4.9 MB |
+| 735 | neural_network/simple_neural_network | ✓ | 118.805ms | 8.1 MB |
+| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 20.845ms | 8.0 MB |
+| 737 | other/activity_selection | ✓ | 18.84ms | 10.4 MB |
+| 738 | other/alternative_list_arrange | error |  |  |
+| 739 | other/bankers_algorithm | ✓ | 11.768ms | 4.4 MB |
+| 740 | other/davis_putnam_logemann_loveland | ✓ | 13.461ms | 3.8 MB |
+| 741 | other/doomsday | ✓ | 8.677ms | 3.1 MB |
+| 742 | other/fischer_yates_shuffle | ✓ | 10.364ms | 3.5 MB |
+| 743 | other/gauss_easter | ✓ | 12.382ms | 2.6 MB |
+| 744 | other/greedy | ✓ | 13.659ms | 2.8 MB |
+| 745 | other/guess_the_number_search | ✓ | 15.925ms | 9.1 MB |
+| 746 | other/h_index | ✓ | 16.914ms | 10.5 MB |
+| 747 | other/least_recently_used | ✓ | 14.05ms | 1.3 MB |
+| 748 | other/lfu_cache | ✓ | 10.033ms | 2.6 MB |
+| 749 | other/linear_congruential_generator | ✓ | 15.607ms | 9.5 MB |
+| 750 | other/lru_cache | ✓ | 10.093ms | 4.1 MB |
+| 751 | other/magicdiamondpattern | ✓ | 8.308ms | 3.2 MB |
+| 752 | other/majority_vote_algorithm | ✓ | 13.377ms | 2.7 MB |
+| 753 | other/maximum_subsequence | ✓ | 12.881ms | 1.9 MB |
+| 754 | other/nested_brackets | ✓ | 15.401ms | 9.7 MB |
+| 755 | other/number_container_system | ✓ | 9.456ms | 3.9 MB |
+| 756 | other/quine | ✓ | 15.052ms | 11.1 MB |
+| 757 | other/scoring_algorithm | ✓ | 14.406ms | 3.2 MB |
+| 758 | other/sdes | error |  |  |
+| 759 | other/tower_of_hanoi | ✓ | 7.667ms | 2.8 MB |
+| 760 | other/word_search | ✓ | 10.73ms | 4.4 MB |
+| 761 | physics/altitude_pressure | ✓ | 14.548ms | 2.4 MB |
+| 762 | physics/archimedes_principle_of_buoyant_force | ✓ | 6.715ms | 2.5 MB |
+| 763 | physics/basic_orbital_capture | error |  |  |
+| 764 | physics/casimir_effect | ✓ | 16.893ms | 10.4 MB |
+| 765 | physics/center_of_mass | ✓ | 12.422ms | 2.3 MB |
 | 766 | physics/centripetal_force |   |  |  |
 | 767 | physics/coulombs_law |   |  |  |
 | 768 | physics/doppler_frequency |   |  |  |

@@ -1,0 +1,3 @@
+../../../tests/algorithms/x/Dart/other/alternative_list_arrange.dart:27:40: Error: Undefined name 'v'.
+  return (it["__name"] == "Int" ? _str(v) : (it["__name"] == "Str" ? it["value"] : ""));
+                                       ^
