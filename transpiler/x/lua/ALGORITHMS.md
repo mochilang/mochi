@@ -2,13 +2,13 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-08 17:45 GMT+7
+Last updated: 2025-08-08 18:17 GMT+7
 
 ## Algorithms Golden Test Checklist (989/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 216µs | 912 B |
-| 2 | backtracking/all_permutations | ✓ | 1.124ms | 2.8 KB |
+| 1 | backtracking/all_combinations | ✓ | 213µs | 912 B |
+| 2 | backtracking/all_permutations | ✓ | 1.114ms | 2.8 KB |
 | 3 | backtracking/all_subsequences | ✓ | 203µs | 1.3 KB |
 | 4 | backtracking/coloring | ✓ | 214µs | 2.0 KB |
 | 5 | backtracking/combination_sum | ✓ | 399µs | 1.0 KB |
