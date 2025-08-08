@@ -1,4 +1,3 @@
-/workspace/mochi/tests/algorithms/transpiler/rb/scheduling/multi_level_feedback_queue.rb:187: warning: already initialized constant Process
 waiting time:			[83 17 94 101]
 completion time:		[136 34 162 125]
 turnaround time:		[136 34 162 125]
