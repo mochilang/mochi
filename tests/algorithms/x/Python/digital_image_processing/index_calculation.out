@@ -1,11 +1,11 @@
 NDVI=0.0
 Traceback (most recent call last):
-  File "/workspace/mochi/tests/algorithms/x/Python/digital_image_processing/index_calculation.py", line 52, in <module>
+  File "/workspace/mochi/tests/algorithms/x/Python/digital_image_processing/index_calculation.py", line 56, in <module>
     main()
-  File "/workspace/mochi/tests/algorithms/x/Python/digital_image_processing/index_calculation.py", line 50, in main
+  File "/workspace/mochi/tests/algorithms/x/Python/digital_image_processing/index_calculation.py", line 54, in main
     print("CCCI=" + str(ccci(red, redEdge, nir)))
                         ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/mochi/tests/algorithms/x/Python/digital_image_processing/index_calculation.py", line 18, in ccci
+  File "/workspace/mochi/tests/algorithms/x/Python/digital_image_processing/index_calculation.py", line 22, in ccci
     return ndre(redEdge, nir) / ndvi(red, nir)
            ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~
 ZeroDivisionError: float division by zero

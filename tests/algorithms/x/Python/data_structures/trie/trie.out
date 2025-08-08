@@ -1,12 +1,1 @@
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/trie.py", line 148, in <module>
-    print_results("Testing trie functionality", test_trie())
-                                                ^^^^^^^^^^^
-  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/trie.py", line 123, in test_trie
-    insert_many(trie, words)
-  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/trie.py", line 71, in insert_many
-    insert(trie, w)
-  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/trie.py", line 51, in insert
-    children = nodes[curr].get("children")
-               ^^^^^^^^^^^^^^^
-AttributeError: 'Node' object has no attribute 'get'
+Testing trie functionality works!
