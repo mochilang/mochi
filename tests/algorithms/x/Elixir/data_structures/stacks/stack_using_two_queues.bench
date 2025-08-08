@@ -1,0 +1,18 @@
+warning: variable "s" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 63 │       s = Map.put(s, :main_queue, new_main)
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/stack_using_two_queues.exs:63:7: Main.push/2
+
+    warning: variable "s" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 74 │       s = Map.put(s, :main_queue, _slice(s.main_queue, 1, _len(Map.get(s, :main_queue, [])) - 1))
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/stack_using_two_queues.exs:74:7: Main.pop/1
+
+** (RuntimeError) peek from empty stack
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/stack_using_two_queues.exs:83: Main.peek/1
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/stack_using_two_queues.exs:105: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/stack_using_two_queues.exs:118: (file)

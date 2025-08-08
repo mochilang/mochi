@@ -1,0 +1,26 @@
+warning: variable "s" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 63 │       s = Map.put(s, :items, (s.items ++ [item]))
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/stack.exs:63:7: Main.push/2
+
+    warning: variable "s" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 75 │       s = Map.put(s, :items, _slice(s.items, 0, (n - 1) - 0))
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/stack.exs:75:7: Main.pop/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 105 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/stack.exs:105:7: Main.contains/2
+
+true
+** (RuntimeError) peek from empty stack
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/stack.exs:84: Main.peek/1
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/stack.exs:130: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/stack.exs:146: (file)

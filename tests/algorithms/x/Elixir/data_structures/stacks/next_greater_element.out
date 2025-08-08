@@ -1,0 +1,59 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 53 │           {j, next} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/next_greater_element.exs:53:12: Main.next_greatest_element_slow/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 66 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/next_greater_element.exs:66:8: Main.next_greatest_element_slow/1
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 101 │           {j, next} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/next_greater_element.exs:101:12: Main.next_greatest_element_fast/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 114 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/next_greater_element.exs:114:8: Main.next_greatest_element_fast/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 138 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/next_greater_element.exs:138:8: Main.set_at_float/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 195 │       {i, res, stack} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/next_greater_element.exs:195:8: Main.next_greatest_element/1
+
+     warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 162 │       {k, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/next_greater_element.exs:162:8: Main.next_greatest_element/1
+
+     warning: variable "stack" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 195 │       {i, res, stack} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/next_greater_element.exs:195:16: Main.next_greatest_element/1
+
+[-5.0, 0.0, 5.0, 5.1, 11.0, 13.0, 21.0, -1.0, 4.0, -1.0, -10.0, -5.0, -1.0, 0.0, -1.0]
+[-5.0, 0.0, 5.0, 5.1, 11.0, 13.0, 21.0, -1.0, 4.0, -1.0, -10.0, -5.0, -1.0, 0.0, -1.0]
+[-5.0, 0.0, 5.0, 5.1, 11.0, 13.0, 21.0, -1.0, 4.0, -1.0, -10.0, -5.0, -1.0, 0.0, -1.0]

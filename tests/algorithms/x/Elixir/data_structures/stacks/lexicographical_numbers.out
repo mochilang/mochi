@@ -1,0 +1,19 @@
+warning: variable "stack" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 60 │       {result, stack} = try do
+    │                ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/lexicographical_numbers.exs:60:16: Main.lexical_order/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 90 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/lexicographical_numbers.exs:90:8: Main.join_ints/1
+
+"1 10 11 12 13 2 3 4 5 6 7 8 9"
+[1]
+"1 10 11 12 13 14 15 16 17 18 19 2 20 3 4 5 6 7 8 9"
+"1 10 11 12 13 14 15 16 17 18 19 2 20 21 22 23 24 25 3 4 5 6 7 8 9"
+[1, 10, 11, 12, 2, 3, 4, 5, 6, 7, 8, 9]
