@@ -1,5 +1,0 @@
-exit status 1
-/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/binary_tree_path_sum.zig:15:24: error: use of undeclared identifier 'Empty'
-/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/binary_tree_path_sum.zig:19:24: error: use of undeclared identifier 'Empty'
-/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/binary_tree_path_sum.zig:23:105: error: use of undeclared identifier 'Empty'
-/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/binary_tree_path_sum.zig:27:105: error: use of undeclared identifier 'Empty'
