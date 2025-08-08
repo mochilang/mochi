@@ -2998,6 +2998,9 @@ func Emit(w io.Writer, p *Program) error {
 	if _, err := io.WriteString(w, header()); err != nil {
 		return err
 	}
+	if _, err := io.WriteString(w, "$VERBOSE = nil\n"); err != nil {
+		return err
+	}
 	if needsJSON {
 		if _, err := io.WriteString(w, "require 'json'\n"); err != nil {
 			return err
