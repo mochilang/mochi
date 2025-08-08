@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-08 10:22 GMT+7
+Last updated: 2025-08-08 15:55 GMT+7
 
-## Algorithms Golden Test Checklist (829/1077)
+## Algorithms Golden Test Checklist (838/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 216µs | 912 B |
@@ -906,16 +906,16 @@ Last updated: 2025-08-08 10:22 GMT+7
 | 897 | project_euler/problem_068/sol1 | ✓ |  |  |
 | 898 | project_euler/problem_069/sol1 | ✓ | 175µs | 240 B |
 | 899 | project_euler/problem_070/sol1 | ✓ | 960.021ms | 159.7 KB |
-| 900 | project_euler/problem_071/sol1 |   |  |  |
-| 901 | project_euler/problem_072/sol1 |   |  |  |
-| 902 | project_euler/problem_072/sol2 |   |  |  |
-| 903 | project_euler/problem_073/sol1 |   |  |  |
-| 904 | project_euler/problem_074/sol1 |   |  |  |
-| 905 | project_euler/problem_074/sol2 |   |  |  |
-| 906 | project_euler/problem_075/sol1 |   |  |  |
-| 907 | project_euler/problem_076/sol1 |   |  |  |
-| 908 | project_euler/problem_077/sol1 |   |  |  |
-| 909 | project_euler/problem_078/sol1 |   |  |  |
+| 900 | project_euler/problem_071/sol1 | ✓ | 51.583ms | 736 B |
+| 901 | project_euler/problem_072/sol1 | ✓ | 1.76782s | 912 B |
+| 902 | project_euler/problem_072/sol2 | ✓ | 393µs | 912 B |
+| 903 | project_euler/problem_073/sol1 | ✓ | 1.663673s | 240 B |
+| 904 | project_euler/problem_074/sol1 | error |  |  |
+| 905 | project_euler/problem_074/sol2 | ✓ | 18.454779s | 1.1 KB |
+| 906 | project_euler/problem_075/sol1 | ✓ | 238.984ms | 776 B |
+| 907 | project_euler/problem_076/sol1 | ✓ | 7.349ms | 808 B |
+| 908 | project_euler/problem_077/sol1 | ✓ | 9.249159s | 1.3 MB |
+| 909 | project_euler/problem_078/sol1 | ✓ | 914.771ms | 896 B |
 | 910 | project_euler/problem_079/sol1 |   |  |  |
 | 911 | project_euler/problem_092/sol1 |   |  |  |
 | 912 | project_euler/problem_116/sol1 |   |  |  |
