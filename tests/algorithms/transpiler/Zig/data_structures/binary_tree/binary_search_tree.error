@@ -1,19 +1,16 @@
-signal: aborted
-thread 12048 panic: access of union field 'List' while field 'Null' is active
-/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/binary_search_tree.zig:18:91: 0x103783a in insert (binary_search_tree)
-        node[@as(usize, @intCast(1))] = Value{.List = insert(node[@as(usize, @intCast(1))].List, value)};
-                                                                                          ^
-/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/binary_search_tree.zig:101:22: 0x10349dc in mochi_main (binary_search_tree)
-        root = insert(root, v);
-                     ^
-/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/binary_search_tree.zig:116:19: 0x1032b16 in main (binary_search_tree)
-        mochi_main();
-                  ^
-/usr/local/zig-linux-x86_64-0.12.0/lib/std/start.zig:501:22: 0x1032729 in main (binary_search_tree)
-            root.main();
-                     ^
-???:?:?: 0x7f318b7fc1c9 in ??? (libc.so.6)
-Unwind information for `libc.so.6:0x7f318b7fc1c9` was not available, trace may be incomplete
-
-???:?:?: 0x7f318b7fc28a in ??? (libc.so.6)
-???:?:?: 0x10323d4 in ??? (???)
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/binary_search_tree.zig:17:15: error: incompatible types: 'i64' and 'binary_search_tree.Value'
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/binary_search_tree.zig:17:9: note: type 'i64' here
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/binary_search_tree.zig:17:21: note: type 'binary_search_tree.Value' here
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/binary_search_tree.zig:42:16: error: expected type '[]i64', found '[]const i64'
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/binary_search_tree.zig:42:16: note: cast discards const qualifier
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/binary_search_tree.zig:40:51: note: function return type declared here
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/binary_search_tree.zig:31:15: error: incompatible types: 'i64' and 'binary_search_tree.Value'
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/binary_search_tree.zig:31:9: note: type 'i64' here
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/binary_search_tree.zig:31:22: note: type 'binary_search_tree.Value' here
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/binary_search_tree.zig:52:45: error: operator != not allowed for type 'binary_search_tree.Value'
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/binary_search_tree.zig:61:45: error: operator != not allowed for type 'binary_search_tree.Value'
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/binary_search_tree.zig:71:15: error: incompatible types: 'i64' and 'binary_search_tree.Value'
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/binary_search_tree.zig:71:9: note: type 'i64' here
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/binary_search_tree.zig:71:21: note: type 'binary_search_tree.Value' here
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/binary_search_tree.zig:10:20: error: array literal requires address-of operator (&) to coerce to slice type '[]binary_search_tree.Value'

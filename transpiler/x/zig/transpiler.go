@@ -1732,10 +1732,13 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 			targetType = zigTypeFromExpr(v.Value)
 		}
 	}
-	kw := "const"
-	if indent > 0 || mut {
-		kw = "var"
-	}
+    kw := "const"
+    if mut {
+            kw = "var"
+    }
+    if kw == "const" && strings.HasPrefix(targetType, "[]") && !strings.HasPrefix(targetType, "[]const ") {
+            targetType = "[]const " + targetType[2:]
+    }
 	if lit, ok := v.Value.(*ListLit); ok && mut && v.Type == "" {
 		elem := lit.ElemType
 		if elem == "" {
@@ -2408,11 +2411,11 @@ func (l *ListLit) emit(w io.Writer) {
 		} else {
 			fmt.Fprintf(w, "[%d]i64{", len(l.Elems))
 		}
-	} else {
-		io.WriteString(w, "&[_]i64{}")
-		return
-	}
-	for i, e := range l.Elems {
+        } else {
+                io.WriteString(w, "([0]i64{})")
+                return
+        }
+        for i, e := range l.Elems {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
@@ -4450,11 +4453,13 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 	paramTypes := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		mutable := mutables[p.Name] || varMut[fn.Name+":"+p.Name] || varMut[":"+p.Name]
-		typ := toZigType(p.Type)
-		isMap := strings.HasPrefix(typ, "std.StringHashMap(") || strings.HasPrefix(typ, "std.AutoHashMap(")
-		if mutable && isMap {
-			typ = "*" + typ
-		}
+                typ := toZigType(p.Type)
+                isMap := strings.HasPrefix(typ, "std.StringHashMap(") || strings.HasPrefix(typ, "std.AutoHashMap(")
+                if mutable && isMap {
+                        typ = "*" + typ
+                } else if !mutable && strings.HasPrefix(typ, "[]") && !strings.HasPrefix(typ, "[]const ") {
+                        typ = "[]const " + typ[2:]
+                }
 		name := p.Name
 		paramName := name
 		if mutable {
