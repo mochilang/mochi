@@ -1134,22 +1134,18 @@ func (p *Program) write(w io.Writer) {
 			typ := p.Type
 			if strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") {
 				if p.ByVal {
-					io.WriteString(w, typ+"&")
+					io.WriteString(w, typ)
 				} else {
 					io.WriteString(w, "const "+typ+"&")
 				}
 			} else if isStructType(typ) {
 				if p.ByVal {
-					io.WriteString(w, typ+"&")
+					io.WriteString(w, typ)
 				} else {
 					io.WriteString(w, "const "+typ+"&")
 				}
 			} else {
-				if p.ByVal && !isPrimitiveType(typ) {
-					io.WriteString(w, typ+"&")
-				} else {
-					io.WriteString(w, typ)
-				}
+				io.WriteString(w, typ)
 			}
 			io.WriteString(w, " ")
 			io.WriteString(w, safeName(p.Name))
@@ -1215,29 +1211,25 @@ func (f *Func) emit(w io.Writer) {
 			io.WriteString(w, "auto ")
 		} else if typ == "auto" {
 			if p.ByVal {
-				io.WriteString(w, "auto& ")
+				io.WriteString(w, "auto ")
 			} else {
 				io.WriteString(w, "auto&& ")
 			}
 		} else {
 			if strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") {
 				if p.ByVal {
-					io.WriteString(w, typ+"& ")
+					io.WriteString(w, typ+" ")
 				} else {
 					io.WriteString(w, "const "+typ+"& ")
 				}
 			} else if isStructType(typ) {
 				if p.ByVal {
-					io.WriteString(w, typ+"& ")
+					io.WriteString(w, typ+" ")
 				} else {
 					io.WriteString(w, "const "+typ+"& ")
 				}
 			} else {
-				if p.ByVal && !isPrimitiveType(typ) {
-					io.WriteString(w, typ+"& ")
-				} else {
-					io.WriteString(w, typ+" ")
-				}
+				io.WriteString(w, typ+" ")
 			}
 		}
 		io.WriteString(w, safeName(p.Name))
@@ -5867,14 +5859,6 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 							if paramNames[vr.Name] {
 								mutatedParams[vr.Name] = true
 							}
-						}
-					}
-				}
-			} else {
-				for _, a := range args {
-					if vr, ok := a.(*VarRef); ok {
-						if paramNames[vr.Name] {
-							mutatedParams[vr.Name] = true
 						}
 					}
 				}
