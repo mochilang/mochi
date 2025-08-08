@@ -2249,7 +2249,11 @@ func (s *SubstringExpr) emit(w io.Writer) {
 	s.Start.emit(w)
 	if s.End != nil {
 		fmt.Fprint(w, ", ")
-		(&BinaryExpr{Left: s.End, Op: "-", Right: s.Start}).emit(w)
+		if lit, ok := s.Start.(*IntLit); ok && lit.Value == 0 {
+			s.End.emit(w)
+		} else {
+			(&BinaryExpr{Left: s.End, Op: "-", Right: s.Start}).emit(w)
+		}
 	}
 	fmt.Fprint(w, ")")
 }
@@ -2294,7 +2298,11 @@ func (s *SliceExpr) emit(w io.Writer) {
 	s.Start.emit(w)
 	if s.End != nil {
 		fmt.Fprint(w, ", ")
-		(&BinaryExpr{Left: s.End, Op: "-", Right: s.Start}).emit(w)
+		if lit, ok := s.Start.(*IntLit); ok && lit.Value == 0 {
+			s.End.emit(w)
+		} else {
+			(&BinaryExpr{Left: s.End, Op: "-", Right: s.Start}).emit(w)
+		}
 	}
 	fmt.Fprint(w, ")")
 }
