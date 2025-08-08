@@ -713,7 +713,7 @@ func (fs *ForStmt) emit(w io.Writer, indent int) {
 			fs.Start.emit(w)
 			io.WriteString(w, "..(")
 			fs.End.emit(w)
-			io.WriteString(w, " - 1)), {")
+			io.WriteString(w, " - 1)//1), {")
 			for i, v := range fs.Vars {
 				if i > 0 {
 					io.WriteString(w, ", ")
@@ -765,7 +765,7 @@ func (fs *ForStmt) emit(w io.Writer, indent int) {
 		fs.Start.emit(w)
 		io.WriteString(w, "..(")
 		fs.End.emit(w)
-		io.WriteString(w, " - 1)), {")
+		io.WriteString(w, " - 1)//1), {")
 		for i, v := range fs.Vars {
 			if i > 0 {
 				io.WriteString(w, ", ")
