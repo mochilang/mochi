@@ -1,0 +1,5 @@
+Execution error (ArityException) at main/empty-queue (queue_on_pseudo_stack.clj:60).
+Wrong number of args (2) passed to: main/get
+
+Full report at:
+/tmp/clojure-1921173540211373795.edn

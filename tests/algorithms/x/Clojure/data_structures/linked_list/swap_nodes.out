@@ -1,0 +1,3 @@
+Original Linked List: clojure.lang.LazySeq@1c3e4a2
+Modified Linked List: clojure.lang.LazySeq@1c3e4a2
+After swapping the nodes whose data is 1 and 4.

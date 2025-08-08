@@ -1,0 +1,6 @@
+a+b*(c^d-e)^(f+g*h)-i
+Execution error (NullPointerException) at main/infix-to-postfix (infix_to_postfix_conversion.clj:68).
+Cannot invoke "Object.getClass()" because "x" is null
+
+Full report at:
+/tmp/clojure-3885989298324137177.edn

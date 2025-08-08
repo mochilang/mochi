@@ -1,0 +1,9 @@
+[1 1]
+[-1 0 1]
+1
+3
+Execution error (IndexOutOfBoundsException) at main/pop (randomized_heap.clj:71).
+null
+
+Full report at:
+/tmp/clojure-1404052881077282263.edn
