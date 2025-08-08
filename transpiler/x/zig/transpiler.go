@@ -54,6 +54,7 @@ var usePrint bool
 var useSplit bool
 var useValue bool
 var useSha256 bool
+var useNewNode bool
 var aliasStack []map[string]string
 var namesStack [][]string
 var nameCounts map[string]int
@@ -1435,6 +1436,13 @@ func (p *Program) Emit() []byte {
 		}
 		firstFn = false
 		fn.emit(&buf)
+	}
+	if useNewNode {
+		buf.WriteString("\nfn newNode(left: ?*Node, value: i64, right: ?*Node) ?*Node {\n")
+		buf.WriteString("    const n = std.heap.page_allocator.create(Node) catch unreachable;\n")
+		buf.WriteString("    n.* = Node{ .left = left, .value = value, .right = right };\n")
+		buf.WriteString("    return n;\n")
+		buf.WriteString("}\n")
 	}
 	if useNow {
 		buf.WriteString("\nvar _now_seed: i64 = 0;\n")
@@ -3895,6 +3903,23 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		return ml, nil
 	case p.Struct != nil:
+		if p.Struct.Name == "Node" && typeAliases["Tree"] == "?*Node" {
+			vals := map[string]Expr{}
+			fields := make([]Field, len(p.Struct.Fields))
+			for i, f := range p.Struct.Fields {
+				v, err := compileExpr(f.Value)
+				if err != nil {
+					return nil, err
+				}
+				vals[f.Name] = v
+				fields[i] = Field{Name: toSnakeCase(f.Name), Type: zigTypeFromExpr(v)}
+			}
+			if _, ok := structDefs["Node"]; !ok {
+				structDefs["Node"] = &StructDef{Name: "Node", Fields: fields}
+			}
+			useNewNode = true
+			return &CallExpr{Func: "newNode", Args: []Expr{vals["left"], vals["value"], vals["right"]}}, nil
+		}
 		entries := make([]MapEntry, len(p.Struct.Fields))
 		fields := make([]Field, len(p.Struct.Fields))
 		for i, f := range p.Struct.Fields {
@@ -3982,6 +4007,48 @@ func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
 	target, err := compileExpr(me.Target)
 	if err != nil {
 		return nil, err
+	}
+	if len(me.Cases) == 2 {
+		if pat0, err := compileExpr(me.Cases[0].Pattern); err == nil {
+			if v, ok := pat0.(*VarRef); ok && (v.Name == "Empty" || v.Name == "null") {
+				if call := extractCallPattern(me.Cases[1].Pattern); call != nil && call.Func == "Node" && len(call.Args) == 3 {
+					resEmpty, err := compileExpr(me.Cases[0].Result)
+					if err != nil {
+						return nil, err
+					}
+					if len(aliasStack) == 0 {
+						aliasStack = append(aliasStack, map[string]string{})
+					}
+					aliases := aliasStack[len(aliasStack)-1]
+					saved := map[string]string{}
+					fieldNames := []string{"left", "value", "right"}
+					tgtStr, _ := exprToString(target)
+					for i, arg := range call.Args {
+						aexpr, err := compileExpr(arg)
+						if err != nil {
+							return nil, err
+						}
+						if vref, ok := aexpr.(*VarRef); ok {
+							saved[vref.Name] = aliases[vref.Name]
+							aliases[vref.Name] = fmt.Sprintf("%s.?.%s", tgtStr, fieldNames[i])
+						}
+					}
+					resNode, err := compileExpr(me.Cases[1].Result)
+					if err != nil {
+						return nil, err
+					}
+					for name, old := range saved {
+						if old == "" {
+							delete(aliases, name)
+						} else {
+							aliases[name] = old
+						}
+					}
+					cond := &BinaryExpr{Left: target, Op: "==", Right: &VarRef{Name: "null"}}
+					return &IfExpr{Cond: cond, Then: resEmpty, Else: resNode}, nil
+				}
+			}
+		}
 	}
 	var expr Expr = &StringLit{Value: ""}
 	for i := len(me.Cases) - 1; i >= 0; i-- {
@@ -5229,12 +5296,15 @@ func stmtsUse(name string, stmts []Stmt) bool {
 func compileTypeDecl(td *parser.TypeDecl) error {
 	if len(td.Variants) > 0 {
 		if td.Name == "Tree" && len(td.Variants) == 2 && td.Variants[1].Name == "Node" {
+			typeAliases["Tree"] = "?*Node"
 			fields := make([]Field, len(td.Variants[1].Fields))
 			for i, f := range td.Variants[1].Fields {
 				fields[i] = Field{Name: toSnakeCase(f.Name), Type: toZigType(f.Type)}
 			}
 			structDefs["Node"] = &StructDef{Name: "Node", Fields: fields}
-			typeAliases["Tree"] = "?*Node"
+			if len(aliasStack) > 0 {
+				aliasStack[0]["Empty"] = "null"
+			}
 			return nil
 		}
 		for i, v := range td.Variants {
