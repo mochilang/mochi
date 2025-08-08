@@ -1,0 +1,23 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/transpiler/CPP/physics/ideal_gas_law.cpp:80:215: warning: multi-character character constant [-Wmultichar]
+   80 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/physics/ideal_gas_law.cpp:80:251: warning: multi-character character constant [-Wmultichar]
+   80 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/physics/ideal_gas_law.cpp: In function ‘double pressure_of_gas_system(double, double, double)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/physics/ideal_gas_law.cpp:121:9: error: ‘_throw’ was not declared in this scope
+  121 |         _throw;
+      |         ^~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/physics/ideal_gas_law.cpp: In function ‘double volume_of_gas_system(double, double, double)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/physics/ideal_gas_law.cpp:129:9: error: ‘_throw’ was not declared in this scope
+  129 |         _throw;
+      |         ^~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/physics/ideal_gas_law.cpp: In function ‘double temperature_of_gas_system(double, double, double)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/physics/ideal_gas_law.cpp:137:9: error: ‘_throw’ was not declared in this scope
+  137 |         _throw;
+      |         ^~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/physics/ideal_gas_law.cpp: In function ‘double moles_of_gas_system(double, double, double)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/physics/ideal_gas_law.cpp:145:9: error: ‘_throw’ was not declared in this scope
+  145 |         _throw;
+      |         ^~~~~~
