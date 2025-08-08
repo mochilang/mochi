@@ -15,6 +15,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode"
 
 	yaml "gopkg.in/yaml.v3"
 
@@ -196,10 +197,30 @@ func isBuiltinType(name string) bool {
 }
 
 func safeName(n string) string {
+	if n == "" {
+		return "_"
+	}
 	if pyKeywords[n] {
 		return n + "_"
 	}
-	return n
+	var buf strings.Builder
+	for i, r := range n {
+		if i == 0 {
+			if !(r == '_' || unicode.IsLetter(r)) {
+				buf.WriteRune('_')
+			}
+		}
+		if unicode.IsLetter(r) || unicode.IsDigit(r) || r == '_' {
+			buf.WriteRune(r)
+		} else {
+			buf.WriteRune('_')
+		}
+	}
+	out := buf.String()
+	if out == "" {
+		return "_"
+	}
+	return out
 }
 
 type Stmt interface{ isStmt() }
