@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-08 11:27 GMT+7
+Last updated: 2025-08-08 15:57 GMT+7
 
-## Algorithms Golden Test Checklist (195/1077)
+## Algorithms Golden Test Checklist (209/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -213,30 +213,30 @@ Last updated: 2025-08-08 11:27 GMT+7
 | 204 | data_structures/hashing/double_hash | ✓ | 44µs | 2.0 MB |
 | 205 | data_structures/hashing/hash_map | error |  |  |
 | 206 | data_structures/hashing/hash_table | ✓ | 57µs | 2.0 MB |
-| 207 | data_structures/hashing/hash_table_with_linked_list |   |  |  |
-| 208 | data_structures/hashing/number_theory/prime_numbers |   |  |  |
-| 209 | data_structures/hashing/quadratic_probing |   |  |  |
-| 210 | data_structures/hashing/tests/test_hash_map |   |  |  |
-| 211 | data_structures/heap/binomial_heap |   |  |  |
-| 212 | data_structures/heap/heap |   |  |  |
-| 213 | data_structures/heap/heap_generic |   |  |  |
-| 214 | data_structures/heap/max_heap |   |  |  |
-| 215 | data_structures/heap/min_heap |   |  |  |
-| 216 | data_structures/heap/randomized_heap |   |  |  |
-| 217 | data_structures/kd_tree/build_kdtree |   |  |  |
-| 218 | data_structures/kd_tree/example/example_usage |   |  |  |
-| 219 | data_structures/kd_tree/example/hypercube_points |   |  |  |
-| 220 | data_structures/kd_tree/kd_node |   |  |  |
-| 221 | data_structures/kd_tree/nearest_neighbour_search |   |  |  |
-| 222 | data_structures/kd_tree/tests/test_kdtree |   |  |  |
-| 223 | data_structures/linked_list/circular_linked_list |   |  |  |
-| 224 | data_structures/linked_list/deque_doubly |   |  |  |
-| 225 | data_structures/linked_list/doubly_linked_list |   |  |  |
-| 226 | data_structures/linked_list/doubly_linked_list_two |   |  |  |
-| 227 | data_structures/linked_list/floyds_cycle_detection |   |  |  |
-| 228 | data_structures/linked_list/from_sequence |   |  |  |
-| 229 | data_structures/linked_list/has_loop |   |  |  |
-| 230 | data_structures/linked_list/is_palindrome |   |  |  |
+| 207 | data_structures/hashing/hash_table_with_linked_list | ✓ | 122µs | 2.1 MB |
+| 208 | data_structures/hashing/number_theory/prime_numbers | ✓ | 39µs | 2.0 MB |
+| 209 | data_structures/hashing/quadratic_probing | ✓ | 52µs | 2.1 MB |
+| 210 | data_structures/hashing/tests/test_hash_map | ✓ | 197µs | 2.3 MB |
+| 211 | data_structures/heap/binomial_heap | error |  |  |
+| 212 | data_structures/heap/heap | error |  |  |
+| 213 | data_structures/heap/heap_generic | error |  |  |
+| 214 | data_structures/heap/max_heap | ✓ | 87µs | 1.9 MB |
+| 215 | data_structures/heap/min_heap | ✓ | 104µs | 2.2 MB |
+| 216 | data_structures/heap/randomized_heap | error |  |  |
+| 217 | data_structures/kd_tree/build_kdtree | ✓ | 135µs | 2.1 MB |
+| 218 | data_structures/kd_tree/example/example_usage | error |  |  |
+| 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 61µs | 1.9 MB |
+| 220 | data_structures/kd_tree/kd_node | ✓ | 95µs | 2.1 MB |
+| 221 | data_structures/kd_tree/nearest_neighbour_search | error |  |  |
+| 222 | data_structures/kd_tree/tests/test_kdtree | ✓ | 256µs | 2.0 MB |
+| 223 | data_structures/linked_list/circular_linked_list | error |  |  |
+| 224 | data_structures/linked_list/deque_doubly | error |  |  |
+| 225 | data_structures/linked_list/doubly_linked_list | error |  |  |
+| 226 | data_structures/linked_list/doubly_linked_list_two | error |  |  |
+| 227 | data_structures/linked_list/floyds_cycle_detection | ✓ | 95µs | 2.2 MB |
+| 228 | data_structures/linked_list/from_sequence | ✓ | 61µs | 2.1 MB |
+| 229 | data_structures/linked_list/has_loop | ✓ | 99µs | 2.1 MB |
+| 230 | data_structures/linked_list/is_palindrome | ✓ | 61µs | 2.0 MB |
 | 231 | data_structures/linked_list/merge_two_lists |   |  |  |
 | 232 | data_structures/linked_list/middle_element_of_linked_list |   |  |  |
 | 233 | data_structures/linked_list/print_reverse |   |  |  |
