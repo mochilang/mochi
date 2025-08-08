@@ -35,7 +35,7 @@ public class Main {
                 row = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row), java.util.stream.IntStream.of(image[src_i][src_j])).toArray()));
                 j = j + 1;
             }
-            padded = ((int[][])(appendObj(padded, row)));
+            padded = ((int[][])(appendObj((int[][])padded, row)));
             i = i + 1;
         }
         return padded;
@@ -61,7 +61,7 @@ public class Main {
                     }
                     bi = bi + 1;
                 }
-                image_array = ((int[][])(appendObj(image_array, window)));
+                image_array = ((int[][])(appendObj((int[][])image_array, window)));
                 j_1 = j_1 + 1;
             }
             i_1 = i_1 + 1;
@@ -113,7 +113,7 @@ public class Main {
                 idx = idx + 1;
                 j_3 = j_3 + 1;
             }
-            dst = ((int[][])(appendObj(dst, row_1)));
+            dst = ((int[][])(appendObj((int[][])dst, row_1)));
             i_4 = i_4 + 1;
         }
         return dst;
@@ -136,44 +136,10 @@ public class Main {
         }
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            image = ((int[][])(new int[][]{new int[]{1, 2, 3, 0, 0}, new int[]{4, 5, 6, 0, 0}, new int[]{7, 8, 9, 0, 0}, new int[]{0, 0, 0, 0, 0}, new int[]{0, 0, 0, 0, 0}}));
-            laplace_kernel = ((int[][])(new int[][]{new int[]{0, 1, 0}, new int[]{1, -4, 1}, new int[]{0, 1, 0}}));
-            result = ((int[][])(img_convolve(((int[][])(image)), ((int[][])(laplace_kernel)))));
-            print_matrix(((int[][])(result)));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        image = ((int[][])(new int[][]{new int[]{1, 2, 3, 0, 0}, new int[]{4, 5, 6, 0, 0}, new int[]{7, 8, 9, 0, 0}, new int[]{0, 0, 0, 0, 0}, new int[]{0, 0, 0, 0, 0}}));
+        laplace_kernel = ((int[][])(new int[][]{new int[]{0, 1, 0}, new int[]{1, -4, 1}, new int[]{0, 1, 0}}));
+        result = ((int[][])(img_convolve(((int[][])(image)), ((int[][])(laplace_kernel)))));
+        print_matrix(((int[][])(result)));
     }
 
     static <T> T[] appendObj(T[] arr, T v) {

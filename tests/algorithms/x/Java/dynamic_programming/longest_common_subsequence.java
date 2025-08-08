@@ -26,7 +26,7 @@ public class Main {
                 row = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row), java.util.stream.IntStream.of(0)).toArray()));
                 j = j + 1;
             }
-            matrix = ((int[][])(appendObj(matrix, row)));
+            matrix = ((int[][])(appendObj((int[][])matrix, row)));
             i = i + 1;
         }
         return matrix;
@@ -68,44 +68,10 @@ dp[i_1][j_1] = dp[i_1][j_1 - 1];
         return new LcsResult(dp[m][n], seq);
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            a = "AGGTAB";
-            b = "GXTXAYB";
-            res = longest_common_subsequence(a, b);
-            System.out.println("len = " + _p(res.length) + ", sub-sequence = " + res.sequence);
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        a = "AGGTAB";
+        b = "GXTXAYB";
+        res = longest_common_subsequence(a, b);
+        System.out.println("len = " + _p(res.length) + ", sub-sequence = " + res.sequence);
     }
 
     static <T> T[] appendObj(T[] arr, T v) {

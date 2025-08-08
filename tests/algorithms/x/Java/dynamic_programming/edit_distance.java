@@ -41,7 +41,7 @@ dp[i][j] = 1 + min3(insert, delete, replace);
             for (int _2 = 0; _2 < n; _2++) {
                 row = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row), java.util.stream.IntStream.of(0 - 1)).toArray()));
             }
-            dp = ((int[][])(appendObj(dp, row)));
+            dp = ((int[][])(appendObj((int[][])dp, row)));
         }
         return helper_top_down(word1, word2, ((int[][])(dp)), m_1 - 1, n - 1);
     }
@@ -55,7 +55,7 @@ dp[i][j] = 1 + min3(insert, delete, replace);
             for (int _2 = 0; _2 < (n_1 + 1); _2++) {
                 row_1 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row_1), java.util.stream.IntStream.of(0)).toArray()));
             }
-            dp_1 = ((int[][])(appendObj(dp_1, row_1)));
+            dp_1 = ((int[][])(appendObj((int[][])dp_1, row_1)));
         }
         for (int i = 0; i < (m_2 + 1); i++) {
             for (int j = 0; j < (n_1 + 1); j++) {
@@ -76,46 +76,12 @@ dp_1[i][j] = 1 + min3(insert_1, delete_1, replace_1);
         return dp_1[m_2][n_1];
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(_p(min_dist_top_down("intention", "execution")));
-            System.out.println(_p(min_dist_top_down("intention", "")));
-            System.out.println(_p(min_dist_top_down("", "")));
-            System.out.println(_p(min_dist_bottom_up("intention", "execution")));
-            System.out.println(_p(min_dist_bottom_up("intention", "")));
-            System.out.println(_p(min_dist_bottom_up("", "")));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println(_p(min_dist_top_down("intention", "execution")));
+        System.out.println(_p(min_dist_top_down("intention", "")));
+        System.out.println(_p(min_dist_top_down("", "")));
+        System.out.println(_p(min_dist_bottom_up("intention", "execution")));
+        System.out.println(_p(min_dist_bottom_up("intention", "")));
+        System.out.println(_p(min_dist_bottom_up("", "")));
     }
 
     static <T> T[] appendObj(T[] arr, T v) {

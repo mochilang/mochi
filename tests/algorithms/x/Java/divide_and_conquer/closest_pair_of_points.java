@@ -99,7 +99,7 @@ points[j + 1] = ((double[])(tmp));
         int i_4 = 0;
         while (i_4 < px.length) {
             if (Math.abs(px[i_4][0] - px[mid][0]) < best) {
-                strip = ((double[][])(appendObj(strip, px[i_4])));
+                strip = ((double[][])(appendObj((double[][])strip, px[i_4])));
             }
             i_4 = i_4 + 1;
         }
@@ -117,42 +117,8 @@ points[j + 1] = ((double[])(tmp));
         return sqrtApprox(dist_sqr);
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            points_1 = ((double[][])(new double[][]{new double[]{2.0, 3.0}, new double[]{12.0, 30.0}, new double[]{40.0, 50.0}, new double[]{5.0, 1.0}, new double[]{12.0, 10.0}, new double[]{3.0, 4.0}}));
-            System.out.println("Distance: " + _p(closest_pair_of_points(((double[][])(points_1)), points_1.length)));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        points_1 = ((double[][])(new double[][]{new double[]{2.0, 3.0}, new double[]{12.0, 30.0}, new double[]{40.0, 50.0}, new double[]{5.0, 1.0}, new double[]{12.0, 10.0}, new double[]{3.0, 4.0}}));
+        System.out.println("Distance: " + _p(closest_pair_of_points(((double[][])(points_1)), points_1.length)));
     }
 
     static <T> T[] appendObj(T[] arr, T v) {

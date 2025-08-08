@@ -1,11 +1,11 @@
 compile: exit status 1
-/tmp/TestJavaTranspiler_Algorithms_Golden292_inversions2650048385/001/Main.java:92: error: incompatible types: int cannot be converted to InvResult
-            nrec = count_inversions_recursive(((int[])(arr_1))).inv;
-                                                               ^
-/tmp/TestJavaTranspiler_Algorithms_Golden292_inversions2650048385/001/Main.java:96: error: incompatible types: int cannot be converted to InvResult
-            nrec2 = count_inversions_recursive(((int[])(arr_1))).inv;
-                                                                ^
-/tmp/TestJavaTranspiler_Algorithms_Golden292_inversions2650048385/001/Main.java:100: error: incompatible types: int cannot be converted to InvResult
-            nrec3 = count_inversions_recursive(((int[])(arr_1))).inv;
-                                                                ^
+/tmp/TestJavaTranspiler_Algorithms_Golden292_inversions3073788799/001/Main.java:89: error: incompatible types: int cannot be converted to InvResult
+        nrec = count_inversions_recursive(((int[])(arr_1))).inv;
+                                                           ^
+/tmp/TestJavaTranspiler_Algorithms_Golden292_inversions3073788799/001/Main.java:93: error: incompatible types: int cannot be converted to InvResult
+        nrec2 = count_inversions_recursive(((int[])(arr_1))).inv;
+                                                            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden292_inversions3073788799/001/Main.java:97: error: incompatible types: int cannot be converted to InvResult
+        nrec3 = count_inversions_recursive(((int[])(arr_1))).inv;
+                                                            ^
 3 errors

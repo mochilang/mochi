@@ -29,7 +29,7 @@ public class Main {
                 }
                 j = j + 1;
             }
-            dp = ((int[][])(appendObj(dp, row)));
+            dp = ((int[][])(appendObj((int[][])dp, row)));
             i = i + 1;
         }
         return new Graph(n, dp);
@@ -70,56 +70,22 @@ g.dp = dp_2;
         return g.dp[u][v];
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            INF = 1000000000;
-            graph = new_graph(5);
-            add_edge(graph, 0, 2, 9);
-            add_edge(graph, 0, 4, 10);
-            add_edge(graph, 1, 3, 5);
-            add_edge(graph, 2, 3, 7);
-            add_edge(graph, 3, 0, 10);
-            add_edge(graph, 3, 1, 2);
-            add_edge(graph, 3, 2, 1);
-            add_edge(graph, 3, 4, 6);
-            add_edge(graph, 4, 1, 3);
-            add_edge(graph, 4, 2, 4);
-            add_edge(graph, 4, 3, 9);
-            floyd_warshall(graph);
-            System.out.println(_p(show_min(graph, 1, 4)));
-            System.out.println(_p(show_min(graph, 0, 3)));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        INF = 1000000000;
+        graph = new_graph(5);
+        add_edge(graph, 0, 2, 9);
+        add_edge(graph, 0, 4, 10);
+        add_edge(graph, 1, 3, 5);
+        add_edge(graph, 2, 3, 7);
+        add_edge(graph, 3, 0, 10);
+        add_edge(graph, 3, 1, 2);
+        add_edge(graph, 3, 2, 1);
+        add_edge(graph, 3, 4, 6);
+        add_edge(graph, 4, 1, 3);
+        add_edge(graph, 4, 2, 4);
+        add_edge(graph, 4, 3, 9);
+        floyd_warshall(graph);
+        System.out.println(_p(show_min(graph, 1, 4)));
+        System.out.println(_p(show_min(graph, 0, 3)));
     }
 
     static <T> T[] appendObj(T[] arr, T v) {

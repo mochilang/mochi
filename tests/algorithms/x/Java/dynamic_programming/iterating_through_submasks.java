@@ -11,8 +11,8 @@ public class Main {
             if (abit == 1 && bbit == 1) {
                 result = result + bit;
             }
-            x = x / 2;
-            y = y / 2;
+            x = Math.floorDiv(x, 2);
+            y = Math.floorDiv(y, 2);
             bit = bit * 2;
         }
         return result;
@@ -31,42 +31,8 @@ public class Main {
         return all_submasks;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(_p(list_of_submasks(15)));
-            System.out.println(_p(list_of_submasks(13)));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println(_p(list_of_submasks(15)));
+        System.out.println(_p(list_of_submasks(13)));
     }
 
     static String _p(Object v) {
