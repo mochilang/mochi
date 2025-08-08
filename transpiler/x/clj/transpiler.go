@@ -834,10 +834,15 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	}
 	pr.Forms = append(pr.Forms, indexOfFn)
 
-	splitFn := &Defn{Name: "split", Params: []Node{Symbol("s"), Symbol("sep")}, Body: []Node{
-		&List{Elems: []Node{Symbol("clojure.string/split"), Symbol("s"), &List{Elems: []Node{Symbol("re-pattern"), Symbol("sep")}}}},
-	}}
-	pr.Forms = append(pr.Forms, splitFn)
+        splitFn := &Defn{Name: "split", Params: []Node{Symbol("s"), Symbol("sep")}, Body: []Node{
+                &List{Elems: []Node{Symbol("clojure.string/split"), Symbol("s"), &List{Elems: []Node{Symbol("re-pattern"), Symbol("sep")}}}},
+        }}
+        pr.Forms = append(pr.Forms, splitFn)
+
+       toiFn := &Defn{Name: "toi", Params: []Node{Symbol("s")}, Body: []Node{
+               &List{Elems: []Node{Symbol("Integer/parseInt"), &List{Elems: []Node{Symbol("str"), Symbol("s")}}}},
+       }}
+       pr.Forms = append(pr.Forms, toiFn)
 
 	if env != nil {
 		structs := env.Structs()
@@ -2097,17 +2102,23 @@ func transpileBlock(stmts []*parser.Statement) (Node, error) {
 	if len(stmts) == 1 {
 		return transpileStmt(stmts[0])
 	}
-	elems := []Node{Symbol("do")}
-	for _, st := range stmts {
-		n, err := transpileStmt(st)
-		if err != nil {
-			return nil, err
-		}
-		if n != nil {
-			elems = append(elems, n)
-		}
-	}
-	return &List{Elems: elems}, nil
+        elems := []Node{Symbol("do")}
+        for _, st := range stmts {
+                n, err := transpileStmt(st)
+                if err != nil {
+                        return nil, err
+                }
+                if n != nil {
+                       if l, ok := n.(*List); ok && len(l.Elems) > 0 {
+                               if sym, ok := l.Elems[0].(Symbol); ok && sym == "do" {
+                                       elems = append(elems, l.Elems[1:]...)
+                                       continue
+                               }
+                       }
+                       elems = append(elems, n)
+                }
+        }
+        return &List{Elems: elems}, nil
 }
 
 func hasLoopCtrl(stmts []*parser.Statement) bool {
@@ -2144,10 +2155,20 @@ func transpileIfStmt(s *parser.IfStmt) (Node, error) {
 			return nil, err
 		}
 	}
-	if elseNode == nil {
-		return &List{Elems: []Node{Symbol("when"), cond, thenNode}}, nil
-	}
-	return &List{Elems: []Node{Symbol("if"), cond, thenNode, elseNode}}, nil
+       if elseNode == nil {
+               return &List{Elems: []Node{Symbol("when"), cond, thenNode}}, nil
+       }
+       // transform `if cond (recur ...) else expr` into
+       // `(do (when cond (recur ...)) expr)` so that `recur`
+       // is emitted in tail position and detected by the
+       // surrounding loop handler.
+       if l, ok := thenNode.(*List); ok && len(l.Elems) == 2 {
+               if sym, ok := l.Elems[0].(Symbol); ok && sym == "recur" {
+                       whenForm := &List{Elems: []Node{Symbol("when"), cond, thenNode}}
+                       return &List{Elems: []Node{Symbol("do"), whenForm, elseNode}}, nil
+               }
+       }
+       return &List{Elems: []Node{Symbol("if"), cond, thenNode, elseNode}}, nil
 }
 
 func transpileIfExpr(e *parser.IfExpr) (Node, error) {
@@ -3314,19 +3335,25 @@ func transpileForStmt(f *parser.ForStmt) (Node, error) {
 		prevSeq = currentSeqVar
 		currentSeqVar = f.Name + "_seq"
 	}
-	bodyNodes := []Node{}
-	for _, st := range f.Body {
-		n, err := transpileStmt(st)
-		if err != nil {
-			if useCtrl {
-				currentSeqVar = prevSeq
-			}
-			return nil, err
-		}
-		if n != nil {
-			bodyNodes = append(bodyNodes, n)
-		}
-	}
+       bodyNodes := []Node{}
+       for _, st := range f.Body {
+               n, err := transpileStmt(st)
+               if err != nil {
+                       if useCtrl {
+                               currentSeqVar = prevSeq
+                       }
+                       return nil, err
+               }
+               if n != nil {
+                       if l, ok := n.(*List); ok && len(l.Elems) > 0 {
+                               if sym, ok := l.Elems[0].(Symbol); ok && sym == "do" {
+                                       bodyNodes = append(bodyNodes, l.Elems[1:]...)
+                                       continue
+                               }
+                       }
+                       bodyNodes = append(bodyNodes, n)
+               }
+       }
 	if useCtrl {
 		currentSeqVar = prevSeq
 	}
