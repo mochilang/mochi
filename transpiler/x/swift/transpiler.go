@@ -38,6 +38,7 @@ var usesSHA256 bool
 var usesAppend bool
 var usesConcat bool
 var usesSet bool
+var usesIndex bool
 var usesLen bool
 var usesSplit bool
 var usesFetch bool
@@ -85,6 +86,7 @@ type Program struct {
 	UseAppend     bool
 	UseConcat     bool
 	UseSet        bool
+	UseIndex      bool
 	UseLen        bool
 	UseSplit      bool
 	UseFetch      bool
@@ -1146,6 +1148,15 @@ func (ie *IndexExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "])")
 		return
 	}
+	if !ie.Force && !ie.KeyString && !ie.KeyAny {
+		fmt.Fprint(w, "_idx(")
+		ie.Base.emit(w)
+		fmt.Fprint(w, ", ")
+		ie.Index.emit(w)
+		fmt.Fprint(w, ")")
+		usesIndex = true
+		return
+	}
 	ie.Base.emit(w)
 	fmt.Fprint(w, "[")
 	if ie.KeyString {
@@ -2043,9 +2054,12 @@ func (p *Program) Emit() []byte {
 	}
 	if p.UseJSON {
 		buf.WriteString("func _json(_ v: Any) {\n")
-		buf.WriteString("    if let data = try? JSONSerialization.data(withJSONObject: v, options: [.sortedKeys, .prettyPrinted]),\n")
+		buf.WriteString("    if JSONSerialization.isValidJSONObject(v),\n")
+		buf.WriteString("       let data = try? JSONSerialization.data(withJSONObject: v, options: [.sortedKeys, .prettyPrinted]),\n")
 		buf.WriteString("       let str = String(data: data, encoding: .utf8) {\n")
 		buf.WriteString("        print(str)\n")
+		buf.WriteString("    } else {\n")
+		buf.WriteString("        print(_p(v))\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("}\n")
 	}
@@ -2063,6 +2077,13 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    }\n")
 		buf.WriteString("    return 0\n}\n")
 	}
+	if p.UseIndex {
+		buf.WriteString("func _idx<T>(_ xs: [T], _ i: Int) -> T? {\n")
+		buf.WriteString("    var idx = i\n")
+		buf.WriteString("    if idx < 0 { idx += xs.count }\n")
+		buf.WriteString("    if idx >= 0 && idx < xs.count { return xs[idx] }\n")
+		buf.WriteString("    return nil\n}\n")
+	}
 	if p.UseRat {
 		buf.WriteString("func _rat_num(_ v: Double) -> Int {\n")
 		buf.WriteString("    if v.isNaN { return 0 }\n")
@@ -2072,7 +2093,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("func _rat_denom(_ v: Double) -> Int { 1 }\n")
 	}
 	if p.UseSHA256 {
-		buf.WriteString("func _sha256(_ bs: [Int]) -> [Int] { return Array(repeating: 0, count: 32) }\n")
+		buf.WriteString("func _sha256(_ v: Any) -> [Int] { return Array(repeating: 0, count: 32) }\n")
 	}
 	if p.UseAppend {
 		buf.WriteString("func _append<T>(_ xs: [T], _ v: T) -> [T] {\n")
@@ -2304,6 +2325,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	usesAppend = false
 	usesConcat = false
 	usesSet = false
+	usesIndex = false
 	usesLen = false
 	usesSplit = false
 	usesFetch = false
@@ -2347,6 +2369,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	p.UseAppend = usesAppend
 	p.UseConcat = usesConcat
 	p.UseSet = usesSet
+	p.UseIndex = usesIndex
 	p.UseLen = usesLen
 	p.UseSplit = usesSplit
 	p.UseFetch = usesFetch
@@ -4338,6 +4361,9 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 					_ = lt // silence unused if lt not used
 				}
 				expr = &IndexExpr{Base: expr, Index: idx, AsString: isStr, Force: force, KeyString: keyStr, KeyAny: keyAny}
+				if !force && !keyStr && !keyAny && !isStr {
+					usesIndex = true
+				}
 			}
 			if env != nil && !skipUpdate {
 				// update baseType after indexing

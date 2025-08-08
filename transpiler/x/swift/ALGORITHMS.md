@@ -2,8 +2,8 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 378/1077
-Last updated: 2025-08-08 11:25 +0700
+Completed programs: 404/1077
+Last updated: 2025-08-08 15:49 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -469,25 +469,25 @@ Last updated: 2025-08-08 11:25 +0700
 | 460 | greedy_methods/gas_station | ✓ | 372µs | 3.1 MB |
 | 461 | greedy_methods/minimum_coin_change |   |  |  |
 | 462 | greedy_methods/minimum_waiting_time | ✓ | 442µs | 3.0 MB |
-| 463 | greedy_methods/optimal_merge_pattern |   |  |  |
-| 464 | greedy_methods/smallest_range |   |  |  |
-| 465 | hashes/adler32 |   |  |  |
-| 466 | hashes/chaos_machine |   |  |  |
-| 467 | hashes/djb2 |   |  |  |
-| 468 | hashes/elf |   |  |  |
-| 469 | hashes/enigma_machine |   |  |  |
-| 470 | hashes/fletcher16 |   |  |  |
-| 471 | hashes/hamming_code |   |  |  |
-| 472 | hashes/luhn |   |  |  |
-| 473 | hashes/md5 |   |  |  |
-| 474 | hashes/sdbm |   |  |  |
-| 475 | hashes/sha1 |   |  |  |
-| 476 | hashes/sha256 |   |  |  |
-| 477 | knapsack/greedy_knapsack |   |  |  |
-| 478 | knapsack/knapsack |   |  |  |
-| 479 | knapsack/recursive_approach_knapsack |   |  |  |
-| 480 | knapsack/tests/test_greedy_knapsack |   |  |  |
-| 481 | knapsack/tests/test_knapsack |   |  |  |
+| 463 | greedy_methods/optimal_merge_pattern | ✓ | 425µs | 2.9 MB |
+| 464 | greedy_methods/smallest_range | ✓ | 427µs | 3.2 MB |
+| 465 | hashes/adler32 | ✓ | 698µs | 3.2 MB |
+| 466 | hashes/chaos_machine | ✓ | 1.702ms | 3.1 MB |
+| 467 | hashes/djb2 | ✓ | 950µs | 2.9 MB |
+| 468 | hashes/elf | ✓ | 2.666ms | 3.2 MB |
+| 469 | hashes/enigma_machine | ✓ | 1.023ms | 3.2 MB |
+| 470 | hashes/fletcher16 | ✓ | 15.445ms | 3.2 MB |
+| 471 | hashes/hamming_code | ✓ | 1.897ms | 3.2 MB |
+| 472 | hashes/luhn | ✓ | 489µs | 3.5 MB |
+| 473 | hashes/md5 | ✓ | 24.156ms | 3.2 MB |
+| 474 | hashes/sdbm | ✓ | 4.396ms | 3.1 MB |
+| 475 | hashes/sha1 | ✓ | 7.848ms | 3.1 MB |
+| 476 | hashes/sha256 | ✓ | 315µs | 3.5 MB |
+| 477 | knapsack/greedy_knapsack | ✓ | 335µs | 3.3 MB |
+| 478 | knapsack/knapsack | ✓ | 271µs | 3.2 MB |
+| 479 | knapsack/recursive_approach_knapsack | ✓ | 330µs | 3.4 MB |
+| 480 | knapsack/tests/test_greedy_knapsack | ✓ | 340µs | 3.3 MB |
+| 481 | knapsack/tests/test_knapsack | ✓ | 257µs | 3.1 MB |
 | 482 | linear_algebra/gaussian_elimination |   |  |  |
 | 483 | linear_algebra/jacobi_iteration_method |   |  |  |
 | 484 | linear_algebra/lu_decomposition |   |  |  |
@@ -496,23 +496,23 @@ Last updated: 2025-08-08 11:25 +0700
 | 487 | linear_algebra/src/gaussian_elimination_pivoting |   |  |  |
 | 488 | linear_algebra/src/lib |   |  |  |
 | 489 | linear_algebra/src/polynom_for_points |   |  |  |
-| 490 | linear_algebra/src/power_iteration |   |  |  |
+| 490 | linear_algebra/src/power_iteration | ✓ | 963µs | 3.5 MB |
 | 491 | linear_algebra/src/rank_of_matrix |   |  |  |
 | 492 | linear_algebra/src/rayleigh_quotient |   |  |  |
 | 493 | linear_algebra/src/schur_complement |   |  |  |
 | 494 | linear_algebra/src/test_linear_algebra |   |  |  |
-| 495 | linear_algebra/src/transformations_2d |   |  |  |
+| 495 | linear_algebra/src/transformations_2d | ✓ | 372µs | 3.5 MB |
 | 496 | linear_programming/simplex |   |  |  |
 | 497 | machine_learning/apriori_algorithm |   |  |  |
 | 498 | machine_learning/astar |   |  |  |
-| 499 | machine_learning/automatic_differentiation |   |  |  |
-| 500 | machine_learning/data_transformations |   |  |  |
-| 501 | machine_learning/decision_tree |   |  |  |
-| 502 | machine_learning/dimensionality_reduction |   |  |  |
+| 499 | machine_learning/automatic_differentiation | ✓ | 279µs | 3.5 MB |
+| 500 | machine_learning/data_transformations | ✓ | 787µs | 3.7 MB |
+| 501 | machine_learning/decision_tree | ✓ | 155.107ms | 3.4 MB |
+| 502 | machine_learning/dimensionality_reduction | ✓ | 150µs | 3.1 MB |
 | 503 | machine_learning/forecasting/run |   |  |  |
 | 504 | machine_learning/frequent_pattern_growth |   |  |  |
 | 505 | machine_learning/gradient_boosting_classifier |   |  |  |
-| 506 | machine_learning/gradient_descent |   |  |  |
+| 506 | machine_learning/gradient_descent | ✓ | 220.148ms | 3.4 MB |
 | 507 | machine_learning/k_means_clust |   |  |  |
 | 508 | machine_learning/k_nearest_neighbours |   |  |  |
 | 509 | machine_learning/linear_discriminant_analysis |   |  |  |

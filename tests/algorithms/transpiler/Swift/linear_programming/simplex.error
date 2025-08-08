@@ -1,0 +1,238 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden496_linear_programming_simplex617980174/001/main.swift:96:36: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+ 94 |     func pivot(_ t: inout [[Double]], _ row: Int, _ col: Int) -> [[Double]] {
+ 95 |         var pivotRow: [Double] = ([] as! [Double])
+ 96 |         let pivotVal = Double(_idx(_idx(t, row), col))
+    |                                    `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+ 97 |         for j in 0..<_int((((_idx(t, row) as! [Double])).count)) {
+ 98 |             pivotRow = (_append(pivotRow, (Double(_idx(_idx(t, row), j)) / pivotVal)) as! [Double])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden496_linear_programming_simplex617980174/001/main.swift:97:43: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+ 95 |         var pivotRow: [Double] = ([] as! [Double])
+ 96 |         let pivotVal = Double(_idx(_idx(t, row), col))
+ 97 |         for j in 0..<_int((((_idx(t, row) as! [Double])).count)) {
+    |                                           `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+ 98 |             pivotRow = (_append(pivotRow, (Double(_idx(_idx(t, row), j)) / pivotVal)) as! [Double])
+ 99 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden496_linear_programming_simplex617980174/001/main.swift:98:56: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+ 96 |         let pivotVal = Double(_idx(_idx(t, row), col))
+ 97 |         for j in 0..<_int((((_idx(t, row) as! [Double])).count)) {
+ 98 |             pivotRow = (_append(pivotRow, (Double(_idx(_idx(t, row), j)) / pivotVal)) as! [Double])
+    |                                                        `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+ 99 |         }
+100 |         t = _set(t, row, (pivotRow as! [Double]))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden496_linear_programming_simplex617980174/001/main.swift:100:36: warning: forced cast of '[Double]' to same type has no effect
+ 98 |             pivotRow = (_append(pivotRow, (Double(_idx(_idx(t, row), j)) / pivotVal)) as! [Double])
+ 99 |         }
+100 |         t = _set(t, row, (pivotRow as! [Double]))
+    |                                    `- warning: forced cast of '[Double]' to same type has no effect
+101 |         for i in 0..<_int(((t).count)) {
+102 |             if (i != row) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden496_linear_programming_simplex617980174/001/main.swift:103:42: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+101 |         for i in 0..<_int(((t).count)) {
+102 |             if (i != row) {
+103 |                 let factor = Double(_idx(_idx(t, i), col))
+    |                                          `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+104 |                 var newRow: [Double] = ([] as! [Double])
+105 |                 for j in 0..<_int((((_idx(t, i) as! [Double])).count)) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden496_linear_programming_simplex617980174/001/main.swift:105:49: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+103 |                 let factor = Double(_idx(_idx(t, i), col))
+104 |                 var newRow: [Double] = ([] as! [Double])
+105 |                 for j in 0..<_int((((_idx(t, i) as! [Double])).count)) {
+    |                                                 `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+106 |                     let value = (Double(_idx(_idx(t, i), j)) - (factor * Double(_idx(pivotRow, j))))
+107 |                     newRow = (_append(newRow, value) as! [Double])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden496_linear_programming_simplex617980174/001/main.swift:106:46: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+104 |                 var newRow: [Double] = ([] as! [Double])
+105 |                 for j in 0..<_int((((_idx(t, i) as! [Double])).count)) {
+106 |                     let value = (Double(_idx(_idx(t, i), j)) - (factor * Double(_idx(pivotRow, j))))
+    |                                              `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+107 |                     newRow = (_append(newRow, value) as! [Double])
+108 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden496_linear_programming_simplex617980174/001/main.swift:109:40: warning: forced cast of '[Double]' to same type has no effect
+107 |                     newRow = (_append(newRow, value) as! [Double])
+108 |                 }
+109 |                 t = _set(t, i, (newRow as! [Double]))
+    |                                        `- warning: forced cast of '[Double]' to same type has no effect
+110 |             }
+111 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden496_linear_programming_simplex617980174/001/main.swift:117:42: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+115 |         var col: Int = 0
+116 |         var minVal: Double = 0.0
+117 |         for j in 0..<(_int((((_idx(t, 0) as! [Double])).count)) &- 1) {
+    |                                          `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+118 |             let v = Double(_idx(_idx(t, 0), j))
+119 |             if (v < minVal) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden496_linear_programming_simplex617980174/001/main.swift:118:33: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+116 |         var minVal: Double = 0.0
+117 |         for j in 0..<(_int((((_idx(t, 0) as! [Double])).count)) &- 1) {
+118 |             let v = Double(_idx(_idx(t, 0), j))
+    |                                 `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+119 |             if (v < minVal) {
+120 |                 minVal = Double(v)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden496_linear_programming_simplex617980174/001/main.swift:131:37: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+129 |         var first: Bool = true
+130 |         for i in 1..<_int(((t).count)) {
+131 |             let coeff = Double(_idx(_idx(t, i), col))
+    |                                     `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+132 |             if (coeff > 0.0) {
+133 |                 let rhs = Double(_idx(_idx(t, i), (_int((((_idx(t, i) as! [Double])).count)) &- 1)))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden496_linear_programming_simplex617980174/001/main.swift:133:39: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+131 |             let coeff = Double(_idx(_idx(t, i), col))
+132 |             if (coeff > 0.0) {
+133 |                 let rhs = Double(_idx(_idx(t, i), (_int((((_idx(t, i) as! [Double])).count)) &- 1)))
+    |                                       `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+134 |                 let ratio = (rhs / coeff)
+135 |                 if (first || (ratio < minRatio)) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden496_linear_programming_simplex617980174/001/main.swift:133:71: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+131 |             let coeff = Double(_idx(_idx(t, i), col))
+132 |             if (coeff > 0.0) {
+133 |                 let rhs = Double(_idx(_idx(t, i), (_int((((_idx(t, i) as! [Double])).count)) &- 1)))
+    |                                                                       `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+134 |                 let ratio = (rhs / coeff)
+135 |                 if (first || (ratio < minRatio)) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden496_linear_programming_simplex617980174/001/main.swift:145:43: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+143 |     }
+144 |     func interpret(_ t: [[Double]], _ nVars: Int) -> [String: Double] {
+145 |         let lastCol = (_int((((_idx(t, 0) as! [Double])).count)) &- 1)
+    |                                           `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+146 |         var p: Double = Double(_idx(_idx(t, 0), lastCol))
+147 |         if (p < 0.0) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden496_linear_programming_simplex617980174/001/main.swift:146:37: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+144 |     func interpret(_ t: [[Double]], _ nVars: Int) -> [String: Double] {
+145 |         let lastCol = (_int((((_idx(t, 0) as! [Double])).count)) &- 1)
+146 |         var p: Double = Double(_idx(_idx(t, 0), lastCol))
+    |                                     `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+147 |         if (p < 0.0) {
+148 |             p = Double(-p)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden496_linear_programming_simplex617980174/001/main.swift:156:39: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+154 |             var nzCount: Int = 0
+155 |             for r in 0..<_int(((t).count)) {
+156 |                 let val = Double(_idx(_idx(t, r), i))
+    |                                       `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+157 |                 if (val != 0.0) {
+158 |                     nzCount = _int((nzCount &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden496_linear_programming_simplex617980174/001/main.swift:162:48: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+160 |                 }
+161 |             }
+162 |             if ((nzCount == 1) && (Double(_idx(_idx(t, nzRow), i)) == 1.0)) {
+    |                                                `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+163 |                 result = _set(result, String(describing: ("x" + _p((i &+ 1)))), Double(_idx(_idx(t, nzRow), lastCol)))
+164 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden496_linear_programming_simplex617980174/001/main.swift:163:93: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+161 |             }
+162 |             if ((nzCount == 1) && (Double(_idx(_idx(t, nzRow), i)) == 1.0)) {
+163 |                 result = _set(result, String(describing: ("x" + _p((i &+ 1)))), Double(_idx(_idx(t, nzRow), lastCol)))
+    |                                                                                             `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+164 |             }
+165 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden496_linear_programming_simplex617980174/001/main.swift:171:42: warning: forced cast of '[[Double]]' to same type has no effect
+169 |         var t: [[Double]] = tab
+170 |         while true {
+171 |             let p: [Int] = (findPivot((t as! [[Double]])) as! [Int])
+    |                                          `- warning: forced cast of '[[Double]]' to same type has no effect
+172 |             let row = (_idx(p, 0) as? Int ?? 0)
+173 |             let col = (_idx(p, 1) as? Int ?? 0)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden496_linear_programming_simplex617980174/001/main.swift:171:59: warning: forced cast of '[Int]' to same type has no effect
+169 |         var t: [[Double]] = tab
+170 |         while true {
+171 |             let p: [Int] = (findPivot((t as! [[Double]])) as! [Int])
+    |                                                           `- warning: forced cast of '[Int]' to same type has no effect
+172 |             let row = (_idx(p, 0) as? Int ?? 0)
+173 |             let col = (_idx(p, 1) as? Int ?? 0)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden496_linear_programming_simplex617980174/001/main.swift:172:35: warning: conditional downcast from 'Int?' to 'Int' does nothing
+170 |         while true {
+171 |             let p: [Int] = (findPivot((t as! [[Double]])) as! [Int])
+172 |             let row = (_idx(p, 0) as? Int ?? 0)
+    |                                   `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+173 |             let col = (_idx(p, 1) as? Int ?? 0)
+174 |             if (row < 0) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden496_linear_programming_simplex617980174/001/main.swift:173:35: warning: conditional downcast from 'Int?' to 'Int' does nothing
+171 |             let p: [Int] = (findPivot((t as! [[Double]])) as! [Int])
+172 |             let row = (_idx(p, 0) as? Int ?? 0)
+173 |             let col = (_idx(p, 1) as? Int ?? 0)
+    |                                   `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+174 |             if (row < 0) {
+175 |                 break
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden496_linear_programming_simplex617980174/001/main.swift:177:38: warning: forced cast of '[[Double]]' to same type has no effect
+175 |                 break
+176 |             }
+177 |             t = (pivot(&t, row, col) as! [[Double]])
+    |                                      `- warning: forced cast of '[[Double]]' to same type has no effect
+178 |         }
+179 |         return t
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden496_linear_programming_simplex617980174/001/main.swift:182:50: warning: forced cast of '[[Double]]' to same type has no effect
+180 |     }
+181 |     var tableau: [[Double]] = ([([-1.0, -1.0, 0.0, 0.0, 0.0] as! [Double]), ([1.0, 3.0, 1.0, 0.0, 4.0] as! [Double]), ([3.0, 1.0, 0.0, 1.0, 4.0] as! [Double])] as! [[Double]])
+182 |     var finalTab: [[Double]] = (simplex((tableau as! [[Double]])) as! [[Double]])
+    |                                                  `- warning: forced cast of '[[Double]]' to same type has no effect
+183 |     let res: [String: Double] = (interpret((finalTab as! [[Double]]), 2) as! [String: Double])
+184 |     print(_p(("P: " + _p(Double(res[String("P")])))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden496_linear_programming_simplex617980174/001/main.swift:182:67: warning: forced cast of '[[Double]]' to same type has no effect
+180 |     }
+181 |     var tableau: [[Double]] = ([([-1.0, -1.0, 0.0, 0.0, 0.0] as! [Double]), ([1.0, 3.0, 1.0, 0.0, 4.0] as! [Double]), ([3.0, 1.0, 0.0, 1.0, 4.0] as! [Double])] as! [[Double]])
+182 |     var finalTab: [[Double]] = (simplex((tableau as! [[Double]])) as! [[Double]])
+    |                                                                   `- warning: forced cast of '[[Double]]' to same type has no effect
+183 |     let res: [String: Double] = (interpret((finalTab as! [[Double]]), 2) as! [String: Double])
+184 |     print(_p(("P: " + _p(Double(res[String("P")])))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden496_linear_programming_simplex617980174/001/main.swift:183:54: warning: forced cast of '[[Double]]' to same type has no effect
+181 |     var tableau: [[Double]] = ([([-1.0, -1.0, 0.0, 0.0, 0.0] as! [Double]), ([1.0, 3.0, 1.0, 0.0, 4.0] as! [Double]), ([3.0, 1.0, 0.0, 1.0, 4.0] as! [Double])] as! [[Double]])
+182 |     var finalTab: [[Double]] = (simplex((tableau as! [[Double]])) as! [[Double]])
+183 |     let res: [String: Double] = (interpret((finalTab as! [[Double]]), 2) as! [String: Double])
+    |                                                      `- warning: forced cast of '[[Double]]' to same type has no effect
+184 |     print(_p(("P: " + _p(Double(res[String("P")])))))
+185 |     for i in 0..<2 {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden496_linear_programming_simplex617980174/001/main.swift:183:74: warning: forced cast of '[String : Double]' to same type has no effect
+181 |     var tableau: [[Double]] = ([([-1.0, -1.0, 0.0, 0.0, 0.0] as! [Double]), ([1.0, 3.0, 1.0, 0.0, 4.0] as! [Double]), ([3.0, 1.0, 0.0, 1.0, 4.0] as! [Double])] as! [[Double]])
+182 |     var finalTab: [[Double]] = (simplex((tableau as! [[Double]])) as! [[Double]])
+183 |     let res: [String: Double] = (interpret((finalTab as! [[Double]]), 2) as! [String: Double])
+    |                                                                          `- warning: forced cast of '[String : Double]' to same type has no effect
+184 |     print(_p(("P: " + _p(Double(res[String("P")])))))
+185 |     for i in 0..<2 {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden496_linear_programming_simplex617980174/001/main.swift:184:33: warning: expression implicitly coerced from 'Double?' to 'Any'
+182 |     var finalTab: [[Double]] = (simplex((tableau as! [[Double]])) as! [[Double]])
+183 |     let res: [String: Double] = (interpret((finalTab as! [[Double]]), 2) as! [String: Double])
+184 |     print(_p(("P: " + _p(Double(res[String("P")])))))
+    |                                 |  |- note: provide a default value to avoid this warning
+    |                                 |  |- note: force-unwrap the value to avoid this warning
+    |                                 |  `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+    |                                 `- warning: expression implicitly coerced from 'Double?' to 'Any'
+185 |     for i in 0..<2 {
+186 |         let key = ("x" + _p((i &+ 1)))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden496_linear_programming_simplex617980174/001/main.swift:188:48: warning: expression implicitly coerced from 'Double?' to 'Any'
+186 |         let key = ("x" + _p((i &+ 1)))
+187 |         if (res[key] != nil) {
+188 |             print(_p(((key + ": ") + _p(Double(res[String(String(describing: key))])))))
+    |                                                |  |- note: provide a default value to avoid this warning
+    |                                                |  |- note: force-unwrap the value to avoid this warning
+    |                                                |  `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+    |                                                `- warning: expression implicitly coerced from 'Double?' to 'Any'
+189 |         }
+190 |     }

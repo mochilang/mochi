@@ -1,0 +1,211 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden487_linear_algebra_src_gaussian_elimination_pivoting1660677072/001/main.swift:107:51: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+105 |         var i: Int = 0
+106 |         while (i < _int(((src).count))) {
+107 |             var row_src: [Double] = (_idx(src, i) as! [Double])
+    |                                                   `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+108 |             var row: [Double] = ([] as! [Double])
+109 |             var j: Int = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden487_linear_algebra_src_gaussian_elimination_pivoting1660677072/001/main.swift:111:44: warning: expression implicitly coerced from 'Double?' to 'Any'
+109 |             var j: Int = 0
+110 |             while (j < _int(((row_src).count))) {
+111 |                 row = (_append(row, Double(_idx(row_src, j))) as! [Double])
+    |                                            |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                            |- note: provide a default value to avoid this warning
+    |                                            |- note: force-unwrap the value to avoid this warning
+    |                                            `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+112 |                 j = _int((j &+ 1))
+113 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden487_linear_algebra_src_gaussian_elimination_pivoting1660677072/001/main.swift:120:51: warning: forced cast of '[[Double]]' to same type has no effect
+118 |     }
+119 |     func solve_linear_system(_ matrix: [[Double]]) -> [Double] {
+120 |         var ab: [[Double]] = (copy_matrix((matrix as! [[Double]])) as! [[Double]])
+    |                                                   `- warning: forced cast of '[[Double]]' to same type has no effect
+121 |         var num_rows: Int = _int(((ab).count))
+122 |         var num_cols: Int = (_int((((_idx(ab, 0) as! [Double])).count)) &- 1)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden487_linear_algebra_src_gaussian_elimination_pivoting1660677072/001/main.swift:120:68: warning: forced cast of '[[Double]]' to same type has no effect
+118 |     }
+119 |     func solve_linear_system(_ matrix: [[Double]]) -> [Double] {
+120 |         var ab: [[Double]] = (copy_matrix((matrix as! [[Double]])) as! [[Double]])
+    |                                                                    `- warning: forced cast of '[[Double]]' to same type has no effect
+121 |         var num_rows: Int = _int(((ab).count))
+122 |         var num_cols: Int = (_int((((_idx(ab, 0) as! [Double])).count)) &- 1)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden487_linear_algebra_src_gaussian_elimination_pivoting1660677072/001/main.swift:122:50: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+120 |         var ab: [[Double]] = (copy_matrix((matrix as! [[Double]])) as! [[Double]])
+121 |         var num_rows: Int = _int(((ab).count))
+122 |         var num_cols: Int = (_int((((_idx(ab, 0) as! [Double])).count)) &- 1)
+    |                                                  `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+123 |         if (num_rows != num_cols) {
+124 |             _ = fatalError("Matrix is not square")
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden487_linear_algebra_src_gaussian_elimination_pivoting1660677072/001/main.swift:131:50: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+129 |             var i: Int = column_num
+130 |             while (i < num_cols) {
+131 |                 if (Double(abs_float(Double(_idx(_idx(ab, i), column_num)))) > Double(abs_float(Double(_idx(_idx(ab, column_num), column_num))))) {
+    |                                                  `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+132 |                     var temp: [Double] = (_idx(ab, column_num) as! [Double])
+133 |                     ab = _set(ab, column_num, (_idx(ab, i) as! [Double]))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden487_linear_algebra_src_gaussian_elimination_pivoting1660677072/001/main.swift:131:109: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+129 |             var i: Int = column_num
+130 |             while (i < num_cols) {
+131 |                 if (Double(abs_float(Double(_idx(_idx(ab, i), column_num)))) > Double(abs_float(Double(_idx(_idx(ab, column_num), column_num))))) {
+    |                                                                                                             `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+132 |                     var temp: [Double] = (_idx(ab, column_num) as! [Double])
+133 |                     ab = _set(ab, column_num, (_idx(ab, i) as! [Double]))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden487_linear_algebra_src_gaussian_elimination_pivoting1660677072/001/main.swift:132:64: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+130 |             while (i < num_cols) {
+131 |                 if (Double(abs_float(Double(_idx(_idx(ab, i), column_num)))) > Double(abs_float(Double(_idx(_idx(ab, column_num), column_num))))) {
+132 |                     var temp: [Double] = (_idx(ab, column_num) as! [Double])
+    |                                                                `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+133 |                     ab = _set(ab, column_num, (_idx(ab, i) as! [Double]))
+134 |                     ab = _set(ab, i, (temp as! [Double]))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden487_linear_algebra_src_gaussian_elimination_pivoting1660677072/001/main.swift:133:60: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+131 |                 if (Double(abs_float(Double(_idx(_idx(ab, i), column_num)))) > Double(abs_float(Double(_idx(_idx(ab, column_num), column_num))))) {
+132 |                     var temp: [Double] = (_idx(ab, column_num) as! [Double])
+133 |                     ab = _set(ab, column_num, (_idx(ab, i) as! [Double]))
+    |                                                            `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+134 |                     ab = _set(ab, i, (temp as! [Double]))
+135 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden487_linear_algebra_src_gaussian_elimination_pivoting1660677072/001/main.swift:134:44: warning: forced cast of '[Double]' to same type has no effect
+132 |                     var temp: [Double] = (_idx(ab, column_num) as! [Double])
+133 |                     ab = _set(ab, column_num, (_idx(ab, i) as! [Double]))
+134 |                     ab = _set(ab, i, (temp as! [Double]))
+    |                                            `- warning: forced cast of '[Double]' to same type has no effect
+135 |                 }
+136 |                 i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden487_linear_algebra_src_gaussian_elimination_pivoting1660677072/001/main.swift:138:46: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+136 |                 i = _int((i &+ 1))
+137 |             }
+138 |             if (Double(abs_float(Double(_idx(_idx(ab, column_num), column_num)))) < 0.00000001) {
+    |                                              `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+139 |                 _ = fatalError("Matrix is singular")
+140 |                 return ([] as! [Double])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden487_linear_algebra_src_gaussian_elimination_pivoting1660677072/001/main.swift:145:55: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+143 |                 i = Int(column_num)
+144 |                 while (i < num_rows) {
+145 |                     var factor: Double = (Double(_idx(_idx(ab, i), (column_num &- 1))) / Double(_idx(_idx(ab, (column_num &- 1)), (column_num &- 1))))
+    |                                                       `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+146 |                     var j: Int = 0
+147 |                     while (j < _int((((_idx(ab, i) as! [Double])).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden487_linear_algebra_src_gaussian_elimination_pivoting1660677072/001/main.swift:145:102: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+143 |                 i = Int(column_num)
+144 |                 while (i < num_rows) {
+145 |                     var factor: Double = (Double(_idx(_idx(ab, i), (column_num &- 1))) / Double(_idx(_idx(ab, (column_num &- 1)), (column_num &- 1))))
+    |                                                                                                      `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+146 |                     var j: Int = 0
+147 |                     while (j < _int((((_idx(ab, i) as! [Double])).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden487_linear_algebra_src_gaussian_elimination_pivoting1660677072/001/main.swift:147:52: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+145 |                     var factor: Double = (Double(_idx(_idx(ab, i), (column_num &- 1))) / Double(_idx(_idx(ab, (column_num &- 1)), (column_num &- 1))))
+146 |                     var j: Int = 0
+147 |                     while (j < _int((((_idx(ab, i) as! [Double])).count))) {
+    |                                                    `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+148 |                         _idx(_idx(ab, i), j) = Double((Double(_idx(_idx(ab, i), j)) - (factor * Double(_idx(_idx(ab, (column_num &- 1)), j)))))
+149 |                         j = _int((j &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden487_linear_algebra_src_gaussian_elimination_pivoting1660677072/001/main.swift:148:30: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+146 |                     var j: Int = 0
+147 |                     while (j < _int((((_idx(ab, i) as! [Double])).count))) {
+148 |                         _idx(_idx(ab, i), j) = Double((Double(_idx(_idx(ab, i), j)) - (factor * Double(_idx(_idx(ab, (column_num &- 1)), j)))))
+    |                              `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+149 |                         j = _int((j &+ 1))
+150 |                     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden487_linear_algebra_src_gaussian_elimination_pivoting1660677072/001/main.swift:148:48: error: cannot assign value of type 'Double' to type '[Double]?'
+146 |                     var j: Int = 0
+147 |                     while (j < _int((((_idx(ab, i) as! [Double])).count))) {
+148 |                         _idx(_idx(ab, i), j) = Double((Double(_idx(_idx(ab, i), j)) - (factor * Double(_idx(_idx(ab, (column_num &- 1)), j)))))
+    |                                                `- error: cannot assign value of type 'Double' to type '[Double]?'
+149 |                         j = _int((j &+ 1))
+150 |                     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden487_linear_algebra_src_gaussian_elimination_pivoting1660677072/001/main.swift:148:68: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+146 |                     var j: Int = 0
+147 |                     while (j < _int((((_idx(ab, i) as! [Double])).count))) {
+148 |                         _idx(_idx(ab, i), j) = Double((Double(_idx(_idx(ab, i), j)) - (factor * Double(_idx(_idx(ab, (column_num &- 1)), j)))))
+    |                                                                    `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+149 |                         j = _int((j &+ 1))
+150 |                     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden487_linear_algebra_src_gaussian_elimination_pivoting1660677072/001/main.swift:148:109: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+146 |                     var j: Int = 0
+147 |                     while (j < _int((((_idx(ab, i) as! [Double])).count))) {
+148 |                         _idx(_idx(ab, i), j) = Double((Double(_idx(_idx(ab, i), j)) - (factor * Double(_idx(_idx(ab, (column_num &- 1)), j)))))
+    |                                                                                                             `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+149 |                         j = _int((j &+ 1))
+150 |                     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden487_linear_algebra_src_gaussian_elimination_pivoting1660677072/001/main.swift:164:42: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+162 |         column_num = _int((num_rows &- 1))
+163 |         while (column_num >= 0) {
+164 |             var x: Double = (Double(_idx(_idx(ab, column_num), num_cols)) / Double(_idx(_idx(ab, column_num), column_num)))
+    |                                          `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+165 |             x_lst = _set(x_lst, column_num, Double(x))
+166 |             var i: Int = (column_num &- 1)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden487_linear_algebra_src_gaussian_elimination_pivoting1660677072/001/main.swift:164:89: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+162 |         column_num = _int((num_rows &- 1))
+163 |         while (column_num >= 0) {
+164 |             var x: Double = (Double(_idx(_idx(ab, column_num), num_cols)) / Double(_idx(_idx(ab, column_num), column_num)))
+    |                                                                                         `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+165 |             x_lst = _set(x_lst, column_num, Double(x))
+166 |             var i: Int = (column_num &- 1)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden487_linear_algebra_src_gaussian_elimination_pivoting1660677072/001/main.swift:168:22: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+166 |             var i: Int = (column_num &- 1)
+167 |             while (i >= 0) {
+168 |                 _idx(_idx(ab, i), num_cols) = Double((Double(_idx(_idx(ab, i), num_cols)) - (Double(_idx(_idx(ab, i), column_num)) * x)))
+    |                      `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+169 |                 i = _int((i &- 1))
+170 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden487_linear_algebra_src_gaussian_elimination_pivoting1660677072/001/main.swift:168:67: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+166 |             var i: Int = (column_num &- 1)
+167 |             while (i >= 0) {
+168 |                 _idx(_idx(ab, i), num_cols) = Double((Double(_idx(_idx(ab, i), num_cols)) - (Double(_idx(_idx(ab, i), column_num)) * x)))
+    |                                                                   `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+169 |                 i = _int((i &- 1))
+170 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden487_linear_algebra_src_gaussian_elimination_pivoting1660677072/001/main.swift:168:106: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+166 |             var i: Int = (column_num &- 1)
+167 |             while (i >= 0) {
+168 |                 _idx(_idx(ab, i), num_cols) = Double((Double(_idx(_idx(ab, i), num_cols)) - (Double(_idx(_idx(ab, i), column_num)) * x)))
+    |                                                                                                          `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+169 |                 i = _int((i &- 1))
+170 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden487_linear_algebra_src_gaussian_elimination_pivoting1660677072/001/main.swift:168:47: error: cannot assign value of type 'Double' to type '[Double]?'
+166 |             var i: Int = (column_num &- 1)
+167 |             while (i >= 0) {
+168 |                 _idx(_idx(ab, i), num_cols) = Double((Double(_idx(_idx(ab, i), num_cols)) - (Double(_idx(_idx(ab, i), column_num)) * x)))
+    |                                               `- error: cannot assign value of type 'Double' to type '[Double]?'
+169 |                 i = _int((i &- 1))
+170 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden487_linear_algebra_src_gaussian_elimination_pivoting1660677072/001/main.swift:178:67: warning: forced cast of '[[Double]]' to same type has no effect
+176 |     print(_p("Matrix:"))
+177 |     print(_p("[" + example_matrix.map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+178 |     var solution: [Double] = (solve_linear_system((example_matrix as! [[Double]])) as! [Double])
+    |                                                                   `- warning: forced cast of '[[Double]]' to same type has no effect
+179 |     print(_p("[" + solution.map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+180 |     let _benchEnd = _now()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden487_linear_algebra_src_gaussian_elimination_pivoting1660677072/001/main.swift:178:84: warning: forced cast of '[Double]' to same type has no effect
+176 |     print(_p("Matrix:"))
+177 |     print(_p("[" + example_matrix.map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+178 |     var solution: [Double] = (solve_linear_system((example_matrix as! [[Double]])) as! [Double])
+    |                                                                                    `- warning: forced cast of '[Double]' to same type has no effect
+179 |     print(_p("[" + solution.map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+180 |     let _benchEnd = _now()

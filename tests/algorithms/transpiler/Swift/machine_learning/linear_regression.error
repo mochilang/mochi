@@ -1,0 +1,243 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden510_machine_learning_linear_regression1311306558/001/main.swift:98:41: warning: expression implicitly coerced from 'Double?' to 'Any'
+ 96 |         var i: Int = 0
+ 97 |         while (i < _int(((x).count))) {
+ 98 |             sum = Double((sum + (Double(_idx(x, i)) * Double(_idx(y, i)))))
+    |                                         |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                         |- note: provide a default value to avoid this warning
+    |                                         |- note: force-unwrap the value to avoid this warning
+    |                                         `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+ 99 |             i = _int((i &+ 1))
+100 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden510_machine_learning_linear_regression1311306558/001/main.swift:98:62: warning: expression implicitly coerced from 'Double?' to 'Any'
+ 96 |         var i: Int = 0
+ 97 |         while (i < _int(((x).count))) {
+ 98 |             sum = Double((sum + (Double(_idx(x, i)) * Double(_idx(y, i)))))
+    |                                                              |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                                              |- note: provide a default value to avoid this warning
+    |                                                              |- note: force-unwrap the value to avoid this warning
+    |                                                              `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+ 99 |             i = _int((i &+ 1))
+100 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden510_machine_learning_linear_regression1311306558/001/main.swift:112:48: warning: forced cast of '[Double]' to same type has no effect
+110 |         var i: Int = 0
+111 |         while (i < len_data) {
+112 |             let prediction = Double(dot((theta as! [Double]), (_idx(data_x, i) as! [Double])))
+    |                                                `- warning: forced cast of '[Double]' to same type has no effect
+113 |             let error = (prediction - Double(_idx(data_y, i)))
+114 |             var k: Int = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden510_machine_learning_linear_regression1311306558/001/main.swift:112:80: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+110 |         var i: Int = 0
+111 |         while (i < len_data) {
+112 |             let prediction = Double(dot((theta as! [Double]), (_idx(data_x, i) as! [Double])))
+    |                                                                                `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+113 |             let error = (prediction - Double(_idx(data_y, i)))
+114 |             var k: Int = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden510_machine_learning_linear_regression1311306558/001/main.swift:113:46: warning: expression implicitly coerced from 'Double?' to 'Any'
+111 |         while (i < len_data) {
+112 |             let prediction = Double(dot((theta as! [Double]), (_idx(data_x, i) as! [Double])))
+113 |             let error = (prediction - Double(_idx(data_y, i)))
+    |                                              |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                              |- note: provide a default value to avoid this warning
+    |                                              |- note: force-unwrap the value to avoid this warning
+    |                                              `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+114 |             var k: Int = 0
+115 |             while (k < _int(((theta).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden510_machine_learning_linear_regression1311306558/001/main.swift:116:106: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+114 |             var k: Int = 0
+115 |             while (k < _int(((theta).count))) {
+116 |                 gradients = _set(gradients, k, Double((Double(_idx(gradients, k)) + (error * Double(_idx(_idx(data_x, i), k))))))
+    |                                                                                                          `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+117 |                 k = _int((k &+ 1))
+118 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden510_machine_learning_linear_regression1311306558/001/main.swift:124:37: warning: expression implicitly coerced from 'Double?' to 'Any'
+122 |         var g: Int = 0
+123 |         while (g < _int(((theta).count))) {
+124 |             t = (_append(t, (Double(_idx(theta, g)) - (Double((alpha / Double(len_data))) * Double(_idx(gradients, g))))) as! [Double])
+    |                                     |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                     |- note: provide a default value to avoid this warning
+    |                                     |- note: force-unwrap the value to avoid this warning
+    |                                     `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+125 |             g = _int((g &+ 1))
+126 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden510_machine_learning_linear_regression1311306558/001/main.swift:124:100: warning: expression implicitly coerced from 'Double?' to 'Any'
+122 |         var g: Int = 0
+123 |         while (g < _int(((theta).count))) {
+124 |             t = (_append(t, (Double(_idx(theta, g)) - (Double((alpha / Double(len_data))) * Double(_idx(gradients, g))))) as! [Double])
+    |                                                                                                    |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                                                                                    |- note: provide a default value to avoid this warning
+    |                                                                                                    |- note: force-unwrap the value to avoid this warning
+    |                                                                                                    `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+125 |             g = _int((g &+ 1))
+126 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden510_machine_learning_linear_regression1311306558/001/main.swift:133:48: warning: forced cast of '[Double]' to same type has no effect
+131 |         var i: Int = 0
+132 |         while (i < len_data) {
+133 |             let prediction = Double(dot((theta as! [Double]), (_idx(data_x, i) as! [Double])))
+    |                                                `- warning: forced cast of '[Double]' to same type has no effect
+134 |             let diff = (prediction - Double(_idx(data_y, i)))
+135 |             total = Double((total + (diff * diff)))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden510_machine_learning_linear_regression1311306558/001/main.swift:133:80: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+131 |         var i: Int = 0
+132 |         while (i < len_data) {
+133 |             let prediction = Double(dot((theta as! [Double]), (_idx(data_x, i) as! [Double])))
+    |                                                                                `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+134 |             let diff = (prediction - Double(_idx(data_y, i)))
+135 |             total = Double((total + (diff * diff)))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden510_machine_learning_linear_regression1311306558/001/main.swift:134:45: warning: expression implicitly coerced from 'Double?' to 'Any'
+132 |         while (i < len_data) {
+133 |             let prediction = Double(dot((theta as! [Double]), (_idx(data_x, i) as! [Double])))
+134 |             let diff = (prediction - Double(_idx(data_y, i)))
+    |                                             |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                             |- note: provide a default value to avoid this warning
+    |                                             |- note: force-unwrap the value to avoid this warning
+    |                                             `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+135 |             total = Double((total + (diff * diff)))
+136 |             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden510_machine_learning_linear_regression1311306558/001/main.swift:143:56: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+141 |         let iterations: Int = 10
+142 |         let alpha: Double = 0.01
+143 |         let no_features: Int = _int((((_idx(data_x, 0) as! [Double])).count))
+    |                                                        `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+144 |         let len_data: Int = _int(((data_x).count))
+145 |         var theta: [Double] = ([] as! [Double])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden510_machine_learning_linear_regression1311306558/001/main.swift:153:57: warning: forced cast of '[[Double]]' to same type has no effect
+151 |         var iter: Int = 0
+152 |         while (iter < iterations) {
+153 |             theta = (run_steep_gradient_descent((data_x as! [[Double]]), (data_y as! [Double]), len_data, Double(alpha), (theta as! [Double])) as! [Double])
+    |                                                         `- warning: forced cast of '[[Double]]' to same type has no effect
+154 |             let error = Double(sum_of_square_error((data_x as! [[Double]]), (data_y as! [Double]), len_data, (theta as! [Double])))
+155 |             print(_p(((("At Iteration " + _p((iter &+ 1))) + " - Error is ") + _p(error))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden510_machine_learning_linear_regression1311306558/001/main.swift:153:82: warning: forced cast of '[Double]' to same type has no effect
+151 |         var iter: Int = 0
+152 |         while (iter < iterations) {
+153 |             theta = (run_steep_gradient_descent((data_x as! [[Double]]), (data_y as! [Double]), len_data, Double(alpha), (theta as! [Double])) as! [Double])
+    |                                                                                  `- warning: forced cast of '[Double]' to same type has no effect
+154 |             let error = Double(sum_of_square_error((data_x as! [[Double]]), (data_y as! [Double]), len_data, (theta as! [Double])))
+155 |             print(_p(((("At Iteration " + _p((iter &+ 1))) + " - Error is ") + _p(error))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden510_machine_learning_linear_regression1311306558/001/main.swift:153:129: warning: forced cast of '[Double]' to same type has no effect
+151 |         var iter: Int = 0
+152 |         while (iter < iterations) {
+153 |             theta = (run_steep_gradient_descent((data_x as! [[Double]]), (data_y as! [Double]), len_data, Double(alpha), (theta as! [Double])) as! [Double])
+    |                                                                                                                                 `- warning: forced cast of '[Double]' to same type has no effect
+154 |             let error = Double(sum_of_square_error((data_x as! [[Double]]), (data_y as! [Double]), len_data, (theta as! [Double])))
+155 |             print(_p(((("At Iteration " + _p((iter &+ 1))) + " - Error is ") + _p(error))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden510_machine_learning_linear_regression1311306558/001/main.swift:153:144: warning: forced cast of '[Double]' to same type has no effect
+151 |         var iter: Int = 0
+152 |         while (iter < iterations) {
+153 |             theta = (run_steep_gradient_descent((data_x as! [[Double]]), (data_y as! [Double]), len_data, Double(alpha), (theta as! [Double])) as! [Double])
+    |                                                                                                                                                `- warning: forced cast of '[Double]' to same type has no effect
+154 |             let error = Double(sum_of_square_error((data_x as! [[Double]]), (data_y as! [Double]), len_data, (theta as! [Double])))
+155 |             print(_p(((("At Iteration " + _p((iter &+ 1))) + " - Error is ") + _p(error))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden510_machine_learning_linear_regression1311306558/001/main.swift:154:60: warning: forced cast of '[[Double]]' to same type has no effect
+152 |         while (iter < iterations) {
+153 |             theta = (run_steep_gradient_descent((data_x as! [[Double]]), (data_y as! [Double]), len_data, Double(alpha), (theta as! [Double])) as! [Double])
+154 |             let error = Double(sum_of_square_error((data_x as! [[Double]]), (data_y as! [Double]), len_data, (theta as! [Double])))
+    |                                                            `- warning: forced cast of '[[Double]]' to same type has no effect
+155 |             print(_p(((("At Iteration " + _p((iter &+ 1))) + " - Error is ") + _p(error))))
+156 |             iter = _int((iter &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden510_machine_learning_linear_regression1311306558/001/main.swift:154:85: warning: forced cast of '[Double]' to same type has no effect
+152 |         while (iter < iterations) {
+153 |             theta = (run_steep_gradient_descent((data_x as! [[Double]]), (data_y as! [Double]), len_data, Double(alpha), (theta as! [Double])) as! [Double])
+154 |             let error = Double(sum_of_square_error((data_x as! [[Double]]), (data_y as! [Double]), len_data, (theta as! [Double])))
+    |                                                                                     `- warning: forced cast of '[Double]' to same type has no effect
+155 |             print(_p(((("At Iteration " + _p((iter &+ 1))) + " - Error is ") + _p(error))))
+156 |             iter = _int((iter &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden510_machine_learning_linear_regression1311306558/001/main.swift:154:117: warning: forced cast of '[Double]' to same type has no effect
+152 |         while (iter < iterations) {
+153 |             theta = (run_steep_gradient_descent((data_x as! [[Double]]), (data_y as! [Double]), len_data, Double(alpha), (theta as! [Double])) as! [Double])
+154 |             let error = Double(sum_of_square_error((data_x as! [[Double]]), (data_y as! [Double]), len_data, (theta as! [Double])))
+    |                                                                                                                     `- warning: forced cast of '[Double]' to same type has no effect
+155 |             print(_p(((("At Iteration " + _p((iter &+ 1))) + " - Error is ") + _p(error))))
+156 |             iter = _int((iter &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden510_machine_learning_linear_regression1311306558/001/main.swift:171:51: warning: expression implicitly coerced from 'Double?' to 'Any'
+169 |         var i: Int = 0
+170 |         while (i < _int(((predicted_y).count))) {
+171 |             let diff = Double(absf(Double((Double(_idx(predicted_y, i)) - Double(_idx(original_y, i))))))
+    |                                                   |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                                   |- note: provide a default value to avoid this warning
+    |                                                   |- note: force-unwrap the value to avoid this warning
+    |                                                   `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+172 |             total = Double((total + diff))
+173 |             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden510_machine_learning_linear_regression1311306558/001/main.swift:171:82: warning: expression implicitly coerced from 'Double?' to 'Any'
+169 |         var i: Int = 0
+170 |         while (i < _int(((predicted_y).count))) {
+171 |             let diff = Double(absf(Double((Double(_idx(predicted_y, i)) - Double(_idx(original_y, i))))))
+    |                                                                                  |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                                                                  |- note: provide a default value to avoid this warning
+    |                                                                                  |- note: force-unwrap the value to avoid this warning
+    |                                                                                  `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+172 |             total = Double((total + diff))
+173 |             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden510_machine_learning_linear_regression1311306558/001/main.swift:179:58: warning: forced cast of '[[Double]]' to same type has no effect
+177 |     let data_x: [[Double]] = ([([1.0, 1.0] as! [Double]), ([1.0, 2.0] as! [Double]), ([1.0, 3.0] as! [Double])] as! [[Double]])
+178 |     let data_y: [Double] = ([1.0, 2.0, 3.0] as! [Double])
+179 |     var theta: [Double] = (run_linear_regression((data_x as! [[Double]]), (data_y as! [Double])) as! [Double])
+    |                                                          `- warning: forced cast of '[[Double]]' to same type has no effect
+180 |     print(_p("Resultant Feature vector :"))
+181 |     var i: Int = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden510_machine_learning_linear_regression1311306558/001/main.swift:179:83: warning: forced cast of '[Double]' to same type has no effect
+177 |     let data_x: [[Double]] = ([([1.0, 1.0] as! [Double]), ([1.0, 2.0] as! [Double]), ([1.0, 3.0] as! [Double])] as! [[Double]])
+178 |     let data_y: [Double] = ([1.0, 2.0, 3.0] as! [Double])
+179 |     var theta: [Double] = (run_linear_regression((data_x as! [[Double]]), (data_y as! [Double])) as! [Double])
+    |                                                                                   `- warning: forced cast of '[Double]' to same type has no effect
+180 |     print(_p("Resultant Feature vector :"))
+181 |     var i: Int = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden510_machine_learning_linear_regression1311306558/001/main.swift:179:98: warning: forced cast of '[Double]' to same type has no effect
+177 |     let data_x: [[Double]] = ([([1.0, 1.0] as! [Double]), ([1.0, 2.0] as! [Double]), ([1.0, 3.0] as! [Double])] as! [[Double]])
+178 |     let data_y: [Double] = ([1.0, 2.0, 3.0] as! [Double])
+179 |     var theta: [Double] = (run_linear_regression((data_x as! [[Double]]), (data_y as! [Double])) as! [Double])
+    |                                                                                                  `- warning: forced cast of '[Double]' to same type has no effect
+180 |     print(_p("Resultant Feature vector :"))
+181 |     var i: Int = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden510_machine_learning_linear_regression1311306558/001/main.swift:183:28: warning: expression implicitly coerced from 'Double?' to 'Any'
+181 |     var i: Int = 0
+182 |     while (i < _int(((theta).count))) {
+183 |         print(_p(_p(Double(_idx(theta, i)))))
+    |                            |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                            |- note: provide a default value to avoid this warning
+    |                            |- note: force-unwrap the value to avoid this warning
+    |                            `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+184 |         i = _int((i &+ 1))
+185 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden510_machine_learning_linear_regression1311306558/001/main.swift:188:55: warning: forced cast of '[Double]' to same type has no effect
+186 |     let predicted_y: [Double] = ([3.0, -0.5, 2.0, 7.0] as! [Double])
+187 |     let original_y: [Double] = ([2.5, 0.0, 2.0, 8.0] as! [Double])
+188 |     let mae = Double(mean_absolute_error((predicted_y as! [Double]), (original_y as! [Double])))
+    |                                                       `- warning: forced cast of '[Double]' to same type has no effect
+189 |     print(_p(("Mean Absolute Error : " + _p(mae))))
+190 |     let _benchEnd = _now()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden510_machine_learning_linear_regression1311306558/001/main.swift:188:82: warning: forced cast of '[Double]' to same type has no effect
+186 |     let predicted_y: [Double] = ([3.0, -0.5, 2.0, 7.0] as! [Double])
+187 |     let original_y: [Double] = ([2.5, 0.0, 2.0, 8.0] as! [Double])
+188 |     let mae = Double(mean_absolute_error((predicted_y as! [Double]), (original_y as! [Double])))
+    |                                                                                  `- warning: forced cast of '[Double]' to same type has no effect
+189 |     print(_p(("Mean Absolute Error : " + _p(mae))))
+190 |     let _benchEnd = _now()

@@ -1,0 +1,1073 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:108:31: warning: forced cast of 'String' to same type has no effect
+106 |             let digit = ((num % 10 + 10) % 10)
+107 |             let ch = String(describing: String(Array(String(describing: "0123456789"))[digit..<(digit &+ 1)]))
+108 |             res = ((ch + res) as! String)
+    |                               `- warning: forced cast of 'String' to same type has no effect
+109 |             num = _int((num / 10))
+110 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:112:32: warning: forced cast of 'String' to same type has no effect
+110 |         }
+111 |         if neg {
+112 |             res = (("-" + res) as! String)
+    |                                `- warning: forced cast of 'String' to same type has no effect
+113 |         }
+114 |         return res
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:126:32: warning: forced cast of 'String' to same type has no effect
+124 |         var res: String = String(describing: int_to_string(int_part))
+125 |         if (dec > 0) {
+126 |             res = ((res + ".") as! String)
+    |                                `- warning: forced cast of 'String' to same type has no effect
+127 |             var frac: Double = (num - Double(int_part))
+128 |             var i: Int = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:132:122: warning: forced cast of 'String' to same type has no effect
+130 |                 frac = Double((frac * 10.0))
+131 |                 let digit = Int(frac)
+132 |                 res = ((res + String(describing: String(Array(String(describing: "0123456789"))[digit..<(digit &+ 1)]))) as! String)
+    |                                                                                                                          `- warning: forced cast of 'String' to same type has no effect
+133 |                 frac = Double((frac - Double(digit)))
+134 |                 i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:138:32: warning: forced cast of 'String' to same type has no effect
+136 |         }
+137 |         if neg {
+138 |             res = (("-" + res) as! String)
+    |                                `- warning: forced cast of 'String' to same type has no effect
+139 |         }
+140 |         return res
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:143:28: warning: conditional downcast from 'Int?' to 'Int' does nothing
+141 |     }
+142 |     func vector_component(_ v: [Int], _ i: Int) -> Int {
+143 |         return (_idx(v, i) as? Int ?? 0)
+    |                            `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+144 |     }
+145 |     func vector_str_int(_ v: [Int]) -> String {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:149:68: warning: conditional downcast from 'Int?' to 'Int' does nothing
+147 |         var i: Int = 0
+148 |         while (i < _int(((v).count))) {
+149 |             s = ((s + String(describing: int_to_string((_idx(v, i) as? Int ?? 0)))) as! String)
+    |                                                                    `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+150 |             if ((i &+ 1) < _int(((v).count))) {
+151 |                 s = ((s + ",") as! String)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:149:85: warning: forced cast of 'String' to same type has no effect
+147 |         var i: Int = 0
+148 |         while (i < _int(((v).count))) {
+149 |             s = ((s + String(describing: int_to_string((_idx(v, i) as? Int ?? 0)))) as! String)
+    |                                                                                     `- warning: forced cast of 'String' to same type has no effect
+150 |             if ((i &+ 1) < _int(((v).count))) {
+151 |                 s = ((s + ",") as! String)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:151:32: warning: forced cast of 'String' to same type has no effect
+149 |             s = ((s + String(describing: int_to_string((_idx(v, i) as? Int ?? 0)))) as! String)
+150 |             if ((i &+ 1) < _int(((v).count))) {
+151 |                 s = ((s + ",") as! String)
+    |                                `- warning: forced cast of 'String' to same type has no effect
+152 |             }
+153 |             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:155:24: warning: forced cast of 'String' to same type has no effect
+153 |             i = _int((i &+ 1))
+154 |         }
+155 |         s = ((s + ")") as! String)
+    |                        `- warning: forced cast of 'String' to same type has no effect
+156 |         return s
+157 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:162:85: warning: forced cast of 'String' to same type has no effect
+160 |         var i: Int = 0
+161 |         while (i < _int(((v).count))) {
+162 |             s = ((s + String(describing: float_to_string(Double(_idx(v, i)), dec))) as! String)
+    |                                                                                     `- warning: forced cast of 'String' to same type has no effect
+163 |             if ((i &+ 1) < _int(((v).count))) {
+164 |                 s = ((s + ",") as! String)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:162:65: warning: expression implicitly coerced from 'Double?' to 'Any'
+160 |         var i: Int = 0
+161 |         while (i < _int(((v).count))) {
+162 |             s = ((s + String(describing: float_to_string(Double(_idx(v, i)), dec))) as! String)
+    |                                                                 |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                                                 |- note: provide a default value to avoid this warning
+    |                                                                 |- note: force-unwrap the value to avoid this warning
+    |                                                                 `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+163 |             if ((i &+ 1) < _int(((v).count))) {
+164 |                 s = ((s + ",") as! String)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:164:32: warning: forced cast of 'String' to same type has no effect
+162 |             s = ((s + String(describing: float_to_string(Double(_idx(v, i)), dec))) as! String)
+163 |             if ((i &+ 1) < _int(((v).count))) {
+164 |                 s = ((s + ",") as! String)
+    |                                `- warning: forced cast of 'String' to same type has no effect
+165 |             }
+166 |             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:168:24: warning: forced cast of 'String' to same type has no effect
+166 |             i = _int((i &+ 1))
+167 |         }
+168 |         s = ((s + ")") as! String)
+    |                        `- warning: forced cast of 'String' to same type has no effect
+169 |         return s
+170 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:175:46: warning: conditional downcast from 'Int?' to 'Int' does nothing
+173 |         var i: Int = 0
+174 |         while (i < _int(((a).count))) {
+175 |             res = (_append(res, ((_idx(a, i) as? Int ?? 0) &+ (_idx(b, i) as? Int ?? 0))) as! [Int])
+    |                                              `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+176 |             i = _int((i &+ 1))
+177 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:175:75: warning: conditional downcast from 'Int?' to 'Int' does nothing
+173 |         var i: Int = 0
+174 |         while (i < _int(((a).count))) {
+175 |             res = (_append(res, ((_idx(a, i) as? Int ?? 0) &+ (_idx(b, i) as? Int ?? 0))) as! [Int])
+    |                                                                           `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+176 |             i = _int((i &+ 1))
+177 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:184:46: warning: conditional downcast from 'Int?' to 'Int' does nothing
+182 |         var i: Int = 0
+183 |         while (i < _int(((a).count))) {
+184 |             res = (_append(res, ((_idx(a, i) as? Int ?? 0) &- (_idx(b, i) as? Int ?? 0))) as! [Int])
+    |                                              `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+185 |             i = _int((i &+ 1))
+186 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:184:75: warning: conditional downcast from 'Int?' to 'Int' does nothing
+182 |         var i: Int = 0
+183 |         while (i < _int(((a).count))) {
+184 |             res = (_append(res, ((_idx(a, i) as? Int ?? 0) &- (_idx(b, i) as? Int ?? 0))) as! [Int])
+    |                                                                           `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+185 |             i = _int((i &+ 1))
+186 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:193:41: warning: expression implicitly coerced from 'Int?' to 'Any'
+191 |         var i: Int = 0
+192 |         while (i < _int(((v).count))) {
+193 |             res = (_append(res, (Double(_idx(v, i)) * s)) as! [Double])
+    |                                         |- warning: expression implicitly coerced from 'Int?' to 'Any'
+    |                                         |- note: provide a default value to avoid this warning
+    |                                         |- note: force-unwrap the value to avoid this warning
+    |                                         `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+194 |             i = _int((i &+ 1))
+195 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:202:45: warning: conditional downcast from 'Int?' to 'Int' does nothing
+200 |         var i: Int = 0
+201 |         while (i < _int(((a).count))) {
+202 |             sum = _int((sum &+ ((_idx(a, i) as? Int ?? 0) &* (_idx(b, i) as? Int ?? 0))))
+    |                                             `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+203 |             i = _int((i &+ 1))
+204 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:202:74: warning: conditional downcast from 'Int?' to 'Int' does nothing
+200 |         var i: Int = 0
+201 |         while (i < _int(((a).count))) {
+202 |             sum = _int((sum &+ ((_idx(a, i) as? Int ?? 0) &* (_idx(b, i) as? Int ?? 0))))
+    |                                                                          `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+203 |             i = _int((i &+ 1))
+204 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:233:30: warning: expression implicitly coerced from 'Int?' to 'Any'
+231 |         var i: Int = 0
+232 |         while (i < _int(((v).count))) {
+233 |             let val = Double(_idx(v, i))
+    |                              |- warning: expression implicitly coerced from 'Int?' to 'Any'
+    |                              |- note: provide a default value to avoid this warning
+    |                              |- note: force-unwrap the value to avoid this warning
+    |                              `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+234 |             sum = Double((sum + (val * val)))
+235 |             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:249:40: warning: forced cast of '[Int]' to same type has no effect
+247 |     }
+248 |     func unit_basis_vector(_ n: Int, _ idx: Int) -> [Int] {
+249 |         var v: [Int] = (zero_vector(n) as! [Int])
+    |                                        `- warning: forced cast of '[Int]' to same type has no effect
+250 |         v = _set(v, idx, 1)
+251 |         return v
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:257:52: warning: conditional downcast from 'Int?' to 'Int' does nothing
+255 |         var i: Int = 0
+256 |         while (i < _int(((x).count))) {
+257 |             res = (_append(res, ((a &* (_idx(x, i) as? Int ?? 0)) &+ (_idx(y, i) as? Int ?? 0))) as! [Int])
+    |                                                    `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+258 |             i = _int((i &+ 1))
+259 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:257:82: warning: conditional downcast from 'Int?' to 'Int' does nothing
+255 |         var i: Int = 0
+256 |         while (i < _int(((x).count))) {
+257 |             res = (_append(res, ((a &* (_idx(x, i) as? Int ?? 0)) &+ (_idx(y, i) as? Int ?? 0))) as! [Int])
+    |                                                                                  `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+258 |             i = _int((i &+ 1))
+259 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:266:45: warning: conditional downcast from 'Int?' to 'Int' does nothing
+264 |         var i: Int = 0
+265 |         while (i < _int(((x).count))) {
+266 |             res = (_append(res, (_idx(x, i) as? Int ?? 0)) as! [Int])
+    |                                             `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+267 |             i = _int((i &+ 1))
+268 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:278:28: warning: forced cast of 'String' to same type has no effect
+276 |         var i: Int = 0
+277 |         while (i < _int(((m).count))) {
+278 |             s = ((s + "|") as! String)
+    |                            `- warning: forced cast of 'String' to same type has no effect
+279 |             var j: Int = 0
+280 |             while (j < _int((((_idx(m, 0) as! [Int])).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:280:43: warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
+278 |             s = ((s + "|") as! String)
+279 |             var j: Int = 0
+280 |             while (j < _int((((_idx(m, 0) as! [Int])).count))) {
+    |                                           `- warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
+281 |                 s = ((s + String(describing: int_to_string((_idx(_idx(m, i), j) as? Int ?? 0)))) as! String)
+282 |                 if ((j &+ 1) < _int((((_idx(m, 0) as! [Int])).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:281:66: error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+279 |             var j: Int = 0
+280 |             while (j < _int((((_idx(m, 0) as! [Int])).count))) {
+281 |                 s = ((s + String(describing: int_to_string((_idx(_idx(m, i), j) as? Int ?? 0)))) as! String)
+    |                                                                  `- error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+282 |                 if ((j &+ 1) < _int((((_idx(m, 0) as! [Int])).count))) {
+283 |                     s = ((s + ",") as! String)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:281:98: warning: forced cast of 'String' to same type has no effect
+279 |             var j: Int = 0
+280 |             while (j < _int((((_idx(m, 0) as! [Int])).count))) {
+281 |                 s = ((s + String(describing: int_to_string((_idx(_idx(m, i), j) as? Int ?? 0)))) as! String)
+    |                                                                                                  `- warning: forced cast of 'String' to same type has no effect
+282 |                 if ((j &+ 1) < _int((((_idx(m, 0) as! [Int])).count))) {
+283 |                     s = ((s + ",") as! String)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:282:51: warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
+280 |             while (j < _int((((_idx(m, 0) as! [Int])).count))) {
+281 |                 s = ((s + String(describing: int_to_string((_idx(_idx(m, i), j) as? Int ?? 0)))) as! String)
+282 |                 if ((j &+ 1) < _int((((_idx(m, 0) as! [Int])).count))) {
+    |                                                   `- warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
+283 |                     s = ((s + ",") as! String)
+284 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:283:36: warning: forced cast of 'String' to same type has no effect
+281 |                 s = ((s + String(describing: int_to_string((_idx(_idx(m, i), j) as? Int ?? 0)))) as! String)
+282 |                 if ((j &+ 1) < _int((((_idx(m, 0) as! [Int])).count))) {
+283 |                     s = ((s + ",") as! String)
+    |                                    `- warning: forced cast of 'String' to same type has no effect
+284 |                 }
+285 |                 j = _int((j &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:287:30: warning: forced cast of 'String' to same type has no effect
+285 |                 j = _int((j &+ 1))
+286 |             }
+287 |             s = ((s + "|\n") as! String)
+    |                              `- warning: forced cast of 'String' to same type has no effect
+288 |             i = _int((i &+ 1))
+289 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:299:47: warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
+297 |                 var r: [Int] = ([] as! [Int])
+298 |                 var j: Int = 0
+299 |                 while (j < _int((((_idx(m, 0) as! [Int])).count))) {
+    |                                               `- warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
+300 |                     if (j != col) {
+301 |                         r = (_append(r, (_idx(_idx(m, i), j) as? Int ?? 0)) as! [Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:301:47: error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+299 |                 while (j < _int((((_idx(m, 0) as! [Int])).count))) {
+300 |                     if (j != col) {
+301 |                         r = (_append(r, (_idx(_idx(m, i), j) as? Int ?? 0)) as! [Int])
+    |                                               `- error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+302 |                     }
+303 |                     j = _int((j &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:314:26: error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+312 |         let n = _int(((m).count))
+313 |         if (n == 1) {
+314 |             return (_idx(_idx(m, 0), 0) as? Int ?? 0)
+    |                          `- error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+315 |         }
+316 |         if (n == 2) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:317:28: error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+315 |         }
+316 |         if (n == 2) {
+317 |             return (((_idx(_idx(m, 0), 0) as? Int ?? 0) &* (_idx(_idx(m, 1), 1) as? Int ?? 0)) &- ((_idx(_idx(m, 0), 1) as? Int ?? 0) &* (_idx(_idx(m, 1), 0) as? Int ?? 0)))
+    |                            `- error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+318 |         }
+319 |         var det: Int = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:317:66: error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+315 |         }
+316 |         if (n == 2) {
+317 |             return (((_idx(_idx(m, 0), 0) as? Int ?? 0) &* (_idx(_idx(m, 1), 1) as? Int ?? 0)) &- ((_idx(_idx(m, 0), 1) as? Int ?? 0) &* (_idx(_idx(m, 1), 0) as? Int ?? 0)))
+    |                                                                  `- error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+318 |         }
+319 |         var det: Int = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:317:106: error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+315 |         }
+316 |         if (n == 2) {
+317 |             return (((_idx(_idx(m, 0), 0) as? Int ?? 0) &* (_idx(_idx(m, 1), 1) as? Int ?? 0)) &- ((_idx(_idx(m, 0), 1) as? Int ?? 0) &* (_idx(_idx(m, 1), 0) as? Int ?? 0)))
+    |                                                                                                          `- error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+318 |         }
+319 |         var det: Int = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:317:144: error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+315 |         }
+316 |         if (n == 2) {
+317 |             return (((_idx(_idx(m, 0), 0) as? Int ?? 0) &* (_idx(_idx(m, 1), 1) as? Int ?? 0)) &- ((_idx(_idx(m, 0), 1) as? Int ?? 0) &* (_idx(_idx(m, 1), 0) as? Int ?? 0)))
+    |                                                                                                                                                `- error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+318 |         }
+319 |         var det: Int = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:322:46: warning: forced cast of '[[Int]]' to same type has no effect
+320 |         var c: Int = 0
+321 |         while (c < n) {
+322 |             let sub: [[Int]] = (submatrix((m as! [[Int]]), 0, c) as! [[Int]])
+    |                                              `- warning: forced cast of '[[Int]]' to same type has no effect
+323 |             var sign: Int = 1
+324 |             if (((c % 2 + 2) % 2) == 1) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:322:66: warning: forced cast of '[[Int]]' to same type has no effect
+320 |         var c: Int = 0
+321 |         while (c < n) {
+322 |             let sub: [[Int]] = (submatrix((m as! [[Int]]), 0, c) as! [[Int]])
+    |                                                                  `- warning: forced cast of '[[Int]]' to same type has no effect
+323 |             var sign: Int = 1
+324 |             if (((c % 2 + 2) % 2) == 1) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:327:48: error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+325 |                 sign = _int(-1)
+326 |             }
+327 |             det = _int((det &+ ((sign &* (_idx(_idx(m, 0), c) as? Int ?? 0)) &* _int(determinant((sub as! [[Int]]))))))
+    |                                                `- error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+328 |             c = _int((c &+ 1))
+329 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:327:103: warning: forced cast of '[[Int]]' to same type has no effect
+325 |                 sign = _int(-1)
+326 |             }
+327 |             det = _int((det &+ ((sign &* (_idx(_idx(m, 0), c) as? Int ?? 0)) &* _int(determinant((sub as! [[Int]]))))))
+    |                                                                                                       `- warning: forced cast of '[[Int]]' to same type has no effect
+328 |             c = _int((c &+ 1))
+329 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:333:47: warning: forced cast of '[[Int]]' to same type has no effect
+331 |     }
+332 |     func matrix_minor(_ m: [[Int]], _ row: Int, _ col: Int) -> Int {
+333 |         return _int(determinant((submatrix((m as! [[Int]]), row, col) as! [[Int]])))
+    |                                               `- warning: forced cast of '[[Int]]' to same type has no effect
+334 |     }
+335 |     func matrix_cofactor(_ m: [[Int]], _ row: Int, _ col: Int) -> Int {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:333:71: warning: forced cast of '[[Int]]' to same type has no effect
+331 |     }
+332 |     func matrix_minor(_ m: [[Int]], _ row: Int, _ col: Int) -> Int {
+333 |         return _int(determinant((submatrix((m as! [[Int]]), row, col) as! [[Int]])))
+    |                                                                       `- warning: forced cast of '[[Int]]' to same type has no effect
+334 |     }
+335 |     func matrix_cofactor(_ m: [[Int]], _ row: Int, _ col: Int) -> Int {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:340:46: warning: forced cast of '[[Int]]' to same type has no effect
+338 |             sign = _int(-1)
+339 |         }
+340 |         return (sign &* _int(matrix_minor((m as! [[Int]]), row, col)))
+    |                                              `- warning: forced cast of '[[Int]]' to same type has no effect
+341 |     }
+342 |     func matrix_mul_vector(_ m: [[Int]], _ v: [Int]) -> [Int] {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:348:43: warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
+346 |             var sum: Int = 0
+347 |             var j: Int = 0
+348 |             while (j < _int((((_idx(m, 0) as! [Int])).count))) {
+    |                                           `- warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
+349 |                 sum = _int((sum &+ ((_idx(_idx(m, i), j) as? Int ?? 0) &* (_idx(v, j) as? Int ?? 0))))
+350 |                 j = _int((j &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:349:43: error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+347 |             var j: Int = 0
+348 |             while (j < _int((((_idx(m, 0) as! [Int])).count))) {
+349 |                 sum = _int((sum &+ ((_idx(_idx(m, i), j) as? Int ?? 0) &* (_idx(v, j) as? Int ?? 0))))
+    |                                           `- error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+350 |                 j = _int((j &+ 1))
+351 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:349:87: warning: conditional downcast from 'Int?' to 'Int' does nothing
+347 |             var j: Int = 0
+348 |             while (j < _int((((_idx(m, 0) as! [Int])).count))) {
+349 |                 sum = _int((sum &+ ((_idx(_idx(m, i), j) as? Int ?? 0) &* (_idx(v, j) as? Int ?? 0))))
+    |                                                                                       `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+350 |                 j = _int((j &+ 1))
+351 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:363:43: warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
+361 |             var row: [Int] = ([] as! [Int])
+362 |             var j: Int = 0
+363 |             while (j < _int((((_idx(m, 0) as! [Int])).count))) {
+    |                                           `- warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
+364 |                 row = (_append(row, ((_idx(_idx(m, i), j) as? Int ?? 0) &* s)) as! [Int])
+365 |                 j = _int((j &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:364:44: error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+362 |             var j: Int = 0
+363 |             while (j < _int((((_idx(m, 0) as! [Int])).count))) {
+364 |                 row = (_append(row, ((_idx(_idx(m, i), j) as? Int ?? 0) &* s)) as! [Int])
+    |                                            `- error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+365 |                 j = _int((j &+ 1))
+366 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:373:14: error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+371 |     }
+372 |     func matrix_change_component(_ m: inout [[Int]], _ i: Int, _ j: Int, _ val: Int) {
+373 |         _idx(_idx(m, i), j) = Int(val)
+    |              `- error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+374 |     }
+375 |     func matrix_component(_ m: [[Int]], _ i: Int, _ j: Int) -> Int {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:373:31: error: cannot assign value of type 'Int' to type '[Int]?'
+371 |     }
+372 |     func matrix_change_component(_ m: inout [[Int]], _ i: Int, _ j: Int, _ val: Int) {
+373 |         _idx(_idx(m, i), j) = Int(val)
+    |                               `- error: cannot assign value of type 'Int' to type '[Int]?'
+374 |     }
+375 |     func matrix_component(_ m: [[Int]], _ i: Int, _ j: Int) -> Int {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:376:22: error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+374 |     }
+375 |     func matrix_component(_ m: [[Int]], _ i: Int, _ j: Int) -> Int {
+376 |         return (_idx(_idx(m, i), j) as? Int ?? 0)
+    |                      `- error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+377 |     }
+378 |     func matrix_add(_ a: [[Int]], _ b: [[Int]]) -> [[Int]] {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:384:43: warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
+382 |             var row: [Int] = ([] as! [Int])
+383 |             var j: Int = 0
+384 |             while (j < _int((((_idx(a, 0) as! [Int])).count))) {
+    |                                           `- warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
+385 |                 row = (_append(row, ((_idx(_idx(a, i), j) as? Int ?? 0) &+ (_idx(_idx(b, i), j) as? Int ?? 0))) as! [Int])
+386 |                 j = _int((j &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:385:44: error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+383 |             var j: Int = 0
+384 |             while (j < _int((((_idx(a, 0) as! [Int])).count))) {
+385 |                 row = (_append(row, ((_idx(_idx(a, i), j) as? Int ?? 0) &+ (_idx(_idx(b, i), j) as? Int ?? 0))) as! [Int])
+    |                                            `- error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+386 |                 j = _int((j &+ 1))
+387 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:385:82: error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+383 |             var j: Int = 0
+384 |             while (j < _int((((_idx(a, 0) as! [Int])).count))) {
+385 |                 row = (_append(row, ((_idx(_idx(a, i), j) as? Int ?? 0) &+ (_idx(_idx(b, i), j) as? Int ?? 0))) as! [Int])
+    |                                                                                  `- error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+386 |                 j = _int((j &+ 1))
+387 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:399:43: warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
+397 |             var row: [Int] = ([] as! [Int])
+398 |             var j: Int = 0
+399 |             while (j < _int((((_idx(a, 0) as! [Int])).count))) {
+    |                                           `- warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
+400 |                 row = (_append(row, ((_idx(_idx(a, i), j) as? Int ?? 0) &- (_idx(_idx(b, i), j) as? Int ?? 0))) as! [Int])
+401 |                 j = _int((j &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:400:44: error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+398 |             var j: Int = 0
+399 |             while (j < _int((((_idx(a, 0) as! [Int])).count))) {
+400 |                 row = (_append(row, ((_idx(_idx(a, i), j) as? Int ?? 0) &- (_idx(_idx(b, i), j) as? Int ?? 0))) as! [Int])
+    |                                            `- error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+401 |                 j = _int((j &+ 1))
+402 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:400:82: error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+398 |             var j: Int = 0
+399 |             while (j < _int((((_idx(a, 0) as! [Int])).count))) {
+400 |                 row = (_append(row, ((_idx(_idx(a, i), j) as? Int ?? 0) &- (_idx(_idx(b, i), j) as? Int ?? 0))) as! [Int])
+    |                                                                                  `- error: cannot convert value of type '[Int]?' to expected argument type '[[Int]?]'
+401 |                 j = _int((j &+ 1))
+402 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:412:45: warning: forced cast of '[Int]' to same type has no effect
+410 |         var i: Int = 0
+411 |         while (i < n) {
+412 |             m = (_append(m, (zero_vector(n) as! [Int])) as! [[Int]])
+    |                                             `- warning: forced cast of '[Int]' to same type has no effect
+413 |             i = _int((i &+ 1))
+414 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:445:60: warning: forced cast of '[Int]' to same type has no effect
+443 |     }
+444 |     let vx: [Int] = ([1, 2, 3] as! [Int])
+445 |     _ = assert_int("component0", _int(vector_component((vx as! [Int]), 0)), 1)
+    |                                                            `- warning: forced cast of '[Int]' to same type has no effect
+446 |     _ = assert_int("component2", _int(vector_component((vx as! [Int]), 2)), 3)
+447 |     let vs: [Int] = ([0, 0, 0, 0, 0, 1] as! [Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:445:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+443 |     }
+444 |     let vx: [Int] = ([1, 2, 3] as! [Int])
+445 |     _ = assert_int("component0", _int(vector_component((vx as! [Int]), 0)), 1)
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+446 |     _ = assert_int("component2", _int(vector_component((vx as! [Int]), 2)), 3)
+447 |     let vs: [Int] = ([0, 0, 0, 0, 0, 1] as! [Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:446:60: warning: forced cast of '[Int]' to same type has no effect
+444 |     let vx: [Int] = ([1, 2, 3] as! [Int])
+445 |     _ = assert_int("component0", _int(vector_component((vx as! [Int]), 0)), 1)
+446 |     _ = assert_int("component2", _int(vector_component((vx as! [Int]), 2)), 3)
+    |                                                            `- warning: forced cast of '[Int]' to same type has no effect
+447 |     let vs: [Int] = ([0, 0, 0, 0, 0, 1] as! [Int])
+448 |     _ = assert_str("str_vector", String(describing: vector_str_int((vs as! [Int]))), "(0,0,0,0,0,1)")
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:446:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+444 |     let vx: [Int] = ([1, 2, 3] as! [Int])
+445 |     _ = assert_int("component0", _int(vector_component((vx as! [Int]), 0)), 1)
+446 |     _ = assert_int("component2", _int(vector_component((vx as! [Int]), 2)), 3)
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+447 |     let vs: [Int] = ([0, 0, 0, 0, 0, 1] as! [Int])
+448 |     _ = assert_str("str_vector", String(describing: vector_str_int((vs as! [Int]))), "(0,0,0,0,0,1)")
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:448:72: warning: forced cast of '[Int]' to same type has no effect
+446 |     _ = assert_int("component2", _int(vector_component((vx as! [Int]), 2)), 3)
+447 |     let vs: [Int] = ([0, 0, 0, 0, 0, 1] as! [Int])
+448 |     _ = assert_str("str_vector", String(describing: vector_str_int((vs as! [Int]))), "(0,0,0,0,0,1)")
+    |                                                                        `- warning: forced cast of '[Int]' to same type has no effect
+449 |     let vsize: [Int] = ([1, 2, 3, 4] as! [Int])
+450 |     _ = assert_int("size", _int(((vsize).count)), 4)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:448:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+446 |     _ = assert_int("component2", _int(vector_component((vx as! [Int]), 2)), 3)
+447 |     let vs: [Int] = ([0, 0, 0, 0, 0, 1] as! [Int])
+448 |     _ = assert_str("str_vector", String(describing: vector_str_int((vs as! [Int]))), "(0,0,0,0,0,1)")
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+449 |     let vsize: [Int] = ([1, 2, 3, 4] as! [Int])
+450 |     _ = assert_int("size", _int(((vsize).count)), 4)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:450:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+448 |     _ = assert_str("str_vector", String(describing: vector_str_int((vs as! [Int]))), "(0,0,0,0,0,1)")
+449 |     let vsize: [Int] = ([1, 2, 3, 4] as! [Int])
+450 |     _ = assert_int("size", _int(((vsize).count)), 4)
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+451 |     let va: [Int] = ([1, 2, 3] as! [Int])
+452 |     let vb: [Int] = ([1, 1, 1] as! [Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:453:39: warning: forced cast of '[Int]' to same type has no effect
+451 |     let va: [Int] = ([1, 2, 3] as! [Int])
+452 |     let vb: [Int] = ([1, 1, 1] as! [Int])
+453 |     let vsum: [Int] = (vector_add((va as! [Int]), (vb as! [Int])) as! [Int])
+    |                                       `- warning: forced cast of '[Int]' to same type has no effect
+454 |     _ = assert_int("add0", _int(vector_component((vsum as! [Int]), 0)), 2)
+455 |     _ = assert_int("add1", _int(vector_component((vsum as! [Int]), 1)), 3)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:453:55: warning: forced cast of '[Int]' to same type has no effect
+451 |     let va: [Int] = ([1, 2, 3] as! [Int])
+452 |     let vb: [Int] = ([1, 1, 1] as! [Int])
+453 |     let vsum: [Int] = (vector_add((va as! [Int]), (vb as! [Int])) as! [Int])
+    |                                                       `- warning: forced cast of '[Int]' to same type has no effect
+454 |     _ = assert_int("add0", _int(vector_component((vsum as! [Int]), 0)), 2)
+455 |     _ = assert_int("add1", _int(vector_component((vsum as! [Int]), 1)), 3)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:453:67: warning: forced cast of '[Int]' to same type has no effect
+451 |     let va: [Int] = ([1, 2, 3] as! [Int])
+452 |     let vb: [Int] = ([1, 1, 1] as! [Int])
+453 |     let vsum: [Int] = (vector_add((va as! [Int]), (vb as! [Int])) as! [Int])
+    |                                                                   `- warning: forced cast of '[Int]' to same type has no effect
+454 |     _ = assert_int("add0", _int(vector_component((vsum as! [Int]), 0)), 2)
+455 |     _ = assert_int("add1", _int(vector_component((vsum as! [Int]), 1)), 3)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:454:56: warning: forced cast of '[Int]' to same type has no effect
+452 |     let vb: [Int] = ([1, 1, 1] as! [Int])
+453 |     let vsum: [Int] = (vector_add((va as! [Int]), (vb as! [Int])) as! [Int])
+454 |     _ = assert_int("add0", _int(vector_component((vsum as! [Int]), 0)), 2)
+    |                                                        `- warning: forced cast of '[Int]' to same type has no effect
+455 |     _ = assert_int("add1", _int(vector_component((vsum as! [Int]), 1)), 3)
+456 |     _ = assert_int("add2", _int(vector_component((vsum as! [Int]), 2)), 4)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:454:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+452 |     let vb: [Int] = ([1, 1, 1] as! [Int])
+453 |     let vsum: [Int] = (vector_add((va as! [Int]), (vb as! [Int])) as! [Int])
+454 |     _ = assert_int("add0", _int(vector_component((vsum as! [Int]), 0)), 2)
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+455 |     _ = assert_int("add1", _int(vector_component((vsum as! [Int]), 1)), 3)
+456 |     _ = assert_int("add2", _int(vector_component((vsum as! [Int]), 2)), 4)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:455:56: warning: forced cast of '[Int]' to same type has no effect
+453 |     let vsum: [Int] = (vector_add((va as! [Int]), (vb as! [Int])) as! [Int])
+454 |     _ = assert_int("add0", _int(vector_component((vsum as! [Int]), 0)), 2)
+455 |     _ = assert_int("add1", _int(vector_component((vsum as! [Int]), 1)), 3)
+    |                                                        `- warning: forced cast of '[Int]' to same type has no effect
+456 |     _ = assert_int("add2", _int(vector_component((vsum as! [Int]), 2)), 4)
+457 |     let vsub: [Int] = (vector_sub((va as! [Int]), (vb as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:455:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+453 |     let vsum: [Int] = (vector_add((va as! [Int]), (vb as! [Int])) as! [Int])
+454 |     _ = assert_int("add0", _int(vector_component((vsum as! [Int]), 0)), 2)
+455 |     _ = assert_int("add1", _int(vector_component((vsum as! [Int]), 1)), 3)
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+456 |     _ = assert_int("add2", _int(vector_component((vsum as! [Int]), 2)), 4)
+457 |     let vsub: [Int] = (vector_sub((va as! [Int]), (vb as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:456:56: warning: forced cast of '[Int]' to same type has no effect
+454 |     _ = assert_int("add0", _int(vector_component((vsum as! [Int]), 0)), 2)
+455 |     _ = assert_int("add1", _int(vector_component((vsum as! [Int]), 1)), 3)
+456 |     _ = assert_int("add2", _int(vector_component((vsum as! [Int]), 2)), 4)
+    |                                                        `- warning: forced cast of '[Int]' to same type has no effect
+457 |     let vsub: [Int] = (vector_sub((va as! [Int]), (vb as! [Int])) as! [Int])
+458 |     _ = assert_int("sub0", _int(vector_component((vsub as! [Int]), 0)), 0)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:456:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+454 |     _ = assert_int("add0", _int(vector_component((vsum as! [Int]), 0)), 2)
+455 |     _ = assert_int("add1", _int(vector_component((vsum as! [Int]), 1)), 3)
+456 |     _ = assert_int("add2", _int(vector_component((vsum as! [Int]), 2)), 4)
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+457 |     let vsub: [Int] = (vector_sub((va as! [Int]), (vb as! [Int])) as! [Int])
+458 |     _ = assert_int("sub0", _int(vector_component((vsub as! [Int]), 0)), 0)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:457:39: warning: forced cast of '[Int]' to same type has no effect
+455 |     _ = assert_int("add1", _int(vector_component((vsum as! [Int]), 1)), 3)
+456 |     _ = assert_int("add2", _int(vector_component((vsum as! [Int]), 2)), 4)
+457 |     let vsub: [Int] = (vector_sub((va as! [Int]), (vb as! [Int])) as! [Int])
+    |                                       `- warning: forced cast of '[Int]' to same type has no effect
+458 |     _ = assert_int("sub0", _int(vector_component((vsub as! [Int]), 0)), 0)
+459 |     _ = assert_int("sub1", _int(vector_component((vsub as! [Int]), 1)), 1)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:457:55: warning: forced cast of '[Int]' to same type has no effect
+455 |     _ = assert_int("add1", _int(vector_component((vsum as! [Int]), 1)), 3)
+456 |     _ = assert_int("add2", _int(vector_component((vsum as! [Int]), 2)), 4)
+457 |     let vsub: [Int] = (vector_sub((va as! [Int]), (vb as! [Int])) as! [Int])
+    |                                                       `- warning: forced cast of '[Int]' to same type has no effect
+458 |     _ = assert_int("sub0", _int(vector_component((vsub as! [Int]), 0)), 0)
+459 |     _ = assert_int("sub1", _int(vector_component((vsub as! [Int]), 1)), 1)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:457:67: warning: forced cast of '[Int]' to same type has no effect
+455 |     _ = assert_int("add1", _int(vector_component((vsum as! [Int]), 1)), 3)
+456 |     _ = assert_int("add2", _int(vector_component((vsum as! [Int]), 2)), 4)
+457 |     let vsub: [Int] = (vector_sub((va as! [Int]), (vb as! [Int])) as! [Int])
+    |                                                                   `- warning: forced cast of '[Int]' to same type has no effect
+458 |     _ = assert_int("sub0", _int(vector_component((vsub as! [Int]), 0)), 0)
+459 |     _ = assert_int("sub1", _int(vector_component((vsub as! [Int]), 1)), 1)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:458:56: warning: forced cast of '[Int]' to same type has no effect
+456 |     _ = assert_int("add2", _int(vector_component((vsum as! [Int]), 2)), 4)
+457 |     let vsub: [Int] = (vector_sub((va as! [Int]), (vb as! [Int])) as! [Int])
+458 |     _ = assert_int("sub0", _int(vector_component((vsub as! [Int]), 0)), 0)
+    |                                                        `- warning: forced cast of '[Int]' to same type has no effect
+459 |     _ = assert_int("sub1", _int(vector_component((vsub as! [Int]), 1)), 1)
+460 |     _ = assert_int("sub2", _int(vector_component((vsub as! [Int]), 2)), 2)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:458:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+456 |     _ = assert_int("add2", _int(vector_component((vsum as! [Int]), 2)), 4)
+457 |     let vsub: [Int] = (vector_sub((va as! [Int]), (vb as! [Int])) as! [Int])
+458 |     _ = assert_int("sub0", _int(vector_component((vsub as! [Int]), 0)), 0)
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+459 |     _ = assert_int("sub1", _int(vector_component((vsub as! [Int]), 1)), 1)
+460 |     _ = assert_int("sub2", _int(vector_component((vsub as! [Int]), 2)), 2)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:459:56: warning: forced cast of '[Int]' to same type has no effect
+457 |     let vsub: [Int] = (vector_sub((va as! [Int]), (vb as! [Int])) as! [Int])
+458 |     _ = assert_int("sub0", _int(vector_component((vsub as! [Int]), 0)), 0)
+459 |     _ = assert_int("sub1", _int(vector_component((vsub as! [Int]), 1)), 1)
+    |                                                        `- warning: forced cast of '[Int]' to same type has no effect
+460 |     _ = assert_int("sub2", _int(vector_component((vsub as! [Int]), 2)), 2)
+461 |     let vmul: [Double] = (vector_scalar_mul((va as! [Int]), 3.0) as! [Double])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:459:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+457 |     let vsub: [Int] = (vector_sub((va as! [Int]), (vb as! [Int])) as! [Int])
+458 |     _ = assert_int("sub0", _int(vector_component((vsub as! [Int]), 0)), 0)
+459 |     _ = assert_int("sub1", _int(vector_component((vsub as! [Int]), 1)), 1)
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+460 |     _ = assert_int("sub2", _int(vector_component((vsub as! [Int]), 2)), 2)
+461 |     let vmul: [Double] = (vector_scalar_mul((va as! [Int]), 3.0) as! [Double])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:460:56: warning: forced cast of '[Int]' to same type has no effect
+458 |     _ = assert_int("sub0", _int(vector_component((vsub as! [Int]), 0)), 0)
+459 |     _ = assert_int("sub1", _int(vector_component((vsub as! [Int]), 1)), 1)
+460 |     _ = assert_int("sub2", _int(vector_component((vsub as! [Int]), 2)), 2)
+    |                                                        `- warning: forced cast of '[Int]' to same type has no effect
+461 |     let vmul: [Double] = (vector_scalar_mul((va as! [Int]), 3.0) as! [Double])
+462 |     _ = assert_str("scalar_mul", String(describing: vector_str_float((vmul as! [Double]), 1)), "(3.0,6.0,9.0)")
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:460:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+458 |     _ = assert_int("sub0", _int(vector_component((vsub as! [Int]), 0)), 0)
+459 |     _ = assert_int("sub1", _int(vector_component((vsub as! [Int]), 1)), 1)
+460 |     _ = assert_int("sub2", _int(vector_component((vsub as! [Int]), 2)), 2)
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+461 |     let vmul: [Double] = (vector_scalar_mul((va as! [Int]), 3.0) as! [Double])
+462 |     _ = assert_str("scalar_mul", String(describing: vector_str_float((vmul as! [Double]), 1)), "(3.0,6.0,9.0)")
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:461:49: warning: forced cast of '[Int]' to same type has no effect
+459 |     _ = assert_int("sub1", _int(vector_component((vsub as! [Int]), 1)), 1)
+460 |     _ = assert_int("sub2", _int(vector_component((vsub as! [Int]), 2)), 2)
+461 |     let vmul: [Double] = (vector_scalar_mul((va as! [Int]), 3.0) as! [Double])
+    |                                                 `- warning: forced cast of '[Int]' to same type has no effect
+462 |     _ = assert_str("scalar_mul", String(describing: vector_str_float((vmul as! [Double]), 1)), "(3.0,6.0,9.0)")
+463 |     _ = assert_int("dot_product", _int(vector_dot(([2, -1, 4] as! [Int]), ([1, -2, -1] as! [Int]))), 0)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:461:66: warning: forced cast of '[Double]' to same type has no effect
+459 |     _ = assert_int("sub1", _int(vector_component((vsub as! [Int]), 1)), 1)
+460 |     _ = assert_int("sub2", _int(vector_component((vsub as! [Int]), 2)), 2)
+461 |     let vmul: [Double] = (vector_scalar_mul((va as! [Int]), 3.0) as! [Double])
+    |                                                                  `- warning: forced cast of '[Double]' to same type has no effect
+462 |     _ = assert_str("scalar_mul", String(describing: vector_str_float((vmul as! [Double]), 1)), "(3.0,6.0,9.0)")
+463 |     _ = assert_int("dot_product", _int(vector_dot(([2, -1, 4] as! [Int]), ([1, -2, -1] as! [Int]))), 0)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:462:76: warning: forced cast of '[Double]' to same type has no effect
+460 |     _ = assert_int("sub2", _int(vector_component((vsub as! [Int]), 2)), 2)
+461 |     let vmul: [Double] = (vector_scalar_mul((va as! [Int]), 3.0) as! [Double])
+462 |     _ = assert_str("scalar_mul", String(describing: vector_str_float((vmul as! [Double]), 1)), "(3.0,6.0,9.0)")
+    |                                                                            `- warning: forced cast of '[Double]' to same type has no effect
+463 |     _ = assert_int("dot_product", _int(vector_dot(([2, -1, 4] as! [Int]), ([1, -2, -1] as! [Int]))), 0)
+464 |     let zvec: [Int] = (zero_vector(10) as! [Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:462:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+460 |     _ = assert_int("sub2", _int(vector_component((vsub as! [Int]), 2)), 2)
+461 |     let vmul: [Double] = (vector_scalar_mul((va as! [Int]), 3.0) as! [Double])
+462 |     _ = assert_str("scalar_mul", String(describing: vector_str_float((vmul as! [Double]), 1)), "(3.0,6.0,9.0)")
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+463 |     _ = assert_int("dot_product", _int(vector_dot(([2, -1, 4] as! [Int]), ([1, -2, -1] as! [Int]))), 0)
+464 |     let zvec: [Int] = (zero_vector(10) as! [Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:463:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+461 |     let vmul: [Double] = (vector_scalar_mul((va as! [Int]), 3.0) as! [Double])
+462 |     _ = assert_str("scalar_mul", String(describing: vector_str_float((vmul as! [Double]), 1)), "(3.0,6.0,9.0)")
+463 |     _ = assert_int("dot_product", _int(vector_dot(([2, -1, 4] as! [Int]), ([1, -2, -1] as! [Int]))), 0)
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+464 |     let zvec: [Int] = (zero_vector(10) as! [Int])
+465 |     let zstr = String(describing: vector_str_int((zvec as! [Int])))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:464:40: warning: forced cast of '[Int]' to same type has no effect
+462 |     _ = assert_str("scalar_mul", String(describing: vector_str_float((vmul as! [Double]), 1)), "(3.0,6.0,9.0)")
+463 |     _ = assert_int("dot_product", _int(vector_dot(([2, -1, 4] as! [Int]), ([1, -2, -1] as! [Int]))), 0)
+464 |     let zvec: [Int] = (zero_vector(10) as! [Int])
+    |                                        `- warning: forced cast of '[Int]' to same type has no effect
+465 |     let zstr = String(describing: vector_str_int((zvec as! [Int])))
+466 |     var zcount: Int = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:465:56: warning: forced cast of '[Int]' to same type has no effect
+463 |     _ = assert_int("dot_product", _int(vector_dot(([2, -1, 4] as! [Int]), ([1, -2, -1] as! [Int]))), 0)
+464 |     let zvec: [Int] = (zero_vector(10) as! [Int])
+465 |     let zstr = String(describing: vector_str_int((zvec as! [Int])))
+    |                                                        `- warning: forced cast of '[Int]' to same type has no effect
+466 |     var zcount: Int = 0
+467 |     var zi: Int = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:469:70: warning: forced cast of 'String' to same type has no effect
+467 |     var zi: Int = 0
+468 |     while (zi < _int(((zstr).count))) {
+469 |         if (String(describing: String(Array(String(describing: (zstr as! String)))[zi..<(zi &+ 1)])) == "0") {
+    |                                                                      `- warning: forced cast of 'String' to same type has no effect
+470 |             zcount = _int((zcount &+ 1))
+471 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:474:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+472 |         zi = _int((zi &+ 1))
+473 |     }
+474 |     _ = assert_int("zero_vector", zcount, 10)
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+475 |     _ = assert_str("unit_basis", String(describing: vector_str_int((unit_basis_vector(3, 1) as! [Int]))), "(0,1,0)")
+476 |     _ = assert_str("axpy", String(describing: vector_str_int((axpy(2, ([1, 2, 3] as! [Int]), ([1, 0, 1] as! [Int])) as! [Int]))), "(3,4,7)")
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:475:93: warning: forced cast of '[Int]' to same type has no effect
+473 |     }
+474 |     _ = assert_int("zero_vector", zcount, 10)
+475 |     _ = assert_str("unit_basis", String(describing: vector_str_int((unit_basis_vector(3, 1) as! [Int]))), "(0,1,0)")
+    |                                                                                             `- warning: forced cast of '[Int]' to same type has no effect
+476 |     _ = assert_str("axpy", String(describing: vector_str_int((axpy(2, ([1, 2, 3] as! [Int]), ([1, 0, 1] as! [Int])) as! [Int]))), "(3,4,7)")
+477 |     let vcopy: [Int] = (copy_vector(([1, 0, 0, 0, 0, 0] as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:475:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+473 |     }
+474 |     _ = assert_int("zero_vector", zcount, 10)
+475 |     _ = assert_str("unit_basis", String(describing: vector_str_int((unit_basis_vector(3, 1) as! [Int]))), "(0,1,0)")
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+476 |     _ = assert_str("axpy", String(describing: vector_str_int((axpy(2, ([1, 2, 3] as! [Int]), ([1, 0, 1] as! [Int])) as! [Int]))), "(3,4,7)")
+477 |     let vcopy: [Int] = (copy_vector(([1, 0, 0, 0, 0, 0] as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:476:117: warning: forced cast of '[Int]' to same type has no effect
+474 |     _ = assert_int("zero_vector", zcount, 10)
+475 |     _ = assert_str("unit_basis", String(describing: vector_str_int((unit_basis_vector(3, 1) as! [Int]))), "(0,1,0)")
+476 |     _ = assert_str("axpy", String(describing: vector_str_int((axpy(2, ([1, 2, 3] as! [Int]), ([1, 0, 1] as! [Int])) as! [Int]))), "(3,4,7)")
+    |                                                                                                                     `- warning: forced cast of '[Int]' to same type has no effect
+477 |     let vcopy: [Int] = (copy_vector(([1, 0, 0, 0, 0, 0] as! [Int])) as! [Int])
+478 |     _ = assert_str("copy", String(describing: vector_str_int((vcopy as! [Int]))), "(1,0,0,0,0,0)")
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:476:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+474 |     _ = assert_int("zero_vector", zcount, 10)
+475 |     _ = assert_str("unit_basis", String(describing: vector_str_int((unit_basis_vector(3, 1) as! [Int]))), "(0,1,0)")
+476 |     _ = assert_str("axpy", String(describing: vector_str_int((axpy(2, ([1, 2, 3] as! [Int]), ([1, 0, 1] as! [Int])) as! [Int]))), "(3,4,7)")
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+477 |     let vcopy: [Int] = (copy_vector(([1, 0, 0, 0, 0, 0] as! [Int])) as! [Int])
+478 |     _ = assert_str("copy", String(describing: vector_str_int((vcopy as! [Int]))), "(1,0,0,0,0,0)")
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:477:69: warning: forced cast of '[Int]' to same type has no effect
+475 |     _ = assert_str("unit_basis", String(describing: vector_str_int((unit_basis_vector(3, 1) as! [Int]))), "(0,1,0)")
+476 |     _ = assert_str("axpy", String(describing: vector_str_int((axpy(2, ([1, 2, 3] as! [Int]), ([1, 0, 1] as! [Int])) as! [Int]))), "(3,4,7)")
+477 |     let vcopy: [Int] = (copy_vector(([1, 0, 0, 0, 0, 0] as! [Int])) as! [Int])
+    |                                                                     `- warning: forced cast of '[Int]' to same type has no effect
+478 |     _ = assert_str("copy", String(describing: vector_str_int((vcopy as! [Int]))), "(1,0,0,0,0,0)")
+479 |     var vchange: [Int] = ([1, 0, 0] as! [Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:478:69: warning: forced cast of '[Int]' to same type has no effect
+476 |     _ = assert_str("axpy", String(describing: vector_str_int((axpy(2, ([1, 2, 3] as! [Int]), ([1, 0, 1] as! [Int])) as! [Int]))), "(3,4,7)")
+477 |     let vcopy: [Int] = (copy_vector(([1, 0, 0, 0, 0, 0] as! [Int])) as! [Int])
+478 |     _ = assert_str("copy", String(describing: vector_str_int((vcopy as! [Int]))), "(1,0,0,0,0,0)")
+    |                                                                     `- warning: forced cast of '[Int]' to same type has no effect
+479 |     var vchange: [Int] = ([1, 0, 0] as! [Int])
+480 |     _ = change_component(&vchange, 0, 0)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:478:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+476 |     _ = assert_str("axpy", String(describing: vector_str_int((axpy(2, ([1, 2, 3] as! [Int]), ([1, 0, 1] as! [Int])) as! [Int]))), "(3,4,7)")
+477 |     let vcopy: [Int] = (copy_vector(([1, 0, 0, 0, 0, 0] as! [Int])) as! [Int])
+478 |     _ = assert_str("copy", String(describing: vector_str_int((vcopy as! [Int]))), "(1,0,0,0,0,0)")
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+479 |     var vchange: [Int] = ([1, 0, 0] as! [Int])
+480 |     _ = change_component(&vchange, 0, 0)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:480:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+478 |     _ = assert_str("copy", String(describing: vector_str_int((vcopy as! [Int]))), "(1,0,0,0,0,0)")
+479 |     var vchange: [Int] = ([1, 0, 0] as! [Int])
+480 |     _ = change_component(&vchange, 0, 0)
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+481 |     _ = change_component(&vchange, 1, 1)
+482 |     _ = assert_str("change_component", String(describing: vector_str_int((vchange as! [Int]))), "(0,1,0)")
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:481:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+479 |     var vchange: [Int] = ([1, 0, 0] as! [Int])
+480 |     _ = change_component(&vchange, 0, 0)
+481 |     _ = change_component(&vchange, 1, 1)
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+482 |     _ = assert_str("change_component", String(describing: vector_str_int((vchange as! [Int]))), "(0,1,0)")
+483 |     var ma: [[Int]] = ([([1, 2, 3] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 8] as! [Int])] as! [[Int]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:482:83: warning: forced cast of '[Int]' to same type has no effect
+480 |     _ = change_component(&vchange, 0, 0)
+481 |     _ = change_component(&vchange, 1, 1)
+482 |     _ = assert_str("change_component", String(describing: vector_str_int((vchange as! [Int]))), "(0,1,0)")
+    |                                                                                   `- warning: forced cast of '[Int]' to same type has no effect
+483 |     var ma: [[Int]] = ([([1, 2, 3] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 8] as! [Int])] as! [[Int]])
+484 |     _ = assert_str("matrix_str", String(describing: matrix_str((ma as! [[Int]]))), "|1,2,3|\n|2,4,5|\n|6,7,8|\n")
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:482:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+480 |     _ = change_component(&vchange, 0, 0)
+481 |     _ = change_component(&vchange, 1, 1)
+482 |     _ = assert_str("change_component", String(describing: vector_str_int((vchange as! [Int]))), "(0,1,0)")
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+483 |     var ma: [[Int]] = ([([1, 2, 3] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 8] as! [Int])] as! [[Int]])
+484 |     _ = assert_str("matrix_str", String(describing: matrix_str((ma as! [[Int]]))), "|1,2,3|\n|2,4,5|\n|6,7,8|\n")
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:484:68: warning: forced cast of '[[Int]]' to same type has no effect
+482 |     _ = assert_str("change_component", String(describing: vector_str_int((vchange as! [Int]))), "(0,1,0)")
+483 |     var ma: [[Int]] = ([([1, 2, 3] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 8] as! [Int])] as! [[Int]])
+484 |     _ = assert_str("matrix_str", String(describing: matrix_str((ma as! [[Int]]))), "|1,2,3|\n|2,4,5|\n|6,7,8|\n")
+    |                                                                    `- warning: forced cast of '[[Int]]' to same type has no effect
+485 |     _ = assert_int("determinant", _int(determinant((ma as! [[Int]]))), -5)
+486 |     var mb: [[Int]] = ([([1, 2, 3] as! [Int]), ([4, 5, 6] as! [Int]), ([7, 8, 9] as! [Int])] as! [[Int]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:484:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+482 |     _ = assert_str("change_component", String(describing: vector_str_int((vchange as! [Int]))), "(0,1,0)")
+483 |     var ma: [[Int]] = ([([1, 2, 3] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 8] as! [Int])] as! [[Int]])
+484 |     _ = assert_str("matrix_str", String(describing: matrix_str((ma as! [[Int]]))), "|1,2,3|\n|2,4,5|\n|6,7,8|\n")
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+485 |     _ = assert_int("determinant", _int(determinant((ma as! [[Int]]))), -5)
+486 |     var mb: [[Int]] = ([([1, 2, 3] as! [Int]), ([4, 5, 6] as! [Int]), ([7, 8, 9] as! [Int])] as! [[Int]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:485:56: warning: forced cast of '[[Int]]' to same type has no effect
+483 |     var ma: [[Int]] = ([([1, 2, 3] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 8] as! [Int])] as! [[Int]])
+484 |     _ = assert_str("matrix_str", String(describing: matrix_str((ma as! [[Int]]))), "|1,2,3|\n|2,4,5|\n|6,7,8|\n")
+485 |     _ = assert_int("determinant", _int(determinant((ma as! [[Int]]))), -5)
+    |                                                        `- warning: forced cast of '[[Int]]' to same type has no effect
+486 |     var mb: [[Int]] = ([([1, 2, 3] as! [Int]), ([4, 5, 6] as! [Int]), ([7, 8, 9] as! [Int])] as! [[Int]])
+487 |     let mv: [Int] = (matrix_mul_vector((mb as! [[Int]]), ([1, 2, 3] as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:485:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+483 |     var ma: [[Int]] = ([([1, 2, 3] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 8] as! [Int])] as! [[Int]])
+484 |     _ = assert_str("matrix_str", String(describing: matrix_str((ma as! [[Int]]))), "|1,2,3|\n|2,4,5|\n|6,7,8|\n")
+485 |     _ = assert_int("determinant", _int(determinant((ma as! [[Int]]))), -5)
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+486 |     var mb: [[Int]] = ([([1, 2, 3] as! [Int]), ([4, 5, 6] as! [Int]), ([7, 8, 9] as! [Int])] as! [[Int]])
+487 |     let mv: [Int] = (matrix_mul_vector((mb as! [[Int]]), ([1, 2, 3] as! [Int])) as! [Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:487:44: warning: forced cast of '[[Int]]' to same type has no effect
+485 |     _ = assert_int("determinant", _int(determinant((ma as! [[Int]]))), -5)
+486 |     var mb: [[Int]] = ([([1, 2, 3] as! [Int]), ([4, 5, 6] as! [Int]), ([7, 8, 9] as! [Int])] as! [[Int]])
+487 |     let mv: [Int] = (matrix_mul_vector((mb as! [[Int]]), ([1, 2, 3] as! [Int])) as! [Int])
+    |                                            `- warning: forced cast of '[[Int]]' to same type has no effect
+488 |     _ = assert_str("matrix_vec_mul", String(describing: vector_str_int((mv as! [Int]))), "(14,32,50)")
+489 |     let msc: [[Int]] = (matrix_mul_scalar((mb as! [[Int]]), 2) as! [[Int]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:487:81: warning: forced cast of '[Int]' to same type has no effect
+485 |     _ = assert_int("determinant", _int(determinant((ma as! [[Int]]))), -5)
+486 |     var mb: [[Int]] = ([([1, 2, 3] as! [Int]), ([4, 5, 6] as! [Int]), ([7, 8, 9] as! [Int])] as! [[Int]])
+487 |     let mv: [Int] = (matrix_mul_vector((mb as! [[Int]]), ([1, 2, 3] as! [Int])) as! [Int])
+    |                                                                                 `- warning: forced cast of '[Int]' to same type has no effect
+488 |     _ = assert_str("matrix_vec_mul", String(describing: vector_str_int((mv as! [Int]))), "(14,32,50)")
+489 |     let msc: [[Int]] = (matrix_mul_scalar((mb as! [[Int]]), 2) as! [[Int]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:488:76: warning: forced cast of '[Int]' to same type has no effect
+486 |     var mb: [[Int]] = ([([1, 2, 3] as! [Int]), ([4, 5, 6] as! [Int]), ([7, 8, 9] as! [Int])] as! [[Int]])
+487 |     let mv: [Int] = (matrix_mul_vector((mb as! [[Int]]), ([1, 2, 3] as! [Int])) as! [Int])
+488 |     _ = assert_str("matrix_vec_mul", String(describing: vector_str_int((mv as! [Int]))), "(14,32,50)")
+    |                                                                            `- warning: forced cast of '[Int]' to same type has no effect
+489 |     let msc: [[Int]] = (matrix_mul_scalar((mb as! [[Int]]), 2) as! [[Int]])
+490 |     _ = assert_str("matrix_scalar_mul", String(describing: matrix_str((msc as! [[Int]]))), "|2,4,6|\n|8,10,12|\n|14,16,18|\n")
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:488:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+486 |     var mb: [[Int]] = ([([1, 2, 3] as! [Int]), ([4, 5, 6] as! [Int]), ([7, 8, 9] as! [Int])] as! [[Int]])
+487 |     let mv: [Int] = (matrix_mul_vector((mb as! [[Int]]), ([1, 2, 3] as! [Int])) as! [Int])
+488 |     _ = assert_str("matrix_vec_mul", String(describing: vector_str_int((mv as! [Int]))), "(14,32,50)")
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+489 |     let msc: [[Int]] = (matrix_mul_scalar((mb as! [[Int]]), 2) as! [[Int]])
+490 |     _ = assert_str("matrix_scalar_mul", String(describing: matrix_str((msc as! [[Int]]))), "|2,4,6|\n|8,10,12|\n|14,16,18|\n")
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:489:47: warning: forced cast of '[[Int]]' to same type has no effect
+487 |     let mv: [Int] = (matrix_mul_vector((mb as! [[Int]]), ([1, 2, 3] as! [Int])) as! [Int])
+488 |     _ = assert_str("matrix_vec_mul", String(describing: vector_str_int((mv as! [Int]))), "(14,32,50)")
+489 |     let msc: [[Int]] = (matrix_mul_scalar((mb as! [[Int]]), 2) as! [[Int]])
+    |                                               `- warning: forced cast of '[[Int]]' to same type has no effect
+490 |     _ = assert_str("matrix_scalar_mul", String(describing: matrix_str((msc as! [[Int]]))), "|2,4,6|\n|8,10,12|\n|14,16,18|\n")
+491 |     var mc: [[Int]] = ([([1, 2, 3] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 8] as! [Int])] as! [[Int]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:489:64: warning: forced cast of '[[Int]]' to same type has no effect
+487 |     let mv: [Int] = (matrix_mul_vector((mb as! [[Int]]), ([1, 2, 3] as! [Int])) as! [Int])
+488 |     _ = assert_str("matrix_vec_mul", String(describing: vector_str_int((mv as! [Int]))), "(14,32,50)")
+489 |     let msc: [[Int]] = (matrix_mul_scalar((mb as! [[Int]]), 2) as! [[Int]])
+    |                                                                `- warning: forced cast of '[[Int]]' to same type has no effect
+490 |     _ = assert_str("matrix_scalar_mul", String(describing: matrix_str((msc as! [[Int]]))), "|2,4,6|\n|8,10,12|\n|14,16,18|\n")
+491 |     var mc: [[Int]] = ([([1, 2, 3] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 8] as! [Int])] as! [[Int]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:490:76: warning: forced cast of '[[Int]]' to same type has no effect
+488 |     _ = assert_str("matrix_vec_mul", String(describing: vector_str_int((mv as! [Int]))), "(14,32,50)")
+489 |     let msc: [[Int]] = (matrix_mul_scalar((mb as! [[Int]]), 2) as! [[Int]])
+490 |     _ = assert_str("matrix_scalar_mul", String(describing: matrix_str((msc as! [[Int]]))), "|2,4,6|\n|8,10,12|\n|14,16,18|\n")
+    |                                                                            `- warning: forced cast of '[[Int]]' to same type has no effect
+491 |     var mc: [[Int]] = ([([1, 2, 3] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 8] as! [Int])] as! [[Int]])
+492 |     _ = matrix_change_component(&mc, 0, 2, 5)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:490:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+488 |     _ = assert_str("matrix_vec_mul", String(describing: vector_str_int((mv as! [Int]))), "(14,32,50)")
+489 |     let msc: [[Int]] = (matrix_mul_scalar((mb as! [[Int]]), 2) as! [[Int]])
+490 |     _ = assert_str("matrix_scalar_mul", String(describing: matrix_str((msc as! [[Int]]))), "|2,4,6|\n|8,10,12|\n|14,16,18|\n")
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+491 |     var mc: [[Int]] = ([([1, 2, 3] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 8] as! [Int])] as! [[Int]])
+492 |     _ = matrix_change_component(&mc, 0, 2, 5)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:492:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+490 |     _ = assert_str("matrix_scalar_mul", String(describing: matrix_str((msc as! [[Int]]))), "|2,4,6|\n|8,10,12|\n|14,16,18|\n")
+491 |     var mc: [[Int]] = ([([1, 2, 3] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 8] as! [Int])] as! [[Int]])
+492 |     _ = matrix_change_component(&mc, 0, 2, 5)
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+493 |     _ = assert_str("change_component_matrix", String(describing: matrix_str((mc as! [[Int]]))), "|1,2,5|\n|2,4,5|\n|6,7,8|\n")
+494 |     _ = assert_int("matrix_component", _int(matrix_component((mc as! [[Int]]), 2, 1)), 7)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:493:81: warning: forced cast of '[[Int]]' to same type has no effect
+491 |     var mc: [[Int]] = ([([1, 2, 3] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 8] as! [Int])] as! [[Int]])
+492 |     _ = matrix_change_component(&mc, 0, 2, 5)
+493 |     _ = assert_str("change_component_matrix", String(describing: matrix_str((mc as! [[Int]]))), "|1,2,5|\n|2,4,5|\n|6,7,8|\n")
+    |                                                                                 `- warning: forced cast of '[[Int]]' to same type has no effect
+494 |     _ = assert_int("matrix_component", _int(matrix_component((mc as! [[Int]]), 2, 1)), 7)
+495 |     var madd: [[Int]] = (matrix_add(([([1, 2, 3] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 8] as! [Int])] as! [[Int]]), ([([1, 2, 7] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 10] as! [Int])] as! [[Int]])) as! [[Int]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:493:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+491 |     var mc: [[Int]] = ([([1, 2, 3] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 8] as! [Int])] as! [[Int]])
+492 |     _ = matrix_change_component(&mc, 0, 2, 5)
+493 |     _ = assert_str("change_component_matrix", String(describing: matrix_str((mc as! [[Int]]))), "|1,2,5|\n|2,4,5|\n|6,7,8|\n")
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+494 |     _ = assert_int("matrix_component", _int(matrix_component((mc as! [[Int]]), 2, 1)), 7)
+495 |     var madd: [[Int]] = (matrix_add(([([1, 2, 3] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 8] as! [Int])] as! [[Int]]), ([([1, 2, 7] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 10] as! [Int])] as! [[Int]])) as! [[Int]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:494:66: warning: forced cast of '[[Int]]' to same type has no effect
+492 |     _ = matrix_change_component(&mc, 0, 2, 5)
+493 |     _ = assert_str("change_component_matrix", String(describing: matrix_str((mc as! [[Int]]))), "|1,2,5|\n|2,4,5|\n|6,7,8|\n")
+494 |     _ = assert_int("matrix_component", _int(matrix_component((mc as! [[Int]]), 2, 1)), 7)
+    |                                                                  `- warning: forced cast of '[[Int]]' to same type has no effect
+495 |     var madd: [[Int]] = (matrix_add(([([1, 2, 3] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 8] as! [Int])] as! [[Int]]), ([([1, 2, 7] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 10] as! [Int])] as! [[Int]])) as! [[Int]])
+496 |     _ = assert_str("matrix_add", String(describing: matrix_str((madd as! [[Int]]))), "|2,4,10|\n|4,8,10|\n|12,14,18|\n")
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:494:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+492 |     _ = matrix_change_component(&mc, 0, 2, 5)
+493 |     _ = assert_str("change_component_matrix", String(describing: matrix_str((mc as! [[Int]]))), "|1,2,5|\n|2,4,5|\n|6,7,8|\n")
+494 |     _ = assert_int("matrix_component", _int(matrix_component((mc as! [[Int]]), 2, 1)), 7)
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+495 |     var madd: [[Int]] = (matrix_add(([([1, 2, 3] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 8] as! [Int])] as! [[Int]]), ([([1, 2, 7] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 10] as! [Int])] as! [[Int]])) as! [[Int]])
+496 |     _ = assert_str("matrix_add", String(describing: matrix_str((madd as! [[Int]]))), "|2,4,10|\n|4,8,10|\n|12,14,18|\n")
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:495:208: warning: forced cast of '[[Int]]' to same type has no effect
+493 |     _ = assert_str("change_component_matrix", String(describing: matrix_str((mc as! [[Int]]))), "|1,2,5|\n|2,4,5|\n|6,7,8|\n")
+494 |     _ = assert_int("matrix_component", _int(matrix_component((mc as! [[Int]]), 2, 1)), 7)
+495 |     var madd: [[Int]] = (matrix_add(([([1, 2, 3] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 8] as! [Int])] as! [[Int]]), ([([1, 2, 7] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 10] as! [Int])] as! [[Int]])) as! [[Int]])
+    |                                                                                                                                                                                                                `- warning: forced cast of '[[Int]]' to same type has no effect
+496 |     _ = assert_str("matrix_add", String(describing: matrix_str((madd as! [[Int]]))), "|2,4,10|\n|4,8,10|\n|12,14,18|\n")
+497 |     var msub: [[Int]] = (matrix_sub(([([1, 2, 3] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 8] as! [Int])] as! [[Int]]), ([([1, 2, 7] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 10] as! [Int])] as! [[Int]])) as! [[Int]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:496:70: warning: forced cast of '[[Int]]' to same type has no effect
+494 |     _ = assert_int("matrix_component", _int(matrix_component((mc as! [[Int]]), 2, 1)), 7)
+495 |     var madd: [[Int]] = (matrix_add(([([1, 2, 3] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 8] as! [Int])] as! [[Int]]), ([([1, 2, 7] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 10] as! [Int])] as! [[Int]])) as! [[Int]])
+496 |     _ = assert_str("matrix_add", String(describing: matrix_str((madd as! [[Int]]))), "|2,4,10|\n|4,8,10|\n|12,14,18|\n")
+    |                                                                      `- warning: forced cast of '[[Int]]' to same type has no effect
+497 |     var msub: [[Int]] = (matrix_sub(([([1, 2, 3] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 8] as! [Int])] as! [[Int]]), ([([1, 2, 7] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 10] as! [Int])] as! [[Int]])) as! [[Int]])
+498 |     _ = assert_str("matrix_sub", String(describing: matrix_str((msub as! [[Int]]))), "|0,0,-4|\n|0,0,0|\n|0,0,-2|\n")
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:496:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+494 |     _ = assert_int("matrix_component", _int(matrix_component((mc as! [[Int]]), 2, 1)), 7)
+495 |     var madd: [[Int]] = (matrix_add(([([1, 2, 3] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 8] as! [Int])] as! [[Int]]), ([([1, 2, 7] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 10] as! [Int])] as! [[Int]])) as! [[Int]])
+496 |     _ = assert_str("matrix_add", String(describing: matrix_str((madd as! [[Int]]))), "|2,4,10|\n|4,8,10|\n|12,14,18|\n")
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+497 |     var msub: [[Int]] = (matrix_sub(([([1, 2, 3] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 8] as! [Int])] as! [[Int]]), ([([1, 2, 7] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 10] as! [Int])] as! [[Int]])) as! [[Int]])
+498 |     _ = assert_str("matrix_sub", String(describing: matrix_str((msub as! [[Int]]))), "|0,0,-4|\n|0,0,0|\n|0,0,-2|\n")
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:497:208: warning: forced cast of '[[Int]]' to same type has no effect
+495 |     var madd: [[Int]] = (matrix_add(([([1, 2, 3] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 8] as! [Int])] as! [[Int]]), ([([1, 2, 7] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 10] as! [Int])] as! [[Int]])) as! [[Int]])
+496 |     _ = assert_str("matrix_add", String(describing: matrix_str((madd as! [[Int]]))), "|2,4,10|\n|4,8,10|\n|12,14,18|\n")
+497 |     var msub: [[Int]] = (matrix_sub(([([1, 2, 3] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 8] as! [Int])] as! [[Int]]), ([([1, 2, 7] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 10] as! [Int])] as! [[Int]])) as! [[Int]])
+    |                                                                                                                                                                                                                `- warning: forced cast of '[[Int]]' to same type has no effect
+498 |     _ = assert_str("matrix_sub", String(describing: matrix_str((msub as! [[Int]]))), "|0,0,-4|\n|0,0,0|\n|0,0,-2|\n")
+499 |     let mzero: [[Int]] = (square_zero_matrix(5) as! [[Int]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:498:70: warning: forced cast of '[[Int]]' to same type has no effect
+496 |     _ = assert_str("matrix_add", String(describing: matrix_str((madd as! [[Int]]))), "|2,4,10|\n|4,8,10|\n|12,14,18|\n")
+497 |     var msub: [[Int]] = (matrix_sub(([([1, 2, 3] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 8] as! [Int])] as! [[Int]]), ([([1, 2, 7] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 10] as! [Int])] as! [[Int]])) as! [[Int]])
+498 |     _ = assert_str("matrix_sub", String(describing: matrix_str((msub as! [[Int]]))), "|0,0,-4|\n|0,0,0|\n|0,0,-2|\n")
+    |                                                                      `- warning: forced cast of '[[Int]]' to same type has no effect
+499 |     let mzero: [[Int]] = (square_zero_matrix(5) as! [[Int]])
+500 |     _ = assert_str("square_zero_matrix", String(describing: matrix_str((mzero as! [[Int]]))), "|0,0,0,0,0|\n|0,0,0,0,0|\n|0,0,0,0,0|\n|0,0,0,0,0|\n|0,0,0,0,0|\n")
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:498:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+496 |     _ = assert_str("matrix_add", String(describing: matrix_str((madd as! [[Int]]))), "|2,4,10|\n|4,8,10|\n|12,14,18|\n")
+497 |     var msub: [[Int]] = (matrix_sub(([([1, 2, 3] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 8] as! [Int])] as! [[Int]]), ([([1, 2, 7] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 10] as! [Int])] as! [[Int]])) as! [[Int]])
+498 |     _ = assert_str("matrix_sub", String(describing: matrix_str((msub as! [[Int]]))), "|0,0,-4|\n|0,0,0|\n|0,0,-2|\n")
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+499 |     let mzero: [[Int]] = (square_zero_matrix(5) as! [[Int]])
+500 |     _ = assert_str("square_zero_matrix", String(describing: matrix_str((mzero as! [[Int]]))), "|0,0,0,0,0|\n|0,0,0,0,0|\n|0,0,0,0,0|\n|0,0,0,0,0|\n|0,0,0,0,0|\n")
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:499:49: warning: forced cast of '[[Int]]' to same type has no effect
+497 |     var msub: [[Int]] = (matrix_sub(([([1, 2, 3] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 8] as! [Int])] as! [[Int]]), ([([1, 2, 7] as! [Int]), ([2, 4, 5] as! [Int]), ([6, 7, 10] as! [Int])] as! [[Int]])) as! [[Int]])
+498 |     _ = assert_str("matrix_sub", String(describing: matrix_str((msub as! [[Int]]))), "|0,0,-4|\n|0,0,0|\n|0,0,-2|\n")
+499 |     let mzero: [[Int]] = (square_zero_matrix(5) as! [[Int]])
+    |                                                 `- warning: forced cast of '[[Int]]' to same type has no effect
+500 |     _ = assert_str("square_zero_matrix", String(describing: matrix_str((mzero as! [[Int]]))), "|0,0,0,0,0|\n|0,0,0,0,0|\n|0,0,0,0,0|\n|0,0,0,0,0|\n|0,0,0,0,0|\n")
+501 |     let _benchEnd = _now()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:500:79: warning: forced cast of '[[Int]]' to same type has no effect
+498 |     _ = assert_str("matrix_sub", String(describing: matrix_str((msub as! [[Int]]))), "|0,0,-4|\n|0,0,0|\n|0,0,-2|\n")
+499 |     let mzero: [[Int]] = (square_zero_matrix(5) as! [[Int]])
+500 |     _ = assert_str("square_zero_matrix", String(describing: matrix_str((mzero as! [[Int]]))), "|0,0,0,0,0|\n|0,0,0,0,0|\n|0,0,0,0,0|\n|0,0,0,0,0|\n|0,0,0,0,0|\n")
+    |                                                                               `- warning: forced cast of '[[Int]]' to same type has no effect
+501 |     let _benchEnd = _now()
+502 |     let _benchMemEnd = _mem()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden494_linear_algebra_src_test_linear_algebra751062512/001/main.swift:500:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+498 |     _ = assert_str("matrix_sub", String(describing: matrix_str((msub as! [[Int]]))), "|0,0,-4|\n|0,0,0|\n|0,0,-2|\n")
+499 |     let mzero: [[Int]] = (square_zero_matrix(5) as! [[Int]])
+500 |     _ = assert_str("square_zero_matrix", String(describing: matrix_str((mzero as! [[Int]]))), "|0,0,0,0,0|\n|0,0,0,0,0|\n|0,0,0,0,0|\n|0,0,0,0,0|\n|0,0,0,0,0|\n")
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+501 |     let _benchEnd = _now()
+502 |     let _benchMemEnd = _mem()

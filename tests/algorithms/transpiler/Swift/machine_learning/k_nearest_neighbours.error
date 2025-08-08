@@ -1,0 +1,174 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden508_machine_learning_k_nearest_neighbours3784355379/001/main.swift:146:61: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+144 |         var i: Int = 0
+145 |         while (i < _int(((train_data).count))) {
+146 |             let pl = PointLabel(point: (_idx(train_data, i) as! [Double]), label: (_idx(train_target, i) as? Int ?? 0))
+    |                                                             `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+147 |             items = (_append(items, pl) as! [PointLabel])
+148 |             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden508_machine_learning_k_nearest_neighbours3784355379/001/main.swift:146:106: warning: conditional downcast from 'Int?' to 'Int' does nothing
+144 |         var i: Int = 0
+145 |         while (i < _int(((train_data).count))) {
+146 |             let pl = PointLabel(point: (_idx(train_data, i) as! [Double]), label: (_idx(train_target, i) as? Int ?? 0))
+    |                                                                                                          `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+147 |             items = (_append(items, pl) as! [PointLabel])
+148 |             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden508_machine_learning_k_nearest_neighbours3784355379/001/main.swift:156:32: warning: expression implicitly coerced from 'Double?' to 'Any'
+154 |         var i: Int = 0
+155 |         while (i < _int(((a).count))) {
+156 |             let diff = (Double(_idx(a, i)) - Double(_idx(b, i)))
+    |                                |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                |- note: provide a default value to avoid this warning
+    |                                |- note: force-unwrap the value to avoid this warning
+    |                                `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+157 |             sum = Double((sum + (diff * diff)))
+158 |             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden508_machine_learning_k_nearest_neighbours3784355379/001/main.swift:156:53: warning: expression implicitly coerced from 'Double?' to 'Any'
+154 |         var i: Int = 0
+155 |         while (i < _int(((a).count))) {
+156 |             let diff = (Double(_idx(a, i)) - Double(_idx(b, i)))
+    |                                                     |- warning: expression implicitly coerced from 'Double?' to 'Any'
+    |                                                     |- note: provide a default value to avoid this warning
+    |                                                     |- note: force-unwrap the value to avoid this warning
+    |                                                     `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+157 |             sum = Double((sum + (diff * diff)))
+158 |             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden508_machine_learning_k_nearest_neighbours3784355379/001/main.swift:166:66: error: value of type 'PointLabel?' has no member 'point'
+164 |         var i: Int = 0
+165 |         while (i < _int(((knn.data).count))) {
+166 |             let d = Double(euclidean_distance((_idx(knn.data, i).point as! [Double]), (pred_point as! [Double])))
+    |                                                                  `- error: value of type 'PointLabel?' has no member 'point'
+167 |             distances = (_append(distances, DistLabel(dist: d, label: _idx(knn.data, i).label)) as! [DistLabel])
+168 |             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden508_machine_learning_k_nearest_neighbours3784355379/001/main.swift:166:99: warning: forced cast of '[Double]' to same type has no effect
+164 |         var i: Int = 0
+165 |         while (i < _int(((knn.data).count))) {
+166 |             let d = Double(euclidean_distance((_idx(knn.data, i).point as! [Double]), (pred_point as! [Double])))
+    |                                                                                                   `- warning: forced cast of '[Double]' to same type has no effect
+167 |             distances = (_append(distances, DistLabel(dist: d, label: _idx(knn.data, i).label)) as! [DistLabel])
+168 |             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden508_machine_learning_k_nearest_neighbours3784355379/001/main.swift:167:89: error: value of type 'PointLabel?' has no member 'label'
+165 |         while (i < _int(((knn.data).count))) {
+166 |             let d = Double(euclidean_distance((_idx(knn.data, i).point as! [Double]), (pred_point as! [Double])))
+167 |             distances = (_append(distances, DistLabel(dist: d, label: _idx(knn.data, i).label)) as! [DistLabel])
+    |                                                                                         `- error: value of type 'PointLabel?' has no member 'label'
+168 |             i = _int((i &+ 1))
+169 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden508_machine_learning_k_nearest_neighbours3784355379/001/main.swift:176:59: error: value of type 'DistLabel?' has no member 'dist'
+174 |             var j: Int = 1
+175 |             while (j < _int(((distances).count))) {
+176 |                 if (String(describing: _idx(distances, j).dist) < String(describing: _idx(distances, min_index).dist)
+    |                                                           `- error: value of type 'DistLabel?' has no member 'dist'
+177 |                 ) {
+178 |                     min_index = Int(j)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden508_machine_learning_k_nearest_neighbours3784355379/001/main.swift:176:113: error: value of type 'DistLabel?' has no member 'dist'
+174 |             var j: Int = 1
+175 |             while (j < _int(((distances).count))) {
+176 |                 if (String(describing: _idx(distances, j).dist) < String(describing: _idx(distances, min_index).dist)
+    |                                                                                                                 `- error: value of type 'DistLabel?' has no member 'dist'
+177 |                 ) {
+178 |                     min_index = Int(j)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden508_machine_learning_k_nearest_neighbours3784355379/001/main.swift:182:65: error: value of type 'DistLabel?' has no member 'label'
+180 |                 j = _int((j &+ 1))
+181 |             }
+182 |             votes = ((_append(votes, _idx(distances, min_index).label) as! [Any?]) as! [Int])
+    |                                                                 `- error: value of type 'DistLabel?' has no member 'label'
+183 |             _idx(distances, min_index).dist = 1000000000000000000.0
+184 |             count = _int((count &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden508_machine_learning_k_nearest_neighbours3784355379/001/main.swift:183:40: error: value of type 'DistLabel?' has no member 'dist'
+181 |             }
+182 |             votes = ((_append(votes, _idx(distances, min_index).label) as! [Any?]) as! [Int])
+183 |             _idx(distances, min_index).dist = 1000000000000000000.0
+    |                                        `- error: value of type 'DistLabel?' has no member 'dist'
+184 |             count = _int((count &+ 1))
+185 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden508_machine_learning_k_nearest_neighbours3784355379/001/main.swift:194:39: warning: conditional downcast from 'Int?' to 'Int' does nothing
+192 |         var v: Int = 0
+193 |         while (v < _int(((votes).count))) {
+194 |             let lbl = (_idx(votes, v) as? Int ?? 0)
+    |                                       `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+195 |             tally = _set(tally, lbl, _int(((_idx(tally, lbl) as? Int ?? 0) &+ 1)))
+196 |             v = _int((v &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden508_machine_learning_k_nearest_neighbours3784355379/001/main.swift:195:62: warning: conditional downcast from 'Int?' to 'Int' does nothing
+193 |         while (v < _int(((votes).count))) {
+194 |             let lbl = (_idx(votes, v) as? Int ?? 0)
+195 |             tally = _set(tally, lbl, _int(((_idx(tally, lbl) as? Int ?? 0) &+ 1)))
+    |                                                              `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+196 |             v = _int((v &+ 1))
+197 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden508_machine_learning_k_nearest_neighbours3784355379/001/main.swift:201:33: warning: conditional downcast from 'Int?' to 'Int' does nothing
+199 |         var m: Int = 1
+200 |         while (m < _int(((tally).count))) {
+201 |             if ((_idx(tally, m) as? Int ?? 0) > (_idx(tally, max_idx) as? Int ?? 0)) {
+    |                                 `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+202 |                 max_idx = Int(m)
+203 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden508_machine_learning_k_nearest_neighbours3784355379/001/main.swift:201:71: warning: conditional downcast from 'Int?' to 'Int' does nothing
+199 |         var m: Int = 1
+200 |         while (m < _int(((tally).count))) {
+201 |             if ((_idx(tally, m) as? Int ?? 0) > (_idx(tally, max_idx) as? Int ?? 0)) {
+    |                                                                       `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+202 |                 max_idx = Int(m)
+203 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden508_machine_learning_k_nearest_neighbours3784355379/001/main.swift:206:43: warning: forced cast from 'String?' to 'String' only unwraps optionals; did you mean to use '!'?
+204 |             m = _int((m &+ 1))
+205 |         }
+206 |         return (_idx(knn.labels, max_idx) as! String)
+    |                                           `- warning: forced cast from 'String?' to 'String' only unwraps optionals; did you mean to use '!'?
+207 |     }
+208 |     let train_X: [[Double]] = ([([0.0, 0.0] as! [Double]), ([1.0, 0.0] as! [Double]), ([0.0, 1.0] as! [Double]), ([0.5, 0.5] as! [Double]), ([3.0, 3.0] as! [Double]), ([2.0, 3.0] as! [Double]), ([3.0, 2.0] as! [Double])] as! [[Double]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden508_machine_learning_k_nearest_neighbours3784355379/001/main.swift:211:33: warning: forced cast of '[[Double]]' to same type has no effect
+209 |     let train_y: [Int] = ([0, 0, 0, 0, 1, 1, 1] as! [Int])
+210 |     let classes: [String] = (["A", "B"] as! [String])
+211 |     let knn = make_knn((train_X as! [[Double]]), (train_y as! [Int]), (classes as! [String]))
+    |                                 `- warning: forced cast of '[[Double]]' to same type has no effect
+212 |     let point: [Double] = ([1.2, 1.2] as! [Double])
+213 |     print(_p(String(describing: classify((knn as! KNN), (point as! [Double]), 5))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden508_machine_learning_k_nearest_neighbours3784355379/001/main.swift:211:59: warning: forced cast of '[Int]' to same type has no effect
+209 |     let train_y: [Int] = ([0, 0, 0, 0, 1, 1, 1] as! [Int])
+210 |     let classes: [String] = (["A", "B"] as! [String])
+211 |     let knn = make_knn((train_X as! [[Double]]), (train_y as! [Int]), (classes as! [String]))
+    |                                                           `- warning: forced cast of '[Int]' to same type has no effect
+212 |     let point: [Double] = ([1.2, 1.2] as! [Double])
+213 |     print(_p(String(describing: classify((knn as! KNN), (point as! [Double]), 5))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden508_machine_learning_k_nearest_neighbours3784355379/001/main.swift:211:80: warning: forced cast of '[String]' to same type has no effect
+209 |     let train_y: [Int] = ([0, 0, 0, 0, 1, 1, 1] as! [Int])
+210 |     let classes: [String] = (["A", "B"] as! [String])
+211 |     let knn = make_knn((train_X as! [[Double]]), (train_y as! [Int]), (classes as! [String]))
+    |                                                                                `- warning: forced cast of '[String]' to same type has no effect
+212 |     let point: [Double] = ([1.2, 1.2] as! [Double])
+213 |     print(_p(String(describing: classify((knn as! KNN), (point as! [Double]), 5))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden508_machine_learning_k_nearest_neighbours3784355379/001/main.swift:213:47: warning: forced cast of 'KNN' to same type has no effect
+211 |     let knn = make_knn((train_X as! [[Double]]), (train_y as! [Int]), (classes as! [String]))
+212 |     let point: [Double] = ([1.2, 1.2] as! [Double])
+213 |     print(_p(String(describing: classify((knn as! KNN), (point as! [Double]), 5))))
+    |                                               `- warning: forced cast of 'KNN' to same type has no effect
+214 |     let _benchEnd = _now()
+215 |     let _benchMemEnd = _mem()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden508_machine_learning_k_nearest_neighbours3784355379/001/main.swift:213:64: warning: forced cast of '[Double]' to same type has no effect
+211 |     let knn = make_knn((train_X as! [[Double]]), (train_y as! [Int]), (classes as! [String]))
+212 |     let point: [Double] = ([1.2, 1.2] as! [Double])
+213 |     print(_p(String(describing: classify((knn as! KNN), (point as! [Double]), 5))))
+    |                                                                `- warning: forced cast of '[Double]' to same type has no effect
+214 |     let _benchEnd = _now()
+215 |     let _benchMemEnd = _mem()

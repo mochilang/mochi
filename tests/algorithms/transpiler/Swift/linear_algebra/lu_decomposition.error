@@ -1,0 +1,200 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden484_linear_algebra_lu_decomposition1777202456/001/main.swift:96:38: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+ 94 |             return LU(lower: [], upper: [])
+ 95 |         }
+ 96 |         let m = _int((((_idx(mat, 0) as! [Double])).count))
+    |                                      `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+ 97 |         if (n != m) {
+ 98 |             _ = fatalError("Matrix must be square")
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden484_linear_algebra_lu_decomposition1777202456/001/main.swift:123:58: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+121 |                 var k: Int = 0
+122 |                 while (k < i) {
+123 |                     total = Double((total + (Double(_idx(_idx(lower, i), k)) * Double(_idx(_idx(upper, k), j1)))))
+    |                                                          `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+124 |                     k = _int((k &+ 1))
+125 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden484_linear_algebra_lu_decomposition1777202456/001/main.swift:123:92: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+121 |                 var k: Int = 0
+122 |                 while (k < i) {
+123 |                     total = Double((total + (Double(_idx(_idx(lower, i), k)) * Double(_idx(_idx(upper, k), j1)))))
+    |                                                                                            `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+124 |                     k = _int((k &+ 1))
+125 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden484_linear_algebra_lu_decomposition1777202456/001/main.swift:126:33: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+124 |                     k = _int((k &+ 1))
+125 |                 }
+126 |                 if (Double(_idx(_idx(upper, j1), j1)) == 0.0) {
+    |                                 `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+127 |                     _ = fatalError("No LU decomposition exists")
+128 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden484_linear_algebra_lu_decomposition1777202456/001/main.swift:129:22: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+127 |                     _ = fatalError("No LU decomposition exists")
+128 |                 }
+129 |                 _idx(_idx(lower, i), j1) = Double((Double((Double(_idx(_idx(mat, i), j1)) - total)) / Double(_idx(_idx(upper, j1), j1))))
+    |                      `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+130 |                 j1 = _int((j1 &+ 1))
+131 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden484_linear_algebra_lu_decomposition1777202456/001/main.swift:129:72: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+127 |                     _ = fatalError("No LU decomposition exists")
+128 |                 }
+129 |                 _idx(_idx(lower, i), j1) = Double((Double((Double(_idx(_idx(mat, i), j1)) - total)) / Double(_idx(_idx(upper, j1), j1))))
+    |                                                                        `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+130 |                 j1 = _int((j1 &+ 1))
+131 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden484_linear_algebra_lu_decomposition1777202456/001/main.swift:129:115: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+127 |                     _ = fatalError("No LU decomposition exists")
+128 |                 }
+129 |                 _idx(_idx(lower, i), j1) = Double((Double((Double(_idx(_idx(mat, i), j1)) - total)) / Double(_idx(_idx(upper, j1), j1))))
+    |                                                                                                                   `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+130 |                 j1 = _int((j1 &+ 1))
+131 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden484_linear_algebra_lu_decomposition1777202456/001/main.swift:129:44: error: cannot assign value of type 'Double' to type '[Double]?'
+127 |                     _ = fatalError("No LU decomposition exists")
+128 |                 }
+129 |                 _idx(_idx(lower, i), j1) = Double((Double((Double(_idx(_idx(mat, i), j1)) - total)) / Double(_idx(_idx(upper, j1), j1))))
+    |                                            `- error: cannot assign value of type 'Double' to type '[Double]?'
+130 |                 j1 = _int((j1 &+ 1))
+131 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden484_linear_algebra_lu_decomposition1777202456/001/main.swift:132:18: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+130 |                 j1 = _int((j1 &+ 1))
+131 |             }
+132 |             _idx(_idx(lower, i), i) = 1.0
+    |                  `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+133 |             var j2: Int = i
+134 |             while (j2 < n) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden484_linear_algebra_lu_decomposition1777202456/001/main.swift:132:39: error: cannot assign value of type 'Double' to type '[Double]?'
+130 |                 j1 = _int((j1 &+ 1))
+131 |             }
+132 |             _idx(_idx(lower, i), i) = 1.0
+    |                                       `- error: cannot assign value of type 'Double' to type '[Double]?'
+133 |             var j2: Int = i
+134 |             while (j2 < n) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden484_linear_algebra_lu_decomposition1777202456/001/main.swift:138:60: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+136 |                 var k2: Int = 0
+137 |                 while (k2 < i) {
+138 |                     total2 = Double((total2 + (Double(_idx(_idx(lower, i), k2)) * Double(_idx(_idx(upper, k2), j2)))))
+    |                                                            `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+139 |                     k2 = _int((k2 &+ 1))
+140 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden484_linear_algebra_lu_decomposition1777202456/001/main.swift:138:95: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+136 |                 var k2: Int = 0
+137 |                 while (k2 < i) {
+138 |                     total2 = Double((total2 + (Double(_idx(_idx(lower, i), k2)) * Double(_idx(_idx(upper, k2), j2)))))
+    |                                                                                               `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+139 |                     k2 = _int((k2 &+ 1))
+140 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden484_linear_algebra_lu_decomposition1777202456/001/main.swift:141:22: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+139 |                     k2 = _int((k2 &+ 1))
+140 |                 }
+141 |                 _idx(_idx(upper, i), j2) = Double((Double(_idx(_idx(mat, i), j2)) - total2))
+    |                      `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+142 |                 j2 = _int((j2 &+ 1))
+143 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden484_linear_algebra_lu_decomposition1777202456/001/main.swift:141:64: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+139 |                     k2 = _int((k2 &+ 1))
+140 |                 }
+141 |                 _idx(_idx(upper, i), j2) = Double((Double(_idx(_idx(mat, i), j2)) - total2))
+    |                                                                `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+142 |                 j2 = _int((j2 &+ 1))
+143 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden484_linear_algebra_lu_decomposition1777202456/001/main.swift:141:44: error: cannot assign value of type 'Double' to type '[Double]?'
+139 |                     k2 = _int((k2 &+ 1))
+140 |                 }
+141 |                 _idx(_idx(upper, i), j2) = Double((Double(_idx(_idx(mat, i), j2)) - total2))
+    |                                            `- error: cannot assign value of type 'Double' to type '[Double]?'
+142 |                 j2 = _int((j2 &+ 1))
+143 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden484_linear_algebra_lu_decomposition1777202456/001/main.swift:153:45: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+151 |             var line: String = ""
+152 |             var j: Int = 0
+153 |             while (j < _int((((_idx(mat, i) as! [Double])).count))) {
+    |                                             `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+154 |                 line = ((line + _p(Double(_idx(_idx(mat, i), j)))) as! String)
+155 |                 if ((j &+ 1) < _int((((_idx(mat, i) as! [Double])).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden484_linear_algebra_lu_decomposition1777202456/001/main.swift:154:48: error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+152 |             var j: Int = 0
+153 |             while (j < _int((((_idx(mat, i) as! [Double])).count))) {
+154 |                 line = ((line + _p(Double(_idx(_idx(mat, i), j)))) as! String)
+    |                                                `- error: cannot convert value of type '[Double]?' to expected argument type '[[Double]?]'
+155 |                 if ((j &+ 1) < _int((((_idx(mat, i) as! [Double])).count))) {
+156 |                     line = ((line + " ") as! String)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden484_linear_algebra_lu_decomposition1777202456/001/main.swift:154:68: warning: forced cast of 'String' to same type has no effect
+152 |             var j: Int = 0
+153 |             while (j < _int((((_idx(mat, i) as! [Double])).count))) {
+154 |                 line = ((line + _p(Double(_idx(_idx(mat, i), j)))) as! String)
+    |                                                                    `- warning: forced cast of 'String' to same type has no effect
+155 |                 if ((j &+ 1) < _int((((_idx(mat, i) as! [Double])).count))) {
+156 |                     line = ((line + " ") as! String)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden484_linear_algebra_lu_decomposition1777202456/001/main.swift:155:53: warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+153 |             while (j < _int((((_idx(mat, i) as! [Double])).count))) {
+154 |                 line = ((line + _p(Double(_idx(_idx(mat, i), j)))) as! String)
+155 |                 if ((j &+ 1) < _int((((_idx(mat, i) as! [Double])).count))) {
+    |                                                     `- warning: forced cast from '[Double]?' to '[Double]' only unwraps optionals; did you mean to use '!'?
+156 |                     line = ((line + " ") as! String)
+157 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden484_linear_algebra_lu_decomposition1777202456/001/main.swift:156:42: warning: forced cast of 'String' to same type has no effect
+154 |                 line = ((line + _p(Double(_idx(_idx(mat, i), j)))) as! String)
+155 |                 if ((j &+ 1) < _int((((_idx(mat, i) as! [Double])).count))) {
+156 |                     line = ((line + " ") as! String)
+    |                                          `- warning: forced cast of 'String' to same type has no effect
+157 |                 }
+158 |                 j = _int((j &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden484_linear_algebra_lu_decomposition1777202456/001/main.swift:165:43: warning: forced cast of '[[Double]]' to same type has no effect
+163 |     }
+164 |     let matrix: [[Double]] = ([([2.0, -2.0, 1.0] as! [Double]), ([0.0, 1.0, 2.0] as! [Double]), ([5.0, 3.0, 1.0] as! [Double])] as! [[Double]])
+165 |     let result = lu_decomposition((matrix as! [[Double]]))
+    |                                           `- warning: forced cast of '[[Double]]' to same type has no effect
+166 |     _ = print_matrix((result.lower as! [[Double]]))
+167 |     _ = print_matrix((result.upper as! [[Double]]))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden484_linear_algebra_lu_decomposition1777202456/001/main.swift:166:36: warning: forced cast of '[[Double]]' to same type has no effect
+164 |     let matrix: [[Double]] = ([([2.0, -2.0, 1.0] as! [Double]), ([0.0, 1.0, 2.0] as! [Double]), ([5.0, 3.0, 1.0] as! [Double])] as! [[Double]])
+165 |     let result = lu_decomposition((matrix as! [[Double]]))
+166 |     _ = print_matrix((result.lower as! [[Double]]))
+    |                                    `- warning: forced cast of '[[Double]]' to same type has no effect
+167 |     _ = print_matrix((result.upper as! [[Double]]))
+168 |     let _benchEnd = _now()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden484_linear_algebra_lu_decomposition1777202456/001/main.swift:166:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+164 |     let matrix: [[Double]] = ([([2.0, -2.0, 1.0] as! [Double]), ([0.0, 1.0, 2.0] as! [Double]), ([5.0, 3.0, 1.0] as! [Double])] as! [[Double]])
+165 |     let result = lu_decomposition((matrix as! [[Double]]))
+166 |     _ = print_matrix((result.lower as! [[Double]]))
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+167 |     _ = print_matrix((result.upper as! [[Double]]))
+168 |     let _benchEnd = _now()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden484_linear_algebra_lu_decomposition1777202456/001/main.swift:167:36: warning: forced cast of '[[Double]]' to same type has no effect
+165 |     let result = lu_decomposition((matrix as! [[Double]]))
+166 |     _ = print_matrix((result.lower as! [[Double]]))
+167 |     _ = print_matrix((result.upper as! [[Double]]))
+    |                                    `- warning: forced cast of '[[Double]]' to same type has no effect
+168 |     let _benchEnd = _now()
+169 |     let _benchMemEnd = _mem()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden484_linear_algebra_lu_decomposition1777202456/001/main.swift:167:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+165 |     let result = lu_decomposition((matrix as! [[Double]]))
+166 |     _ = print_matrix((result.lower as! [[Double]]))
+167 |     _ = print_matrix((result.upper as! [[Double]]))
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+168 |     let _benchEnd = _now()
+169 |     let _benchMemEnd = _mem()
