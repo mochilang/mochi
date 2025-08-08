@@ -2147,15 +2147,20 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				}
 				currentFunc = prevFunc
 			case st.Return != nil:
-				if st.Return.Value != nil {
-					ex, err := convertExpr(env, st.Return.Value)
-					if err != nil {
-						return nil, err
-					}
-					pr.Stmts = append(pr.Stmts, &ReturnStmt{Expr: ex})
-				} else {
-					pr.Stmts = append(pr.Stmts, &ReturnStmt{Expr: nil})
-				}
+                               if st.Return.Value != nil {
+                                       ex, err := convertExpr(env, st.Return.Value)
+                                       if err != nil {
+                                               return nil, err
+                                       }
+                                       if vr, ok := ex.(*VarRef); ok && vr.Name == "nil" {
+                                               if rt, ok2 := funcReturns[currentFunc]; ok2 {
+                                                       ex = zeroValue(rt)
+                                               }
+                                       }
+                                       pr.Stmts = append(pr.Stmts, &ReturnStmt{Expr: ex})
+                               } else {
+                                       pr.Stmts = append(pr.Stmts, &ReturnStmt{Expr: nil})
+                               }
 			case st.Import != nil:
 				continue
 			case st.ExternFun != nil:
@@ -2445,8 +2450,12 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
                                                         switch t := types.ExprType(st.Var.Value, env).(type) {
                                                         case types.StringType:
                                                                 vd.Type = "string"
-                                                        case types.ListType:
-                                                                vd.Type = pasTypeFromType(t.Elem)
+                                                         case types.ListType:
+                                                                 // List literals without an explicit type should use the
+                                                                 // array alias for their element type rather than defaulting
+                                                                 // to the element type itself. Otherwise, variables that
+                                                                 // store lists end up being declared as plain integers.
+                                                                 vd.Type = currProg.addArrayAlias(pasTypeFromType(t.Elem))
                                                         case types.BoolType:
                                                                 vd.Type = "boolean"
                                                         }
@@ -3245,28 +3254,28 @@ func replaceVar(e Expr, name string, repl Expr) Expr {
 }
 
 func zeroValue(typ string) Expr {
-	switch {
-	case typ == "integer":
-		return &IntLit{Value: 0}
-	case typ == "string":
-		return &StringLit{Value: ""}
-	case typ == "BigRat":
-		currProg.UseBigRat = true
-		return &CallExpr{Name: "_bigrat", Args: []Expr{&IntLit{Value: 0}}}
-	case strings.HasPrefix(typ, "array of"):
-		return &ListLit{}
-	default:
-		for _, r := range currProg.Records {
-			if r.Name == typ {
-				var args []Expr
-				for _, f := range r.Fields {
-					args = append(args, zeroValue(f.Type))
-				}
-				return &CallExpr{Name: ctorName(typ), Args: args}
-			}
-		}
-	}
-	return &IntLit{Value: 0}
+       switch {
+       case typ == "integer":
+               return &IntLit{Value: 0}
+       case typ == "string":
+               return &StringLit{Value: ""}
+       case typ == "BigRat":
+               currProg.UseBigRat = true
+               return &CallExpr{Name: "_bigrat", Args: []Expr{&IntLit{Value: 0}}}
+       case strings.HasPrefix(typ, "array of") || isArrayAlias(typ):
+               return &ListLit{}
+       default:
+               for _, r := range currProg.Records {
+                       if r.Name == typ {
+                               var args []Expr
+                               for _, f := range r.Fields {
+                                       args = append(args, zeroValue(f.Type))
+                               }
+                               return &CallExpr{Name: ctorName(typ), Args: args}
+                       }
+               }
+       }
+       return &IntLit{Value: 0}
 }
 
 func buildLeftJoinQuery(env *types.Env, q *parser.QueryExpr, varName string, varTypes map[string]string) ([]Stmt, string, error) {
