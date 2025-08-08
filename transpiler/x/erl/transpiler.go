@@ -240,10 +240,11 @@ mochi_repeat(_, _) -> [].
 const helperStr = `
 -compile({nowarn_unused_function, mochi_str/1}).
 mochi_str(V) when is_float(V) ->
-    S = erlang:float_to_list(V, [short]),
-    case lists:suffix(".0", S) of
-        true -> lists:sublist(S, length(S) - 2);
-        false -> S
+    S0 = erlang:float_to_list(V, [short]),
+    S1 = re:replace(S0, "\.?0+$", "", [{return, list}]),
+    case S1 of
+        "" -> "0";
+        _ -> S1
     end;
 mochi_str(V) ->
     S = lists:flatten(io_lib:format("~p", [V])),
