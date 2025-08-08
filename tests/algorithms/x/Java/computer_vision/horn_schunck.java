@@ -17,7 +17,7 @@ public class Main {
                 row = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row), java.util.stream.DoubleStream.of(0.0)).toArray()));
                 j = j + 1;
             }
-            res = ((double[][])(appendObj(res, row)));
+            res = ((double[][])(appendObj((double[][])res, row)));
             i = i + 1;
         }
         return res;
@@ -41,7 +41,7 @@ public class Main {
                 }
                 x = x + 1;
             }
-            out = ((double[][])(appendObj(out, row_1)));
+            out = ((double[][])(appendObj((double[][])out, row_1)));
             y = y + 1;
         }
         return out;
@@ -52,8 +52,8 @@ public class Main {
         int w_1 = img[0].length;
         int kh = ker.length;
         int kw = ker[0].length;
-        int py = kh / 2;
-        int px = kw / 2;
+        int py = Math.floorDiv(kh, 2);
+        int px = Math.floorDiv(kw, 2);
         double[][] out_1 = ((double[][])(new double[][]{}));
         int y_1 = 0;
         while (y_1 < h_1) {
@@ -77,7 +77,7 @@ public class Main {
                 row_2 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row_2), java.util.stream.DoubleStream.of(s)).toArray()));
                 x_1 = x_1 + 1;
             }
-            out_1 = ((double[][])(appendObj(out_1, row_2)));
+            out_1 = ((double[][])(appendObj((double[][])out_1, row_2)));
             y_1 = y_1 + 1;
         }
         return out_1;
@@ -155,7 +155,41 @@ v[y_2][x_2] = av - dy * upd;
         print_matrix(((double[][])(v_1)));
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static <T> T[] appendObj(T[] arr, T v) {

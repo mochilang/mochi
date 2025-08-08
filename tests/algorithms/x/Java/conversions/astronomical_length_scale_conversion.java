@@ -57,14 +57,48 @@ public class Main {
         return value * pow10(exponent);
     }
     public static void main(String[] args) {
-        UNIT_SYMBOL = ((java.util.Map<String,String>)(new java.util.LinkedHashMap<String, String>(java.util.Map.ofEntries(java.util.Map.entry("meter", "m"), java.util.Map.entry("kilometer", "km"), java.util.Map.entry("megametre", "Mm"), java.util.Map.entry("gigametre", "Gm"), java.util.Map.entry("terametre", "Tm"), java.util.Map.entry("petametre", "Pm"), java.util.Map.entry("exametre", "Em"), java.util.Map.entry("zettametre", "Zm"), java.util.Map.entry("yottametre", "Ym")))));
-        METRIC_CONVERSION = ((java.util.Map<String,Integer>)(new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("m", 0), java.util.Map.entry("km", 3), java.util.Map.entry("Mm", 6), java.util.Map.entry("Gm", 9), java.util.Map.entry("Tm", 12), java.util.Map.entry("Pm", 15), java.util.Map.entry("Em", 18), java.util.Map.entry("Zm", 21), java.util.Map.entry("Ym", 24)))));
-        ABBREVIATIONS = "m, km, Mm, Gm, Tm, Pm, Em, Zm, Ym";
-        System.out.println(_p(length_conversion(1.0, "meter", "kilometer")));
-        System.out.println(_p(length_conversion(1.0, "meter", "megametre")));
-        System.out.println(_p(length_conversion(1.0, "gigametre", "meter")));
-        System.out.println(_p(length_conversion(1.0, "terametre", "zettametre")));
-        System.out.println(_p(length_conversion(1.0, "yottametre", "zettametre")));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            UNIT_SYMBOL = ((java.util.Map<String,String>)(new java.util.LinkedHashMap<String, String>(java.util.Map.ofEntries(java.util.Map.entry("meter", "m"), java.util.Map.entry("kilometer", "km"), java.util.Map.entry("megametre", "Mm"), java.util.Map.entry("gigametre", "Gm"), java.util.Map.entry("terametre", "Tm"), java.util.Map.entry("petametre", "Pm"), java.util.Map.entry("exametre", "Em"), java.util.Map.entry("zettametre", "Zm"), java.util.Map.entry("yottametre", "Ym")))));
+            METRIC_CONVERSION = ((java.util.Map<String,Integer>)(new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("m", 0), java.util.Map.entry("km", 3), java.util.Map.entry("Mm", 6), java.util.Map.entry("Gm", 9), java.util.Map.entry("Tm", 12), java.util.Map.entry("Pm", 15), java.util.Map.entry("Em", 18), java.util.Map.entry("Zm", 21), java.util.Map.entry("Ym", 24)))));
+            ABBREVIATIONS = "m, km, Mm, Gm, Tm, Pm, Em, Zm, Ym";
+            System.out.println(_p(length_conversion(1.0, "meter", "kilometer")));
+            System.out.println(_p(length_conversion(1.0, "meter", "megametre")));
+            System.out.println(_p(length_conversion(1.0, "gigametre", "meter")));
+            System.out.println(_p(length_conversion(1.0, "terametre", "zettametre")));
+            System.out.println(_p(length_conversion(1.0, "yottametre", "zettametre")));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static int _runeLen(String s) {

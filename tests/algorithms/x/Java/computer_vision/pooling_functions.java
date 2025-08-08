@@ -27,7 +27,7 @@ public class Main {
                 row = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row), java.util.stream.IntStream.of(max_val)).toArray()));
                 j = j + stride;
             }
-            result = ((int[][])(appendObj(result, row)));
+            result = ((int[][])(appendObj((int[][])result, row)));
             i = i + stride;
         }
         return result;
@@ -54,10 +54,10 @@ public class Main {
                     }
                     r_1 = r_1 + 1;
                 }
-                row_1 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row_1), java.util.stream.IntStream.of(sum / (size * size))).toArray()));
+                row_1 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row_1), java.util.stream.IntStream.of(Math.floorDiv(sum, (size * size)))).toArray()));
                 j_1 = j_1 + stride;
             }
-            result_1 = ((int[][])(appendObj(result_1, row_1)));
+            result_1 = ((int[][])(appendObj((int[][])result_1, row_1)));
             i_1 = i_1 + stride;
         }
         return result_1;
@@ -89,7 +89,41 @@ public class Main {
         print_matrix(((int[][])(avgpooling(((int[][])(arr2)), 2, 1))));
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static <T> T[] appendObj(T[] arr, T v) {

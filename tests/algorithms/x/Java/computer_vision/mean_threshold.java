@@ -15,7 +15,7 @@ public class Main {
             }
             i = i + 1;
         }
-        int mean = total / (height * width);
+        int mean = Math.floorDiv(total, (height * width));
         i = 0;
         while (i < height) {
             int j_1 = 0;
@@ -40,8 +40,42 @@ image[i][j_1] = 0;
         }
     }
     public static void main(String[] args) {
-        img = ((int[][])(new int[][]{new int[]{10, 200, 50}, new int[]{100, 150, 30}, new int[]{90, 80, 220}}));
-        result = ((int[][])(mean_threshold(((int[][])(img)))));
-        print_image(((int[][])(result)));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            img = ((int[][])(new int[][]{new int[]{10, 200, 50}, new int[]{100, 150, 30}, new int[]{90, 80, 220}}));
+            result = ((int[][])(mean_threshold(((int[][])(img)))));
+            print_image(((int[][])(result)));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 }

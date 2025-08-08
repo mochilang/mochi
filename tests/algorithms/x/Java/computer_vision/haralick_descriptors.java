@@ -73,7 +73,7 @@ public class Main {
             for (int j = 0; j < size; j++) {
                 row = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row), java.util.stream.DoubleStream.of(0.0)).toArray()));
             }
-            matrix = ((double[][])(appendObj(matrix, row)));
+            matrix = ((double[][])(appendObj((double[][])matrix, row)));
         }
         for (int x = 1; x < image.length - 1; x++) {
             for (int y = 1; y < image[x].length - 1; y++) {
@@ -136,14 +136,48 @@ matrix[i][j] = matrix[i][j] / total;
         return new double[]{maximum_prob, correlation, energy, contrast, dissimilarity, inverse_difference, homogeneity, entropy};
     }
     public static void main(String[] args) {
-        image = ((int[][])(new int[][]{new int[]{0, 1, 0}, new int[]{1, 0, 1}, new int[]{0, 1, 0}}));
-        glcm = ((double[][])(matrix_concurrency(((int[][])(image)), ((int[])(new int[]{0, 1})))));
-        descriptors = ((double[])(haralick_descriptors(((double[][])(glcm)))));
-        idx = 0;
-        while (idx < descriptors.length) {
-            System.out.println(_p(_geto(descriptors, idx)));
-            idx = idx + 1;
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            image = ((int[][])(new int[][]{new int[]{0, 1, 0}, new int[]{1, 0, 1}, new int[]{0, 1, 0}}));
+            glcm = ((double[][])(matrix_concurrency(((int[][])(image)), ((int[])(new int[]{0, 1})))));
+            descriptors = ((double[])(haralick_descriptors(((double[][])(glcm)))));
+            idx = 0;
+            while (idx < descriptors.length) {
+                System.out.println(_p(_getd(descriptors, idx)));
+                idx = idx + 1;
+            }
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
         }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static <T> T[] appendObj(T[] arr, T v) {
@@ -168,7 +202,7 @@ matrix[i][j] = matrix[i][j] / total;
         return String.valueOf(v);
     }
 
-    static Object _geto(Object[] a, int i) {
+    static Double _getd(double[] a, int i) {
         return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }

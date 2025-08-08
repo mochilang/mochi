@@ -2819,7 +2819,8 @@ func (a *AppendExpr) emit(w io.Writer) {
 	}
 	if strings.HasSuffix(jt, "[]") || strings.Contains(jt, "<") {
 		needAppendObj = true
-		fmt.Fprint(w, "appendObj(")
+		arrType := javaType(elem) + "[]"
+		fmt.Fprintf(w, "appendObj((%s)", arrType)
 		a.List.emit(w)
 		fmt.Fprint(w, ", ")
 		if ll, ok := a.Value.(*ListLit); ok && (ll.ElemType == "" || ll.ElemType == "Object") {
@@ -4219,6 +4220,12 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 					}
 				}
 			}
+			if t != "" {
+				varTypes[alias] = t
+			}
+			vstmt := &VarStmt{Name: alias, Type: t, Expr: e}
+			varDecls[alias] = vstmt
+			scopeStack[len(scopeStack)-1][alias] = vstmt
 			return &LetStmt{Name: alias, Type: t, Expr: e}, nil
 		}
 		t := typeRefString(s.Let.Type)
@@ -4495,7 +4502,7 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 					}
 				} else {
 					curJ, tJ := javaType(cur), javaType(t)
-					if tJ == "Object" && curJ != "Object" {
+					if tJ == "Object" && curJ != "Object" && !strings.HasSuffix(curJ, "[]") {
 						varTypes[alias] = "Object"
 						if vdecl != nil {
 							vdecl.Type = "Object"
@@ -4666,6 +4673,10 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			if currentFuncReturn == "" || currentFuncReturn == "void" {
 				if _, ok := e.(*NullLit); ok {
 					e = nil
+				}
+			} else if e != nil {
+				if javaType(inferType(e)) != javaType(currentFuncReturn) {
+					e = &CastExpr{Value: e, Type: currentFuncReturn}
 				}
 			}
 		}
@@ -5554,6 +5565,15 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			arg := args[0]
 			if ix, ok := arg.(*IndexExpr); ok && isArrayExpr(ix.Target) {
 				et := arrayElemType(ix.Target)
+				if et == "" {
+					if t := inferType(ix); t != "" {
+						et = t
+					} else if t := inferType(ix.Target); strings.HasSuffix(t, "[]") {
+						et = strings.TrimSuffix(t, "[]")
+					} else {
+						et = "double"
+					}
+				}
 				switch et {
 				case "int":
 					needArrGetI = true
@@ -5565,8 +5585,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					needArrGetB = true
 					arg = &CallExpr{Func: "_getb", Args: []Expr{ix.Target, ix.Index}}
 				default:
-					needArrGetO = true
-					arg = &CallExpr{Func: "_geto", Args: []Expr{ix.Target, ix.Index}}
+					needArrGetD = true
+					arg = &CallExpr{Func: "_getd", Args: []Expr{ix.Target, ix.Index}}
 				}
 			}
 			return &CallExpr{Func: "_p", Args: []Expr{arg}}, nil
