@@ -1,0 +1,13 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/algorithms/transpiler/FS/greedy_methods/fractional_cover_problem.fs(67,95): error FS0001: This expression was expected to have type
+    'a list    
+but here has type
+    Item array    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/greedy_methods/fractional_cover_problem.fs(69,42): error FS0001: This expression was expected to have type
+    'a []    
+but here has type
+    'b list    

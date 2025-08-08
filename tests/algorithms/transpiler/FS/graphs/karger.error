@@ -1,0 +1,17 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/algorithms/transpiler/FS/graphs/karger.fs(104,28): error FS0001: The type 'obj' is not compatible with the type 'seq<'a>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/graphs/karger.fs(105,31): error FS0001: This expression was expected to have type
+    obj array    
+but here has type
+    obj    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/graphs/karger.fs(105,60): error FS0001: The type 'obj' is not compatible with the type 'seq<'a>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/graphs/karger.fs(144,35): error FS0001: This expression was expected to have type
+    'a []    
+but here has type
+    obj    

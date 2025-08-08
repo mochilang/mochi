@@ -1,0 +1,7 @@
+seq
+  [[1, System.String[]] [2, System.String[]] [3, System.String[]]
+   [4, System.String[]]]
+true
+seq
+  [[1, System.String[]] [2, System.String[]] [4, System.String[]]
+   [5, System.String[]]]
