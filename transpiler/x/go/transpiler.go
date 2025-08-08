@@ -184,6 +184,14 @@ func emitCastAnyToType(w io.Writer, typ, v string) {
 		fmt.Fprintf(w, " }; return out }; return v.([]%s) }(%s)", elem, v)
 		return
 	}
+	if isIdentifier(v) && !assignAnyVars[v] {
+		if typ == "" || typ == "any" {
+			fmt.Fprint(w, v)
+		} else {
+			fmt.Fprintf(w, "%s(%s)", typ, v)
+		}
+		return
+	}
 	fmt.Fprintf(w, "%s.(%s)", v, typ)
 }
 
@@ -2207,13 +2215,9 @@ func (a *AssertExpr) emit(w io.Writer) {
 				}
 			}
 		}
-		if vr, ok := a.Expr.(*VarRef); ok && topEnv != nil {
-			if vt, err := topEnv.GetVar(vr.Name); err == nil {
-				if _, ok2 := vt.(types.StringType); ok2 {
-					a.Expr.emit(w)
-					return
-				}
-			}
+		if _, ok := a.Expr.(*VarRef); ok {
+			a.Expr.emit(w)
+			return
 		}
 		a.Expr.emit(w)
 		io.WriteString(w, ".(string)")
@@ -2278,6 +2282,29 @@ func (a *AssertExpr) emit(w io.Writer) {
 		switch a.Expr.(type) {
 		case *CallExpr, *VarRef, *IndexExpr, *SliceExpr:
 			a.Expr.emit(w)
+			return
+		}
+	}
+	if vr, ok := a.Expr.(*VarRef); ok {
+		if vd, ok2 := varDecls[vr.Name]; ok2 {
+			if !assignAnyVars[vr.Name] || (vd.Type != "" && vd.Type != "any") {
+				if a.Type == "" || a.Type == "any" {
+					a.Expr.emit(w)
+				} else {
+					fmt.Fprintf(w, "%s(", a.Type)
+					a.Expr.emit(w)
+					io.WriteString(w, ")")
+				}
+				return
+			}
+		} else if !assignAnyVars[vr.Name] {
+			if a.Type == "" || a.Type == "any" {
+				a.Expr.emit(w)
+			} else {
+				fmt.Fprintf(w, "%s(", a.Type)
+				a.Expr.emit(w)
+				io.WriteString(w, ")")
+			}
 			return
 		}
 	}
@@ -5052,33 +5079,35 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 					// auto convert unknown types to float64 for arithmetic
 					if newExpr == nil && (ops[i].Op == "+" || ops[i].Op == "-" || ops[i].Op == "*" || ops[i].Op == "/") {
 						if _, ok := typesList[i].(types.AnyType); ok {
-							if ae, ok2 := left.(*AssertExpr); ok2 && ae.Type == "int" {
+							if isIntType(typesList[i+1]) {
+								left = &AssertExpr{Expr: left, Type: "int"}
 								typesList[i] = types.IntType{}
-							} else if ae, ok2 := left.(*AssertExpr); ok2 && ae.Type == "float64" {
-								typesList[i] = types.FloatType{}
 							} else {
 								left = &CallExpr{Func: "_toFloat", Args: []Expr{left}}
 								usesFloatConv = true
+								typesList[i] = types.FloatType{}
 							}
 						}
 						if _, ok := typesList[i+1].(types.AnyType); ok {
-							if ae, ok2 := right.(*AssertExpr); ok2 && ae.Type == "int" {
+							if isIntType(typesList[i]) {
+								right = &AssertExpr{Expr: right, Type: "int"}
 								typesList[i+1] = types.IntType{}
-							} else if ae, ok2 := right.(*AssertExpr); ok2 && ae.Type == "float64" {
-								typesList[i+1] = types.FloatType{}
 							} else {
 								right = &CallExpr{Func: "_toFloat", Args: []Expr{right}}
 								usesFloatConv = true
+								typesList[i+1] = types.FloatType{}
 							}
 						}
 						if _, ok := typesList[i].(types.FloatType); ok {
 							if _, ok2 := typesList[i+1].(types.IntType); ok2 {
 								right = &CallExpr{Func: "float64", Args: []Expr{right}}
+								typesList[i+1] = types.FloatType{}
 							}
 						}
 						if _, ok := typesList[i+1].(types.FloatType); ok {
 							if _, ok2 := typesList[i].(types.IntType); ok2 {
 								left = &CallExpr{Func: "float64", Args: []Expr{left}}
+								typesList[i] = types.FloatType{}
 							}
 						}
 					}
