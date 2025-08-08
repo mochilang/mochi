@@ -2203,7 +2203,9 @@ func (c *CallExpr) emit(w io.Writer) {
 	case "panic":
 		io.WriteString(w, "erlang:error(")
 		if len(c.Args) > 0 {
+			io.WriteString(w, "{panic, ")
 			c.Args[0].emit(w)
+			io.WriteString(w, "}")
 		} else {
 			io.WriteString(w, "panic")
 		}

@@ -1,3 +1,7 @@
+## Progress (2025-08-08 16:30 +0700)
+- Add Erlang output for Hubble parameter algorithm (3e269b61d6)
+- Regenerated golden files - 103/105 vm valid programs passing
+
 ## Progress (2025-08-08 16:19 +0700)
 - scala: fix branch scoping and numeric string formatting (0204126673)
 - Regenerated golden files - 103/105 vm valid programs passing
