@@ -25,7 +25,7 @@ var builtinNames = map[string]struct{}{
 	"str": {}, "min": {}, "max": {}, "append": {}, "json": {}, "exists": {},
 	"values": {}, "keys": {}, "load": {}, "save": {}, "now": {}, "input": {},
 	"upper": {}, "lower": {}, "num": {}, "denom": {}, "indexOf": {}, "repeat": {}, "parseIntStr": {}, "slice": {}, "split": {}, "contains": {}, "substr": {}, "pow": {}, "getoutput": {}, "intval": {}, "floatval": {}, "int": {}, "float": {}, "to_float": {},
-	"concat": {}, "panic": {}, "ceil": {}, "floor": {},
+	"concat": {}, "panic": {}, "error": {}, "ceil": {}, "floor": {},
 }
 
 const helperLookupHost = `function _lookup_host($host) {
@@ -3105,6 +3105,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return &CallExpr{Func: "parseIntStr", Args: []Expr{args[0], args[1]}}, nil
 			}
 			return nil, fmt.Errorf("parseIntStr expects 1 or 2 args")
+		} else if name == "error" && isBuiltin {
+			if len(args) != 1 {
+				return nil, fmt.Errorf("error expects 1 arg")
+			}
+			usesPanic = true
+			return &CallExpr{Func: "_panic", Args: args}, nil
 		} else if name == "panic" && isBuiltin {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("panic expects 1 arg")
