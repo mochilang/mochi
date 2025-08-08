@@ -291,7 +291,19 @@ func (c *ContinueStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
-	io.WriteString(w, "throw :continue")
+	vars := currentBreakVars()
+	if len(vars) == 0 {
+		io.WriteString(w, "throw :continue")
+		return
+	}
+	io.WriteString(w, "throw {:continue, {")
+	for i, v := range vars {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, sanitizeIdent(v))
+	}
+	io.WriteString(w, "}}")
 }
 
 // ReturnStmt returns from a function optionally with a value.
@@ -425,10 +437,33 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 		for i := 0; i < indent+2; i++ {
 			io.WriteString(w, "  ")
 		}
+		if len(wst.Vars) > 0 {
+			io.WriteString(w, "{")
+			for i, v := range wst.Vars {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				io.WriteString(w, sanitizeIdent(v))
+			}
+			io.WriteString(w, "} = ")
+		}
 		io.WriteString(w, "try do\n")
 		for _, st := range wst.Body {
 			st.emit(w, indent+3)
 			io.WriteString(w, "\n")
+		}
+		if len(wst.Vars) > 0 {
+			for i := 0; i < indent+3; i++ {
+				io.WriteString(w, "  ")
+			}
+			io.WriteString(w, "{")
+			for i, v := range wst.Vars {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				io.WriteString(w, sanitizeIdent(v))
+			}
+			io.WriteString(w, "}\n")
 		}
 		for i := 0; i < indent+2; i++ {
 			io.WriteString(w, "  ")
@@ -437,7 +472,25 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 		for i := 0; i < indent+3; i++ {
 			io.WriteString(w, "  ")
 		}
-		io.WriteString(w, ":continue -> nil\n")
+		if len(wst.Vars) > 0 {
+			io.WriteString(w, "{:continue, {")
+			for i, v := range wst.Vars {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				io.WriteString(w, sanitizeIdent(v))
+			}
+			io.WriteString(w, "}} -> {")
+			for i, v := range wst.Vars {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				io.WriteString(w, sanitizeIdent(v))
+			}
+			io.WriteString(w, "}\n")
+		} else {
+			io.WriteString(w, ":continue -> nil\n")
+		}
 		for i := 0; i < indent+2; i++ {
 			io.WriteString(w, "  ")
 		}
