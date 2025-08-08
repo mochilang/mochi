@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-08 09:37 UTC
+Last updated: 2025-08-08 10:06 UTC
 
 ## Algorithms Golden Test Checklist (1046/1077)
 | Index | Name | Status | Duration | Memory |
@@ -257,55 +257,55 @@ Last updated: 2025-08-08 09:37 UTC
 | 248 | data_structures/stacks/dijkstras_two_stack_algorithm | ✓ | 571.223ms | 33.3 KB |
 | 249 | data_structures/stacks/infix_to_postfix_conversion | ✓ | 571.223ms | 32.3 KB |
 | 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ | 571.223ms | 2.7 KB |
-| 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 571.223ms | 549.3 KB |
-| 252 | data_structures/stacks/lexicographical_numbers | ✓ | 571.223ms | 68.9 KB |
+| 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 571.223ms | 47.4 KB |
+| 252 | data_structures/stacks/lexicographical_numbers | ✓ | 571.223ms | 77.0 KB |
 | 253 | data_structures/stacks/next_greater_element | ✓ | 571.223ms | 333.7 KB |
-| 254 | data_structures/stacks/postfix_evaluation | ✓ | 571.223ms | 807.2 KB |
-| 255 | data_structures/stacks/prefix_evaluation | ✓ | 571.223ms | 44.7 KB |
+| 254 | data_structures/stacks/postfix_evaluation | ✓ | 571.223ms | 295.0 KB |
+| 255 | data_structures/stacks/prefix_evaluation | ✓ | 571.223ms | 36.2 KB |
 | 256 | data_structures/stacks/stack | ✓ | 571.223ms | 45.6 KB |
 | 257 | data_structures/stacks/stack_using_two_queues | ✓ | 571.223ms | 32.3 KB |
 | 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 571.223ms | 45.4 KB |
 | 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 571.223ms | 34.3 KB |
 | 260 | data_structures/stacks/stock_span_problem | ✓ | 571.223ms | 43.1 KB |
 | 261 | data_structures/suffix_tree/example/example_usage | ✓ | 571.223ms | 28.9 KB |
-| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 3.243ms | 282.9 KB |
-| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 1.107ms | 26.8 KB |
-| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 2.454ms | 46.6 KB |
-| 265 | data_structures/trie/radix_tree | ✓ | 2.011ms | 79.2 KB |
-| 266 | data_structures/trie/trie | ✓ | 2.013ms | 36.1 KB |
-| 267 | digital_image_processing/change_brightness | ✓ | 1.22ms | 19.9 KB |
-| 268 | digital_image_processing/change_contrast | ✓ | 2.472ms | 38.3 KB |
-| 269 | digital_image_processing/convert_to_negative | ✓ | 808µs | 17.9 KB |
-| 270 | digital_image_processing/dithering/burkes | ✓ | 2.343ms | 47.6 KB |
-| 271 | digital_image_processing/edge_detection/canny | ✓ | 2.685ms | 105.6 KB |
-| 272 | digital_image_processing/filters/bilateral_filter | ✓ | 1.614ms | 45.8 KB |
-| 273 | digital_image_processing/filters/convolve | ✓ | 2.353ms | 62.9 KB |
-| 274 | digital_image_processing/filters/gabor_filter | ✓ | 1.829ms | 560.4 KB |
-| 275 | digital_image_processing/filters/gaussian_filter | ✓ | 2.265ms | 65.1 KB |
-| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 2.866ms | 52.1 KB |
-| 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 2.244ms | 49.3 KB |
-| 278 | digital_image_processing/filters/median_filter | ✓ | 2.375ms | 29.5 KB |
-| 279 | digital_image_processing/filters/sobel_filter | ✓ | 5.041ms | 873.5 KB |
-| 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 1.354ms | 549.1 KB |
-| 281 | digital_image_processing/index_calculation | ✓ | 918µs | 20.9 KB |
-| 282 | digital_image_processing/morphological_operations/dilation_operation | ✓ | 2.178ms | 299.3 KB |
-| 283 | digital_image_processing/morphological_operations/erosion_operation | ✓ | 1.367ms | 30.4 KB |
-| 284 | digital_image_processing/resize/resize | ✓ | 1.521ms | 536.6 KB |
-| 285 | digital_image_processing/rotation/rotation | ✓ | 1.265ms | 30.1 KB |
-| 286 | digital_image_processing/sepia | ✓ | 844µs | 17.5 KB |
-| 287 | digital_image_processing/test_digital_image_processing | ✓ | 4.53ms | 340.0 KB |
+| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 571.223ms | 49.0 KB |
+| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 571.223ms | 26.4 KB |
+| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 571.223ms | 565.9 KB |
+| 265 | data_structures/trie/radix_tree | ✓ | 571.223ms | 587.1 KB |
+| 266 | data_structures/trie/trie | ✓ | 571.223ms | 93.1 KB |
+| 267 | digital_image_processing/change_brightness | ✓ | 571.223ms | 22.9 KB |
+| 268 | digital_image_processing/change_contrast | ✓ | 571.223ms | 42.0 KB |
+| 269 | digital_image_processing/convert_to_negative | ✓ | 571.223ms | 21.9 KB |
+| 270 | digital_image_processing/dithering/burkes | ✓ | 571.223ms | 865.8 KB |
+| 271 | digital_image_processing/edge_detection/canny | ✓ | 571.223ms | 256.0 KB |
+| 272 | digital_image_processing/filters/bilateral_filter | ✓ | 571.223ms | 85.1 KB |
+| 273 | digital_image_processing/filters/convolve | ✓ | 571.223ms | 146.2 KB |
+| 274 | digital_image_processing/filters/gabor_filter | ✓ | 571.223ms | 47.9 KB |
+| 275 | digital_image_processing/filters/gaussian_filter | ✓ | 571.223ms | 89.5 KB |
+| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 571.223ms | 619.3 KB |
+| 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 571.223ms | 116.5 KB |
+| 278 | digital_image_processing/filters/median_filter | ✓ | 571.223ms | 78.8 KB |
+| 279 | digital_image_processing/filters/sobel_filter | ✓ | 571.223ms | 1.3 MB |
+| 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 571.223ms | 92.0 KB |
+| 281 | digital_image_processing/index_calculation | ✓ | 571.223ms | 20.4 KB |
+| 282 | digital_image_processing/morphological_operations/dilation_operation | ✓ | 571.223ms | 855.2 KB |
+| 283 | digital_image_processing/morphological_operations/erosion_operation | ✓ | 571.223ms | 51.6 KB |
+| 284 | digital_image_processing/resize/resize | ✓ | 571.223ms | 544.4 KB |
+| 285 | digital_image_processing/rotation/rotation | ✓ | 571.223ms | 65.1 KB |
+| 286 | digital_image_processing/sepia | ✓ | 571.223ms | 22.5 KB |
+| 287 | digital_image_processing/test_digital_image_processing | ✓ | 571.223ms | 516.0 KB |
 | 288 | divide_and_conquer/closest_pair_of_points | ✓ | 571.223ms | 57.9 KB |
-| 289 | divide_and_conquer/convex_hull | ✓ | 7µs | 3.3 KB |
-| 290 | divide_and_conquer/heaps_algorithm | ✓ | 1.042ms | 580.1 KB |
-| 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 1.322ms | 275.4 KB |
-| 292 | divide_and_conquer/inversions | ✓ | 1.346ms | 44.0 KB |
-| 293 | divide_and_conquer/kth_order_statistic | ✓ | 1.755ms | 30.7 KB |
-| 294 | divide_and_conquer/max_difference_pair | ✓ | 1.353ms | 274.1 KB |
-| 295 | divide_and_conquer/max_subarray | ✓ | 1.348ms | 42.9 KB |
-| 296 | divide_and_conquer/mergesort | ✓ | 1.187ms | 31.3 KB |
-| 297 | divide_and_conquer/peak | ✓ | 1.003ms | 27.3 KB |
-| 298 | divide_and_conquer/power | ✓ | 1.926ms | 281.9 KB |
-| 299 | divide_and_conquer/strassen_matrix_multiplication | ✓ | 16.377ms | 573.4 KB |
+| 289 | divide_and_conquer/convex_hull | ✓ | 571.223ms | 2.7 KB |
+| 290 | divide_and_conquer/heaps_algorithm | ✓ | 571.223ms | 278.6 KB |
+| 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 571.223ms | 39.8 KB |
+| 292 | divide_and_conquer/inversions | ✓ | 571.223ms | 67.7 KB |
+| 293 | divide_and_conquer/kth_order_statistic | ✓ | 571.223ms | 35.9 KB |
+| 294 | divide_and_conquer/max_difference_pair | ✓ | 571.223ms | 539.2 KB |
+| 295 | divide_and_conquer/max_subarray | ✓ | 571.223ms | 50.8 KB |
+| 296 | divide_and_conquer/mergesort | ✓ | 571.223ms | 52.0 KB |
+| 297 | divide_and_conquer/peak | ✓ | 571.223ms | 30.6 KB |
+| 298 | divide_and_conquer/power | ✓ | 571.223ms | 281.3 KB |
+| 299 | divide_and_conquer/strassen_matrix_multiplication | ✓ | 571.223ms | 1.0 MB |
 | 300 | docs/conf | ✓ | 1.659ms | 528.8 KB |
 | 301 | dynamic_programming/abbreviation | ✓ | 2.075ms | 33.9 KB |
 | 302 | dynamic_programming/all_construct | ✓ | 2.679ms | 56.8 KB |
