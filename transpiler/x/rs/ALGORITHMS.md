@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-07 16:17 GMT+7
+Last updated: 2025-08-08 10:23 GMT+7
 
-## Algorithms Golden Test Checklist (185/1077)
+## Algorithms Golden Test Checklist (190/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -266,11 +266,11 @@ Last updated: 2025-08-07 16:17 GMT+7
 | 257 | data_structures/stacks/stack_using_two_queues |   |  |  |
 | 258 | data_structures/stacks/stack_with_doubly_linked_list |   |  |  |
 | 259 | data_structures/stacks/stack_with_singly_linked_list |   |  |  |
-| 260 | data_structures/stacks/stock_span_problem |   |  |  |
-| 261 | data_structures/suffix_tree/example/example_usage |   |  |  |
-| 262 | data_structures/suffix_tree/suffix_tree |   |  |  |
-| 263 | data_structures/suffix_tree/suffix_tree_node |   |  |  |
-| 264 | data_structures/suffix_tree/tests/test_suffix_tree |   |  |  |
+| 260 | data_structures/stacks/stock_span_problem | ✓ | 48µs | 2.1 MB |
+| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 58µs | 2.0 MB |
+| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 279µs | 2.1 MB |
+| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 70µs | 1.9 MB |
+| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 51µs | 1.8 MB |
 | 265 | data_structures/trie/radix_tree |   |  |  |
 | 266 | data_structures/trie/trie |   |  |  |
 | 267 | digital_image_processing/change_brightness |   |  |  |
