@@ -44,7 +44,7 @@ public class Main {
             while (j < mat[i_1].length) {
                 double v = mat[i_1][j];
                 double e = -(v * v) / (2.0 * variance);
-                row = ((double[])(java.util.stream.Stream.concat(java.util.Arrays.stream(row), java.util.Arrays.stream(new double[]{expApprox(e)})).toArray(double[]::new)));
+                row = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row), java.util.Arrays.stream(new double[]{expApprox(e)})).toArray()));
                 j = j + 1;
             }
             out = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(out), java.util.Arrays.stream(new double[][]{row})).toArray(double[][]::new)));
@@ -61,7 +61,7 @@ public class Main {
             double[] row_1 = ((double[])(new double[]{}));
             int j_1 = y - half;
             while (j_1 <= y + half) {
-                row_1 = ((double[])(java.util.stream.Stream.concat(java.util.Arrays.stream(row_1), java.util.Arrays.stream(new double[]{img[i_2][j_1]})).toArray(double[]::new)));
+                row_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row_1), java.util.Arrays.stream(new double[]{img[i_2][j_1]})).toArray()));
                 j_1 = j_1 + 1;
             }
             slice = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(slice), java.util.Arrays.stream(new double[][]{row_1})).toArray(double[][]::new)));
@@ -80,7 +80,7 @@ public class Main {
                 double di = ((Number)((i_3 - Math.floorDiv(kernel_size, 2)))).doubleValue();
                 double dj = ((Number)((j_2 - Math.floorDiv(kernel_size, 2)))).doubleValue();
                 double dist = sqrtApprox(di * di + dj * dj);
-                row_2 = ((double[])(java.util.stream.Stream.concat(java.util.Arrays.stream(row_2), java.util.Arrays.stream(new double[]{dist})).toArray(double[]::new)));
+                row_2 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row_2), java.util.Arrays.stream(new double[]{dist})).toArray()));
                 j_2 = j_2 + 1;
             }
             arr = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr), java.util.Arrays.stream(new double[][]{row_2})).toArray(double[][]::new)));
@@ -96,7 +96,7 @@ public class Main {
             double[] row_3 = ((double[])(new double[]{}));
             int j_3 = 0;
             while (j_3 < mat[i_4].length) {
-                row_3 = ((double[])(java.util.stream.Stream.concat(java.util.Arrays.stream(row_3), java.util.Arrays.stream(new double[]{mat[i_4][j_3] - value})).toArray(double[]::new)));
+                row_3 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row_3), java.util.Arrays.stream(new double[]{mat[i_4][j_3] - value})).toArray()));
                 j_3 = j_3 + 1;
             }
             res = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.Arrays.stream(new double[][]{row_3})).toArray(double[][]::new)));
@@ -112,7 +112,7 @@ public class Main {
             double[] row_4 = ((double[])(new double[]{}));
             int j_4 = 0;
             while (j_4 < a[i_5].length) {
-                row_4 = ((double[])(java.util.stream.Stream.concat(java.util.Arrays.stream(row_4), java.util.Arrays.stream(new double[]{a[i_5][j_4] * b[i_5][j_4]})).toArray(double[]::new)));
+                row_4 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row_4), java.util.Arrays.stream(new double[]{a[i_5][j_4] * b[i_5][j_4]})).toArray()));
                 j_4 = j_4 + 1;
             }
             res_1 = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_1), java.util.Arrays.stream(new double[][]{row_4})).toArray(double[][]::new)));
@@ -151,43 +151,9 @@ public class Main {
         return val;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            PI = 3.141592653589793;
-            img = ((double[][])(new double[][]{new double[]{0.2, 0.3, 0.4}, new double[]{0.3, 0.4, 0.5}, new double[]{0.4, 0.5, 0.6}}));
-            result = bilateral_filter(((double[][])(img)), 1.0, 1.0, 3);
-            System.out.println(result);
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        PI = 3.141592653589793;
+        img = ((double[][])(new double[][]{new double[]{0.2, 0.3, 0.4}, new double[]{0.3, 0.4, 0.5}, new double[]{0.4, 0.5, 0.6}}));
+        result = bilateral_filter(((double[][])(img)), 1.0, 1.0, 3);
+        System.out.println(result);
     }
 }

@@ -6,7 +6,7 @@ public class Main {
         int idx = 0;
         while (idx < tableSize) {
             String[][] empty = ((String[][])(new String[][]{}));
-            table = ((String[][][])(appendObj(table, empty)));
+            table = ((String[][][])(appendObj((String[][][])table, empty)));
             idx = idx + 1;
         }
         String[] base = ((String[])(new String[]{}));
@@ -30,7 +30,7 @@ table[0] = ((String[][])(new String[][]{base}));
                             }
                             combination = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(combination), java.util.stream.Stream.of(word)).toArray(String[]::new)));
                             int nextIndex = i + wordLen;
-table[nextIndex] = ((String[][])(appendObj(table[nextIndex], combination)));
+table[nextIndex] = ((String[][])(appendObj((String[][])table[nextIndex], combination)));
                             k = k + 1;
                         }
                     }
@@ -42,43 +42,9 @@ table[nextIndex] = ((String[][])(appendObj(table[nextIndex], combination)));
         return table[_runeLen(target)];
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(_p(allConstruct("jwajalapa", ((String[])(new String[]{"jwa", "j", "w", "a", "la", "lapa"})))));
-            System.out.println(_p(allConstruct("rajamati", ((String[])(new String[]{"s", "raj", "amat", "raja", "ma", "i", "t"})))));
-            System.out.println(_p(allConstruct("hexagonosaurus", ((String[])(new String[]{"h", "ex", "hex", "ag", "ago", "ru", "auru", "rus", "go", "no", "o", "s"})))));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println(_p(allConstruct("jwajalapa", ((String[])(new String[]{"jwa", "j", "w", "a", "la", "lapa"})))));
+        System.out.println(_p(allConstruct("rajamati", ((String[])(new String[]{"s", "raj", "amat", "raja", "ma", "i", "t"})))));
+        System.out.println(_p(allConstruct("hexagonosaurus", ((String[])(new String[]{"h", "ex", "hex", "ag", "ago", "ru", "auru", "rus", "go", "no", "o", "s"})))));
     }
 
     static <T> T[] appendObj(T[] arr, T v) {

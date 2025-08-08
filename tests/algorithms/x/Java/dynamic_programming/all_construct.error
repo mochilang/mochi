@@ -10,4 +10,4 @@ Exception in thread "main" java.lang.StringIndexOutOfBoundsException: Range [7, 
 	at java.base/java.lang.String.checkBoundsBeginEnd(String.java:4865)
 	at java.base/java.lang.String.substring(String.java:2834)
 	at Main.allConstruct(Main.java:21)
-	at Main.main(Main.java:48)
+	at Main.main(Main.java:45)

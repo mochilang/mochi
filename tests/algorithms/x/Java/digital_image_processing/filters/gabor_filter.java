@@ -69,49 +69,15 @@ public class Main {
                 row = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row), java.util.stream.DoubleStream.of(value)).toArray()));
                 x = x + 1;
             }
-            gabor = ((double[][])(appendObj(gabor, row)));
+            gabor = ((double[][])(appendObj((double[][])gabor, row)));
             y = y + 1;
         }
         return gabor;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            PI = 3.141592653589793;
-            kernel = ((double[][])(gabor_filter_kernel(3, 8.0, 0.0, 10.0, 0.0, 0.0)));
-            System.out.println(java.util.Arrays.deepToString(kernel));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        PI = 3.141592653589793;
+        kernel = ((double[][])(gabor_filter_kernel(3, 8.0, 0.0, 10.0, 0.0, 0.0)));
+        System.out.println(java.util.Arrays.deepToString(kernel));
     }
 
     static <T> T[] appendObj(T[] arr, T v) {

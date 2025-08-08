@@ -61,7 +61,7 @@ public class Main {
                 row = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row), java.util.stream.DoubleStream.of(0.0)).toArray()));
                 x = x + 1;
             }
-            m = ((double[][])(appendObj(m, row)));
+            m = ((double[][])(appendObj((double[][])m, row)));
             y = y + 1;
         }
         return m;
@@ -191,7 +191,7 @@ out_3[y_5][x_5] = mat[y_5][x_5] * factor;
                 row_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row_1), java.util.stream.DoubleStream.of(((double)(image[y0][x0])))).toArray()));
                 x0 = x0 + 1;
             }
-            img = ((double[][])(appendObj(img, row_1)));
+            img = ((double[][])(appendObj((double[][])img, row_1)));
             y0 = y0 + 1;
         }
         int[][] kernel_x = ((int[][])(new int[][]{new int[]{-1, 0, 1}, new int[]{-2, 0, 2}, new int[]{-1, 0, 1}}));
@@ -227,7 +227,7 @@ theta[y_6][x_6] = atan2Approx(gy, gx);
             String line = "";
             int x_7 = 0;
             while (x_7 < mat[y_7].length) {
-                line = line + _p(_geto(mat[y_7], x_7));
+                line = line + _p(_getd(mat[y_7], x_7));
                 if (x_7 < mat[y_7].length - 1) {
                     line = line + " ";
                 }
@@ -244,7 +244,7 @@ theta[y_6][x_6] = atan2Approx(gy, gx);
             String line_1 = "";
             int x_8 = 0;
             while (x_8 < mat[y_8].length) {
-                line_1 = line_1 + _p(_geto(mat[y_8], x_8));
+                line_1 = line_1 + _p(_getd(mat[y_8], x_8));
                 if (x_8 < mat[y_8].length - 1) {
                     line_1 = line_1 + " ";
                 }
@@ -264,42 +264,8 @@ theta[y_6][x_6] = atan2Approx(gy, gx);
         print_matrix_float(((double[][])(theta_1)));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            PI = 3.141592653589793;
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        PI = 3.141592653589793;
+        main();
     }
 
     static <T> T[] appendObj(T[] arr, T v) {
@@ -324,7 +290,7 @@ theta[y_6][x_6] = atan2Approx(gy, gx);
         return String.valueOf(v);
     }
 
-    static Object _geto(Object[] a, int i) {
+    static Double _getd(double[] a, int i) {
         return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }

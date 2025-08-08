@@ -31,7 +31,7 @@ public class Main {
                 row = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row), java.util.stream.IntStream.of(255 - img[y][x])).toArray()));
                 x = x + 1;
             }
-            out = ((int[][])(appendObj(out, row)));
+            out = ((int[][])(appendObj((int[][])out, row)));
             y = y + 1;
         }
         return out;
@@ -52,7 +52,7 @@ public class Main {
                 row_1 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row_1), java.util.stream.IntStream.of(v)).toArray()));
                 x_1 = x_1 + 1;
             }
-            out_1 = ((int[][])(appendObj(out_1, row_1)));
+            out_1 = ((int[][])(appendObj((int[][])out_1, row_1)));
             y_1 = y_1 + 1;
         }
         return out_1;
@@ -71,7 +71,7 @@ public class Main {
                 row_2 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row_2), java.util.stream.DoubleStream.of(0.0)).toArray()));
                 j = j + 1;
             }
-            k = ((double[][])(appendObj(k, row_2)));
+            k = ((double[][])(appendObj((double[][])k, row_2)));
             i = i + 1;
         }
         return k;
@@ -105,7 +105,7 @@ public class Main {
                 row_3 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row_3), java.util.stream.IntStream.of(((Number)(acc)).intValue())).toArray()));
                 x_2 = x_2 + 1;
             }
-            out_2 = ((int[][])(appendObj(out_2, row_3)));
+            out_2 = ((int[][])(appendObj((int[][])out_2, row_3)));
             y_2 = y_2 + 1;
         }
         return out_2;
@@ -159,7 +159,7 @@ arr[j_1 + 1] = tmp;
                 row_4 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row_4), java.util.stream.IntStream.of(sorted[Math.floorDiv(sorted.length, 2)])).toArray()));
                 x_3 = x_3 + 1;
             }
-            out_3 = ((int[][])(appendObj(out_3, row_4)));
+            out_3 = ((int[][])(appendObj((int[][])out_3, row_4)));
             y_3 = y_3 + 1;
         }
         return out_3;
@@ -204,7 +204,7 @@ arr[j_1 + 1] = tmp;
                 row_5 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row_5), java.util.stream.IntStream.of(iabs(sx) + iabs(sy))).toArray()));
                 x_4 = x_4 + 1;
             }
-            out_4 = ((int[][])(appendObj(out_4, row_5)));
+            out_4 = ((int[][])(appendObj((int[][])out_4, row_5)));
             y_4 = y_4 + 1;
         }
         return out_4;
@@ -270,62 +270,28 @@ arr[j_1 + 1] = tmp;
                 row_6 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row_6), java.util.stream.IntStream.of(local_binary_value(((int[][])(img)), x_5, y_5))).toArray()));
                 x_5 = x_5 + 1;
             }
-            out_5 = ((int[][])(appendObj(out_5, row_6)));
+            out_5 = ((int[][])(appendObj((int[][])out_5, row_6)));
             y_5 = y_5 + 1;
         }
         return out_5;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            img = ((int[][])(new int[][]{new int[]{52, 55, 61}, new int[]{62, 59, 55}, new int[]{63, 65, 66}}));
-            negative = ((int[][])(convert_to_negative(((int[][])(img)))));
-            contrast = ((int[][])(change_contrast(((int[][])(img)), 110)));
-            kernel = ((double[][])(gen_gaussian_kernel(3, 1.0)));
-            laplace = ((double[][])(new double[][]{new double[]{0.25, 0.5, 0.25}, new double[]{0.5, -3.0, 0.5}, new double[]{0.25, 0.5, 0.25}}));
-            convolved = ((int[][])(img_convolve(((int[][])(img)), ((double[][])(laplace)))));
-            medianed = ((int[][])(median_filter(((int[][])(img)), 3)));
-            sobel = ((int[][])(sobel_filter(((int[][])(img)))));
-            lbp_img = ((int[][])(local_binary_pattern(((int[][])(img)))));
-            System.out.println(java.util.Arrays.deepToString(negative));
-            System.out.println(java.util.Arrays.deepToString(contrast));
-            System.out.println(java.util.Arrays.deepToString(kernel));
-            System.out.println(java.util.Arrays.deepToString(convolved));
-            System.out.println(java.util.Arrays.deepToString(medianed));
-            System.out.println(java.util.Arrays.deepToString(sobel));
-            System.out.println(java.util.Arrays.deepToString(lbp_img));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        img = ((int[][])(new int[][]{new int[]{52, 55, 61}, new int[]{62, 59, 55}, new int[]{63, 65, 66}}));
+        negative = ((int[][])(convert_to_negative(((int[][])(img)))));
+        contrast = ((int[][])(change_contrast(((int[][])(img)), 110)));
+        kernel = ((double[][])(gen_gaussian_kernel(3, 1.0)));
+        laplace = ((double[][])(new double[][]{new double[]{0.25, 0.5, 0.25}, new double[]{0.5, -3.0, 0.5}, new double[]{0.25, 0.5, 0.25}}));
+        convolved = ((int[][])(img_convolve(((int[][])(img)), ((double[][])(laplace)))));
+        medianed = ((int[][])(median_filter(((int[][])(img)), 3)));
+        sobel = ((int[][])(sobel_filter(((int[][])(img)))));
+        lbp_img = ((int[][])(local_binary_pattern(((int[][])(img)))));
+        System.out.println(java.util.Arrays.deepToString(negative));
+        System.out.println(java.util.Arrays.deepToString(contrast));
+        System.out.println(java.util.Arrays.deepToString(kernel));
+        System.out.println(java.util.Arrays.deepToString(convolved));
+        System.out.println(java.util.Arrays.deepToString(medianed));
+        System.out.println(java.util.Arrays.deepToString(sobel));
+        System.out.println(java.util.Arrays.deepToString(lbp_img));
     }
 
     static <T> T[] appendObj(T[] arr, T v) {

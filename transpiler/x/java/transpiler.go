@@ -2986,6 +2986,12 @@ func (u *UnionAllExpr) emit(w io.Writer) {
 	if elem == "" {
 		elem = "Object"
 	}
+	if elem == "float" || elem == "float64" {
+		elem = "double"
+	}
+	if elem == "bool" {
+		elem = "boolean"
+	}
 	jt := javaType(elem)
 	if jt == "" {
 		jt = elem
@@ -5677,6 +5683,20 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if name == "str" && len(args) == 1 {
 			needP = true
 			arg := args[0]
+			// Unwrap simple casts to inspect inner index expressions.
+			var wrap func(Expr) Expr
+			switch a := arg.(type) {
+			case *IntCastExpr:
+				arg = a.Value
+				wrap = func(e Expr) Expr { return &IntCastExpr{Value: e} }
+			case *FloatCastExpr:
+				arg = a.Value
+				wrap = func(e Expr) Expr { return &FloatCastExpr{Value: e} }
+			case *CastExpr:
+				t := a.Type
+				arg = a.Value
+				wrap = func(e Expr) Expr { return &CastExpr{Type: t, Value: e} }
+			}
 			if ix, ok := arg.(*IndexExpr); ok && isArrayExpr(ix.Target) {
 				et := arrayElemType(ix.Target)
 				if et == "" {
@@ -5688,20 +5708,28 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 						et = "double"
 					}
 				}
+				var inner Expr
 				switch et {
 				case "int":
 					needArrGetI = true
-					arg = &CallExpr{Func: "_geti", Args: []Expr{ix.Target, ix.Index}}
+					inner = &CallExpr{Func: "_geti", Args: []Expr{ix.Target, ix.Index}}
 				case "double":
 					needArrGetD = true
-					arg = &CallExpr{Func: "_getd", Args: []Expr{ix.Target, ix.Index}}
+					inner = &CallExpr{Func: "_getd", Args: []Expr{ix.Target, ix.Index}}
 				case "boolean":
 					needArrGetB = true
-					arg = &CallExpr{Func: "_getb", Args: []Expr{ix.Target, ix.Index}}
+					inner = &CallExpr{Func: "_getb", Args: []Expr{ix.Target, ix.Index}}
 				default:
 					needArrGetD = true
-					arg = &CallExpr{Func: "_getd", Args: []Expr{ix.Target, ix.Index}}
+					inner = &CallExpr{Func: "_getd", Args: []Expr{ix.Target, ix.Index}}
 				}
+				if wrap != nil {
+					inner = wrap(inner)
+				}
+				arg = inner
+			} else if wrap != nil {
+				// Reapply cast if no index expression matched.
+				arg = wrap(arg)
 			}
 			return &CallExpr{Func: "_p", Args: []Expr{arg}}, nil
 		}

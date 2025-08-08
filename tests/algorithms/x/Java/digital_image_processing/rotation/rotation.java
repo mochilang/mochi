@@ -28,9 +28,9 @@ public class Main {
         double adj21 = b * g - a * h;
         double adj22 = a * e - b * d;
         double[][] inv = ((double[][])(new double[][]{}));
-        inv = ((double[][])(appendObj(inv, new double[]{adj00 / det, adj01 / det, adj02 / det})));
-        inv = ((double[][])(appendObj(inv, new double[]{adj10 / det, adj11 / det, adj12 / det})));
-        inv = ((double[][])(appendObj(inv, new double[]{adj20 / det, adj21 / det, adj22 / det})));
+        inv = ((double[][])(appendObj((double[][])inv, new double[]{adj00 / det, adj01 / det, adj02 / det})));
+        inv = ((double[][])(appendObj((double[][])inv, new double[]{adj10 / det, adj11 / det, adj12 / det})));
+        inv = ((double[][])(appendObj((double[][])inv, new double[]{adj20 / det, adj21 / det, adj22 / det})));
         return inv;
     }
 
@@ -55,7 +55,7 @@ public class Main {
                 row = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row), java.util.stream.IntStream.of(value)).toArray()));
                 c_1 = c_1 + 1;
             }
-            result = ((int[][])(appendObj(result, row)));
+            result = ((int[][])(appendObj((int[][])result, row)));
             r = r + 1;
         }
         return result;
@@ -100,45 +100,11 @@ out[sy][sx] = img[y][x];
         return out;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            img = ((int[][])(new int[][]{new int[]{1, 2, 3}, new int[]{4, 5, 6}, new int[]{7, 8, 9}}));
-            pts1 = ((double[][])(new double[][]{new double[]{0.0, 0.0}, new double[]{2.0, 0.0}, new double[]{0.0, 2.0}}));
-            pts2 = ((double[][])(new double[][]{new double[]{0.0, 2.0}, new double[]{0.0, 0.0}, new double[]{2.0, 2.0}}));
-            rotated = ((int[][])(get_rotation(((int[][])(img)), ((double[][])(pts1)), ((double[][])(pts2)), 3, 3)));
-            System.out.println(_p(rotated));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        img = ((int[][])(new int[][]{new int[]{1, 2, 3}, new int[]{4, 5, 6}, new int[]{7, 8, 9}}));
+        pts1 = ((double[][])(new double[][]{new double[]{0.0, 0.0}, new double[]{2.0, 0.0}, new double[]{0.0, 2.0}}));
+        pts2 = ((double[][])(new double[][]{new double[]{0.0, 2.0}, new double[]{0.0, 0.0}, new double[]{2.0, 2.0}}));
+        rotated = ((int[][])(get_rotation(((int[][])(img)), ((double[][])(pts1)), ((double[][])(pts2)), 3, 3)));
+        System.out.println(_p(rotated));
     }
 
     static <T> T[] appendObj(T[] arr, T v) {

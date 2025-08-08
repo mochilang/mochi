@@ -60,7 +60,7 @@ public class Main {
                 row = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row), java.util.stream.DoubleStream.of(0.0)).toArray()));
                 j = j + 1;
             }
-            out = ((double[][])(appendObj(out, row)));
+            out = ((double[][])(appendObj((double[][])out, row)));
             i_1 = i_1 + 1;
         }
         return out;
@@ -119,7 +119,7 @@ dir[i_2][j_1] = deg(atan2Approx(gyy, gxx)) + 180.0;
             }
             i_2 = i_2 + 1;
         }
-        return new java.util.LinkedHashMap<String, double[][]>(java.util.Map.ofEntries(java.util.Map.entry("grad", ((double[][])(grad))), java.util.Map.entry("dir", ((double[][])(dir)))));
+        return ((java.util.Map<String,double[][]>)(new java.util.LinkedHashMap<String, double[][]>(java.util.Map.ofEntries(java.util.Map.entry("grad", ((double[][])(grad))), java.util.Map.entry("dir", ((double[][])(dir)))))));
     }
 
     static double[][] suppress_non_maximum(int h, int w, double[][] direction, double[][] grad) {
@@ -210,7 +210,7 @@ img[r_3][c_2] = 0.0;
             int c_3 = 0;
             String line = "";
             while (c_3 < img[r_4].length) {
-                line = line + _p(_geto(img[r_4], c_3)) + " ";
+                line = line + _p(_getd(img[r_4], c_3)) + " ";
                 c_3 = c_3 + 1;
             }
             System.out.println(line);
@@ -218,47 +218,13 @@ img[r_3][c_2] = 0.0;
         }
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            PI = 3.141592653589793;
-            GAUSSIAN_KERNEL = ((double[][])(new double[][]{new double[]{0.0625, 0.125, 0.0625}, new double[]{0.125, 0.25, 0.125}, new double[]{0.0625, 0.125, 0.0625}}));
-            SOBEL_GX = ((double[][])(new double[][]{new double[]{-1.0, 0.0, 1.0}, new double[]{-2.0, 0.0, 2.0}, new double[]{-1.0, 0.0, 1.0}}));
-            SOBEL_GY = ((double[][])(new double[][]{new double[]{1.0, 2.0, 1.0}, new double[]{0.0, 0.0, 0.0}, new double[]{-1.0, -2.0, -1.0}}));
-            image = ((double[][])(new double[][]{new double[]{0.0, 0.0, 0.0, 0.0, 0.0}, new double[]{0.0, 255.0, 255.0, 255.0, 0.0}, new double[]{0.0, 255.0, 255.0, 255.0, 0.0}, new double[]{0.0, 255.0, 255.0, 255.0, 0.0}, new double[]{0.0, 0.0, 0.0, 0.0, 0.0}}));
-            edges = ((double[][])(canny(((double[][])(image)), 20.0, 40.0, 128.0, 255.0)));
-            print_image(((double[][])(edges)));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        PI = 3.141592653589793;
+        GAUSSIAN_KERNEL = ((double[][])(new double[][]{new double[]{0.0625, 0.125, 0.0625}, new double[]{0.125, 0.25, 0.125}, new double[]{0.0625, 0.125, 0.0625}}));
+        SOBEL_GX = ((double[][])(new double[][]{new double[]{-1.0, 0.0, 1.0}, new double[]{-2.0, 0.0, 2.0}, new double[]{-1.0, 0.0, 1.0}}));
+        SOBEL_GY = ((double[][])(new double[][]{new double[]{1.0, 2.0, 1.0}, new double[]{0.0, 0.0, 0.0}, new double[]{-1.0, -2.0, -1.0}}));
+        image = ((double[][])(new double[][]{new double[]{0.0, 0.0, 0.0, 0.0, 0.0}, new double[]{0.0, 255.0, 255.0, 255.0, 0.0}, new double[]{0.0, 255.0, 255.0, 255.0, 0.0}, new double[]{0.0, 255.0, 255.0, 255.0, 0.0}, new double[]{0.0, 0.0, 0.0, 0.0, 0.0}}));
+        edges = ((double[][])(canny(((double[][])(image)), 20.0, 40.0, 128.0, 255.0)));
+        print_image(((double[][])(edges)));
     }
 
     static <T> T[] appendObj(T[] arr, T v) {
@@ -283,7 +249,7 @@ img[r_3][c_2] = 0.0;
         return String.valueOf(v);
     }
 
-    static Object _geto(Object[] a, int i) {
+    static Double _getd(double[] a, int i) {
         return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }
