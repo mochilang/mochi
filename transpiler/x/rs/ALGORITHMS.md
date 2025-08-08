@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-08 16:58 GMT+7
+Last updated: 2025-08-08 17:29 GMT+7
 
-## Algorithms Golden Test Checklist (211/1077)
+## Algorithms Golden Test Checklist (212/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -238,7 +238,7 @@ Last updated: 2025-08-08 16:58 GMT+7
 | 229 | data_structures/linked_list/has_loop | ✓ | 99µs | 2.1 MB |
 | 230 | data_structures/linked_list/is_palindrome | ✓ | 61µs | 2.0 MB |
 | 231 | data_structures/linked_list/merge_two_lists | ✓ | 83µs | 2.1 MB |
-| 232 | data_structures/linked_list/middle_element_of_linked_list |   |  |  |
+| 232 | data_structures/linked_list/middle_element_of_linked_list | ✓ | 61µs | 2.2 MB |
 | 233 | data_structures/linked_list/print_reverse |   |  |  |
 | 234 | data_structures/linked_list/reverse_k_group |   |  |  |
 | 235 | data_structures/linked_list/rotate_to_the_right |   |  |  |
