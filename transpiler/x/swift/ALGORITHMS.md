@@ -2,8 +2,8 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 404/1077
-Last updated: 2025-08-08 15:49 +0700
+Completed programs: 408/1077
+Last updated: 2025-08-08 16:17 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -228,10 +228,10 @@ Last updated: 2025-08-08 15:49 +0700
 | 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 908µs | 3.2 MB |
 | 220 | data_structures/kd_tree/kd_node | ✓ | 995µs | 3.5 MB |
 | 221 | data_structures/kd_tree/nearest_neighbour_search | ✓ | 997µs | 3.5 MB |
-| 222 | data_structures/kd_tree/tests/test_kdtree |   |  |  |
-| 223 | data_structures/linked_list/circular_linked_list |   |  |  |
-| 224 | data_structures/linked_list/deque_doubly |   |  |  |
-| 225 | data_structures/linked_list/doubly_linked_list |   |  |  |
+| 222 | data_structures/kd_tree/tests/test_kdtree | ✓ | 345µs | 3.2 MB |
+| 223 | data_structures/linked_list/circular_linked_list | ✓ | 350µs | 3.1 MB |
+| 224 | data_structures/linked_list/deque_doubly | ✓ | 461µs | 3.2 MB |
+| 225 | data_structures/linked_list/doubly_linked_list | ✓ | 325µs | 2.9 MB |
 | 226 | data_structures/linked_list/doubly_linked_list_two |   |  |  |
 | 227 | data_structures/linked_list/floyds_cycle_detection |   |  |  |
 | 228 | data_structures/linked_list/from_sequence |   |  |  |
@@ -267,7 +267,7 @@ Last updated: 2025-08-08 15:49 +0700
 | 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 194µs | 3.2 MB |
 | 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 264µs | 3.1 MB |
 | 260 | data_structures/stacks/stock_span_problem | ✓ | 461µs | 3.2 MB |
-| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 569µs | 3.2 MB |
+| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 362µs | 3.2 MB |
 | 262 | data_structures/suffix_tree/suffix_tree | ✓ | 1.104ms | 3.1 MB |
 | 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 927µs | 3.1 MB |
 | 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 454µs | 3.2 MB |
