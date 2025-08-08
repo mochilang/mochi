@@ -1,3 +1,0 @@
-exit status 1
-/workspace/mochi/tests/algorithms/transpiler/Zig/ciphers/affine_cipher.zig:28:9: error: name shadows primitive 'u1'
-/workspace/mochi/tests/algorithms/transpiler/Zig/ciphers/affine_cipher.zig:28:9: note: consider using @"u1" to disambiguate

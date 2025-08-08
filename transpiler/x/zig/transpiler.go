@@ -157,6 +157,32 @@ func zigIdent(s string) string {
 	if zigKeywords[ident] {
 		return ident + "_"
 	}
+	if len(ident) > 1 {
+		if ident[0] == 'u' || ident[0] == 'i' {
+			allDigits := true
+			for _, c := range ident[1:] {
+				if c < '0' || c > '9' {
+					allDigits = false
+					break
+				}
+			}
+			if allDigits {
+				return ident + "_"
+			}
+		}
+		if ident[0] == 'f' {
+			switch ident {
+			case "f16", "f32", "f64", "f80", "f128":
+				return ident + "_"
+			}
+		}
+		if ident == "usize" || ident == "isize" {
+			return ident + "_"
+		}
+		if strings.HasPrefix(ident, "c_") {
+			return ident + "_"
+		}
+	}
 	return ident
 }
 
@@ -3565,8 +3591,19 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			args[i] = ex
 		}
-		if _, ok := funcReturns[p.Call.Func]; ok {
-			return &CallExpr{Func: p.Call.Func, Args: args}, nil
+		name := p.Call.Func
+		if name == "main" && mainFuncName != "" {
+			name = mainFuncName
+		}
+		if extra, ok := nestedFunArgs[name]; ok {
+			pre := make([]Expr, len(extra))
+			for i, n := range extra {
+				pre[i] = &VarRef{Name: resolveAlias(n)}
+			}
+			args = append(pre, args...)
+		}
+		if _, ok := funcReturns[name]; ok {
+			return &CallExpr{Func: name, Args: args}, nil
 		}
 		switch p.Call.Func {
 		case "now":
@@ -3732,17 +3769,6 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				}
 				return &AppendExpr{List: args[0], Value: args[1], ElemType: zigTypeFromExpr(args[1])}, nil
 			}
-		}
-		name := p.Call.Func
-		if name == "main" && mainFuncName != "" {
-			name = mainFuncName
-		}
-		if extra, ok := nestedFunArgs[name]; ok {
-			pre := make([]Expr, len(extra))
-			for i, n := range extra {
-				pre[i] = &VarRef{Name: resolveAlias(n)}
-			}
-			args = append(pre, args...)
 		}
 		return &CallExpr{Func: name, Args: args}, nil
 	case p.Lit != nil:
