@@ -1,0 +1,5 @@
+/workspace/mochi/tests/algorithms/x/Erlang/project_euler/problem_041/sol1.erl:139:22: Warning: variable 'Primes_4' exported from 'case' (line 116, column 9)
+%  139| {Current, I_6, Nums, Primes_4, Res_5} = Fun_3(Current, I_5, Nums, Primes_4, Res_4),
+%     |                      ^
+
+"solution() = 7652413"

@@ -5427,8 +5427,9 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 		path := ""
 		if p.Load.Path != nil {
 			path = *p.Load.Path
+			root := repoRootFrom(ctx.baseDir)
 			if strings.HasPrefix(path, "tests/") {
-				path = filepath.Join(repoRoot(), path)
+				path = filepath.Join(root, path)
 			} else if !filepath.IsAbs(path) {
 				cand := filepath.Join(ctx.baseDir, path)
 				if _, err := os.Stat(cand); err == nil {
@@ -5438,7 +5439,7 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 					for strings.HasPrefix(clean, "../") {
 						clean = strings.TrimPrefix(clean, "../")
 					}
-					path = filepath.Join(repoRoot(), "tests", clean)
+					path = filepath.Join(root, "tests", clean)
 				}
 			}
 		}
@@ -6537,12 +6538,8 @@ func (p *Program) Emit() []byte {
 	return buf.Bytes()
 }
 
-func repoRoot() string {
-	dir, err := os.Getwd()
-	if err != nil {
-		return ""
-	}
-	for i := 0; i < 10; i++ {
+func repoRootFrom(dir string) string {
+	for i := 0; i < 25; i++ {
 		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
 			return dir
 		}
@@ -6553,6 +6550,14 @@ func repoRoot() string {
 		dir = parent
 	}
 	return ""
+}
+
+func repoRoot() string {
+	dir, err := os.Getwd()
+	if err != nil {
+		return ""
+	}
+	return repoRootFrom(dir)
 }
 
 func version() string {
