@@ -899,6 +899,9 @@ func (ix *IndexExpr) emitWithCast(w io.Writer, asTarget bool) {
 			}
 		} else if isString {
 			io.WriteString(w, ".toString()")
+			if ix.Type == "Int" {
+				io.WriteString(w, ".toInt()")
+			}
 		} else if isList && ix.Type != "" && (baseType == "" || strings.Contains(baseType, "Any")) {
 			io.WriteString(w, " as "+ix.Type)
 		} else if ix.ForceBang {
@@ -1090,6 +1093,9 @@ func (c *CastExpr) emit(w io.Writer) {
 		switch t := guessType(c.Value); t {
 		case "Any", "Any?", "":
 			io.WriteString(w, " as Int")
+		case "String":
+			useHelper("importBigInt")
+			io.WriteString(w, ".toBigInteger().toInt()")
 		default:
 			io.WriteString(w, ".toInt()")
 		}
@@ -3670,6 +3676,15 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				}
 				_ = i
 			}
+			if st.Fun.Name == "panic" {
+				ret = "Nothing"
+				if len(st.Fun.Params) > 0 {
+					arg := st.Fun.Params[0].Name
+					body = append(body, &ExprStmt{Expr: &RawExpr{Code: fmt.Sprintf("throw RuntimeException(%s)", arg)}})
+				} else {
+					body = append(body, &ExprStmt{Expr: &RawExpr{Code: "throw RuntimeException(\"panic\")"}})
+				}
+			}
 			p.Funcs = append(p.Funcs, &FuncDef{Name: fname, Params: params, Ret: ret, Body: body})
 			funcRets[fname] = ret
 		case st.If != nil:
@@ -5504,12 +5519,25 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				args[i] = ex
 			}
 			if fe, ok := expr.(*FieldExpr); ok {
-				if vr, ok2 := fe.Receiver.(*VarRef); ok2 && vr.Name == "stdout" {
-					if fe.Name == "write" && len(args) == 1 {
-						expr = &CallExpr{Func: "print", Args: args}
-					} else if fe.Name == "writeln" && len(args) == 1 {
-						expr = &CallExpr{Func: "println", Args: args}
-					} else {
+				if fe.Name == "join" && len(args) == 1 {
+					expr = &InvokeExpr{Callee: &FieldExpr{Receiver: fe.Receiver, Name: "joinToString"}, Args: args}
+				} else if vr, ok2 := fe.Receiver.(*VarRef); ok2 {
+					switch vr.Name {
+					case "stdout":
+						if fe.Name == "write" && len(args) == 1 {
+							expr = &CallExpr{Func: "print", Args: args}
+						} else if fe.Name == "writeln" && len(args) == 1 {
+							expr = &CallExpr{Func: "println", Args: args}
+						} else {
+							expr = &InvokeExpr{Callee: expr, Args: args}
+						}
+					case "Object":
+						if fe.Name == "keys" && len(args) == 1 {
+							expr = &FieldExpr{Receiver: args[0], Name: "keys"}
+						} else {
+							expr = &InvokeExpr{Callee: expr, Args: args}
+						}
+					default:
 						expr = &InvokeExpr{Callee: expr, Args: args}
 					}
 				} else {
@@ -5628,6 +5656,15 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			return &KeysExpr{Map: m}, nil
+		case "Object.keys":
+			if len(p.Call.Args) != 1 {
+				return nil, fmt.Errorf("Object.keys expects 1 arg")
+			}
+			m, err := convertExpr(env, p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &FieldExpr{Receiver: m, Name: "keys"}, nil
 		case "exists":
 			if len(p.Call.Args) != 1 {
 				return nil, fmt.Errorf("exists expects 1 arg")

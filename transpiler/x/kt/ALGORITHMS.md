@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-08 10:21 GMT+7
+Last updated: 2025-08-08 11:29 GMT+7
 
-## Algorithms Golden Test Checklist (90/1077)
+## Algorithms Golden Test Checklist (139/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 30.54ms | 124.45KiB |
@@ -110,57 +110,57 @@ Last updated: 2025-08-08 10:21 GMT+7
 | 101 | ciphers/rsa_key_generator | ✓ | 6.44ms | 133.55KiB |
 | 102 | ciphers/running_key_cipher | ✓ | 6.88ms | 134.18KiB |
 | 103 | ciphers/shuffled_shift_cipher |   |  |  |
-| 104 | ciphers/simple_keyword_cypher |   |  |  |
-| 105 | ciphers/simple_substitution_cipher |   |  |  |
-| 106 | ciphers/transposition_cipher |   |  |  |
-| 107 | ciphers/transposition_cipher_encrypt_decrypt_file |   |  |  |
-| 108 | ciphers/trifid_cipher |   |  |  |
-| 109 | ciphers/vernam_cipher |   |  |  |
-| 110 | ciphers/vigenere_cipher |   |  |  |
-| 111 | ciphers/xor_cipher |   |  |  |
-| 112 | computer_vision/cnn_classification |   |  |  |
-| 113 | computer_vision/flip_augmentation |   |  |  |
-| 114 | computer_vision/haralick_descriptors |   |  |  |
-| 115 | computer_vision/harris_corner |   |  |  |
-| 116 | computer_vision/horn_schunck |   |  |  |
-| 117 | computer_vision/intensity_based_segmentation |   |  |  |
-| 118 | computer_vision/mean_threshold |   |  |  |
-| 119 | computer_vision/mosaic_augmentation |   |  |  |
-| 120 | computer_vision/pooling_functions |   |  |  |
-| 121 | conversions/astronomical_length_scale_conversion |   |  |  |
-| 122 | conversions/binary_to_decimal |   |  |  |
-| 123 | conversions/binary_to_hexadecimal |   |  |  |
-| 124 | conversions/binary_to_octal |   |  |  |
-| 125 | conversions/convert_number_to_words |   |  |  |
-| 126 | conversions/decimal_to_any |   |  |  |
-| 127 | conversions/decimal_to_binary |   |  |  |
-| 128 | conversions/decimal_to_hexadecimal |   |  |  |
-| 129 | conversions/decimal_to_octal |   |  |  |
-| 130 | conversions/energy_conversions |   |  |  |
-| 131 | conversions/excel_title_to_column |   |  |  |
-| 132 | conversions/hex_to_bin |   |  |  |
-| 133 | conversions/hexadecimal_to_decimal |   |  |  |
-| 134 | conversions/ipv4_conversion |   |  |  |
-| 135 | conversions/length_conversion |   |  |  |
-| 136 | conversions/molecular_chemistry |   |  |  |
-| 137 | conversions/octal_to_binary |   |  |  |
-| 138 | conversions/octal_to_decimal |   |  |  |
-| 139 | conversions/octal_to_hexadecimal |   |  |  |
-| 140 | conversions/prefix_conversions |   |  |  |
-| 141 | conversions/prefix_conversions_string |   |  |  |
-| 142 | conversions/pressure_conversions |   |  |  |
-| 143 | conversions/rectangular_to_polar |   |  |  |
-| 144 | conversions/rgb_cmyk_conversion |   |  |  |
-| 145 | conversions/rgb_hsv_conversion |   |  |  |
-| 146 | conversions/roman_numerals |   |  |  |
-| 147 | conversions/speed_conversions |   |  |  |
-| 148 | conversions/temperature_conversions |   |  |  |
-| 149 | conversions/time_conversions |   |  |  |
-| 150 | conversions/volume_conversions |   |  |  |
-| 151 | conversions/weight_conversion |   |  |  |
-| 152 | data_compression/burrows_wheeler |   |  |  |
+| 104 | ciphers/simple_keyword_cypher | ✓ | 8.26ms | 134.09KiB |
+| 105 | ciphers/simple_substitution_cipher | ✓ | 11.79ms | 131.07KiB |
+| 106 | ciphers/transposition_cipher | ✓ | 29.15ms | 103.14KiB |
+| 107 | ciphers/transposition_cipher_encrypt_decrypt_file | ✓ | 21.06ms | 127.77KiB |
+| 108 | ciphers/trifid_cipher | ✓ | 12.69ms | 123.62KiB |
+| 109 | ciphers/vernam_cipher | ✓ | 8.08ms | 134.07KiB |
+| 110 | ciphers/vigenere_cipher | ✓ | 11.37ms | 134.03KiB |
+| 111 | ciphers/xor_cipher | ✓ | 9.58ms | 380.01KiB |
+| 112 | computer_vision/cnn_classification | ✓ | 9.74ms | 124.27KiB |
+| 113 | computer_vision/flip_augmentation | ✓ | 12.39ms | 113.19KiB |
+| 114 | computer_vision/haralick_descriptors | ✓ | 10.05ms | 124.48KiB |
+| 115 | computer_vision/harris_corner | ✓ | 7.91ms | 134.12KiB |
+| 116 | computer_vision/horn_schunck | ✓ | 31.20ms | 121.77KiB |
+| 117 | computer_vision/intensity_based_segmentation | ✓ | 24.11ms | 123.22KiB |
+| 118 | computer_vision/mean_threshold | ✓ | 7.32ms | 134.19KiB |
+| 119 | computer_vision/mosaic_augmentation | ✓ | 48.11ms | 60.12KiB |
+| 120 | computer_vision/pooling_functions | ✓ | 24.24ms | 123.12KiB |
+| 121 | conversions/astronomical_length_scale_conversion | ✓ | 10.47ms | 124.01KiB |
+| 122 | conversions/binary_to_decimal | ✓ | 11.54ms | 131.12KiB |
+| 123 | conversions/binary_to_hexadecimal | ✓ | 14.34ms | 122.13KiB |
+| 124 | conversions/binary_to_octal | ✓ | 12.74ms | 131.16KiB |
+| 125 | conversions/convert_number_to_words | ✓ | 9.00ms | 133.09KiB |
+| 126 | conversions/decimal_to_any | ✓ | 12.95ms | 130.34KiB |
+| 127 | conversions/decimal_to_binary | ✓ | 8.84ms | 133.88KiB |
+| 128 | conversions/decimal_to_hexadecimal | ✓ | 9.31ms | 133.98KiB |
+| 129 | conversions/decimal_to_octal | ✓ | 8.79ms | 133.98KiB |
+| 130 | conversions/energy_conversions | ✓ | 8.99ms | 124.21KiB |
+| 131 | conversions/excel_title_to_column | ✓ | 12.26ms | 131.28KiB |
+| 132 | conversions/hex_to_bin | ✓ | 12.21ms | 122.01KiB |
+| 133 | conversions/hexadecimal_to_decimal | ✓ | 9.88ms | 130.94KiB |
+| 134 | conversions/ipv4_conversion | error |  |  |
+| 135 | conversions/length_conversion | ✓ | 12.06ms | 120.75KiB |
+| 136 | conversions/molecular_chemistry | ✓ | 9.13ms | 134.14KiB |
+| 137 | conversions/octal_to_binary | ✓ | 12.58ms | 130.25KiB |
+| 138 | conversions/octal_to_decimal | ✓ | 13.18ms | 122.45KiB |
+| 139 | conversions/octal_to_hexadecimal | ✓ | 7.16ms | 133.82KiB |
+| 140 | conversions/prefix_conversions | ✓ | 8.75ms | 124.14KiB |
+| 141 | conversions/prefix_conversions_string | ✓ | 10.31ms | 124.22KiB |
+| 142 | conversions/pressure_conversions | ✓ | 10.72ms | 124.27KiB |
+| 143 | conversions/rectangular_to_polar | ✓ | 23.93ms | 113.98KiB |
+| 144 | conversions/rgb_cmyk_conversion | ✓ | 25.23ms | 123.84KiB |
+| 145 | conversions/rgb_hsv_conversion | ✓ | 9.97ms | 123.84KiB |
+| 146 | conversions/roman_numerals | ✓ | 9.77ms | 134.12KiB |
+| 147 | conversions/speed_conversions | ✓ | 9.12ms | 124.08KiB |
+| 148 | conversions/temperature_conversions | ✓ | 9.52ms | 124.38KiB |
+| 149 | conversions/time_conversions | ✓ | 7.61ms | 124.20KiB |
+| 150 | conversions/volume_conversions | ✓ | 9.14ms | 124.12KiB |
+| 151 | conversions/weight_conversion | ✓ | 11.94ms | 124.27KiB |
+| 152 | data_compression/burrows_wheeler | ✓ | 8.98ms | 134.08KiB |
 | 153 | data_compression/huffman |   |  |  |
-| 154 | data_compression/lempel_ziv |   |  |  |
+| 154 | data_compression/lempel_ziv | ✓ | 27.27ms | 120.68KiB |
 | 155 | data_compression/lempel_ziv_decompress |   |  |  |
 | 156 | data_compression/lz77 |   |  |  |
 | 157 | data_compression/peak_signal_to_noise_ratio |   |  |  |

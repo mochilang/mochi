@@ -1,0 +1,4 @@
+Plaintext: HELLO
+Encrypted: RIJVS
+Decrypted: HELLO
+{"duration_us":8076, "memory_bytes":137288, "name":"main"}
