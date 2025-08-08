@@ -1,0 +1,6 @@
+{_max_value = 25.0;
+ _fractions = [|1.0; 1.0; 1.0; 1.0; 1.0|];}
+{_max_value = 16.0;
+ _fractions = [|1.0; 1.0; 1.0; 1.0|];}
+{_max_value = 0.0;
+ _fractions = [||];}

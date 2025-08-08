@@ -1,0 +1,17 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/algorithms/transpiler/FS/graphs/minimum_spanning_tree_prims2.fs(92,43): error FS0001: The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/graphs/minimum_spanning_tree_prims2.fs(92,49): error FS0001: This expression was expected to have type
+    string    
+but here has type
+    char    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/graphs/minimum_spanning_tree_prims2.fs(137,55): error FS0001: The type 'int' does not match the type 'IDictionary<string,int>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/graphs/minimum_spanning_tree_prims2.fs(137,61): error FS0001: This expression was expected to have type
+    string    
+but here has type
+    char    

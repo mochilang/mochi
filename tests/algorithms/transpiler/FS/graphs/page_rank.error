@@ -1,0 +1,7 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/algorithms/transpiler/FS/graphs/page_rank.fs(64,63): error FS0001: The type 'string array' does not match the type 'string'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/graphs/page_rank.fs(118,1): warning FS0020: This expression should have type 'unit', but has type 'IDictionary<string,float>'. Use 'ignore' to discard the result of the expression, or 'let' to bind the result to a name.

@@ -1,0 +1,17 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/algorithms/transpiler/FS/graphs/kahns_algorithm_topo.fs(60,35): error FS0001: The type 'IDictionary<int,int array>' is not compatible with the type 'seq<'a * 'b>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/graphs/kahns_algorithm_topo.fs(89,22): error FS0001: Type mismatch. Expecting a
+    obj array    
+but given a
+    int array    
+The type 'obj' does not match the type 'int'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/graphs/kahns_algorithm_topo.fs(91,18): error FS0001: Type mismatch. Expecting a
+    obj array    
+but given a
+    int array    
+The type 'obj' does not match the type 'int'

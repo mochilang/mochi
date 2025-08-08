@@ -1665,19 +1665,19 @@ func (fst *ForStmt) emit(w io.Writer) {
 	writeIndent(w)
 	io.WriteString(w, "for ")
 	if fst.End == nil {
-		if ix, ok := fst.Start.(*IndexExpr); ok {
-			if isMapType(inferType(ix)) || isMapType(inferType(ix.Target)) {
-				io.WriteString(w, fsIdent(fst.Name))
-				io.WriteString(w, " in (")
-				ix.emit(w)
-				io.WriteString(w, ").Keys do\n")
-			} else {
-				io.WriteString(w, fsIdent(fst.Name))
-				io.WriteString(w, " in ")
-				ix.emit(w)
-				io.WriteString(w, " do\n")
-			}
-		} else if isMapType(inferType(fst.Start)) {
+               if ix, ok := fst.Start.(*IndexExpr); ok {
+                       if isMapType(inferType(ix)) {
+                               io.WriteString(w, fsIdent(fst.Name))
+                               io.WriteString(w, " in (")
+                               ix.emit(w)
+                               io.WriteString(w, ").Keys do\n")
+                       } else {
+                               io.WriteString(w, fsIdent(fst.Name))
+                               io.WriteString(w, " in ")
+                               ix.emit(w)
+                               io.WriteString(w, " do\n")
+                       }
+               } else if isMapType(inferType(fst.Start)) {
 			io.WriteString(w, "KeyValue(")
 			io.WriteString(w, fsIdent(fst.Name))
 			io.WriteString(w, ", _) in ")
@@ -2471,58 +2471,45 @@ type IndexExpr struct {
 }
 
 func (i *IndexExpr) emit(w io.Writer) {
-	if _, ok := i.Target.(*IndexExpr); ok {
-		usesDictGet = true
-		io.WriteString(w, "_dictGet ")
-		if needsParen(i.Target) {
-			io.WriteString(w, "(")
-			i.Target.emit(w)
-			io.WriteString(w, ")")
-		} else {
-			i.Target.emit(w)
-		}
-		io.WriteString(w, " (")
-		i.Index.emit(w)
-		io.WriteString(w, ")")
-		return
-	}
-	t := inferType(i.Target)
-	if isMapType(t) {
-		usesDictGet = true
-		io.WriteString(w, "_dictGet ")
-		if needsParen(i.Target) {
-			io.WriteString(w, "(")
-			i.Target.emit(w)
-			io.WriteString(w, ")")
-		} else {
-			i.Target.emit(w)
-		}
-		io.WriteString(w, " (")
-		if mapKeyType(t) == "string" {
-			io.WriteString(w, "(string (")
-			i.Index.emit(w)
-			io.WriteString(w, "))")
-		} else {
-			i.Index.emit(w)
-		}
-		io.WriteString(w, ")")
-		return
-	}
-	if strings.HasSuffix(t, " array") || t == "" {
-		usesSafeIndex = true
-		io.WriteString(w, "_idx ")
-		if needsParen(i.Target) {
-			io.WriteString(w, "(")
-			i.Target.emit(w)
-			io.WriteString(w, ")")
-		} else {
-			i.Target.emit(w)
-		}
-		io.WriteString(w, " (")
-		i.Index.emit(w)
-		io.WriteString(w, ")")
-		return
-	}
+        t := inferType(i.Target)
+        // If the target is a map, use dictionary helpers
+        if isMapType(t) {
+                usesDictGet = true
+                io.WriteString(w, "_dictGet ")
+                if needsParen(i.Target) {
+                        io.WriteString(w, "(")
+                        i.Target.emit(w)
+                        io.WriteString(w, ")")
+                } else {
+                        i.Target.emit(w)
+                }
+                io.WriteString(w, " (")
+                if mapKeyType(t) == "string" {
+                        io.WriteString(w, "(string (")
+                        i.Index.emit(w)
+                        io.WriteString(w, "))")
+                } else {
+                        i.Index.emit(w)
+                }
+                io.WriteString(w, ")")
+                return
+        }
+        // Otherwise treat it as an array/string index
+        if strings.HasSuffix(t, " array") || t == "" {
+                usesSafeIndex = true
+                io.WriteString(w, "_idx ")
+                if needsParen(i.Target) {
+                        io.WriteString(w, "(")
+                        i.Target.emit(w)
+                        io.WriteString(w, ")")
+                } else {
+                        i.Target.emit(w)
+                }
+                io.WriteString(w, " (")
+                i.Index.emit(w)
+                io.WriteString(w, ")")
+                return
+        }
 	if t == "string" {
 		io.WriteString(w, "string (")
 		i.Target.emit(w)

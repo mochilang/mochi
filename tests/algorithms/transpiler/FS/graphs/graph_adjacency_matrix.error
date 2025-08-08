@@ -1,0 +1,7 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/algorithms/transpiler/FS/graphs/graph_adjacency_matrix.fs(69,13): error FS0039: The value or constructor 'add_vertex' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/graphs/graph_adjacency_matrix.fs(74,13): error FS0039: The value or constructor 'add_edge' is not defined
