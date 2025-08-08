@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
-Completed programs: 518/1077
-Last updated: 2025-08-07 16:09 +0700
+Completed programs: 568/1077
+Last updated: 2025-08-08 11:15 +0700
 
 Checklist:
 
@@ -582,56 +582,56 @@ Checklist:
 | 573 | maths/gaussian |   |  |  |
 | 574 | maths/gcd_of_n_numbers |   |  |  |
 | 575 | maths/geometric_mean |   |  |  |
-| 576 | maths/germain_primes |   |  |  |
-| 577 | maths/greatest_common_divisor |   |  |  |
-| 578 | maths/hardy_ramanujanalgo |   |  |  |
-| 579 | maths/integer_square_root |   |  |  |
-| 580 | maths/interquartile_range |   |  |  |
-| 581 | maths/is_int_palindrome |   |  |  |
-| 582 | maths/is_ip_v4_address_valid |   |  |  |
-| 583 | maths/is_square_free |   |  |  |
-| 584 | maths/jaccard_similarity |   |  |  |
-| 585 | maths/joint_probability_distribution |   |  |  |
-| 586 | maths/josephus_problem |   |  |  |
-| 587 | maths/juggler_sequence |   |  |  |
-| 588 | maths/karatsuba |   |  |  |
-| 589 | maths/kth_lexicographic_permutation |   |  |  |
-| 590 | maths/largest_of_very_large_numbers |   |  |  |
-| 591 | maths/least_common_multiple |   |  |  |
-| 592 | maths/line_length |   |  |  |
-| 593 | maths/liouville_lambda |   |  |  |
-| 594 | maths/lucas_lehmer_primality_test |   |  |  |
-| 595 | maths/lucas_series |   |  |  |
-| 596 | maths/maclaurin_series |   |  |  |
-| 597 | maths/manhattan_distance |   |  |  |
-| 598 | maths/matrix_exponentiation |   |  |  |
-| 599 | maths/max_sum_sliding_window |   |  |  |
-| 600 | maths/minkowski_distance |   |  |  |
-| 601 | maths/mobius_function |   |  |  |
-| 602 | maths/modular_division |   |  |  |
-| 603 | maths/monte_carlo |   |  |  |
-| 604 | maths/monte_carlo_dice |   |  |  |
-| 605 | maths/number_of_digits |   |  |  |
-| 606 | maths/numerical_analysis/adams_bashforth |   |  |  |
-| 607 | maths/numerical_analysis/bisection |   |  |  |
-| 608 | maths/numerical_analysis/bisection_2 |   |  |  |
-| 609 | maths/numerical_analysis/integration_by_simpson_approx |   |  |  |
-| 610 | maths/numerical_analysis/intersection |   |  |  |
-| 611 | maths/numerical_analysis/nevilles_method |   |  |  |
-| 612 | maths/numerical_analysis/newton_forward_interpolation |   |  |  |
-| 613 | maths/numerical_analysis/newton_raphson |   |  |  |
-| 614 | maths/numerical_analysis/numerical_integration |   |  |  |
-| 615 | maths/numerical_analysis/proper_fractions |   |  |  |
-| 616 | maths/numerical_analysis/runge_kutta |   |  |  |
-| 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 |   |  |  |
-| 618 | maths/numerical_analysis/runge_kutta_gills |   |  |  |
-| 619 | maths/numerical_analysis/secant_method |   |  |  |
-| 620 | maths/numerical_analysis/simpson_rule |   |  |  |
-| 621 | maths/numerical_analysis/square_root |   |  |  |
-| 622 | maths/odd_sieve |   |  |  |
-| 623 | maths/perfect_cube |   |  |  |
-| 624 | maths/perfect_number |   |  |  |
-| 625 | maths/perfect_square |   |  |  |
+| 576 | maths/germain_primes | ✓ | 4µs | 8.7 MB |
+| 577 | maths/greatest_common_divisor | ✓ | 4µs | 8.7 MB |
+| 578 | maths/hardy_ramanujanalgo | ✓ | 7µs | 8.7 MB |
+| 579 | maths/integer_square_root | ✓ | 4µs | 8.7 MB |
+| 580 | maths/interquartile_range | ✓ | 5µs | 8.7 MB |
+| 581 | maths/is_int_palindrome | ✓ | 3µs | 8.7 MB |
+| 582 | maths/is_ip_v4_address_valid | ✓ | 9µs | 8.7 MB |
+| 583 | maths/is_square_free | ✓ | 4µs | 8.7 MB |
+| 584 | maths/jaccard_similarity | ✓ | 6µs | 8.8 MB |
+| 585 | maths/joint_probability_distribution | ✓ | 6µs | 8.7 MB |
+| 586 | maths/josephus_problem | ✓ | 3µs | 8.7 MB |
+| 587 | maths/juggler_sequence | ✓ | 7µs | 8.7 MB |
+| 588 | maths/karatsuba | ✓ | 4µs | 8.7 MB |
+| 589 | maths/kth_lexicographic_permutation | ✓ | 5µs | 8.7 MB |
+| 590 | maths/largest_of_very_large_numbers | ✓ | 9µs | 8.7 MB |
+| 591 | maths/least_common_multiple | ✓ | 4µs | 8.7 MB |
+| 592 | maths/line_length | ✓ | 11µs | 8.7 MB |
+| 593 | maths/liouville_lambda | ✓ | 6µs | 8.7 MB |
+| 594 | maths/lucas_lehmer_primality_test | ✓ | 3µs | 8.7 MB |
+| 595 | maths/lucas_series | ✓ | 10µs | 8.7 MB |
+| 596 | maths/maclaurin_series | ✓ | 23µs | 8.7 MB |
+| 597 | maths/manhattan_distance | ✓ | 6µs | 8.7 MB |
+| 598 | maths/matrix_exponentiation | ✓ | 6µs | 8.7 MB |
+| 599 | maths/max_sum_sliding_window | ✓ | 4µs | 8.7 MB |
+| 600 | maths/minkowski_distance | ✓ | 8µs | 8.7 MB |
+| 601 | maths/mobius_function | ✓ | 4µs | 8.7 MB |
+| 602 | maths/modular_division | ✓ | 4µs | 8.7 MB |
+| 603 | maths/monte_carlo | ✓ | 29µs | 8.7 MB |
+| 604 | maths/monte_carlo_dice | ✓ | 113µs | 8.7 MB |
+| 605 | maths/number_of_digits | ✓ | 5µs | 8.7 MB |
+| 606 | maths/numerical_analysis/adams_bashforth | ✓ | 4µs | 8.8 MB |
+| 607 | maths/numerical_analysis/bisection | ✓ | 2µs | 8.7 MB |
+| 608 | maths/numerical_analysis/bisection_2 | ✓ | 6µs | 8.8 MB |
+| 609 | maths/numerical_analysis/integration_by_simpson_approx | ✓ | 19µs | 8.7 MB |
+| 610 | maths/numerical_analysis/intersection | ✓ | 3µs | 8.7 MB |
+| 611 | maths/numerical_analysis/nevilles_method | ✓ | 4µs | 8.7 MB |
+| 612 | maths/numerical_analysis/newton_forward_interpolation | ✓ | 6µs | 8.7 MB |
+| 613 | maths/numerical_analysis/newton_raphson | ✓ | 2µs | 8.7 MB |
+| 614 | maths/numerical_analysis/numerical_integration | ✓ | 22µs | 8.7 MB |
+| 615 | maths/numerical_analysis/proper_fractions | ✓ | 5µs | 8.7 MB |
+| 616 | maths/numerical_analysis/runge_kutta | ✓ | 14µs | 8.7 MB |
+| 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 | ✓ | 6µs | 8.7 MB |
+| 618 | maths/numerical_analysis/runge_kutta_gills | ✓ | 3µs | 8.7 MB |
+| 619 | maths/numerical_analysis/secant_method | ✓ | 7µs | 8.7 MB |
+| 620 | maths/numerical_analysis/simpson_rule | ✓ | 3µs | 8.7 MB |
+| 621 | maths/numerical_analysis/square_root | ✓ | 3µs | 8.7 MB |
+| 622 | maths/odd_sieve | ✓ | 4µs | 8.7 MB |
+| 623 | maths/perfect_cube | ✓ | 4µs | 8.7 MB |
+| 624 | maths/perfect_number | ✓ | 2.798ms | 8.7 MB |
+| 625 | maths/perfect_square | ✓ | 4µs | 8.8 MB |
 | 626 | maths/persistence |   |  |  |
 | 627 | maths/pi_generator |   |  |  |
 | 628 | maths/pi_monte_carlo_estimation |   |  |  |
