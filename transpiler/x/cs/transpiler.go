@@ -869,6 +869,31 @@ type CmpExpr struct {
 
 func (c *CmpExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "(")
+	if (c.Op == "==" || c.Op == "!=") && (isListExpr(c.Left) || isListExpr(c.Right)) {
+		elem := strings.TrimSuffix(typeOfExpr(c.Left), "[]")
+		if elem == "" || elem == "object" {
+			elem = strings.TrimSuffix(typeOfExpr(c.Right), "[]")
+		}
+		if elem == "" || elem == "object" {
+			elem = "object"
+		}
+		if r, ok := c.Right.(*ListLit); ok && len(r.Elems) == 0 && (r.ElemType == "" || r.ElemType == "object[]") {
+			r.ElemType = elem + "[]"
+		}
+		if l, ok := c.Left.(*ListLit); ok && len(l.Elems) == 0 && (l.ElemType == "" || l.ElemType == "object[]") {
+			l.ElemType = elem + "[]"
+		}
+		if c.Op == "!=" {
+			fmt.Fprint(w, "!")
+		}
+		fmt.Fprintf(w, "Enumerable.SequenceEqual<%s>(", elem)
+		c.Left.emit(w)
+		fmt.Fprint(w, ", ")
+		c.Right.emit(w)
+		fmt.Fprint(w, ")")
+		fmt.Fprint(w, ")")
+		return
+	}
 	if (c.Op == "<" || c.Op == "<=" || c.Op == ">" || c.Op == ">=") &&
 		(isStringExpr(c.Left) || isStringExpr(c.Right)) {
 		fmt.Fprint(w, "string.Compare(")
@@ -2652,12 +2677,22 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 	apply := func(left Expr, op string, right Expr) Expr {
 		switch op {
 		case "==", "!=", "<", "<=", ">", ">=":
-			if (op == "==" || op == "!=") && ((isStringExpr(left) && isBoolExpr(right)) || (isBoolExpr(left) && isStringExpr(right))) {
-				if bl, ok := left.(*BoolLit); ok {
-					left = &StringLit{Value: map[bool]string{true: "true", false: "false"}[bl.Value]}
-				}
-				if br, ok := right.(*BoolLit); ok {
-					right = &StringLit{Value: map[bool]string{true: "true", false: "false"}[br.Value]}
+			if op == "==" || op == "!=" {
+				if isListExpr(left) || isListExpr(right) {
+					usesLinq = true
+					if l, ok := left.(*ListLit); ok && len(l.Elems) == 0 && l.ElemType == "" {
+						l.ElemType = typeOfExpr(right)
+					}
+					if r, ok := right.(*ListLit); ok && len(r.Elems) == 0 && r.ElemType == "" {
+						r.ElemType = typeOfExpr(left)
+					}
+				} else if (isStringExpr(left) && isBoolExpr(right)) || (isBoolExpr(left) && isStringExpr(right)) {
+					if bl, ok := left.(*BoolLit); ok {
+						left = &StringLit{Value: map[bool]string{true: "true", false: "false"}[bl.Value]}
+					}
+					if br, ok := right.(*BoolLit); ok {
+						right = &StringLit{Value: map[bool]string{true: "true", false: "false"}[br.Value]}
+					}
 				}
 			}
 			return &CmpExpr{Op: op, Left: left, Right: right}
@@ -3491,7 +3526,11 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				}
 			}
 		}
-		if currentReturnVoid {
+		if val == nil {
+			if !currentReturnVoid {
+				val = &RawExpr{Code: fmt.Sprintf("default(%s)", currentReturnType), Type: currentReturnType}
+			}
+		} else if currentReturnVoid {
 			if rv, ok := val.(*RawExpr); ok && rv.Code == "null" {
 				val = nil
 			}
