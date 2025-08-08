@@ -2,485 +2,485 @@
 
 This checklist is auto-generated.
 Generated Racket code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Racket`.
-Last updated: 2025-08-08 04:34 UTC
+Last updated: 2025-08-08 08:53 UTC
 
-## Algorithms Golden Test Checklist (81/1077)
+## Algorithms Golden Test Checklist (528/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | backtracking/all_combinations |   |  |  |
-| 2 | backtracking/all_permutations |   |  |  |
-| 3 | backtracking/all_subsequences |   |  |  |
-| 4 | backtracking/coloring |   |  |  |
-| 5 | backtracking/combination_sum |   |  |  |
-| 6 | backtracking/crossword_puzzle_solver |   |  |  |
-| 7 | backtracking/hamiltonian_cycle |   |  |  |
-| 8 | backtracking/knight_tour |   |  |  |
-| 9 | backtracking/match_word_pattern |   |  |  |
-| 10 | backtracking/minimax |   |  |  |
-| 11 | backtracking/n_queens |   |  |  |
-| 12 | backtracking/n_queens_math |   |  |  |
-| 13 | backtracking/power_sum |   |  |  |
-| 14 | backtracking/rat_in_maze |   |  |  |
-| 15 | backtracking/sudoku |   |  |  |
-| 16 | backtracking/sum_of_subsets |   |  |  |
-| 17 | backtracking/word_break |   |  |  |
-| 18 | backtracking/word_ladder |   |  |  |
-| 19 | backtracking/word_search |   |  |  |
-| 20 | bit_manipulation/binary_and_operator |   |  |  |
-| 21 | bit_manipulation/binary_coded_decimal |   |  |  |
-| 22 | bit_manipulation/binary_count_setbits |   |  |  |
-| 23 | bit_manipulation/binary_count_trailing_zeros |   |  |  |
-| 24 | bit_manipulation/binary_or_operator |   |  |  |
-| 25 | bit_manipulation/binary_shifts |   |  |  |
-| 26 | bit_manipulation/binary_twos_complement |   |  |  |
-| 27 | bit_manipulation/binary_xor_operator |   |  |  |
-| 28 | bit_manipulation/bitwise_addition_recursive |   |  |  |
-| 29 | bit_manipulation/count_1s_brian_kernighan_method |   |  |  |
-| 30 | bit_manipulation/count_number_of_one_bits |   |  |  |
-| 31 | bit_manipulation/excess_3_code |   |  |  |
-| 32 | bit_manipulation/find_previous_power_of_two |   |  |  |
-| 33 | bit_manipulation/find_unique_number |   |  |  |
-| 34 | bit_manipulation/gray_code_sequence |   |  |  |
-| 35 | bit_manipulation/highest_set_bit |   |  |  |
-| 36 | bit_manipulation/index_of_rightmost_set_bit |   |  |  |
-| 37 | bit_manipulation/is_even |   |  |  |
-| 38 | bit_manipulation/is_power_of_two |   |  |  |
-| 39 | bit_manipulation/largest_pow_of_two_le_num |   |  |  |
-| 40 | bit_manipulation/missing_number |   |  |  |
-| 41 | bit_manipulation/numbers_different_signs |   |  |  |
-| 42 | bit_manipulation/power_of_4 |   |  |  |
-| 43 | bit_manipulation/reverse_bits |   |  |  |
-| 44 | bit_manipulation/single_bit_manipulation_operations |   |  |  |
-| 45 | bit_manipulation/swap_all_odd_and_even_bits |   |  |  |
-| 46 | blockchain/diophantine_equation |   |  |  |
-| 47 | boolean_algebra/and_gate |   |  |  |
-| 48 | boolean_algebra/imply_gate |   |  |  |
-| 49 | boolean_algebra/karnaugh_map_simplification |   |  |  |
-| 50 | boolean_algebra/multiplexer |   |  |  |
-| 51 | boolean_algebra/nand_gate |   |  |  |
-| 52 | boolean_algebra/nimply_gate |   |  |  |
-| 53 | boolean_algebra/nor_gate |   |  |  |
-| 54 | boolean_algebra/not_gate |   |  |  |
-| 55 | boolean_algebra/or_gate |   |  |  |
-| 56 | boolean_algebra/quine_mc_cluskey |   |  |  |
-| 57 | boolean_algebra/xnor_gate |   |  |  |
-| 58 | boolean_algebra/xor_gate |   |  |  |
-| 59 | cellular_automata/conways_game_of_life |   |  |  |
-| 60 | cellular_automata/game_of_life |   |  |  |
-| 61 | cellular_automata/langtons_ant |   |  |  |
-| 62 | cellular_automata/nagel_schrekenberg |   |  |  |
-| 63 | cellular_automata/one_dimensional |   |  |  |
-| 64 | cellular_automata/wa_tor |   |  |  |
-| 65 | ciphers/a1z26 |   |  |  |
-| 66 | ciphers/affine_cipher |   |  |  |
-| 67 | ciphers/atbash |   |  |  |
-| 68 | ciphers/autokey |   |  |  |
-| 69 | ciphers/baconian_cipher |   |  |  |
-| 70 | ciphers/base16 |   |  |  |
-| 71 | ciphers/base32 |   |  |  |
-| 72 | ciphers/base64_cipher |   |  |  |
-| 73 | ciphers/base85 |   |  |  |
-| 74 | ciphers/beaufort_cipher |   |  |  |
-| 75 | ciphers/bifid |   |  |  |
-| 76 | ciphers/brute_force_caesar_cipher |   |  |  |
-| 77 | ciphers/caesar_cipher |   |  |  |
-| 78 | ciphers/cryptomath_module |   |  |  |
-| 79 | ciphers/decrypt_caesar_with_chi_squared |   |  |  |
-| 80 | ciphers/deterministic_miller_rabin |   |  |  |
-| 81 | ciphers/diffie |   |  |  |
-| 82 | ciphers/diffie_hellman |   |  |  |
-| 83 | ciphers/elgamal_key_generator |   |  |  |
-| 84 | ciphers/enigma_machine2 |   |  |  |
-| 85 | ciphers/fractionated_morse_cipher |   |  |  |
-| 86 | ciphers/gronsfeld_cipher |   |  |  |
-| 87 | ciphers/hill_cipher |   |  |  |
-| 88 | ciphers/mixed_keyword_cypher |   |  |  |
-| 89 | ciphers/mono_alphabetic_ciphers |   |  |  |
-| 90 | ciphers/morse_code |   |  |  |
-| 91 | ciphers/onepad_cipher |   |  |  |
-| 92 | ciphers/permutation_cipher |   |  |  |
-| 93 | ciphers/playfair_cipher |   |  |  |
-| 94 | ciphers/polybius |   |  |  |
-| 95 | ciphers/porta_cipher |   |  |  |
-| 96 | ciphers/rabin_miller |   |  |  |
-| 97 | ciphers/rail_fence_cipher |   |  |  |
-| 98 | ciphers/rot13 |   |  |  |
-| 99 | ciphers/rsa_cipher |   |  |  |
-| 100 | ciphers/rsa_factorization |   |  |  |
-| 101 | ciphers/rsa_key_generator |   |  |  |
-| 102 | ciphers/running_key_cipher |   |  |  |
-| 103 | ciphers/shuffled_shift_cipher |   |  |  |
-| 104 | ciphers/simple_keyword_cypher |   |  |  |
-| 105 | ciphers/simple_substitution_cipher |   |  |  |
-| 106 | ciphers/transposition_cipher |   |  |  |
-| 107 | ciphers/transposition_cipher_encrypt_decrypt_file |   |  |  |
-| 108 | ciphers/trifid_cipher |   |  |  |
-| 109 | ciphers/vernam_cipher |   |  |  |
-| 110 | ciphers/vigenere_cipher |   |  |  |
-| 111 | ciphers/xor_cipher |   |  |  |
-| 112 | computer_vision/cnn_classification |   |  |  |
-| 113 | computer_vision/flip_augmentation |   |  |  |
-| 114 | computer_vision/haralick_descriptors |   |  |  |
-| 115 | computer_vision/harris_corner |   |  |  |
-| 116 | computer_vision/horn_schunck |   |  |  |
-| 117 | computer_vision/intensity_based_segmentation |   |  |  |
-| 118 | computer_vision/mean_threshold |   |  |  |
-| 119 | computer_vision/mosaic_augmentation |   |  |  |
-| 120 | computer_vision/pooling_functions |   |  |  |
-| 121 | conversions/astronomical_length_scale_conversion |   |  |  |
-| 122 | conversions/binary_to_decimal |   |  |  |
-| 123 | conversions/binary_to_hexadecimal |   |  |  |
-| 124 | conversions/binary_to_octal |   |  |  |
-| 125 | conversions/convert_number_to_words |   |  |  |
-| 126 | conversions/decimal_to_any |   |  |  |
-| 127 | conversions/decimal_to_binary |   |  |  |
-| 128 | conversions/decimal_to_hexadecimal |   |  |  |
-| 129 | conversions/decimal_to_octal |   |  |  |
-| 130 | conversions/energy_conversions |   |  |  |
-| 131 | conversions/excel_title_to_column |   |  |  |
-| 132 | conversions/hex_to_bin |   |  |  |
-| 133 | conversions/hexadecimal_to_decimal |   |  |  |
-| 134 | conversions/ipv4_conversion |   |  |  |
-| 135 | conversions/length_conversion |   |  |  |
-| 136 | conversions/molecular_chemistry |   |  |  |
-| 137 | conversions/octal_to_binary |   |  |  |
-| 138 | conversions/octal_to_decimal |   |  |  |
-| 139 | conversions/octal_to_hexadecimal |   |  |  |
-| 140 | conversions/prefix_conversions |   |  |  |
-| 141 | conversions/prefix_conversions_string |   |  |  |
-| 142 | conversions/pressure_conversions |   |  |  |
-| 143 | conversions/rectangular_to_polar |   |  |  |
-| 144 | conversions/rgb_cmyk_conversion |   |  |  |
-| 145 | conversions/rgb_hsv_conversion |   |  |  |
-| 146 | conversions/roman_numerals |   |  |  |
-| 147 | conversions/speed_conversions |   |  |  |
-| 148 | conversions/temperature_conversions |   |  |  |
-| 149 | conversions/time_conversions |   |  |  |
-| 150 | conversions/volume_conversions |   |  |  |
-| 151 | conversions/weight_conversion |   |  |  |
-| 152 | data_compression/burrows_wheeler |   |  |  |
-| 153 | data_compression/huffman |   |  |  |
-| 154 | data_compression/lempel_ziv |   |  |  |
-| 155 | data_compression/lempel_ziv_decompress |   |  |  |
-| 156 | data_compression/lz77 |   |  |  |
-| 157 | data_compression/peak_signal_to_noise_ratio |   |  |  |
-| 158 | data_compression/run_length_encoding |   |  |  |
-| 159 | data_structures/arrays/equilibrium_index_in_array |   |  |  |
-| 160 | data_structures/arrays/find_triplets_with_0_sum |   |  |  |
-| 161 | data_structures/arrays/index_2d_array_in_1d |   |  |  |
-| 162 | data_structures/arrays/kth_largest_element |   |  |  |
-| 163 | data_structures/arrays/median_two_array |   |  |  |
-| 164 | data_structures/arrays/monotonic_array |   |  |  |
-| 165 | data_structures/arrays/pairs_with_given_sum |   |  |  |
-| 166 | data_structures/arrays/permutations |   |  |  |
-| 167 | data_structures/arrays/prefix_sum |   |  |  |
-| 168 | data_structures/arrays/product_sum |   |  |  |
-| 169 | data_structures/arrays/sparse_table |   |  |  |
-| 170 | data_structures/arrays/sudoku_solver |   |  |  |
+| 1 | backtracking/all_combinations | ✓ | 29µs | 18.2 KB |
+| 2 | backtracking/all_permutations | ✓ | 198µs | 373.4 KB |
+| 3 | backtracking/all_subsequences | ✓ | 36µs | 21.5 KB |
+| 4 | backtracking/coloring | ✓ | 87µs | 215.3 KB |
+| 5 | backtracking/combination_sum | ✓ | 37µs | 41.6 KB |
+| 6 | backtracking/crossword_puzzle_solver | ✓ | 221µs | 452.1 KB |
+| 7 | backtracking/hamiltonian_cycle | ✓ | 2µs | 576 B |
+| 8 | backtracking/knight_tour | ✓ | 10µs | 928 B |
+| 9 | backtracking/match_word_pattern | ✓ | 201µs | 598.9 KB |
+| 10 | backtracking/minimax | ✓ | 15µs | 10.2 KB |
+| 11 | backtracking/n_queens | ✓ | 9m31.223891s | 206.5 KB |
+| 12 | backtracking/n_queens_math | ✓ | 9m31.223891s | 15.6 KB |
+| 13 | backtracking/power_sum | ✓ | 9m31.223891s | 70.3 KB |
+| 14 | backtracking/rat_in_maze | ✓ | 9m31.223891s | 37.7 KB |
+| 15 | backtracking/sudoku | ✓ | 9m31.223891s |  |
+| 16 | backtracking/sum_of_subsets | ✓ | 9m31.223891s | 50.9 KB |
+| 17 | backtracking/word_break | ✓ | 9m31.223891s | 31.8 KB |
+| 18 | backtracking/word_ladder | ✓ | 9m31.223891s | 1.1 MB |
+| 19 | backtracking/word_search | ✓ | 9m31.223891s | 88.7 KB |
+| 20 | bit_manipulation/binary_and_operator | ✓ | 9m31.223891s | 73.1 KB |
+| 21 | bit_manipulation/binary_coded_decimal | ✓ | 9m31.223891s | 38.8 KB |
+| 22 | bit_manipulation/binary_count_setbits | ✓ | 9m31.223891s | 12.2 KB |
+| 23 | bit_manipulation/binary_count_trailing_zeros | ✓ | 9m31.223891s | 18.5 KB |
+| 24 | bit_manipulation/binary_or_operator | ✓ | 9m31.223891s | 21.2 KB |
+| 25 | bit_manipulation/binary_shifts | ✓ | 9m31.223891s | 25.8 KB |
+| 26 | bit_manipulation/binary_twos_complement | ✓ | 9m31.223891s | 44.6 KB |
+| 27 | bit_manipulation/binary_xor_operator | ✓ | 9m31.223891s | 73.2 KB |
+| 28 | bit_manipulation/bitwise_addition_recursive | ✓ | 9m31.223891s | 21.5 KB |
+| 29 | bit_manipulation/count_1s_brian_kernighan_method | ✓ | 9m31.223891s | 35.8 KB |
+| 30 | bit_manipulation/count_number_of_one_bits | ✓ | 9m31.223891s | 74.4 KB |
+| 31 | bit_manipulation/excess_3_code | ✓ | 9m31.223891s | 8.7 KB |
+| 32 | bit_manipulation/find_previous_power_of_two | ✓ | 9m31.223891s | 46.0 KB |
+| 33 | bit_manipulation/find_unique_number | ✓ | 9m31.223891s | 27.5 KB |
+| 34 | bit_manipulation/gray_code_sequence | ✓ | 9m31.223891s | 3.0 KB |
+| 35 | bit_manipulation/highest_set_bit | ✓ | 9m31.223891s | 9.8 KB |
+| 36 | bit_manipulation/index_of_rightmost_set_bit | ✓ | 9m31.223891s | 5.2 KB |
+| 37 | bit_manipulation/is_even | ✓ | 9m31.223891s | 3.5 KB |
+| 38 | bit_manipulation/is_power_of_two | ✓ | 9m31.223891s | 384 B |
+| 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 9m31.223891s | 18.0 KB |
+| 40 | bit_manipulation/missing_number | ✓ | 9m31.223891s | 3.2 KB |
+| 41 | bit_manipulation/numbers_different_signs | ✓ | 9m31.223891s | 3.5 KB |
+| 42 | bit_manipulation/power_of_4 | ✓ | 9m31.223891s | 5.8 KB |
+| 43 | bit_manipulation/reverse_bits | ✓ | 9m31.223891s | 160.6 KB |
+| 44 | bit_manipulation/single_bit_manipulation_operations | ✓ | 9m31.223891s | 14.4 KB |
+| 45 | bit_manipulation/swap_all_odd_and_even_bits | ✓ | 9m31.223891s |  |
+| 46 | blockchain/diophantine_equation | ✓ | 9m31.223891s | 16.1 KB |
+| 47 | boolean_algebra/and_gate | ✓ | 9m31.223891s | 7.8 KB |
+| 48 | boolean_algebra/imply_gate | ✓ | 9m31.223891s | 3.0 KB |
+| 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 9m31.223891s | 11.5 KB |
+| 50 | boolean_algebra/multiplexer | ✓ | 9m31.223891s | 3.0 KB |
+| 51 | boolean_algebra/nand_gate | ✓ | 9m31.223891s | 3.0 KB |
+| 52 | boolean_algebra/nimply_gate | ✓ | 9m31.223891s | 3.0 KB |
+| 53 | boolean_algebra/nor_gate | ✓ | 9m31.223891s | 59.5 KB |
+| 54 | boolean_algebra/not_gate | ✓ | 9m31.223891s | 1.7 KB |
+| 55 | boolean_algebra/or_gate | ✓ | 9m31.223891s | 3.2 KB |
+| 56 | boolean_algebra/quine_mc_cluskey | ✓ | 9m31.223891s | 72.4 KB |
+| 57 | boolean_algebra/xnor_gate | ✓ | 9m31.223891s | 3.0 KB |
+| 58 | boolean_algebra/xor_gate | ✓ | 9m31.223891s | 3.0 KB |
+| 59 | cellular_automata/conways_game_of_life | ✓ | 9m31.223891s | 234.3 KB |
+| 60 | cellular_automata/game_of_life | ✓ | 9m31.223891s | 930.3 KB |
+| 61 | cellular_automata/langtons_ant | ✓ | 9m31.223891s | 384 B |
+| 62 | cellular_automata/nagel_schrekenberg | ✓ | 9m31.223891s | 108.3 KB |
+| 63 | cellular_automata/one_dimensional | ✓ | 9m31.223891s | 586.2 KB |
+| 64 | cellular_automata/wa_tor | ✓ | 9m31.223891s |  |
+| 65 | ciphers/a1z26 | ✓ | 9m31.223891s | 3.4 KB |
+| 66 | ciphers/affine_cipher | ✓ | 9m31.223891s |  |
+| 67 | ciphers/atbash | ✓ | 9m31.223891s | 390.5 KB |
+| 68 | ciphers/autokey | ✓ | 9m31.223891s | 2.0 MB |
+| 69 | ciphers/baconian_cipher | ✓ | 9m31.223891s | 90.2 KB |
+| 70 | ciphers/base16 | ✓ | 9m31.223891s | 212.6 KB |
+| 71 | ciphers/base32 | ✓ | 9m31.223891s |  |
+| 72 | ciphers/base64_cipher | ✓ | 9m31.223891s | 216.0 KB |
+| 73 | ciphers/base85 | ✓ | 9m31.223891s | 429.4 KB |
+| 74 | ciphers/beaufort_cipher | ✓ | 9m31.223891s | 34.4 KB |
+| 75 | ciphers/bifid | ✓ | 9m31.223891s | 1017.1 KB |
+| 76 | ciphers/brute_force_caesar_cipher | ✓ | 9m31.223891s | 2.6 MB |
+| 77 | ciphers/caesar_cipher | ✓ | 9m31.223891s | 1.3 MB |
+| 78 | ciphers/cryptomath_module | ✓ | 9m31.223891s | 21.3 KB |
+| 79 | ciphers/decrypt_caesar_with_chi_squared | ✓ | 9m31.223891s | 4.9 KB |
+| 80 | ciphers/deterministic_miller_rabin | ✓ | 9m31.223891s | 893.8 KB |
+| 81 | ciphers/diffie | ✓ | 9m31.223891s | 110.9 KB |
+| 82 | ciphers/diffie_hellman | ✓ | 9m31.223891s | 8.2 KB |
+| 83 | ciphers/elgamal_key_generator | ✓ | 9m31.223891s | 75.8 KB |
+| 84 | ciphers/enigma_machine2 | ✓ | 9m31.223891s | 498.8 KB |
+| 85 | ciphers/fractionated_morse_cipher | ✓ | 9m31.223891s | 2.2 KB |
+| 86 | ciphers/gronsfeld_cipher | ✓ | 9m31.223891s | 1.3 MB |
+| 87 | ciphers/hill_cipher | ✓ | 9m31.223891s | 1.4 MB |
+| 88 | ciphers/mixed_keyword_cypher | ✓ | 9m31.223891s | 392.2 KB |
+| 89 | ciphers/mono_alphabetic_ciphers | ✓ | 9m31.223891s | 71.8 KB |
+| 90 | ciphers/morse_code | ✓ | 9m31.223891s | 97.5 KB |
+| 91 | ciphers/onepad_cipher | ✓ | 9m31.223891s | 7.0 KB |
+| 92 | ciphers/permutation_cipher | ✓ | 9m31.223891s | 2.2 KB |
+| 93 | ciphers/playfair_cipher | ✓ | 9m31.223891s | 166.0 KB |
+| 94 | ciphers/polybius | ✓ | 9m31.223891s | 214.8 KB |
+| 95 | ciphers/porta_cipher | ✓ | 9m31.223891s | 407.8 KB |
+| 96 | ciphers/rabin_miller | ✓ | 11m44.124012s | 102.0 KB |
+| 97 | ciphers/rail_fence_cipher | ✓ | 9m31.223891s | 41.7 KB |
+| 98 | ciphers/rot13 | ✓ | 9m31.223891s | 2.6 MB |
+| 99 | ciphers/rsa_cipher | ✓ | 9m31.223891s | 141.0 KB |
+| 100 | ciphers/rsa_factorization | ✓ | 9m31.223891s | 247.6 KB |
+| 101 | ciphers/rsa_key_generator | ✓ | 9m31.223891s | 1.5 KB |
+| 102 | ciphers/running_key_cipher | ✓ | 9m31.223891s | 93.1 KB |
+| 103 | ciphers/shuffled_shift_cipher | ✓ | 9m31.223891s | 1.1 MB |
+| 104 | ciphers/simple_keyword_cypher | ✓ | 9m31.223891s | 232.2 KB |
+| 105 | ciphers/simple_substitution_cipher | ✓ | 9m31.223891s | 678.5 KB |
+| 106 | ciphers/transposition_cipher | ✓ | 9m31.223891s | 13.0 KB |
+| 107 | ciphers/transposition_cipher_encrypt_decrypt_file | ✓ | 9m31.223891s | 576 B |
+| 108 | ciphers/trifid_cipher | ✓ | 9m31.223891s | 944.2 KB |
+| 109 | ciphers/vernam_cipher | ✓ | 9m31.223891s | 848 B |
+| 110 | ciphers/vigenere_cipher | ✓ | 9m31.223891s | 2.1 MB |
+| 111 | ciphers/xor_cipher | ✓ | 9m31.223891s |  |
+| 112 | computer_vision/cnn_classification | ✓ | 9m31.223891s | 1.7 KB |
+| 113 | computer_vision/flip_augmentation | ✓ | 9m31.223891s | 37.3 KB |
+| 114 | computer_vision/haralick_descriptors | ✓ | 9m31.223891s | 7.1 KB |
+| 115 | computer_vision/harris_corner | ✓ | 9m31.223891s | 1.7 KB |
+| 116 | computer_vision/horn_schunck | ✓ | 9m31.223891s | 6.3 MB |
+| 117 | computer_vision/intensity_based_segmentation | ✓ | 9m31.223891s | 22.5 KB |
+| 118 | computer_vision/mean_threshold | ✓ | 9m31.223891s | 4.0 KB |
+| 119 | computer_vision/mosaic_augmentation | ✓ | 9m31.223891s | 418.8 KB |
+| 120 | computer_vision/pooling_functions | ✓ | 9m31.223891s | 91.7 KB |
+| 121 | conversions/astronomical_length_scale_conversion | ✓ | 9m31.223891s | 26.1 KB |
+| 122 | conversions/binary_to_decimal | ✓ | 9m31.223891s | 28.6 KB |
+| 123 | conversions/binary_to_hexadecimal | ✓ | 9m31.223891s | 70.1 KB |
+| 124 | conversions/binary_to_octal | ✓ | 9m31.223891s | 14.8 KB |
+| 125 | conversions/convert_number_to_words | ✓ | 9m31.223891s | 355.4 KB |
+| 126 | conversions/decimal_to_any | ✓ | 9m31.223891s | 8.6 KB |
+| 127 | conversions/decimal_to_binary | ✓ | 9m31.223891s | 16.2 KB |
+| 128 | conversions/decimal_to_hexadecimal | ✓ | 9m31.223891s | 14.2 KB |
+| 129 | conversions/decimal_to_octal | ✓ | 9m31.223891s | 25.2 KB |
+| 130 | conversions/energy_conversions | ✓ | 9m31.223891s | 68.3 KB |
+| 131 | conversions/excel_title_to_column | ✓ | 9m31.223891s | 22.8 KB |
+| 132 | conversions/hex_to_bin | ✓ | 9m31.223891s | 55.9 KB |
+| 133 | conversions/hexadecimal_to_decimal | ✓ | 9m31.223891s | 90.6 KB |
+| 134 | conversions/ipv4_conversion | ✓ | 9m31.223891s | 191.0 KB |
+| 135 | conversions/length_conversion | ✓ | 9m31.223891s | 34.0 KB |
+| 136 | conversions/molecular_chemistry | ✓ | 9m31.223891s | 7.2 KB |
+| 137 | conversions/octal_to_binary | ✓ | 9m31.223891s | 16.5 KB |
+| 138 | conversions/octal_to_decimal | ✓ | 9m31.223891s | 24.7 KB |
+| 139 | conversions/octal_to_hexadecimal | ✓ | 9m31.223891s | 28.0 KB |
+| 140 | conversions/prefix_conversions | ✓ | 9m31.223891s | 16.6 KB |
+| 141 | conversions/prefix_conversions_string | ✓ | 9m31.223891s | 19.8 KB |
+| 142 | conversions/pressure_conversions | ✓ | 9m31.223891s | 14.2 KB |
+| 143 | conversions/rectangular_to_polar | ✓ | 9m31.223891s | 124.1 KB |
+| 144 | conversions/rgb_cmyk_conversion | ✓ | 9m31.223891s | 18.6 KB |
+| 145 | conversions/rgb_hsv_conversion | ✓ | 9m31.223891s | 5.8 KB |
+| 146 | conversions/roman_numerals | ✓ | 9m31.223891s | 384 B |
+| 147 | conversions/speed_conversions | ✓ | 9m31.223891s | 60.5 KB |
+| 148 | conversions/temperature_conversions | ✓ | 9m31.223891s | 58.5 KB |
+| 149 | conversions/time_conversions | ✓ | 9m31.223891s | 5.8 KB |
+| 150 | conversions/volume_conversions | ✓ | 9m31.223891s | 45.7 KB |
+| 151 | conversions/weight_conversion | ✓ | 9m31.223891s | 4.8 KB |
+| 152 | data_compression/burrows_wheeler | ✓ | 9m31.223891s | 119.0 KB |
+| 153 | data_compression/huffman | ✓ | 9m31.223891s | 198.2 KB |
+| 154 | data_compression/lempel_ziv | ✓ | 9m31.223891s | 61.2 KB |
+| 155 | data_compression/lempel_ziv_decompress | ✓ | 9m31.223891s | 528 B |
+| 156 | data_compression/lz77 | ✓ | 9m31.223891s | 28.5 KB |
+| 157 | data_compression/peak_signal_to_noise_ratio | ✓ | 9m31.223891s | 384 B |
+| 158 | data_compression/run_length_encoding | ✓ | 9m31.223891s | 37.5 KB |
+| 159 | data_structures/arrays/equilibrium_index_in_array | ✓ | 9m31.223891s | 21.3 KB |
+| 160 | data_structures/arrays/find_triplets_with_0_sum | ✓ | 9m31.223891s | 117.7 KB |
+| 161 | data_structures/arrays/index_2d_array_in_1d | ✓ | 9m31.223891s | 14.6 KB |
+| 162 | data_structures/arrays/kth_largest_element | ✓ | 9m31.223891s | 27.3 KB |
+| 163 | data_structures/arrays/median_two_array | ✓ | 9m31.223891s | 54.5 KB |
+| 164 | data_structures/arrays/monotonic_array | ✓ | 9m31.223891s | 6.2 KB |
+| 165 | data_structures/arrays/pairs_with_given_sum | ✓ | 9m31.223891s | 50.8 KB |
+| 166 | data_structures/arrays/permutations | ✓ | 9m31.223891s | 100.2 KB |
+| 167 | data_structures/arrays/prefix_sum | ✓ | 9m31.223891s | 31.2 KB |
+| 168 | data_structures/arrays/product_sum | ✓ | 9m31.223891s | 9.5 KB |
+| 169 | data_structures/arrays/sparse_table | ✓ | 9m31.223891s | 14.9 KB |
+| 170 | data_structures/arrays/sudoku_solver | ✓ | 9m31.223891s | 2.8 MB |
 | 171 | data_structures/binary_tree/avl_tree |   |  |  |
-| 172 | data_structures/binary_tree/basic_binary_tree |   |  |  |
-| 173 | data_structures/binary_tree/binary_search_tree |   |  |  |
+| 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 9m31.223891s | 37.3 KB |
+| 173 | data_structures/binary_tree/binary_search_tree | ✓ | 9m31.223891s | 52.5 KB |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive |   |  |  |
-| 175 | data_structures/binary_tree/binary_tree_mirror |   |  |  |
-| 176 | data_structures/binary_tree/binary_tree_node_sum |   |  |  |
+| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 9m31.223891s | 13.7 KB |
+| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 9m31.223891s | 6.6 KB |
 | 177 | data_structures/binary_tree/binary_tree_path_sum |   |  |  |
-| 178 | data_structures/binary_tree/diff_views_of_binary_tree |   |  |  |
-| 179 | data_structures/binary_tree/distribute_coins |   |  |  |
-| 180 | data_structures/binary_tree/fenwick_tree |   |  |  |
-| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist |   |  |  |
-| 182 | data_structures/binary_tree/floor_and_ceiling |   |  |  |
-| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 |   |  |  |
-| 184 | data_structures/binary_tree/is_sorted |   |  |  |
-| 185 | data_structures/binary_tree/is_sum_tree |   |  |  |
-| 186 | data_structures/binary_tree/lazy_segment_tree |   |  |  |
-| 187 | data_structures/binary_tree/lowest_common_ancestor |   |  |  |
-| 188 | data_structures/binary_tree/maximum_fenwick_tree |   |  |  |
-| 189 | data_structures/binary_tree/maximum_sum_bst |   |  |  |
-| 190 | data_structures/binary_tree/merge_two_binary_trees |   |  |  |
-| 191 | data_structures/binary_tree/mirror_binary_tree |   |  |  |
-| 192 | data_structures/binary_tree/non_recursive_segment_tree |   |  |  |
-| 193 | data_structures/binary_tree/number_of_possible_binary_trees |   |  |  |
-| 194 | data_structures/binary_tree/red_black_tree |   |  |  |
-| 195 | data_structures/binary_tree/segment_tree |   |  |  |
-| 196 | data_structures/binary_tree/segment_tree_other |   |  |  |
+| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 9m31.223891s | 43.7 KB |
+| 179 | data_structures/binary_tree/distribute_coins | ✓ | 9m31.223891s | 44.9 KB |
+| 180 | data_structures/binary_tree/fenwick_tree | ✓ | 9m31.223891s | 94.1 KB |
+| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 9m31.223891s | 4.1 KB |
+| 182 | data_structures/binary_tree/floor_and_ceiling | ✓ | 9m31.223891s | 19.8 KB |
+| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 | ✓ | 9m31.223891s | 12.4 KB |
+| 184 | data_structures/binary_tree/is_sorted | ✓ | 9m31.223891s | 15.3 KB |
+| 185 | data_structures/binary_tree/is_sum_tree | ✓ | 9m31.223891s | 384 B |
+| 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 9m31.223891s | 302.4 KB |
+| 187 | data_structures/binary_tree/lowest_common_ancestor | ✓ | 9m31.223891s | 927.3 KB |
+| 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 9m31.223891s | 4.8 MB |
+| 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 9m31.223891s | 72.4 KB |
+| 190 | data_structures/binary_tree/merge_two_binary_trees | ✓ | 9m31.223891s | 50.0 KB |
+| 191 | data_structures/binary_tree/mirror_binary_tree | ✓ | 9m31.223891s | 71.7 KB |
+| 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 9m31.223891s | 21.3 KB |
+| 193 | data_structures/binary_tree/number_of_possible_binary_trees | ✓ | 9m31.223891s | 624 B |
+| 194 | data_structures/binary_tree/red_black_tree | ✓ | 9m31.223891s | 405.3 KB |
+| 195 | data_structures/binary_tree/segment_tree | ✓ | 9m31.223891s | 286.8 KB |
+| 196 | data_structures/binary_tree/segment_tree_other | ✓ | 9m31.223891s | 238.8 KB |
 | 197 | data_structures/binary_tree/serialize_deserialize_binary_tree |   |  |  |
-| 198 | data_structures/binary_tree/symmetric_tree |   |  |  |
+| 198 | data_structures/binary_tree/symmetric_tree | ✓ | 9m31.223891s | 5.1 KB |
 | 199 | data_structures/binary_tree/treap |   |  |  |
-| 200 | data_structures/binary_tree/wavelet_tree |   |  |  |
-| 201 | data_structures/disjoint_set/alternate_disjoint_set |   |  |  |
-| 202 | data_structures/disjoint_set/disjoint_set |   |  |  |
-| 203 | data_structures/hashing/bloom_filter |   |  |  |
-| 204 | data_structures/hashing/double_hash |   |  |  |
-| 205 | data_structures/hashing/hash_map |   |  |  |
-| 206 | data_structures/hashing/hash_table |   |  |  |
-| 207 | data_structures/hashing/hash_table_with_linked_list |   |  |  |
-| 208 | data_structures/hashing/number_theory/prime_numbers |   |  |  |
-| 209 | data_structures/hashing/quadratic_probing |   |  |  |
-| 210 | data_structures/hashing/tests/test_hash_map |   |  |  |
-| 211 | data_structures/heap/binomial_heap |   |  |  |
-| 212 | data_structures/heap/heap |   |  |  |
-| 213 | data_structures/heap/heap_generic |   |  |  |
-| 214 | data_structures/heap/max_heap |   |  |  |
-| 215 | data_structures/heap/min_heap |   |  |  |
+| 200 | data_structures/binary_tree/wavelet_tree | ✓ | 9m31.223891s | 13.1 KB |
+| 201 | data_structures/disjoint_set/alternate_disjoint_set | ✓ | 9m31.223891s | 9.6 KB |
+| 202 | data_structures/disjoint_set/disjoint_set | ✓ | 9m31.223891s | 163.2 KB |
+| 203 | data_structures/hashing/bloom_filter | ✓ | 9m31.223891s | 398.2 KB |
+| 204 | data_structures/hashing/double_hash | ✓ | 9m31.223891s | 31.9 KB |
+| 205 | data_structures/hashing/hash_map | ✓ | 9m31.223891s | 21.4 KB |
+| 206 | data_structures/hashing/hash_table | ✓ | 9m31.223891s | 26.8 KB |
+| 207 | data_structures/hashing/hash_table_with_linked_list | ✓ | 9m31.223891s | 19.2 KB |
+| 208 | data_structures/hashing/number_theory/prime_numbers | ✓ | 9m31.223891s | 32.5 KB |
+| 209 | data_structures/hashing/quadratic_probing | ✓ | 9m31.223891s | 8.0 KB |
+| 210 | data_structures/hashing/tests/test_hash_map | ✓ | 9m31.223891s | 77.6 KB |
+| 211 | data_structures/heap/binomial_heap | ✓ | 9m31.223891s | 13.9 KB |
+| 212 | data_structures/heap/heap | ✓ | 9m31.223891s | 84.4 KB |
+| 213 | data_structures/heap/heap_generic | ✓ | 9m31.223891s | 36.2 KB |
+| 214 | data_structures/heap/max_heap | ✓ | 9m31.223891s | 18.8 KB |
+| 215 | data_structures/heap/min_heap | ✓ | 9m31.223891s | 16.9 KB |
 | 216 | data_structures/heap/randomized_heap |   |  |  |
-| 217 | data_structures/kd_tree/build_kdtree |   |  |  |
+| 217 | data_structures/kd_tree/build_kdtree | ✓ | 9m31.223891s | 12.5 KB |
 | 218 | data_structures/kd_tree/example/example_usage |   |  |  |
-| 219 | data_structures/kd_tree/example/hypercube_points |   |  |  |
+| 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 9m31.223891s | 7.2 KB |
 | 220 | data_structures/kd_tree/kd_node |   |  |  |
-| 221 | data_structures/kd_tree/nearest_neighbour_search |   |  |  |
-| 222 | data_structures/kd_tree/tests/test_kdtree |   |  |  |
-| 223 | data_structures/linked_list/circular_linked_list |   |  |  |
-| 224 | data_structures/linked_list/deque_doubly |   |  |  |
-| 225 | data_structures/linked_list/doubly_linked_list |   |  |  |
-| 226 | data_structures/linked_list/doubly_linked_list_two |   |  |  |
-| 227 | data_structures/linked_list/floyds_cycle_detection |   |  |  |
-| 228 | data_structures/linked_list/from_sequence |   |  |  |
-| 229 | data_structures/linked_list/has_loop |   |  |  |
-| 230 | data_structures/linked_list/is_palindrome |   |  |  |
-| 231 | data_structures/linked_list/merge_two_lists |   |  |  |
-| 232 | data_structures/linked_list/middle_element_of_linked_list |   |  |  |
-| 233 | data_structures/linked_list/print_reverse |   |  |  |
-| 234 | data_structures/linked_list/reverse_k_group |   |  |  |
-| 235 | data_structures/linked_list/rotate_to_the_right |   |  |  |
-| 236 | data_structures/linked_list/singly_linked_list |   |  |  |
-| 237 | data_structures/linked_list/skip_list |   |  |  |
-| 238 | data_structures/linked_list/swap_nodes |   |  |  |
-| 239 | data_structures/queues/circular_queue |   |  |  |
-| 240 | data_structures/queues/circular_queue_linked_list |   |  |  |
-| 241 | data_structures/queues/double_ended_queue |   |  |  |
+| 221 | data_structures/kd_tree/nearest_neighbour_search | ✓ | 9m31.223891s | 42.5 KB |
+| 222 | data_structures/kd_tree/tests/test_kdtree | ✓ | 9m31.223891s | 128.8 KB |
+| 223 | data_structures/linked_list/circular_linked_list | ✓ | 9m31.223891s | 49.1 KB |
+| 224 | data_structures/linked_list/deque_doubly | ✓ | 9m31.223891s | 13.4 KB |
+| 225 | data_structures/linked_list/doubly_linked_list | ✓ | 9m31.223891s | 36.8 KB |
+| 226 | data_structures/linked_list/doubly_linked_list_two | ✓ | 9m31.223891s | 50.0 KB |
+| 227 | data_structures/linked_list/floyds_cycle_detection | ✓ | 9m31.223891s | 16.4 KB |
+| 228 | data_structures/linked_list/from_sequence | ✓ | 9m31.223891s | 15.3 KB |
+| 229 | data_structures/linked_list/has_loop | ✓ | 9m31.223891s | 15.8 KB |
+| 230 | data_structures/linked_list/is_palindrome | ✓ | 9m31.223891s | 12.0 KB |
+| 231 | data_structures/linked_list/merge_two_lists | ✓ | 9m31.223891s | 150.8 KB |
+| 232 | data_structures/linked_list/middle_element_of_linked_list | ✓ | 9m31.223891s | 41.4 KB |
+| 233 | data_structures/linked_list/print_reverse | ✓ | 9m31.223891s | 13.9 KB |
+| 234 | data_structures/linked_list/reverse_k_group | ✓ | 9m31.223891s | 16.1 KB |
+| 235 | data_structures/linked_list/rotate_to_the_right | ✓ | 9m31.223891s | 12.5 KB |
+| 236 | data_structures/linked_list/singly_linked_list | ✓ | 9m31.223891s | 43.8 KB |
+| 237 | data_structures/linked_list/skip_list | ✓ | 9m31.223891s | 100.2 KB |
+| 238 | data_structures/linked_list/swap_nodes | ✓ | 9m31.223891s | 12.9 KB |
+| 239 | data_structures/queues/circular_queue | ✓ | 9m31.223891s | 13.0 KB |
+| 240 | data_structures/queues/circular_queue_linked_list | ✓ | 9m31.223891s | 13.2 KB |
+| 241 | data_structures/queues/double_ended_queue | ✓ | 9m31.223891s | 19.8 KB |
 | 242 | data_structures/queues/linked_queue |   |  |  |
-| 243 | data_structures/queues/priority_queue_using_list |   |  |  |
+| 243 | data_structures/queues/priority_queue_using_list | ✓ | 9m31.223891s | 113.6 KB |
 | 244 | data_structures/queues/queue_by_list |   |  |  |
-| 245 | data_structures/queues/queue_by_two_stacks |   |  |  |
-| 246 | data_structures/queues/queue_on_pseudo_stack |   |  |  |
-| 247 | data_structures/stacks/balanced_parentheses |   |  |  |
-| 248 | data_structures/stacks/dijkstras_two_stack_algorithm |   |  |  |
-| 249 | data_structures/stacks/infix_to_postfix_conversion |   |  |  |
-| 250 | data_structures/stacks/infix_to_prefix_conversion |   |  |  |
-| 251 | data_structures/stacks/largest_rectangle_histogram |   |  |  |
-| 252 | data_structures/stacks/lexicographical_numbers |   |  |  |
-| 253 | data_structures/stacks/next_greater_element |   |  |  |
-| 254 | data_structures/stacks/postfix_evaluation |   |  |  |
-| 255 | data_structures/stacks/prefix_evaluation |   |  |  |
+| 245 | data_structures/queues/queue_by_two_stacks | ✓ | 9m31.223891s | 2.7 KB |
+| 246 | data_structures/queues/queue_on_pseudo_stack | ✓ | 9m31.223891s | 30.8 KB |
+| 247 | data_structures/stacks/balanced_parentheses | ✓ | 9m31.223891s | 37.3 KB |
+| 248 | data_structures/stacks/dijkstras_two_stack_algorithm | ✓ | 9m31.223891s | 41.7 KB |
+| 249 | data_structures/stacks/infix_to_postfix_conversion | ✓ | 9m31.223891s | 69.9 KB |
+| 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ | 9m31.223891s | 384 B |
+| 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 9m31.223891s | 27.5 KB |
+| 252 | data_structures/stacks/lexicographical_numbers | ✓ | 9m31.223891s | 17.9 KB |
+| 253 | data_structures/stacks/next_greater_element | ✓ | 9m31.223891s | 195.2 KB |
+| 254 | data_structures/stacks/postfix_evaluation | ✓ | 9m31.223891s | 56.2 KB |
+| 255 | data_structures/stacks/prefix_evaluation | ✓ | 9m31.223891s | 98.3 KB |
 | 256 | data_structures/stacks/stack |   |  |  |
 | 257 | data_structures/stacks/stack_using_two_queues |   |  |  |
-| 258 | data_structures/stacks/stack_with_doubly_linked_list |   |  |  |
-| 259 | data_structures/stacks/stack_with_singly_linked_list |   |  |  |
-| 260 | data_structures/stacks/stock_span_problem |   |  |  |
-| 261 | data_structures/suffix_tree/example/example_usage |   |  |  |
-| 262 | data_structures/suffix_tree/suffix_tree |   |  |  |
-| 263 | data_structures/suffix_tree/suffix_tree_node |   |  |  |
+| 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 9m31.223891s | 17.4 KB |
+| 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 9m31.223891s | 11.0 KB |
+| 260 | data_structures/stacks/stock_span_problem | ✓ | 9m31.223891s | 2.7 KB |
+| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 9m31.223891s | 26.6 KB |
+| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 9m31.223891s | 12.8 KB |
+| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 9m31.223891s | 1.9 KB |
 | 264 | data_structures/suffix_tree/tests/test_suffix_tree |   |  |  |
-| 265 | data_structures/trie/radix_tree |   |  |  |
-| 266 | data_structures/trie/trie |   |  |  |
-| 267 | digital_image_processing/change_brightness |   |  |  |
-| 268 | digital_image_processing/change_contrast |   |  |  |
-| 269 | digital_image_processing/convert_to_negative |   |  |  |
-| 270 | digital_image_processing/dithering/burkes |   |  |  |
-| 271 | digital_image_processing/edge_detection/canny |   |  |  |
-| 272 | digital_image_processing/filters/bilateral_filter |   |  |  |
+| 265 | data_structures/trie/radix_tree | ✓ | 9m31.223891s | 28.0 KB |
+| 266 | data_structures/trie/trie | ✓ | 9m31.223891s | 60.2 KB |
+| 267 | digital_image_processing/change_brightness | ✓ | 9m31.223891s | 13.6 KB |
+| 268 | digital_image_processing/change_contrast | ✓ | 9m31.223891s | 15.7 KB |
+| 269 | digital_image_processing/convert_to_negative | ✓ | 9m31.223891s | 6.9 KB |
+| 270 | digital_image_processing/dithering/burkes | ✓ | 9m31.223891s | 78.1 KB |
+| 271 | digital_image_processing/edge_detection/canny | ✓ | 9m31.223891s | 18.0 KB |
+| 272 | digital_image_processing/filters/bilateral_filter | ✓ | 9m31.223891s | 1.7 KB |
 | 273 | digital_image_processing/filters/convolve |   |  |  |
-| 274 | digital_image_processing/filters/gabor_filter |   |  |  |
-| 275 | digital_image_processing/filters/gaussian_filter |   |  |  |
-| 276 | digital_image_processing/filters/laplacian_filter |   |  |  |
-| 277 | digital_image_processing/filters/local_binary_pattern |   |  |  |
-| 278 | digital_image_processing/filters/median_filter |   |  |  |
-| 279 | digital_image_processing/filters/sobel_filter |   |  |  |
-| 280 | digital_image_processing/histogram_equalization/histogram_stretch |   |  |  |
-| 281 | digital_image_processing/index_calculation |   |  |  |
-| 282 | digital_image_processing/morphological_operations/dilation_operation |   |  |  |
-| 283 | digital_image_processing/morphological_operations/erosion_operation |   |  |  |
-| 284 | digital_image_processing/resize/resize |   |  |  |
-| 285 | digital_image_processing/rotation/rotation |   |  |  |
-| 286 | digital_image_processing/sepia |   |  |  |
-| 287 | digital_image_processing/test_digital_image_processing |   |  |  |
-| 288 | divide_and_conquer/closest_pair_of_points |   |  |  |
-| 289 | divide_and_conquer/convex_hull |   |  |  |
-| 290 | divide_and_conquer/heaps_algorithm |   |  |  |
-| 291 | divide_and_conquer/heaps_algorithm_iterative |   |  |  |
-| 292 | divide_and_conquer/inversions |   |  |  |
-| 293 | divide_and_conquer/kth_order_statistic |   |  |  |
-| 294 | divide_and_conquer/max_difference_pair |   |  |  |
-| 295 | divide_and_conquer/max_subarray |   |  |  |
-| 296 | divide_and_conquer/mergesort |   |  |  |
-| 297 | divide_and_conquer/peak |   |  |  |
-| 298 | divide_and_conquer/power |   |  |  |
-| 299 | divide_and_conquer/strassen_matrix_multiplication |   |  |  |
-| 300 | docs/conf |   |  |  |
-| 301 | dynamic_programming/abbreviation |   |  |  |
-| 302 | dynamic_programming/all_construct |   |  |  |
-| 303 | dynamic_programming/bitmask |   |  |  |
-| 304 | dynamic_programming/catalan_numbers |   |  |  |
-| 305 | dynamic_programming/climbing_stairs |   |  |  |
-| 306 | dynamic_programming/combination_sum_iv |   |  |  |
-| 307 | dynamic_programming/edit_distance |   |  |  |
-| 308 | dynamic_programming/factorial |   |  |  |
-| 309 | dynamic_programming/fast_fibonacci |   |  |  |
-| 310 | dynamic_programming/fibonacci |   |  |  |
-| 311 | dynamic_programming/fizz_buzz |   |  |  |
-| 312 | dynamic_programming/floyd_warshall |   |  |  |
-| 313 | dynamic_programming/integer_partition |   |  |  |
-| 314 | dynamic_programming/iterating_through_submasks |   |  |  |
-| 315 | dynamic_programming/k_means_clustering_tensorflow |   |  |  |
+| 274 | digital_image_processing/filters/gabor_filter | ✓ | 9m31.223891s | 8.2 KB |
+| 275 | digital_image_processing/filters/gaussian_filter | ✓ | 9m31.223891s | 5.5 KB |
+| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 9m31.223891s | 18.5 KB |
+| 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 9m31.223891s | 207.8 KB |
+| 278 | digital_image_processing/filters/median_filter | ✓ | 9m31.223891s | 186.0 KB |
+| 279 | digital_image_processing/filters/sobel_filter | ✓ | 9m31.223891s | 1.1 MB |
+| 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 9m31.223891s | 4.0 KB |
+| 281 | digital_image_processing/index_calculation | ✓ | 9m31.223891s | 6.5 KB |
+| 282 | digital_image_processing/morphological_operations/dilation_operation | ✓ | 9m31.223891s | 114.9 KB |
+| 283 | digital_image_processing/morphological_operations/erosion_operation | ✓ | 9m31.223891s | 43.5 KB |
+| 284 | digital_image_processing/resize/resize | ✓ | 9m31.223891s | 56.2 KB |
+| 285 | digital_image_processing/rotation/rotation | ✓ | 9m31.223891s | 1.9 KB |
+| 286 | digital_image_processing/sepia | ✓ | 9m31.223891s | 2.6 KB |
+| 287 | digital_image_processing/test_digital_image_processing | ✓ | 9m31.223891s | 11.6 KB |
+| 288 | divide_and_conquer/closest_pair_of_points | ✓ | 9m31.223891s | 67.3 KB |
+| 289 | divide_and_conquer/convex_hull | ✓ | 9m31.223891s | 384 B |
+| 290 | divide_and_conquer/heaps_algorithm | ✓ | 9m31.223891s | 13.5 KB |
+| 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 9m31.223891s | 25.3 KB |
+| 292 | divide_and_conquer/inversions | ✓ | 9m31.223891s | 2.3 KB |
+| 293 | divide_and_conquer/kth_order_statistic | ✓ | 9m31.223891s | 40.1 KB |
+| 294 | divide_and_conquer/max_difference_pair | ✓ | 9m31.223891s | 25.1 KB |
+| 295 | divide_and_conquer/max_subarray | ✓ | 9m31.223891s | 84.5 KB |
+| 296 | divide_and_conquer/mergesort | ✓ | 9m31.223891s | 80.2 KB |
+| 297 | divide_and_conquer/peak | ✓ | 9m31.223891s | 11.3 KB |
+| 298 | divide_and_conquer/power | ✓ | 9m31.223891s | 12.0 KB |
+| 299 | divide_and_conquer/strassen_matrix_multiplication | ✓ | 9m31.223891s | 2.2 MB |
+| 300 | docs/conf | ✓ | 9m31.223891s | 544 B |
+| 301 | dynamic_programming/abbreviation | ✓ | 9m31.223891s | 221.5 KB |
+| 302 | dynamic_programming/all_construct | ✓ | 9m31.223891s | 247.6 KB |
+| 303 | dynamic_programming/bitmask | ✓ | 9m31.223891s | 29.3 KB |
+| 304 | dynamic_programming/catalan_numbers | ✓ | 9m31.223891s | 16.1 KB |
+| 305 | dynamic_programming/climbing_stairs | ✓ | 9m31.223891s | 2.9 KB |
+| 306 | dynamic_programming/combination_sum_iv | ✓ | 9m31.223891s | 94.5 KB |
+| 307 | dynamic_programming/edit_distance | ✓ | 9m31.223891s | 1.5 MB |
+| 308 | dynamic_programming/factorial | ✓ | 9m31.223891s | 16.8 KB |
+| 309 | dynamic_programming/fast_fibonacci | ✓ | 9m31.223891s | 45.0 KB |
+| 310 | dynamic_programming/fibonacci | ✓ | 9m31.223891s | 16.5 KB |
+| 311 | dynamic_programming/fizz_buzz | ✓ | 9m31.223891s | 14.6 KB |
+| 312 | dynamic_programming/floyd_warshall | ✓ | 9m31.223891s | 85.1 KB |
+| 313 | dynamic_programming/integer_partition | ✓ | 9m31.223891s | 1.3 MB |
+| 314 | dynamic_programming/iterating_through_submasks | ✓ | 9m31.223891s | 69.1 KB |
+| 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 9m31.223891s | 242.4 KB |
 | 316 | dynamic_programming/knapsack |   |  |  |
-| 317 | dynamic_programming/largest_divisible_subset |   |  |  |
-| 318 | dynamic_programming/longest_common_subsequence |   |  |  |
-| 319 | dynamic_programming/longest_common_substring |   |  |  |
-| 320 | dynamic_programming/longest_increasing_subsequence |   |  |  |
-| 321 | dynamic_programming/longest_increasing_subsequence_iterative |   |  |  |
-| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn |   |  |  |
-| 323 | dynamic_programming/longest_palindromic_subsequence |   |  |  |
-| 324 | dynamic_programming/matrix_chain_multiplication |   |  |  |
-| 325 | dynamic_programming/matrix_chain_order |   |  |  |
-| 326 | dynamic_programming/max_non_adjacent_sum |   |  |  |
-| 327 | dynamic_programming/max_product_subarray |   |  |  |
-| 328 | dynamic_programming/max_subarray_sum |   |  |  |
+| 317 | dynamic_programming/largest_divisible_subset | ✓ | 9m31.223891s | 27.0 KB |
+| 318 | dynamic_programming/longest_common_subsequence | ✓ | 9m31.223891s | 864 B |
+| 319 | dynamic_programming/longest_common_substring | ✓ | 9m31.223891s | 159.3 KB |
+| 320 | dynamic_programming/longest_increasing_subsequence | ✓ | 9m31.223891s | 384 B |
+| 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 9m31.223891s | 241.1 KB |
+| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | ✓ | 9m31.223891s | 54.3 KB |
+| 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 9m31.223891s | 195.7 KB |
+| 324 | dynamic_programming/matrix_chain_multiplication | ✓ | 9m31.223891s | 384 B |
+| 325 | dynamic_programming/matrix_chain_order | ✓ | 9m31.223891s | 104.7 KB |
+| 326 | dynamic_programming/max_non_adjacent_sum | ✓ | 9m31.223891s | 11.6 KB |
+| 327 | dynamic_programming/max_product_subarray | ✓ | 9m31.223891s | 4.7 KB |
+| 328 | dynamic_programming/max_subarray_sum | ✓ | 9m31.223891s | 22.6 KB |
 | 329 | dynamic_programming/min_distance_up_bottom |   |  |  |
-| 330 | dynamic_programming/minimum_coin_change |   |  |  |
-| 331 | dynamic_programming/minimum_cost_path |   |  |  |
-| 332 | dynamic_programming/minimum_partition |   |  |  |
-| 333 | dynamic_programming/minimum_size_subarray_sum |   |  |  |
-| 334 | dynamic_programming/minimum_squares_to_represent_a_number |   |  |  |
-| 335 | dynamic_programming/minimum_steps_to_one |   |  |  |
-| 336 | dynamic_programming/minimum_tickets_cost |   |  |  |
-| 337 | dynamic_programming/optimal_binary_search_tree |   |  |  |
-| 338 | dynamic_programming/palindrome_partitioning |   |  |  |
-| 339 | dynamic_programming/range_sum_query |   |  |  |
-| 340 | dynamic_programming/regex_match |   |  |  |
-| 341 | dynamic_programming/rod_cutting |   |  |  |
-| 342 | dynamic_programming/smith_waterman |   |  |  |
-| 343 | dynamic_programming/subset_generation |   |  |  |
-| 344 | dynamic_programming/sum_of_subset |   |  |  |
-| 345 | dynamic_programming/trapped_water |   |  |  |
-| 346 | dynamic_programming/tribonacci |   |  |  |
-| 347 | dynamic_programming/viterbi |   |  |  |
-| 348 | dynamic_programming/wildcard_matching |   |  |  |
-| 349 | dynamic_programming/word_break |   |  |  |
-| 350 | electronics/apparent_power |   |  |  |
+| 330 | dynamic_programming/minimum_coin_change | ✓ | 9m31.223891s | 288.2 KB |
+| 331 | dynamic_programming/minimum_cost_path | ✓ | 9m31.223891s | 16.8 KB |
+| 332 | dynamic_programming/minimum_partition | ✓ | 9m31.223891s |  |
+| 333 | dynamic_programming/minimum_size_subarray_sum | ✓ | 9m31.223891s | 27.7 KB |
+| 334 | dynamic_programming/minimum_squares_to_represent_a_number | ✓ | 9m31.223891s | 212.1 KB |
+| 335 | dynamic_programming/minimum_steps_to_one | ✓ |  |  |
+| 336 | dynamic_programming/minimum_tickets_cost | ✓ | 9m31.223891s | 177.8 KB |
+| 337 | dynamic_programming/optimal_binary_search_tree | ✓ | 9m31.223891s | 96.3 KB |
+| 338 | dynamic_programming/palindrome_partitioning | ✓ |  |  |
+| 339 | dynamic_programming/range_sum_query | ✓ | 9m31.223891s | 11.5 KB |
+| 340 | dynamic_programming/regex_match | ✓ | 9m31.223891s | 138.2 KB |
+| 341 | dynamic_programming/rod_cutting | ✓ |  |  |
+| 342 | dynamic_programming/smith_waterman | ✓ | 9m31.223891s | 10.0 KB |
+| 343 | dynamic_programming/subset_generation | ✓ | 9m31.223891s | 46.5 KB |
+| 344 | dynamic_programming/sum_of_subset | ✓ |  |  |
+| 345 | dynamic_programming/trapped_water | ✓ | 9m31.223891s | 53.6 KB |
+| 346 | dynamic_programming/tribonacci | ✓ | 9m31.223891s | 5.5 KB |
+| 347 | dynamic_programming/viterbi | ✓ |  |  |
+| 348 | dynamic_programming/wildcard_matching | ✓ | 9m31.223891s | 199.8 KB |
+| 349 | dynamic_programming/word_break | ✓ | 9m31.223891s | 104.0 KB |
+| 350 | electronics/apparent_power | ✓ | 9m31.223891s | 384 B |
 | 351 | electronics/builtin_voltage |   |  |  |
-| 352 | electronics/capacitor_equivalence |   |  |  |
-| 353 | electronics/carrier_concentration |   |  |  |
-| 354 | electronics/charging_capacitor |   |  |  |
-| 355 | electronics/charging_inductor |   |  |  |
-| 356 | electronics/circular_convolution |   |  |  |
-| 357 | electronics/coulombs_law |   |  |  |
-| 358 | electronics/electric_conductivity |   |  |  |
-| 359 | electronics/electric_power |   |  |  |
-| 360 | electronics/electrical_impedance |   |  |  |
-| 361 | electronics/ic_555_timer |   |  |  |
-| 362 | electronics/ind_reactance |   |  |  |
+| 352 | electronics/capacitor_equivalence | ✓ | 9m31.223891s | 6.6 KB |
+| 353 | electronics/carrier_concentration | ✓ | 9m31.223891s | 2.3 KB |
+| 354 | electronics/charging_capacitor | ✓ | 9m31.223891s | 60.2 KB |
+| 355 | electronics/charging_inductor | ✓ | 9m31.223891s | 47.7 KB |
+| 356 | electronics/circular_convolution | ✓ | 9m31.223891s | 12.7 KB |
+| 357 | electronics/coulombs_law | ✓ | 9m31.223891s | 21.5 KB |
+| 358 | electronics/electric_conductivity | ✓ | 9m31.223891s | 6.6 KB |
+| 359 | electronics/electric_power | ✓ | 9m31.223891s | 7.2 KB |
+| 360 | electronics/electrical_impedance | ✓ | 9m31.223891s | 31.0 KB |
+| 361 | electronics/ic_555_timer | ✓ | 9m31.223891s | 3.7 KB |
+| 362 | electronics/ind_reactance | ✓ | 9m31.223891s | 8.2 KB |
 | 363 | electronics/ohms_law |   |  |  |
-| 364 | electronics/real_and_reactive_power |   |  |  |
-| 365 | electronics/resistor_color_code |   |  |  |
-| 366 | electronics/resistor_equivalence |   |  |  |
-| 367 | electronics/resonant_frequency |   |  |  |
-| 368 | electronics/wheatstone_bridge |   |  |  |
-| 369 | file_transfer/receive_file |   |  |  |
-| 370 | file_transfer/send_file |   |  |  |
-| 371 | file_transfer/tests/test_send_file |   |  |  |
-| 372 | financial/equated_monthly_installments |   |  |  |
-| 373 | financial/exponential_moving_average |   |  |  |
-| 374 | financial/interest |   |  |  |
-| 375 | financial/present_value |   |  |  |
-| 376 | financial/price_plus_tax |   |  |  |
-| 377 | financial/simple_moving_average |   |  |  |
-| 378 | financial/straight_line_depreciation |   |  |  |
-| 379 | financial/time_and_half_pay |   |  |  |
-| 380 | fractals/julia_sets |   |  |  |
-| 381 | fractals/koch_snowflake |   |  |  |
-| 382 | fractals/mandelbrot |   |  |  |
-| 383 | fractals/sierpinski_triangle |   |  |  |
-| 384 | fractals/vicsek |   |  |  |
-| 385 | fuzzy_logic/fuzzy_operations |   |  |  |
-| 386 | genetic_algorithm/basic_string |   |  |  |
-| 387 | geodesy/haversine_distance |   |  |  |
-| 388 | geodesy/lamberts_ellipsoidal_distance |   |  |  |
-| 389 | geometry/geometry |   |  |  |
-| 390 | graphics/bezier_curve |   |  |  |
-| 391 | graphics/butterfly_pattern |   |  |  |
-| 392 | graphics/digital_differential_analyzer_line |   |  |  |
+| 364 | electronics/real_and_reactive_power | ✓ | 9m31.223891s | 20.4 KB |
+| 365 | electronics/resistor_color_code | ✓ | 9m31.223891s | 384 B |
+| 366 | electronics/resistor_equivalence | ✓ | 9m31.223891s | 6.8 KB |
+| 367 | electronics/resonant_frequency | ✓ | 9m31.223891s | 11.2 KB |
+| 368 | electronics/wheatstone_bridge | ✓ | 9m31.223891s | 3.0 KB |
+| 369 | file_transfer/receive_file | ✓ | 9m31.223891s | 3.3 KB |
+| 370 | file_transfer/send_file | ✓ | 9m31.223891s | 4.3 KB |
+| 371 | file_transfer/tests/test_send_file | ✓ |  |  |
+| 372 | financial/equated_monthly_installments | ✓ | 9m31.223891s | 63.6 KB |
+| 373 | financial/exponential_moving_average | ✓ | 9m31.223891s | 4.8 KB |
+| 374 | financial/interest | ✓ | 9m31.223891s | 695.4 KB |
+| 375 | financial/present_value | ✓ | 9m31.223891s | 33.6 KB |
+| 376 | financial/price_plus_tax | ✓ | 9m31.223891s | 2.6 KB |
+| 377 | financial/simple_moving_average | ✓ | 9m31.223891s | 12.4 KB |
+| 378 | financial/straight_line_depreciation | ✓ | 9m31.223891s | 37.3 KB |
+| 379 | financial/time_and_half_pay | ✓ | 9m31.223891s | 3.6 KB |
+| 380 | fractals/julia_sets | ✓ | 9m31.223891s |  |
+| 381 | fractals/koch_snowflake | ✓ | 9m31.223891s | 15.6 KB |
+| 382 | fractals/mandelbrot | ✓ | 9m31.223891s | 2.1 KB |
+| 383 | fractals/sierpinski_triangle | ✓ | 9m31.223891s | 52.7 KB |
+| 384 | fractals/vicsek | ✓ |  |  |
+| 385 | fuzzy_logic/fuzzy_operations | ✓ | 9m31.223891s | 13.6 KB |
+| 386 | genetic_algorithm/basic_string | ✓ | 9m31.223891s | 8.4 KB |
+| 387 | geodesy/haversine_distance | ✓ | 9m31.223891s | 68.2 KB |
+| 388 | geodesy/lamberts_ellipsoidal_distance | ✓ | 9m31.223891s | 54.1 KB |
+| 389 | geometry/geometry | ✓ | 9m31.223891s | 28.5 KB |
+| 390 | graphics/bezier_curve | ✓ | 9m31.223891s | 36.1 KB |
+| 391 | graphics/butterfly_pattern | ✓ | 9m31.223891s | 91.1 KB |
+| 392 | graphics/digital_differential_analyzer_line | ✓ | 9m31.223891s | 9.9 KB |
 | 393 | graphics/vector3_for_2d_rendering |   |  |  |
-| 394 | graphs/a_star |   |  |  |
-| 395 | graphs/ant_colony_optimization_algorithms |   |  |  |
-| 396 | graphs/articulation_points |   |  |  |
-| 397 | graphs/basic_graphs |   |  |  |
-| 398 | graphs/bellman_ford |   |  |  |
-| 399 | graphs/bi_directional_dijkstra |   |  |  |
-| 400 | graphs/bidirectional_a_star |   |  |  |
-| 401 | graphs/bidirectional_breadth_first_search |   |  |  |
-| 402 | graphs/bidirectional_search |   |  |  |
+| 394 | graphs/a_star | ✓ | 9m31.223891s | 192.2 KB |
+| 395 | graphs/ant_colony_optimization_algorithms | ✓ | 7m25.36997s | 2.0 MB |
+| 396 | graphs/articulation_points | ✓ | 9m31.223891s | 275.5 KB |
+| 397 | graphs/basic_graphs | ✓ |  |  |
+| 398 | graphs/bellman_ford | ✓ | 9m31.223891s | 4.7 KB |
+| 399 | graphs/bi_directional_dijkstra | ✓ | 9m31.223891s | 62.6 KB |
+| 400 | graphs/bidirectional_a_star | ✓ | 9m31.223891s | 2.7 KB |
+| 401 | graphs/bidirectional_breadth_first_search | ✓ | 9m31.223891s | 152.5 KB |
+| 402 | graphs/bidirectional_search | ✓ | 9m31.223891s | 43.3 KB |
 | 403 | graphs/boruvka |   |  |  |
-| 404 | graphs/breadth_first_search |   |  |  |
-| 405 | graphs/breadth_first_search_2 |   |  |  |
+| 404 | graphs/breadth_first_search | ✓ | 9m31.223891s | 6.0 KB |
+| 405 | graphs/breadth_first_search_2 | ✓ | 9m31.223891s | 30.5 KB |
 | 406 | graphs/breadth_first_search_shortest_path |   |  |  |
-| 407 | graphs/breadth_first_search_shortest_path_2 |   |  |  |
+| 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 9m31.223891s | 384 B |
 | 408 | graphs/breadth_first_search_zero_one_shortest_path |   |  |  |
-| 409 | graphs/check_bipatrite |   |  |  |
-| 410 | graphs/check_cycle |   |  |  |
-| 411 | graphs/connected_components |   |  |  |
+| 409 | graphs/check_bipatrite | ✓ |  |  |
+| 410 | graphs/check_cycle | ✓ | 9m31.223891s | 36.8 KB |
+| 411 | graphs/connected_components | ✓ | 9m31.223891s | 117.0 KB |
 | 412 | graphs/deep_clone_graph |   |  |  |
-| 413 | graphs/depth_first_search |   |  |  |
-| 414 | graphs/depth_first_search_2 |   |  |  |
-| 415 | graphs/dijkstra |   |  |  |
-| 416 | graphs/dijkstra_2 |   |  |  |
+| 413 | graphs/depth_first_search | ✓ | 9m31.223891s | 1.0 KB |
+| 414 | graphs/depth_first_search_2 | ✓ |  |  |
+| 415 | graphs/dijkstra | ✓ | 9m31.223891s | 45.3 KB |
+| 416 | graphs/dijkstra_2 | ✓ | 9m31.223891s | 34.3 KB |
 | 417 | graphs/dijkstra_algorithm |   |  |  |
-| 418 | graphs/dijkstra_alternate |   |  |  |
-| 419 | graphs/dijkstra_binary_grid |   |  |  |
+| 418 | graphs/dijkstra_alternate | ✓ | 9m31.223891s | 6.4 KB |
+| 419 | graphs/dijkstra_binary_grid | ✓ | 9m31.223891s | 115.5 KB |
 | 420 | graphs/dinic |   |  |  |
-| 421 | graphs/directed_and_undirected_weighted_graph |   |  |  |
+| 421 | graphs/directed_and_undirected_weighted_graph | ✓ | 9m31.223891s | 24.2 KB |
 | 422 | graphs/edmonds_karp_multiple_source_and_sink |   |  |  |
-| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph |   |  |  |
-| 424 | graphs/even_tree |   |  |  |
-| 425 | graphs/finding_bridges |   |  |  |
-| 426 | graphs/frequent_pattern_graph_miner |   |  |  |
-| 427 | graphs/g_topological_sort |   |  |  |
-| 428 | graphs/gale_shapley_bigraph |   |  |  |
-| 429 | graphs/graph_adjacency_list |   |  |  |
-| 430 | graphs/graph_adjacency_matrix |   |  |  |
-| 431 | graphs/graph_list |   |  |  |
-| 432 | graphs/graphs_floyd_warshall |   |  |  |
-| 433 | graphs/greedy_best_first |   |  |  |
-| 434 | graphs/greedy_min_vertex_cover |   |  |  |
-| 435 | graphs/kahns_algorithm_long |   |  |  |
-| 436 | graphs/kahns_algorithm_topo |   |  |  |
-| 437 | graphs/karger |   |  |  |
-| 438 | graphs/lanczos_eigenvectors |   |  |  |
-| 439 | graphs/markov_chain |   |  |  |
-| 440 | graphs/matching_min_vertex_cover |   |  |  |
-| 441 | graphs/minimum_path_sum |   |  |  |
-| 442 | graphs/minimum_spanning_tree_boruvka |   |  |  |
-| 443 | graphs/minimum_spanning_tree_kruskal |   |  |  |
-| 444 | graphs/minimum_spanning_tree_kruskal2 |   |  |  |
-| 445 | graphs/minimum_spanning_tree_prims |   |  |  |
-| 446 | graphs/minimum_spanning_tree_prims2 |   |  |  |
-| 447 | graphs/multi_heuristic_astar |   |  |  |
-| 448 | graphs/page_rank |   |  |  |
-| 449 | graphs/prim |   |  |  |
-| 450 | graphs/random_graph_generator |   |  |  |
-| 451 | graphs/scc_kosaraju |   |  |  |
-| 452 | graphs/strongly_connected_components |   |  |  |
-| 453 | graphs/tarjans_scc |   |  |  |
-| 454 | graphs/tests/test_min_spanning_tree_kruskal |   |  |  |
-| 455 | graphs/tests/test_min_spanning_tree_prim |   |  |  |
-| 456 | greedy_methods/best_time_to_buy_and_sell_stock |   |  |  |
-| 457 | greedy_methods/fractional_cover_problem |   |  |  |
-| 458 | greedy_methods/fractional_knapsack |   |  |  |
-| 459 | greedy_methods/fractional_knapsack_2 |   |  |  |
-| 460 | greedy_methods/gas_station |   |  |  |
-| 461 | greedy_methods/minimum_coin_change |   |  |  |
-| 462 | greedy_methods/minimum_waiting_time |   |  |  |
-| 463 | greedy_methods/optimal_merge_pattern |   |  |  |
-| 464 | greedy_methods/smallest_range |   |  |  |
-| 465 | hashes/adler32 |   |  |  |
-| 466 | hashes/chaos_machine |   |  |  |
-| 467 | hashes/djb2 |   |  |  |
-| 468 | hashes/elf |   |  |  |
-| 469 | hashes/enigma_machine |   |  |  |
-| 470 | hashes/fletcher16 |   |  |  |
+| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 9m31.223891s | 416.8 KB |
+| 424 | graphs/even_tree | ✓ | 9m31.223891s | 28.0 KB |
+| 425 | graphs/finding_bridges | ✓ | 9m31.223891s | 2.1 MB |
+| 426 | graphs/frequent_pattern_graph_miner | ✓ | 9m31.223891s | 1.4 MB |
+| 427 | graphs/g_topological_sort | ✓ | 9m31.223891s | 83.1 KB |
+| 428 | graphs/gale_shapley_bigraph | ✓ | 9m31.223891s | 47.6 KB |
+| 429 | graphs/graph_adjacency_list | ✓ | 9m31.223891s | 38.2 KB |
+| 430 | graphs/graph_adjacency_matrix | ✓ | 9m31.223891s | 18.4 KB |
+| 431 | graphs/graph_list | ✓ | 9m31.223891s | 22.3 KB |
+| 432 | graphs/graphs_floyd_warshall | ✓ | 9m31.223891s | 12.5 KB |
+| 433 | graphs/greedy_best_first | ✓ | 9m31.223891s | 1.9 MB |
+| 434 | graphs/greedy_min_vertex_cover | ✓ | 9m31.223891s | 30.1 KB |
+| 435 | graphs/kahns_algorithm_long | ✓ | 9m31.223891s | 41.7 KB |
+| 436 | graphs/kahns_algorithm_topo | ✓ | 9m31.223891s | 33.5 KB |
+| 437 | graphs/karger | ✓ | 9m31.223891s | 6.2 KB |
+| 438 | graphs/lanczos_eigenvectors | ✓ | 9m31.223891s | 21.2 KB |
+| 439 | graphs/markov_chain | ✓ | 9m31.223891s | 3.7 MB |
+| 440 | graphs/matching_min_vertex_cover | ✓ | 9m31.223891s | 1.3 KB |
+| 441 | graphs/minimum_path_sum | ✓ | 9m31.223891s | 23.6 KB |
+| 442 | graphs/minimum_spanning_tree_boruvka | ✓ | 9m31.223891s | 36.1 KB |
+| 443 | graphs/minimum_spanning_tree_kruskal | ✓ | 9m31.223891s | 76.7 KB |
+| 444 | graphs/minimum_spanning_tree_kruskal2 | ✓ | 9m31.223891s | 46.6 KB |
+| 445 | graphs/minimum_spanning_tree_prims | ✓ | 9m31.223891s | 6.3 KB |
+| 446 | graphs/minimum_spanning_tree_prims2 | ✓ | 9m31.223891s | 3.2 KB |
+| 447 | graphs/multi_heuristic_astar | ✓ | 9m31.223891s | 42.0 KB |
+| 448 | graphs/page_rank | ✓ | 9m31.223891s | 45.1 KB |
+| 449 | graphs/prim | ✓ | 9m31.223891s |  |
+| 450 | graphs/random_graph_generator | ✓ | 9m31.223891s | 31.9 KB |
+| 451 | graphs/scc_kosaraju | ✓ | 9m31.223891s | 250.2 KB |
+| 452 | graphs/strongly_connected_components | ✓ | 9m31.223891s | 175.3 KB |
+| 453 | graphs/tarjans_scc | ✓ | 9m31.223891s | 42.3 KB |
+| 454 | graphs/tests/test_min_spanning_tree_kruskal | ✓ | 9m31.223891s | 132.1 KB |
+| 455 | graphs/tests/test_min_spanning_tree_prim | ✓ | 9m31.223891s | 129.6 KB |
+| 456 | greedy_methods/best_time_to_buy_and_sell_stock | ✓ | 9m31.223891s | 6.8 KB |
+| 457 | greedy_methods/fractional_cover_problem | ✓ | 9m31.223891s | 20.0 KB |
+| 458 | greedy_methods/fractional_knapsack | ✓ | 9m31.223891s | 928 B |
+| 459 | greedy_methods/fractional_knapsack_2 | ✓ | 9m31.223891s | 45.8 KB |
+| 460 | greedy_methods/gas_station | ✓ | 9m31.223891s | 7.7 KB |
+| 461 | greedy_methods/minimum_coin_change | ✓ | 9m31.223891s | 27.4 KB |
+| 462 | greedy_methods/minimum_waiting_time | ✓ | 9m31.223891s | 28.4 KB |
+| 463 | greedy_methods/optimal_merge_pattern | ✓ | 9m31.223891s | 87.7 KB |
+| 464 | greedy_methods/smallest_range | ✓ | 9m31.223891s | 65.0 KB |
+| 465 | hashes/adler32 | ✓ | 9m31.223891s | 189.4 KB |
+| 466 | hashes/chaos_machine | ✓ | 9m31.223891s | 3.0 MB |
+| 467 | hashes/djb2 | ✓ | 9m31.223891s | 375.5 KB |
+| 468 | hashes/elf | ✓ | 9m31.223891s | 819.7 KB |
+| 469 | hashes/enigma_machine | ✓ | 9m31.223891s | 544 B |
+| 470 | hashes/fletcher16 | ✓ | 9m31.223891s | 384 B |
 | 471 | hashes/hamming_code |   |  |  |
-| 472 | hashes/luhn |   |  |  |
-| 473 | hashes/md5 |   |  |  |
-| 474 | hashes/sdbm |   |  |  |
+| 472 | hashes/luhn | ✓ | 9m31.223891s | 27.4 KB |
+| 473 | hashes/md5 | ✓ | 9m31.223891s | 384 B |
+| 474 | hashes/sdbm | ✓ | 9m31.223891s | 681.0 KB |
 | 475 | hashes/sha1 | ✓ | 9m31.223891s | 2.7 MB |
 | 476 | hashes/sha256 | ✓ | 9m31.223891s | 67.8 KB |
 | 477 | knapsack/greedy_knapsack | ✓ | 9m31.223891s | 33.3 KB |
