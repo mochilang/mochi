@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 410/1077
-Last updated: 2025-08-08 15:34 +0700
+Completed programs: 459/1077
+Last updated: 2025-08-08 15:53 +0700
 
 Checklist:
 
@@ -460,56 +460,56 @@ Checklist:
 | 451 | graphs/scc_kosaraju | ✓ | 408.0µs | 3.55MB |
 | 452 | graphs/strongly_connected_components | ✓ | 985.0µs | 3.58MB |
 | 453 | graphs/tarjans_scc |   |  |  |
-| 454 | graphs/tests/test_min_spanning_tree_kruskal |   |  |  |
-| 455 | graphs/tests/test_min_spanning_tree_prim |   |  |  |
-| 456 | greedy_methods/best_time_to_buy_and_sell_stock |   |  |  |
-| 457 | greedy_methods/fractional_cover_problem |   |  |  |
-| 458 | greedy_methods/fractional_knapsack |   |  |  |
-| 459 | greedy_methods/fractional_knapsack_2 |   |  |  |
-| 460 | greedy_methods/gas_station |   |  |  |
-| 461 | greedy_methods/minimum_coin_change |   |  |  |
-| 462 | greedy_methods/minimum_waiting_time |   |  |  |
-| 463 | greedy_methods/optimal_merge_pattern |   |  |  |
-| 464 | greedy_methods/smallest_range |   |  |  |
-| 465 | hashes/adler32 |   |  |  |
-| 466 | hashes/chaos_machine |   |  |  |
-| 467 | hashes/djb2 |   |  |  |
-| 468 | hashes/elf |   |  |  |
-| 469 | hashes/enigma_machine |   |  |  |
-| 470 | hashes/fletcher16 |   |  |  |
-| 471 | hashes/hamming_code |   |  |  |
-| 472 | hashes/luhn |   |  |  |
-| 473 | hashes/md5 |   |  |  |
-| 474 | hashes/sdbm |   |  |  |
-| 475 | hashes/sha1 |   |  |  |
-| 476 | hashes/sha256 |   |  |  |
-| 477 | knapsack/greedy_knapsack |   |  |  |
-| 478 | knapsack/knapsack |   |  |  |
-| 479 | knapsack/recursive_approach_knapsack |   |  |  |
-| 480 | knapsack/tests/test_greedy_knapsack |   |  |  |
-| 481 | knapsack/tests/test_knapsack |   |  |  |
-| 482 | linear_algebra/gaussian_elimination |   |  |  |
-| 483 | linear_algebra/jacobi_iteration_method |   |  |  |
-| 484 | linear_algebra/lu_decomposition |   |  |  |
-| 485 | linear_algebra/matrix_inversion |   |  |  |
-| 486 | linear_algebra/src/conjugate_gradient |   |  |  |
-| 487 | linear_algebra/src/gaussian_elimination_pivoting |   |  |  |
-| 488 | linear_algebra/src/lib |   |  |  |
-| 489 | linear_algebra/src/polynom_for_points |   |  |  |
-| 490 | linear_algebra/src/power_iteration |   |  |  |
-| 491 | linear_algebra/src/rank_of_matrix |   |  |  |
-| 492 | linear_algebra/src/rayleigh_quotient |   |  |  |
-| 493 | linear_algebra/src/schur_complement |   |  |  |
-| 494 | linear_algebra/src/test_linear_algebra |   |  |  |
-| 495 | linear_algebra/src/transformations_2d |   |  |  |
-| 496 | linear_programming/simplex |   |  |  |
+| 454 | graphs/tests/test_min_spanning_tree_kruskal | ✓ | 365.0µs | 3.48MB |
+| 455 | graphs/tests/test_min_spanning_tree_prim | ✓ | 505.0µs | 3.81MB |
+| 456 | greedy_methods/best_time_to_buy_and_sell_stock | ✓ | 370.0µs | 3.56MB |
+| 457 | greedy_methods/fractional_cover_problem | ✓ | 429.0µs | 3.75MB |
+| 458 | greedy_methods/fractional_knapsack | ✓ | 525.0µs | 3.81MB |
+| 459 | greedy_methods/fractional_knapsack_2 | ✓ | 408.0µs | 3.64MB |
+| 460 | greedy_methods/gas_station | ✓ | 242.0µs | 3.62MB |
+| 461 | greedy_methods/minimum_coin_change | ✓ | 353.0µs | 3.46MB |
+| 462 | greedy_methods/minimum_waiting_time | ✓ | 230.0µs | 3.52MB |
+| 463 | greedy_methods/optimal_merge_pattern | ✓ | 211.0µs | 3.57MB |
+| 464 | greedy_methods/smallest_range | ✓ | 602.0µs | 3.70MB |
+| 465 | hashes/adler32 | ✓ | 377.0µs | 3.61MB |
+| 466 | hashes/chaos_machine | ✓ | 521.0µs | 3.64MB |
+| 467 | hashes/djb2 | ✓ | 401.0µs | 3.52MB |
+| 468 | hashes/elf | ✓ | 500.0µs | 3.62MB |
+| 469 | hashes/enigma_machine | ✓ | 2.0ms | 3.67MB |
+| 470 | hashes/fletcher16 | ✓ | 1.0µs | 3.45MB |
+| 471 | hashes/hamming_code | ✓ | 1.0ms | 3.48MB |
+| 472 | hashes/luhn | ✓ | 319.0µs | 3.53MB |
+| 473 | hashes/md5 | ✓ | 2.0µs | 3.48MB |
+| 474 | hashes/sdbm | ✓ | 577.0µs | 3.54MB |
+| 475 | hashes/sha1 | ✓ | 960.0µs | 3.48MB |
+| 476 | hashes/sha256 | ✓ | 3.0ms | 7.15MB |
+| 477 | knapsack/greedy_knapsack | ✓ | 572.0µs | 3.85MB |
+| 478 | knapsack/knapsack | ✓ | 253.0µs | 3.61MB |
+| 479 | knapsack/recursive_approach_knapsack | ✓ | 339.0µs | 3.62MB |
+| 480 | knapsack/tests/test_greedy_knapsack | ✓ | 264.0µs | 3.53MB |
+| 481 | knapsack/tests/test_knapsack | ✓ | 209.0µs | 3.42MB |
+| 482 | linear_algebra/gaussian_elimination | ✓ | 506.0µs | 3.82MB |
+| 483 | linear_algebra/jacobi_iteration_method | ✓ | 421.0µs | 3.70MB |
+| 484 | linear_algebra/lu_decomposition | ✓ | 612.0µs | 3.87MB |
+| 485 | linear_algebra/matrix_inversion | ✓ | 685.0µs | 3.69MB |
+| 486 | linear_algebra/src/conjugate_gradient | ✓ | 942.0µs | 3.76MB |
+| 487 | linear_algebra/src/gaussian_elimination_pivoting | ✓ | 466.0µs | 3.77MB |
+| 488 | linear_algebra/src/lib | ✓ | 674.0µs | 3.83MB |
+| 489 | linear_algebra/src/polynom_for_points | ✓ | 811.0µs | 3.88MB |
+| 490 | linear_algebra/src/power_iteration | ✓ | 556.0µs | 3.73MB |
+| 491 | linear_algebra/src/rank_of_matrix | ✓ | 2.0µs | 3.57MB |
+| 492 | linear_algebra/src/rayleigh_quotient | ✓ | 561.0µs | 3.86MB |
+| 493 | linear_algebra/src/schur_complement | ✓ | 548.0µs | 3.70MB |
+| 494 | linear_algebra/src/test_linear_algebra | ✓ | 681.0µs | 3.64MB |
+| 495 | linear_algebra/src/transformations_2d | ✓ | 508.0µs | 3.71MB |
+| 496 | linear_programming/simplex | ✓ | 722.0µs | 3.77MB |
 | 497 | machine_learning/apriori_algorithm |   |  |  |
-| 498 | machine_learning/astar |   |  |  |
-| 499 | machine_learning/automatic_differentiation |   |  |  |
-| 500 | machine_learning/data_transformations |   |  |  |
-| 501 | machine_learning/decision_tree |   |  |  |
-| 502 | machine_learning/dimensionality_reduction |   |  |  |
-| 503 | machine_learning/forecasting/run |   |  |  |
+| 498 | machine_learning/astar | ✓ | 474.0µs | 3.56MB |
+| 499 | machine_learning/automatic_differentiation | ✓ | 466.0µs | 3.72MB |
+| 500 | machine_learning/data_transformations | ✓ | 667.0µs | 3.79MB |
+| 501 | machine_learning/decision_tree | ✓ | 8.0ms | 3.99MB |
+| 502 | machine_learning/dimensionality_reduction | ✓ | 262.0µs | 3.46MB |
+| 503 | machine_learning/forecasting/run | ✓ | 558.0µs | 3.86MB |
 | 504 | machine_learning/frequent_pattern_growth |   |  |  |
 | 505 | machine_learning/gradient_boosting_classifier |   |  |  |
 | 506 | machine_learning/gradient_descent |   |  |  |
