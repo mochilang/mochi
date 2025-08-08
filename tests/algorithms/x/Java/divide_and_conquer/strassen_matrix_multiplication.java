@@ -14,7 +14,7 @@ public class Main {
                 row = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row), java.util.stream.IntStream.of(matrix_a[i][j] + matrix_b[i][j])).toArray()));
                 j = j + 1;
             }
-            result = ((int[][])(appendObj(result, row)));
+            result = ((int[][])(appendObj((int[][])result, row)));
             i = i + 1;
         }
         return result;
@@ -30,7 +30,7 @@ public class Main {
                 row_1 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row_1), java.util.stream.IntStream.of(matrix_a[i_1][j_1] - matrix_b[i_1][j_1])).toArray()));
                 j_1 = j_1 + 1;
             }
-            result_1 = ((int[][])(appendObj(result_1, row_1)));
+            result_1 = ((int[][])(appendObj((int[][])result_1, row_1)));
             i_1 = i_1 + 1;
         }
         return result_1;
@@ -53,8 +53,8 @@ public class Main {
                 right_row = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(right_row), java.util.stream.IntStream.of(a[i_2][j_2 + mid])).toArray()));
                 j_2 = j_2 + 1;
             }
-            top_left = ((int[][])(appendObj(top_left, left_row)));
-            top_right = ((int[][])(appendObj(top_right, right_row)));
+            top_left = ((int[][])(appendObj((int[][])top_left, left_row)));
+            top_right = ((int[][])(appendObj((int[][])top_right, right_row)));
             i_2 = i_2 + 1;
         }
         i_2 = mid;
@@ -67,8 +67,8 @@ public class Main {
                 right_row_1 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(right_row_1), java.util.stream.IntStream.of(a[i_2][j_3 + mid])).toArray()));
                 j_3 = j_3 + 1;
             }
-            bot_left = ((int[][])(appendObj(bot_left, left_row_1)));
-            bot_right = ((int[][])(appendObj(bot_right, right_row_1)));
+            bot_left = ((int[][])(appendObj((int[][])bot_left, left_row_1)));
+            bot_right = ((int[][])(appendObj((int[][])bot_right, right_row_1)));
             i_2 = i_2 + 1;
         }
         return new int[][][]{top_left, top_right, bot_left, bot_right};
@@ -100,7 +100,7 @@ public class Main {
                 row_2 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row_2), java.util.stream.IntStream.of(v)).toArray()));
                 j_4 = j_4 + 1;
             }
-            res = ((int[][])(appendObj(res, row_2)));
+            res = ((int[][])(appendObj((int[][])res, row_2)));
             i_3 = i_3 + 1;
         }
         return res;
@@ -134,12 +134,12 @@ public class Main {
         int[][] new_matrix = ((int[][])(new int[][]{}));
         int i_4 = 0;
         while (i_4 < top_right_1.length) {
-            new_matrix = ((int[][])(appendObj(new_matrix, java.util.stream.IntStream.concat(java.util.Arrays.stream(top_left_1[i_4]), java.util.Arrays.stream(top_right_1[i_4])).toArray())));
+            new_matrix = ((int[][])(appendObj((int[][])new_matrix, java.util.stream.IntStream.concat(java.util.Arrays.stream(top_left_1[i_4]), java.util.Arrays.stream(top_right_1[i_4])).toArray())));
             i_4 = i_4 + 1;
         }
         i_4 = 0;
         while (i_4 < bot_right_1.length) {
-            new_matrix = ((int[][])(appendObj(new_matrix, java.util.stream.IntStream.concat(java.util.Arrays.stream(bot_left_1[i_4]), java.util.Arrays.stream(bot_right_1[i_4])).toArray())));
+            new_matrix = ((int[][])(appendObj((int[][])new_matrix, java.util.stream.IntStream.concat(java.util.Arrays.stream(bot_left_1[i_4]), java.util.Arrays.stream(bot_right_1[i_4])).toArray())));
             i_4 = i_4 + 1;
         }
         return new_matrix;
@@ -165,7 +165,7 @@ public class Main {
                 row_3 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row_3), java.util.stream.IntStream.of(result_padded[i_5][j_5])).toArray()));
                 j_5 = j_5 + 1;
             }
-            final_matrix = ((int[][])(appendObj(final_matrix, row_3)));
+            final_matrix = ((int[][])(appendObj((int[][])final_matrix, row_3)));
             i_5 = i_5 + 1;
         }
         return final_matrix;
@@ -178,41 +178,7 @@ public class Main {
         System.out.println(java.util.Arrays.deepToString(res_1));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 
     static <T> T[] appendObj(T[] arr, T v) {

@@ -20,7 +20,7 @@ public class Main {
                 row = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row), java.util.stream.DoubleStream.of(value)).toArray()));
                 j = j + 1;
             }
-            gray = ((double[][])(appendObj(gray, row)));
+            gray = ((double[][])(appendObj((double[][])gray, row)));
             i = i + 1;
         }
         return gray;
@@ -36,7 +36,7 @@ public class Main {
                 row_1 = ((boolean[])(appendBool(row_1, gray[i_1][j_1] > 127.0 && gray[i_1][j_1] <= 255.0)));
                 j_1 = j_1 + 1;
             }
-            binary = ((boolean[][])(appendObj(binary, row_1)));
+            binary = ((boolean[][])(appendObj((boolean[][])binary, row_1)));
             i_1 = i_1 + 1;
         }
         return binary;
@@ -58,7 +58,7 @@ public class Main {
                 row_2 = ((boolean[])(appendBool(row_2, false)));
                 x = x + 1;
             }
-            padded = ((boolean[][])(appendObj(padded, row_2)));
+            padded = ((boolean[][])(appendObj((boolean[][])padded, row_2)));
             y = y + 1;
         }
         y = 0;
@@ -91,56 +91,22 @@ padded[pad_y + y][pad_x + x_1] = image[y][x_1];
                 row_out = ((boolean[])(appendBool(row_out, sum == 5)));
                 x_2 = x_2 + 1;
             }
-            output = ((boolean[][])(appendObj(output, row_out)));
+            output = ((boolean[][])(appendObj((boolean[][])output, row_out)));
             y = y + 1;
         }
         return output;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            rgb_img = ((int[][][])(new int[][][]{new int[][]{new int[]{127, 255, 0}}}));
-            System.out.println(_p(rgb_to_gray(((int[][][])(rgb_img)))));
-            gray_img = ((double[][])(new double[][]{new double[]{127.0, 255.0, 0.0}}));
-            System.out.println(_p(gray_to_binary(((double[][])(gray_img)))));
-            img1 = ((boolean[][])(new boolean[][]{new boolean[]{true, true, false}}));
-            kernel1 = ((int[][])(new int[][]{new int[]{0, 1, 0}}));
-            System.out.println(_p(erosion(((boolean[][])(img1)), ((int[][])(kernel1)))));
-            img2 = ((boolean[][])(new boolean[][]{new boolean[]{true, false, false}}));
-            kernel2 = ((int[][])(new int[][]{new int[]{1, 1, 0}}));
-            System.out.println(_p(erosion(((boolean[][])(img2)), ((int[][])(kernel2)))));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        rgb_img = ((int[][][])(new int[][][]{new int[][]{new int[]{127, 255, 0}}}));
+        System.out.println(_p(rgb_to_gray(((int[][][])(rgb_img)))));
+        gray_img = ((double[][])(new double[][]{new double[]{127.0, 255.0, 0.0}}));
+        System.out.println(_p(gray_to_binary(((double[][])(gray_img)))));
+        img1 = ((boolean[][])(new boolean[][]{new boolean[]{true, true, false}}));
+        kernel1 = ((int[][])(new int[][]{new int[]{0, 1, 0}}));
+        System.out.println(_p(erosion(((boolean[][])(img1)), ((int[][])(kernel1)))));
+        img2 = ((boolean[][])(new boolean[][]{new boolean[]{true, false, false}}));
+        kernel2 = ((int[][])(new int[][]{new int[]{1, 1, 0}}));
+        System.out.println(_p(erosion(((boolean[][])(img2)), ((int[][])(kernel2)))));
     }
 
     static boolean[] appendBool(boolean[] arr, boolean v) {

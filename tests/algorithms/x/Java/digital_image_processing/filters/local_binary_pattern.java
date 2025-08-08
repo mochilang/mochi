@@ -28,56 +28,22 @@ public class Main {
         return sum;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            image = ((int[][])(new int[][]{new int[]{10, 10, 10, 10, 10}, new int[]{10, 20, 30, 20, 10}, new int[]{10, 30, 40, 30, 10}, new int[]{10, 20, 30, 20, 10}, new int[]{10, 10, 10, 10, 10}}));
-            i_1 = 0;
-            while (i_1 < image.length) {
-                int j = 0;
-                String line = "";
-                while (j < image[0].length) {
-                    int value = local_binary_value(((int[][])(image)), i_1, j);
-                    line = line + _p(value);
-                    if (j < image[0].length - 1) {
-                        line = line + " ";
-                    }
-                    j = j + 1;
+        image = ((int[][])(new int[][]{new int[]{10, 10, 10, 10, 10}, new int[]{10, 20, 30, 20, 10}, new int[]{10, 30, 40, 30, 10}, new int[]{10, 20, 30, 20, 10}, new int[]{10, 10, 10, 10, 10}}));
+        i_1 = 0;
+        while (i_1 < image.length) {
+            int j = 0;
+            String line = "";
+            while (j < image[0].length) {
+                int value = local_binary_value(((int[][])(image)), i_1, j);
+                line = line + _p(value);
+                if (j < image[0].length - 1) {
+                    line = line + " ";
                 }
-                System.out.println(line);
-                i_1 = i_1 + 1;
+                j = j + 1;
             }
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
+            System.out.println(line);
+            i_1 = i_1 + 1;
         }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {
