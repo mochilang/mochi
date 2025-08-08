@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Racket code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Racket`.
-Last updated: 2025-08-08 12:00 UTC
+Last updated: 2025-08-08 12:18 UTC
 
-## Algorithms Golden Test Checklist (665/1077)
+## Algorithms Golden Test Checklist (692/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 39µs | 18.9 KB |
@@ -688,74 +688,74 @@ Last updated: 2025-08-08 12:00 UTC
 | 679 | maths/special_numbers/weird_number | ✓ | 846µs | 884.1 KB |
 | 680 | maths/sum_of_arithmetic_series | ✓ | 17µs | 2.9 KB |
 | 681 | maths/sum_of_digits | ✓ | 43µs | 99.8 KB |
-| 682 | maths/sum_of_geometric_progression | ✓ | 35µs | 84.2 KB |
-| 683 | maths/sum_of_harmonic_series | ✓ | 53µs | 13.3 KB |
-| 684 | maths/sumset | ✓ | 64µs | 59.4 KB |
-| 685 | maths/sylvester_sequence | ✓ | 33µs | 4.7 KB |
-| 686 | maths/tanh | ✓ | 144µs | 138.2 KB |
-| 687 | maths/test_factorial | ✓ | 28µs | 28.0 KB |
-| 688 | maths/test_prime_check | ✓ | 41µs | 75.7 KB |
-| 689 | maths/three_sum | ✓ | 66µs | 41.6 KB |
-| 690 | maths/trapezoidal_rule | ✓ | 29µs | 1.8 KB |
-| 691 | maths/triplet_sum | ✓ | 102µs | 119.2 KB |
-| 692 | maths/twin_prime | ✓ | 22µs | 12.2 KB |
-| 693 | maths/two_pointer | ✓ | 46µs | 46.8 KB |
-| 694 | maths/two_sum | ✓ | 28µs | 3.4 KB |
-| 695 | maths/volume | ✓ | 94µs | 28.7 KB |
-| 696 | maths/zellers_congruence | ✓ | 69µs | 45.5 KB |
-| 697 | matrix/binary_search_matrix | ✓ | 49µs | 16.3 KB |
+| 682 | maths/sum_of_geometric_progression |   |  |  |
+| 683 | maths/sum_of_harmonic_series |   |  |  |
+| 684 | maths/sumset |   |  |  |
+| 685 | maths/sylvester_sequence |   |  |  |
+| 686 | maths/tanh |   |  |  |
+| 687 | maths/test_factorial |   |  |  |
+| 688 | maths/test_prime_check |   |  |  |
+| 689 | maths/three_sum |   |  |  |
+| 690 | maths/trapezoidal_rule |   |  |  |
+| 691 | maths/triplet_sum |   |  |  |
+| 692 | maths/twin_prime |   |  |  |
+| 693 | maths/two_pointer |   |  |  |
+| 694 | maths/two_sum |   |  |  |
+| 695 | maths/volume |   |  |  |
+| 696 | maths/zellers_congruence |   |  |  |
+| 697 | matrix/binary_search_matrix |   |  |  |
 | 698 | matrix/count_islands_in_matrix | ✓ | 330µs | 480.0 KB |
-| 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 34.160105s |  |
-| 700 | matrix/count_paths |   |  |  |
-| 701 | matrix/cramers_rule_2x2 |   |  |  |
-| 702 | matrix/inverse_of_matrix |   |  |  |
-| 703 | matrix/largest_square_area_in_matrix |   |  |  |
-| 704 | matrix/matrix_based_game |   |  |  |
-| 705 | matrix/matrix_class |   |  |  |
-| 706 | matrix/matrix_equalization |   |  |  |
-| 707 | matrix/matrix_multiplication_recursion |   |  |  |
-| 708 | matrix/matrix_operation |   |  |  |
-| 709 | matrix/max_area_of_island |   |  |  |
-| 710 | matrix/median_matrix |   |  |  |
-| 711 | matrix/nth_fibonacci_using_matrix_exponentiation |   |  |  |
-| 712 | matrix/pascal_triangle |   |  |  |
-| 713 | matrix/rotate_matrix |   |  |  |
-| 714 | matrix/searching_in_sorted_matrix |   |  |  |
-| 715 | matrix/sherman_morrison |   |  |  |
-| 716 | matrix/spiral_print |   |  |  |
-| 717 | matrix/tests/test_matrix_operation |   |  |  |
+| 699 | matrix/count_negative_numbers_in_sorted_matrix |   |  |  |
+| 700 | matrix/count_paths | ✓ | 161µs | 96.7 KB |
+| 701 | matrix/cramers_rule_2x2 | ✓ | 44µs | 4.7 KB |
+| 702 | matrix/inverse_of_matrix | ✓ | 160µs | 17.8 KB |
+| 703 | matrix/largest_square_area_in_matrix | ✓ | 87µs | 50.6 KB |
+| 704 | matrix/matrix_based_game | ✓ | 212µs | 193.8 KB |
+| 705 | matrix/matrix_class | ✓ | 1.257ms | 584.9 KB |
+| 706 | matrix/matrix_equalization | ✓ | 4.223ms |  |
+| 707 | matrix/matrix_multiplication_recursion | ✓ | 130µs | 78.9 KB |
+| 708 | matrix/matrix_operation | ✓ | 377µs | 304.9 KB |
+| 709 | matrix/max_area_of_island | ✓ | 310µs | 268.9 KB |
+| 710 | matrix/median_matrix | ✓ | 57µs | 48.1 KB |
+| 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ | 645µs | 985.2 KB |
+| 712 | matrix/pascal_triangle | ✓ | 121µs | 50.6 KB |
+| 713 | matrix/rotate_matrix | ✓ | 113µs | 104.7 KB |
+| 714 | matrix/searching_in_sorted_matrix | ✓ | 89µs | 16.2 KB |
+| 715 | matrix/sherman_morrison | ✓ | 475µs | 96.2 KB |
+| 716 | matrix/spiral_print | ✓ | 70µs | 33.8 KB |
+| 717 | matrix/tests/test_matrix_operation | ✓ | 225µs | 73.5 KB |
 | 718 | matrix/validate_sudoku_board |   |  |  |
 | 719 | networking_flow/ford_fulkerson |   |  |  |
 | 720 | networking_flow/minimum_cut |   |  |  |
-| 721 | neural_network/activation_functions/binary_step |   |  |  |
-| 722 | neural_network/activation_functions/exponential_linear_unit |   |  |  |
-| 723 | neural_network/activation_functions/gaussian_error_linear_unit |   |  |  |
-| 724 | neural_network/activation_functions/leaky_rectified_linear_unit |   |  |  |
-| 725 | neural_network/activation_functions/mish |   |  |  |
-| 726 | neural_network/activation_functions/rectified_linear_unit |   |  |  |
-| 727 | neural_network/activation_functions/scaled_exponential_linear_unit |   |  |  |
+| 721 | neural_network/activation_functions/binary_step | ✓ | 26µs | 5.2 KB |
+| 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 91µs | 61.9 KB |
+| 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 87µs | 77.8 KB |
+| 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 49µs | 5.8 KB |
+| 725 | neural_network/activation_functions/mish | ✓ | 187µs | 332.7 KB |
+| 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 52µs | 4.4 KB |
+| 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 61µs | 9.5 KB |
 | 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent |   |  |  |
 | 729 | neural_network/activation_functions/softplus |   |  |  |
-| 730 | neural_network/activation_functions/squareplus |   |  |  |
-| 731 | neural_network/activation_functions/swish |   |  |  |
-| 732 | neural_network/back_propagation_neural_network |   |  |  |
-| 733 | neural_network/convolution_neural_network |   |  |  |
-| 734 | neural_network/input_data |   |  |  |
-| 735 | neural_network/simple_neural_network |   |  |  |
-| 736 | neural_network/two_hidden_layers_neural_network |   |  |  |
-| 737 | other/activity_selection |   |  |  |
-| 738 | other/alternative_list_arrange |   |  |  |
-| 739 | other/bankers_algorithm |   |  |  |
-| 740 | other/davis_putnam_logemann_loveland |   |  |  |
-| 741 | other/doomsday |   |  |  |
-| 742 | other/fischer_yates_shuffle |   |  |  |
-| 743 | other/gauss_easter |   |  |  |
-| 744 | other/greedy |   |  |  |
-| 745 | other/guess_the_number_search |   |  |  |
-| 746 | other/h_index |   |  |  |
+| 730 | neural_network/activation_functions/squareplus | ✓ | 182µs | 86.9 KB |
+| 731 | neural_network/activation_functions/swish | ✓ | 184µs | 234.1 KB |
+| 732 | neural_network/back_propagation_neural_network | ✓ | 3.457406s |  |
+| 733 | neural_network/convolution_neural_network | ✓ | 14.353ms | 2.4 MB |
+| 734 | neural_network/input_data | ✓ | 162µs | 58.4 KB |
+| 735 | neural_network/simple_neural_network | ✓ | 62µs | 1.9 KB |
+| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 10.846ms | 210.0 KB |
+| 737 | other/activity_selection | ✓ | 22µs | 3.9 KB |
+| 738 | other/alternative_list_arrange | ✓ | 39µs | 32.0 KB |
+| 739 | other/bankers_algorithm | ✓ | 176µs | 134.5 KB |
+| 740 | other/davis_putnam_logemann_loveland | ✓ | 13µs | 1.2 KB |
+| 741 | other/doomsday | ✓ | 29µs | 4.2 KB |
+| 742 | other/fischer_yates_shuffle | ✓ | 88µs | 36.9 KB |
+| 743 | other/gauss_easter | ✓ | 65µs | 24.2 KB |
+| 744 | other/greedy | ✓ | 104µs | 47.2 KB |
+| 745 | other/guess_the_number_search | ✓ | 62µs | 35.8 KB |
+| 746 | other/h_index | ✓ | 96µs | 66.0 KB |
 | 747 | other/least_recently_used |   |  |  |
-| 748 | other/lfu_cache |   |  |  |
-| 749 | other/linear_congruential_generator |   |  |  |
+| 748 | other/lfu_cache | ✓ | 105µs | 97.1 KB |
+| 749 | other/linear_congruential_generator | ✓ | 25µs | 6.1 KB |
 | 750 | other/lru_cache |   |  |  |
 | 751 | other/magicdiamondpattern |   |  |  |
 | 752 | other/majority_vote_algorithm |   |  |  |
