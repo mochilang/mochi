@@ -1,13 +1,13 @@
 Traceback (most recent call last):
-  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/radix_tree.py", line 232, in <module>
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/radix_tree.py", line 236, in <module>
     main()
-  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/radix_tree.py", line 228, in main
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/radix_tree.py", line 232, in main
     insert_many(tree, words)
-  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/radix_tree.py", line 65, in insert_many
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/radix_tree.py", line 69, in insert_many
     insert(tree, 0, w)
-  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/radix_tree.py", line 100, in insert
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/radix_tree.py", line 104, in insert
     insert(tree, new_idx, res.rem_word)
-  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/radix_tree.py", line 68, in insert
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/trie/radix_tree.py", line 72, in insert
     node = nodes[idx]
            ~~~~~^^^^^
 IndexError: list index out of range

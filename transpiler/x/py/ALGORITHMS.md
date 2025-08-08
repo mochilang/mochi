@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Python`.
-Last updated: 2025-08-08 06:31 GMT+7
+Last updated: 2025-08-08 06:53 GMT+7
 
-## Algorithms Golden Test Checklist (500/1077)
+## Algorithms Golden Test Checklist (504/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 63.0µs | 12.88MB |
@@ -259,56 +259,56 @@ Last updated: 2025-08-08 06:31 GMT+7
 | 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ | 162.0µs | 13.80MB |
 | 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 52.0µs | 12.86MB |
 | 252 | data_structures/stacks/lexicographical_numbers | ✓ | 149.0µs | 12.52MB |
-| 253 | data_structures/stacks/next_greater_element | error |  |  |
-| 254 | data_structures/stacks/postfix_evaluation | ✓ | 145.0µs | 13.74MB |
-| 255 | data_structures/stacks/prefix_evaluation | ✓ | 151.0µs | 13.54MB |
-| 256 | data_structures/stacks/stack | error |  |  |
-| 257 | data_structures/stacks/stack_using_two_queues | ✓ | 969.0µs | 12.50MB |
-| 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 68.0µs | 13.74MB |
-| 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 42.0µs | 13.09MB |
-| 260 | data_structures/stacks/stock_span_problem | ✓ | 37.0µs | 13.06MB |
-| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 65.0µs | 13.11MB |
-| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 1.0ms | 12.77MB |
-| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 1.0ms | 12.54MB |
-| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 954.0µs | 12.80MB |
+| 253 | data_structures/stacks/next_greater_element | ✓ | 122.0µs | 13.61MB |
+| 254 | data_structures/stacks/postfix_evaluation | ✓ | 119.0µs | 13.39MB |
+| 255 | data_structures/stacks/prefix_evaluation | ✓ | 150.0µs | 13.48MB |
+| 256 | data_structures/stacks/stack | ✓ | 30.0µs | 13.05MB |
+| 257 | data_structures/stacks/stack_using_two_queues | ✓ | 680.0µs | 12.43MB |
+| 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 40.0µs | 13.64MB |
+| 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 29.0µs | 12.91MB |
+| 260 | data_structures/stacks/stock_span_problem | ✓ | 22.0µs | 13.24MB |
+| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 44.0µs | 13.06MB |
+| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 1.0ms | 13.12MB |
+| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 992.0µs | 13.03MB |
+| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 697.0µs | 12.86MB |
 | 265 | data_structures/trie/radix_tree | error |  |  |
-| 266 | data_structures/trie/trie | error |  |  |
-| 267 | digital_image_processing/change_brightness | ✓ | 43.0µs | 12.50MB |
-| 268 | digital_image_processing/change_contrast | ✓ | 47.0µs | 13.00MB |
-| 269 | digital_image_processing/convert_to_negative | ✓ | 27.0µs | 12.55MB |
-| 270 | digital_image_processing/dithering/burkes | ✓ | 132.0µs | 13.73MB |
+| 266 | data_structures/trie/trie | ✓ | 1.0ms | 13.75MB |
+| 267 | digital_image_processing/change_brightness | ✓ | 22.0µs | 12.42MB |
+| 268 | digital_image_processing/change_contrast | ✓ | 36.0µs | 12.55MB |
+| 269 | digital_image_processing/convert_to_negative | ✓ | 19.0µs | 12.36MB |
+| 270 | digital_image_processing/dithering/burkes | ✓ | 81.0µs | 13.22MB |
 | 271 | digital_image_processing/edge_detection/canny | error |  |  |
-| 272 | digital_image_processing/filters/bilateral_filter | ✓ | 152.0µs | 13.96MB |
-| 273 | digital_image_processing/filters/convolve | ✓ | 233.0µs | 13.46MB |
-| 274 | digital_image_processing/filters/gabor_filter | ✓ | 176.0µs | 12.77MB |
-| 275 | digital_image_processing/filters/gaussian_filter | ✓ | 179.0µs | 13.54MB |
-| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 164.0µs | 14.17MB |
-| 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 129.0µs | 13.17MB |
-| 278 | digital_image_processing/filters/median_filter | ✓ | 105.0µs | 12.95MB |
-| 279 | digital_image_processing/filters/sobel_filter | ✓ | 582.0µs | 14.68MB |
-| 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 683.0µs | 12.54MB |
+| 272 | digital_image_processing/filters/bilateral_filter | ✓ | 101.0µs | 13.92MB |
+| 273 | digital_image_processing/filters/convolve | ✓ | 154.0µs | 14.06MB |
+| 274 | digital_image_processing/filters/gabor_filter | ✓ | 148.0µs | 13.54MB |
+| 275 | digital_image_processing/filters/gaussian_filter | ✓ | 112.0µs | 13.84MB |
+| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 135.0µs | 13.84MB |
+| 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 110.0µs | 12.97MB |
+| 278 | digital_image_processing/filters/median_filter | ✓ | 66.0µs | 12.92MB |
+| 279 | digital_image_processing/filters/sobel_filter | ✓ | 352.0µs | 13.76MB |
+| 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 478.0µs | 12.66MB |
 | 281 | digital_image_processing/index_calculation | error |  |  |
-| 282 | digital_image_processing/morphological_operations/dilation_operation | ✓ | 91.0µs | 14.05MB |
-| 283 | digital_image_processing/morphological_operations/erosion_operation | ✓ | 84.0µs | 13.77MB |
-| 284 | digital_image_processing/resize/resize | ✓ | 94.0µs | 12.54MB |
-| 285 | digital_image_processing/rotation/rotation | ✓ | 63.0µs | 13.60MB |
-| 286 | digital_image_processing/sepia | ✓ | 35.0µs | 12.48MB |
-| 287 | digital_image_processing/test_digital_image_processing | ✓ | 439.0µs | 14.33MB |
-| 288 | divide_and_conquer/closest_pair_of_points | error |  |  |
-| 289 | divide_and_conquer/convex_hull | ✓ | 1.0ms | 13.16MB |
-| 290 | divide_and_conquer/heaps_algorithm | ✓ | 32.0µs | 12.79MB |
-| 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 41.0µs | 12.92MB |
-| 292 | divide_and_conquer/inversions | ✓ | 1.0ms | 13.98MB |
-| 293 | divide_and_conquer/kth_order_statistic | ✓ | 63.0µs | 13.11MB |
-| 294 | divide_and_conquer/max_difference_pair | ✓ | 32.0µs | 12.28MB |
-| 295 | divide_and_conquer/max_subarray | ✓ | 90.0µs | 13.61MB |
-| 296 | divide_and_conquer/mergesort | ✓ | 72.0µs | 12.57MB |
-| 297 | divide_and_conquer/peak | ✓ | 34.0µs | 12.61MB |
-| 298 | divide_and_conquer/power | ✓ | 37.0µs | 12.48MB |
-| 299 | divide_and_conquer/strassen_matrix_multiplication | ✓ | 4.0ms | 14.24MB |
-| 300 | docs/conf | ✓ | 25.0µs | 12.57MB |
-| 301 | dynamic_programming/abbreviation | ✓ | 104.0µs | 13.80MB |
-| 302 | dynamic_programming/all_construct | ✓ | 253.0µs | 12.61MB |
+| 282 | digital_image_processing/morphological_operations/dilation_operation | ✓ | 72.0µs | 13.95MB |
+| 283 | digital_image_processing/morphological_operations/erosion_operation | ✓ | 42.0µs | 13.75MB |
+| 284 | digital_image_processing/resize/resize | ✓ | 68.0µs | 12.89MB |
+| 285 | digital_image_processing/rotation/rotation | ✓ | 38.0µs | 13.99MB |
+| 286 | digital_image_processing/sepia | ✓ | 25.0µs | 13.38MB |
+| 287 | digital_image_processing/test_digital_image_processing | ✓ | 294.0µs | 14.75MB |
+| 288 | divide_and_conquer/closest_pair_of_points | ✓ | 44.0µs | 13.75MB |
+| 289 | divide_and_conquer/convex_hull | ✓ | 708.0µs | 13.46MB |
+| 290 | divide_and_conquer/heaps_algorithm | ✓ | 24.0µs | 13.05MB |
+| 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 31.0µs | 12.41MB |
+| 292 | divide_and_conquer/inversions | ✓ | 843.0µs | 13.38MB |
+| 293 | divide_and_conquer/kth_order_statistic | ✓ | 35.0µs | 12.29MB |
+| 294 | divide_and_conquer/max_difference_pair | ✓ | 21.0µs | 12.25MB |
+| 295 | divide_and_conquer/max_subarray | ✓ | 79.0µs | 13.60MB |
+| 296 | divide_and_conquer/mergesort | ✓ | 77.0µs | 12.52MB |
+| 297 | divide_and_conquer/peak | ✓ | 16.0µs | 12.61MB |
+| 298 | divide_and_conquer/power | ✓ | 27.0µs | 12.74MB |
+| 299 | divide_and_conquer/strassen_matrix_multiplication | ✓ | 4.0ms | 13.99MB |
+| 300 | docs/conf | ✓ | 13.0µs | 12.80MB |
+| 301 | dynamic_programming/abbreviation | ✓ | 79.0µs | 13.21MB |
+| 302 | dynamic_programming/all_construct | ✓ | 143.0µs | 12.77MB |
 | 303 | dynamic_programming/bitmask | ✓ | 31.0µs | 12.95MB |
 | 304 | dynamic_programming/catalan_numbers | ✓ | 30.0µs | 12.73MB |
 | 305 | dynamic_programming/climbing_stairs | ✓ | 17.0µs | 12.30MB |
