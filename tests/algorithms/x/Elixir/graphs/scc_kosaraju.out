@@ -1,0 +1,67 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 56 │       {i, reversed_graph} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/scc_kosaraju.exs:56:8: Main.kosaraju/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 75 │       {i, reversed_graph} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/scc_kosaraju.exs:75:8: Main.kosaraju/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 92 │       {i, visit} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/scc_kosaraju.exs:92:8: Main.kosaraju/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 114 │       {i, stack} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/scc_kosaraju.exs:114:8: Main.kosaraju/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 130 │       {i, visit} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/scc_kosaraju.exs:130:8: Main.kosaraju/1
+
+     warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 155 │       {idx, scc} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/scc_kosaraju.exs:155:8: Main.kosaraju/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 180 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/scc_kosaraju.exs:180:7: Main.main/0
+
+[4, 3, 2, 1, 0]
+[3, 2, 1, 0]
+[4, 3, 2, 1, 0]
+[2, 1, 0]
+[3, 2, 1, 0]
+[4, 3, 2, 1, 0]
+[0, 2, 1]
+[1, 0, 2]
+[1, 0, 2]
+[2, 1, 0]
+[3, 2, 1, 0]
+[4, 3, 2, 1, 0]
+[0, 2, 1]
+[0, 2, 1]
+[1, 0, 2]
+[2, 1, 0]
+[3, 2, 1, 0]
+[4, 3, 2, 1, 0]

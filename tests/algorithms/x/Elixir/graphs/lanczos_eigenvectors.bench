@@ -1,0 +1,247 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 47 │       {guess, i} = try do
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:47:15: Main.sqrtApprox/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 78 │       {i, s} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:78:8: Main.dot/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 102 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:102:8: Main.vector_scale/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 126 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:126:8: Main.vector_sub/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 150 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:150:8: Main.vector_add/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 178 │           {j, row} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:178:12: Main.zeros_matrix/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 191 │       {i, m} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:191:8: Main.zeros_matrix/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 215 │       {col, i} = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:215:13: Main.column/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 244 │           j = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:244:11: Main.validate_adjacency_list/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 256 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:256:7: Main.validate_adjacency_list/1
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 288 │           {j, sum} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:288:12: Main.multiply_matrix_vector/2
+
+     warning: variable "result" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 294 │           result = (result ++ [sum])
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:294:11: Main.multiply_matrix_vector/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 301 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:301:7: Main.multiply_matrix_vector/2
+
+     warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 418 │               {q, r} = try do
+     │                   ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:418:19: Main.lanczos_iteration/2
+
+     warning: variable "p" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 395 │           {p, ss2} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:395:12: Main.lanczos_iteration/2
+
+     warning: variable "beta" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 438 │       {beta, j, q, t} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:438:8: Main.lanczos_iteration/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 331 │       {i, v} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:331:8: Main.lanczos_iteration/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 348 │       {i, ss} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:348:8: Main.lanczos_iteration/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 365 │       {i, q} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:365:8: Main.lanczos_iteration/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 438 │       {beta, j, q, t} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:438:14: Main.lanczos_iteration/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 497 │               {j, max, p, q} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:497:16: Main.jacobi_eigen/2
+
+     warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 556 │           {a, k} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:556:15: Main.jacobi_eigen/2
+
+     warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 575 │           {k, v} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:575:12: Main.jacobi_eigen/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 587 │       {a, i, iter, v} = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:587:11: Main.jacobi_eigen/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 604 │       {eigenvalues, i} = try do
+     │                     ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:604:21: Main.jacobi_eigen/2
+
+     warning: variable "iter" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 587 │       {a, i, iter, v} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:587:14: Main.jacobi_eigen/2
+
+     warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 638 │               {k, s} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:638:16: Main.matmul/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 651 │           {j, m} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:651:12: Main.matmul/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 663 │       {i, m} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:663:8: Main.matmul/2
+
+     warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 701 │                 {r, vectors} = try do
+     │                  ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:701:18: Main.sort_eigenpairs/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 717 │           {j, values, vectors} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:717:12: Main.sort_eigenpairs/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 729 │       {i, values, vectors} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:729:8: Main.sort_eigenpairs/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 771 │       {i, s} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:771:8: Main.list_to_string/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 801 │       {i, s} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:801:8: Main.matrix_to_string/1
+
+** (ArithmeticError) bad argument in arithmetic expression: 0.11032573653025755 * nil
+    :erlang.*(0.11032573653025755, nil)
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:71: anonymous fn/5 in Main.dot/2
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:79: Main.dot/2
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:382: anonymous fn/8 in Main.lanczos_iteration/2
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:439: Main.lanczos_iteration/2
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:743: Main.find_lanczos_eigenvectors/2
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:818: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/lanczos_eigenvectors.exs:828: (file)

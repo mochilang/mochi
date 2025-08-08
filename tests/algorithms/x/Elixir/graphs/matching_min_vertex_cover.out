@@ -1,0 +1,8 @@
+warning: variable "edges" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 99 │       {chosen, edges} = try do
+    │                ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/matching_min_vertex_cover.exs:99:16: Main.matching_min_vertex_cover/1
+
+[4 3 2 0]

@@ -1,0 +1,93 @@
+run: exit status 1
+    warning: variable "dist" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 17 │         dist = Map.put(dist, node_, inf)
+    │         ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_prims2.exs:17:9: Main.prims_algo/1
+
+    warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 95 │             {k, queue} = try do
+    │              ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_prims2.exs:95:14: Main.prims_algo/1
+
+    warning: variable "parent" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 76 │           {parent, queue} = if dist[neighbour] > dist[start] + w do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_prims2.exs:76:12: Main.prims_algo/1
+
+    warning: variable "queue" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 76 │           {parent, queue} = if dist[neighbour] > dist[start] + w do
+    │                    ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_prims2.exs:76:20: Main.prims_algo/1
+
+     warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 181 │                 {queue, r} = try do
+     │                         ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_prims2.exs:181:25: Main.prims_algo/1
+
+     warning: variable "parent" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 162 │               {parent, queue} = if dist[neighbour] > dist[node_] + w do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_prims2.exs:162:16: Main.prims_algo/1
+
+     warning: variable "queue" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 162 │               {parent, queue} = if dist[neighbour] > dist[node_] + w do
+     │                        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_prims2.exs:162:24: Main.prims_algo/1
+
+     warning: variable "p" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 128 │           {best_idx, p} = try do
+     │                      ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_prims2.exs:128:22: Main.prims_algo/1
+
+     warning: variable "q" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 152 │           {q, tmp} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_prims2.exs:152:12: Main.prims_algo/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 41 │       {i, min_idx} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_prims2.exs:41:8: Main.prims_algo/1
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 65 │       {j, new_q} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_prims2.exs:65:8: Main.prims_algo/1
+
+     warning: variable "queue" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 201 │       {parent, queue} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_prims2.exs:201:16: Main.prims_algo/1
+
+** (ArithmeticError) bad argument in arithmetic expression: nil + 3
+    :erlang.+(nil, 3)
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_prims2.exs:162: anonymous fn/5 in Main.prims_algo/1
+    (elixir 1.18.3) lib/enum.ex:2546: Enum."-reduce/3-lists^foldl/2-0-"/3
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_prims2.exs:159: anonymous fn/5 in Main.prims_algo/1
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_prims2.exs:202: Main.prims_algo/1
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_prims2.exs:225: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/minimum_spanning_tree_prims2.exs:232: (file)
