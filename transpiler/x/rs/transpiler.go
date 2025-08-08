@@ -3437,6 +3437,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		return &AssignStmt{Name: stmt.Assign.Name, Expr: val}, nil
 	case stmt.Return != nil:
 		if stmt.Return.Value != nil {
+			if ml := mapLiteralExpr(stmt.Return.Value); ml != nil && strings.HasPrefix(currentFuncRet, "HashMap") {
+				forceMap[ml] = true
+			}
 			val, err := compileExpr(stmt.Return.Value)
 			if err != nil {
 				return nil, err
