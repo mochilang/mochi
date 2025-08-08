@@ -1,0 +1,16 @@
+run: exit status 1
+string=?: contract violation
+  expected: string?
+  given: '("milk")
+  context...:
+   /workspace/mochi/tests/algorithms/x/Racket/machine_learning/apriori_algorithm.rkt:76:2
+   /workspace/mochi/tests/algorithms/x/Racket/machine_learning/apriori_algorithm.rkt:75:0
+   /workspace/mochi/tests/algorithms/x/Racket/machine_learning/apriori_algorithm.rkt:74:2
+   /workspace/mochi/tests/algorithms/x/Racket/machine_learning/apriori_algorithm.rkt:87:2
+   /workspace/mochi/tests/algorithms/x/Racket/machine_learning/apriori_algorithm.rkt:86:0
+   /workspace/mochi/tests/algorithms/x/Racket/machine_learning/apriori_algorithm.rkt:85:2
+   /workspace/mochi/tests/algorithms/x/Racket/machine_learning/apriori_algorithm.rkt:262:144
+   /workspace/mochi/tests/algorithms/x/Racket/machine_learning/apriori_algorithm.rkt:258:4
+   /workspace/mochi/tests/algorithms/x/Racket/machine_learning/apriori_algorithm.rkt:250:144
+   /workspace/mochi/tests/algorithms/x/Racket/machine_learning/apriori_algorithm.rkt:236:2
+   body of "/workspace/mochi/tests/algorithms/x/Racket/machine_learning/apriori_algorithm.rkt"
