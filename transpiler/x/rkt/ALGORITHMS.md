@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Racket code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Racket`.
-Last updated: 2025-08-08 08:53 UTC
+Last updated: 2025-08-08 09:25 UTC
 
-## Algorithms Golden Test Checklist (528/1077)
+## Algorithms Golden Test Checklist (578/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 29µs | 18.2 KB |
@@ -567,57 +567,57 @@ Last updated: 2025-08-08 08:53 UTC
 | 558 | maths/entropy | ✓ | 9m31.223891s | 3.5 MB |
 | 559 | maths/euclidean_distance | ✓ | 9m31.223891s | 123.6 KB |
 | 560 | maths/euler_method | ✓ | 9m31.223891s | 2.2 MB |
-| 561 | maths/euler_modified |   |  |  |
-| 562 | maths/eulers_totient |   |  |  |
-| 563 | maths/extended_euclidean_algorithm |   |  |  |
-| 564 | maths/factorial |   |  |  |
-| 565 | maths/factors |   |  |  |
-| 566 | maths/fast_inverse_sqrt |   |  |  |
-| 567 | maths/fermat_little_theorem |   |  |  |
-| 568 | maths/fibonacci |   |  |  |
-| 569 | maths/find_max |   |  |  |
-| 570 | maths/find_min |   |  |  |
-| 571 | maths/floor |   |  |  |
-| 572 | maths/gamma |   |  |  |
-| 573 | maths/gaussian |   |  |  |
-| 574 | maths/gcd_of_n_numbers |   |  |  |
+| 561 | maths/euler_modified | ✓ | 96µs | 102.6 KB |
+| 562 | maths/eulers_totient | ✓ | 72µs | 54.2 KB |
+| 563 | maths/extended_euclidean_algorithm | ✓ | 41µs | 23.1 KB |
+| 564 | maths/factorial | ✓ | 46µs | 62.8 KB |
+| 565 | maths/factors | ✓ | 48µs | 18.4 KB |
+| 566 | maths/fast_inverse_sqrt | ✓ | 1.194ms | 3.0 MB |
+| 567 | maths/fermat_little_theorem | ✓ | 14µs | 2.1 KB |
+| 568 | maths/fibonacci | ✓ | 157µs | 293.9 KB |
+| 569 | maths/find_max | ✓ | 67µs | 61.8 KB |
+| 570 | maths/find_min | ✓ | 49µs | 28.9 KB |
+| 571 | maths/floor | ✓ | 24µs | 10.7 KB |
+| 572 | maths/gamma | ✓ | 869.724ms | 24.4 MB |
+| 573 | maths/gaussian | ✓ | 39µs | 24.7 KB |
+| 574 | maths/gcd_of_n_numbers | ✓ | 32µs | 30.8 KB |
 | 575 | maths/geometric_mean |   |  |  |
-| 576 | maths/germain_primes |   |  |  |
-| 577 | maths/greatest_common_divisor |   |  |  |
-| 578 | maths/hardy_ramanujanalgo |   |  |  |
-| 579 | maths/integer_square_root |   |  |  |
-| 580 | maths/interquartile_range |   |  |  |
-| 581 | maths/is_int_palindrome |   |  |  |
-| 582 | maths/is_ip_v4_address_valid |   |  |  |
-| 583 | maths/is_square_free |   |  |  |
-| 584 | maths/jaccard_similarity |   |  |  |
-| 585 | maths/joint_probability_distribution |   |  |  |
-| 586 | maths/josephus_problem |   |  |  |
-| 587 | maths/juggler_sequence |   |  |  |
-| 588 | maths/karatsuba |   |  |  |
-| 589 | maths/kth_lexicographic_permutation |   |  |  |
-| 590 | maths/largest_of_very_large_numbers |   |  |  |
-| 591 | maths/least_common_multiple |   |  |  |
-| 592 | maths/line_length |   |  |  |
-| 593 | maths/liouville_lambda |   |  |  |
-| 594 | maths/lucas_lehmer_primality_test |   |  |  |
-| 595 | maths/lucas_series |   |  |  |
-| 596 | maths/maclaurin_series |   |  |  |
-| 597 | maths/manhattan_distance |   |  |  |
-| 598 | maths/matrix_exponentiation |   |  |  |
-| 599 | maths/max_sum_sliding_window |   |  |  |
-| 600 | maths/minkowski_distance |   |  |  |
-| 601 | maths/mobius_function |   |  |  |
-| 602 | maths/modular_division |   |  |  |
-| 603 | maths/monte_carlo |   |  |  |
-| 604 | maths/monte_carlo_dice |   |  |  |
-| 605 | maths/number_of_digits |   |  |  |
-| 606 | maths/numerical_analysis/adams_bashforth |   |  |  |
-| 607 | maths/numerical_analysis/bisection |   |  |  |
-| 608 | maths/numerical_analysis/bisection_2 |   |  |  |
-| 609 | maths/numerical_analysis/integration_by_simpson_approx |   |  |  |
-| 610 | maths/numerical_analysis/intersection |   |  |  |
-| 611 | maths/numerical_analysis/nevilles_method |   |  |  |
+| 576 | maths/germain_primes | ✓ | 35µs | 29.7 KB |
+| 577 | maths/greatest_common_divisor | ✓ | 52µs | 60.0 KB |
+| 578 | maths/hardy_ramanujanalgo | ✓ | 170µs | 373.4 KB |
+| 579 | maths/integer_square_root | ✓ | 53µs | 55.8 KB |
+| 580 | maths/interquartile_range | ✓ | 106µs | 109.8 KB |
+| 581 | maths/is_int_palindrome | ✓ | 34µs | 11.0 KB |
+| 582 | maths/is_ip_v4_address_valid | ✓ | 169µs | 183.3 KB |
+| 583 | maths/is_square_free | ✓ | 36µs | 12.7 KB |
+| 584 | maths/jaccard_similarity | ✓ | 51µs | 44.1 KB |
+| 585 | maths/joint_probability_distribution | ✓ | 175µs | 69.8 KB |
+| 586 | maths/josephus_problem | ✓ | 32µs | 26.1 KB |
+| 587 | maths/juggler_sequence | ✓ | 89µs | 132.3 KB |
+| 588 | maths/karatsuba | ✓ | 61µs | 38.8 KB |
+| 589 | maths/kth_lexicographic_permutation | ✓ | 52µs | 46.9 KB |
+| 590 | maths/largest_of_very_large_numbers | ✓ | 72µs | 142.6 KB |
+| 591 | maths/least_common_multiple | ✓ | 24µs | 7.7 KB |
+| 592 | maths/line_length | ✓ | 4.989ms | 4.2 MB |
+| 593 | maths/liouville_lambda | ✓ | 25µs | 14.8 KB |
+| 594 | maths/lucas_lehmer_primality_test | ✓ | 24µs | 15.6 KB |
+| 595 | maths/lucas_series | ✓ | 7.651ms |  |
+| 596 | maths/maclaurin_series | ✓ | 4.178ms |  |
+| 597 | maths/manhattan_distance | ✓ | 50µs | 17.0 KB |
+| 598 | maths/matrix_exponentiation | ✓ | 132µs | 197.4 KB |
+| 599 | maths/max_sum_sliding_window | ✓ | 27µs | 15.6 KB |
+| 600 | maths/minkowski_distance | ✓ | 74µs | 124.7 KB |
+| 601 | maths/mobius_function | ✓ | 29µs | 8.0 KB |
+| 602 | maths/modular_division | ✓ | 43µs | 38.6 KB |
+| 603 | maths/monte_carlo | ✓ | 12.574ms | 904.7 KB |
+| 604 | maths/monte_carlo_dice | ✓ | 34.091ms | 2.2 MB |
+| 605 | maths/number_of_digits | ✓ | 36µs | 32.2 KB |
+| 606 | maths/numerical_analysis/adams_bashforth | ✓ | 46µs | 14.9 KB |
+| 607 | maths/numerical_analysis/bisection | ✓ | 65µs | 67.4 KB |
+| 608 | maths/numerical_analysis/bisection_2 | ✓ | 51µs | 41.7 KB |
+| 609 | maths/numerical_analysis/integration_by_simpson_approx | ✓ | 818µs | 1.8 MB |
+| 610 | maths/numerical_analysis/intersection | ✓ | 53µs | 26.5 KB |
+| 611 | maths/numerical_analysis/nevilles_method | ✓ | 95µs | 77.1 KB |
 | 612 | maths/numerical_analysis/newton_forward_interpolation |   |  |  |
 | 613 | maths/numerical_analysis/newton_raphson |   |  |  |
 | 614 | maths/numerical_analysis/numerical_integration |   |  |  |

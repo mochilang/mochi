@@ -1,0 +1,7 @@
+run: exit status 1
+test4 failed
+  context...:
+   /workspace/mochi/tests/algorithms/x/Racket/maths/geometric_mean.rkt:166:2
+   /workspace/mochi/tests/algorithms/x/Racket/maths/geometric_mean.rkt:172:2
+   /workspace/mochi/tests/algorithms/x/Racket/maths/geometric_mean.rkt:171:0
+   body of "/workspace/mochi/tests/algorithms/x/Racket/maths/geometric_mean.rkt"
