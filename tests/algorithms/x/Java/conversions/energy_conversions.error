@@ -1,8 +1,0 @@
-compile: exit status 1
-/tmp/TestJavaTranspiler_Algorithms_Golden130_energy_conversions219165491/001/Main.java:5: error: incompatible types: boolean cannot be converted to Number
-        if (((Number)((ENERGY_CONVERSION.containsKey(from_type)))).intValue() == false || ((Number)((ENERGY_CONVERSION.containsKey(to_type)))).intValue() == false) {
-                     ^
-/tmp/TestJavaTranspiler_Algorithms_Golden130_energy_conversions219165491/001/Main.java:5: error: incompatible types: boolean cannot be converted to Number
-        if (((Number)((ENERGY_CONVERSION.containsKey(from_type)))).intValue() == false || ((Number)((ENERGY_CONVERSION.containsKey(to_type)))).intValue() == false) {
-                                                                                                   ^
-2 errors

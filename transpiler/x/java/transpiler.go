@@ -930,7 +930,7 @@ func inferType(e Expr) string {
 		}
 	case *MethodCallExpr:
 		switch ex.Name {
-		case "contains":
+		case "contains", "containsKey", "anyMatch":
 			return "boolean"
 		case "apply":
 			if v, ok := ex.Target.(*VarExpr); ok {
@@ -2385,6 +2385,12 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		}
 		if rt == "Object" {
 			rt = ""
+		}
+		if lt == "boolean" || rt == "boolean" {
+			emitCastExpr(w, b.Left, "boolean")
+			fmt.Fprint(w, " "+b.Op+" ")
+			emitCastExpr(w, b.Right, "boolean")
+			return
 		}
 		if lt == "double" || rt == "double" {
 			typ = "double"
