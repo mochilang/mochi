@@ -1,0 +1,43 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/algorithms/transpiler/FS/machine_learning/apriori_algorithm.fs(270,37): error FS0001: This expression was expected to have type
+    'a []    
+but here has type
+    obj    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/machine_learning/apriori_algorithm.fs(273,28): error FS0001: The type 'obj' is not compatible with the type 'seq<'a>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/machine_learning/apriori_algorithm.fs(276,38): error FS0001: The type 'obj' is not compatible with the type 'seq<'a>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/machine_learning/apriori_algorithm.fs(281,40): error FS0001: The type 'obj' is not compatible with the type 'seq<'a>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/machine_learning/apriori_algorithm.fs(282,56): error FS0001: This expression was expected to have type
+    string array array    
+but here has type
+    obj    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/machine_learning/apriori_algorithm.fs(288,36): error FS0001: The type 'obj' is not compatible with the type 'seq<'a>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/machine_learning/apriori_algorithm.fs(290,69): error FS0001: This expression was expected to have type
+    string array array    
+but here has type
+    obj    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/machine_learning/apriori_algorithm.fs(294,36): error FS0001: The type 'obj' is not compatible with the type 'seq<'a>'
+
+/workspace/mochi/tests/algorithms/transpiler/FS/machine_learning/apriori_algorithm.fs(295,76): error FS0001: This expression was expected to have type
+    string array array    
+but here has type
+    obj    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/machine_learning/apriori_algorithm.fs(299,72): error FS0001: This expression was expected to have type
+    string array array    
+but here has type
+    obj    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/machine_learning/apriori_algorithm.fs(300,36): error FS0001: This expression was expected to have type
+    string array array    
+but here has type
+    obj    
