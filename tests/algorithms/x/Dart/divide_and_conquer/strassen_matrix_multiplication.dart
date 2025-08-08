@@ -47,10 +47,10 @@ List<List<int>> matrix_addition(List<List<int>> matrix_a, List<List<int>> matrix
     List<int> row = <int>[];
     int j = 0;
     while (j < matrix_a[i].length) {
-    row = [...row, matrix_a[i][j] + matrix_b[i][j]];
+    row = (row..add(matrix_a[i][j] + matrix_b[i][j]));
     j = j + 1;
   }
-    result = ([...result, row] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    result = ((result..add(row)) as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
     i = i + 1;
   }
   return result;
@@ -63,10 +63,10 @@ List<List<int>> matrix_subtraction(List<List<int>> matrix_a, List<List<int>> mat
     List<int> row = <int>[];
     int j = 0;
     while (j < matrix_a[i].length) {
-    row = [...row, matrix_a[i][j] - matrix_b[i][j]];
+    row = (row..add(matrix_a[i][j] - matrix_b[i][j]));
     j = j + 1;
   }
-    result = ([...result, row] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    result = ((result..add(row)) as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
     i = i + 1;
   }
   return result;
@@ -85,12 +85,12 @@ List<List<List<int>>> split_matrix(List<List<int>> a) {
     List<int> right_row = <int>[];
     int j = 0;
     while (j < mid) {
-    left_row = [...left_row, a[i][j]];
-    right_row = [...right_row, a[i][j + mid]];
+    left_row = (left_row..add(a[i][j]));
+    right_row = (right_row..add(a[i][j + mid]));
     j = j + 1;
   }
-    top_left = ([...top_left, left_row] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
-    top_right = ([...top_right, right_row] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    top_left = ((top_left..add(left_row)) as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    top_right = ((top_right..add(right_row)) as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
     i = i + 1;
   }
   i = mid;
@@ -99,12 +99,12 @@ List<List<List<int>>> split_matrix(List<List<int>> a) {
     List<int> right_row = <int>[];
     int j = 0;
     while (j < mid) {
-    left_row = [...left_row, a[i][j]];
-    right_row = [...right_row, a[i][j + mid]];
+    left_row = (left_row..add(a[i][j]));
+    right_row = (right_row..add(a[i][j + mid]));
     j = j + 1;
   }
-    bot_left = ([...bot_left, left_row] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
-    bot_right = ([...bot_right, right_row] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    bot_left = ((bot_left..add(left_row)) as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    bot_right = ((bot_right..add(right_row)) as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
     i = i + 1;
   }
   return [top_left, top_right, bot_left, bot_right];
@@ -133,10 +133,10 @@ List<List<int>> pad_matrix(List<List<int>> mat, int rows, int cols) {
     if (i < mat.length && j < mat[0].length) {
     v = mat[i][j];
   }
-    row = [...row, v];
+    row = (row..add(v));
     j = j + 1;
   }
-    res = ([...res, row] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    res = ((res..add(row)) as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
     i = i + 1;
   }
   return res;
@@ -170,12 +170,12 @@ List<List<int>> actual_strassen(List<List<int>> matrix_a, List<List<int>> matrix
   List<List<int>> new_matrix = <List<int>>[];
   int i = 0;
   while (i < top_right.length) {
-    new_matrix = [...new_matrix, [...top_left[i], ...top_right[i]]];
+    new_matrix = (new_matrix..add([...top_left[i], ...top_right[i]]));
     i = i + 1;
   }
   i = 0;
   while (i < bot_right.length) {
-    new_matrix = [...new_matrix, [...bot_left[i], ...bot_right[i]]];
+    new_matrix = (new_matrix..add([...bot_left[i], ...bot_right[i]]));
     i = i + 1;
   }
   return new_matrix;
@@ -198,10 +198,10 @@ List<List<int>> strassen(List<List<int>> matrix1, List<List<int>> matrix2) {
     List<int> row = <int>[];
     int j = 0;
     while (j < dims2[1]) {
-    row = [...row, result_padded[i][j]];
+    row = (row..add(result_padded[i][j]));
     j = j + 1;
   }
-    final_matrix = ([...final_matrix, row] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    final_matrix = ((final_matrix..add(row)) as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
     i = i + 1;
   }
   return final_matrix;

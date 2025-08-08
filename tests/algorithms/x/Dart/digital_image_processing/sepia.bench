@@ -1,9 +1,1 @@
-Unhandled exception:
-type 'int' is not a subtype of type 'double' in type cast
-#0      to_grayscale (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/sepia.dart:47:29)
-#1      make_sepia (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/sepia.dart:59:16)
-#2      sepia (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/sepia.dart:69:31)
-#3      sepia (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/sepia.dart)
-#4      main (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/sepia.dart:77:10)
-#5      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
-#6      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)
+{"duration_us":21209,"memory_bytes":2879488,"name":"main"}

@@ -36,13 +36,15 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+
 List<List<String>> allConstruct(String target, List<String> wordBank) {
   int tableSize = target.length + 1;
   List<List<List<String>>> table = <List<List<String>>>[];
   int idx = 0;
   while (idx < tableSize) {
     List<List<String>> empty = <List<String>>[];
-    table = ([...table, empty] as List).map((e) => ((e as List).map((e) => (List<String>.from(e) as List<String>)).toList() as List<List<String>>)).toList();
+    table = ((table..add(empty)) as List).map((e) => ((e as List).map((e) => (List<String>.from(e) as List<String>)).toList() as List<List<String>>)).toList();
     idx = idx + 1;
   }
   List<String> base = <String>[];
@@ -61,12 +63,12 @@ List<List<String>> allConstruct(String target, List<String> wordBank) {
     List<String> combination = <String>[];
     int m = 0;
     while (m < way.length) {
-    combination = [...combination, way[m]];
+    combination = (combination..add(way[m]));
     m = m + 1;
   }
-    combination = [...combination, word];
+    combination = (combination..add(word));
     int nextIndex = i + wordLen;
-    while (table.length <= nextIndex) { table.add(<List<String>>[]); } table[nextIndex] = ([...table[nextIndex], combination] as List).map((e) => (List<String>.from(e) as List<String>)).toList();
+    while (table.length <= nextIndex) { table.add(<List<String>>[]); } table[nextIndex] = ((table[nextIndex]..add(combination)) as List).map((e) => (List<String>.from(e) as List<String>)).toList();
     k = k + 1;
   };
   }
@@ -85,9 +87,9 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print((allConstruct("jwajalapa", ["jwa", "j", "w", "a", "la", "lapa"])).toString());
-  print((allConstruct("rajamati", ["s", "raj", "amat", "raja", "ma", "i", "t"])).toString());
-  print((allConstruct("hexagonosaurus", ["h", "ex", "hex", "ag", "ago", "ru", "auru", "rus", "go", "no", "o", "s"])).toString());
+  print(_str(allConstruct("jwajalapa", ["jwa", "j", "w", "a", "la", "lapa"])));
+  print(_str(allConstruct("rajamati", ["s", "raj", "amat", "raja", "ma", "i", "t"])));
+  print(_str(allConstruct("hexagonosaurus", ["h", "ex", "hex", "ag", "ago", "ru", "auru", "rus", "go", "no", "o", "s"])));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

@@ -2392,22 +2392,22 @@ type AppendExpr struct {
 }
 
 func (a *AppendExpr) emit(w io.Writer) error {
-	if _, err := io.WriteString(w, "["); err != nil {
-		return err
-	}
-	if _, err := io.WriteString(w, "..."); err != nil {
+	if _, err := io.WriteString(w, "("); err != nil {
 		return err
 	}
 	if err := a.List.emit(w); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, ", "); err != nil {
+	if _, err := io.WriteString(w, "..add("); err != nil {
 		return err
 	}
 	if err := a.Value.emit(w); err != nil {
 		return err
 	}
-	_, err := io.WriteString(w, "]")
+	if _, err := io.WriteString(w, ")"); err != nil {
+		return err
+	}
+	_, err := io.WriteString(w, ")")
 	return err
 }
 

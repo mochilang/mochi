@@ -1,1 +1,24 @@
-[[121, 73, 149, 59], [83, 37, 61, 43], [151, 99, 207, 81], [72, 56, 108, 36], [121, 73, 149, 59], [83, 37, 61, 43], [151, 99, 207, 81], [72, 56, 108, 36], [121, 73, 149, 59], [51, 33, 55, 37]]
+../../../tests/algorithms/x/Dart/divide_and_conquer/strassen_matrix_multiplication.dart:30:32: Error: Expected ')' before this.
+    result = (result..add(row) as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+                               ^^
+../../../tests/algorithms/x/Dart/divide_and_conquer/strassen_matrix_multiplication.dart:46:32: Error: Expected ')' before this.
+    result = (result..add(row) as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+                               ^^
+../../../tests/algorithms/x/Dart/divide_and_conquer/strassen_matrix_multiplication.dart:69:41: Error: Expected ')' before this.
+    top_left = (top_left..add(left_row) as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+                                        ^^
+../../../tests/algorithms/x/Dart/divide_and_conquer/strassen_matrix_multiplication.dart:70:44: Error: Expected ')' before this.
+    top_right = (top_right..add(right_row) as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+                                           ^^
+../../../tests/algorithms/x/Dart/divide_and_conquer/strassen_matrix_multiplication.dart:83:41: Error: Expected ')' before this.
+    bot_left = (bot_left..add(left_row) as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+                                        ^^
+../../../tests/algorithms/x/Dart/divide_and_conquer/strassen_matrix_multiplication.dart:84:44: Error: Expected ')' before this.
+    bot_right = (bot_right..add(right_row) as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+                                           ^^
+../../../tests/algorithms/x/Dart/divide_and_conquer/strassen_matrix_multiplication.dart:116:26: Error: Expected ')' before this.
+    res = (res..add(row) as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+                         ^^
+../../../tests/algorithms/x/Dart/divide_and_conquer/strassen_matrix_multiplication.dart:181:44: Error: Expected ')' before this.
+    final_matrix = (final_matrix..add(row) as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+                                           ^^

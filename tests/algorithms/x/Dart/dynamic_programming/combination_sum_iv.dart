@@ -36,11 +36,13 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+
 List<int> make_list(int len, int value) {
   List<int> arr = <int>[];
   int i = 0;
   while (i < len) {
-    arr = [...arr, value];
+    arr = (arr..add(value));
     i = i + 1;
   }
   return arr;
@@ -115,9 +117,9 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print((combination_sum_iv([1, 2, 5], 5)).toString());
-  print((combination_sum_iv_dp_array([1, 2, 5], 5)).toString());
-  print((combination_sum_iv_bottom_up(3, [1, 2, 5], 5)).toString());
+  print(_str(combination_sum_iv([1, 2, 5], 5)));
+  print(_str(combination_sum_iv_dp_array([1, 2, 5], 5)));
+  print(_str(combination_sum_iv_bottom_up(3, [1, 2, 5], 5)));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

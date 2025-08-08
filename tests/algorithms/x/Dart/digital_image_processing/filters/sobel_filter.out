@@ -1,8 +1,10 @@
-Unhandled exception:
-type 'int' is not a subtype of type 'double' in type cast
-#0      sobel_filter (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/filters/sobel_filter.dart:204:34)
-#1      _main (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/filters/sobel_filter.dart:273:34)
-#2      _start (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/filters/sobel_filter.dart:281:3)
-#3      main (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/filters/sobel_filter.dart:284:16)
-#4      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
-#5      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)
+65 146 185 146 65
+146 245 255 245 146
+185 255 0 255 185
+146 245 255 245 146
+65 146 185 146 65
+0.78125 1.247520464725931 1.5707963267948966 1.247520464725931 0.78125
+0.3232758620689656 0.78125 1.5707963267948966 0.78125 0.3232758620689656
+0 0 0 0 0
+0.3232758620689656 0.78125 1.5707963267948966 0.78125 0.3232758620689656
+0.78125 1.247520464725931 1.5707963267948966 1.247520464725931 0.78125

@@ -1,11 +1,3 @@
-../../../tests/algorithms/x/Dart/divide_and_conquer/convex_hull.dart:59:39: Error: The value 'null' can't be assigned to the parameter type 'Point' because 'Point' is not nullable.
- - 'Point' is from '../../../tests/algorithms/x/Dart/divide_and_conquer/convex_hull.dart'.
-    while (arr.length <= j) { arr.add(null); } arr[j] = q;
-                                      ^
-../../../tests/algorithms/x/Dart/divide_and_conquer/convex_hull.dart:60:43: Error: The value 'null' can't be assigned to the parameter type 'Point' because 'Point' is not nullable.
- - 'Point' is from '../../../tests/algorithms/x/Dart/divide_and_conquer/convex_hull.dart'.
-    while (arr.length <= j + 1) { arr.add(null); } arr[j + 1] = p;
-                                          ^
 ../../../tests/algorithms/x/Dart/divide_and_conquer/convex_hull.dart:74:21: Error: The argument type 'List<Point>' can't be assigned to the parameter type 'String'.
  - 'List' is from 'dart:core'.
  - 'Point' is from '../../../tests/algorithms/x/Dart/divide_and_conquer/convex_hull.dart'.
