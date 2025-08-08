@@ -1,4 +1,4 @@
-// Generated 2025-08-07 14:57 +0700
+// Generated 2025-08-08 11:10 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,15 +19,27 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
+    d.[k] <- v
+    d
+let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
+    let d = System.Collections.Generic.Dictionary<'K, 'V>()
+    for (k, v) in pairs do
+        d.[k] <- v
+    upcast d
+let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
+    match d.TryGetValue(k) with
+    | true, v -> v
+    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
-    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+    if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 type List = {
-    data: int array
+    mutable _data: int array
 }
 let rec empty_list () =
     let mutable __ret : List = Unchecked.defaultof<List>
     try
-        __ret <- { data = [||] }
+        __ret <- { _data = [||] }
         raise Return
         __ret
     with
@@ -39,10 +51,10 @@ and push (lst: List) (value: int) =
     try
         let mutable res: int array = [|value|]
         let mutable i: int = 0
-        while i < (Seq.length (lst.data)) do
-            res <- Array.append res [|_idx (lst.data) (i)|]
+        while i < (Seq.length (lst._data)) do
+            res <- Array.append res [|(_idx (lst._data) (i))|]
             i <- i + 1
-        __ret <- { data = res }
+        __ret <- { _data = res }
         raise Return
         __ret
     with
@@ -51,7 +63,7 @@ and middle_element (lst: List) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable lst = lst
     try
-        let n: int = Seq.length (lst.data)
+        let n: int = Seq.length (lst._data)
         if n = 0 then
             printfn "%s" ("No element found.")
             __ret <- 0
@@ -61,7 +73,7 @@ and middle_element (lst: List) =
         while (fast + 1) < n do
             fast <- fast + 2
             slow <- slow + 1
-        __ret <- _idx (lst.data) (slow)
+        __ret <- _idx (lst._data) (slow)
         raise Return
         __ret
     with

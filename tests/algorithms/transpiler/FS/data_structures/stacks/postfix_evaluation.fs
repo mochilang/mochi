@@ -1,4 +1,4 @@
-// Generated 2025-08-07 14:57 +0700
+// Generated 2025-08-08 11:10 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -29,8 +29,20 @@ let _substring (s:string) (start:int) (finish:int) =
     if st > en then st <- en
     s.Substring(st, en - st)
 
+let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
+    d.[k] <- v
+    d
+let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
+    let d = System.Collections.Generic.Dictionary<'K, 'V>()
+    for (k, v) in pairs do
+        d.[k] <- v
+    upcast d
+let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
+    match d.TryGetValue(k) with
+    | true, v -> v
+    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
-    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+    if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
     s.Replace("[|", "[")
@@ -47,7 +59,7 @@ let rec slice_without_last (xs: float array) =
         let mutable res: float array = [||]
         let mutable i: int = 0
         while i < ((Seq.length (xs)) - 1) do
-            res <- Array.append res [|_idx xs (i)|]
+            res <- Array.append res [|(_idx xs (i))|]
             i <- i + 1
         __ret <- res
         raise Return
@@ -142,7 +154,7 @@ let rec evaluate (tokens: string array) =
                     let b: float = _idx stack ((Seq.length (stack)) - 1)
                     stack <- slice_without_last (stack)
                     if token = "-" then
-                        stack <- Array.append stack [|0.0 - b|]
+                        stack <- Array.append stack [|(0.0 - b)|]
                     else
                         stack <- Array.append stack [|b|]
                 else
@@ -153,7 +165,7 @@ let rec evaluate (tokens: string array) =
                     let mutable result: float = apply_op (a) (b) (token)
                     stack <- Array.append stack [|result|]
             else
-                stack <- Array.append stack [|parse_float (token)|]
+                stack <- Array.append stack [|(parse_float (token))|]
         if (Seq.length (stack)) <> 1 then
             failwith ("Invalid postfix expression")
         __ret <- _idx stack (0)

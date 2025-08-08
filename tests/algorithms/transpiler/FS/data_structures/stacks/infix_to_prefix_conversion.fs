@@ -1,4 +1,4 @@
-// Generated 2025-08-07 14:57 +0700
+// Generated 2025-08-08 11:10 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -27,8 +27,12 @@ let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collec
     for (k, v) in pairs do
         d.[k] <- v
     upcast d
+let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
+    match d.TryGetValue(k) with
+    | true, v -> v
+    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
-    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+    if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
 open System.Collections.Generic
@@ -99,22 +103,22 @@ let rec infix_to_postfix (infix: string) =
                         if (Seq.length (stack)) = 0 then
                             failwith ("list index out of range")
                         while (_idx stack ((Seq.length (stack)) - 1)) <> "(" do
-                            post <- Array.append post [|_idx stack ((Seq.length (stack)) - 1)|]
+                            post <- Array.append post [|(_idx stack ((Seq.length (stack)) - 1))|]
                             stack <- Array.sub stack 0 (((Seq.length (stack)) - 1) - 0)
                         stack <- Array.sub stack 0 (((Seq.length (stack)) - 1) - 0)
                     else
                         if (Seq.length (stack)) = 0 then
                             stack <- Array.append stack [|x|]
                         else
-                            while (((Seq.length (stack)) > 0) && ((_idx stack ((Seq.length (stack)) - 1)) <> "(")) && ((PRIORITY.[(string (x))]) <= (PRIORITY.[(string (_idx stack ((Seq.length (stack)) - 1)))])) do
-                                post <- Array.append post [|_idx stack ((Seq.length (stack)) - 1)|]
+                            while (((Seq.length (stack)) > 0) && ((_idx stack ((Seq.length (stack)) - 1)) <> "(")) && ((_dictGet PRIORITY ((string (x)))) <= (_dictGet PRIORITY ((string (_idx stack ((Seq.length (stack)) - 1)))))) do
+                                post <- Array.append post [|(_idx stack ((Seq.length (stack)) - 1))|]
                                 stack <- Array.sub stack 0 (((Seq.length (stack)) - 1) - 0)
                             stack <- Array.append stack [|x|]
             i <- i + 1
         while (Seq.length (stack)) > 0 do
             if (_idx stack ((Seq.length (stack)) - 1)) = "(" then
                 failwith ("invalid expression")
-            post <- Array.append post [|_idx stack ((Seq.length (stack)) - 1)|]
+            post <- Array.append post [|(_idx stack ((Seq.length (stack)) - 1))|]
             stack <- Array.sub stack 0 (((Seq.length (stack)) - 1) - 0)
         let mutable res: string = ""
         let mutable j: int = 0

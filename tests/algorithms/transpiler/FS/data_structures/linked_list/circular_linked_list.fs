@@ -1,4 +1,4 @@
-// Generated 2025-08-07 14:57 +0700
+// Generated 2025-08-08 11:10 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,8 +19,20 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
+    d.[k] <- v
+    d
+let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
+    let d = System.Collections.Generic.Dictionary<'K, 'V>()
+    for (k, v) in pairs do
+        d.[k] <- v
+    upcast d
+let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
+    match d.TryGetValue(k) with
+    | true, v -> v
+    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
-    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+    if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
     s.Replace("[|", "[")
@@ -29,132 +41,132 @@ let rec _str v =
      .Replace(";", "")
      .Replace("\"", "")
 type CircularLinkedList = {
-    data: int array
+    mutable _data: int array
 }
 type DeleteResult = {
-    list: CircularLinkedList
-    value: int
+    mutable _list: CircularLinkedList
+    mutable _value: int
 }
 let rec empty_list () =
     let mutable __ret : CircularLinkedList = Unchecked.defaultof<CircularLinkedList>
     try
-        __ret <- { data = [||] }
+        __ret <- { _data = [||] }
         raise Return
         __ret
     with
         | Return -> __ret
-and length (list: CircularLinkedList) =
+and length (_list: CircularLinkedList) =
     let mutable __ret : int = Unchecked.defaultof<int>
-    let mutable list = list
+    let mutable _list = _list
     try
-        __ret <- Seq.length (list.data)
+        __ret <- Seq.length (_list._data)
         raise Return
         __ret
     with
         | Return -> __ret
-and is_empty (list: CircularLinkedList) =
+and is_empty (_list: CircularLinkedList) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
-    let mutable list = list
+    let mutable _list = _list
     try
-        __ret <- (Seq.length (list.data)) = 0
+        __ret <- (Seq.length (_list._data)) = 0
         raise Return
         __ret
     with
         | Return -> __ret
-and to_string (list: CircularLinkedList) =
+and to_string (_list: CircularLinkedList) =
     let mutable __ret : string = Unchecked.defaultof<string>
-    let mutable list = list
+    let mutable _list = _list
     try
-        if (Seq.length (list.data)) = 0 then
+        if (Seq.length (_list._data)) = 0 then
             __ret <- ""
             raise Return
-        let mutable s: string = _str (_idx (list.data) (0))
+        let mutable s: string = _str (_idx (_list._data) (0))
         let mutable i: int = 1
-        while i < (Seq.length (list.data)) do
-            s <- (s + "->") + (_str (_idx (list.data) (i)))
+        while i < (Seq.length (_list._data)) do
+            s <- (s + "->") + (_str (_idx (_list._data) (i)))
             i <- i + 1
         __ret <- s
         raise Return
         __ret
     with
         | Return -> __ret
-and insert_nth (list: CircularLinkedList) (index: int) (value: int) =
+and insert_nth (_list: CircularLinkedList) (index: int) (_value: int) =
     let mutable __ret : CircularLinkedList = Unchecked.defaultof<CircularLinkedList>
-    let mutable list = list
+    let mutable _list = _list
     let mutable index = index
-    let mutable value = value
+    let mutable _value = _value
     try
-        if (index < 0) || (index > (Seq.length (list.data))) then
+        if (index < 0) || (index > (Seq.length (_list._data))) then
             failwith ("index out of range")
         let mutable res: int array = [||]
         let mutable i: int = 0
         while i < index do
-            res <- Array.append res [|_idx (list.data) (i)|]
+            res <- Array.append res [|(_idx (_list._data) (i))|]
             i <- i + 1
-        res <- Array.append res [|value|]
-        while i < (Seq.length (list.data)) do
-            res <- Array.append res [|_idx (list.data) (i)|]
+        res <- Array.append res [|_value|]
+        while i < (Seq.length (_list._data)) do
+            res <- Array.append res [|(_idx (_list._data) (i))|]
             i <- i + 1
-        __ret <- { data = res }
+        __ret <- { _data = res }
         raise Return
         __ret
     with
         | Return -> __ret
-and insert_head (list: CircularLinkedList) (value: int) =
+and insert_head (_list: CircularLinkedList) (_value: int) =
     let mutable __ret : CircularLinkedList = Unchecked.defaultof<CircularLinkedList>
-    let mutable list = list
-    let mutable value = value
+    let mutable _list = _list
+    let mutable _value = _value
     try
-        __ret <- insert_nth (list) (0) (value)
+        __ret <- insert_nth (_list) (0) (_value)
         raise Return
         __ret
     with
         | Return -> __ret
-and insert_tail (list: CircularLinkedList) (value: int) =
+and insert_tail (_list: CircularLinkedList) (_value: int) =
     let mutable __ret : CircularLinkedList = Unchecked.defaultof<CircularLinkedList>
-    let mutable list = list
-    let mutable value = value
+    let mutable _list = _list
+    let mutable _value = _value
     try
-        __ret <- insert_nth (list) (Seq.length (list.data)) (value)
+        __ret <- insert_nth (_list) (Seq.length (_list._data)) (_value)
         raise Return
         __ret
     with
         | Return -> __ret
-and delete_nth (list: CircularLinkedList) (index: int) =
+and delete_nth (_list: CircularLinkedList) (index: int) =
     let mutable __ret : DeleteResult = Unchecked.defaultof<DeleteResult>
-    let mutable list = list
+    let mutable _list = _list
     let mutable index = index
     try
-        if (index < 0) || (index >= (Seq.length (list.data))) then
+        if (index < 0) || (index >= (Seq.length (_list._data))) then
             failwith ("index out of range")
         let mutable res: int array = [||]
         let mutable i: int = 0
         let mutable ``val``: int = 0
-        while i < (Seq.length (list.data)) do
+        while i < (Seq.length (_list._data)) do
             if i = index then
-                ``val`` <- _idx (list.data) (i)
+                ``val`` <- _idx (_list._data) (i)
             else
-                res <- Array.append res [|_idx (list.data) (i)|]
+                res <- Array.append res [|(_idx (_list._data) (i))|]
             i <- i + 1
-        __ret <- { list = { data = res }; value = ``val`` }
+        __ret <- { _list = { _data = res }; _value = ``val`` }
         raise Return
         __ret
     with
         | Return -> __ret
-and delete_front (list: CircularLinkedList) =
+and delete_front (_list: CircularLinkedList) =
     let mutable __ret : DeleteResult = Unchecked.defaultof<DeleteResult>
-    let mutable list = list
+    let mutable _list = _list
     try
-        __ret <- delete_nth (list) (0)
+        __ret <- delete_nth (_list) (0)
         raise Return
         __ret
     with
         | Return -> __ret
-and delete_tail (list: CircularLinkedList) =
+and delete_tail (_list: CircularLinkedList) =
     let mutable __ret : DeleteResult = Unchecked.defaultof<DeleteResult>
-    let mutable list = list
+    let mutable _list = _list
     try
-        __ret <- delete_nth (list) ((Seq.length (list.data)) - 1)
+        __ret <- delete_nth (_list) ((Seq.length (_list._data)) - 1)
         raise Return
         __ret
     with
@@ -175,14 +187,14 @@ and main () =
         cll <- insert_head (cll) (0)
         printfn "%s" (to_string (cll))
         let mutable res: DeleteResult = delete_front (cll)
-        cll <- res.list
-        printfn "%d" (res.value)
+        cll <- res._list
+        printfn "%d" (res._value)
         res <- delete_tail (cll)
-        cll <- res.list
-        printfn "%d" (res.value)
+        cll <- res._list
+        printfn "%d" (res._value)
         res <- delete_nth (cll) (2)
-        cll <- res.list
-        printfn "%d" (res.value)
+        cll <- res._list
+        printfn "%d" (res._value)
         printfn "%s" (to_string (cll))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)

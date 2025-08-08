@@ -1,4 +1,4 @@
-// Generated 2025-08-07 14:57 +0700
+// Generated 2025-08-08 11:10 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,8 +19,30 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let _substring (s:string) (start:int) (finish:int) =
+    let len = String.length s
+    let mutable st = if start < 0 then len + start else start
+    let mutable en = if finish < 0 then len + finish else finish
+    if st < 0 then st <- 0
+    if st > len then st <- len
+    if en > len then en <- len
+    if st > en then st <- en
+    s.Substring(st, en - st)
+
+let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
+    d.[k] <- v
+    d
+let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
+    let d = System.Collections.Generic.Dictionary<'K, 'V>()
+    for (k, v) in pairs do
+        d.[k] <- v
+    upcast d
+let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
+    match d.TryGetValue(k) with
+    | true, v -> v
+    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
-    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+    if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
     s.Replace("[|", "[")
@@ -29,13 +51,13 @@ let rec _str v =
      .Replace(";", "")
      .Replace("\"", "")
 type SuffixTree = {
-    text: string
+    mutable _text: string
 }
-let rec new_suffix_tree (text: string) =
+let rec new_suffix_tree (_text: string) =
     let mutable __ret : SuffixTree = Unchecked.defaultof<SuffixTree>
-    let mutable text = text
+    let mutable _text = _text
     try
-        __ret <- { text = text }
+        __ret <- { _text = _text }
         raise Return
         __ret
     with
@@ -45,7 +67,7 @@ and search (tree: SuffixTree) (pattern: string) =
     let mutable tree = tree
     let mutable pattern = pattern
     try
-        let n: int = String.length (tree.text)
+        let n: int = String.length (tree._text)
         let m: int = String.length (pattern)
         if m = 0 then
             __ret <- true
@@ -55,7 +77,7 @@ and search (tree: SuffixTree) (pattern: string) =
             raise Return
         let mutable i: int = 0
         while i <= (n - m) do
-            if (tree.text.Substring(i, (i + m) - i)) = pattern then
+            if (_substring (tree._text) (i) (i + m)) = pattern then
                 __ret <- true
                 raise Return
             i <- i + 1
@@ -69,8 +91,8 @@ and main () =
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        let text: string = "monkey banana"
-        let suffix_tree: SuffixTree = new_suffix_tree (text)
+        let _text: string = "monkey banana"
+        let suffix_tree: SuffixTree = new_suffix_tree (_text)
         let patterns: string array = [|"ana"; "ban"; "na"; "xyz"; "mon"|]
         let mutable i: int = 0
         while i < (Seq.length (patterns)) do

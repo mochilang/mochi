@@ -1,4 +1,4 @@
-// Generated 2025-08-07 14:57 +0700
+// Generated 2025-08-08 11:10 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,8 +19,20 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
+    d.[k] <- v
+    d
+let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
+    let d = System.Collections.Generic.Dictionary<'K, 'V>()
+    for (k, v) in pairs do
+        d.[k] <- v
+    upcast d
+let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
+    match d.TryGetValue(k) with
+    | true, v -> v
+    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
-    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+    if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
     s.Replace("[|", "[")
@@ -29,8 +41,8 @@ let rec _str v =
      .Replace(";", "")
      .Replace("\"", "")
 type Node = {
-    data: int
-    next: int
+    mutable _data: int
+    mutable _next: int
 }
 let rec has_loop (nodes: Node array) (head: int) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
@@ -41,16 +53,16 @@ let rec has_loop (nodes: Node array) (head: int) =
         let mutable fast: int = head
         while fast <> (0 - 1) do
             let fast_node1: Node = _idx nodes (fast)
-            if (fast_node1.next) = (0 - 1) then
+            if (fast_node1._next) = (0 - 1) then
                 __ret <- false
                 raise Return
-            let fast_node2: Node = _idx nodes (fast_node1.next)
-            if (fast_node2.next) = (0 - 1) then
+            let fast_node2: Node = _idx nodes (fast_node1._next)
+            if (fast_node2._next) = (0 - 1) then
                 __ret <- false
                 raise Return
             let slow_node: Node = _idx nodes (slow)
-            slow <- slow_node.next
-            fast <- fast_node2.next
+            slow <- slow_node._next
+            fast <- fast_node2._next
             if slow = fast then
                 __ret <- true
                 raise Return
@@ -67,7 +79,7 @@ and make_nodes (values: int array) =
         let mutable i: int = 0
         while i < (Seq.length (values)) do
             let next_idx: int = if i = ((Seq.length (values)) - 1) then (0 - 1) else (i + 1)
-            nodes <- Array.append nodes [|{ data = _idx values (i); next = next_idx }|]
+            nodes <- Array.append nodes [|{ _data = _idx values (i); _next = next_idx }|]
             i <- i + 1
         __ret <- nodes
         raise Return
@@ -81,7 +93,7 @@ and main () =
         let __mem_start = System.GC.GetTotalMemory(true)
         let mutable list1: Node array = make_nodes (unbox<int array> [|1; 2; 3; 4|])
         printfn "%s" (_str (has_loop (list1) (0)))
-        ((_idx list1 (3) :?> Node).next) <- 1
+        list1.[3]._next <- 1
         printfn "%s" (_str (has_loop (list1) (0)))
         let list2: Node array = make_nodes (unbox<int array> [|5; 6; 5; 6|])
         printfn "%s" (_str (has_loop (list2) (0)))

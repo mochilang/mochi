@@ -1,4 +1,4 @@
-// Generated 2025-08-07 14:57 +0700
+// Generated 2025-08-08 11:10 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -29,8 +29,20 @@ let _substring (s:string) (start:int) (finish:int) =
     if st > en then st <- en
     s.Substring(st, en - st)
 
+let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
+    d.[k] <- v
+    d
+let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
+    let d = System.Collections.Generic.Dictionary<'K, 'V>()
+    for (k, v) in pairs do
+        d.[k] <- v
+    upcast d
+let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
+    match d.TryGetValue(k) with
+    | true, v -> v
+    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
-    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+    if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
     s.Replace("[|", "[")
@@ -155,7 +167,7 @@ let rec evaluate (expression: string) =
             let token: string = _idx tokens (i)
             if token <> "" then
                 if is_operand (token) then
-                    stack <- Array.append stack [|float (to_int (token))|]
+                    stack <- Array.append stack [|(float (to_int (token)))|]
                 else
                     let o1: float = _idx stack ((Seq.length (stack)) - 1)
                     let o2: float = _idx stack ((Seq.length (stack)) - 2)
@@ -180,7 +192,7 @@ let rec eval_rec (tokens: string array) (pos: int) =
             raise Return
         let left: float array = eval_rec (tokens) (next)
         let a: float = _idx left (0)
-        let p1: int = unbox<int> (_idx left (1))
+        let p1: int = int (_idx left (1))
         let right: float array = eval_rec (tokens) (p1)
         let b: float = _idx right (0)
         let p2: float = _idx right (1)

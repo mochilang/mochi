@@ -1,4 +1,4 @@
-// Generated 2025-08-07 14:57 +0700
+// Generated 2025-08-08 11:10 +0700
 
 exception Break
 exception Continue
@@ -40,8 +40,12 @@ let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collec
     for (k, v) in pairs do
         d.[k] <- v
     upcast d
+let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
+    match d.TryGetValue(k) with
+    | true, v -> v
+    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
-    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+    if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 open System.Collections.Generic
 
 let PRECEDENCES: System.Collections.Generic.IDictionary<string, int> = _dictCreate [("+", 1); ("-", 1); ("*", 2); ("/", 2); ("^", 3)]
@@ -50,7 +54,7 @@ let rec precedence (ch: string) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable ch = ch
     try
-        __ret <- if PRECEDENCES.ContainsKey(ch) then (PRECEDENCES.[(string (ch))]) else (-1)
+        __ret <- if PRECEDENCES.ContainsKey(ch) then (_dictGet PRECEDENCES ((string (ch)))) else (-1)
         raise Return
         __ret
     with
@@ -59,7 +63,7 @@ and associativity (ch: string) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable ch = ch
     try
-        __ret <- if ASSOCIATIVITIES.ContainsKey(ch) then (ASSOCIATIVITIES.[(string (ch))]) else ""
+        __ret <- if ASSOCIATIVITIES.ContainsKey(ch) then (_dictGet ASSOCIATIVITIES ((string (ch)))) else ""
         raise Return
         __ret
     with
@@ -133,7 +137,7 @@ and infix_to_postfix (expression: string) =
                         else
                             if ch = ")" then
                                 while ((Seq.length (stack)) > 0) && ((_idx stack ((Seq.length (stack)) - 1)) <> "(") do
-                                    postfix <- Array.append postfix [|_idx stack ((Seq.length (stack)) - 1)|]
+                                    postfix <- Array.append postfix [|(_idx stack ((Seq.length (stack)) - 1))|]
                                     stack <- Array.sub stack 0 (((Seq.length (stack)) - 1) - 0)
                                 if (Seq.length (stack)) > 0 then
                                     stack <- Array.sub stack 0 (((Seq.length (stack)) - 1) - 0)
@@ -152,13 +156,13 @@ and infix_to_postfix (expression: string) =
                                                     stack <- Array.append stack [|ch|]
                                                     raise Break
                                                 if cp < tp then
-                                                    postfix <- Array.append postfix [|_idx stack ((Seq.length (stack)) - 1)|]
+                                                    postfix <- Array.append postfix [|(_idx stack ((Seq.length (stack)) - 1))|]
                                                     stack <- Array.sub stack 0 (((Seq.length (stack)) - 1) - 0)
                                                     raise Continue
                                                 if (associativity (ch)) = "RL" then
                                                     stack <- Array.append stack [|ch|]
                                                     raise Break
-                                                postfix <- Array.append postfix [|_idx stack ((Seq.length (stack)) - 1)|]
+                                                postfix <- Array.append postfix [|(_idx stack ((Seq.length (stack)) - 1))|]
                                                 stack <- Array.sub stack 0 (((Seq.length (stack)) - 1) - 0)
                                             with
                                             | Continue -> ()
@@ -174,7 +178,7 @@ and infix_to_postfix (expression: string) =
         | Break -> ()
         | Continue -> ()
         while (Seq.length (stack)) > 0 do
-            postfix <- Array.append postfix [|_idx stack ((Seq.length (stack)) - 1)|]
+            postfix <- Array.append postfix [|(_idx stack ((Seq.length (stack)) - 1))|]
             stack <- Array.sub stack 0 (((Seq.length (stack)) - 1) - 0)
         let mutable res: string = ""
         let mutable j: int = 0

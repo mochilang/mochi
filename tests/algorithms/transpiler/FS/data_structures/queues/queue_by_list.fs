@@ -1,4 +1,4 @@
-// Generated 2025-08-07 14:57 +0700
+// Generated 2025-08-08 11:10 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,8 +19,20 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
+    d.[k] <- v
+    d
+let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
+    let d = System.Collections.Generic.Dictionary<'K, 'V>()
+    for (k, v) in pairs do
+        d.[k] <- v
+    upcast d
+let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
+    match d.TryGetValue(k) with
+    | true, v -> v
+    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
-    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+    if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
     s.Replace("[|", "[")
@@ -29,11 +41,11 @@ let rec _str v =
      .Replace(";", "")
      .Replace("\"", "")
 type Queue = {
-    entries: int array
+    mutable _entries: int array
 }
 type GetResult = {
-    queue: Queue
-    value: int
+    mutable _queue: Queue
+    mutable _value: int
 }
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
@@ -41,7 +53,7 @@ let rec new_queue (items: int array) =
     let mutable __ret : Queue = Unchecked.defaultof<Queue>
     let mutable items = items
     try
-        __ret <- { entries = items }
+        __ret <- { _entries = items }
         raise Return
         __ret
     with
@@ -50,7 +62,7 @@ let rec len_queue (q: Queue) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable q = q
     try
-        __ret <- Seq.length (q.entries)
+        __ret <- Seq.length (q._entries)
         raise Return
         __ret
     with
@@ -61,9 +73,9 @@ let rec str_queue (q: Queue) =
     try
         let mutable s: string = "Queue(("
         let mutable i: int = 0
-        while i < (Seq.length (q.entries)) do
-            s <- s + (_str (_idx (q.entries) (i)))
-            if i < ((Seq.length (q.entries)) - 1) then
+        while i < (Seq.length (q._entries)) do
+            s <- s + (_str (_idx (q._entries) (i)))
+            if i < ((Seq.length (q._entries)) - 1) then
                 s <- s + ", "
             i <- i + 1
         s <- s + "))"
@@ -77,9 +89,9 @@ let rec put (q: Queue) (item: int) =
     let mutable q = q
     let mutable item = item
     try
-        let mutable e: int array = q.entries
+        let mutable e: int array = q._entries
         e <- Array.append e [|item|]
-        __ret <- { entries = e }
+        __ret <- { _entries = e }
         raise Return
         __ret
     with
@@ -88,15 +100,15 @@ let rec get (q: Queue) =
     let mutable __ret : GetResult = Unchecked.defaultof<GetResult>
     let mutable q = q
     try
-        if (Seq.length (q.entries)) = 0 then
+        if (Seq.length (q._entries)) = 0 then
             failwith ("Queue is empty")
-        let value: int = _idx (q.entries) (0)
+        let _value: int = _idx (q._entries) (0)
         let mutable new_entries: int array = [||]
         let mutable i: int = 1
-        while i < (Seq.length (q.entries)) do
-            new_entries <- Array.append new_entries [|_idx (q.entries) (i)|]
+        while i < (Seq.length (q._entries)) do
+            new_entries <- Array.append new_entries [|(_idx (q._entries) (i))|]
             i <- i + 1
-        __ret <- { queue = { entries = new_entries }; value = value }
+        __ret <- { _queue = { _entries = new_entries }; _value = _value }
         raise Return
         __ret
     with
@@ -106,7 +118,7 @@ let rec rotate (q: Queue) (rotation: int) =
     let mutable q = q
     let mutable rotation = rotation
     try
-        let mutable e: int array = q.entries
+        let mutable e: int array = q._entries
         let mutable r: int = 0
         while r < rotation do
             if (Seq.length (e)) > 0 then
@@ -114,12 +126,12 @@ let rec rotate (q: Queue) (rotation: int) =
                 let mutable rest: int array = [||]
                 let mutable i: int = 1
                 while i < (Seq.length (e)) do
-                    rest <- Array.append rest [|_idx e (i)|]
+                    rest <- Array.append rest [|(_idx e (i))|]
                     i <- i + 1
                 rest <- Array.append rest [|first|]
                 e <- rest
             r <- r + 1
-        __ret <- { entries = e }
+        __ret <- { _entries = e }
         raise Return
         __ret
     with
@@ -128,7 +140,7 @@ let rec get_front (q: Queue) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable q = q
     try
-        __ret <- _idx (q.entries) (0)
+        __ret <- _idx (q._entries) (0)
         raise Return
         __ret
     with
@@ -141,13 +153,13 @@ q <- put (q) (30)
 q <- put (q) (40)
 printfn "%s" (str_queue (q))
 let res: GetResult = get (q)
-q <- res.queue
-printfn "%d" (res.value)
+q <- res._queue
+printfn "%d" (res._value)
 printfn "%s" (str_queue (q))
 q <- rotate (q) (2)
 printfn "%s" (str_queue (q))
-let front: int = get_front (q)
-printfn "%d" (front)
+let _front: int = get_front (q)
+printfn "%d" (_front)
 printfn "%s" (str_queue (q))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)

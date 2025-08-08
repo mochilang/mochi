@@ -1,4 +1,4 @@
-// Generated 2025-08-07 14:57 +0700
+// Generated 2025-08-08 11:10 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,8 +19,28 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
+    d.[k] <- v
+    d
+let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
+    let d = System.Collections.Generic.Dictionary<'K, 'V>()
+    for (k, v) in pairs do
+        d.[k] <- v
+    upcast d
+let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
+    match d.TryGetValue(k) with
+    | true, v -> v
+    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
-    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+    if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
+    let mutable a = arr
+    if i >= a.Length then
+        let na = Array.zeroCreate<'a> (i + 1)
+        Array.blit a 0 na 0 a.Length
+        a <- na
+    a.[i] <- v
+    a
 let rec _str v =
     let s = sprintf "%A" v
     s.Replace("[|", "[")
@@ -29,12 +49,12 @@ let rec _str v =
      .Replace(";", "")
      .Replace("\"", "")
 type LinkedList = {
-    data: int array
+    mutable _data: int array
 }
 let rec empty_list () =
     let mutable __ret : LinkedList = Unchecked.defaultof<LinkedList>
     try
-        __ret <- { data = [||] }
+        __ret <- { _data = [||] }
         raise Return
         __ret
     with
@@ -45,8 +65,8 @@ and push (list: LinkedList) (value: int) =
     let mutable value = value
     try
         let mutable res: int array = [|value|]
-        res <- unbox<int array> (Array.append (res) (list.data))
-        __ret <- { data = res }
+        res <- unbox<int array> (Array.append (res) (list._data))
+        __ret <- { _data = res }
         raise Return
         __ret
     with
@@ -63,20 +83,20 @@ and swap_nodes (list: LinkedList) (v1: int) (v2: int) =
         let mutable idx1: int = 0 - 1
         let mutable idx2: int = 0 - 1
         let mutable i: int = 0
-        while i < (Seq.length (list.data)) do
-            if ((_idx (list.data) (i)) = v1) && (idx1 = (0 - 1)) then
+        while i < (Seq.length (list._data)) do
+            if ((_idx (list._data) (i)) = v1) && (idx1 = (0 - 1)) then
                 idx1 <- i
-            if ((_idx (list.data) (i)) = v2) && (idx2 = (0 - 1)) then
+            if ((_idx (list._data) (i)) = v2) && (idx2 = (0 - 1)) then
                 idx2 <- i
             i <- i + 1
         if (idx1 = (0 - 1)) || (idx2 = (0 - 1)) then
             __ret <- list
             raise Return
-        let mutable res: int array = list.data
+        let mutable res: int array = list._data
         let temp: int = _idx res (idx1)
         res.[idx1] <- _idx res (idx2)
         res.[idx2] <- temp
-        __ret <- { data = res }
+        __ret <- { _data = res }
         raise Return
         __ret
     with
@@ -85,7 +105,7 @@ and to_string (list: LinkedList) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable list = list
     try
-        __ret <- _str (list.data)
+        __ret <- _str (list._data)
         raise Return
         __ret
     with

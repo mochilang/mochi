@@ -1,4 +1,4 @@
-// Generated 2025-08-07 14:57 +0700
+// Generated 2025-08-08 11:10 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -27,8 +27,12 @@ let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collec
     for (k, v) in pairs do
         d.[k] <- v
     upcast d
+let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
+    match d.TryGetValue(k) with
+    | true, v -> v
+    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
-    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+    if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 open System.Collections.Generic
 
 let INF: float = 1000000000.0
@@ -145,7 +149,7 @@ and test_search () =
         let tree: float array array = build_kdtree (pts) (0)
         let qp: float array = _idx (hypercube_points (1) (10.0) (2)) (0)
         let res: System.Collections.Generic.IDictionary<string, float> = nearest_neighbour_search (tree) (qp)
-        if (((res.[(string ("index"))]) <> (-1.0)) && ((res.[(string ("dist"))]) >= 0.0)) && ((res.[(string ("visited"))]) > 0.0) then
+        if (((_dictGet res ((string ("index")))) <> (-1.0)) && ((_dictGet res ((string ("dist")))) >= 0.0)) && ((_dictGet res ((string ("visited")))) > 0.0) then
             printfn "%s" ("search true")
         else
             printfn "%s" ("search false")
@@ -159,7 +163,7 @@ and test_edge () =
         let tree: float array array = build_kdtree (empty_pts) (0)
         let query: float array = [|0.0; 0.0|]
         let res: System.Collections.Generic.IDictionary<string, float> = nearest_neighbour_search (tree) (query)
-        if (((res.[(string ("index"))]) = (-1.0)) && ((res.[(string ("dist"))]) > 100000000.0)) && ((res.[(string ("visited"))]) = 0.0) then
+        if (((_dictGet res ((string ("index")))) = (-1.0)) && ((_dictGet res ((string ("dist")))) > 100000000.0)) && ((_dictGet res ((string ("visited")))) = 0.0) then
             printfn "%s" ("edge true")
         else
             printfn "%s" ("edge false")

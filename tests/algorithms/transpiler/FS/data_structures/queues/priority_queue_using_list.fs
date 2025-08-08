@@ -1,4 +1,4 @@
-// Generated 2025-08-07 14:57 +0700
+// Generated 2025-08-08 11:10 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,8 +19,28 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
+    d.[k] <- v
+    d
+let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
+    let d = System.Collections.Generic.Dictionary<'K, 'V>()
+    for (k, v) in pairs do
+        d.[k] <- v
+    upcast d
+let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
+    match d.TryGetValue(k) with
+    | true, v -> v
+    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
-    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+    if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
+    let mutable a = arr
+    if i >= a.Length then
+        let na = Array.zeroCreate<'a> (i + 1)
+        Array.blit a 0 na 0 a.Length
+        a <- na
+    a.[i] <- v
+    a
 let rec _str v =
     let s = sprintf "%A" v
     s.Replace("[|", "[")
@@ -29,18 +49,18 @@ let rec _str v =
      .Replace(";", "")
      .Replace("\"", "")
 type FixedPriorityQueue = {
-    queues: int array array
+    mutable _queues: int array array
 }
 type FPQDequeueResult = {
-    queue: FixedPriorityQueue
-    value: int
+    mutable queue: FixedPriorityQueue
+    mutable value: int
 }
 type ElementPriorityQueue = {
-    queue: int array
+    mutable queue: int array
 }
 type EPQDequeueResult = {
-    queue: ElementPriorityQueue
-    value: int
+    mutable queue: ElementPriorityQueue
+    mutable value: int
 }
 let rec panic (msg: string) =
     let mutable __ret : unit = Unchecked.defaultof<unit>
@@ -53,7 +73,7 @@ let rec panic (msg: string) =
 and fpq_new () =
     let mutable __ret : FixedPriorityQueue = Unchecked.defaultof<FixedPriorityQueue>
     try
-        __ret <- { queues = [|[||]; [||]; [||]|] }
+        __ret <- { _queues = [|[||]; [||]; [||]|] }
         raise Return
         __ret
     with
@@ -64,17 +84,17 @@ and fpq_enqueue (fpq: FixedPriorityQueue) (priority: int) (data: int) =
     let mutable priority = priority
     let mutable data = data
     try
-        if (priority < 0) || (priority >= (Seq.length (fpq.queues))) then
+        if (priority < 0) || (priority >= (Seq.length (fpq._queues))) then
             panic ("Valid priorities are 0, 1, and 2")
             __ret <- fpq
             raise Return
-        if (Seq.length (_idx (fpq.queues) (priority))) >= 100 then
+        if (Seq.length (_idx (fpq._queues) (priority))) >= 100 then
             panic ("Maximum queue size is 100")
             __ret <- fpq
             raise Return
-        let mutable qs: int array array = fpq.queues
+        let mutable qs: int array array = fpq._queues
         qs.[priority] <- Array.append (_idx qs (priority)) [|data|]
-        fpq <- { fpq with queues = qs }
+        fpq._queues <- qs
         __ret <- fpq
         raise Return
         __ret
@@ -84,7 +104,7 @@ and fpq_dequeue (fpq: FixedPriorityQueue) =
     let mutable __ret : FPQDequeueResult = Unchecked.defaultof<FPQDequeueResult>
     let mutable fpq = fpq
     try
-        let mutable qs: int array array = fpq.queues
+        let mutable qs: int array array = fpq._queues
         let mutable i: int = 0
         while i < (Seq.length (qs)) do
             let q: int array = _idx qs (i)
@@ -93,10 +113,10 @@ and fpq_dequeue (fpq: FixedPriorityQueue) =
                 let mutable new_q: int array = [||]
                 let mutable j: int = 1
                 while j < (Seq.length (q)) do
-                    new_q <- Array.append new_q [|_idx q (j)|]
+                    new_q <- Array.append new_q [|(_idx q (j))|]
                     j <- j + 1
                 qs.[i] <- new_q
-                fpq <- { fpq with queues = qs }
+                fpq._queues <- qs
                 __ret <- { queue = fpq; value = ``val`` }
                 raise Return
             i <- i + 1
@@ -112,9 +132,9 @@ and fpq_to_string (fpq: FixedPriorityQueue) =
     try
         let mutable lines: string array = [||]
         let mutable i: int = 0
-        while i < (Seq.length (fpq.queues)) do
+        while i < (Seq.length (fpq._queues)) do
             let mutable q_str: string = "["
-            let mutable q: int array = _idx (fpq.queues) (i)
+            let mutable q: int array = _idx (fpq._queues) (i)
             let mutable j: int = 0
             while j < (Seq.length (q)) do
                 if j > 0 then
@@ -122,7 +142,7 @@ and fpq_to_string (fpq: FixedPriorityQueue) =
                 q_str <- q_str + (_str (_idx q (j)))
                 j <- j + 1
             q_str <- q_str + "]"
-            lines <- Array.append lines [|(("Priority " + (_str (i))) + ": ") + q_str|]
+            lines <- Array.append lines [|((("Priority " + (_str (i))) + ": ") + q_str)|]
             i <- i + 1
         let mutable res: string = ""
         i <- 0
@@ -153,7 +173,7 @@ and epq_enqueue (epq: ElementPriorityQueue) (data: int) =
             panic ("Maximum queue size is 100")
             __ret <- epq
             raise Return
-        epq <- { epq with queue = Array.append (epq.queue) [|data|] }
+        epq.queue <- Array.append (epq.queue) [|data|]
         __ret <- epq
         raise Return
         __ret
@@ -180,9 +200,9 @@ and epq_dequeue (epq: ElementPriorityQueue) =
         i <- 0
         while i < (Seq.length (epq.queue)) do
             if i <> idx then
-                new_q <- Array.append new_q [|_idx (epq.queue) (i)|]
+                new_q <- Array.append new_q [|(_idx (epq.queue) (i))|]
             i <- i + 1
-        epq <- { epq with queue = new_q }
+        epq.queue <- new_q
         __ret <- { queue = epq; value = min_val }
         raise Return
         __ret

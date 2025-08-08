@@ -1,4 +1,4 @@
-// Generated 2025-08-07 14:57 +0700
+// Generated 2025-08-08 11:10 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,8 +19,20 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
+    d.[k] <- v
+    d
+let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
+    let d = System.Collections.Generic.Dictionary<'K, 'V>()
+    for (k, v) in pairs do
+        d.[k] <- v
+    upcast d
+let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
+    match d.TryGetValue(k) with
+    | true, v -> v
+    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
-    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+    if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
     s.Replace("[|", "[")
@@ -29,21 +41,21 @@ let rec _str v =
      .Replace(";", "")
      .Replace("\"", "")
 type Queue = {
-    stack: int array
-    length: int
+    mutable _stack: int array
+    mutable _length: int
 }
 type GetResult = {
-    queue: Queue
-    value: int
+    mutable queue: Queue
+    mutable value: int
 }
 type FrontResult = {
-    queue: Queue
-    value: int
+    mutable queue: Queue
+    mutable value: int
 }
 let rec empty_queue () =
     let mutable __ret : Queue = Unchecked.defaultof<Queue>
     try
-        __ret <- { stack = [||]; length = 0 }
+        __ret <- { _stack = [||]; _length = 0 }
         raise Return
         __ret
     with
@@ -53,8 +65,8 @@ and put (q: Queue) (item: int) =
     let mutable q = q
     let mutable item = item
     try
-        let mutable s: int array = Array.append (q.stack) [|item|]
-        __ret <- { stack = s; length = (q.length) + 1 }
+        let mutable s: int array = Array.append (q._stack) [|item|]
+        __ret <- { _stack = s; _length = (q._length) + 1 }
         raise Return
         __ret
     with
@@ -66,7 +78,7 @@ and drop_first (xs: int array) =
         let mutable res: int array = [||]
         let mutable i: int = 1
         while i < (Seq.length (xs)) do
-            res <- Array.append res [|_idx xs (i)|]
+            res <- Array.append res [|(_idx xs (i))|]
             i <- i + 1
         __ret <- res
         raise Return
@@ -80,7 +92,7 @@ and drop_last (xs: int array) =
         let mutable res: int array = [||]
         let mutable i: int = 0
         while i < ((Seq.length (xs)) - 1) do
-            res <- Array.append res [|_idx xs (i)|]
+            res <- Array.append res [|(_idx xs (i))|]
             i <- i + 1
         __ret <- res
         raise Return
@@ -92,14 +104,14 @@ and rotate (q: Queue) (rotation: int) =
     let mutable q = q
     let mutable rotation = rotation
     try
-        let mutable s: int array = q.stack
+        let mutable s: int array = q._stack
         let mutable i: int = 0
         while (i < rotation) && ((Seq.length (s)) > 0) do
             let temp: int = _idx s (0)
             s <- drop_first (s)
             s <- Array.append s [|temp|]
             i <- i + 1
-        __ret <- { stack = s; length = q.length }
+        __ret <- { _stack = s; _length = q._length }
         raise Return
         __ret
     with
@@ -108,26 +120,26 @@ and get (q: Queue) =
     let mutable __ret : GetResult = Unchecked.defaultof<GetResult>
     let mutable q = q
     try
-        if (q.length) = 0 then
+        if (q._length) = 0 then
             failwith ("queue empty")
         let mutable q1: Queue = rotate (q) (1)
-        let v: int = _idx (q1.stack) ((q1.length) - 1)
-        let mutable s: int array = drop_last (q1.stack)
-        let mutable q2: Queue = { stack = s; length = q1.length }
-        q2 <- rotate (q2) ((q2.length) - 1)
-        q2 <- { stack = q2.stack; length = (q2.length) - 1 }
+        let v: int = _idx (q1._stack) ((q1._length) - 1)
+        let mutable s: int array = drop_last (q1._stack)
+        let mutable q2: Queue = { _stack = s; _length = q1._length }
+        q2 <- rotate (q2) ((q2._length) - 1)
+        q2 <- { _stack = q2._stack; _length = (q2._length) - 1 }
         __ret <- { queue = q2; value = v }
         raise Return
         __ret
     with
         | Return -> __ret
-and front (q: Queue) =
+and _front (q: Queue) =
     let mutable __ret : FrontResult = Unchecked.defaultof<FrontResult>
     let mutable q = q
     try
         let r: GetResult = get (q)
         let mutable q2: Queue = put (r.queue) (r.value)
-        q2 <- rotate (q2) ((q2.length) - 1)
+        q2 <- rotate (q2) ((q2._length) - 1)
         __ret <- { queue = q2; value = r.value }
         raise Return
         __ret
@@ -137,7 +149,7 @@ and size (q: Queue) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable q = q
     try
-        __ret <- q.length
+        __ret <- q._length
         raise Return
         __ret
     with
@@ -147,11 +159,11 @@ and to_string (q: Queue) =
     let mutable q = q
     try
         let mutable s: string = "<"
-        if (q.length) > 0 then
-            s <- s + (_str (_idx (q.stack) (0)))
+        if (q._length) > 0 then
+            s <- s + (_str (_idx (q._stack) (0)))
             let mutable i: int = 1
-            while i < (q.length) do
-                s <- (s + ", ") + (_str (_idx (q.stack) (i)))
+            while i < (q._length) do
+                s <- (s + ", ") + (_str (_idx (q._stack) (i)))
                 i <- i + 1
         s <- s + ">"
         __ret <- s
@@ -173,9 +185,9 @@ and main () =
         q <- g.queue
         printfn "%d" (g.value)
         printfn "%s" (to_string (q))
-        let f: FrontResult = front (q)
-        q <- f.queue
-        printfn "%d" (f.value)
+        let f = _front (q)
+        q <- unbox<Queue> (((f :?> System.Collections.Generic.IDictionary<string, obj>).["queue"]))
+        printfn "%A" (((f :?> System.Collections.Generic.IDictionary<string, obj>).["value"]))
         printfn "%s" (to_string (q))
         printfn "%d" (size (q))
         let __bench_end = _now()

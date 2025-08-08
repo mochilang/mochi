@@ -1,4 +1,4 @@
-// Generated 2025-08-07 14:57 +0700
+// Generated 2025-08-08 11:10 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -27,8 +27,12 @@ let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collec
     for (k, v) in pairs do
         d.[k] <- v
     upcast d
+let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
+    match d.TryGetValue(k) with
+    | true, v -> v
+    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
-    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+    if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _repr v =
     let s = sprintf "%A" v
     s.Replace("[|", "[")
@@ -88,15 +92,15 @@ let rec merge (r1: int) (r2: int) =
         if r2 = NIL then
             __ret <- r1
             raise Return
-        if (_idx nodes (r1).[(string ("value"))]) > (_idx nodes (r2).[(string ("value"))]) then
+        if (_dictGet (_idx nodes (r1)) ((string ("value")))) > (_dictGet (_idx nodes (r2)) ((string ("value")))) then
             let tmp: int = r1
             r1 <- r2
             r2 <- tmp
         if rand_bool() then
-            let tmp: int = _idx nodes (r1).[(string ("left"))]
-            nodes.[r1].["left"] <- _idx nodes (r1).[(string ("right"))]
+            let tmp: int = _dictGet (_idx nodes (r1)) ((string ("left")))
+            nodes.[r1].["left"] <- _dictGet (_idx nodes (r1)) ((string ("right")))
             nodes.[r1].["right"] <- tmp
-        nodes.[r1].["left"] <- merge (_idx nodes (r1).[(string ("left"))]) (r2)
+        nodes.[r1].["left"] <- merge (_dictGet (_idx nodes (r1)) ((string ("left")))) (r2)
         __ret <- r1
         raise Return
         __ret
@@ -116,7 +120,7 @@ let rec insert (value: int) =
 let rec top () =
     let mutable __ret : int = Unchecked.defaultof<int>
     try
-        __ret <- if root = NIL then 0 else (_idx nodes (root).[(string ("value"))])
+        __ret <- if root = NIL then 0 else (_dictGet (_idx nodes (root)) ((string ("value"))))
         raise Return
         __ret
     with
@@ -125,8 +129,8 @@ let rec pop () =
     let mutable __ret : int = Unchecked.defaultof<int>
     try
         let result: int = top()
-        let l: int = _idx nodes (root).[(string ("left"))]
-        let r: int = _idx nodes (root).[(string ("right"))]
+        let l: int = _dictGet (_idx nodes (root)) ((string ("left")))
+        let r: int = _dictGet (_idx nodes (root)) ((string ("right")))
         root <- merge (l) (r)
         __ret <- result
         raise Return
@@ -146,7 +150,7 @@ let rec to_sorted_list () =
     try
         let mutable res: int array = [||]
         while not (is_empty()) do
-            res <- Array.append res [|pop()|]
+            res <- Array.append res [|(pop())|]
         __ret <- res
         raise Return
         __ret

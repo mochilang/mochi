@@ -1,4 +1,4 @@
-// Generated 2025-08-07 14:57 +0700
+// Generated 2025-08-08 11:10 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,8 +19,28 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
+    d.[k] <- v
+    d
+let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
+    let d = System.Collections.Generic.Dictionary<'K, 'V>()
+    for (k, v) in pairs do
+        d.[k] <- v
+    upcast d
+let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
+    match d.TryGetValue(k) with
+    | true, v -> v
+    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
-    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+    if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
+    let mutable a = arr
+    if i >= a.Length then
+        let na = Array.zeroCreate<'a> (i + 1)
+        Array.blit a 0 na 0 a.Length
+        a <- na
+    a.[i] <- v
+    a
 let rec _str v =
     let s = sprintf "%A" v
     s.Replace("[|", "[")
@@ -28,10 +48,14 @@ let rec _str v =
      .Replace("; ", " ")
      .Replace(";", "")
      .Replace("\"", "")
+let _floordiv (a:int) (b:int) : int =
+    let q = a / b
+    let r = a % b
+    if r <> 0 && ((a < 0) <> (b < 0)) then q - 1 else q
 type KDNode = {
-    point: float array
-    left: int
-    right: int
+    mutable _point: float array
+    mutable _left: int
+    mutable _right: int
 }
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
@@ -68,17 +92,17 @@ let rec build_kdtree (points: float array array) (depth: int) =
         let k: int = Seq.length (_idx points (0))
         let axis: int = ((depth % k + k) % k)
         let sorted: float array array = sort_points (points) (axis)
-        let median_idx: int = (Seq.length (sorted)) / 2
+        let median_idx: int = _floordiv (Seq.length (sorted)) 2
         let left_points: float array array = Array.sub sorted 0 (median_idx - 0)
         let right_points: float array array = Array.sub sorted (median_idx + 1) ((Seq.length (sorted)) - (median_idx + 1))
         let mutable idx: int = Seq.length (tree)
-        tree <- Array.append tree [|{ point = _idx sorted (median_idx); left = 0 - 1; right = 0 - 1 }|]
+        tree <- Array.append tree [|{ _point = _idx sorted (median_idx); _left = 0 - 1; _right = 0 - 1 }|]
         let left_idx: int = build_kdtree (left_points) (depth + 1)
         let right_idx: int = build_kdtree (right_points) (depth + 1)
         let mutable node: KDNode = _idx tree (idx)
-        node <- { node with left = left_idx }
-        node <- { node with right = right_idx }
-        tree <- _arrset tree idx (node)
+        node._left <- left_idx
+        node._right <- right_idx
+        tree <- _arrset tree (idx) (node)
         __ret <- idx
         raise Return
         __ret
