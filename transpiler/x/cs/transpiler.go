@@ -296,9 +296,17 @@ func (s *AssignIndexStmt) emit(w io.Writer) {
 			}
 		}
 	}
+	targetType := typeOfExpr(s.Target)
+	idxType := typeOfExpr(s.Index)
 	s.Target.emit(w)
 	fmt.Fprint(w, "[")
-	s.Index.emit(w)
+	if strings.HasSuffix(targetType, "[]") && idxType != "int" {
+		fmt.Fprint(w, "(int)(")
+		s.Index.emit(w)
+		fmt.Fprint(w, ")")
+	} else {
+		s.Index.emit(w)
+	}
 	fmt.Fprint(w, "] = ")
 	s.Value.emit(w)
 }
