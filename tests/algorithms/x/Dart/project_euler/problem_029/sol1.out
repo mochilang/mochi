@@ -1,0 +1,12 @@
+Unhandled exception:
+FormatException: Invalid number (at character 1)
+
+^
+
+#0      int._handleFormatError (dart:core-patch/integers_patch.dart:135:7)
+#1      int.parse (dart:core-patch/integers_patch.dart:53:14)
+#2      _main (file:///workspace/mochi/tests/algorithms/x/Dart/project_euler/problem_029/sol1.dart:43:15)
+#3      _start (file:///workspace/mochi/tests/algorithms/x/Dart/project_euler/problem_029/sol1.dart:48:3)
+#4      main (file:///workspace/mochi/tests/algorithms/x/Dart/project_euler/problem_029/sol1.dart:51:16)
+#5      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#6      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)
