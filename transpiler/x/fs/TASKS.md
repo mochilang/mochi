@@ -1,3 +1,7 @@
+## Progress (2025-08-08 15:37 +0700)
+- php: support ceil/floor and add algorithm outputs
+- Generated F# for 103/105 programs (103 passing)
+
 ## Progress (2025-08-08 11:10 +0700)
 - chore(java): add algorithms outputs
 - Generated F# for 103/105 programs (103 passing)
