@@ -1,0 +1,15 @@
+/workspace/mochi/tests/algorithms/x/Erlang/physics/rainfall_intensity.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/physics/rainfall_intensity.erl:93:2: Warning: variable 'Is_neg_3' exported from 'case' (line 72, column 9)
+%   93| {Is_neg_3, N_2, Sum_2, Term_2, X, Y_3} = Fun(Is_neg_3, N, Sum, Term, X, Y_3),
+%     |  ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/physics/rainfall_intensity.erl:93:35: Warning: variable 'Y_3' exported from 'case' (line 72, column 9)
+%   93| {Is_neg_3, N_2, Sum_2, Term_2, X, Y_3} = Fun(Is_neg_3, N, Sum, Term, X, Y_3),
+%     |                                   ^
+
+49.967500155067256
+77.53741060077824
+43.53099068931351

@@ -1,0 +1,10 @@
+/workspace/mochi/tests/algorithms/x/Erlang/physics/mass_energy_equivalence.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+1.1194894506345802e19
+2.8760165719578165e19
+0
+1.3859169098203872e-15
+3.560480179371579e-15
+0

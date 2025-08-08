@@ -1,0 +1,14 @@
+/workspace/mochi/tests/algorithms/x/Erlang/physics/lens_formulae.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/physics/lens_formulae.erl:53:1: Warning: function mochi_safe_mul/2 is unused
+%   53| mochi_safe_mul(A, B) ->
+%     | ^
+
+6.666666666666667
+-5.0516129032258075
+-13.333333333333332
+1.9787234042553192
+22.22222222222222
+3.1719696969696973

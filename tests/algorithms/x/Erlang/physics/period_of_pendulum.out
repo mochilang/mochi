@@ -1,0 +1,8 @@
+/workspace/mochi/tests/algorithms/x/Erlang/physics/period_of_pendulum.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+2.2252155506257845
+3.0888278441908574
+4.76073193364765
+0

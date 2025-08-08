@@ -1,0 +1,10 @@
+/workspace/mochi/tests/algorithms/x/Erlang/project_euler/problem_002/sol5.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+10
+10
+2
+0
+44
+4613732

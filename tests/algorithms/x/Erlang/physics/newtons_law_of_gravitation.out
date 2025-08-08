@@ -1,0 +1,8 @@
+/workspace/mochi/tests/algorithms/x/Erlang/physics/newtons_law_of_gravitation.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+"force 8.342875e-12"
+"mass_1 1.385816317292268e19"
+"mass_2 2696912035719.102"
+"distance 5.803910918741933e-6"
