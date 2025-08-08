@@ -1,9 +1,9 @@
 exit status 134
 Unhandled exception. System.TypeInitializationException: The type initializer for 'Program' threw an exception.
  ---> System.IndexOutOfRangeException: Index was outside the bounds of the array.
-   at Program.pad_edge(Int64[][] image_0, Int64 pad_size_1) in /tmp/TestCSTranspiler_Algorithms_Golden001_digital_image_processing_filters_convolve1182287428/001/Program.cs:line 132
-   at Program.img_convolve(Int64[][] image_33, Int64[][] kernel_34) in /tmp/TestCSTranspiler_Algorithms_Golden001_digital_image_processing_filters_convolve1182287428/001/Program.cs:line 198
-   at Program..cctor() in /tmp/TestCSTranspiler_Algorithms_Golden001_digital_image_processing_filters_convolve1182287428/001/Program.cs:line 102
+   at Program.pad_edge(Int64[][] image_0, Int64 pad_size_1) in /tmp/TestCSTranspiler_Algorithms_Golden001_digital_image_processing_filters_convolve2508540681/001/Program.cs:line 132
+   at Program.img_convolve(Int64[][] image_33, Int64[][] kernel_34) in /tmp/TestCSTranspiler_Algorithms_Golden001_digital_image_processing_filters_convolve2508540681/001/Program.cs:line 198
+   at Program..cctor() in /tmp/TestCSTranspiler_Algorithms_Golden001_digital_image_processing_filters_convolve2508540681/001/Program.cs:line 102
    --- End of inner exception stack trace ---
-   at Program._now() in /tmp/TestCSTranspiler_Algorithms_Golden001_digital_image_processing_filters_convolve1182287428/001/Program.cs:line 13
-   at Program.Main() in /tmp/TestCSTranspiler_Algorithms_Golden001_digital_image_processing_filters_convolve1182287428/001/Program.cs:line 239
+   at Program._now() in /tmp/TestCSTranspiler_Algorithms_Golden001_digital_image_processing_filters_convolve2508540681/001/Program.cs:line 13
+   at Program.Main() in /tmp/TestCSTranspiler_Algorithms_Golden001_digital_image_processing_filters_convolve2508540681/001/Program.cs:line 239

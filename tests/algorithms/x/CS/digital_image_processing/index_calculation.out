@@ -1,4 +1,4 @@
-/tmp/TestCSTranspiler_Algorithms_Golden001_digital_image_processing_index_calculation1202159710/001/Program.cs(157,16): warning CS0219: The variable 'blue_27' is assigned but its value is never used [/tmp/TestCSTranspiler_Algorithms_Golden001_digital_image_processing_index_calculation1202159710/001/app.csproj]
+/tmp/TestCSTranspiler_Algorithms_Golden001_digital_image_processing_index_calculation2816952924/001/Program.cs(157,16): warning CS0219: The variable 'blue_27' is assigned but its value is never used [/tmp/TestCSTranspiler_Algorithms_Golden001_digital_image_processing_index_calculation2816952924/001/app.csproj]
 NDVI=0.3333333333333333
 CCCI=1.2857142857142858
 CVI=5.555555555555555

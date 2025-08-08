@@ -1,9 +1,0 @@
-exit status 1
-/tmp/TestCSTranspiler_Algorithms_Golden001_divide_and_conquer_inversions269728818/001/Program.cs(105,32): error CS0029: Cannot implicitly convert type 'long[]' to 'object[]' [/tmp/TestCSTranspiler_Algorithms_Golden001_divide_and_conquer_inversions269728818/001/app.csproj]
-/tmp/TestCSTranspiler_Algorithms_Golden001_divide_and_conquer_inversions269728818/001/Program.cs(106,54): error CS1503: Argument 1: cannot convert from 'object[]' to 'long[]' [/tmp/TestCSTranspiler_Algorithms_Golden001_divide_and_conquer_inversions269728818/001/app.csproj]
-/tmp/TestCSTranspiler_Algorithms_Golden001_divide_and_conquer_inversions269728818/001/Program.cs(107,62): error CS1503: Argument 1: cannot convert from 'object[]' to 'long[]' [/tmp/TestCSTranspiler_Algorithms_Golden001_divide_and_conquer_inversions269728818/001/app.csproj]
-/tmp/TestCSTranspiler_Algorithms_Golden001_divide_and_conquer_inversions269728818/001/Program.cs(177,24): error CS0029: Cannot implicitly convert type 'long[]' to 'object[]' [/tmp/TestCSTranspiler_Algorithms_Golden001_divide_and_conquer_inversions269728818/001/app.csproj]
-/tmp/TestCSTranspiler_Algorithms_Golden001_divide_and_conquer_inversions269728818/001/Program.cs(178,56): error CS1503: Argument 1: cannot convert from 'object[]' to 'long[]' [/tmp/TestCSTranspiler_Algorithms_Golden001_divide_and_conquer_inversions269728818/001/app.csproj]
-/tmp/TestCSTranspiler_Algorithms_Golden001_divide_and_conquer_inversions269728818/001/Program.cs(179,64): error CS1503: Argument 1: cannot convert from 'object[]' to 'long[]' [/tmp/TestCSTranspiler_Algorithms_Golden001_divide_and_conquer_inversions269728818/001/app.csproj]
-
-The build failed. Fix the build errors and run again.
