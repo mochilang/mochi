@@ -53,7 +53,7 @@ public class Main {
     }
 
     static FixedPriorityQueue fpq_new() {
-        return new FixedPriorityQueue(new int[][]{new Object[]{}, new Object[]{}, new Object[]{}});
+        return new FixedPriorityQueue(new int[][]{new int[]{}, new int[]{}, new int[]{}});
     }
 
     static FixedPriorityQueue fpq_enqueue(FixedPriorityQueue fpq, int priority, int data) {

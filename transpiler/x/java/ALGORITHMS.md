@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-08 17:39 GMT+7
+Last updated: 2025-08-08 17:59 GMT+7
 
-## Algorithms Golden Test Checklist (908/1077)
+## Algorithms Golden Test Checklist (910/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -248,8 +248,8 @@ Last updated: 2025-08-08 17:39 GMT+7
 | 239 | data_structures/queues/circular_queue | ✓ | 39.0ms | 46.96KB |
 | 240 | data_structures/queues/circular_queue_linked_list | ✓ | 46.0ms | 48.30KB |
 | 241 | data_structures/queues/double_ended_queue | ✓ | 63.0ms | 96.15KB |
-| 242 | data_structures/queues/linked_queue | error |  |  |
-| 243 | data_structures/queues/priority_queue_using_list | error |  |  |
+| 242 | data_structures/queues/linked_queue | ✓ | 27.0ms | 46.50KB |
+| 243 | data_structures/queues/priority_queue_using_list | ✓ | 42.0ms | 98.20KB |
 | 244 | data_structures/queues/queue_by_list | ✓ | 47.0ms | 55.59KB |
 | 245 | data_structures/queues/queue_by_two_stacks | ✓ | 46.0ms | 47.04KB |
 | 246 | data_structures/queues/queue_on_pseudo_stack | ✓ | 67.0ms | 95.86KB |
@@ -259,7 +259,7 @@ Last updated: 2025-08-08 17:39 GMT+7
 | 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ | 14.0ms | 888B |
 | 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 29.0ms | 46.25KB |
 | 252 | data_structures/stacks/lexicographical_numbers | ✓ | 30.0ms | 54.63KB |
-| 253 | data_structures/stacks/next_greater_element | error |  |  |
+| 253 | data_structures/stacks/next_greater_element | error | 41.0ms | 58.95KB |
 | 254 | data_structures/stacks/postfix_evaluation | ✓ | 26.0ms | 56.98KB |
 | 255 | data_structures/stacks/prefix_evaluation | ✓ | 27.0ms | 65.15KB |
 | 256 | data_structures/stacks/stack | ✓ | 27.0ms | 46.70KB |
@@ -277,7 +277,7 @@ Last updated: 2025-08-08 17:39 GMT+7
 | 268 | digital_image_processing/change_contrast | ✓ | 34.0ms | 93.01KB |
 | 269 | digital_image_processing/convert_to_negative | ✓ | 17.0ms | 888B |
 | 270 | digital_image_processing/dithering/burkes | ✓ | 29.0ms | 54.85KB |
-| 271 | digital_image_processing/edge_detection/canny | error |  |  |
+| 271 | digital_image_processing/edge_detection/canny | error | 47.0ms | 95.38KB |
 | 272 | digital_image_processing/filters/bilateral_filter | error |  |  |
 | 273 | digital_image_processing/filters/convolve | error |  |  |
 | 274 | digital_image_processing/filters/gabor_filter | ✓ | 29.0ms | 57.08KB |
@@ -285,10 +285,10 @@ Last updated: 2025-08-08 17:39 GMT+7
 | 276 | digital_image_processing/filters/laplacian_filter | ✓ | 28.0ms | 55.31KB |
 | 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 22.0ms | 38.38KB |
 | 278 | digital_image_processing/filters/median_filter | ✓ | 28.0ms | 46.14KB |
-| 279 | digital_image_processing/filters/sobel_filter | error |  |  |
+| 279 | digital_image_processing/filters/sobel_filter | error | 45.0ms | 66.20KB |
 | 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 31.0ms | 46.34KB |
 | 281 | digital_image_processing/index_calculation | ✓ | 26.0ms | 47.74KB |
-| 282 | digital_image_processing/morphological_operations/dilation_operation | error |  |  |
+| 282 | digital_image_processing/morphological_operations/dilation_operation | error | 32.0ms | 67.83KB |
 | 283 | digital_image_processing/morphological_operations/erosion_operation | ✓ | 25.0ms | 57.92KB |
 | 284 | digital_image_processing/resize/resize | ✓ | 26.0ms | 46.53KB |
 | 285 | digital_image_processing/rotation/rotation | error |  |  |
