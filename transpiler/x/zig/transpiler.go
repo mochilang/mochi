@@ -1119,8 +1119,24 @@ func (m *MapLit) emit(w io.Writer) {
 			}
 			if k, ok := e.Key.(*StringLit); ok {
 				fmt.Fprintf(w, ".%s = ", zigIdent(k.Value))
+				if sd, ok := structDefs[m.StructName]; ok {
+					for _, f := range sd.Fields {
+						if f.Name == toSnakeCase(k.Value) {
+							if strings.HasPrefix(f.Type, "[]") {
+								if ll, ok := e.Value.(*ListLit); ok {
+									ll.ElemType = strings.TrimPrefix(f.Type, "[]")
+									io.WriteString(w, "@constCast((&(")
+									ll.emit(w)
+									io.WriteString(w, "))[0..])")
+									goto emitted
+								}
+							}
+						}
+					}
+				}
 			}
 			e.Value.emit(w)
+		emitted:
 		}
 		io.WriteString(w, " }")
 		return
@@ -1404,6 +1420,10 @@ func (p *Program) Emit() []byte {
 						fn.Params[i].Type = "*" + t
 						varTypes[prm.Name] = fn.Params[i].Type
 						params[i] = fn.Params[i].Type
+					} else if strings.HasPrefix(t, "[]const ") {
+						fn.Params[i].Type = "[]" + strings.TrimPrefix(t, "[]const ")
+						varTypes[prm.Name] = fn.Params[i].Type
+						params[i] = fn.Params[i].Type
 					}
 				}
 			}
@@ -1502,8 +1522,8 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    },\n")
 		buf.WriteString("    .Struct => |_| {\n")
 		buf.WriteString("        if (@hasDecl(@TypeOf(v), \"iterator\")) {\n")
-		buf.WriteString("            const Pair = struct{ ks: []const u8, vs: []const u8 };\n")
-		buf.WriteString("            var pairs = std.ArrayList(Pair).init(std.heap.page_allocator);\n")
+		buf.WriteString("            const KVPair = struct{ ks: []const u8, vs: []const u8 };\n")
+		buf.WriteString("            var pairs = std.ArrayList(KVPair).init(std.heap.page_allocator);\n")
 		buf.WriteString("            defer pairs.deinit();\n")
 		buf.WriteString("            var it = v.iterator();\n")
 		buf.WriteString("            while (it.next()) |e| {\n")
@@ -1511,8 +1531,8 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("                const vs = _str(e.value_ptr.*);\n")
 		buf.WriteString("                pairs.append(.{ .ks = ks, .vs = vs }) catch unreachable;\n")
 		buf.WriteString("            }\n")
-		buf.WriteString("            std.sort.heap(Pair, pairs.items, {}, struct {\n")
-		buf.WriteString("                pub fn less(_: void, a: Pair, b: Pair) bool {\n")
+		buf.WriteString("            std.sort.heap(KVPair, pairs.items, {}, struct {\n")
+		buf.WriteString("                pub fn less(_: void, a: KVPair, b: KVPair) bool {\n")
 		buf.WriteString("                    return std.mem.lessThan(u8, a.ks, b.ks);\n")
 		buf.WriteString("                }\n")
 		buf.WriteString("            }.less);\n")
@@ -1803,9 +1823,9 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 			fmt.Fprintf(w, "&[_]%s{}", strings.TrimPrefix(targetType, "[]"))
 		} else {
 			if ll, ok := v.Value.(*ListLit); ok && ll.ElemType != "" && strings.HasPrefix(targetType, "[]") {
-				io.WriteString(w, "(&(")
+				io.WriteString(w, "@constCast((&(")
 				ll.emit(w)
-				io.WriteString(w, "))[0..]")
+				io.WriteString(w, "))[0..])")
 			} else {
 				v.Value.emit(w)
 			}
@@ -1844,9 +1864,9 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 		fmt.Fprintf(w, "&[_]%s{}", strings.TrimPrefix(targetType, "[]"))
 	} else {
 		if ll, ok := a.Value.(*ListLit); ok && ll.ElemType != "" && strings.HasPrefix(targetType, "[]") {
-			io.WriteString(w, "(&(")
+			io.WriteString(w, "@constCast((&(")
 			ll.emit(w)
-			io.WriteString(w, "))[0..]")
+			io.WriteString(w, "))[0..])")
 		} else {
 			a.Value.emit(w)
 		}
@@ -3324,6 +3344,27 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 						ops = append(ops[:i], ops[i+1:]...)
 						continue
 					}
+				}
+			}
+			if li, ok := l.(*IntLit); ok {
+				if ri, ok2 := r.(*IntLit); ok2 {
+					switch ops[i].Op {
+					case "+":
+						operands[i] = &IntLit{Value: li.Value + ri.Value}
+					case "-":
+						operands[i] = &IntLit{Value: li.Value - ri.Value}
+					case "*":
+						operands[i] = &IntLit{Value: li.Value * ri.Value}
+					case "/":
+						operands[i] = &IntLit{Value: li.Value / ri.Value}
+					case "%":
+						operands[i] = &IntLit{Value: li.Value % ri.Value}
+					default:
+						operands[i] = &BinaryExpr{Left: l, Op: ops[i].Op, Right: r}
+					}
+					operands = append(operands[:i+1], operands[i+2:]...)
+					ops = append(ops[:i], ops[i+1:]...)
+					continue
 				}
 			}
 			expr := &BinaryExpr{Left: l, Op: ops[i].Op, Right: r}
