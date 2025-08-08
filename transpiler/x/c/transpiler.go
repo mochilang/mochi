@@ -4328,6 +4328,10 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				funcAliases[name] = "user_powf"
 				name = "user_powf"
 			}
+			if name == "pow" { // avoid conflict with stdlib
+				funcAliases[name] = "user_pow"
+				name = "user_pow"
+			}
 			if name == "double" { // avoid conflict with C keyword
 				funcAliases[name] = "user_double"
 				name = "user_double"
