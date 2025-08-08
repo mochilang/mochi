@@ -1024,11 +1024,12 @@ func (i *InExpr) emit(w io.Writer) {
 		i.Elem.emit(w)
 		io.WriteString(w, ")")
 	default:
+		// Member expects a proper list; ensure a list is always provided.
 		io.WriteString(w, "(not (not (member ")
 		i.Elem.emit(w)
-		io.WriteString(w, " ")
+		io.WriteString(w, " (or ")
 		i.Set.emit(w)
-		io.WriteString(w, ")))")
+		io.WriteString(w, " '()))))")
 	}
 }
 
@@ -1373,11 +1374,11 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		b.Right.emit(w)
 		io.WriteString(w, "]) (if (and (string? __l) (string? __r)) (string-append __l __r) (+ __l __r)))")
 	case "list-append":
-		io.WriteString(w, "(append ")
+		io.WriteString(w, "(append (or ")
 		b.Left.emit(w)
-		io.WriteString(w, " ")
+		io.WriteString(w, " '()) (or ")
 		b.Right.emit(w)
-		io.WriteString(w, ")")
+		io.WriteString(w, " '()))")
 	case "fmod":
 		io.WriteString(w, "(- ")
 		b.Left.emit(w)
@@ -3147,7 +3148,10 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		return &LenExpr{Arg: args[0]}, nil
 	case "append":
 		if len(args) == 2 {
-			return &CallExpr{Func: "append", Args: []Expr{args[0], &CallExpr{Func: "list", Args: []Expr{args[1]}}}}, nil
+			// Ensure the receiver is a list before appending.
+			left := &CallExpr{Func: "or", Args: []Expr{args[0], &ListLit{}}}
+			right := &CallExpr{Func: "list", Args: []Expr{args[1]}}
+			return &CallExpr{Func: "append", Args: []Expr{left, right}}, nil
 		}
 	case "concat":
 		if len(args) >= 2 {
