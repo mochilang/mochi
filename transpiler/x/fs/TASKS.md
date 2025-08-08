@@ -1,3 +1,7 @@
+## Progress (2025-08-08 18:09 +0700)
+- fs: promote int multiplication to int64
+- Generated F# for 103/105 programs (103 passing)
+
 ## Progress (2025-08-08 17:35 +0700)
 - go transpiler: handle typed append
 - Generated F# for 103/105 programs (103 passing)
