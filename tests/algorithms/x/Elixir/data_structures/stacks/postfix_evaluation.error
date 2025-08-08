@@ -1,0 +1,41 @@
+run: exit status 1
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 43 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/postfix_evaluation.exs:43:8: Main.slice_without_last/1
+
+     warning: variable "place" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 108 │         {idx, place, result} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/postfix_evaluation.exs:108:15: Main.parse_float/1
+
+    warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 94 │       {idx, result} = if idx < _len(token) && _slice(token, idx, idx + 1 - (idx)) == "." do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/postfix_evaluation.exs:94:8: Main.parse_float/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 137 │       {i, result} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/postfix_evaluation.exs:137:8: Main.pow_float/2
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a number
+
+    :erlang.trunc("2")
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/postfix_evaluation.exs:80: anonymous fn/4 in Main.parse_float/1
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/postfix_evaluation.exs:88: Main.parse_float/1
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/postfix_evaluation.exs:194: anonymous fn/2 in Main.evaluate/1
+    (elixir 1.18.3) lib/enum.ex:2546: Enum."-reduce/3-lists^foldl/2-0-"/3
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/postfix_evaluation.exs:176: Main.evaluate/1
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/postfix_evaluation.exs:208: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/postfix_evaluation.exs:215: (file)

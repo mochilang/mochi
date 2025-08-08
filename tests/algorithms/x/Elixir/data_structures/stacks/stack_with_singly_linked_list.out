@@ -1,0 +1,14 @@
+warning: variable "stack" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 59 │   def clear(stack) do
+    │             ~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/stack_with_singly_linked_list.exs:59:13: Main.clear/1
+
+true
+false
+python
+algorithms
+9
+5
+true

@@ -1,0 +1,22 @@
+warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 84 │       {count, idx} = try do
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/stack_with_doubly_linked_list.exs:84:15: Main.size/1
+
+     warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 117 │       {idx, s} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/stacks/stack_with_doubly_linked_list.exs:117:8: Main.print_stack/1
+
+Stack operations using Doubly LinkedList
+stack elements are:
+7->6->5->4->
+Top element is 7
+Size of the stack is 4
+stack elements are:
+5->4->
+stack is empty: false
