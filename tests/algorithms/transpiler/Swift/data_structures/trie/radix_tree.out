@@ -1,0 +1,10 @@
+Words: [banana bananas bandanas bandana band apple all beast]
+Tree:
+- a
+-- pple  (leaf)
+- b
+-- an
+--- ana  (leaf)
+---- s  (leaf)
+--- d  (leaf)
+---- ana  (leaf)

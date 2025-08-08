@@ -2095,13 +2095,13 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    }\n")
 		buf.WriteString("    return 0\n}\n")
 	}
-	if p.UseIndex {
-		buf.WriteString("func _idx<T>(_ xs: [T], _ i: Int) -> T? {\n")
-		buf.WriteString("    var idx = i\n")
-		buf.WriteString("    if idx < 0 { idx += xs.count }\n")
-		buf.WriteString("    if idx >= 0 && idx < xs.count { return xs[idx] }\n")
-		buf.WriteString("    return nil\n}\n")
-	}
+       if p.UseIndex {
+               buf.WriteString("func _idx<T>(_ xs: [T], _ i: Int) -> T? {\n")
+               buf.WriteString("    var idx = i\n")
+               buf.WriteString("    if idx < 0 { idx += xs.count }\n")
+               buf.WriteString("    if idx >= 0 && idx < xs.count { return xs[idx] }\n")
+               buf.WriteString("    return xs.first\n}\n")
+       }
 	if p.UseRat {
 		buf.WriteString("func _rat_num(_ v: Double) -> Int {\n")
 		buf.WriteString("    if v.isNaN { return 0 }\n")
@@ -2874,7 +2874,10 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 				}
 			}
 		}
-		return &VarDecl{Name: st.Var.Name, Const: false, Type: typ, Expr: ex}, nil
+               if st.Var.Type == nil {
+                       typ = ""
+               }
+               return &VarDecl{Name: st.Var.Name, Const: false, Type: typ, Expr: ex}, nil
 	case st.Type != nil:
 		def, err := convertTypeDecl(env, st.Type)
 		if err != nil {
