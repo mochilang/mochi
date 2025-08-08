@@ -3538,7 +3538,7 @@ func (p *Program) Emit() []byte {
 	for _, s := range body {
 		s.emit(&buf)
 	}
-	buf.WriteString("  ()")
+	buf.WriteString("  ()\n")
 	return buf.Bytes()
 }
 
