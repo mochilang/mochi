@@ -1551,6 +1551,12 @@ func (s *LetStmt) emit(w io.Writer, indentLevel int) {
 		io.WriteString(w, ": "+typ)
 	}
 	io.WriteString(w, " = ")
+	if typ == "Int" {
+		io.WriteString(w, "(")
+		s.Value.emit(w)
+		io.WriteString(w, ").toInt()")
+		return
+	}
 	if s.Type == "BigInteger" {
 		useHelper("importBigInt")
 		if _, ok := s.Value.(*IntLit); ok {
@@ -1614,6 +1620,12 @@ func (s *VarStmt) emit(w io.Writer, indentLevel int) {
 		io.WriteString(w, ": "+typ)
 	}
 	io.WriteString(w, " = ")
+	if typ == "Int" {
+		io.WriteString(w, "(")
+		s.Value.emit(w)
+		io.WriteString(w, ").toInt()")
+		return
+	}
 	if s.Type == "BigInteger" {
 		useHelper("importBigInt")
 		if _, ok := s.Value.(*IntLit); ok {
@@ -1666,6 +1678,12 @@ func (s *AssignStmt) emit(w io.Writer, indentLevel int) {
 		typ = guessType(&VarRef{Name: s.Name})
 	}
 	valType := guessType(s.Value)
+	if typ == "Int" {
+		io.WriteString(w, "(")
+		s.Value.emit(w)
+		io.WriteString(w, ").toInt()")
+		return
+	}
 	if typ == "Long" && valType != "Long" {
 		io.WriteString(w, "(")
 		s.Value.emit(w)

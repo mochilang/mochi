@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-08 11:29 GMT+7
+Last updated: 2025-08-08 16:02 GMT+7
 
-## Algorithms Golden Test Checklist (139/1077)
+## Algorithms Golden Test Checklist (146/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 30.54ms | 124.45KiB |
@@ -161,13 +161,13 @@ Last updated: 2025-08-08 11:29 GMT+7
 | 152 | data_compression/burrows_wheeler | ✓ | 8.98ms | 134.08KiB |
 | 153 | data_compression/huffman |   |  |  |
 | 154 | data_compression/lempel_ziv | ✓ | 27.27ms | 120.68KiB |
-| 155 | data_compression/lempel_ziv_decompress |   |  |  |
-| 156 | data_compression/lz77 |   |  |  |
-| 157 | data_compression/peak_signal_to_noise_ratio |   |  |  |
-| 158 | data_compression/run_length_encoding |   |  |  |
-| 159 | data_structures/arrays/equilibrium_index_in_array |   |  |  |
-| 160 | data_structures/arrays/find_triplets_with_0_sum |   |  |  |
-| 161 | data_structures/arrays/index_2d_array_in_1d |   |  |  |
+| 155 | data_compression/lempel_ziv_decompress | ✓ | 7.77ms | 134.29KiB |
+| 156 | data_compression/lz77 | ✓ | 10.94ms | 131.70KiB |
+| 157 | data_compression/peak_signal_to_noise_ratio | ✓ | 20.22ms | 124.67KiB |
+| 158 | data_compression/run_length_encoding | ✓ | 10.52ms | 125.19KiB |
+| 159 | data_structures/arrays/equilibrium_index_in_array | ✓ | 11.01ms | 133.85KiB |
+| 160 | data_structures/arrays/find_triplets_with_0_sum | ✓ | 25.12ms | 122.58KiB |
+| 161 | data_structures/arrays/index_2d_array_in_1d | ✓ | 27.59ms | 123.07KiB |
 | 162 | data_structures/arrays/kth_largest_element |   |  |  |
 | 163 | data_structures/arrays/median_two_array |   |  |  |
 | 164 | data_structures/arrays/monotonic_array |   |  |  |
