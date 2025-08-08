@@ -2324,16 +2324,33 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 					if vd.Type != "" {
 						varTypes[vd.Name] = vd.Type
 					}
-					idxVar := fmt.Sprintf("%s_idx", name)
-					varTypes[idxVar] = "integer"
-					setVarType(idxVar, "integer")
-					mapName := exprToVarRef(idxExpr.Target)
-					idxAssign := &AssignStmt{Name: idxVar, Expr: &CallExpr{Name: mapName + ".IndexOf", Args: []Expr{idxExpr.Index}}}
-					cond := &BinaryExpr{Op: "<>", Left: &VarRef{Name: idxVar}, Right: &IntLit{Value: -1}, Bool: true}
-					sel := &SelectorExpr{Root: mapName, Tail: []string{"Data"}}
-					thenAssign := &AssignStmt{Name: name, Expr: &IndexExpr{Target: sel, Index: &VarRef{Name: idxVar}}}
-					elseAssign := &AssignStmt{Name: name, Expr: zeroValue(vd.Type)}
-					out = append(out, idxAssign, &IfStmt{Cond: cond, Then: []Stmt{thenAssign}, Else: []Stmt{elseAssign}})
+                                        idxVar := fmt.Sprintf("%s_idx", name)
+                                        varTypes[idxVar] = "integer"
+                                        setVarType(idxVar, "integer")
+                                        if currentFunc != "" {
+                                                varOwners[idxVar] = currentFunc
+                                        }
+                                        mapName := exprToVarRef(idxExpr.Target)
+                                        var preAssign Stmt
+                                        if mapName == "" {
+                                                mapName = fmt.Sprintf("%s_map", name)
+                                                mt := inferType(idxExpr.Target)
+                                                varTypes[mapName] = mt
+                                                setVarType(mapName, mt)
+                                                if currentFunc != "" {
+                                                        varOwners[mapName] = currentFunc
+                                                }
+                                                preAssign = &AssignStmt{Name: mapName, Expr: idxExpr.Target}
+                                        }
+                                        idxAssign := &AssignStmt{Name: idxVar, Expr: &CallExpr{Name: mapName + ".IndexOf", Args: []Expr{idxExpr.Index}}}
+                                        cond := &BinaryExpr{Op: "<>", Left: &VarRef{Name: idxVar}, Right: &IntLit{Value: -1}, Bool: true}
+                                        sel := &SelectorExpr{Root: mapName, Tail: []string{"Data"}}
+                                        thenAssign := &AssignStmt{Name: name, Expr: &IndexExpr{Target: sel, Index: &VarRef{Name: idxVar}}}
+                                        elseAssign := &AssignStmt{Name: name, Expr: zeroValue(vd.Type)}
+                                        if preAssign != nil {
+                                                out = append(out, preAssign)
+                                        }
+                                        out = append(out, idxAssign, &IfStmt{Cond: cond, Then: []Stmt{thenAssign}, Else: []Stmt{elseAssign}})
 					continue
 				}
 				if rec, ok := ex.(*RecordLit); ok {
@@ -2386,10 +2403,17 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 		case st.Var != nil:
 			name := declareName(st.Var.Name)
 			vd := VarDecl{Name: name}
-			if st.Var.Type != nil {
-				vd.Type = typeFromRef(st.Var.Type)
-			}
-			if st.Var.Value != nil {
+                        if st.Var.Type != nil {
+                                vd.Type = typeFromRef(st.Var.Type)
+                        }
+                        if vd.Type == "" && st.Var.Value != nil {
+                                if call := callFromExpr(st.Var.Value); call != nil {
+                                        if rt, ok := funcReturns[call.Func]; ok {
+                                                vd.Type = rt
+                                        }
+                                }
+                        }
+                        if st.Var.Value != nil {
 				if isEmptyMapLiteral(st.Var.Value) && strings.HasPrefix(vd.Type, "specialize TFPGMap") {
 					if !hasVar(vd.Name) {
 						currProg.Vars = append(currProg.Vars, vd)
@@ -2413,14 +2437,23 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 						args = append(args, f.Expr)
 					}
 					out = append(out, &AssignStmt{Name: name, Expr: &CallExpr{Name: ctorName(rec.Type), Args: args}})
-				} else {
-					if vd.Type == "" {
-						if t := inferType(ex); t != "" {
-							vd.Type = t
-						}
-					}
-					out = append(out, &AssignStmt{Name: name, Expr: ex})
-				}
+                                } else {
+                                        if vd.Type == "" {
+                                                if t := inferType(ex); t != "" {
+                                                        vd.Type = t
+                                                } else {
+                                                        switch t := types.ExprType(st.Var.Value, env).(type) {
+                                                        case types.StringType:
+                                                                vd.Type = "string"
+                                                        case types.ListType:
+                                                                vd.Type = pasTypeFromType(t.Elem)
+                                                        case types.BoolType:
+                                                                vd.Type = "boolean"
+                                                        }
+                                                }
+                                        }
+                                        out = append(out, &AssignStmt{Name: name, Expr: ex})
+                                }
 			}
 			if !hasVar(vd.Name) {
 				currProg.Vars = append(currProg.Vars, vd)
