@@ -1,0 +1,76 @@
+warning: variable "minimum" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 36 │       {min_index, minimum, vertex} = try do
+    │                   ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/dijkstra_alternate.exs:36:19: Main.minimum_distance/2
+
+    warning: variable "vertex" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 36 │       {min_index, minimum, vertex} = try do
+    │                            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/dijkstra_alternate.exs:36:28: Main.minimum_distance/2
+
+    warning: variable "distances" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 54 │           distances = (distances ++ [10000000])
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/dijkstra_alternate.exs:54:11: Main.dijkstra/2
+
+    warning: variable "distances" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 94 │                 distances = List.replace_at(distances, v, Enum.at(distances, u) + Enum.at(Enum.at(graph, u), v))
+    │                 ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/dijkstra_alternate.exs:94:17: Main.dijkstra/2
+
+     warning: variable "v" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 102 │           v = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/dijkstra_alternate.exs:102:11: Main.dijkstra/2
+
+     warning: variable "count" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 114 │       {count, visited} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/dijkstra_alternate.exs:114:8: Main.dijkstra/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 61 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/dijkstra_alternate.exs:61:7: Main.dijkstra/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 79 │       {i, visited} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/dijkstra_alternate.exs:79:8: Main.dijkstra/2
+
+     warning: variable "visited" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 114 │       {count, visited} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/dijkstra_alternate.exs:114:15: Main.dijkstra/2
+
+     warning: variable "v" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 138 │       v = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/dijkstra_alternate.exs:138:7: Main.print_solution/1
+
+** (ArgumentError) argument error
+    :erlang.++(nil, [10000000])
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/dijkstra_alternate.exs:54: anonymous fn/3 in Main.dijkstra/2
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/dijkstra_alternate.exs:62: Main.dijkstra/2
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/dijkstra_alternate.exs:153: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/dijkstra_alternate.exs:162: (file)

@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-08 17:20 GMT+7
+Last updated: 2025-08-08 17:54 GMT+7
 
-## Algorithms Golden Test Checklist (315/1077)
+## Algorithms Golden Test Checklist (356/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -389,56 +389,56 @@ Last updated: 2025-08-08 17:20 GMT+7
 | 380 | fractals/julia_sets | ✓ | 11.73ms | 25.0 MB |
 | 381 | fractals/koch_snowflake | ✓ | 6.62ms | 17.3 MB |
 | 382 | fractals/mandelbrot | ✓ | 16.99ms | 33.5 MB |
-| 383 | fractals/sierpinski_triangle |   |  |  |
-| 384 | fractals/vicsek |   |  |  |
-| 385 | fuzzy_logic/fuzzy_operations |   |  |  |
-| 386 | genetic_algorithm/basic_string |   |  |  |
-| 387 | geodesy/haversine_distance |   |  |  |
-| 388 | geodesy/lamberts_ellipsoidal_distance |   |  |  |
-| 389 | geometry/geometry |   |  |  |
-| 390 | graphics/bezier_curve |   |  |  |
-| 391 | graphics/butterfly_pattern |   |  |  |
-| 392 | graphics/digital_differential_analyzer_line |   |  |  |
-| 393 | graphics/vector3_for_2d_rendering |   |  |  |
-| 394 | graphs/a_star |   |  |  |
-| 395 | graphs/ant_colony_optimization_algorithms |   |  |  |
-| 396 | graphs/articulation_points |   |  |  |
-| 397 | graphs/basic_graphs |   |  |  |
-| 398 | graphs/bellman_ford |   |  |  |
-| 399 | graphs/bi_directional_dijkstra |   |  |  |
-| 400 | graphs/bidirectional_a_star |   |  |  |
-| 401 | graphs/bidirectional_breadth_first_search |   |  |  |
-| 402 | graphs/bidirectional_search |   |  |  |
-| 403 | graphs/boruvka |   |  |  |
-| 404 | graphs/breadth_first_search |   |  |  |
-| 405 | graphs/breadth_first_search_2 |   |  |  |
-| 406 | graphs/breadth_first_search_shortest_path |   |  |  |
-| 407 | graphs/breadth_first_search_shortest_path_2 |   |  |  |
-| 408 | graphs/breadth_first_search_zero_one_shortest_path |   |  |  |
-| 409 | graphs/check_bipatrite |   |  |  |
-| 410 | graphs/check_cycle |   |  |  |
-| 411 | graphs/connected_components |   |  |  |
-| 412 | graphs/deep_clone_graph |   |  |  |
-| 413 | graphs/depth_first_search |   |  |  |
-| 414 | graphs/depth_first_search_2 |   |  |  |
-| 415 | graphs/dijkstra |   |  |  |
-| 416 | graphs/dijkstra_2 |   |  |  |
-| 417 | graphs/dijkstra_algorithm |   |  |  |
-| 418 | graphs/dijkstra_alternate |   |  |  |
-| 419 | graphs/dijkstra_binary_grid |   |  |  |
-| 420 | graphs/dinic |   |  |  |
-| 421 | graphs/directed_and_undirected_weighted_graph |   |  |  |
-| 422 | graphs/edmonds_karp_multiple_source_and_sink |   |  |  |
-| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph |   |  |  |
-| 424 | graphs/even_tree |   |  |  |
-| 425 | graphs/finding_bridges |   |  |  |
-| 426 | graphs/frequent_pattern_graph_miner |   |  |  |
-| 427 | graphs/g_topological_sort |   |  |  |
-| 428 | graphs/gale_shapley_bigraph |   |  |  |
-| 429 | graphs/graph_adjacency_list |   |  |  |
-| 430 | graphs/graph_adjacency_matrix |   |  |  |
-| 431 | graphs/graph_list |   |  |  |
-| 432 | graphs/graphs_floyd_warshall |   |  |  |
+| 383 | fractals/sierpinski_triangle | ✓ | 14.32ms | 32.7 MB |
+| 384 | fractals/vicsek | ✓ | 1.08ms | 17.3 MB |
+| 385 | fuzzy_logic/fuzzy_operations | ✓ | 35.62ms | 32.8 MB |
+| 386 | genetic_algorithm/basic_string | ✓ | 9.52ms | 17.4 MB |
+| 387 | geodesy/haversine_distance | ✓ | 8.81ms | 32.7 MB |
+| 388 | geodesy/lamberts_ellipsoidal_distance | ✓ | 8.28ms | 34.2 MB |
+| 389 | geometry/geometry | ✓ | 11.22ms | 25.1 MB |
+| 390 | graphics/bezier_curve | ✓ | 21.68ms | 25.2 MB |
+| 391 | graphics/butterfly_pattern | ✓ | 8.29ms | 12.5 MB |
+| 392 | graphics/digital_differential_analyzer_line | ✓ | 12.40ms | 25.0 MB |
+| 393 | graphics/vector3_for_2d_rendering | ✓ | 13.13ms | 35.2 MB |
+| 394 | graphs/a_star | ✓ | 15.76ms | 9.5 MB |
+| 395 | graphs/ant_colony_optimization_algorithms | ✓ | 42.64ms | 98.5 MB |
+| 396 | graphs/articulation_points | ✓ | 551us | 25.0 MB |
+| 397 | graphs/basic_graphs | ✓ | 17.19ms | 17.3 MB |
+| 398 | graphs/bellman_ford | ✓ | 10.57ms | 17.3 MB |
+| 399 | graphs/bi_directional_dijkstra | ✓ | 10.24ms | 12.5 MB |
+| 400 | graphs/bidirectional_a_star | error |  |  |
+| 401 | graphs/bidirectional_breadth_first_search | ✓ | 14.80ms | 99.1 MB |
+| 402 | graphs/bidirectional_search | ✓ | 498us | 17.4 MB |
+| 403 | graphs/boruvka | error |  |  |
+| 404 | graphs/breadth_first_search | ✓ | 13.98ms | 17.3 MB |
+| 405 | graphs/breadth_first_search_2 | ✓ | 10.55ms | 17.3 MB |
+| 406 | graphs/breadth_first_search_shortest_path | ✓ | 9.97ms | 25.0 MB |
+| 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 1us | 0 B |
+| 408 | graphs/breadth_first_search_zero_one_shortest_path | error |  |  |
+| 409 | graphs/check_bipatrite | ✓ | 12.44ms | 17.3 MB |
+| 410 | graphs/check_cycle | ✓ | 3.29ms | 17.3 MB |
+| 411 | graphs/connected_components | ✓ | 12.55ms | 12.5 MB |
+| 412 | graphs/deep_clone_graph | error |  |  |
+| 413 | graphs/depth_first_search | ✓ | 15.59ms | 17.3 MB |
+| 414 | graphs/depth_first_search_2 | ✓ | 21.58ms | 17.3 MB |
+| 415 | graphs/dijkstra | ✓ |  |  |
+| 416 | graphs/dijkstra_2 | ✓ | 491us | 17.3 MB |
+| 417 | graphs/dijkstra_algorithm | ✓ | 534us | 0 B |
+| 418 | graphs/dijkstra_alternate | error |  |  |
+| 419 | graphs/dijkstra_binary_grid | ✓ | 3.15ms | 17.3 MB |
+| 420 | graphs/dinic | ✓ | 11.96ms | 25.0 MB |
+| 421 | graphs/directed_and_undirected_weighted_graph | ✓ | 17.12ms | 17.3 MB |
+| 422 | graphs/edmonds_karp_multiple_source_and_sink | error |  |  |
+| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 2.06ms | 17.3 MB |
+| 424 | graphs/even_tree | ✓ | 8.22ms | 12.5 MB |
+| 425 | graphs/finding_bridges | ✓ | 5.26ms | 20.2 MB |
+| 426 | graphs/frequent_pattern_graph_miner | error |  |  |
+| 427 | graphs/g_topological_sort | ✓ | 9.17ms | 17.3 MB |
+| 428 | graphs/gale_shapley_bigraph | ✓ | 11.32ms | 17.3 MB |
+| 429 | graphs/graph_adjacency_list | error |  |  |
+| 430 | graphs/graph_adjacency_matrix | error |  |  |
+| 431 | graphs/graph_list | ✓ | 27.04ms | 12.5 MB |
+| 432 | graphs/graphs_floyd_warshall | ✓ | 9.20ms | 25.0 MB |
 | 433 | graphs/greedy_best_first |   |  |  |
 | 434 | graphs/greedy_min_vertex_cover |   |  |  |
 | 435 | graphs/kahns_algorithm_long |   |  |  |

@@ -1,0 +1,30 @@
+warning: variable "count" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 19 │           {count} = if Enum.at(visited, to) == false do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/articulation_points.exs:19:12: Main.dfs_skip/4
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 53 │           {i, visited} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/articulation_points.exs:53:12: Main.articulation_points/1
+
+    warning: variable "v" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 88 │       {result, v} = try do
+    │                ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/articulation_points.exs:88:16: Main.articulation_points/1
+
+0
+1
+2
+3
+4
+5
+6
+7
+8

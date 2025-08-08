@@ -1,0 +1,52 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 37 │       {i, s} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/dijkstra_binary_grid.exs:37:8: Main.path_to_string/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 105 │           {dist_map, i, prev, queue} = try do
+     │                      ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/dijkstra_binary_grid.exs:105:22: Main.dijkstra/4
+
+     warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 154 │         {k, path} = try do
+     │          ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/dijkstra_binary_grid.exs:154:10: Main.dijkstra/4
+
+     warning: variable "step_key" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 137 │         {path_rev, step_key, step_pt} = try do
+     │                    ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/dijkstra_binary_grid.exs:137:20: Main.dijkstra/4
+
+     warning: variable "step_pt" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 137 │         {path_rev, step_key, step_pt} = try do
+     │                              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/dijkstra_binary_grid.exs:137:30: Main.dijkstra/4
+
+     warning: variable "front" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 116 │       {dist_map, front, prev, queue} = try do
+     │                  ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/dijkstra_binary_grid.exs:116:18: Main.dijkstra/4
+
+     warning: variable "queue" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 116 │       {dist_map, front, prev, queue} = try do
+     │                               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/dijkstra_binary_grid.exs:116:31: Main.dijkstra/4
+
+4.0, [(0, 0), (0, 1), (1, 1), (2, 1), (2, 2)]
+2.0, [(0, 0), (1, 1), (2, 2)]
+4.0, [(0, 0), (0, 1), (0, 2), (1, 2), (2, 2)]

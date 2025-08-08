@@ -1,0 +1,48 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 44 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search_shortest_path_2.exs:44:7: Main.contains/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 97 │             {i, queue} = try do
+    │              ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search_shortest_path_2.exs:97:14: Main.bfs_shortest_path/3
+
+     warning: variable "explored" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 113 │       {explored, queue} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search_shortest_path_2.exs:113:8: Main.bfs_shortest_path/3
+
+     warning: variable "queue" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 113 │       {explored, queue} = try do
+     │                  ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search_shortest_path_2.exs:113:18: Main.bfs_shortest_path/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 171 │           {dist, i, queue, visited} = try do
+     │                  ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search_shortest_path_2.exs:171:18: Main.bfs_shortest_path_distance/3
+
+     warning: variable "queue" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 182 │       {dist, queue, visited} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search_shortest_path_2.exs:182:14: Main.bfs_shortest_path_distance/3
+
+     warning: variable "visited" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 182 │       {dist, queue, visited} = try do
+     │                     ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search_shortest_path_2.exs:182:21: Main.bfs_shortest_path_distance/3

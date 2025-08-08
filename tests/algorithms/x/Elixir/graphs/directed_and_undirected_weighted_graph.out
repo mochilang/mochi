@@ -1,0 +1,255 @@
+warning: variable "seed" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 14 │               seed = v
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:14:15: Main._now/0
+
+    warning: variable "seeded" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 15 │               seeded = true
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:15:15: Main._now/0
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 69 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:69:7: Main.list_contains_int/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 94 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:94:7: Main.edge_exists/3
+
+     warning: variable "edges" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 133 │         {edges, g} = if !edge_exists(edges, w, v) do
+     │          ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:133:10: Main.dg_add_pair/4
+
+     warning: variable "g" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 149 │       {g} = if !(Map.has_key?(g.graph, v)) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:149:8: Main.dg_add_pair/4
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 181 │         {i, new_edges} = try do
+     │          ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:181:10: Main.dg_remove_pair/3
+
+     warning: variable "g" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 163 │       {g} = if Map.has_key?(g.graph, u) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:163:8: Main.dg_remove_pair/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 237 │       {i, order} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:237:8: Main.dg_dfs_util/5
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 293 │           {i, queue, visited} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:293:12: Main.dg_bfs/2
+
+     warning: variable "queue" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 304 │       {order, queue, visited} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:304:15: Main.dg_bfs/2
+
+     warning: variable "visited" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 304 │       {order, queue, visited} = try do
+     │                      ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:304:22: Main.dg_bfs/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 335 │         {count, i} = try do
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:335:17: Main.dg_in_degree/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 375 │       {i, stack} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:375:8: Main.dg_topo_util/4
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 411 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:411:8: Main.dg_topological_sort/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 460 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:460:8: Main.dg_cycle_util/5
+
+     warning: variable "rec" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 466 │       rec = Map.put(rec, node_, false)
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:466:7: Main.dg_cycle_util/5
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 515 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:515:7: Main.dg_has_cycle_util/4
+
+     warning: variable "rec" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 521 │       rec = Map.put(rec, node_, false)
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:521:7: Main.dg_has_cycle_util/4
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 569 │           j = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:569:11: Main.dg_fill_graph_randomly/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 581 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:581:7: Main.dg_fill_graph_randomly/2
+
+     warning: variable "edges" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 622 │         {edges, g} = if !edge_exists(edges, w, v) do
+     │          ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:622:10: Main.g_add_pair/4
+
+     warning: variable "edges2" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 640 │         {edges2, g} = if !edge_exists(edges2, w, u) do
+     │          ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:640:10: Main.g_add_pair/4
+
+     warning: variable "g" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 638 │       {g} = if Map.has_key?(g.graph, v) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:638:8: Main.g_add_pair/4
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 680 │         {i, new_edges} = try do
+     │          ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:680:10: Main.g_remove_pair/3
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 711 │         {j, new_edges2} = try do
+     │          ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:711:10: Main.g_remove_pair/3
+
+     warning: variable "g" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 693 │       {g} = if Map.has_key?(g.graph, v) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:693:8: Main.g_remove_pair/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 767 │       {i, order} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:767:8: Main.g_dfs_util/5
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 823 │           {i, queue, visited} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:823:12: Main.g_bfs/2
+
+     warning: variable "queue" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 834 │       {order, queue, visited} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:834:15: Main.g_bfs/2
+
+     warning: variable "visited" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 834 │       {order, queue, visited} = try do
+     │                      ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:834:22: Main.g_bfs/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 889 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:889:8: Main.g_cycle_util/5
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 941 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:941:7: Main.g_has_cycle_util/4
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 993 │           j = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:993:11: Main.g_fill_graph_randomly/2
+
+      warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+      │
+ 1005 │       i = try do
+      │       ~
+      │
+      └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/directed_and_undirected_weighted_graph.exs:1005:7: Main.g_fill_graph_randomly/2
+
+[0]
+[0]
+0
+0
+[]
+false
+[0]
+[0]
+0
+false

@@ -1,0 +1,59 @@
+warning: variable "g" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 24 │         g = Map.put(g, :size, from_vertex + 1)
+    │         ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/depth_first_search_2.exs:24:9: Main.add_edge/3
+
+    warning: variable "g" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 27 │         g = Map.put(g, :size, to_vertex + 1)
+    │         ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/depth_first_search_2.exs:27:9: Main.add_edge/3
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 53 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/depth_first_search_2.exs:53:8: Main.list_to_string/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 83 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/depth_first_search_2.exs:83:8: Main.list_to_arrow/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 115 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/depth_first_search_2.exs:115:7: Main.print_graph/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 147 │         {i, order} = try do
+     │          ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/depth_first_search_2.exs:147:10: Main.dfs_recursive/4
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 176 │       {i, visited} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/depth_first_search_2.exs:176:8: Main.dfs/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 198 │       {i, order} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/depth_first_search_2.exs:198:8: Main.dfs/1
+
+%{0 => [1, 2], 1 => [2], 2 => [0, 3], 3 => [3]}
+DFS:
+""

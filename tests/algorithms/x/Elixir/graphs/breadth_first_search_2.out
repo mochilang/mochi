@@ -1,0 +1,58 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 43 │       {i, s} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search_2.exs:43:8: Main.join/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 83 │           {explored, i, queue, result} = try do
+    │                      ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search_2.exs:83:22: Main.breadth_first_search/2
+
+    warning: variable "explored" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 94 │       {explored, queue, result} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search_2.exs:94:8: Main.breadth_first_search/2
+
+    warning: variable "queue" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 94 │       {explored, queue, result} = try do
+    │                  ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search_2.exs:94:18: Main.breadth_first_search/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 135 │           {i, queue, result, visited} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search_2.exs:135:12: Main.breadth_first_search_with_deque/2
+
+     warning: variable "head" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 146 │       {head, queue, result, visited} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search_2.exs:146:8: Main.breadth_first_search_with_deque/2
+
+     warning: variable "queue" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 146 │       {head, queue, result, visited} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search_2.exs:146:14: Main.breadth_first_search_with_deque/2
+
+     warning: variable "visited" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 146 │       {head, queue, result, visited} = try do
+     │                             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search_2.exs:146:29: Main.breadth_first_search_with_deque/2
+
+"ABCDEF"
+"ABCDEF"

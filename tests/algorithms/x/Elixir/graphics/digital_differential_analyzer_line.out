@@ -1,0 +1,22 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 42 │       {coordinates, i, x, y} = try do
+    │                     ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphics/digital_differential_analyzer_line.exs:42:21: Main.digital_differential_analyzer_line/2
+
+    warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 42 │       {coordinates, i, x, y} = try do
+    │                        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphics/digital_differential_analyzer_line.exs:42:24: Main.digital_differential_analyzer_line/2
+
+    warning: variable "y" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 42 │       {coordinates, i, x, y} = try do
+    │                           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphics/digital_differential_analyzer_line.exs:42:27: Main.digital_differential_analyzer_line/2
+
+[%{y: 2, x: 2}, %{y: 3, x: 3}, %{y: 4, x: 4}]

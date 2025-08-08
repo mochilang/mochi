@@ -1,0 +1,15 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 86 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/graph_adjacency_list.exs:86:8: Main.remove_from_list/2
+
+     error: imported Kernel.to_string/1 conflicts with local function
+     │
+ 217 │   def to_string(graph) do
+     │       ^
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/graph_adjacency_list.exs:217:7: Main (module)
+
+** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/graphs/graph_adjacency_list.exs: cannot compile module Main (errors have been logged)
