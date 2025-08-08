@@ -1,0 +1,23 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/algorithms/x/Kotlin/data_structures/binary_tree/binary_search_tree.kt:87:23: error: type mismatch: inferred type is MutableList<Any?>? but MutableList<Any?> was expected
+        root = insert(root, v)
+                      ^
+/workspace/mochi/tests/algorithms/x/Kotlin/data_structures/binary_tree/binary_search_tree.kt:89:21: error: type mismatch: inferred type is MutableList<Any?>? but MutableList<Any?> was expected
+    println(inorder(root, mutableListOf<Int>()).toString())
+                    ^
+/workspace/mochi/tests/algorithms/x/Kotlin/data_structures/binary_tree/binary_search_tree.kt:90:20: error: type mismatch: inferred type is MutableList<Any?>? but MutableList<Any?> was expected
+    println(search(root, 6))
+                   ^
+/workspace/mochi/tests/algorithms/x/Kotlin/data_structures/binary_tree/binary_search_tree.kt:91:20: error: type mismatch: inferred type is MutableList<Any?>? but MutableList<Any?> was expected
+    println(search(root, 20))
+                   ^
+/workspace/mochi/tests/algorithms/x/Kotlin/data_structures/binary_tree/binary_search_tree.kt:92:22: error: type mismatch: inferred type is MutableList<Any?>? but MutableList<Any?> was expected
+    println(find_min(root))
+                     ^
+/workspace/mochi/tests/algorithms/x/Kotlin/data_structures/binary_tree/binary_search_tree.kt:93:22: error: type mismatch: inferred type is MutableList<Any?>? but MutableList<Any?> was expected
+    println(find_max(root))
+                     ^
+/workspace/mochi/tests/algorithms/x/Kotlin/data_structures/binary_tree/binary_search_tree.kt:94:19: error: type mismatch: inferred type is MutableList<Any?>? but MutableList<Any?> was expected
+    root = delete(root, 6)
+                  ^

@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-08 16:58 GMT+7
+Last updated: 2025-08-08 17:54 GMT+7
 
-## Algorithms Golden Test Checklist (155/1077)
+## Algorithms Golden Test Checklist (156/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 30.54ms | 124.45KiB |
@@ -177,9 +177,9 @@ Last updated: 2025-08-08 16:58 GMT+7
 | 168 | data_structures/arrays/product_sum | ✓ | 7.26ms | 29.53KiB |
 | 169 | data_structures/arrays/sparse_table | ✓ | 5.62ms | 28.84KiB |
 | 170 | data_structures/arrays/sudoku_solver | ✓ | 13.25ms | 32.46KiB |
-| 171 | data_structures/binary_tree/avl_tree | error |  |  |
-| 172 | data_structures/binary_tree/basic_binary_tree |   |  |  |
-| 173 | data_structures/binary_tree/binary_search_tree |   |  |  |
+| 171 | data_structures/binary_tree/avl_tree |   |  |  |
+| 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 9.61ms | 133.72KiB |
+| 173 | data_structures/binary_tree/binary_search_tree | error |  |  |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive |   |  |  |
 | 175 | data_structures/binary_tree/binary_tree_mirror |   |  |  |
 | 176 | data_structures/binary_tree/binary_tree_node_sum |   |  |  |
