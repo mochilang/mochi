@@ -129,6 +129,36 @@ func emitIndex(w io.Writer, e Expr) {
 	}
 }
 
+func isLiteralExpr(e Expr) bool {
+	switch v := e.(type) {
+	case *IntLit, *FloatLit, *StringLit, *BoolLit:
+		return true
+	case *ListLit:
+		for _, el := range v.Elems {
+			if !isLiteralExpr(el) {
+				return false
+			}
+		}
+		return true
+	case *StructLit:
+		for _, f := range v.Fields {
+			if !isLiteralExpr(f.Value) {
+				return false
+			}
+		}
+		return true
+	case *MapLit:
+		for i := range v.Keys {
+			if !isLiteralExpr(v.Keys[i]) || !isLiteralExpr(v.Values[i]) {
+				return false
+			}
+		}
+		return true
+	default:
+		return false
+	}
+}
+
 func init() {
 	_, file, _, _ := runtime.Caller(0)
 	root := filepath.Join(filepath.Dir(file), "../../..")
@@ -839,6 +869,11 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "    std::vector<int64_t> out(SHA256_DIGEST_LENGTH);")
 		fmt.Fprintln(w, "    for(int i=0;i<SHA256_DIGEST_LENGTH;i++) out[i]=digest[i];")
 		fmt.Fprintln(w, "    return out;")
+		fmt.Fprintln(w, "}")
+		fmt.Fprintln(w, "static std::vector<int64_t> _sha256_str(const std::string& s) {")
+		fmt.Fprintln(w, "    std::vector<int64_t> bs(s.size());")
+		fmt.Fprintln(w, "    for(size_t i=0;i<s.size();++i) bs[i]=static_cast<unsigned char>(s[i]);")
+		fmt.Fprintln(w, "    return _sha256(bs);")
 		fmt.Fprintln(w, "}")
 	}
 	if p.UseMD5 {
@@ -3846,7 +3881,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					lst.ElemType = "std::any"
 				}
 			}
-			globals = append(globals, &LetStmt{Name: stmt.Let.Name, Type: typ, Value: val})
+			if val != nil && !isLiteralExpr(val) {
+				globals = append(globals, &LetStmt{Name: stmt.Let.Name, Type: typ})
+				body = append(body, &AssignStmt{Name: stmt.Let.Name, Value: val})
+			} else {
+				globals = append(globals, &LetStmt{Name: stmt.Let.Name, Type: typ, Value: val})
+			}
 			if cp.GlobalTypes != nil {
 				cp.GlobalTypes[stmt.Let.Name] = typ
 			}
@@ -5618,6 +5658,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					return nil, err
 				}
 				usesSHA256 = true
+				if exprType(arg) == "std::string" {
+					return &CallExpr{Name: "_sha256_str", Args: []Expr{arg}}, nil
+				}
 				return &CallExpr{Name: "_sha256", Args: []Expr{arg}}, nil
 			}
 		case "min":
