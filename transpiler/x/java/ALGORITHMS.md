@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-08 10:20 GMT+7
+Last updated: 2025-08-08 10:53 GMT+7
 
-## Algorithms Golden Test Checklist (829/1077)
+## Algorithms Golden Test Checklist (875/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -988,59 +988,59 @@ Last updated: 2025-08-08 10:20 GMT+7
 | 979 | sorts/shrink_shell_sort | ✓ | 13.0ms | 760B |
 | 980 | sorts/slowsort | ✓ | 16.0ms | 1.04KB |
 | 981 | sorts/stooge_sort | ✓ | 24.0ms | 760B |
-| 982 | sorts/strand_sort |   |  |  |
-| 983 | sorts/tim_sort |   |  |  |
-| 984 | sorts/topological_sort |   |  |  |
-| 985 | sorts/tree_sort |   |  |  |
-| 986 | sorts/unknown_sort |   |  |  |
-| 987 | sorts/wiggle_sort |   |  |  |
-| 988 | strings/aho_corasick |   |  |  |
-| 989 | strings/alternative_string_arrange |   |  |  |
-| 990 | strings/anagrams |   |  |  |
-| 991 | strings/autocomplete_using_trie |   |  |  |
-| 992 | strings/barcode_validator |   |  |  |
+| 982 | sorts/strand_sort | ✓ | 26.0ms | 46.25KB |
+| 983 | sorts/tim_sort | ✓ | 28.0ms | 54.93KB |
+| 984 | sorts/topological_sort | error |  |  |
+| 985 | sorts/tree_sort | ✓ | 26.0ms | 48.12KB |
+| 986 | sorts/unknown_sort | error |  |  |
+| 987 | sorts/wiggle_sort | ✓ | 30.0ms | 56.92KB |
+| 988 | strings/aho_corasick | ✓ | 26.0ms | 46.48KB |
+| 989 | strings/alternative_string_arrange | ✓ | 19.0ms | 33.07KB |
+| 990 | strings/anagrams | error |  |  |
+| 991 | strings/autocomplete_using_trie | ✓ | 25.0ms | 53.36KB |
+| 992 | strings/barcode_validator | ✓ |  |  |
 | 993 | strings/bitap_string_match | ✓ | 27.0ms | 46.46KB |
 | 994 | strings/boyer_moore_search | ✓ | 29.0ms | 0B |
 | 995 | strings/camel_case_to_snake_case | ✓ | 56.0ms | 80.21KB |
-| 996 | strings/can_string_be_rearranged_as_palindrome |   |  |  |
-| 997 | strings/capitalize |   |  |  |
-| 998 | strings/check_anagrams |   |  |  |
-| 999 | strings/count_vowels |   |  |  |
-| 1000 | strings/credit_card_validator |   |  |  |
-| 1001 | strings/damerau_levenshtein_distance |   |  |  |
-| 1002 | strings/detecting_english_programmatically |   |  |  |
-| 1003 | strings/dna |   |  |  |
-| 1004 | strings/edit_distance |   |  |  |
-| 1005 | strings/frequency_finder |   |  |  |
-| 1006 | strings/hamming_distance |   |  |  |
-| 1007 | strings/indian_phone_validator |   |  |  |
-| 1008 | strings/is_contains_unique_chars |   |  |  |
-| 1009 | strings/is_isogram |   |  |  |
-| 1010 | strings/is_pangram |   |  |  |
-| 1011 | strings/is_polish_national_id |   |  |  |
-| 1012 | strings/is_spain_national_id |   |  |  |
-| 1013 | strings/is_srilankan_phone_number |   |  |  |
-| 1014 | strings/is_valid_email_address |   |  |  |
-| 1015 | strings/jaro_winkler |   |  |  |
-| 1016 | strings/join |   |  |  |
-| 1017 | strings/knuth_morris_pratt |   |  |  |
-| 1018 | strings/levenshtein_distance |   |  |  |
-| 1019 | strings/lower |   |  |  |
-| 1020 | strings/manacher |   |  |  |
-| 1021 | strings/min_cost_string_conversion |   |  |  |
-| 1022 | strings/naive_string_search |   |  |  |
-| 1023 | strings/ngram |   |  |  |
-| 1024 | strings/palindrome |   |  |  |
-| 1025 | strings/pig_latin |   |  |  |
-| 1026 | strings/prefix_function |   |  |  |
-| 1027 | strings/rabin_karp |   |  |  |
-| 1028 | strings/remove_duplicate |   |  |  |
-| 1029 | strings/reverse_letters |   |  |  |
-| 1030 | strings/reverse_words |   |  |  |
-| 1031 | strings/snake_case_to_camel_pascal_case |   |  |  |
-| 1032 | strings/split |   |  |  |
-| 1033 | strings/string_switch_case |   |  |  |
-| 1034 | strings/strip |   |  |  |
+| 996 | strings/can_string_be_rearranged_as_palindrome | ✓ | 25.0ms | 33.86KB |
+| 997 | strings/capitalize | ✓ | 19.0ms | 33.02KB |
+| 998 | strings/check_anagrams | ✓ | 21.0ms | 35.66KB |
+| 999 | strings/count_vowels | ✓ | 16.0ms | 1.15KB |
+| 1000 | strings/credit_card_validator | ✓ | 24.0ms | 38.43KB |
+| 1001 | strings/damerau_levenshtein_distance | ✓ | 30.0ms | 46.73KB |
+| 1002 | strings/detecting_english_programmatically | ✓ | 29.0ms | 53.29KB |
+| 1003 | strings/dna | ✓ | 24.0ms | 38.40KB |
+| 1004 | strings/edit_distance | ✓ | 41.0ms | 1.02KB |
+| 1005 | strings/frequency_finder | ✓ | 33.0ms | 52.88KB |
+| 1006 | strings/hamming_distance | ✓ | 15.0ms | 904B |
+| 1007 | strings/indian_phone_validator | ✓ | 18.0ms | 1.07KB |
+| 1008 | strings/is_contains_unique_chars | ✓ | 14.0ms | 1.06KB |
+| 1009 | strings/is_isogram | ✓ | 19.0ms | 33.18KB |
+| 1010 | strings/is_pangram | ✓ | 29.0ms | 47.51KB |
+| 1011 | strings/is_polish_national_id | ✓ | 14.0ms | 1.09KB |
+| 1012 | strings/is_spain_national_id | ✓ | 24.0ms | 33.77KB |
+| 1013 | strings/is_srilankan_phone_number | ✓ | 16.0ms | 1.00KB |
+| 1014 | strings/is_valid_email_address | ✓ | 51.0ms | 86.16KB |
+| 1015 | strings/jaro_winkler | ✓ | 17.0ms | 10.86KB |
+| 1016 | strings/join | ✓ | 22.0ms | 33.16KB |
+| 1017 | strings/knuth_morris_pratt | ✓ | 31.0ms | 46.15KB |
+| 1018 | strings/levenshtein_distance | ✓ | 31.0ms | 46.34KB |
+| 1019 | strings/lower | ✓ | 15.0ms | 2.34KB |
+| 1020 | strings/manacher | ✓ | 43.0ms | 93.66KB |
+| 1021 | strings/min_cost_string_conversion | ✓ | 43.0ms | 101.35KB |
+| 1022 | strings/naive_string_search | ✓ | 29.0ms | 46.20KB |
+| 1023 | strings/ngram | ✓ | 28.0ms | 45.49KB |
+| 1024 | strings/palindrome | ✓ | 36.0ms | 79.58KB |
+| 1025 | strings/pig_latin | ✓ | 40.0ms | 82.45KB |
+| 1026 | strings/prefix_function | ✓ | 30.0ms | 46.51KB |
+| 1027 | strings/rabin_karp | ✓ | 17.0ms | 1.09KB |
+| 1028 | strings/remove_duplicate | ✓ | 28.0ms | 55.02KB |
+| 1029 | strings/reverse_letters | ✓ | 31.0ms | 61.39KB |
+| 1030 | strings/reverse_words | ✓ | 27.0ms | 54.34KB |
+| 1031 | strings/snake_case_to_camel_pascal_case | ✓ | 24.0ms | 46.67KB |
+| 1032 | strings/split | ✓ | 26.0ms | 46.19KB |
+| 1033 | strings/string_switch_case | error |  |  |
+| 1034 | strings/strip | ✓ | 17.0ms | 920B |
 | 1035 | strings/text_justification |   |  |  |
 | 1036 | strings/title |   |  |  |
 | 1037 | strings/top_k_frequent_words |   |  |  |
