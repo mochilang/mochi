@@ -3,7 +3,7 @@
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
 Completed programs: 343/1077
-Last updated: 2025-08-07 14:57 +0700
+Last updated: 2025-08-08 10:08 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -266,11 +266,11 @@ Last updated: 2025-08-07 14:57 +0700
 | 257 | data_structures/stacks/stack_using_two_queues | ✓ | 244µs | 3.4 MB |
 | 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 194µs | 3.2 MB |
 | 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 264µs | 3.1 MB |
-| 260 | data_structures/stacks/stock_span_problem | ✓ | 355µs | 3.3 MB |
-| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 291µs | 3.2 MB |
-| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 677µs | 3.5 MB |
-| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 482µs | 3.2 MB |
-| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 220µs | 2.9 MB |
+| 260 | data_structures/stacks/stock_span_problem | ✓ | 461µs | 3.2 MB |
+| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 569µs | 3.2 MB |
+| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 1.104ms | 3.1 MB |
+| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 927µs | 3.1 MB |
+| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 454µs | 3.2 MB |
 | 265 | data_structures/trie/radix_tree |   |  |  |
 | 266 | data_structures/trie/trie |   |  |  |
 | 267 | digital_image_processing/change_brightness | ✓ | 450µs | 3.1 MB |
