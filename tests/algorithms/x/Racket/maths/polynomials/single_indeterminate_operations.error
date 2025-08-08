@@ -1,7 +1,0 @@
-run: exit status 1
-add failed
-  context...:
-   /workspace/mochi/tests/algorithms/x/Racket/maths/polynomials/single_indeterminate_operations.rkt:317:2
-   /workspace/mochi/tests/algorithms/x/Racket/maths/polynomials/single_indeterminate_operations.rkt:325:2
-   /workspace/mochi/tests/algorithms/x/Racket/maths/polynomials/single_indeterminate_operations.rkt:324:0
-   body of "/workspace/mochi/tests/algorithms/x/Racket/maths/polynomials/single_indeterminate_operations.rkt"

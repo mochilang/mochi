@@ -151,7 +151,7 @@ func (p *PrintStmt) emit(w io.Writer) {
 		io.WriteString(w, ")\n")
 		return
 	}
-	io.WriteString(w, "(displayln (string-join (map (lambda (x) (format \"~a\" x)) (list")
+	io.WriteString(w, "(displayln (string-join (map (lambda (x) (to-string x)) (list")
 	for _, part := range p.Parts {
 		io.WriteString(w, " ")
 		part.emit(w)
@@ -363,17 +363,17 @@ func (b *BenchStmt) emit(w io.Writer) {
 			body = append(body, st)
 		}
 	}
-        // Use real time for benchmark measurements to reflect actual runtime
-        fmt.Fprintln(w, "(let* ([_start_mem (current-memory-use)] [_start (current-inexact-monotonic-milliseconds)])")
-        fmt.Fprintln(w, "  (let/ec _return (begin")
-        for _, st := range body {
-                st.emit(w)
-        }
-        fmt.Fprintln(w, "    (void)")
-        fmt.Fprintln(w, "  ))")
-        fmt.Fprintln(w, "  (let* ([_end (current-inexact-monotonic-milliseconds)] [_end_mem (current-memory-use)]")
-        fmt.Fprintln(w, "         [_dur_us (max 1 (exact-ceiling (* (- _end _start) 1000)))]")
-        fmt.Fprintln(w, "         [_mem (max 0 (- _end_mem _start_mem))])")
+	// Use real time for benchmark measurements to reflect actual runtime
+	fmt.Fprintln(w, "(let* ([_start_mem (current-memory-use)] [_start (current-inexact-monotonic-milliseconds)])")
+	fmt.Fprintln(w, "  (let/ec _return (begin")
+	for _, st := range body {
+		st.emit(w)
+	}
+	fmt.Fprintln(w, "    (void)")
+	fmt.Fprintln(w, "  ))")
+	fmt.Fprintln(w, "  (let* ([_end (current-inexact-monotonic-milliseconds)] [_end_mem (current-memory-use)]")
+	fmt.Fprintln(w, "         [_dur_us (max 1 (exact-ceiling (* (- _end _start) 1000)))]")
+	fmt.Fprintln(w, "         [_mem (max 0 (- _end_mem _start_mem))])")
 	io.WriteString(w, "    (displayln \"{\")\n")
 	io.WriteString(w, "    (displayln (format \"  \\\"duration_us\\\": ~a,\" _dur_us))\n")
 	io.WriteString(w, "    (displayln (format \"  \\\"memory_bytes\\\": ~a,\" _mem))\n")
@@ -419,16 +419,16 @@ type WhileStmt struct {
 }
 
 func (wst *WhileStmt) emit(w io.Writer) {
-        io.WriteString(w, "(let/ec _break (let loop ()\n  (if ")
-        wst.Cond.emit(w)
-        io.WriteString(w, " (begin\n    (let/ec _cont\n")
-        pushContinue("_cont")
-        for _, st := range wst.Body {
-                io.WriteString(w, "      ")
-                st.emit(w)
-        }
-        popContinue()
-        io.WriteString(w, "    )\n    (loop)) (void))))\n")
+	io.WriteString(w, "(let/ec _break (let loop ()\n  (if ")
+	wst.Cond.emit(w)
+	io.WriteString(w, " (begin\n    (let/ec _cont\n")
+	pushContinue("_cont")
+	for _, st := range wst.Body {
+		io.WriteString(w, "      ")
+		st.emit(w)
+	}
+	popContinue()
+	io.WriteString(w, "    )\n    (loop)) (void))))\n")
 }
 
 type BreakStmt struct{}
@@ -953,7 +953,7 @@ func (s *SumExpr) emit(w io.Writer) {
 type StrExpr struct{ Arg Expr }
 
 func (s *StrExpr) emit(w io.Writer) {
-	io.WriteString(w, "(format \"~a\" ")
+	io.WriteString(w, "(to-string ")
 	s.Arg.emit(w)
 	io.WriteString(w, ")")
 }
@@ -1457,12 +1457,15 @@ func header() string {
 	hdr += "(define (now)\n  (if nowSeed\n      (begin (set! nowSeed (modulo (+ (* nowSeed 1664525) 1013904223) 2147483647)) nowSeed)\n      (inexact->exact (floor (* (current-inexact-monotonic-milliseconds) 1000)))))\n"
 	hdr += "(define (int x)\n  (cond\n    [(number? x) (inexact->exact (truncate x))]\n    [(string? x) (let ([n (string->number x)]) (if n (inexact->exact (truncate n)) 0))]\n    [else 0]))\n"
 	hdr += "(define (float x)\n  (cond\n    [(number? x) (exact->inexact x)]\n    [(string? x) (let ([n (string->number x)]) (if n (exact->inexact n) 0.0))]\n    [else 0.0]))\n"
-	hdr += "(define (input) (let ([ln (read-line)]) (if (eof-object? ln) \"\" ln)))\n"
+	hdr += "(define (to-string x)\n"
+	hdr += "  (cond\n"
+	hdr += "    [(number? x) (let* ([s (format \"~a\" x)]) (if (regexp-match? #rx\"[.]0$\" s) (substring s 0 (- (string-length s) 2)) s))]\n"
+	hdr += "    [else (format \"~a\" x)]))\n"
 	hdr += "(define (upper s) (string-upcase s))\n"
 	hdr += "(define (lower s) (string-downcase s))\n"
 	hdr += "(define (sublist lst start end)\n  (if (string? lst)\n      (substring lst start end)\n      (take (drop lst start) (- end start))))\n\n"
 	hdr += "(define (slice seq start end)\n  (define len (if (string? seq) (string-length seq) (length seq)))\n  (define s (int start))\n  (define e (int end))\n  (when (< s 0) (set! s (+ len s)))\n  (when (< e 0) (set! e (+ len e)))\n  (set! s (max 0 (min len s)))\n  (set! e (max 0 (min len e)))\n  (when (< e s) (set! e s))\n  (if (string? seq) (substring seq s e) (sublist seq s e)))\n"
-	hdr += "(define (pad-start s width ch)\n  (let ([s (format \"~a\" s)])\n    (if (< (string-length s) width)\n        (string-append (make-string (- width (string-length s)) (string-ref ch 0)) s)\n        s)))\n"
+	hdr += "(define (pad-start s width ch)\n  (let ([s (to-string s)])\n    (if (< (string-length s) width)\n        (string-append (make-string (- width (string-length s)) (string-ref ch 0)) s)\n        s)))\n"
 	hdr += "(define (index-of s ch)\n  (cond\n    [(string? s)\n     (let loop ([i 0])\n       (cond [(>= i (string-length s)) -1]\n             [(string=? (substring s i (add1 i)) ch) i]\n             [else (loop (add1 i))]))]\n    [else\n     (let loop ([i 0] [lst s])\n       (cond [(null? lst) -1]\n             [(equal? (car lst) ch) i]\n             [else (loop (add1 i) (cdr lst))]))]))\n"
 	hdr += "(define (_repeat s n)\n  (cond\n    [(string? s) (apply string-append (make-list (int n) s))]\n    [(list? s) (apply append (make-list (int n) s))]\n    [else '()]))\n"
 	hdr += "(define (_parse-int-str s base) (int (string->number s base)))\n"
