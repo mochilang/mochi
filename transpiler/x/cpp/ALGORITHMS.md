@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 365/1077
-Last updated: 2025-08-08 09:18 +0700
+Completed programs: 366/1077
+Last updated: 2025-08-08 10:08 +0700
 
 Checklist:
 
@@ -266,13 +266,13 @@ Checklist:
 | 257 | data_structures/stacks/stack_using_two_queues | ✓ | 527.0µs | 3.61MB |
 | 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 769.0µs | 3.71MB |
 | 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 658.0µs | 3.48MB |
-| 260 | data_structures/stacks/stock_span_problem | ✓ | 250.0µs | 3.65MB |
+| 260 | data_structures/stacks/stock_span_problem | ✓ | 119.0µs | 3.58MB |
 | 261 | data_structures/suffix_tree/example/example_usage | ✓ | 543.0µs | 3.62MB |
 | 262 | data_structures/suffix_tree/suffix_tree | ✓ | 524.0µs | 3.66MB |
 | 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 415.0µs | 3.55MB |
 | 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 463.0µs | 3.68MB |
 | 265 | data_structures/trie/radix_tree |   |  |  |
-| 266 | data_structures/trie/trie |   |  |  |
+| 266 | data_structures/trie/trie | ✓ | 349.0µs | 3.64MB |
 | 267 | digital_image_processing/change_brightness | ✓ | 589.0µs | 3.69MB |
 | 268 | digital_image_processing/change_contrast | ✓ | 944.0µs | 3.71MB |
 | 269 | digital_image_processing/convert_to_negative | ✓ | 403.0µs | 3.59MB |

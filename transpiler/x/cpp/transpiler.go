@@ -1412,18 +1412,23 @@ func (l *ListLit) emit(w io.Writer) {
 		}
 	}
 	io.WriteString(w, "std::vector<"+elemTyp+">{")
-	for i, e := range l.Elems {
-		if i > 0 {
-			io.WriteString(w, ", ")
-		}
-		if elemTyp == "std::any" && exprType(e) != "std::any" {
-			io.WriteString(w, "std::any(")
-			e.emit(w)
-			io.WriteString(w, ")")
-		} else {
-			e.emit(w)
-		}
-	}
+        for i, e := range l.Elems {
+                if i > 0 {
+                        io.WriteString(w, ", ")
+                }
+                et := exprType(e)
+                if elemTyp == "std::any" && et != "std::any" {
+                        io.WriteString(w, "std::any(")
+                        e.emit(w)
+                        io.WriteString(w, ")")
+                } else if elemTyp != "auto" && et != "auto" && et != elemTyp {
+                        io.WriteString(w, elemTyp+"(")
+                        e.emit(w)
+                        io.WriteString(w, ")")
+                } else {
+                        e.emit(w)
+                }
+        }
 	io.WriteString(w, "}")
 }
 
@@ -2995,20 +3000,24 @@ func (s *LetStmt) emit(w io.Writer, indent int) {
 			}
 			io.WriteString(w, pt)
 		}
-		io.WriteString(w, ")> ")
-		io.WriteString(w, safeName(s.Name))
-		io.WriteString(w, " = ")
-		io.WriteString(w, "[=](")
-		for i, p := range bl.Params {
-			if i > 0 {
-				io.WriteString(w, ", ")
-			}
-			pt := p.Type
-			if pt == "" {
-				pt = "auto"
-			}
-			io.WriteString(w, pt+" "+p.Name)
-		}
+                io.WriteString(w, ")> ")
+                io.WriteString(w, safeName(s.Name))
+                io.WriteString(w, ";\n")
+                for i := 0; i < indent; i++ {
+                        io.WriteString(w, "    ")
+                }
+                io.WriteString(w, safeName(s.Name))
+                io.WriteString(w, " = [=, &"+safeName(s.Name)+"](")
+                for i, p := range bl.Params {
+                        if i > 0 {
+                                io.WriteString(w, ", ")
+                        }
+                        pt := p.Type
+                        if pt == "" {
+                                pt = "auto"
+                        }
+                        io.WriteString(w, pt+" "+p.Name)
+                }
 		io.WriteString(w, ") mutable {\n")
 		prev := localTypes
 		nt := map[string]string{}
@@ -3341,7 +3350,10 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 				return
 			}
 		}
-		r.Value.emit(w)
+                if ll, ok := r.Value.(*ListLit); ok && ll.ElemType == "" && strings.HasPrefix(currentReturnType, "std::vector<") {
+                        ll.ElemType = elementTypeFromListType(currentReturnType)
+                }
+                r.Value.emit(w)
 	}
 	io.WriteString(w, ";\n")
 }
