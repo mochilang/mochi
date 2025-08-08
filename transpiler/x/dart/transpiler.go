@@ -4348,7 +4348,7 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
-	if _, err := io.WriteString(w, "String _substr(String s, num start, num end) {\n  var n = s.length;\n  int s0 = start.toInt();\n  int e0 = end.toInt();\n  if (s0 < 0) s0 += n;\n  if (e0 < 0) e0 += n;\n  if (s0 < 0) s0 = 0;\n  if (s0 > n) s0 = n;\n  if (e0 < 0) e0 = 0;\n  if (e0 > n) e0 = n;\n  if (s0 > e0) s0 = e0;\n  return s.substring(s0, e0);\n}\n\n"); err != nil {
+	if _, err := io.WriteString(w, "dynamic _substr(dynamic s, num start, num end) {\n  int n = s.length;\n  int s0 = start.toInt();\n  int e0 = end.toInt();\n  if (s0 < 0) s0 += n;\n  if (e0 < 0) e0 += n;\n  if (s0 < 0) s0 = 0;\n  if (s0 > n) s0 = n;\n  if (e0 < 0) e0 = 0;\n  if (e0 > n) e0 = n;\n  if (s0 > e0) s0 = e0;\n  if (s is String) {\n    return s.substring(s0, e0);\n  }\n  return s.sublist(s0, e0);\n}\n\n"); err != nil {
 		return err
 	}
 	if useRepeat {
