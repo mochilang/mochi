@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 198/1077
-Last updated: 2025-08-08 16:32 +0700
+Completed programs: 206/1077
+Last updated: 2025-08-08 17:08 +0700
 
 Checklist:
 
@@ -278,14 +278,14 @@ Checklist:
 | 269 | digital_image_processing/convert_to_negative | ✓ | 598.0µs | 4.30KB |
 | 270 | digital_image_processing/dithering/burkes | ✓ | 386.0µs | 3.39KB |
 | 271 | digital_image_processing/edge_detection/canny |   |  |  |
-| 272 | digital_image_processing/filters/bilateral_filter |   |  |  |
-| 273 | digital_image_processing/filters/convolve |   |  |  |
-| 274 | digital_image_processing/filters/gabor_filter |   |  |  |
-| 275 | digital_image_processing/filters/gaussian_filter |   |  |  |
-| 276 | digital_image_processing/filters/laplacian_filter |   |  |  |
-| 277 | digital_image_processing/filters/local_binary_pattern |   |  |  |
-| 278 | digital_image_processing/filters/median_filter |   |  |  |
-| 279 | digital_image_processing/filters/sobel_filter |   |  |  |
+| 272 | digital_image_processing/filters/bilateral_filter | ✓ | 459.0µs | 3.94KB |
+| 273 | digital_image_processing/filters/convolve | ✓ | 601.0µs | 37.34KB |
+| 274 | digital_image_processing/filters/gabor_filter | ✓ | 396.0µs | 4.45KB |
+| 275 | digital_image_processing/filters/gaussian_filter | ✓ | 687.0µs | 30.73KB |
+| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 393.0µs | 3.17KB |
+| 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 347.0µs | 1.86KB |
+| 278 | digital_image_processing/filters/median_filter | ✓ | 514.0µs | 4.59KB |
+| 279 | digital_image_processing/filters/sobel_filter | ✓ | 1.0ms | 223.20KB |
 | 280 | digital_image_processing/histogram_equalization/histogram_stretch |   |  |  |
 | 281 | digital_image_processing/index_calculation |   |  |  |
 | 282 | digital_image_processing/morphological_operations/dilation_operation |   |  |  |

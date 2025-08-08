@@ -1,0 +1,3 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/digital_image_processing/histogram_equalization/histogram_stretch.go:122:26: invalid operation: (255 * cumulative) / total (mismatched types int and float64)

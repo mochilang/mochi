@@ -1679,6 +1679,11 @@ func (u *UnionAllExpr) emit(w io.Writer) {
 	if et == "" {
 		et = "any"
 	}
+	if et != "any" {
+		if ll, ok := u.Right.(*ListLit); ok && (ll.ElemType == "" || ll.ElemType == "any") {
+			ll.ElemType = et
+		}
+	}
 	fmt.Fprintf(w, "func() []%s { tmp := make([]%s, len(", et, et)
 	u.Left.emit(w)
 	fmt.Fprint(w, ")); copy(tmp, ")
@@ -5048,13 +5053,13 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 						}
 					}
 					if newExpr == nil && (ops[i].Op == "<" || ops[i].Op == "<=" || ops[i].Op == ">" || ops[i].Op == ">=" || ops[i].Op == "==" || ops[i].Op == "!=") {
-						if _, ok := typesList[i].(types.FloatType); ok {
-							if _, ok2 := typesList[i+1].(types.IntType); ok2 {
+						if isFloatType(typesList[i]) {
+							if isIntType(typesList[i+1]) {
 								right = &CallExpr{Func: "float64", Args: []Expr{right}}
 							}
 						}
-						if _, ok := typesList[i+1].(types.FloatType); ok {
-							if _, ok2 := typesList[i].(types.IntType); ok2 {
+						if isFloatType(typesList[i+1]) {
+							if isIntType(typesList[i]) {
 								left = &CallExpr{Func: "float64", Args: []Expr{left}}
 							}
 						}
@@ -5123,14 +5128,14 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 								typesList[i+1] = types.FloatType{}
 							}
 						}
-						if _, ok := typesList[i].(types.FloatType); ok {
-							if _, ok2 := typesList[i+1].(types.IntType); ok2 {
+						if isFloatType(typesList[i]) {
+							if isIntType(typesList[i+1]) {
 								right = &CallExpr{Func: "float64", Args: []Expr{right}}
 								typesList[i+1] = types.FloatType{}
 							}
 						}
-						if _, ok := typesList[i+1].(types.FloatType); ok {
-							if _, ok2 := typesList[i].(types.IntType); ok2 {
+						if isFloatType(typesList[i+1]) {
+							if isIntType(typesList[i]) {
 								left = &CallExpr{Func: "float64", Args: []Expr{left}}
 								typesList[i] = types.FloatType{}
 							}
