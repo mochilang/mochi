@@ -36,10 +36,10 @@ fun find_all(html: string, open: string, close: string): list<string> {
   let cl = len(close)
   while true {
     let start = index_of(html, open, pos)
-    if start == -1 { break }
+    if start < 0 { break }
     let begin = start + ol
     let end = index_of(html, close, begin)
-    if end == -1 { break }
+    if end < 0 { break }
     res = append(res, html[begin:end])
     pos = end + cl
   }
