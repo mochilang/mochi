@@ -1,0 +1,5 @@
+[94;1mtests/github/TheAlgorithms/Mochi/electronics/apparent_power.mochi[0;22m
+   [33mtest[0m zero phase                   ... [32mok[0m (1.0ms)
+   [33mtest[0m orthogonal voltage                   ... [32mok[0m (1.0ms)
+   [33mtest[0m negative angles                   ... [32mok[0m (1.0ms)
+   [33mtest[0m another case                   ... [32mok[0m (1.0ms)

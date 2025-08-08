@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 248/1077
-Last updated: 2025-08-08 17:46 +0700
+Completed programs: 293/1077
+Last updated: 2025-08-08 18:11 +0700
 
 Checklist:
 
@@ -337,55 +337,55 @@ Checklist:
 | 328 | dynamic_programming/max_subarray_sum | ✓ | 310.0µs | 1.12KB |
 | 329 | dynamic_programming/min_distance_up_bottom | ✓ | 838.0µs | 10.81KB |
 | 330 | dynamic_programming/minimum_coin_change | ✓ | 431.0µs | 3.38KB |
-| 331 | dynamic_programming/minimum_cost_path |   |  |  |
-| 332 | dynamic_programming/minimum_partition |   |  |  |
-| 333 | dynamic_programming/minimum_size_subarray_sum |   |  |  |
-| 334 | dynamic_programming/minimum_squares_to_represent_a_number |   |  |  |
-| 335 | dynamic_programming/minimum_steps_to_one |   |  |  |
-| 336 | dynamic_programming/minimum_tickets_cost |   |  |  |
-| 337 | dynamic_programming/optimal_binary_search_tree |   |  |  |
-| 338 | dynamic_programming/palindrome_partitioning |   |  |  |
-| 339 | dynamic_programming/range_sum_query |   |  |  |
-| 340 | dynamic_programming/regex_match |   |  |  |
-| 341 | dynamic_programming/rod_cutting |   |  |  |
-| 342 | dynamic_programming/smith_waterman |   |  |  |
-| 343 | dynamic_programming/subset_generation |   |  |  |
-| 344 | dynamic_programming/sum_of_subset |   |  |  |
-| 345 | dynamic_programming/trapped_water |   |  |  |
-| 346 | dynamic_programming/tribonacci |   |  |  |
-| 347 | dynamic_programming/viterbi |   |  |  |
-| 348 | dynamic_programming/wildcard_matching |   |  |  |
-| 349 | dynamic_programming/word_break |   |  |  |
-| 350 | electronics/apparent_power |   |  |  |
-| 351 | electronics/builtin_voltage |   |  |  |
-| 352 | electronics/capacitor_equivalence |   |  |  |
-| 353 | electronics/carrier_concentration |   |  |  |
-| 354 | electronics/charging_capacitor |   |  |  |
-| 355 | electronics/charging_inductor |   |  |  |
+| 331 | dynamic_programming/minimum_cost_path | ✓ | 674.0µs | 1.22KB |
+| 332 | dynamic_programming/minimum_partition | ✓ | 713.0µs | 8.15KB |
+| 333 | dynamic_programming/minimum_size_subarray_sum | ✓ | 427.0µs | 1000B |
+| 334 | dynamic_programming/minimum_squares_to_represent_a_number | ✓ | 451.0µs | 1.90KB |
+| 335 | dynamic_programming/minimum_steps_to_one | ✓ | 442.0µs | 1.55KB |
+| 336 | dynamic_programming/minimum_tickets_cost | ✓ | 876.0µs | 2.46KB |
+| 337 | dynamic_programming/optimal_binary_search_tree | ✓ | 452.0µs | 5.06KB |
+| 338 | dynamic_programming/palindrome_partitioning | ✓ | 687.0µs | 2.69KB |
+| 339 | dynamic_programming/range_sum_query | ✓ | 565.0µs | 1.60KB |
+| 340 | dynamic_programming/regex_match | ✓ | 654.0µs | 3.03KB |
+| 341 | dynamic_programming/rod_cutting | ✓ | 535.0µs | 1.35KB |
+| 342 | dynamic_programming/smith_waterman | ✓ | 839.0µs | 7.08KB |
+| 343 | dynamic_programming/subset_generation | ✓ | 564.0µs | 2.88KB |
+| 344 | dynamic_programming/sum_of_subset | ✓ | 552.0µs | 1.77KB |
+| 345 | dynamic_programming/trapped_water | ✓ | 588.0µs | 1.66KB |
+| 346 | dynamic_programming/tribonacci | ✓ | 954.0µs | 3.19KB |
+| 347 | dynamic_programming/viterbi | ✓ | 769.0µs | 3.13KB |
+| 348 | dynamic_programming/wildcard_matching | ✓ | 793.0µs | 2.30KB |
+| 349 | dynamic_programming/word_break | ✓ | 661.0µs | 2.99KB |
+| 350 | electronics/apparent_power | ✓ | 423.0µs | 1.16KB |
+| 351 | electronics/builtin_voltage | ✓ | 579.0µs | 1.05KB |
+| 352 | electronics/capacitor_equivalence | ✓ | 481.0µs | 1.03KB |
+| 353 | electronics/carrier_concentration | ✓ | 638.0µs | 1.09KB |
+| 354 | electronics/charging_capacitor | ✓ | 425.0µs | 1.04KB |
+| 355 | electronics/charging_inductor | ✓ | 417.0µs | 1.01KB |
 | 356 | electronics/circular_convolution |   |  |  |
-| 357 | electronics/coulombs_law |   |  |  |
-| 358 | electronics/electric_conductivity |   |  |  |
+| 357 | electronics/coulombs_law | ✓ | 530.0µs | 2.11KB |
+| 358 | electronics/electric_conductivity | ✓ | 874.0µs | 1.21KB |
 | 359 | electronics/electric_power |   |  |  |
-| 360 | electronics/electrical_impedance |   |  |  |
-| 361 | electronics/ic_555_timer |   |  |  |
-| 362 | electronics/ind_reactance |   |  |  |
-| 363 | electronics/ohms_law |   |  |  |
-| 364 | electronics/real_and_reactive_power |   |  |  |
+| 360 | electronics/electrical_impedance | ✓ | 720.0µs | 1.91KB |
+| 361 | electronics/ic_555_timer | ✓ | 468.0µs | 1.02KB |
+| 362 | electronics/ind_reactance | ✓ | 752.0µs | 1.93KB |
+| 363 | electronics/ohms_law | ✓ | 778.0µs | 4.98KB |
+| 364 | electronics/real_and_reactive_power | ✓ | 422.0µs | 1.12KB |
 | 365 | electronics/resistor_color_code |   |  |  |
-| 366 | electronics/resistor_equivalence |   |  |  |
-| 367 | electronics/resonant_frequency |   |  |  |
-| 368 | electronics/wheatstone_bridge |   |  |  |
-| 369 | file_transfer/receive_file |   |  |  |
-| 370 | file_transfer/send_file |   |  |  |
+| 366 | electronics/resistor_equivalence | ✓ | 379.0µs | 1.10KB |
+| 367 | electronics/resonant_frequency | ✓ | 756.0µs | 1000B |
+| 368 | electronics/wheatstone_bridge | ✓ | 441.0µs | 1.01KB |
+| 369 | file_transfer/receive_file | ✓ | 443.0µs | 1.00KB |
+| 370 | file_transfer/send_file | ✓ | 711.0µs | 1.93KB |
 | 371 | file_transfer/tests/test_send_file |   |  |  |
-| 372 | financial/equated_monthly_installments |   |  |  |
-| 373 | financial/exponential_moving_average |   |  |  |
-| 374 | financial/interest |   |  |  |
-| 375 | financial/present_value |   |  |  |
-| 376 | financial/price_plus_tax |   |  |  |
-| 377 | financial/simple_moving_average |   |  |  |
-| 378 | financial/straight_line_depreciation |   |  |  |
-| 379 | financial/time_and_half_pay |   |  |  |
+| 372 | financial/equated_monthly_installments | ✓ | 782.0µs | 1.02KB |
+| 373 | financial/exponential_moving_average | ✓ | 533.0µs | 1.34KB |
+| 374 | financial/interest | ✓ | 674.0µs | 1.22KB |
+| 375 | financial/present_value | ✓ | 639.0µs | 1.33KB |
+| 376 | financial/price_plus_tax | ✓ | 465.0µs | 1.15KB |
+| 377 | financial/simple_moving_average | ✓ | 520.0µs | 2.06KB |
+| 378 | financial/straight_line_depreciation | ✓ | 837.0µs | 2.30KB |
+| 379 | financial/time_and_half_pay | ✓ | 548.0µs | 1.01KB |
 | 380 | fractals/julia_sets |   |  |  |
 | 381 | fractals/koch_snowflake |   |  |  |
 | 382 | fractals/mandelbrot |   |  |  |
