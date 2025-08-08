@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 241/1077
-Last updated: 2025-08-08 15:41 +0700
+Completed programs: 286/1077
+Last updated: 2025-08-08 16:06 +0700
 
 Checklist:
 
@@ -216,56 +216,56 @@ Checklist:
 | 207 | data_structures/hashing/hash_table_with_linked_list | ✓ | 153.0µs | 3.77KB |
 | 208 | data_structures/hashing/number_theory/prime_numbers | ✓ | 102.0µs | 240B |
 | 209 | data_structures/hashing/quadratic_probing | ✓ | 38.0µs | 2.45KB |
-| 210 | data_structures/hashing/tests/test_hash_map |   |  |  |
-| 211 | data_structures/heap/binomial_heap |   |  |  |
-| 212 | data_structures/heap/heap |   |  |  |
-| 213 | data_structures/heap/heap_generic |   |  |  |
-| 214 | data_structures/heap/max_heap |   |  |  |
-| 215 | data_structures/heap/min_heap |   |  |  |
+| 210 | data_structures/hashing/tests/test_hash_map | ✓ | 218.0µs | 8.97KB |
+| 211 | data_structures/heap/binomial_heap | ✓ | 112.0µs | 3.12KB |
+| 212 | data_structures/heap/heap | ✓ |  |  |
+| 213 | data_structures/heap/heap_generic | ✓ | 252.0µs | 18.11KB |
+| 214 | data_structures/heap/max_heap | ✓ | 136.0µs | 3.47KB |
+| 215 | data_structures/heap/min_heap | ✓ | 212.0µs | 3.60KB |
 | 216 | data_structures/heap/randomized_heap |   |  |  |
-| 217 | data_structures/kd_tree/build_kdtree |   |  |  |
+| 217 | data_structures/kd_tree/build_kdtree | ✓ | 287.0µs | 19.29KB |
 | 218 | data_structures/kd_tree/example/example_usage |   |  |  |
-| 219 | data_structures/kd_tree/example/hypercube_points |   |  |  |
-| 220 | data_structures/kd_tree/kd_node |   |  |  |
-| 221 | data_structures/kd_tree/nearest_neighbour_search |   |  |  |
-| 222 | data_structures/kd_tree/tests/test_kdtree |   |  |  |
-| 223 | data_structures/linked_list/circular_linked_list |   |  |  |
-| 224 | data_structures/linked_list/deque_doubly |   |  |  |
-| 225 | data_structures/linked_list/doubly_linked_list |   |  |  |
-| 226 | data_structures/linked_list/doubly_linked_list_two |   |  |  |
-| 227 | data_structures/linked_list/floyds_cycle_detection |   |  |  |
-| 228 | data_structures/linked_list/from_sequence |   |  |  |
-| 229 | data_structures/linked_list/has_loop |   |  |  |
-| 230 | data_structures/linked_list/is_palindrome |   |  |  |
-| 231 | data_structures/linked_list/merge_two_lists |   |  |  |
-| 232 | data_structures/linked_list/middle_element_of_linked_list |   |  |  |
-| 233 | data_structures/linked_list/print_reverse |   |  |  |
-| 234 | data_structures/linked_list/reverse_k_group |   |  |  |
-| 235 | data_structures/linked_list/rotate_to_the_right |   |  |  |
-| 236 | data_structures/linked_list/singly_linked_list |   |  |  |
-| 237 | data_structures/linked_list/skip_list |   |  |  |
-| 238 | data_structures/linked_list/swap_nodes |   |  |  |
-| 239 | data_structures/queues/circular_queue |   |  |  |
-| 240 | data_structures/queues/circular_queue_linked_list |   |  |  |
-| 241 | data_structures/queues/double_ended_queue |   |  |  |
+| 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 161.0µs | 1.51KB |
+| 220 | data_structures/kd_tree/kd_node | ✓ | 148.0µs | 1.62KB |
+| 221 | data_structures/kd_tree/nearest_neighbour_search | ✓ | 214.0µs | 9.59KB |
+| 222 | data_structures/kd_tree/tests/test_kdtree | ✓ | 100.0µs | 12.84KB |
+| 223 | data_structures/linked_list/circular_linked_list | ✓ | 169.0µs | 6.62KB |
+| 224 | data_structures/linked_list/deque_doubly | ✓ | 62.0µs | 4.87KB |
+| 225 | data_structures/linked_list/doubly_linked_list | ✓ | 141.0µs | 4.13KB |
+| 226 | data_structures/linked_list/doubly_linked_list_two | ✓ | 402.0µs | 25.20KB |
+| 227 | data_structures/linked_list/floyds_cycle_detection | ✓ | 39.0µs | 2.38KB |
+| 228 | data_structures/linked_list/from_sequence | ✓ | 123.0µs | 4.87KB |
+| 229 | data_structures/linked_list/has_loop | ✓ | 57.0µs | 2.46KB |
+| 230 | data_structures/linked_list/is_palindrome | ✓ | 22.0µs | 616B |
+| 231 | data_structures/linked_list/merge_two_lists | ✓ | 449.0µs | 59.52KB |
+| 232 | data_structures/linked_list/middle_element_of_linked_list | ✓ | 204.0µs | 8.97KB |
+| 233 | data_structures/linked_list/print_reverse | ✓ | 91.0µs | 1.91KB |
+| 234 | data_structures/linked_list/reverse_k_group | ✓ | 151.0µs | 2.05KB |
+| 235 | data_structures/linked_list/rotate_to_the_right | ✓ | 100.0µs | 1.88KB |
+| 236 | data_structures/linked_list/singly_linked_list | ✓ | 130.0µs | 5.37KB |
+| 237 | data_structures/linked_list/skip_list | ✓ | 232.0µs | 26.09KB |
+| 238 | data_structures/linked_list/swap_nodes | ✓ | 122.0µs | 2.04KB |
+| 239 | data_structures/queues/circular_queue | ✓ | 131.0µs | 2.69KB |
+| 240 | data_structures/queues/circular_queue_linked_list | ✓ | 107.0µs | 3.01KB |
+| 241 | data_structures/queues/double_ended_queue | ✓ | 138.0µs | 2.80KB |
 | 242 | data_structures/queues/linked_queue |   |  |  |
 | 243 | data_structures/queues/priority_queue_using_list |   |  |  |
-| 244 | data_structures/queues/queue_by_list |   |  |  |
-| 245 | data_structures/queues/queue_by_two_stacks |   |  |  |
-| 246 | data_structures/queues/queue_on_pseudo_stack |   |  |  |
-| 247 | data_structures/stacks/balanced_parentheses |   |  |  |
-| 248 | data_structures/stacks/dijkstras_two_stack_algorithm |   |  |  |
-| 249 | data_structures/stacks/infix_to_postfix_conversion |   |  |  |
-| 250 | data_structures/stacks/infix_to_prefix_conversion |   |  |  |
-| 251 | data_structures/stacks/largest_rectangle_histogram |   |  |  |
-| 252 | data_structures/stacks/lexicographical_numbers |   |  |  |
-| 253 | data_structures/stacks/next_greater_element |   |  |  |
-| 254 | data_structures/stacks/postfix_evaluation |   |  |  |
+| 244 | data_structures/queues/queue_by_list | ✓ | 102.0µs | 2.73KB |
+| 245 | data_structures/queues/queue_by_two_stacks | ✓ | 112.0µs | 1.83KB |
+| 246 | data_structures/queues/queue_on_pseudo_stack | ✓ | 115.0µs | 3.48KB |
+| 247 | data_structures/stacks/balanced_parentheses | ✓ | 56.0µs | 2.81KB |
+| 248 | data_structures/stacks/dijkstras_two_stack_algorithm | ✓ | 130.0µs | 2.59KB |
+| 249 | data_structures/stacks/infix_to_postfix_conversion | ✓ | 96.0µs | 11.64KB |
+| 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ | 2.0µs | 208B |
+| 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 120.0µs | 7.48KB |
+| 252 | data_structures/stacks/lexicographical_numbers | ✓ | 366.0µs | 67.44KB |
+| 253 | data_structures/stacks/next_greater_element | ✓ | 604.0µs | 58.73KB |
+| 254 | data_structures/stacks/postfix_evaluation | ✓ | 201.0µs | 5.72KB |
 | 255 | data_structures/stacks/prefix_evaluation |   |  |  |
-| 256 | data_structures/stacks/stack |   |  |  |
-| 257 | data_structures/stacks/stack_using_two_queues |   |  |  |
-| 258 | data_structures/stacks/stack_with_doubly_linked_list |   |  |  |
-| 259 | data_structures/stacks/stack_with_singly_linked_list |   |  |  |
+| 256 | data_structures/stacks/stack | ✓ | 242.0µs | 2.20KB |
+| 257 | data_structures/stacks/stack_using_two_queues | ✓ | 123.0µs | 3.48KB |
+| 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 165.0µs | 3.95KB |
+| 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 65.0µs | 3.67KB |
 | 260 | data_structures/stacks/stock_span_problem | ✓ | 141.0µs | 448B |
 | 261 | data_structures/suffix_tree/example/example_usage | ✓ | 72.0µs | 1.45KB |
 | 262 | data_structures/suffix_tree/suffix_tree | ✓ | 324.0µs | 34.88KB |
