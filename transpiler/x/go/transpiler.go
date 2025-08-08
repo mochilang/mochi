@@ -180,7 +180,9 @@ func emitCastAnyToType(w io.Writer, typ, v string) {
 			return
 		}
 		fmt.Fprintf(w, "func(v any) []%s { if v == nil { return nil }; if vv, ok := v.([]%s); ok { return vv }; if arr, ok := v.([]any); ok { if len(arr)==0 { return []%s{} }; out := make([]%s, len(arr)); for i, x := range arr { out[i] = ", elem, elem, elem, elem)
+		assignAnyVars["x"] = true
 		emitCastAnyToType(w, elem, "x")
+		delete(assignAnyVars, "x")
 		fmt.Fprintf(w, " }; return out }; return v.([]%s) }(%s)", elem, v)
 		return
 	}
@@ -2173,9 +2175,18 @@ func (a *AssertExpr) emit(w io.Writer) {
 		}
 	}
 	if a.Type == "int" {
-		io.WriteString(w, "int(")
-		a.Expr.emit(w)
-		io.WriteString(w, ")")
+		if vr, ok := a.Expr.(*VarRef); ok {
+			if assignAnyVars[vr.Name] {
+				a.Expr.emit(w)
+				io.WriteString(w, ".(int)")
+			} else {
+				a.Expr.emit(w)
+			}
+		} else {
+			io.WriteString(w, "int(")
+			a.Expr.emit(w)
+			io.WriteString(w, ")")
+		}
 		return
 	}
 	if a.Type == "float64" {
@@ -2184,7 +2195,14 @@ func (a *AssertExpr) emit(w io.Writer) {
 			return
 		}
 		switch ex := a.Expr.(type) {
-		case *IndexExpr, *VarRef, *FieldExpr:
+		case *VarRef:
+			if assignAnyVars[ex.Name] {
+				a.Expr.emit(w)
+				io.WriteString(w, ".(float64)")
+			} else {
+				a.Expr.emit(w)
+			}
+		case *IndexExpr, *FieldExpr:
 			a.Expr.emit(w)
 			io.WriteString(w, ".(float64)")
 		case *CallExpr:
@@ -6897,15 +6915,17 @@ func Emit(prog *Program, bench bool) []byte {
 		buf.WriteString("}\n\n")
 	}
 	if prog.UseIndex {
-		buf.WriteString("func _index[T any](s []T, i int) T {\n")
-		buf.WriteString("    if i < 0 { i += len(s) }\n")
-		buf.WriteString("    return s[i]\n")
+		buf.WriteString("func _index[T any](s []T, i any) T {\n")
+		buf.WriteString("    idx := func(v any) int { if vv, ok := v.(int); ok { return vv }; if vv, ok := v.(float64); ok { return int(vv) }; return v.(int) }(i)\n")
+		buf.WriteString("    if idx < 0 { idx += len(s) }\n")
+		buf.WriteString("    return s[idx]\n")
 		buf.WriteString("}\n\n")
 	}
 	if prog.UseSetIndex {
-		buf.WriteString("func _setIndex[T any](s []T, i int, v T) {\n")
-		buf.WriteString("    if i < 0 { i += len(s) }\n")
-		buf.WriteString("    s[i] = v\n")
+		buf.WriteString("func _setIndex[T any](s []T, i any, v T) {\n")
+		buf.WriteString("    idx := func(v any) int { if vv, ok := v.(int); ok { return vv }; if vv, ok := v.(float64); ok { return int(vv) }; return v.(int) }(i)\n")
+		buf.WriteString("    if idx < 0 { idx += len(s) }\n")
+		buf.WriteString("    s[idx] = v\n")
 		buf.WriteString("}\n\n")
 	}
 	if prog.UseSplit {
@@ -7107,11 +7127,15 @@ func Emit(prog *Program, bench bool) []byte {
 		}
 	}
 	buf.WriteString("}\n")
-	out, err := format.Source(buf.Bytes())
+	code := buf.String()
+	if usesReflect && !prog.UseReflect {
+		code = strings.Replace(code, "import (\n", "import (\n    \"reflect\"\n", 1)
+	}
+	out, err := format.Source([]byte(code))
 	if err == nil {
 		return out
 	}
-	return buf.Bytes()
+	return []byte(code)
 }
 
 // print converts prog to an ast.Node and prints it.
