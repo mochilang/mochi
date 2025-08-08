@@ -672,18 +672,37 @@ func (l *LetStmt) emitTop(w io.Writer) {
 type VarStmt struct {
 	Name string
 	Expr Expr
+	Typ  string
 }
 
 func (v *VarStmt) emit(w io.Writer) {
 	fmt.Fprintf(w, "  let %s = ref (", sanitizeIdent(v.Name))
-	v.Expr.emit(w)
+	v.emitExpr(w)
 	io.WriteString(w, ") in\n")
 }
 
 func (v *VarStmt) emitTop(w io.Writer) {
 	fmt.Fprintf(w, "let %s = ref (", sanitizeIdent(v.Name))
-	v.Expr.emit(w)
+	v.emitExpr(w)
 	io.WriteString(w, ")\n")
+}
+
+func (v *VarStmt) emitExpr(w io.Writer) {
+	switch e := v.Expr.(type) {
+	case *ListLit:
+		if len(e.Elems) == 0 && v.Typ != "" {
+			io.WriteString(w, "[] : ")
+			io.WriteString(w, ocamlType(v.Typ))
+			return
+		}
+	case *MapLit:
+		if len(e.Items) == 0 && v.Typ != "" {
+			io.WriteString(w, "[] : ")
+			io.WriteString(w, ocamlType(v.Typ))
+			return
+		}
+	}
+	v.Expr.emit(w)
 }
 
 // AssignStmt represents an update to a mutable variable.
@@ -3259,6 +3278,18 @@ let _len v =
 `
 
 const helperShow = `
+let rec __is_list v =
+  let open Obj in
+  let r = repr v in
+  if is_int r then false
+  else
+    match tag r with
+    | 0 ->
+        let t = field r 1 in
+        if is_int t then (magic t : int) = 0
+        else __is_list (magic t)
+    | _ -> false
+
 let rec __show v =
   let open Obj in
   let r = repr v in
@@ -3266,7 +3297,7 @@ let rec __show v =
     string_of_int (magic v : int)
   else
     match tag r with
-    | 0 -> __show_list (Obj.magic v)
+    | 0 -> if __is_list v then __show_list (Obj.magic v) else __show_tuple (Obj.magic v)
     | 252 -> Printf.sprintf "'%s'" (String.escaped (magic v : string))
     | 253 -> string_of_float (magic v)
     | _ -> "<value>"
@@ -3274,6 +3305,14 @@ and __show_list l =
   match l with
   | [] -> "[]"
   | _ -> "[" ^ String.concat " " (List.map __show l) ^ "]"
+and __show_tuple t =
+  let open Obj in
+  let r = repr t in
+  let rec aux i =
+    if i >= size r then []
+    else __show (Obj.obj (field r i)) :: aux (i + 1)
+  in
+  "(" ^ String.concat ", " (aux 0) ^ ")"
 and __str v =
   let open Obj in
   let r = repr v in
@@ -3281,7 +3320,7 @@ and __str v =
     string_of_int (magic v : int)
   else
     match tag r with
-    | 0 -> __str_list (Obj.magic v)
+    | 0 -> if __is_list v then __str_list (Obj.magic v) else __str_tuple (Obj.magic v)
     | 252 -> (magic v : string)
     | 253 -> string_of_float (magic v)
     | _ -> "<value>"
@@ -3289,6 +3328,14 @@ and __str_list l =
   match l with
   | [] -> "[]"
   | _ -> "[" ^ String.concat " " (List.map __str l) ^ "]"
+and __str_tuple t =
+  let open Obj in
+  let r = repr t in
+  let rec aux i =
+    if i >= size r then []
+    else __str (Obj.obj (field r i)) :: aux (i + 1)
+  in
+  "(" ^ String.concat ", " (aux 0) ^ ")"
 `
 
 func gitTimestamp() string {
@@ -3624,7 +3671,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		stmt := Stmt(&LetStmt{Name: st.Let.Name, Expr: expr})
 		if vinfo.ref || strings.HasPrefix(typ, "list-") || strings.HasPrefix(typ, "map") {
 			vinfo.ref = true
-			stmt = &VarStmt{Name: st.Let.Name, Expr: expr}
+			stmt = &VarStmt{Name: st.Let.Name, Expr: expr, Typ: typ}
 		}
 		vars[st.Let.Name] = vinfo
 		return stmt, nil
@@ -3690,7 +3737,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			vinfo.ret = strings.TrimPrefix(typ, "func-")
 		}
 		vars[st.Var.Name] = vinfo
-		return &VarStmt{Name: st.Var.Name, Expr: expr}, nil
+		return &VarStmt{Name: st.Var.Name, Expr: expr, Typ: typ}, nil
 	case st.Assign != nil:
 		info, ok := vars[st.Assign.Name]
 		if !ok {
