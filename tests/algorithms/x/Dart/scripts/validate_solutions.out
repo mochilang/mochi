@@ -1,4 +1,4 @@
-../../../tests/algorithms/x/Dart/scripts/validate_solutions.dart:55:31: Error: The argument type 'String' can't be assigned to the parameter type 'List<int>'.
+../../../tests/algorithms/x/Dart/scripts/validate_solutions.dart:58:31: Error: The argument type 'String' can't be assigned to the parameter type 'List<int>'.
  - 'List' is from 'dart:core'.
   return bytes_to_hex(_sha256(s));
                               ^

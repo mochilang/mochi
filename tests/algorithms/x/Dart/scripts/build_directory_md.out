@@ -1,4 +1,8 @@
-../../../tests/algorithms/x/Dart/scripts/build_directory_md.dart:223:21: Error: The argument type 'String' can't be assigned to the parameter type 'List<String>'.
- - 'List' is from 'dart:core'.
-    filepath = join(_substr(parts, 0, parts.length - 1), "/");
-                    ^
+## Data Structures
+  * [Binary Tree](data_structures/binary_tree.py)
+  * [Linked List](data_structures/linked_list.py)
+
+## Math
+  * Number Theory
+    * [Greatest Common Divisor](math/number_theory/greatest_common_divisor.ipynb)
+    * [Prime Check](math/number_theory/prime_check.py)

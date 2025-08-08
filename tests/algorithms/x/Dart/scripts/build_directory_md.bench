@@ -1,4 +1,1 @@
-../../../tests/algorithms/x/Dart/scripts/build_directory_md.dart:246:21: Error: The argument type 'String' can't be assigned to the parameter type 'List<String>'.
- - 'List' is from 'dart:core'.
-    filepath = join(_substr(parts, 0, parts.length - 1), "/");
-                    ^
+{"duration_us":18007,"memory_bytes":4325376,"name":"main"}
