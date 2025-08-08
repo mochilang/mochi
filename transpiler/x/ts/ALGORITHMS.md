@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-08 03:52 UTC
+Last updated: 2025-08-08 04:24 UTC
 
-## Algorithms Golden Test Checklist (1043/1077)
+## Algorithms Golden Test Checklist (1044/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 645µs | 22.6 KB |
@@ -294,7 +294,7 @@ Last updated: 2025-08-08 03:52 UTC
 | 285 | digital_image_processing/rotation/rotation | ✓ | 1.265ms | 30.1 KB |
 | 286 | digital_image_processing/sepia | ✓ | 844µs | 17.5 KB |
 | 287 | digital_image_processing/test_digital_image_processing | ✓ | 4.53ms | 340.0 KB |
-| 288 | divide_and_conquer/closest_pair_of_points |   |  |  |
+| 288 | divide_and_conquer/closest_pair_of_points | ✓ | 571.223ms | 57.9 KB |
 | 289 | divide_and_conquer/convex_hull | ✓ | 7µs | 3.3 KB |
 | 290 | divide_and_conquer/heaps_algorithm | ✓ | 1.042ms | 580.1 KB |
 | 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 1.322ms | 275.4 KB |
