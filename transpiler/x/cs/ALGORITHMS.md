@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-08 17:07 GMT+7
+Last updated: 2025-08-08 17:41 GMT+7
 
-## Algorithms Golden Test Checklist (878/1077)
+## Algorithms Golden Test Checklist (927/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -960,56 +960,56 @@ Last updated: 2025-08-08 17:07 GMT+7
 | 951 | sorts/double_sort | ✓ | 2.0ms | 15.72KB |
 | 952 | sorts/dutch_national_flag_sort | ✓ | 2.0ms | 18.38KB |
 | 953 | sorts/exchange_sort | ✓ | 2.0ms | 19.59KB |
-| 954 | sorts/external_sort |   |  |  |
-| 955 | sorts/gnome_sort |   |  |  |
-| 956 | sorts/heap_sort |   |  |  |
-| 957 | sorts/insertion_sort |   |  |  |
-| 958 | sorts/intro_sort |   |  |  |
-| 959 | sorts/iterative_merge_sort |   |  |  |
-| 960 | sorts/merge_insertion_sort |   |  |  |
-| 961 | sorts/merge_sort |   |  |  |
-| 962 | sorts/msd_radix_sort |   |  |  |
-| 963 | sorts/natural_sort |   |  |  |
-| 964 | sorts/odd_even_sort |   |  |  |
-| 965 | sorts/odd_even_transposition_parallel |   |  |  |
-| 966 | sorts/odd_even_transposition_single_threaded |   |  |  |
-| 967 | sorts/pancake_sort |   |  |  |
-| 968 | sorts/patience_sort |   |  |  |
-| 969 | sorts/pigeon_sort |   |  |  |
-| 970 | sorts/pigeonhole_sort |   |  |  |
-| 971 | sorts/quick_sort |   |  |  |
-| 972 | sorts/quick_sort_3_partition |   |  |  |
-| 973 | sorts/radix_sort |   |  |  |
-| 974 | sorts/recursive_insertion_sort |   |  |  |
-| 975 | sorts/recursive_mergesort_array |   |  |  |
-| 976 | sorts/recursive_quick_sort |   |  |  |
-| 977 | sorts/selection_sort |   |  |  |
-| 978 | sorts/shell_sort |   |  |  |
-| 979 | sorts/shrink_shell_sort |   |  |  |
-| 980 | sorts/slowsort |   |  |  |
-| 981 | sorts/stooge_sort |   |  |  |
-| 982 | sorts/strand_sort |   |  |  |
-| 983 | sorts/tim_sort |   |  |  |
-| 984 | sorts/topological_sort |   |  |  |
-| 985 | sorts/tree_sort |   |  |  |
-| 986 | sorts/unknown_sort |   |  |  |
-| 987 | sorts/wiggle_sort |   |  |  |
-| 988 | strings/aho_corasick |   |  |  |
-| 989 | strings/alternative_string_arrange |   |  |  |
-| 990 | strings/anagrams |   |  |  |
-| 991 | strings/autocomplete_using_trie |   |  |  |
-| 992 | strings/barcode_validator |   |  |  |
-| 993 | strings/bitap_string_match |   |  |  |
-| 994 | strings/boyer_moore_search |   |  |  |
-| 995 | strings/camel_case_to_snake_case |   |  |  |
-| 996 | strings/can_string_be_rearranged_as_palindrome |   |  |  |
-| 997 | strings/capitalize |   |  |  |
-| 998 | strings/check_anagrams |   |  |  |
-| 999 | strings/count_vowels |   |  |  |
-| 1000 | strings/credit_card_validator |   |  |  |
-| 1001 | strings/damerau_levenshtein_distance |   |  |  |
-| 1002 | strings/detecting_english_programmatically |   |  |  |
-| 1003 | strings/dna |   |  |  |
+| 954 | sorts/external_sort | ✓ | 2.0ms | 24.15KB |
+| 955 | sorts/gnome_sort | ✓ | 2.0ms | 18.48KB |
+| 956 | sorts/heap_sort | ✓ | 2.0ms | 20.42KB |
+| 957 | sorts/insertion_sort | ✓ | 2.0ms | 18.61KB |
+| 958 | sorts/intro_sort | ✓ | 2.0ms | 19.68KB |
+| 959 | sorts/iterative_merge_sort | ✓ | 2.0ms | 29.31KB |
+| 960 | sorts/merge_insertion_sort | ✓ | 2.0ms | 21.32KB |
+| 961 | sorts/merge_sort | ✓ | 2.0ms | 22.21KB |
+| 962 | sorts/msd_radix_sort | ✓ | 2.0ms | 30.59KB |
+| 963 | sorts/natural_sort | ✓ | 2.0ms | 94.27KB |
+| 964 | sorts/odd_even_sort | ✓ | 2.0ms | 19.38KB |
+| 965 | sorts/odd_even_transposition_parallel | ✓ | 2.0ms | 18.16KB |
+| 966 | sorts/odd_even_transposition_single_threaded | ✓ | 2.0ms | 15.66KB |
+| 967 | sorts/pancake_sort | ✓ | 2.0ms | 16.98KB |
+| 968 | sorts/patience_sort | ✓ | 2.0ms | 22.16KB |
+| 969 | sorts/pigeon_sort | ✓ | 2.0ms | 42.89KB |
+| 970 | sorts/pigeonhole_sort | ✓ | 2.0ms | 18.09KB |
+| 971 | sorts/quick_sort | ✓ | 2.0ms | 22.52KB |
+| 972 | sorts/quick_sort_3_partition | ✓ | 2.0ms | 27.86KB |
+| 973 | sorts/radix_sort | ✓ | 2.0ms | 35.31KB |
+| 974 | sorts/recursive_insertion_sort | ✓ | 2.0ms | 17.23KB |
+| 975 | sorts/recursive_mergesort_array | ✓ | 2.0ms | 29.83KB |
+| 976 | sorts/recursive_quick_sort | ✓ | 2.0ms | 20.48KB |
+| 977 | sorts/selection_sort | ✓ | 2.0ms | 18.41KB |
+| 978 | sorts/shell_sort | ✓ | 2.0ms | 18.85KB |
+| 979 | sorts/shrink_shell_sort | ✓ | 2.0ms | 17.08KB |
+| 980 | sorts/slowsort | ✓ | 2.0ms | 20.96KB |
+| 981 | sorts/stooge_sort | ✓ | 1.0ms | 17.91KB |
+| 982 | sorts/strand_sort | ✓ | 2.0ms | 21.48KB |
+| 983 | sorts/tim_sort | ✓ | 2.0ms | 33.31KB |
+| 984 | sorts/topological_sort | ✓ | 2.0ms | 15.05KB |
+| 985 | sorts/tree_sort | ✓ | 2.0ms | 26.64KB |
+| 986 | sorts/unknown_sort | ✓ | 2.0ms | 22.82KB |
+| 987 | sorts/wiggle_sort | ✓ | 2.0ms | 19.50KB |
+| 988 | strings/aho_corasick | ✓ | 2.0ms | 23.42KB |
+| 989 | strings/alternative_string_arrange | ✓ | 1.0ms | 13.84KB |
+| 990 | strings/anagrams | error |  |  |
+| 991 | strings/autocomplete_using_trie | ✓ | 2.0ms | 14.21KB |
+| 992 | strings/barcode_validator | ✓ | 2.0ms | 20.88KB |
+| 993 | strings/bitap_string_match | ✓ | 2.0ms | 37.89KB |
+| 994 | strings/boyer_moore_search | ✓ | 1.0µs | 43.73KB |
+| 995 | strings/camel_case_to_snake_case | ✓ | 1.0ms | 131.00KB |
+| 996 | strings/can_string_be_rearranged_as_palindrome | ✓ | 2.0ms | 27.52KB |
+| 997 | strings/capitalize | ✓ | 1.0ms | 14.70KB |
+| 998 | strings/check_anagrams | ✓ | 3.0ms | 24.13KB |
+| 999 | strings/count_vowels | ✓ | 2.0ms | 34.44KB |
+| 1000 | strings/credit_card_validator | ✓ | 2.0ms | 15.48KB |
+| 1001 | strings/damerau_levenshtein_distance | ✓ | 2.0ms | 65.43KB |
+| 1002 | strings/detecting_english_programmatically | ✓ | 2.0ms | 53.91KB |
+| 1003 | strings/dna | ✓ | 1.0ms | 13.74KB |
 | 1004 | strings/edit_distance |   |  |  |
 | 1005 | strings/frequency_finder |   |  |  |
 | 1006 | strings/hamming_distance |   |  |  |
