@@ -1,0 +1,8 @@
+parse: error[P999]: /workspace/mochi/tests/github/TheAlgorithms/Mochi/graphs/tarjans_scc.mochi:39:25: unexpected token "-" (expected PostfixExpr)
+  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/graphs/tarjans_scc.mochi:39:25
+
+ 39 |       if index_of[w] == -1 {
+    |                         ^
+
+help:
+  Parse error occurred. Check syntax near this location.

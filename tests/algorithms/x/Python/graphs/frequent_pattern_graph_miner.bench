@@ -1,0 +1,15 @@
+{
+  "duration_us": 113,
+  "memory_bytes": 15192064,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/graphs/frequent_pattern_graph_miner.py", line 318, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/graphs/frequent_pattern_graph_miner.py", line 306, in main
+    frequency_table = get_frequency_table(EDGE_ARRAY)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/graphs/frequent_pattern_graph_miner.py", line 117, in get_frequency_table
+    if toi(table[j].get("count")) > toi(table[max_i].get("count")):
+       ^^^
+NameError: name 'toi' is not defined

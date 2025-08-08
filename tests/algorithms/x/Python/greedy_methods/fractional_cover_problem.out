@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/greedy_methods/fractional_cover_problem.py", line 40, in <module>
+    print(str(fractional_cover(items1, 50)))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/greedy_methods/fractional_cover_problem.py", line 30, in fractional_cover
+    sorted = [it for it in sorted([it for it in items], key=lambda it: ratio(it), reverse=True)]
+                           ^^^^^^
+UnboundLocalError: cannot access local variable 'sorted' where it is not associated with a value
