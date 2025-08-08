@@ -2,12 +2,12 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 375/1077
-Last updated: 2025-08-08 10:32 +0700
+Completed programs: 378/1077
+Last updated: 2025-08-08 11:25 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 1.183ms | 4.0 MB |
+| 1 | backtracking/all_combinations | ✓ | 2.345ms | 3.7 MB |
 | 2 | backtracking/all_permutations | ✓ | 1.383ms | 3.5 MB |
 | 3 | backtracking/all_subsequences | ✓ | 914µs | 3.4 MB |
 | 4 | backtracking/coloring | ✓ | 540µs | 3.3 MB |
@@ -463,12 +463,12 @@ Last updated: 2025-08-08 10:32 +0700
 | 454 | graphs/tests/test_min_spanning_tree_kruskal | ✓ | 1.276ms | 3.7 MB |
 | 455 | graphs/tests/test_min_spanning_tree_prim |   |  |  |
 | 456 | greedy_methods/best_time_to_buy_and_sell_stock | ✓ | 287µs | 3.1 MB |
-| 457 | greedy_methods/fractional_cover_problem |   |  |  |
+| 457 | greedy_methods/fractional_cover_problem | ✓ | 753µs | 3.3 MB |
 | 458 | greedy_methods/fractional_knapsack |   |  |  |
 | 459 | greedy_methods/fractional_knapsack_2 |   |  |  |
-| 460 | greedy_methods/gas_station |   |  |  |
+| 460 | greedy_methods/gas_station | ✓ | 372µs | 3.1 MB |
 | 461 | greedy_methods/minimum_coin_change |   |  |  |
-| 462 | greedy_methods/minimum_waiting_time |   |  |  |
+| 462 | greedy_methods/minimum_waiting_time | ✓ | 442µs | 3.0 MB |
 | 463 | greedy_methods/optimal_merge_pattern |   |  |  |
 | 464 | greedy_methods/smallest_range |   |  |  |
 | 465 | hashes/adler32 |   |  |  |

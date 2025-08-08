@@ -46,6 +46,7 @@ var usesExists bool
 var fetchStructs map[string]bool
 var funcMutParams map[string][]bool
 var funcInOutParams map[string][]bool
+var funcParamTypes map[string][]string
 var currentUpdated map[string]bool
 var currentAnyUpdated map[string]bool
 var classStructs map[string]bool
@@ -1687,6 +1688,7 @@ func (c *CallExpr) emit(w io.Writer) {
 	}
 	flags, has := funcMutParams[c.Func]
 	inFlags := funcInOutParams[c.Func]
+	paramTs := funcParamTypes[c.Func]
 	needTmp := false
 	if has {
 		for i, f := range flags {
@@ -1700,7 +1702,11 @@ func (c *CallExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "{ () -> Any in\n")
 		for i, f := range flags {
 			if f && i < len(c.Args) && i < len(inFlags) && inFlags[i] && !addrable(c.Args[i]) {
-				fmt.Fprintf(w, "var _tmp%d = ", i)
+				fmt.Fprintf(w, "var _tmp%d", i)
+				if i < len(paramTs) && paramTs[i] != "" {
+					fmt.Fprintf(w, ": %s", paramTs[i])
+				}
+				fmt.Fprint(w, " = ")
 				emitNoCast(c.Args[i])
 				fmt.Fprint(w, "\n")
 			}
@@ -3051,6 +3057,7 @@ func convertFunDecl(env *types.Env, f *parser.FunStmt) (Stmt, error) {
 	child.SetVar("$retType", retT, false)
 	mutFlags := make([]bool, len(f.Params))
 	inFlags := make([]bool, len(f.Params))
+	paramTypes := make([]string, len(f.Params))
 	for i, p := range f.Params {
 		m := updated[p.Name]
 		mutFlags[i] = m
@@ -3060,6 +3067,7 @@ func convertFunDecl(env *types.Env, f *parser.FunStmt) (Stmt, error) {
 		}
 		child.SetVar(p.Name, pt, true)
 		useInOut := m && (types.IsListType(pt) || types.IsMapType(pt) || types.IsStructType(pt) || types.IsUnionType(pt))
+		paramTypes[i] = swiftTypeOf(pt)
 		if st, ok := pt.(types.StructType); ok {
 			if classStructs[st.Name] {
 				useInOut = false
@@ -3071,6 +3079,10 @@ func convertFunDecl(env *types.Env, f *parser.FunStmt) (Stmt, error) {
 	}
 	funcMutParams[f.Name] = mutFlags
 	funcInOutParams[f.Name] = inFlags
+	if funcParamTypes == nil {
+		funcParamTypes = map[string][]string{}
+	}
+	funcParamTypes[f.Name] = paramTypes
 	body, err := convertStmts(child, f.Body)
 	if err != nil {
 		return nil, err
@@ -4299,6 +4311,17 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			} else {
 				keyStr := false
 				keyAny := false
+				if st, ok := origBaseType.(types.StructType); ok {
+					if lit, ok2 := idx.(*LitExpr); ok2 && lit.IsString {
+						if ft, ok3 := st.Fields[lit.Value]; ok3 {
+							expr = &FieldExpr{Target: expr, Name: lit.Value}
+							if env != nil && !skipUpdate {
+								baseType = ft
+							}
+							continue
+						}
+					}
+				}
 				if mt, ok := origBaseType.(types.MapType); ok {
 					if types.IsStringType(mt.Key) {
 						idx = &CastExpr{Expr: idx, Type: "String"}
