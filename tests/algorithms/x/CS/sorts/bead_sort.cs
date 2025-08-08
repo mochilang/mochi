@@ -28,11 +28,11 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
-    static long _mod(long a, long b) {
-        if (b == 0) return 0;
-        var r = a % b;
-        if ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;
-        return r;
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
     }
     static string _substr(string s, long start, long end) {
         if (start < 0) start = 0;
@@ -97,43 +97,41 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
-        };
-        return x_2;
-    }
-
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
-                }
-                n_8 = (n_8 + 1);
+    public static long[] bead_sort(long[] sequence_0) {
+        long n_1 = sequence_0.Length;
+        long i_2 = 0;
+        while ((i_2 < n_1)) {
+            if ((sequence_0[(int)(i_2)] < 0)) {
+                throw new Exception("Sequence must be list of non-negative integers");
             }
-            d_7 = (d_7 + 1);
+            i_2 = (i_2 + 1);
         };
-        return fractions_number_6;
-    }
-
-    public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+        long pass_3 = 0;
+        while ((pass_3 < n_1)) {
+            long j_4 = 0;
+            while ((j_4 < (n_1 - 1))) {
+                long upper_5 = sequence_0[(int)(j_4)];
+                long lower_6 = sequence_0[(int)((j_4 + 1))];
+                if ((upper_5 > lower_6)) {
+                    long diff_7 = (upper_5 - lower_6);
+                    sequence_0[j_4] = (upper_5 - diff_7);
+                    sequence_0[(j_4 + 1)] = (lower_6 + diff_7);
+                }
+                j_4 = (j_4 + 1);
+            }
+            pass_3 = (pass_3 + 1);
+        };
+        return sequence_0;
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            Program.main();
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.bead_sort(new long[]{6, 11, 12, 4, 1, 5}))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.bead_sort(new long[]{9, 8, 7, 6, 5, 4, 3, 2, 1}))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.bead_sort(new long[]{5, 0, 4, 3}))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.bead_sort(new long[]{8, 2, 1}))));
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);

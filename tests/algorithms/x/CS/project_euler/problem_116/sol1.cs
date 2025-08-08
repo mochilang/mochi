@@ -28,12 +28,6 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
-    static long _mod(long a, long b) {
-        if (b == 0) return 0;
-        var r = a % b;
-        if ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;
-        return r;
-    }
     static string _substr(string s, long start, long end) {
         if (start < 0) start = 0;
         if (end < 0) end = 0;
@@ -97,43 +91,46 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
+    public static long solution(long length_0) {
+        long[][] ways_1 = new long[][]{};
+        long i_2 = 0;
+        while ((i_2 <= length_0)) {
+            long[] row_3 = new long[]{};
+            row_3 = (Enumerable.ToArray(Enumerable.Append<long>(row_3, 0)));
+            row_3 = (Enumerable.ToArray(Enumerable.Append<long>(row_3, 0)));
+            row_3 = (Enumerable.ToArray(Enumerable.Append<long>(row_3, 0)));
+            ways_1 = (Enumerable.ToArray(Enumerable.Append<long[]>(ways_1, row_3)));
+            i_2 = (i_2 + 1);
         };
-        return x_2;
-    }
-
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
+        long row_length_4 = 0;
+        while ((row_length_4 <= length_0)) {
+            long tile_length_5 = 2;
+            while ((tile_length_5 <= 4)) {
+                long tile_start_6 = 0;
+                while ((tile_start_6 <= (row_length_4 - tile_length_5))) {
+                    long remaining_7 = ((row_length_4 - tile_start_6) - tile_length_5);
+                    ways_1[(int)(row_length_4)][(tile_length_5 - 2)] = ((ways_1[(int)(row_length_4)][(int)((tile_length_5 - 2))] + ways_1[(int)(remaining_7)][(int)((tile_length_5 - 2))]) + 1);
+                    tile_start_6 = (tile_start_6 + 1);
                 }
-                n_8 = (n_8 + 1);
+                tile_length_5 = (tile_length_5 + 1);
             }
-            d_7 = (d_7 + 1);
+            row_length_4 = (row_length_4 + 1);
         };
-        return fractions_number_6;
-    }
-
-    public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+        long total_8 = 0;
+        long j_9 = 0;
+        while ((j_9 < 3)) {
+            total_8 = (total_8 + ways_1[(int)(length_0)][(int)(j_9)]);
+            j_9 = (j_9 + 1);
+        };
+        return total_8;
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            Program.main();
+            Console.WriteLine(Program._fmtTop(Program.solution(5)));
+            Console.WriteLine(Program._fmtTop(Program.solution(50)));
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);

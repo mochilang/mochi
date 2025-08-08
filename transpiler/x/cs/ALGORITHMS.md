@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-08 15:41 GMT+7
+Last updated: 2025-08-08 16:06 GMT+7
 
-## Algorithms Golden Test Checklist (828/1077)
+## Algorithms Golden Test Checklist (876/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -907,57 +907,57 @@ Last updated: 2025-08-08 15:41 GMT+7
 | 898 | project_euler/problem_069/sol1 | ✓ | 2.0ms | 16.36KB |
 | 899 | project_euler/problem_070/sol1 | ✓ | 21.0ms | 391.00MB |
 | 900 | project_euler/problem_071/sol1 | ✓ | 4.0ms | 16.46KB |
-| 901 | project_euler/problem_072/sol1 | ✓ |  |  |
-| 902 | project_euler/problem_072/sol2 |   |  |  |
-| 903 | project_euler/problem_073/sol1 | ✓ | 265.0ms | 16.36KB |
-| 904 | project_euler/problem_074/sol1 |   |  |  |
-| 905 | project_euler/problem_074/sol2 |   |  |  |
-| 906 | project_euler/problem_075/sol1 |   |  |  |
-| 907 | project_euler/problem_076/sol1 |   |  |  |
-| 908 | project_euler/problem_077/sol1 |   |  |  |
-| 909 | project_euler/problem_078/sol1 |   |  |  |
-| 910 | project_euler/problem_079/sol1 |   |  |  |
-| 911 | project_euler/problem_092/sol1 |   |  |  |
-| 912 | project_euler/problem_116/sol1 |   |  |  |
-| 913 | project_euler/problem_345/sol1 |   |  |  |
-| 914 | quantum/q_fourier_transform |   |  |  |
-| 915 | scheduling/job_sequence_with_deadline |   |  |  |
-| 916 | scheduling/job_sequencing_with_deadline |   |  |  |
-| 917 | scheduling/multi_level_feedback_queue |   |  |  |
-| 918 | scheduling/non_preemptive_shortest_job_first |   |  |  |
-| 919 | scheduling/round_robin |   |  |  |
-| 920 | scheduling/shortest_job_first |   |  |  |
-| 921 | scripts/build_directory_md |   |  |  |
-| 922 | scripts/validate_filenames |   |  |  |
-| 923 | scripts/validate_solutions |   |  |  |
-| 924 | searches/binary_search |   |  |  |
-| 925 | searches/double_linear_search |   |  |  |
-| 926 | searches/double_linear_search_recursion |   |  |  |
-| 927 | searches/exponential_search |   |  |  |
-| 928 | searches/fibonacci_search |   |  |  |
-| 929 | searches/hill_climbing |   |  |  |
-| 930 | searches/interpolation_search |   |  |  |
-| 931 | searches/jump_search |   |  |  |
-| 932 | searches/linear_search |   |  |  |
-| 933 | searches/median_of_medians |   |  |  |
-| 934 | searches/quick_select |   |  |  |
-| 935 | searches/sentinel_linear_search |   |  |  |
-| 936 | searches/simple_binary_search |   |  |  |
-| 937 | searches/simulated_annealing |   |  |  |
-| 938 | searches/tabu_search |   |  |  |
-| 939 | searches/ternary_search |   |  |  |
-| 940 | sorts/bead_sort |   |  |  |
-| 941 | sorts/binary_insertion_sort |   |  |  |
-| 942 | sorts/bitonic_sort |   |  |  |
-| 943 | sorts/bogo_sort |   |  |  |
-| 944 | sorts/bubble_sort |   |  |  |
-| 945 | sorts/bucket_sort |   |  |  |
-| 946 | sorts/circle_sort |   |  |  |
-| 947 | sorts/cocktail_shaker_sort |   |  |  |
-| 948 | sorts/comb_sort |   |  |  |
-| 949 | sorts/counting_sort |   |  |  |
-| 950 | sorts/cycle_sort |   |  |  |
-| 951 | sorts/double_sort |   |  |  |
+| 901 | project_euler/problem_072/sol1 |   |  |  |
+| 902 | project_euler/problem_072/sol2 | ✓ | 4.0ms | 3.93MB |
+| 903 | project_euler/problem_073/sol1 | ✓ | 251.0ms | 16.30KB |
+| 904 | project_euler/problem_074/sol1 | ✓ | 3.0ms | 576.92KB |
+| 905 | project_euler/problem_074/sol2 | ✓ | 422.0ms | 2.74GB |
+| 906 | project_euler/problem_075/sol1 | ✓ | 2.0ms | 34.71MB |
+| 907 | project_euler/problem_076/sol1 | ✓ | 7.0ms | 5.75MB |
+| 908 | project_euler/problem_077/sol1 | ✓ | 2.0ms | 630.63MB |
+| 909 | project_euler/problem_078/sol1 | ✓ | 527.0ms | 11.43GB |
+| 910 | project_euler/problem_079/sol1 | ✓ | 4.0ms | 1.32MB |
+| 911 | project_euler/problem_092/sol1 | ✓ | 2.0ms | 16.58KB |
+| 912 | project_euler/problem_116/sol1 | ✓ | 3.0ms | 50.54KB |
+| 913 | project_euler/problem_345/sol1 | ✓ | 1.0ms | 4.00GB |
+| 914 | quantum/q_fourier_transform | ✓ | 3.0ms | 20.77KB |
+| 915 | scheduling/job_sequence_with_deadline | ✓ | 2.0ms | 18.54KB |
+| 916 | scheduling/job_sequencing_with_deadline | ✓ | 2.0ms | 19.29KB |
+| 917 | scheduling/multi_level_feedback_queue | ✓ | 3.0ms | 22.49KB |
+| 918 | scheduling/non_preemptive_shortest_job_first | ✓ | 3.0ms | 21.30KB |
+| 919 | scheduling/round_robin | ✓ | 3.0ms | 18.80KB |
+| 920 | scheduling/shortest_job_first | ✓ | 4.0ms | 24.31KB |
+| 921 | scripts/build_directory_md | ✓ | 4.0ms | 73.55KB |
+| 922 | scripts/validate_filenames | ✓ | 5.0ms | 23.69KB |
+| 923 | scripts/validate_solutions | ✓ | 1.0ms | 46.00KB |
+| 924 | searches/binary_search | ✓ | 3.0ms | 17.84KB |
+| 925 | searches/double_linear_search | ✓ | 2.0ms | 64.37KB |
+| 926 | searches/double_linear_search_recursion | ✓ | 2.0ms | 17.84KB |
+| 927 | searches/exponential_search | ✓ | 1.0µs | 43.05KB |
+| 928 | searches/fibonacci_search | ✓ | 2.0ms | 17.63KB |
+| 929 | searches/hill_climbing | ✓ | 8.0ms | 4.41MB |
+| 930 | searches/interpolation_search | ✓ | 2.0ms | 17.97KB |
+| 931 | searches/jump_search | ✓ | 2.0ms | 17.88KB |
+| 932 | searches/linear_search | ✓ | 3.0ms | 18.43KB |
+| 933 | searches/median_of_medians | ✓ | 3.0ms | 27.63KB |
+| 934 | searches/quick_select | ✓ | 3.0ms | 25.95KB |
+| 935 | searches/sentinel_linear_search | ✓ | 3.0ms | 20.62KB |
+| 936 | searches/simple_binary_search | ✓ | 3.0ms | 13.34KB |
+| 937 | searches/simulated_annealing | ✓ | 5.0ms | 3.64MB |
+| 938 | searches/tabu_search | ✓ | 2.0ms | 64.60KB |
+| 939 | searches/ternary_search | ✓ | 2.0ms | 17.45KB |
+| 940 | sorts/bead_sort | ✓ | 2.0ms | 18.75KB |
+| 941 | sorts/binary_insertion_sort | ✓ | 2.0ms | 17.62KB |
+| 942 | sorts/bitonic_sort | ✓ | 3.0ms | 72.30KB |
+| 943 | sorts/bogo_sort | ✓ | 2.0ms | 16.70KB |
+| 944 | sorts/bubble_sort | ✓ | 3.0ms | 19.92KB |
+| 945 | sorts/bucket_sort | ✓ | 4.0ms | 48.35KB |
+| 946 | sorts/circle_sort | ✓ | 2.0ms | 18.36KB |
+| 947 | sorts/cocktail_shaker_sort | ✓ | 2.0ms | 18.98KB |
+| 948 | sorts/comb_sort | ✓ | 2.0ms | 19.04KB |
+| 949 | sorts/counting_sort | ✓ | 2.0ms | 67.39KB |
+| 950 | sorts/cycle_sort | ✓ | 3.0ms | 18.53KB |
+| 951 | sorts/double_sort | ✓ | 2.0ms | 15.72KB |
 | 952 | sorts/dutch_national_flag_sort |   |  |  |
 | 953 | sorts/exchange_sort |   |  |  |
 | 954 | sorts/external_sort |   |  |  |

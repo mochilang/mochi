@@ -28,11 +28,24 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
-    static long _mod(long a, long b) {
-        if (b == 0) return 0;
-        var r = a % b;
-        if ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;
-        return r;
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
+    }
+    static long _atoi(object v) {
+        if (v == null) return 0;
+        if (v is long l) return l;
+        if (v is int i) return i;
+        if (v is double d) return (long)d;
+        if (v is bool b) return b ? 1L : 0L;
+        if (v is string s) {
+            if (long.TryParse(s, out var n)) return n;
+            if (double.TryParse(s, out var f)) return (long)f;
+            return 0;
+        }
+        try { return Convert.ToInt64(v); } catch { return 0; }
     }
     static string _substr(string s, long start, long end) {
         if (start < 0) start = 0;
@@ -97,36 +110,34 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
-        };
-        return x_2;
-    }
-
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
-                }
-                n_8 = (n_8 + 1);
+    public static long[] comb_sort(long[] data_0) {
+        double shrink_factor_1 = 1.3;
+        long gap_2 = data_0.Length;
+        bool completed_3 = false;
+        while ((!completed_3)) {
+            gap_2 = _atoi((gap_2 / shrink_factor_1));
+            if ((gap_2 <= 1)) {
+                gap_2 = 1;
+                completed_3 = true;
             }
-            d_7 = (d_7 + 1);
+            long index_4 = 0;
+            while (((index_4 + gap_2) < data_0.Length)) {
+                if ((data_0[(int)(index_4)] > data_0[(int)((index_4 + gap_2))])) {
+                    long tmp_5 = data_0[(int)(index_4)];
+                    data_0[index_4] = data_0[(int)((index_4 + gap_2))];
+                    data_0[(index_4 + gap_2)] = tmp_5;
+                    completed_3 = false;
+                }
+                index_4 = (index_4 + 1);
+            }
         };
-        return fractions_number_6;
+        return data_0;
     }
 
     public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+        Console.WriteLine(Program._fmtTop(Program.comb_sort(new long[]{0, 5, 3, 2, 2})));
+        Console.WriteLine(Program._fmtTop(Program.comb_sort(new long[]{})));
+        Console.WriteLine(Program._fmtTop(Program.comb_sort(new long[]{99, 45, -7, 8, 2, 0, -15, 3})));
     }
 
     static void Main() {

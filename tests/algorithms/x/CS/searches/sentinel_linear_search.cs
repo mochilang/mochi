@@ -28,11 +28,11 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
-    static long _mod(long a, long b) {
-        if (b == 0) return 0;
-        var r = a % b;
-        if ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;
-        return r;
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
     }
     static string _substr(string s, long start, long end) {
         if (start < 0) start = 0;
@@ -97,43 +97,38 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
+    public static long[] remove_last(long[] xs_0) {
+        long[] res_1 = new long[]{};
+        long i_2 = 0;
+        while ((i_2 < (xs_0.Length - 1))) {
+            res_1 = (Enumerable.ToArray(Enumerable.Append<long>(res_1, xs_0[(int)(i_2)])));
+            i_2 = (i_2 + 1);
         };
-        return x_2;
+        return res_1;
     }
 
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
-                }
-                n_8 = (n_8 + 1);
-            }
-            d_7 = (d_7 + 1);
+    public static long sentinel_linear_search(long[] sequence_3, long target_4) {
+        long[] seq_5 = sequence_3;
+        seq_5 = (Enumerable.ToArray(Enumerable.Append<long>(seq_5, target_4)));
+        long index_6 = 0;
+        while ((seq_5[(int)(index_6)] != target_4)) {
+            index_6 = (index_6 + 1);
         };
-        return fractions_number_6;
-    }
-
-    public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+        seq_5 = Program.remove_last(seq_5);
+        if ((index_6 == seq_5.Length)) {
+            return -1;
+        };
+        return index_6;
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            Program.main();
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.sentinel_linear_search(new long[]{0, 5, 7, 10, 15}, 0))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.sentinel_linear_search(new long[]{0, 5, 7, 10, 15}, 15))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.sentinel_linear_search(new long[]{0, 5, 7, 10, 15}, 5))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.sentinel_linear_search(new long[]{0, 5, 7, 10, 15}, 6))));
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);

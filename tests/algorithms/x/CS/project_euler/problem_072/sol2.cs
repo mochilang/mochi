@@ -28,12 +28,6 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
-    static long _mod(long a, long b) {
-        if (b == 0) return 0;
-        var r = a % b;
-        if ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;
-        return r;
-    }
     static string _substr(string s, long start, long end) {
         if (start < 0) start = 0;
         if (end < 0) end = 0;
@@ -97,36 +91,36 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
+    public static long solution(long limit_0) {
+        long[] phi_1 = new long[]{};
+        long i_2 = 0;
+        while ((i_2 <= limit_0)) {
+            phi_1 = (Enumerable.ToArray(Enumerable.Append<long>(phi_1, i_2)));
+            i_2 = (i_2 + 1);
         };
-        return x_2;
-    }
-
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
+        long n_3 = 2;
+        while ((n_3 <= limit_0)) {
+            if ((phi_1[(int)(n_3)] == n_3)) {
+                long k_4 = n_3;
+                while ((k_4 <= limit_0)) {
+                    phi_1[k_4] = (phi_1[(int)(k_4)] - (phi_1[(int)(k_4)] / n_3));
+                    k_4 = (k_4 + n_3);
                 }
-                n_8 = (n_8 + 1);
             }
-            d_7 = (d_7 + 1);
+            n_3 = (n_3 + 1);
         };
-        return fractions_number_6;
+        long total_5 = 0;
+        long m_6 = 2;
+        while ((m_6 <= limit_0)) {
+            total_5 = (total_5 + phi_1[(int)(m_6)]);
+            m_6 = (m_6 + 1);
+        };
+        return total_5;
     }
 
     public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+        Console.WriteLine(Program._fmtTop(Program.solution(8)));
+        Console.WriteLine(Program._fmtTop(Program.solution(1000)));
     }
 
     static void Main() {

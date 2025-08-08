@@ -97,43 +97,56 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
+    static long[] DIGIT_FACTORIAL_0 = new long[]{1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880};
+    public static long digit_factorial_sum(long number_1) {
+        if ((number_1 < 0)) {
+            throw new Exception("Parameter number must be greater than or equal to 0");
         };
-        return x_2;
+        if ((number_1 == 0)) {
+            return DIGIT_FACTORIAL_0[(int)(0)];
+        };
+        long n_2 = number_1;
+        long total_3 = 0;
+        while ((n_2 > 0)) {
+            long digit_4 = _mod(n_2, 10);
+            total_3 = (total_3 + DIGIT_FACTORIAL_0[(int)(digit_4)]);
+            n_2 = (n_2 / 10);
+        };
+        return total_3;
     }
 
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
-                }
-                n_8 = (n_8 + 1);
+    public static long chain_len(long n_5, long limit_6) {
+        Dictionary<long, bool> seen_7 = new Dictionary<long, bool>{};
+        long length_8 = 0;
+        long cur_9 = n_5;
+        while ((((seen_7.ContainsKey(cur_9)) == false) && (length_8 <= limit_6))) {
+            seen_7[cur_9] = true;
+            length_8 = (length_8 + 1);
+            cur_9 = Program.digit_factorial_sum(cur_9);
+        };
+        return length_8;
+    }
+
+    public static long solution(long chain_length_10, long number_limit_11) {
+        if (((chain_length_10 <= 0) || (number_limit_11 <= 0))) {
+            throw new Exception("Parameters chain_length and number_limit must be greater than 0");
+        };
+        long count_12 = 0;
+        long start_13 = 1;
+        while ((start_13 < number_limit_11)) {
+            if ((Program.chain_len(start_13, chain_length_10) == chain_length_10)) {
+                count_12 = (count_12 + 1);
             }
-            d_7 = (d_7 + 1);
+            start_13 = (start_13 + 1);
         };
-        return fractions_number_6;
-    }
-
-    public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+        return count_12;
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            Program.main();
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.solution(60, 1000000))));
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);

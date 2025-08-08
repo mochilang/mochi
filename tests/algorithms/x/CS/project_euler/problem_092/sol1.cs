@@ -97,43 +97,49 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
+    public static long next_number(long number_0) {
+        long n_1 = number_0;
+        long total_2 = 0;
+        while ((n_1 > 0)) {
+            long d_3 = _mod(n_1, 10);
+            total_2 = (total_2 + (d_3 * d_3));
+            n_1 = (n_1 / 10);
         };
-        return x_2;
+        return total_2;
     }
 
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
-                }
-                n_8 = (n_8 + 1);
+    public static bool chain(long number_4) {
+        long n_5 = number_4;
+        while (((n_5 != 1) && (n_5 != 89))) {
+            n_5 = Program.next_number(n_5);
+        };
+        return (n_5 == 1);
+    }
+
+    public static long solution(long limit_6) {
+        long count_7 = 0;
+        long i_8 = 1;
+        while ((i_8 < limit_6)) {
+            if ((!Program.chain(i_8))) {
+                count_7 = (count_7 + 1);
             }
-            d_7 = (d_7 + 1);
+            i_8 = (i_8 + 1);
         };
-        return fractions_number_6;
-    }
-
-    public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+        return count_7;
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            Program.main();
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.next_number(44))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.next_number(10))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.next_number(32))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.chain(10))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.chain(58))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.chain(1))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.solution(100))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.solution(1000))));
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);

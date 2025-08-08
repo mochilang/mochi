@@ -28,6 +28,25 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
+    }
+    static long _atoi(object v) {
+        if (v == null) return 0;
+        if (v is long l) return l;
+        if (v is int i) return i;
+        if (v is double d) return (long)d;
+        if (v is bool b) return b ? 1L : 0L;
+        if (v is string s) {
+            if (long.TryParse(s, out var n)) return n;
+            if (double.TryParse(s, out var f)) return (long)f;
+            return 0;
+        }
+        try { return Convert.ToInt64(v); } catch { return 0; }
+    }
     static long _mod(long a, long b) {
         if (b == 0) return 0;
         var r = a % b;
@@ -97,36 +116,90 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
+    public static long[] calculate_waiting_times(long[] burst_times_0) {
+        long quantum_1 = 2;
+        long[] rem_2 = new long[]{};
+        long i_3 = 0;
+        while ((i_3 < burst_times_0.Length)) {
+            rem_2 = (Enumerable.ToArray(Enumerable.Append<long>(rem_2, burst_times_0[(int)(i_3)])));
+            i_3 = (i_3 + 1);
         };
-        return x_2;
+        long[] waiting_4 = new long[]{};
+        i_3 = 0;
+        while ((i_3 < burst_times_0.Length)) {
+            waiting_4 = (Enumerable.ToArray(Enumerable.Append<long>(waiting_4, 0)));
+            i_3 = (i_3 + 1);
+        };
+        long t_5 = 0;
+        while (true) {
+            bool done_6 = true;
+            long j_7 = 0;
+            while ((j_7 < burst_times_0.Length)) {
+                if ((rem_2[(int)(j_7)] > 0)) {
+                    done_6 = false;
+                    if ((rem_2[(int)(j_7)] > quantum_1)) {
+                        t_5 = (t_5 + quantum_1);
+                        rem_2[j_7] = (rem_2[(int)(j_7)] - quantum_1);
+                    } else {
+                        t_5 = (t_5 + rem_2[(int)(j_7)]);
+                        waiting_4[j_7] = (t_5 - burst_times_0[(int)(j_7)]);
+                        rem_2[j_7] = 0;
+                    }
+                }
+                j_7 = (j_7 + 1);
+            }
+            if (done_6) {
+                return waiting_4;
+            }
+        };
+        return waiting_4;
     }
 
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
-                }
-                n_8 = (n_8 + 1);
-            }
-            d_7 = (d_7 + 1);
+    public static long[] calculate_turn_around_times(long[] burst_times_8, long[] waiting_times_9) {
+        long[] result_10 = new long[]{};
+        long i_11 = 0;
+        while ((i_11 < burst_times_8.Length)) {
+            result_10 = (Enumerable.ToArray(Enumerable.Append<long>(result_10, (burst_times_8[(int)(i_11)] + waiting_times_9[(int)(i_11)]))));
+            i_11 = (i_11 + 1);
         };
-        return fractions_number_6;
+        return result_10;
+    }
+
+    public static double mean(long[] values_12) {
+        long total_13 = 0;
+        long i_14 = 0;
+        while ((i_14 < values_12.Length)) {
+            total_13 = (total_13 + values_12[(int)(i_14)]);
+            i_14 = (i_14 + 1);
+        };
+        return (Convert.ToDouble(total_13) / Convert.ToDouble(values_12.Length));
+    }
+
+    public static string format_float_5(double x_15) {
+        long scaled_16 = _atoi(((x_15 * 100000.0) + 0.5));
+        long int_part_17 = (scaled_16 / 100000);
+        long frac_part_18 = _mod(scaled_16, 100000);
+        string frac_str_19 = _fmtStr(frac_part_18);
+        while ((frac_str_19.Length < 5)) {
+            frac_str_19 = ("0" + frac_str_19);
+        };
+        return ((_fmtStr(int_part_17) + ".") + frac_str_19);
     }
 
     public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+        long[] burst_times_20 = new long[]{3, 5, 7};
+        long[] waiting_times_21 = Program.calculate_waiting_times(burst_times_20);
+        long[] turn_around_times_22 = Program.calculate_turn_around_times(burst_times_20, waiting_times_21);
+        Console.WriteLine(Program._fmtTop("Process ID \tBurst Time \tWaiting Time \tTurnaround Time"));
+        long i_23 = 0;
+        while ((i_23 < burst_times_20.Length)) {
+            string line_24 = ((((((("  " + _fmtStr((i_23 + 1))) + "\t\t  ") + _fmtStr(burst_times_20[(int)(i_23)])) + "\t\t  ") + _fmtStr(waiting_times_21[(int)(i_23)])) + "\t\t  ") + _fmtStr(turn_around_times_22[(int)(i_23)]));
+            Console.WriteLine(Program._fmtTop(line_24));
+            i_23 = (i_23 + 1);
+        };
+        Console.WriteLine(Program._fmtTop(""));
+        Console.WriteLine(Program._fmtTop(("Average waiting time = " + Program.format_float_5(Program.mean(waiting_times_21)))));
+        Console.WriteLine(Program._fmtTop(("Average turn around time = " + Program.format_float_5(Program.mean(turn_around_times_22)))));
     }
 
     static void Main() {

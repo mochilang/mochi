@@ -28,11 +28,11 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
-    static long _mod(long a, long b) {
-        if (b == 0) return 0;
-        var r = a % b;
-        if ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;
-        return r;
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
     }
     static string _substr(string s, long start, long end) {
         if (start < 0) start = 0;
@@ -97,43 +97,57 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
-        };
-        return x_2;
-    }
-
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
+    public static long[] cycle_sort(long[] arr_0) {
+        long n_1 = arr_0.Length;
+        long cycle_start_2 = 0;
+        while ((cycle_start_2 < (n_1 - 1))) {
+            long item_3 = arr_0[(int)(cycle_start_2)];
+            long pos_4 = cycle_start_2;
+            long i_5 = (cycle_start_2 + 1);
+            while ((i_5 < n_1)) {
+                if ((arr_0[(int)(i_5)] < item_3)) {
+                    pos_4 = (pos_4 + 1);
                 }
-                n_8 = (n_8 + 1);
+                i_5 = (i_5 + 1);
             }
-            d_7 = (d_7 + 1);
+            if ((pos_4 == cycle_start_2)) {
+                cycle_start_2 = (cycle_start_2 + 1);
+                continue;
+            }
+            while ((item_3 == arr_0[(int)(pos_4)])) {
+                pos_4 = (pos_4 + 1);
+            }
+            long temp_6 = arr_0[(int)(pos_4)];
+            arr_0[pos_4] = item_3;
+            item_3 = temp_6;
+            while ((pos_4 != cycle_start_2)) {
+                pos_4 = cycle_start_2;
+                i_5 = (cycle_start_2 + 1);
+                while ((i_5 < n_1)) {
+                    if ((arr_0[(int)(i_5)] < item_3)) {
+                        pos_4 = (pos_4 + 1);
+                    }
+                    i_5 = (i_5 + 1);
+                }
+                while ((item_3 == arr_0[(int)(pos_4)])) {
+                    pos_4 = (pos_4 + 1);
+                }
+                long temp2_7 = arr_0[(int)(pos_4)];
+                arr_0[pos_4] = item_3;
+                item_3 = temp2_7;
+            }
+            cycle_start_2 = (cycle_start_2 + 1);
         };
-        return fractions_number_6;
-    }
-
-    public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+        return arr_0;
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            Program.main();
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.cycle_sort(new long[]{4, 3, 2, 1}))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.cycle_sort(new long[]{-4, 20, 0, -50, 100, -1}))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.cycle_sort(new long[]{}))));
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);

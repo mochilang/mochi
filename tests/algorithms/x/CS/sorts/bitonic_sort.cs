@@ -28,11 +28,11 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
-    static long _mod(long a, long b) {
-        if (b == 0) return 0;
-        var r = a % b;
-        if ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;
-        return r;
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
     }
     static string _substr(string s, long start, long end) {
         if (start < 0) start = 0;
@@ -97,36 +97,63 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
+    public static long[] set_at_int(long[] xs_0, long idx_1, long value_2) {
+        long[] res_3 = new long[]{};
+        long i_4 = 0;
+        while ((i_4 < xs_0.Length)) {
+            if ((i_4 == idx_1)) {
+                res_3 = (Enumerable.ToArray(Enumerable.Append<long>(res_3, value_2)));
+            } else {
+                res_3 = (Enumerable.ToArray(Enumerable.Append<long>(res_3, xs_0[(int)(i_4)])));
+            }
+            i_4 = (i_4 + 1);
         };
-        return x_2;
+        return res_3;
     }
 
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
-                }
-                n_8 = (n_8 + 1);
-            }
-            d_7 = (d_7 + 1);
+    public static long[] comp_and_swap(long[] arr_5, long i_6, long j_7, long dir_8) {
+        long[] res_9 = arr_5;
+        long xi_10 = arr_5[(int)(i_6)];
+        long xj_11 = arr_5[(int)(j_7)];
+        if ((((dir_8 == 1) && (xi_10 > xj_11)) || ((dir_8 == 0) && (xi_10 < xj_11)))) {
+            res_9 = Program.set_at_int(res_9, i_6, xj_11);
+            res_9 = Program.set_at_int(res_9, j_7, xi_10);
         };
-        return fractions_number_6;
+        return res_9;
+    }
+
+    public static long[] bitonic_merge(long[] arr_12, long low_13, long length_14, long dir_15) {
+        long[] res_16 = arr_12;
+        if ((length_14 > 1)) {
+            long mid_17 = (length_14 / 2);
+            long k_18 = low_13;
+            while ((k_18 < (low_13 + mid_17))) {
+                res_16 = Program.comp_and_swap(res_16, k_18, (k_18 + mid_17), dir_15);
+                k_18 = (k_18 + 1);
+            }
+            res_16 = Program.bitonic_merge(res_16, low_13, mid_17, dir_15);
+            res_16 = Program.bitonic_merge(res_16, (low_13 + mid_17), mid_17, dir_15);
+        };
+        return res_16;
+    }
+
+    public static long[] bitonic_sort(long[] arr_19, long low_20, long length_21, long dir_22) {
+        long[] res_23 = arr_19;
+        if ((length_21 > 1)) {
+            long mid_24 = (length_21 / 2);
+            res_23 = Program.bitonic_sort(res_23, low_20, mid_24, 1);
+            res_23 = Program.bitonic_sort(res_23, (low_20 + mid_24), mid_24, 0);
+            res_23 = Program.bitonic_merge(res_23, low_20, length_21, dir_22);
+        };
+        return res_23;
     }
 
     public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+        long[] data_25 = new long[]{12, 34, 92, -23, 0, -121, -167, 145};
+        long[] asc_26 = Program.bitonic_sort(data_25, 0, data_25.Length, 1);
+        Console.WriteLine(Program._fmtTop(_fmtStr(asc_26)));
+        long[] desc_27 = Program.bitonic_merge(asc_26, 0, asc_26.Length, 0);
+        Console.WriteLine(Program._fmtTop(_fmtStr(desc_27)));
     }
 
     static void Main() {

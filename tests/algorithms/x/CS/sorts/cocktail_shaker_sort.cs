@@ -28,11 +28,11 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
-    static long _mod(long a, long b) {
-        if (b == 0) return 0;
-        var r = a % b;
-        if ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;
-        return r;
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
     }
     static string _substr(string s, long start, long end) {
         if (start < 0) start = 0;
@@ -97,43 +97,50 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
-        };
-        return x_2;
-    }
-
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
+    public static long[] cocktail_shaker_sort(long[] arr_0) {
+        long start_1 = 0;
+        long end_2 = (arr_0.Length - 1);
+        while ((start_1 < end_2)) {
+            bool swapped_3 = false;
+            long i_4 = start_1;
+            while ((i_4 < end_2)) {
+                if ((arr_0[(int)(i_4)] > arr_0[(int)((i_4 + 1))])) {
+                    long temp_5 = arr_0[(int)(i_4)];
+                    arr_0[i_4] = arr_0[(int)((i_4 + 1))];
+                    arr_0[(i_4 + 1)] = temp_5;
+                    swapped_3 = true;
                 }
-                n_8 = (n_8 + 1);
+                i_4 = (i_4 + 1);
             }
-            d_7 = (d_7 + 1);
+            if ((!swapped_3)) {
+                break;
+            }
+            end_2 = (end_2 - 1);
+            i_4 = end_2;
+            while ((i_4 > start_1)) {
+                if ((arr_0[(int)(i_4)] < arr_0[(int)((i_4 - 1))])) {
+                    long temp2_6 = arr_0[(int)(i_4)];
+                    arr_0[i_4] = arr_0[(int)((i_4 - 1))];
+                    arr_0[(i_4 - 1)] = temp2_6;
+                    swapped_3 = true;
+                }
+                i_4 = (i_4 - 1);
+            }
+            if ((!swapped_3)) {
+                break;
+            }
+            start_1 = (start_1 + 1);
         };
-        return fractions_number_6;
-    }
-
-    public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+        return arr_0;
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            Program.main();
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.cocktail_shaker_sort(new long[]{4, 5, 2, 1, 2}))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.cocktail_shaker_sort(new long[]{-4, 5, 0, 1, 2, 11}))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.cocktail_shaker_sort(new long[]{1, 2, 3, 4, 5}))));
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);

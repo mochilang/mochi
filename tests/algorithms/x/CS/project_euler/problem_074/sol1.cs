@@ -28,6 +28,12 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
+    }
     static long _mod(long a, long b) {
         if (b == 0) return 0;
         var r = a % b;
@@ -97,43 +103,86 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
+    static long[] DIGIT_FACTORIALS_0 = new long[]{1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880};
+    static Dictionary<long, long> cache_sum_digit_factorials_1 = new Dictionary<long, long>{{145, 145}};
+    static Dictionary<long, long> chain_length_cache_2 = new Dictionary<long, long>{{145, 0}, {169, 3}, {36301, 3}, {1454, 3}, {871, 2}, {45361, 2}, {872, 2}};
+    public static long sum_digit_factorials(long n_3) {
+        if ((cache_sum_digit_factorials_1.ContainsKey(n_3))) {
+            return (cache_sum_digit_factorials_1.ContainsKey(n_3) ? cache_sum_digit_factorials_1[n_3] : 0);
         };
-        return x_2;
+        long m_4 = n_3;
+        long ret_5 = 0;
+        if ((m_4 == 0)) {
+            ret_5 = DIGIT_FACTORIALS_0[(int)(0)];
+        };
+        while ((m_4 > 0)) {
+            long digit_6 = _mod(m_4, 10);
+            ret_5 = (ret_5 + DIGIT_FACTORIALS_0[(int)(digit_6)]);
+            m_4 = (m_4 / 10);
+        };
+        cache_sum_digit_factorials_1[n_3] = ret_5;
+        return ret_5;
     }
 
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
+    public static long chain_length(long n_7) {
+        if ((chain_length_cache_2.ContainsKey(n_7))) {
+            return (chain_length_cache_2.ContainsKey(n_7) ? chain_length_cache_2[n_7] : 0);
+        };
+        long[] chain_8 = new long[]{};
+        Dictionary<long, long> seen_9 = new Dictionary<long, long>{};
+        long current_10 = n_7;
+        while (true) {
+            if ((chain_length_cache_2.ContainsKey(current_10))) {
+                long known_11 = (chain_length_cache_2.ContainsKey(current_10) ? chain_length_cache_2[current_10] : 0);
+                long total_12 = known_11;
+                long i_13 = (chain_8.Length - 1);
+                while ((i_13 >= 0)) {
+                    total_12 = (total_12 + 1);
+                    chain_length_cache_2[chain_8[(int)(i_13)]] = total_12;
+                    i_13 = (i_13 - 1);
                 }
-                n_8 = (n_8 + 1);
+                return (chain_length_cache_2.ContainsKey(n_7) ? chain_length_cache_2[n_7] : 0);
             }
-            d_7 = (d_7 + 1);
+            if ((seen_9.ContainsKey(current_10))) {
+                long loop_start_14 = (seen_9.ContainsKey(current_10) ? seen_9[current_10] : 0);
+                long loop_len_15 = (chain_8.Length - loop_start_14);
+                long i_16 = (chain_8.Length - 1);
+                long ahead_17 = 0;
+                while ((i_16 >= 0)) {
+                    if ((i_16 >= loop_start_14)) {
+                        chain_length_cache_2[chain_8[(int)(i_16)]] = loop_len_15;
+                    } else {
+                        chain_length_cache_2[chain_8[(int)(i_16)]] = (loop_len_15 + (ahead_17 + 1));
+                    }
+                    ahead_17 = (ahead_17 + 1);
+                    i_16 = (i_16 - 1);
+                }
+                return (chain_length_cache_2.ContainsKey(n_7) ? chain_length_cache_2[n_7] : 0);
+            }
+            seen_9[current_10] = chain_8.Length;
+            chain_8 = (Enumerable.ToArray(Enumerable.Append<long>(chain_8, current_10)));
+            current_10 = Program.sum_digit_factorials(current_10);
         };
-        return fractions_number_6;
+        return default(long);
     }
 
-    public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+    public static long solution(long num_terms_18, long max_start_19) {
+        long count_20 = 0;
+        long i_21 = 1;
+        while ((i_21 < max_start_19)) {
+            if ((Program.chain_length(i_21) == num_terms_18)) {
+                count_20 = (count_20 + 1);
+            }
+            i_21 = (i_21 + 1);
+        };
+        return count_20;
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            Program.main();
+            Console.WriteLine(Program._fmtTop(("solution() = " + _fmtStr(Program.solution(60, 1000)))));
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);

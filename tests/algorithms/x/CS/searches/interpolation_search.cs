@@ -28,11 +28,11 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
-    static long _mod(long a, long b) {
-        if (b == 0) return 0;
-        var r = a % b;
-        if ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;
-        return r;
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
     }
     static string _substr(string s, long start, long end) {
         if (start < 0) start = 0;
@@ -97,43 +97,81 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
-        };
-        return x_2;
-    }
-
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
+    public static long interpolation_search(long[] arr_0, long item_1) {
+        long left_2 = 0;
+        long right_3 = (arr_0.Length - 1);
+        while ((left_2 <= right_3)) {
+            if ((arr_0[(int)(left_2)] == arr_0[(int)(right_3)])) {
+                if ((arr_0[(int)(left_2)] == item_1)) {
+                    return left_2;
                 }
-                n_8 = (n_8 + 1);
+                return -1;
             }
-            d_7 = (d_7 + 1);
+            long point_4 = (left_2 + (((item_1 - arr_0[(int)(left_2)]) * (right_3 - left_2)) / (arr_0[(int)(right_3)] - arr_0[(int)(left_2)])));
+            if (((point_4 < 0) || (point_4 >= arr_0.Length))) {
+                return -1;
+            }
+            long current_5 = arr_0[(int)(point_4)];
+            if ((current_5 == item_1)) {
+                return point_4;
+            }
+            if ((point_4 < left_2)) {
+                right_3 = left_2;
+                left_2 = point_4;
+            } else if ((point_4 > right_3)) {
+                left_2 = right_3;
+                right_3 = point_4;
+            } else if ((item_1 < current_5)) {
+                right_3 = (point_4 - 1);
+            } else {
+                left_2 = (point_4 + 1);
+            }
         };
-        return fractions_number_6;
+        return -1;
     }
 
-    public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+    public static long interpolation_search_recursive(long[] arr_6, long item_7, long left_8, long right_9) {
+        if ((left_8 > right_9)) {
+            return -1;
+        };
+        if ((arr_6[(int)(left_8)] == arr_6[(int)(right_9)])) {
+            if ((arr_6[(int)(left_8)] == item_7)) {
+                return left_8;
+            }
+            return -1;
+        };
+        long point_10 = (left_8 + (((item_7 - arr_6[(int)(left_8)]) * (right_9 - left_8)) / (arr_6[(int)(right_9)] - arr_6[(int)(left_8)])));
+        if (((point_10 < 0) || (point_10 >= arr_6.Length))) {
+            return -1;
+        };
+        if ((arr_6[(int)(point_10)] == item_7)) {
+            return point_10;
+        };
+        if ((point_10 < left_8)) {
+            return Program.interpolation_search_recursive(arr_6, item_7, point_10, left_8);
+        };
+        if ((point_10 > right_9)) {
+            return Program.interpolation_search_recursive(arr_6, item_7, right_9, left_8);
+        };
+        if ((arr_6[(int)(point_10)] > item_7)) {
+            return Program.interpolation_search_recursive(arr_6, item_7, left_8, (point_10 - 1));
+        };
+        return Program.interpolation_search_recursive(arr_6, item_7, (point_10 + 1), right_9);
+    }
+
+    public static long interpolation_search_by_recursion(long[] arr_11, long item_12) {
+        return Program.interpolation_search_recursive(arr_11, item_12, 0, (arr_11.Length - 1));
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            Program.main();
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.interpolation_search(new long[]{1, 2, 3, 4, 5}, 2))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.interpolation_search(new long[]{1, 2, 3, 4, 5}, 6))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.interpolation_search_by_recursion(new long[]{0, 5, 7, 10, 15}, 5))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.interpolation_search_by_recursion(new long[]{0, 5, 7, 10, 15}, 100))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.interpolation_search_by_recursion(new long[]{5, 5, 5, 5, 5}, 3))));
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);

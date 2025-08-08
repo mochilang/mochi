@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Numerics;
+using System.Security.Cryptography;
 using System.Collections;
 
 class Program {
@@ -27,6 +28,29 @@ class Program {
     }
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
+    }
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
+    }
+    static long[] _sha256(long[] bs) {
+        using var sha = System.Security.Cryptography.SHA256.Create();
+        var bytes = new byte[bs.Length];
+        for (int i = 0; i < bs.Length; i++) bytes[i] = (byte)bs[i];
+        var hash = sha.ComputeHash(bytes);
+        var res = new long[hash.Length];
+        for (int i = 0; i < hash.Length; i++) res[i] = hash[i];
+        return res;
+    }
+    static long[] _sha256(string s) {
+        using var sha = System.Security.Cryptography.SHA256.Create();
+        var bytes = System.Text.Encoding.UTF8.GetBytes(s);
+        var hash = sha.ComputeHash(bytes);
+        var res = new long[hash.Length];
+        for (int i = 0; i < hash.Length; i++) res[i] = hash[i];
+        return res;
     }
     static long _mod(long a, long b) {
         if (b == 0) return 0;
@@ -97,43 +121,51 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
-        };
-        return x_2;
+    static string HEX_0 = "0123456789abcdef";
+    static string expected_10 = Program.sha256_hex("233168");
+    static string answer_11 = Program.solution_001();
+    static string computed_12 = Program.sha256_hex(answer_11);
+    public static string byte_to_hex(long b_1) {
+        long hi_2 = (b_1 / 16);
+        long lo_3 = _mod(b_1, 16);
+        return (HEX_0.Substring((int)(hi_2), 1) + HEX_0.Substring((int)(lo_3), 1));
     }
 
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
-                }
-                n_8 = (n_8 + 1);
+    public static string bytes_to_hex(long[] bs_4) {
+        string res_5 = "";
+        long i_6 = 0;
+        while ((i_6 < bs_4.Length)) {
+            res_5 = (res_5 + Program.byte_to_hex(bs_4[(int)(i_6)]));
+            i_6 = (i_6 + 1);
+        };
+        return res_5;
+    }
+
+    public static string sha256_hex(string s_7) {
+        return Program.bytes_to_hex(_sha256(s_7));
+    }
+
+    public static string solution_001() {
+        long total_8 = 0;
+        long n_9 = 0;
+        while ((n_9 < 1000)) {
+            if (((_mod(n_9, 3) == 0) || (_mod(n_9, 5) == 0))) {
+                total_8 = (total_8 + n_9);
             }
-            d_7 = (d_7 + 1);
+            n_9 = (n_9 + 1);
         };
-        return fractions_number_6;
-    }
-
-    public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+        return _fmtStr(total_8);
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            Program.main();
+            if ((computed_12 == expected_10)) {
+                Console.WriteLine(Program._fmtTop("Problem 001 passed"));
+            } else {
+                Console.WriteLine(Program._fmtTop(((("Problem 001 failed: " + computed_12) + " != ") + expected_10)));
+            }
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);

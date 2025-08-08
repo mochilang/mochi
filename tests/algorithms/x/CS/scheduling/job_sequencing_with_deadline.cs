@@ -6,6 +6,12 @@ using System.Text.Json;
 using System.Numerics;
 using System.Collections;
 
+class Job {
+    public long id;
+    public long deadline;
+    public long profit;
+    public override string ToString() => $"Job {{id = {id}, deadline = {deadline}, profit = {profit}}}";
+}
 class Program {
     static bool seededNow = false;
     static long nowSeed = 0;
@@ -28,11 +34,11 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
-    static long _mod(long a, long b) {
-        if (b == 0) return 0;
-        var r = a % b;
-        if ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;
-        return r;
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
     }
     static string _substr(string s, long start, long end) {
         if (start < 0) start = 0;
@@ -97,43 +103,88 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
-        };
-        return x_2;
-    }
-
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
+    static Job[] jobs1_22 = new Job[]{};
+    public static Job[] sort_jobs_by_profit(Job[] jobs_0) {
+        Job[] js_1 = jobs_0;
+        long i_2 = 0;
+        while ((i_2 < js_1.Length)) {
+            long j_3 = 0;
+            while ((j_3 < ((js_1.Length - i_2) - 1))) {
+                Job a_4 = js_1[(int)(j_3)];
+                Job b_5 = js_1[(int)((j_3 + 1))];
+                if ((a_4.profit < b_5.profit)) {
+                    js_1[j_3] = b_5;
+                    js_1[(j_3 + 1)] = a_4;
                 }
-                n_8 = (n_8 + 1);
+                j_3 = (j_3 + 1);
             }
-            d_7 = (d_7 + 1);
+            i_2 = (i_2 + 1);
         };
-        return fractions_number_6;
+        return js_1;
     }
 
-    public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+    public static long max_deadline(Job[] jobs_6) {
+        long max_d_7 = 0;
+        long i_8 = 0;
+        while ((i_8 < jobs_6.Length)) {
+            Job job_9 = jobs_6[(int)(i_8)];
+            long d_10 = job_9.deadline;
+            if ((d_10 > max_d_7)) {
+                max_d_7 = d_10;
+            }
+            i_8 = (i_8 + 1);
+        };
+        return max_d_7;
+    }
+
+    public static long[] job_sequencing_with_deadlines(Job[] jobs_11) {
+        Job[] js_12 = Program.sort_jobs_by_profit(jobs_11);
+        long max_d_13 = Program.max_deadline(js_12);
+        long[] time_slots_14 = new long[]{};
+        long t_15 = 0;
+        while ((t_15 < max_d_13)) {
+            time_slots_14 = (Enumerable.ToArray(Enumerable.Append<long>(time_slots_14, (0 - 1))));
+            t_15 = (t_15 + 1);
+        };
+        long count_16 = 0;
+        long max_profit_17 = 0;
+        long i_18 = 0;
+        while ((i_18 < js_12.Length)) {
+            Job job_19 = js_12[(int)(i_18)];
+            long j_20 = (job_19.deadline - 1);
+            while ((j_20 >= 0)) {
+                if ((time_slots_14[(int)(j_20)] == (0 - 1))) {
+                    time_slots_14[j_20] = job_19.id;
+                    count_16 = (count_16 + 1);
+                    max_profit_17 = (max_profit_17 + job_19.profit);
+                    break;
+                }
+                j_20 = (j_20 - 1);
+            }
+            i_18 = (i_18 + 1);
+        };
+        long[] result_21 = new long[]{};
+        result_21 = (Enumerable.ToArray(Enumerable.Append<long>(result_21, count_16)));
+        result_21 = (Enumerable.ToArray(Enumerable.Append<long>(result_21, max_profit_17)));
+        return result_21;
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            Program.main();
+            jobs1_22 = (Enumerable.ToArray(Enumerable.Append<Job>(jobs1_22, new Job{id = 1, deadline = 4, profit = 20})));
+            jobs1_22 = (Enumerable.ToArray(Enumerable.Append<Job>(jobs1_22, new Job{id = 2, deadline = 1, profit = 10})));
+            jobs1_22 = (Enumerable.ToArray(Enumerable.Append<Job>(jobs1_22, new Job{id = 3, deadline = 1, profit = 40})));
+            jobs1_22 = (Enumerable.ToArray(Enumerable.Append<Job>(jobs1_22, new Job{id = 4, deadline = 1, profit = 30})));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.job_sequencing_with_deadlines(jobs1_22))));
+            Job[] jobs2_23 = new Job[]{};
+            jobs2_23 = (Enumerable.ToArray(Enumerable.Append<Job>(jobs2_23, new Job{id = 1, deadline = 2, profit = 100})));
+            jobs2_23 = (Enumerable.ToArray(Enumerable.Append<Job>(jobs2_23, new Job{id = 2, deadline = 1, profit = 19})));
+            jobs2_23 = (Enumerable.ToArray(Enumerable.Append<Job>(jobs2_23, new Job{id = 3, deadline = 2, profit = 27})));
+            jobs2_23 = (Enumerable.ToArray(Enumerable.Append<Job>(jobs2_23, new Job{id = 4, deadline = 1, profit = 25})));
+            jobs2_23 = (Enumerable.ToArray(Enumerable.Append<Job>(jobs2_23, new Job{id = 5, deadline = 1, profit = 15})));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.job_sequencing_with_deadlines(jobs2_23))));
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);

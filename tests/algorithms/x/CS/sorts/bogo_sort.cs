@@ -28,6 +28,12 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
+    }
     static long _mod(long a, long b) {
         if (b == 0) return 0;
         var r = a % b;
@@ -97,43 +103,53 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
-        };
-        return x_2;
+    static long seed_0 = 1;
+    static long[] data_10 = new long[]{3, 2, 1};
+    public static long rand() {
+        seed_0 = _mod(((seed_0 * 1103515245) + 12345), 2147483648L);
+        return seed_0;
     }
 
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
-                }
-                n_8 = (n_8 + 1);
+    public static long rand_range(long max_1) {
+        return _mod(Program.rand(), max_1);
+    }
+
+    public static long[] shuffle(long[] list_int_2) {
+        long i_3 = (list_int_2.Length - 1);
+        while ((i_3 > 0)) {
+            long j_4 = Program.rand_range((i_3 + 1));
+            long tmp_5 = list_int_2[(int)(i_3)];
+            list_int_2[i_3] = list_int_2[(int)(j_4)];
+            list_int_2[j_4] = tmp_5;
+            i_3 = (i_3 - 1);
+        };
+        return list_int_2;
+    }
+
+    public static bool is_sorted(long[] list_int_6) {
+        long i_7 = 0;
+        while ((i_7 < (list_int_6.Length - 1))) {
+            if ((list_int_6[(int)(i_7)] > list_int_6[(int)((i_7 + 1))])) {
+                return false;
             }
-            d_7 = (d_7 + 1);
+            i_7 = (i_7 + 1);
         };
-        return fractions_number_6;
+        return true;
     }
 
-    public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+    public static long[] bogo_sort(long[] list_int_8) {
+        long[] res_9 = list_int_8;
+        while ((!Program.is_sorted(res_9))) {
+            res_9 = Program.shuffle(res_9);
+        };
+        return res_9;
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            Program.main();
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.bogo_sort(data_10))));
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);

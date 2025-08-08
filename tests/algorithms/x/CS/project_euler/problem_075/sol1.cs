@@ -97,43 +97,55 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
+    static long result_13 = Program.solution(1500000);
     public static long gcd(long a_0, long b_1) {
         long x_2 = a_0;
         long y_3 = b_1;
         while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
+            long t_4 = _mod(x_2, y_3);
             x_2 = y_3;
-            y_3 = temp_4;
+            y_3 = t_4;
         };
         return x_2;
     }
 
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
+    public static long solution(long limit_5) {
+        Dictionary<long, long> frequencies_6 = new Dictionary<long, long>{};
+        long m_7 = 2;
+        while ((((2 * m_7) * (m_7 + 1)) <= limit_5)) {
+            long n_8 = (_mod(m_7, 2) + 1);
+            while ((n_8 < m_7)) {
+                if ((Program.gcd(m_7, n_8) > 1)) {
+                    n_8 = (n_8 + 2);
+                    continue;
                 }
-                n_8 = (n_8 + 1);
+                long primitive_perimeter_9 = ((2 * m_7) * (m_7 + n_8));
+                long perimeter_10 = primitive_perimeter_9;
+                while ((perimeter_10 <= limit_5)) {
+                    if ((!(frequencies_6.ContainsKey(perimeter_10)))) {
+                        frequencies_6[perimeter_10] = 0;
+                    }
+                    frequencies_6[perimeter_10] = ((frequencies_6.ContainsKey(perimeter_10) ? frequencies_6[perimeter_10] : 0) + 1);
+                    perimeter_10 = (perimeter_10 + primitive_perimeter_9);
+                }
+                n_8 = (n_8 + 2);
             }
-            d_7 = (d_7 + 1);
+            m_7 = (m_7 + 1);
         };
-        return fractions_number_6;
-    }
-
-    public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+        long count_11 = 0;
+        foreach (long p_12 in frequencies_6.Keys) {
+            if (((frequencies_6.ContainsKey(p_12) ? frequencies_6[p_12] : 0) == 1)) {
+                count_11 = (count_11 + 1);
+            }
+        };
+        return count_11;
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            Program.main();
+            Console.WriteLine(Program._fmtTop(("solution() = " + _fmtStr(result_13))));
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);

@@ -28,11 +28,11 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
-    static long _mod(long a, long b) {
-        if (b == 0) return 0;
-        var r = a % b;
-        if ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;
-        return r;
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
     }
     static string _substr(string s, long start, long end) {
         if (start < 0) start = 0;
@@ -97,36 +97,77 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
+    public static long indexOf(string s_0, string sub_1) {
+        long n_2 = s_0.Length;
+        long m_3 = sub_1.Length;
+        long i_4 = 0;
+        while ((i_4 <= (n_2 - m_3))) {
+            if ((_substr(s_0, i_4, (i_4 + m_3)) == sub_1)) {
+                return i_4;
+            }
+            i_4 = (i_4 + 1);
         };
-        return x_2;
+        return -1;
     }
 
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
-                }
-                n_8 = (n_8 + 1);
+    public static bool contains(string s_5, string sub_6) {
+        return (Program.indexOf(s_5, sub_6) >= 0);
+    }
+
+    public static long validate(string[] files_7) {
+        string[] upper_8 = new string[]{};
+        string[] space_9 = new string[]{};
+        string[] hyphen_10 = new string[]{};
+        string[] nodir_11 = new string[]{};
+        foreach (string f_12 in files_7) {
+            if ((f_12 != f_12.ToLower())) {
+                upper_8 = (Enumerable.ToArray(Enumerable.Append<string>(upper_8, f_12)));
             }
-            d_7 = (d_7 + 1);
+            if (Program.contains(f_12, " ")) {
+                space_9 = (Enumerable.ToArray(Enumerable.Append<string>(space_9, f_12)));
+            }
+            if ((Program.contains(f_12, "-") && (Program.contains(f_12, "/site-packages/") == false))) {
+                hyphen_10 = (Enumerable.ToArray(Enumerable.Append<string>(hyphen_10, f_12)));
+            }
+            if ((!Program.contains(f_12, "/"))) {
+                nodir_11 = (Enumerable.ToArray(Enumerable.Append<string>(nodir_11, f_12)));
+            }
         };
-        return fractions_number_6;
+        if ((upper_8.Length > 0)) {
+            Console.WriteLine(Program._fmtTop((_fmtStr(upper_8.Length) + " files contain uppercase characters:")));
+            foreach (string f_13 in upper_8) {
+                Console.WriteLine(Program._fmtTop(f_13));
+            }
+            Console.WriteLine(Program._fmtTop(""));
+        };
+        if ((space_9.Length > 0)) {
+            Console.WriteLine(Program._fmtTop((_fmtStr(space_9.Length) + " files contain space characters:")));
+            foreach (string f_14 in space_9) {
+                Console.WriteLine(Program._fmtTop(f_14));
+            }
+            Console.WriteLine(Program._fmtTop(""));
+        };
+        if ((hyphen_10.Length > 0)) {
+            Console.WriteLine(Program._fmtTop((_fmtStr(hyphen_10.Length) + " files contain hyphen characters:")));
+            foreach (string f_15 in hyphen_10) {
+                Console.WriteLine(Program._fmtTop(f_15));
+            }
+            Console.WriteLine(Program._fmtTop(""));
+        };
+        if ((nodir_11.Length > 0)) {
+            Console.WriteLine(Program._fmtTop((_fmtStr(nodir_11.Length) + " files are not in a directory:")));
+            foreach (string f_16 in nodir_11) {
+                Console.WriteLine(Program._fmtTop(f_16));
+            }
+            Console.WriteLine(Program._fmtTop(""));
+        };
+        return (((upper_8.Length + space_9.Length) + hyphen_10.Length) + nodir_11.Length);
     }
 
     public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+        string[] files_17 = new string[]{"scripts/Validate_filenames.py", "good/file.txt", "bad file.txt", "/site-packages/pkg-name.py", "nopath", "src/hyphen-name.py"};
+        long bad_18 = Program.validate(files_17);
+        Console.WriteLine(Program._fmtTop(_fmtStr(bad_18)));
     }
 
     static void Main() {

@@ -28,6 +28,12 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
+    }
     static long _mod(long a, long b) {
         if (b == 0) return 0;
         var r = a % b;
@@ -97,43 +103,67 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
-        };
-        return x_2;
-    }
-
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
-                }
-                n_8 = (n_8 + 1);
+    public static long[][] partition(long[] data_0, long pivot_1) {
+        long[] less_2 = new long[]{};
+        long[] equal_3 = new long[]{};
+        long[] greater_4 = new long[]{};
+        for (var i_5 = 0; i_5 < data_0.Length; i_5++) {
+            long v_6 = data_0[(int)(i_5)];
+            if ((v_6 < pivot_1)) {
+                less_2 = (Enumerable.ToArray(Enumerable.Append<long>(less_2, v_6)));
+            } else if ((v_6 > pivot_1)) {
+                greater_4 = (Enumerable.ToArray(Enumerable.Append<long>(greater_4, v_6)));
+            } else {
+                equal_3 = (Enumerable.ToArray(Enumerable.Append<long>(equal_3, v_6)));
             }
-            d_7 = (d_7 + 1);
         };
-        return fractions_number_6;
+        return new long[][]{less_2, equal_3, greater_4};
     }
 
-    public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+    public static long quick_select(long[] items_7, long index_8) {
+        if (((index_8 < 0) || (index_8 >= items_7.Length))) {
+            return -1;
+        };
+        long pivot_9 = items_7[(int)((items_7.Length / 2))];
+        long[][] parts_10 = Program.partition(items_7, pivot_9);
+        long[] smaller_11 = parts_10[(int)(0)];
+        long[] equal_12 = parts_10[(int)(1)];
+        long[] larger_13 = parts_10[(int)(2)];
+        long count_14 = equal_12.Length;
+        long m_15 = smaller_11.Length;
+        if (((m_15 <= index_8) && (index_8 < (m_15 + count_14)))) {
+            return pivot_9;
+        } else if ((index_8 < m_15)) {
+            return Program.quick_select(smaller_11, index_8);
+        } else {
+            return Program.quick_select(larger_13, (index_8 - (m_15 + count_14)));
+        };
+        return default(long);
+    }
+
+    public static double median(long[] items_16) {
+        long n_17 = items_16.Length;
+        long mid_18 = (n_17 / 2);
+        if ((_mod(n_17, 2) != 0)) {
+            return (1.0 * Program.quick_select(items_16, mid_18));
+        } else {
+            long low_19 = Program.quick_select(items_16, (mid_18 - 1));
+            long high_20 = Program.quick_select(items_16, mid_18);
+            return ((1.0 * (low_19 + high_20)) / 2.0);
+        };
+        return default(double);
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            Program.main();
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.quick_select(new long[]{2, 4, 5, 7, 899, 54, 32}, 5))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.quick_select(new long[]{2, 4, 5, 7, 899, 54, 32}, 1))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.quick_select(new long[]{5, 4, 3, 2}, 2))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.quick_select(new long[]{3, 5, 7, 10, 2, 12}, 3))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.median(new long[]{3, 2, 2, 9, 9}))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.median(new long[]{2, 2, 9, 9, 9, 3}))));
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);

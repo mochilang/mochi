@@ -28,11 +28,11 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
-    static long _mod(long a, long b) {
-        if (b == 0) return 0;
-        var r = a % b;
-        if ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;
-        return r;
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
     }
     static string _substr(string s, long start, long end) {
         if (start < 0) start = 0;
@@ -97,36 +97,94 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static long gcd(long a_0, long b_1) {
-        long x_2 = a_0;
-        long y_3 = b_1;
-        while ((y_3 != 0)) {
-            long temp_4 = _mod(x_2, y_3);
-            x_2 = y_3;
-            y_3 = temp_4;
+    public static long[] bubble_sort_iterative(long[] collection_0) {
+        long n_1 = collection_0.Length;
+        while ((n_1 > 0)) {
+            bool swapped_2 = false;
+            long j_3 = 0;
+            while ((j_3 < (n_1 - 1))) {
+                if ((collection_0[(int)(j_3)] > collection_0[(int)((j_3 + 1))])) {
+                    long temp_4 = collection_0[(int)(j_3)];
+                    collection_0[j_3] = collection_0[(int)((j_3 + 1))];
+                    collection_0[(j_3 + 1)] = temp_4;
+                    swapped_2 = true;
+                }
+                j_3 = (j_3 + 1);
+            }
+            if ((!swapped_2)) {
+                break;
+            }
+            n_1 = (n_1 - 1);
         };
-        return x_2;
+        return collection_0;
     }
 
-    public static long solution(long max_d_5) {
-        long fractions_number_6 = 0;
-        long d_7 = 0;
-        while ((d_7 <= max_d_5)) {
-            long n_8 = ((d_7 / 3) + 1);
-            long half_9 = ((d_7 + 1) / 2);
-            while ((n_8 < half_9)) {
-                if ((Program.gcd(n_8, d_7) == 1)) {
-                    fractions_number_6 = (fractions_number_6 + 1);
-                }
-                n_8 = (n_8 + 1);
+    public static long[] bubble_sort_recursive(long[] collection_5) {
+        long n_6 = collection_5.Length;
+        bool swapped_7 = false;
+        long i_8 = 0;
+        while ((i_8 < (n_6 - 1))) {
+            if ((collection_5[(int)(i_8)] > collection_5[(int)((i_8 + 1))])) {
+                long temp_9 = collection_5[(int)(i_8)];
+                collection_5[i_8] = collection_5[(int)((i_8 + 1))];
+                collection_5[(i_8 + 1)] = temp_9;
+                swapped_7 = true;
             }
-            d_7 = (d_7 + 1);
+            i_8 = (i_8 + 1);
         };
-        return fractions_number_6;
+        if (swapped_7) {
+            return Program.bubble_sort_recursive(collection_5);
+        };
+        return collection_5;
+    }
+
+    public static long[] copy_list(long[] xs_10) {
+        long[] out_11 = new long[]{};
+        long i_12 = 0;
+        while ((i_12 < xs_10.Length)) {
+            out_11 = (Enumerable.ToArray(Enumerable.Append<long>(out_11, xs_10[(int)(i_12)])));
+            i_12 = (i_12 + 1);
+        };
+        return out_11;
+    }
+
+    public static bool list_eq(long[] a_13, long[] b_14) {
+        if ((a_13.Length != b_14.Length)) {
+            return false;
+        };
+        long k_15 = 0;
+        while ((k_15 < a_13.Length)) {
+            if ((a_13[(int)(k_15)] != b_14[(int)(k_15)])) {
+                return false;
+            }
+            k_15 = (k_15 + 1);
+        };
+        return true;
+    }
+
+    public static void test_bubble_sort() {
+        long[] example_16 = new long[]{0, 5, 2, 3, 2};
+        long[] expected_17 = new long[]{0, 2, 2, 3, 5};
+        if ((!Program.list_eq(Program.bubble_sort_iterative(Program.copy_list(example_16)), expected_17))) {
+            throw new Exception("iterative failed");
+        };
+        if ((!Program.list_eq(Program.bubble_sort_recursive(Program.copy_list(example_16)), expected_17))) {
+            throw new Exception("recursive failed");
+        };
+        long[] empty_18 = new long[]{};
+        if ((Program.bubble_sort_iterative(Program.copy_list(empty_18)).Length != 0)) {
+            throw new Exception("empty iterative failed");
+        };
+        if ((Program.bubble_sort_recursive(Program.copy_list(empty_18)).Length != 0)) {
+            throw new Exception("empty recursive failed");
+        };
     }
 
     public static void main() {
-        Console.WriteLine(Program._fmtTop(Program.solution(12000)));
+        Program.test_bubble_sort();
+        long[] arr_19 = new long[]{5, 1, 4, 2, 8};
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.bubble_sort_iterative(Program.copy_list(arr_19)))));
+        Console.WriteLine(Program._fmtTop(_fmtStr(Program.bubble_sort_recursive(Program.copy_list(arr_19)))));
     }
 
     static void Main() {
