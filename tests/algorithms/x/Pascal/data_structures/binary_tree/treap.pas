@@ -75,10 +75,10 @@ var
   node_lefts: array of integer;
   node_rights: array of integer;
   seed: integer;
-  value: integer;
   left: integer;
   root: integer;
   acc: IntArray;
+  value: integer;
   right: integer;
   i: integer;
 function makeSplitResult(left: integer; right: integer): SplitResult; forward;

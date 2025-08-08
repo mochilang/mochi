@@ -57,12 +57,12 @@ var
   N: integer;
   st: array of integer;
   NEG_INF: integer;
-  val: integer;
-  b: integer;
   idx: integer;
-  left: integer;
-  a_10: integer;
+  b: integer;
   right: integer;
+  a_10: integer;
+  val: integer;
+  left: integer;
 function left_child(idx: integer): integer; forward;
 function right_child(idx: integer): integer; forward;
 procedure build(idx: integer; left: integer; right: integer); forward;

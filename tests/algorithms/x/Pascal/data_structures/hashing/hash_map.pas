@@ -57,11 +57,11 @@ var
   bench_memdiff_0: int64;
   hm: HashMap;
   key: integer;
-  ind: integer;
-  initial_size: integer;
-  n: integer;
   val: integer;
   new_size: integer;
+  n: integer;
+  initial_size: integer;
+  ind: integer;
 function makeHashMap(buckets: BucketArray; len: integer; cap_num: integer; cap_den: integer; initial_size: integer): HashMap; forward;
 function makeBucket(state: integer; key: integer; val: integer): Bucket; forward;
 function make_buckets(n: integer): BucketArray; forward;

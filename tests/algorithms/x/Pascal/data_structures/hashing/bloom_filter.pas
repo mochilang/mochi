@@ -49,11 +49,11 @@ var
   bench_mem_0: int64;
   bench_memdiff_0: int64;
   ascii: string;
+  size: integer;
   b: Bloom;
+  value: string;
   ch: string;
   items: StrArray;
-  size: integer;
-  value: string;
 function makeBloom(size: integer; bits: IntArray): Bloom; forward;
 function ord_(ch: string): integer; forward;
 function new_bloom(size: integer): Bloom; forward;
