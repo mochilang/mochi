@@ -1,0 +1,5 @@
+/workspace/mochi/tests/algorithms/x/Erlang/project_euler/problem_029/sol1.erl:50:1: Warning: function mochi_nth/2 is unused
+%   50| mochi_nth(I, L) ->
+%     | ^
+
+badarg

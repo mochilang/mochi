@@ -1,0 +1,5 @@
+/workspace/mochi/tests/algorithms/x/Erlang/project_euler/problem_032/sol32.erl:180:7: Warning: variable 'P_3' exported from 'case' (line 149, column 9)
+%  180| {I_8, P_3, Prefix, Products_6, Remaining} = Fun_4(I_7, P_3, Prefix, Products_5, Remaining),
+%     |       ^
+
+45228
