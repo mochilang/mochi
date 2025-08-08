@@ -1,0 +1,8 @@
+exit status 1
+Unhandled Exception:
+System.InvalidCastException: Specified cast is not valid.
+  at Simplex.interpret (System.Double[][] t, System.Int32 nVars) [0x00158] in <6895c797ba5e15f0a745038397c79568>:0 
+  at <StartupCode$simplex>.$Simplex.main@ () [0x00164] in <6895c797ba5e15f0a745038397c79568>:0 
+[ERROR] FATAL UNHANDLED EXCEPTION: System.InvalidCastException: Specified cast is not valid.
+  at Simplex.interpret (System.Double[][] t, System.Int32 nVars) [0x00158] in <6895c797ba5e15f0a745038397c79568>:0 
+  at <StartupCode$simplex>.$Simplex.main@ () [0x00164] in <6895c797ba5e15f0a745038397c79568>:0

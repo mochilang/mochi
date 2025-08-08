@@ -153,9 +153,9 @@ const helperPadStart = `let _padStart (s:string) (width:int) (pad:string) =
     out
 `
 
-const helperSHA256 = `let _sha256 (bs:int array) : int array =
+const helperSHA256 = `let _sha256 (s:string) : int array =
     use sha = System.Security.Cryptography.SHA256.Create()
-    let bytes = Array.map byte bs
+    let bytes = System.Text.Encoding.UTF8.GetBytes(s)
     sha.ComputeHash(bytes) |> Array.map int
 `
 
@@ -1665,19 +1665,19 @@ func (fst *ForStmt) emit(w io.Writer) {
 	writeIndent(w)
 	io.WriteString(w, "for ")
 	if fst.End == nil {
-               if ix, ok := fst.Start.(*IndexExpr); ok {
-                       if isMapType(inferType(ix)) {
-                               io.WriteString(w, fsIdent(fst.Name))
-                               io.WriteString(w, " in (")
-                               ix.emit(w)
-                               io.WriteString(w, ").Keys do\n")
-                       } else {
-                               io.WriteString(w, fsIdent(fst.Name))
-                               io.WriteString(w, " in ")
-                               ix.emit(w)
-                               io.WriteString(w, " do\n")
-                       }
-               } else if isMapType(inferType(fst.Start)) {
+		if ix, ok := fst.Start.(*IndexExpr); ok {
+			if isMapType(inferType(ix)) {
+				io.WriteString(w, fsIdent(fst.Name))
+				io.WriteString(w, " in (")
+				ix.emit(w)
+				io.WriteString(w, ").Keys do\n")
+			} else {
+				io.WriteString(w, fsIdent(fst.Name))
+				io.WriteString(w, " in ")
+				ix.emit(w)
+				io.WriteString(w, " do\n")
+			}
+		} else if isMapType(inferType(fst.Start)) {
 			io.WriteString(w, "KeyValue(")
 			io.WriteString(w, fsIdent(fst.Name))
 			io.WriteString(w, ", _) in ")
@@ -2360,6 +2360,11 @@ func inferType(e Expr) string {
 			return "int"
 		case "Seq.averageBy float", "List.averageBy float":
 			return "float"
+		case "Array.append":
+			if len(v.Args) > 0 {
+				return inferType(v.Args[0])
+			}
+			return "array"
 		case "_dictGet":
 			if len(v.Args) > 0 {
 				return mapValueType(inferType(v.Args[0]))
@@ -2471,45 +2476,45 @@ type IndexExpr struct {
 }
 
 func (i *IndexExpr) emit(w io.Writer) {
-        t := inferType(i.Target)
-        // If the target is a map, use dictionary helpers
-        if isMapType(t) {
-                usesDictGet = true
-                io.WriteString(w, "_dictGet ")
-                if needsParen(i.Target) {
-                        io.WriteString(w, "(")
-                        i.Target.emit(w)
-                        io.WriteString(w, ")")
-                } else {
-                        i.Target.emit(w)
-                }
-                io.WriteString(w, " (")
-                if mapKeyType(t) == "string" {
-                        io.WriteString(w, "(string (")
-                        i.Index.emit(w)
-                        io.WriteString(w, "))")
-                } else {
-                        i.Index.emit(w)
-                }
-                io.WriteString(w, ")")
-                return
-        }
-        // Otherwise treat it as an array/string index
-        if strings.HasSuffix(t, " array") || t == "" {
-                usesSafeIndex = true
-                io.WriteString(w, "_idx ")
-                if needsParen(i.Target) {
-                        io.WriteString(w, "(")
-                        i.Target.emit(w)
-                        io.WriteString(w, ")")
-                } else {
-                        i.Target.emit(w)
-                }
-                io.WriteString(w, " (")
-                i.Index.emit(w)
-                io.WriteString(w, ")")
-                return
-        }
+	t := inferType(i.Target)
+	// If the target is a map, use dictionary helpers
+	if isMapType(t) {
+		usesDictGet = true
+		io.WriteString(w, "_dictGet ")
+		if needsParen(i.Target) {
+			io.WriteString(w, "(")
+			i.Target.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			i.Target.emit(w)
+		}
+		io.WriteString(w, " (")
+		if mapKeyType(t) == "string" {
+			io.WriteString(w, "(string (")
+			i.Index.emit(w)
+			io.WriteString(w, "))")
+		} else {
+			i.Index.emit(w)
+		}
+		io.WriteString(w, ")")
+		return
+	}
+	// Otherwise treat it as an array/string index
+	if strings.HasSuffix(t, " array") || t == "" {
+		usesSafeIndex = true
+		io.WriteString(w, "_idx ")
+		if needsParen(i.Target) {
+			io.WriteString(w, "(")
+			i.Target.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			i.Target.emit(w)
+		}
+		io.WriteString(w, " (")
+		i.Index.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
 	if t == "string" {
 		io.WriteString(w, "string (")
 		i.Target.emit(w)
@@ -3545,11 +3550,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		if sl, ok := e.(*StructLit); ok && sl.Name != "" {
 			declared = sl.Name
 		}
-		if declared == "array" {
-			if ll, ok := e.(*ListLit); ok {
-				if t := simpleListType(ll); t != "" {
-					declared = t
-				}
+		if ll, ok := e.(*ListLit); ok {
+			if t := simpleListType(ll); t != "" {
+				declared = t
 			}
 		}
 		if il, ok := e.(*IntLit); ok && declared == "int64" && il.Value <= math.MaxUint32 {
@@ -3609,6 +3612,16 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		varTypes[st.Let.Name] = declared
 		typ := fsDecl
 		mut := mutatedVars[st.Let.Name]
+		if fsDecl != "" {
+			at := inferType(e)
+			if fsDecl == "int" && at == "int64" {
+				e = &CastExpr{Expr: e, Type: "int"}
+			} else if fsDecl == "int64" && at == "int" {
+				e = &CastExpr{Expr: e, Type: "int64"}
+			} else if at != fsDecl && at != "" {
+				e = &CastExpr{Expr: e, Type: fsDecl}
+			}
+		}
 		if typ == "array" || typ == "map" {
 			typ = ""
 		}
@@ -3726,6 +3739,16 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		varTypes[st.Var.Name] = declared
 		typ := fsDecl
+		if fsDecl != "" {
+			at := inferType(e)
+			if fsDecl == "int" && at == "int64" {
+				e = &CastExpr{Expr: e, Type: "int"}
+			} else if fsDecl == "int64" && at == "int" {
+				e = &CastExpr{Expr: e, Type: "int64"}
+			} else if at != fsDecl && at != "" {
+				e = &CastExpr{Expr: e, Type: fsDecl}
+			}
+		}
 		if typ == "array" || typ == "map" {
 			typ = ""
 		}
@@ -4510,6 +4533,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			usesSHA256 = true
 			neededOpens["System.Security.Cryptography"] = true
+			neededOpens["System.Text"] = true
 			return &CallExpr{Func: "_sha256", Args: args}, nil
 		case "keys":
 			if len(args) != 1 {
@@ -4627,6 +4651,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			v, err := convertExpr(f.Value)
 			if err != nil {
 				return nil, err
+			}
+			if ft, ok := structFieldType(p.Struct.Name, f.Name); ok {
+				at := inferType(v)
+				if at == "int64" && ft == "int" {
+					v = &CastExpr{Expr: v, Type: "int"}
+				} else if at == "int" && ft == "int64" {
+					v = &CastExpr{Expr: v, Type: "int64"}
+				} else if at != "" && ft != "" && at != ft {
+					v = &CastExpr{Expr: v, Type: ft}
+				}
 			}
 			fields[i] = StructFieldExpr{Name: f.Name, Value: v}
 		}
