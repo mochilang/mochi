@@ -1,0 +1,58 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 20 │           {j, row} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/floyd_warshall.exs:20:12: Main.new_graph/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 33 │       {dp, i} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/floyd_warshall.exs:33:12: Main.new_graph/1
+
+    warning: variable "g" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 50 │       g = Map.put(g, :dp, dp)
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/floyd_warshall.exs:50:7: Main.add_edge/4
+
+    warning: variable "row" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 69 │                   {dp, row} = if alt < Enum.at(row, j) do
+    │                        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/floyd_warshall.exs:69:24: Main.floyd_warshall/1
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 82 │               {dp, j} = try do
+    │                    ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/floyd_warshall.exs:82:20: Main.floyd_warshall/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 94 │           {dp, i} = try do
+    │                ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/floyd_warshall.exs:94:16: Main.floyd_warshall/1
+
+     warning: variable "g" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 112 │       g = Map.put(g, :dp, dp)
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/floyd_warshall.exs:112:7: Main.floyd_warshall/1
+
+     warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 106 │       {dp, k} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/floyd_warshall.exs:106:12: Main.floyd_warshall/1
+
+1000000000
+1000000000

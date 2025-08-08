@@ -1,0 +1,41 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 23 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/longest_increasing_subsequence_iterative.exs:23:8: Main.copy_list/1
+
+    warning: variable "prev" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 76 │           {lis, prev} = try do
+    │                 ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/longest_increasing_subsequence_iterative.exs:76:17: Main.longest_subsequence/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 50 │       {i, lis} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/longest_increasing_subsequence_iterative.exs:50:8: Main.longest_subsequence/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 88 │       {i, lis} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/longest_increasing_subsequence_iterative.exs:88:8: Main.longest_subsequence/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 110 │       {i, result} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/longest_increasing_subsequence_iterative.exs:110:8: Main.longest_subsequence/1
+
+[10, 22, 33, 50, 60, 80]
+[1, 2, 3, 9]
+~c"\a\a"
+[12, 23, 35, 39]
+[1, 1, 1]
+[]

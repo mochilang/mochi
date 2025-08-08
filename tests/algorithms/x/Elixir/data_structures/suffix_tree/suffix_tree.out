@@ -1,0 +1,37 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 76 │       {j, node_idx, nodes} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/suffix_tree/suffix_tree.exs:76:8: Main.add_suffix/3
+
+     warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 112 │           {k, suffix} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/suffix_tree/suffix_tree.exs:112:12: Main.build_suffix_tree/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 125 │       {i, t} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/suffix_tree/suffix_tree.exs:125:8: Main.build_suffix_tree/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 166 │       {i, node_idx} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/suffix_tree/suffix_tree.exs:166:8: Main.search/2
+
+     warning: variable "node_idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 166 │       {i, node_idx} = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/suffix_tree/suffix_tree.exs:166:11: Main.search/2
+
+true
+false

@@ -1,0 +1,19 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 59 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/suffix_tree/example/example_usage.exs:59:7: Main.search/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 87 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/suffix_tree/example/example_usage.exs:87:7: Main.main/0
+
+Pattern 'ana' found: true
+Pattern 'ban' found: true
+Pattern 'na' found: true
+Pattern 'xyz' found: false
+Pattern 'mon' found: true

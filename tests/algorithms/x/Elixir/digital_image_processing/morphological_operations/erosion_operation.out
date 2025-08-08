@@ -1,0 +1,88 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 31 │           {j, row} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/morphological_operations/erosion_operation.exs:31:12: Main.rgb_to_gray/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 44 │       {gray, i} = try do
+    │              ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/morphological_operations/erosion_operation.exs:44:14: Main.rgb_to_gray/1
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 72 │           {j, row} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/morphological_operations/erosion_operation.exs:72:12: Main.gray_to_binary/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 85 │       {binary, i} = try do
+    │                ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/morphological_operations/erosion_operation.exs:85:16: Main.gray_to_binary/1
+
+     warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 119 │           {row, x} = try do
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/morphological_operations/erosion_operation.exs:119:17: Main.erosion/2
+
+     warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 151 │           {padded, x} = try do
+     │                    ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/morphological_operations/erosion_operation.exs:151:20: Main.erosion/2
+
+     warning: variable "kx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 196 │                   {kx, sum} = try do
+     │                    ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/morphological_operations/erosion_operation.exs:196:20: Main.erosion/2
+
+     warning: variable "ky" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 208 │               {ky, sum} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/morphological_operations/erosion_operation.exs:208:16: Main.erosion/2
+
+     warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 221 │           {row_out, x} = try do
+     │                     ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/morphological_operations/erosion_operation.exs:221:21: Main.erosion/2
+
+     warning: variable "y" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 132 │       {padded, y} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/morphological_operations/erosion_operation.exs:132:16: Main.erosion/2
+
+     warning: variable "y" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 163 │       {padded, y} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/morphological_operations/erosion_operation.exs:163:16: Main.erosion/2
+
+     warning: variable "y" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 234 │       {output, y} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/morphological_operations/erosion_operation.exs:234:16: Main.erosion/2
+
+[[187.6453]]
+[[false, true, false]]
+[[false, false, false]]
+[[false, false, false]]

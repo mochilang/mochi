@@ -1,0 +1,36 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 50 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/rotation/rotation.exs:50:8: Main.mat_vec_mul/2
+
+    warning: variable "c" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 78 │           {c, row} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/rotation/rotation.exs:78:12: Main.create_matrix/3
+
+    warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 91 │       {r, result} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/rotation/rotation.exs:91:8: Main.create_matrix/3
+
+     warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 146 │           {out, x} = try do
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/rotation/rotation.exs:146:17: Main.get_rotation/5
+
+     warning: variable "y" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 158 │       {out, y} = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/rotation/rotation.exs:158:13: Main.get_rotation/5
+
+	

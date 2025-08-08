@@ -1,0 +1,50 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 39 │       {a, i} = try do
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/filters/median_filter.exs:39:11: Main.insertion_sort/1
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 70 │           {j, row} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/filters/median_filter.exs:70:12: Main.median_filter/2
+
+     warning: variable "y" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 109 │                   {kernel, y} = try do
+     │                            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/filters/median_filter.exs:109:28: Main.median_filter/2
+
+     warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 121 │               {kernel, x} = try do
+     │                        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/filters/median_filter.exs:121:24: Main.median_filter/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 136 │           {j, result} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/filters/median_filter.exs:136:12: Main.median_filter/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 83 │       {i, result} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/filters/median_filter.exs:83:8: Main.median_filter/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 148 │       {i, result} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/filters/median_filter.exs:148:8: Main.median_filter/2
+
+[[0, 0, 0, 0, 0], [0, 10, 10, 10, 0], [0, 10, 10, 10, 0], [0, 10, 10, 10, 0], [0, 0, 0, 0, 0]]

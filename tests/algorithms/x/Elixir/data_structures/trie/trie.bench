@@ -1,0 +1,64 @@
+warning: variable "child_idx" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 48 │           child_idx = -1
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/trie/trie.exs:48:11: Main.insert/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 71 │       {curr, i, nodes} = try do
+    │              ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/trie/trie.exs:71:14: Main.insert/2
+
+    warning: variable "trie" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 80 │       trie = Map.put(trie, :nodes, nodes)
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/trie/trie.exs:80:7: Main.insert/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 113 │       {curr, i} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/trie/trie.exs:113:14: Main.find/2
+
+     warning: variable "nodes" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 159 │   nodes = List.replace_at(nodes, idx, node_)
+     │   ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/trie/trie.exs:159:3: Main.delete/2
+
+     warning: the underscored variable "_delete" is used after being set. A leading underscore indicates that the value of the variable should be ignored. If this is intended please rename the variable to remove the underscore
+     │
+ 162 │       _delete.(0, 0)
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/trie/trie.exs:162:7: Main.delete/2
+
+     warning: variable "trie" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 163 │       trie = Map.put(trie, :nodes, nodes)
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/trie/trie.exs:163:7: Main.delete/2
+
+     error: undefined function _delete/2 (expected Main to define such a function or for it to be imported, but none are available)
+     │
+ 148 │   should_delete = _delete(child_idx, pos + 1)
+     │                   ^^^^^^^
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/trie/trie.exs:148:19: Main.delete/2
+
+     error: undefined function dfs/2 (expected Main to define such a function or for it to be imported, but none are available)
+     │
+ 176 │     dfs(node_.children[key], (word <> key))
+     │     ^^^
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/trie/trie.exs:176:5: Main.print_words/1
+
+** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/data_structures/trie/trie.exs: cannot compile module Main (errors have been logged)

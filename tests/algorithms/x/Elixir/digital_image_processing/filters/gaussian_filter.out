@@ -1,0 +1,67 @@
+warning: variable "n" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 25 │       {n, sum, term} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/filters/gaussian_filter.exs:25:8: Main.expApprox/1
+
+    warning: variable "term" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 25 │       {n, sum, term} = try do
+    │                ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/filters/gaussian_filter.exs:25:16: Main.expApprox/1
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 58 │           {j, row} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/filters/gaussian_filter.exs:58:12: Main.gen_gaussian_kernel/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 71 │       {i, kernel} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/filters/gaussian_filter.exs:71:8: Main.gen_gaussian_kernel/2
+
+     warning: variable "kj" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 111 │                   {kj, sum} = try do
+     │                    ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/filters/gaussian_filter.exs:111:20: Main.gaussian_filter/3
+
+     warning: variable "ki" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 123 │               {ki, sum} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/filters/gaussian_filter.exs:123:16: Main.gaussian_filter/3
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 136 │           {j, row} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/filters/gaussian_filter.exs:136:12: Main.gaussian_filter/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 149 │       {dst, i} = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/filters/gaussian_filter.exs:149:13: Main.gaussian_filter/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 172 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/filters/gaussian_filter.exs:172:7: Main.print_image/1
+
+~c".5D"
+~c"2<R"
+~c"5AZ"
+[-1081]

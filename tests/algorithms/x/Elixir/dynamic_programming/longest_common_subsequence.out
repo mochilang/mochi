@@ -1,0 +1,43 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 27 │           {j, row} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/longest_common_subsequence.exs:27:12: Main.zeros_matrix/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 40 │       {i, matrix} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/longest_common_subsequence.exs:40:8: Main.zeros_matrix/2
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 81 │           {dp, j} = try do
+    │                ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/longest_common_subsequence.exs:81:16: Main.longest_common_subsequence/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 93 │       {dp, i} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/longest_common_subsequence.exs:93:12: Main.longest_common_subsequence/2
+
+     warning: variable "i2" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 124 │       {i2, j2, seq} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/longest_common_subsequence.exs:124:8: Main.longest_common_subsequence/2
+
+     warning: variable "j2" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 124 │       {i2, j2, seq} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/longest_common_subsequence.exs:124:12: Main.longest_common_subsequence/2
+
+len = 4, sub-sequence = GTAB

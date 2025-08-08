@@ -1,0 +1,8 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 60 │       {i, name} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/docs/conf.exs:60:8: Main.parse_project_name/1
+
+thealgorithms-python

@@ -1,0 +1,67 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 37 │           {j, row} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/dithering/burkes.exs:37:12: Main.zeros/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 50 │       {i, table} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/dithering/burkes.exs:50:8: Main.zeros/2
+
+    warning: variable "current_error" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 78 │               current_error = 0
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/dithering/burkes.exs:78:15: Main.burkes_dither/2
+
+    warning: variable "new_val" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 77 │               new_val = 0
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/dithering/burkes.exs:77:15: Main.burkes_dither/2
+
+     warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 102 │           {error_table, row, x} = try do
+     │                              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/dithering/burkes.exs:102:30: Main.burkes_dither/2
+
+     warning: variable "error_table" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 115 │       {error_table, output, y} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/dithering/burkes.exs:115:8: Main.burkes_dither/2
+
+     warning: variable "y" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 115 │       {error_table, output, y} = try do
+     │                             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/dithering/burkes.exs:115:29: Main.burkes_dither/2
+
+     warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 150 │           {line, x} = try do
+     │                  ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/dithering/burkes.exs:150:18: Main.main/0
+
+     warning: variable "y" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 163 │       y = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/dithering/burkes.exs:163:7: Main.main/0
+
+0 0 255 255
+255 255 0 0
+255 0 255 0
+0 255 255 0

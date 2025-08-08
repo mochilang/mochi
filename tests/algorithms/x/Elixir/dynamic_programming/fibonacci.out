@@ -1,0 +1,16 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 47 │       {i, result} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/fibonacci.exs:47:8: Main.fib_get/2
+
+    warning: variable "fib" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 65 │       fib = res.fib
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/fibonacci.exs:65:7: Main.main/0
+
+[0 1 1 2 3 5 8 13 21 34]
+[0 1 1 2 3]

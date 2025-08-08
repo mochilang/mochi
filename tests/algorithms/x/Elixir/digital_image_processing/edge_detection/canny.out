@@ -1,0 +1,156 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 23 │       {guess, i} = try do
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/edge_detection/canny.exs:23:15: Main.sqrtApprox/1
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 94 │           {j, row} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/edge_detection/canny.exs:94:12: Main.zero_matrix/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 107 │       {i, out} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/edge_detection/canny.exs:107:8: Main.zero_matrix/2
+
+     warning: variable "kx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 147 │                   {kx, sum} = try do
+     │                    ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/edge_detection/canny.exs:147:20: Main.convolve/2
+
+     warning: variable "ky" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 159 │               {ky, sum} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/edge_detection/canny.exs:159:16: Main.convolve/2
+
+     warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 172 │           {out, x} = try do
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/edge_detection/canny.exs:172:17: Main.convolve/2
+
+     warning: variable "y" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 184 │       {out, y} = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/edge_detection/canny.exs:184:13: Main.convolve/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 226 │           {dir, grad, j} = try do
+     │                       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/edge_detection/canny.exs:226:23: Main.sobel_filter/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 238 │       {dir, grad, i} = try do
+     │                   ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/edge_detection/canny.exs:238:19: Main.sobel_filter/1
+
+     warning: variable "p" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 260 │               p = 0.0
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/edge_detection/canny.exs:260:15: Main.suppress_non_maximum/4
+
+     warning: variable "q" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 259 │               q = 0.0
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/edge_detection/canny.exs:259:15: Main.suppress_non_maximum/4
+
+     warning: variable "c" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 296 │           {c, dest} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/edge_detection/canny.exs:296:12: Main.suppress_non_maximum/4
+
+     warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 308 │       {dest, r} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/edge_detection/canny.exs:308:14: Main.suppress_non_maximum/4
+
+     warning: variable "c" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 347 │           {c, img} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/edge_detection/canny.exs:347:12: Main.double_threshold/7
+
+     warning: variable "img" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 359 │       {img, r} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/edge_detection/canny.exs:359:8: Main.double_threshold/7
+
+     warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 359 │       {img, r} = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/edge_detection/canny.exs:359:13: Main.double_threshold/7
+
+     warning: variable "c" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 395 │           {c, img} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/edge_detection/canny.exs:395:12: Main.track_edge/5
+
+     warning: variable "img" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 407 │       {img, r} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/edge_detection/canny.exs:407:8: Main.track_edge/5
+
+     warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 407 │       {img, r} = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/edge_detection/canny.exs:407:13: Main.track_edge/5
+
+     warning: variable "c" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 449 │           {c, line} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/edge_detection/canny.exs:449:12: Main.print_image/1
+
+     warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 462 │       r = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/edge_detection/canny.exs:462:7: Main.print_image/1
+
+** (ArithmeticError) bad argument in arithmetic expression
+    /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/edge_detection/canny.exs:16: anonymous fn/4 in Main.sqrtApprox/1
+    /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/edge_detection/canny.exs:24: Main.sqrtApprox/1
+    /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/edge_detection/canny.exs:218: anonymous fn/8 in Main.sobel_filter/1
+    /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/edge_detection/canny.exs:227: anonymous fn/8 in Main.sobel_filter/1
+    /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/edge_detection/canny.exs:239: Main.sobel_filter/1
+    /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/edge_detection/canny.exs:420: Main.canny/5
+    /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/edge_detection/canny.exs:478: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/digital_image_processing/edge_detection/canny.exs:482: (file)

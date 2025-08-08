@@ -1,0 +1,34 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 31 │           {j, row} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/matrix_chain_multiplication.exs:31:12: Main.matrix_chain_multiply/1
+
+    warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 76 │                 {dp, k} = try do
+    │                      ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/matrix_chain_multiplication.exs:76:22: Main.matrix_chain_multiply/1
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 90 │           {dp, j} = try do
+    │                ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/matrix_chain_multiplication.exs:90:16: Main.matrix_chain_multiply/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 44 │       {dp, i} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/matrix_chain_multiplication.exs:44:12: Main.matrix_chain_multiply/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 102 │       {dp, i} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/matrix_chain_multiplication.exs:102:12: Main.matrix_chain_multiply/1

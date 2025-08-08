@@ -1,0 +1,20 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 62 │       {i, is_found, longest_subseq} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/longest_increasing_subsequence.exs:62:8: Main.longest_subsequence/1
+
+    warning: variable "is_found" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 62 │       {i, is_found, longest_subseq} = try do
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/longest_increasing_subsequence.exs:62:11: Main.longest_subsequence/1
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 84 │       {filtered, j} = try do
+    │                  ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/longest_increasing_subsequence.exs:84:18: Main.longest_subsequence/1
