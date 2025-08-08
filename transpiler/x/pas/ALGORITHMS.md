@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-08 10:18 GMT+7
+Last updated: 2025-08-08 15:55 GMT+7
 
-## Algorithms Golden Test Checklist (144/1077)
+## Algorithms Golden Test Checklist (154/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -132,17 +132,17 @@ Last updated: 2025-08-08 10:18 GMT+7
 | 123 | conversions/binary_to_hexadecimal |   |  |  |
 | 124 | conversions/binary_to_octal |   |  |  |
 | 125 | conversions/convert_number_to_words |   |  |  |
-| 126 | conversions/decimal_to_any |   |  |  |
-| 127 | conversions/decimal_to_binary |   |  |  |
-| 128 | conversions/decimal_to_hexadecimal |   |  |  |
-| 129 | conversions/decimal_to_octal |   |  |  |
-| 130 | conversions/energy_conversions |   |  |  |
-| 131 | conversions/excel_title_to_column |   |  |  |
-| 132 | conversions/hex_to_bin |   |  |  |
-| 133 | conversions/hexadecimal_to_decimal |   |  |  |
+| 126 | conversions/decimal_to_any | ✓ | 0ns | 0B |
+| 127 | conversions/decimal_to_binary | ✓ | 0ns | 0B |
+| 128 | conversions/decimal_to_hexadecimal | ✓ | 0ns | 4.06KB |
+| 129 | conversions/decimal_to_octal | ✓ | 0ns | 0B |
+| 130 | conversions/energy_conversions | ✓ | 0ns | 7.69KB |
+| 131 | conversions/excel_title_to_column | ✓ | 0ns | 0B |
+| 132 | conversions/hex_to_bin | ✓ | 0ns | 64B |
+| 133 | conversions/hexadecimal_to_decimal | ✓ | 0ns | 0B |
 | 134 | conversions/ipv4_conversion |   |  |  |
-| 135 | conversions/length_conversion |   |  |  |
-| 136 | conversions/molecular_chemistry |   |  |  |
+| 135 | conversions/length_conversion | ✓ | 0ns | 0B |
+| 136 | conversions/molecular_chemistry | ✓ | 0ns | 64B |
 | 137 | conversions/octal_to_binary |   |  |  |
 | 138 | conversions/octal_to_decimal |   |  |  |
 | 139 | conversions/octal_to_hexadecimal |   |  |  |

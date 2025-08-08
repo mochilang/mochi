@@ -85,7 +85,7 @@ func declareName(name string) string {
 	if currentFunc != "" {
 		newName = currentFunc + "_" + newName
 	}
-	if _, ok := funcNames[name]; ok {
+	if _, ok := funcNames[strings.ToLower(name)]; ok {
 		newName = newName + "_var"
 	} else if hasVar(newName) {
 		newName = fmt.Sprintf("%s_%d", newName, len(currProg.Vars))
@@ -557,7 +557,7 @@ func (b *BoolLit) isBool() bool { return true }
 type VarRef struct{ Name string }
 
 func (v *VarRef) emit(w io.Writer) {
-	if _, ok := funcNames[v.Name]; ok {
+	if _, ok := funcNames[strings.ToLower(v.Name)]; ok {
 		io.WriteString(w, "@"+v.Name)
 	} else {
 		io.WriteString(w, v.Name)
@@ -1579,10 +1579,10 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 		if st.Fun != nil {
 			name := st.Fun.Name
 			switch name {
-			case "xor", "and", "or", "div", "mod", "type", "repeat", "ord":
+			case "xor", "and", "or", "div", "mod", "type", "repeat", "ord", "panic":
 				name = name + "_"
 			}
-			funcNames[name] = struct{}{}
+			funcNames[strings.ToLower(name)] = struct{}{}
 			if name != st.Fun.Name {
 				nameMap[st.Fun.Name] = name
 				st.Fun.Name = name
@@ -1961,7 +1961,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				if err != nil {
 					return nil, err
 				}
-				typ := "integer"
+				typ := "int64"
 				if st.For.RangeEnd == nil {
 					if t := inferType(start); strings.HasPrefix(t, "array of ") {
 						typ = strings.TrimPrefix(t, "array of ")
@@ -2053,7 +2053,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				}
 				paramNames := map[string]string{}
 				for _, p := range st.Fun.Params {
-					typ := "integer"
+					typ := "int64"
 					if p.Type != nil {
 						typ = typeFromRef(p.Type)
 					}
@@ -2078,7 +2078,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				currProg.Vars = currProg.Vars[:startVarCount]
 				var params []string
 				for _, p := range st.Fun.Params {
-					typ := "integer"
+					typ := "int64"
 					if p.Type != nil {
 						typ = typeFromRef(p.Type)
 					}
@@ -2446,7 +2446,7 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 					startType = fmt.Sprintf("specialize TFPGMap<%s, %s>", keyT, valT)
 				}
 			}
-			typ := "integer"
+			typ := "int64"
 			if st.For.RangeEnd == nil {
 				if strings.HasPrefix(startType, "array of ") {
 					elem := strings.TrimPrefix(startType, "array of ")
@@ -2608,11 +2608,11 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 			fn := st.Fun
 			name := fn.Name
 			switch name {
-			case "xor", "and", "or", "div", "mod", "type", "set", "label", "repeat":
+			case "xor", "and", "or", "div", "mod", "type", "set", "label", "repeat", "panic":
 				name = name + "_"
 			}
 			if name != fn.Name {
-				funcNames[name] = struct{}{}
+				funcNames[strings.ToLower(name)] = struct{}{}
 				nameMap[fn.Name] = name
 				fn.Name = name
 			}
@@ -2621,7 +2621,7 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 				local[k] = v
 			}
 			for _, p := range fn.Params {
-				typ := "integer"
+				typ := "int64"
 				if p.Type != nil {
 					typ = typeFromRef(p.Type)
 				}
@@ -2649,7 +2649,7 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 			popScope()
 			var params []string
 			for _, p := range fn.Params {
-				typ := "integer"
+				typ := "int64"
 				if p.Type != nil {
 					typ = typeFromRef(p.Type)
 				}
@@ -4027,7 +4027,7 @@ func typeOf(e *parser.Expr, env *types.Env) string {
 	case types.BoolType:
 		return "boolean"
 	case types.IntType, types.Int64Type:
-		return "integer"
+		return "int64"
 	case types.BigIntType:
 		return "int64"
 	}
@@ -4263,7 +4263,7 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 					name = "StrToInt"
 					expr = &CallExpr{Name: name, Args: args}
 				} else if name == "contains" && len(args) == 2 {
-					if _, ok := funcNames[name]; ok {
+					if _, ok := funcNames[strings.ToLower(name)]; ok {
 						expr = &CallExpr{Name: name, Args: args}
 					} else if inferType(args[0]) == "string" || inferType(args[1]) == "string" {
 						expr = &ContainsExpr{Collection: args[0], Value: args[1], Kind: "string"}
@@ -4616,7 +4616,7 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			currProg.NeedMax = true
 			return &CallExpr{Name: "max", Args: args}, nil
 		} else if name == "keys" && len(args) == 1 {
-			if _, ok := funcNames[name]; !ok {
+			if _, ok := funcNames[strings.ToLower(name)]; !ok {
 				// treat keys(map) as the map itself for iteration purposes
 				return args[0], nil
 			}
@@ -4673,7 +4673,7 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		} else if name == "float" && len(args) == 1 {
 			return &CallExpr{Name: "Double", Args: args}, nil
 		} else if name == "contains" && len(args) == 2 {
-			if _, ok := funcNames[name]; ok {
+			if _, ok := funcNames[strings.ToLower(name)]; ok {
 				return &CallExpr{Name: name, Args: args}, nil
 			}
 			if inferType(args[0]) == "string" || inferType(args[1]) == "string" {
@@ -4734,6 +4734,7 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		varsSet := map[string]struct{}{}
 		allInts := true
 		allStrings := true
+		allNums := true
 		for _, it := range p.Map.Items {
 			val, err := convertExpr(env, it.Value)
 			if err != nil {
@@ -4755,11 +4756,24 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			if vType != "string" {
 				allStrings = false
 			}
+			if vType != "integer" && vType != "real" {
+				allNums = false
+			}
 		}
 		if allInts {
 			valType = "integer"
 		} else if allStrings {
 			valType = "string"
+		} else if allNums {
+			valType = "real"
+			for i, it := range items {
+				if it.Type == "integer" {
+					if il, ok := it.Value.(*IntLit); ok {
+						items[i].Value = &RealLit{Value: float64(il.Value)}
+					}
+					items[i].Type = "real"
+				}
+			}
 		}
 		names := make([]string, 0, len(varsSet))
 		for name := range varsSet {
@@ -4846,7 +4860,7 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		pushScope()
 		currentFunc = name
 		for _, pa := range p.FunExpr.Params {
-			typ := "integer"
+			typ := "int64"
 			if pa.Type != nil {
 				typ = typeFromRef(pa.Type)
 				if strings.HasPrefix(typ, "array of ") {
