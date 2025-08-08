@@ -1,0 +1,23 @@
+[DEMO] Areas of various geometric shapes:
+Rectangle: 200.0
+Square: 100.0
+Triangle: 50.0
+Triangle Three Sides: 30.0
+Parallelogram: 200.0
+Rhombus: 100.0
+Trapezium: 450.0
+Circle: 1256.637061
+Ellipse: 628.3185307
+
+Surface Areas of various geometric shapes:
+Cube: 2400.0
+Cuboid: 2200.0
+Sphere: 5026.548246
+Hemisphere: 3769.911184
+Cone: 1016.640738
+Conical Frustum: 4551.172807
+Cylinder: 1884.955592
+Torus: 7895.683521
+Equilateral Triangle: 43.29840805
+Square: 99.99953971
+Regular Pentagon: 172.0476248

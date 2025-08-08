@@ -1,0 +1,14 @@
+At Iteration 1 - Error is 2.082703704
+At Iteration 2 - Error is 1.85910278
+At Iteration 3 - Error is 1.65961544
+At Iteration 4 - Error is 1.481640964
+At Iteration 5 - Error is 1.322859132
+At Iteration 6 - Error is 1.181199962
+At Iteration 7 - Error is 1.054816729
+At Iteration 8 - Error is 0.9420618824
+At Iteration 9 - Error is 0.8414655647
+At Iteration 10 - Error is 0.751716447
+Resultant Feature vector :
+0.1558607263
+0.3662629181
+Mean Absolute Error : 0.5

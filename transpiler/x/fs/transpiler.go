@@ -3593,7 +3593,11 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			if fsDecl == "obj" && inferred != "obj" {
 				e = &CallExpr{Func: "box", Args: []Expr{e}}
 			} else if inferred == "obj" && fsDecl != "obj" {
-				e = &CastExpr{Expr: e, Type: fsDecl}
+				if _, ok := e.(*MapLit); ok && strings.HasPrefix(fsDecl, "System.Collections.Generic.IDictionary<") {
+					// allow type inference for empty maps without casting
+				} else {
+					e = &CastExpr{Expr: e, Type: fsDecl}
+				}
 			}
 		}
 		if ml, ok := e.(*MapLit); ok && strings.HasPrefix(fsDecl, "System.Collections.Generic.IDictionary<") {
@@ -3618,7 +3622,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				e = &CastExpr{Expr: e, Type: "int"}
 			} else if fsDecl == "int64" && at == "int" {
 				e = &CastExpr{Expr: e, Type: "int64"}
-			} else if at != fsDecl && at != "" {
+			} else if at != fsDecl && at != "" && !(at == "map" && strings.HasPrefix(fsDecl, "System.Collections.Generic.IDictionary<")) {
 				e = &CastExpr{Expr: e, Type: fsDecl}
 			}
 		}
@@ -3701,7 +3705,11 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			if fsDecl == "obj" && inferred != "obj" {
 				e = &CallExpr{Func: "box", Args: []Expr{e}}
 			} else if inferred == "obj" && fsDecl != "obj" {
-				e = &CastExpr{Expr: e, Type: fsDecl}
+				if _, ok := e.(*MapLit); ok && strings.HasPrefix(fsDecl, "System.Collections.Generic.IDictionary<") {
+					// allow type inference for empty maps
+				} else {
+					e = &CastExpr{Expr: e, Type: fsDecl}
+				}
 			}
 		}
 		if strings.Contains(fsDecl, "System.Collections.Generic.IDictionary<") {
@@ -3745,7 +3753,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				e = &CastExpr{Expr: e, Type: "int"}
 			} else if fsDecl == "int64" && at == "int" {
 				e = &CastExpr{Expr: e, Type: "int64"}
-			} else if at != fsDecl && at != "" {
+			} else if at != fsDecl && at != "" && !(at == "map" && strings.HasPrefix(fsDecl, "System.Collections.Generic.IDictionary<")) {
 				e = &CastExpr{Expr: e, Type: fsDecl}
 			}
 		}

@@ -1,4 +1,4 @@
-// Generated 2025-08-08 16:34 +0700
+// Generated 2025-08-08 17:07 +0700
 
 exception Break
 exception Continue
@@ -119,7 +119,7 @@ let rec interpret (t: float array array) (nVars: int) =
         let mutable p: float = _idx (_idx t (0)) (lastCol)
         if p < 0.0 then
             p <- -p
-        let mutable result: System.Collections.Generic.IDictionary<string, float> = unbox<System.Collections.Generic.IDictionary<string, float>> (_dictCreate [])
+        let mutable result: System.Collections.Generic.IDictionary<string, float> = _dictCreate []
         result.["P"] <- p
         for i in 0 .. (nVars - 1) do
             let mutable nzRow: int = -1
