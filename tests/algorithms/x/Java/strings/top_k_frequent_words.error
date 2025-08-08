@@ -1,0 +1,10 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden1037_top_k_frequent_words1401998182/001/Main.java:52: error: incompatible types: LinkedHashMap<String,Object> cannot be converted to Map<String,Integer>
+        freq_map = new java.util.LinkedHashMap<String, Object>();
+                   ^
+/tmp/TestJavaTranspiler_Algorithms_Golden1037_top_k_frequent_words1401998182/001/Main.java:64: error: for-each not applicable to expression type
+        for (var w : freq_map) {
+                     ^
+  required: array or java.lang.Iterable
+  found:    Map<String,Integer>
+2 errors

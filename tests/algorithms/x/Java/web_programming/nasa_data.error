@@ -1,0 +1,12 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden1069_nasa_data1173838570/001/Main.java:80: error: cannot find symbol
+        Object first_item = first(items);
+                            ^
+  symbol:   method first(ArchiveItem[])
+  location: class Main
+/tmp/TestJavaTranspiler_Algorithms_Golden1069_nasa_data1173838570/001/Main.java:81: error: cannot find symbol
+        Object first_data = first(((ArchiveItem)first_item).data);
+                            ^
+  symbol:   method first(ArchiveItemData[])
+  location: class Main
+2 errors

@@ -1,0 +1,6 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden1073_reddit276790768/001/Main.java:114: error: incompatible types: String cannot be converted to Map<String,String>
+result.put(idx, String.valueOf(post_map));
+                              ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+1 error

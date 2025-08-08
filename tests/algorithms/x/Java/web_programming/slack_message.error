@@ -1,0 +1,12 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden1075_slack_message4164819499/001/Main.java:162: error: cannot find symbol
+    static string _fetch_string(String url) {
+           ^
+  symbol:   class string
+  location: class Main
+/tmp/TestJavaTranspiler_Algorithms_Golden1075_slack_message4164819499/001/Main.java:163: error: cannot find symbol
+        return _cast(string.class, _fetch(url));
+                     ^
+  symbol:   class string
+  location: class Main
+2 errors

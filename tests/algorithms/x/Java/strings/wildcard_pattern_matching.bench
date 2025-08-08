@@ -1,0 +1,4 @@
+Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index -1 out of bounds for length 5
+	at Main.match_pattern(Main.java:26)
+	at Main.main(Main.java:64)
+	at Main.main(Main.java:106)

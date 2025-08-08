@@ -1,0 +1,23 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden1062_get_ip_geolocation2067037156/001/Main.java:9: error: ';' expected
+        java.util.Map<String,String> data = _fetch_java.util.Map<String,String>(url);
+                                                                              ^
+/tmp/TestJavaTranspiler_Algorithms_Golden1062_get_ip_geolocation2067037156/001/Main.java:9: error: not a statement
+        java.util.Map<String,String> data = _fetch_java.util.Map<String,String>(url);
+                                                                                ^
+/tmp/TestJavaTranspiler_Algorithms_Golden1062_get_ip_geolocation2067037156/001/Main.java:9: error: ';' expected
+        java.util.Map<String,String> data = _fetch_java.util.Map<String,String>(url);
+                                                                                   ^
+/tmp/TestJavaTranspiler_Algorithms_Golden1062_get_ip_geolocation2067037156/001/Main.java:165: error: ';' expected
+    static java.util.Map<String,String> _fetch_java.util.Map<String,String>(String url) {
+                                                   ^
+/tmp/TestJavaTranspiler_Algorithms_Golden1062_get_ip_geolocation2067037156/001/Main.java:165: error: <identifier> expected
+    static java.util.Map<String,String> _fetch_java.util.Map<String,String>(String url) {
+                                                                           ^
+/tmp/TestJavaTranspiler_Algorithms_Golden1062_get_ip_geolocation2067037156/001/Main.java:166: error: <identifier> expected
+        return _cast(java.util.Map<String,String>.class, _fetch(url));
+                                                  ^
+/tmp/TestJavaTranspiler_Algorithms_Golden1062_get_ip_geolocation2067037156/001/Main.java:166: error: <identifier> expected
+        return _cast(java.util.Map<String,String>.class, _fetch(url));
+                                                       ^
+7 errors
