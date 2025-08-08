@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 558/1077
-Last updated: 2025-08-08 17:21 +0700
+Completed programs: 608/1077
+Last updated: 2025-08-08 17:28 +0700
 
 Checklist:
 
@@ -615,57 +615,57 @@ Checklist:
 | 606 | maths/numerical_analysis/adams_bashforth |   |  |  |
 | 607 | maths/numerical_analysis/bisection |   |  |  |
 | 608 | maths/numerical_analysis/bisection_2 | ✓ | 577.0µs | 3.75MB |
-| 609 | maths/numerical_analysis/integration_by_simpson_approx |   |  |  |
-| 610 | maths/numerical_analysis/intersection |   |  |  |
-| 611 | maths/numerical_analysis/nevilles_method |   |  |  |
-| 612 | maths/numerical_analysis/newton_forward_interpolation |   |  |  |
-| 613 | maths/numerical_analysis/newton_raphson |   |  |  |
-| 614 | maths/numerical_analysis/numerical_integration |   |  |  |
-| 615 | maths/numerical_analysis/proper_fractions |   |  |  |
-| 616 | maths/numerical_analysis/runge_kutta |   |  |  |
-| 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 |   |  |  |
-| 618 | maths/numerical_analysis/runge_kutta_gills |   |  |  |
-| 619 | maths/numerical_analysis/secant_method |   |  |  |
-| 620 | maths/numerical_analysis/simpson_rule |   |  |  |
-| 621 | maths/numerical_analysis/square_root |   |  |  |
-| 622 | maths/odd_sieve |   |  |  |
-| 623 | maths/perfect_cube |   |  |  |
-| 624 | maths/perfect_number |   |  |  |
-| 625 | maths/perfect_square |   |  |  |
-| 626 | maths/persistence |   |  |  |
-| 627 | maths/pi_generator |   |  |  |
-| 628 | maths/pi_monte_carlo_estimation |   |  |  |
-| 629 | maths/points_are_collinear_3d |   |  |  |
-| 630 | maths/pollard_rho |   |  |  |
-| 631 | maths/polynomial_evaluation |   |  |  |
-| 632 | maths/polynomials/single_indeterminate_operations |   |  |  |
-| 633 | maths/power_using_recursion |   |  |  |
-| 634 | maths/prime_check |   |  |  |
-| 635 | maths/prime_factors |   |  |  |
-| 636 | maths/prime_numbers |   |  |  |
-| 637 | maths/prime_sieve_eratosthenes |   |  |  |
+| 609 | maths/numerical_analysis/integration_by_simpson_approx | ✓ | 551.0µs | 3.66MB |
+| 610 | maths/numerical_analysis/intersection | ✓ | 518.0µs | 3.60MB |
+| 611 | maths/numerical_analysis/nevilles_method | ✓ | 826.0µs | 3.88MB |
+| 612 | maths/numerical_analysis/newton_forward_interpolation | ✓ | 520.0µs | 3.86MB |
+| 613 | maths/numerical_analysis/newton_raphson | ✓ | 428.0µs | 3.86MB |
+| 614 | maths/numerical_analysis/numerical_integration | ✓ | 5.0ms | 3.75MB |
+| 615 | maths/numerical_analysis/proper_fractions | ✓ | 300.0µs | 3.55MB |
+| 616 | maths/numerical_analysis/runge_kutta | ✓ | 1.0ms | 3.83MB |
+| 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 | ✓ | 528.0µs | 3.79MB |
+| 618 | maths/numerical_analysis/runge_kutta_gills | ✓ | 603.0µs | 3.68MB |
+| 619 | maths/numerical_analysis/secant_method | ✓ | 638.0µs | 3.71MB |
+| 620 | maths/numerical_analysis/simpson_rule | ✓ | 530.0µs | 3.75MB |
+| 621 | maths/numerical_analysis/square_root | ✓ | 524.0µs | 3.66MB |
+| 622 | maths/odd_sieve | ✓ | 253.0µs | 3.48MB |
+| 623 | maths/perfect_cube | ✓ | 328.0µs | 3.67MB |
+| 624 | maths/perfect_number | ✓ | 139.0ms | 3.59MB |
+| 625 | maths/perfect_square | ✓ | 303.0µs | 3.58MB |
+| 626 | maths/persistence | ✓ | 206.0µs | 3.58MB |
+| 627 | maths/pi_generator | ✓ | 171.0µs | 3.54MB |
+| 628 | maths/pi_monte_carlo_estimation | ✓ | 990.0µs | 3.73MB |
+| 629 | maths/points_are_collinear_3d | ✓ | 268.0µs | 3.46MB |
+| 630 | maths/pollard_rho | ✓ | 278.0µs | 3.62MB |
+| 631 | maths/polynomial_evaluation | ✓ | 507.0µs | 3.86MB |
+| 632 | maths/polynomials/single_indeterminate_operations | ✓ | 463.0µs | 3.77MB |
+| 633 | maths/power_using_recursion | ✓ | 202.0µs | 3.56MB |
+| 634 | maths/prime_check | ✓ | 364.0µs | 3.73MB |
+| 635 | maths/prime_factors | ✓ | 344.0µs | 3.60MB |
+| 636 | maths/prime_numbers | ✓ | 336.0µs | 3.60MB |
+| 637 | maths/prime_sieve_eratosthenes | ✓ | 440.0µs | 3.77MB |
 | 638 | maths/primelib |   |  |  |
-| 639 | maths/print_multiplication_table |   |  |  |
-| 640 | maths/pythagoras |   |  |  |
-| 641 | maths/qr_decomposition |   |  |  |
-| 642 | maths/quadratic_equations_complex_numbers |   |  |  |
-| 643 | maths/radians |   |  |  |
-| 644 | maths/radix2_fft |   |  |  |
-| 645 | maths/remove_digit |   |  |  |
-| 646 | maths/segmented_sieve |   |  |  |
-| 647 | maths/series/arithmetic |   |  |  |
-| 648 | maths/series/geometric |   |  |  |
-| 649 | maths/series/geometric_series |   |  |  |
-| 650 | maths/series/harmonic |   |  |  |
-| 651 | maths/series/harmonic_series |   |  |  |
-| 652 | maths/series/hexagonal_numbers |   |  |  |
-| 653 | maths/series/p_series |   |  |  |
-| 654 | maths/sieve_of_eratosthenes |   |  |  |
-| 655 | maths/sigmoid |   |  |  |
-| 656 | maths/signum |   |  |  |
-| 657 | maths/simultaneous_linear_equation_solver |   |  |  |
-| 658 | maths/sin |   |  |  |
-| 659 | maths/sock_merchant |   |  |  |
+| 639 | maths/print_multiplication_table | ✓ | 298.0µs | 3.48MB |
+| 640 | maths/pythagoras | ✓ | 485.0µs | 3.80MB |
+| 641 | maths/qr_decomposition | ✓ | 602.0µs | 3.69MB |
+| 642 | maths/quadratic_equations_complex_numbers | ✓ | 523.0µs | 3.73MB |
+| 643 | maths/radians | ✓ | 521.0µs | 3.67MB |
+| 644 | maths/radix2_fft | ✓ | 582.0µs | 3.86MB |
+| 645 | maths/remove_digit | ✓ | 194.0µs | 3.45MB |
+| 646 | maths/segmented_sieve | ✓ | 370.0µs | 3.76MB |
+| 647 | maths/series/arithmetic | ✓ | 550.0µs | 3.71MB |
+| 648 | maths/series/geometric | ✓ | 459.0µs | 3.80MB |
+| 649 | maths/series/geometric_series | ✓ | 416.0µs | 3.65MB |
+| 650 | maths/series/harmonic | ✓ | 449.0µs | 3.88MB |
+| 651 | maths/series/harmonic_series | ✓ | 288.0µs | 3.78MB |
+| 652 | maths/series/hexagonal_numbers | ✓ | 324.0µs | 3.60MB |
+| 653 | maths/series/p_series | ✓ | 492.0µs | 3.84MB |
+| 654 | maths/sieve_of_eratosthenes | ✓ | 607.0µs | 3.69MB |
+| 655 | maths/sigmoid | ✓ | 487.0µs | 3.65MB |
+| 656 | maths/signum | ✓ | 251.0µs | 3.62MB |
+| 657 | maths/simultaneous_linear_equation_solver | ✓ | 642.0µs | 3.80MB |
+| 658 | maths/sin | ✓ | 516.0µs | 3.91MB |
+| 659 | maths/sock_merchant | ✓ | 279.0µs | 3.65MB |
 | 660 | maths/softmax |   |  |  |
 | 661 | maths/solovay_strassen_primality_test |   |  |  |
 | 662 | maths/spearman_rank_correlation_coefficient |   |  |  |
