@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-07 15:16 GMT+7
+Last updated: 2025-08-08 10:21 GMT+7
 
-## Algorithms Golden Test Checklist (85/1077)
+## Algorithms Golden Test Checklist (90/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 30.54ms | 124.45KiB |
@@ -109,7 +109,7 @@ Last updated: 2025-08-07 15:16 GMT+7
 | 100 | ciphers/rsa_factorization | ✓ | 32.38ms | 114.70KiB |
 | 101 | ciphers/rsa_key_generator | ✓ | 6.44ms | 133.55KiB |
 | 102 | ciphers/running_key_cipher | ✓ | 6.88ms | 134.18KiB |
-| 103 | ciphers/shuffled_shift_cipher | error |  |  |
+| 103 | ciphers/shuffled_shift_cipher |   |  |  |
 | 104 | ciphers/simple_keyword_cypher |   |  |  |
 | 105 | ciphers/simple_substitution_cipher |   |  |  |
 | 106 | ciphers/transposition_cipher |   |  |  |
@@ -266,11 +266,11 @@ Last updated: 2025-08-07 15:16 GMT+7
 | 257 | data_structures/stacks/stack_using_two_queues |   |  |  |
 | 258 | data_structures/stacks/stack_with_doubly_linked_list |   |  |  |
 | 259 | data_structures/stacks/stack_with_singly_linked_list |   |  |  |
-| 260 | data_structures/stacks/stock_span_problem |   |  |  |
-| 261 | data_structures/suffix_tree/example/example_usage |   |  |  |
-| 262 | data_structures/suffix_tree/suffix_tree |   |  |  |
-| 263 | data_structures/suffix_tree/suffix_tree_node |   |  |  |
-| 264 | data_structures/suffix_tree/tests/test_suffix_tree |   |  |  |
+| 260 | data_structures/stacks/stock_span_problem | ✓ | 9.46ms | 134.14KiB |
+| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 21.57ms | 124.59KiB |
+| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 10.13ms | 134.09KiB |
+| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 9.51ms | 133.64KiB |
+| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 10.25ms | 134.09KiB |
 | 265 | data_structures/trie/radix_tree |   |  |  |
 | 266 | data_structures/trie/trie |   |  |  |
 | 267 | digital_image_processing/change_brightness |   |  |  |

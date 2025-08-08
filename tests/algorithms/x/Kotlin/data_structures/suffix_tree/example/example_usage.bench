@@ -1,0 +1,6 @@
+Pattern 'ana' found: true
+Pattern 'ban' found: true
+Pattern 'na' found: true
+Pattern 'xyz' found: false
+Pattern 'mon' found: true
+{"duration_us":21569, "memory_bytes":127584, "name":"main"}
