@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Racket code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Racket`.
-Last updated: 2025-08-08 09:25 UTC
+Last updated: 2025-08-08 10:13 UTC
 
-## Algorithms Golden Test Checklist (578/1077)
+## Algorithms Golden Test Checklist (598/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 29µs | 18.2 KB |
@@ -618,26 +618,26 @@ Last updated: 2025-08-08 09:25 UTC
 | 609 | maths/numerical_analysis/integration_by_simpson_approx | ✓ | 818µs | 1.8 MB |
 | 610 | maths/numerical_analysis/intersection | ✓ | 53µs | 26.5 KB |
 | 611 | maths/numerical_analysis/nevilles_method | ✓ | 95µs | 77.1 KB |
-| 612 | maths/numerical_analysis/newton_forward_interpolation |   |  |  |
-| 613 | maths/numerical_analysis/newton_raphson |   |  |  |
-| 614 | maths/numerical_analysis/numerical_integration |   |  |  |
-| 615 | maths/numerical_analysis/proper_fractions |   |  |  |
-| 616 | maths/numerical_analysis/runge_kutta |   |  |  |
-| 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 |   |  |  |
-| 618 | maths/numerical_analysis/runge_kutta_gills |   |  |  |
-| 619 | maths/numerical_analysis/secant_method |   |  |  |
-| 620 | maths/numerical_analysis/simpson_rule |   |  |  |
-| 621 | maths/numerical_analysis/square_root |   |  |  |
-| 622 | maths/odd_sieve |   |  |  |
-| 623 | maths/perfect_cube |   |  |  |
-| 624 | maths/perfect_number |   |  |  |
-| 625 | maths/perfect_square |   |  |  |
-| 626 | maths/persistence |   |  |  |
-| 627 | maths/pi_generator |   |  |  |
-| 628 | maths/pi_monte_carlo_estimation |   |  |  |
-| 629 | maths/points_are_collinear_3d |   |  |  |
-| 630 | maths/pollard_rho |   |  |  |
-| 631 | maths/polynomial_evaluation |   |  |  |
+| 612 | maths/numerical_analysis/newton_forward_interpolation | ✓ | 65µs | 28.7 KB |
+| 613 | maths/numerical_analysis/newton_raphson | ✓ | 67µs | 5.2 KB |
+| 614 | maths/numerical_analysis/numerical_integration | ✓ | 221.881ms | 25.0 MB |
+| 615 | maths/numerical_analysis/proper_fractions | ✓ | 116µs | 66.9 KB |
+| 616 | maths/numerical_analysis/runge_kutta | ✓ | 13.577ms | 5.6 MB |
+| 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 | ✓ | 125µs | 45.0 KB |
+| 618 | maths/numerical_analysis/runge_kutta_gills | ✓ | 79µs | 8.5 KB |
+| 619 | maths/numerical_analysis/secant_method | ✓ | 63µs | 41.2 KB |
+| 620 | maths/numerical_analysis/simpson_rule | ✓ | 32µs | 1.7 KB |
+| 621 | maths/numerical_analysis/square_root | ✓ | 94µs | 3.1 KB |
+| 622 | maths/odd_sieve | ✓ | 59µs | 21.3 KB |
+| 623 | maths/perfect_cube | ✓ | 33µs | 11.7 KB |
+| 624 | maths/perfect_number | ✓ | 2m30.154705s | 3.9 GB |
+| 625 | maths/perfect_square | ✓ | 49µs | 10.1 KB |
+| 626 | maths/persistence | ✓ | 37µs | 21.1 KB |
+| 627 | maths/pi_generator | ✓ | 21µs | 3.0 KB |
+| 628 | maths/pi_monte_carlo_estimation | ✓ | 38.315ms | 5.8 MB |
+| 629 | maths/points_are_collinear_3d | ✓ | 80µs | 58.3 KB |
+| 630 | maths/pollard_rho | ✓ | 223µs | 251.4 KB |
+| 631 | maths/polynomial_evaluation | ✓ | 76µs | 31.0 KB |
 | 632 | maths/polynomials/single_indeterminate_operations |   |  |  |
 | 633 | maths/power_using_recursion |   |  |  |
 | 634 | maths/prime_check |   |  |  |
