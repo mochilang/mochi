@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 366/1077
-Last updated: 2025-08-08 10:08 +0700
+Completed programs: 367/1077
+Last updated: 2025-08-08 10:29 +0700
 
 Checklist:
 
@@ -406,7 +406,7 @@ Checklist:
 | 397 | graphs/basic_graphs | ✓ | 544.0µs | 3.55MB |
 | 398 | graphs/bellman_ford | ✓ | 503.0µs | 3.74MB |
 | 399 | graphs/bi_directional_dijkstra | ✓ | 400.0µs | 3.80MB |
-| 400 | graphs/bidirectional_a_star |   |  |  |
+| 400 | graphs/bidirectional_a_star | ✓ | 256.0µs | 3.65MB |
 | 401 | graphs/bidirectional_breadth_first_search |   |  |  |
 | 402 | graphs/bidirectional_search |   |  |  |
 | 403 | graphs/boruvka |   |  |  |
