@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
 Completed programs: 186/1077
-Last updated: 2025-08-07 18:49 +0700
+Last updated: 2025-08-08 06:45 +0700
 
 Checklist:
 
@@ -258,10 +258,10 @@ Checklist:
 | 249 | data_structures/stacks/infix_to_postfix_conversion |   |  |  |
 | 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ | 980.0µs | 130.87KB |
 | 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 441.0µs | 1.38KB |
-| 252 | data_structures/stacks/lexicographical_numbers | ✓ | 610.0µs | 6.77KB |
-| 253 | data_structures/stacks/next_greater_element | ✓ | 405.0µs | 5.56KB |
-| 254 | data_structures/stacks/postfix_evaluation | ✓ | 440.0µs | 1.40KB |
-| 255 | data_structures/stacks/prefix_evaluation | ✓ | 456.0µs | 2.84KB |
+| 252 | data_structures/stacks/lexicographical_numbers | ✓ | 693.0µs | 6.77KB |
+| 253 | data_structures/stacks/next_greater_element | ✓ | 856.0µs | 5.58KB |
+| 254 | data_structures/stacks/postfix_evaluation | ✓ | 428.0µs | 1.63KB |
+| 255 | data_structures/stacks/prefix_evaluation | ✓ | 584.0µs | 2.84KB |
 | 256 | data_structures/stacks/stack |   |  |  |
 | 257 | data_structures/stacks/stack_using_two_queues |   |  |  |
 | 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 244.0µs | 1.31KB |
