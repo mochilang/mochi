@@ -168,12 +168,19 @@ func capitalize(name string) string {
 }
 
 var dartKeywords = map[string]struct{}{
+	// Core language keywords
 	"abstract": {}, "else": {}, "enum": {}, "false": {}, "final": {},
 	"for": {}, "if": {}, "in": {}, "new": {}, "null": {}, "super": {},
 	"switch": {}, "case": {}, "var": {}, "void": {}, "while": {},
-	"return": {}, "this": {}, "true": {}, "is": {},
-	"with": {},
-	"num":  {},
+	"return": {}, "this": {}, "true": {}, "is": {}, "with": {},
+	"num": {},
+	// Additional reserved words
+	"assert": {}, "async": {}, "await": {}, "break": {}, "catch": {},
+	"class": {}, "const": {}, "continue": {}, "default": {}, "do": {},
+	"dynamic": {}, "extends": {}, "factory": {}, "finally": {},
+	"import": {}, "interface": {}, "library": {}, "mixin": {},
+	"operator": {}, "part": {}, "rethrow": {}, "static": {},
+	"typedef": {}, "yield": {}, "try": {}, "throw": {},
 }
 
 func sanitize(name string) string {
