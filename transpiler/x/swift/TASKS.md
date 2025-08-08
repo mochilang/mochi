@@ -1,5 +1,5 @@
-## Progress (2025-08-07 09:47 +0700)
-- swift: improve list handling and string conversion
+## Progress (2025-08-08 18:50 +0700)
+- scala: escape more keywords and update algorithm outputs
 - Generated golden tests for 102/105 programs
 - Updated README checklist and output artifacts
 
