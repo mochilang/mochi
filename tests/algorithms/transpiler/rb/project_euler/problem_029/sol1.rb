@@ -25,6 +25,12 @@ def _now()
 end
 
 
+def _input()
+  line = STDIN.gets
+  line ? line.chomp : ''
+end
+
+
 require 'objspace'
 def _mem()
   ObjectSpace.memsize_of_all
@@ -82,35 +88,31 @@ end
 
 start_mem = _mem()
 start = _now()
-  def factorial(n)
+  def int_pow(base, exp)
     result = 1.clone
-    i = 2.clone
-    while i <= n
-      result = result * i.clone
+    i = 0.clone
+    while i < exp
+      result = result * base.clone
       i = _add(i, 1).clone
     end
     return result
   end
-  def nth_permutation(digits, index)
-    chars = digits.clone
-    n = index.clone
-    res = "".clone
-    k = chars.length.clone
-    while k > 0
-      f = factorial(k - 1)
-      pos = n / f
-      n = n % f.clone
-      res = _add(res, chars[pos..._add(pos, 1)]).clone
-      chars = _add(chars[0...pos], chars[_add(pos, 1)...chars.length]).clone
-      k = k - 1.clone
+  def solution(n)
+    powers = [].clone
+    limit = _add(n, 1)
+    (2...limit).each do |a|
+      (2...limit).each do |b|
+        p = int_pow(a, b)
+        if !(powers.include?(p))
+          powers = (powers << (p)).clone
+        end
+      end
     end
-    return res
-  end
-  def solution()
-    return nth_permutation("0123456789", 999999)
+    return powers.length
   end
   def main()
-    puts(solution())
+    n = (_input()).to_i
+    puts(((["Number of terms ", solution(n)]).map{ |x| if x.nil? then 'None' elsif x == true then 'True' elsif x == false then 'False' elsif x.respond_to?(:to_h) then '{' + x.to_h.map{ |k,v| "'#{k}': #{v.is_a?(String) ? '\'' + v + '\'' : v.to_s}" }.join(', ') + '}' else x end }.join(' ')).rstrip())
   end
   main()
 end_time = _now()

@@ -25,6 +25,12 @@ def _now()
 end
 
 
+def _input()
+  line = STDIN.gets
+  line ? line.chomp : ''
+end
+
+
 require 'objspace'
 def _mem()
   ObjectSpace.memsize_of_all
@@ -82,35 +88,22 @@ end
 
 start_mem = _mem()
 start = _now()
-  def factorial(n)
-    result = 1.clone
-    i = 2.clone
-    while i <= n
-      result = result * i.clone
-      i = _add(i, 1).clone
+  def solution(n)
+    a = 0.clone
+    b = 1.clone
+    index = 1.clone
+    while _str(b).length < n
+      temp = _add(a, b)
+      a = b.clone
+      b = temp.clone
+      index = _add(index, 1).clone
     end
-    return result
-  end
-  def nth_permutation(digits, index)
-    chars = digits.clone
-    n = index.clone
-    res = "".clone
-    k = chars.length.clone
-    while k > 0
-      f = factorial(k - 1)
-      pos = n / f
-      n = n % f.clone
-      res = _add(res, chars[pos..._add(pos, 1)]).clone
-      chars = _add(chars[0...pos], chars[_add(pos, 1)...chars.length]).clone
-      k = k - 1.clone
-    end
-    return res
-  end
-  def solution()
-    return nth_permutation("0123456789", 999999)
+    return index
   end
   def main()
-    puts(solution())
+    n = (_input()).to_i
+    ans = solution(n)
+    puts(_str(ans))
   end
   main()
 end_time = _now()

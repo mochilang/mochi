@@ -25,6 +25,12 @@ def _now()
 end
 
 
+def _input()
+  line = STDIN.gets
+  line ? line.chomp : ''
+end
+
+
 require 'objspace'
 def _mem()
   ObjectSpace.memsize_of_all
@@ -82,35 +88,57 @@ end
 
 start_mem = _mem()
 start = _now()
-  def factorial(n)
-    result = 1.clone
-    i = 2.clone
-    while i <= n
-      result = result * i.clone
-      i = _add(i, 1).clone
-    end
-    return result
+  def one_pence()
+    return 1
   end
-  def nth_permutation(digits, index)
-    chars = digits.clone
-    n = index.clone
-    res = "".clone
-    k = chars.length.clone
-    while k > 0
-      f = factorial(k - 1)
-      pos = n / f
-      n = n % f.clone
-      res = _add(res, chars[pos..._add(pos, 1)]).clone
-      chars = _add(chars[0...pos], chars[_add(pos, 1)...chars.length]).clone
-      k = k - 1.clone
+  def two_pence(x)
+    if x < 0
+      return 0
     end
-    return res
+    return _add(two_pence(x - 2), one_pence())
   end
-  def solution()
-    return nth_permutation("0123456789", 999999)
+  def five_pence(x)
+    if x < 0
+      return 0
+    end
+    return _add(five_pence(x - 5), two_pence(x))
+  end
+  def ten_pence(x)
+    if x < 0
+      return 0
+    end
+    return _add(ten_pence(x - 10), five_pence(x))
+  end
+  def twenty_pence(x)
+    if x < 0
+      return 0
+    end
+    return _add(twenty_pence(x - 20), ten_pence(x))
+  end
+  def fifty_pence(x)
+    if x < 0
+      return 0
+    end
+    return _add(fifty_pence(x - 50), twenty_pence(x))
+  end
+  def one_pound(x)
+    if x < 0
+      return 0
+    end
+    return _add(one_pound(x - 100), fifty_pence(x))
+  end
+  def two_pound(x)
+    if x < 0
+      return 0
+    end
+    return _add(two_pound(x - 200), one_pound(x))
+  end
+  def solution(n)
+    return two_pound(n)
   end
   def main()
-    puts(solution())
+    n = (_input()).to_i
+    puts(_str(solution(n)))
   end
   main()
 end_time = _now()

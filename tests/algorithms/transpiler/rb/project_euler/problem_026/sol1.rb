@@ -82,35 +82,44 @@ end
 
 start_mem = _mem()
 start = _now()
-  def factorial(n)
-    result = 1.clone
-    i = 2.clone
-    while i <= n
-      result = result * i.clone
-      i = _add(i, 1).clone
+  def contains(lst, val)
+        __tmp1 = lst
+    if __tmp1.respond_to?(:keys) && !__tmp1.is_a?(String)
+      __tmp1 = __tmp1.keys
     end
-    return result
-  end
-  def nth_permutation(digits, index)
-    chars = digits.clone
-    n = index.clone
-    res = "".clone
-    k = chars.length.clone
-    while k > 0
-      f = factorial(k - 1)
-      pos = n / f
-      n = n % f.clone
-      res = _add(res, chars[pos..._add(pos, 1)]).clone
-      chars = _add(chars[0...pos], chars[_add(pos, 1)...chars.length]).clone
-      k = k - 1.clone
+    __tmp1.each do |x|
+      if _eq(x, val)
+        return true
+      end
     end
-    return res
+    return false
   end
-  def solution()
-    return nth_permutation("0123456789", 999999)
+  def solution(numerator, limit)
+    the_digit = 1.clone
+    longest_len = 0.clone
+    (numerator...limit).each do |d|
+      remainders = [].clone
+      rem = numerator.clone
+      count = 1.clone
+      while count <= limit
+        if contains(remainders, rem)
+          if longest_len < remainders.length
+            longest_len = remainders.length.clone
+            the_digit = d.clone
+          end
+        else
+          remainders = (remainders << (rem)).clone
+          rem = rem * 10 % d.clone
+        end
+        count = _add(count, 1).clone
+      end
+    end
+    return the_digit
   end
   def main()
-    puts(solution())
+    puts(_str(solution(1, 10)))
+    puts(_str(solution(10, 100)))
+    puts(_str(solution(10, 1000)))
   end
   main()
 end_time = _now()
