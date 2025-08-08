@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 364/1077
-Last updated: 2025-08-07 23:14 +0700
+Completed programs: 365/1077
+Last updated: 2025-08-08 09:18 +0700
 
 Checklist:
 
@@ -294,7 +294,7 @@ Checklist:
 | 285 | digital_image_processing/rotation/rotation | ✓ | 384.0µs | 3.48MB |
 | 286 | digital_image_processing/sepia | ✓ | 451.0µs | 3.48MB |
 | 287 | digital_image_processing/test_digital_image_processing | ✓ | 933.0µs | 3.74MB |
-| 288 | divide_and_conquer/closest_pair_of_points |   |  |  |
+| 288 | divide_and_conquer/closest_pair_of_points | ✓ | 332.0µs | 3.87MB |
 | 289 | divide_and_conquer/convex_hull | ✓ | 4.0µs | 3.52MB |
 | 290 | divide_and_conquer/heaps_algorithm |   |  |  |
 | 291 | divide_and_conquer/heaps_algorithm_iterative |   |  |  |
