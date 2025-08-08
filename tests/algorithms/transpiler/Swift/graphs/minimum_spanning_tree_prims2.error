@@ -1,0 +1,236 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden446_graphs_minimum_spanning_tree_prims21425172831/001/main.swift:134:42: warning: forced cast of 'QueueNode' to same type has no effect
+132 |             i = _int((i &+ 1))
+133 |         }
+134 |         let start_node = (queue[min_idx] as! QueueNode)
+    |                                          `- warning: forced cast of 'QueueNode' to same type has no effect
+135 |         let start = start_node.node
+136 |         var new_q: [QueueNode] = ([] as! [QueueNode])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden446_graphs_minimum_spanning_tree_prims21425172831/001/main.swift:140:51: warning: forced cast of 'QueueNode' to same type has no effect
+138 |         while (j < _int(((queue).count))) {
+139 |             if (j != min_idx) {
+140 |                 new_q = (_append(new_q, (queue[j] as! QueueNode)) as! [QueueNode])
+    |                                                   `- warning: forced cast of 'QueueNode' to same type has no effect
+141 |             }
+142 |             j = _int((j &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden446_graphs_minimum_spanning_tree_prims21425172831/001/main.swift:144:24: warning: forced cast of '[QueueNode]' to same type has no effect
+142 |             j = _int((j &+ 1))
+143 |         }
+144 |         queue = (new_q as! [QueueNode])
+    |                        `- warning: forced cast of '[QueueNode]' to same type has no effect
+145 |         dist = _set(dist, String(describing: start), 0)
+146 |         for neighbour in (graph[String(String(describing: start))] as! [String: Int]).keys.sorted() {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden446_graphs_minimum_spanning_tree_prims21425172831/001/main.swift:146:68: warning: forced cast from '[String : Int]?' to '[String : Int]' only unwraps optionals; did you mean to use '!'?
+144 |         queue = (new_q as! [QueueNode])
+145 |         dist = _set(dist, String(describing: start), 0)
+146 |         for neighbour in (graph[String(String(describing: start))] as! [String: Int]).keys.sorted() {
+    |                                                                    `- warning: forced cast from '[String : Int]?' to '[String : Int]' only unwraps optionals; did you mean to use '!'?
+147 |             let w = (graph[String(String(describing: start))][String(String(describing: neighbour))] as? Int ?? 0)
+148 |             if ((dist[String(String(describing: neighbour))] as? Int ?? 0) > ((dist[String(String(describing: start))] as? Int ?? 0) &+ w)) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden446_graphs_minimum_spanning_tree_prims21425172831/001/main.swift:147:61: error: value of optional type '[String : Int]?' must be unwrapped to refer to member 'subscript' of wrapped base type '[String : Int]'
+145 |         dist = _set(dist, String(describing: start), 0)
+146 |         for neighbour in (graph[String(String(describing: start))] as! [String: Int]).keys.sorted() {
+147 |             let w = (graph[String(String(describing: start))][String(String(describing: neighbour))] as? Int ?? 0)
+    |                                                             |- error: value of optional type '[String : Int]?' must be unwrapped to refer to member 'subscript' of wrapped base type '[String : Int]'
+    |                                                             |- note: chain the optional using '?' to access member 'subscript' only for non-'nil' base values
+    |                                                             `- note: force-unwrap using '!' to abort execution if the optional value contains 'nil'
+148 |             if ((dist[String(String(describing: neighbour))] as? Int ?? 0) > ((dist[String(String(describing: start))] as? Int ?? 0) &+ w)) {
+149 |                 dist = _set(dist, String(describing: neighbour), _int(((dist[String(String(describing: start))] as? Int ?? 0) &+ w)))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden446_graphs_minimum_spanning_tree_prims21425172831/001/main.swift:147:102: warning: conditional downcast from 'Int?' to 'Int' does nothing
+145 |         dist = _set(dist, String(describing: start), 0)
+146 |         for neighbour in (graph[String(String(describing: start))] as! [String: Int]).keys.sorted() {
+147 |             let w = (graph[String(String(describing: start))][String(String(describing: neighbour))] as? Int ?? 0)
+    |                                                                                                      `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+148 |             if ((dist[String(String(describing: neighbour))] as? Int ?? 0) > ((dist[String(String(describing: start))] as? Int ?? 0) &+ w)) {
+149 |                 dist = _set(dist, String(describing: neighbour), _int(((dist[String(String(describing: start))] as? Int ?? 0) &+ w)))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden446_graphs_minimum_spanning_tree_prims21425172831/001/main.swift:148:62: warning: conditional downcast from 'Int?' to 'Int' does nothing
+146 |         for neighbour in (graph[String(String(describing: start))] as! [String: Int]).keys.sorted() {
+147 |             let w = (graph[String(String(describing: start))][String(String(describing: neighbour))] as? Int ?? 0)
+148 |             if ((dist[String(String(describing: neighbour))] as? Int ?? 0) > ((dist[String(String(describing: start))] as? Int ?? 0) &+ w)) {
+    |                                                              `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+149 |                 dist = _set(dist, String(describing: neighbour), _int(((dist[String(String(describing: start))] as? Int ?? 0) &+ w)))
+150 |                 parent = _set(parent, String(describing: neighbour), (start as! String))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden446_graphs_minimum_spanning_tree_prims21425172831/001/main.swift:148:120: warning: conditional downcast from 'Int?' to 'Int' does nothing
+146 |         for neighbour in (graph[String(String(describing: start))] as! [String: Int]).keys.sorted() {
+147 |             let w = (graph[String(String(describing: start))][String(String(describing: neighbour))] as? Int ?? 0)
+148 |             if ((dist[String(String(describing: neighbour))] as? Int ?? 0) > ((dist[String(String(describing: start))] as? Int ?? 0) &+ w)) {
+    |                                                                                                                        `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+149 |                 dist = _set(dist, String(describing: neighbour), _int(((dist[String(String(describing: start))] as? Int ?? 0) &+ w)))
+150 |                 parent = _set(parent, String(describing: neighbour), (start as! String))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden446_graphs_minimum_spanning_tree_prims21425172831/001/main.swift:149:113: warning: conditional downcast from 'Int?' to 'Int' does nothing
+147 |             let w = (graph[String(String(describing: start))][String(String(describing: neighbour))] as? Int ?? 0)
+148 |             if ((dist[String(String(describing: neighbour))] as? Int ?? 0) > ((dist[String(String(describing: start))] as? Int ?? 0) &+ w)) {
+149 |                 dist = _set(dist, String(describing: neighbour), _int(((dist[String(String(describing: start))] as? Int ?? 0) &+ w)))
+    |                                                                                                                 `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+150 |                 parent = _set(parent, String(describing: neighbour), (start as! String))
+151 |                 var k: Int = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden446_graphs_minimum_spanning_tree_prims21425172831/001/main.swift:150:77: warning: forced cast of 'String' to same type has no effect
+148 |             if ((dist[String(String(describing: neighbour))] as? Int ?? 0) > ((dist[String(String(describing: start))] as? Int ?? 0) &+ w)) {
+149 |                 dist = _set(dist, String(describing: neighbour), _int(((dist[String(String(describing: start))] as? Int ?? 0) &+ w)))
+150 |                 parent = _set(parent, String(describing: neighbour), (start as! String))
+    |                                                                             `- warning: forced cast of 'String' to same type has no effect
+151 |                 var k: Int = 0
+152 |                 while (k < _int(((queue).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden446_graphs_minimum_spanning_tree_prims21425172831/001/main.swift:155:88: warning: conditional downcast from 'Int?' to 'Int' does nothing
+153 |                     if (String(describing: queue[k].node) == String(describing: neighbour)
+154 |                     ) {
+155 |                         queue[k].weight = (dist[String(String(describing: neighbour))] as? Int ?? 0)
+    |                                                                                        `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+156 |                         break
+157 |                     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden446_graphs_minimum_spanning_tree_prims21425172831/001/main.swift:172:47: warning: forced cast of 'QueueNode' to same type has no effect
+170 |                 p = _int((p &+ 1))
+171 |             }
+172 |             let node_entry = (queue[best_idx] as! QueueNode)
+    |                                               `- warning: forced cast of 'QueueNode' to same type has no effect
+173 |             let node = node_entry.node
+174 |             var tmp: [QueueNode] = ([] as! [QueueNode])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden446_graphs_minimum_spanning_tree_prims21425172831/001/main.swift:178:51: warning: forced cast of 'QueueNode' to same type has no effect
+176 |             while (q < _int(((queue).count))) {
+177 |                 if (q != best_idx) {
+178 |                     tmp = (_append(tmp, (queue[q] as! QueueNode)) as! [QueueNode])
+    |                                                   `- warning: forced cast of 'QueueNode' to same type has no effect
+179 |                 }
+180 |                 q = _int((q &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden446_graphs_minimum_spanning_tree_prims21425172831/001/main.swift:182:26: warning: forced cast of '[QueueNode]' to same type has no effect
+180 |                 q = _int((q &+ 1))
+181 |             }
+182 |             queue = (tmp as! [QueueNode])
+    |                          `- warning: forced cast of '[QueueNode]' to same type has no effect
+183 |             for neighbour in (graph[String(String(describing: node))] as! [String: Int]).keys.sorted() {
+184 |                 let w = (graph[String(String(describing: node))][String(String(describing: neighbour))] as? Int ?? 0)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden446_graphs_minimum_spanning_tree_prims21425172831/001/main.swift:183:71: warning: forced cast from '[String : Int]?' to '[String : Int]' only unwraps optionals; did you mean to use '!'?
+181 |             }
+182 |             queue = (tmp as! [QueueNode])
+183 |             for neighbour in (graph[String(String(describing: node))] as! [String: Int]).keys.sorted() {
+    |                                                                       `- warning: forced cast from '[String : Int]?' to '[String : Int]' only unwraps optionals; did you mean to use '!'?
+184 |                 let w = (graph[String(String(describing: node))][String(String(describing: neighbour))] as? Int ?? 0)
+185 |                 if ((dist[String(String(describing: neighbour))] as? Int ?? 0) > ((dist[String(String(describing: node))] as? Int ?? 0) &+ w)) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden446_graphs_minimum_spanning_tree_prims21425172831/001/main.swift:184:64: error: value of optional type '[String : Int]?' must be unwrapped to refer to member 'subscript' of wrapped base type '[String : Int]'
+182 |             queue = (tmp as! [QueueNode])
+183 |             for neighbour in (graph[String(String(describing: node))] as! [String: Int]).keys.sorted() {
+184 |                 let w = (graph[String(String(describing: node))][String(String(describing: neighbour))] as? Int ?? 0)
+    |                                                                |- error: value of optional type '[String : Int]?' must be unwrapped to refer to member 'subscript' of wrapped base type '[String : Int]'
+    |                                                                |- note: chain the optional using '?' to access member 'subscript' only for non-'nil' base values
+    |                                                                `- note: force-unwrap using '!' to abort execution if the optional value contains 'nil'
+185 |                 if ((dist[String(String(describing: neighbour))] as? Int ?? 0) > ((dist[String(String(describing: node))] as? Int ?? 0) &+ w)) {
+186 |                     dist = _set(dist, String(describing: neighbour), _int(((dist[String(String(describing: node))] as? Int ?? 0) &+ w)))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden446_graphs_minimum_spanning_tree_prims21425172831/001/main.swift:184:105: warning: conditional downcast from 'Int?' to 'Int' does nothing
+182 |             queue = (tmp as! [QueueNode])
+183 |             for neighbour in (graph[String(String(describing: node))] as! [String: Int]).keys.sorted() {
+184 |                 let w = (graph[String(String(describing: node))][String(String(describing: neighbour))] as? Int ?? 0)
+    |                                                                                                         `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+185 |                 if ((dist[String(String(describing: neighbour))] as? Int ?? 0) > ((dist[String(String(describing: node))] as? Int ?? 0) &+ w)) {
+186 |                     dist = _set(dist, String(describing: neighbour), _int(((dist[String(String(describing: node))] as? Int ?? 0) &+ w)))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden446_graphs_minimum_spanning_tree_prims21425172831/001/main.swift:185:66: warning: conditional downcast from 'Int?' to 'Int' does nothing
+183 |             for neighbour in (graph[String(String(describing: node))] as! [String: Int]).keys.sorted() {
+184 |                 let w = (graph[String(String(describing: node))][String(String(describing: neighbour))] as? Int ?? 0)
+185 |                 if ((dist[String(String(describing: neighbour))] as? Int ?? 0) > ((dist[String(String(describing: node))] as? Int ?? 0) &+ w)) {
+    |                                                                  `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+186 |                     dist = _set(dist, String(describing: neighbour), _int(((dist[String(String(describing: node))] as? Int ?? 0) &+ w)))
+187 |                     parent = _set(parent, String(describing: neighbour), (node as! String))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden446_graphs_minimum_spanning_tree_prims21425172831/001/main.swift:185:123: warning: conditional downcast from 'Int?' to 'Int' does nothing
+183 |             for neighbour in (graph[String(String(describing: node))] as! [String: Int]).keys.sorted() {
+184 |                 let w = (graph[String(String(describing: node))][String(String(describing: neighbour))] as? Int ?? 0)
+185 |                 if ((dist[String(String(describing: neighbour))] as? Int ?? 0) > ((dist[String(String(describing: node))] as? Int ?? 0) &+ w)) {
+    |                                                                                                                           `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+186 |                     dist = _set(dist, String(describing: neighbour), _int(((dist[String(String(describing: node))] as? Int ?? 0) &+ w)))
+187 |                     parent = _set(parent, String(describing: neighbour), (node as! String))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden446_graphs_minimum_spanning_tree_prims21425172831/001/main.swift:186:116: warning: conditional downcast from 'Int?' to 'Int' does nothing
+184 |                 let w = (graph[String(String(describing: node))][String(String(describing: neighbour))] as? Int ?? 0)
+185 |                 if ((dist[String(String(describing: neighbour))] as? Int ?? 0) > ((dist[String(String(describing: node))] as? Int ?? 0) &+ w)) {
+186 |                     dist = _set(dist, String(describing: neighbour), _int(((dist[String(String(describing: node))] as? Int ?? 0) &+ w)))
+    |                                                                                                                    `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+187 |                     parent = _set(parent, String(describing: neighbour), (node as! String))
+188 |                     var r: Int = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden446_graphs_minimum_spanning_tree_prims21425172831/001/main.swift:187:80: warning: forced cast of 'String' to same type has no effect
+185 |                 if ((dist[String(String(describing: neighbour))] as? Int ?? 0) > ((dist[String(String(describing: node))] as? Int ?? 0) &+ w)) {
+186 |                     dist = _set(dist, String(describing: neighbour), _int(((dist[String(String(describing: node))] as? Int ?? 0) &+ w)))
+187 |                     parent = _set(parent, String(describing: neighbour), (node as! String))
+    |                                                                                `- warning: forced cast of 'String' to same type has no effect
+188 |                     var r: Int = 0
+189 |                     while (r < _int(((queue).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden446_graphs_minimum_spanning_tree_prims21425172831/001/main.swift:192:92: warning: conditional downcast from 'Int?' to 'Int' does nothing
+190 |                         if (String(describing: queue[r].node) == String(describing: neighbour)
+191 |                         ) {
+192 |                             queue[r].weight = (dist[String(String(describing: neighbour))] as? Int ?? 0)
+    |                                                                                            `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+193 |                             break
+194 |                         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden446_graphs_minimum_spanning_tree_prims21425172831/001/main.swift:213:33: warning: forced cast of '[String : [String : Int]]' to same type has no effect
+211 |     graph = _set(graph, "c", (["a": 15, "b": 10, "d": 5] as! [String: Int]))
+212 |     graph = _set(graph, "d", (["b": 100, "c": 5] as! [String: Int]))
+213 |     let res = prims_algo((graph as! [String: [String: Int]]))
+    |                                 `- warning: forced cast of '[String : [String : Int]]' to same type has no effect
+214 |     var dist: [String: Int] = res.dist
+215 |     print(_p(_p(_int(iabs(((dist[String("a")] as? Int ?? 0) &- (dist[String("b")] as? Int ?? 0)))))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden446_graphs_minimum_spanning_tree_prims21425172831/001/main.swift:215:47: warning: conditional downcast from 'Int?' to 'Int' does nothing
+213 |     let res = prims_algo((graph as! [String: [String: Int]]))
+214 |     var dist: [String: Int] = res.dist
+215 |     print(_p(_p(_int(iabs(((dist[String("a")] as? Int ?? 0) &- (dist[String("b")] as? Int ?? 0)))))))
+    |                                               `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+216 |     print(_p(_p(_int(iabs(((dist[String("d")] as? Int ?? 0) &- (dist[String("b")] as? Int ?? 0)))))))
+217 |     print(_p(_p(_int(iabs(((dist[String("a")] as? Int ?? 0) &- (dist[String("c")] as? Int ?? 0)))))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden446_graphs_minimum_spanning_tree_prims21425172831/001/main.swift:215:83: warning: conditional downcast from 'Int?' to 'Int' does nothing
+213 |     let res = prims_algo((graph as! [String: [String: Int]]))
+214 |     var dist: [String: Int] = res.dist
+215 |     print(_p(_p(_int(iabs(((dist[String("a")] as? Int ?? 0) &- (dist[String("b")] as? Int ?? 0)))))))
+    |                                                                                   `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+216 |     print(_p(_p(_int(iabs(((dist[String("d")] as? Int ?? 0) &- (dist[String("b")] as? Int ?? 0)))))))
+217 |     print(_p(_p(_int(iabs(((dist[String("a")] as? Int ?? 0) &- (dist[String("c")] as? Int ?? 0)))))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden446_graphs_minimum_spanning_tree_prims21425172831/001/main.swift:216:47: warning: conditional downcast from 'Int?' to 'Int' does nothing
+214 |     var dist: [String: Int] = res.dist
+215 |     print(_p(_p(_int(iabs(((dist[String("a")] as? Int ?? 0) &- (dist[String("b")] as? Int ?? 0)))))))
+216 |     print(_p(_p(_int(iabs(((dist[String("d")] as? Int ?? 0) &- (dist[String("b")] as? Int ?? 0)))))))
+    |                                               `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+217 |     print(_p(_p(_int(iabs(((dist[String("a")] as? Int ?? 0) &- (dist[String("c")] as? Int ?? 0)))))))
+218 |     let _benchEnd = _now()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden446_graphs_minimum_spanning_tree_prims21425172831/001/main.swift:216:83: warning: conditional downcast from 'Int?' to 'Int' does nothing
+214 |     var dist: [String: Int] = res.dist
+215 |     print(_p(_p(_int(iabs(((dist[String("a")] as? Int ?? 0) &- (dist[String("b")] as? Int ?? 0)))))))
+216 |     print(_p(_p(_int(iabs(((dist[String("d")] as? Int ?? 0) &- (dist[String("b")] as? Int ?? 0)))))))
+    |                                                                                   `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+217 |     print(_p(_p(_int(iabs(((dist[String("a")] as? Int ?? 0) &- (dist[String("c")] as? Int ?? 0)))))))
+218 |     let _benchEnd = _now()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden446_graphs_minimum_spanning_tree_prims21425172831/001/main.swift:217:47: warning: conditional downcast from 'Int?' to 'Int' does nothing
+215 |     print(_p(_p(_int(iabs(((dist[String("a")] as? Int ?? 0) &- (dist[String("b")] as? Int ?? 0)))))))
+216 |     print(_p(_p(_int(iabs(((dist[String("d")] as? Int ?? 0) &- (dist[String("b")] as? Int ?? 0)))))))
+217 |     print(_p(_p(_int(iabs(((dist[String("a")] as? Int ?? 0) &- (dist[String("c")] as? Int ?? 0)))))))
+    |                                               `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+218 |     let _benchEnd = _now()
+219 |     let _benchMemEnd = _mem()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden446_graphs_minimum_spanning_tree_prims21425172831/001/main.swift:217:83: warning: conditional downcast from 'Int?' to 'Int' does nothing
+215 |     print(_p(_p(_int(iabs(((dist[String("a")] as? Int ?? 0) &- (dist[String("b")] as? Int ?? 0)))))))
+216 |     print(_p(_p(_int(iabs(((dist[String("d")] as? Int ?? 0) &- (dist[String("b")] as? Int ?? 0)))))))
+217 |     print(_p(_p(_int(iabs(((dist[String("a")] as? Int ?? 0) &- (dist[String("c")] as? Int ?? 0)))))))
+    |                                                                                   `- warning: conditional downcast from 'Int?' to 'Int' does nothing
+218 |     let _benchEnd = _now()
+219 |     let _benchMemEnd = _mem()

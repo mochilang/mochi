@@ -1,0 +1,456 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:111:26: warning: forced cast of 'String' to same type has no effect
+109 |         var i: Int = 0
+110 |         while (i < _int(((list).count))) {
+111 |             if ((list[i] as! String) == value) {
+    |                          `- warning: forced cast of 'String' to same type has no effect
+112 |                 return true
+113 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:122:26: warning: forced cast of 'String' to same type has no effect
+120 |         var i: Int = 0
+121 |         while (i < _int(((list).count))) {
+122 |             if ((list[i] as! String) != value) {
+    |                          `- warning: forced cast of 'String' to same type has no effect
+123 |                 res = (_append(res, (list[i] as! String)) as! [String])
+124 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:123:46: warning: forced cast of 'String' to same type has no effect
+121 |         while (i < _int(((list).count))) {
+122 |             if ((list[i] as! String) != value) {
+123 |                 res = (_append(res, (list[i] as! String)) as! [String])
+    |                                              `- warning: forced cast of 'String' to same type has no effect
+124 |             }
+125 |             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:137:76: warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+135 |         for node in (_keys(graph) as! [String]) {
+136 |             var lst: [String] = ([] as! [String])
+137 |             var neigh: [String] = (graph[String(String(describing: node))] as! [String])
+    |                                                                            `- warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+138 |             var i: Int = 0
+139 |             while (i < _int(((neigh).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:140:47: warning: forced cast of 'String' to same type has no effect
+138 |             var i: Int = 0
+139 |             while (i < _int(((neigh).count))) {
+140 |                 lst = (_append(lst, (neigh[i] as! String)) as! [String])
+    |                                               `- warning: forced cast of 'String' to same type has no effect
+141 |                 i = _int((i &+ 1))
+142 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:143:74: warning: forced cast of '[String]' to same type has no effect
+141 |                 i = _int((i &+ 1))
+142 |             }
+143 |             graph_copy = _set(graph_copy, String(describing: node), (lst as! [String]))
+    |                                                                          `- warning: forced cast of '[String]' to same type has no effect
+144 |         }
+145 |         var nodes: [String] = (_keys(graph_copy) as! [String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:147:67: warning: forced cast of 'String' to same type has no effect
+145 |         var nodes: [String] = (_keys(graph_copy) as! [String])
+146 |         while (_int(((nodes).count)) > 2) {
+147 |             let u = (nodes[_int(rand_int(_int(((nodes).count))))] as! String)
+    |                                                                   `- warning: forced cast of 'String' to same type has no effect
+148 |             let u_neighbors: [String] = (graph_copy[String(String(describing: u))] as! [String])
+149 |             let v = (u_neighbors[_int(rand_int(_int(((u_neighbors).count))))] as! String)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:148:84: warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+146 |         while (_int(((nodes).count)) > 2) {
+147 |             let u = (nodes[_int(rand_int(_int(((nodes).count))))] as! String)
+148 |             let u_neighbors: [String] = (graph_copy[String(String(describing: u))] as! [String])
+    |                                                                                    `- warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+149 |             let v = (u_neighbors[_int(rand_int(_int(((u_neighbors).count))))] as! String)
+150 |             let uv = (u + v)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:149:79: warning: forced cast of 'String' to same type has no effect
+147 |             let u = (nodes[_int(rand_int(_int(((nodes).count))))] as! String)
+148 |             let u_neighbors: [String] = (graph_copy[String(String(describing: u))] as! [String])
+149 |             let v = (u_neighbors[_int(rand_int(_int(((u_neighbors).count))))] as! String)
+    |                                                                               `- warning: forced cast of 'String' to same type has no effect
+150 |             let uv = (u + v)
+151 |             var uv_neighbors: [String] = ([] as! [String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:153:74: warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+151 |             var uv_neighbors: [String] = ([] as! [String])
+152 |             var i: Int = 0
+153 |             while (i < _int((((graph_copy[String(String(describing: u))] as! [String])).count))) {
+    |                                                                          `- warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+154 |                 let n = (graph_copy[String(String(describing: u))][i] as! String)
+155 |                 if (((n != u) && (n != v)) && (((uv_neighbors as! [String]).contains((n as! String))) == false)) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:154:66: error: value of optional type '[String]?' must be unwrapped to refer to member 'subscript' of wrapped base type '[String]'
+152 |             var i: Int = 0
+153 |             while (i < _int((((graph_copy[String(String(describing: u))] as! [String])).count))) {
+154 |                 let n = (graph_copy[String(String(describing: u))][i] as! String)
+    |                                                                  |- error: value of optional type '[String]?' must be unwrapped to refer to member 'subscript' of wrapped base type '[String]'
+    |                                                                  |- note: chain the optional using '?' to access member 'subscript' only for non-'nil' base values
+    |                                                                  `- note: force-unwrap using '!' to abort execution if the optional value contains 'nil'
+155 |                 if (((n != u) && (n != v)) && (((uv_neighbors as! [String]).contains((n as! String))) == false)) {
+156 |                     uv_neighbors = (_append(uv_neighbors, n) as! [String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:154:71: warning: forced cast of 'String' to same type has no effect
+152 |             var i: Int = 0
+153 |             while (i < _int((((graph_copy[String(String(describing: u))] as! [String])).count))) {
+154 |                 let n = (graph_copy[String(String(describing: u))][i] as! String)
+    |                                                                       `- warning: forced cast of 'String' to same type has no effect
+155 |                 if (((n != u) && (n != v)) && (((uv_neighbors as! [String]).contains((n as! String))) == false)) {
+156 |                     uv_neighbors = (_append(uv_neighbors, n) as! [String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:155:63: warning: forced cast of '[String]' to same type has no effect
+153 |             while (i < _int((((graph_copy[String(String(describing: u))] as! [String])).count))) {
+154 |                 let n = (graph_copy[String(String(describing: u))][i] as! String)
+155 |                 if (((n != u) && (n != v)) && (((uv_neighbors as! [String]).contains((n as! String))) == false)) {
+    |                                                               `- warning: forced cast of '[String]' to same type has no effect
+156 |                     uv_neighbors = (_append(uv_neighbors, n) as! [String])
+157 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:161:74: warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+159 |             }
+160 |             i = 0
+161 |             while (i < _int((((graph_copy[String(String(describing: v))] as! [String])).count))) {
+    |                                                                          `- warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+162 |                 let n = (graph_copy[String(String(describing: v))][i] as! String)
+163 |                 if (((n != u) && (n != v)) && (((uv_neighbors as! [String]).contains((n as! String))) == false)) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:162:66: error: value of optional type '[String]?' must be unwrapped to refer to member 'subscript' of wrapped base type '[String]'
+160 |             i = 0
+161 |             while (i < _int((((graph_copy[String(String(describing: v))] as! [String])).count))) {
+162 |                 let n = (graph_copy[String(String(describing: v))][i] as! String)
+    |                                                                  |- error: value of optional type '[String]?' must be unwrapped to refer to member 'subscript' of wrapped base type '[String]'
+    |                                                                  |- note: chain the optional using '?' to access member 'subscript' only for non-'nil' base values
+    |                                                                  `- note: force-unwrap using '!' to abort execution if the optional value contains 'nil'
+163 |                 if (((n != u) && (n != v)) && (((uv_neighbors as! [String]).contains((n as! String))) == false)) {
+164 |                     uv_neighbors = (_append(uv_neighbors, n) as! [String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:162:71: warning: forced cast of 'String' to same type has no effect
+160 |             i = 0
+161 |             while (i < _int((((graph_copy[String(String(describing: v))] as! [String])).count))) {
+162 |                 let n = (graph_copy[String(String(describing: v))][i] as! String)
+    |                                                                       `- warning: forced cast of 'String' to same type has no effect
+163 |                 if (((n != u) && (n != v)) && (((uv_neighbors as! [String]).contains((n as! String))) == false)) {
+164 |                     uv_neighbors = (_append(uv_neighbors, n) as! [String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:163:63: warning: forced cast of '[String]' to same type has no effect
+161 |             while (i < _int((((graph_copy[String(String(describing: v))] as! [String])).count))) {
+162 |                 let n = (graph_copy[String(String(describing: v))][i] as! String)
+163 |                 if (((n != u) && (n != v)) && (((uv_neighbors as! [String]).contains((n as! String))) == false)) {
+    |                                                               `- warning: forced cast of '[String]' to same type has no effect
+164 |                     uv_neighbors = (_append(uv_neighbors, n) as! [String])
+165 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:168:81: warning: forced cast of '[String]' to same type has no effect
+166 |                 i = _int((i &+ 1))
+167 |             }
+168 |             graph_copy = _set(graph_copy, String(describing: uv), (uv_neighbors as! [String]))
+    |                                                                                 `- warning: forced cast of '[String]' to same type has no effect
+169 |             var k: Int = 0
+170 |             while (k < _int(((uv_neighbors).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:171:43: warning: forced cast of 'String' to same type has no effect
+169 |             var k: Int = 0
+170 |             while (k < _int(((uv_neighbors).count))) {
+171 |                 let nb = (uv_neighbors[k] as! String)
+    |                                           `- warning: forced cast of 'String' to same type has no effect
+172 |                 graph_copy = _set(graph_copy, String(describing: nb), (_append((graph_copy[String(String(describing: nb))] as! [String]), uv) as! [String]))
+173 |                 graph_copy = _set(graph_copy, String(describing: nb), (remove_all((graph_copy[String(String(describing: nb))] as! [String]), (u as! String)) as! [String]))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:172:124: warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+170 |             while (k < _int(((uv_neighbors).count))) {
+171 |                 let nb = (uv_neighbors[k] as! String)
+172 |                 graph_copy = _set(graph_copy, String(describing: nb), (_append((graph_copy[String(String(describing: nb))] as! [String]), uv) as! [String]))
+    |                                                                                                                            `- warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+173 |                 graph_copy = _set(graph_copy, String(describing: nb), (remove_all((graph_copy[String(String(describing: nb))] as! [String]), (u as! String)) as! [String]))
+174 |                 graph_copy = _set(graph_copy, String(describing: nb), (remove_all((graph_copy[String(String(describing: nb))] as! [String]), (v as! String)) as! [String]))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:173:127: warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+171 |                 let nb = (uv_neighbors[k] as! String)
+172 |                 graph_copy = _set(graph_copy, String(describing: nb), (_append((graph_copy[String(String(describing: nb))] as! [String]), uv) as! [String]))
+173 |                 graph_copy = _set(graph_copy, String(describing: nb), (remove_all((graph_copy[String(String(describing: nb))] as! [String]), (u as! String)) as! [String]))
+    |                                                                                                                               `- warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+174 |                 graph_copy = _set(graph_copy, String(describing: nb), (remove_all((graph_copy[String(String(describing: nb))] as! [String]), (v as! String)) as! [String]))
+175 |                 k = _int((k &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:173:145: warning: forced cast of 'String' to same type has no effect
+171 |                 let nb = (uv_neighbors[k] as! String)
+172 |                 graph_copy = _set(graph_copy, String(describing: nb), (_append((graph_copy[String(String(describing: nb))] as! [String]), uv) as! [String]))
+173 |                 graph_copy = _set(graph_copy, String(describing: nb), (remove_all((graph_copy[String(String(describing: nb))] as! [String]), (u as! String)) as! [String]))
+    |                                                                                                                                                 `- warning: forced cast of 'String' to same type has no effect
+174 |                 graph_copy = _set(graph_copy, String(describing: nb), (remove_all((graph_copy[String(String(describing: nb))] as! [String]), (v as! String)) as! [String]))
+175 |                 k = _int((k &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:173:158: warning: forced cast of '[String]' to same type has no effect
+171 |                 let nb = (uv_neighbors[k] as! String)
+172 |                 graph_copy = _set(graph_copy, String(describing: nb), (_append((graph_copy[String(String(describing: nb))] as! [String]), uv) as! [String]))
+173 |                 graph_copy = _set(graph_copy, String(describing: nb), (remove_all((graph_copy[String(String(describing: nb))] as! [String]), (u as! String)) as! [String]))
+    |                                                                                                                                                              `- warning: forced cast of '[String]' to same type has no effect
+174 |                 graph_copy = _set(graph_copy, String(describing: nb), (remove_all((graph_copy[String(String(describing: nb))] as! [String]), (v as! String)) as! [String]))
+175 |                 k = _int((k &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:174:127: warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+172 |                 graph_copy = _set(graph_copy, String(describing: nb), (_append((graph_copy[String(String(describing: nb))] as! [String]), uv) as! [String]))
+173 |                 graph_copy = _set(graph_copy, String(describing: nb), (remove_all((graph_copy[String(String(describing: nb))] as! [String]), (u as! String)) as! [String]))
+174 |                 graph_copy = _set(graph_copy, String(describing: nb), (remove_all((graph_copy[String(String(describing: nb))] as! [String]), (v as! String)) as! [String]))
+    |                                                                                                                               `- warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+175 |                 k = _int((k &+ 1))
+176 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:174:145: warning: forced cast of 'String' to same type has no effect
+172 |                 graph_copy = _set(graph_copy, String(describing: nb), (_append((graph_copy[String(String(describing: nb))] as! [String]), uv) as! [String]))
+173 |                 graph_copy = _set(graph_copy, String(describing: nb), (remove_all((graph_copy[String(String(describing: nb))] as! [String]), (u as! String)) as! [String]))
+174 |                 graph_copy = _set(graph_copy, String(describing: nb), (remove_all((graph_copy[String(String(describing: nb))] as! [String]), (v as! String)) as! [String]))
+    |                                                                                                                                                 `- warning: forced cast of 'String' to same type has no effect
+175 |                 k = _int((k &+ 1))
+176 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:174:158: warning: forced cast of '[String]' to same type has no effect
+172 |                 graph_copy = _set(graph_copy, String(describing: nb), (_append((graph_copy[String(String(describing: nb))] as! [String]), uv) as! [String]))
+173 |                 graph_copy = _set(graph_copy, String(describing: nb), (remove_all((graph_copy[String(String(describing: nb))] as! [String]), (u as! String)) as! [String]))
+174 |                 graph_copy = _set(graph_copy, String(describing: nb), (remove_all((graph_copy[String(String(describing: nb))] as! [String]), (v as! String)) as! [String]))
+    |                                                                                                                                                              `- warning: forced cast of '[String]' to same type has no effect
+175 |                 k = _int((k &+ 1))
+176 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:179:74: warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+177 |             var group: [String] = ([] as! [String])
+178 |             i = 0
+179 |             while (i < _int((((contracted[String(String(describing: u))] as! [String])).count))) {
+    |                                                                          `- warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+180 |                 group = (_append(group, (contracted[String(String(describing: u))][i] as! String)) as! [String])
+181 |                 i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:180:82: error: value of optional type '[String]?' must be unwrapped to refer to member 'subscript' of wrapped base type '[String]'
+178 |             i = 0
+179 |             while (i < _int((((contracted[String(String(describing: u))] as! [String])).count))) {
+180 |                 group = (_append(group, (contracted[String(String(describing: u))][i] as! String)) as! [String])
+    |                                                                                  |- error: value of optional type '[String]?' must be unwrapped to refer to member 'subscript' of wrapped base type '[String]'
+    |                                                                                  |- note: chain the optional using '?' to access member 'subscript' only for non-'nil' base values
+    |                                                                                  `- note: force-unwrap using '!' to abort execution if the optional value contains 'nil'
+181 |                 i = _int((i &+ 1))
+182 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:180:87: warning: forced cast of 'String' to same type has no effect
+178 |             i = 0
+179 |             while (i < _int((((contracted[String(String(describing: u))] as! [String])).count))) {
+180 |                 group = (_append(group, (contracted[String(String(describing: u))][i] as! String)) as! [String])
+    |                                                                                       `- warning: forced cast of 'String' to same type has no effect
+181 |                 i = _int((i &+ 1))
+182 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:184:74: warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+182 |             }
+183 |             i = 0
+184 |             while (i < _int((((contracted[String(String(describing: v))] as! [String])).count))) {
+    |                                                                          `- warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+185 |                 let val = (contracted[String(String(describing: v))][i] as! String)
+186 |                 if (((group as! [String]).contains((val as! String))) == false) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:185:68: error: value of optional type '[String]?' must be unwrapped to refer to member 'subscript' of wrapped base type '[String]'
+183 |             i = 0
+184 |             while (i < _int((((contracted[String(String(describing: v))] as! [String])).count))) {
+185 |                 let val = (contracted[String(String(describing: v))][i] as! String)
+    |                                                                    |- error: value of optional type '[String]?' must be unwrapped to refer to member 'subscript' of wrapped base type '[String]'
+    |                                                                    |- note: chain the optional using '?' to access member 'subscript' only for non-'nil' base values
+    |                                                                    `- note: force-unwrap using '!' to abort execution if the optional value contains 'nil'
+186 |                 if (((group as! [String]).contains((val as! String))) == false) {
+187 |                     group = (_append(group, val) as! [String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:185:73: warning: forced cast of 'String' to same type has no effect
+183 |             i = 0
+184 |             while (i < _int((((contracted[String(String(describing: v))] as! [String])).count))) {
+185 |                 let val = (contracted[String(String(describing: v))][i] as! String)
+    |                                                                         `- warning: forced cast of 'String' to same type has no effect
+186 |                 if (((group as! [String]).contains((val as! String))) == false) {
+187 |                     group = (_append(group, val) as! [String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:186:29: warning: forced cast of '[String]' to same type has no effect
+184 |             while (i < _int((((contracted[String(String(describing: v))] as! [String])).count))) {
+185 |                 let val = (contracted[String(String(describing: v))][i] as! String)
+186 |                 if (((group as! [String]).contains((val as! String))) == false) {
+    |                             `- warning: forced cast of '[String]' to same type has no effect
+187 |                     group = (_append(group, val) as! [String])
+188 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:191:74: warning: forced cast of '[String]' to same type has no effect
+189 |                 i = _int((i &+ 1))
+190 |             }
+191 |             contracted = _set(contracted, String(describing: uv), (group as! [String]))
+    |                                                                          `- warning: forced cast of '[String]' to same type has no effect
+192 |             nodes = (remove_all((nodes as! [String]), (u as! String)) as! [String])
+193 |             nodes = (remove_all((nodes as! [String]), (v as! String)) as! [String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:192:40: warning: forced cast of '[String]' to same type has no effect
+190 |             }
+191 |             contracted = _set(contracted, String(describing: uv), (group as! [String]))
+192 |             nodes = (remove_all((nodes as! [String]), (u as! String)) as! [String])
+    |                                        `- warning: forced cast of '[String]' to same type has no effect
+193 |             nodes = (remove_all((nodes as! [String]), (v as! String)) as! [String])
+194 |             nodes = (_append(nodes, uv) as! [String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:192:58: warning: forced cast of 'String' to same type has no effect
+190 |             }
+191 |             contracted = _set(contracted, String(describing: uv), (group as! [String]))
+192 |             nodes = (remove_all((nodes as! [String]), (u as! String)) as! [String])
+    |                                                          `- warning: forced cast of 'String' to same type has no effect
+193 |             nodes = (remove_all((nodes as! [String]), (v as! String)) as! [String])
+194 |             nodes = (_append(nodes, uv) as! [String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:192:71: warning: forced cast of '[String]' to same type has no effect
+190 |             }
+191 |             contracted = _set(contracted, String(describing: uv), (group as! [String]))
+192 |             nodes = (remove_all((nodes as! [String]), (u as! String)) as! [String])
+    |                                                                       `- warning: forced cast of '[String]' to same type has no effect
+193 |             nodes = (remove_all((nodes as! [String]), (v as! String)) as! [String])
+194 |             nodes = (_append(nodes, uv) as! [String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:193:40: warning: forced cast of '[String]' to same type has no effect
+191 |             contracted = _set(contracted, String(describing: uv), (group as! [String]))
+192 |             nodes = (remove_all((nodes as! [String]), (u as! String)) as! [String])
+193 |             nodes = (remove_all((nodes as! [String]), (v as! String)) as! [String])
+    |                                        `- warning: forced cast of '[String]' to same type has no effect
+194 |             nodes = (_append(nodes, uv) as! [String])
+195 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:193:58: warning: forced cast of 'String' to same type has no effect
+191 |             contracted = _set(contracted, String(describing: uv), (group as! [String]))
+192 |             nodes = (remove_all((nodes as! [String]), (u as! String)) as! [String])
+193 |             nodes = (remove_all((nodes as! [String]), (v as! String)) as! [String])
+    |                                                          `- warning: forced cast of 'String' to same type has no effect
+194 |             nodes = (_append(nodes, uv) as! [String])
+195 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:193:71: warning: forced cast of '[String]' to same type has no effect
+191 |             contracted = _set(contracted, String(describing: uv), (group as! [String]))
+192 |             nodes = (remove_all((nodes as! [String]), (u as! String)) as! [String])
+193 |             nodes = (remove_all((nodes as! [String]), (v as! String)) as! [String])
+    |                                                                       `- warning: forced cast of '[String]' to same type has no effect
+194 |             nodes = (_append(nodes, uv) as! [String])
+195 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:199:31: warning: forced cast of 'String' to same type has no effect
+197 |         var j: Int = 0
+198 |         while (j < _int(((nodes).count))) {
+199 |             let n = (nodes[j] as! String)
+    |                               `- warning: forced cast of 'String' to same type has no effect
+200 |             groups = (_append(groups, (contracted[String(String(describing: n))] as! [String])) as! [[String]])
+201 |             j = _int((j &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:200:82: warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+198 |         while (j < _int(((nodes).count))) {
+199 |             let n = (nodes[j] as! String)
+200 |             groups = (_append(groups, (contracted[String(String(describing: n))] as! [String])) as! [[String]])
+    |                                                                                  `- warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+201 |             j = _int((j &+ 1))
+202 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:203:43: warning: forced cast of '[String]' to same type has no effect
+201 |             j = _int((j &+ 1))
+202 |         }
+203 |         let groupA: [String] = (groups[0] as! [String])
+    |                                           `- warning: forced cast of '[String]' to same type has no effect
+204 |         let groupB: [String] = (groups[1] as! [String])
+205 |         var cut: [Pair] = ([] as! [Pair])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:204:43: warning: forced cast of '[String]' to same type has no effect
+202 |         }
+203 |         let groupA: [String] = (groups[0] as! [String])
+204 |         let groupB: [String] = (groups[1] as! [String])
+    |                                           `- warning: forced cast of '[String]' to same type has no effect
+205 |         var cut: [Pair] = ([] as! [Pair])
+206 |         j = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:208:35: warning: forced cast of 'String' to same type has no effect
+206 |         j = 0
+207 |         while (j < _int(((groupA).count))) {
+208 |             let node = (groupA[j] as! String)
+    |                                   `- warning: forced cast of 'String' to same type has no effect
+209 |             var neigh: [String] = (graph[String(String(describing: node))] as! [String])
+210 |             var l: Int = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:209:76: warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+207 |         while (j < _int(((groupA).count))) {
+208 |             let node = (groupA[j] as! String)
+209 |             var neigh: [String] = (graph[String(String(describing: node))] as! [String])
+    |                                                                            `- warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+210 |             var l: Int = 0
+211 |             while (l < _int(((neigh).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:212:36: warning: forced cast of 'String' to same type has no effect
+210 |             var l: Int = 0
+211 |             while (l < _int(((neigh).count))) {
+212 |                 let nb = (neigh[l] as! String)
+    |                                    `- warning: forced cast of 'String' to same type has no effect
+213 |                 if ((groupB as! [String]).contains((nb as! String))) {
+214 |                     cut = (_append(cut, Pair(a: node, b: nb)) as! [Pair])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:213:29: warning: forced cast of '[String]' to same type has no effect
+211 |             while (l < _int(((neigh).count))) {
+212 |                 let nb = (neigh[l] as! String)
+213 |                 if ((groupB as! [String]).contains((nb as! String))) {
+    |                             `- warning: forced cast of '[String]' to same type has no effect
+214 |                     cut = (_append(cut, Pair(a: node, b: nb)) as! [Pair])
+215 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:213:56: warning: forced cast of 'String' to same type has no effect
+211 |             while (l < _int(((neigh).count))) {
+212 |                 let nb = (neigh[l] as! String)
+213 |                 if ((groupB as! [String]).contains((nb as! String))) {
+    |                                                        `- warning: forced cast of 'String' to same type has no effect
+214 |                     cut = (_append(cut, Pair(a: node, b: nb)) as! [Pair])
+215 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:226:29: warning: forced cast of 'Pair' to same type has no effect
+224 |         var i: Int = 0
+225 |         while (i < _int(((cut).count))) {
+226 |             let p = (cut[i] as! Pair)
+    |                             `- warning: forced cast of 'Pair' to same type has no effect
+227 |             s = ((((((s + "(") + p.a) + ", ") + p.b) + ")") as! String)
+228 |             if (i < (_int(((cut).count)) &- 1)) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:227:61: warning: forced cast of 'String' to same type has no effect
+225 |         while (i < _int(((cut).count))) {
+226 |             let p = (cut[i] as! Pair)
+227 |             s = ((((((s + "(") + p.a) + ", ") + p.b) + ")") as! String)
+    |                                                             `- warning: forced cast of 'String' to same type has no effect
+228 |             if (i < (_int(((cut).count)) &- 1)) {
+229 |                 s = ((s + ", ") as! String)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:229:33: warning: forced cast of 'String' to same type has no effect
+227 |             s = ((((((s + "(") + p.a) + ", ") + p.b) + ")") as! String)
+228 |             if (i < (_int(((cut).count)) &- 1)) {
+229 |                 s = ((s + ", ") as! String)
+    |                                 `- warning: forced cast of 'String' to same type has no effect
+230 |             }
+231 |             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:233:24: warning: forced cast of 'String' to same type has no effect
+231 |             i = _int((i &+ 1))
+232 |         }
+233 |         s = ((s + "}") as! String)
+    |                        `- warning: forced cast of 'String' to same type has no effect
+234 |         return s
+235 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:237:55: warning: forced cast of '[String : [String]]' to same type has no effect
+235 |     }
+236 |     let TEST_GRAPH: [String: [String]] = (["1": (["2", "3", "4", "5"] as! [String]), "2": (["1", "3", "4", "5"] as! [String]), "3": (["1", "2", "4", "5", "10"] as! [String]), "4": (["1", "2", "3", "5", "6"] as! [String]), "5": (["1", "2", "3", "4", "7"] as! [String]), "6": (["7", "8", "9", "10", "4"] as! [String]), "7": (["6", "8", "9", "10", "5"] as! [String]), "8": (["6", "7", "9", "10"] as! [String]), "9": (["6", "7", "8", "10"] as! [String]), "10": (["6", "7", "8", "9", "3"] as! [String])] as! [String: [String]])
+237 |     let result: [Pair] = (partition_graph((TEST_GRAPH as! [String: [String]])) as! [Pair])
+    |                                                       `- warning: forced cast of '[String : [String]]' to same type has no effect
+238 |     print(_p(String(describing: cut_to_string((result as! [Pair])))))
+239 |     let _benchEnd = _now()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:237:80: warning: forced cast of '[Pair]' to same type has no effect
+235 |     }
+236 |     let TEST_GRAPH: [String: [String]] = (["1": (["2", "3", "4", "5"] as! [String]), "2": (["1", "3", "4", "5"] as! [String]), "3": (["1", "2", "4", "5", "10"] as! [String]), "4": (["1", "2", "3", "5", "6"] as! [String]), "5": (["1", "2", "3", "4", "7"] as! [String]), "6": (["7", "8", "9", "10", "4"] as! [String]), "7": (["6", "8", "9", "10", "5"] as! [String]), "8": (["6", "7", "9", "10"] as! [String]), "9": (["6", "7", "8", "10"] as! [String]), "10": (["6", "7", "8", "9", "3"] as! [String])] as! [String: [String]])
+237 |     let result: [Pair] = (partition_graph((TEST_GRAPH as! [String: [String]])) as! [Pair])
+    |                                                                                `- warning: forced cast of '[Pair]' to same type has no effect
+238 |     print(_p(String(describing: cut_to_string((result as! [Pair])))))
+239 |     let _benchEnd = _now()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden437_graphs_karger1261616654/001/main.swift:238:55: warning: forced cast of '[Pair]' to same type has no effect
+236 |     let TEST_GRAPH: [String: [String]] = (["1": (["2", "3", "4", "5"] as! [String]), "2": (["1", "3", "4", "5"] as! [String]), "3": (["1", "2", "4", "5", "10"] as! [String]), "4": (["1", "2", "3", "5", "6"] as! [String]), "5": (["1", "2", "3", "4", "7"] as! [String]), "6": (["7", "8", "9", "10", "4"] as! [String]), "7": (["6", "8", "9", "10", "5"] as! [String]), "8": (["6", "7", "9", "10"] as! [String]), "9": (["6", "7", "8", "10"] as! [String]), "10": (["6", "7", "8", "9", "3"] as! [String])] as! [String: [String]])
+237 |     let result: [Pair] = (partition_graph((TEST_GRAPH as! [String: [String]])) as! [Pair])
+238 |     print(_p(String(describing: cut_to_string((result as! [Pair])))))
+    |                                                       `- warning: forced cast of '[Pair]' to same type has no effect
+239 |     let _benchEnd = _now()
+240 |     let _benchMemEnd = _mem()

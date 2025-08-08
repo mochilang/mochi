@@ -1,0 +1,161 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden423_graphs_eulerian_path_and_circuit_for_undirected_graph2775984744/001/main.swift:103:46: warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
+101 |         path = (_append(path, u) as! [Int])
+102 |         if (graph[u] != nil) {
+103 |             let neighbors: [Int] = (graph[u] as! [Int])
+    |                                              `- warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
+104 |             var i: Int = 0
+105 |             while (i < _int(((neighbors).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden423_graphs_eulerian_path_and_circuit_for_undirected_graph2775984744/001/main.swift:106:39: warning: conditional cast from 'Int' to 'Int' always succeeds
+104 |             var i: Int = 0
+105 |             while (i < _int(((neighbors).count))) {
+106 |                 let v = (neighbors[i] as? Int ?? 0)
+    |                                       `- warning: conditional cast from 'Int' to 'Int' always succeeds
+107 |                 if ((visited_edge[u][v] as! Bool) == false) {
+108 |                     visited_edge[u][v] = true
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden423_graphs_eulerian_path_and_circuit_for_undirected_graph2775984744/001/main.swift:107:41: warning: forced cast of 'Bool' to same type has no effect
+105 |             while (i < _int(((neighbors).count))) {
+106 |                 let v = (neighbors[i] as? Int ?? 0)
+107 |                 if ((visited_edge[u][v] as! Bool) == false) {
+    |                                         `- warning: forced cast of 'Bool' to same type has no effect
+108 |                     visited_edge[u][v] = true
+109 |                     visited_edge[v][u] = true
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden423_graphs_eulerian_path_and_circuit_for_undirected_graph2775984744/001/main.swift:110:43: warning: forced cast of '[Int : [Int]]' to same type has no effect
+108 |                     visited_edge[u][v] = true
+109 |                     visited_edge[v][u] = true
+110 |                     path = (dfs(v, (graph as! [Int: [Int]]), &visited_edge, &path) as! [Int])
+    |                                           `- warning: forced cast of '[Int : [Int]]' to same type has no effect
+111 |                 }
+112 |                 i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden423_graphs_eulerian_path_and_circuit_for_undirected_graph2775984744/001/main.swift:110:84: warning: forced cast of '[Int]' to same type has no effect
+108 |                     visited_edge[u][v] = true
+109 |                     visited_edge[v][u] = true
+110 |                     path = (dfs(v, (graph as! [Int: [Int]]), &visited_edge, &path) as! [Int])
+    |                                                                                    `- warning: forced cast of '[Int]' to same type has no effect
+111 |                 }
+112 |                 i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden423_graphs_eulerian_path_and_circuit_for_undirected_graph2775984744/001/main.swift:123:40: warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
+121 |         while (i < max_node) {
+122 |             if (graph[i] != nil) {
+123 |                 if (((_int((((graph[i] as! [Int])).count)) % 2 + 2) % 2) == 1) {
+    |                                        `- warning: forced cast from '[Int]?' to '[Int]' only unwraps optionals; did you mean to use '!'?
+124 |                     odd_degree_nodes = _int((odd_degree_nodes &+ 1))
+125 |                     odd_node = Int(i)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden423_graphs_eulerian_path_and_circuit_for_undirected_graph2775984744/001/main.swift:139:61: warning: forced cast of '[[Bool]]' to same type has no effect
+137 |     }
+138 |     func check_euler(_ graph: [Int: [Int]], _ max_node: Int) {
+139 |         var visited_edge: [[Bool]] = (make_matrix(max_node) as! [[Bool]])
+    |                                                             `- warning: forced cast of '[[Bool]]' to same type has no effect
+140 |         let res = check_circuit_or_path((graph as! [Int: [Int]]), max_node)
+141 |         if (res.status == 3) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden423_graphs_eulerian_path_and_circuit_for_undirected_graph2775984744/001/main.swift:140:48: warning: forced cast of '[Int : [Int]]' to same type has no effect
+138 |     func check_euler(_ graph: [Int: [Int]], _ max_node: Int) {
+139 |         var visited_edge: [[Bool]] = (make_matrix(max_node) as! [[Bool]])
+140 |         let res = check_circuit_or_path((graph as! [Int: [Int]]), max_node)
+    |                                                `- warning: forced cast of '[Int : [Int]]' to same type has no effect
+141 |         if (res.status == 3) {
+142 |             print(_p("graph is not Eulerian"))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden423_graphs_eulerian_path_and_circuit_for_undirected_graph2775984744/001/main.swift:156:73: error: cannot convert value of type '[Any]' to expected argument type '[Int]'
+154 |         let path: [Int] = ({ () -> Any in
+155 |         var _tmp3 = []
+156 |         return dfs(start_node, (graph as! [Int: [Int]]), &visited_edge, &_tmp3)
+    |                                                                         |- error: cannot convert value of type '[Any]' to expected argument type '[Int]'
+    |                                                                         `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
+157 |     }() as! [Int])
+158 |     print(_p("[" + path.map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden423_graphs_eulerian_path_and_circuit_for_undirected_graph2775984744/001/main.swift:156:39: warning: forced cast of '[Int : [Int]]' to same type has no effect
+154 |         let path: [Int] = ({ () -> Any in
+155 |         var _tmp3 = []
+156 |         return dfs(start_node, (graph as! [Int: [Int]]), &visited_edge, &_tmp3)
+    |                                       `- warning: forced cast of '[Int : [Int]]' to same type has no effect
+157 |     }() as! [Int])
+158 |     print(_p("[" + path.map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden423_graphs_eulerian_path_and_circuit_for_undirected_graph2775984744/001/main.swift:166:21: warning: forced cast of '[Int : [Int]]' to same type has no effect
+164 | let g5: [Int: [Int]] = (([1: [] as [Any], 2: [] as [Any]] as! [Int: [Any?]]) as! [Int: [Int]])
+165 | let max_node = 10
+166 | _ = check_euler((g1 as! [Int: [Int]]), max_node)
+    |                     `- warning: forced cast of '[Int : [Int]]' to same type has no effect
+167 | _ = check_euler((g2 as! [Int: [Int]]), max_node)
+168 | _ = check_euler((g3 as! [Int: [Int]]), max_node)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden423_graphs_eulerian_path_and_circuit_for_undirected_graph2775984744/001/main.swift:166:1: warning: using '_' to ignore the result of a Void-returning function is redundant
+164 | let g5: [Int: [Int]] = (([1: [] as [Any], 2: [] as [Any]] as! [Int: [Any?]]) as! [Int: [Int]])
+165 | let max_node = 10
+166 | _ = check_euler((g1 as! [Int: [Int]]), max_node)
+    | `- warning: using '_' to ignore the result of a Void-returning function is redundant
+167 | _ = check_euler((g2 as! [Int: [Int]]), max_node)
+168 | _ = check_euler((g3 as! [Int: [Int]]), max_node)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden423_graphs_eulerian_path_and_circuit_for_undirected_graph2775984744/001/main.swift:167:21: warning: forced cast of '[Int : [Int]]' to same type has no effect
+165 | let max_node = 10
+166 | _ = check_euler((g1 as! [Int: [Int]]), max_node)
+167 | _ = check_euler((g2 as! [Int: [Int]]), max_node)
+    |                     `- warning: forced cast of '[Int : [Int]]' to same type has no effect
+168 | _ = check_euler((g3 as! [Int: [Int]]), max_node)
+169 | _ = check_euler((g4 as! [Int: [Int]]), max_node)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden423_graphs_eulerian_path_and_circuit_for_undirected_graph2775984744/001/main.swift:167:1: warning: using '_' to ignore the result of a Void-returning function is redundant
+165 | let max_node = 10
+166 | _ = check_euler((g1 as! [Int: [Int]]), max_node)
+167 | _ = check_euler((g2 as! [Int: [Int]]), max_node)
+    | `- warning: using '_' to ignore the result of a Void-returning function is redundant
+168 | _ = check_euler((g3 as! [Int: [Int]]), max_node)
+169 | _ = check_euler((g4 as! [Int: [Int]]), max_node)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden423_graphs_eulerian_path_and_circuit_for_undirected_graph2775984744/001/main.swift:168:21: warning: forced cast of '[Int : [Int]]' to same type has no effect
+166 | _ = check_euler((g1 as! [Int: [Int]]), max_node)
+167 | _ = check_euler((g2 as! [Int: [Int]]), max_node)
+168 | _ = check_euler((g3 as! [Int: [Int]]), max_node)
+    |                     `- warning: forced cast of '[Int : [Int]]' to same type has no effect
+169 | _ = check_euler((g4 as! [Int: [Int]]), max_node)
+170 | _ = check_euler((g5 as! [Int: [Int]]), max_node)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden423_graphs_eulerian_path_and_circuit_for_undirected_graph2775984744/001/main.swift:168:1: warning: using '_' to ignore the result of a Void-returning function is redundant
+166 | _ = check_euler((g1 as! [Int: [Int]]), max_node)
+167 | _ = check_euler((g2 as! [Int: [Int]]), max_node)
+168 | _ = check_euler((g3 as! [Int: [Int]]), max_node)
+    | `- warning: using '_' to ignore the result of a Void-returning function is redundant
+169 | _ = check_euler((g4 as! [Int: [Int]]), max_node)
+170 | _ = check_euler((g5 as! [Int: [Int]]), max_node)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden423_graphs_eulerian_path_and_circuit_for_undirected_graph2775984744/001/main.swift:169:21: warning: forced cast of '[Int : [Int]]' to same type has no effect
+167 | _ = check_euler((g2 as! [Int: [Int]]), max_node)
+168 | _ = check_euler((g3 as! [Int: [Int]]), max_node)
+169 | _ = check_euler((g4 as! [Int: [Int]]), max_node)
+    |                     `- warning: forced cast of '[Int : [Int]]' to same type has no effect
+170 | _ = check_euler((g5 as! [Int: [Int]]), max_node)
+171 | let _benchEnd = _now()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden423_graphs_eulerian_path_and_circuit_for_undirected_graph2775984744/001/main.swift:169:1: warning: using '_' to ignore the result of a Void-returning function is redundant
+167 | _ = check_euler((g2 as! [Int: [Int]]), max_node)
+168 | _ = check_euler((g3 as! [Int: [Int]]), max_node)
+169 | _ = check_euler((g4 as! [Int: [Int]]), max_node)
+    | `- warning: using '_' to ignore the result of a Void-returning function is redundant
+170 | _ = check_euler((g5 as! [Int: [Int]]), max_node)
+171 | let _benchEnd = _now()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden423_graphs_eulerian_path_and_circuit_for_undirected_graph2775984744/001/main.swift:170:21: warning: forced cast of '[Int : [Int]]' to same type has no effect
+168 | _ = check_euler((g3 as! [Int: [Int]]), max_node)
+169 | _ = check_euler((g4 as! [Int: [Int]]), max_node)
+170 | _ = check_euler((g5 as! [Int: [Int]]), max_node)
+    |                     `- warning: forced cast of '[Int : [Int]]' to same type has no effect
+171 | let _benchEnd = _now()
+172 | let _benchMemEnd = _mem()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden423_graphs_eulerian_path_and_circuit_for_undirected_graph2775984744/001/main.swift:170:1: warning: using '_' to ignore the result of a Void-returning function is redundant
+168 | _ = check_euler((g3 as! [Int: [Int]]), max_node)
+169 | _ = check_euler((g4 as! [Int: [Int]]), max_node)
+170 | _ = check_euler((g5 as! [Int: [Int]]), max_node)
+    | `- warning: using '_' to ignore the result of a Void-returning function is redundant
+171 | let _benchEnd = _now()
+172 | let _benchMemEnd = _mem()

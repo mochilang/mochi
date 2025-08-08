@@ -1,0 +1,1002 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:137:34: warning: forced cast of 'String' to same type has no effect
+135 |         for row in edge_array {
+136 |             for item in row {
+137 |                 let e = (item[0] as! String)
+    |                                  `- warning: forced cast of 'String' to same type has no effect
+138 |                 if (!((distinct as! [String]).contains((e as! String)))) {
+139 |                     distinct = (_append(distinct, e) as! [String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:138:33: warning: forced cast of '[String]' to same type has no effect
+136 |             for item in row {
+137 |                 let e = (item[0] as! String)
+138 |                 if (!((distinct as! [String]).contains((e as! String)))) {
+    |                                 `- warning: forced cast of '[String]' to same type has no effect
+139 |                     distinct = (_append(distinct, e) as! [String])
+140 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:138:59: warning: forced cast of 'String' to same type has no effect
+136 |             for item in row {
+137 |                 let e = (item[0] as! String)
+138 |                 if (!((distinct as! [String]).contains((e as! String)))) {
+    |                                                           `- warning: forced cast of 'String' to same type has no effect
+139 |                     distinct = (_append(distinct, e) as! [String])
+140 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:150:40: warning: forced cast of '[[String]]' to same type has no effect
+148 |         while (i < _int(((edge_array).count))) {
+149 |             var found: Bool = false
+150 |             for item in (edge_array[i] as! [[String]]) {
+    |                                        `- warning: forced cast of '[[String]]' to same type has no effect
+151 |                 if ((item[0] as! String) == de) {
+152 |                     found = true
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:151:30: warning: forced cast of 'String' to same type has no effect
+149 |             var found: Bool = false
+150 |             for item in (edge_array[i] as! [[String]]) {
+151 |                 if ((item[0] as! String) == de) {
+    |                              `- warning: forced cast of 'String' to same type has no effect
+152 |                     found = true
+153 |                     break
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:157:44: warning: forced cast of 'String' to same type has no effect
+155 |             }
+156 |             if found {
+157 |                 bitcode = ((bitcode + "1") as! String)
+    |                                            `- warning: forced cast of 'String' to same type has no effect
+158 |             } else {
+159 |                 bitcode = ((bitcode + "0") as! String)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:159:44: warning: forced cast of 'String' to same type has no effect
+157 |                 bitcode = ((bitcode + "1") as! String)
+158 |             } else {
+159 |                 bitcode = ((bitcode + "0") as! String)
+    |                                            `- warning: forced cast of 'String' to same type has no effect
+160 |             }
+161 |             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:169:71: warning: forced cast of 'String' to same type has no effect
+167 |         var i: Int = 0
+168 |         while (i < _int(((s).count))) {
+169 |             if (String(describing: String(Array(String(describing: (s as! String)))[i..<(i &+ 1)])) == "1") {
+    |                                                                       `- warning: forced cast of 'String' to same type has no effect
+170 |                 c = _int((c &+ 1))
+171 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:177:65: warning: forced cast of '[[[String]]]' to same type has no effect
+175 |     }
+176 |     func get_frequency_table(_ edge_array: [[[String]]]) -> [[String: String]] {
+177 |         let distinct: [String] = (get_distinct_edge((edge_array as! [[[String]]])) as! [String])
+    |                                                                 `- warning: forced cast of '[[[String]]]' to same type has no effect
+178 |         var table: [[String: String]] = ([] as! [[String: String]])
+179 |         for e in distinct {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:177:84: warning: forced cast of '[String]' to same type has no effect
+175 |     }
+176 |     func get_frequency_table(_ edge_array: [[[String]]]) -> [[String: String]] {
+177 |         let distinct: [String] = (get_distinct_edge((edge_array as! [[[String]]])) as! [String])
+    |                                                                                    `- warning: forced cast of '[String]' to same type has no effect
+178 |         var table: [[String: String]] = ([] as! [[String: String]])
+179 |         for e in distinct {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:180:66: warning: forced cast of '[[[String]]]' to same type has no effect
+178 |         var table: [[String: String]] = ([] as! [[String: String]])
+179 |         for e in distinct {
+180 |             let bit = String(describing: get_bitcode((edge_array as! [[[String]]]), (e as! String)))
+    |                                                                  `- warning: forced cast of '[[[String]]]' to same type has no effect
+181 |             let cnt = _int(count_ones((bit as! String)))
+182 |             var entry: [String: String] = (["edge": e, "count": _p(cnt), "bit": bit] as! [String: String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:180:88: warning: forced cast of 'String' to same type has no effect
+178 |         var table: [[String: String]] = ([] as! [[String: String]])
+179 |         for e in distinct {
+180 |             let bit = String(describing: get_bitcode((edge_array as! [[[String]]]), (e as! String)))
+    |                                                                                        `- warning: forced cast of 'String' to same type has no effect
+181 |             let cnt = _int(count_ones((bit as! String)))
+182 |             var entry: [String: String] = (["edge": e, "count": _p(cnt), "bit": bit] as! [String: String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:181:44: warning: forced cast of 'String' to same type has no effect
+179 |         for e in distinct {
+180 |             let bit = String(describing: get_bitcode((edge_array as! [[[String]]]), (e as! String)))
+181 |             let cnt = _int(count_ones((bit as! String)))
+    |                                            `- warning: forced cast of 'String' to same type has no effect
+182 |             var entry: [String: String] = (["edge": e, "count": _p(cnt), "bit": bit] as! [String: String])
+183 |             table = (_append(table, entry) as! [[String: String]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:190:40: error: cannot find 'toi' in scope
+188 |             var j: Int = (i &+ 1)
+189 |             while (j < _int(((table).count))) {
+190 |                 if (String(describing: toi((String(Array(table[j])["count"]) as! String))) > String(describing: toi((String(Array(table[max_i])["count"]) as! String)))
+    |                                        `- error: cannot find 'toi' in scope
+191 |                 ) {
+192 |                     max_i = Int(j)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:190:113: error: cannot find 'toi' in scope
+188 |             var j: Int = (i &+ 1)
+189 |             while (j < _int(((table).count))) {
+190 |                 if (String(describing: toi((String(Array(table[j])["count"]) as! String))) > String(describing: toi((String(Array(table[max_i])["count"]) as! String)))
+    |                                                                                                                 `- error: cannot find 'toi' in scope
+191 |                 ) {
+192 |                     max_i = Int(j)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:190:118: error: no exact matches in call to initializer 
+188 |             var j: Int = (i &+ 1)
+189 |             while (j < _int(((table).count))) {
+190 |                 if (String(describing: toi((String(Array(table[j])["count"]) as! String))) > String(describing: toi((String(Array(table[max_i])["count"]) as! String)))
+    |                                                                                                                      `- error: no exact matches in call to initializer 
+191 |                 ) {
+192 |                     max_i = Int(j)
+
+Swift.String.init:2:19: note: candidate requires that 'Dictionary<String, String>.Element' (aka '(key: String, value: String)') conform to 'LosslessStringConvertible' (requirement specified as 'T' : 'LosslessStringConvertible')
+1 | struct String {
+2 | @inlinable public init<T>(_ value: T) where T : LosslessStringConvertible}
+  |                   `- note: candidate requires that 'Dictionary<String, String>.Element' (aka '(key: String, value: String)') conform to 'LosslessStringConvertible' (requirement specified as 'T' : 'LosslessStringConvertible')
+3 | 
+
+Swift.String.init:2:8: note: candidate requires that 'Dictionary<String, String>.Element' (aka '(key: String, value: String)') conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
+1 | struct String {
+2 | public init<T>(_ value: T, radix: Int = 10, uppercase: Bool = false) where T : BinaryInteger}
+  |        `- note: candidate requires that 'Dictionary<String, String>.Element' (aka '(key: String, value: String)') conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
+3 | 
+
+Swift.String.init:2:8: note: candidate requires that 'Dictionary<String, String>.Element' (aka '(key: String, value: String)') conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
+1 | struct String {
+2 | public init<S>(_ characters: S) where S : Sequence, S.Element == Character}
+  |        `- note: candidate requires that 'Dictionary<String, String>.Element' (aka '(key: String, value: String)') conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
+3 | 
+
+Swift.RangeReplaceableCollection.init:2:19: note: candidate requires that 'Dictionary<String, String>.Element' (aka '(key: String, value: String)') conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
+1 | protocol RangeReplaceableCollection {
+2 | @inlinable public init<S>(_ elements: S) where S : Sequence, Self.Element == S.Element}
+  |                   `- note: candidate requires that 'Dictionary<String, String>.Element' (aka '(key: String, value: String)') conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
+3 | 
+
+Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
+1 | struct String {
+2 | public init<Subject>(describing instance: Subject)}
+  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
+3 | 
+
+Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
+1 | struct String {
+2 | public init<Subject>(reflecting subject: Subject)}
+  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
+3 | 
+
+Swift.String.init:2:19: note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
+1 | struct String {
+2 | @inlinable public init<Subject>(describing instance: Subject) where Subject : CustomStringConvertible}
+  |                   `- note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
+3 | 
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:190:67: error: no exact matches in call to subscript 
+188 |             var j: Int = (i &+ 1)
+189 |             while (j < _int(((table).count))) {
+190 |                 if (String(describing: toi((String(Array(table[j])["count"]) as! String))) > String(describing: toi((String(Array(table[max_i])["count"]) as! String)))
+    |                                                                   `- error: no exact matches in call to subscript 
+191 |                 ) {
+192 |                     max_i = Int(j)
+
+Swift.Array.subscript:2:19: note: candidate expects value of type 'Int' for parameter #1 (got 'String')
+1 | generic struct Array {
+2 | @inlinable public subscript(index: Int) -> Element { get set }}
+  |                   `- note: candidate expects value of type 'Int' for parameter #1 (got 'String')
+3 | 
+
+Swift.Array.subscript:2:19: note: candidate expects value of type 'Range<Int>' for parameter #1 (got 'String')
+1 | generic struct Array {
+2 | @inlinable public subscript(bounds: Range<Int>) -> ArraySlice<Element> { get set }}
+  |                   `- note: candidate expects value of type 'Range<Int>' for parameter #1 (got 'String')
+3 | 
+
+Swift.Collection.subscript:3:10: note: candidate expects value of type 'RangeSet<Array<Dictionary<String, String>.Element>.Index>' (aka 'RangeSet<Int>') for parameter #1 (got 'String')
+1 | protocol Collection {
+2 | @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+3 |   public subscript(subranges: RangeSet<Self.Index>) -> DiscontiguousSlice<Self> { get }}
+  |          `- note: candidate expects value of type 'RangeSet<Array<Dictionary<String, String>.Element>.Index>' (aka 'RangeSet<Int>') for parameter #1 (got 'String')
+4 | 
+
+Swift.Collection.subscript:2:19: note: candidate expects value of type '(UnboundedRange_) -> ()' for parameter #1 (got 'String')
+1 | protocol Collection {
+2 | @inlinable public subscript(x: (UnboundedRange_) -> ()) -> Self.SubSequence { get }}
+  |                   `- note: candidate expects value of type '(UnboundedRange_) -> ()' for parameter #1 (got 'String')
+3 | 
+
+Swift.MutableCollection.subscript:2:19: note: candidate expects value of type '(UnboundedRange_) -> ()' for parameter #1 (got 'String')
+1 | protocol MutableCollection {
+2 | @inlinable public subscript(x: (UnboundedRange_) -> ()) -> Self.SubSequence { get set }}
+  |                   `- note: candidate expects value of type '(UnboundedRange_) -> ()' for parameter #1 (got 'String')
+3 | 
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:190:45: error: no exact matches in call to initializer 
+188 |             var j: Int = (i &+ 1)
+189 |             while (j < _int(((table).count))) {
+190 |                 if (String(describing: toi((String(Array(table[j])["count"]) as! String))) > String(describing: toi((String(Array(table[max_i])["count"]) as! String)))
+    |                                             `- error: no exact matches in call to initializer 
+191 |                 ) {
+192 |                     max_i = Int(j)
+
+Swift.String.init:2:19: note: candidate requires that 'Dictionary<String, String>.Element' (aka '(key: String, value: String)') conform to 'LosslessStringConvertible' (requirement specified as 'T' : 'LosslessStringConvertible')
+1 | struct String {
+2 | @inlinable public init<T>(_ value: T) where T : LosslessStringConvertible}
+  |                   `- note: candidate requires that 'Dictionary<String, String>.Element' (aka '(key: String, value: String)') conform to 'LosslessStringConvertible' (requirement specified as 'T' : 'LosslessStringConvertible')
+3 | 
+
+Swift.String.init:2:8: note: candidate requires that 'Dictionary<String, String>.Element' (aka '(key: String, value: String)') conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
+1 | struct String {
+2 | public init<T>(_ value: T, radix: Int = 10, uppercase: Bool = false) where T : BinaryInteger}
+  |        `- note: candidate requires that 'Dictionary<String, String>.Element' (aka '(key: String, value: String)') conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
+3 | 
+
+Swift.String.init:2:8: note: candidate requires that 'Dictionary<String, String>.Element' (aka '(key: String, value: String)') conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
+1 | struct String {
+2 | public init<S>(_ characters: S) where S : Sequence, S.Element == Character}
+  |        `- note: candidate requires that 'Dictionary<String, String>.Element' (aka '(key: String, value: String)') conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
+3 | 
+
+Swift.RangeReplaceableCollection.init:2:19: note: candidate requires that 'Dictionary<String, String>.Element' (aka '(key: String, value: String)') conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
+1 | protocol RangeReplaceableCollection {
+2 | @inlinable public init<S>(_ elements: S) where S : Sequence, Self.Element == S.Element}
+  |                   `- note: candidate requires that 'Dictionary<String, String>.Element' (aka '(key: String, value: String)') conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
+3 | 
+
+Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
+1 | struct String {
+2 | public init<Subject>(describing instance: Subject)}
+  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
+3 | 
+
+Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
+1 | struct String {
+2 | public init<Subject>(reflecting subject: Subject)}
+  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
+3 | 
+
+Swift.String.init:2:19: note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
+1 | struct String {
+2 | @inlinable public init<Subject>(describing instance: Subject) where Subject : CustomStringConvertible}
+  |                   `- note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
+3 | 
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:190:144: error: no exact matches in call to subscript 
+188 |             var j: Int = (i &+ 1)
+189 |             while (j < _int(((table).count))) {
+190 |                 if (String(describing: toi((String(Array(table[j])["count"]) as! String))) > String(describing: toi((String(Array(table[max_i])["count"]) as! String)))
+    |                                                                                                                                                `- error: no exact matches in call to subscript 
+191 |                 ) {
+192 |                     max_i = Int(j)
+
+Swift.Array.subscript:2:19: note: candidate expects value of type 'Int' for parameter #1 (got 'String')
+1 | generic struct Array {
+2 | @inlinable public subscript(index: Int) -> Element { get set }}
+  |                   `- note: candidate expects value of type 'Int' for parameter #1 (got 'String')
+3 | 
+
+Swift.Array.subscript:2:19: note: candidate expects value of type 'Range<Int>' for parameter #1 (got 'String')
+1 | generic struct Array {
+2 | @inlinable public subscript(bounds: Range<Int>) -> ArraySlice<Element> { get set }}
+  |                   `- note: candidate expects value of type 'Range<Int>' for parameter #1 (got 'String')
+3 | 
+
+Swift.Collection.subscript:3:10: note: candidate expects value of type 'RangeSet<Array<Dictionary<String, String>.Element>.Index>' (aka 'RangeSet<Int>') for parameter #1 (got 'String')
+1 | protocol Collection {
+2 | @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+3 |   public subscript(subranges: RangeSet<Self.Index>) -> DiscontiguousSlice<Self> { get }}
+  |          `- note: candidate expects value of type 'RangeSet<Array<Dictionary<String, String>.Element>.Index>' (aka 'RangeSet<Int>') for parameter #1 (got 'String')
+4 | 
+
+Swift.Collection.subscript:2:19: note: candidate expects value of type '(UnboundedRange_) -> ()' for parameter #1 (got 'String')
+1 | protocol Collection {
+2 | @inlinable public subscript(x: (UnboundedRange_) -> ()) -> Self.SubSequence { get }}
+  |                   `- note: candidate expects value of type '(UnboundedRange_) -> ()' for parameter #1 (got 'String')
+3 | 
+
+Swift.MutableCollection.subscript:2:19: note: candidate expects value of type '(UnboundedRange_) -> ()' for parameter #1 (got 'String')
+1 | protocol MutableCollection {
+2 | @inlinable public subscript(x: (UnboundedRange_) -> ()) -> Self.SubSequence { get set }}
+  |                   `- note: candidate expects value of type '(UnboundedRange_) -> ()' for parameter #1 (got 'String')
+3 | 
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:196:51: warning: forced cast of '[String : String]' to same type has no effect
+194 |                 j = _int((j &+ 1))
+195 |             }
+196 |             let tmp: [String: String] = (table[i] as! [String: String])
+    |                                                   `- warning: forced cast of '[String : String]' to same type has no effect
+197 |             table = _set(table, i, (table[max_i] as! [String: String]))
+198 |             table = _set(table, max_i, (tmp as! [String: String]))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:197:50: warning: forced cast of '[String : String]' to same type has no effect
+195 |             }
+196 |             let tmp: [String: String] = (table[i] as! [String: String])
+197 |             table = _set(table, i, (table[max_i] as! [String: String]))
+    |                                                  `- warning: forced cast of '[String : String]' to same type has no effect
+198 |             table = _set(table, max_i, (tmp as! [String: String]))
+199 |             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:198:45: warning: forced cast of '[String : String]' to same type has no effect
+196 |             let tmp: [String: String] = (table[i] as! [String: String])
+197 |             table = _set(table, i, (table[max_i] as! [String: String]))
+198 |             table = _set(table, max_i, (tmp as! [String: String]))
+    |                                             `- warning: forced cast of '[String : String]' to same type has no effect
+199 |             i = _int((i &+ 1))
+200 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:206:33: warning: forced cast from '[[String : String]]' to '[[String : Any]]' always succeeds; did you mean to use 'as'?
+204 |         var nodes: [String: [String]] = ([:] as! [String: [String]])
+205 |         var keys: [String] = ([] as! [String])
+206 |         for _item in freq_table as! [[String: Any]] {
+    |                                 `- warning: forced cast from '[[String : String]]' to '[[String : Any]]' always succeeds; did you mean to use 'as'?
+207 |             let f = _item as! [String: Any]
+208 |             let code = (f[String("bit")] as! String)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:207:27: warning: forced cast of '[String : Any]' to same type has no effect
+205 |         var keys: [String] = ([] as! [String])
+206 |         for _item in freq_table as! [[String: Any]] {
+207 |             let f = _item as! [String: Any]
+    |                           `- warning: forced cast of '[String : Any]' to same type has no effect
+208 |             let code = (f[String("bit")] as! String)
+209 |             let edge = (f[String("edge")] as! String)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:211:113: warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+209 |             let edge = (f[String("edge")] as! String)
+210 |             if (nodes[code] != nil) {
+211 |                 nodes = _set(nodes, String(describing: code), (_append((nodes[String(String(describing: code))] as! [String]), edge) as! [String]))
+    |                                                                                                                 `- warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+212 |             } else {
+213 |                 nodes = _set(nodes, String(describing: code), ([edge] as! [String]))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:224:39: warning: forced cast of 'String' to same type has no effect
+222 |         var i: Int = 0
+223 |         while (i < _int(((nodes.keys).count))) {
+224 |             let code = (nodes.keys[i] as! String)
+    |                                       `- warning: forced cast of 'String' to same type has no effect
+225 |             let wt = _int(count_ones((code as! String)))
+226 |             if (clusters[wt] != nil) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:225:44: warning: forced cast of 'String' to same type has no effect
+223 |         while (i < _int(((nodes.keys).count))) {
+224 |             let code = (nodes.keys[i] as! String)
+225 |             let wt = _int(count_ones((code as! String)))
+    |                                            `- warning: forced cast of 'String' to same type has no effect
+226 |             if (clusters[wt] != nil) {
+227 |                 clusters = _set(clusters, wt, (_append((clusters[wt] as! [String]), code) as! [String]))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:227:70: warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+225 |             let wt = _int(count_ones((code as! String)))
+226 |             if (clusters[wt] != nil) {
+227 |                 clusters = _set(clusters, wt, (_append((clusters[wt] as! [String]), code) as! [String]))
+    |                                                                      `- warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+228 |             } else {
+229 |                 clusters = _set(clusters, wt, ([code] as! [String]))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:240:42: warning: conditional cast from 'Int' to 'Int' always succeeds
+238 |         var i: Int = 0
+239 |         while (i < _int(((clusters.weights).count))) {
+240 |             let w = (clusters.weights[i] as? Int ?? 0)
+    |                                          `- warning: conditional cast from 'Int' to 'Int' always succeeds
+241 |             sup = (_append(sup, ((w &* 100) / _int(((clusters.weights).count)))) as! [Int])
+242 |             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:249:76: warning: forced cast of 'String' to same type has no effect
+247 |         var i: Int = 0
+248 |         while (i < _int(((a).count))) {
+249 |             let c1 = String(describing: String(Array(String(describing: (a as! String)))[i..<(i &+ 1)]))
+    |                                                                            `- warning: forced cast of 'String' to same type has no effect
+250 |             let c2 = String(describing: String(Array(String(describing: (b as! String)))[i..<(i &+ 1)]))
+251 |             if ((c1 == "1") && (c2 != "1")) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:250:76: warning: forced cast of 'String' to same type has no effect
+248 |         while (i < _int(((a).count))) {
+249 |             let c1 = String(describing: String(Array(String(describing: (a as! String)))[i..<(i &+ 1)]))
+250 |             let c2 = String(describing: String(Array(String(describing: (b as! String)))[i..<(i &+ 1)]))
+    |                                                                            `- warning: forced cast of 'String' to same type has no effect
+251 |             if ((c1 == "1") && (c2 != "1")) {
+252 |                 return false
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:262:42: warning: conditional cast from 'Int' to 'Int' always succeeds
+260 |         var i: Int = 0
+261 |         while (i < _int(((clusters.weights).count))) {
+262 |             let w = (clusters.weights[i] as? Int ?? 0)
+    |                                          `- warning: conditional cast from 'Int' to 'Int' always succeeds
+263 |             if (w > m) {
+264 |                 m = Int(w)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:272:43: warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+270 |     func get_cluster_codes(_ clusters: ClusterData, _ wt: Int) -> [String] {
+271 |         if (clusters.clusters[wt] != nil) {
+272 |             return (clusters.clusters[wt] as! [String])
+    |                                           `- warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+273 |         }
+274 |         return ([] as! [String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:278:61: warning: forced cast of 'ClusterData' to same type has no effect
+276 |     func create_edge(_ nodes: NodesData, _ graph: inout [String: [String]], _ gkeys: [String], _ clusters: ClusterData, _ c1: Int, _ maxk: Int) -> [String] {
+277 |         var keys: [String] = gkeys
+278 |         let codes1: [String] = (get_cluster_codes((clusters as! ClusterData), c1) as! [String])
+    |                                                             `- warning: forced cast of 'ClusterData' to same type has no effect
+279 |         var idx1: Int = 0
+280 |         while (idx1 < _int(((codes1).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:278:83: warning: forced cast of '[String]' to same type has no effect
+276 |     func create_edge(_ nodes: NodesData, _ graph: inout [String: [String]], _ gkeys: [String], _ clusters: ClusterData, _ c1: Int, _ maxk: Int) -> [String] {
+277 |         var keys: [String] = gkeys
+278 |         let codes1: [String] = (get_cluster_codes((clusters as! ClusterData), c1) as! [String])
+    |                                                                                   `- warning: forced cast of '[String]' to same type has no effect
+279 |         var idx1: Int = 0
+280 |         while (idx1 < _int(((codes1).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:281:40: warning: forced cast of 'String' to same type has no effect
+279 |         var idx1: Int = 0
+280 |         while (idx1 < _int(((codes1).count))) {
+281 |             let i_code = (codes1[idx1] as! String)
+    |                                        `- warning: forced cast of 'String' to same type has no effect
+282 |             var count: Int = 0
+283 |             var c2: Int = (c1 &+ 1)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:285:69: warning: forced cast of 'ClusterData' to same type has no effect
+283 |             var c2: Int = (c1 &+ 1)
+284 |             while (c2 <= maxk) {
+285 |                 let codes2: [String] = (get_cluster_codes((clusters as! ClusterData), c2) as! [String])
+    |                                                                     `- warning: forced cast of 'ClusterData' to same type has no effect
+286 |                 var j: Int = 0
+287 |                 while (j < _int(((codes2).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:285:91: warning: forced cast of '[String]' to same type has no effect
+283 |             var c2: Int = (c1 &+ 1)
+284 |             while (c2 <= maxk) {
+285 |                 let codes2: [String] = (get_cluster_codes((clusters as! ClusterData), c2) as! [String])
+    |                                                                                           `- warning: forced cast of '[String]' to same type has no effect
+286 |                 var j: Int = 0
+287 |                 while (j < _int(((codes2).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:288:45: warning: forced cast of 'String' to same type has no effect
+286 |                 var j: Int = 0
+287 |                 while (j < _int(((codes2).count))) {
+288 |                     let j_code = (codes2[j] as! String)
+    |                                             `- warning: forced cast of 'String' to same type has no effect
+289 |                     if contains_bits((i_code as! String), (j_code as! String)) {
+290 |                         if (graph[i_code] != nil) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:289:46: warning: forced cast of 'String' to same type has no effect
+287 |                 while (j < _int(((codes2).count))) {
+288 |                     let j_code = (codes2[j] as! String)
+289 |                     if contains_bits((i_code as! String), (j_code as! String)) {
+    |                                              `- warning: forced cast of 'String' to same type has no effect
+290 |                         if (graph[i_code] != nil) {
+291 |                             graph = _set(graph, String(describing: i_code), (_append((graph[String(String(describing: i_code))] as! [String]), j_code) as! [String]))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:289:67: warning: forced cast of 'String' to same type has no effect
+287 |                 while (j < _int(((codes2).count))) {
+288 |                     let j_code = (codes2[j] as! String)
+289 |                     if contains_bits((i_code as! String), (j_code as! String)) {
+    |                                                                   `- warning: forced cast of 'String' to same type has no effect
+290 |                         if (graph[i_code] != nil) {
+291 |                             graph = _set(graph, String(describing: i_code), (_append((graph[String(String(describing: i_code))] as! [String]), j_code) as! [String]))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:291:129: warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+289 |                     if contains_bits((i_code as! String), (j_code as! String)) {
+290 |                         if (graph[i_code] != nil) {
+291 |                             graph = _set(graph, String(describing: i_code), (_append((graph[String(String(describing: i_code))] as! [String]), j_code) as! [String]))
+    |                                                                                                                                 `- warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+292 |                         } else {
+293 |                             graph = _set(graph, String(describing: i_code), ([j_code] as! [String]))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:294:41: warning: forced cast of '[String]' to same type has no effect
+292 |                         } else {
+293 |                             graph = _set(graph, String(describing: i_code), ([j_code] as! [String]))
+294 |                             if (!((keys as! [String]).contains((i_code as! String)))) {
+    |                                         `- warning: forced cast of '[String]' to same type has no effect
+295 |                                 keys = (_append(keys, i_code) as! [String])
+296 |                             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:294:72: warning: forced cast of 'String' to same type has no effect
+292 |                         } else {
+293 |                             graph = _set(graph, String(describing: i_code), ([j_code] as! [String]))
+294 |                             if (!((keys as! [String]).contains((i_code as! String)))) {
+    |                                                                        `- warning: forced cast of 'String' to same type has no effect
+295 |                                 keys = (_append(keys, i_code) as! [String])
+296 |                             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:298:37: warning: forced cast of '[String]' to same type has no effect
+296 |                             }
+297 |                         }
+298 |                         if (!((keys as! [String]).contains((j_code as! String)))) {
+    |                                     `- warning: forced cast of '[String]' to same type has no effect
+299 |                             keys = (_append(keys, j_code) as! [String])
+300 |                         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:298:68: warning: forced cast of 'String' to same type has no effect
+296 |                             }
+297 |                         }
+298 |                         if (!((keys as! [String]).contains((j_code as! String)))) {
+    |                                                                    `- warning: forced cast of 'String' to same type has no effect
+299 |                             keys = (_append(keys, j_code) as! [String])
+300 |                         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:316:51: warning: forced cast of 'ClusterData' to same type has no effect
+314 |     }
+315 |     func construct_graph(_ clusters: ClusterData, _ nodes: NodesData) -> GraphData {
+316 |         let maxk = _int(max_cluster_key((clusters as! ClusterData)))
+    |                                                   `- warning: forced cast of 'ClusterData' to same type has no effect
+317 |         let top_codes: [String] = (get_cluster_codes((clusters as! ClusterData), maxk) as! [String])
+318 |         var graph: [String: [String]] = ([:] as! [String: [String]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:317:64: warning: forced cast of 'ClusterData' to same type has no effect
+315 |     func construct_graph(_ clusters: ClusterData, _ nodes: NodesData) -> GraphData {
+316 |         let maxk = _int(max_cluster_key((clusters as! ClusterData)))
+317 |         let top_codes: [String] = (get_cluster_codes((clusters as! ClusterData), maxk) as! [String])
+    |                                                                `- warning: forced cast of 'ClusterData' to same type has no effect
+318 |         var graph: [String: [String]] = ([:] as! [String: [String]])
+319 |         var keys: [String] = (["Header"] as! [String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:317:88: warning: forced cast of '[String]' to same type has no effect
+315 |     func construct_graph(_ clusters: ClusterData, _ nodes: NodesData) -> GraphData {
+316 |         let maxk = _int(max_cluster_key((clusters as! ClusterData)))
+317 |         let top_codes: [String] = (get_cluster_codes((clusters as! ClusterData), maxk) as! [String])
+    |                                                                                        `- warning: forced cast of '[String]' to same type has no effect
+318 |         var graph: [String: [String]] = ([:] as! [String: [String]])
+319 |         var keys: [String] = (["Header"] as! [String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:323:38: warning: forced cast of 'String' to same type has no effect
+321 |         var i: Int = 0
+322 |         while (i < _int(((top_codes).count))) {
+323 |             let code = (top_codes[i] as! String)
+    |                                      `- warning: forced cast of 'String' to same type has no effect
+324 |             graph = _set(graph, "Header", (_append((graph[String("Header")] as! [String]), code) as! [String]))
+325 |             graph = _set(graph, String(describing: code), (["Header"] as! [String]))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:324:77: warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+322 |         while (i < _int(((top_codes).count))) {
+323 |             let code = (top_codes[i] as! String)
+324 |             graph = _set(graph, "Header", (_append((graph[String("Header")] as! [String]), code) as! [String]))
+    |                                                                             `- warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+325 |             graph = _set(graph, String(describing: code), (["Header"] as! [String]))
+326 |             keys = (_append(keys, code) as! [String])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:331:40: warning: forced cast of 'NodesData' to same type has no effect
+329 |         var c: Int = 1
+330 |         while (c < maxk) {
+331 |             keys = (create_edge((nodes as! NodesData), &graph, (keys as! [String]), (clusters as! ClusterData), c, maxk) as! [String])
+    |                                        `- warning: forced cast of 'NodesData' to same type has no effect
+332 |             c = _int((c &+ 1))
+333 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:331:70: warning: forced cast of '[String]' to same type has no effect
+329 |         var c: Int = 1
+330 |         while (c < maxk) {
+331 |             keys = (create_edge((nodes as! NodesData), &graph, (keys as! [String]), (clusters as! ClusterData), c, maxk) as! [String])
+    |                                                                      `- warning: forced cast of '[String]' to same type has no effect
+332 |             c = _int((c &+ 1))
+333 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:331:95: warning: forced cast of 'ClusterData' to same type has no effect
+329 |         var c: Int = 1
+330 |         while (c < maxk) {
+331 |             keys = (create_edge((nodes as! NodesData), &graph, (keys as! [String]), (clusters as! ClusterData), c, maxk) as! [String])
+    |                                                                                               `- warning: forced cast of 'ClusterData' to same type has no effect
+332 |             c = _int((c &+ 1))
+333 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:331:122: warning: forced cast of '[String]' to same type has no effect
+329 |         var c: Int = 1
+330 |         while (c < maxk) {
+331 |             keys = (create_edge((nodes as! NodesData), &graph, (keys as! [String]), (clusters as! ClusterData), c, maxk) as! [String])
+    |                                                                                                                          `- warning: forced cast of '[String]' to same type has no effect
+332 |             c = _int((c &+ 1))
+333 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:345:51: warning: forced cast of '[String]' to same type has no effect
+343 |     }
+344 |     func my_dfs(_ graph: [String: [String]], _ start: String, _ end: String, _ path: [String]) -> Void {
+345 |         var new_path: [String] = (copy_list((path as! [String])) as! [String])
+    |                                                   `- warning: forced cast of '[String]' to same type has no effect
+346 |         new_path = (_append(new_path, start) as! [String])
+347 |         if (start == end) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:345:66: warning: forced cast of '[String]' to same type has no effect
+343 |     }
+344 |     func my_dfs(_ graph: [String: [String]], _ start: String, _ end: String, _ path: [String]) -> Void {
+345 |         var new_path: [String] = (copy_list((path as! [String])) as! [String])
+    |                                                                  `- warning: forced cast of '[String]' to same type has no effect
+346 |         new_path = (_append(new_path, start) as! [String])
+347 |         if (start == end) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:351:63: warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+349 |             return
+350 |         }
+351 |         for node in (graph[String(String(describing: start))] as! [String]) {
+    |                                                               `- warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+352 |             var seen: Bool = false
+353 |             for p in new_path {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:359:35: warning: forced cast of '[String : [String]]' to same type has no effect
+357 |             }
+358 |             if (!seen) {
+359 |                 _ = my_dfs((graph as! [String: [String]]), (node as! String), (end as! String), (new_path as! [String]))
+    |                                   `- warning: forced cast of '[String : [String]]' to same type has no effect
+360 |             }
+361 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:359:66: warning: forced cast of 'String' to same type has no effect
+357 |             }
+358 |             if (!seen) {
+359 |                 _ = my_dfs((graph as! [String: [String]]), (node as! String), (end as! String), (new_path as! [String]))
+    |                                                                  `- warning: forced cast of 'String' to same type has no effect
+360 |             }
+361 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:359:84: warning: forced cast of 'String' to same type has no effect
+357 |             }
+358 |             if (!seen) {
+359 |                 _ = my_dfs((graph as! [String: [String]]), (node as! String), (end as! String), (new_path as! [String]))
+    |                                                                                    `- warning: forced cast of 'String' to same type has no effect
+360 |             }
+361 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:359:107: warning: forced cast of '[String]' to same type has no effect
+357 |             }
+358 |             if (!seen) {
+359 |                 _ = my_dfs((graph as! [String: [String]]), (node as! String), (end as! String), (new_path as! [String]))
+    |                                                                                                           `- warning: forced cast of '[String]' to same type has no effect
+360 |             }
+361 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:359:17: warning: using '_' to ignore the result of a Void-returning function is redundant
+357 |             }
+358 |             if (!seen) {
+359 |                 _ = my_dfs((graph as! [String: [String]]), (node as! String), (end as! String), (new_path as! [String]))
+    |                 `- warning: using '_' to ignore the result of a Void-returning function is redundant
+360 |             }
+361 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:365:60: warning: forced cast of 'ClusterData' to same type has no effect
+363 |     func find_freq_subgraph_given_support(_ s: Int, _ clusters: ClusterData, _ graph: GraphData) -> Void {
+364 |         let k = ((s &* _int(((clusters.weights).count))) / 100)
+365 |         let codes: [String] = (get_cluster_codes((clusters as! ClusterData), k) as! [String])
+    |                                                            `- warning: forced cast of 'ClusterData' to same type has no effect
+366 |         var i: Int = 0
+367 |         while (i < _int(((codes).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:365:81: warning: forced cast of '[String]' to same type has no effect
+363 |     func find_freq_subgraph_given_support(_ s: Int, _ clusters: ClusterData, _ graph: GraphData) -> Void {
+364 |         let k = ((s &* _int(((clusters.weights).count))) / 100)
+365 |         let codes: [String] = (get_cluster_codes((clusters as! ClusterData), k) as! [String])
+    |                                                                                 `- warning: forced cast of '[String]' to same type has no effect
+366 |         var i: Int = 0
+367 |         while (i < _int(((codes).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:368:37: warning: forced cast of '[String : [String]]' to same type has no effect
+366 |         var i: Int = 0
+367 |         while (i < _int(((codes).count))) {
+368 |             _ = my_dfs((graph.edges as! [String: [String]]), (codes[i] as! String), "Header", ([] as! [String]))
+    |                                     `- warning: forced cast of '[String : [String]]' to same type has no effect
+369 |             i = _int((i &+ 1))
+370 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:368:72: warning: forced cast of 'String' to same type has no effect
+366 |         var i: Int = 0
+367 |         while (i < _int(((codes).count))) {
+368 |             _ = my_dfs((graph.edges as! [String: [String]]), (codes[i] as! String), "Header", ([] as! [String]))
+    |                                                                        `- warning: forced cast of 'String' to same type has no effect
+369 |             i = _int((i &+ 1))
+370 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:368:13: warning: using '_' to ignore the result of a Void-returning function is redundant
+366 |         var i: Int = 0
+367 |         while (i < _int(((codes).count))) {
+368 |             _ = my_dfs((graph.edges as! [String: [String]]), (codes[i] as! String), "Header", ([] as! [String]))
+    |             `- warning: using '_' to ignore the result of a Void-returning function is redundant
+369 |             i = _int((i &+ 1))
+370 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:373:61: warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+371 |     }
+372 |     func node_edges(_ nodes: NodesData, _ code: String) -> [String] {
+373 |         return (nodes.map[String(String(describing: code))] as! [String])
+    |                                                             `- warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+374 |     }
+375 |     func freq_subgraphs_edge_list(_ paths: [[String]], _ nodes: NodesData) -> [[[String]]] {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:381:37: warning: forced cast of 'String' to same type has no effect
+379 |             var j: Int = 0
+380 |             while (j < (_int(((path).count)) &- 1)) {
+381 |                 let code = (path[j] as! String)
+    |                                     `- warning: forced cast of 'String' to same type has no effect
+382 |                 let edge_list: [String] = (node_edges((nodes as! NodesData), (code as! String)) as! [String])
+383 |                 var e: Int = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:382:62: warning: forced cast of 'NodesData' to same type has no effect
+380 |             while (j < (_int(((path).count)) &- 1)) {
+381 |                 let code = (path[j] as! String)
+382 |                 let edge_list: [String] = (node_edges((nodes as! NodesData), (code as! String)) as! [String])
+    |                                                              `- warning: forced cast of 'NodesData' to same type has no effect
+383 |                 var e: Int = 0
+384 |                 while (e < _int(((edge_list).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:382:84: warning: forced cast of 'String' to same type has no effect
+380 |             while (j < (_int(((path).count)) &- 1)) {
+381 |                 let code = (path[j] as! String)
+382 |                 let edge_list: [String] = (node_edges((nodes as! NodesData), (code as! String)) as! [String])
+    |                                                                                    `- warning: forced cast of 'String' to same type has no effect
+383 |                 var e: Int = 0
+384 |                 while (e < _int(((edge_list).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:382:97: warning: forced cast of '[String]' to same type has no effect
+380 |             while (j < (_int(((path).count)) &- 1)) {
+381 |                 let code = (path[j] as! String)
+382 |                 let edge_list: [String] = (node_edges((nodes as! NodesData), (code as! String)) as! [String])
+    |                                                                                                 `- warning: forced cast of '[String]' to same type has no effect
+383 |                 var e: Int = 0
+384 |                 while (e < _int(((edge_list).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:385:46: warning: forced cast of 'String' to same type has no effect
+383 |                 var e: Int = 0
+384 |                 while (e < _int(((edge_list).count))) {
+385 |                     let edge = (edge_list[e] as! String)
+    |                                              `- warning: forced cast of 'String' to same type has no effect
+386 |                     let a = String(describing: String(Array(String(describing: (edge as! String)))[0..<1]))
+387 |                     let b = String(describing: String(Array(String(describing: (edge as! String)))[1..<2]))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:386:86: warning: forced cast of 'String' to same type has no effect
+384 |                 while (e < _int(((edge_list).count))) {
+385 |                     let edge = (edge_list[e] as! String)
+386 |                     let a = String(describing: String(Array(String(describing: (edge as! String)))[0..<1]))
+    |                                                                                      `- warning: forced cast of 'String' to same type has no effect
+387 |                     let b = String(describing: String(Array(String(describing: (edge as! String)))[1..<2]))
+388 |                     el = (_append(el, ([a, b] as! [String])) as! [[String]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:387:86: warning: forced cast of 'String' to same type has no effect
+385 |                     let edge = (edge_list[e] as! String)
+386 |                     let a = String(describing: String(Array(String(describing: (edge as! String)))[0..<1]))
+387 |                     let b = String(describing: String(Array(String(describing: (edge as! String)))[1..<2]))
+    |                                                                                      `- warning: forced cast of 'String' to same type has no effect
+388 |                     el = (_append(el, ([a, b] as! [String])) as! [[String]])
+389 |                     e = _int((e &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:401:39: warning: forced cast of 'String' to same type has no effect
+399 |         var i: Int = 0
+400 |         while (i < _int(((nodes.keys).count))) {
+401 |             let code = (nodes.keys[i] as! String)
+    |                                       `- warning: forced cast of 'String' to same type has no effect
+402 |             print(_p(code))
+403 |             print(_p("[" + (nodes.map[String(String(describing: code))] as! [String]).map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: ", ") + "]"))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:403:73: warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+401 |             let code = (nodes.keys[i] as! String)
+402 |             print(_p(code))
+403 |             print(_p("[" + (nodes.map[String(String(describing: code))] as! [String]).map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: ", ") + "]"))
+    |                                                                         `- warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+404 |             i = _int((i &+ 1))
+405 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:403:106: warning: conditional cast from 'String' to 'String' always succeeds
+401 |             let code = (nodes.keys[i] as! String)
+402 |             print(_p(code))
+403 |             print(_p("[" + (nodes.map[String(String(describing: code))] as! [String]).map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: ", ") + "]"))
+    |                                                                                                          `- warning: conditional cast from 'String' to 'String' always succeeds
+404 |             i = _int((i &+ 1))
+405 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:407:51: warning: cast from 'Int' to unrelated type 'String' always fails
+405 |         }
+406 |         print(_p("\nSupport\n"))
+407 |         print(_p("[" + support.map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: ", ") + "]"))
+    |                                                   `- warning: cast from 'Int' to unrelated type 'String' always fails
+408 |         print(_p("\nCluster\n"))
+409 |         var j: Int = 0
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:411:42: warning: conditional cast from 'Int' to 'Int' always succeeds
+409 |         var j: Int = 0
+410 |         while (j < _int(((clusters.weights).count))) {
+411 |             let w = (clusters.weights[j] as? Int ?? 0)
+    |                                          `- warning: conditional cast from 'Int' to 'Int' always succeeds
+412 |             print(_p(((_p(w) + ":") + "[" + (clusters.clusters[w] as! [String]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]")))
+413 |             j = _int((j &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:412:67: warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+410 |         while (j < _int(((clusters.weights).count))) {
+411 |             let w = (clusters.weights[j] as? Int ?? 0)
+412 |             print(_p(((_p(w) + ":") + "[" + (clusters.clusters[w] as! [String]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]")))
+    |                                                                   `- warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+413 |             j = _int((j &+ 1))
+414 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:418:38: warning: forced cast of 'String' to same type has no effect
+416 |         var k: Int = 0
+417 |         while (k < _int(((graph.keys).count))) {
+418 |             let key = (graph.keys[k] as! String)
+    |                                      `- warning: forced cast of 'String' to same type has no effect
+419 |             print(_p(key))
+420 |             print(_p("[" + (graph.edges[String(String(describing: key))] as! [String]).map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: ", ") + "]"))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:420:74: warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+418 |             let key = (graph.keys[k] as! String)
+419 |             print(_p(key))
+420 |             print(_p("[" + (graph.edges[String(String(describing: key))] as! [String]).map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: ", ") + "]"))
+    |                                                                          `- warning: forced cast from '[String]?' to '[String]' only unwraps optionals; did you mean to use '!'?
+421 |             k = _int((k &+ 1))
+422 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:420:107: warning: conditional cast from 'String' to 'String' always succeeds
+418 |             let key = (graph.keys[k] as! String)
+419 |             print(_p(key))
+420 |             print(_p("[" + (graph.edges[String(String(describing: key))] as! [String]).map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: ", ") + "]"))
+    |                                                                                                           `- warning: conditional cast from 'String' to 'String' always succeeds
+421 |             k = _int((k &+ 1))
+422 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:425:50: warning: cast from '[String]' to unrelated type 'String' always fails
+423 |         print(_p("\nEdge List of Frequent subgraphs\n"))
+424 |         for el in freq_subgraph_edge_list {
+425 |             print(_p("[" + el.map{ if let s = $0 as? String { "\"" + s.replacingOccurrences(of: "\"", with: "\\\"") + "\"" } else { _p($0) } }.joined(separator: ", ") + "]"))
+    |                                                  `- warning: cast from '[String]' to unrelated type 'String' always fails
+426 |         }
+427 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:429:84: warning: forced cast of '[[[String]]]' to same type has no effect
+427 |     }
+428 |     func main() {
+429 |         let frequency_table: [[String: String]] = (get_frequency_table((EDGE_ARRAY as! [[[String]]])) as! [[String: String]])
+    |                                                                                    `- warning: forced cast of '[[[String]]]' to same type has no effect
+430 |         let nodes = get_nodes((frequency_table as! [[String: String]]))
+431 |         let clusters = get_cluster((nodes as! NodesData))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:429:103: warning: forced cast of '[[String : String]]' to same type has no effect
+427 |     }
+428 |     func main() {
+429 |         let frequency_table: [[String: String]] = (get_frequency_table((EDGE_ARRAY as! [[[String]]])) as! [[String: String]])
+    |                                                                                                       `- warning: forced cast of '[[String : String]]' to same type has no effect
+430 |         let nodes = get_nodes((frequency_table as! [[String: String]]))
+431 |         let clusters = get_cluster((nodes as! NodesData))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:430:48: warning: forced cast of '[[String : String]]' to same type has no effect
+428 |     func main() {
+429 |         let frequency_table: [[String: String]] = (get_frequency_table((EDGE_ARRAY as! [[[String]]])) as! [[String: String]])
+430 |         let nodes = get_nodes((frequency_table as! [[String: String]]))
+    |                                                `- warning: forced cast of '[[String : String]]' to same type has no effect
+431 |         let clusters = get_cluster((nodes as! NodesData))
+432 |         let support: [Int] = (get_support((clusters as! ClusterData)) as! [Int])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:431:43: warning: forced cast of 'NodesData' to same type has no effect
+429 |         let frequency_table: [[String: String]] = (get_frequency_table((EDGE_ARRAY as! [[[String]]])) as! [[String: String]])
+430 |         let nodes = get_nodes((frequency_table as! [[String: String]]))
+431 |         let clusters = get_cluster((nodes as! NodesData))
+    |                                           `- warning: forced cast of 'NodesData' to same type has no effect
+432 |         let support: [Int] = (get_support((clusters as! ClusterData)) as! [Int])
+433 |         let graph = construct_graph((clusters as! ClusterData), (nodes as! NodesData))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:432:53: warning: forced cast of 'ClusterData' to same type has no effect
+430 |         let nodes = get_nodes((frequency_table as! [[String: String]]))
+431 |         let clusters = get_cluster((nodes as! NodesData))
+432 |         let support: [Int] = (get_support((clusters as! ClusterData)) as! [Int])
+    |                                                     `- warning: forced cast of 'ClusterData' to same type has no effect
+433 |         let graph = construct_graph((clusters as! ClusterData), (nodes as! NodesData))
+434 |         _ = find_freq_subgraph_given_support(60, (clusters as! ClusterData), (graph as! GraphData))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:432:71: warning: forced cast of '[Int]' to same type has no effect
+430 |         let nodes = get_nodes((frequency_table as! [[String: String]]))
+431 |         let clusters = get_cluster((nodes as! NodesData))
+432 |         let support: [Int] = (get_support((clusters as! ClusterData)) as! [Int])
+    |                                                                       `- warning: forced cast of '[Int]' to same type has no effect
+433 |         let graph = construct_graph((clusters as! ClusterData), (nodes as! NodesData))
+434 |         _ = find_freq_subgraph_given_support(60, (clusters as! ClusterData), (graph as! GraphData))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:433:47: warning: forced cast of 'ClusterData' to same type has no effect
+431 |         let clusters = get_cluster((nodes as! NodesData))
+432 |         let support: [Int] = (get_support((clusters as! ClusterData)) as! [Int])
+433 |         let graph = construct_graph((clusters as! ClusterData), (nodes as! NodesData))
+    |                                               `- warning: forced cast of 'ClusterData' to same type has no effect
+434 |         _ = find_freq_subgraph_given_support(60, (clusters as! ClusterData), (graph as! GraphData))
+435 |         let freq_subgraph_edge_list: [[[String]]] = (freq_subgraphs_edge_list((paths as! [[String]]), (nodes as! NodesData)) as! [[[String]]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:433:72: warning: forced cast of 'NodesData' to same type has no effect
+431 |         let clusters = get_cluster((nodes as! NodesData))
+432 |         let support: [Int] = (get_support((clusters as! ClusterData)) as! [Int])
+433 |         let graph = construct_graph((clusters as! ClusterData), (nodes as! NodesData))
+    |                                                                        `- warning: forced cast of 'NodesData' to same type has no effect
+434 |         _ = find_freq_subgraph_given_support(60, (clusters as! ClusterData), (graph as! GraphData))
+435 |         let freq_subgraph_edge_list: [[[String]]] = (freq_subgraphs_edge_list((paths as! [[String]]), (nodes as! NodesData)) as! [[[String]]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:434:60: warning: forced cast of 'ClusterData' to same type has no effect
+432 |         let support: [Int] = (get_support((clusters as! ClusterData)) as! [Int])
+433 |         let graph = construct_graph((clusters as! ClusterData), (nodes as! NodesData))
+434 |         _ = find_freq_subgraph_given_support(60, (clusters as! ClusterData), (graph as! GraphData))
+    |                                                            `- warning: forced cast of 'ClusterData' to same type has no effect
+435 |         let freq_subgraph_edge_list: [[[String]]] = (freq_subgraphs_edge_list((paths as! [[String]]), (nodes as! NodesData)) as! [[[String]]])
+436 |         _ = print_all((nodes as! NodesData), (support as! [Int]), (clusters as! ClusterData), (graph as! GraphData), (freq_subgraph_edge_list as! [[[String]]]))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:434:85: warning: forced cast of 'GraphData' to same type has no effect
+432 |         let support: [Int] = (get_support((clusters as! ClusterData)) as! [Int])
+433 |         let graph = construct_graph((clusters as! ClusterData), (nodes as! NodesData))
+434 |         _ = find_freq_subgraph_given_support(60, (clusters as! ClusterData), (graph as! GraphData))
+    |                                                                                     `- warning: forced cast of 'GraphData' to same type has no effect
+435 |         let freq_subgraph_edge_list: [[[String]]] = (freq_subgraphs_edge_list((paths as! [[String]]), (nodes as! NodesData)) as! [[[String]]])
+436 |         _ = print_all((nodes as! NodesData), (support as! [Int]), (clusters as! ClusterData), (graph as! GraphData), (freq_subgraph_edge_list as! [[[String]]]))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:434:9: warning: using '_' to ignore the result of a Void-returning function is redundant
+432 |         let support: [Int] = (get_support((clusters as! ClusterData)) as! [Int])
+433 |         let graph = construct_graph((clusters as! ClusterData), (nodes as! NodesData))
+434 |         _ = find_freq_subgraph_given_support(60, (clusters as! ClusterData), (graph as! GraphData))
+    |         `- warning: using '_' to ignore the result of a Void-returning function is redundant
+435 |         let freq_subgraph_edge_list: [[[String]]] = (freq_subgraphs_edge_list((paths as! [[String]]), (nodes as! NodesData)) as! [[[String]]])
+436 |         _ = print_all((nodes as! NodesData), (support as! [Int]), (clusters as! ClusterData), (graph as! GraphData), (freq_subgraph_edge_list as! [[[String]]]))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:435:86: warning: forced cast of '[[String]]' to same type has no effect
+433 |         let graph = construct_graph((clusters as! ClusterData), (nodes as! NodesData))
+434 |         _ = find_freq_subgraph_given_support(60, (clusters as! ClusterData), (graph as! GraphData))
+435 |         let freq_subgraph_edge_list: [[[String]]] = (freq_subgraphs_edge_list((paths as! [[String]]), (nodes as! NodesData)) as! [[[String]]])
+    |                                                                                      `- warning: forced cast of '[[String]]' to same type has no effect
+436 |         _ = print_all((nodes as! NodesData), (support as! [Int]), (clusters as! ClusterData), (graph as! GraphData), (freq_subgraph_edge_list as! [[[String]]]))
+437 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:435:110: warning: forced cast of 'NodesData' to same type has no effect
+433 |         let graph = construct_graph((clusters as! ClusterData), (nodes as! NodesData))
+434 |         _ = find_freq_subgraph_given_support(60, (clusters as! ClusterData), (graph as! GraphData))
+435 |         let freq_subgraph_edge_list: [[[String]]] = (freq_subgraphs_edge_list((paths as! [[String]]), (nodes as! NodesData)) as! [[[String]]])
+    |                                                                                                              `- warning: forced cast of 'NodesData' to same type has no effect
+436 |         _ = print_all((nodes as! NodesData), (support as! [Int]), (clusters as! ClusterData), (graph as! GraphData), (freq_subgraph_edge_list as! [[[String]]]))
+437 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:435:126: warning: forced cast of '[[[String]]]' to same type has no effect
+433 |         let graph = construct_graph((clusters as! ClusterData), (nodes as! NodesData))
+434 |         _ = find_freq_subgraph_given_support(60, (clusters as! ClusterData), (graph as! GraphData))
+435 |         let freq_subgraph_edge_list: [[[String]]] = (freq_subgraphs_edge_list((paths as! [[String]]), (nodes as! NodesData)) as! [[[String]]])
+    |                                                                                                                              `- warning: forced cast of '[[[String]]]' to same type has no effect
+436 |         _ = print_all((nodes as! NodesData), (support as! [Int]), (clusters as! ClusterData), (graph as! GraphData), (freq_subgraph_edge_list as! [[[String]]]))
+437 |     }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:436:30: warning: forced cast of 'NodesData' to same type has no effect
+434 |         _ = find_freq_subgraph_given_support(60, (clusters as! ClusterData), (graph as! GraphData))
+435 |         let freq_subgraph_edge_list: [[[String]]] = (freq_subgraphs_edge_list((paths as! [[String]]), (nodes as! NodesData)) as! [[[String]]])
+436 |         _ = print_all((nodes as! NodesData), (support as! [Int]), (clusters as! ClusterData), (graph as! GraphData), (freq_subgraph_edge_list as! [[[String]]]))
+    |                              `- warning: forced cast of 'NodesData' to same type has no effect
+437 |     }
+438 |     _ = main()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:436:55: warning: forced cast of '[Int]' to same type has no effect
+434 |         _ = find_freq_subgraph_given_support(60, (clusters as! ClusterData), (graph as! GraphData))
+435 |         let freq_subgraph_edge_list: [[[String]]] = (freq_subgraphs_edge_list((paths as! [[String]]), (nodes as! NodesData)) as! [[[String]]])
+436 |         _ = print_all((nodes as! NodesData), (support as! [Int]), (clusters as! ClusterData), (graph as! GraphData), (freq_subgraph_edge_list as! [[[String]]]))
+    |                                                       `- warning: forced cast of '[Int]' to same type has no effect
+437 |     }
+438 |     _ = main()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:436:77: warning: forced cast of 'ClusterData' to same type has no effect
+434 |         _ = find_freq_subgraph_given_support(60, (clusters as! ClusterData), (graph as! GraphData))
+435 |         let freq_subgraph_edge_list: [[[String]]] = (freq_subgraphs_edge_list((paths as! [[String]]), (nodes as! NodesData)) as! [[[String]]])
+436 |         _ = print_all((nodes as! NodesData), (support as! [Int]), (clusters as! ClusterData), (graph as! GraphData), (freq_subgraph_edge_list as! [[[String]]]))
+    |                                                                             `- warning: forced cast of 'ClusterData' to same type has no effect
+437 |     }
+438 |     _ = main()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:436:102: warning: forced cast of 'GraphData' to same type has no effect
+434 |         _ = find_freq_subgraph_given_support(60, (clusters as! ClusterData), (graph as! GraphData))
+435 |         let freq_subgraph_edge_list: [[[String]]] = (freq_subgraphs_edge_list((paths as! [[String]]), (nodes as! NodesData)) as! [[[String]]])
+436 |         _ = print_all((nodes as! NodesData), (support as! [Int]), (clusters as! ClusterData), (graph as! GraphData), (freq_subgraph_edge_list as! [[[String]]]))
+    |                                                                                                      `- warning: forced cast of 'GraphData' to same type has no effect
+437 |     }
+438 |     _ = main()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:436:143: warning: forced cast of '[[[String]]]' to same type has no effect
+434 |         _ = find_freq_subgraph_given_support(60, (clusters as! ClusterData), (graph as! GraphData))
+435 |         let freq_subgraph_edge_list: [[[String]]] = (freq_subgraphs_edge_list((paths as! [[String]]), (nodes as! NodesData)) as! [[[String]]])
+436 |         _ = print_all((nodes as! NodesData), (support as! [Int]), (clusters as! ClusterData), (graph as! GraphData), (freq_subgraph_edge_list as! [[[String]]]))
+    |                                                                                                                                               `- warning: forced cast of '[[[String]]]' to same type has no effect
+437 |     }
+438 |     _ = main()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:436:9: warning: using '_' to ignore the result of a Void-returning function is redundant
+434 |         _ = find_freq_subgraph_given_support(60, (clusters as! ClusterData), (graph as! GraphData))
+435 |         let freq_subgraph_edge_list: [[[String]]] = (freq_subgraphs_edge_list((paths as! [[String]]), (nodes as! NodesData)) as! [[[String]]])
+436 |         _ = print_all((nodes as! NodesData), (support as! [Int]), (clusters as! ClusterData), (graph as! GraphData), (freq_subgraph_edge_list as! [[[String]]]))
+    |         `- warning: using '_' to ignore the result of a Void-returning function is redundant
+437 |     }
+438 |     _ = main()
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden426_graphs_frequent_pattern_graph_miner1253895828/001/main.swift:438:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+436 |         _ = print_all((nodes as! NodesData), (support as! [Int]), (clusters as! ClusterData), (graph as! GraphData), (freq_subgraph_edge_list as! [[[String]]]))
+437 |     }
+438 |     _ = main()
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+439 |     let _benchEnd = _now()
+440 |     let _benchMemEnd = _mem()

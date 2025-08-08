@@ -1,0 +1,376 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:140:39: warning: forced cast of 'Pos' to same type has no effect
+138 |         var i: Int = 0
+139 |         while (i < _int(((p).count))) {
+140 |             res = (_append(res, (p[i] as! Pos)) as! [Pos])
+    |                                       `- warning: forced cast of 'Pos' to same type has no effect
+141 |             i = _int((i &+ 1))
+142 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:156:37: warning: forced cast of 'Node' to same type has no effect
+154 |         var i: Int = 0
+155 |         while (i < _int(((nodes).count))) {
+156 |             if node_equal((nodes[i] as! Node), (node as! Node)) {
+    |                                     `- warning: forced cast of 'Node' to same type has no effect
+157 |                 return true
+158 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:156:54: warning: forced cast of 'Node' to same type has no effect
+154 |         var i: Int = 0
+155 |         while (i < _int(((nodes).count))) {
+156 |             if node_equal((nodes[i] as! Node), (node as! Node)) {
+    |                                                      `- warning: forced cast of 'Node' to same type has no effect
+157 |                 return true
+158 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:167:36: warning: forced cast of 'Node' to same type has no effect
+165 |         var i: Int = 1
+166 |         while (i < _int(((arr).count))) {
+167 |             let key_node = (arr[i] as! Node)
+    |                                    `- warning: forced cast of 'Node' to same type has no effect
+168 |             var j: Int = (i &- 1)
+169 |             while (j >= 0) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:170:36: warning: forced cast of 'Node' to same type has no effect
+168 |             var j: Int = (i &- 1)
+169 |             while (j >= 0) {
+170 |                 let temp = (arr[j] as! Node)
+    |                                    `- warning: forced cast of 'Node' to same type has no effect
+171 |                 if (temp.f_cost > key_node.f_cost) {
+172 |                     arr = _set(arr, (j &+ 1), (temp as! Node))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:172:53: warning: forced cast of 'Node' to same type has no effect
+170 |                 let temp = (arr[j] as! Node)
+171 |                 if (temp.f_cost > key_node.f_cost) {
+172 |                     arr = _set(arr, (j &+ 1), (temp as! Node))
+    |                                                     `- warning: forced cast of 'Node' to same type has no effect
+173 |                     j = _int((j &- 1))
+174 |                 } else {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:178:49: warning: forced cast of 'Node' to same type has no effect
+176 |                 }
+177 |             }
+178 |             arr = _set(arr, (j &+ 1), (key_node as! Node))
+    |                                                 `- warning: forced cast of 'Node' to same type has no effect
+179 |             i = _int((i &+ 1))
+180 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:187:31: warning: forced cast of 'Pos' to same type has no effect
+185 |         var i: Int = 0
+186 |         while (i < _int(((delta).count))) {
+187 |             let d = (delta[i] as! Pos)
+    |                               `- warning: forced cast of 'Pos' to same type has no effect
+188 |             let pos_x = (parent.pos_x &+ d.x)
+189 |             let pos_y = (parent.pos_y &+ d.y)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:190:61: warning: forced cast of '[Int]' to same type has no effect
+188 |             let pos_x = (parent.pos_x &+ d.x)
+189 |             let pos_y = (parent.pos_y &+ d.y)
+190 |             if (((((pos_x >= 0) && (pos_x < _int((((grid[0] as! [Int])).count)))) && (pos_y >= 0)) && (pos_y < _int(((grid).count)))) && ((grid[pos_y][pos_x] as? Int ?? 0) == 0)) {
+    |                                                             `- warning: forced cast of '[Int]' to same type has no effect
+191 |                 var new_path: [Pos] = (clone_path((parent.path as! [Pos])) as! [Pos])
+192 |                 new_path = (_append(new_path, Pos(y: pos_y, x: pos_x)) as! [Pos])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:190:159: warning: conditional cast from 'Int' to 'Int' always succeeds
+188 |             let pos_x = (parent.pos_x &+ d.x)
+189 |             let pos_y = (parent.pos_y &+ d.y)
+190 |             if (((((pos_x >= 0) && (pos_x < _int((((grid[0] as! [Int])).count)))) && (pos_y >= 0)) && (pos_y < _int(((grid).count)))) && ((grid[pos_y][pos_x] as? Int ?? 0) == 0)) {
+    |                                                                                                                                                               `- warning: conditional cast from 'Int' to 'Int' always succeeds
+191 |                 var new_path: [Pos] = (clone_path((parent.path as! [Pos])) as! [Pos])
+192 |                 new_path = (_append(new_path, Pos(y: pos_y, x: pos_x)) as! [Pos])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:191:64: warning: forced cast of '[Pos]' to same type has no effect
+189 |             let pos_y = (parent.pos_y &+ d.y)
+190 |             if (((((pos_x >= 0) && (pos_x < _int((((grid[0] as! [Int])).count)))) && (pos_y >= 0)) && (pos_y < _int(((grid).count)))) && ((grid[pos_y][pos_x] as? Int ?? 0) == 0)) {
+191 |                 var new_path: [Pos] = (clone_path((parent.path as! [Pos])) as! [Pos])
+    |                                                                `- warning: forced cast of '[Pos]' to same type has no effect
+192 |                 new_path = (_append(new_path, Pos(y: pos_y, x: pos_x)) as! [Pos])
+193 |                 res = (_append(res, make_node(pos_x, pos_y, target.x, target.y, (parent.g_cost &+ 1), (new_path as! [Pos]))) as! [Node])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:191:76: warning: forced cast of '[Pos]' to same type has no effect
+189 |             let pos_y = (parent.pos_y &+ d.y)
+190 |             if (((((pos_x >= 0) && (pos_x < _int((((grid[0] as! [Int])).count)))) && (pos_y >= 0)) && (pos_y < _int(((grid).count)))) && ((grid[pos_y][pos_x] as? Int ?? 0) == 0)) {
+191 |                 var new_path: [Pos] = (clone_path((parent.path as! [Pos])) as! [Pos])
+    |                                                                            `- warning: forced cast of '[Pos]' to same type has no effect
+192 |                 new_path = (_append(new_path, Pos(y: pos_y, x: pos_x)) as! [Pos])
+193 |                 res = (_append(res, make_node(pos_x, pos_y, target.x, target.y, (parent.g_cost &+ 1), (new_path as! [Pos]))) as! [Node])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:193:113: warning: forced cast of '[Pos]' to same type has no effect
+191 |                 var new_path: [Pos] = (clone_path((parent.path as! [Pos])) as! [Pos])
+192 |                 new_path = (_append(new_path, Pos(y: pos_y, x: pos_x)) as! [Pos])
+193 |                 res = (_append(res, make_node(pos_x, pos_y, target.x, target.y, (parent.g_cost &+ 1), (new_path as! [Pos]))) as! [Node])
+    |                                                                                                                 `- warning: forced cast of '[Pos]' to same type has no effect
+194 |             }
+195 |             i = _int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:201:82: warning: forced cast of '[Pos]' to same type has no effect
+199 |     func greedy_best_first(_ grid: [[Int]], _ `init`: Pos, _ goal: Pos) -> [Pos] {
+200 |         let start_path: [Pos] = ([`init`] as! [Pos])
+201 |         let start = make_node(`init`.x, `init`.y, goal.x, goal.y, 0, (start_path as! [Pos]))
+    |                                                                                  `- warning: forced cast of '[Pos]' to same type has no effect
+202 |         var open_nodes: [Node] = ([start] as! [Node])
+203 |         var closed_nodes: [Node] = ([] as! [Node])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:205:50: warning: forced cast of '[Node]' to same type has no effect
+203 |         var closed_nodes: [Node] = ([] as! [Node])
+204 |         while (_int(((open_nodes).count)) > 0) {
+205 |             open_nodes = (sort_nodes((open_nodes as! [Node])) as! [Node])
+    |                                                  `- warning: forced cast of '[Node]' to same type has no effect
+206 |             let current = (open_nodes[0] as! Node)
+207 |             var new_open: [Node] = ([] as! [Node])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:205:63: warning: forced cast of '[Node]' to same type has no effect
+203 |         var closed_nodes: [Node] = ([] as! [Node])
+204 |         while (_int(((open_nodes).count)) > 0) {
+205 |             open_nodes = (sort_nodes((open_nodes as! [Node])) as! [Node])
+    |                                                               `- warning: forced cast of '[Node]' to same type has no effect
+206 |             let current = (open_nodes[0] as! Node)
+207 |             var new_open: [Node] = ([] as! [Node])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:206:42: warning: forced cast of 'Node' to same type has no effect
+204 |         while (_int(((open_nodes).count)) > 0) {
+205 |             open_nodes = (sort_nodes((open_nodes as! [Node])) as! [Node])
+206 |             let current = (open_nodes[0] as! Node)
+    |                                          `- warning: forced cast of 'Node' to same type has no effect
+207 |             var new_open: [Node] = ([] as! [Node])
+208 |             var idx: Int = 1
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:210:64: warning: forced cast of 'Node' to same type has no effect
+208 |             var idx: Int = 1
+209 |             while (idx < _int(((open_nodes).count))) {
+210 |                 new_open = (_append(new_open, (open_nodes[idx] as! Node)) as! [Node])
+    |                                                                `- warning: forced cast of 'Node' to same type has no effect
+211 |                 idx = _int((idx &+ 1))
+212 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:213:36: warning: forced cast of '[Node]' to same type has no effect
+211 |                 idx = _int((idx &+ 1))
+212 |             }
+213 |             open_nodes = (new_open as! [Node])
+    |                                    `- warning: forced cast of '[Node]' to same type has no effect
+214 |             if ((current.pos_x == goal.x) && (current.pos_y == goal.y)) {
+215 |                 return current.path
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:218:60: warning: forced cast of '[[Int]]' to same type has no effect
+216 |             }
+217 |             closed_nodes = (_append(closed_nodes, current) as! [Node])
+218 |             let successors: [Node] = (get_successors((grid as! [[Int]]), (current as! Node), (goal as! Pos)) as! [Node])
+    |                                                            `- warning: forced cast of '[[Int]]' to same type has no effect
+219 |             var i: Int = 0
+220 |             while (i < _int(((successors).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:218:83: warning: forced cast of 'Node' to same type has no effect
+216 |             }
+217 |             closed_nodes = (_append(closed_nodes, current) as! [Node])
+218 |             let successors: [Node] = (get_successors((grid as! [[Int]]), (current as! Node), (goal as! Pos)) as! [Node])
+    |                                                                                   `- warning: forced cast of 'Node' to same type has no effect
+219 |             var i: Int = 0
+220 |             while (i < _int(((successors).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:218:100: warning: forced cast of 'Pos' to same type has no effect
+216 |             }
+217 |             closed_nodes = (_append(closed_nodes, current) as! [Node])
+218 |             let successors: [Node] = (get_successors((grid as! [[Int]]), (current as! Node), (goal as! Pos)) as! [Node])
+    |                                                                                                    `- warning: forced cast of 'Pos' to same type has no effect
+219 |             var i: Int = 0
+220 |             while (i < _int(((successors).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:218:110: warning: forced cast of '[Node]' to same type has no effect
+216 |             }
+217 |             closed_nodes = (_append(closed_nodes, current) as! [Node])
+218 |             let successors: [Node] = (get_successors((grid as! [[Int]]), (current as! Node), (goal as! Pos)) as! [Node])
+    |                                                                                                              `- warning: forced cast of '[Node]' to same type has no effect
+219 |             var i: Int = 0
+220 |             while (i < _int(((successors).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:221:44: warning: forced cast of 'Node' to same type has no effect
+219 |             var i: Int = 0
+220 |             while (i < _int(((successors).count))) {
+221 |                 let child = (successors[i] as! Node)
+    |                                            `- warning: forced cast of 'Node' to same type has no effect
+222 |                 if (((!((closed_nodes as! [Node]).contains((child as! Node)))) as! Bool) && ((!((open_nodes as! [Node]).contains((child as! Node)))) as! Bool)) {
+223 |                     open_nodes = (_append(open_nodes, child) as! [Node])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:222:39: warning: forced cast of '[Node]' to same type has no effect
+220 |             while (i < _int(((successors).count))) {
+221 |                 let child = (successors[i] as! Node)
+222 |                 if (((!((closed_nodes as! [Node]).contains((child as! Node)))) as! Bool) && ((!((open_nodes as! [Node]).contains((child as! Node)))) as! Bool)) {
+    |                                       `- warning: forced cast of '[Node]' to same type has no effect
+223 |                     open_nodes = (_append(open_nodes, child) as! [Node])
+224 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:222:60: error: missing argument label 'where:' in call
+220 |             while (i < _int(((successors).count))) {
+221 |                 let child = (successors[i] as! Node)
+222 |                 if (((!((closed_nodes as! [Node]).contains((child as! Node)))) as! Bool) && ((!((open_nodes as! [Node]).contains((child as! Node)))) as! Bool)) {
+    |                                                            `- error: missing argument label 'where:' in call
+223 |                     open_nodes = (_append(open_nodes, child) as! [Node])
+224 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:222:67: error: cannot convert value of type 'Node' to expected argument type '(Node) throws -> Bool'
+220 |             while (i < _int(((successors).count))) {
+221 |                 let child = (successors[i] as! Node)
+222 |                 if (((!((closed_nodes as! [Node]).contains((child as! Node)))) as! Bool) && ((!((open_nodes as! [Node]).contains((child as! Node)))) as! Bool)) {
+    |                                                                   `- error: cannot convert value of type 'Node' to expected argument type '(Node) throws -> Bool'
+223 |                     open_nodes = (_append(open_nodes, child) as! [Node])
+224 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:222:67: warning: forced cast of 'Node' to same type has no effect
+220 |             while (i < _int(((successors).count))) {
+221 |                 let child = (successors[i] as! Node)
+222 |                 if (((!((closed_nodes as! [Node]).contains((child as! Node)))) as! Bool) && ((!((open_nodes as! [Node]).contains((child as! Node)))) as! Bool)) {
+    |                                                                   `- warning: forced cast of 'Node' to same type has no effect
+223 |                     open_nodes = (_append(open_nodes, child) as! [Node])
+224 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:222:80: warning: forced cast of 'Bool' to same type has no effect
+220 |             while (i < _int(((successors).count))) {
+221 |                 let child = (successors[i] as! Node)
+222 |                 if (((!((closed_nodes as! [Node]).contains((child as! Node)))) as! Bool) && ((!((open_nodes as! [Node]).contains((child as! Node)))) as! Bool)) {
+    |                                                                                `- warning: forced cast of 'Bool' to same type has no effect
+223 |                     open_nodes = (_append(open_nodes, child) as! [Node])
+224 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:222:109: warning: forced cast of '[Node]' to same type has no effect
+220 |             while (i < _int(((successors).count))) {
+221 |                 let child = (successors[i] as! Node)
+222 |                 if (((!((closed_nodes as! [Node]).contains((child as! Node)))) as! Bool) && ((!((open_nodes as! [Node]).contains((child as! Node)))) as! Bool)) {
+    |                                                                                                             `- warning: forced cast of '[Node]' to same type has no effect
+223 |                     open_nodes = (_append(open_nodes, child) as! [Node])
+224 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:222:130: error: missing argument label 'where:' in call
+220 |             while (i < _int(((successors).count))) {
+221 |                 let child = (successors[i] as! Node)
+222 |                 if (((!((closed_nodes as! [Node]).contains((child as! Node)))) as! Bool) && ((!((open_nodes as! [Node]).contains((child as! Node)))) as! Bool)) {
+    |                                                                                                                                  `- error: missing argument label 'where:' in call
+223 |                     open_nodes = (_append(open_nodes, child) as! [Node])
+224 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:222:137: error: cannot convert value of type 'Node' to expected argument type '(Node) throws -> Bool'
+220 |             while (i < _int(((successors).count))) {
+221 |                 let child = (successors[i] as! Node)
+222 |                 if (((!((closed_nodes as! [Node]).contains((child as! Node)))) as! Bool) && ((!((open_nodes as! [Node]).contains((child as! Node)))) as! Bool)) {
+    |                                                                                                                                         `- error: cannot convert value of type 'Node' to expected argument type '(Node) throws -> Bool'
+223 |                     open_nodes = (_append(open_nodes, child) as! [Node])
+224 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:222:137: warning: forced cast of 'Node' to same type has no effect
+220 |             while (i < _int(((successors).count))) {
+221 |                 let child = (successors[i] as! Node)
+222 |                 if (((!((closed_nodes as! [Node]).contains((child as! Node)))) as! Bool) && ((!((open_nodes as! [Node]).contains((child as! Node)))) as! Bool)) {
+    |                                                                                                                                         `- warning: forced cast of 'Node' to same type has no effect
+223 |                     open_nodes = (_append(open_nodes, child) as! [Node])
+224 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:222:150: warning: forced cast of 'Bool' to same type has no effect
+220 |             while (i < _int(((successors).count))) {
+221 |                 let child = (successors[i] as! Node)
+222 |                 if (((!((closed_nodes as! [Node]).contains((child as! Node)))) as! Bool) && ((!((open_nodes as! [Node]).contains((child as! Node)))) as! Bool)) {
+    |                                                                                                                                                      `- warning: forced cast of 'Bool' to same type has no effect
+223 |                     open_nodes = (_append(open_nodes, child) as! [Node])
+224 |                 }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:235:37: warning: forced cast of '[Int]' to same type has no effect
+233 |         var i: Int = 0
+234 |         while (i < _int(((grid).count))) {
+235 |             print(_p("[" + (grid[i] as! [Int]).map{ _p($0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"))
+    |                                     `- warning: forced cast of '[Int]' to same type has no effect
+236 |             i = _int((i &+ 1))
+237 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:243:50: warning: forced cast of '[[Int]]' to same type has no effect
+241 |         while (idx < _int(((TEST_GRIDS).count))) {
+242 |             print(_p((("==grid-" + _p((idx &+ 1))) + "==")))
+243 |             var grid: [[Int]] = (TEST_GRIDS[idx] as! [[Int]])
+    |                                                  `- warning: forced cast of '[[Int]]' to same type has no effect
+244 |             let `init` = Pos(y: 0, x: 0)
+245 |             let goal = Pos(y: (_int(((grid).count)) &- 1), x: (_int((((grid[0] as! [Int])).count)) &- 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:245:80: warning: forced cast of '[Int]' to same type has no effect
+243 |             var grid: [[Int]] = (TEST_GRIDS[idx] as! [[Int]])
+244 |             let `init` = Pos(y: 0, x: 0)
+245 |             let goal = Pos(y: (_int(((grid).count)) &- 1), x: (_int((((grid[0] as! [Int])).count)) &- 1))
+    |                                                                                `- warning: forced cast of '[Int]' to same type has no effect
+246 |             _ = print_grid((grid as! [[Int]]))
+247 |             print(_p("------"))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:246:34: warning: forced cast of '[[Int]]' to same type has no effect
+244 |             let `init` = Pos(y: 0, x: 0)
+245 |             let goal = Pos(y: (_int(((grid).count)) &- 1), x: (_int((((grid[0] as! [Int])).count)) &- 1))
+246 |             _ = print_grid((grid as! [[Int]]))
+    |                                  `- warning: forced cast of '[[Int]]' to same type has no effect
+247 |             print(_p("------"))
+248 |             let path: [Pos] = (greedy_best_first((grid as! [[Int]]), (`init` as! Pos), (goal as! Pos)) as! [Pos])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:246:13: warning: using '_' to ignore the result of a Void-returning function is redundant
+244 |             let `init` = Pos(y: 0, x: 0)
+245 |             let goal = Pos(y: (_int(((grid).count)) &- 1), x: (_int((((grid[0] as! [Int])).count)) &- 1))
+246 |             _ = print_grid((grid as! [[Int]]))
+    |             `- warning: using '_' to ignore the result of a Void-returning function is redundant
+247 |             print(_p("------"))
+248 |             let path: [Pos] = (greedy_best_first((grid as! [[Int]]), (`init` as! Pos), (goal as! Pos)) as! [Pos])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:248:56: warning: forced cast of '[[Int]]' to same type has no effect
+246 |             _ = print_grid((grid as! [[Int]]))
+247 |             print(_p("------"))
+248 |             let path: [Pos] = (greedy_best_first((grid as! [[Int]]), (`init` as! Pos), (goal as! Pos)) as! [Pos])
+    |                                                        `- warning: forced cast of '[[Int]]' to same type has no effect
+249 |             var j: Int = 0
+250 |             while (j < _int(((path).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:248:78: warning: forced cast of 'Pos' to same type has no effect
+246 |             _ = print_grid((grid as! [[Int]]))
+247 |             print(_p("------"))
+248 |             let path: [Pos] = (greedy_best_first((grid as! [[Int]]), (`init` as! Pos), (goal as! Pos)) as! [Pos])
+    |                                                                              `- warning: forced cast of 'Pos' to same type has no effect
+249 |             var j: Int = 0
+250 |             while (j < _int(((path).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:248:94: warning: forced cast of 'Pos' to same type has no effect
+246 |             _ = print_grid((grid as! [[Int]]))
+247 |             print(_p("------"))
+248 |             let path: [Pos] = (greedy_best_first((grid as! [[Int]]), (`init` as! Pos), (goal as! Pos)) as! [Pos])
+    |                                                                                              `- warning: forced cast of 'Pos' to same type has no effect
+249 |             var j: Int = 0
+250 |             while (j < _int(((path).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:248:104: warning: forced cast of '[Pos]' to same type has no effect
+246 |             _ = print_grid((grid as! [[Int]]))
+247 |             print(_p("------"))
+248 |             let path: [Pos] = (greedy_best_first((grid as! [[Int]]), (`init` as! Pos), (goal as! Pos)) as! [Pos])
+    |                                                                                                        `- warning: forced cast of '[Pos]' to same type has no effect
+249 |             var j: Int = 0
+250 |             while (j < _int(((path).count))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:251:34: warning: forced cast of 'Pos' to same type has no effect
+249 |             var j: Int = 0
+250 |             while (j < _int(((path).count))) {
+251 |                 let p = (path[j] as! Pos)
+    |                                  `- warning: forced cast of 'Pos' to same type has no effect
+252 |                 grid[p.y][p.x] = 2
+253 |                 j = _int((j &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:255:34: warning: forced cast of '[[Int]]' to same type has no effect
+253 |                 j = _int((j &+ 1))
+254 |             }
+255 |             _ = print_grid((grid as! [[Int]]))
+    |                                  `- warning: forced cast of '[[Int]]' to same type has no effect
+256 |             idx = _int((idx &+ 1))
+257 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:255:13: warning: using '_' to ignore the result of a Void-returning function is redundant
+253 |                 j = _int((j &+ 1))
+254 |             }
+255 |             _ = print_grid((grid as! [[Int]]))
+    |             `- warning: using '_' to ignore the result of a Void-returning function is redundant
+256 |             idx = _int((idx &+ 1))
+257 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden433_graphs_greedy_best_first2618496503/001/main.swift:259:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+257 |         }
+258 |     }
+259 |     _ = main()
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+260 |     let _benchEnd = _now()
+261 |     let _benchMemEnd = _mem()

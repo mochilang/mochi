@@ -4264,6 +4264,9 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				}
 				if m, ok := baseType.(types.MapType); ok {
 					baseType = types.OptionType{Elem: m.Value}
+					if i+1 < len(p.Ops) && p.Ops[i+1].Index != nil {
+						force = true
+					}
 					// Map lookups return optionals; avoid force unwrap
 				} else if l, ok := baseType.(types.ListType); ok {
 					baseType = l.Elem
