@@ -594,6 +594,10 @@ type VarStmt struct {
 }
 
 func (s *VarStmt) emit(w io.Writer) error {
+	if _, exists := localVarTypes[s.Name]; exists {
+		as := &AssignStmt{Target: &Name{Name: s.Name}, Value: s.Value}
+		return as.emit(w)
+	}
 	nextStructHint = s.Name
 	typ := s.Type
 	if typ == "" {
@@ -1514,7 +1518,7 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 	}
 	lp := precedence(b.Left)
 	bp := precedence(b)
-	if lp > bp {
+	if lp > bp || ((b.Op == "==" || b.Op == "!=") && isComparisonExpr(b.Left)) {
 		if _, err := io.WriteString(w, "("); err != nil {
 			return err
 		}
@@ -1544,7 +1548,7 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 	rp := precedence(b.Right)
 	// Ensure correct evaluation order for expressions like `a - (b + c)`
 	// where the right operand has the same precedence as the parent.
-	if rp >= bp {
+	if rp >= bp || ((b.Op == "==" || b.Op == "!=") && isComparisonExpr(b.Right)) {
 		if _, err := io.WriteString(w, "("); err != nil {
 			return err
 		}
@@ -1580,6 +1584,16 @@ func precedence(e Expr) int {
 		return 8
 	}
 	return 0
+}
+
+func isComparisonExpr(e Expr) bool {
+	if b, ok := e.(*BinaryExpr); ok {
+		switch b.Op {
+		case "==", "!=", "<", "<=", ">", ">=":
+			return true
+		}
+	}
+	return false
 }
 
 // CondExpr represents a conditional expression like `cond ? a : b`.
