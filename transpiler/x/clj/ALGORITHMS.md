@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-08 18:15 GMT+7
+Last updated: 2025-08-08 19:07 GMT+7
 
-## Algorithms Golden Test Checklist (346/1077)
+## Algorithms Golden Test Checklist (349/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 50.25ms | 19.66MB |
@@ -434,9 +434,9 @@ Last updated: 2025-08-08 18:15 GMT+7
 | 425 | graphs/finding_bridges | ✓ | 96.28ms | 21.26MB |
 | 426 | graphs/frequent_pattern_graph_miner | ✓ | 73.819ms | 39.17MB |
 | 427 | graphs/g_topological_sort | ✓ | 43.381ms | 21.59MB |
-| 428 | graphs/gale_shapley_bigraph |   |  |  |
-| 429 | graphs/graph_adjacency_list |   |  |  |
-| 430 | graphs/graph_adjacency_matrix |   |  |  |
+| 428 | graphs/gale_shapley_bigraph | ✓ | 67.864ms | 21.33MB |
+| 429 | graphs/graph_adjacency_list | ✓ | 77.656ms | 26.68MB |
+| 430 | graphs/graph_adjacency_matrix | ✓ | 73.157ms | 24.73MB |
 | 431 | graphs/graph_list |   |  |  |
 | 432 | graphs/graphs_floyd_warshall |   |  |  |
 | 433 | graphs/greedy_best_first |   |  |  |

@@ -834,15 +834,15 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	}
 	pr.Forms = append(pr.Forms, indexOfFn)
 
-        splitFn := &Defn{Name: "split", Params: []Node{Symbol("s"), Symbol("sep")}, Body: []Node{
-                &List{Elems: []Node{Symbol("clojure.string/split"), Symbol("s"), &List{Elems: []Node{Symbol("re-pattern"), Symbol("sep")}}}},
-        }}
-        pr.Forms = append(pr.Forms, splitFn)
+	splitFn := &Defn{Name: "split", Params: []Node{Symbol("s"), Symbol("sep")}, Body: []Node{
+		&List{Elems: []Node{Symbol("clojure.string/split"), Symbol("s"), &List{Elems: []Node{Symbol("re-pattern"), Symbol("sep")}}}},
+	}}
+	pr.Forms = append(pr.Forms, splitFn)
 
-       toiFn := &Defn{Name: "toi", Params: []Node{Symbol("s")}, Body: []Node{
-               &List{Elems: []Node{Symbol("Integer/parseInt"), &List{Elems: []Node{Symbol("str"), Symbol("s")}}}},
-       }}
-       pr.Forms = append(pr.Forms, toiFn)
+	toiFn := &Defn{Name: "toi", Params: []Node{Symbol("s")}, Body: []Node{
+		&List{Elems: []Node{Symbol("Integer/parseInt"), &List{Elems: []Node{Symbol("str"), Symbol("s")}}}},
+	}}
+	pr.Forms = append(pr.Forms, toiFn)
 
 	if env != nil {
 		structs := env.Structs()
@@ -985,6 +985,28 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 		// extern declarations only affect type checking
 		return nil, nil
 	case s.Expr != nil:
+		if c := callExpr(s.Expr.Expr); c != nil {
+			if len(c.Args) > 0 {
+				if name, ok := identName(c.Args[0]); ok {
+					if transpileEnv != nil {
+						if _, ok := transpileEnv.GetFunc(c.Func); ok {
+							n, err := transpileExpr(s.Expr.Expr)
+							if err != nil {
+								return nil, err
+							}
+							if declVars != nil && declVars[name] {
+								return &List{Elems: []Node{Symbol("set!"), Symbol(name), n}}, nil
+							}
+							return &List{Elems: []Node{
+								Symbol("alter-var-root"),
+								&List{Elems: []Node{Symbol("var"), Symbol(name)}},
+								&List{Elems: []Node{Symbol("constantly"), n}},
+							}}, nil
+						}
+					}
+				}
+			}
+		}
 		return transpileExpr(s.Expr.Expr)
 	case s.If != nil:
 		return transpileIfStmt(s.If)
@@ -1357,6 +1379,22 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 			}},
 		}}
 		bodyNode = &List{Elems: []Node{Symbol("try"), bodyNode, catchExpr}}
+	}
+	if !hasReturn && f.Return == nil && len(f.Params) > 0 {
+		sym := Symbol(renameVar(f.Params[0].Name))
+		if lst, ok := bodyNode.(*List); ok {
+			if len(lst.Elems) > 0 {
+				if s, ok := lst.Elems[0].(Symbol); ok && s == "do" {
+					lst.Elems = append(lst.Elems, sym)
+				} else {
+					bodyNode = &List{Elems: []Node{Symbol("do"), bodyNode, sym}}
+				}
+			} else {
+				bodyNode = &List{Elems: []Node{Symbol("do"), bodyNode, sym}}
+			}
+		} else {
+			bodyNode = &List{Elems: []Node{Symbol("do"), bodyNode, sym}}
+		}
 	}
 	if len(localVars) > 0 {
 		names := make([]string, 0, len(localVars))
@@ -2102,23 +2140,23 @@ func transpileBlock(stmts []*parser.Statement) (Node, error) {
 	if len(stmts) == 1 {
 		return transpileStmt(stmts[0])
 	}
-        elems := []Node{Symbol("do")}
-        for _, st := range stmts {
-                n, err := transpileStmt(st)
-                if err != nil {
-                        return nil, err
-                }
-                if n != nil {
-                       if l, ok := n.(*List); ok && len(l.Elems) > 0 {
-                               if sym, ok := l.Elems[0].(Symbol); ok && sym == "do" {
-                                       elems = append(elems, l.Elems[1:]...)
-                                       continue
-                               }
-                       }
-                       elems = append(elems, n)
-                }
-        }
-        return &List{Elems: elems}, nil
+	elems := []Node{Symbol("do")}
+	for _, st := range stmts {
+		n, err := transpileStmt(st)
+		if err != nil {
+			return nil, err
+		}
+		if n != nil {
+			if l, ok := n.(*List); ok && len(l.Elems) > 0 {
+				if sym, ok := l.Elems[0].(Symbol); ok && sym == "do" {
+					elems = append(elems, l.Elems[1:]...)
+					continue
+				}
+			}
+			elems = append(elems, n)
+		}
+	}
+	return &List{Elems: elems}, nil
 }
 
 func hasLoopCtrl(stmts []*parser.Statement) bool {
@@ -2155,20 +2193,20 @@ func transpileIfStmt(s *parser.IfStmt) (Node, error) {
 			return nil, err
 		}
 	}
-       if elseNode == nil {
-               return &List{Elems: []Node{Symbol("when"), cond, thenNode}}, nil
-       }
-       // transform `if cond (recur ...) else expr` into
-       // `(do (when cond (recur ...)) expr)` so that `recur`
-       // is emitted in tail position and detected by the
-       // surrounding loop handler.
-       if l, ok := thenNode.(*List); ok && len(l.Elems) == 2 {
-               if sym, ok := l.Elems[0].(Symbol); ok && sym == "recur" {
-                       whenForm := &List{Elems: []Node{Symbol("when"), cond, thenNode}}
-                       return &List{Elems: []Node{Symbol("do"), whenForm, elseNode}}, nil
-               }
-       }
-       return &List{Elems: []Node{Symbol("if"), cond, thenNode, elseNode}}, nil
+	if elseNode == nil {
+		return &List{Elems: []Node{Symbol("when"), cond, thenNode}}, nil
+	}
+	// transform `if cond (recur ...) else expr` into
+	// `(do (when cond (recur ...)) expr)` so that `recur`
+	// is emitted in tail position and detected by the
+	// surrounding loop handler.
+	if l, ok := thenNode.(*List); ok && len(l.Elems) == 2 {
+		if sym, ok := l.Elems[0].(Symbol); ok && sym == "recur" {
+			whenForm := &List{Elems: []Node{Symbol("when"), cond, thenNode}}
+			return &List{Elems: []Node{Symbol("do"), whenForm, elseNode}}, nil
+		}
+	}
+	return &List{Elems: []Node{Symbol("if"), cond, thenNode, elseNode}}, nil
 }
 
 func transpileIfExpr(e *parser.IfExpr) (Node, error) {
@@ -3072,6 +3110,21 @@ func identName(e *parser.Expr) (string, bool) {
 	return name, true
 }
 
+func callExpr(e *parser.Expr) *parser.CallExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value.Target
+	if p == nil || p.Call == nil || len(u.Value.Ops) > 0 {
+		return nil
+	}
+	return p.Call
+}
+
 func literalString(e *parser.Expr) (string, bool) {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return "", false
@@ -3335,25 +3388,25 @@ func transpileForStmt(f *parser.ForStmt) (Node, error) {
 		prevSeq = currentSeqVar
 		currentSeqVar = f.Name + "_seq"
 	}
-       bodyNodes := []Node{}
-       for _, st := range f.Body {
-               n, err := transpileStmt(st)
-               if err != nil {
-                       if useCtrl {
-                               currentSeqVar = prevSeq
-                       }
-                       return nil, err
-               }
-               if n != nil {
-                       if l, ok := n.(*List); ok && len(l.Elems) > 0 {
-                               if sym, ok := l.Elems[0].(Symbol); ok && sym == "do" {
-                                       bodyNodes = append(bodyNodes, l.Elems[1:]...)
-                                       continue
-                               }
-                       }
-                       bodyNodes = append(bodyNodes, n)
-               }
-       }
+	bodyNodes := []Node{}
+	for _, st := range f.Body {
+		n, err := transpileStmt(st)
+		if err != nil {
+			if useCtrl {
+				currentSeqVar = prevSeq
+			}
+			return nil, err
+		}
+		if n != nil {
+			if l, ok := n.(*List); ok && len(l.Elems) > 0 {
+				if sym, ok := l.Elems[0].(Symbol); ok && sym == "do" {
+					bodyNodes = append(bodyNodes, l.Elems[1:]...)
+					continue
+				}
+			}
+			bodyNodes = append(bodyNodes, n)
+		}
+	}
 	if useCtrl {
 		currentSeqVar = prevSeq
 	}
