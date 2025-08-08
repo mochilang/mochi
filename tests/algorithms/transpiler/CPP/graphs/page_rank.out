@@ -1,0 +1,10 @@
+======= Nodes =======
+{'name': 'A', 'inbound': [C], 'outbound': [B, C]}
+{'name': 'B', 'inbound': [A], 'outbound': [C]}
+{'name': 'C', 'inbound': [A, B], 'outbound': [A]}
+======= Iteration 1 =======
+{A148801, B148800.575, C148801.06375}
+======= Iteration 2 =======
+{A148801.05419, B148800.59803, C148801.10635}
+======= Iteration 3 =======
+{A148801.0904, B148800.613421, C148801.13483}
