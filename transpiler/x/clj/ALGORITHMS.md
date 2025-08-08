@@ -2,22 +2,22 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-08 19:07 GMT+7
+Last updated: 2025-08-08 20:59 GMT+7
 
-## Algorithms Golden Test Checklist (349/1077)
+## Algorithms Golden Test Checklist (381/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 50.25ms | 19.66MB |
-| 2 | backtracking/all_permutations | ✓ | 70.354ms | 20.50MB |
-| 3 | backtracking/all_subsequences | ✓ | 50.083ms | 18.92MB |
+| 2 | backtracking/all_permutations | error | 70.354ms | 20.50MB |
+| 3 | backtracking/all_subsequences | error | 50.083ms | 18.92MB |
 | 4 | backtracking/coloring | ✓ | 53.736ms | 20.05MB |
 | 5 | backtracking/combination_sum | ✓ | 54.599ms | 19.62MB |
-| 6 | backtracking/crossword_puzzle_solver | ✓ | 51.637ms | 22.30MB |
+| 6 | backtracking/crossword_puzzle_solver | error | 51.637ms | 22.30MB |
 | 7 | backtracking/hamiltonian_cycle | ✓ | 37.79ms | 20.67MB |
 | 8 | backtracking/knight_tour | ✓ | 37.789ms | 22.69MB |
 | 9 | backtracking/match_word_pattern | ✓ | 61.392ms | 21.23MB |
 | 10 | backtracking/minimax | ✓ | 33.902ms | 20.10MB |
-| 11 | backtracking/n_queens |   |  |  |
+| 11 | backtracking/n_queens | ✓ | 79.51ms | 22.10MB |
 | 12 | backtracking/n_queens_math | ✓ | 54.596ms | 21.57MB |
 | 13 | backtracking/power_sum | ✓ | 45.022ms | 20.11MB |
 | 14 | backtracking/rat_in_maze | ✓ | 63.228ms | 21.36MB |
@@ -437,56 +437,56 @@ Last updated: 2025-08-08 19:07 GMT+7
 | 428 | graphs/gale_shapley_bigraph | ✓ | 67.864ms | 21.33MB |
 | 429 | graphs/graph_adjacency_list | ✓ | 77.656ms | 26.68MB |
 | 430 | graphs/graph_adjacency_matrix | ✓ | 73.157ms | 24.73MB |
-| 431 | graphs/graph_list |   |  |  |
-| 432 | graphs/graphs_floyd_warshall |   |  |  |
-| 433 | graphs/greedy_best_first |   |  |  |
-| 434 | graphs/greedy_min_vertex_cover |   |  |  |
-| 435 | graphs/kahns_algorithm_long |   |  |  |
-| 436 | graphs/kahns_algorithm_topo |   |  |  |
-| 437 | graphs/karger |   |  |  |
-| 438 | graphs/lanczos_eigenvectors |   |  |  |
-| 439 | graphs/markov_chain |   |  |  |
-| 440 | graphs/matching_min_vertex_cover |   |  |  |
-| 441 | graphs/minimum_path_sum |   |  |  |
-| 442 | graphs/minimum_spanning_tree_boruvka |   |  |  |
-| 443 | graphs/minimum_spanning_tree_kruskal |   |  |  |
-| 444 | graphs/minimum_spanning_tree_kruskal2 |   |  |  |
-| 445 | graphs/minimum_spanning_tree_prims |   |  |  |
-| 446 | graphs/minimum_spanning_tree_prims2 |   |  |  |
-| 447 | graphs/multi_heuristic_astar |   |  |  |
-| 448 | graphs/page_rank |   |  |  |
-| 449 | graphs/prim |   |  |  |
-| 450 | graphs/random_graph_generator |   |  |  |
-| 451 | graphs/scc_kosaraju |   |  |  |
-| 452 | graphs/strongly_connected_components |   |  |  |
-| 453 | graphs/tarjans_scc |   |  |  |
-| 454 | graphs/tests/test_min_spanning_tree_kruskal |   |  |  |
-| 455 | graphs/tests/test_min_spanning_tree_prim |   |  |  |
-| 456 | greedy_methods/best_time_to_buy_and_sell_stock |   |  |  |
-| 457 | greedy_methods/fractional_cover_problem |   |  |  |
-| 458 | greedy_methods/fractional_knapsack |   |  |  |
-| 459 | greedy_methods/fractional_knapsack_2 |   |  |  |
-| 460 | greedy_methods/gas_station |   |  |  |
-| 461 | greedy_methods/minimum_coin_change |   |  |  |
-| 462 | greedy_methods/minimum_waiting_time |   |  |  |
-| 463 | greedy_methods/optimal_merge_pattern |   |  |  |
-| 464 | greedy_methods/smallest_range |   |  |  |
-| 465 | hashes/adler32 |   |  |  |
-| 466 | hashes/chaos_machine |   |  |  |
-| 467 | hashes/djb2 |   |  |  |
-| 468 | hashes/elf |   |  |  |
-| 469 | hashes/enigma_machine |   |  |  |
-| 470 | hashes/fletcher16 |   |  |  |
-| 471 | hashes/hamming_code |   |  |  |
-| 472 | hashes/luhn |   |  |  |
-| 473 | hashes/md5 |   |  |  |
-| 474 | hashes/sdbm |   |  |  |
-| 475 | hashes/sha1 |   |  |  |
-| 476 | hashes/sha256 |   |  |  |
-| 477 | knapsack/greedy_knapsack |   |  |  |
-| 478 | knapsack/knapsack |   |  |  |
-| 479 | knapsack/recursive_approach_knapsack |   |  |  |
-| 480 | knapsack/tests/test_greedy_knapsack |   |  |  |
+| 431 | graphs/graph_list | ✓ | 97.038ms | 20.32MB |
+| 432 | graphs/graphs_floyd_warshall | ✓ | 46.461ms | 21.04MB |
+| 433 | graphs/greedy_best_first | ✓ | 164.738ms | 25.53MB |
+| 434 | graphs/greedy_min_vertex_cover | ✓ | 81.089ms | 21.01MB |
+| 435 | graphs/kahns_algorithm_long | ✓ | 60.905ms | 21.76MB |
+| 436 | graphs/kahns_algorithm_topo | ✓ | 78.973ms | 21.05MB |
+| 437 | graphs/karger | error |  |  |
+| 438 | graphs/lanczos_eigenvectors | error |  |  |
+| 439 | graphs/markov_chain | ✓ | 589.201ms | 22.69MB |
+| 440 | graphs/matching_min_vertex_cover | ✓ | 71.266ms | 21.73MB |
+| 441 | graphs/minimum_path_sum | error |  |  |
+| 442 | graphs/minimum_spanning_tree_boruvka | ✓ | 54.708ms | 23.15MB |
+| 443 | graphs/minimum_spanning_tree_kruskal | ✓ | 52.554ms | 21.51MB |
+| 444 | graphs/minimum_spanning_tree_kruskal2 | ✓ | 61.596ms | 24.42MB |
+| 445 | graphs/minimum_spanning_tree_prims | ✓ | 53.524ms | 21.56MB |
+| 446 | graphs/minimum_spanning_tree_prims2 | error |  |  |
+| 447 | graphs/multi_heuristic_astar | ✓ | 62.958ms | 29.94MB |
+| 448 | graphs/page_rank | error |  |  |
+| 449 | graphs/prim | ✓ | 58.869ms | 25.95MB |
+| 450 | graphs/random_graph_generator | ✓ | 81.75ms | 20.98MB |
+| 451 | graphs/scc_kosaraju | ✓ | 101.148ms | 22.46MB |
+| 452 | graphs/strongly_connected_components | ✓ | 88.043ms | 22.41MB |
+| 453 | graphs/tarjans_scc | error |  |  |
+| 454 | graphs/tests/test_min_spanning_tree_kruskal | ✓ | 75.012ms | 22.03MB |
+| 455 | graphs/tests/test_min_spanning_tree_prim | error |  |  |
+| 456 | greedy_methods/best_time_to_buy_and_sell_stock | ✓ | 54.423ms | 19.38MB |
+| 457 | greedy_methods/fractional_cover_problem | ✓ | 61.491ms | 20.74MB |
+| 458 | greedy_methods/fractional_knapsack | ✓ | 44.424ms | 22.13MB |
+| 459 | greedy_methods/fractional_knapsack_2 | error |  |  |
+| 460 | greedy_methods/gas_station | error |  |  |
+| 461 | greedy_methods/minimum_coin_change | ✓ | 87.183ms | 19.62MB |
+| 462 | greedy_methods/minimum_waiting_time | ✓ | 58.88ms | 20.39MB |
+| 463 | greedy_methods/optimal_merge_pattern | ✓ | 58.188ms | 20.13MB |
+| 464 | greedy_methods/smallest_range | ✓ | 56.65ms | 21.59MB |
+| 465 | hashes/adler32 | ✓ | 47.637ms | 20.40MB |
+| 466 | hashes/chaos_machine | error |  |  |
+| 467 | hashes/djb2 | ✓ | 62.393ms | 20.38MB |
+| 468 | hashes/elf | ✓ | 61.59ms | 23.93MB |
+| 469 | hashes/enigma_machine | error |  |  |
+| 470 | hashes/fletcher16 | ✓ | 47.894ms | 19.54MB |
+| 471 | hashes/hamming_code | error |  |  |
+| 472 | hashes/luhn | ✓ | 47.467ms | 20.53MB |
+| 473 | hashes/md5 | ✓ | 61.752ms | 30.38MB |
+| 474 | hashes/sdbm | error |  |  |
+| 475 | hashes/sha1 | ✓ | 192.686ms | 27.44MB |
+| 476 | hashes/sha256 | error |  |  |
+| 477 | knapsack/greedy_knapsack | error |  |  |
+| 478 | knapsack/knapsack | ✓ | 51.843ms | 19.89MB |
+| 479 | knapsack/recursive_approach_knapsack | ✓ | 49.184ms | 19.60MB |
+| 480 | knapsack/tests/test_greedy_knapsack | error |  |  |
 | 481 | knapsack/tests/test_knapsack |   |  |  |
 | 482 | linear_algebra/gaussian_elimination |   |  |  |
 | 483 | linear_algebra/jacobi_iteration_method |   |  |  |

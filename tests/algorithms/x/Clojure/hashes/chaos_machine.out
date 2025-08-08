@@ -1,0 +1,5 @@
+Execution error (ClassCastException) at main/round-dec (chaos_machine.clj:91).
+class java.lang.Double cannot be cast to class java.lang.String (java.lang.Double and java.lang.String are in module java.base of loader 'bootstrap')
+
+Full report at:
+/tmp/clojure-8309737767952403948.edn

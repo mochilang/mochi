@@ -1,0 +1,5 @@
+Execution error (NullPointerException) at main/can-complete-journey (gas_station.clj:44).
+Cannot invoke "Object.getClass()" because "x" is null
+
+Full report at:
+/tmp/clojure-7351401671150817484.edn
