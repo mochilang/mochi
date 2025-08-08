@@ -1,0 +1,15 @@
+exit status 134
+Unhandled exception. System.Text.Json.JsonException: The input does not contain any JSON tokens. Expected the input to start with a valid JSON token, when isFinalBlock is true. Path: $ | LineNumber: 0 | BytePositionInLine: 0.
+ ---> System.Text.Json.JsonReaderException: The input does not contain any JSON tokens. Expected the input to start with a valid JSON token, when isFinalBlock is true. LineNumber: 0 | BytePositionInLine: 0.
+   at System.Text.Json.ThrowHelper.ThrowJsonReaderException(Utf8JsonReader& json, ExceptionResource resource, Byte nextByte, ReadOnlySpan`1 bytes)
+   at System.Text.Json.Utf8JsonReader.Read()
+   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, JsonSerializerOptions options, ReadStack& state)
+   --- End of inner exception stack trace ---
+   at System.Text.Json.ThrowHelper.ReThrowWithPath(ReadStack& state, JsonReaderException ex)
+   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, JsonSerializerOptions options, ReadStack& state)
+   at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 utf8Json, JsonTypeInfo`1 jsonTypeInfo, Nullable`1 actualByteCount)
+   at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 json, JsonTypeInfo`1 jsonTypeInfo)
+   at Program._fetch_BookData(String url) in /tmp/TestCSTranspiler_Algorithms_Golden001_web_programming_search_books_by_isbn3136781499/001/Program.cs:line 79
+   at Program.get_book_data(String olid_17) in /tmp/TestCSTranspiler_Algorithms_Golden001_web_programming_search_books_by_isbn3136781499/001/Program.cs:line 205
+   at Program.main() in /tmp/TestCSTranspiler_Algorithms_Golden001_web_programming_search_books_by_isbn3136781499/001/Program.cs:line 229
+   at Program.Main() in /tmp/TestCSTranspiler_Algorithms_Golden001_web_programming_search_books_by_isbn3136781499/001/Program.cs:line 243

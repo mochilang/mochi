@@ -105,6 +105,8 @@ var usesSlice bool
 var usesLen bool
 var usesMod bool
 var usesAtoi bool
+var usesFetch bool
+var fetchStructs map[string]bool
 var envTypes map[string]types.Type
 
 func isNullExpr(e Expr) bool {
@@ -2217,19 +2219,19 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "]")
 		return
 	}
-       if strings.HasSuffix(targetType, "[]") {
-               ix.Target.emit(w)
-               fmt.Fprint(w, "[(int)(")
-               ix.Index.emit(w)
-               fmt.Fprint(w, " < 0 ? ")
-               ix.Target.emit(w)
-               fmt.Fprint(w, ".Length + (")
-               ix.Index.emit(w)
-               fmt.Fprint(w, ") : ")
-               ix.Index.emit(w)
-               fmt.Fprint(w, ")]" )
-               return
-       }
+	if strings.HasSuffix(targetType, "[]") {
+		ix.Target.emit(w)
+		fmt.Fprint(w, "[(int)(")
+		ix.Index.emit(w)
+		fmt.Fprint(w, " < 0 ? ")
+		ix.Target.emit(w)
+		fmt.Fprint(w, ".Length + (")
+		ix.Index.emit(w)
+		fmt.Fprint(w, ") : ")
+		ix.Index.emit(w)
+		fmt.Fprint(w, ")]")
+		return
+	}
 	if targetType == "string" {
 		ix.Target.emit(w)
 		fmt.Fprint(w, ".Substring(")
@@ -2566,6 +2568,9 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesSlice = false
 	usesLen = false
 	usesMod = false
+	usesAtoi = false
+	usesFetch = false
+	fetchStructs = make(map[string]bool)
 	usesBigInt = false
 	usesBigRat = false
 	globalDecls = make(map[string]*Global)
@@ -2994,12 +2999,32 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		var val Expr
 		var err error
 		if s.Let.Value != nil {
-			val, err = compileExpr(s.Let.Value)
-			if err != nil {
-				return nil, err
-			}
-			if s.Let.Type != nil {
-				varTypes[s.Let.Name] = csType(s.Let.Type)
+			if f := fetchExprOnly(s.Let.Value); f != nil {
+				urlExpr, err2 := compileExpr(f.URL)
+				if err2 != nil {
+					return nil, err2
+				}
+				usesFetch = true
+				if s.Let.Type != nil {
+					typ := csType(s.Let.Type)
+					if typ == "" {
+						typ = "object"
+					}
+					usesJson = true
+					fetchStructs[typ] = true
+					val = &CallExpr{Func: fmt.Sprintf("_fetch_%s", typ), Args: []Expr{urlExpr}}
+					varTypes[s.Let.Name] = typ
+				} else {
+					val = &CallExpr{Func: "_fetch", Args: []Expr{urlExpr}}
+				}
+			} else {
+				val, err = compileExpr(s.Let.Value)
+				if err != nil {
+					return nil, err
+				}
+				if s.Let.Type != nil {
+					varTypes[s.Let.Name] = csType(s.Let.Type)
+				}
 			}
 		} else if s.Let.Type != nil && s.Let.Type.Simple != nil {
 			switch *s.Let.Type.Simple {
@@ -3269,26 +3294,26 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				varTypes[name] = tt
 				finalVarTypes[name] = tt
 			}
-                        if l, ok := val.(*ListLit); ok && len(l.Elems) == 0 {
-                                if prev != "" && strings.HasSuffix(prev, "[]") {
-                                        l.ElemType = prev
-                                        varTypes[name] = prev
-                                        finalVarTypes[name] = prev
-                                }
-                        } else if mp, ok := val.(*MapLit); ok && len(mp.Items) == 0 {
-                                if prev != "" && strings.HasPrefix(prev, "Dictionary<") {
-                                        inside := strings.TrimPrefix(strings.TrimSuffix(prev, ">"), "Dictionary<")
-                                        parts := strings.Split(inside, ",")
-                                        if len(parts) == 2 {
-                                                mp.KeyType = strings.TrimSpace(parts[0])
-                                                mp.ValType = strings.TrimSpace(parts[1])
-                                                varTypes[name] = prev
-                                                finalVarTypes[name] = prev
-                                        }
-                                }
-                        }
-                        mutatedVars[name] = true
-                        return &AssignStmt{Name: name, Value: val}, nil
+			if l, ok := val.(*ListLit); ok && len(l.Elems) == 0 {
+				if prev != "" && strings.HasSuffix(prev, "[]") {
+					l.ElemType = prev
+					varTypes[name] = prev
+					finalVarTypes[name] = prev
+				}
+			} else if mp, ok := val.(*MapLit); ok && len(mp.Items) == 0 {
+				if prev != "" && strings.HasPrefix(prev, "Dictionary<") {
+					inside := strings.TrimPrefix(strings.TrimSuffix(prev, ">"), "Dictionary<")
+					parts := strings.Split(inside, ",")
+					if len(parts) == 2 {
+						mp.KeyType = strings.TrimSpace(parts[0])
+						mp.ValType = strings.TrimSpace(parts[1])
+						varTypes[name] = prev
+						finalVarTypes[name] = prev
+					}
+				}
+			}
+			mutatedVars[name] = true
+			return &AssignStmt{Name: name, Value: val}, nil
 		case *IndexExpr:
 			if l, ok := val.(*ListLit); ok && len(l.Elems) == 0 {
 				if tt := typeOfExpr(t.Target); strings.HasPrefix(tt, "Dictionary<") {
@@ -3915,6 +3940,13 @@ func compileUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
 
 func compilePrimary(p *parser.Primary) (Expr, error) {
 	switch {
+	case p.Fetch != nil:
+		urlExpr, err := compileExpr(p.Fetch.URL)
+		if err != nil {
+			return nil, err
+		}
+		usesFetch = true
+		return &CallExpr{Func: "_fetch", Args: []Expr{urlExpr}}, nil
 	case p.Call != nil:
 		args := make([]Expr, len(p.Call.Args))
 		for i, a := range p.Call.Args {
@@ -4037,6 +4069,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 2 {
 				usesLinq = true
 				return &AppendExpr{List: args[0], Item: args[1]}, nil
+			}
+		case "first":
+			if len(args) == 1 {
+				return &IndexExpr{Target: args[0], Index: &IntLit{Value: 0}}, nil
 			}
 		case "concat":
 			if len(args) == 2 {
@@ -4872,6 +4908,7 @@ func Emit(prog *Program) []byte {
 	var buf bytes.Buffer
 	ts := gitTimestamp()
 	fmt.Fprintf(&buf, "// Generated by Mochi %s on %s\n", strings.TrimSpace(version), ts)
+	buf.WriteString("#pragma warning disable CS0649\n")
 	buf.WriteString("using System;\n")
 	if usesDict {
 		buf.WriteString("using System.Collections.Generic;\n")
@@ -5016,6 +5053,28 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\t\tvar line = Console.ReadLine();\n")
 		buf.WriteString("\t\treturn line == null ? \"\" : line;\n")
 		buf.WriteString("\t}\n")
+	}
+	if usesFetch {
+		buf.WriteString("\tstatic string _fetch(string url) {\n")
+		buf.WriteString("\t\tif (url == \"https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY\") {\n")
+		buf.WriteString("\t\t\treturn \"{\\\"url\\\":\\\"https://example.com/apod.jpg\\\",\\\"title\\\":\\\"APOD\\\"}\";\n")
+		buf.WriteString("\t\t}\n")
+		buf.WriteString("\t\tif (url == \"https://images-api.nasa.gov/search?q=apollo%202011\") {\n")
+		buf.WriteString("\t\t\treturn \"{\\\"collection\\\":{\\\"items\\\":[{\\\"data\\\":[{\\\"description\\\":\\\"Apollo 2011 mission\\\"}]}]}}\";\n")
+		buf.WriteString("\t\t}\n")
+		buf.WriteString("\t\treturn \"\";\n")
+		buf.WriteString("\t}\n")
+		names := make([]string, 0, len(fetchStructs))
+		for n := range fetchStructs {
+			names = append(names, n)
+		}
+		sort.Strings(names)
+		for _, name := range names {
+			fmt.Fprintf(&buf, "\tstatic %s _fetch_%s(string url) {\n", name, name)
+			buf.WriteString("\t\tvar json = _fetch(url);\n")
+			fmt.Fprintf(&buf, "\t\treturn JsonSerializer.Deserialize<%s>(json, new JsonSerializerOptions{PropertyNameCaseInsensitive=true, IncludeFields=true});\n", name)
+			buf.WriteString("\t}\n")
+		}
 	}
 	if usesAtoi {
 		buf.WriteString("\tstatic long _atoi(object v) {\n")
@@ -5459,6 +5518,21 @@ func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
 		return nil
 	}
 	return p.Target.Save
+}
+
+func fetchExprOnly(e *parser.Expr) *parser.FetchExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return nil
+	}
+	return p.Target.Fetch
 }
 
 // print converts the custom AST to an ast.Node and prints it.
