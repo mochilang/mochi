@@ -3071,27 +3071,38 @@ func callPattern(e *parser.Expr) (string, []string, bool) {
 }
 
 func defaultValue(t *parser.TypeRef) Node {
-	if t == nil || t.Simple == nil {
+	if t == nil {
 		return Symbol("nil")
 	}
-	switch *t.Simple {
-	case "int":
-		return IntLit(0)
-	case "float":
-		return FloatLit(0.0)
-	case "bool":
-		return Symbol("false")
-	case "string":
-		return StringLit("")
-	case "list":
-		return &Vector{}
-	case "map":
-		return &Map{}
-	case "bigint":
-		return IntLit(0)
-	default:
-		return Symbol("nil")
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int":
+			return IntLit(0)
+		case "float":
+			return FloatLit(0.0)
+		case "bool":
+			return Symbol("false")
+		case "string":
+			return StringLit("")
+		case "bigint":
+			return IntLit(0)
+		case "list":
+			return &Vector{}
+		case "map":
+			return &Map{}
+		default:
+			return Symbol("nil")
+		}
 	}
+	if t.Generic != nil {
+		switch t.Generic.Name {
+		case "list":
+			return &Vector{}
+		case "map":
+			return &Map{}
+		}
+	}
+	return Symbol("nil")
 }
 
 func castNode(n Node, t *parser.TypeRef) (Node, error) {

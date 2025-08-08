@@ -1,0 +1,4 @@
+WARNING: Implicit use of clojure.main with options is deprecated, use -M
+mobility 1.5604519068722301E18
+conductivity 5.12672E-14
+electron_conc 5.201506356240767E18

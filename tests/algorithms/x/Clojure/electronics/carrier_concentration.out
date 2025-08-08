@@ -1,0 +1,4 @@
+WARNING: Implicit use of clojure.main with options is deprecated, use -M
+intrinsic_conc, 49.99996757507324
+electron_conc, 25.0
+hole_conc, 1440.0
