@@ -1,0 +1,7 @@
+/workspace/mochi/tests/algorithms/x/Erlang/physics/shear_stress.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+"Result(name='area',  value=4)"
+"Result(name='stress',  value=8)"
+"Result(name='tangential_force',  value=1.2e6)"

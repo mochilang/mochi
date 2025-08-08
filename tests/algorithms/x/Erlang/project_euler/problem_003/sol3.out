@@ -1,0 +1,12 @@
+/workspace/mochi/tests/algorithms/x/Erlang/project_euler/problem_003/sol3.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/project_euler/problem_003/sol3.erl:53:1: Warning: function mochi_safe_mul/2 is unused
+%   53| mochi_safe_mul(A, B) ->
+%     | ^
+
+29
+5
+17
+6857

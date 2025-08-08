@@ -1,0 +1,8 @@
+/workspace/mochi/tests/algorithms/x/Erlang/physics/speeds_of_gas_molecules.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+454.3488755062257
+445.52572734330454
+402.65620702280023
+394.8368955535605

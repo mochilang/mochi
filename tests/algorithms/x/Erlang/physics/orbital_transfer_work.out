@@ -1,0 +1,25 @@
+/workspace/mochi/tests/algorithms/x/Erlang/physics/orbital_transfer_work.erl:40:1: Warning: function mochi_nth/2 is unused
+%   40| mochi_nth(I, L) ->
+%     | ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/physics/orbital_transfer_work.erl:167:16: Warning: variable 'Sign_3' exported from 'case' (line 149, column 9)
+%  167| {Exp_2, Num_4, Sign_3, X_2} = Fun_4(Exp, Num_3, Sign_3, X_2),
+%     |                ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/physics/orbital_transfer_work.erl:177:16: Warning: variable 'Sign_3' exported from 'case' (line 149, column 9)
+%  177| {Exp_3, Num_5, Sign_3, X_2} = Fun_5(Exp_2, Num_4, Sign_3, X_2),
+%     |                ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/physics/orbital_transfer_work.erl:199:2: Warning: variable 'Exp_5' exported from 'case' (line 180, column 9)
+%  199| {Exp_5, Frac_part, Frac_str_2, Int_part, Num_5, Scaled_3, Sign_3, Temp, X_2} = Fun_6(Exp_5, Frac_part, Frac_str, Int_part, Num_5, Scaled_3, Sign_3, Temp, X_2),
+%     |  ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/physics/orbital_transfer_work.erl:199:49: Warning: variable 'Scaled_3' exported from 'case' (line 180, column 9)
+%  199| {Exp_5, Frac_part, Frac_str_2, Int_part, Num_5, Scaled_3, Sign_3, Temp, X_2} = Fun_6(Exp_5, Frac_part, Frac_str, Int_part, Num_5, Scaled_3, Sign_3, Temp, X_2),
+%     |                                                 ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/physics/orbital_transfer_work.erl:199:59: Warning: variable 'Sign_3' exported from 'case' (line 149, column 9)
+%  199| {Exp_5, Frac_part, Frac_str_2, Int_part, Num_5, Scaled_3, Sign_3, Temp, X_2} = Fun_6(Exp_5, Frac_part, Frac_str, Int_part, Num_5, Scaled_3, Sign_3, Temp, X_2),
+%     |                                                           ^
+
+"2.811e+09"

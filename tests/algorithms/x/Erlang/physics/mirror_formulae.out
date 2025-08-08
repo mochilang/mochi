@@ -1,0 +1,11 @@
+/workspace/mochi/tests/algorithms/x/Erlang/physics/mirror_formulae.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/physics/mirror_formulae.erl:62:1: Warning: function mochi_safe_mul/2 is unused
+%   62| mochi_safe_mul(A, B) ->
+%     | ^
+
+6.666666666666666
+-59.999999999999986
+13.333333333333332

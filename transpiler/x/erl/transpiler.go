@@ -316,23 +316,24 @@ type Program struct {
 
 // context tracks variable aliases to emulate mutable variables.
 type context struct {
-	alias      map[string]string
-	orig       map[string]string
-	counter    map[string]int
-	strVar     map[string]bool
-	floatVar   map[string]bool
-	mapVar     map[string]bool
-	boolVar    map[string]bool
-	listStrVar map[string]bool
-	strField   map[string]map[string]bool
-	boolField  map[string]map[string]bool
-	groups     map[string]groupInfo
-	constVal   map[string]Expr
-	autoMod    map[string]string
-	baseDir    string
-	globals    map[string]bool
-	params     map[string]bool
-	mutated    map[string]bool
+	alias        map[string]string
+	orig         map[string]string
+	counter      map[string]int
+	strVar       map[string]bool
+	floatVar     map[string]bool
+	mapVar       map[string]bool
+	boolVar      map[string]bool
+	listStrVar   map[string]bool
+	strField     map[string]map[string]bool
+	boolField    map[string]map[string]bool
+	groups       map[string]groupInfo
+	constVal     map[string]Expr
+	autoMod      map[string]string
+	baseDir      string
+	globals      map[string]bool
+	params       map[string]bool
+	mutated      map[string]bool
+	pendingThrow bool
 }
 
 type groupInfo struct{ key, items string }
@@ -3730,6 +3731,16 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		e, err := convertExpr(st.Expr.Expr, env, ctx)
 		if err != nil {
 			return nil, err
+		}
+		if nr, ok := e.(*NameRef); ok && ctx.original(nr.Name) == "throw" {
+			delete(ctx.orig, nr.Name)
+			delete(ctx.alias, "throw")
+			ctx.pendingThrow = true
+			return nil, nil
+		}
+		if ctx.pendingThrow {
+			ctx.pendingThrow = false
+			return []Stmt{&CallStmt{Call: &CallExpr{Func: "erlang:error", Args: []Expr{e}}}}, nil
 		}
 		if c, ok := e.(*CallExpr); ok {
 			if c.Func == "print" {

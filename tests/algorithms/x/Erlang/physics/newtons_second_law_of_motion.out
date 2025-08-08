@@ -1,0 +1,9 @@
+/workspace/mochi/tests/algorithms/x/Erlang/physics/newtons_second_law_of_motion.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/physics/newtons_second_law_of_motion.erl:56:1: Warning: function mochi_safe_div/2 is unused
+%   56| mochi_safe_div(A, B) ->
+%     | ^
+
+"The force is 125 N"

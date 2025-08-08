@@ -1,0 +1,7 @@
+/workspace/mochi/tests/algorithms/x/Erlang/physics/rms_speed_of_molecule.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+"rms_speed_of_molecule(100,  2) = 35.315279554323226"
+"rms_speed_of_molecule(273,  12) = 23.82145842197744"
+"Vrms of Nitrogen gas at 300 K is 16.347797820239535 m/s"
