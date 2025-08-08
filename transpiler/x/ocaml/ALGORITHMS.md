@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 233/1077
-Last updated: 2025-08-08 11:10 +0700
+Completed programs: 241/1077
+Last updated: 2025-08-08 15:41 +0700
 
 Checklist:
 
@@ -206,16 +206,16 @@ Checklist:
 | 197 | data_structures/binary_tree/serialize_deserialize_binary_tree |   |  |  |
 | 198 | data_structures/binary_tree/symmetric_tree |   |  |  |
 | 199 | data_structures/binary_tree/treap | ✓ | 328.0µs | 37.35KB |
-| 200 | data_structures/binary_tree/wavelet_tree |   |  |  |
-| 201 | data_structures/disjoint_set/alternate_disjoint_set |   |  |  |
-| 202 | data_structures/disjoint_set/disjoint_set |   |  |  |
-| 203 | data_structures/hashing/bloom_filter |   |  |  |
-| 204 | data_structures/hashing/double_hash |   |  |  |
-| 205 | data_structures/hashing/hash_map | ✓ | 174.0µs | 2.02KB |
-| 206 | data_structures/hashing/hash_table | ✓ | 198.0µs | 3.62KB |
-| 207 | data_structures/hashing/hash_table_with_linked_list |   |  |  |
-| 208 | data_structures/hashing/number_theory/prime_numbers |   |  |  |
-| 209 | data_structures/hashing/quadratic_probing |   |  |  |
+| 200 | data_structures/binary_tree/wavelet_tree | ✓ | 542.0µs | 61.21KB |
+| 201 | data_structures/disjoint_set/alternate_disjoint_set | ✓ | 133.0µs | 3.38KB |
+| 202 | data_structures/disjoint_set/disjoint_set | ✓ | 327.0µs | 37.91KB |
+| 203 | data_structures/hashing/bloom_filter | ✓ | 2.0ms | 307.80KB |
+| 204 | data_structures/hashing/double_hash | ✓ | 162.0µs | 6.25KB |
+| 205 | data_structures/hashing/hash_map | ✓ | 101.0µs | 2.02KB |
+| 206 | data_structures/hashing/hash_table | ✓ | 130.0µs | 3.62KB |
+| 207 | data_structures/hashing/hash_table_with_linked_list | ✓ | 153.0µs | 3.77KB |
+| 208 | data_structures/hashing/number_theory/prime_numbers | ✓ | 102.0µs | 240B |
+| 209 | data_structures/hashing/quadratic_probing | ✓ | 38.0µs | 2.45KB |
 | 210 | data_structures/hashing/tests/test_hash_map |   |  |  |
 | 211 | data_structures/heap/binomial_heap |   |  |  |
 | 212 | data_structures/heap/heap |   |  |  |
