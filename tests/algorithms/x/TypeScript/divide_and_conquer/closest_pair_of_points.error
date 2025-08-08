@@ -1,8 +1,0 @@
-parse: error[P052]: /workspace/mochi/tests/github/TheAlgorithms/Mochi/divide_and_conquer/closest_pair_of_points.mochi:90:49: unexpected token "e18" (expected ")")
-  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/divide_and_conquer/closest_pair_of_points.mochi:90:49
-
- 90 |     return dis_between_closest_pair(px, count, 1e18)
-    |                                                 ^
-
-help:
-  Unbalanced parentheses. Check for missing `(` or `)`.
