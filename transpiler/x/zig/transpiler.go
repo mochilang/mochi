@@ -1154,7 +1154,17 @@ func (m *MapLit) emit(w io.Writer) {
 			e.Value.emit(w)
 			io.WriteString(w, "}")
 		} else {
-			e.Value.emit(w)
+			if strings.HasPrefix(valType, "[]") {
+				if ll, ok := e.Value.(*ListLit); ok {
+					io.WriteString(w, "@constCast(&")
+					ll.emit(w)
+					io.WriteString(w, ")[0..]")
+				} else {
+					e.Value.emit(w)
+				}
+			} else {
+				e.Value.emit(w)
+			}
 		}
 		io.WriteString(w, ") catch unreachable;")
 	}
@@ -1732,13 +1742,13 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 			targetType = zigTypeFromExpr(v.Value)
 		}
 	}
-    kw := "const"
-    if mut {
-            kw = "var"
-    }
-    if kw == "const" && strings.HasPrefix(targetType, "[]") && !strings.HasPrefix(targetType, "[]const ") {
-            targetType = "[]const " + targetType[2:]
-    }
+	kw := "const"
+	if mut {
+		kw = "var"
+	}
+	if kw == "const" && strings.HasPrefix(targetType, "[]") && !strings.HasPrefix(targetType, "[]const ") {
+		targetType = "[]const " + targetType[2:]
+	}
 	if lit, ok := v.Value.(*ListLit); ok && mut && v.Type == "" {
 		elem := lit.ElemType
 		if elem == "" {
@@ -1859,7 +1869,13 @@ func (a *IndexAssignStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, ".put(")
 		idx.Index.emit(w)
 		io.WriteString(w, ", ")
-		a.Value.emit(w)
+		if ll, ok := a.Value.(*ListLit); ok && strings.HasPrefix(zigTypeFromExpr(a.Value), "[]") {
+			io.WriteString(w, "@constCast(&")
+			ll.emit(w)
+			io.WriteString(w, ")[0..]")
+		} else {
+			a.Value.emit(w)
+		}
 		io.WriteString(w, ") catch unreachable;\n")
 		return
 	}
@@ -1883,7 +1899,17 @@ func (a *IndexAssignStmt) emit(w io.Writer, indent int) {
 	} else if _, ok := a.Value.(*NullLit); ok && valueAccess(targetType) == ".List" {
 		fmt.Fprintf(w, "&[_]%s{}", strings.TrimPrefix(targetType, "[]"))
 	} else {
-		a.Value.emit(w)
+		if strings.HasPrefix(targetType, "[]") {
+			if ll, ok := a.Value.(*ListLit); ok {
+				io.WriteString(w, "@constCast(&")
+				ll.emit(w)
+				io.WriteString(w, ")[0..]")
+			} else {
+				a.Value.emit(w)
+			}
+		} else {
+			a.Value.emit(w)
+		}
 		if valType == "Value" && targetType != "Value" {
 			io.WriteString(w, valueAccess(targetType))
 		}
@@ -2411,11 +2437,11 @@ func (l *ListLit) emit(w io.Writer) {
 		} else {
 			fmt.Fprintf(w, "[%d]i64{", len(l.Elems))
 		}
-        } else {
-                io.WriteString(w, "([0]i64{})")
-                return
-        }
-        for i, e := range l.Elems {
+	} else {
+		io.WriteString(w, "([0]i64{})")
+		return
+	}
+	for i, e := range l.Elems {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
@@ -4453,13 +4479,13 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 	paramTypes := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		mutable := mutables[p.Name] || varMut[fn.Name+":"+p.Name] || varMut[":"+p.Name]
-                typ := toZigType(p.Type)
-                isMap := strings.HasPrefix(typ, "std.StringHashMap(") || strings.HasPrefix(typ, "std.AutoHashMap(")
-                if mutable && isMap {
-                        typ = "*" + typ
-                } else if !mutable && strings.HasPrefix(typ, "[]") && !strings.HasPrefix(typ, "[]const ") {
-                        typ = "[]const " + typ[2:]
-                }
+		typ := toZigType(p.Type)
+		isMap := strings.HasPrefix(typ, "std.StringHashMap(") || strings.HasPrefix(typ, "std.AutoHashMap(")
+		if mutable && isMap {
+			typ = "*" + typ
+		} else if !mutable && strings.HasPrefix(typ, "[]") && !strings.HasPrefix(typ, "[]const ") {
+			typ = "[]const " + typ[2:]
+		}
 		name := p.Name
 		paramName := name
 		if mutable {
