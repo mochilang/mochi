@@ -1,0 +1,14 @@
+compile: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/algorithms/x/Pascal/digital_image_processing/edge_detection/canny.pas
+fgl.pp(1668,8) Note: Call to subroutine "function TFPGMap<System.ShortString,System.Variant>.IndexOf(const AKey:ShortString):LongInt;" marked as inline is not inlined
+canny.pas(90,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+canny.pas(90,54) Note: Call to subroutine "operator :=(const source:QWord):Variant;" marked as inline is not inlined
+canny.pas(93,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+canny.pas(93,53) Note: Call to subroutine "operator :=(const source:QWord):Variant;" marked as inline is not inlined
+canny.pas(360,89) Error: Incompatible type for arg no. 4: Got "LongInt", expected "RealArrayArray"
+canny.pas(402) Fatal: There were 1 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

@@ -1,0 +1,19 @@
+compile: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/algorithms/x/Pascal/divide_and_conquer/max_subarray.pas
+max_subarray.pas(105,28) Error: Error in type definition
+max_subarray.pas(106,29) Error: Error in type definition
+max_subarray.pas(107,29) Error: Error in type definition
+max_subarray.pas(119,25) Error: Illegal qualifier
+max_subarray.pas(119,51) Error: Illegal qualifier
+max_subarray.pas(119,79) Error: Illegal qualifier
+max_subarray.pas(119,105) Error: Illegal qualifier
+max_subarray.pas(122,26) Error: Illegal qualifier
+max_subarray.pas(122,51) Error: Illegal qualifier
+max_subarray.pas(122,80) Error: Illegal qualifier
+max_subarray.pas(122,106) Error: Illegal qualifier
+max_subarray.pas(178) Fatal: There were 11 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

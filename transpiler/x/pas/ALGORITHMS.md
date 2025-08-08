@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-07 17:30 GMT+7
+Last updated: 2025-08-08 10:18 GMT+7
 
-## Algorithms Golden Test Checklist (120/1077)
+## Algorithms Golden Test Checklist (144/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -217,27 +217,27 @@ Last updated: 2025-08-07 17:30 GMT+7
 | 208 | data_structures/hashing/number_theory/prime_numbers |   |  |  |
 | 209 | data_structures/hashing/quadratic_probing |   |  |  |
 | 210 | data_structures/hashing/tests/test_hash_map | ✓ | 0ns | 0B |
-| 211 | data_structures/heap/binomial_heap | ✓ | 0ns | 0B |
-| 212 | data_structures/heap/heap | ✓ |  |  |
-| 213 | data_structures/heap/heap_generic | error |  |  |
-| 214 | data_structures/heap/max_heap | ✓ | 0ns | 128B |
-| 215 | data_structures/heap/min_heap | error |  |  |
-| 216 | data_structures/heap/randomized_heap | error |  |  |
-| 217 | data_structures/kd_tree/build_kdtree | error |  |  |
-| 218 | data_structures/kd_tree/example/example_usage | error |  |  |
-| 219 | data_structures/kd_tree/example/hypercube_points | error |  |  |
-| 220 | data_structures/kd_tree/kd_node | ✓ | 0ns | 480B |
-| 221 | data_structures/kd_tree/nearest_neighbour_search | ✓ | 0ns | 1.09KB |
-| 222 | data_structures/kd_tree/tests/test_kdtree | ✓ | 0ns | 3.06KB |
-| 223 | data_structures/linked_list/circular_linked_list | error |  |  |
-| 224 | data_structures/linked_list/deque_doubly | ✓ | 0ns | 64B |
-| 225 | data_structures/linked_list/doubly_linked_list | error |  |  |
-| 226 | data_structures/linked_list/doubly_linked_list_two | ✓ | 0ns | 64B |
-| 227 | data_structures/linked_list/floyds_cycle_detection | ✓ | 0ns | 0B |
-| 228 | data_structures/linked_list/from_sequence | error |  |  |
-| 229 | data_structures/linked_list/has_loop | error |  |  |
-| 230 | data_structures/linked_list/is_palindrome | ✓ | 0ns | 0B |
-| 231 | data_structures/linked_list/merge_two_lists | ✓ | 0ns | 0B |
+| 211 | data_structures/heap/binomial_heap |   |  |  |
+| 212 | data_structures/heap/heap |   |  |  |
+| 213 | data_structures/heap/heap_generic |   |  |  |
+| 214 | data_structures/heap/max_heap |   |  |  |
+| 215 | data_structures/heap/min_heap |   |  |  |
+| 216 | data_structures/heap/randomized_heap |   |  |  |
+| 217 | data_structures/kd_tree/build_kdtree |   |  |  |
+| 218 | data_structures/kd_tree/example/example_usage |   |  |  |
+| 219 | data_structures/kd_tree/example/hypercube_points |   |  |  |
+| 220 | data_structures/kd_tree/kd_node |   |  |  |
+| 221 | data_structures/kd_tree/nearest_neighbour_search |   |  |  |
+| 222 | data_structures/kd_tree/tests/test_kdtree |   |  |  |
+| 223 | data_structures/linked_list/circular_linked_list |   |  |  |
+| 224 | data_structures/linked_list/deque_doubly |   |  |  |
+| 225 | data_structures/linked_list/doubly_linked_list |   |  |  |
+| 226 | data_structures/linked_list/doubly_linked_list_two |   |  |  |
+| 227 | data_structures/linked_list/floyds_cycle_detection |   |  |  |
+| 228 | data_structures/linked_list/from_sequence |   |  |  |
+| 229 | data_structures/linked_list/has_loop |   |  |  |
+| 230 | data_structures/linked_list/is_palindrome |   |  |  |
+| 231 | data_structures/linked_list/merge_two_lists |   |  |  |
 | 232 | data_structures/linked_list/middle_element_of_linked_list |   |  |  |
 | 233 | data_structures/linked_list/print_reverse |   |  |  |
 | 234 | data_structures/linked_list/reverse_k_group |   |  |  |
@@ -266,56 +266,56 @@ Last updated: 2025-08-07 17:30 GMT+7
 | 257 | data_structures/stacks/stack_using_two_queues |   |  |  |
 | 258 | data_structures/stacks/stack_with_doubly_linked_list |   |  |  |
 | 259 | data_structures/stacks/stack_with_singly_linked_list |   |  |  |
-| 260 | data_structures/stacks/stock_span_problem |   |  |  |
-| 261 | data_structures/suffix_tree/example/example_usage |   |  |  |
-| 262 | data_structures/suffix_tree/suffix_tree |   |  |  |
-| 263 | data_structures/suffix_tree/suffix_tree_node |   |  |  |
-| 264 | data_structures/suffix_tree/tests/test_suffix_tree |   |  |  |
-| 265 | data_structures/trie/radix_tree |   |  |  |
-| 266 | data_structures/trie/trie |   |  |  |
-| 267 | digital_image_processing/change_brightness |   |  |  |
-| 268 | digital_image_processing/change_contrast |   |  |  |
-| 269 | digital_image_processing/convert_to_negative |   |  |  |
-| 270 | digital_image_processing/dithering/burkes |   |  |  |
-| 271 | digital_image_processing/edge_detection/canny |   |  |  |
-| 272 | digital_image_processing/filters/bilateral_filter |   |  |  |
-| 273 | digital_image_processing/filters/convolve |   |  |  |
-| 274 | digital_image_processing/filters/gabor_filter |   |  |  |
-| 275 | digital_image_processing/filters/gaussian_filter |   |  |  |
-| 276 | digital_image_processing/filters/laplacian_filter |   |  |  |
-| 277 | digital_image_processing/filters/local_binary_pattern |   |  |  |
-| 278 | digital_image_processing/filters/median_filter |   |  |  |
-| 279 | digital_image_processing/filters/sobel_filter |   |  |  |
-| 280 | digital_image_processing/histogram_equalization/histogram_stretch |   |  |  |
-| 281 | digital_image_processing/index_calculation |   |  |  |
-| 282 | digital_image_processing/morphological_operations/dilation_operation |   |  |  |
-| 283 | digital_image_processing/morphological_operations/erosion_operation |   |  |  |
-| 284 | digital_image_processing/resize/resize |   |  |  |
-| 285 | digital_image_processing/rotation/rotation |   |  |  |
-| 286 | digital_image_processing/sepia |   |  |  |
-| 287 | digital_image_processing/test_digital_image_processing |   |  |  |
-| 288 | divide_and_conquer/closest_pair_of_points |   |  |  |
-| 289 | divide_and_conquer/convex_hull |   |  |  |
-| 290 | divide_and_conquer/heaps_algorithm |   |  |  |
-| 291 | divide_and_conquer/heaps_algorithm_iterative |   |  |  |
-| 292 | divide_and_conquer/inversions |   |  |  |
-| 293 | divide_and_conquer/kth_order_statistic |   |  |  |
-| 294 | divide_and_conquer/max_difference_pair |   |  |  |
-| 295 | divide_and_conquer/max_subarray |   |  |  |
-| 296 | divide_and_conquer/mergesort |   |  |  |
-| 297 | divide_and_conquer/peak |   |  |  |
-| 298 | divide_and_conquer/power |   |  |  |
-| 299 | divide_and_conquer/strassen_matrix_multiplication |   |  |  |
-| 300 | docs/conf |   |  |  |
-| 301 | dynamic_programming/abbreviation |   |  |  |
-| 302 | dynamic_programming/all_construct |   |  |  |
-| 303 | dynamic_programming/bitmask |   |  |  |
-| 304 | dynamic_programming/catalan_numbers |   |  |  |
-| 305 | dynamic_programming/climbing_stairs |   |  |  |
-| 306 | dynamic_programming/combination_sum_iv |   |  |  |
-| 307 | dynamic_programming/edit_distance |   |  |  |
-| 308 | dynamic_programming/factorial |   |  |  |
-| 309 | dynamic_programming/fast_fibonacci |   |  |  |
+| 260 | data_structures/stacks/stock_span_problem | ✓ | 0ns | 128B |
+| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 0ns | 64B |
+| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 1.0µs | 24.59KB |
+| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 1.0µs | 1.78KB |
+| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 0ns | 2.81KB |
+| 265 | data_structures/trie/radix_tree | error |  |  |
+| 266 | data_structures/trie/trie | error |  |  |
+| 267 | digital_image_processing/change_brightness | ✓ | 0ns | 384B |
+| 268 | digital_image_processing/change_contrast | ✓ | 0ns | 512B |
+| 269 | digital_image_processing/convert_to_negative | error |  |  |
+| 270 | digital_image_processing/dithering/burkes | ✓ | 0ns | 0B |
+| 271 | digital_image_processing/edge_detection/canny | error |  |  |
+| 272 | digital_image_processing/filters/bilateral_filter | ✓ | 0ns | 256B |
+| 273 | digital_image_processing/filters/convolve | error |  |  |
+| 274 | digital_image_processing/filters/gabor_filter | error |  |  |
+| 275 | digital_image_processing/filters/gaussian_filter | ✓ | 0ns | 704B |
+| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 0ns | 960B |
+| 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 0ns | 576B |
+| 278 | digital_image_processing/filters/median_filter | ✓ | 0ns | 0B |
+| 279 | digital_image_processing/filters/sobel_filter | ✓ | 1.0µs | 0B |
+| 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 1.0µs | 256B |
+| 281 | digital_image_processing/index_calculation | ✓ | 0ns | 0B |
+| 282 | digital_image_processing/morphological_operations/dilation_operation | ✓ | 0ns | 0B |
+| 283 | digital_image_processing/morphological_operations/erosion_operation | error |  |  |
+| 284 | digital_image_processing/resize/resize | error |  |  |
+| 285 | digital_image_processing/rotation/rotation | ✓ | 0ns | 1.00KB |
+| 286 | digital_image_processing/sepia | error |  |  |
+| 287 | digital_image_processing/test_digital_image_processing | error |  |  |
+| 288 | divide_and_conquer/closest_pair_of_points | ✓ | 0ns | 608B |
+| 289 | divide_and_conquer/convex_hull | error |  |  |
+| 290 | divide_and_conquer/heaps_algorithm | ✓ | 0ns | 0B |
+| 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 0ns | 544B |
+| 292 | divide_and_conquer/inversions | error |  |  |
+| 293 | divide_and_conquer/kth_order_statistic | ✓ | 0ns | 128B |
+| 294 | divide_and_conquer/max_difference_pair | ✓ | 0ns | 0B |
+| 295 | divide_and_conquer/max_subarray | error |  |  |
+| 296 | divide_and_conquer/mergesort | ✓ | 0ns | 160B |
+| 297 | divide_and_conquer/peak | ✓ | 0ns | 0B |
+| 298 | divide_and_conquer/power | ✓ | 0ns | 64B |
+| 299 | divide_and_conquer/strassen_matrix_multiplication | ✓ | 2.0µs | 0B |
+| 300 | docs/conf | ✓ | 0ns | 0B |
+| 301 | dynamic_programming/abbreviation | ✓ | 1.0µs | 0B |
+| 302 | dynamic_programming/all_construct | error |  |  |
+| 303 | dynamic_programming/bitmask | ✓ | 0ns | 0B |
+| 304 | dynamic_programming/catalan_numbers | error |  |  |
+| 305 | dynamic_programming/climbing_stairs | ✓ | 0ns | 0B |
+| 306 | dynamic_programming/combination_sum_iv | ✓ | 0ns | 128B |
+| 307 | dynamic_programming/edit_distance | ✓ | 0ns | 64B |
+| 308 | dynamic_programming/factorial | ✓ | 0ns | 320B |
+| 309 | dynamic_programming/fast_fibonacci | ✓ | 0ns | 64B |
 | 310 | dynamic_programming/fibonacci |   |  |  |
 | 311 | dynamic_programming/fizz_buzz |   |  |  |
 | 312 | dynamic_programming/floyd_warshall |   |  |  |
