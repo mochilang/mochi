@@ -205,11 +205,31 @@ type MapAssignStmt struct {
 
 func (m *MapAssignStmt) emit(w io.Writer) {
 	name := sanitizeName(m.Name)
-	fmt.Fprintf(w, "(set! %s (hash-set (or %s (hash)) ", name, name)
+	fmt.Fprintf(w, "(if (hash? %s) (hash-set! %s ", name, name)
 	m.Key.emit(w)
 	io.WriteString(w, " ")
 	m.Expr.emit(w)
-	io.WriteString(w, "))\n")
+	fmt.Fprintf(w, ") (begin (set! %s (make-hash)) (hash-set! %s ", name, name)
+	m.Key.emit(w)
+	io.WriteString(w, " ")
+	m.Expr.emit(w)
+	io.WriteString(w, ")))\n")
+}
+
+type HashLit struct {
+	Pairs [][2]Expr
+}
+
+func (h *HashLit) emit(w io.Writer) {
+	io.WriteString(w, "(let ([h (make-hash)])")
+	for _, p := range h.Pairs {
+		io.WriteString(w, " (hash-set! h ")
+		p[0].emit(w)
+		io.WriteString(w, " ")
+		p[1].emit(w)
+		io.WriteString(w, ")")
+	}
+	io.WriteString(w, " h)")
 }
 
 type DoubleListAssignStmt struct {
@@ -2158,7 +2178,7 @@ func convertForStmt(n *parser.ForStmt, env *types.Env) (Stmt, error) {
 	// detect leading if statements that contain only continue/break
 	for len(bodyStmts) > 0 {
 		st := bodyStmts[0]
-		if st.If != nil && len(st.If.Then) == 1 && len(st.If.Else) == 0 {
+		if st.If != nil && len(st.If.Then) == 1 && len(st.If.Else) == 0 && st.If.ElseIf == nil {
 			if st.If.Then[0].Continue != nil {
 				c, err := convertExpr(st.If.Cond, child)
 				if err != nil {
@@ -2996,7 +3016,8 @@ func convertStruct(s *parser.StructLiteral, env *types.Env) (Expr, error) {
 	if env != nil {
 		if ut, ok := env.FindUnionByVariant(s.Name); ok {
 			st := ut.Variants[s.Name]
-			args := []Expr{&StringLit{Value: "tag"}, &StringLit{Value: s.Name}}
+			pairs := make([][2]Expr, 0, len(s.Fields)+1)
+			pairs = append(pairs, [2]Expr{&StringLit{Value: "tag"}, &StringLit{Value: s.Name}})
 			for i, f := range s.Fields {
 				val, err := convertExpr(f.Value, env)
 				if err != nil {
@@ -3006,31 +3027,31 @@ func convertStruct(s *parser.StructLiteral, env *types.Env) (Expr, error) {
 				if i < len(st.Order) {
 					key = st.Order[i]
 				}
-				args = append(args, &StringLit{Value: key}, val)
+				pairs = append(pairs, [2]Expr{&StringLit{Value: key}, val})
 			}
-			return &CallExpr{Func: "hash", Args: args}, nil
+			return &HashLit{Pairs: pairs}, nil
 		}
 	}
-	var args []Expr
+	pairs := make([][2]Expr, 0, len(s.Fields))
 	for _, f := range s.Fields {
 		val, err := convertExpr(f.Value, env)
 		if err != nil {
 			return nil, err
 		}
-		args = append(args, &StringLit{Value: f.Name}, val)
+		pairs = append(pairs, [2]Expr{&StringLit{Value: f.Name}, val})
 	}
 	if env != nil {
 		if st, ok := env.GetStruct(s.Name); ok {
 			for name := range st.Methods {
-				args = append(args, &StringLit{Value: name}, &Name{Name: name})
+				pairs = append(pairs, [2]Expr{&StringLit{Value: name}, &Name{Name: name}})
 			}
 		}
 	}
-	return &CallExpr{Func: "hash", Args: args}, nil
+	return &HashLit{Pairs: pairs}, nil
 }
 
 func convertMap(m *parser.MapLiteral, env *types.Env) (Expr, error) {
-	var args []Expr
+	pairs := make([][2]Expr, 0, len(m.Items))
 	for _, it := range m.Items {
 		var k Expr
 		if name, ok := isSimpleIdent(it.Key); ok {
@@ -3046,9 +3067,9 @@ func convertMap(m *parser.MapLiteral, env *types.Env) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		args = append(args, k, v)
+		pairs = append(pairs, [2]Expr{k, v})
 	}
-	return &CallExpr{Func: "hash", Args: args}, nil
+	return &HashLit{Pairs: pairs}, nil
 }
 
 func convertMatchExpr(m *parser.MatchExpr, env *types.Env) (Expr, error) {
@@ -3213,6 +3234,14 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 	case "indexOf":
 		if len(args) == 2 {
 			return &CallExpr{Func: "index-of", Args: args}, nil
+		}
+	case "toi":
+		if len(args) == 1 {
+			return &CallExpr{Func: "int", Args: args}, nil
+		}
+	case "values":
+		if len(args) == 1 {
+			return &CallExpr{Func: "hash-values", Args: args}, nil
 		}
 	case "split":
 		if len(args) == 2 {
