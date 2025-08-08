@@ -1,0 +1,4 @@
+exit status 2
+true
+true
+Fatal error: exception Failure("dequeue from empty queue")

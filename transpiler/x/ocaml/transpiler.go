@@ -2257,7 +2257,9 @@ func (mu *MapUpdateExpr) emit(w io.Writer) {
 			io.WriteString(w, ") : (string * Obj.t) list)")
 		}
 	} else {
+		io.WriteString(w, "(")
 		mu.Map.emit(w)
+		io.WriteString(w, ")")
 	}
 	io.WriteString(w, ")")
 }
@@ -3824,7 +3826,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 				indices[len(st.Assign.Index)+j] = &StringLit{Value: f.Name}
 			}
 			listExpr := Expr(&Name{Ident: st.Assign.Name, Typ: info.typ, Ref: true})
-			upd := buildListUpdate(listExpr, indices, valExpr)
+			upd := buildListUpdate(listExpr, info.typ, indices, valExpr)
 			return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
 		}
 		if valTyp != "" && info.typ == "" {
@@ -6359,17 +6361,25 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 	return nil, "", fmt.Errorf("call %s not supported", c.Func)
 }
 
-func buildListUpdate(list Expr, indexes []Expr, val Expr) Expr {
+func buildListUpdate(list Expr, listTyp string, indexes []Expr, val Expr) Expr {
 	idx := indexes[0]
 	if len(indexes) == 1 {
 		return &ListUpdateExpr{List: list, Index: idx, Value: val}
 	}
+	elemTyp := ""
+	if strings.HasPrefix(listTyp, "list-") {
+		elemTyp = strings.TrimPrefix(listTyp, "list-")
+	}
 	if _, ok := indexes[1].(*StringLit); ok {
-		mapExpr := &IndexExpr{Col: list, Index: idx, Typ: "map", ColTyp: "list"}
-		inner := buildMapUpdate(mapExpr, indexes[1:], val, "map")
+		mpTyp := "map"
+		if elemTyp != "" {
+			mpTyp = elemTyp
+		}
+		mapExpr := &IndexExpr{Col: list, Index: idx, Typ: mpTyp, ColTyp: "list"}
+		inner := buildMapUpdate(mapExpr, indexes[1:], val, mpTyp)
 		return &ListUpdateExpr{List: list, Index: idx, Value: inner}
 	}
-	inner := buildListUpdate(&IndexExpr{Col: list, Index: idx, Typ: "list", ColTyp: "list"}, indexes[1:], val)
+	inner := buildListUpdate(&IndexExpr{Col: list, Index: idx, Typ: elemTyp, ColTyp: "list"}, elemTyp, indexes[1:], val)
 	return &ListUpdateExpr{List: list, Index: idx, Value: inner}
 }
 
