@@ -453,7 +453,8 @@ func header() []byte {
         (else (to-str x))))`
 	prelude += "\n(define (upper s) (string-upcase s))"
 	prelude += "\n(define (lower s) (string-downcase s))"
-	prelude += "\n(define (fmod a b) (- a (* (floor (/ a b)) b)))"
+	prelude += "\n(define _floor floor)"
+	prelude += "\n(define (fmod a b) (- a (* (_floor (/ a b)) b)))"
 	prelude += "\n(define (_mod a b) (if (and (integer? a) (integer? b)) (modulo a b) (fmod a b)))"
 	// Perform integer division when both operands are integers to mimic
 	// Mochi's semantics. Fall back to Scheme's `/` for cases requiring
@@ -1640,13 +1641,13 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 					Symbol("cond"),
 					&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), Symbol(x)}},
 						&List{Elems: []Node{Symbol("inexact->exact"),
-							&List{Elems: []Node{Symbol("floor"),
+							&List{Elems: []Node{Symbol("_floor"),
 								&List{Elems: []Node{Symbol("string->number"), Symbol(x)}}}}}}}},
 					&List{Elems: []Node{&List{Elems: []Node{Symbol("boolean?"), Symbol(x)}},
 						&List{Elems: []Node{Symbol("if"), Symbol(x), IntLit(1), IntLit(0)}}}},
 					&List{Elems: []Node{Symbol("else"),
 						&List{Elems: []Node{Symbol("inexact->exact"),
-							&List{Elems: []Node{Symbol("floor"), Symbol(x)}}}}}},
+							&List{Elems: []Node{Symbol("_floor"), Symbol(x)}}}}}},
 				}}
 				node = &List{Elems: []Node{
 					Symbol("let"),
@@ -3220,9 +3221,9 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 			x := gensym("v")
 			cond := &List{Elems: []Node{
 				Symbol("cond"),
-				&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), Symbol(x)}}, &List{Elems: []Node{Symbol("exact"), &List{Elems: []Node{Symbol("floor"), &List{Elems: []Node{Symbol("string->number"), Symbol(x)}}}}}}}},
+				&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), Symbol(x)}}, &List{Elems: []Node{Symbol("exact"), &List{Elems: []Node{Symbol("_floor"), &List{Elems: []Node{Symbol("string->number"), Symbol(x)}}}}}}}},
 				&List{Elems: []Node{&List{Elems: []Node{Symbol("boolean?"), Symbol(x)}}, &List{Elems: []Node{Symbol("if"), Symbol(x), IntLit(1), IntLit(0)}}}},
-				&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("exact"), &List{Elems: []Node{Symbol("floor"), Symbol(x)}}}}}},
+				&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("exact"), &List{Elems: []Node{Symbol("_floor"), Symbol(x)}}}}}},
 			}}
 			return &List{Elems: []Node{
 				Symbol("let"),
