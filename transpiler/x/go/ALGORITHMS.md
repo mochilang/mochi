@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 186/1077
-Last updated: 2025-08-08 10:19 +0700
+Completed programs: 187/1077
+Last updated: 2025-08-08 11:18 +0700
 
 Checklist:
 
@@ -190,7 +190,7 @@ Checklist:
 | 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist |   |  |  |
 | 182 | data_structures/binary_tree/floor_and_ceiling | ✓ | 582.0µs | 1.84KB |
 | 183 | data_structures/binary_tree/inorder_tree_traversal_2022 |   |  |  |
-| 184 | data_structures/binary_tree/is_sorted |   |  |  |
+| 184 | data_structures/binary_tree/is_sorted | ✓ | 409.0µs | 1.82KB |
 | 185 | data_structures/binary_tree/is_sum_tree |   |  |  |
 | 186 | data_structures/binary_tree/lazy_segment_tree |   |  |  |
 | 187 | data_structures/binary_tree/lowest_common_ancestor |   |  |  |
