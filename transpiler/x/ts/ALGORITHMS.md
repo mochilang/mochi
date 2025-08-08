@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-08 12:02 UTC
+Last updated: 2025-08-08 12:18 UTC
 
 ## Algorithms Golden Test Checklist (1050/1077)
 | Index | Name | Status | Duration | Memory |
@@ -412,12 +412,12 @@ Last updated: 2025-08-08 12:02 UTC
 | 403 | graphs/boruvka |   |  |  |
 | 404 | graphs/breadth_first_search | ✓ | 1.854ms | 29.5 KB |
 | 405 | graphs/breadth_first_search_2 | ✓ | 1.786ms | 535.3 KB |
-| 406 | graphs/breadth_first_search_shortest_path | ✓ | 1.977ms | 281.5 KB |
+| 406 | graphs/breadth_first_search_shortest_path | ✓ | 571.223ms | 539.5 KB |
 | 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 9µs | 3.3 KB |
 | 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ | 1.52ms | 39.6 KB |
-| 409 | graphs/check_bipatrite | ✓ | 1.08ms | 17.8 KB |
+| 409 | graphs/check_bipatrite | ✓ | 571.223ms | 531.5 KB |
 | 410 | graphs/check_cycle | ✓ | 1.792ms | 27.2 KB |
-| 411 | graphs/connected_components | ✓ | 2.739ms | 281.1 KB |
+| 411 | graphs/connected_components | ✓ | 571.223ms | 38.8 KB |
 | 412 | graphs/deep_clone_graph |   |  |  |
 | 413 | graphs/depth_first_search | ✓ | 1.48ms | 273.6 KB |
 | 414 | graphs/depth_first_search_2 | ✓ | 2.24ms | 291.1 KB |

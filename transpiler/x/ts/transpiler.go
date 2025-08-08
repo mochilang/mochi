@@ -2804,40 +2804,35 @@ func convertForStmt(f *parser.ForStmt, env *types.Env) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
-        var elemType types.Type
-        keys := false
-        if env != nil {
-                switch t := types.CheckExprType(f.Source, env).(type) {
-                case types.MapType:
-                        keys = true
-                        elemType = t.Key
-                case types.StructType:
-                        // Treat structured maps like objects and iterate over keys
-                        keys = true
-                        elemType = types.StringType{}
-                case types.ListType:
-                        elemType = t.Elem
-                case types.GroupType:
-                        elemType = t.Elem
-                case types.StringType:
-                        elemType = types.StringType{}
-                }
-                if elemType != nil {
-                        env.SetVar(f.Name, elemType, true)
-                }
-        }
-        // When type information is unavailable but the iterable is an index
-        // expression (e.g. `for x in m[k]`), default to iterating over keys.
-        if !keys {
-                if _, ok := iterable.(*IndexExpr); ok {
-                        keys = true
-                }
-        }
-        if !keys && env == nil {
-                if ie, ok := iterable.(*IndexExpr); ok && ie.Raw {
-                        keys = true
-                }
-        }
+	var elemType types.Type
+	keys := false
+	if env != nil {
+		switch t := types.CheckExprType(f.Source, env).(type) {
+		case types.MapType:
+			keys = true
+			elemType = t.Key
+		case types.StructType:
+			// Treat structured maps like objects and iterate over keys
+			keys = true
+			elemType = types.StringType{}
+		case types.ListType:
+			elemType = t.Elem
+		case types.GroupType:
+			elemType = t.Elem
+		case types.StringType:
+			elemType = types.StringType{}
+		}
+		if elemType != nil {
+			env.SetVar(f.Name, elemType, true)
+		}
+	}
+	// When type information is unavailable but the iterable is an index
+	// expression (e.g. `for x in m[k]`), default to iterating over keys.
+	if !keys && env == nil {
+		if _, ok := iterable.(*IndexExpr); ok {
+			keys = true
+		}
+	}
 	body, err := convertStmtList(f.Body)
 	if err != nil {
 		return nil, err
