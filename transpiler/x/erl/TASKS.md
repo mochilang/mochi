@@ -1,3 +1,11 @@
+## Progress (2025-08-08 16:19 +0700)
+- scala: fix branch scoping and numeric string formatting (0204126673)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-08 16:19 +0700)
+- scala: fix branch scoping and numeric string formatting (0204126673)
+- Regenerated golden files - 103/105 vm valid programs passing
+
 ## Progress (2025-08-07 16:25 +0700)
 - erl transpiler: trim float trailing zeros (6899ff50f4)
 - Regenerated golden files - 103/105 vm valid programs passing
