@@ -873,8 +873,6 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 				op = "//"
 			} else if isIntLike(inferPyType(b.Left, currentEnv)) && isIntLike(inferPyType(b.Right, currentEnv)) {
 				op = "//"
-			} else if !isFloatLike(inferPyType(b.Left, currentEnv)) && !isFloatLike(inferPyType(b.Right, currentEnv)) {
-				op = "//"
 			}
 		}
 		switch op {
@@ -1802,7 +1800,7 @@ func isIntOnlyExpr(e Expr, env *types.Env) bool {
 				return isIntLike(t)
 			}
 		}
-		return true
+		return false
 	case *BinaryExpr:
 		if ex.Op == "/" {
 			return isIntOnlyExpr(ex.Left, env) && isIntOnlyExpr(ex.Right, env)
@@ -4997,10 +4995,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 2 {
 				return &BinaryExpr{Left: args[0], Op: "*", Right: args[1]}, nil
 			}
-               case "contains":
-                       if !hasFunc && len(args) == 2 {
-                               return &BinaryExpr{Left: args[1], Op: "in", Right: args[0]}, nil
-                       }
+		case "contains":
+			if !hasFunc && len(args) == 2 {
+				return &BinaryExpr{Left: args[1], Op: "in", Right: args[0]}, nil
+			}
 		case "parseIntStr":
 			if len(args) == 2 {
 				return &CallExpr{Func: &Name{Name: "int"}, Args: []Expr{args[0], args[1]}}, nil
