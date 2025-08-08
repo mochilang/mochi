@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 722/1077
-Last updated: 2025-08-08 19:49 +0700
+Completed programs: 726/1077
+Last updated: 2025-08-08 20:45 +0700
 
 Checklist:
 
@@ -795,10 +795,10 @@ Checklist:
 | 786 | physics/photoelectric_effect |   |  |  |
 | 787 | physics/potential_energy |   |  |  |
 | 788 | physics/rainfall_intensity |   |  |  |
-| 789 | physics/reynolds_number |   |  |  |
-| 790 | physics/rms_speed_of_molecule |   |  |  |
-| 791 | physics/shear_stress |   |  |  |
-| 792 | physics/speed_of_sound |   |  |  |
+| 789 | physics/reynolds_number | ✓ | 640.0µs | 3.74MB |
+| 790 | physics/rms_speed_of_molecule | ✓ | 543.0µs | 3.66MB |
+| 791 | physics/shear_stress | ✓ | 555.0µs | 3.75MB |
+| 792 | physics/speed_of_sound | ✓ | 556.0µs | 3.82MB |
 | 793 | physics/speeds_of_gas_molecules |   |  |  |
 | 794 | physics/terminal_velocity |   |  |  |
 | 795 | project_euler/problem_001/sol1 |   |  |  |
