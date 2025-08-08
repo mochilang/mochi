@@ -1,0 +1,17 @@
+Volumes:
+Cube: 8
+Cuboid: 8
+Cone: 1.33333
+Right Circular Cone: 8.37758
+Prism: 4
+Pyramid: 1.33333
+Sphere: 33.5103
+Hemisphere: 16.7552
+Circular Cylinder: 25.1327
+Torus: 157.914
+Conical Frustum: 58.6431
+Spherical cap: 5.23599
+Spheres intersection: 21.2058
+Spheres union: 45.8149
+Hollow Circular Cylinder: 28.2743
+Icosahedron: 34.089
