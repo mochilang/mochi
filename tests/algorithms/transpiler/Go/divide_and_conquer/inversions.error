@@ -1,0 +1,6 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/divide_and_conquer/inversions.go:375:8: cannot use total (variable of type float64) as int value in struct literal
+../../../tests/algorithms/transpiler/Go/divide_and_conquer/inversions.go:454:10: cannot use count_inversions_recursive(func(v any) []int {…}(arr_1)).Inv (value of type int) as InvResult value in assignment
+../../../tests/algorithms/transpiler/Go/divide_and_conquer/inversions.go:529:11: cannot use count_inversions_recursive(func(v any) []int {…}(arr_1)).Inv (value of type int) as InvResult value in assignment
+../../../tests/algorithms/transpiler/Go/divide_and_conquer/inversions.go:569:11: cannot use count_inversions_recursive(func(v any) []int {…}(arr_1)).Inv (value of type int) as InvResult value in assignment
