@@ -1,5 +1,0 @@
-exit status 134
-Unhandled exception. System.IndexOutOfRangeException: Index was outside the bounds of the array.
-   at Program.resize_nn(Int64[][][] img_9, Int64 dst_w_10, Int64 dst_h_11) in /tmp/TestCSTranspiler_Algorithms_Golden001_digital_image_processing_resize_resize2052530060/001/Program.cs:line 135
-   at Program.main() in /tmp/TestCSTranspiler_Algorithms_Golden001_digital_image_processing_resize_resize2052530060/001/Program.cs:line 145
-   at Program.Main() in /tmp/TestCSTranspiler_Algorithms_Golden001_digital_image_processing_resize_resize2052530060/001/Program.cs:line 153

@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-08 09:32 GMT+7
+Last updated: 2025-08-08 10:17 GMT+7
 
-## Algorithms Golden Test Checklist (734/1077)
+## Algorithms Golden Test Checklist (739/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -266,13 +266,13 @@ Last updated: 2025-08-08 09:32 GMT+7
 | 257 | data_structures/stacks/stack_using_two_queues | ✓ | 4.0ms | 17.73KB |
 | 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 3.0ms | 17.95KB |
 | 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 3.0ms | 13.90KB |
-| 260 | data_structures/stacks/stock_span_problem | ✓ | 3.0ms | 18.09KB |
+| 260 | data_structures/stacks/stock_span_problem | ✓ | 2.0ms | 18.09KB |
 | 261 | data_structures/suffix_tree/example/example_usage | error |  |  |
-| 262 | data_structures/suffix_tree/suffix_tree | error |  |  |
+| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 2.0ms | 24.79KB |
 | 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 3.0ms | 16.92KB |
 | 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 2.0ms | 15.18KB |
 | 265 | data_structures/trie/radix_tree | error |  |  |
-| 266 | data_structures/trie/trie | error |  |  |
+| 266 | data_structures/trie/trie | ✓ | 3.0ms | 25.62KB |
 | 267 | digital_image_processing/change_brightness | ✓ | 3.0ms | 19.35KB |
 | 268 | digital_image_processing/change_contrast | ✓ | 3.0ms | 19.46KB |
 | 269 | digital_image_processing/convert_to_negative | ✓ | 3.0ms | 19.86KB |
@@ -281,41 +281,41 @@ Last updated: 2025-08-08 09:32 GMT+7
 | 272 | digital_image_processing/filters/bilateral_filter | ✓ | 2.0ms | 27.70KB |
 | 273 | digital_image_processing/filters/convolve | error |  |  |
 | 274 | digital_image_processing/filters/gabor_filter | ✓ | 3.0ms | 17.09KB |
-| 275 | digital_image_processing/filters/gaussian_filter | ✓ | 2.0ms | 25.59KB |
-| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 2.0ms | 24.75KB |
+| 275 | digital_image_processing/filters/gaussian_filter | ✓ | 2.0ms | 25.55KB |
+| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 3.0ms | 24.75KB |
 | 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 3.0ms | 25.52KB |
 | 278 | digital_image_processing/filters/median_filter | ✓ | 3.0ms | 33.38KB |
 | 279 | digital_image_processing/filters/sobel_filter | ✓ | 4.0ms | 74.20KB |
 | 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 2.0ms | 575.92KB |
-| 281 | digital_image_processing/index_calculation | ✓ | 4.0ms | 14.17KB |
+| 281 | digital_image_processing/index_calculation | ✓ | 3.0ms | 14.17KB |
 | 282 | digital_image_processing/morphological_operations/dilation_operation | ✓ | 4.0ms | 25.59KB |
-| 283 | digital_image_processing/morphological_operations/erosion_operation | ✓ | 3.0ms | 18.62KB |
-| 284 | digital_image_processing/resize/resize | error |  |  |
-| 285 | digital_image_processing/rotation/rotation | ✓ | 2.0ms | 20.89KB |
-| 286 | digital_image_processing/sepia | ✓ | 2.0ms | 19.42KB |
-| 287 | digital_image_processing/test_digital_image_processing | ✓ | 3.0ms | 55.20KB |
-| 288 | divide_and_conquer/closest_pair_of_points | error |  |  |
-| 289 | divide_and_conquer/convex_hull | ✓ | 1.0µs | 43.76KB |
-| 290 | divide_and_conquer/heaps_algorithm | ✓ | 3.0ms | 19.98KB |
+| 283 | digital_image_processing/morphological_operations/erosion_operation | ✓ | 4.0ms | 18.62KB |
+| 284 | digital_image_processing/resize/resize | ✓ | 3.0ms | 30.70KB |
+| 285 | digital_image_processing/rotation/rotation | ✓ | 3.0ms | 21.41KB |
+| 286 | digital_image_processing/sepia | ✓ | 2.0ms | 19.52KB |
+| 287 | digital_image_processing/test_digital_image_processing | ✓ | 3.0ms | 55.41KB |
+| 288 | divide_and_conquer/closest_pair_of_points | ✓ | 3.0ms | 14.49KB |
+| 289 | divide_and_conquer/convex_hull | ✓ | 1.0µs | 43.75KB |
+| 290 | divide_and_conquer/heaps_algorithm | ✓ | 3.0ms | 19.42KB |
 | 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 3.0ms | 21.48KB |
-| 292 | divide_and_conquer/inversions | error |  |  |
+| 292 | divide_and_conquer/inversions | ✓ | 2.0ms | 29.23KB |
 | 293 | divide_and_conquer/kth_order_statistic | ✓ | 3.0ms | 22.13KB |
 | 294 | divide_and_conquer/max_difference_pair | ✓ | 3.0ms | 17.33KB |
 | 295 | divide_and_conquer/max_subarray | ✓ | 3.0ms | 20.69KB |
 | 296 | divide_and_conquer/mergesort | ✓ | 3.0ms | 27.28KB |
 | 297 | divide_and_conquer/peak | ✓ | 2.0ms | 17.27KB |
 | 298 | divide_and_conquer/power | ✓ | 3.0ms | 13.99KB |
-| 299 | divide_and_conquer/strassen_matrix_multiplication | ✓ | 5.0ms | 1.69MB |
+| 299 | divide_and_conquer/strassen_matrix_multiplication | ✓ | 6.0ms | 1.69MB |
 | 300 | docs/conf | ✓ | 2.0ms | 15.11KB |
 | 301 | dynamic_programming/abbreviation | ✓ | 3.0ms | 26.74KB |
 | 302 | dynamic_programming/all_construct | ✓ | 3.0ms | 52.64KB |
-| 303 | dynamic_programming/bitmask | ✓ | 4.0ms | 18.87KB |
+| 303 | dynamic_programming/bitmask | ✓ | 3.0ms | 18.87KB |
 | 304 | dynamic_programming/catalan_numbers | ✓ | 3.0ms | 18.02KB |
-| 305 | dynamic_programming/climbing_stairs | ✓ | 2.0ms | 16.39KB |
-| 306 | dynamic_programming/combination_sum_iv | ✓ | 4.0ms | 18.12KB |
+| 305 | dynamic_programming/climbing_stairs | ✓ | 3.0ms | 16.39KB |
+| 306 | dynamic_programming/combination_sum_iv | ✓ | 3.0ms | 18.12KB |
 | 307 | dynamic_programming/edit_distance | ✓ | 3.0ms | 51.69KB |
 | 308 | dynamic_programming/factorial | ✓ | 3.0ms | 19.87KB |
-| 309 | dynamic_programming/fast_fibonacci | ✓ | 3.0ms | 18.49KB |
+| 309 | dynamic_programming/fast_fibonacci | ✓ | 2.0ms | 18.49KB |
 | 310 | dynamic_programming/fibonacci | error |  |  |
 | 311 | dynamic_programming/fizz_buzz | ✓ | 2.0ms | 19.84KB |
 | 312 | dynamic_programming/floyd_warshall | error |  |  |

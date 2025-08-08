@@ -1,8 +1,7 @@
-error[T008]: type mismatch: expected RadixNode, got string
-  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/data_structures/trie/radix_tree.mochi:85:18
-
- 85 |   child.prefix = res.rem_prefix
-    |                  ^
-
-help:
-  Change the value to match the expected type.
+exit status 134
+Unhandled exception. System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at Program.insert(RadixTree tree_15, Int64 idx_16, String word_17) in /tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_trie_radix_tree2216579866/001/Program.cs:line 153
+   at Program.insert(RadixTree tree_15, Int64 idx_16, String word_17) in /tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_trie_radix_tree2216579866/001/Program.cs:line 188
+   at Program.insert_many(RadixTree tree_12, String[] words_13) in /tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_trie_radix_tree2216579866/001/Program.cs:line 147
+   at Program.main() in /tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_trie_radix_tree2216579866/001/Program.cs:line 360
+   at Program.Main() in /tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_trie_radix_tree2216579866/001/Program.cs:line 370
