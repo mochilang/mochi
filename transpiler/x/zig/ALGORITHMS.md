@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-07 16:58 +0700
+Last updated: 2025-08-08 10:32 +0700
 
-## Program Checklist (153/1077)
+## Program Checklist (156/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.114ms | 512.0 KB |
@@ -72,11 +72,11 @@ Last updated: 2025-08-07 16:58 +0700
 | 63 | cellular_automata/one_dimensional | ✓ | 18.13ms | 4.2 MB |
 | 64 | cellular_automata/wa_tor | ✓ | 8.706ms | 2.8 MB |
 | 65 | ciphers/a1z26 | ✓ | 888µs | 256.0 KB |
-| 66 | ciphers/affine_cipher |   |  |  |
+| 66 | ciphers/affine_cipher | ✓ | 4.561ms | 640.0 KB |
 | 67 | ciphers/atbash | ✓ | 854µs | 384.0 KB |
-| 68 | ciphers/autokey |   |  |  |
+| 68 | ciphers/autokey | ✓ | 6.407ms | 1.0 MB |
 | 69 | ciphers/baconian_cipher |   |  |  |
-| 70 | ciphers/base16 |   |  |  |
+| 70 | ciphers/base16 | ✓ | 3.348ms | 640.0 KB |
 | 71 | ciphers/base32 | ✓ | 22.044ms | 6.8 MB |
 | 72 | ciphers/base64_cipher | ✓ | 2.964ms | 1.0 MB |
 | 73 | ciphers/base85 | ✓ | 8.01ms | 2.6 MB |
