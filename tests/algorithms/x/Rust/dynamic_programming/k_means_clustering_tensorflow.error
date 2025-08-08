@@ -1,0 +1,485 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:63:2
+   |
+63 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:79:2
+   |
+79 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:130:2
+    |
+130 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:136:2
+    |
+136 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:57:11
+   |
+57 |     while (i < (a.len() as i64)) {
+   |           ^                    ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+57 -     while (i < (a.len() as i64)) {
+57 +     while i < (a.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:58:29
+   |
+58 |         let mut diff: f64 = (a[i as usize] - b[i as usize]);
+   |                             ^                             ^
+   |
+help: remove these parentheses
+   |
+58 -         let mut diff: f64 = (a[i as usize] - b[i as usize]);
+58 +         let mut diff: f64 = a[i as usize] - b[i as usize];
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:59:15
+   |
+59 |         sum = (sum + (diff * diff));
+   |               ^                   ^
+   |
+help: remove these parentheses
+   |
+59 -         sum = (sum + (diff * diff));
+59 +         sum = sum + (diff * diff);
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:60:13
+   |
+60 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+60 -         i = (i + 1);
+60 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:65:24
+   |
+65 |     let mut dim: i64 = (vectors[0 as usize].clone().len() as i64);
+   |                        ^                                        ^
+   |
+help: remove these parentheses
+   |
+65 -     let mut dim: i64 = (vectors[0 as usize].clone().len() as i64);
+65 +     let mut dim: i64 = vectors[0 as usize].clone().len() as i64;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:68:11
+   |
+68 |     while (i < dim) {
+   |           ^       ^
+   |
+help: remove these parentheses
+   |
+68 -     while (i < dim) {
+68 +     while i < dim {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:71:15
+   |
+71 |         while (j < (vectors.len() as i64)) {
+   |               ^                          ^
+   |
+help: remove these parentheses
+   |
+71 -         while (j < (vectors.len() as i64)) {
+71 +         while j < (vectors.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:72:21
+   |
+72 |             total = (total + vectors[j as usize].clone()[i as usize]);
+   |                     ^                                               ^
+   |
+help: remove these parentheses
+   |
+72 -             total = (total + vectors[j as usize].clone()[i as usize]);
+72 +             total = total + vectors[j as usize].clone()[i as usize];
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:73:17
+   |
+73 |             j = (j + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+73 -             j = (j + 1);
+73 +             j = j + 1;
+   |
+
+warning: unnecessary parentheses around method argument
+  --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:75:51
+   |
+75 |         res = { let mut _v = res.clone(); _v.push((total / (vectors.len() as i64))); _v };
+   |                                                   ^                              ^
+   |
+help: remove these parentheses
+   |
+75 -         res = { let mut _v = res.clone(); _v.push((total / (vectors.len() as i64))); _v };
+75 +         res = { let mut _v = res.clone(); _v.push(total / (vectors.len() as i64)); _v };
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:76:13
+   |
+76 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+76 -         i = (i + 1);
+76 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:83:11
+   |
+83 |     while (i < k) {
+   |           ^     ^
+   |
+help: remove these parentheses
+   |
+83 -     while (i < k) {
+83 +     while i < k {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:85:13
+   |
+85 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+85 -         i = (i + 1);
+85 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:88:22
+   |
+88 |     let mut n: i64 = (vectors.len() as i64);
+   |                      ^                    ^
+   |
+help: remove these parentheses
+   |
+88 -     let mut n: i64 = (vectors.len() as i64);
+88 +     let mut n: i64 = vectors.len() as i64;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:90:11
+   |
+90 |     while (i < n) {
+   |           ^     ^
+   |
+help: remove these parentheses
+   |
+90 -     while (i < n) {
+90 +     while i < n {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:92:13
+   |
+92 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+92 -         i = (i + 1);
+92 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:95:11
+   |
+95 |     while (it < iterations) {
+   |           ^               ^
+   |
+help: remove these parentheses
+   |
+95 -     while (it < iterations) {
+95 +     while it < iterations {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:97:15
+   |
+97 |         while (v < n) {
+   |               ^     ^
+   |
+help: remove these parentheses
+   |
+97 -         while (v < n) {
+97 +         while v < n {
+   |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:101:19
+    |
+101 |             while (c < k) {
+    |                   ^     ^
+    |
+help: remove these parentheses
+    |
+101 -             while (c < k) {
+101 +             while c < k {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:103:20
+    |
+103 |                 if (d < bestDist) {
+    |                    ^            ^
+    |
+help: remove these parentheses
+    |
+103 -                 if (d < bestDist) {
+103 +                 if d < bestDist {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:107:21
+    |
+107 |                 c = (c + 1);
+    |                     ^     ^
+    |
+help: remove these parentheses
+    |
+107 -                 c = (c + 1);
+107 +                 c = c + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:110:17
+    |
+110 |             v = (v + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+110 -             v = (v + 1);
+110 +             v = v + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:113:15
+    |
+113 |         while (cIdx < k) {
+    |               ^        ^
+    |
+help: remove these parentheses
+    |
+113 -         while (cIdx < k) {
+113 +         while cIdx < k {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:116:19
+    |
+116 |             while (v2 < n) {
+    |                   ^      ^
+    |
+help: remove these parentheses
+    |
+116 -             while (v2 < n) {
+116 +             while v2 < n {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:117:20
+    |
+117 |                 if (assignments[v2 as usize] == cIdx) {
+    |                    ^                                ^
+    |
+help: remove these parentheses
+    |
+117 -                 if (assignments[v2 as usize] == cIdx) {
+117 +                 if assignments[v2 as usize] == cIdx {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:120:22
+    |
+120 |                 v2 = (v2 + 1);
+    |                      ^      ^
+    |
+help: remove these parentheses
+    |
+120 -                 v2 = (v2 + 1);
+120 +                 v2 = v2 + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:122:16
+    |
+122 |             if ((cluster.len() as i64) > 0) {
+    |                ^                          ^
+    |
+help: remove these parentheses
+    |
+122 -             if ((cluster.len() as i64) > 0) {
+122 +             if (cluster.len() as i64) > 0 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:125:20
+    |
+125 |             cIdx = (cIdx + 1);
+    |                    ^        ^
+    |
+help: remove these parentheses
+    |
+125 -             cIdx = (cIdx + 1);
+125 +             cIdx = cIdx + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:127:14
+    |
+127 |         it = (it + 1);
+    |              ^      ^
+    |
+help: remove these parentheses
+    |
+127 -         it = (it + 1);
+127 +         it = it + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:139:28
+    |
+139 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+139 -     let duration_us: i64 = ((_end - _start) / 1000);
+139 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0277]: cannot divide `f64` by `i64`
+  --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:75:58
+   |
+75 |         res = { let mut _v = res.clone(); _v.push((total / (vectors.len() as i64))); _v };
+   |                                                          ^ no implementation for `f64 / i64`
+   |
+   = help: the trait `Div<i64>` is not implemented for `f64`
+   = help: the following other types implement trait `Div<Rhs>`:
+             `&f64` implements `Div<f64>`
+             `&f64` implements `Div`
+             `f64` implements `Div<&f64>`
+             `f64` implements `Div`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:54:20
+   |
+54 |     fn distance_sq(mut a: Vec<f64>, mut b: Vec<f64>) -> f64 {
+   |                    ----^
+   |                    |
+   |                    help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:54:37
+   |
+54 |     fn distance_sq(mut a: Vec<f64>, mut b: Vec<f64>) -> f64 {
+   |                                     ----^
+   |                                     |
+   |                                     help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:58:13
+   |
+58 |         let mut diff: f64 = (a[i as usize] - b[i as usize]);
+   |             ----^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:80:16
+   |
+80 |     fn k_means(mut vectors: Vec<Vec<f64>>, mut k: i64, mut iterations: i64) -> KMeansResult {
+   |                ----^^^^^^^
+   |                |
+   |                help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:80:44
+   |
+80 |     fn k_means(mut vectors: Vec<Vec<f64>>, mut k: i64, mut iterations: i64) -> KMeansResult {
+   |                                            ----^
+   |                                            |
+   |                                            help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:80:56
+   |
+80 |     fn k_means(mut vectors: Vec<Vec<f64>>, mut k: i64, mut iterations: i64) -> KMeansResult {
+   |                                                        ----^^^^^^^^^^
+   |                                                        |
+   |                                                        help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:88:9
+   |
+88 |     let mut n: i64 = (vectors.len() as i64);
+   |         ----^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:102:21
+    |
+102 |                 let mut d: f64 = distance_sq(vectors[v as usize].clone(), centroids[c as usize].clone());
+    |                     ----^
+    |                     |
+    |                     help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:132:9
+    |
+132 |     let mut vectors: Vec<Vec<f64>> = vec![vec![1.0, 2.0], vec![1.5, 1.8], vec![5.0, 8.0], vec![8.0, 8.0], vec![1.0, 0.6], vec![9.0, 11.0]];
+    |         ----^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/k_means_clustering_tensorflow.rs:133:9
+    |
+133 |     let mut result: KMeansResult = k_means(vectors.clone(), 2, 5);
+    |         ----^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+error: aborting due to 1 previous error; 44 warnings emitted
+
+For more information about this error, try `rustc --explain E0277`.
