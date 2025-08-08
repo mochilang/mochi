@@ -1,0 +1,10 @@
+{
+  "duration_us": 7,
+  "memory_bytes": 14327808,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/hashes/sha256.py", line 51, in <module>
+    print(bytes_to_hex(list(hashlib.sha256(bytes("Python")).digest())))
+                                           ^^^^^^^^^^^^^^^
+TypeError: string argument without an encoding

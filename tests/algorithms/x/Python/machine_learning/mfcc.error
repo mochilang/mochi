@@ -1,17 +1,12 @@
 run: exit status 1
-{
-  "duration_us": 71,
-  "memory_bytes": 15196160,
-  "name": "main"
-}
 Traceback (most recent call last):
-  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/mfcc.py", line 193, in <module>
+  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/mfcc.py", line 171, in <module>
     coeffs = mfcc(audio, 5, 3)
              ^^^^^^^^^^^^^^^^^
-  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/mfcc.py", line 171, in mfcc
+  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/mfcc.py", line 149, in mfcc
     norm = normalize(audio)
            ^^^^^^^^^^^^^^^^
-  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/mfcc.py", line 105, in normalize
+  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/mfcc.py", line 83, in normalize
     res = _append(res, audio[i] // max_val)
                        ~~~~~~~~~^^~~~~~~~~
 ZeroDivisionError: float floor division by zero

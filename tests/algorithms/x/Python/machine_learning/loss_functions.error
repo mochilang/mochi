@@ -11,21 +11,17 @@ run: exit status 1
 0.75
 228152458.75893378
 0.0
-{
-  "duration_us": 207,
-  "memory_bytes": 16359424,
-  "name": "main"
-}
 Traceback (most recent call last):
-  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/loss_functions.py", line 348, in <module>
+  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/loss_functions.py", line 322, in <module>
     main()
-  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/loss_functions.py", line 343, in main
+  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/loss_functions.py", line 321, in main
     print(kullback_leibler_divergence(y_true_kl, y_pred_kl))
           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/loss_functions.py", line 307, in kullback_leibler_divergence
+  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/loss_functions.py", line 288, in kullback_leibler_divergence
     total = total + y_true[i] * ln(y_true[i] // y_pred[i])
                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/loss_functions.py", line 62, in ln
+  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/loss_functions.py", line 43, in ln
     panic("ln domain error")
-    ^^^^^
-NameError: name 'panic' is not defined
+  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/loss_functions.py", line 11, in panic
+    raise Exception(msg)
+Exception: ln domain error

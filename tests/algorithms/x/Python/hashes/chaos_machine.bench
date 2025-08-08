@@ -1,0 +1,13 @@
+{
+  "duration_us": 2434,
+  "memory_bytes": 14012416,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/hashes/chaos_machine.py", line 131, in <module>
+    machine = push(machine, i)
+              ^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/hashes/chaos_machine.py", line 79, in push
+    e = (1.0 * seed) // value
+        ~~~~~~~~~~~~~^^~~~~~~
+ZeroDivisionError: float floor division by zero
