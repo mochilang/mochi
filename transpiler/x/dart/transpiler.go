@@ -23,7 +23,15 @@ import (
 )
 
 const helperSHA256 = `
-List<int> _sha256(List<int> bs) {
+List<int> _sha256(dynamic data) {
+  List<int> bs;
+  if (data is String) {
+    bs = utf8.encode(data);
+  } else if (data is List<int>) {
+    bs = data;
+  } else {
+    bs = utf8.encode(data.toString());
+  }
   final tmp = File('${Directory.systemTemp.path}/sha256_${DateTime.now().microsecondsSinceEpoch}.bin');
   tmp.writeAsBytesSync(bs.map((e) => e & 0xff).toList());
   final result = Process.runSync('sha256sum', [tmp.path]);
@@ -4291,7 +4299,7 @@ func Emit(w io.Writer, p *Program) error {
 			added[path] = true
 		}
 	}
-	if (usesJSON || useFetch) && !added["dart:convert"] {
+	if (usesJSON || useFetch || useSHA256) && !added["dart:convert"] {
 		if _, err := io.WriteString(w, "import 'dart:convert';\n"); err != nil {
 			return err
 		}

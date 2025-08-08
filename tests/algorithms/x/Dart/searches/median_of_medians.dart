@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,10 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
@@ -43,9 +46,9 @@ List<int> set_at_int(List<int> xs, int idx, int value) {
   List<int> res = <int>[];
   while (i < xs.length) {
     if (i == idx) {
-    res = [...res, value];
+    res = (res..add(value));
   } else {
-    res = [...res, xs[i]];
+    res = (res..add(xs[i]));
   }
     i = i + 1;
   }
@@ -81,9 +84,9 @@ int median_of_medians(List<int> arr) {
   int i = 0;
   while (i < arr.length) {
     if (i + 5 <= arr.length) {
-    medians = [...medians, median_of_five(arr.sublist(i, i + 5))];
+    medians = (medians..add(median_of_five(arr.sublist(i, i + 5))));
   } else {
-    medians = [...medians, median_of_five(arr.sublist(i, arr.length))];
+    medians = (medians..add(median_of_five(arr.sublist(i, arr.length))));
   }
     i = i + 5;
   }
@@ -101,19 +104,19 @@ int quick_select(List<int> arr, int target) {
   int i = 0;
   while (i < arr.length) {
     if (arr[i] < x) {
-    left = [...left, arr[i]];
+    left = (left..add(arr[i]));
   } else {
     if (arr[i] > x) {
-    right = [...right, arr[i]];
+    right = (right..add(arr[i]));
   } else {
     if (arr[i] == x) {
     if (!check) {
     check = true;
   } else {
-    right = [...right, arr[i]];
+    right = (right..add(arr[i]));
   };
   } else {
-    right = [...right, arr[i]];
+    right = (right..add(arr[i]));
   };
   };
   }

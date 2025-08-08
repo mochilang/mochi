@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,10 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
@@ -59,7 +62,7 @@ List<int> reverse_list(List<int> src) {
   List<int> res = <int>[];
   int i = src.length - 1;
   while (i >= 0) {
-    res = [...res, src[i]];
+    res = (res..add(src[i]));
     i = i - 1;
   }
   return res;
@@ -73,10 +76,10 @@ List<int> patience_sort(List<int> collection) {
     int idx = bisect_left(stacks, element);
     if (idx != stacks.length) {
     List<int> stack = stacks[idx];
-    while (stacks.length <= idx) { stacks.add(<int>[]); } stacks[idx] = [...stack, element];
+    while (stacks.length <= idx) { stacks.add(<int>[]); } stacks[idx] = (stack..add(element));
   } else {
     List<int> new_stack = [element];
-    stacks = ([...stacks, new_stack] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    stacks = ((stacks..add(new_stack)) as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
   }
     i = i + 1;
   }
@@ -88,7 +91,7 @@ List<int> patience_sort(List<int> collection) {
   List<int> indices = <int>[];
   i = 0;
   while (i < stacks.length) {
-    indices = [...indices, 0];
+    indices = (indices..add(0));
     i = i + 1;
   }
   int total = 0;
@@ -119,7 +122,7 @@ List<int> patience_sort(List<int> collection) {
   }
     j = j + 1;
   }
-    result = [...result, min_val];
+    result = (result..add(min_val));
     while (indices.length <= min_stack) { indices.add(0); } indices[min_stack] = indices[min_stack] + 1;
     count = count + 1;
   }

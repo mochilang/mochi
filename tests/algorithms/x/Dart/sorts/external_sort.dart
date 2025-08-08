@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,14 +33,17 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 List<int> subarray(List<int> xs, int start, int end) {
   List<int> result = <int>[];
   int k = start;
   while (k < end) {
-    result = [...result, xs[k]];
+    result = (result..add(xs[k]));
     k = k + 1;
   }
   return result;
@@ -52,19 +55,19 @@ List<int> merge(List<int> left_half, List<int> right_half) {
   int j = 0;
   while (i < left_half.length && j < right_half.length) {
     if (left_half[i] < right_half[j]) {
-    result = [...result, left_half[i]];
+    result = (result..add(left_half[i]));
     i = i + 1;
   } else {
-    result = [...result, right_half[j]];
+    result = (result..add(right_half[j]));
     j = j + 1;
   }
   }
   while (i < left_half.length) {
-    result = [...result, left_half[i]];
+    result = (result..add(left_half[i]));
     i = i + 1;
   }
   while (j < right_half.length) {
-    result = [...result, right_half[j]];
+    result = (result..add(right_half[j]));
     j = j + 1;
   }
   return result;
@@ -89,7 +92,7 @@ List<List<int>> split_into_blocks(List<int> data, int block_size) {
     int end = (i + block_size < data.length ? i + block_size : data.length);
     List<int> block = subarray(data, i, end);
     List<int> sorted_block = merge_sort(block);
-    blocks = ([...blocks, sorted_block] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    blocks = ((blocks..add(sorted_block)) as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
     i = end;
   }
   return blocks;
@@ -100,7 +103,7 @@ List<int> merge_blocks(List<List<int>> blocks) {
   List<int> indices = <int>[];
   int i = 0;
   while (i < num_blocks) {
-    indices = [...indices, 0];
+    indices = (indices..add(0));
     i = i + 1;
   }
   List<int> result = <int>[];
@@ -123,7 +126,7 @@ List<int> merge_blocks(List<List<int>> blocks) {
     j = j + 1;
   }
     if (!done) {
-    result = [...result, min_val];
+    result = (result..add(min_val));
     while (indices.length <= min_block) { indices.add(0); } indices[min_block] = indices[min_block] + 1;
   }
   }

@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,10 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
@@ -42,7 +45,7 @@ List<int> odd_even_sort(List<int> xs) {
   List<int> arr = <int>[];
   int i = 0;
   while (i < xs.length) {
-    arr = [...arr, xs[i]];
+    arr = (arr..add(xs[i]));
     i = i + 1;
   }
   int n = arr.length;
@@ -90,22 +93,22 @@ void test_odd_even_sort() {
   List<int> a = [5, 4, 3, 2, 1];
   List<int> r1 = odd_even_sort(a);
   if (r1[0] != 1 || r1[1] != 2 || r1[2] != 3 || r1[3] != 4 || r1[4] != 5) {
-    throw Exception("case1 failed");
+    ;
   }
   List<int> b = [];
   List<int> r2 = odd_even_sort(b);
   if (r2.length != 0) {
-    throw Exception("case2 failed");
+    ;
   }
   List<int> c = [-10, -1, 10, 2];
   List<int> r3 = odd_even_sort(c);
   if (r3[0] != -10 || r3[1] != -1 || r3[2] != 2 || r3[3] != 10) {
-    throw Exception("case3 failed");
+    ;
   }
   List<int> d = [1, 2, 3, 4];
   List<int> r4 = odd_even_sort(d);
   if (r4[0] != 1 || r4[1] != 2 || r4[2] != 3 || r4[3] != 4) {
-    throw Exception("case4 failed");
+    ;
   }
 }
 

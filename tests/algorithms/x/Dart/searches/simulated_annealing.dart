@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,10 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 class SearchProblem {
@@ -50,14 +53,14 @@ double score(SearchProblem p, dynamic f) {
 List<SearchProblem> get_neighbors(SearchProblem p) {
   double s = p.step;
   List<SearchProblem> ns = <SearchProblem>[];
-  ns = [...ns, SearchProblem(x: p.x - s, y: p.y - s, step: s)];
-  ns = [...ns, SearchProblem(x: p.x - s, y: p.y, step: s)];
-  ns = [...ns, SearchProblem(x: p.x - s, y: p.y + s, step: s)];
-  ns = [...ns, SearchProblem(x: p.x, y: p.y - s, step: s)];
-  ns = [...ns, SearchProblem(x: p.x, y: p.y + s, step: s)];
-  ns = [...ns, SearchProblem(x: p.x + s, y: p.y - s, step: s)];
-  ns = [...ns, SearchProblem(x: p.x + s, y: p.y, step: s)];
-  ns = [...ns, SearchProblem(x: p.x + s, y: p.y + s, step: s)];
+  ns = (ns..add(SearchProblem(x: p.x - s, y: p.y - s, step: s)));
+  ns = (ns..add(SearchProblem(x: p.x - s, y: p.y, step: s)));
+  ns = (ns..add(SearchProblem(x: p.x - s, y: p.y + s, step: s)));
+  ns = (ns..add(SearchProblem(x: p.x, y: p.y - s, step: s)));
+  ns = (ns..add(SearchProblem(x: p.x, y: p.y + s, step: s)));
+  ns = (ns..add(SearchProblem(x: p.x + s, y: p.y - s, step: s)));
+  ns = (ns..add(SearchProblem(x: p.x + s, y: p.y, step: s)));
+  ns = (ns..add(SearchProblem(x: p.x + s, y: p.y + s, step: s)));
   return ns;
 }
 
@@ -66,7 +69,7 @@ List<SearchProblem> remove_at(List<SearchProblem> lst, int idx) {
   int i = 0;
   while (i < lst.length) {
     if (i != idx) {
-    res = [...res, lst[i]];
+    res = (res..add(lst[i]));
   }
     i = i + 1;
   }
@@ -81,7 +84,7 @@ int rand() {
 }
 
 double random_float() {
-  return ((rand()).toDouble()) / 2147483648.0;
+  return (rand().toDouble()) / 2147483648.0;
 }
 
 int randint(int low, int high) {
@@ -99,7 +102,7 @@ double expApprox(double x) {
   double sum = 1.0;
   int n = 1;
   while (n < 30) {
-    term = term * y / ((n).toDouble());
+    term = term * y / (n.toDouble());
     sum = sum + term;
     n = n + 1;
   }

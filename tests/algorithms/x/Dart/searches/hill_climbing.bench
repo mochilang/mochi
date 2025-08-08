@@ -1,6 +1,1 @@
-../../../tests/algorithms/x/Dart/searches/hill_climbing.dart:84:5: Error: Undefined name 'e18'.
-    e18;
-    ^^^
-../../../tests/algorithms/x/Dart/searches/hill_climbing.dart:86:5: Error: Undefined name 'e18'.
-    e18;
-    ^^^
+{"duration_us":39646,"memory_bytes":12496896,"name":"_start"}

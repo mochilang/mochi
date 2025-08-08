@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,10 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
@@ -76,14 +79,12 @@ SearchProblem hill_climbing(SearchProblem sp, bool find_max, double max_x, doubl
   int iterations = 0;
   bool solution_found = false;
   while (solution_found == false && iterations < max_iter) {
-    visited = [...visited, current];
+    visited = (visited..add(current));
     iterations = iterations + 1;
     double current_score = score(current);
     List<SearchProblem> neighs = neighbors(current);
-    num max_change = -1.0;
-    e18;
-    double min_change = 1.0;
-    e18;
+    num max_change = -1000000000000000000.0;
+    double min_change = 1000000000000000000.0;
     SearchProblem next = current;
     bool improved = false;
     int i = 0;

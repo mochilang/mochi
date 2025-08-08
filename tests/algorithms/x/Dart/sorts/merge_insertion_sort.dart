@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,10 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
@@ -59,12 +62,12 @@ List<int> binary_search_insertion_from(List<int> sorted_list, int item, int star
   List<int> result = <int>[];
   int i = 0;
   while (i < left) {
-    result = [...result, sorted_list[i]];
+    result = (result..add(sorted_list[i]));
     i = i + 1;
   }
-  result = [...result, item];
+  result = (result..add(item));
   while (i < sorted_list.length) {
-    result = [...result, sorted_list[i]];
+    result = (result..add(sorted_list[i]));
     i = i + 1;
   }
   return result;
@@ -80,19 +83,19 @@ List<List<int>> merge(List<List<int>> left, List<List<int>> right) {
   int j = 0;
   while (i < left.length && j < right.length) {
     if (left[i][0] < right[j][0]) {
-    result = ([...result, left[i]] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    result = ((result..add(left[i])) as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
     i = i + 1;
   } else {
-    result = ([...result, right[j]] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    result = ((result..add(right[j])) as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
     j = j + 1;
   }
   }
   while (i < left.length) {
-    result = ([...result, left[i]] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    result = ((result..add(left[i])) as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
     i = i + 1;
   }
   while (j < right.length) {
-    result = ([...result, right[j]] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    result = ((result..add(right[j])) as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
     j = j + 1;
   }
   return result;
@@ -107,13 +110,13 @@ List<List<int>> sortlist_2d(List<List<int>> list_2d) {
   List<List<int>> left = <List<int>>[];
   int i = 0;
   while (i < middle) {
-    left = ([...left, list_2d[i]] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    left = ((left..add(list_2d[i])) as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
     i = i + 1;
   }
   List<List<int>> right = <List<int>>[];
   int j = middle;
   while (j < length) {
-    right = ([...right, list_2d[j]] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    right = ((right..add(list_2d[j])) as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
     j = j + 1;
   }
   return merge(sortlist_2d(left), sortlist_2d(right));
@@ -133,9 +136,9 @@ List<int> merge_insertion_sort(List<int> collection) {
     int a = collection[i];
     int b = collection[i + 1];
     if (a < b) {
-    two_paired_list = ([...two_paired_list, [a, b]] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    two_paired_list = ((two_paired_list..add([a, b])) as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
   } else {
-    two_paired_list = ([...two_paired_list, [b, a]] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    two_paired_list = ((two_paired_list..add([b, a])) as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
   };
   }
     i = i + 2;
@@ -144,10 +147,10 @@ List<int> merge_insertion_sort(List<int> collection) {
   List<int> result = <int>[];
   i = 0;
   while (i < sorted_list_2d.length) {
-    result = [...result, sorted_list_2d[i][0]];
+    result = (result..add(sorted_list_2d[i][0]));
     i = i + 1;
   }
-  result = [...result, sorted_list_2d[sorted_list_2d.length - 1][1]];
+  result = (result..add(sorted_list_2d[sorted_list_2d.length - 1][1]));
   if (has_last_odd_item) {
     result = binary_search_insertion(result, collection[collection.length - 1]);
   }

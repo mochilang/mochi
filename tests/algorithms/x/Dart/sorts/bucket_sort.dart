@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,10 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
@@ -55,9 +58,9 @@ List<double> set_at_float(List<double> xs, int idx, double value) {
   List<double> res = <double>[];
   while (i < xs.length) {
     if (i == idx) {
-    res = [...res, value];
+    res = (res..add(value));
   } else {
-    res = [...res, xs[i]];
+    res = (res..add(xs[i]));
   }
     i = i + 1;
   }
@@ -69,9 +72,9 @@ List<List<double>> set_at_list_float(List<List<double>> xs, int idx, List<double
   List<List<double>> res = <List<double>>[];
   while (i < xs.length) {
     if (i == idx) {
-    res = ([...res, value] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    res = ((res..add(value)) as List).map((e) => (List<double>.from(e) as List<double>)).toList();
   } else {
-    res = ([...res, xs[i]] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    res = ((res..add(xs[i])) as List).map((e) => (List<double>.from(e) as List<double>)).toList();
   }
     i = i + 1;
   }
@@ -117,7 +120,7 @@ List<double> bucket_sort_with_count(List<double> xs, int bucket_count) {
   List<List<double>> buckets = <List<double>>[];
   i = 0;
   while (i < bucket_count) {
-    buckets = [...buckets, []];
+    buckets = (buckets..add([]));
     i = i + 1;
   }
   i = 0;
@@ -131,7 +134,7 @@ List<double> bucket_sort_with_count(List<double> xs, int bucket_count) {
     idx = bucket_count - 1;
   }
     List<double> bucket = buckets[idx];
-    bucket = [...bucket, val];
+    bucket = (bucket..add(val));
     buckets = set_at_list_float(buckets, idx, bucket);
     i = i + 1;
   }
@@ -141,7 +144,7 @@ List<double> bucket_sort_with_count(List<double> xs, int bucket_count) {
     List<double> sorted_bucket = sort_float(buckets[i]);
     int j = 0;
     while (j < sorted_bucket.length) {
-    result = [...result, sorted_bucket[j]];
+    result = (result..add(sorted_bucket[j]));
     j = j + 1;
   }
     i = i + 1;

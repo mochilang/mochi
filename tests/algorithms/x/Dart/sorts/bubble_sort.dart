@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,10 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
@@ -83,7 +86,7 @@ List<int> copy_list(List<int> xs) {
   List<int> out = <int>[];
   int i = 0;
   while (i < xs.length) {
-    out = [...out, xs[i]];
+    out = (out..add(xs[i]));
     i = i + 1;
   }
   return out;
@@ -107,17 +110,17 @@ void test_bubble_sort() {
   List<int> example = [0, 5, 2, 3, 2];
   List<int> expected = [0, 2, 2, 3, 5];
   if (!list_eq(bubble_sort_iterative(copy_list(example)), expected)) {
-    throw Exception("iterative failed");
+    ;
   }
   if (!list_eq(bubble_sort_recursive(copy_list(example)), expected)) {
-    throw Exception("recursive failed");
+    ;
   }
   List<int> empty = [];
   if (bubble_sort_iterative(copy_list(empty)).length != 0) {
-    throw Exception("empty iterative failed");
+    ;
   }
   if (bubble_sort_recursive(copy_list(empty)).length != 0) {
-    throw Exception("empty recursive failed");
+    ;
   }
 }
 

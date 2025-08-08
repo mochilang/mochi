@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,10 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
@@ -56,7 +59,7 @@ int path_cost(List<String> path, Map<String, Map<String, int>> graph) {
   while (i < path.length - 1) {
     String u = path[i];
     String v = path[i + 1];
-    total = (total + ((graph[u] ?? {})[v] ?? 0)).toInt();
+    total = total + ((graph[u] ?? {})[v] ?? 0);
     i = i + 1;
   }
   return total;
@@ -67,11 +70,11 @@ Solution generate_first_solution(Map<String, Map<String, int>> graph, String sta
   String visiting = start;
   int total = 0;
   while (path.length < graph.length) {
-    path = [...path, visiting];
+    path = (path..add(visiting));
     String best_node = "";
     int best_cost = 1000000;
     for (var n in graph[visiting]!.keys) {
-    if (!path.contains(n) && ((graph[visiting] ?? {})[n] ?? 0).compareTo(best_cost) < 0) {
+    if (!path.contains(n) && ((graph[visiting] ?? {})[n] ?? 0) < best_cost) {
     best_cost = (graph[visiting] ?? {})[n]!;
     best_node = n;
   }
@@ -82,8 +85,8 @@ Solution generate_first_solution(Map<String, Map<String, int>> graph, String sta
     total = total + best_cost;
     visiting = best_node;
   }
-  path = [...path, start];
-  total = (total + ((graph[visiting] ?? {})[start] ?? 0)).toInt();
+  path = (path..add(start));
+  total = total + ((graph[visiting] ?? {})[start] ?? 0);
   return Solution(path: path, cost: total);
 }
 
@@ -91,7 +94,7 @@ List<String> copy_path(List<String> path) {
   List<String> res = <String>[];
   int i = 0;
   while (i < path.length) {
-    res = [...res, path[i]];
+    res = (res..add(path[i]));
     i = i + 1;
   }
   return res;
@@ -109,7 +112,7 @@ List<Solution> find_neighborhood(Solution sol, Map<String, Map<String, int>> gra
     while (new_path.length <= i) { new_path.add(""); } new_path[i] = new_path[j];
     while (new_path.length <= j) { new_path.add(""); } new_path[j] = tmp;
     int cost = path_cost(new_path, graph);
-    neighbors = [...neighbors, Solution(path: new_path, cost: cost)];
+    neighbors = (neighbors..add(Solution(path: new_path, cost: cost)));
   }
     j = j + 1;
   }
@@ -160,12 +163,12 @@ Solution tabu_search(Solution first, Map<String, Map<String, int>> graph, int it
     i = i + 1;
   }
     solution = best_neighbor;
-    tabu = [...tabu, best_move];
+    tabu = (tabu..add(best_move));
     if (tabu.length > size) {
     List<Swap> new_tab = <Swap>[];
     int j = 1;
     while (j < tabu.length) {
-    new_tab = [...new_tab, tabu[j]];
+    new_tab = (new_tab..add(tabu[j]));
     j = j + 1;
   };
     tabu = new_tab;
