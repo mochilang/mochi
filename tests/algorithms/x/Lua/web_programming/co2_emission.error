@@ -1,0 +1,7 @@
+run: exit status 1
+lua: .../tests/algorithms/x/Lua/web_programming/co2_emission.lua:45: attempt to index a nil value (field 'data')
+stack traceback:
+	.../tests/algorithms/x/Lua/web_programming/co2_emission.lua:45: in function 'fetch_last_half_hour'
+	.../tests/algorithms/x/Lua/web_programming/co2_emission.lua:165: in function 'main'
+	.../tests/algorithms/x/Lua/web_programming/co2_emission.lua:169: in main chunk
+	[C]: in ?
