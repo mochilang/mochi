@@ -4977,6 +4977,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		if m, isMap := valExpr.(*MapLit); isMap {
 			keyT := "const char*"
 			valT := "int"
+			explicit := false
 			if s.Let.Type != nil {
 				if mt, ok := types.ResolveTypeRef(s.Let.Type, env).(types.MapType); ok {
 					if _, ok2 := mt.Key.(types.StringType); ok2 {
@@ -4985,6 +4986,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 						keyT = "int"
 					}
 					valT = cTypeFromMochiType(mt.Value)
+					explicit = true
 				}
 			}
 			if len(m.Items) > 0 {
@@ -4995,9 +4997,11 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				} else {
 					keyT = "int"
 				}
-				vt := inferExprType(env, m.Items[0].Value)
-				if vt != "" {
-					valT = vt
+				if !explicit {
+					vt := inferExprType(env, m.Items[0].Value)
+					if vt != "" {
+						valT = vt
+					}
 				}
 			}
 			if s.Let.Type != nil && types.IsStringAnyMapLike(types.ResolveTypeRef(s.Let.Type, env)) {
@@ -5092,7 +5096,18 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 					if i > 0 {
 						buf.WriteString(", ")
 					}
-					it.Value.emitExpr(&buf)
+					if v, ok := valueFromExpr(it.Value); ok {
+						switch c := v.(type) {
+						case int:
+							fmt.Fprintf(&buf, "%d", c)
+						case float64:
+							fmt.Fprintf(&buf, "%g", c)
+						default:
+							it.Value.emitExpr(&buf)
+						}
+					} else {
+						it.Value.emitExpr(&buf)
+					}
 				}
 				buf.WriteString("};\n")
 			}
@@ -7747,6 +7762,12 @@ func evalFloat(e Expr) (float64, bool) {
 				}
 			}
 		}
+	case *CallExpr:
+		if (v.Func == "pow10" || v.Func == "user_pow10") && len(v.Args) == 1 {
+			if n, ok := evalInt(v.Args[0]); ok {
+				return math.Pow10(int(n)), true
+			}
+		}
 	}
 	return 0, false
 }
@@ -8689,6 +8710,12 @@ func evalQueryConst(q *parser.QueryExpr) (*ListLit, bool) {
 }
 
 func valueFromExpr(e Expr) (any, bool) {
+	if i, ok := evalInt(e); ok {
+		return i, true
+	}
+	if f, ok := evalFloat(e); ok {
+		return f, true
+	}
 	switch v := e.(type) {
 	case *IntLit:
 		return v.Value, true
