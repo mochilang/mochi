@@ -4324,6 +4324,10 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				funcAliases[name] = "user_floorf"
 				name = "user_floorf"
 			}
+			if name == "floor" { // avoid conflict with stdlib
+				funcAliases[name] = "user_floor"
+				name = "user_floor"
+			}
 			if name == "powf" { // avoid conflict with stdlib
 				funcAliases[name] = "user_powf"
 				name = "user_powf"
@@ -4331,6 +4335,14 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			if name == "pow" { // avoid conflict with stdlib
 				funcAliases[name] = "user_pow"
 				name = "user_pow"
+			}
+			if name == "pow10" { // avoid conflict with stdlib
+				funcAliases[name] = "user_pow10"
+				name = "user_pow10"
+			}
+			if name == "round" { // avoid conflict with stdlib
+				funcAliases[name] = "user_round"
+				name = "user_round"
 			}
 			if name == "double" { // avoid conflict with C keyword
 				funcAliases[name] = "user_double"
