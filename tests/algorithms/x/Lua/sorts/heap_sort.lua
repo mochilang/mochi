@@ -27,6 +27,11 @@ end
 return os.time() * 1000000000 + math.floor(os.clock() * 1000000000)
 end
 
+local function _panic(msg)
+io.stderr:write(tostring(msg))
+os.exit(1)
+end
+
 local function _str(v)
 if type(v) == 'number' then
   local s = tostring(v)
@@ -39,9 +44,25 @@ do
   collectgarbage()
   local _bench_start_mem = collectgarbage('count') * 1024
   local _bench_start = os.clock()
-  function solution(number)
-    local partitions = {1}
-    local i = (function(v)
+  function heapify(arr, index, heap_size)
+    local largest = index
+    local left_index = ((2 * index) + 1)
+    local right_index = ((2 * index) + 2)
+    if ((left_index < heap_size) and (arr[left_index + 1] > arr[largest + 1])) then
+      largest = left_index
+    end
+    if ((right_index < heap_size) and (arr[right_index + 1] > arr[largest + 1])) then
+      largest = right_index
+    end
+    if (largest ~= index) then
+      local temp = arr[largest + 1]
+      arr[largest + 1] = arr[index + 1]
+      arr[index + 1] = temp
+      heapify(arr, largest, heap_size)
+    end
+  end
+  function heap_sort(arr)
+    local n = (function(v)
     if type(v) == 'table' and v.items ~= nil then
       return #v.items
     elseif type(v) == 'table' and (v[1] == nil) then
@@ -57,40 +78,25 @@ do
           else
             return 0
           end
-        end)(partitions)
-        while true do
-          local item = 0
-          local j = 1
-          while true do
-            local sign = ((((j % 2) == 0)) and ((-1)) or (1))
-            local index = ((((j * j) * 3) - j) // 2)
-            if (index > i) then
-              break
-            end
-            item = (item + (partitions[(i - index) + 1] * sign))
-            item = (item % number)
-            index = (index + j)
-            if (index > i) then
-              break
-            end
-            item = (item + (partitions[(i - index) + 1] * sign))
-            item = (item % number)
-            j = (j + 1)
-          end
-          if (item == 0) then
-            return i
-          end
-          partitions = (function(lst, item)
-          lst = lst or {}
-          table.insert(lst, item)
-          return lst
-        end)(partitions, item)
-        i = (i + 1)
+        end)(arr)
+        local i = ((n // 2) - 1)
+        while (i >= 0) do
+          heapify(arr, i, n)
+          i = (i - 1)
+        end
+        i = (n - 1)
+        while (i > 0) do
+          local temp = arr[0 + 1]
+          arr[0 + 1] = arr[i + 1]
+          arr[i + 1] = temp
+          heapify(arr, 0, i)
+          i = (i - 1)
+        end
+        return arr
       end
-      return 0
-    end
-    function main()
-      print((((type(_str(solution(1))) == "table")) and (
+      data = {3, 7, 9, 28, 123, (-5), 8, (-30), (-200), 0, 4}
+      result = heap_sort(data)
+      print(
       (function(v)
       local function encode(x)
       if type(x) == "table" then
@@ -134,8 +140,8 @@ do
           end
         end
         return encode(v)
-      end)(_str(solution(1)))) or (_str(solution(1)))))
-      print((((type(_str(solution(9))) == "table")) and (
+      end)(result))
+      if (
       (function(v)
       local function encode(x)
       if type(x) == "table" then
@@ -179,8 +185,7 @@ do
           end
         end
         return encode(v)
-      end)(_str(solution(9)))) or (_str(solution(9)))))
-      print((((type(_str(solution(1000000))) == "table")) and (
+      end)(result) ~=
       (function(v)
       local function encode(x)
       if type(x) == "table" then
@@ -224,13 +229,13 @@ do
           end
         end
         return encode(v)
-      end)(_str(solution(1000000)))) or (_str(solution(1000000)))))
-    end
-    main()
-    local _bench_end = os.clock()
-    collectgarbage()
-    local _bench_end_mem = collectgarbage('count') * 1024
-    local _bench_duration_us = math.floor((_bench_end - _bench_start) * 1000000)
-    local _bench_mem = math.floor(math.max(0, _bench_end_mem - _bench_start_mem))
-    print('{\n  "duration_us": ' .. _bench_duration_us .. ',\n  "memory_bytes": ' .. _bench_mem .. ',\n  "name": "main"\n}')
-  end;
+      end)({(-200), (-30), (-5), 0, 3, 4, 7, 8, 9, 28, 123})) then
+        _panic("Assertion error")
+      end
+      local _bench_end = os.clock()
+      collectgarbage()
+      local _bench_end_mem = collectgarbage('count') * 1024
+      local _bench_duration_us = math.floor((_bench_end - _bench_start) * 1000000)
+      local _bench_mem = math.floor(math.max(0, _bench_end_mem - _bench_start_mem))
+      print('{\n  "duration_us": ' .. _bench_duration_us .. ',\n  "memory_bytes": ' .. _bench_mem .. ',\n  "name": "main"\n}')
+    end;
