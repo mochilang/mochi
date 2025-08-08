@@ -81,6 +81,10 @@ var varAliases map[string]string
 var aliasStack []map[string]string
 var aliasCounts map[string]int
 
+type listAliasRef struct{ Obj, Field string }
+
+var listVarRefs map[string]listAliasRef
+
 func pushScope(closure bool) map[string]*VarStmt {
 	saved := varDecls
 	scopeStack = append(scopeStack, varDecls)
@@ -1769,6 +1773,9 @@ func (s *AssignStmt) emit(w io.Writer, indent string) {
 	}
 	emitCastExpr(w, s.Expr, typ)
 	fmt.Fprint(w, ";\n")
+	if ref, ok := listVarRefs[s.Name]; ok {
+		fmt.Fprintf(w, "%s%s.%s = %s;\n", indent, sanitize(ref.Obj), ref.Field, sanitize(s.Name))
+	}
 }
 
 // IndexAssignStmt represents assignments like a[0] = x or m["k"] = v.
@@ -3774,6 +3781,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	structDecls = map[string]*TypeDeclStmt{}
 	varDecls = map[string]*VarStmt{}
 	refVars = map[string]bool{}
+	listVarRefs = map[string]listAliasRef{}
 	scopeStack = []map[string]*VarStmt{varDecls}
 	closureStack = []bool{false}
 	varAliases = map[string]string{}
@@ -4141,6 +4149,25 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 					for _, el := range l.Elems {
 						if ll, ok2 := el.(*ListLit); ok2 && ll.ElemType == "" {
 							ll.ElemType = inner
+						}
+					}
+				}
+			}
+			if strings.HasSuffix(t, "[]") || strings.HasPrefix(t, "list<") {
+				if fe, ok := e.(*FieldExpr); ok {
+					if v, ok2 := fe.Target.(*VarExpr); ok2 {
+						if listVarRefs == nil {
+							listVarRefs = map[string]listAliasRef{}
+						}
+						listVarRefs[alias] = listAliasRef{Obj: resolveAlias(v.Name), Field: fe.Name}
+					}
+				} else if cast, ok := e.(*CastExpr); ok {
+					if fe, ok2 := cast.Value.(*FieldExpr); ok2 {
+						if v, ok3 := fe.Target.(*VarExpr); ok3 {
+							if listVarRefs == nil {
+								listVarRefs = map[string]listAliasRef{}
+							}
+							listVarRefs[alias] = listAliasRef{Obj: resolveAlias(v.Name), Field: fe.Name}
 						}
 					}
 				}

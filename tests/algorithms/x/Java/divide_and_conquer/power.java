@@ -4,7 +4,7 @@ public class Main {
         if (b == 0) {
             return 1;
         }
-        int half = actual_power(a, b / 2);
+        int half = actual_power(a, Math.floorDiv(b, 2));
         if (Math.floorMod(b, 2) == 0) {
             return half * half;
         }

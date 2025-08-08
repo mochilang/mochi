@@ -47,7 +47,7 @@ public class Main {
             int x_1 = 0;
             while (x_1 < w_1) {
                 int p = img[y_1][x_1];
-                int v = ((p - 128) * factor) / 100 + 128;
+                int v = Math.floorDiv(((p - 128) * factor), 100) + 128;
                 v = clamp_byte(v);
                 row_1 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row_1), java.util.stream.IntStream.of(v)).toArray()));
                 x_1 = x_1 + 1;
@@ -132,7 +132,7 @@ arr[j_1 + 1] = tmp;
     static int[][] median_filter(int[][] img, int k) {
         int h_3 = img.length;
         int w_3 = img[0].length;
-        int offset = k / 2;
+        int offset = Math.floorDiv(k, 2);
         int[][] out_3 = ((int[][])(new int[][]{}));
         int y_3 = 0;
         while (y_3 < h_3) {
@@ -156,7 +156,7 @@ arr[j_1 + 1] = tmp;
                     ky_1 = ky_1 + 1;
                 }
                 int[] sorted = ((int[])(sort_ints(((int[])(vals)))));
-                row_4 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row_4), java.util.stream.IntStream.of(sorted[sorted.length / 2])).toArray()));
+                row_4 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row_4), java.util.stream.IntStream.of(sorted[Math.floorDiv(sorted.length, 2)])).toArray()));
                 x_3 = x_3 + 1;
             }
             out_3 = ((int[][])(appendObj(out_3, row_4)));

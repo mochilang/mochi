@@ -50,7 +50,7 @@ public class Main {
         if (low == high) {
             return new Result(low, high, arr[low]);
         }
-        int mid = (low + high) / 2;
+        int mid = Math.floorDiv((low + high), 2);
         Result left = max_subarray(((double[])(arr)), low, mid);
         Result right = max_subarray(((double[])(arr)), mid + 1, high);
         Result cross = max_cross_sum(((double[])(arr)), low, mid, high);

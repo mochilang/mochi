@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-07 20:01 GMT+7
+Last updated: 2025-08-08 10:20 GMT+7
 
-## Algorithms Golden Test Checklist (825/1077)
+## Algorithms Golden Test Checklist (829/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -267,54 +267,54 @@ Last updated: 2025-08-07 20:01 GMT+7
 | 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 46.0ms | 96.02KB |
 | 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 25.0ms | 46.48KB |
 | 260 | data_structures/stacks/stock_span_problem | ✓ | 25.0ms | 46.12KB |
-| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 31.0ms | 78.19KB |
-| 262 | data_structures/suffix_tree/suffix_tree | error |  |  |
-| 263 | data_structures/suffix_tree/suffix_tree_node | error |  |  |
-| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 18.0ms | 1.42KB |
+| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 34.0ms | 78.19KB |
+| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 31.0ms | 58.70KB |
+| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 15.0ms | 1.71KB |
+| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 15.0ms | 1.42KB |
 | 265 | data_structures/trie/radix_tree | error |  |  |
 | 266 | data_structures/trie/trie | ✓ | 31.0ms | 59.47KB |
-| 267 | digital_image_processing/change_brightness | ✓ | 24.0ms | 46.16KB |
-| 268 | digital_image_processing/change_contrast | ✓ | 36.0ms | 93.01KB |
-| 269 | digital_image_processing/convert_to_negative | ✓ | 13.0ms | 888B |
-| 270 | digital_image_processing/dithering/burkes | ✓ | 29.0ms | 54.75KB |
+| 267 | digital_image_processing/change_brightness | ✓ | 26.0ms | 46.16KB |
+| 268 | digital_image_processing/change_contrast | ✓ | 34.0ms | 93.01KB |
+| 269 | digital_image_processing/convert_to_negative | ✓ | 17.0ms | 888B |
+| 270 | digital_image_processing/dithering/burkes | ✓ | 29.0ms | 54.85KB |
 | 271 | digital_image_processing/edge_detection/canny | error |  |  |
 | 272 | digital_image_processing/filters/bilateral_filter | error |  |  |
 | 273 | digital_image_processing/filters/convolve | error |  |  |
-| 274 | digital_image_processing/filters/gabor_filter | ✓ | 26.0ms | 57.08KB |
-| 275 | digital_image_processing/filters/gaussian_filter | ✓ | 27.0ms | 49.28KB |
-| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 26.0ms | 55.21KB |
+| 274 | digital_image_processing/filters/gabor_filter | ✓ | 29.0ms | 57.08KB |
+| 275 | digital_image_processing/filters/gaussian_filter | ✓ | 25.0ms | 49.38KB |
+| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 28.0ms | 55.31KB |
 | 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 22.0ms | 38.38KB |
-| 278 | digital_image_processing/filters/median_filter | ✓ | 29.0ms | 46.04KB |
+| 278 | digital_image_processing/filters/median_filter | ✓ | 28.0ms | 46.14KB |
 | 279 | digital_image_processing/filters/sobel_filter | error |  |  |
-| 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 28.0ms | 46.23KB |
-| 281 | digital_image_processing/index_calculation | ✓ | 22.0ms | 47.74KB |
+| 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 31.0ms | 46.34KB |
+| 281 | digital_image_processing/index_calculation | ✓ | 26.0ms | 47.74KB |
 | 282 | digital_image_processing/morphological_operations/dilation_operation | error |  |  |
-| 283 | digital_image_processing/morphological_operations/erosion_operation | ✓ | 27.0ms | 57.82KB |
-| 284 | digital_image_processing/resize/resize | ✓ | 40.0ms | 46.53KB |
+| 283 | digital_image_processing/morphological_operations/erosion_operation | ✓ | 25.0ms | 57.92KB |
+| 284 | digital_image_processing/resize/resize | ✓ | 26.0ms | 46.53KB |
 | 285 | digital_image_processing/rotation/rotation | error |  |  |
 | 286 | digital_image_processing/sepia | ✓ | 13.0ms | 840B |
-| 287 | digital_image_processing/test_digital_image_processing | ✓ | 28.0ms | 57.13KB |
-| 288 | divide_and_conquer/closest_pair_of_points | error |  |  |
-| 289 | divide_and_conquer/convex_hull | ✓ | 14.0ms | 0B |
-| 290 | divide_and_conquer/heaps_algorithm | ✓ | 14.0ms | 656B |
-| 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 25.0ms | 46.24KB |
+| 287 | digital_image_processing/test_digital_image_processing | ✓ | 30.0ms | 57.23KB |
+| 288 | divide_and_conquer/closest_pair_of_points | ✓ | 21.0ms | 47.88KB |
+| 289 | divide_and_conquer/convex_hull | ✓ | 16.0ms | 0B |
+| 290 | divide_and_conquer/heaps_algorithm | ✓ | 15.0ms | 656B |
+| 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 28.0ms | 46.24KB |
 | 292 | divide_and_conquer/inversions | error |  |  |
-| 293 | divide_and_conquer/kth_order_statistic | ✓ | 30.0ms | 46.25KB |
-| 294 | divide_and_conquer/max_difference_pair | ✓ | 14.0ms | 656B |
-| 295 | divide_and_conquer/max_subarray | ✓ | 43.0ms | 94.39KB |
-| 296 | divide_and_conquer/mergesort | ✓ | 25.0ms | 46.14KB |
-| 297 | divide_and_conquer/peak | ✓ | 14.0ms | 664B |
+| 293 | divide_and_conquer/kth_order_statistic | ✓ | 27.0ms | 46.25KB |
+| 294 | divide_and_conquer/max_difference_pair | ✓ | 16.0ms | 760B |
+| 295 | divide_and_conquer/max_subarray | ✓ | 34.0ms | 94.49KB |
+| 296 | divide_and_conquer/mergesort | ✓ | 25.0ms | 46.24KB |
+| 297 | divide_and_conquer/peak | ✓ | 15.0ms | 768B |
 | 298 | divide_and_conquer/power | ✓ | 14.0ms | 10.55KB |
-| 299 | divide_and_conquer/strassen_matrix_multiplication | error |  |  |
-| 300 | docs/conf | ✓ | 24.0ms | 32.95KB |
-| 301 | dynamic_programming/abbreviation | ✓ | 16.0ms | 1.13KB |
+| 299 | divide_and_conquer/strassen_matrix_multiplication | ✓ | 54.0ms | 46.61KB |
+| 300 | docs/conf | ✓ | 21.0ms | 32.95KB |
+| 301 | dynamic_programming/abbreviation | ✓ | 15.0ms | 1.13KB |
 | 302 | dynamic_programming/all_construct | error |  |  |
 | 303 | dynamic_programming/bitmask | ✓ | 28.0ms | 57.40KB |
 | 304 | dynamic_programming/catalan_numbers | error |  |  |
-| 305 | dynamic_programming/climbing_stairs | ✓ | 13.0ms | 448B |
+| 305 | dynamic_programming/climbing_stairs | ✓ | 15.0ms | 448B |
 | 306 | dynamic_programming/combination_sum_iv | ✓ | 27.0ms | 46.25KB |
-| 307 | dynamic_programming/edit_distance | ✓ | 29.0ms | 46.36KB |
-| 308 | dynamic_programming/factorial | ✓ | 27.0ms | 46.40KB |
+| 307 | dynamic_programming/edit_distance | ✓ | 28.0ms | 46.36KB |
+| 308 | dynamic_programming/factorial | ✓ | 24.0ms | 46.40KB |
 | 309 | dynamic_programming/fast_fibonacci | ✓ | 15.0ms | 1.09KB |
 | 310 | dynamic_programming/fibonacci | ✓ | 25.0ms | 46.84KB |
 | 311 | dynamic_programming/fizz_buzz | ✓ | 21.0ms | 38.66KB |

@@ -70,7 +70,7 @@ public class Main {
         int h = img.length;
         int w = img[0].length;
         int k = kernel.length;
-        int pad = k / 2;
+        int pad = Math.floorDiv(k, 2);
         double[][] out_1 = ((double[][])(zero_matrix(h, w)));
         int y = pad;
         while (y < h - pad) {

@@ -97,7 +97,7 @@ public class Main {
         int height_1 = image.length;
         int width_1 = image[0].length;
         int k_size = kernel.length;
-        int pad_size = k_size / 2;
+        int pad_size = Math.floorDiv(k_size, 2);
         int[][] padded_1 = ((int[][])(pad_edge(((int[][])(image)), pad_size)));
         int[][] image_array_1 = ((int[][])(im2col(((int[][])(padded_1)), k_size, k_size)));
         int[] kernel_flat = ((int[])(flatten(((int[][])(kernel)))));

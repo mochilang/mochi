@@ -35,7 +35,7 @@ public class Main {
         int rows = src.length;
         int cols = src[0].length;
         int k = kernel.length;
-        int pad = k / 2;
+        int pad = Math.floorDiv(k, 2);
         int[][] output = ((int[][])(make_matrix(rows, cols, 0)));
         int i_1 = 0;
         while (i_1 < rows) {

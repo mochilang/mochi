@@ -1,5 +1,5 @@
 compile: exit status 1
-/tmp/TestJavaTranspiler_Algorithms_Golden285_rotation4124051726/001/Main.java:73: error: incompatible types: Object[][] cannot be converted to double[][]
+/tmp/TestJavaTranspiler_Algorithms_Golden285_rotation2164633404/001/Main.java:73: error: incompatible types: Object[][] cannot be converted to double[][]
         double[][] inv_1 = ((double[][])(mat_inverse3(((double[][])(src)))));
                                                                    ^
 1 error
