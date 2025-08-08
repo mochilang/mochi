@@ -1,0 +1,14 @@
+run: exit status 1
+hash-set: contract violation
+  expected: (and/c hash? immutable?)
+  given: '#hash(("dist" . 0.9899494936611665) ("label" . 0))
+  argument position: 1st
+  other arguments...:
+   "dist"
+   1e+18
+  context...:
+   /workspace/mochi/tests/algorithms/x/Racket/machine_learning/k_nearest_neighbours.rkt:122:18
+   /workspace/mochi/tests/algorithms/x/Racket/machine_learning/k_nearest_neighbours.rkt:110:2
+   /workspace/mochi/tests/algorithms/x/Racket/machine_learning/k_nearest_neighbours.rkt:168:2
+   /workspace/mochi/tests/algorithms/x/Racket/machine_learning/k_nearest_neighbours.rkt:167:0
+   body of "/workspace/mochi/tests/algorithms/x/Racket/machine_learning/k_nearest_neighbours.rkt"
