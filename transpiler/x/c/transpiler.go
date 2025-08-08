@@ -83,6 +83,7 @@ var (
 	needListAppendPtr       bool
 	needListAppendStrPtr    bool
 	needConcatStrPtr        bool
+	needConcatLongLong      bool
 	needListAppendDouble    bool
 	needListAppendDoublePtr bool
 	needListAppendDoubleNew bool
@@ -181,18 +182,21 @@ func emitLensExpr(w io.Writer, e Expr) {
 	case *CallExpr:
 		io.WriteString(w, v.Func+"_lens")
 	case *ListLit:
-		io.WriteString(w, "(size_t[]){")
+		if len(v.Elems) == 0 {
+			io.WriteString(w, "NULL")
+			return
+		}
+		fmt.Fprintf(w, "({size_t *tmp = malloc(%d * sizeof(size_t)); ", len(v.Elems))
 		for i, e := range v.Elems {
-			if i > 0 {
-				io.WriteString(w, ", ")
-			}
+			fmt.Fprintf(w, "tmp[%d] = ", i)
 			if lst, ok := e.(*ListLit); ok {
 				fmt.Fprintf(w, "%d", len(lst.Elems))
 			} else {
 				io.WriteString(w, "0")
 			}
+			io.WriteString(w, "; ")
 		}
-		io.WriteString(w, "}")
+		io.WriteString(w, "tmp;})")
 	default:
 		io.WriteString(w, "NULL")
 	}
@@ -651,6 +655,69 @@ func markStructParamMutations(stmts []Stmt, params map[string]bool, mutated map[
 			markStructParamMutations(s.Body, params, mutated)
 		}
 	}
+}
+
+func exprUsesVar(e Expr, name string) bool {
+	switch v := e.(type) {
+	case *VarRef:
+		return v.Name == name
+	case *FieldExpr:
+		return exprUsesVar(v.Target, name)
+	case *IndexExpr:
+		return exprUsesVar(v.Target, name) || exprUsesVar(v.Index, name)
+	case *CallExpr:
+		for _, a := range v.Args {
+			if exprUsesVar(a, name) {
+				return true
+			}
+		}
+	case *BinaryExpr:
+		return exprUsesVar(v.Left, name) || exprUsesVar(v.Right, name)
+	case *UnaryExpr:
+		return exprUsesVar(v.Expr, name)
+	case *ListLit:
+		for _, e := range v.Elems {
+			if exprUsesVar(e, name) {
+				return true
+			}
+		}
+	case *StructLit:
+		for _, f := range v.Fields {
+			if exprUsesVar(f.Value, name) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func stmtsUseVarInReturn(stmts []Stmt, name string) bool {
+	for _, st := range stmts {
+		if stmtUsesVarInReturn(st, name) {
+			return true
+		}
+	}
+	return false
+}
+
+func stmtUsesVarInReturn(s Stmt, name string) bool {
+	switch v := s.(type) {
+	case *ReturnStmt:
+		if v.Expr != nil {
+			return exprUsesVar(v.Expr, name)
+		}
+	case *IfStmt:
+		if stmtsUseVarInReturn(v.Then, name) || stmtsUseVarInReturn(v.Else, name) {
+			return true
+		}
+	case *WhileStmt:
+		return stmtsUseVarInReturn(v.Body, name)
+	case *ForStmt:
+		return stmtsUseVarInReturn(v.Body, name)
+	case *BenchStmt:
+		return stmtsUseVarInReturn(v.Body, name)
+	}
+	return false
 }
 
 func (c *CallStmt) emit(w io.Writer, indent int) {
@@ -1249,30 +1316,30 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 		base := strings.TrimSuffix(typ, "[]")
 		if lst, ok := d.Value.(*ListLit); ok {
 			if indent == 0 && len(lst.Elems) > 0 {
-                               fmt.Fprintf(w, "%s %s_init[%d] = {", base, d.Name, len(lst.Elems))
-                               for i, e := range lst.Elems {
-                                       if i > 0 {
-                                               io.WriteString(w, ", ")
-                                       }
-                                       if base == "const char*" {
-                                               if inferExprType(currentEnv, e) == "const char*" {
-                                                       e.emitExpr(w)
-                                               } else if lit, ok2 := e.(*IntLit); ok2 {
-                                                       fmt.Fprintf(w, "\"%d\"", lit.Value)
-                                               } else {
-                                                       e.emitExpr(w)
-                                               }
-                                       } else {
-                                               e.emitExpr(w)
-                                       }
-                               }
-                               io.WriteString(w, "};\n")
-                               writeIndent(w, indent)
-                               fmt.Fprintf(w, "%s *%s = malloc(%d * sizeof(%s));\n", base, d.Name, len(lst.Elems), base)
-                               writeIndent(w, indent)
-                               fmt.Fprintf(w, "memcpy(%s, %s_init, %d * sizeof(%s));\n", d.Name, d.Name, len(lst.Elems), base)
-                               writeIndent(w, indent)
-                               fmt.Fprintf(w, "size_t %s_len = %d;\n", d.Name, len(lst.Elems))
+				fmt.Fprintf(w, "%s %s_init[%d] = {", base, d.Name, len(lst.Elems))
+				for i, e := range lst.Elems {
+					if i > 0 {
+						io.WriteString(w, ", ")
+					}
+					if base == "const char*" {
+						if inferExprType(currentEnv, e) == "const char*" {
+							e.emitExpr(w)
+						} else if lit, ok2 := e.(*IntLit); ok2 {
+							fmt.Fprintf(w, "\"%d\"", lit.Value)
+						} else {
+							e.emitExpr(w)
+						}
+					} else {
+						e.emitExpr(w)
+					}
+				}
+				io.WriteString(w, "};\n")
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "%s *%s = malloc(%d * sizeof(%s));\n", base, d.Name, len(lst.Elems), base)
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "memcpy(%s, %s_init, %d * sizeof(%s));\n", d.Name, d.Name, len(lst.Elems), base)
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "size_t %s_len = %d;\n", d.Name, len(lst.Elems))
 			} else {
 				fmt.Fprintf(w, "%s *%s = NULL;\n", base, d.Name)
 				writeIndent(w, indent)
@@ -1286,40 +1353,40 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 					case "double":
 						needListAppendDouble = true
 						fmt.Fprintf(w, "%s = list_append_double(%s, &%s_len, ", d.Name, d.Name, d.Name)
-                                       case "const char*":
-                                               needListAppendStr = true
-                                               fmt.Fprintf(w, "%s = list_append_str(%s, &%s_len, ", d.Name, d.Name, d.Name)
-                                               if inferExprType(currentEnv, e) == "const char*" {
-                                                       e.emitExpr(w)
-                                               } else {
-                                                       needStrInt = true
-                                                       io.WriteString(w, "str_int(")
-                                                       e.emitExpr(w)
-                                                       io.WriteString(w, ")")
-                                               }
-                                               io.WriteString(w, ");\n")
-                                               continue
-                                       default:
-                                               if strings.HasSuffix(base, "*") || (base != "" && !strings.HasSuffix(base, "[]")) {
-                                                       typ := strings.TrimSuffix(base, "*")
-                                                       if typ == "" {
-                                                               typ = base
-                                                       }
-                                                       if needListAppendStruct == nil {
-                                                               needListAppendStruct = make(map[string]bool)
-                                                       }
-                                                       needListAppendStruct[typ] = true
-                                                       fmt.Fprintf(w, "%s = list_append_%s(%s, &%s_len, ", d.Name, sanitizeTypeName(typ), d.Name, d.Name)
-                                               } else {
-                                                       needListAppendInt = true
-                                                       fmt.Fprintf(w, "%s = list_append_int(%s, &%s_len, ", d.Name, d.Name, d.Name)
-                                               }
-                                       }
-                                       if base != "const char*" {
-                                               e.emitExpr(w)
-                                               io.WriteString(w, ");\n")
-                                       }
-                               }
+					case "const char*":
+						needListAppendStr = true
+						fmt.Fprintf(w, "%s = list_append_str(%s, &%s_len, ", d.Name, d.Name, d.Name)
+						if inferExprType(currentEnv, e) == "const char*" {
+							e.emitExpr(w)
+						} else {
+							needStrInt = true
+							io.WriteString(w, "str_int(")
+							e.emitExpr(w)
+							io.WriteString(w, ")")
+						}
+						io.WriteString(w, ");\n")
+						continue
+					default:
+						if strings.HasSuffix(base, "*") || (base != "" && !strings.HasSuffix(base, "[]")) {
+							typ := strings.TrimSuffix(base, "*")
+							if typ == "" {
+								typ = base
+							}
+							if needListAppendStruct == nil {
+								needListAppendStruct = make(map[string]bool)
+							}
+							needListAppendStruct[typ] = true
+							fmt.Fprintf(w, "%s = list_append_%s(%s, &%s_len, ", d.Name, sanitizeTypeName(typ), d.Name, d.Name)
+						} else {
+							needListAppendInt = true
+							fmt.Fprintf(w, "%s = list_append_int(%s, &%s_len, ", d.Name, d.Name, d.Name)
+						}
+					}
+					if base != "const char*" {
+						e.emitExpr(w)
+						io.WriteString(w, ");\n")
+					}
+				}
 			}
 			return
 		}
@@ -1699,18 +1766,17 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 			writeIndent(w, indent)
 			fmt.Fprintf(w, "%s_len = %d;\n", a.Name, len(lst.Elems))
 			writeIndent(w, indent)
-			io.WriteString(w, fmt.Sprintf("%s_lens = (size_t[]){", a.Name))
+			fmt.Fprintf(w, "%s_lens = ({size_t *tmp = malloc(%d * sizeof(size_t)); ", a.Name, len(lst.Elems))
 			for i, e := range lst.Elems {
-				if i > 0 {
-					io.WriteString(w, ", ")
-				}
+				fmt.Fprintf(w, "tmp[%d] = ", i)
 				if sl, ok2 := e.(*ListLit); ok2 {
 					fmt.Fprintf(w, "%d", len(sl.Elems))
 				} else {
 					emitLenExpr(w, e)
 				}
+				io.WriteString(w, "; ")
 			}
-			io.WriteString(w, "};\n")
+			io.WriteString(w, "tmp;});\n")
 			writeIndent(w, indent)
 			fmt.Fprintf(w, "%s_lens_len = %d;\n", a.Name, len(lst.Elems))
 		} else if ok {
@@ -2057,14 +2123,13 @@ func (l *ListLit) emitExpr(w io.Writer) {
 		return
 	}
 	outType := base + strings.Repeat("*", dims)
-	fmt.Fprintf(w, "(%s[]){ ", outType)
+	fmt.Fprintf(w, "({%s tmp = malloc(%d * sizeof(%s)); ", outType+"*", len(l.Elems), outType)
 	for i, e := range l.Elems {
-		if i > 0 {
-			io.WriteString(w, ", ")
-		}
+		fmt.Fprintf(w, "tmp[%d] = ", i)
 		e.emitExpr(w)
+		io.WriteString(w, "; ")
 	}
-	io.WriteString(w, " }")
+	io.WriteString(w, "tmp;})")
 }
 
 type StructField struct {
@@ -2520,14 +2585,61 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 				return
 			}
 		}
+		if fe, ok := c.Args[0].(*FieldExpr); ok {
+			base := inferExprType(currentEnv, c.Args[0])
+			elemBase := strings.TrimSuffix(strings.TrimSuffix(base, "[]"), "*")
+			switch elemBase {
+			case "int", "long long":
+				needListAppendIntNew = true
+				io.WriteString(w, "list_append_int_new(")
+			case "double":
+				needListAppendDoubleNew = true
+				io.WriteString(w, "list_append_double_new(")
+			default:
+				if strings.Contains(elemBase, "char*") {
+					needListAppendStrNew = true
+					io.WriteString(w, "list_append_str_new(")
+				} else {
+					if needListAppendStructNew == nil {
+						needListAppendStructNew = make(map[string]bool)
+					}
+					needListAppendStructNew[elemBase] = true
+					fmt.Fprintf(w, "list_append_%s_new(", sanitizeTypeName(elemBase))
+				}
+			}
+			fe.emitExpr(w)
+			io.WriteString(w, ", ")
+			emitLenExpr(w, c.Args[0])
+			io.WriteString(w, ", ")
+			if len(c.Args) > 1 && c.Args[1] != nil {
+				c.Args[1].emitExpr(w)
+			}
+			io.WriteString(w, ")")
+			return
+		}
 	}
 	if c.Func == "concat" && len(c.Args) == 2 {
 		if a, ok := c.Args[0].(*VarRef); ok {
-			if b, ok2 := c.Args[1].(*VarRef); ok2 {
-				needConcatStrPtr = true
-				needListAppendStrPtr = true
-				needListAppendSizeT = true
-				fmt.Fprintf(w, "concat_strptr(%s, &%s_len, &%s_lens, &%s_lens_len, %s, %s_len, %s_lens)", a.Name, a.Name, a.Name, a.Name, b.Name, b.Name, b.Name)
+			t0 := inferExprType(currentEnv, c.Args[0])
+			if strings.Contains(t0, "const char*") {
+				if b, ok2 := c.Args[1].(*VarRef); ok2 {
+					needConcatStrPtr = true
+					needListAppendStrPtr = true
+					needListAppendSizeT = true
+					fmt.Fprintf(w, "concat_strptr(%s, &%s_len, &%s_lens, &%s_lens_len, %s, %s_len, %s_lens)", a.Name, a.Name, a.Name, a.Name, b.Name, b.Name, b.Name)
+					return
+				}
+			} else {
+				needConcatLongLong = true
+				if b, ok2 := c.Args[1].(*VarRef); ok2 {
+					fmt.Fprintf(w, "concat_long_long(%s, %s_len, %s, %s_len)", a.Name, a.Name, b.Name, b.Name)
+					return
+				}
+				fmt.Fprintf(w, "concat_long_long(%s, %s_len, ", a.Name, a.Name)
+				c.Args[1].emitExpr(w)
+				io.WriteString(w, ", ")
+				emitLenExpr(w, c.Args[1])
+				io.WriteString(w, ")")
 				return
 			}
 		}
@@ -3909,6 +4021,15 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("        a = list_append_strptr(a, a_len, b[i]);\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    return a;\n")
+		buf.WriteString("}\n\n")
+	}
+	if needConcatLongLong {
+		buf.WriteString("static size_t concat_len;\n")
+		buf.WriteString("static long long* concat_long_long(long long *a, size_t a_len, const long long *b, size_t b_len) {\n")
+		buf.WriteString("    long long *res = realloc(a, (a_len + b_len) * sizeof(long long));\n")
+		buf.WriteString("    if (b_len > 0) memcpy(res + a_len, b, b_len * sizeof(long long));\n")
+		buf.WriteString("    concat_len = a_len + b_len;\n")
+		buf.WriteString("    return res;\n")
 		buf.WriteString("}\n\n")
 	}
 	if needNow {
@@ -6497,7 +6618,7 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 	for i := range params {
 		if mutated[params[i].Name] && !strings.HasSuffix(params[i].Type, "*") {
 			if _, ok := structTypes[params[i].Type]; ok {
-				if params[i].Type != ret {
+				if !stmtsUseVarInReturn(body, params[i].Name) {
 					params[i].Type = params[i].Type + "*"
 					paramTypes[i] = params[i].Type
 					varTypes[params[i].Name] = params[i].Type
