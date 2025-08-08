@@ -52,6 +52,7 @@ var fetchStructs map[string]bool
 var useMD5 bool
 var useExists bool
 var useAnyVec bool
+var useIndex bool
 var inStr bool
 var reserved = map[string]bool{
 	// C++ keywords
@@ -171,6 +172,7 @@ type Program struct {
 	UseConcat      bool
 	UseSplit       bool
 	UseSlice       bool
+	UseIndex       bool
 	UseJSON        bool
 	UseBenchNow    bool
 	UsePanic       bool
@@ -896,6 +898,12 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "    std::vector<T> out = a;")
 		fmt.Fprintln(w, "    out.insert(out.end(), b.begin(), b.end());")
 		fmt.Fprintln(w, "    return out;")
+		fmt.Fprintln(w, "}")
+	}
+	if p.UseIndex {
+		fmt.Fprintln(w, "template<typename V> decltype(auto) _index(const V& v, int64_t i) {")
+		fmt.Fprintln(w, "    if (i < 0) i += v.size();")
+		fmt.Fprintln(w, "    return v[static_cast<size_t>(i)];")
 		fmt.Fprintln(w, "}")
 	}
 	if p.UseSlice {
@@ -1745,19 +1753,10 @@ func (i *IndexExpr) emit(w io.Writer) {
 	}
 	idxType := exprType(i.Index)
 	if idxType == "int64_t" {
-		// Use capture-less lambdas for global initializers since non-local
-		// lambdas cannot have a capture-default. Inside functions we still
-		// capture by reference to allow using local variables in the index
-		// expression.
-		cap := "[&]"
-		if !inFunction {
-			cap = "[]"
-		}
-		io.WriteString(w, "("+cap+"(const auto& __v){ auto __i = ")
-		i.Index.emit(w)
-		io.WriteString(w, "; if (__i < 0) __i += __v.size(); return __v[static_cast<size_t>(__i)]; })")
-		io.WriteString(w, "(")
+		io.WriteString(w, "_index(")
 		i.Target.emit(w)
+		io.WriteString(w, ", ")
+		i.Index.emit(w)
 		io.WriteString(w, ")")
 	} else {
 		i.Target.emit(w)
@@ -3049,15 +3048,15 @@ func (s *LetStmt) emit(w io.Writer, indent int) {
 		}
 		return
 	}
-        declType := typ
-        if declType != "" && strings.HasPrefix(declType, "std::map<") && s.Value != nil && (valType == "" || !strings.HasPrefix(valType, "std::map<")) {
-                declType = ""
-        }
-        if declType == "" {
-                io.WriteString(w, "auto ")
-        } else {
-                io.WriteString(w, declType+" ")
-        }
+	declType := typ
+	if declType != "" && strings.HasPrefix(declType, "std::map<") && s.Value != nil && (valType == "" || !strings.HasPrefix(valType, "std::map<")) {
+		declType = ""
+	}
+	if declType == "" {
+		io.WriteString(w, "auto ")
+	} else {
+		io.WriteString(w, declType+" ")
+	}
 	io.WriteString(w, safeName(s.Name))
 	if s.Value != nil {
 		if l, ok := s.Value.(*ListLit); ok && len(l.Elems) == 0 && declType != "" {
@@ -3299,41 +3298,41 @@ func (a *AssignIndexStmt) emit(w io.Writer, indent int) {
 }
 
 func (a *AssignFieldStmt) emit(w io.Writer, indent int) {
-        for i := 0; i < indent; i++ {
-                io.WriteString(w, "    ")
-        }
-        if _, ok := a.Target.(*IndexExpr); ok {
-                // handle assignments to fields of indexed elements
-                var idxs []Expr
-                target := a.Target
-                for {
-                        if ix2, ok2 := target.(*IndexExpr); ok2 {
-                                idxs = append([]Expr{ix2.Index}, idxs...)
-                                target = ix2.Target
-                        } else {
-                                break
-                        }
-                }
-                io.WriteString(w, "{ auto& __tmp = ")
-                target.emit(w)
-                for _, id := range idxs {
-                        io.WriteString(w, "[")
-                        emitIndex(w, id)
-                        io.WriteString(w, "]")
-                }
-                io.WriteString(w, "; __tmp.")
-                io.WriteString(w, a.Field)
-                io.WriteString(w, " = ")
-                a.Value.emit(w)
-                io.WriteString(w, "; }\n")
-                return
-        }
-        a.Target.emit(w)
-        io.WriteString(w, ".")
-        io.WriteString(w, a.Field)
-        io.WriteString(w, " = ")
-        a.Value.emit(w)
-        io.WriteString(w, ";\n")
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "    ")
+	}
+	if _, ok := a.Target.(*IndexExpr); ok {
+		// handle assignments to fields of indexed elements
+		var idxs []Expr
+		target := a.Target
+		for {
+			if ix2, ok2 := target.(*IndexExpr); ok2 {
+				idxs = append([]Expr{ix2.Index}, idxs...)
+				target = ix2.Target
+			} else {
+				break
+			}
+		}
+		io.WriteString(w, "{ auto& __tmp = ")
+		target.emit(w)
+		for _, id := range idxs {
+			io.WriteString(w, "[")
+			emitIndex(w, id)
+			io.WriteString(w, "]")
+		}
+		io.WriteString(w, "; __tmp.")
+		io.WriteString(w, a.Field)
+		io.WriteString(w, " = ")
+		a.Value.emit(w)
+		io.WriteString(w, "; }\n")
+		return
+	}
+	a.Target.emit(w)
+	io.WriteString(w, ".")
+	io.WriteString(w, a.Field)
+	io.WriteString(w, " = ")
+	a.Value.emit(w)
+	io.WriteString(w, ";\n")
 }
 
 func (e *ExprStmt) emit(w io.Writer, indent int) {
@@ -3358,25 +3357,25 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, "    ")
 	}
 	io.WriteString(w, "return")
-        if r.Value != nil {
-                if l, ok := r.Value.(*ListLit); ok && len(l.Elems) == 0 && r.Type != "" {
-                        io.WriteString(w, " ")
-                        io.WriteString(w, defaultValueForType(r.Type))
-                        io.WriteString(w, ";\n")
-                        return
-                }
-                if _, ok := r.Value.(*NullLit); ok && r.Type != "" {
-                        io.WriteString(w, " ")
-                        io.WriteString(w, defaultValueForType(r.Type))
-                        io.WriteString(w, ";\n")
-                        return
-                }
-                io.WriteString(w, " ")
-                if strings.HasPrefix(r.Type, "std::unique_ptr<") || strings.HasPrefix(r.Type, "std::shared_ptr<") {
-                        if sl, ok := r.Value.(*StructLit); ok {
-                                maker := "std::make_unique"
-                                if strings.HasPrefix(r.Type, "std::shared_ptr<") {
-                                        maker = "std::make_shared"
+	if r.Value != nil {
+		if l, ok := r.Value.(*ListLit); ok && len(l.Elems) == 0 && r.Type != "" {
+			io.WriteString(w, " ")
+			io.WriteString(w, defaultValueForType(r.Type))
+			io.WriteString(w, ";\n")
+			return
+		}
+		if _, ok := r.Value.(*NullLit); ok && r.Type != "" {
+			io.WriteString(w, " ")
+			io.WriteString(w, defaultValueForType(r.Type))
+			io.WriteString(w, ";\n")
+			return
+		}
+		io.WriteString(w, " ")
+		if strings.HasPrefix(r.Type, "std::unique_ptr<") || strings.HasPrefix(r.Type, "std::shared_ptr<") {
+			if sl, ok := r.Value.(*StructLit); ok {
+				maker := "std::make_unique"
+				if strings.HasPrefix(r.Type, "std::shared_ptr<") {
+					maker = "std::make_shared"
 				}
 				fmt.Fprintf(w, "%s<%s>(", maker, sl.Name)
 				for i, f := range sl.Fields {
@@ -3667,6 +3666,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	useBigRat = false
 	useExists = false
 	useAnyVec = false
+	useIndex = false
 	cp := &Program{Includes: []string{"<iostream>", "<string>"}, ListTypes: map[string]string{}, GlobalTypes: map[string]string{}}
 	currentProgram = cp
 	currentEnv = env
@@ -4180,6 +4180,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	cp.UseConcat = useConcat
 	cp.UseSplit = useSplit
 	cp.UseSlice = useSlice
+	cp.UseIndex = useIndex
 	cp.UseJSON = useJSON
 	cp.UseBenchNow = benchMain
 	cp.UsePanic = usesPanic
@@ -4428,7 +4429,7 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		} else {
 			localTypes[s.Let.Name] = "auto"
 		}
-                if ml, ok := val.(*MapLit); ok && typ != "" && strings.HasPrefix(typ, "std::map<") && strings.HasSuffix(typ, ">") {
+		if ml, ok := val.(*MapLit); ok && typ != "" && strings.HasPrefix(typ, "std::map<") && strings.HasSuffix(typ, ">") {
 			parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(typ, "std::map<"), ">"), ",", 2)
 			if len(parts) == 2 {
 				valType := strings.TrimSpace(parts[1])
@@ -4447,13 +4448,13 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 					}
 				}
 			}
-                }
-                if ll, ok := val.(*ListLit); ok && typ != "" {
-                        if ll.ElemType == "" {
-                                ll.ElemType = elementTypeFromListType(typ)
-                        }
-                }
-                ls := &LetStmt{Name: s.Let.Name, Type: typ, Value: val}
+		}
+		if ll, ok := val.(*ListLit); ok && typ != "" {
+			if ll.ElemType == "" {
+				ll.ElemType = elementTypeFromListType(typ)
+			}
+		}
+		ls := &LetStmt{Name: s.Let.Name, Type: typ, Value: val}
 		if currentVarDecls != nil {
 			currentVarDecls[s.Let.Name] = ls
 		}
@@ -4536,12 +4537,12 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 				}
 			}
 		}
-                if ll, ok := val.(*ListLit); ok && typ != "" {
-                        if ll.ElemType == "" {
-                                ll.ElemType = elementTypeFromListType(typ)
-                        }
-                }
-                ls := &LetStmt{Name: s.Var.Name, Type: typ, Value: val}
+		if ll, ok := val.(*ListLit); ok && typ != "" {
+			if ll.ElemType == "" {
+				ll.ElemType = elementTypeFromListType(typ)
+			}
+		}
+		ls := &LetStmt{Name: s.Var.Name, Type: typ, Value: val}
 		if currentVarDecls != nil {
 			currentVarDecls[s.Var.Name] = ls
 		}
@@ -4757,15 +4758,15 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-                        if _, ok := val.(*NullLit); ok && currentReturnType == "void" {
-                                val = nil
-                        } else if _, ok := val.(*NullLit); ok && currentReturnType == "std::string" {
-                                val = &StringLit{Value: ""}
-                        } else if _, ok := val.(*NullLit); ok && currentReturnType != "" && currentReturnType != "std::any" {
-                                // leave as null; ReturnStmt emitter will handle default value
-                        } else if exprType(val) == "std::any" && currentReturnType != "" && currentReturnType != "std::any" {
-                                val = newCastExpr(val, currentReturnType)
-                        }
+			if _, ok := val.(*NullLit); ok && currentReturnType == "void" {
+				val = nil
+			} else if _, ok := val.(*NullLit); ok && currentReturnType == "std::string" {
+				val = &StringLit{Value: ""}
+			} else if _, ok := val.(*NullLit); ok && currentReturnType != "" && currentReturnType != "std::any" {
+				// leave as null; ReturnStmt emitter will handle default value
+			} else if exprType(val) == "std::any" && currentReturnType != "" && currentReturnType != "std::any" {
+				val = newCastExpr(val, currentReturnType)
+			}
 		}
 		if val == nil && currentReturnType == "int" {
 			val = &IntLit{Value: 0}
@@ -5005,6 +5006,9 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				idx, err := convertExpr(op.Index.Start)
 				if err != nil {
 					return nil, err
+				}
+				if exprType(idx) == "int64_t" {
+					useIndex = true
 				}
 				if sl, ok := idx.(*StringLit); ok {
 					t := exprType(expr)
@@ -5825,31 +5829,31 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				useBigRat = true
 				return &CallExpr{Name: "_denom", Args: []Expr{arg}}, nil
 			}
-                case "parseIntStr":
-                        if len(p.Call.Args) == 1 || len(p.Call.Args) == 2 {
-                                v0, err := convertExpr(p.Call.Args[0])
-                                if err != nil {
-                                        return nil, err
-                                }
-                                var v1 Expr = &IntLit{Value: 10}
-                                if len(p.Call.Args) == 2 {
-                                        v1, err = convertExpr(p.Call.Args[1])
-                                        if err != nil {
-                                                return nil, err
-                                        }
-                                }
-                                usesParseIntStr = true
-                                return &CallExpr{Name: "_parse_int_str", Args: []Expr{v0, v1}}, nil
-                        }
-                case "toi":
-                        if len(p.Call.Args) == 1 {
-                                arg, err := convertExpr(p.Call.Args[0])
-                                if err != nil {
-                                        return nil, err
-                                }
-                                usesParseIntStr = true
-                                return &CallExpr{Name: "_parse_int_str", Args: []Expr{arg, &IntLit{Value: 10}}}, nil
-                        }
+		case "parseIntStr":
+			if len(p.Call.Args) == 1 || len(p.Call.Args) == 2 {
+				v0, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				var v1 Expr = &IntLit{Value: 10}
+				if len(p.Call.Args) == 2 {
+					v1, err = convertExpr(p.Call.Args[1])
+					if err != nil {
+						return nil, err
+					}
+				}
+				usesParseIntStr = true
+				return &CallExpr{Name: "_parse_int_str", Args: []Expr{v0, v1}}, nil
+			}
+		case "toi":
+			if len(p.Call.Args) == 1 {
+				arg, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				usesParseIntStr = true
+				return &CallExpr{Name: "_parse_int_str", Args: []Expr{arg, &IntLit{Value: 10}}}, nil
+			}
 		case "input":
 			if len(p.Call.Args) == 0 {
 				return &InputExpr{}, nil
