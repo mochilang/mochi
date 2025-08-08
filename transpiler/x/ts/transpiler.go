@@ -3859,6 +3859,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			useStr = true
 			return &PrintExpr{Args: args}, nil
 		case "len":
+			if transpileEnv != nil {
+				if _, ok := transpileEnv.GetFunc("len"); ok {
+					// user-defined len function; treat as a normal call
+					return &CallExpr{Func: "len", Args: args}, nil
+				}
+			}
 			if len(args) != 1 {
 				return nil, fmt.Errorf("len expects one argument")
 			}
