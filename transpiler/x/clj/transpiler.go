@@ -694,6 +694,7 @@ var funParamsStack [][]string
 var nestedFunArgs map[string][]string
 var stringVars map[string]bool
 var stringListVars map[string]bool
+var mapVars map[string]bool
 var renameVars map[string]string
 var currentFun string
 var declVars map[string]bool
@@ -732,6 +733,8 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	funParamsStack = nil
 	nestedFunArgs = make(map[string][]string)
 	stringVars = nil
+	stringListVars = nil
+	mapVars = nil
 	renameVars = nil
 	declVars = make(map[string]bool)
 	currentStruct = nil
@@ -746,6 +749,8 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		nestedFunArgs = nil
 		funParamsStack = nil
 		stringVars = nil
+		stringListVars = nil
+		mapVars = nil
 		renameVars = nil
 		declVars = nil
 		currentStruct = nil
@@ -886,12 +891,14 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	currentFun = "main"
 	stringVars = make(map[string]bool)
 	stringListVars = make(map[string]bool)
+	mapVars = make(map[string]bool)
 	renameVars = make(map[string]string)
 	defer func() {
 		funDepth--
 		currentFun = prevFun
 		stringVars = nil
 		stringListVars = nil
+		mapVars = nil
 		renameVars = nil
 	}()
 
@@ -1009,6 +1016,9 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 		if stringListVars != nil && isStringListNode(v) {
 			stringListVars[name] = true
 		}
+		if mapVars != nil && isMapNode(v) {
+			mapVars[name] = true
+		}
 		if funDepth > 0 {
 			if funDepth == 1 && currentFun == "main" {
 				return &List{Elems: []Node{Symbol("def"), Symbol("^:dynamic"), Symbol(name), v}}, nil
@@ -1055,6 +1065,9 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 		if stringListVars != nil && isStringListNode(v) {
 			stringListVars[name] = true
 		}
+		if mapVars != nil && isMapNode(v) {
+			mapVars[name] = true
+		}
 		if funDepth > 1 {
 			if declVars != nil {
 				declVars[name] = true
@@ -1095,6 +1108,9 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 		}
 		if stringListVars != nil && isStringListNode(v) {
 			stringListVars[name] = true
+		}
+		if mapVars != nil && isMapNode(v) {
+			mapVars[name] = true
 		}
 		if transpileEnv != nil && len(path) >= 1 {
 			if typ, err := transpileEnv.GetVar(s.Assign.Name); err == nil {
@@ -1195,6 +1211,7 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 	prevStruct := currentStruct
 	prevSelf := currentSelf
 	prevRename := renameVars
+	prevMap := mapVars
 	outerVarStack = append(outerVarStack, renameVars)
 	if transpileEnv != nil {
 		if parts := strings.SplitN(f.Name, "_", 2); len(parts) == 2 {
@@ -1213,6 +1230,7 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 		funParamsStack = funParamsStack[:len(funParamsStack)-1]
 		stringVars = nil
 		stringListVars = nil
+		mapVars = prevMap
 		renameVars = prevRename
 		outerVarStack = outerVarStack[:len(outerVarStack)-1]
 		currentStruct = prevStruct
@@ -1222,6 +1240,7 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 
 	stringVars = make(map[string]bool)
 	stringListVars = make(map[string]bool)
+	mapVars = make(map[string]bool)
 	renameVars = make(map[string]string)
 
 	mutated := map[string]bool{}
@@ -1279,6 +1298,8 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 				if a := p.Type.Generic.Args[0]; a != nil && a.Simple != nil && *a.Simple == "string" {
 					stringListVars[newName] = true
 				}
+			} else if p.Type.Generic.Name == "map" {
+				mapVars[newName] = true
 			}
 		}
 	}
@@ -1642,6 +1663,11 @@ func isMapNode(n Node) bool {
 			}
 		}
 	case Symbol:
+		if mapVars != nil {
+			if mapVars[string(t)] {
+				return true
+			}
+		}
 		if transpileEnv != nil {
 			name := string(t)
 			if typ, err := transpileEnv.GetVar(name); err == nil {
