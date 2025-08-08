@@ -1,0 +1,4 @@
+[(0, 0, a), (0, 0, b), (2, 2, c), (4, 3, a), (2, 2, a)]
+[(0, 0, a), (1, 1, c), (3, 4, b), (3, 3, a), (1, 2, c)]
+cabracadabrarrarrad
+{"duration_us":10936, "memory_bytes":134856, "name":"main"}
