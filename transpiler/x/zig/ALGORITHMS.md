@@ -2,192 +2,192 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-08 18:51 +0700
+Last updated: 2025-08-08 19:10 +0700
 
-## Program Checklist (161/1077)
+## Program Checklist (2/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 1.114ms | 512.0 KB |
-| 2 | backtracking/all_permutations | ✓ | 10.646ms | 2.4 MB |
-| 3 | backtracking/all_subsequences | ✓ | 1.176ms | 572.0 KB |
-| 4 | backtracking/coloring | ✓ | 600µs | 256.0 KB |
-| 5 | backtracking/combination_sum | ✓ | 893µs | 384.0 KB |
-| 6 | backtracking/crossword_puzzle_solver | ✓ | 835µs | 384.0 KB |
-| 7 | backtracking/hamiltonian_cycle | ✓ | 235µs |  |
-| 8 | backtracking/knight_tour | ✓ | 563µs | 256.0 KB |
-| 9 | backtracking/match_word_pattern | ✓ | 6.807ms | 1.4 MB |
-| 10 | backtracking/minimax | ✓ | 638µs | 128.0 KB |
-| 11 | backtracking/n_queens | ✓ | 1.663ms | 384.0 KB |
-| 12 | backtracking/n_queens_math | ✓ | 2.652ms | 768.0 KB |
-| 13 | backtracking/power_sum | ✓ | 642µs | 256.0 KB |
-| 14 | backtracking/rat_in_maze | ✓ | 2.022ms | 640.0 KB |
-| 15 | backtracking/sudoku | ✓ | 47.423ms | 7.9 MB |
-| 16 | backtracking/sum_of_subsets | ✓ | 1.215ms | 256.0 KB |
-| 17 | backtracking/word_break | ✓ | 599µs | 256.0 KB |
-| 18 | backtracking/word_ladder | ✓ | 67.003ms | 13.2 MB |
-| 19 | backtracking/word_search | ✓ | 2.554ms | 512.0 KB |
-| 20 | bit_manipulation/binary_and_operator | ✓ | 5.357ms | 1.0 MB |
-| 21 | bit_manipulation/binary_coded_decimal | ✓ | 3.267ms | 768.0 KB |
-| 22 | bit_manipulation/binary_count_setbits | ✓ | 513µs | 256.0 KB |
-| 23 | bit_manipulation/binary_count_trailing_zeros | ✓ | 697µs | 256.0 KB |
-| 24 | bit_manipulation/binary_or_operator | ✓ | 1.557ms | 384.0 KB |
-| 25 | bit_manipulation/binary_shifts | ✓ | 2.266ms | 512.0 KB |
-| 26 | bit_manipulation/binary_twos_complement | ✓ | 2.077ms | 640.0 KB |
-| 27 | bit_manipulation/binary_xor_operator | ✓ | 5.146ms | 1.1 MB |
-| 28 | bit_manipulation/bitwise_addition_recursive | ✓ | 707µs | 128.0 KB |
-| 29 | bit_manipulation/count_1s_brian_kernighan_method | ✓ | 597µs | 256.0 KB |
-| 30 | bit_manipulation/count_number_of_one_bits | ✓ | 910µs | 256.0 KB |
-| 31 | bit_manipulation/excess_3_code |   | 801µs | 256.0 KB |
-| 32 | bit_manipulation/find_previous_power_of_two | ✓ | 1.449ms | 384.0 KB |
-| 33 | bit_manipulation/find_unique_number | ✓ | 703µs | 256.0 KB |
-| 34 | bit_manipulation/gray_code_sequence | ✓ | 1.663ms | 384.0 KB |
-| 35 | bit_manipulation/highest_set_bit | ✓ | 499µs | 256.0 KB |
-| 36 | bit_manipulation/index_of_rightmost_set_bit | ✓ | 670µs | 256.0 KB |
-| 37 | bit_manipulation/is_even | ✓ | 737µs | 256.0 KB |
-| 38 | bit_manipulation/is_power_of_two | ✓ | 263µs |  |
-| 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 596µs | 384.0 KB |
-| 40 | bit_manipulation/missing_number | ✓ | 517µs |  |
-| 41 | bit_manipulation/numbers_different_signs | ✓ | 616µs | 384.0 KB |
-| 42 | bit_manipulation/power_of_4 | ✓ | 559µs | 256.0 KB |
-| 43 | bit_manipulation/reverse_bits | ✓ | 8.205ms | 1.8 MB |
-| 44 | bit_manipulation/single_bit_manipulation_operations | ✓ | 506µs | 256.0 KB |
-| 45 | bit_manipulation/swap_all_odd_and_even_bits | ✓ | 8.112ms | 1.6 MB |
-| 46 | blockchain/diophantine_equation | ✓ | 1.623ms | 384.0 KB |
-| 47 | boolean_algebra/and_gate | ✓ | 827µs | 256.0 KB |
-| 48 | boolean_algebra/imply_gate | ✓ | 558µs | 384.0 KB |
-| 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 1.073ms | 256.0 KB |
-| 50 | boolean_algebra/multiplexer | ✓ | 461µs | 384.0 KB |
-| 51 | boolean_algebra/nand_gate | ✓ | 566µs | 256.0 KB |
-| 52 | boolean_algebra/nimply_gate | ✓ | 670µs | 256.0 KB |
-| 53 | boolean_algebra/nor_gate | ✓ | 4.566ms | 768.0 KB |
-| 54 | boolean_algebra/not_gate | ✓ | 415µs | 256.0 KB |
-| 55 | boolean_algebra/or_gate | ✓ | 686µs | 256.0 KB |
-| 56 | boolean_algebra/quine_mc_cluskey | ✓ | 1.336ms | 512.0 KB |
-| 57 | boolean_algebra/xnor_gate | ✓ | 629µs | 256.0 KB |
-| 58 | boolean_algebra/xor_gate | ✓ | 374µs | 256.0 KB |
-| 59 | cellular_automata/conways_game_of_life | ✓ | 4.266ms | 1.5 MB |
-| 60 | cellular_automata/game_of_life | ✓ | 4.028ms | 1.2 MB |
-| 61 | cellular_automata/langtons_ant | ✓ | 205µs |  |
-| 62 | cellular_automata/nagel_schrekenberg | ✓ | 1.803ms | 768.0 KB |
-| 63 | cellular_automata/one_dimensional | ✓ | 18.13ms | 4.2 MB |
-| 64 | cellular_automata/wa_tor | ✓ | 8.706ms | 2.8 MB |
-| 65 | ciphers/a1z26 | ✓ | 888µs | 256.0 KB |
-| 66 | ciphers/affine_cipher | ✓ | 4.561ms | 640.0 KB |
-| 67 | ciphers/atbash | ✓ | 854µs | 384.0 KB |
-| 68 | ciphers/autokey | ✓ | 6.407ms | 1.0 MB |
-| 69 | ciphers/baconian_cipher | ✓ | 2.182ms | 768.0 KB |
-| 70 | ciphers/base16 | ✓ | 3.348ms | 640.0 KB |
-| 71 | ciphers/base32 | ✓ | 22.044ms | 6.8 MB |
-| 72 | ciphers/base64_cipher | ✓ | 2.964ms | 1.0 MB |
-| 73 | ciphers/base85 | ✓ | 8.01ms | 2.6 MB |
-| 74 | ciphers/beaufort_cipher | ✓ | 975µs | 384.0 KB |
-| 75 | ciphers/bifid | ✓ | 4.345ms | 1.4 MB |
-| 76 | ciphers/brute_force_caesar_cipher | ✓ | 5.989ms | 1.9 MB |
-| 77 | ciphers/caesar_cipher | ✓ | 22.286ms | 6.4 MB |
+| 1 | backtracking/all_combinations |   |  |  |
+| 2 | backtracking/all_permutations |   |  |  |
+| 3 | backtracking/all_subsequences |   |  |  |
+| 4 | backtracking/coloring |   |  |  |
+| 5 | backtracking/combination_sum |   |  |  |
+| 6 | backtracking/crossword_puzzle_solver |   |  |  |
+| 7 | backtracking/hamiltonian_cycle |   |  |  |
+| 8 | backtracking/knight_tour |   |  |  |
+| 9 | backtracking/match_word_pattern |   |  |  |
+| 10 | backtracking/minimax |   |  |  |
+| 11 | backtracking/n_queens |   |  |  |
+| 12 | backtracking/n_queens_math |   |  |  |
+| 13 | backtracking/power_sum |   |  |  |
+| 14 | backtracking/rat_in_maze |   |  |  |
+| 15 | backtracking/sudoku |   |  |  |
+| 16 | backtracking/sum_of_subsets |   |  |  |
+| 17 | backtracking/word_break |   |  |  |
+| 18 | backtracking/word_ladder |   |  |  |
+| 19 | backtracking/word_search |   |  |  |
+| 20 | bit_manipulation/binary_and_operator |   |  |  |
+| 21 | bit_manipulation/binary_coded_decimal |   |  |  |
+| 22 | bit_manipulation/binary_count_setbits |   |  |  |
+| 23 | bit_manipulation/binary_count_trailing_zeros |   |  |  |
+| 24 | bit_manipulation/binary_or_operator |   |  |  |
+| 25 | bit_manipulation/binary_shifts |   |  |  |
+| 26 | bit_manipulation/binary_twos_complement |   |  |  |
+| 27 | bit_manipulation/binary_xor_operator |   |  |  |
+| 28 | bit_manipulation/bitwise_addition_recursive |   |  |  |
+| 29 | bit_manipulation/count_1s_brian_kernighan_method |   |  |  |
+| 30 | bit_manipulation/count_number_of_one_bits |   |  |  |
+| 31 | bit_manipulation/excess_3_code |   |  |  |
+| 32 | bit_manipulation/find_previous_power_of_two |   |  |  |
+| 33 | bit_manipulation/find_unique_number |   |  |  |
+| 34 | bit_manipulation/gray_code_sequence |   |  |  |
+| 35 | bit_manipulation/highest_set_bit |   |  |  |
+| 36 | bit_manipulation/index_of_rightmost_set_bit |   |  |  |
+| 37 | bit_manipulation/is_even |   |  |  |
+| 38 | bit_manipulation/is_power_of_two |   |  |  |
+| 39 | bit_manipulation/largest_pow_of_two_le_num |   |  |  |
+| 40 | bit_manipulation/missing_number |   |  |  |
+| 41 | bit_manipulation/numbers_different_signs |   |  |  |
+| 42 | bit_manipulation/power_of_4 |   |  |  |
+| 43 | bit_manipulation/reverse_bits |   |  |  |
+| 44 | bit_manipulation/single_bit_manipulation_operations |   |  |  |
+| 45 | bit_manipulation/swap_all_odd_and_even_bits |   |  |  |
+| 46 | blockchain/diophantine_equation |   |  |  |
+| 47 | boolean_algebra/and_gate |   |  |  |
+| 48 | boolean_algebra/imply_gate |   |  |  |
+| 49 | boolean_algebra/karnaugh_map_simplification |   |  |  |
+| 50 | boolean_algebra/multiplexer |   |  |  |
+| 51 | boolean_algebra/nand_gate |   |  |  |
+| 52 | boolean_algebra/nimply_gate |   |  |  |
+| 53 | boolean_algebra/nor_gate |   |  |  |
+| 54 | boolean_algebra/not_gate |   |  |  |
+| 55 | boolean_algebra/or_gate |   |  |  |
+| 56 | boolean_algebra/quine_mc_cluskey |   |  |  |
+| 57 | boolean_algebra/xnor_gate |   |  |  |
+| 58 | boolean_algebra/xor_gate |   |  |  |
+| 59 | cellular_automata/conways_game_of_life |   |  |  |
+| 60 | cellular_automata/game_of_life |   |  |  |
+| 61 | cellular_automata/langtons_ant |   |  |  |
+| 62 | cellular_automata/nagel_schrekenberg |   |  |  |
+| 63 | cellular_automata/one_dimensional |   |  |  |
+| 64 | cellular_automata/wa_tor |   |  |  |
+| 65 | ciphers/a1z26 |   |  |  |
+| 66 | ciphers/affine_cipher |   |  |  |
+| 67 | ciphers/atbash |   |  |  |
+| 68 | ciphers/autokey |   |  |  |
+| 69 | ciphers/baconian_cipher |   |  |  |
+| 70 | ciphers/base16 |   |  |  |
+| 71 | ciphers/base32 |   |  |  |
+| 72 | ciphers/base64_cipher |   |  |  |
+| 73 | ciphers/base85 |   |  |  |
+| 74 | ciphers/beaufort_cipher |   |  |  |
+| 75 | ciphers/bifid |   |  |  |
+| 76 | ciphers/brute_force_caesar_cipher |   |  |  |
+| 77 | ciphers/caesar_cipher |   |  |  |
 | 78 | ciphers/cryptomath_module |   |  |  |
 | 79 | ciphers/decrypt_caesar_with_chi_squared |   |  |  |
 | 80 | ciphers/deterministic_miller_rabin |   |  |  |
 | 81 | ciphers/diffie |   |  |  |
-| 82 | ciphers/diffie_hellman | ✓ | 313µs | 128.0 KB |
-| 83 | ciphers/elgamal_key_generator | ✓ | 544µs | 256.0 KB |
-| 84 | ciphers/enigma_machine2 | ✓ | 5.101ms | 1.5 MB |
+| 82 | ciphers/diffie_hellman |   |  |  |
+| 83 | ciphers/elgamal_key_generator |   |  |  |
+| 84 | ciphers/enigma_machine2 |   |  |  |
 | 85 | ciphers/fractionated_morse_cipher |   |  |  |
-| 86 | ciphers/gronsfeld_cipher | ✓ | 2.226ms | 768.0 KB |
-| 87 | ciphers/hill_cipher | ✓ | 4.471ms | 1.5 MB |
-| 88 | ciphers/mixed_keyword_cypher | ✓ | 4.94ms | 1.4 MB |
-| 89 | ciphers/mono_alphabetic_ciphers | ✓ | 868µs | 384.0 KB |
-| 90 | ciphers/morse_code | ✓ | 2.345ms | 768.0 KB |
-| 91 | ciphers/onepad_cipher | ✓ | 768µs | 384.0 KB |
-| 92 | ciphers/permutation_cipher | ✓ | 1.284ms | 384.0 KB |
+| 86 | ciphers/gronsfeld_cipher |   |  |  |
+| 87 | ciphers/hill_cipher |   |  |  |
+| 88 | ciphers/mixed_keyword_cypher |   |  |  |
+| 89 | ciphers/mono_alphabetic_ciphers |   |  |  |
+| 90 | ciphers/morse_code |   |  |  |
+| 91 | ciphers/onepad_cipher |   |  |  |
+| 92 | ciphers/permutation_cipher |   |  |  |
 | 93 | ciphers/playfair_cipher |   |  |  |
-| 94 | ciphers/polybius | ✓ | 2.23ms | 768.0 KB |
-| 95 | ciphers/porta_cipher | ✓ | 1.387ms | 384.0 KB |
-| 96 | ciphers/rabin_miller | ✓ | 728µs | 384.0 KB |
-| 97 | ciphers/rail_fence_cipher | ✓ | 6.703ms | 2.1 MB |
-| 98 | ciphers/rot13 | ✓ | 3.076ms | 768.0 KB |
-| 99 | ciphers/rsa_cipher | ✓ | 1.197ms | 384.0 KB |
-| 100 | ciphers/rsa_factorization | ✓ | 557µs | 256.0 KB |
-| 101 | ciphers/rsa_key_generator | ✓ | 491µs | 256.0 KB |
-| 102 | ciphers/running_key_cipher | ✓ | 1.776ms | 640.0 KB |
-| 103 | ciphers/shuffled_shift_cipher | ✓ | 4.804ms | 1.5 MB |
-| 104 | ciphers/simple_keyword_cypher | ✓ | 1.46ms | 384.0 KB |
-| 105 | ciphers/simple_substitution_cipher | ✓ | 979µs | 256.0 KB |
-| 106 | ciphers/transposition_cipher | ✓ | 406µs | 384.0 KB |
-| 107 | ciphers/transposition_cipher_encrypt_decrypt_file | ✓ | 711µs | 128.0 KB |
-| 108 | ciphers/trifid_cipher | ✓ | 6.408ms | 2.0 MB |
-| 109 | ciphers/vernam_cipher | ✓ | 498µs | 256.0 KB |
-| 110 | ciphers/vigenere_cipher | ✓ | 1.731ms | 512.0 KB |
-| 111 | ciphers/xor_cipher | ✓ | 1.193ms | 512.0 KB |
-| 112 | computer_vision/cnn_classification | ✓ | 1.142ms | 640.0 KB |
-| 113 | computer_vision/flip_augmentation | ✓ | 2.42ms | 768.0 KB |
-| 114 | computer_vision/haralick_descriptors | ✓ | 648µs | 384.0 KB |
-| 115 | computer_vision/harris_corner | ✓ | 2.764ms | 1.0 MB |
-| 116 | computer_vision/horn_schunck | ✓ | 18.895ms | 6.2 MB |
-| 117 | computer_vision/intensity_based_segmentation | ✓ | 679µs | 256.0 KB |
-| 118 | computer_vision/mean_threshold | ✓ | 383µs | 256.0 KB |
-| 119 | computer_vision/mosaic_augmentation | ✓ | 124.022ms | 40.0 MB |
-| 120 | computer_vision/pooling_functions | ✓ | 1.496ms | 640.0 KB |
-| 121 | conversions/astronomical_length_scale_conversion | ✓ | 931µs | 512.0 KB |
-| 122 | conversions/binary_to_decimal | ✓ | 465µs | 256.0 KB |
-| 123 | conversions/binary_to_hexadecimal | ✓ | 1.454ms | 512.0 KB |
-| 124 | conversions/binary_to_octal | ✓ | 545µs | 256.0 KB |
+| 94 | ciphers/polybius |   |  |  |
+| 95 | ciphers/porta_cipher |   |  |  |
+| 96 | ciphers/rabin_miller |   |  |  |
+| 97 | ciphers/rail_fence_cipher |   |  |  |
+| 98 | ciphers/rot13 |   |  |  |
+| 99 | ciphers/rsa_cipher |   |  |  |
+| 100 | ciphers/rsa_factorization |   |  |  |
+| 101 | ciphers/rsa_key_generator |   |  |  |
+| 102 | ciphers/running_key_cipher |   |  |  |
+| 103 | ciphers/shuffled_shift_cipher |   |  |  |
+| 104 | ciphers/simple_keyword_cypher |   |  |  |
+| 105 | ciphers/simple_substitution_cipher |   |  |  |
+| 106 | ciphers/transposition_cipher |   |  |  |
+| 107 | ciphers/transposition_cipher_encrypt_decrypt_file |   |  |  |
+| 108 | ciphers/trifid_cipher |   |  |  |
+| 109 | ciphers/vernam_cipher |   |  |  |
+| 110 | ciphers/vigenere_cipher |   |  |  |
+| 111 | ciphers/xor_cipher |   |  |  |
+| 112 | computer_vision/cnn_classification |   |  |  |
+| 113 | computer_vision/flip_augmentation |   |  |  |
+| 114 | computer_vision/haralick_descriptors |   |  |  |
+| 115 | computer_vision/harris_corner |   |  |  |
+| 116 | computer_vision/horn_schunck |   |  |  |
+| 117 | computer_vision/intensity_based_segmentation |   |  |  |
+| 118 | computer_vision/mean_threshold |   |  |  |
+| 119 | computer_vision/mosaic_augmentation |   |  |  |
+| 120 | computer_vision/pooling_functions |   |  |  |
+| 121 | conversions/astronomical_length_scale_conversion |   |  |  |
+| 122 | conversions/binary_to_decimal |   |  |  |
+| 123 | conversions/binary_to_hexadecimal |   |  |  |
+| 124 | conversions/binary_to_octal |   |  |  |
 | 125 | conversions/convert_number_to_words |   |  |  |
-| 126 | conversions/decimal_to_any | ✓ | 434µs | 256.0 KB |
-| 127 | conversions/decimal_to_binary | ✓ | 1.404ms | 384.0 KB |
-| 128 | conversions/decimal_to_hexadecimal | ✓ | 806µs | 256.0 KB |
-| 129 | conversions/decimal_to_octal | ✓ | 467µs | 256.0 KB |
-| 130 | conversions/energy_conversions | ✓ | 551µs | 512.0 KB |
-| 131 | conversions/excel_title_to_column | ✓ | 376µs | 256.0 KB |
+| 126 | conversions/decimal_to_any |   |  |  |
+| 127 | conversions/decimal_to_binary |   |  |  |
+| 128 | conversions/decimal_to_hexadecimal |   |  |  |
+| 129 | conversions/decimal_to_octal |   |  |  |
+| 130 | conversions/energy_conversions |   |  |  |
+| 131 | conversions/excel_title_to_column |   |  |  |
 | 132 | conversions/hex_to_bin |   |  |  |
-| 133 | conversions/hexadecimal_to_decimal | ✓ | 403µs | 256.0 KB |
+| 133 | conversions/hexadecimal_to_decimal |   |  |  |
 | 134 | conversions/ipv4_conversion |   |  |  |
-| 135 | conversions/length_conversion | ✓ | 748µs | 384.0 KB |
-| 136 | conversions/molecular_chemistry | ✓ | 541µs | 384.0 KB |
-| 137 | conversions/octal_to_binary | ✓ | 601µs | 256.0 KB |
-| 138 | conversions/octal_to_decimal | ✓ | 336µs | 256.0 KB |
-| 139 | conversions/octal_to_hexadecimal | ✓ | 639µs | 256.0 KB |
-| 140 | conversions/prefix_conversions | ✓ | 872µs | 512.0 KB |
+| 135 | conversions/length_conversion |   |  |  |
+| 136 | conversions/molecular_chemistry |   |  |  |
+| 137 | conversions/octal_to_binary |   |  |  |
+| 138 | conversions/octal_to_decimal |   |  |  |
+| 139 | conversions/octal_to_hexadecimal |   |  |  |
+| 140 | conversions/prefix_conversions |   |  |  |
 | 141 | conversions/prefix_conversions_string |   |  |  |
 | 142 | conversions/pressure_conversions |   |  |  |
-| 143 | conversions/rectangular_to_polar | ✓ | 1.003ms | 512.0 KB |
-| 144 | conversions/rgb_cmyk_conversion | ✓ | 785µs | 384.0 KB |
+| 143 | conversions/rectangular_to_polar |   |  |  |
+| 144 | conversions/rgb_cmyk_conversion |   |  |  |
 | 145 | conversions/rgb_hsv_conversion |   |  |  |
-| 146 | conversions/roman_numerals | ✓ | 285µs | 128.0 KB |
-| 147 | conversions/speed_conversions | ✓ | 724µs | 512.0 KB |
-| 148 | conversions/temperature_conversions | ✓ | 299µs | 256.0 KB |
+| 146 | conversions/roman_numerals |   |  |  |
+| 147 | conversions/speed_conversions |   |  |  |
+| 148 | conversions/temperature_conversions |   |  |  |
 | 149 | conversions/time_conversions |   |  |  |
-| 150 | conversions/volume_conversions | ✓ | 558µs | 512.0 KB |
-| 151 | conversions/weight_conversion | ✓ | 471µs | 384.0 KB |
-| 152 | data_compression/burrows_wheeler | ✓ | 1.55ms | 640.0 KB |
+| 150 | conversions/volume_conversions |   |  |  |
+| 151 | conversions/weight_conversion |   |  |  |
+| 152 | data_compression/burrows_wheeler |   |  |  |
 | 153 | data_compression/huffman |   |  |  |
-| 154 | data_compression/lempel_ziv | ✓ | 1.59ms | 640.0 KB |
-| 155 | data_compression/lempel_ziv_decompress | ✓ | 1.034ms | 384.0 KB |
+| 154 | data_compression/lempel_ziv |   |  |  |
+| 155 | data_compression/lempel_ziv_decompress |   |  |  |
 | 156 | data_compression/lz77 |   |  |  |
-| 157 | data_compression/peak_signal_to_noise_ratio | ✓ | 245µs |  |
-| 158 | data_compression/run_length_encoding | ✓ | 2.517ms | 640.0 KB |
-| 159 | data_structures/arrays/equilibrium_index_in_array | ✓ | 736µs | 384.0 KB |
-| 160 | data_structures/arrays/find_triplets_with_0_sum | ✓ | 3.449ms | 956.0 KB |
-| 161 | data_structures/arrays/index_2d_array_in_1d | ✓ | 1.361ms | 384.0 KB |
-| 162 | data_structures/arrays/kth_largest_element | ✓ | 504µs | 128.0 KB |
-| 163 | data_structures/arrays/median_two_array | ✓ | 2.505ms | 512.0 KB |
-| 164 | data_structures/arrays/monotonic_array | ✓ | 579µs | 256.0 KB |
-| 165 | data_structures/arrays/pairs_with_given_sum | ✓ | 1.3ms | 128.0 KB |
-| 166 | data_structures/arrays/permutations | ✓ | 4.407ms | 1.0 MB |
-| 167 | data_structures/arrays/prefix_sum | ✓ | 1.336ms | 384.0 KB |
-| 168 | data_structures/arrays/product_sum | ✓ | 541µs | 384.0 KB |
-| 169 | data_structures/arrays/sparse_table | ✓ | 1.286ms | 512.0 KB |
-| 170 | data_structures/arrays/sudoku_solver | ✓ | 10.001ms | 3.1 MB |
-| 171 | data_structures/binary_tree/avl_tree | ✓ | 669µs | 256.0 KB |
-| 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 961µs | 512.0 KB |
+| 157 | data_compression/peak_signal_to_noise_ratio |   |  |  |
+| 158 | data_compression/run_length_encoding |   |  |  |
+| 159 | data_structures/arrays/equilibrium_index_in_array |   |  |  |
+| 160 | data_structures/arrays/find_triplets_with_0_sum |   |  |  |
+| 161 | data_structures/arrays/index_2d_array_in_1d |   |  |  |
+| 162 | data_structures/arrays/kth_largest_element |   |  |  |
+| 163 | data_structures/arrays/median_two_array |   |  |  |
+| 164 | data_structures/arrays/monotonic_array |   |  |  |
+| 165 | data_structures/arrays/pairs_with_given_sum |   |  |  |
+| 166 | data_structures/arrays/permutations |   |  |  |
+| 167 | data_structures/arrays/prefix_sum |   |  |  |
+| 168 | data_structures/arrays/product_sum |   |  |  |
+| 169 | data_structures/arrays/sparse_table |   |  |  |
+| 170 | data_structures/arrays/sudoku_solver |   |  |  |
+| 171 | data_structures/binary_tree/avl_tree |   |  |  |
+| 172 | data_structures/binary_tree/basic_binary_tree |   |  |  |
 | 173 | data_structures/binary_tree/binary_search_tree |   |  |  |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive |   |  |  |
-| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 1.548ms | 512.0 KB |
-| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 436µs | 128.0 KB |
-| 177 | data_structures/binary_tree/binary_tree_path_sum | ✓ | 535µs | 256.0 KB |
-| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 1.402ms | 572.0 KB |
-| 179 | data_structures/binary_tree/distribute_coins | ✓ | 467µs | 256.0 KB |
-| 180 | data_structures/binary_tree/fenwick_tree |   |  |  |
-| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist |   |  |  |
+| 175 | data_structures/binary_tree/binary_tree_mirror |   |  |  |
+| 176 | data_structures/binary_tree/binary_tree_node_sum |   |  |  |
+| 177 | data_structures/binary_tree/binary_tree_path_sum |   |  |  |
+| 178 | data_structures/binary_tree/diff_views_of_binary_tree |   |  |  |
+| 179 | data_structures/binary_tree/distribute_coins |   |  |  |
+| 180 | data_structures/binary_tree/fenwick_tree | ✓ | 2.81ms | 384.0 KB |
+| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 1.849ms | 512.0 KB |
 | 182 | data_structures/binary_tree/floor_and_ceiling |   |  |  |
 | 183 | data_structures/binary_tree/inorder_tree_traversal_2022 |   |  |  |
 | 184 | data_structures/binary_tree/is_sorted |   |  |  |
