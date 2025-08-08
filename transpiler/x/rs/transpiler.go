@@ -747,13 +747,78 @@ func (f *FuncDecl) emit(w io.Writer) {
 }
 
 type FunLit struct {
-	Params []Param
-	Return string
-	Expr   Expr
-	Body   []Stmt
+	Params   []Param
+	Return   string
+	Expr     Expr
+	Body     []Stmt
+	Name     string
+	Captures []Param
 }
 
 func (f *FunLit) emit(w io.Writer) {
+	if f.Name != "" && len(f.Captures) > 0 {
+		io.WriteString(w, "{\n")
+		fmt.Fprintf(w, "fn %s(", rustIdent(f.Name))
+		for i, p := range append(f.Captures, f.Params...) {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			if p.Type != "" {
+				fmt.Fprintf(w, "%s: %s", rustIdent(p.Name), p.Type)
+			} else {
+				io.WriteString(w, rustIdent(p.Name))
+			}
+		}
+		io.WriteString(w, ")")
+		if f.Return != "" && f.Return != "()" {
+			fmt.Fprintf(w, " -> %s", f.Return)
+		}
+		io.WriteString(w, " {\n")
+		buf := w.(*bytes.Buffer)
+		for _, st := range f.Body {
+			writeStmt(buf, st, 1)
+		}
+		io.WriteString(w, "}\n")
+		io.WriteString(w, "move |")
+		for i, p := range f.Params {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			if p.Type != "" {
+				fmt.Fprintf(w, "%s: %s", rustIdent(p.Name), p.Type)
+			} else {
+				io.WriteString(w, rustIdent(p.Name))
+			}
+		}
+		io.WriteString(w, "|")
+		if f.Return != "" && f.Return != "()" {
+			fmt.Fprintf(w, " -> %s", f.Return)
+		}
+		io.WriteString(w, " { ")
+		io.WriteString(w, rustIdent(f.Name))
+		io.WriteString(w, "(")
+		for i, p := range f.Captures {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			if strings.HasPrefix(p.Type, "&mut ") {
+				fmt.Fprintf(w, "&mut %s", rustIdent(p.Name))
+			} else if strings.HasPrefix(p.Type, "&") {
+				io.WriteString(w, rustIdent(p.Name))
+			} else {
+				io.WriteString(w, rustIdent(p.Name))
+			}
+		}
+		for i, p := range f.Params {
+			if len(f.Captures)+i > 0 {
+				io.WriteString(w, ", ")
+			}
+			io.WriteString(w, rustIdent(p.Name))
+		}
+		io.WriteString(w, ") }")
+		io.WriteString(w, "\n}")
+		return
+	}
 	io.WriteString(w, "move |")
 	for i, p := range f.Params {
 		if i > 0 {
@@ -4080,7 +4145,52 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 	svCopy := copyBoolMap(stringVars)
 	mvCopy := copyBoolMap(mapVars)
 	if nested {
-		flit := &FunLit{Params: params, Return: ret, Body: body}
+		var flit *FunLit
+		if containsCallStmts(body, name) {
+			caps := collectCaptures(body, params, localsCopy, name)
+			if len(caps) > 0 {
+				addCaptureArgs(body, name, caps)
+				capParams := make([]Param, len(caps))
+				for i, c := range caps {
+					ct := varTypes[c]
+					if t, ok := currentParamTypes[c]; ok && t != "" {
+						ct = t
+					}
+					if ct == "" {
+						ct = "i64"
+					}
+					paramType := ct
+					if strings.HasPrefix(ct, "&") {
+						paramType = ct
+					} else if ct == "i64" || ct == "f64" || ct == "bool" {
+						paramType = ct
+					} else if ct == "String" {
+						if isVarMutated(body, c) {
+							paramType = "&mut String"
+						} else {
+							paramType = "&str"
+						}
+					} else if strings.HasPrefix(ct, "Vec<") || strings.HasPrefix(ct, "HashMap<") || ct == "Trie" || strings.HasPrefix(ct, "Option<") || strings.HasPrefix(ct, "Box<") || strings.HasPrefix(ct, "Rc<") || strings.HasPrefix(ct, "RefCell<") || strings.HasSuffix(ct, "]") || strings.HasSuffix(ct, ">") {
+						if isVarMutated(body, c) {
+							paramType = "&mut " + ct
+						} else {
+							paramType = "&" + ct
+						}
+					} else {
+						if isVarMutated(body, c) {
+							paramType = "&mut " + ct
+						} else {
+							paramType = "&" + ct
+						}
+					}
+					capParams[i] = Param{Name: c, Type: paramType}
+				}
+				flit = &FunLit{Params: params, Return: ret, Body: body, Name: name, Captures: capParams}
+			}
+		}
+		if flit == nil {
+			flit = &FunLit{Params: params, Return: ret, Body: body}
+		}
 		vd := &VarDecl{Name: name, Expr: flit}
 		if len(localVarStack) > 0 {
 			localVarStack[len(localVarStack)-1][name] = true
@@ -5810,6 +5920,511 @@ func isFunctionExpr(e Expr) bool {
 			return true
 		}
 		if _, ok := funReturns[ex.Name]; ok {
+			return true
+		}
+	}
+	return false
+}
+
+func containsCallExpr(e Expr, name string) bool {
+	switch ex := e.(type) {
+	case *CallExpr:
+		if ex.Func == name {
+			return true
+		}
+		for _, a := range ex.Args {
+			if containsCallExpr(a, name) {
+				return true
+			}
+		}
+	case *BinaryExpr:
+		return containsCallExpr(ex.Left, name) || containsCallExpr(ex.Right, name)
+	case *UnaryExpr:
+		return containsCallExpr(ex.Expr, name)
+	case *IndexExpr:
+		return containsCallExpr(ex.Target, name) || containsCallExpr(ex.Index, name)
+	case *MethodCallExpr:
+		if containsCallExpr(ex.Receiver, name) {
+			return true
+		}
+		for _, a := range ex.Args {
+			if containsCallExpr(a, name) {
+				return true
+			}
+		}
+	case *FieldExpr:
+		return containsCallExpr(ex.Receiver, name)
+	case *SliceExpr:
+		if containsCallExpr(ex.Target, name) {
+			return true
+		}
+		if ex.Start != nil && containsCallExpr(ex.Start, name) {
+			return true
+		}
+		if ex.End != nil && containsCallExpr(ex.End, name) {
+			return true
+		}
+	}
+	return false
+}
+
+func containsCallStmt(s Stmt, name string) bool {
+	switch st := s.(type) {
+	case *IfStmt:
+		if containsCallExpr(st.Cond, name) {
+			return true
+		}
+		for _, t := range st.Then {
+			if containsCallStmt(t, name) {
+				return true
+			}
+		}
+		for _, e := range st.Else {
+			if containsCallStmt(e, name) {
+				return true
+			}
+		}
+	case *WhileStmt:
+		if containsCallExpr(st.Cond, name) {
+			return true
+		}
+		for _, b := range st.Body {
+			if containsCallStmt(b, name) {
+				return true
+			}
+		}
+	case *ForStmt:
+		if containsCallExpr(st.Iter, name) {
+			return true
+		}
+		for _, b := range st.Body {
+			if containsCallStmt(b, name) {
+				return true
+			}
+		}
+	case *ReturnStmt:
+		if st.Value != nil && containsCallExpr(st.Value, name) {
+			return true
+		}
+	case *VarDecl:
+		if st.Expr != nil && containsCallExpr(st.Expr, name) {
+			return true
+		}
+	case *AssignStmt:
+		if containsCallExpr(st.Expr, name) {
+			return true
+		}
+	case *IndexAssignStmt:
+		if containsCallExpr(st.Target, name) {
+			return true
+		}
+		if containsCallExpr(st.Value, name) {
+			return true
+		}
+	case *ExprStmt:
+		if containsCallExpr(st.Expr, name) {
+			return true
+		}
+	case *MultiStmt:
+		for _, ms := range st.Stmts {
+			if containsCallStmt(ms, name) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func containsCallStmts(body []Stmt, name string) bool {
+	for _, st := range body {
+		if containsCallStmt(st, name) {
+			return true
+		}
+	}
+	return false
+}
+
+func collectNamesExpr(names map[string]bool, e Expr) {
+	switch ex := e.(type) {
+	case *NameRef:
+		names[ex.Name] = true
+	case *CallExpr:
+		for _, a := range ex.Args {
+			collectNamesExpr(names, a)
+		}
+	case *BinaryExpr:
+		collectNamesExpr(names, ex.Left)
+		collectNamesExpr(names, ex.Right)
+	case *UnaryExpr:
+		collectNamesExpr(names, ex.Expr)
+	case *IndexExpr:
+		collectNamesExpr(names, ex.Target)
+		collectNamesExpr(names, ex.Index)
+	case *MethodCallExpr:
+		collectNamesExpr(names, ex.Receiver)
+		for _, a := range ex.Args {
+			collectNamesExpr(names, a)
+		}
+	case *FieldExpr:
+		collectNamesExpr(names, ex.Receiver)
+	case *StructLit:
+		for _, f := range ex.Fields {
+			collectNamesExpr(names, f)
+		}
+	case *ListLit:
+		for _, el := range ex.Elems {
+			collectNamesExpr(names, el)
+		}
+	case *MapLit:
+		for _, it := range ex.Items {
+			collectNamesExpr(names, it.Key)
+			collectNamesExpr(names, it.Value)
+		}
+	case *SliceExpr:
+		collectNamesExpr(names, ex.Target)
+		if ex.Start != nil {
+			collectNamesExpr(names, ex.Start)
+		}
+		if ex.End != nil {
+			collectNamesExpr(names, ex.End)
+		}
+	}
+}
+
+func collectNamesStmt(names map[string]bool, s Stmt) {
+	switch st := s.(type) {
+	case *IfStmt:
+		collectNamesExpr(names, st.Cond)
+		for _, t := range st.Then {
+			collectNamesStmt(names, t)
+		}
+		for _, e := range st.Else {
+			collectNamesStmt(names, e)
+		}
+	case *WhileStmt:
+		collectNamesExpr(names, st.Cond)
+		for _, b := range st.Body {
+			collectNamesStmt(names, b)
+		}
+	case *ForStmt:
+		collectNamesExpr(names, st.Iter)
+		for _, b := range st.Body {
+			collectNamesStmt(names, b)
+		}
+	case *ReturnStmt:
+		if st.Value != nil {
+			collectNamesExpr(names, st.Value)
+		}
+	case *VarDecl:
+		if st.Expr != nil {
+			collectNamesExpr(names, st.Expr)
+		}
+	case *AssignStmt:
+		collectNamesExpr(names, st.Expr)
+	case *IndexAssignStmt:
+		collectNamesExpr(names, st.Target)
+		collectNamesExpr(names, st.Value)
+	case *ExprStmt:
+		collectNamesExpr(names, st.Expr)
+	case *MultiStmt:
+		for _, ms := range st.Stmts {
+			collectNamesStmt(names, ms)
+		}
+	}
+}
+
+func collectCaptures(body []Stmt, params []Param, locals map[string]bool, name string) []string {
+	names := map[string]bool{}
+	for _, st := range body {
+		collectNamesStmt(names, st)
+	}
+	for _, p := range params {
+		delete(names, p.Name)
+	}
+	localNames := map[string]bool{}
+	for _, st := range body {
+		collectLocalNames(localNames, st)
+	}
+	for n := range localNames {
+		delete(names, n)
+	}
+	delete(names, name)
+	var out []string
+	for n := range names {
+		if _, ok := funReturns[n]; ok {
+			continue
+		}
+		if varTypes[n] == "" && currentParamTypes[n] == "" {
+			continue
+		}
+		out = append(out, n)
+	}
+	sort.Strings(out)
+	return out
+}
+
+func collectLocalNames(m map[string]bool, s Stmt) {
+	switch st := s.(type) {
+	case *VarDecl:
+		m[st.Name] = true
+	case *IfStmt:
+		for _, t := range st.Then {
+			collectLocalNames(m, t)
+		}
+		for _, e := range st.Else {
+			collectLocalNames(m, e)
+		}
+	case *WhileStmt:
+		for _, b := range st.Body {
+			collectLocalNames(m, b)
+		}
+	case *ForStmt:
+		for _, b := range st.Body {
+			collectLocalNames(m, b)
+		}
+	case *MultiStmt:
+		for _, ms := range st.Stmts {
+			collectLocalNames(m, ms)
+		}
+	}
+}
+
+func addCaptureArgs(body []Stmt, name string, caps []string) {
+	for _, st := range body {
+		addCaptureArgsStmt(st, name, caps)
+	}
+}
+
+func addCaptureArgsStmt(s Stmt, name string, caps []string) {
+	switch st := s.(type) {
+	case *IfStmt:
+		addCaptureArgsExpr(st.Cond, name, caps)
+		for _, t := range st.Then {
+			addCaptureArgsStmt(t, name, caps)
+		}
+		for _, e := range st.Else {
+			addCaptureArgsStmt(e, name, caps)
+		}
+	case *WhileStmt:
+		addCaptureArgsExpr(st.Cond, name, caps)
+		for _, b := range st.Body {
+			addCaptureArgsStmt(b, name, caps)
+		}
+	case *ForStmt:
+		addCaptureArgsExpr(st.Iter, name, caps)
+		for _, b := range st.Body {
+			addCaptureArgsStmt(b, name, caps)
+		}
+	case *ReturnStmt:
+		if st.Value != nil {
+			addCaptureArgsExpr(st.Value, name, caps)
+		}
+	case *VarDecl:
+		if st.Expr != nil {
+			addCaptureArgsExpr(st.Expr, name, caps)
+		}
+	case *AssignStmt:
+		addCaptureArgsExpr(st.Expr, name, caps)
+	case *IndexAssignStmt:
+		addCaptureArgsExpr(st.Target, name, caps)
+		addCaptureArgsExpr(st.Value, name, caps)
+	case *ExprStmt:
+		addCaptureArgsExpr(st.Expr, name, caps)
+	case *MultiStmt:
+		for _, ms := range st.Stmts {
+			addCaptureArgsStmt(ms, name, caps)
+		}
+	}
+}
+
+func addCaptureArgsExpr(e Expr, name string, caps []string) {
+	switch ex := e.(type) {
+	case *CallExpr:
+		if ex.Func == name {
+			args := make([]Expr, 0, len(caps)+len(ex.Args))
+			for _, c := range caps {
+				args = append(args, &NameRef{Name: c})
+			}
+			args = append(args, ex.Args...)
+			ex.Args = args
+		}
+		for _, a := range ex.Args {
+			addCaptureArgsExpr(a, name, caps)
+		}
+	case *BinaryExpr:
+		addCaptureArgsExpr(ex.Left, name, caps)
+		addCaptureArgsExpr(ex.Right, name, caps)
+	case *UnaryExpr:
+		addCaptureArgsExpr(ex.Expr, name, caps)
+	case *IndexExpr:
+		addCaptureArgsExpr(ex.Target, name, caps)
+		addCaptureArgsExpr(ex.Index, name, caps)
+	case *MethodCallExpr:
+		addCaptureArgsExpr(ex.Receiver, name, caps)
+		for _, a := range ex.Args {
+			addCaptureArgsExpr(a, name, caps)
+		}
+	case *FieldExpr:
+		addCaptureArgsExpr(ex.Receiver, name, caps)
+	case *StructLit:
+		for _, f := range ex.Fields {
+			addCaptureArgsExpr(f, name, caps)
+		}
+	case *ListLit:
+		for _, el := range ex.Elems {
+			addCaptureArgsExpr(el, name, caps)
+		}
+	case *MapLit:
+		for i := range ex.Items {
+			addCaptureArgsExpr(ex.Items[i].Key, name, caps)
+			addCaptureArgsExpr(ex.Items[i].Value, name, caps)
+		}
+	case *SliceExpr:
+		addCaptureArgsExpr(ex.Target, name, caps)
+		if ex.Start != nil {
+			addCaptureArgsExpr(ex.Start, name, caps)
+		}
+		if ex.End != nil {
+			addCaptureArgsExpr(ex.End, name, caps)
+		}
+	}
+}
+
+func isVarMutated(body []Stmt, name string) bool {
+	for _, st := range body {
+		if isVarMutatedStmt(st, name) {
+			return true
+		}
+	}
+	return false
+}
+
+func isVarMutatedStmt(s Stmt, name string) bool {
+	switch st := s.(type) {
+	case *AssignStmt:
+		if st.Name == name {
+			return true
+		}
+		return isVarMutatedExpr(st.Expr, name)
+	case *IndexAssignStmt:
+		if nr, ok := st.Target.(*NameRef); ok && nr.Name == name {
+			return true
+		}
+		if ie, ok := st.Target.(*IndexExpr); ok {
+			if nr, ok2 := ie.Target.(*NameRef); ok2 && nr.Name == name {
+				return true
+			}
+		}
+		if isVarMutatedExpr(st.Target, name) || isVarMutatedExpr(st.Value, name) {
+			return true
+		}
+		return false
+	case *IfStmt:
+		if isVarMutatedExpr(st.Cond, name) {
+			return true
+		}
+		for _, t := range st.Then {
+			if isVarMutatedStmt(t, name) {
+				return true
+			}
+		}
+		for _, e := range st.Else {
+			if isVarMutatedStmt(e, name) {
+				return true
+			}
+		}
+	case *WhileStmt:
+		if isVarMutatedExpr(st.Cond, name) {
+			return true
+		}
+		for _, b := range st.Body {
+			if isVarMutatedStmt(b, name) {
+				return true
+			}
+		}
+	case *ForStmt:
+		if isVarMutatedExpr(st.Iter, name) {
+			return true
+		}
+		for _, b := range st.Body {
+			if isVarMutatedStmt(b, name) {
+				return true
+			}
+		}
+	case *ReturnStmt:
+		if st.Value != nil {
+			return isVarMutatedExpr(st.Value, name)
+		}
+	case *VarDecl:
+		if st.Expr != nil {
+			return isVarMutatedExpr(st.Expr, name)
+		}
+	case *ExprStmt:
+		return isVarMutatedExpr(st.Expr, name)
+	case *MultiStmt:
+		for _, ms := range st.Stmts {
+			if isVarMutatedStmt(ms, name) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func isVarMutatedExpr(e Expr, name string) bool {
+	switch ex := e.(type) {
+	case *CallExpr:
+		for _, a := range ex.Args {
+			if isVarMutatedExpr(a, name) {
+				return true
+			}
+		}
+	case *MethodCallExpr:
+		if nr, ok := ex.Receiver.(*NameRef); ok && nr.Name == name {
+			return true
+		}
+		for _, a := range ex.Args {
+			if isVarMutatedExpr(a, name) {
+				return true
+			}
+		}
+	case *BinaryExpr:
+		if isVarMutatedExpr(ex.Left, name) || isVarMutatedExpr(ex.Right, name) {
+			return true
+		}
+	case *UnaryExpr:
+		return isVarMutatedExpr(ex.Expr, name)
+	case *IndexExpr:
+		if nr, ok := ex.Target.(*NameRef); ok && nr.Name == name {
+			return true
+		}
+		return isVarMutatedExpr(ex.Target, name) || isVarMutatedExpr(ex.Index, name)
+	case *StructLit:
+		for _, f := range ex.Fields {
+			if isVarMutatedExpr(f, name) {
+				return true
+			}
+		}
+	case *ListLit:
+		for _, el := range ex.Elems {
+			if isVarMutatedExpr(el, name) {
+				return true
+			}
+		}
+	case *MapLit:
+		for _, it := range ex.Items {
+			if isVarMutatedExpr(it.Key, name) || isVarMutatedExpr(it.Value, name) {
+				return true
+			}
+		}
+	case *SliceExpr:
+		if isVarMutatedExpr(ex.Target, name) {
+			return true
+		}
+		if ex.Start != nil && isVarMutatedExpr(ex.Start, name) {
+			return true
+		}
+		if ex.End != nil && isVarMutatedExpr(ex.End, name) {
 			return true
 		}
 	}
