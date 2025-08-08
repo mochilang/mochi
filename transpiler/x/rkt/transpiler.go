@@ -842,11 +842,11 @@ func (i *IndexExpr) emit(w io.Writer) {
 		i.Target.emit(w)
 		io.WriteString(w, " ")
 		i.Index.emit(w)
-		io.WriteString(w, " #f) (let ([lst ")
+		io.WriteString(w, " #f) (safe-index ")
 		i.Target.emit(w)
-		io.WriteString(w, "] [idx (int ")
+		io.WriteString(w, " (int ")
 		i.Index.emit(w)
-		io.WriteString(w, ")]) (if (and (>= idx 0) (< idx (length lst))) (list-ref lst idx) #f))) #f)")
+		io.WriteString(w, "))) #f)")
 	}
 }
 
@@ -1467,6 +1467,7 @@ func header() string {
 	hdr += "(define (slice seq start end)\n  (define len (if (string? seq) (string-length seq) (length seq)))\n  (define s (int start))\n  (define e (int end))\n  (when (< s 0) (set! s (+ len s)))\n  (when (< e 0) (set! e (+ len e)))\n  (set! s (max 0 (min len s)))\n  (set! e (max 0 (min len e)))\n  (when (< e s) (set! e s))\n  (if (string? seq) (substring seq s e) (sublist seq s e)))\n"
 	hdr += "(define (pad-start s width ch)\n  (let ([s (to-string s)])\n    (if (< (string-length s) width)\n        (string-append (make-string (- width (string-length s)) (string-ref ch 0)) s)\n        s)))\n"
 	hdr += "(define (index-of s ch)\n  (cond\n    [(string? s)\n     (let loop ([i 0])\n       (cond [(>= i (string-length s)) -1]\n             [(string=? (substring s i (add1 i)) ch) i]\n             [else (loop (add1 i))]))]\n    [else\n     (let loop ([i 0] [lst s])\n       (cond [(null? lst) -1]\n             [(equal? (car lst) ch) i]\n             [else (loop (add1 i) (cdr lst))]))]))\n"
+	hdr += "(define (safe-index lst idx) (let ([i (int idx)]) (if (and (>= i 0) (< i (length lst))) (list-ref lst i) #f)))\n"
 	hdr += "(define (_repeat s n)\n  (cond\n    [(string? s) (apply string-append (make-list (int n) s))]\n    [(list? s) (apply append (make-list (int n) s))]\n    [else '()]))\n"
 	hdr += "(define (_parse-int-str s base) (int (string->number s base)))\n"
 	hdr += "(define (_sha256 bs) (bytes->list (sha256-bytes (if (string? bs) (string->bytes/utf-8 bs) (list->bytes bs)))))\n"
