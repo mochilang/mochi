@@ -2921,9 +2921,6 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 				if ft, ok := stt.Fields[f.Name]; ok {
 					cur = ft
 				}
-				if ie, ok := lhs.(*IndexExpr); ok && !ie.Force {
-					ie.Force = true
-				}
 				lhs = &FieldExpr{Target: lhs, Name: f.Name}
 			} else {
 				lhs = &IndexExpr{Base: lhs, Index: &LitExpr{Value: f.Name, IsString: true}, Force: true}
