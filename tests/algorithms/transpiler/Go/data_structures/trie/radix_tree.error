@@ -1,15 +1,11 @@
 exit status 1
-panic: runtime error: index out of range [1] with length 1
-
-goroutine 1 [running]:
-main.insert({{0xc0000907f0?, 0xc0001207a0?, 0x0?}}, 0x0, {0x4e182e, 0x7})
-	/workspace/mochi/tests/algorithms/transpiler/Go/data_structures/trie/radix_tree.go:152 +0x7c5
-main.insert_many(...)
-	/workspace/mochi/tests/algorithms/transpiler/Go/data_structures/trie/radix_tree.go:121
-main.mochiMain()
-	/workspace/mochi/tests/algorithms/transpiler/Go/data_structures/trie/radix_tree.go:432 +0x150
-main.main.func1(...)
-	/workspace/mochi/tests/algorithms/transpiler/Go/data_structures/trie/radix_tree.go:462
-main.main()
-	/workspace/mochi/tests/algorithms/transpiler/Go/data_structures/trie/radix_tree.go:469 +0x92
-exit status 2
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/data_structures/trie/radix_tree.go:171:27: invalid operation: MatchResult(res).RemWord (value of type string) is not an interface
+../../../tests/algorithms/transpiler/Go/data_structures/trie/radix_tree.go:181:33: invalid operation: MatchResult(res).Common (value of type string) is not an interface
+../../../tests/algorithms/transpiler/Go/data_structures/trie/radix_tree.go:182:2: cannot assign to _index(nodes, new_idx).Children (neither addressable nor a map index expression)
+../../../tests/algorithms/transpiler/Go/data_structures/trie/radix_tree.go:184:3: cannot assign to _index(nodes, new_idx).IsLeaf (neither addressable nor a map index expression)
+../../../tests/algorithms/transpiler/Go/data_structures/trie/radix_tree.go:186:30: invalid operation: MatchResult(res).RemWord (value of type string) is not an interface
+../../../tests/algorithms/transpiler/Go/data_structures/trie/radix_tree.go:218:31: invalid operation: MatchResult(res).RemWord (value of type string) is not an interface
+../../../tests/algorithms/transpiler/Go/data_structures/trie/radix_tree.go:277:38: invalid operation: MatchResult(res).RemWord (value of type string) is not an interface
+../../../tests/algorithms/transpiler/Go/data_structures/trie/radix_tree.go:402:21: cannot convert x (variable of interface type any) to type string: need type assertion
+../../../tests/algorithms/transpiler/Go/data_structures/trie/radix_tree.go:459:21: cannot convert x (variable of interface type any) to type string: need type assertion
