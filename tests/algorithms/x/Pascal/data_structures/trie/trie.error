@@ -1,0 +1,20 @@
+compile: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/algorithms/x/Pascal/data_structures/trie/trie.pas
+fgl.pp(1668,8) Note: Call to subroutine "function TFPGMap<System.ShortString,System.LongInt>.IndexOf(const AKey:ShortString):LongInt;" marked as inline is not inlined
+trie.pas(108,22) Note: Call to subroutine "function TFPGMap<System.ShortString,System.LongInt>.GetKey(Index:LongInt):ShortString;" marked as inline is not inlined
+trie.pas(110,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.LongInt>.PutKeyData(const AKey:ShortString;const NewData:LongInt);" marked as inline is not inlined
+trie.pas(110,54) Note: Call to subroutine "function TFPGMap<System.ShortString,System.LongInt>.GetKeyData(const AKey:ShortString):LongInt;" marked as inline is not inlined
+trie.pas(134,21) Note: Call to subroutine "function TFPGMap<System.ShortString,System.LongInt>.IndexOf(const AKey:ShortString):LongInt;" marked as inline is not inlined
+trie.pas(135,38) Note: Call to subroutine "function TFPGMap<System.ShortString,System.LongInt>.GetKeyData(const AKey:ShortString):LongInt;" marked as inline is not inlined
+trie.pas(141,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.LongInt>.PutKeyData(const AKey:ShortString;const NewData:LongInt);" marked as inline is not inlined
+trie.pas(177,23) Note: Call to subroutine "function TFPGMap<System.ShortString,System.LongInt>.IndexOf(const AKey:ShortString):LongInt;" marked as inline is not inlined
+trie.pas(180,29) Note: Call to subroutine "function TFPGMap<System.ShortString,System.LongInt>.GetKeyData(const AKey:ShortString):LongInt;" marked as inline is not inlined
+trie.pas(200,8) Error: Type mismatch
+trie.pas(220,9) Error: Type mismatch
+trie.pas(239,29) Error: Identifier not found "Count"
+trie.pas(239,38) Fatal: Syntax error, "]" expected but ")" found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

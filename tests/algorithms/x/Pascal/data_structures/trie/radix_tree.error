@@ -1,0 +1,15 @@
+compile: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/algorithms/x/Pascal/data_structures/trie/radix_tree.pas
+fgl.pp(1668,8) Note: Call to subroutine "function TFPGMap<System.ShortString,System.LongInt>.IndexOf(const AKey:ShortString):LongInt;" marked as inline is not inlined
+radix_tree.pas(221,35) Error: Incompatible types: got "TFPGMap<System.ShortString,System.LongInt>" expected "RadixNode"
+radix_tree.pas(223,35) Error: Incompatible types: got "Boolean" expected "RadixNode"
+radix_tree.pas(335,6) Error: Type mismatch
+radix_tree.pas(340,7) Error: Type mismatch
+radix_tree.pas(360,6) Error: Type mismatch
+radix_tree.pas(366,30) Error: Identifier not found "Count"
+radix_tree.pas(366,39) Fatal: Syntax error, "]" expected but ")" found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

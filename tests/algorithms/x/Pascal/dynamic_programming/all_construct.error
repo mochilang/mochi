@@ -1,0 +1,11 @@
+compile: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/algorithms/x/Pascal/dynamic_programming/all_construct.pas
+all_construct.pas(134,90) Error: Incompatible type for arg no. 1: Got "StrArrayArray", expected "{Open} Array Of LongInt"
+all_construct.pas(135,97) Error: Incompatible type for arg no. 1: Got "StrArrayArray", expected "{Open} Array Of LongInt"
+all_construct.pas(136,133) Error: Incompatible type for arg no. 1: Got "StrArrayArray", expected "{Open} Array Of LongInt"
+all_construct.pas(145) Fatal: There were 3 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

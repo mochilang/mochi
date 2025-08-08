@@ -2241,6 +2241,16 @@ func convertIf(env *types.Env, ifs *parser.IfStmt, varTypes map[string]string) (
 	return &IfStmt{Cond: cond, Then: thenBody, Else: elseBody}, nil
 }
 
+func assignFromIfExpr(name string, ie *IfExpr) Stmt {
+	var elseBody []Stmt
+	if ie.ElseIf != nil {
+		elseBody = []Stmt{assignFromIfExpr(name, ie.ElseIf)}
+	} else if ie.Else != nil {
+		elseBody = []Stmt{&AssignStmt{Name: name, Expr: ie.Else}}
+	}
+	return &IfStmt{Cond: ie.Cond, Then: []Stmt{&AssignStmt{Name: name, Expr: ie.Then}}, Else: elseBody}
+}
+
 func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]string) ([]Stmt, error) {
 	prev := currentVarTypes
 	currentVarTypes = varTypes
@@ -2267,7 +2277,11 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 						setVarType(name, typ)
 					}
 				}
-				out = append(out, &AssignStmt{Name: name, Expr: val})
+				if ie, ok := val.(*IfExpr); ok {
+					out = append(out, assignFromIfExpr(name, ie))
+				} else {
+					out = append(out, &AssignStmt{Name: name, Expr: val})
+				}
 			case *SelectorExpr:
 				out = append(out, &SetStmt{Target: t, Expr: val})
 			case *IndexExpr:
@@ -2341,7 +2355,11 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 							vd.Type = t
 						}
 					}
-					out = append(out, &AssignStmt{Name: name, Expr: ex})
+					if ie, ok := ex.(*IfExpr); ok {
+						out = append(out, assignFromIfExpr(name, ie))
+					} else {
+						out = append(out, &AssignStmt{Name: name, Expr: ex})
+					}
 				}
 			}
 			if !hasVar(vd.Name) {
@@ -4646,6 +4664,12 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				_ = currProg.addArrayAlias(elem)
 			}
 			return &CallExpr{Name: "concat", Args: []Expr{args[0], &ListLit{Elems: []Expr{args[1]}}}}, nil
+		} else if name == "slice" && (len(args) == 2 || len(args) == 3) {
+			var end Expr
+			if len(args) == 3 {
+				end = args[2]
+			}
+			return &SliceExpr{Target: args[0], Start: args[1], End: end, String: inferType(args[0]) == "string"}, nil
 		} else if name == "float" && len(args) == 1 {
 			return &CallExpr{Name: "Double", Args: args}, nil
 		} else if name == "contains" && len(args) == 2 {

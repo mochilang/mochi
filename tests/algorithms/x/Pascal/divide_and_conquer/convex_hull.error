@@ -1,0 +1,12 @@
+compile: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/algorithms/x/Pascal/divide_and_conquer/convex_hull.pas
+convex_hull.pas(122,23) Error: Incompatible types: got "{Dynamic} Array Of Point" expected "{Dynamic} Array Of LongInt"
+convex_hull.pas(125,48) Error: Illegal type conversion: "{Array Of Const/Constant Open} Array of Point" to "IntArray"
+convex_hull.pas(125,23) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of {Dynamic} Array Of LongInt", expected "{Open} Array Of Pointer"
+convex_hull.pas(128,8) Error: Incompatible types: got "{Dynamic} Array Of LongInt" expected "PointArray"
+convex_hull.pas(143) Fatal: There were 4 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode
