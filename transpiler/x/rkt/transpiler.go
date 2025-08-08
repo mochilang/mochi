@@ -842,11 +842,11 @@ func (i *IndexExpr) emit(w io.Writer) {
 		i.Target.emit(w)
 		io.WriteString(w, " ")
 		i.Index.emit(w)
-		io.WriteString(w, " #f) (list-ref ")
+		io.WriteString(w, " #f) (let ([lst ")
 		i.Target.emit(w)
-		io.WriteString(w, " (int ")
+		io.WriteString(w, "] [idx (int ")
 		i.Index.emit(w)
-		io.WriteString(w, "))) #f)")
+		io.WriteString(w, ")]) (if (and (>= idx 0) (< idx (length lst))) (list-ref lst idx) #f))) #f)")
 	}
 }
 
