@@ -1,0 +1,15 @@
+{
+  "duration_us": 14,
+  "memory_bytes": 14667776,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/other/lru_cache.py", line 216, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/other/lru_cache.py", line 192, in main
+    cache = lru_put(cache, 1, 1)
+            ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/other/lru_cache.py", line 162, in lru_put
+    cache.list["nodes"] = nodes
+    ~~~~~~~~~~^^^^^^^^^
+TypeError: 'DoubleLinkedList' object does not support item assignment
