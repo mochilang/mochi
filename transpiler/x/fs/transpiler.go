@@ -1665,11 +1665,18 @@ func (fst *ForStmt) emit(w io.Writer) {
 	writeIndent(w)
 	io.WriteString(w, "for ")
 	if fst.End == nil {
-		if ix, ok := fst.Start.(*IndexExpr); ok && isMapType(inferType(ix)) {
-			io.WriteString(w, fsIdent(fst.Name))
-			io.WriteString(w, " in ")
-			ix.emit(w)
-			io.WriteString(w, ".Keys do\n")
+		if ix, ok := fst.Start.(*IndexExpr); ok {
+			if isMapType(inferType(ix)) || isMapType(inferType(ix.Target)) {
+				io.WriteString(w, fsIdent(fst.Name))
+				io.WriteString(w, " in (")
+				ix.emit(w)
+				io.WriteString(w, ").Keys do\n")
+			} else {
+				io.WriteString(w, fsIdent(fst.Name))
+				io.WriteString(w, " in ")
+				ix.emit(w)
+				io.WriteString(w, " do\n")
+			}
 		} else if isMapType(inferType(fst.Start)) {
 			io.WriteString(w, "KeyValue(")
 			io.WriteString(w, fsIdent(fst.Name))
@@ -2316,8 +2323,16 @@ func inferType(e Expr) string {
 		if t == "string" {
 			return "string"
 		}
-		if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") {
+		if isMapType(t) {
 			return mapValueType(t)
+		}
+		if id, ok := v.Target.(*IdentExpr); ok {
+			if isMapType(id.Type) {
+				return mapValueType(id.Type)
+			}
+			if vt, ok2 := varTypes[id.Name]; ok2 && isMapType(vt) {
+				return mapValueType(vt)
+			}
 		}
 		return ""
 	case *MatchExpr:
@@ -2456,7 +2471,43 @@ type IndexExpr struct {
 }
 
 func (i *IndexExpr) emit(w io.Writer) {
+	if _, ok := i.Target.(*IndexExpr); ok {
+		usesDictGet = true
+		io.WriteString(w, "_dictGet ")
+		if needsParen(i.Target) {
+			io.WriteString(w, "(")
+			i.Target.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			i.Target.emit(w)
+		}
+		io.WriteString(w, " (")
+		i.Index.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
 	t := inferType(i.Target)
+	if isMapType(t) {
+		usesDictGet = true
+		io.WriteString(w, "_dictGet ")
+		if needsParen(i.Target) {
+			io.WriteString(w, "(")
+			i.Target.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			i.Target.emit(w)
+		}
+		io.WriteString(w, " (")
+		if mapKeyType(t) == "string" {
+			io.WriteString(w, "(string (")
+			i.Index.emit(w)
+			io.WriteString(w, "))")
+		} else {
+			i.Index.emit(w)
+		}
+		io.WriteString(w, ")")
+		return
+	}
 	if strings.HasSuffix(t, " array") || t == "" {
 		usesSafeIndex = true
 		io.WriteString(w, "_idx ")
@@ -2478,48 +2529,6 @@ func (i *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, ".[")
 		i.Index.emit(w)
 		io.WriteString(w, "])")
-		return
-	}
-	if id, ok := i.Target.(*IdentExpr); ok && strings.HasPrefix(id.Type, "System.Collections.Generic.IDictionary<") {
-		usesDictGet = true
-		io.WriteString(w, "_dictGet ")
-		if needsParen(i.Target) {
-			io.WriteString(w, "(")
-			i.Target.emit(w)
-			io.WriteString(w, ")")
-		} else {
-			i.Target.emit(w)
-		}
-		io.WriteString(w, " (")
-		if mapKeyType(id.Type) == "string" {
-			io.WriteString(w, "(string (")
-			i.Index.emit(w)
-			io.WriteString(w, "))")
-		} else {
-			i.Index.emit(w)
-		}
-		io.WriteString(w, ")")
-		return
-	}
-	if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") {
-		usesDictGet = true
-		io.WriteString(w, "_dictGet ")
-		if needsParen(i.Target) {
-			io.WriteString(w, "(")
-			i.Target.emit(w)
-			io.WriteString(w, ")")
-		} else {
-			i.Target.emit(w)
-		}
-		io.WriteString(w, " (")
-		if mapKeyType(t) == "string" {
-			io.WriteString(w, "(string (")
-			i.Index.emit(w)
-			io.WriteString(w, "))")
-		} else {
-			i.Index.emit(w)
-		}
-		io.WriteString(w, ")")
 		return
 	}
 	if t == "map" || t == "obj" || t == "" {
