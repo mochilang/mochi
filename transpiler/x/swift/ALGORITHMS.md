@@ -2,8 +2,8 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 425/1077
-Last updated: 2025-08-08 16:57 +0700
+Completed programs: 426/1077
+Last updated: 2025-08-08 17:23 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -249,7 +249,7 @@ Last updated: 2025-08-08 16:57 +0700
 | 240 | data_structures/queues/circular_queue_linked_list | ✓ | 639µs | 3.2 MB |
 | 241 | data_structures/queues/double_ended_queue | ✓ | 511µs | 2.9 MB |
 | 242 | data_structures/queues/linked_queue | ✓ | 415µs | 3.1 MB |
-| 243 | data_structures/queues/priority_queue_using_list |   |  |  |
+| 243 | data_structures/queues/priority_queue_using_list | ✓ | 1.303ms | 3.7 MB |
 | 244 | data_structures/queues/queue_by_list |   |  |  |
 | 245 | data_structures/queues/queue_by_two_stacks |   |  |  |
 | 246 | data_structures/queues/queue_on_pseudo_stack |   |  |  |

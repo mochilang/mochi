@@ -5242,11 +5242,13 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			return &CallExpr{Func: "_repeat", Args: []Expr{a0, a1}}, nil
 		}
 		if pr.Call.Func == "panic" && len(pr.Call.Args) == 1 {
-			arg, err := convertExpr(env, pr.Call.Args[0])
-			if err != nil {
-				return nil, err
+			if _, ok := env.GetFunc("panic"); !ok {
+				arg, err := convertExpr(env, pr.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				return &CallExpr{Func: "fatalError", Args: []Expr{arg}}, nil
 			}
-			return &CallExpr{Func: "fatalError", Args: []Expr{arg}}, nil
 		}
 		if pr.Call.Func == "error" && len(pr.Call.Args) == 1 {
 			arg, err := convertExpr(env, pr.Call.Args[0])
@@ -5447,10 +5449,28 @@ func convertStructLiteral(env *types.Env, sl *parser.StructLiteral) (Expr, error
 	var fields []FieldInit
 	var keys []Expr
 	var vals []Expr
+	var st types.StructType
+	var hasStruct bool
+	if sl.Name != "" && env != nil {
+		if s, ok := env.GetStruct(sl.Name); ok {
+			st = s
+			hasStruct = true
+		}
+	}
 	for _, f := range sl.Fields {
 		v, err := convertExpr(env, f.Value)
 		if err != nil {
 			return nil, err
+		}
+		if hasStruct {
+			if ft, ok := st.Fields[f.Name]; ok {
+				if ce, ok := v.(*CastExpr); ok {
+					if ce.Type == "[Any]" || strings.Contains(ce.Type, "Any?") {
+						v = ce.Expr
+					}
+				}
+				v = &CastExpr{Expr: v, Type: swiftTypeOf(ft)}
+			}
 		}
 		fields = append(fields, FieldInit{Name: f.Name, Value: v})
 		keys = append(keys, &LitExpr{Value: f.Name, IsString: true})
