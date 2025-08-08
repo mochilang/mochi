@@ -2139,6 +2139,16 @@ func (l *ListLit) emit(w io.Writer) {
 	fmt.Fprint(w, "}")
 }
 
+func listElemType(t string) string {
+	if strings.HasPrefix(t, "list<") && strings.HasSuffix(t, ">") {
+		return t[5 : len(t)-1]
+	}
+	if strings.HasSuffix(t, "[]") {
+		return strings.TrimSuffix(t, "[]")
+	}
+	return ""
+}
+
 // MapLit represents a simple map literal.
 type MapLit struct {
 	Keys      []Expr
@@ -2149,6 +2159,33 @@ type MapLit struct {
 }
 
 func (m *MapLit) emit(w io.Writer) {
+	if m.ValueType == "" {
+		if len(m.Values) > 0 {
+			if ll, ok := m.Values[0].(*ListLit); ok {
+				et := ll.ElemType
+				same := true
+				for _, v := range m.Values {
+					l2, ok := v.(*ListLit)
+					if !ok {
+						same = false
+						break
+					}
+					if et == "" {
+						et = l2.ElemType
+					}
+					if l2.ElemType == "" && et != "" {
+						l2.ElemType = et
+					} else if l2.ElemType != et {
+						same = false
+						break
+					}
+				}
+				if same && et != "" {
+					m.ValueType = javaType(et) + "[]"
+				}
+			}
+		}
+	}
 	valType := "Object"
 	if m.ValueType != "" {
 		valType = javaBoxType(m.ValueType)
@@ -2178,6 +2215,11 @@ func (m *MapLit) emit(w io.Writer) {
 				m.Keys[i].emit(w)
 				fmt.Fprint(w, ", ")
 				if m.ValueType != "" {
+					if ll, ok := m.Values[i].(*ListLit); ok && ll.ElemType == "" {
+						if et := listElemType(m.ValueType); et != "" {
+							ll.ElemType = et
+						}
+					}
 					emitCastExpr(w, m.Values[i], m.ValueType)
 				} else if valType != "Object" {
 					emitCastExpr(w, m.Values[i], valType)
@@ -2196,6 +2238,11 @@ func (m *MapLit) emit(w io.Writer) {
 				m.Keys[i].emit(w)
 				fmt.Fprint(w, ", ")
 				if m.ValueType != "" {
+					if ll, ok := m.Values[i].(*ListLit); ok && ll.ElemType == "" {
+						if et := listElemType(m.ValueType); et != "" {
+							ll.ElemType = et
+						}
+					}
 					emitCastExpr(w, m.Values[i], m.ValueType)
 				} else {
 					m.Values[i].emit(w)

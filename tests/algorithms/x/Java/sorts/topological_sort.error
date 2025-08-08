@@ -1,0 +1,5 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden984_topological_sort437416609/001/Main.java:10: error: array required, but Object found
+            Object neighbor = neighbors[i];
+                                       ^
+1 error
