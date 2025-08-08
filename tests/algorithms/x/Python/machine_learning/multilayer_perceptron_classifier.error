@@ -1,13 +1,8 @@
 run: exit status 1
-{
-  "duration_us": 7,
-  "memory_bytes": 14725120,
-  "name": "main"
-}
 Traceback (most recent call last):
-  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/multilayer_perceptron_classifier.py", line 115, in <module>
+  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/multilayer_perceptron_classifier.py", line 93, in <module>
     train(4000, 0.5)
-  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/multilayer_perceptron_classifier.py", line 75, in train
+  File "/workspace/mochi/tests/algorithms/x/Python/machine_learning/multilayer_perceptron_classifier.py", line 53, in train
     z1 = w1[0][0] * x0 + w1[1][0] * x1 + b1[0]
                                          ^^
 UnboundLocalError: cannot access local variable 'b1' where it is not associated with a value

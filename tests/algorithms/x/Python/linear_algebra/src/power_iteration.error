@@ -1,0 +1,12 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/linear_algebra/src/power_iteration.py", line 88, in <module>
+    result = power_iteration(input_matrix, vector, 1e-12, 100)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/linear_algebra/src/power_iteration.py", line 78, in power_iteration
+    v = normalize(w)
+        ^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/linear_algebra/src/power_iteration.py", line 67, in normalize
+    res = _append(res, vec[i] // n)
+                       ~~~~~~~^^~~
+ZeroDivisionError: float floor division by zero

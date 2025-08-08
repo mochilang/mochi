@@ -1,0 +1,11 @@
+Text input in binary is '010011010110010101110011011100110110000101100111011001010000000000000000'
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/hashes/hamming_code.py", line 223, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/hashes/hamming_code.py", line 207, in main
+    encoded = hamming_encode(sizePari, data_bits)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/hashes/hamming_code.py", line 173, in hamming_encode
+    result = _append(result, parity[cont_bp])
+                             ~~~~~~^^^^^^^^^
+IndexError: list index out of range

@@ -1,0 +1,6 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/hashes/sha256.py", line 27, in <module>
+    print(bytes_to_hex(list(hashlib.sha256(bytes("Python")).digest())))
+                                           ^^^^^^^^^^^^^^^
+TypeError: string argument without an encoding
