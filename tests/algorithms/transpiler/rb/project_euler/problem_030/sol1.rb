@@ -82,37 +82,29 @@ end
 
 start_mem = _mem()
 start = _now()
-  def factorial(n)
-    result = 1.clone
-    i = 2.clone
-    while i <= n
-      result = result * i.clone
-      i = _add(i, 1).clone
+  def digits_fifth_powers_sum(number)
+    total = 0.clone
+    n = number.clone
+    while n > 0
+      digit = n % 10
+      total = _add(total, $DIGITS_FIFTH_POWER[digit]).clone
+      n = n / 10.clone
     end
-    return result
-  end
-  def nth_permutation(digits, index)
-    chars = digits.clone
-    n = index.clone
-    res = "".clone
-    k = chars.length.clone
-    while k > 0
-      f = factorial(k - 1)
-      pos = n / f
-      n = n % f.clone
-      res = _add(res, chars[pos..._add(pos, 1)]).clone
-      chars = _add(chars[0...pos], chars[_add(pos, 1)...chars.length]).clone
-      k = k - 1.clone
-    end
-    return res
+    return total
   end
   def solution()
-    return nth_permutation("0123456789", 999999)
+    total = 0.clone
+    num = 1000.clone
+    while num < 1000000
+      if _eq(num, digits_fifth_powers_sum(num))
+        total = _add(total, num).clone
+      end
+      num = _add(num, 1).clone
+    end
+    return total
   end
-  def main()
-    puts(solution())
-  end
-  main()
+  $DIGITS_FIFTH_POWER = [0, 1, 32, 243, 1024, 3125, 7776, 16807, 32768, 59049]
+  puts(solution())
 end_time = _now()
 end_mem = _mem()
 result = {"duration_us" => ((end_time - start) / 1000), "memory_bytes" => (end_mem - start_mem), "name" => "main"}

@@ -82,37 +82,51 @@ end
 
 start_mem = _mem()
 start = _now()
-  def factorial(n)
-    result = 1.clone
-    i = 2.clone
-    while i <= n
-      result = result * i.clone
-      i = _add(i, 1).clone
+  def is_prime(number)
+    if 1 < number && number < 4
+      return true
+    else
+      if number < 2 || _eq(number % 2, 0) || _eq(number % 3, 0)
+        return false
+      end
     end
-    return result
-  end
-  def nth_permutation(digits, index)
-    chars = digits.clone
-    n = index.clone
-    res = "".clone
-    k = chars.length.clone
-    while k > 0
-      f = factorial(k - 1)
-      pos = n / f
-      n = n % f.clone
-      res = _add(res, chars[pos..._add(pos, 1)]).clone
-      chars = _add(chars[0...pos], chars[_add(pos, 1)...chars.length]).clone
-      k = k - 1.clone
+    i = 5.clone
+    while i * i <= number
+      if _eq(number % i, 0) || _eq(number % (_add(i, 2)), 0)
+        return false
+      end
+      i = _add(i, 6).clone
     end
-    return res
+    return true
   end
-  def solution()
-    return nth_permutation("0123456789", 999999)
+  def solution(a_limit, b_limit)
+    longest_len = 0.clone
+    longest_a = 0.clone
+    longest_b = 0.clone
+    a = _add((-1 * a_limit), 1).clone
+    while a < a_limit
+      b = 2.clone
+      while b < b_limit
+        if is_prime(b)
+          count = 0.clone
+          n = 0.clone
+          while is_prime(_add(_add(n * n, a * n), b))
+            count = _add(count, 1).clone
+            n = _add(n, 1).clone
+          end
+          if count > longest_len
+            longest_len = count.clone
+            longest_a = a.clone
+            longest_b = b.clone
+          end
+        end
+        b = _add(b, 1).clone
+      end
+      a = _add(a, 1).clone
+    end
+    return longest_a * longest_b
   end
-  def main()
-    puts(solution())
-  end
-  main()
+  puts(_str(solution(1000, 1000)))
 end_time = _now()
 end_mem = _mem()
 result = {"duration_us" => ((end_time - start) / 1000), "memory_bytes" => (end_mem - start_mem), "name" => "main"}

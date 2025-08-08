@@ -82,37 +82,34 @@ end
 
 start_mem = _mem()
 start = _now()
-  def factorial(n)
-    result = 1.clone
-    i = 2.clone
-    while i <= n
-      result = result * i.clone
-      i = _add(i, 1).clone
+  def num_digits(x)
+    count = 0.clone
+    n = x.clone
+    while n > 0
+      count = _add(count, 1).clone
+      n = n / 10.clone
     end
-    return result
+    return count
   end
-  def nth_permutation(digits, index)
-    chars = digits.clone
-    n = index.clone
-    res = "".clone
-    k = chars.length.clone
-    while k > 0
-      f = factorial(k - 1)
-      pos = n / f
-      n = n % f.clone
-      res = _add(res, chars[pos..._add(pos, 1)]).clone
-      chars = _add(chars[0...pos], chars[_add(pos, 1)...chars.length]).clone
-      k = k - 1.clone
+  def solution(n)
+    f1 = 1.clone
+    f2 = 1.clone
+    index = 2.clone
+    while true
+      f = _add(f1, f2)
+      f1 = f2.clone
+      f2 = f.clone
+      index = _add(index, 1).clone
+      if _eq(num_digits(f), n)
+        break
+      end
     end
-    return res
+    return index
   end
-  def solution()
-    return nth_permutation("0123456789", 999999)
-  end
-  def main()
-    puts(solution())
-  end
-  main()
+  puts(_add("solution(1000) = ", _str(solution(1000))))
+  puts(_add("solution(100) = ", _str(solution(100))))
+  puts(_add("solution(50) = ", _str(solution(50))))
+  puts(_add("solution(3) = ", _str(solution(3))))
 end_time = _now()
 end_mem = _mem()
 result = {"duration_us" => ((end_time - start) / 1000), "memory_bytes" => (end_mem - start_mem), "name" => "main"}
