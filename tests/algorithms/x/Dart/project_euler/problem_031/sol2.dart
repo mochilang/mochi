@@ -18,7 +18,7 @@ int solution(int pence) {
   List<int> ways = <int>[];
   int i = 0;
   while (i <= pence) {
-    ways = [...ways, 0];
+    ways = (ways..add(0));
     i = i + 1;
   }
   while (ways.length <= 0) { ways.add(0); } ways[0] = 1;
