@@ -1,0 +1,7 @@
+"Process ID \tBurst Time \tWaiting Time \tTurnaround Time"
+"  1\t\t  3\t\t  0\t\t  3"
+"  2\t\t  5\t\t  0\t\t  5"
+"  3\t\t  7\t\t  0\t\t  7"
+[]
+"Average waiting time = 0.00000"
+"Average turn around time = 5.00000"

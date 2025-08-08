@@ -1,0 +1,12 @@
+/workspace/mochi/tests/algorithms/x/Erlang/scheduling/non_preemptive_shortest_job_first.erl:53:1: Warning: function mochi_safe_mul/2 is unused
+%   53| mochi_safe_mul(A, B) ->
+%     | ^
+
+"[TEST CASE 01]"
+"PID\tBurst Time\tArrival Time\tWaiting Time\tTurnaround Time"
+"1\t2\t\t\t0\t\t\t\t0\t\t\t\t2"
+"2\t5\t\t\t0\t\t\t\t5\t\t\t\t10"
+"3\t3\t\t\t0\t\t\t\t2\t\t\t\t5"
+"4\t7\t\t\t0\t\t\t\t10\t\t\t\t17"
+"\nAverage waiting time = 4.25"
+"Average turnaround time = 8.5"

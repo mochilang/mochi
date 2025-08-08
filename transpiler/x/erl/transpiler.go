@@ -1207,7 +1207,7 @@ func (fd *FuncDecl) emit(w io.Writer) {
 	} else {
 		io.WriteString(w, "nil")
 	}
-	io.WriteString(w, "\n    catch {return, Ret} -> Ret end.\n\n")
+	io.WriteString(w, "\n    catch {return, RetCatch} -> RetCatch end.\n\n")
 }
 
 func (af *AnonFunc) emit(w io.Writer) {
@@ -1235,7 +1235,7 @@ func (af *AnonFunc) emit(w io.Writer) {
 	} else {
 		io.WriteString(w, "nil")
 	}
-	io.WriteString(w, "\n    catch {return, Ret} -> Ret end")
+	io.WriteString(w, "\n    catch {return, RetCatch} -> RetCatch end")
 	io.WriteString(w, "\nend")
 }
 

@@ -1,0 +1,16 @@
+/workspace/mochi/tests/algorithms/x/Erlang/scripts/validate_filenames.erl:55:1: Warning: function mochi_nth/2 is unused
+%   55| mochi_nth(I, L) ->
+%     | ^
+
+"1 files contain uppercase characters:"
+"scripts/Validate_filenames.py"
+[]
+"6 files are not in a directory:"
+"scripts/Validate_filenames.py"
+"good/file.txt"
+"bad file.txt"
+"/site-packages/pkg-name.py"
+"nopath"
+"src/hyphen-name.py"
+[]
+7
