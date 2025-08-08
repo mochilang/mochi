@@ -1,0 +1,12 @@
+warning: variable "start" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 51 │       start = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/file_transfer/send_file.exs:51:7: Main.send_file/2
+
+The quick 
+brown fox 
+jumps over
+ the lazy 
+dog.

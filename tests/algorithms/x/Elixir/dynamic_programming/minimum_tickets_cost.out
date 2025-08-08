@@ -1,0 +1,24 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 23 │       {arr, i} = try do
+    │             ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/minimum_tickets_cost.exs:23:13: Main.make_list/2
+
+    warning: variable "d" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 91 │       {d, day_index, dp} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/minimum_tickets_cost.exs:91:8: Main.minimum_tickets_cost/2
+
+    warning: variable "day_index" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 91 │       {d, day_index, dp} = try do
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/minimum_tickets_cost.exs:91:11: Main.minimum_tickets_cost/2
+
+11
+17
+24

@@ -1,0 +1,19 @@
+warning: variable "accumulated" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 36 │       {accumulated, expenses, period} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/financial/straight_line_depreciation.exs:36:8: Main.straight_line_depreciation/3
+
+    warning: variable "period" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 36 │       {accumulated, expenses, period} = try do
+    │                               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/financial/straight_line_depreciation.exs:36:31: Main.straight_line_depreciation/3
+
+[100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0]
+[200.0, 200.0, 200.0, 200.0, 200.0, 200.0]
+[250.25, 250.25, 250.25, 250.25]
+[30.0, 30.0, 30.0, 30.0, 30.0, 30.0, 30.0, 30.0, 30.0, 30.0, 30.0]
+[4885.0]
