@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 675/1077
-Last updated: 2025-08-08 19:16 +0700
+Completed programs: 722/1077
+Last updated: 2025-08-08 19:49 +0700
 
 Checklist:
 
@@ -735,55 +735,55 @@ Checklist:
 | 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 551.0µs | 3.83MB |
 | 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 467.0µs | 3.69MB |
 | 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 342.0µs | 3.64MB |
-| 729 | neural_network/activation_functions/softplus |   |  |  |
-| 730 | neural_network/activation_functions/squareplus |   |  |  |
-| 731 | neural_network/activation_functions/swish |   |  |  |
-| 732 | neural_network/back_propagation_neural_network |   |  |  |
-| 733 | neural_network/convolution_neural_network |   |  |  |
-| 734 | neural_network/input_data |   |  |  |
-| 735 | neural_network/simple_neural_network |   |  |  |
-| 736 | neural_network/two_hidden_layers_neural_network |   |  |  |
-| 737 | other/activity_selection |   |  |  |
-| 738 | other/alternative_list_arrange |   |  |  |
-| 739 | other/bankers_algorithm |   |  |  |
-| 740 | other/davis_putnam_logemann_loveland |   |  |  |
-| 741 | other/doomsday |   |  |  |
-| 742 | other/fischer_yates_shuffle |   |  |  |
-| 743 | other/gauss_easter |   |  |  |
-| 744 | other/greedy |   |  |  |
-| 745 | other/guess_the_number_search |   |  |  |
-| 746 | other/h_index |   |  |  |
-| 747 | other/least_recently_used |   |  |  |
-| 748 | other/lfu_cache |   |  |  |
-| 749 | other/linear_congruential_generator |   |  |  |
-| 750 | other/lru_cache |   |  |  |
-| 751 | other/magicdiamondpattern |   |  |  |
-| 752 | other/majority_vote_algorithm |   |  |  |
-| 753 | other/maximum_subsequence |   |  |  |
-| 754 | other/nested_brackets |   |  |  |
-| 755 | other/number_container_system |   |  |  |
-| 756 | other/quine |   |  |  |
-| 757 | other/scoring_algorithm |   |  |  |
-| 758 | other/sdes |   |  |  |
-| 759 | other/tower_of_hanoi |   |  |  |
-| 760 | other/word_search |   |  |  |
-| 761 | physics/altitude_pressure |   |  |  |
-| 762 | physics/archimedes_principle_of_buoyant_force |   |  |  |
+| 729 | neural_network/activation_functions/softplus | ✓ | 695.0µs | 3.90MB |
+| 730 | neural_network/activation_functions/squareplus | ✓ | 820.0µs | 3.73MB |
+| 731 | neural_network/activation_functions/swish | ✓ | 569.0µs | 3.80MB |
+| 732 | neural_network/back_propagation_neural_network | ✓ | 2.54s | 3.89MB |
+| 733 | neural_network/convolution_neural_network | ✓ | 2.0ms | 3.79MB |
+| 734 | neural_network/input_data | ✓ | 669.0µs | 3.66MB |
+| 735 | neural_network/simple_neural_network | ✓ | 145.0ms | 3.84MB |
+| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 2.0ms | 3.73MB |
+| 737 | other/activity_selection | ✓ | 333.0µs | 3.72MB |
+| 738 | other/alternative_list_arrange | ✓ | 449.0µs | 3.71MB |
+| 739 | other/bankers_algorithm | ✓ | 547.0µs | 3.64MB |
+| 740 | other/davis_putnam_logemann_loveland | ✓ | 291.0µs | 3.59MB |
+| 741 | other/doomsday | ✓ | 180.0µs | 3.66MB |
+| 742 | other/fischer_yates_shuffle | ✓ | 285.0µs | 3.62MB |
+| 743 | other/gauss_easter | ✓ | 323.0µs | 3.76MB |
+| 744 | other/greedy | ✓ | 659.0µs | 3.73MB |
+| 745 | other/guess_the_number_search | ✓ | 403.0µs | 3.56MB |
+| 746 | other/h_index | ✓ | 324.0µs | 3.55MB |
+| 747 | other/least_recently_used | ✓ | 397.0µs | 3.57MB |
+| 748 | other/lfu_cache | ✓ | 343.0µs | 3.58MB |
+| 749 | other/linear_congruential_generator | ✓ | 313.0µs | 3.69MB |
+| 750 | other/lru_cache | ✓ | 410.0µs | 3.60MB |
+| 751 | other/magicdiamondpattern | ✓ | 271.0µs | 3.64MB |
+| 752 | other/majority_vote_algorithm | ✓ | 288.0µs | 3.77MB |
+| 753 | other/maximum_subsequence | ✓ | 204.0µs | 3.57MB |
+| 754 | other/nested_brackets | ✓ | 491.0µs | 3.64MB |
+| 755 | other/number_container_system | ✓ | 274.0µs | 3.59MB |
+| 756 | other/quine | ✓ | 158.0µs | 3.44MB |
+| 757 | other/scoring_algorithm | ✓ | 518.0µs | 3.83MB |
+| 758 | other/sdes | ✓ | 487.0µs | 3.55MB |
+| 759 | other/tower_of_hanoi | ✓ | 192.0µs | 3.46MB |
+| 760 | other/word_search | ✓ | 891.0µs | 3.52MB |
+| 761 | physics/altitude_pressure | ✓ | 574.0µs | 3.89MB |
+| 762 | physics/archimedes_principle_of_buoyant_force | ✓ | 1.0µs | 3.38MB |
 | 763 | physics/basic_orbital_capture |   |  |  |
-| 764 | physics/casimir_effect |   |  |  |
-| 765 | physics/center_of_mass |   |  |  |
-| 766 | physics/centripetal_force |   |  |  |
-| 767 | physics/coulombs_law |   |  |  |
-| 768 | physics/doppler_frequency |   |  |  |
-| 769 | physics/escape_velocity |   |  |  |
-| 770 | physics/grahams_law |   |  |  |
-| 771 | physics/horizontal_projectile_motion |   |  |  |
-| 772 | physics/hubble_parameter |   |  |  |
+| 764 | physics/casimir_effect | ✓ | 684.0µs | 3.70MB |
+| 765 | physics/center_of_mass | ✓ | 510.0µs | 3.73MB |
+| 766 | physics/centripetal_force | ✓ | 444.0µs | 3.82MB |
+| 767 | physics/coulombs_law | ✓ | 250.0µs | 3.61MB |
+| 768 | physics/doppler_frequency | ✓ | 555.0µs | 3.73MB |
+| 769 | physics/escape_velocity | ✓ | 554.0µs | 3.80MB |
+| 770 | physics/grahams_law | ✓ | 492.0µs | 3.98MB |
+| 771 | physics/horizontal_projectile_motion | ✓ | 520.0µs | 3.80MB |
+| 772 | physics/hubble_parameter | ✓ | 456.0µs | 3.73MB |
 | 773 | physics/ideal_gas_law |   |  |  |
-| 774 | physics/in_static_equilibrium |   |  |  |
-| 775 | physics/kinetic_energy |   |  |  |
-| 776 | physics/lens_formulae |   |  |  |
-| 777 | physics/lorentz_transformation_four_vector |   |  |  |
+| 774 | physics/in_static_equilibrium | ✓ | 267.0µs | 3.55MB |
+| 775 | physics/kinetic_energy | ✓ | 578.0µs | 3.79MB |
+| 776 | physics/lens_formulae | ✓ | 481.0µs | 3.72MB |
+| 777 | physics/lorentz_transformation_four_vector | ✓ | 499.0µs | 3.74MB |
 | 778 | physics/malus_law |   |  |  |
 | 779 | physics/mass_energy_equivalence |   |  |  |
 | 780 | physics/mirror_formulae |   |  |  |
