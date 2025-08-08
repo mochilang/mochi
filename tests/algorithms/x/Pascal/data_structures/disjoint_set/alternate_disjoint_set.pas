@@ -50,11 +50,11 @@ var
   bench_mem_0: int64;
   bench_memdiff_0: int64;
   ds: DisjointSet;
-  set_counts: IntArray;
+  src: integer;
   idx: integer;
   xs: IntArray;
+  set_counts: IntArray;
   dst: integer;
-  src: integer;
 function makeDisjointSet(set_counts: IntArray; max_set: integer; ranks: IntArray; parents: IntArray): DisjointSet; forward;
 function max_list(xs: IntArray): integer; forward;
 function disjoint_set_new(set_counts: IntArray): DisjointSet; forward;

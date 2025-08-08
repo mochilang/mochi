@@ -54,16 +54,16 @@ var
   nodes: array of Node;
   test_array: array of integer;
   root: integer;
-  num: integer;
-  node_idx: integer;
-  start_num: integer;
+  arr: IntArray;
   length_: integer;
   index: integer;
-  end_num: integer;
-  value: integer;
-  arr: IntArray;
+  num: integer;
   end_: integer;
+  value: integer;
+  start_num: integer;
   start: integer;
+  node_idx: integer;
+  end_num: integer;
 function makeNode(minn: integer; maxx: integer; map_left: IntArray; left: integer; right: integer): Node; forward;
 function make_list(length_: integer; value: integer): IntArray; forward;
 function min_list(arr: IntArray): integer; forward;
@@ -212,7 +212,11 @@ end;
   if quantile_node_var.minn = quantile_node_var.maxx then begin
   exit(quantile_node_var.minn);
 end;
-  quantile_left_start := IfThen(start = 0, 0, quantile_node_var.map_left[start - 1]);
+  if start = 0 then begin
+  quantile_left_start := 0;
+end else begin
+  quantile_left_start := quantile_node_var.map_left[start - 1];
+end;
   quantile_num_left := quantile_node_var.map_left[end_] - quantile_left_start;
   if quantile_num_left > index then begin
   exit(quantile(quantile_node_var.left, index, quantile_left_start, quantile_node_var.map_left[end_] - 1));

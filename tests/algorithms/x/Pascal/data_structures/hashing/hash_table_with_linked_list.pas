@@ -70,13 +70,13 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  value: integer;
-  size_table: integer;
-  ht: HashTableWithLinkedList;
-  lst: IntArray;
   key: integer;
-  data: integer;
+  lst: IntArray;
+  ht: HashTableWithLinkedList;
+  size_table: integer;
   charge_factor: integer;
+  data: integer;
+  value: integer;
 function Map1(): specialize TFPGMap<integer, IntArray>; forward;
 function makeHashTableWithLinkedList(size_table: integer; charge_factor: integer; values: IntArrayArray; keys: specialize TFPGMap<integer, IntArray>): HashTableWithLinkedList; forward;
 function make_table(size_table: integer; charge_factor: integer): HashTableWithLinkedList; forward;

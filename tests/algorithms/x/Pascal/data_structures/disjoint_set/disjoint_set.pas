@@ -61,10 +61,10 @@ var
   same: boolean;
   root_same: boolean;
   res: FindResult;
-  b: integer;
-  x: integer;
-  a: integer;
   y: integer;
+  x: integer;
+  b: integer;
+  a: integer;
 function makeFindResult(ds: DS; root: integer): FindResult; forward;
 function makeDS(parent: IntArray; rank: IntArray): DS; forward;
 function make_set(ds_var: DS; x: integer): DS; forward;

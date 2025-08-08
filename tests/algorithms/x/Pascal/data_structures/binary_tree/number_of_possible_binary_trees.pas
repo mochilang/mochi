@@ -62,7 +62,7 @@ function binomial_coefficient(n: integer; k: integer): integer;
 var
   binomial_coefficient_result_: integer;
   binomial_coefficient_kk: integer;
-  binomial_coefficient_i: integer;
+  binomial_coefficient_i: int64;
 begin
   binomial_coefficient_result_ := 1;
   binomial_coefficient_kk := k;
@@ -82,7 +82,7 @@ end;
 function factorial(n: integer): integer;
 var
   factorial_result_: integer;
-  factorial_i: integer;
+  factorial_i: int64;
 begin
   if n < 0 then begin
   writeln('factorial() not defined for negative values');

@@ -78,8 +78,9 @@ func declareName(name string) string {
 	}
 	newName := name
 	switch strings.ToLower(name) {
-	case "label", "xor", "and", "or", "div", "mod", "type", "set", "result", "repeat", "end", "nil", "length", "ord", "array":
-		// Avoid Pascal reserved keywords (case-insensitive)
+	case "label", "xor", "and", "or", "div", "mod", "type", "set", "result", "repeat", "end", "nil", "length", "ord", "array",
+		"real", "integer", "string", "boolean", "char":
+		// Avoid Pascal reserved keywords and built-in types (case-insensitive)
 		newName = name + "_"
 	}
 	if currentFunc != "" {
@@ -2070,9 +2071,10 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				if err != nil {
 					return nil, err
 				}
-				for k, v := range local {
-					varTypes[k] = v
-				}
+				// Parameters and locals should not escape to the
+				// outer scope's type map. They are relevant only
+				// within this function, so we intentionally avoid
+				// merging them into the parent varTypes map.
 				popScope()
 				locals := append([]VarDecl(nil), currProg.Vars[startVarCount:]...)
 				currProg.Vars = currProg.Vars[:startVarCount]

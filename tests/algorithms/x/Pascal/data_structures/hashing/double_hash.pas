@@ -55,13 +55,13 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  key: integer;
+  data: IntArray;
+  values: IntArray;
+  prime: integer;
   value: integer;
   n: integer;
+  key: integer;
   size: integer;
-  prime: integer;
-  values: IntArray;
-  data: IntArray;
 function is_prime(n: integer): boolean; forward;
 function prev_prime(n: integer): integer; forward;
 function create_table(size: integer): IntArray; forward;

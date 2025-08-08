@@ -74,11 +74,11 @@ var
   LEFT: integer;
   RIGHT: integer;
   NEG_ONE: integer;
-  x: integer;
-  t: RBTree;
-  z: integer;
-  v: integer;
   acc: IntArray;
+  v: integer;
+  z: integer;
+  t: RBTree;
+  x: integer;
 function makeRBTree(nodes: IntArrayArray; root: integer): RBTree; forward;
 function make_tree(): RBTree; forward;
 function rotate_left(t: RBTree; x: integer): RBTree; forward;
