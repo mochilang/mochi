@@ -1,0 +1,8 @@
+run: exit status 1
+lua: ...hi/tests/algorithms/x/Lua/scripts/validate_solutions.lua:34: bad argument #1 to 'char' (number expected, got nil)
+stack traceback:
+	[C]: in function 'string.char'
+	...hi/tests/algorithms/x/Lua/scripts/validate_solutions.lua:34: in upvalue '_sha256'
+	...hi/tests/algorithms/x/Lua/scripts/validate_solutions.lua:92: in function 'sha256_hex'
+	...hi/tests/algorithms/x/Lua/scripts/validate_solutions.lua:106: in main chunk
+	[C]: in ?

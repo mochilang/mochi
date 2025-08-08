@@ -1,0 +1,8 @@
+run: exit status 1
+lua: .../mochi/tests/algorithms/x/Lua/searches/hill_climbing.lua:43: attempt to call a nil value (global 'f')
+stack traceback:
+	.../mochi/tests/algorithms/x/Lua/searches/hill_climbing.lua:43: in function 'score'
+	.../mochi/tests/algorithms/x/Lua/searches/hill_climbing.lua:90: in function 'hill_climbing'
+	.../mochi/tests/algorithms/x/Lua/searches/hill_climbing.lua:152: in function 'main'
+	.../mochi/tests/algorithms/x/Lua/searches/hill_climbing.lua:293: in main chunk
+	[C]: in ?

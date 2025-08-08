@@ -27,6 +27,11 @@ end
 return os.time() * 1000000000 + math.floor(os.clock() * 1000000000)
 end
 
+local function _panic(msg)
+io.stderr:write(tostring(msg))
+os.exit(1)
+end
+
 local function _str(v)
 if type(v) == 'number' then
   local s = tostring(v)
@@ -39,9 +44,30 @@ do
   collectgarbage()
   local _bench_start_mem = collectgarbage('count') * 1024
   local _bench_start = os.clock()
-  function solution(number)
-    local partitions = {1}
-    local i = (function(v)
+  function fibonacci(k)
+    if (k < 0) then
+      _panic("k must be >= 0")
+    end
+    local a = 0
+    local b = 1
+    local i = 0
+    while (i < k) do
+      local tmp = (a + b)
+      a = b
+      b = tmp
+      i = (i + 1)
+    end
+    return a
+  end
+  function min_int(a, b)
+    if (a < b) then
+      return a
+    else
+      return b
+    end
+  end
+  function fibonacci_search(arr, val)
+    local n = (function(v)
     if type(v) == 'table' and v.items ~= nil then
       return #v.items
     elseif type(v) == 'table' and (v[1] == nil) then
@@ -57,40 +83,32 @@ do
           else
             return 0
           end
-        end)(partitions)
-        while true do
-          local item = 0
-          local j = 1
-          while true do
-            local sign = ((((j % 2) == 0)) and ((-1)) or (1))
-            local index = ((((j * j) * 3) - j) // 2)
-            if (index > i) then
-              break
-            end
-            item = (item + (partitions[(i - index) + 1] * sign))
-            item = (item % number)
-            index = (index + j)
-            if (index > i) then
-              break
-            end
-            item = (item + (partitions[(i - index) + 1] * sign))
-            item = (item % number)
-            j = (j + 1)
-          end
-          if (item == 0) then
+        end)(arr)
+        local m = 0
+        while (fibonacci(m) < n) do
+          m = (m + 1)
+        end
+        local offset = 0
+        while (m > 0) do
+          local i = min_int((offset + fibonacci((m - 1))), (n - 1))
+          local item = arr[i + 1]
+          if (item == val) then
             return i
+          else
+            if (val < item) then
+              m = (m - 1)
+            else
+              offset = (offset + fibonacci((m - 1)))
+              m = (m - 2)
+            end
           end
-          partitions = (function(lst, item)
-          lst = lst or {}
-          table.insert(lst, item)
-          return lst
-        end)(partitions, item)
-        i = (i + 1)
+        end
+        return (-1)
       end
-      return 0
-    end
-    function main()
-      print((((type(_str(solution(1))) == "table")) and (
+      example1 = {4, 5, 6, 7}
+      example2 = {(-18), 2}
+      example3 = {0, 5, 10, 15, 20, 25, 30}
+      print((((type(_str(fibonacci_search(example1, 4))) == "table")) and (
       (function(v)
       local function encode(x)
       if type(x) == "table" then
@@ -134,8 +152,8 @@ do
           end
         end
         return encode(v)
-      end)(_str(solution(1)))) or (_str(solution(1)))))
-      print((((type(_str(solution(9))) == "table")) and (
+      end)(_str(fibonacci_search(example1, 4)))) or (_str(fibonacci_search(example1, 4)))))
+      print((((type(_str(fibonacci_search(example1, (-10)))) == "table")) and (
       (function(v)
       local function encode(x)
       if type(x) == "table" then
@@ -179,8 +197,8 @@ do
           end
         end
         return encode(v)
-      end)(_str(solution(9)))) or (_str(solution(9)))))
-      print((((type(_str(solution(1000000))) == "table")) and (
+      end)(_str(fibonacci_search(example1, (-10))))) or (_str(fibonacci_search(example1, (-10))))))
+      print((((type(_str(fibonacci_search(example2, (-18)))) == "table")) and (
       (function(v)
       local function encode(x)
       if type(x) == "table" then
@@ -224,13 +242,101 @@ do
           end
         end
         return encode(v)
-      end)(_str(solution(1000000)))) or (_str(solution(1000000)))))
-    end
-    main()
-    local _bench_end = os.clock()
-    collectgarbage()
-    local _bench_end_mem = collectgarbage('count') * 1024
-    local _bench_duration_us = math.floor((_bench_end - _bench_start) * 1000000)
-    local _bench_mem = math.floor(math.max(0, _bench_end_mem - _bench_start_mem))
-    print('{\n  "duration_us": ' .. _bench_duration_us .. ',\n  "memory_bytes": ' .. _bench_mem .. ',\n  "name": "main"\n}')
-  end;
+      end)(_str(fibonacci_search(example2, (-18))))) or (_str(fibonacci_search(example2, (-18))))))
+      print((((type(_str(fibonacci_search(example3, 15))) == "table")) and (
+      (function(v)
+      local function encode(x)
+      if type(x) == "table" then
+        if x.__name and x.__order then
+          local parts = {x.__name, " {"}
+          for i, k in ipairs(x.__order) do
+            if i > 1 then parts[#parts+1] = ", " end
+            parts[#parts+1] = k .. " = " .. encode(x[k])
+          end
+          parts[#parts+1] = "}"
+          return table.concat(parts)
+        elseif #x > 0 then
+            local allTables = true
+            for _, v in ipairs(x) do
+              if type(v) ~= "table" then allTables = false break end
+            end
+            local parts = {}
+            if not allTables then parts[#parts+1] = "[" end
+            for i, val in ipairs(x) do
+              parts[#parts+1] = encode(val)
+              if i < #x then parts[#parts+1] = " " end
+            end
+            if not allTables then parts[#parts+1] = "]" end
+            return table.concat(parts)
+          else
+            local keys = {}
+            for k in pairs(x) do if k ~= "__name" and k ~= "__order" then table.insert(keys, k) end end
+            table.sort(keys, function(a,b) return tostring(a) > tostring(b) end)
+            local parts = {"{"}
+            for i, k in ipairs(keys) do
+              parts[#parts+1] = "'" .. tostring(k) .. "': " .. encode(x[k])
+              if i < #keys then parts[#parts+1] = ", " end
+            end
+            parts[#parts+1] = "}"
+            return table.concat(parts)
+          end
+        elseif type(x) == "string" then
+            return '"' .. x .. '"'
+          else
+            return tostring(x)
+          end
+        end
+        return encode(v)
+      end)(_str(fibonacci_search(example3, 15)))) or (_str(fibonacci_search(example3, 15)))))
+      print((((type(_str(fibonacci_search(example3, 17))) == "table")) and (
+      (function(v)
+      local function encode(x)
+      if type(x) == "table" then
+        if x.__name and x.__order then
+          local parts = {x.__name, " {"}
+          for i, k in ipairs(x.__order) do
+            if i > 1 then parts[#parts+1] = ", " end
+            parts[#parts+1] = k .. " = " .. encode(x[k])
+          end
+          parts[#parts+1] = "}"
+          return table.concat(parts)
+        elseif #x > 0 then
+            local allTables = true
+            for _, v in ipairs(x) do
+              if type(v) ~= "table" then allTables = false break end
+            end
+            local parts = {}
+            if not allTables then parts[#parts+1] = "[" end
+            for i, val in ipairs(x) do
+              parts[#parts+1] = encode(val)
+              if i < #x then parts[#parts+1] = " " end
+            end
+            if not allTables then parts[#parts+1] = "]" end
+            return table.concat(parts)
+          else
+            local keys = {}
+            for k in pairs(x) do if k ~= "__name" and k ~= "__order" then table.insert(keys, k) end end
+            table.sort(keys, function(a,b) return tostring(a) > tostring(b) end)
+            local parts = {"{"}
+            for i, k in ipairs(keys) do
+              parts[#parts+1] = "'" .. tostring(k) .. "': " .. encode(x[k])
+              if i < #keys then parts[#parts+1] = ", " end
+            end
+            parts[#parts+1] = "}"
+            return table.concat(parts)
+          end
+        elseif type(x) == "string" then
+            return '"' .. x .. '"'
+          else
+            return tostring(x)
+          end
+        end
+        return encode(v)
+      end)(_str(fibonacci_search(example3, 17)))) or (_str(fibonacci_search(example3, 17)))))
+      local _bench_end = os.clock()
+      collectgarbage()
+      local _bench_end_mem = collectgarbage('count') * 1024
+      local _bench_duration_us = math.floor((_bench_end - _bench_start) * 1000000)
+      local _bench_mem = math.floor(math.max(0, _bench_end_mem - _bench_start_mem))
+      print('{\n  "duration_us": ' .. _bench_duration_us .. ',\n  "memory_bytes": ' .. _bench_mem .. ',\n  "name": "main"\n}')
+    end;

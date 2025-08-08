@@ -27,21 +27,19 @@ end
 return os.time() * 1000000000 + math.floor(os.clock() * 1000000000)
 end
 
-local function _str(v)
-if type(v) == 'number' then
-  local s = tostring(v)
-  s = string.gsub(s, '%.0+$', '')
-  return s
-end
-return tostring(v)
+local function _panic(msg)
+io.stderr:write(tostring(msg))
+os.exit(1)
 end
 do
   collectgarbage()
   local _bench_start_mem = collectgarbage('count') * 1024
   local _bench_start = os.clock()
-  function solution(number)
-    local partitions = {1}
-    local i = (function(v)
+  function dutch_national_flag_sort(seq)
+    local a = seq
+    local low = 0
+    local mid = 0
+    local high = ((function(v)
     if type(v) == 'table' and v.items ~= nil then
       return #v.items
     elseif type(v) == 'table' and (v[1] == nil) then
@@ -57,40 +55,33 @@ do
           else
             return 0
           end
-        end)(partitions)
-        while true do
-          local item = 0
-          local j = 1
-          while true do
-            local sign = ((((j % 2) == 0)) and ((-1)) or (1))
-            local index = ((((j * j) * 3) - j) // 2)
-            if (index > i) then
-              break
+        end)(a) - 1)
+        while (mid <= high) do
+          local v = a[mid + 1]
+          if (v == 0) then
+            local tmp = a[low + 1]
+            a[low + 1] = v
+            a[mid + 1] = tmp
+            low = (low + 1)
+            mid = (mid + 1)
+          else
+            if (v == 1) then
+              mid = (mid + 1)
+            else
+              if (v == 2) then
+                local tmp2 = a[high + 1]
+                a[high + 1] = v
+                a[mid + 1] = tmp2
+                high = (high - 1)
+              else
+                _panic("The elements inside the sequence must contains only (0, 1, 2) values")
+              end
             end
-            item = (item + (partitions[(i - index) + 1] * sign))
-            item = (item % number)
-            index = (index + j)
-            if (index > i) then
-              break
-            end
-            item = (item + (partitions[(i - index) + 1] * sign))
-            item = (item % number)
-            j = (j + 1)
           end
-          if (item == 0) then
-            return i
-          end
-          partitions = (function(lst, item)
-          lst = lst or {}
-          table.insert(lst, item)
-          return lst
-        end)(partitions, item)
-        i = (i + 1)
+        end
+        return a
       end
-      return 0
-    end
-    function main()
-      print((((type(_str(solution(1))) == "table")) and (
+      print(
       (function(v)
       local function encode(x)
       if type(x) == "table" then
@@ -134,8 +125,8 @@ do
           end
         end
         return encode(v)
-      end)(_str(solution(1)))) or (_str(solution(1)))))
-      print((((type(_str(solution(9))) == "table")) and (
+      end)(dutch_national_flag_sort({})))
+      print(
       (function(v)
       local function encode(x)
       if type(x) == "table" then
@@ -179,8 +170,8 @@ do
           end
         end
         return encode(v)
-      end)(_str(solution(9)))) or (_str(solution(9)))))
-      print((((type(_str(solution(1000000))) == "table")) and (
+      end)(dutch_national_flag_sort({0})))
+      print(
       (function(v)
       local function encode(x)
       if type(x) == "table" then
@@ -224,13 +215,56 @@ do
           end
         end
         return encode(v)
-      end)(_str(solution(1000000)))) or (_str(solution(1000000)))))
-    end
-    main()
-    local _bench_end = os.clock()
-    collectgarbage()
-    local _bench_end_mem = collectgarbage('count') * 1024
-    local _bench_duration_us = math.floor((_bench_end - _bench_start) * 1000000)
-    local _bench_mem = math.floor(math.max(0, _bench_end_mem - _bench_start_mem))
-    print('{\n  "duration_us": ' .. _bench_duration_us .. ',\n  "memory_bytes": ' .. _bench_mem .. ',\n  "name": "main"\n}')
-  end;
+      end)(dutch_national_flag_sort({2, 1, 0, 0, 1, 2})))
+      print(
+      (function(v)
+      local function encode(x)
+      if type(x) == "table" then
+        if x.__name and x.__order then
+          local parts = {x.__name, " {"}
+          for i, k in ipairs(x.__order) do
+            if i > 1 then parts[#parts+1] = ", " end
+            parts[#parts+1] = k .. " = " .. encode(x[k])
+          end
+          parts[#parts+1] = "}"
+          return table.concat(parts)
+        elseif #x > 0 then
+            local allTables = true
+            for _, v in ipairs(x) do
+              if type(v) ~= "table" then allTables = false break end
+            end
+            local parts = {}
+            if not allTables then parts[#parts+1] = "[" end
+            for i, val in ipairs(x) do
+              parts[#parts+1] = encode(val)
+              if i < #x then parts[#parts+1] = " " end
+            end
+            if not allTables then parts[#parts+1] = "]" end
+            return table.concat(parts)
+          else
+            local keys = {}
+            for k in pairs(x) do if k ~= "__name" and k ~= "__order" then table.insert(keys, k) end end
+            table.sort(keys, function(a,b) return tostring(a) > tostring(b) end)
+            local parts = {"{"}
+            for i, k in ipairs(keys) do
+              parts[#parts+1] = "'" .. tostring(k) .. "': " .. encode(x[k])
+              if i < #keys then parts[#parts+1] = ", " end
+            end
+            parts[#parts+1] = "}"
+            return table.concat(parts)
+          end
+        elseif type(x) == "string" then
+            return '"' .. x .. '"'
+          else
+            return tostring(x)
+          end
+        end
+        return encode(v)
+      end)(dutch_national_flag_sort({0, 1, 1, 0, 1, 2, 1, 2, 0, 0, 0, 1})))
+      local _bench_end = os.clock()
+      collectgarbage()
+      local _bench_end_mem = collectgarbage('count') * 1024
+      local _bench_duration_us = math.floor((_bench_end - _bench_start) * 1000000)
+      local _bench_mem = math.floor(math.max(0, _bench_end_mem - _bench_start_mem))
+      print('{\n  "duration_us": ' .. _bench_duration_us .. ',\n  "memory_bytes": ' .. _bench_mem .. ',\n  "name": "main"\n}')
+    end;

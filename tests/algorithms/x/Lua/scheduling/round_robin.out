@@ -1,0 +1,7 @@
+Process ID 	Burst Time 	Waiting Time 	Turnaround Time
+  1		  3		  4		  7
+  2		  5		  7		  12
+  3		  7		  8		  15
+
+Average waiting time = 6.00000
+Average turn around time = 11.00000

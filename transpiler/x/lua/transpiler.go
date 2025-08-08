@@ -155,7 +155,8 @@ local function _getoutput(cmd)
   if not p then return '' end
   local out = p:read('*a') or ''
   p:close()
-  out = string.gsub(out, '\n$', '')
+  -- trim trailing newlines from different platforms
+  out = string.gsub(out, '\r?\n$', '')
   return out
 end
 `
