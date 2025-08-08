@@ -1,0 +1,4 @@
+** (UndefinedFunctionError) function Jason.encode!/1 is undefined (module Jason is not available). Make sure the module name is correct and has been specified in full (or that an alias has been defined)
+    Jason.encode!(%{"current" => 2.0})
+    /workspace/mochi/tests/algorithms/x/Elixir/electronics/ohms_law.exs:53: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/electronics/ohms_law.exs:63: (file)

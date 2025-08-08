@@ -1,0 +1,16 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 27 │       {i, sum} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/electronics/resistor_equivalence.exs:27:8: Main.resistor_parallel/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 55 │       {i, sum} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/electronics/resistor_equivalence.exs:55:8: Main.resistor_series/1
+
+Parallel: 0.8737571620498019
+Series: 8.21389

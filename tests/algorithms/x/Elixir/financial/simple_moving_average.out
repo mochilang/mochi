@@ -1,0 +1,24 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 41 │       {i, result, window_sum} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/financial/simple_moving_average.exs:41:8: Main.simple_moving_average/2
+
+    warning: variable "window_sum" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 41 │       {i, result, window_sum} = try do
+    │                   ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/financial/simple_moving_average.exs:41:19: Main.simple_moving_average/2
+
+Day 1: Not enough data for SMA
+Day 2: Not enough data for SMA
+Day 3: 12.333333333333334
+Day 4: 13.333333333333334
+Day 5: 14.0
+Day 6: 14.333333333333334
+Day 7: 16.0
+Day 8: 17.0
+Day 9: 18.0
+Day 10: 19.0

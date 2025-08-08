@@ -1,0 +1,12 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 29 │       {i, out} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/file_transfer/receive_file.exs:29:8: Main.receive_file/1
+
+File opened
+Receiving data...
+Successfully received the file
+Connection closed
+Hello from server

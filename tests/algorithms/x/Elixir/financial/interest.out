@@ -1,0 +1,14 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 23 │       {i, result} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/financial/interest.exs:23:8: Main.powf/2
+
+3240.0
+0.09
+1800.0
+1576.2500000000014
+500.00000000000045
+1618.223072263516
+512.6749646744622

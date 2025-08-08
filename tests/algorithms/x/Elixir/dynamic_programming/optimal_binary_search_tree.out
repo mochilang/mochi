@@ -1,0 +1,71 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 47 │       {arr, i} = try do
+    │             ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/optimal_binary_search_tree.exs:47:13: Main.sort_nodes/1
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 139 │           {dp_row, j, root_row, total_row} = try do
+     │                    ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/optimal_binary_search_tree.exs:139:20: Main.find_optimal_binary_search_tree/1
+
+     warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 189 │               {dp, r, root} = try do
+     │                    ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/optimal_binary_search_tree.exs:189:20: Main.find_optimal_binary_search_tree/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 104 │       {freqs, i, keys} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/optimal_binary_search_tree.exs:104:15: Main.find_optimal_binary_search_tree/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 213 │       {dp, i, interval_length, root, total} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/optimal_binary_search_tree.exs:213:12: Main.find_optimal_binary_search_tree/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 230 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/optimal_binary_search_tree.exs:230:7: Main.find_optimal_binary_search_tree/1
+
+     warning: variable "interval_length" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 213 │       {dp, i, interval_length, root, total} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/optimal_binary_search_tree.exs:213:15: Main.find_optimal_binary_search_tree/1
+
+     warning: variable "total" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 213 │       {dp, i, interval_length, root, total} = try do
+     │                                      ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/optimal_binary_search_tree.exs:213:38: Main.find_optimal_binary_search_tree/1
+
+Binary search tree nodes:
+Node(key=10, freq=34)
+Node(key=12, freq=8)
+Node(key=20, freq=50)
+Node(key=25, freq=40)
+Node(key=37, freq=30)
+Node(key=42, freq=3)
+
+The cost of optimal BST for given tree nodes is 324.
+20 is the root of the binary search tree.
+10 is the left child of key 20.
+12 is the right child of key 10.
+25 is the right child of key 20.
+37 is the right child of key 25.
+42 is the right child of key 37.

@@ -1,0 +1,27 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 62 │           {best, j} = try do
+    │                  ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/rod_cutting.exs:62:18: Main.bottom_up_cut_rod/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 36 │       {i, max_rev} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/rod_cutting.exs:36:8: Main.bottom_up_cut_rod/2
+
+    warning: variable "length" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 75 │       {length, max_rev} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/rod_cutting.exs:75:8: Main.bottom_up_cut_rod/2
+
+** (ArgumentError) argument error
+    :erlang.++(nil, [0])
+    /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/rod_cutting.exs:29: anonymous fn/4 in Main.bottom_up_cut_rod/2
+    /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/rod_cutting.exs:37: Main.bottom_up_cut_rod/2
+    /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/rod_cutting.exs:88: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/rod_cutting.exs:92: (file)

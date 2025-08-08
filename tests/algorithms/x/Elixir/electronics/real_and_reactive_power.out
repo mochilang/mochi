@@ -1,0 +1,13 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 19 │       {guess, i} = try do
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/electronics/real_and_reactive_power.exs:19:15: Main.sqrt/1
+
+90.0
+0.0
+-90.0
+43.58898943540673
+0.0
+43.58898943540673

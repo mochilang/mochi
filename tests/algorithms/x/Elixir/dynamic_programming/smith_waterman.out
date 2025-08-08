@@ -1,0 +1,49 @@
+warning: variable "score" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 56 │         score = (score ++ [row])
+    │         ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/smith_waterman.exs:56:9: Main.smith_waterman/5
+
+    warning: variable "score" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 84 │           score = List.replace_at(score, i, List.replace_at(Enum.at(score, i), j, max_val))
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/smith_waterman.exs:84:11: Main.smith_waterman/5
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 150 │       {align1, align2, i, j} = try do
+     │                        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/smith_waterman.exs:150:24: Main.traceback/6
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 150 │       {align1, align2, i, j} = try do
+     │                           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/smith_waterman.exs:150:27: Main.traceback/6
+
+    warning: variable "max_value" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 99 │       {i_max, j_max, max_value} = Enum.reduce((0..(_len(score) - 1)//1), {i_max, j_max, max_value}, fn i, {i_max, j_max, max_value} ->
+    │                      ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/smith_waterman.exs:99:22: Main.traceback/6
+
+** (Protocol.UndefinedError) protocol Enumerable not implemented for type Atom
+
+Got value:
+
+    nil
+
+    (elixir 1.18.3) lib/enum.ex:1: Enumerable.impl_for!/1
+    (elixir 1.18.3) lib/enum.ex:230: Enumerable.slice/1
+    (elixir 1.18.3) lib/enum.ex:4579: Enum.slice_forward/4
+    (elixir 1.18.3) lib/enum.ex:479: Enum.at/3
+    /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/smith_waterman.exs:62: anonymous fn/7 in Main.smith_waterman/5
+    (elixir 1.18.3) lib/enum.ex:992: anonymous fn/3 in Enum.each/2
+    (elixir 1.18.3) lib/enum.ex:4507: Enum.reduce_range/5
+    (elixir 1.18.3) lib/enum.ex:2550: Enum.each/2

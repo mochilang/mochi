@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-08 15:53 GMT+7
+Last updated: 2025-08-08 16:11 GMT+7
 
-## Algorithms Golden Test Checklist (269/1077)
+## Algorithms Golden Test Checklist (314/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -337,56 +337,56 @@ Last updated: 2025-08-08 15:53 GMT+7
 | 328 | dynamic_programming/max_subarray_sum | ✓ | 15.37ms | 32.9 MB |
 | 329 | dynamic_programming/min_distance_up_bottom | ✓ |  |  |
 | 330 | dynamic_programming/minimum_coin_change | ✓ |  |  |
-| 331 | dynamic_programming/minimum_cost_path |   |  |  |
-| 332 | dynamic_programming/minimum_partition |   |  |  |
-| 333 | dynamic_programming/minimum_size_subarray_sum |   |  |  |
-| 334 | dynamic_programming/minimum_squares_to_represent_a_number |   |  |  |
-| 335 | dynamic_programming/minimum_steps_to_one |   |  |  |
-| 336 | dynamic_programming/minimum_tickets_cost |   |  |  |
-| 337 | dynamic_programming/optimal_binary_search_tree |   |  |  |
-| 338 | dynamic_programming/palindrome_partitioning |   |  |  |
-| 339 | dynamic_programming/range_sum_query |   |  |  |
-| 340 | dynamic_programming/regex_match |   |  |  |
-| 341 | dynamic_programming/rod_cutting |   |  |  |
-| 342 | dynamic_programming/smith_waterman |   |  |  |
-| 343 | dynamic_programming/subset_generation |   |  |  |
-| 344 | dynamic_programming/sum_of_subset |   |  |  |
-| 345 | dynamic_programming/trapped_water |   |  |  |
-| 346 | dynamic_programming/tribonacci |   |  |  |
-| 347 | dynamic_programming/viterbi |   |  |  |
-| 348 | dynamic_programming/wildcard_matching |   |  |  |
-| 349 | dynamic_programming/word_break |   |  |  |
-| 350 | electronics/apparent_power |   |  |  |
-| 351 | electronics/builtin_voltage |   |  |  |
-| 352 | electronics/capacitor_equivalence |   |  |  |
-| 353 | electronics/carrier_concentration |   |  |  |
-| 354 | electronics/charging_capacitor |   |  |  |
-| 355 | electronics/charging_inductor |   |  |  |
-| 356 | electronics/circular_convolution |   |  |  |
-| 357 | electronics/coulombs_law |   |  |  |
-| 358 | electronics/electric_conductivity |   |  |  |
-| 359 | electronics/electric_power |   |  |  |
-| 360 | electronics/electrical_impedance |   |  |  |
-| 361 | electronics/ic_555_timer |   |  |  |
-| 362 | electronics/ind_reactance |   |  |  |
-| 363 | electronics/ohms_law |   |  |  |
-| 364 | electronics/real_and_reactive_power |   |  |  |
-| 365 | electronics/resistor_color_code |   |  |  |
-| 366 | electronics/resistor_equivalence |   |  |  |
-| 367 | electronics/resonant_frequency |   |  |  |
-| 368 | electronics/wheatstone_bridge |   |  |  |
-| 369 | file_transfer/receive_file |   |  |  |
-| 370 | file_transfer/send_file |   |  |  |
-| 371 | file_transfer/tests/test_send_file |   |  |  |
-| 372 | financial/equated_monthly_installments |   |  |  |
-| 373 | financial/exponential_moving_average |   |  |  |
-| 374 | financial/interest |   |  |  |
-| 375 | financial/present_value |   |  |  |
-| 376 | financial/price_plus_tax |   |  |  |
-| 377 | financial/simple_moving_average |   |  |  |
-| 378 | financial/straight_line_depreciation |   |  |  |
-| 379 | financial/time_and_half_pay |   |  |  |
-| 380 | fractals/julia_sets |   |  |  |
+| 331 | dynamic_programming/minimum_cost_path | ✓ | 6.62ms | 12.5 MB |
+| 332 | dynamic_programming/minimum_partition | ✓ | 8.53ms | 45.2 MB |
+| 333 | dynamic_programming/minimum_size_subarray_sum | ✓ | 6.41ms | 17.3 MB |
+| 334 | dynamic_programming/minimum_squares_to_represent_a_number | ✓ | 6.02ms | 17.3 MB |
+| 335 | dynamic_programming/minimum_steps_to_one | ✓ | 7.78ms | 25.0 MB |
+| 336 | dynamic_programming/minimum_tickets_cost | ✓ | 7.02ms | 17.3 MB |
+| 337 | dynamic_programming/optimal_binary_search_tree | ✓ | 590us | 17.3 MB |
+| 338 | dynamic_programming/palindrome_partitioning | ✓ | 6.42ms | 17.3 MB |
+| 339 | dynamic_programming/range_sum_query | ✓ | 12.34ms | 17.3 MB |
+| 340 | dynamic_programming/regex_match | ✓ | 3.74ms | 25.0 MB |
+| 341 | dynamic_programming/rod_cutting | error |  |  |
+| 342 | dynamic_programming/smith_waterman | error |  |  |
+| 343 | dynamic_programming/subset_generation | ✓ | 9.29ms | 25.0 MB |
+| 344 | dynamic_programming/sum_of_subset | ✓ | 7.53ms | 25.0 MB |
+| 345 | dynamic_programming/trapped_water | ✓ | 6.28ms | 12.5 MB |
+| 346 | dynamic_programming/tribonacci | ✓ | 7.87ms | 12.5 MB |
+| 347 | dynamic_programming/viterbi | ✓ | 7.29ms | 25.0 MB |
+| 348 | dynamic_programming/wildcard_matching | ✓ | 2.91ms | 25.0 MB |
+| 349 | dynamic_programming/word_break | ✓ | 2.43ms | 12.5 MB |
+| 350 | electronics/apparent_power | ✓ | 1us | 0 B |
+| 351 | electronics/builtin_voltage | ✓ | 7.05ms | 25.0 MB |
+| 352 | electronics/capacitor_equivalence | ✓ | 2.85ms | 12.5 MB |
+| 353 | electronics/carrier_concentration | ✓ | 5.34ms | 25.0 MB |
+| 354 | electronics/charging_capacitor | ✓ | 6.08ms | 35.3 MB |
+| 355 | electronics/charging_inductor | ✓ | 7.19ms | 34.0 MB |
+| 356 | electronics/circular_convolution | error |  |  |
+| 357 | electronics/coulombs_law | ✓ | 2.48ms | 17.3 MB |
+| 358 | electronics/electric_conductivity | ✓ | 4.78ms | 25.0 MB |
+| 359 | electronics/electric_power | error |  |  |
+| 360 | electronics/electrical_impedance | ✓ | 16.05ms | 32.8 MB |
+| 361 | electronics/ic_555_timer | ✓ | 6.64ms | 25.0 MB |
+| 362 | electronics/ind_reactance | ✓ | 11.99ms | 32.7 MB |
+| 363 | electronics/ohms_law | error |  |  |
+| 364 | electronics/real_and_reactive_power | ✓ | 7.78ms | 32.7 MB |
+| 365 | electronics/resistor_color_code | ✓ | 1us | 0 B |
+| 366 | electronics/resistor_equivalence | ✓ | 7.12ms | 25.0 MB |
+| 367 | electronics/resonant_frequency | ✓ | 5.83ms | 25.0 MB |
+| 368 | electronics/wheatstone_bridge | ✓ | 6.99ms | 25.0 MB |
+| 369 | file_transfer/receive_file | ✓ | 251us | 0 B |
+| 370 | file_transfer/send_file | ✓ | 231us | 12.5 MB |
+| 371 | file_transfer/tests/test_send_file | ✓ |  |  |
+| 372 | financial/equated_monthly_installments | ✓ | 6.03ms | 25.0 MB |
+| 373 | financial/exponential_moving_average | ✓ | 2.29ms | 17.3 MB |
+| 374 | financial/interest | ✓ | 7.09ms | 15.4 MB |
+| 375 | financial/present_value | ✓ | 7.68ms | 25.1 MB |
+| 376 | financial/price_plus_tax | ✓ | 6.42ms | 25.0 MB |
+| 377 | financial/simple_moving_average | ✓ | 2.70ms | 17.3 MB |
+| 378 | financial/straight_line_depreciation | ✓ | 8.01ms | 25.0 MB |
+| 379 | financial/time_and_half_pay | ✓ | 7.04ms | 25.1 MB |
+| 380 | fractals/julia_sets | ✓ | 11.73ms | 25.0 MB |
 | 381 | fractals/koch_snowflake |   |  |  |
 | 382 | fractals/mandelbrot |   |  |  |
 | 383 | fractals/sierpinski_triangle |   |  |  |

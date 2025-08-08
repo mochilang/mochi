@@ -1,0 +1,10 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 26 │       {guess, i} = try do
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/electronics/coulombs_law.exs:26:15: Main.sqrtApprox/1
+
+{"force": 33705.0}
+{"distance": 116112.01820813905}
+{"charge1": 8.900756564307966e-4}
