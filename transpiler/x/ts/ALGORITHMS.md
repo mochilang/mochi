@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-08 10:06 UTC
+Last updated: 2025-08-08 10:38 UTC
 
-## Algorithms Golden Test Checklist (1046/1077)
+## Algorithms Golden Test Checklist (1050/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 645µs | 22.6 KB |
@@ -421,7 +421,7 @@ Last updated: 2025-08-08 10:06 UTC
 | 412 | graphs/deep_clone_graph |   |  |  |
 | 413 | graphs/depth_first_search | ✓ | 1.48ms | 273.6 KB |
 | 414 | graphs/depth_first_search_2 | ✓ | 2.24ms | 291.1 KB |
-| 415 | graphs/dijkstra |   |  |  |
+| 415 | graphs/dijkstra | ✓ | 571.223ms | 28.8 KB |
 | 416 | graphs/dijkstra_2 | ✓ | 2.371ms | 43.2 KB |
 | 417 | graphs/dijkstra_algorithm | ✓ | 2.773ms | 587.0 KB |
 | 418 | graphs/dijkstra_alternate | ✓ | 1.915ms | 556.4 KB |
@@ -431,8 +431,8 @@ Last updated: 2025-08-08 10:06 UTC
 | 422 | graphs/edmonds_karp_multiple_source_and_sink |   |  |  |
 | 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 3.748ms | 569.5 KB |
 | 424 | graphs/even_tree | ✓ | 1.817ms | 35.0 KB |
-| 425 | graphs/finding_bridges |   |  |  |
-| 426 | graphs/frequent_pattern_graph_miner |   |  |  |
+| 425 | graphs/finding_bridges | ✓ | 571.223ms | 80.7 KB |
+| 426 | graphs/frequent_pattern_graph_miner | ✓ | 571.223ms | 466.9 KB |
 | 427 | graphs/g_topological_sort | ✓ | 2.276ms | 559.5 KB |
 | 428 | graphs/gale_shapley_bigraph | ✓ | 1.734ms | 532.0 KB |
 | 429 | graphs/graph_adjacency_list | ✓ | 2.11ms | 30.7 KB |
@@ -442,7 +442,7 @@ Last updated: 2025-08-08 10:06 UTC
 | 433 | graphs/greedy_best_first | ✓ | 4.768ms | 956.7 KB |
 | 434 | graphs/greedy_min_vertex_cover | ✓ | 1.908ms | 274.5 KB |
 | 435 | graphs/kahns_algorithm_long | ✓ | 1.466ms | 276.2 KB |
-| 436 | graphs/kahns_algorithm_topo |   |  |  |
+| 436 | graphs/kahns_algorithm_topo | ✓ | 571.223ms | 34.8 KB |
 | 437 | graphs/karger | ✓ | 2.475ms | 95.4 KB |
 | 438 | graphs/lanczos_eigenvectors | ✓ | 4.555ms | 820.6 KB |
 | 439 | graphs/markov_chain | ✓ | 12.999ms | 187.7 KB |
