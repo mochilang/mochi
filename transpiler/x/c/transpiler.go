@@ -156,11 +156,13 @@ func emitLenExpr(w io.Writer, e Expr) {
 		fmt.Fprintf(w, "%d", len(v.Elems))
 	case *IndexExpr:
 		if vr, ok := v.Target.(*VarRef); ok {
-			if typ, ok2 := varTypes[vr.Name]; ok2 && strings.HasSuffix(typ, "[][]") {
-				io.WriteString(w, vr.Name+"_lens[")
-				v.Index.emitExpr(w)
-				io.WriteString(w, "]")
-				break
+			if currentEnv != nil {
+				if _, err := currentEnv.GetVar(vr.Name + "_lens"); err == nil {
+					io.WriteString(w, vr.Name+"_lens[")
+					v.Index.emitExpr(w)
+					io.WriteString(w, "]")
+					break
+				}
 			}
 		}
 		io.WriteString(w, "0")
@@ -965,7 +967,77 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 		typ = "long long"
 	}
 	writeIndent(w, indent)
-	if strings.HasSuffix(typ, "[][]") {
+	if strings.HasSuffix(typ, "[][][]") {
+		base := strings.TrimSuffix(typ, "[][][]")
+		if lst, ok := d.Value.(*ListLit); ok {
+			for i, e := range lst.Elems {
+				if ll, ok2 := e.(*ListLit); ok2 {
+					for j, e2 := range ll.Elems {
+						if ll2, ok3 := e2.(*ListLit); ok3 {
+							fmt.Fprintf(w, "%s %s_%d_%d[%d] = {", base, d.Name, i, j, len(ll2.Elems))
+							for k, se := range ll2.Elems {
+								if k > 0 {
+									io.WriteString(w, ", ")
+								}
+								se.emitExpr(w)
+							}
+							io.WriteString(w, "};\n")
+							writeIndent(w, indent)
+						}
+					}
+					fmt.Fprintf(w, "%s *%s_%d_init[%d] = {", base, d.Name, i, len(ll.Elems))
+					for j := range ll.Elems {
+						if j > 0 {
+							io.WriteString(w, ", ")
+						}
+						fmt.Fprintf(w, "%s_%d_%d", d.Name, i, j)
+					}
+					io.WriteString(w, "};\n")
+					writeIndent(w, indent)
+					fmt.Fprintf(w, "%s **%s_%d = %s_%d_init;\n", base, d.Name, i, d.Name, i)
+					writeIndent(w, indent)
+				}
+			}
+			fmt.Fprintf(w, "%s **%s_init[%d] = {", base, d.Name, len(lst.Elems))
+			for i := range lst.Elems {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				fmt.Fprintf(w, "%s_%d", d.Name, i)
+			}
+			io.WriteString(w, "};\n")
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "%s ***%s = %s_init;\n", base, d.Name, d.Name)
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t %s_len = %d;\n", d.Name, len(lst.Elems))
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t %s_lens_init[%d] = {", d.Name, len(lst.Elems))
+			for i, e := range lst.Elems {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				if ll, ok2 := e.(*ListLit); ok2 {
+					fmt.Fprintf(w, "%d", len(ll.Elems))
+				} else {
+					io.WriteString(w, "0")
+				}
+			}
+			io.WriteString(w, "};\n")
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t *%s_lens = %s_lens_init;\n", d.Name, d.Name)
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t %s_lens_len = %d;\n", d.Name, len(lst.Elems))
+			return
+		}
+		fmt.Fprintf(w, "%s ***%s = NULL;\n", base, d.Name)
+		writeIndent(w, indent)
+		fmt.Fprintf(w, "size_t %s_len = 0;\n", d.Name)
+		writeIndent(w, indent)
+		fmt.Fprintf(w, "size_t *%s_lens = NULL;\n", d.Name)
+		writeIndent(w, indent)
+		fmt.Fprintf(w, "size_t %s_lens_len = 0;\n", d.Name)
+		return
+	} else if strings.HasSuffix(typ, "[][]") {
 		dims := strings.Count(typ, "[]")
 		base := strings.TrimSuffix(typ, strings.Repeat("[]", dims))
 		stars := strings.Repeat("*", dims)
