@@ -29,17 +29,17 @@ fun find_from(s: string, pattern: string, start: int): int {
 fun download_image(html: string): string {
   let tag: string = "<meta property=\"og:image\""
   let idx_tag: int = find_from(html, tag, 0)
-  if idx_tag == -1 {
+  if idx_tag == (-1) {
     return "No meta tag with property 'og:image' was found."
   }
   let key: string = "content=\""
   let idx_content: int = find_from(html, key, idx_tag)
-  if idx_content == -1 {
+  if idx_content == (-1) {
     return "Image URL not found in meta tag."
   }
   let start: int = idx_content + len(key)
   var end: int = start
-  while end < len(html) and substring(html, end, end + 1) != "\"" {
+  while end < len(html) && substring(html, end, end + 1) != "\"" {
     end = end + 1
   }
   if end >= len(html) {
