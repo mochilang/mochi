@@ -1,730 +1,730 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 608/1077
-Last updated: 2025-08-08 17:28 +0700
+Completed programs: 57/1077
+Last updated: 2025-08-08 18:00 +0700
 
 Checklist:
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:------:|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 301.0µs | 3.73MB |
-| 2 | backtracking/all_permutations | ✓ | 761.0µs | 3.77MB |
-| 3 | backtracking/all_subsequences | ✓ | 270.0µs | 3.70MB |
-| 4 | backtracking/coloring | ✓ | 249.0µs | 3.63MB |
-| 5 | backtracking/combination_sum | ✓ | 585.0µs | 3.69MB |
-| 6 | backtracking/crossword_puzzle_solver | ✓ | 272.0µs | 3.57MB |
-| 7 | backtracking/hamiltonian_cycle | ✓ | 3.0µs | 3.42MB |
+| 1 | backtracking/all_combinations |   |  |  |
+| 2 | backtracking/all_permutations |   |  |  |
+| 3 | backtracking/all_subsequences |   |  |  |
+| 4 | backtracking/coloring |   |  |  |
+| 5 | backtracking/combination_sum |   |  |  |
+| 6 | backtracking/crossword_puzzle_solver |   |  |  |
+| 7 | backtracking/hamiltonian_cycle |   |  |  |
 | 8 | backtracking/knight_tour |   |  |  |
 | 9 | backtracking/match_word_pattern |   |  |  |
-| 10 | backtracking/minimax | ✓ | 272.0µs | 3.55MB |
-| 11 | backtracking/n_queens | ✓ | 387.0µs | 3.57MB |
+| 10 | backtracking/minimax |   |  |  |
+| 11 | backtracking/n_queens |   |  |  |
 | 12 | backtracking/n_queens_math |   |  |  |
-| 13 | backtracking/power_sum | ✓ | 267.0µs | 3.62MB |
-| 14 | backtracking/rat_in_maze | ✓ | 291.0µs | 3.47MB |
+| 13 | backtracking/power_sum |   |  |  |
+| 14 | backtracking/rat_in_maze |   |  |  |
 | 15 | backtracking/sudoku |   |  |  |
 | 16 | backtracking/sum_of_subsets |   |  |  |
 | 17 | backtracking/word_break |   |  |  |
 | 18 | backtracking/word_ladder |   |  |  |
 | 19 | backtracking/word_search |   |  |  |
 | 20 | bit_manipulation/binary_and_operator |   |  |  |
-| 21 | bit_manipulation/binary_coded_decimal | ✓ | 361.0µs | 3.75MB |
-| 22 | bit_manipulation/binary_count_setbits | ✓ | 251.0µs | 3.57MB |
-| 23 | bit_manipulation/binary_count_trailing_zeros | ✓ | 370.0µs | 3.73MB |
-| 24 | bit_manipulation/binary_or_operator | ✓ | 174.0µs | 3.52MB |
-| 25 | bit_manipulation/binary_shifts | ✓ | 288.0µs | 3.62MB |
-| 26 | bit_manipulation/binary_twos_complement | ✓ | 278.0µs | 3.56MB |
-| 27 | bit_manipulation/binary_xor_operator | ✓ | 324.0µs | 3.61MB |
-| 28 | bit_manipulation/bitwise_addition_recursive | ✓ | 318.0µs | 3.53MB |
-| 29 | bit_manipulation/count_1s_brian_kernighan_method | ✓ | 222.0µs | 3.69MB |
-| 30 | bit_manipulation/count_number_of_one_bits | ✓ | 234.0µs | 3.58MB |
-| 31 | bit_manipulation/excess_3_code | ✓ | 273.0µs | 3.59MB |
-| 32 | bit_manipulation/find_previous_power_of_two | ✓ | 283.0µs | 3.73MB |
-| 33 | bit_manipulation/find_unique_number | ✓ | 407.0µs | 3.59MB |
-| 34 | bit_manipulation/gray_code_sequence | ✓ | 248.0µs | 3.44MB |
-| 35 | bit_manipulation/highest_set_bit | ✓ | 216.0µs | 3.69MB |
-| 36 | bit_manipulation/index_of_rightmost_set_bit | ✓ | 221.0µs | 3.54MB |
-| 37 | bit_manipulation/is_even | ✓ | 369.0µs | 3.69MB |
-| 38 | bit_manipulation/is_power_of_two | ✓ | 2.0µs | 3.45MB |
-| 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 266.0µs | 3.58MB |
-| 40 | bit_manipulation/missing_number | ✓ | 224.0µs | 3.48MB |
-| 41 | bit_manipulation/numbers_different_signs | ✓ | 249.0µs | 3.61MB |
-| 42 | bit_manipulation/power_of_4 | ✓ | 199.0µs | 3.58MB |
-| 43 | bit_manipulation/reverse_bits | ✓ | 283.0µs | 3.50MB |
-| 44 | bit_manipulation/single_bit_manipulation_operations | ✓ | 193.0µs | 3.59MB |
-| 45 | bit_manipulation/swap_all_odd_and_even_bits | ✓ | 439.0µs | 3.65MB |
-| 46 | blockchain/diophantine_equation | ✓ | 275.0µs | 3.46MB |
-| 47 | boolean_algebra/and_gate | ✓ | 155.0µs | 3.64MB |
-| 48 | boolean_algebra/imply_gate | ✓ | 114.0µs | 3.53MB |
-| 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 201.0µs | 3.48MB |
-| 50 | boolean_algebra/multiplexer | ✓ | 126.0µs | 3.51MB |
-| 51 | boolean_algebra/nand_gate | ✓ | 211.0µs | 3.58MB |
-| 52 | boolean_algebra/nimply_gate | ✓ | 109.0µs | 3.51MB |
-| 53 | boolean_algebra/nor_gate | ✓ | 312.0µs | 3.60MB |
-| 54 | boolean_algebra/not_gate | ✓ | 168.0µs | 3.62MB |
-| 55 | boolean_algebra/or_gate | ✓ | 182.0µs | 3.54MB |
-| 56 | boolean_algebra/quine_mc_cluskey | ✓ | 245.0µs | 3.50MB |
-| 57 | boolean_algebra/xnor_gate | ✓ | 137.0µs | 3.43MB |
-| 58 | boolean_algebra/xor_gate | ✓ | 263.0µs | 3.54MB |
-| 59 | cellular_automata/conways_game_of_life | ✓ | 501.0µs | 3.57MB |
-| 60 | cellular_automata/game_of_life | ✓ | 475.0µs | 3.57MB |
-| 61 | cellular_automata/langtons_ant | ✓ | 1.0µs | 3.47MB |
-| 62 | cellular_automata/nagel_schrekenberg | ✓ | 314.0µs | 3.61MB |
-| 63 | cellular_automata/one_dimensional | ✓ | 1.0ms | 3.71MB |
-| 64 | cellular_automata/wa_tor | ✓ | 1.0ms | 3.66MB |
-| 65 | ciphers/a1z26 | ✓ | 279.0µs | 3.62MB |
-| 66 | ciphers/affine_cipher | ✓ | 1.0ms | 3.44MB |
-| 67 | ciphers/atbash | ✓ | 315.0µs | 3.48MB |
-| 68 | ciphers/autokey | ✓ | 820.0µs | 3.59MB |
-| 69 | ciphers/baconian_cipher | ✓ | 199.0µs | 3.62MB |
-| 70 | ciphers/base16 | ✓ | 282.0µs | 3.49MB |
-| 71 | ciphers/base32 | ✓ | 1.0ms | 3.70MB |
-| 72 | ciphers/base64_cipher | ✓ | 406.0µs | 3.71MB |
-| 73 | ciphers/base85 | ✓ | 536.0µs | 3.60MB |
-| 74 | ciphers/beaufort_cipher | ✓ | 252.0µs | 3.64MB |
-| 75 | ciphers/bifid | ✓ | 520.0µs | 3.59MB |
-| 76 | ciphers/brute_force_caesar_cipher | ✓ | 1.0ms | 3.73MB |
-| 77 | ciphers/caesar_cipher | ✓ | 7.0ms | 3.71MB |
-| 78 | ciphers/cryptomath_module | ✓ | 206.0µs | 3.55MB |
-| 79 | ciphers/decrypt_caesar_with_chi_squared | ✓ | 408.0µs | 3.77MB |
-| 80 | ciphers/deterministic_miller_rabin | ✓ | 268.0µs | 3.70MB |
-| 81 | ciphers/diffie | ✓ | 254.0µs | 3.68MB |
-| 82 | ciphers/diffie_hellman | ✓ | 295.0µs | 3.48MB |
-| 83 | ciphers/elgamal_key_generator | ✓ | 261.0µs | 3.53MB |
-| 84 | ciphers/enigma_machine2 | ✓ | 3.0ms | 3.60MB |
-| 85 | ciphers/fractionated_morse_cipher | ✓ | 275.0µs | 3.55MB |
-| 86 | ciphers/gronsfeld_cipher | ✓ | 719.0µs | 3.48MB |
-| 87 | ciphers/hill_cipher | ✓ | 691.0µs | 3.67MB |
-| 88 | ciphers/mixed_keyword_cypher | ✓ | 693.0µs | 3.58MB |
-| 89 | ciphers/mono_alphabetic_ciphers | ✓ | 196.0µs | 3.56MB |
-| 90 | ciphers/morse_code | ✓ | 211.0µs | 3.65MB |
-| 91 | ciphers/onepad_cipher | ✓ | 165.0µs | 3.61MB |
-| 92 | ciphers/permutation_cipher | ✓ | 247.0µs | 3.68MB |
-| 93 | ciphers/playfair_cipher | ✓ | 470.0µs | 3.60MB |
-| 94 | ciphers/polybius | ✓ | 332.0µs | 3.71MB |
-| 95 | ciphers/porta_cipher | ✓ | 468.0µs | 3.57MB |
-| 96 | ciphers/rabin_miller | ✓ | 221.0µs | 3.80MB |
-| 97 | ciphers/rail_fence_cipher | ✓ | 275.0µs | 3.47MB |
-| 98 | ciphers/rot13 | ✓ | 1.0ms | 3.56MB |
-| 99 | ciphers/rsa_cipher | ✓ | 300.0µs | 3.71MB |
-| 100 | ciphers/rsa_factorization | ✓ | 299.0µs | 3.63MB |
-| 101 | ciphers/rsa_key_generator | ✓ | 203.0µs | 3.66MB |
-| 102 | ciphers/running_key_cipher | ✓ | 369.0µs | 3.59MB |
-| 103 | ciphers/shuffled_shift_cipher | ✓ | 216.0µs | 3.56MB |
-| 104 | ciphers/simple_keyword_cypher | ✓ | 156.0µs | 3.48MB |
-| 105 | ciphers/simple_substitution_cipher | ✓ | 306.0µs | 3.59MB |
+| 21 | bit_manipulation/binary_coded_decimal |   |  |  |
+| 22 | bit_manipulation/binary_count_setbits |   |  |  |
+| 23 | bit_manipulation/binary_count_trailing_zeros |   |  |  |
+| 24 | bit_manipulation/binary_or_operator |   |  |  |
+| 25 | bit_manipulation/binary_shifts |   |  |  |
+| 26 | bit_manipulation/binary_twos_complement |   |  |  |
+| 27 | bit_manipulation/binary_xor_operator |   |  |  |
+| 28 | bit_manipulation/bitwise_addition_recursive |   |  |  |
+| 29 | bit_manipulation/count_1s_brian_kernighan_method |   |  |  |
+| 30 | bit_manipulation/count_number_of_one_bits |   |  |  |
+| 31 | bit_manipulation/excess_3_code |   |  |  |
+| 32 | bit_manipulation/find_previous_power_of_two |   |  |  |
+| 33 | bit_manipulation/find_unique_number |   |  |  |
+| 34 | bit_manipulation/gray_code_sequence |   |  |  |
+| 35 | bit_manipulation/highest_set_bit |   |  |  |
+| 36 | bit_manipulation/index_of_rightmost_set_bit |   |  |  |
+| 37 | bit_manipulation/is_even |   |  |  |
+| 38 | bit_manipulation/is_power_of_two |   |  |  |
+| 39 | bit_manipulation/largest_pow_of_two_le_num |   |  |  |
+| 40 | bit_manipulation/missing_number |   |  |  |
+| 41 | bit_manipulation/numbers_different_signs |   |  |  |
+| 42 | bit_manipulation/power_of_4 |   |  |  |
+| 43 | bit_manipulation/reverse_bits |   |  |  |
+| 44 | bit_manipulation/single_bit_manipulation_operations |   |  |  |
+| 45 | bit_manipulation/swap_all_odd_and_even_bits |   |  |  |
+| 46 | blockchain/diophantine_equation |   |  |  |
+| 47 | boolean_algebra/and_gate |   |  |  |
+| 48 | boolean_algebra/imply_gate |   |  |  |
+| 49 | boolean_algebra/karnaugh_map_simplification |   |  |  |
+| 50 | boolean_algebra/multiplexer |   |  |  |
+| 51 | boolean_algebra/nand_gate |   |  |  |
+| 52 | boolean_algebra/nimply_gate |   |  |  |
+| 53 | boolean_algebra/nor_gate |   |  |  |
+| 54 | boolean_algebra/not_gate |   |  |  |
+| 55 | boolean_algebra/or_gate |   |  |  |
+| 56 | boolean_algebra/quine_mc_cluskey |   |  |  |
+| 57 | boolean_algebra/xnor_gate |   |  |  |
+| 58 | boolean_algebra/xor_gate |   |  |  |
+| 59 | cellular_automata/conways_game_of_life |   |  |  |
+| 60 | cellular_automata/game_of_life |   |  |  |
+| 61 | cellular_automata/langtons_ant |   |  |  |
+| 62 | cellular_automata/nagel_schrekenberg |   |  |  |
+| 63 | cellular_automata/one_dimensional |   |  |  |
+| 64 | cellular_automata/wa_tor |   |  |  |
+| 65 | ciphers/a1z26 |   |  |  |
+| 66 | ciphers/affine_cipher |   |  |  |
+| 67 | ciphers/atbash |   |  |  |
+| 68 | ciphers/autokey |   |  |  |
+| 69 | ciphers/baconian_cipher |   |  |  |
+| 70 | ciphers/base16 |   |  |  |
+| 71 | ciphers/base32 |   |  |  |
+| 72 | ciphers/base64_cipher |   |  |  |
+| 73 | ciphers/base85 |   |  |  |
+| 74 | ciphers/beaufort_cipher |   |  |  |
+| 75 | ciphers/bifid |   |  |  |
+| 76 | ciphers/brute_force_caesar_cipher |   |  |  |
+| 77 | ciphers/caesar_cipher |   |  |  |
+| 78 | ciphers/cryptomath_module |   |  |  |
+| 79 | ciphers/decrypt_caesar_with_chi_squared |   |  |  |
+| 80 | ciphers/deterministic_miller_rabin |   |  |  |
+| 81 | ciphers/diffie |   |  |  |
+| 82 | ciphers/diffie_hellman |   |  |  |
+| 83 | ciphers/elgamal_key_generator |   |  |  |
+| 84 | ciphers/enigma_machine2 |   |  |  |
+| 85 | ciphers/fractionated_morse_cipher |   |  |  |
+| 86 | ciphers/gronsfeld_cipher |   |  |  |
+| 87 | ciphers/hill_cipher |   |  |  |
+| 88 | ciphers/mixed_keyword_cypher |   |  |  |
+| 89 | ciphers/mono_alphabetic_ciphers |   |  |  |
+| 90 | ciphers/morse_code |   |  |  |
+| 91 | ciphers/onepad_cipher |   |  |  |
+| 92 | ciphers/permutation_cipher |   |  |  |
+| 93 | ciphers/playfair_cipher |   |  |  |
+| 94 | ciphers/polybius |   |  |  |
+| 95 | ciphers/porta_cipher |   |  |  |
+| 96 | ciphers/rabin_miller |   |  |  |
+| 97 | ciphers/rail_fence_cipher |   |  |  |
+| 98 | ciphers/rot13 |   |  |  |
+| 99 | ciphers/rsa_cipher |   |  |  |
+| 100 | ciphers/rsa_factorization |   |  |  |
+| 101 | ciphers/rsa_key_generator |   |  |  |
+| 102 | ciphers/running_key_cipher |   |  |  |
+| 103 | ciphers/shuffled_shift_cipher |   |  |  |
+| 104 | ciphers/simple_keyword_cypher |   |  |  |
+| 105 | ciphers/simple_substitution_cipher |   |  |  |
 | 106 | ciphers/transposition_cipher |   |  |  |
-| 107 | ciphers/transposition_cipher_encrypt_decrypt_file | ✓ | 189.0µs | 3.59MB |
-| 108 | ciphers/trifid_cipher | ✓ | 577.0µs | 3.48MB |
-| 109 | ciphers/vernam_cipher | ✓ | 161.0µs | 3.52MB |
-| 110 | ciphers/vigenere_cipher | ✓ | 616.0µs | 3.47MB |
-| 111 | ciphers/xor_cipher | ✓ | 269.0µs | 3.57MB |
-| 112 | computer_vision/cnn_classification | ✓ | 344.0µs | 3.73MB |
-| 113 | computer_vision/flip_augmentation | ✓ | 411.0µs | 3.88MB |
-| 114 | computer_vision/haralick_descriptors | ✓ | 318.0µs | 3.72MB |
-| 115 | computer_vision/harris_corner | ✓ | 200.0µs | 3.64MB |
-| 116 | computer_vision/horn_schunck | ✓ | 941.0µs | 3.77MB |
-| 117 | computer_vision/intensity_based_segmentation | ✓ | 230.0µs | 3.62MB |
-| 118 | computer_vision/mean_threshold | ✓ | 164.0µs | 3.57MB |
-| 119 | computer_vision/mosaic_augmentation | ✓ | 7.0ms | 4.00MB |
-| 120 | computer_vision/pooling_functions | ✓ | 273.0µs | 3.72MB |
-| 121 | conversions/astronomical_length_scale_conversion | ✓ | 352.0µs | 3.75MB |
-| 122 | conversions/binary_to_decimal | ✓ | 224.0µs | 3.68MB |
-| 123 | conversions/binary_to_hexadecimal | ✓ | 184.0µs | 3.44MB |
-| 124 | conversions/binary_to_octal | ✓ | 181.0µs | 3.59MB |
-| 125 | conversions/convert_number_to_words | ✓ | 261.0µs | 3.67MB |
-| 126 | conversions/decimal_to_any | ✓ | 132.0µs | 3.52MB |
-| 127 | conversions/decimal_to_binary | ✓ | 159.0µs | 3.61MB |
-| 128 | conversions/decimal_to_hexadecimal | ✓ | 119.0µs | 3.52MB |
-| 129 | conversions/decimal_to_octal | ✓ | 209.0µs | 3.55MB |
-| 130 | conversions/energy_conversions | ✓ | 326.0µs | 3.79MB |
-| 131 | conversions/excel_title_to_column | ✓ | 121.0µs | 3.65MB |
-| 132 | conversions/hex_to_bin | ✓ | 263.0µs | 3.66MB |
-| 133 | conversions/hexadecimal_to_decimal | ✓ | 223.0µs | 3.61MB |
-| 134 | conversions/ipv4_conversion | ✓ | 269.0µs | 3.76MB |
-| 135 | conversions/length_conversion | ✓ | 584.0µs | 3.80MB |
-| 136 | conversions/molecular_chemistry | ✓ | 267.0µs | 3.68MB |
-| 137 | conversions/octal_to_binary | ✓ | 258.0µs | 3.61MB |
-| 138 | conversions/octal_to_decimal | ✓ | 202.0µs | 3.61MB |
-| 139 | conversions/octal_to_hexadecimal | ✓ | 190.0µs | 3.56MB |
-| 140 | conversions/prefix_conversions | ✓ | 320.0µs | 3.71MB |
-| 141 | conversions/prefix_conversions_string | ✓ | 312.0µs | 3.75MB |
+| 107 | ciphers/transposition_cipher_encrypt_decrypt_file |   |  |  |
+| 108 | ciphers/trifid_cipher |   |  |  |
+| 109 | ciphers/vernam_cipher |   |  |  |
+| 110 | ciphers/vigenere_cipher |   |  |  |
+| 111 | ciphers/xor_cipher |   |  |  |
+| 112 | computer_vision/cnn_classification |   |  |  |
+| 113 | computer_vision/flip_augmentation |   |  |  |
+| 114 | computer_vision/haralick_descriptors |   |  |  |
+| 115 | computer_vision/harris_corner |   |  |  |
+| 116 | computer_vision/horn_schunck |   |  |  |
+| 117 | computer_vision/intensity_based_segmentation |   |  |  |
+| 118 | computer_vision/mean_threshold |   |  |  |
+| 119 | computer_vision/mosaic_augmentation |   |  |  |
+| 120 | computer_vision/pooling_functions |   |  |  |
+| 121 | conversions/astronomical_length_scale_conversion |   |  |  |
+| 122 | conversions/binary_to_decimal |   |  |  |
+| 123 | conversions/binary_to_hexadecimal |   |  |  |
+| 124 | conversions/binary_to_octal |   |  |  |
+| 125 | conversions/convert_number_to_words |   |  |  |
+| 126 | conversions/decimal_to_any |   |  |  |
+| 127 | conversions/decimal_to_binary |   |  |  |
+| 128 | conversions/decimal_to_hexadecimal |   |  |  |
+| 129 | conversions/decimal_to_octal |   |  |  |
+| 130 | conversions/energy_conversions |   |  |  |
+| 131 | conversions/excel_title_to_column |   |  |  |
+| 132 | conversions/hex_to_bin |   |  |  |
+| 133 | conversions/hexadecimal_to_decimal |   |  |  |
+| 134 | conversions/ipv4_conversion |   |  |  |
+| 135 | conversions/length_conversion |   |  |  |
+| 136 | conversions/molecular_chemistry |   |  |  |
+| 137 | conversions/octal_to_binary |   |  |  |
+| 138 | conversions/octal_to_decimal |   |  |  |
+| 139 | conversions/octal_to_hexadecimal |   |  |  |
+| 140 | conversions/prefix_conversions |   |  |  |
+| 141 | conversions/prefix_conversions_string |   |  |  |
 | 142 | conversions/pressure_conversions |   |  |  |
-| 143 | conversions/rectangular_to_polar | ✓ | 341.0µs | 3.73MB |
-| 144 | conversions/rgb_cmyk_conversion | ✓ | 182.0µs | 3.63MB |
-| 145 | conversions/rgb_hsv_conversion | ✓ | 396.0µs | 3.79MB |
-| 146 | conversions/roman_numerals | ✓ | 0ns | 3.43MB |
-| 147 | conversions/speed_conversions | ✓ | 334.0µs | 3.72MB |
-| 148 | conversions/temperature_conversions | ✓ | 439.0µs | 3.83MB |
-| 149 | conversions/time_conversions | ✓ | 327.0µs | 3.72MB |
-| 150 | conversions/volume_conversions | ✓ | 312.0µs | 3.76MB |
-| 151 | conversions/weight_conversion | ✓ | 400.0µs | 3.66MB |
-| 152 | data_compression/burrows_wheeler | ✓ | 187.0µs | 3.59MB |
-| 153 | data_compression/huffman | ✓ | 344.0µs | 3.54MB |
+| 143 | conversions/rectangular_to_polar |   |  |  |
+| 144 | conversions/rgb_cmyk_conversion |   |  |  |
+| 145 | conversions/rgb_hsv_conversion |   |  |  |
+| 146 | conversions/roman_numerals |   |  |  |
+| 147 | conversions/speed_conversions |   |  |  |
+| 148 | conversions/temperature_conversions |   |  |  |
+| 149 | conversions/time_conversions |   |  |  |
+| 150 | conversions/volume_conversions |   |  |  |
+| 151 | conversions/weight_conversion |   |  |  |
+| 152 | data_compression/burrows_wheeler |   |  |  |
+| 153 | data_compression/huffman |   |  |  |
 | 154 | data_compression/lempel_ziv |   |  |  |
-| 155 | data_compression/lempel_ziv_decompress | ✓ | 94.0µs | 3.58MB |
-| 156 | data_compression/lz77 | ✓ | 250.0µs | 3.63MB |
-| 157 | data_compression/peak_signal_to_noise_ratio | ✓ | 9.0µs | 3.60MB |
-| 158 | data_compression/run_length_encoding | ✓ | 249.0µs | 3.70MB |
-| 159 | data_structures/arrays/equilibrium_index_in_array | ✓ | 132.0µs | 3.52MB |
-| 160 | data_structures/arrays/find_triplets_with_0_sum | ✓ | 268.0µs | 3.59MB |
-| 161 | data_structures/arrays/index_2d_array_in_1d | ✓ | 212.0µs | 3.62MB |
-| 162 | data_structures/arrays/kth_largest_element | ✓ | 188.0µs | 3.48MB |
-| 163 | data_structures/arrays/median_two_array | ✓ | 342.0µs | 3.73MB |
-| 164 | data_structures/arrays/monotonic_array | ✓ | 207.0µs | 3.74MB |
-| 165 | data_structures/arrays/pairs_with_given_sum | ✓ | 141.0µs | 3.69MB |
-| 166 | data_structures/arrays/permutations | ✓ | 297.0µs | 3.63MB |
-| 167 | data_structures/arrays/prefix_sum | ✓ | 150.0µs | 3.54MB |
-| 168 | data_structures/arrays/product_sum | ✓ | 126.0µs | 3.65MB |
-| 169 | data_structures/arrays/sparse_table | ✓ | 220.0µs | 3.62MB |
-| 170 | data_structures/arrays/sudoku_solver | ✓ | 925.0µs | 3.68MB |
-| 171 | data_structures/binary_tree/avl_tree | ✓ | 395.0µs | 3.80MB |
-| 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 195.0µs | 3.50MB |
-| 173 | data_structures/binary_tree/binary_search_tree | ✓ | 215.0µs | 3.61MB |
+| 155 | data_compression/lempel_ziv_decompress |   |  |  |
+| 156 | data_compression/lz77 |   |  |  |
+| 157 | data_compression/peak_signal_to_noise_ratio |   |  |  |
+| 158 | data_compression/run_length_encoding |   |  |  |
+| 159 | data_structures/arrays/equilibrium_index_in_array |   |  |  |
+| 160 | data_structures/arrays/find_triplets_with_0_sum |   |  |  |
+| 161 | data_structures/arrays/index_2d_array_in_1d |   |  |  |
+| 162 | data_structures/arrays/kth_largest_element |   |  |  |
+| 163 | data_structures/arrays/median_two_array |   |  |  |
+| 164 | data_structures/arrays/monotonic_array |   |  |  |
+| 165 | data_structures/arrays/pairs_with_given_sum |   |  |  |
+| 166 | data_structures/arrays/permutations |   |  |  |
+| 167 | data_structures/arrays/prefix_sum |   |  |  |
+| 168 | data_structures/arrays/product_sum |   |  |  |
+| 169 | data_structures/arrays/sparse_table |   |  |  |
+| 170 | data_structures/arrays/sudoku_solver |   |  |  |
+| 171 | data_structures/binary_tree/avl_tree |   |  |  |
+| 172 | data_structures/binary_tree/basic_binary_tree |   |  |  |
+| 173 | data_structures/binary_tree/binary_search_tree |   |  |  |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive |   |  |  |
-| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 298.0µs | 3.64MB |
-| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 141.0µs | 3.44MB |
+| 175 | data_structures/binary_tree/binary_tree_mirror |   |  |  |
+| 176 | data_structures/binary_tree/binary_tree_node_sum |   |  |  |
 | 177 | data_structures/binary_tree/binary_tree_path_sum |   |  |  |
-| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 202.0µs | 3.71MB |
-| 179 | data_structures/binary_tree/distribute_coins | ✓ | 178.0µs | 3.48MB |
-| 180 | data_structures/binary_tree/fenwick_tree | ✓ | 145.0µs | 3.48MB |
-| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 287.0µs | 3.56MB |
+| 178 | data_structures/binary_tree/diff_views_of_binary_tree |   |  |  |
+| 179 | data_structures/binary_tree/distribute_coins |   |  |  |
+| 180 | data_structures/binary_tree/fenwick_tree |   |  |  |
+| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist |   |  |  |
 | 182 | data_structures/binary_tree/floor_and_ceiling |   |  |  |
-| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 | ✓ | 154.0µs | 3.59MB |
+| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 |   |  |  |
 | 184 | data_structures/binary_tree/is_sorted |   |  |  |
-| 185 | data_structures/binary_tree/is_sum_tree | ✓ | 19.0µs | 3.39MB |
-| 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 420.0µs | 3.73MB |
-| 187 | data_structures/binary_tree/lowest_common_ancestor | ✓ | 534.0µs | 3.56MB |
-| 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 209.0ms | 3.81MB |
-| 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 130.0µs | 3.57MB |
+| 185 | data_structures/binary_tree/is_sum_tree |   |  |  |
+| 186 | data_structures/binary_tree/lazy_segment_tree |   |  |  |
+| 187 | data_structures/binary_tree/lowest_common_ancestor |   |  |  |
+| 188 | data_structures/binary_tree/maximum_fenwick_tree |   |  |  |
+| 189 | data_structures/binary_tree/maximum_sum_bst |   |  |  |
 | 190 | data_structures/binary_tree/merge_two_binary_trees |   |  |  |
 | 191 | data_structures/binary_tree/mirror_binary_tree |   |  |  |
-| 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 198.0µs | 3.61MB |
+| 192 | data_structures/binary_tree/non_recursive_segment_tree |   |  |  |
 | 193 | data_structures/binary_tree/number_of_possible_binary_trees |   |  |  |
-| 194 | data_structures/binary_tree/red_black_tree | ✓ | 291.0µs | 3.65MB |
-| 195 | data_structures/binary_tree/segment_tree | ✓ | 283.0µs | 3.63MB |
-| 196 | data_structures/binary_tree/segment_tree_other | ✓ | 571.0µs | 3.68MB |
+| 194 | data_structures/binary_tree/red_black_tree |   |  |  |
+| 195 | data_structures/binary_tree/segment_tree |   |  |  |
+| 196 | data_structures/binary_tree/segment_tree_other |   |  |  |
 | 197 | data_structures/binary_tree/serialize_deserialize_binary_tree |   |  |  |
-| 198 | data_structures/binary_tree/symmetric_tree | ✓ | 205.0µs | 3.69MB |
+| 198 | data_structures/binary_tree/symmetric_tree |   |  |  |
 | 199 | data_structures/binary_tree/treap |   |  |  |
-| 200 | data_structures/binary_tree/wavelet_tree | ✓ | 191.0µs | 3.65MB |
-| 201 | data_structures/disjoint_set/alternate_disjoint_set | ✓ | 131.0µs | 3.48MB |
-| 202 | data_structures/disjoint_set/disjoint_set | ✓ | 253.0µs | 3.55MB |
-| 203 | data_structures/hashing/bloom_filter | ✓ | 2.0ms | 3.75MB |
-| 204 | data_structures/hashing/double_hash | ✓ | 253.0µs | 3.62MB |
-| 205 | data_structures/hashing/hash_map | ✓ | 185.0µs | 3.77MB |
-| 206 | data_structures/hashing/hash_table | ✓ | 233.0µs | 3.72MB |
+| 200 | data_structures/binary_tree/wavelet_tree |   |  |  |
+| 201 | data_structures/disjoint_set/alternate_disjoint_set |   |  |  |
+| 202 | data_structures/disjoint_set/disjoint_set |   |  |  |
+| 203 | data_structures/hashing/bloom_filter |   |  |  |
+| 204 | data_structures/hashing/double_hash |   |  |  |
+| 205 | data_structures/hashing/hash_map |   |  |  |
+| 206 | data_structures/hashing/hash_table |   |  |  |
 | 207 | data_structures/hashing/hash_table_with_linked_list |   |  |  |
 | 208 | data_structures/hashing/number_theory/prime_numbers |   |  |  |
-| 209 | data_structures/hashing/quadratic_probing | ✓ | 127.0µs | 3.54MB |
-| 210 | data_structures/hashing/tests/test_hash_map | ✓ | 409.0µs | 3.54MB |
-| 211 | data_structures/heap/binomial_heap | ✓ | 302.0µs | 3.75MB |
-| 212 | data_structures/heap/heap | ✓ |  |  |
-| 213 | data_structures/heap/heap_generic | ✓ | 415.0µs | 3.59MB |
-| 214 | data_structures/heap/max_heap | ✓ | 199.0µs | 3.43MB |
-| 215 | data_structures/heap/min_heap | ✓ | 380.0µs | 3.79MB |
-| 216 | data_structures/heap/randomized_heap | ✓ | 403.0µs | 3.55MB |
-| 217 | data_structures/kd_tree/build_kdtree | ✓ | 413.0µs | 3.75MB |
-| 218 | data_structures/kd_tree/example/example_usage | ✓ | 6.66s | 6.55MB |
-| 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 439.0µs | 3.66MB |
-| 220 | data_structures/kd_tree/kd_node | ✓ | 362.0µs | 3.72MB |
-| 221 | data_structures/kd_tree/nearest_neighbour_search | ✓ | 461.0µs | 3.77MB |
-| 222 | data_structures/kd_tree/tests/test_kdtree | ✓ | 312.0µs | 3.69MB |
+| 209 | data_structures/hashing/quadratic_probing |   |  |  |
+| 210 | data_structures/hashing/tests/test_hash_map |   |  |  |
+| 211 | data_structures/heap/binomial_heap |   |  |  |
+| 212 | data_structures/heap/heap |   |  |  |
+| 213 | data_structures/heap/heap_generic |   |  |  |
+| 214 | data_structures/heap/max_heap |   |  |  |
+| 215 | data_structures/heap/min_heap |   |  |  |
+| 216 | data_structures/heap/randomized_heap |   |  |  |
+| 217 | data_structures/kd_tree/build_kdtree |   |  |  |
+| 218 | data_structures/kd_tree/example/example_usage |   |  |  |
+| 219 | data_structures/kd_tree/example/hypercube_points |   |  |  |
+| 220 | data_structures/kd_tree/kd_node |   |  |  |
+| 221 | data_structures/kd_tree/nearest_neighbour_search |   |  |  |
+| 222 | data_structures/kd_tree/tests/test_kdtree |   |  |  |
 | 223 | data_structures/linked_list/circular_linked_list |   |  |  |
 | 224 | data_structures/linked_list/deque_doubly |   |  |  |
 | 225 | data_structures/linked_list/doubly_linked_list |   |  |  |
 | 226 | data_structures/linked_list/doubly_linked_list_two |   |  |  |
-| 227 | data_structures/linked_list/floyds_cycle_detection | ✓ | 205.0µs | 3.52MB |
+| 227 | data_structures/linked_list/floyds_cycle_detection |   |  |  |
 | 228 | data_structures/linked_list/from_sequence |   |  |  |
-| 229 | data_structures/linked_list/has_loop | ✓ | 215.0µs | 3.62MB |
-| 230 | data_structures/linked_list/is_palindrome | ✓ | 152.0µs | 3.48MB |
-| 231 | data_structures/linked_list/merge_two_lists | ✓ | 293.0µs | 3.61MB |
-| 232 | data_structures/linked_list/middle_element_of_linked_list | ✓ | 213.0µs | 3.51MB |
-| 233 | data_structures/linked_list/print_reverse | ✓ | 238.0µs | 3.74MB |
-| 234 | data_structures/linked_list/reverse_k_group | ✓ | 252.0µs | 3.62MB |
-| 235 | data_structures/linked_list/rotate_to_the_right | ✓ | 250.0µs | 3.64MB |
-| 236 | data_structures/linked_list/singly_linked_list | ✓ | 328.0µs | 3.55MB |
-| 237 | data_structures/linked_list/skip_list | ✓ | 294.0µs | 3.77MB |
-| 238 | data_structures/linked_list/swap_nodes | ✓ | 272.0µs | 3.45MB |
-| 239 | data_structures/queues/circular_queue | ✓ | 176.0µs | 3.58MB |
-| 240 | data_structures/queues/circular_queue_linked_list | ✓ | 209.0µs | 3.57MB |
-| 241 | data_structures/queues/double_ended_queue | ✓ | 268.0µs | 3.62MB |
-| 242 | data_structures/queues/linked_queue | ✓ | 231.0µs | 3.70MB |
-| 243 | data_structures/queues/priority_queue_using_list | ✓ | 803.0µs | 3.51MB |
+| 229 | data_structures/linked_list/has_loop |   |  |  |
+| 230 | data_structures/linked_list/is_palindrome |   |  |  |
+| 231 | data_structures/linked_list/merge_two_lists |   |  |  |
+| 232 | data_structures/linked_list/middle_element_of_linked_list |   |  |  |
+| 233 | data_structures/linked_list/print_reverse |   |  |  |
+| 234 | data_structures/linked_list/reverse_k_group |   |  |  |
+| 235 | data_structures/linked_list/rotate_to_the_right |   |  |  |
+| 236 | data_structures/linked_list/singly_linked_list |   |  |  |
+| 237 | data_structures/linked_list/skip_list |   |  |  |
+| 238 | data_structures/linked_list/swap_nodes |   |  |  |
+| 239 | data_structures/queues/circular_queue |   |  |  |
+| 240 | data_structures/queues/circular_queue_linked_list |   |  |  |
+| 241 | data_structures/queues/double_ended_queue |   |  |  |
+| 242 | data_structures/queues/linked_queue |   |  |  |
+| 243 | data_structures/queues/priority_queue_using_list |   |  |  |
 | 244 | data_structures/queues/queue_by_list |   |  |  |
-| 245 | data_structures/queues/queue_by_two_stacks | ✓ | 160.0µs | 3.51MB |
-| 246 | data_structures/queues/queue_on_pseudo_stack | ✓ | 255.0µs | 3.76MB |
-| 247 | data_structures/stacks/balanced_parentheses | ✓ | 168.0µs | 3.64MB |
-| 248 | data_structures/stacks/dijkstras_two_stack_algorithm | ✓ | 247.0µs | 3.49MB |
-| 249 | data_structures/stacks/infix_to_postfix_conversion | ✓ | 625.0µs | 3.56MB |
-| 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ | 1.0µs | 3.44MB |
-| 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 278.0µs | 3.70MB |
-| 252 | data_structures/stacks/lexicographical_numbers | ✓ | 1.0ms | 3.56MB |
-| 253 | data_structures/stacks/next_greater_element | ✓ | 1.0ms | 3.75MB |
-| 254 | data_structures/stacks/postfix_evaluation | ✓ | 962.0µs | 3.75MB |
-| 255 | data_structures/stacks/prefix_evaluation | ✓ | 908.0µs | 3.74MB |
-| 256 | data_structures/stacks/stack | ✓ | 1.0ms | 3.55MB |
-| 257 | data_structures/stacks/stack_using_two_queues | ✓ | 527.0µs | 3.61MB |
-| 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 769.0µs | 3.71MB |
-| 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 658.0µs | 3.48MB |
-| 260 | data_structures/stacks/stock_span_problem | ✓ | 119.0µs | 3.58MB |
-| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 543.0µs | 3.62MB |
-| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 524.0µs | 3.66MB |
-| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 415.0µs | 3.55MB |
-| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 463.0µs | 3.68MB |
+| 245 | data_structures/queues/queue_by_two_stacks |   |  |  |
+| 246 | data_structures/queues/queue_on_pseudo_stack |   |  |  |
+| 247 | data_structures/stacks/balanced_parentheses |   |  |  |
+| 248 | data_structures/stacks/dijkstras_two_stack_algorithm |   |  |  |
+| 249 | data_structures/stacks/infix_to_postfix_conversion |   |  |  |
+| 250 | data_structures/stacks/infix_to_prefix_conversion |   |  |  |
+| 251 | data_structures/stacks/largest_rectangle_histogram |   |  |  |
+| 252 | data_structures/stacks/lexicographical_numbers |   |  |  |
+| 253 | data_structures/stacks/next_greater_element |   |  |  |
+| 254 | data_structures/stacks/postfix_evaluation |   |  |  |
+| 255 | data_structures/stacks/prefix_evaluation |   |  |  |
+| 256 | data_structures/stacks/stack |   |  |  |
+| 257 | data_structures/stacks/stack_using_two_queues |   |  |  |
+| 258 | data_structures/stacks/stack_with_doubly_linked_list |   |  |  |
+| 259 | data_structures/stacks/stack_with_singly_linked_list |   |  |  |
+| 260 | data_structures/stacks/stock_span_problem |   |  |  |
+| 261 | data_structures/suffix_tree/example/example_usage |   |  |  |
+| 262 | data_structures/suffix_tree/suffix_tree |   |  |  |
+| 263 | data_structures/suffix_tree/suffix_tree_node |   |  |  |
+| 264 | data_structures/suffix_tree/tests/test_suffix_tree |   |  |  |
 | 265 | data_structures/trie/radix_tree |   |  |  |
-| 266 | data_structures/trie/trie | ✓ | 349.0µs | 3.64MB |
-| 267 | digital_image_processing/change_brightness | ✓ | 589.0µs | 3.69MB |
-| 268 | digital_image_processing/change_contrast | ✓ | 944.0µs | 3.71MB |
-| 269 | digital_image_processing/convert_to_negative | ✓ | 403.0µs | 3.59MB |
-| 270 | digital_image_processing/dithering/burkes | ✓ | 861.0µs | 3.62MB |
-| 271 | digital_image_processing/edge_detection/canny | ✓ | 664.0µs | 3.80MB |
-| 272 | digital_image_processing/filters/bilateral_filter | ✓ | 975.0µs | 3.86MB |
-| 273 | digital_image_processing/filters/convolve | ✓ | 432.0µs | 3.71MB |
-| 274 | digital_image_processing/filters/gabor_filter | ✓ | 532.0µs | 3.71MB |
-| 275 | digital_image_processing/filters/gaussian_filter | ✓ | 457.0µs | 3.55MB |
-| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 310.0µs | 3.76MB |
-| 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 446.0µs | 3.61MB |
-| 278 | digital_image_processing/filters/median_filter | ✓ | 867.0µs | 3.75MB |
-| 279 | digital_image_processing/filters/sobel_filter | ✓ | 1.0ms | 3.82MB |
-| 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 272.0µs | 3.41MB |
-| 281 | digital_image_processing/index_calculation | ✓ | 576.0µs | 3.78MB |
-| 282 | digital_image_processing/morphological_operations/dilation_operation | ✓ | 1.0ms | 3.82MB |
-| 283 | digital_image_processing/morphological_operations/erosion_operation | ✓ | 1.0ms | 3.81MB |
-| 284 | digital_image_processing/resize/resize | ✓ | 542.0µs | 3.61MB |
-| 285 | digital_image_processing/rotation/rotation | ✓ | 384.0µs | 3.48MB |
-| 286 | digital_image_processing/sepia | ✓ | 451.0µs | 3.48MB |
-| 287 | digital_image_processing/test_digital_image_processing | ✓ | 933.0µs | 3.74MB |
-| 288 | divide_and_conquer/closest_pair_of_points | ✓ | 332.0µs | 3.87MB |
-| 289 | divide_and_conquer/convex_hull | ✓ | 4.0µs | 3.52MB |
+| 266 | data_structures/trie/trie |   |  |  |
+| 267 | digital_image_processing/change_brightness |   |  |  |
+| 268 | digital_image_processing/change_contrast |   |  |  |
+| 269 | digital_image_processing/convert_to_negative |   |  |  |
+| 270 | digital_image_processing/dithering/burkes |   |  |  |
+| 271 | digital_image_processing/edge_detection/canny |   |  |  |
+| 272 | digital_image_processing/filters/bilateral_filter |   |  |  |
+| 273 | digital_image_processing/filters/convolve |   |  |  |
+| 274 | digital_image_processing/filters/gabor_filter |   |  |  |
+| 275 | digital_image_processing/filters/gaussian_filter |   |  |  |
+| 276 | digital_image_processing/filters/laplacian_filter |   |  |  |
+| 277 | digital_image_processing/filters/local_binary_pattern |   |  |  |
+| 278 | digital_image_processing/filters/median_filter |   |  |  |
+| 279 | digital_image_processing/filters/sobel_filter |   |  |  |
+| 280 | digital_image_processing/histogram_equalization/histogram_stretch |   |  |  |
+| 281 | digital_image_processing/index_calculation |   |  |  |
+| 282 | digital_image_processing/morphological_operations/dilation_operation |   |  |  |
+| 283 | digital_image_processing/morphological_operations/erosion_operation |   |  |  |
+| 284 | digital_image_processing/resize/resize |   |  |  |
+| 285 | digital_image_processing/rotation/rotation |   |  |  |
+| 286 | digital_image_processing/sepia |   |  |  |
+| 287 | digital_image_processing/test_digital_image_processing |   |  |  |
+| 288 | divide_and_conquer/closest_pair_of_points |   |  |  |
+| 289 | divide_and_conquer/convex_hull |   |  |  |
 | 290 | divide_and_conquer/heaps_algorithm |   |  |  |
 | 291 | divide_and_conquer/heaps_algorithm_iterative |   |  |  |
-| 292 | divide_and_conquer/inversions | ✓ | 501.0µs | 3.67MB |
-| 293 | divide_and_conquer/kth_order_statistic | ✓ | 626.0µs | 3.54MB |
-| 294 | divide_and_conquer/max_difference_pair |   | 175.0µs | 3.61MB |
-| 295 | divide_and_conquer/max_subarray | ✓ | 903.0µs | 3.69MB |
-| 296 | divide_and_conquer/mergesort | ✓ | 763.0µs | 3.60MB |
-| 297 | divide_and_conquer/peak | ✓ | 540.0µs | 3.54MB |
-| 298 | divide_and_conquer/power | ✓ | 927.0µs | 3.64MB |
+| 292 | divide_and_conquer/inversions |   |  |  |
+| 293 | divide_and_conquer/kth_order_statistic |   |  |  |
+| 294 | divide_and_conquer/max_difference_pair |   |  |  |
+| 295 | divide_and_conquer/max_subarray |   |  |  |
+| 296 | divide_and_conquer/mergesort |   |  |  |
+| 297 | divide_and_conquer/peak |   |  |  |
+| 298 | divide_and_conquer/power |   |  |  |
 | 299 | divide_and_conquer/strassen_matrix_multiplication |   |  |  |
-| 300 | docs/conf | ✓ | 313.0µs | 3.54MB |
-| 301 | dynamic_programming/abbreviation | ✓ | 489.0µs | 3.43MB |
-| 302 | dynamic_programming/all_construct | ✓ | 599.0µs | 3.64MB |
-| 303 | dynamic_programming/bitmask | ✓ | 197.0µs | 3.61MB |
-| 304 | dynamic_programming/catalan_numbers | ✓ | 192.0µs | 3.75MB |
-| 305 | dynamic_programming/climbing_stairs | ✓ | 149.0µs | 3.62MB |
-| 306 | dynamic_programming/combination_sum_iv | ✓ | 202.0µs | 3.62MB |
-| 307 | dynamic_programming/edit_distance | ✓ | 376.0µs | 3.62MB |
-| 308 | dynamic_programming/factorial | ✓ | 252.0µs | 3.69MB |
-| 309 | dynamic_programming/fast_fibonacci | ✓ | 228.0µs | 3.72MB |
-| 310 | dynamic_programming/fibonacci | ✓ | 264.0µs | 3.61MB |
-| 311 | dynamic_programming/fizz_buzz | ✓ | 205.0µs | 3.54MB |
-| 312 | dynamic_programming/floyd_warshall | ✓ | 211.0µs | 3.69MB |
-| 313 | dynamic_programming/integer_partition | ✓ | 7.0ms | 3.77MB |
-| 314 | dynamic_programming/iterating_through_submasks | ✓ | 245.0µs | 3.68MB |
-| 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 446.0µs | 3.76MB |
+| 300 | docs/conf |   |  |  |
+| 301 | dynamic_programming/abbreviation |   |  |  |
+| 302 | dynamic_programming/all_construct |   |  |  |
+| 303 | dynamic_programming/bitmask |   |  |  |
+| 304 | dynamic_programming/catalan_numbers |   |  |  |
+| 305 | dynamic_programming/climbing_stairs |   |  |  |
+| 306 | dynamic_programming/combination_sum_iv |   |  |  |
+| 307 | dynamic_programming/edit_distance |   |  |  |
+| 308 | dynamic_programming/factorial |   |  |  |
+| 309 | dynamic_programming/fast_fibonacci |   |  |  |
+| 310 | dynamic_programming/fibonacci |   |  |  |
+| 311 | dynamic_programming/fizz_buzz |   |  |  |
+| 312 | dynamic_programming/floyd_warshall |   |  |  |
+| 313 | dynamic_programming/integer_partition |   |  |  |
+| 314 | dynamic_programming/iterating_through_submasks |   |  |  |
+| 315 | dynamic_programming/k_means_clustering_tensorflow |   |  |  |
 | 316 | dynamic_programming/knapsack |   |  |  |
-| 317 | dynamic_programming/largest_divisible_subset | ✓ | 185.0µs | 3.54MB |
-| 318 | dynamic_programming/longest_common_subsequence | ✓ | 201.0µs | 3.70MB |
-| 319 | dynamic_programming/longest_common_substring | ✓ | 367.0µs | 3.70MB |
-| 320 | dynamic_programming/longest_increasing_subsequence | ✓ | 10.0µs | 3.48MB |
-| 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 377.0µs | 3.55MB |
-| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | ✓ | 139.0µs | 3.52MB |
-| 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 355.0µs | 3.75MB |
-| 324 | dynamic_programming/matrix_chain_multiplication | ✓ | 18.0µs | 3.51MB |
-| 325 | dynamic_programming/matrix_chain_order | ✓ | 342.0µs | 3.61MB |
-| 326 | dynamic_programming/max_non_adjacent_sum | ✓ | 169.0µs | 3.70MB |
-| 327 | dynamic_programming/max_product_subarray | ✓ | 157.0µs | 3.62MB |
-| 328 | dynamic_programming/max_subarray_sum | ✓ | 387.0µs | 3.78MB |
-| 329 | dynamic_programming/min_distance_up_bottom | ✓ | 681.0µs | 3.48MB |
-| 330 | dynamic_programming/minimum_coin_change | ✓ | 306.0µs | 3.52MB |
-| 331 | dynamic_programming/minimum_cost_path | ✓ | 202.0µs | 3.70MB |
-| 332 | dynamic_programming/minimum_partition | ✓ | 1.0ms | 3.71MB |
-| 333 | dynamic_programming/minimum_size_subarray_sum | ✓ | 276.0µs | 3.69MB |
-| 334 | dynamic_programming/minimum_squares_to_represent_a_number | ✓ | 231.0µs | 3.60MB |
-| 335 | dynamic_programming/minimum_steps_to_one | ✓ | 222.0µs | 3.66MB |
-| 336 | dynamic_programming/minimum_tickets_cost | ✓ | 301.0µs | 3.74MB |
-| 337 | dynamic_programming/optimal_binary_search_tree | ✓ | 327.0µs | 3.63MB |
-| 338 | dynamic_programming/palindrome_partitioning | ✓ | 443.0µs | 3.40MB |
-| 339 | dynamic_programming/range_sum_query | ✓ | 317.0µs | 3.62MB |
-| 340 | dynamic_programming/regex_match | ✓ | 464.0µs | 3.50MB |
-| 341 | dynamic_programming/rod_cutting | ✓ | 143.0µs | 3.65MB |
-| 342 | dynamic_programming/smith_waterman | ✓ | 139.0µs | 3.71MB |
-| 343 | dynamic_programming/subset_generation | ✓ | 295.0µs | 3.77MB |
-| 344 | dynamic_programming/sum_of_subset | ✓ | 441.0µs | 3.43MB |
-| 345 | dynamic_programming/trapped_water | ✓ | 207.0µs | 3.70MB |
-| 346 | dynamic_programming/tribonacci | ✓ | 193.0µs | 3.69MB |
-| 347 | dynamic_programming/viterbi | ✓ | 145.0µs | 3.48MB |
-| 348 | dynamic_programming/wildcard_matching | ✓ | 373.0µs | 3.65MB |
-| 349 | dynamic_programming/word_break | ✓ | 232.0µs | 3.45MB |
-| 350 | electronics/apparent_power | ✓ | 1.0µs | 3.52MB |
-| 351 | electronics/builtin_voltage | ✓ | 238.0µs | 3.75MB |
-| 352 | electronics/capacitor_equivalence | ✓ | 371.0µs | 3.74MB |
-| 353 | electronics/carrier_concentration | ✓ | 629.0µs | 3.70MB |
-| 354 | electronics/charging_capacitor | ✓ | 358.0µs | 3.75MB |
-| 355 | electronics/charging_inductor | ✓ | 391.0µs | 3.73MB |
-| 356 | electronics/circular_convolution | ✓ | 365.0µs | 3.74MB |
-| 357 | electronics/coulombs_law | ✓ | 387.0µs | 3.68MB |
-| 358 | electronics/electric_conductivity | ✓ | 359.0µs | 3.75MB |
-| 359 | electronics/electric_power | ✓ | 375.0µs | 3.79MB |
-| 360 | electronics/electrical_impedance | ✓ | 432.0µs | 3.82MB |
-| 361 | electronics/ic_555_timer | ✓ | 380.0µs | 3.68MB |
-| 362 | electronics/ind_reactance | ✓ | 337.0µs | 3.76MB |
-| 363 | electronics/ohms_law | ✓ | 154.0µs | 3.52MB |
-| 364 | electronics/real_and_reactive_power | ✓ | 343.0µs | 3.77MB |
-| 365 | electronics/resistor_color_code | ✓ | 0ns | 3.50MB |
-| 366 | electronics/resistor_equivalence | ✓ | 392.0µs | 3.79MB |
-| 367 | electronics/resonant_frequency | ✓ | 377.0µs | 3.78MB |
-| 368 | electronics/wheatstone_bridge | ✓ | 339.0µs | 3.65MB |
-| 369 | file_transfer/receive_file | ✓ | 170.0µs | 3.44MB |
-| 370 | file_transfer/send_file | ✓ | 147.0µs | 3.44MB |
-| 371 | file_transfer/tests/test_send_file | ✓ | 194.0µs | 3.52MB |
-| 372 | financial/equated_monthly_installments | ✓ | 433.0µs | 3.77MB |
-| 373 | financial/exponential_moving_average | ✓ | 524.0µs | 3.84MB |
-| 374 | financial/interest | ✓ | 504.0µs | 3.71MB |
-| 375 | financial/present_value | ✓ | 498.0µs | 3.67MB |
-| 376 | financial/price_plus_tax | ✓ | 724.0µs | 3.67MB |
-| 377 | financial/simple_moving_average | ✓ | 497.0µs | 3.75MB |
-| 378 | financial/straight_line_depreciation | ✓ | 778.0µs | 3.74MB |
-| 379 | financial/time_and_half_pay | ✓ | 447.0µs | 3.73MB |
-| 380 | fractals/julia_sets | ✓ | 826.0µs | 3.71MB |
-| 381 | fractals/koch_snowflake | ✓ | 448.0µs | 3.81MB |
-| 382 | fractals/mandelbrot | ✓ | 251.0µs | 3.64MB |
-| 383 | fractals/sierpinski_triangle | ✓ | 516.0µs | 3.68MB |
-| 384 | fractals/vicsek | ✓ | 522.0µs | 3.59MB |
-| 385 | fuzzy_logic/fuzzy_operations | ✓ | 769.0µs | 3.78MB |
-| 386 | genetic_algorithm/basic_string | ✓ | 341.0µs | 3.73MB |
-| 387 | geodesy/haversine_distance | ✓ | 455.0µs | 3.64MB |
-| 388 | geodesy/lamberts_ellipsoidal_distance | ✓ | 543.0µs | 3.73MB |
-| 389 | geometry/geometry | ✓ | 769.0µs | 3.72MB |
-| 390 | graphics/bezier_curve | ✓ | 545.0µs | 3.79MB |
-| 391 | graphics/butterfly_pattern | ✓ | 380.0µs | 3.48MB |
-| 392 | graphics/digital_differential_analyzer_line | ✓ | 246.0µs | 3.70MB |
-| 393 | graphics/vector3_for_2d_rendering | ✓ | 598.0µs | 3.66MB |
-| 394 | graphs/a_star | ✓ | 591.0µs | 3.59MB |
-| 395 | graphs/ant_colony_optimization_algorithms | ✓ | 18.0ms | 3.66MB |
-| 396 | graphs/articulation_points | ✓ | 347.0µs | 3.64MB |
-| 397 | graphs/basic_graphs | ✓ | 544.0µs | 3.55MB |
-| 398 | graphs/bellman_ford | ✓ | 503.0µs | 3.74MB |
-| 399 | graphs/bi_directional_dijkstra | ✓ | 400.0µs | 3.80MB |
-| 400 | graphs/bidirectional_a_star | ✓ | 256.0µs | 3.65MB |
+| 317 | dynamic_programming/largest_divisible_subset |   |  |  |
+| 318 | dynamic_programming/longest_common_subsequence |   |  |  |
+| 319 | dynamic_programming/longest_common_substring |   |  |  |
+| 320 | dynamic_programming/longest_increasing_subsequence |   |  |  |
+| 321 | dynamic_programming/longest_increasing_subsequence_iterative |   |  |  |
+| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn |   |  |  |
+| 323 | dynamic_programming/longest_palindromic_subsequence |   |  |  |
+| 324 | dynamic_programming/matrix_chain_multiplication |   |  |  |
+| 325 | dynamic_programming/matrix_chain_order |   |  |  |
+| 326 | dynamic_programming/max_non_adjacent_sum |   |  |  |
+| 327 | dynamic_programming/max_product_subarray |   |  |  |
+| 328 | dynamic_programming/max_subarray_sum |   |  |  |
+| 329 | dynamic_programming/min_distance_up_bottom |   |  |  |
+| 330 | dynamic_programming/minimum_coin_change |   |  |  |
+| 331 | dynamic_programming/minimum_cost_path |   |  |  |
+| 332 | dynamic_programming/minimum_partition |   |  |  |
+| 333 | dynamic_programming/minimum_size_subarray_sum |   |  |  |
+| 334 | dynamic_programming/minimum_squares_to_represent_a_number |   |  |  |
+| 335 | dynamic_programming/minimum_steps_to_one |   |  |  |
+| 336 | dynamic_programming/minimum_tickets_cost |   |  |  |
+| 337 | dynamic_programming/optimal_binary_search_tree |   |  |  |
+| 338 | dynamic_programming/palindrome_partitioning |   |  |  |
+| 339 | dynamic_programming/range_sum_query |   |  |  |
+| 340 | dynamic_programming/regex_match |   |  |  |
+| 341 | dynamic_programming/rod_cutting |   |  |  |
+| 342 | dynamic_programming/smith_waterman |   |  |  |
+| 343 | dynamic_programming/subset_generation |   |  |  |
+| 344 | dynamic_programming/sum_of_subset |   |  |  |
+| 345 | dynamic_programming/trapped_water |   |  |  |
+| 346 | dynamic_programming/tribonacci |   |  |  |
+| 347 | dynamic_programming/viterbi |   |  |  |
+| 348 | dynamic_programming/wildcard_matching |   |  |  |
+| 349 | dynamic_programming/word_break |   |  |  |
+| 350 | electronics/apparent_power |   |  |  |
+| 351 | electronics/builtin_voltage |   |  |  |
+| 352 | electronics/capacitor_equivalence |   |  |  |
+| 353 | electronics/carrier_concentration |   |  |  |
+| 354 | electronics/charging_capacitor |   |  |  |
+| 355 | electronics/charging_inductor |   |  |  |
+| 356 | electronics/circular_convolution |   |  |  |
+| 357 | electronics/coulombs_law |   |  |  |
+| 358 | electronics/electric_conductivity |   |  |  |
+| 359 | electronics/electric_power |   |  |  |
+| 360 | electronics/electrical_impedance |   |  |  |
+| 361 | electronics/ic_555_timer |   |  |  |
+| 362 | electronics/ind_reactance |   |  |  |
+| 363 | electronics/ohms_law |   |  |  |
+| 364 | electronics/real_and_reactive_power |   |  |  |
+| 365 | electronics/resistor_color_code |   |  |  |
+| 366 | electronics/resistor_equivalence |   |  |  |
+| 367 | electronics/resonant_frequency |   |  |  |
+| 368 | electronics/wheatstone_bridge |   |  |  |
+| 369 | file_transfer/receive_file |   |  |  |
+| 370 | file_transfer/send_file |   |  |  |
+| 371 | file_transfer/tests/test_send_file |   |  |  |
+| 372 | financial/equated_monthly_installments |   |  |  |
+| 373 | financial/exponential_moving_average |   |  |  |
+| 374 | financial/interest |   |  |  |
+| 375 | financial/present_value |   |  |  |
+| 376 | financial/price_plus_tax |   |  |  |
+| 377 | financial/simple_moving_average |   |  |  |
+| 378 | financial/straight_line_depreciation |   |  |  |
+| 379 | financial/time_and_half_pay |   |  |  |
+| 380 | fractals/julia_sets |   |  |  |
+| 381 | fractals/koch_snowflake |   |  |  |
+| 382 | fractals/mandelbrot |   |  |  |
+| 383 | fractals/sierpinski_triangle |   |  |  |
+| 384 | fractals/vicsek |   |  |  |
+| 385 | fuzzy_logic/fuzzy_operations |   |  |  |
+| 386 | genetic_algorithm/basic_string |   |  |  |
+| 387 | geodesy/haversine_distance |   |  |  |
+| 388 | geodesy/lamberts_ellipsoidal_distance |   |  |  |
+| 389 | geometry/geometry |   |  |  |
+| 390 | graphics/bezier_curve |   |  |  |
+| 391 | graphics/butterfly_pattern |   |  |  |
+| 392 | graphics/digital_differential_analyzer_line |   |  |  |
+| 393 | graphics/vector3_for_2d_rendering |   |  |  |
+| 394 | graphs/a_star |   |  |  |
+| 395 | graphs/ant_colony_optimization_algorithms |   |  |  |
+| 396 | graphs/articulation_points |   |  |  |
+| 397 | graphs/basic_graphs |   |  |  |
+| 398 | graphs/bellman_ford |   |  |  |
+| 399 | graphs/bi_directional_dijkstra |   |  |  |
+| 400 | graphs/bidirectional_a_star |   |  |  |
 | 401 | graphs/bidirectional_breadth_first_search |   |  |  |
-| 402 | graphs/bidirectional_search | ✓ | 320.0µs | 3.54MB |
+| 402 | graphs/bidirectional_search |   |  |  |
 | 403 | graphs/boruvka |   |  |  |
-| 404 | graphs/breadth_first_search | ✓ | 231.0µs | 3.45MB |
-| 405 | graphs/breadth_first_search_2 | ✓ | 197.0µs | 3.57MB |
-| 406 | graphs/breadth_first_search_shortest_path | ✓ | 288.0µs | 3.62MB |
-| 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 0ns | 3.40MB |
+| 404 | graphs/breadth_first_search |   |  |  |
+| 405 | graphs/breadth_first_search_2 |   |  |  |
+| 406 | graphs/breadth_first_search_shortest_path |   |  |  |
+| 407 | graphs/breadth_first_search_shortest_path_2 |   |  |  |
 | 408 | graphs/breadth_first_search_zero_one_shortest_path |   |  |  |
-| 409 | graphs/check_bipatrite | ✓ | 192.0µs | 3.62MB |
-| 410 | graphs/check_cycle | ✓ | 247.0µs | 3.53MB |
-| 411 | graphs/connected_components | ✓ | 361.0µs | 3.57MB |
+| 409 | graphs/check_bipatrite |   |  |  |
+| 410 | graphs/check_cycle |   |  |  |
+| 411 | graphs/connected_components |   |  |  |
 | 412 | graphs/deep_clone_graph |   |  |  |
-| 413 | graphs/depth_first_search | ✓ | 165.0µs | 3.66MB |
-| 414 | graphs/depth_first_search_2 | ✓ | 376.0µs | 3.60MB |
-| 415 | graphs/dijkstra | ✓ | 301.0µs | 3.44MB |
-| 416 | graphs/dijkstra_2 | ✓ | 242.0µs | 3.59MB |
-| 417 | graphs/dijkstra_algorithm | ✓ | 238.0µs | 3.70MB |
-| 418 | graphs/dijkstra_alternate | ✓ | 339.0µs | 3.58MB |
-| 419 | graphs/dijkstra_binary_grid | ✓ | 660.0µs | 3.84MB |
-| 420 | graphs/dinic | ✓ | 746.0µs | 3.72MB |
-| 421 | graphs/directed_and_undirected_weighted_graph | ✓ | 379.0µs | 3.71MB |
+| 413 | graphs/depth_first_search |   |  |  |
+| 414 | graphs/depth_first_search_2 |   |  |  |
+| 415 | graphs/dijkstra |   |  |  |
+| 416 | graphs/dijkstra_2 |   |  |  |
+| 417 | graphs/dijkstra_algorithm |   |  |  |
+| 418 | graphs/dijkstra_alternate |   |  |  |
+| 419 | graphs/dijkstra_binary_grid |   |  |  |
+| 420 | graphs/dinic |   |  |  |
+| 421 | graphs/directed_and_undirected_weighted_graph |   |  |  |
 | 422 | graphs/edmonds_karp_multiple_source_and_sink |   |  |  |
-| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 1.0ms | 3.57MB |
-| 424 | graphs/even_tree | ✓ | 403.0µs | 3.57MB |
+| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph |   |  |  |
+| 424 | graphs/even_tree |   |  |  |
 | 425 | graphs/finding_bridges |   |  |  |
-| 426 | graphs/frequent_pattern_graph_miner | ✓ | 2.0ms | 3.91MB |
-| 427 | graphs/g_topological_sort | ✓ | 371.0µs | 3.57MB |
-| 428 | graphs/gale_shapley_bigraph | ✓ | 257.0µs | 3.62MB |
-| 429 | graphs/graph_adjacency_list | ✓ | 367.0µs | 3.74MB |
+| 426 | graphs/frequent_pattern_graph_miner |   |  |  |
+| 427 | graphs/g_topological_sort |   |  |  |
+| 428 | graphs/gale_shapley_bigraph |   |  |  |
+| 429 | graphs/graph_adjacency_list |   |  |  |
 | 430 | graphs/graph_adjacency_matrix |   |  |  |
-| 431 | graphs/graph_list | ✓ | 331.0µs | 3.72MB |
-| 432 | graphs/graphs_floyd_warshall | ✓ | 203.0µs | 3.77MB |
-| 433 | graphs/greedy_best_first | ✓ | 1.0ms | 3.60MB |
-| 434 | graphs/greedy_min_vertex_cover | ✓ | 198.0µs | 3.43MB |
-| 435 | graphs/kahns_algorithm_long | ✓ | 123.0µs | 3.53MB |
-| 436 | graphs/kahns_algorithm_topo | ✓ | 238.0µs | 3.65MB |
-| 437 | graphs/karger | ✓ | 163.0µs | 3.70MB |
-| 438 | graphs/lanczos_eigenvectors | ✓ | 362.0µs | 3.88MB |
-| 439 | graphs/markov_chain | ✓ | 5.0ms | 3.57MB |
-| 440 | graphs/matching_min_vertex_cover | ✓ | 185.0µs | 3.64MB |
-| 441 | graphs/minimum_path_sum | ✓ | 238.0µs | 3.68MB |
-| 442 | graphs/minimum_spanning_tree_boruvka | ✓ | 270.0µs | 3.66MB |
-| 443 | graphs/minimum_spanning_tree_kruskal | ✓ | 349.0µs | 3.64MB |
-| 444 | graphs/minimum_spanning_tree_kruskal2 | ✓ | 241.0µs | 3.62MB |
-| 445 | graphs/minimum_spanning_tree_prims | ✓ | 260.0µs | 3.66MB |
-| 446 | graphs/minimum_spanning_tree_prims2 | ✓ | 308.0µs | 3.68MB |
-| 447 | graphs/multi_heuristic_astar | ✓ | 201.0µs | 3.69MB |
-| 448 | graphs/page_rank | ✓ | 460.0µs | 3.79MB |
-| 449 | graphs/prim | ✓ | 479.0µs | 3.71MB |
-| 450 | graphs/random_graph_generator | ✓ | 211.0µs | 3.39MB |
-| 451 | graphs/scc_kosaraju | ✓ | 408.0µs | 3.55MB |
-| 452 | graphs/strongly_connected_components | ✓ | 985.0µs | 3.58MB |
+| 431 | graphs/graph_list |   |  |  |
+| 432 | graphs/graphs_floyd_warshall |   |  |  |
+| 433 | graphs/greedy_best_first |   |  |  |
+| 434 | graphs/greedy_min_vertex_cover |   |  |  |
+| 435 | graphs/kahns_algorithm_long |   |  |  |
+| 436 | graphs/kahns_algorithm_topo |   |  |  |
+| 437 | graphs/karger |   |  |  |
+| 438 | graphs/lanczos_eigenvectors |   |  |  |
+| 439 | graphs/markov_chain |   |  |  |
+| 440 | graphs/matching_min_vertex_cover |   |  |  |
+| 441 | graphs/minimum_path_sum |   |  |  |
+| 442 | graphs/minimum_spanning_tree_boruvka |   |  |  |
+| 443 | graphs/minimum_spanning_tree_kruskal |   |  |  |
+| 444 | graphs/minimum_spanning_tree_kruskal2 |   |  |  |
+| 445 | graphs/minimum_spanning_tree_prims |   |  |  |
+| 446 | graphs/minimum_spanning_tree_prims2 |   |  |  |
+| 447 | graphs/multi_heuristic_astar |   |  |  |
+| 448 | graphs/page_rank |   |  |  |
+| 449 | graphs/prim |   |  |  |
+| 450 | graphs/random_graph_generator |   |  |  |
+| 451 | graphs/scc_kosaraju |   |  |  |
+| 452 | graphs/strongly_connected_components |   |  |  |
 | 453 | graphs/tarjans_scc |   |  |  |
-| 454 | graphs/tests/test_min_spanning_tree_kruskal | ✓ | 365.0µs | 3.48MB |
-| 455 | graphs/tests/test_min_spanning_tree_prim | ✓ | 505.0µs | 3.81MB |
-| 456 | greedy_methods/best_time_to_buy_and_sell_stock | ✓ | 370.0µs | 3.56MB |
-| 457 | greedy_methods/fractional_cover_problem | ✓ | 429.0µs | 3.75MB |
-| 458 | greedy_methods/fractional_knapsack | ✓ | 525.0µs | 3.81MB |
-| 459 | greedy_methods/fractional_knapsack_2 | ✓ | 408.0µs | 3.64MB |
-| 460 | greedy_methods/gas_station | ✓ | 242.0µs | 3.62MB |
-| 461 | greedy_methods/minimum_coin_change | ✓ | 353.0µs | 3.46MB |
-| 462 | greedy_methods/minimum_waiting_time | ✓ | 230.0µs | 3.52MB |
-| 463 | greedy_methods/optimal_merge_pattern | ✓ | 211.0µs | 3.57MB |
-| 464 | greedy_methods/smallest_range | ✓ | 602.0µs | 3.70MB |
-| 465 | hashes/adler32 | ✓ | 377.0µs | 3.61MB |
-| 466 | hashes/chaos_machine | ✓ | 521.0µs | 3.64MB |
-| 467 | hashes/djb2 | ✓ | 401.0µs | 3.52MB |
-| 468 | hashes/elf | ✓ | 500.0µs | 3.62MB |
-| 469 | hashes/enigma_machine | ✓ | 2.0ms | 3.67MB |
-| 470 | hashes/fletcher16 | ✓ | 1.0µs | 3.45MB |
-| 471 | hashes/hamming_code | ✓ | 1.0ms | 3.48MB |
-| 472 | hashes/luhn | ✓ | 319.0µs | 3.53MB |
-| 473 | hashes/md5 | ✓ | 2.0µs | 3.48MB |
-| 474 | hashes/sdbm | ✓ | 577.0µs | 3.54MB |
-| 475 | hashes/sha1 | ✓ | 960.0µs | 3.48MB |
-| 476 | hashes/sha256 | ✓ | 3.0ms | 7.15MB |
-| 477 | knapsack/greedy_knapsack | ✓ | 572.0µs | 3.85MB |
-| 478 | knapsack/knapsack | ✓ | 253.0µs | 3.61MB |
-| 479 | knapsack/recursive_approach_knapsack | ✓ | 339.0µs | 3.62MB |
-| 480 | knapsack/tests/test_greedy_knapsack | ✓ | 264.0µs | 3.53MB |
-| 481 | knapsack/tests/test_knapsack | ✓ | 209.0µs | 3.42MB |
-| 482 | linear_algebra/gaussian_elimination | ✓ | 506.0µs | 3.82MB |
-| 483 | linear_algebra/jacobi_iteration_method | ✓ | 421.0µs | 3.70MB |
-| 484 | linear_algebra/lu_decomposition | ✓ | 612.0µs | 3.87MB |
-| 485 | linear_algebra/matrix_inversion | ✓ | 685.0µs | 3.69MB |
-| 486 | linear_algebra/src/conjugate_gradient | ✓ | 942.0µs | 3.76MB |
-| 487 | linear_algebra/src/gaussian_elimination_pivoting | ✓ | 466.0µs | 3.77MB |
-| 488 | linear_algebra/src/lib | ✓ | 674.0µs | 3.83MB |
-| 489 | linear_algebra/src/polynom_for_points | ✓ | 811.0µs | 3.88MB |
-| 490 | linear_algebra/src/power_iteration | ✓ | 556.0µs | 3.73MB |
-| 491 | linear_algebra/src/rank_of_matrix | ✓ | 2.0µs | 3.57MB |
-| 492 | linear_algebra/src/rayleigh_quotient | ✓ | 561.0µs | 3.86MB |
-| 493 | linear_algebra/src/schur_complement | ✓ | 548.0µs | 3.70MB |
-| 494 | linear_algebra/src/test_linear_algebra | ✓ | 681.0µs | 3.64MB |
-| 495 | linear_algebra/src/transformations_2d | ✓ | 508.0µs | 3.71MB |
-| 496 | linear_programming/simplex | ✓ | 722.0µs | 3.77MB |
+| 454 | graphs/tests/test_min_spanning_tree_kruskal |   |  |  |
+| 455 | graphs/tests/test_min_spanning_tree_prim |   |  |  |
+| 456 | greedy_methods/best_time_to_buy_and_sell_stock |   |  |  |
+| 457 | greedy_methods/fractional_cover_problem |   |  |  |
+| 458 | greedy_methods/fractional_knapsack |   |  |  |
+| 459 | greedy_methods/fractional_knapsack_2 |   |  |  |
+| 460 | greedy_methods/gas_station |   |  |  |
+| 461 | greedy_methods/minimum_coin_change |   |  |  |
+| 462 | greedy_methods/minimum_waiting_time |   |  |  |
+| 463 | greedy_methods/optimal_merge_pattern |   |  |  |
+| 464 | greedy_methods/smallest_range |   |  |  |
+| 465 | hashes/adler32 |   |  |  |
+| 466 | hashes/chaos_machine |   |  |  |
+| 467 | hashes/djb2 |   |  |  |
+| 468 | hashes/elf |   |  |  |
+| 469 | hashes/enigma_machine |   |  |  |
+| 470 | hashes/fletcher16 |   |  |  |
+| 471 | hashes/hamming_code |   |  |  |
+| 472 | hashes/luhn |   |  |  |
+| 473 | hashes/md5 |   |  |  |
+| 474 | hashes/sdbm |   |  |  |
+| 475 | hashes/sha1 |   |  |  |
+| 476 | hashes/sha256 |   |  |  |
+| 477 | knapsack/greedy_knapsack |   |  |  |
+| 478 | knapsack/knapsack |   |  |  |
+| 479 | knapsack/recursive_approach_knapsack |   |  |  |
+| 480 | knapsack/tests/test_greedy_knapsack |   |  |  |
+| 481 | knapsack/tests/test_knapsack |   |  |  |
+| 482 | linear_algebra/gaussian_elimination |   |  |  |
+| 483 | linear_algebra/jacobi_iteration_method |   |  |  |
+| 484 | linear_algebra/lu_decomposition |   |  |  |
+| 485 | linear_algebra/matrix_inversion |   |  |  |
+| 486 | linear_algebra/src/conjugate_gradient |   |  |  |
+| 487 | linear_algebra/src/gaussian_elimination_pivoting |   |  |  |
+| 488 | linear_algebra/src/lib |   |  |  |
+| 489 | linear_algebra/src/polynom_for_points |   |  |  |
+| 490 | linear_algebra/src/power_iteration |   |  |  |
+| 491 | linear_algebra/src/rank_of_matrix |   |  |  |
+| 492 | linear_algebra/src/rayleigh_quotient |   |  |  |
+| 493 | linear_algebra/src/schur_complement |   |  |  |
+| 494 | linear_algebra/src/test_linear_algebra |   |  |  |
+| 495 | linear_algebra/src/transformations_2d |   |  |  |
+| 496 | linear_programming/simplex |   |  |  |
 | 497 | machine_learning/apriori_algorithm |   |  |  |
-| 498 | machine_learning/astar | ✓ | 474.0µs | 3.56MB |
-| 499 | machine_learning/automatic_differentiation | ✓ | 466.0µs | 3.72MB |
-| 500 | machine_learning/data_transformations | ✓ | 667.0µs | 3.79MB |
-| 501 | machine_learning/decision_tree | ✓ | 8.0ms | 3.99MB |
-| 502 | machine_learning/dimensionality_reduction | ✓ | 262.0µs | 3.46MB |
-| 503 | machine_learning/forecasting/run | ✓ | 558.0µs | 3.86MB |
+| 498 | machine_learning/astar |   |  |  |
+| 499 | machine_learning/automatic_differentiation |   |  |  |
+| 500 | machine_learning/data_transformations |   |  |  |
+| 501 | machine_learning/decision_tree |   |  |  |
+| 502 | machine_learning/dimensionality_reduction |   |  |  |
+| 503 | machine_learning/forecasting/run |   |  |  |
 | 504 | machine_learning/frequent_pattern_growth |   |  |  |
-| 505 | machine_learning/gradient_boosting_classifier | ✓ | 396.0µs | 3.86MB |
-| 506 | machine_learning/gradient_descent | ✓ | 32.0ms | 3.77MB |
-| 507 | machine_learning/k_means_clust | ✓ | 424.0µs | 3.70MB |
-| 508 | machine_learning/k_nearest_neighbours | ✓ | 232.0µs | 3.59MB |
-| 509 | machine_learning/linear_discriminant_analysis | ✓ | 673.0µs | 3.76MB |
-| 510 | machine_learning/linear_regression | ✓ | 384.0µs | 3.86MB |
-| 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 420.0µs | 3.66MB |
-| 512 | machine_learning/logistic_regression | ✓ | 2.0ms | 3.82MB |
-| 513 | machine_learning/loss_functions | ✓ | 453.0µs | 3.95MB |
-| 514 | machine_learning/lstm/lstm_prediction | ✓ | 9.0ms | 3.73MB |
-| 515 | machine_learning/mfcc | ✓ | 429.0µs | 3.87MB |
-| 516 | machine_learning/multilayer_perceptron_classifier | ✓ | 8.0ms | 3.62MB |
-| 517 | machine_learning/polynomial_regression | ✓ | 503.0µs | 3.85MB |
-| 518 | machine_learning/principle_component_analysis | ✓ | 468.0µs | 3.61MB |
-| 519 | machine_learning/scoring_functions | ✓ | 398.0µs | 3.75MB |
-| 520 | machine_learning/self_organizing_map | ✓ | 410.0µs | 3.79MB |
-| 521 | machine_learning/sequential_minimum_optimization | ✓ | 298.0µs | 3.82MB |
-| 522 | machine_learning/similarity_search | ✓ | 409.0µs | 3.73MB |
-| 523 | machine_learning/support_vector_machines | ✓ | 1.0ms | 3.56MB |
-| 524 | machine_learning/word_frequency_functions | ✓ | 1.0ms | 3.77MB |
-| 525 | machine_learning/xgboost_classifier | ✓ | 335.0µs | 3.70MB |
-| 526 | machine_learning/xgboost_regressor | ✓ | 422.0µs | 3.78MB |
-| 527 | maths/abs | ✓ | 426.0µs | 3.75MB |
-| 528 | maths/addition_without_arithmetic | ✓ | 176.0µs | 3.70MB |
-| 529 | maths/aliquot_sum | ✓ | 239.0µs | 3.60MB |
-| 530 | maths/allocation_number | ✓ | 323.0µs | 3.63MB |
-| 531 | maths/arc_length | ✓ | 484.0µs | 3.75MB |
-| 532 | maths/area | ✓ | 419.0µs | 3.69MB |
-| 533 | maths/area_under_curve | ✓ | 6.0ms | 3.73MB |
-| 534 | maths/average_absolute_deviation | ✓ | 371.0µs | 3.70MB |
-| 535 | maths/average_mean | ✓ | 356.0µs | 3.73MB |
-| 536 | maths/average_median | ✓ | 348.0µs | 3.71MB |
-| 537 | maths/average_mode | ✓ | 262.0µs | 3.45MB |
-| 538 | maths/bailey_borwein_plouffe | ✓ | 583.0ms | 3.70MB |
+| 505 | machine_learning/gradient_boosting_classifier |   |  |  |
+| 506 | machine_learning/gradient_descent |   |  |  |
+| 507 | machine_learning/k_means_clust |   |  |  |
+| 508 | machine_learning/k_nearest_neighbours |   |  |  |
+| 509 | machine_learning/linear_discriminant_analysis |   |  |  |
+| 510 | machine_learning/linear_regression |   |  |  |
+| 511 | machine_learning/local_weighted_learning/local_weighted_learning |   |  |  |
+| 512 | machine_learning/logistic_regression |   |  |  |
+| 513 | machine_learning/loss_functions |   |  |  |
+| 514 | machine_learning/lstm/lstm_prediction |   |  |  |
+| 515 | machine_learning/mfcc |   |  |  |
+| 516 | machine_learning/multilayer_perceptron_classifier |   |  |  |
+| 517 | machine_learning/polynomial_regression |   |  |  |
+| 518 | machine_learning/principle_component_analysis |   |  |  |
+| 519 | machine_learning/scoring_functions |   |  |  |
+| 520 | machine_learning/self_organizing_map |   |  |  |
+| 521 | machine_learning/sequential_minimum_optimization |   |  |  |
+| 522 | machine_learning/similarity_search |   |  |  |
+| 523 | machine_learning/support_vector_machines |   |  |  |
+| 524 | machine_learning/word_frequency_functions |   |  |  |
+| 525 | machine_learning/xgboost_classifier |   |  |  |
+| 526 | machine_learning/xgboost_regressor |   |  |  |
+| 527 | maths/abs |   |  |  |
+| 528 | maths/addition_without_arithmetic |   |  |  |
+| 529 | maths/aliquot_sum |   |  |  |
+| 530 | maths/allocation_number |   |  |  |
+| 531 | maths/arc_length |   |  |  |
+| 532 | maths/area |   |  |  |
+| 533 | maths/area_under_curve |   |  |  |
+| 534 | maths/average_absolute_deviation |   |  |  |
+| 535 | maths/average_mean |   |  |  |
+| 536 | maths/average_median |   |  |  |
+| 537 | maths/average_mode |   |  |  |
+| 538 | maths/bailey_borwein_plouffe |   |  |  |
 | 539 | maths/base_neg2_conversion |   |  |  |
-| 540 | maths/basic_maths | ✓ | 225.0µs | 3.54MB |
-| 541 | maths/binary_exponentiation | ✓ | 389.0µs | 3.65MB |
-| 542 | maths/binary_multiplication | ✓ | 204.0µs | 3.60MB |
-| 543 | maths/binomial_coefficient | ✓ | 252.0µs | 3.68MB |
-| 544 | maths/binomial_distribution | ✓ | 9.0µs | 3.36MB |
-| 545 | maths/ceil | ✓ | 170.0µs | 3.47MB |
-| 546 | maths/chebyshev_distance | ✓ | 505.0µs | 3.77MB |
-| 547 | maths/check_polygon | ✓ | 439.0µs | 3.75MB |
-| 548 | maths/chinese_remainder_theorem | ✓ | 186.0µs | 3.55MB |
-| 549 | maths/chudnovsky_algorithm | ✓ | 336.0µs | 3.74MB |
-| 550 | maths/collatz_sequence | ✓ | 238.0µs | 3.64MB |
-| 551 | maths/combinations | ✓ | 268.0µs | 3.76MB |
-| 552 | maths/continued_fraction | ✓ | 218.0µs | 3.62MB |
-| 553 | maths/decimal_isolate | ✓ | 304.0µs | 3.66MB |
+| 540 | maths/basic_maths |   |  |  |
+| 541 | maths/binary_exponentiation |   |  |  |
+| 542 | maths/binary_multiplication |   |  |  |
+| 543 | maths/binomial_coefficient |   |  |  |
+| 544 | maths/binomial_distribution |   |  |  |
+| 545 | maths/ceil |   |  |  |
+| 546 | maths/chebyshev_distance |   |  |  |
+| 547 | maths/check_polygon |   |  |  |
+| 548 | maths/chinese_remainder_theorem |   |  |  |
+| 549 | maths/chudnovsky_algorithm |   |  |  |
+| 550 | maths/collatz_sequence |   |  |  |
+| 551 | maths/combinations |   |  |  |
+| 552 | maths/continued_fraction |   |  |  |
+| 553 | maths/decimal_isolate |   |  |  |
 | 554 | maths/decimal_to_fraction |   |  |  |
-| 555 | maths/dodecahedron | ✓ | 439.0µs | 3.80MB |
-| 556 | maths/double_factorial | ✓ | 159.0µs | 3.48MB |
-| 557 | maths/dual_number_automatic_differentiation | ✓ | 429.0µs | 3.78MB |
-| 558 | maths/entropy | ✓ | 5.0ms | 3.75MB |
-| 559 | maths/euclidean_distance | ✓ | 528.0µs | 3.64MB |
-| 560 | maths/euler_method | ✓ | 1.0ms | 3.84MB |
-| 561 | maths/euler_modified | ✓ | 598.0µs | 3.83MB |
-| 562 | maths/eulers_totient | ✓ | 427.0µs | 3.64MB |
-| 563 | maths/extended_euclidean_algorithm | ✓ | 227.0µs | 3.61MB |
-| 564 | maths/factorial | ✓ | 188.0µs | 3.56MB |
-| 565 | maths/factors | ✓ | 386.0µs | 3.77MB |
-| 566 | maths/fast_inverse_sqrt | ✓ | 480.0µs | 3.73MB |
-| 567 | maths/fermat_little_theorem | ✓ | 186.0µs | 3.57MB |
-| 568 | maths/fibonacci | ✓ | 368.0µs | 3.61MB |
-| 569 | maths/find_max | ✓ | 640.0µs | 3.70MB |
-| 570 | maths/find_min | ✓ | 447.0µs | 3.77MB |
-| 571 | maths/floor | ✓ | 277.0µs | 3.74MB |
-| 572 | maths/gamma | ✓ | 30.0ms | 3.73MB |
-| 573 | maths/gaussian | ✓ | 435.0µs | 3.86MB |
-| 574 | maths/gcd_of_n_numbers | ✓ | 324.0µs | 3.60MB |
+| 555 | maths/dodecahedron |   |  |  |
+| 556 | maths/double_factorial |   |  |  |
+| 557 | maths/dual_number_automatic_differentiation |   |  |  |
+| 558 | maths/entropy |   |  |  |
+| 559 | maths/euclidean_distance |   |  |  |
+| 560 | maths/euler_method |   |  |  |
+| 561 | maths/euler_modified |   |  |  |
+| 562 | maths/eulers_totient |   |  |  |
+| 563 | maths/extended_euclidean_algorithm |   |  |  |
+| 564 | maths/factorial |   |  |  |
+| 565 | maths/factors |   |  |  |
+| 566 | maths/fast_inverse_sqrt |   |  |  |
+| 567 | maths/fermat_little_theorem |   |  |  |
+| 568 | maths/fibonacci |   |  |  |
+| 569 | maths/find_max |   |  |  |
+| 570 | maths/find_min |   |  |  |
+| 571 | maths/floor |   |  |  |
+| 572 | maths/gamma |   |  |  |
+| 573 | maths/gaussian |   |  |  |
+| 574 | maths/gcd_of_n_numbers |   |  |  |
 | 575 | maths/geometric_mean |   |  |  |
-| 576 | maths/germain_primes | ✓ | 231.0µs | 3.52MB |
-| 577 | maths/greatest_common_divisor | ✓ | 371.0µs | 3.61MB |
-| 578 | maths/hardy_ramanujanalgo | ✓ | 506.0µs | 3.67MB |
-| 579 | maths/integer_square_root | ✓ | 351.0µs | 3.69MB |
-| 580 | maths/interquartile_range | ✓ | 518.0µs | 3.80MB |
-| 581 | maths/is_int_palindrome | ✓ | 234.0µs | 3.62MB |
-| 582 | maths/is_ip_v4_address_valid | ✓ | 604.0µs | 3.64MB |
-| 583 | maths/is_square_free | ✓ | 375.0µs | 3.58MB |
-| 584 | maths/jaccard_similarity | ✓ | 508.0µs | 3.82MB |
-| 585 | maths/joint_probability_distribution | ✓ | 723.0µs | 3.86MB |
-| 586 | maths/josephus_problem | ✓ | 343.0µs | 3.54MB |
-| 587 | maths/juggler_sequence | ✓ | 345.0µs | 3.61MB |
-| 588 | maths/karatsuba | ✓ | 299.0µs | 3.72MB |
-| 589 | maths/kth_lexicographic_permutation | ✓ | 437.0µs | 3.63MB |
-| 590 | maths/largest_of_very_large_numbers | ✓ | 281.0µs | 3.61MB |
-| 591 | maths/least_common_multiple | ✓ | 392.0µs | 3.68MB |
-| 592 | maths/line_length | ✓ | 900.0µs | 3.79MB |
-| 593 | maths/liouville_lambda | ✓ | 223.0µs | 3.46MB |
-| 594 | maths/lucas_lehmer_primality_test | ✓ | 258.0µs | 3.59MB |
-| 595 | maths/lucas_series | ✓ | 396.0µs | 3.58MB |
-| 596 | maths/maclaurin_series | ✓ | 664.0µs | 3.65MB |
-| 597 | maths/manhattan_distance | ✓ | 421.0µs | 3.66MB |
-| 598 | maths/matrix_exponentiation | ✓ | 655.0µs | 3.70MB |
-| 599 | maths/max_sum_sliding_window | ✓ | 312.0µs | 3.54MB |
-| 600 | maths/minkowski_distance | ✓ | 1.0ms | 3.73MB |
-| 601 | maths/mobius_function | ✓ | 268.0µs | 3.64MB |
-| 602 | maths/modular_division | ✓ | 277.0µs | 3.60MB |
-| 603 | maths/monte_carlo | ✓ | 937.0µs | 3.82MB |
-| 604 | maths/monte_carlo_dice | ✓ | 1.0ms | 3.73MB |
-| 605 | maths/number_of_digits | ✓ | 315.0µs | 3.64MB |
+| 576 | maths/germain_primes |   |  |  |
+| 577 | maths/greatest_common_divisor |   |  |  |
+| 578 | maths/hardy_ramanujanalgo |   |  |  |
+| 579 | maths/integer_square_root |   |  |  |
+| 580 | maths/interquartile_range |   |  |  |
+| 581 | maths/is_int_palindrome |   |  |  |
+| 582 | maths/is_ip_v4_address_valid |   |  |  |
+| 583 | maths/is_square_free |   |  |  |
+| 584 | maths/jaccard_similarity |   |  |  |
+| 585 | maths/joint_probability_distribution |   |  |  |
+| 586 | maths/josephus_problem |   |  |  |
+| 587 | maths/juggler_sequence |   |  |  |
+| 588 | maths/karatsuba |   |  |  |
+| 589 | maths/kth_lexicographic_permutation |   |  |  |
+| 590 | maths/largest_of_very_large_numbers |   |  |  |
+| 591 | maths/least_common_multiple |   |  |  |
+| 592 | maths/line_length |   |  |  |
+| 593 | maths/liouville_lambda |   |  |  |
+| 594 | maths/lucas_lehmer_primality_test |   |  |  |
+| 595 | maths/lucas_series |   |  |  |
+| 596 | maths/maclaurin_series |   |  |  |
+| 597 | maths/manhattan_distance |   |  |  |
+| 598 | maths/matrix_exponentiation |   |  |  |
+| 599 | maths/max_sum_sliding_window |   |  |  |
+| 600 | maths/minkowski_distance |   |  |  |
+| 601 | maths/mobius_function |   |  |  |
+| 602 | maths/modular_division |   |  |  |
+| 603 | maths/monte_carlo |   |  |  |
+| 604 | maths/monte_carlo_dice |   |  |  |
+| 605 | maths/number_of_digits |   |  |  |
 | 606 | maths/numerical_analysis/adams_bashforth |   |  |  |
 | 607 | maths/numerical_analysis/bisection |   |  |  |
-| 608 | maths/numerical_analysis/bisection_2 | ✓ | 577.0µs | 3.75MB |
-| 609 | maths/numerical_analysis/integration_by_simpson_approx | ✓ | 551.0µs | 3.66MB |
-| 610 | maths/numerical_analysis/intersection | ✓ | 518.0µs | 3.60MB |
-| 611 | maths/numerical_analysis/nevilles_method | ✓ | 826.0µs | 3.88MB |
-| 612 | maths/numerical_analysis/newton_forward_interpolation | ✓ | 520.0µs | 3.86MB |
-| 613 | maths/numerical_analysis/newton_raphson | ✓ | 428.0µs | 3.86MB |
-| 614 | maths/numerical_analysis/numerical_integration | ✓ | 5.0ms | 3.75MB |
-| 615 | maths/numerical_analysis/proper_fractions | ✓ | 300.0µs | 3.55MB |
-| 616 | maths/numerical_analysis/runge_kutta | ✓ | 1.0ms | 3.83MB |
-| 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 | ✓ | 528.0µs | 3.79MB |
-| 618 | maths/numerical_analysis/runge_kutta_gills | ✓ | 603.0µs | 3.68MB |
-| 619 | maths/numerical_analysis/secant_method | ✓ | 638.0µs | 3.71MB |
-| 620 | maths/numerical_analysis/simpson_rule | ✓ | 530.0µs | 3.75MB |
-| 621 | maths/numerical_analysis/square_root | ✓ | 524.0µs | 3.66MB |
-| 622 | maths/odd_sieve | ✓ | 253.0µs | 3.48MB |
-| 623 | maths/perfect_cube | ✓ | 328.0µs | 3.67MB |
-| 624 | maths/perfect_number | ✓ | 139.0ms | 3.59MB |
-| 625 | maths/perfect_square | ✓ | 303.0µs | 3.58MB |
-| 626 | maths/persistence | ✓ | 206.0µs | 3.58MB |
-| 627 | maths/pi_generator | ✓ | 171.0µs | 3.54MB |
-| 628 | maths/pi_monte_carlo_estimation | ✓ | 990.0µs | 3.73MB |
-| 629 | maths/points_are_collinear_3d | ✓ | 268.0µs | 3.46MB |
-| 630 | maths/pollard_rho | ✓ | 278.0µs | 3.62MB |
-| 631 | maths/polynomial_evaluation | ✓ | 507.0µs | 3.86MB |
-| 632 | maths/polynomials/single_indeterminate_operations | ✓ | 463.0µs | 3.77MB |
-| 633 | maths/power_using_recursion | ✓ | 202.0µs | 3.56MB |
-| 634 | maths/prime_check | ✓ | 364.0µs | 3.73MB |
-| 635 | maths/prime_factors | ✓ | 344.0µs | 3.60MB |
-| 636 | maths/prime_numbers | ✓ | 336.0µs | 3.60MB |
-| 637 | maths/prime_sieve_eratosthenes | ✓ | 440.0µs | 3.77MB |
+| 608 | maths/numerical_analysis/bisection_2 |   |  |  |
+| 609 | maths/numerical_analysis/integration_by_simpson_approx |   |  |  |
+| 610 | maths/numerical_analysis/intersection |   |  |  |
+| 611 | maths/numerical_analysis/nevilles_method |   |  |  |
+| 612 | maths/numerical_analysis/newton_forward_interpolation |   |  |  |
+| 613 | maths/numerical_analysis/newton_raphson |   |  |  |
+| 614 | maths/numerical_analysis/numerical_integration |   |  |  |
+| 615 | maths/numerical_analysis/proper_fractions |   |  |  |
+| 616 | maths/numerical_analysis/runge_kutta |   |  |  |
+| 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 |   |  |  |
+| 618 | maths/numerical_analysis/runge_kutta_gills |   |  |  |
+| 619 | maths/numerical_analysis/secant_method |   |  |  |
+| 620 | maths/numerical_analysis/simpson_rule |   |  |  |
+| 621 | maths/numerical_analysis/square_root |   |  |  |
+| 622 | maths/odd_sieve |   |  |  |
+| 623 | maths/perfect_cube |   |  |  |
+| 624 | maths/perfect_number |   |  |  |
+| 625 | maths/perfect_square |   |  |  |
+| 626 | maths/persistence |   |  |  |
+| 627 | maths/pi_generator |   |  |  |
+| 628 | maths/pi_monte_carlo_estimation |   |  |  |
+| 629 | maths/points_are_collinear_3d |   |  |  |
+| 630 | maths/pollard_rho |   |  |  |
+| 631 | maths/polynomial_evaluation |   |  |  |
+| 632 | maths/polynomials/single_indeterminate_operations |   |  |  |
+| 633 | maths/power_using_recursion |   |  |  |
+| 634 | maths/prime_check |   |  |  |
+| 635 | maths/prime_factors |   |  |  |
+| 636 | maths/prime_numbers |   |  |  |
+| 637 | maths/prime_sieve_eratosthenes |   |  |  |
 | 638 | maths/primelib |   |  |  |
-| 639 | maths/print_multiplication_table | ✓ | 298.0µs | 3.48MB |
-| 640 | maths/pythagoras | ✓ | 485.0µs | 3.80MB |
-| 641 | maths/qr_decomposition | ✓ | 602.0µs | 3.69MB |
-| 642 | maths/quadratic_equations_complex_numbers | ✓ | 523.0µs | 3.73MB |
-| 643 | maths/radians | ✓ | 521.0µs | 3.67MB |
-| 644 | maths/radix2_fft | ✓ | 582.0µs | 3.86MB |
-| 645 | maths/remove_digit | ✓ | 194.0µs | 3.45MB |
-| 646 | maths/segmented_sieve | ✓ | 370.0µs | 3.76MB |
-| 647 | maths/series/arithmetic | ✓ | 550.0µs | 3.71MB |
-| 648 | maths/series/geometric | ✓ | 459.0µs | 3.80MB |
-| 649 | maths/series/geometric_series | ✓ | 416.0µs | 3.65MB |
-| 650 | maths/series/harmonic | ✓ | 449.0µs | 3.88MB |
-| 651 | maths/series/harmonic_series | ✓ | 288.0µs | 3.78MB |
-| 652 | maths/series/hexagonal_numbers | ✓ | 324.0µs | 3.60MB |
-| 653 | maths/series/p_series | ✓ | 492.0µs | 3.84MB |
-| 654 | maths/sieve_of_eratosthenes | ✓ | 607.0µs | 3.69MB |
-| 655 | maths/sigmoid | ✓ | 487.0µs | 3.65MB |
-| 656 | maths/signum | ✓ | 251.0µs | 3.62MB |
-| 657 | maths/simultaneous_linear_equation_solver | ✓ | 642.0µs | 3.80MB |
-| 658 | maths/sin | ✓ | 516.0µs | 3.91MB |
-| 659 | maths/sock_merchant | ✓ | 279.0µs | 3.65MB |
-| 660 | maths/softmax |   |  |  |
-| 661 | maths/solovay_strassen_primality_test |   |  |  |
-| 662 | maths/spearman_rank_correlation_coefficient |   |  |  |
-| 663 | maths/special_numbers/armstrong_numbers |   |  |  |
-| 664 | maths/special_numbers/automorphic_number |   |  |  |
-| 665 | maths/special_numbers/bell_numbers |   |  |  |
-| 666 | maths/special_numbers/carmichael_number |   |  |  |
-| 667 | maths/special_numbers/catalan_number |   |  |  |
-| 668 | maths/special_numbers/hamming_numbers |   |  |  |
-| 669 | maths/special_numbers/happy_number |   |  |  |
-| 670 | maths/special_numbers/harshad_numbers |   |  |  |
-| 671 | maths/special_numbers/hexagonal_number |   |  |  |
-| 672 | maths/special_numbers/krishnamurthy_number |   |  |  |
-| 673 | maths/special_numbers/perfect_number |   |  |  |
-| 674 | maths/special_numbers/polygonal_numbers |   |  |  |
-| 675 | maths/special_numbers/pronic_number |   |  |  |
-| 676 | maths/special_numbers/proth_number |   |  |  |
-| 677 | maths/special_numbers/triangular_numbers |   |  |  |
-| 678 | maths/special_numbers/ugly_numbers |   |  |  |
-| 679 | maths/special_numbers/weird_number |   |  |  |
-| 680 | maths/sum_of_arithmetic_series |   |  |  |
-| 681 | maths/sum_of_digits |   |  |  |
-| 682 | maths/sum_of_geometric_progression |   |  |  |
-| 683 | maths/sum_of_harmonic_series |   |  |  |
-| 684 | maths/sumset |   |  |  |
-| 685 | maths/sylvester_sequence |   |  |  |
-| 686 | maths/tanh |   |  |  |
-| 687 | maths/test_factorial |   |  |  |
-| 688 | maths/test_prime_check |   |  |  |
-| 689 | maths/three_sum |   |  |  |
-| 690 | maths/trapezoidal_rule |   |  |  |
-| 691 | maths/triplet_sum |   |  |  |
-| 692 | maths/twin_prime |   |  |  |
-| 693 | maths/two_pointer |   |  |  |
-| 694 | maths/two_sum |   |  |  |
-| 695 | maths/volume |   |  |  |
-| 696 | maths/zellers_congruence |   |  |  |
-| 697 | matrix/binary_search_matrix |   |  |  |
+| 639 | maths/print_multiplication_table |   |  |  |
+| 640 | maths/pythagoras |   |  |  |
+| 641 | maths/qr_decomposition |   |  |  |
+| 642 | maths/quadratic_equations_complex_numbers |   |  |  |
+| 643 | maths/radians |   |  |  |
+| 644 | maths/radix2_fft |   |  |  |
+| 645 | maths/remove_digit |   |  |  |
+| 646 | maths/segmented_sieve |   |  |  |
+| 647 | maths/series/arithmetic |   |  |  |
+| 648 | maths/series/geometric |   |  |  |
+| 649 | maths/series/geometric_series |   |  |  |
+| 650 | maths/series/harmonic |   |  |  |
+| 651 | maths/series/harmonic_series |   |  |  |
+| 652 | maths/series/hexagonal_numbers |   |  |  |
+| 653 | maths/series/p_series |   |  |  |
+| 654 | maths/sieve_of_eratosthenes |   |  |  |
+| 655 | maths/sigmoid |   |  |  |
+| 656 | maths/signum |   |  |  |
+| 657 | maths/simultaneous_linear_equation_solver |   |  |  |
+| 658 | maths/sin |   |  |  |
+| 659 | maths/sock_merchant |   |  |  |
+| 660 | maths/softmax | ✓ | 779.0µs | 3.73MB |
+| 661 | maths/solovay_strassen_primality_test | ✓ | 421.0µs | 3.68MB |
+| 662 | maths/spearman_rank_correlation_coefficient | ✓ | 829.0µs | 3.84MB |
+| 663 | maths/special_numbers/armstrong_numbers | ✓ | 254.0µs | 3.51MB |
+| 664 | maths/special_numbers/automorphic_number | ✓ | 328.0µs | 3.70MB |
+| 665 | maths/special_numbers/bell_numbers | ✓ | 480.0µs | 3.61MB |
+| 666 | maths/special_numbers/carmichael_number | ✓ | 1.0ms | 3.69MB |
+| 667 | maths/special_numbers/catalan_number | ✓ | 399.0µs | 3.55MB |
+| 668 | maths/special_numbers/hamming_numbers | ✓ | 393.0µs | 3.63MB |
+| 669 | maths/special_numbers/happy_number | ✓ | 273.0µs | 3.69MB |
+| 670 | maths/special_numbers/harshad_numbers | ✓ | 639.0µs | 3.52MB |
+| 671 | maths/special_numbers/hexagonal_number | ✓ | 292.0µs | 3.42MB |
+| 672 | maths/special_numbers/krishnamurthy_number | ✓ | 321.0µs | 3.54MB |
+| 673 | maths/special_numbers/perfect_number | ✓ | 513.0µs | 3.69MB |
+| 674 | maths/special_numbers/polygonal_numbers | ✓ | 385.0µs | 3.59MB |
+| 675 | maths/special_numbers/pronic_number | ✓ | 461.0µs | 3.64MB |
+| 676 | maths/special_numbers/proth_number | ✓ | 449.0µs | 3.61MB |
+| 677 | maths/special_numbers/triangular_numbers | ✓ | 293.0µs | 3.48MB |
+| 678 | maths/special_numbers/ugly_numbers | ✓ | 741.0µs | 3.60MB |
+| 679 | maths/special_numbers/weird_number | ✓ | 689.0µs | 3.55MB |
+| 680 | maths/sum_of_arithmetic_series | ✓ | 272.0µs | 3.62MB |
+| 681 | maths/sum_of_digits | ✓ | 342.0µs | 3.69MB |
+| 682 | maths/sum_of_geometric_progression | ✓ | 889.0µs | 3.78MB |
+| 683 | maths/sum_of_harmonic_series | ✓ | 644.0µs | 3.73MB |
+| 684 | maths/sumset | ✓ | 324.0µs | 3.46MB |
+| 685 | maths/sylvester_sequence | ✓ | 424.0µs | 3.72MB |
+| 686 | maths/tanh | ✓ | 680.0µs | 3.66MB |
+| 687 | maths/test_factorial | ✓ | 220.0µs | 3.44MB |
+| 688 | maths/test_prime_check | ✓ | 405.0µs | 3.58MB |
+| 689 | maths/three_sum | ✓ | 406.0µs | 3.62MB |
+| 690 | maths/trapezoidal_rule | ✓ | 703.0µs | 3.75MB |
+| 691 | maths/triplet_sum | ✓ | 428.0µs | 3.62MB |
+| 692 | maths/twin_prime | ✓ | 241.0µs | 3.52MB |
+| 693 | maths/two_pointer | ✓ | 333.0µs | 3.43MB |
+| 694 | maths/two_sum | ✓ | 535.0µs | 3.62MB |
+| 695 | maths/volume | ✓ | 776.0µs | 3.74MB |
+| 696 | maths/zellers_congruence | ✓ | 432.0µs | 3.54MB |
+| 697 | matrix/binary_search_matrix | ✓ | 452.0µs | 3.61MB |
 | 698 | matrix/count_islands_in_matrix |   |  |  |
-| 699 | matrix/count_negative_numbers_in_sorted_matrix |   |  |  |
-| 700 | matrix/count_paths |   |  |  |
-| 701 | matrix/cramers_rule_2x2 |   |  |  |
-| 702 | matrix/inverse_of_matrix |   |  |  |
+| 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 3.85s | 49.57MB |
+| 700 | matrix/count_paths | ✓ | 809.0µs | 3.64MB |
+| 701 | matrix/cramers_rule_2x2 | ✓ | 610.0µs | 3.69MB |
+| 702 | matrix/inverse_of_matrix | ✓ | 546.0µs | 3.68MB |
 | 703 | matrix/largest_square_area_in_matrix |   |  |  |
-| 704 | matrix/matrix_based_game |   |  |  |
-| 705 | matrix/matrix_class |   |  |  |
-| 706 | matrix/matrix_equalization |   |  |  |
-| 707 | matrix/matrix_multiplication_recursion |   |  |  |
-| 708 | matrix/matrix_operation |   |  |  |
-| 709 | matrix/max_area_of_island |   |  |  |
-| 710 | matrix/median_matrix |   |  |  |
-| 711 | matrix/nth_fibonacci_using_matrix_exponentiation |   |  |  |
-| 712 | matrix/pascal_triangle |   |  |  |
-| 713 | matrix/rotate_matrix |   |  |  |
-| 714 | matrix/searching_in_sorted_matrix |   |  |  |
-| 715 | matrix/sherman_morrison |   |  |  |
-| 716 | matrix/spiral_print |   |  |  |
-| 717 | matrix/tests/test_matrix_operation |   |  |  |
-| 718 | matrix/validate_sudoku_board |   |  |  |
+| 704 | matrix/matrix_based_game | ✓ | 804.0µs | 3.79MB |
+| 705 | matrix/matrix_class | ✓ | 1.0ms | 3.83MB |
+| 706 | matrix/matrix_equalization | ✓ | 360.0µs | 3.58MB |
+| 707 | matrix/matrix_multiplication_recursion | ✓ | 716.0µs | 3.75MB |
+| 708 | matrix/matrix_operation | ✓ | 1.0ms | 3.84MB |
+| 709 | matrix/max_area_of_island | ✓ | 2.0ms | 3.64MB |
+| 710 | matrix/median_matrix | ✓ | 522.0µs | 3.55MB |
+| 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ | 758.0µs | 3.71MB |
+| 712 | matrix/pascal_triangle | ✓ | 433.0µs | 3.53MB |
+| 713 | matrix/rotate_matrix | ✓ | 654.0µs | 3.62MB |
+| 714 | matrix/searching_in_sorted_matrix | ✓ | 900.0µs | 3.73MB |
+| 715 | matrix/sherman_morrison | ✓ | 822.0µs | 3.87MB |
+| 716 | matrix/spiral_print | ✓ | 414.0µs | 3.52MB |
+| 717 | matrix/tests/test_matrix_operation | ✓ | 727.0µs | 3.76MB |
+| 718 | matrix/validate_sudoku_board | ✓ | 586.0µs | 3.66MB |
 | 719 | networking_flow/ford_fulkerson |   |  |  |
 | 720 | networking_flow/minimum_cut |   |  |  |
 | 721 | neural_network/activation_functions/binary_step |   |  |  |
