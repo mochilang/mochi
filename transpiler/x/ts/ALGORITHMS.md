@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-08 11:07 UTC
+Last updated: 2025-08-08 12:02 UTC
 
 ## Algorithms Golden Test Checklist (1050/1077)
 | Index | Name | Status | Duration | Memory |
@@ -406,7 +406,7 @@ Last updated: 2025-08-08 11:07 UTC
 | 397 | graphs/basic_graphs | ✓ | 571.223ms | 230.1 KB |
 | 398 | graphs/bellman_ford | ✓ | 571.223ms | 37.4 KB |
 | 399 | graphs/bi_directional_dijkstra | ✓ | 571.223ms | 545.6 KB |
-| 400 | graphs/bidirectional_a_star | ✓ | 571.223ms | 1.3 MB |
+| 400 | graphs/bidirectional_a_star | ✓ | 571.223ms | 304.0 KB |
 | 401 | graphs/bidirectional_breadth_first_search | ✓ | 5.063ms | 149.4 KB |
 | 402 | graphs/bidirectional_search | ✓ | 1.454ms | 42.3 KB |
 | 403 | graphs/boruvka |   |  |  |
