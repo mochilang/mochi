@@ -1254,6 +1254,18 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 					fmt.Fprintf(w, "size_t %s_len = %s_len + 1;\n", d.Name, vr.Name)
 					return
 				}
+				if ie, ok := call.Args[0].(*IndexExpr); ok {
+					if vr, ok2 := ie.Target.(*VarRef); ok2 {
+						fmt.Fprintf(w, "%s *%s = ", base, d.Name)
+						d.Value.emitExpr(w)
+						io.WriteString(w, ";\n")
+						writeIndent(w, indent)
+						fmt.Fprintf(w, "size_t %s_len = %s_lens[(int)(", d.Name, vr.Name)
+						ie.Index.emitExpr(w)
+						io.WriteString(w, ")] + 1;\n")
+						return
+					}
+				}
 			}
 			if call.Func == "_slice_int" || call.Func == "_slice_double" || call.Func == "_slice_str" {
 				fmt.Fprintf(w, "%s *%s = ", base, d.Name)
@@ -2370,6 +2382,31 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 			}
 			io.WriteString(w, ")")
 			return
+		}
+		if ie, ok := c.Args[0].(*IndexExpr); ok {
+			if vr, ok2 := ie.Target.(*VarRef); ok2 {
+				switch inferExprType(currentEnv, c.Args[1]) {
+				case "double":
+					needListAppendDoubleNew = true
+					io.WriteString(w, "list_append_double_new(")
+				case "const char*":
+					needListAppendStrNew = true
+					io.WriteString(w, "list_append_str_new(")
+				default:
+					needListAppendIntNew = true
+					io.WriteString(w, "list_append_int_new(")
+				}
+				c.Args[0].emitExpr(w)
+				io.WriteString(w, ", ")
+				fmt.Fprintf(w, "%s_lens[(int)(", vr.Name)
+				ie.Index.emitExpr(w)
+				io.WriteString(w, ")], ")
+				if len(c.Args) > 1 && c.Args[1] != nil {
+					c.Args[1].emitExpr(w)
+				}
+				io.WriteString(w, ")")
+				return
+			}
 		}
 	}
 	if c.Func == "concat" && len(c.Args) == 2 {
