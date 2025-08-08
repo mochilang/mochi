@@ -644,7 +644,8 @@ func (e *IntDivExpr) emit(w io.Writer) {
 			e.Right.emit(w)
 		}
 	} else {
-		io.WriteString(w, "Math.trunc(")
+		// Use Math.floor for integer division to match Mochi semantics with negative values
+		io.WriteString(w, "Math.floor(")
 		if e.Left != nil {
 			e.Left.emit(w)
 		}
