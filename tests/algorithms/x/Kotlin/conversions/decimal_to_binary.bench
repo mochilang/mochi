@@ -1,0 +1,9 @@
+0b0
+0b10
+0b111
+0b100011
+-0b10
+0b0
+0b101000
+-0b101000
+{"duration_us":8836, "memory_bytes":137096, "name":"main"}

@@ -1,0 +1,10 @@
+run: exit status 1
+-1062731775
+167772415
+-1062731775
+167772415
+Exception in thread "main" java.lang.RuntimeException: Invalid decimal IPv4 address
+	at Ipv4_conversionKt.panic(ipv4_conversion.kt:3)
+	at Ipv4_conversionKt.decimal_to_ipv4(ipv4_conversion.kt:137)
+	at Ipv4_conversionKt.main(ipv4_conversion.kt:169)
+	at Ipv4_conversionKt.main(ipv4_conversion.kt)
