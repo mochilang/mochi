@@ -3036,8 +3036,14 @@ func (c *CallExpr) emit(w io.Writer) {
 						a.emit(w)
 						io.WriteString(w, "))")
 					case strings.HasPrefix(exp, "[]") && strings.HasPrefix(at, "["):
-						a.emit(w)
-						io.WriteString(w, "[0..]")
+						if ll, ok := a.(*ListLit); ok {
+							io.WriteString(w, "(")
+							ll.emit(w)
+							io.WriteString(w, ")[0..]")
+						} else {
+							a.emit(w)
+							io.WriteString(w, "[0..]")
+						}
 					default:
 						a.emit(w)
 					}
