@@ -74,7 +74,7 @@ var reserved = map[string]bool{
 	"union": true, "unsigned": true, "using": true, "virtual": true, "void": true, "volatile": true,
 	"wchar_t": true, "while": true, "xor": true, "xor_eq": true,
 	// avoid clashing with C standard library functions
-	"rand": true, "random": true, "time": true,
+	"ceil": true, "rand": true, "random": true, "time": true,
 	"NULL": true,
 }
 var currentReturnType string
@@ -7742,7 +7742,7 @@ func exprType(e Expr) string {
 		}
 		return "auto"
 	case *LenExpr:
-		return "int"
+		return "int64_t"
 	case *AvgExpr:
 		return "double"
 	case *ToUpperExpr, *ToLowerExpr, *TrimSpaceExpr:
