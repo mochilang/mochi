@@ -1312,11 +1312,14 @@ func (b *BinaryExpr) emit(w io.Writer) {
 				return
 			}
 			if (lt == "Any" || lt == "Any?") && (rt == "Double" || rt == "Int") {
-				if _, ok := e.(*IndexExpr); ok {
-					e.emit(w)
+				if ix, ok := e.(*IndexExpr); ok {
+					if ix.Type == "" || ix.Type == "Any" || ix.Type == "Any?" {
+						ix.Type = rt
+					}
+					ix.emit(w)
 					return
 				}
-				cast(e, "Double")
+				cast(e, rt)
 				return
 			}
 			if (lt == "Any" || lt == "Any?") && (rt == "Any" || rt == "Any?") {
