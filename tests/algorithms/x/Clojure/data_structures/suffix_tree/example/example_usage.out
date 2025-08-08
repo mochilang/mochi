@@ -2,4 +2,4 @@ Execution error (ClassCastException) at main/search (example_usage.clj:43).
 class java.lang.String cannot be cast to class clojure.lang.IPersistentVector (java.lang.String is in module java.base of loader 'bootstrap'; clojure.lang.IPersistentVector is in unnamed module of loader 'app')
 
 Full report at:
-/tmp/clojure-7220630656527730895.edn
+/tmp/clojure-766204321429576913.edn

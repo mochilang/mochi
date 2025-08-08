@@ -2423,6 +2423,31 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 			return &List{Elems: []Node{Symbol("Math/abs"), arg}}, nil
 		case "append":
 			elems = append(elems, Symbol("conj"))
+		case "slice":
+			if len(c.Args) != 3 {
+				return nil, fmt.Errorf("slice expects 3 args")
+			}
+			target, err := transpileExpr(c.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			startArg, err := transpileExpr(c.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			endArg, err := transpileExpr(c.Args[2])
+			if err != nil {
+				return nil, err
+			}
+			fn := Symbol("subvec")
+			if transpileEnv != nil {
+				t := types.TypeOfExprBasic(c.Args[0], transpileEnv)
+				if _, ok := t.(types.StringType); ok {
+					fn = Symbol("subs")
+				}
+			}
+			endNode := &List{Elems: []Node{Symbol("min"), endArg, &List{Elems: []Node{Symbol("count"), target}}}}
+			return &List{Elems: []Node{fn, target, startArg, endNode}}, nil
 		case "repeat":
 			if len(c.Args) != 2 {
 				return nil, fmt.Errorf("repeat expects 2 args")

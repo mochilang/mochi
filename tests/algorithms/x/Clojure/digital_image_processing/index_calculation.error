@@ -4,4 +4,4 @@ Execution error (ArithmeticException) at main/ccci (index_calculation.clj:44).
 Divide by zero
 
 Full report at:
-/tmp/clojure-13271805317324715101.edn
+/tmp/clojure-9121866477572927214.edn

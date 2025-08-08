@@ -3,4 +3,4 @@ Execution error (ClassCastException) at main/round-to-int (rotation.clj:123).
 class java.lang.Double cannot be cast to class java.lang.String (java.lang.Double and java.lang.String are in module java.base of loader 'bootstrap')
 
 Full report at:
-/tmp/clojure-5515159680483272749.edn
+/tmp/clojure-12993832754724277933.edn

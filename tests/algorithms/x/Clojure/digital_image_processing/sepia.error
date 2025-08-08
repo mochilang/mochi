@@ -3,4 +3,4 @@ Execution error (ClassCastException) at main/to-grayscale (sepia.clj:41).
 class java.lang.Double cannot be cast to class java.lang.String (java.lang.Double and java.lang.String are in module java.base of loader 'bootstrap')
 
 Full report at:
-/tmp/clojure-4728118322079379502.edn
+/tmp/clojure-10781198495710262808.edn
