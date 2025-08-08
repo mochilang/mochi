@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-08 10:20 GMT+7
+Last updated: 2025-08-08 11:23 GMT+7
 
-## Algorithms Golden Test Checklist (734/1077)
+## Algorithms Golden Test Checklist (744/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 117µs | 38.8 KB |
@@ -794,26 +794,26 @@ Last updated: 2025-08-08 10:20 GMT+7
 | 785 | physics/period_of_pendulum | error |  |  |
 | 786 | physics/photoelectric_effect | ✓ | 58µs | 35.3 KB |
 | 787 | physics/potential_energy | ✓ | 118µs | 38.7 KB |
-| 788 | physics/rainfall_intensity | ✓ | 142µs | 35.9 KB |
-| 789 | physics/reynolds_number | ✓ | 82µs | 38.7 KB |
-| 790 | physics/rms_speed_of_molecule | ✓ | 104µs | 39.5 KB |
-| 791 | physics/shear_stress | ✓ | 98µs | 39.7 KB |
-| 792 | physics/speed_of_sound | ✓ | 69µs | 38.9 KB |
-| 793 | physics/speeds_of_gas_molecules | ✓ | 84µs | 35.7 KB |
-| 794 | physics/terminal_velocity | ✓ | 71µs | 39.2 KB |
-| 795 | project_euler/problem_001/sol1 | ✓ | 103µs | 35.2 KB |
-| 796 | project_euler/problem_001/sol2 | ✓ | 315µs | 40.2 KB |
-| 797 | project_euler/problem_001/sol3 | ✓ | 77µs | 39.2 KB |
-| 798 | project_euler/problem_001/sol4 |   |  |  |
-| 799 | project_euler/problem_001/sol5 |   |  |  |
-| 800 | project_euler/problem_001/sol6 |   |  |  |
-| 801 | project_euler/problem_001/sol7 |   |  |  |
-| 802 | project_euler/problem_002/sol1 |   |  |  |
-| 803 | project_euler/problem_002/sol2 |   |  |  |
-| 804 | project_euler/problem_002/sol3 |   |  |  |
-| 805 | project_euler/problem_002/sol4 |   |  |  |
-| 806 | project_euler/problem_002/sol5 |   |  |  |
-| 807 | project_euler/problem_003/sol1 |   |  |  |
+| 788 | physics/rainfall_intensity | ✓ | 68µs | 35.9 KB |
+| 789 | physics/reynolds_number | ✓ | 40µs | 38.7 KB |
+| 790 | physics/rms_speed_of_molecule | ✓ | 41µs | 39.5 KB |
+| 791 | physics/shear_stress | ✓ | 150µs | 39.7 KB |
+| 792 | physics/speed_of_sound | ✓ | 33µs | 38.9 KB |
+| 793 | physics/speeds_of_gas_molecules | ✓ | 45µs | 35.7 KB |
+| 794 | physics/terminal_velocity | ✓ | 41µs | 39.2 KB |
+| 795 | project_euler/problem_001/sol1 | ✓ | 56µs | 35.2 KB |
+| 796 | project_euler/problem_001/sol2 | ✓ | 59µs | 40.2 KB |
+| 797 | project_euler/problem_001/sol3 | ✓ | 63µs | 39.2 KB |
+| 798 | project_euler/problem_001/sol4 | ✓ | 2.715ms | 44.3 KB |
+| 799 | project_euler/problem_001/sol5 | ✓ | 41µs | 38.9 KB |
+| 800 | project_euler/problem_001/sol6 | ✓ | 58µs | 35.9 KB |
+| 801 | project_euler/problem_001/sol7 | ✓ | 64µs | 39.2 KB |
+| 802 | project_euler/problem_002/sol1 | ✓ | 43µs | 39.5 KB |
+| 803 | project_euler/problem_002/sol2 | ✓ | 36µs | 39.5 KB |
+| 804 | project_euler/problem_002/sol3 | ✓ | 142µs | 39.5 KB |
+| 805 | project_euler/problem_002/sol4 | ✓ | 70µs | 36.1 KB |
+| 806 | project_euler/problem_002/sol5 | ✓ | 42µs | 35.2 KB |
+| 807 | project_euler/problem_003/sol1 | ✓ | 4.082ms | 36.9 KB |
 | 808 | project_euler/problem_003/sol2 |   |  |  |
 | 809 | project_euler/problem_003/sol3 |   |  |  |
 | 810 | project_euler/problem_004/sol1 |   |  |  |
