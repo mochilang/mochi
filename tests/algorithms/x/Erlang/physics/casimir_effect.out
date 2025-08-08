@@ -1,0 +1,7 @@
+/workspace/mochi/tests/algorithms/x/Erlang/physics/casimir_effect.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+#{force => 6.4248189174864216e-21}
+#{distance => 1.0323056015031114e-5}
+#{area => 0.06688838837354052}

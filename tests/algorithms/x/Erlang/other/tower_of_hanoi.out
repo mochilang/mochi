@@ -1,0 +1,11 @@
+/workspace/mochi/tests/algorithms/x/Erlang/other/tower_of_hanoi.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+"moving disk from A to B"
+"moving disk from A to C"
+"moving disk from B to C"
+"moving disk from A to B"
+"moving disk from C to A"
+"moving disk from C to B"
+"moving disk from A to B"

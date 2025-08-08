@@ -1,0 +1,7 @@
+/workspace/mochi/tests/algorithms/x/Erlang/other/h_index.erl:53:1: Warning: function mochi_safe_mul/2 is unused
+%   53| mochi_safe_mul(A, B) ->
+%     | ^
+
+3
+1
+2

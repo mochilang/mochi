@@ -1,0 +1,9 @@
+/workspace/mochi/tests/algorithms/x/Erlang/physics/centripetal_force.erl:40:1: Warning: function mochi_nth/2 is unused
+%   40| mochi_nth(I, L) ->
+%     | ^
+
+1395
+450
+3333.33
+784
+1.0e4

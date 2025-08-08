@@ -1,0 +1,5 @@
+/workspace/mochi/tests/algorithms/x/Erlang/other/quine.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+"/*\nQuine:\n\nA quine is a program that outputs its own source code using string substitution.\n*/\nlet code: string = %s\nprint(code)\n"

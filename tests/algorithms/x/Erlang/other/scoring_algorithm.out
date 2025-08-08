@@ -1,0 +1,7 @@
+/workspace/mochi/tests/algorithms/x/Erlang/other/scoring_algorithm.erl:53:1: Warning: function mochi_safe_mul/2 is unused
+%   53| mochi_safe_mul(A, B) ->
+%     | ^
+
+[[20.0 60.0 2012.0 2.0] 
+ [23.0 90.0 2015.0 1.0] 
+ [22.0 50.0 2011.0 1.3333333333333335]]

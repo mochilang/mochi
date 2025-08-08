@@ -1,0 +1,13 @@
+/workspace/mochi/tests/algorithms/x/Erlang/other/word_search.erl:179:2: Warning: variable 'Ci_3' exported from 'case' (line 150, column 17)
+%  179| {Ci_3, Col, Cols, Dc, Dr, End_c, End_r, K_2, Ok_3, Ri, Row_3, Rows, Word, Word_len, Ws} = Fun_4(Ci_3, Col, Cols, Dc, Dr, End_c, End_r, K, Ok, Ri, Row_3, Rows, Word, Word_len, Ws),
+%     |  ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/other/word_search.erl:188:55: Warning: the result of evaluating operator '++'/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%  188|             Row_list_2 = lists:sublist(Row_list, Cc2) ++ [string:substr(Word, K_3 + 1, ((K_3 + 1) - K_3))] ++ lists:nthtail(Cc2 + 1, Row_list),
+%     |                                                       ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/other/word_search.erl:194:2: Warning: variable 'Ci_3' exported from 'case' (line 150, column 17)
+%  194| {Ci_3, Col, Cols, Dc, Dr, End_c, End_r, K_4, Ok_3, Ri, Row_3, Rows, Word, Word_len, Ws} = Fun_5(Ci_3, Col, Cols, Dc, Dr, End_c, End_r, K_3, Ok_3, Ri, Row_3, Rows, Word, Word_len, Ws),
+%     |  ^
+
+"y n m f q t o z u p \ni p y p k h e l u n \nw p i b u f g v s h \nq x w l s d g f s h \ne n m t c f i l i p \ni l i f e f i d a t \ns b a t s n c t a b \no l w h y j w v q v \nu f y b e h q t k t \nw v i n u z s t s d \n"

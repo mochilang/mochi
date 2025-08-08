@@ -1,0 +1,6 @@
+run: exit status 127
+/workspace/mochi/tests/algorithms/x/Erlang/neural_network/activation_functions/soboleva_modified_hyperbolic_tangent.erl:76:62: function to_float/1 undefined
+%   76|             Term_2 = mochi_safe_div(mochi_safe_mul(Term, X), to_float(N)),
+%     |                                                              ^
+
+escript: There were compilation errors.

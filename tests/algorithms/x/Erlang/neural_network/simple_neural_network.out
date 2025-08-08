@@ -1,0 +1,13 @@
+/workspace/mochi/tests/algorithms/x/Erlang/neural_network/simple_neural_network.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/neural_network/simple_neural_network.erl:119:2: Warning: variable 'Is_neg_3' exported from 'case' (line 98, column 9)
+%  119| {Is_neg_3, N_2, Sum_2, Term_2, X, Y_3} = Fun(Is_neg_3, N, Sum, Term, X, Y_3),
+%     |  ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/neural_network/simple_neural_network.erl:119:35: Warning: variable 'Y_3' exported from 'case' (line 98, column 9)
+%  119| {Is_neg_3, N_2, Sum_2, Term_2, X, Y_3} = Fun(Is_neg_3, N, Sum, Term, X, Y_3),
+%     |                                   ^
+
+32.11788290745957

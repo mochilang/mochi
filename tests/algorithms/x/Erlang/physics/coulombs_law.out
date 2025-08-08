@@ -1,0 +1,9 @@
+/workspace/mochi/tests/algorithms/x/Erlang/physics/coulombs_law.erl:39:1: Warning: function mochi_nth/2 is unused
+%   39| mochi_nth(I, L) ->
+%     | ^
+
+"12382849136.06"
+"5392531075.38"
+"-39944674632.44"
+"3595020716.92"
+"17975103584.60"
