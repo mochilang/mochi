@@ -174,24 +174,25 @@ func safeName(name string) string {
 func emitCastAnyToType(w io.Writer, typ, v string) {
 	if strings.HasPrefix(typ, "[]") {
 		elem := typ[2:]
-		usesReflect = true
 		if typ == "[]any" {
+			usesReflect = true
 			fmt.Fprintf(w, "func(v any) []any { if v == nil { return nil }; if arr, ok := v.([]any); ok { return arr }; rv := reflect.ValueOf(v); if rv.Kind() != reflect.Slice { return v.([]any) }; n := rv.Len(); out := make([]any, n); for i := 0; i < n; i++ { out[i] = rv.Index(i).Interface() }; return out }(%s)", v)
 			return
 		}
-		fmt.Fprintf(w, "func(v any) []%s { if v == nil { return nil }; if vv, ok := v.([]%s); ok { return vv }; if arr, ok := v.([]any); ok { if len(arr)==0 { return []%s{} }; out := make([]%s, len(arr)); for i, x := range arr { out[i] = ", elem, elem, elem, elem)
-		assignAnyVars["x"] = true
-		emitCastAnyToType(w, elem, "x")
-		delete(assignAnyVars, "x")
-		fmt.Fprintf(w, " }; return out }; return v.([]%s) }(%s)", elem, v)
+		fmt.Fprintf(w, "func(v any) []%s { if v == nil { return nil }; if vv, ok := v.([]%s); ok { return vv }; if arr, ok := v.([]any); ok { if len(arr)==0 { return []%s{} }; out := make([]%s, len(arr)); for i, x := range arr { out[i] = x.(%s) }; return out }; return v.([]%s) }(%s)", elem, elem, elem, elem, elem, elem, v)
+		return
+	}
+	if typ == "" || typ == "any" {
+		fmt.Fprint(w, v)
+		return
+	}
+	vv := strings.TrimSpace(v)
+	if strings.HasPrefix(vv, "func(") {
+		fmt.Fprintf(w, "%s.(%s)", v, typ)
 		return
 	}
 	if isIdentifier(v) && !assignAnyVars[v] {
-		if typ == "" || typ == "any" {
-			fmt.Fprint(w, v)
-		} else {
-			fmt.Fprintf(w, "%s(%s)", typ, v)
-		}
+		fmt.Fprintf(w, "%s(%s)", typ, v)
 		return
 	}
 	fmt.Fprintf(w, "%s.(%s)", v, typ)
@@ -2175,14 +2176,18 @@ func (a *AssertExpr) emit(w io.Writer) {
 		}
 	}
 	if a.Type == "int" {
-		if vr, ok := a.Expr.(*VarRef); ok {
-			if assignAnyVars[vr.Name] {
+		switch ex := a.Expr.(type) {
+		case *VarRef:
+			if assignAnyVars[ex.Name] {
 				a.Expr.emit(w)
 				io.WriteString(w, ".(int)")
 			} else {
 				a.Expr.emit(w)
 			}
-		} else {
+		case *CallExpr, *IfExpr:
+			a.Expr.emit(w)
+			io.WriteString(w, ".(int)")
+		default:
 			io.WriteString(w, "int(")
 			a.Expr.emit(w)
 			io.WriteString(w, ")")
@@ -2251,7 +2256,9 @@ func (a *AssertExpr) emit(w io.Writer) {
 		}
 		elem := a.Type[2:]
 		fmt.Fprintf(w, "func(v any) []%s { if v == nil { return nil }; if vv, ok := v.([]%s); ok { return vv }; if arr, ok := v.([]any); ok { if len(arr)==0 { return []%s{} }; out := make([]%s, len(arr)); for i, x := range arr { out[i] = ", elem, elem, elem, elem)
+		assignAnyVars["x"] = true
 		emitCastAnyToType(w, elem, "x")
+		delete(assignAnyVars, "x")
 		fmt.Fprintf(w, " }; return out }; return v.([]%s) }(", elem)
 		a.Expr.emit(w)
 		fmt.Fprint(w, ")")
