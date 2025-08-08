@@ -38,7 +38,7 @@ public class Main {
 
     static int[][][] split_matrix(int[][] a) {
         int n = a.length;
-        int mid = n / 2;
+        int mid = Math.floorDiv(n, 2);
         int[][] top_left = ((int[][])(new int[][]{}));
         int[][] top_right = ((int[][])(new int[][]{}));
         int[][] bot_left = ((int[][])(new int[][]{}));
@@ -134,12 +134,12 @@ public class Main {
         int[][] new_matrix = ((int[][])(new int[][]{}));
         int i_4 = 0;
         while (i_4 < top_right_1.length) {
-            new_matrix = ((int[][])(appendObj(new_matrix, concat(top_left_1[i_4], top_right_1[i_4]))));
+            new_matrix = ((int[][])(appendObj(new_matrix, java.util.stream.IntStream.concat(java.util.Arrays.stream(top_left_1[i_4]), java.util.Arrays.stream(top_right_1[i_4])).toArray())));
             i_4 = i_4 + 1;
         }
         i_4 = 0;
         while (i_4 < bot_right_1.length) {
-            new_matrix = ((int[][])(appendObj(new_matrix, concat(bot_left_1[i_4], bot_right_1[i_4]))));
+            new_matrix = ((int[][])(appendObj(new_matrix, java.util.stream.IntStream.concat(java.util.Arrays.stream(bot_left_1[i_4]), java.util.Arrays.stream(bot_right_1[i_4])).toArray())));
             i_4 = i_4 + 1;
         }
         return new_matrix;
@@ -218,12 +218,6 @@ public class Main {
     static <T> T[] appendObj(T[] arr, T v) {
         T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
         out[arr.length] = v;
-        return out;
-    }
-
-    static <T> T[] concat(T[] a, T[] b) {
-        T[] out = java.util.Arrays.copyOf(a, a.length + b.length);
-        System.arraycopy(b, 0, out, a.length, b.length);
         return out;
     }
 

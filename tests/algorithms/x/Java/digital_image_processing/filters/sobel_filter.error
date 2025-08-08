@@ -1,8 +1,8 @@
 compile: exit status 1
-/tmp/TestJavaTranspiler_Algorithms_Golden279_sobel_filter2010544114/001/Main.java:230: error: incompatible types: double[] cannot be converted to Object[]
+/tmp/TestJavaTranspiler_Algorithms_Golden279_sobel_filter2368104557/001/Main.java:230: error: incompatible types: double[] cannot be converted to Object[]
                 line = line + _p(_geto(mat[y_7], x_7));
                                           ^
-/tmp/TestJavaTranspiler_Algorithms_Golden279_sobel_filter2010544114/001/Main.java:247: error: incompatible types: double[] cannot be converted to Object[]
+/tmp/TestJavaTranspiler_Algorithms_Golden279_sobel_filter2368104557/001/Main.java:247: error: incompatible types: double[] cannot be converted to Object[]
                 line_1 = line_1 + _p(_geto(mat[y_8], x_8));
                                               ^
 Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output

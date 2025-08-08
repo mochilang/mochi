@@ -37,7 +37,7 @@ public class Main {
 
     static boolean has_key(java.util.Map<String,Integer> m, String k) {
         for (String key : m.keySet()) {
-            if (((Number)(key)).intValue() == k) {
+            if ((key.equals(k))) {
                 return true;
             }
         }
@@ -49,7 +49,7 @@ public class Main {
         int node_idx = 0;
         int j = 0;
         while (j < _runeLen(suffix)) {
-            String ch = suffix.substring(j, j+1);
+            String ch = _substr(suffix, j, j + 1);
             Node node = nodes[node_idx];
             java.util.Map<String,Integer> children = node.children;
             if (!(Boolean)has_key(children, ch)) {
@@ -80,7 +80,7 @@ tree.nodes = nodes;
             String suffix = "";
             int k = i;
             while (k < n) {
-                suffix = suffix + text.substring(k, k+1);
+                suffix = suffix + _substr(text, k, k + 1);
                 k = k + 1;
             }
             t = add_suffix(t, suffix, i);
@@ -101,7 +101,7 @@ tree.nodes = java.util.stream.Stream.concat(java.util.Arrays.stream(tree.nodes),
         int i_1 = 0;
         Node[] nodes_1 = ((Node[])(tree.nodes));
         while (i_1 < _runeLen(pattern)) {
-            String ch_1 = pattern.substring(i_1, i_1+1);
+            String ch_1 = _substr(pattern, i_1, i_1 + 1);
             Node node_2 = nodes_1[node_idx_1];
             java.util.Map<String,Integer> children_1 = node_2.children;
             if (!(Boolean)has_key(children_1, ch_1)) {
@@ -154,6 +154,12 @@ tree.nodes = java.util.stream.Stream.concat(java.util.Arrays.stream(tree.nodes),
 
     static int _runeLen(String s) {
         return s.codePointCount(0, s.length());
+    }
+
+    static String _substr(String s, int i, int j) {
+        int start = s.offsetByCodePoints(0, i);
+        int end = s.offsetByCodePoints(0, j);
+        return s.substring(start, end);
     }
 
     static String _p(Object v) {

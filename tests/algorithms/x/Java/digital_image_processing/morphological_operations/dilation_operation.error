@@ -1,5 +1,5 @@
 compile: exit status 1
-/tmp/TestJavaTranspiler_Algorithms_Golden282_dilation_operation3064971432/001/Main.java:111: error: incompatible types: double[] cannot be converted to Object[]
+/tmp/TestJavaTranspiler_Algorithms_Golden282_dilation_operation2146985067/001/Main.java:111: error: incompatible types: double[] cannot be converted to Object[]
                 line = line + _p(_geto(mat[i_3], j_5));
                                           ^
 Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output

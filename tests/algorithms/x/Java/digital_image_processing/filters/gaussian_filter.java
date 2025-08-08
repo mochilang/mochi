@@ -17,7 +17,7 @@ public class Main {
     }
 
     static double[][] gen_gaussian_kernel(int k_size, double sigma) {
-        int center = k_size / 2;
+        int center = Math.floorDiv(k_size, 2);
         double[][] kernel = ((double[][])(new double[][]{}));
         int i = 0;
         while (i < k_size) {

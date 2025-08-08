@@ -18,7 +18,7 @@ public class Main {
         if (n == 0) {
             return new FibPair(0, 1);
         }
-        FibPair half = _fib(n / 2);
+        FibPair half = _fib(Math.floorDiv(n, 2));
         int a = half.fn;
         int b = half.fn1;
         int c = a * (b * 2 - a);

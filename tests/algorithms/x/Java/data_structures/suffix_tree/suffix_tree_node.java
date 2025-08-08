@@ -34,7 +34,7 @@ public class Main {
 
     static boolean has_key(java.util.Map<String,Integer> m, String k) {
         for (String key : m.keySet()) {
-            if (((Number)(key)).intValue() == k) {
+            if ((key.equals(k))) {
                 return true;
             }
         }

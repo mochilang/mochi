@@ -1,31 +1,11 @@
 compile: exit status 1
-/tmp/TestJavaTranspiler_Algorithms_Golden292_inversions3000004094/001/Main.java:66: error: method concat in class Main cannot be applied to given types;
-            r = ((int[])(concat(r, slice_list(((int[])(p)), i_1, p.length))));
-                         ^
-  required: T[],T[]
-  found:    int[],int[]
-  reason: inference variable T has incompatible bounds
-    equality constraints: int
-    upper bounds: Object
-  where T is a type-variable:
-    T extends Object declared in method <T>concat(T[],T[])
-/tmp/TestJavaTranspiler_Algorithms_Golden292_inversions3000004094/001/Main.java:68: error: method concat in class Main cannot be applied to given types;
-            r = ((int[])(concat(r, slice_list(((int[])(q)), j_1, q.length))));
-                         ^
-  required: T[],T[]
-  found:    int[],int[]
-  reason: inference variable T has incompatible bounds
-    equality constraints: int
-    upper bounds: Object
-  where T is a type-variable:
-    T extends Object declared in method <T>concat(T[],T[])
-/tmp/TestJavaTranspiler_Algorithms_Golden292_inversions3000004094/001/Main.java:92: error: incompatible types: int cannot be converted to InvResult
+/tmp/TestJavaTranspiler_Algorithms_Golden292_inversions2650048385/001/Main.java:92: error: incompatible types: int cannot be converted to InvResult
             nrec = count_inversions_recursive(((int[])(arr_1))).inv;
                                                                ^
-/tmp/TestJavaTranspiler_Algorithms_Golden292_inversions3000004094/001/Main.java:96: error: incompatible types: int cannot be converted to InvResult
+/tmp/TestJavaTranspiler_Algorithms_Golden292_inversions2650048385/001/Main.java:96: error: incompatible types: int cannot be converted to InvResult
             nrec2 = count_inversions_recursive(((int[])(arr_1))).inv;
                                                                 ^
-/tmp/TestJavaTranspiler_Algorithms_Golden292_inversions3000004094/001/Main.java:100: error: incompatible types: int cannot be converted to InvResult
+/tmp/TestJavaTranspiler_Algorithms_Golden292_inversions2650048385/001/Main.java:100: error: incompatible types: int cannot be converted to InvResult
             nrec3 = count_inversions_recursive(((int[])(arr_1))).inv;
                                                                 ^
-5 errors
+3 errors

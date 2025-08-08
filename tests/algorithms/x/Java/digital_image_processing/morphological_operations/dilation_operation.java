@@ -46,8 +46,8 @@ public class Main {
         int img_w = image[0].length;
         int k_h = kernel.length;
         int k_w = kernel[0].length;
-        int pad_h = k_h / 2;
-        int pad_w = k_w / 2;
+        int pad_h = Math.floorDiv(k_h, 2);
+        int pad_w = Math.floorDiv(k_w, 2);
         int p_h = img_h + 2 * pad_h;
         int p_w = img_w + 2 * pad_w;
         int[][] padded = ((int[][])(new int[][]{}));

@@ -142,7 +142,7 @@ tree.nodes = nodes_1;
     static java.util.Map<String,Integer> remove_key(java.util.Map<String,Integer> m, String k) {
         java.util.Map<String,Integer> out = ((java.util.Map<String,Integer>)(new java.util.LinkedHashMap<String, Integer>()));
         for (String key : m.keySet()) {
-            if (((Number)(key)).intValue() != k) {
+            if (!(key.equals(k))) {
 out.put(key, (int)(((int)(m).getOrDefault(key, 0))));
             }
         }
@@ -151,7 +151,7 @@ out.put(key, (int)(((int)(m).getOrDefault(key, 0))));
 
     static boolean has_key(java.util.Map<String,Integer> m, String k) {
         for (String key : m.keySet()) {
-            if (((Number)(key)).intValue() == k) {
+            if ((key.equals(k))) {
                 return true;
             }
         }
@@ -191,7 +191,7 @@ tree.nodes = nodes_3;
             if ((children_2.size() == 1) && (!node_2.is_leaf)) {
                 String only_key = "";
                 for (String k : children_2.keySet()) {
-                    only_key = (String)(k);
+                    only_key = k;
                 }
                 int merge_idx = (int)(((int)(children_2).getOrDefault(only_key, 0)));
                 RadixNode merge_node = nodes_3[merge_idx];

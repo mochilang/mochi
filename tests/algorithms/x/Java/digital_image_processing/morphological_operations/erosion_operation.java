@@ -47,8 +47,8 @@ public class Main {
         int w = image[0].length;
         int k_h = kernel.length;
         int k_w = kernel[0].length;
-        int pad_y = k_h / 2;
-        int pad_x = k_w / 2;
+        int pad_y = Math.floorDiv(k_h, 2);
+        int pad_x = Math.floorDiv(k_w, 2);
         boolean[][] padded = ((boolean[][])(new boolean[][]{}));
         int y = 0;
         while (y < h + 2 * pad_y) {

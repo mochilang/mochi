@@ -32,7 +32,7 @@ hist[val] = hist[val] + 1;
         int h = 0;
         while (h < 256) {
             cumulative = cumulative + hist[h];
-mapping[h] = (255 * cumulative) / total;
+mapping[h] = Math.floorDiv((255 * cumulative), total);
             h = h + 1;
         }
         i_1 = 0;

@@ -1,5 +1,0 @@
-compile: exit status 1
-/tmp/TestJavaTranspiler_Algorithms_Golden263_suffix_tree_node761339571/001/Main.java:37: error: incompatible types: String cannot be converted to Number
-            if (((Number)(key)).intValue() == k) {
-                         ^
-1 error

@@ -29,7 +29,7 @@ public class Main {
             int v = a[start];
             return new int[]{v, v};
         }
-        int mid = (start + end) / 2;
+        int mid = Math.floorDiv((start + end), 2);
         int[] left = ((int[])(max_diff_range(((int[])(a)), start, mid)));
         int[] right = ((int[])(max_diff_range(((int[])(a)), mid, end)));
         int small1 = left[0];

@@ -54,7 +54,7 @@ public class Main {
     }
 
     static double[][] get_slice(double[][] img, int x, int y, int kernel_size) {
-        int half = kernel_size / 2;
+        int half = Math.floorDiv(kernel_size, 2);
         int i_2 = x - half;
         double[][] slice = ((double[][])(new double[][]{}));
         while (i_2 <= x + half) {
@@ -77,8 +77,8 @@ public class Main {
             double[] row_2 = ((double[])(new double[]{}));
             int j_2 = 0;
             while (j_2 < kernel_size) {
-                double di = ((Number)((i_3 - kernel_size / 2))).doubleValue();
-                double dj = ((Number)((j_2 - kernel_size / 2))).doubleValue();
+                double di = ((Number)((i_3 - Math.floorDiv(kernel_size, 2)))).doubleValue();
+                double dj = ((Number)((j_2 - Math.floorDiv(kernel_size, 2)))).doubleValue();
                 double dist = sqrtApprox(di * di + dj * dj);
                 row_2 = ((double[])(java.util.stream.Stream.concat(java.util.Arrays.stream(row_2), java.util.Arrays.stream(new double[]{dist})).toArray(double[]::new)));
                 j_2 = j_2 + 1;
@@ -138,7 +138,7 @@ public class Main {
     static double bilateral_filter(double[][] img, double spatial_variance, double intensity_variance, int kernel_size) {
         double[][] gauss_ker = ((double[][])(get_gauss_kernel(kernel_size, spatial_variance)));
         double[][] img_s = ((double[][])(img));
-        double center = img_s[kernel_size / 2][kernel_size / 2];
+        double center = img_s[Math.floorDiv(kernel_size, 2)][Math.floorDiv(kernel_size, 2)];
         double[][] img_i = ((double[][])(elementwise_sub(((double[][])(img_s)), center)));
         double[][] img_ig = ((double[][])(vec_gaussian(((double[][])(img_i)), intensity_variance)));
         double[][] weights = ((double[][])(elementwise_mul(((double[][])(gauss_ker)), ((double[][])(img_ig)))));

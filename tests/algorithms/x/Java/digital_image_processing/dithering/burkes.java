@@ -46,13 +46,13 @@ public class Main {
                     current_error = total - 255;
                 }
                 row_1 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row_1), java.util.stream.IntStream.of(new_val)).toArray()));
-error_table[y][x + 3] = error_table[y][x + 3] + (8 * current_error) / 32;
-error_table[y][x + 4] = error_table[y][x + 4] + (4 * current_error) / 32;
-error_table[y + 1][x + 2] = error_table[y + 1][x + 2] + (8 * current_error) / 32;
-error_table[y + 1][x + 3] = error_table[y + 1][x + 3] + (4 * current_error) / 32;
-error_table[y + 1][x + 4] = error_table[y + 1][x + 4] + (2 * current_error) / 32;
-error_table[y + 1][x + 1] = error_table[y + 1][x + 1] + (4 * current_error) / 32;
-error_table[y + 1][x] = error_table[y + 1][x] + (2 * current_error) / 32;
+error_table[y][x + 3] = error_table[y][x + 3] + Math.floorDiv((8 * current_error), 32);
+error_table[y][x + 4] = error_table[y][x + 4] + Math.floorDiv((4 * current_error), 32);
+error_table[y + 1][x + 2] = error_table[y + 1][x + 2] + Math.floorDiv((8 * current_error), 32);
+error_table[y + 1][x + 3] = error_table[y + 1][x + 3] + Math.floorDiv((4 * current_error), 32);
+error_table[y + 1][x + 4] = error_table[y + 1][x + 4] + Math.floorDiv((2 * current_error), 32);
+error_table[y + 1][x + 1] = error_table[y + 1][x + 1] + Math.floorDiv((4 * current_error), 32);
+error_table[y + 1][x] = error_table[y + 1][x] + Math.floorDiv((2 * current_error), 32);
                 x = x + 1;
             }
             output = ((int[][])(appendObj(output, row_1)));

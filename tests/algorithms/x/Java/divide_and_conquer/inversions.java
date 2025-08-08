@@ -63,9 +63,9 @@ public class Main {
             }
         }
         if (i_1 < p.length) {
-            r = ((int[])(concat(r, slice_list(((int[])(p)), i_1, p.length))));
+            r = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(r), java.util.Arrays.stream(slice_list(((int[])(p)), i_1, p.length))).toArray()));
         } else {
-            r = ((int[])(concat(r, slice_list(((int[])(q)), j_1, q.length))));
+            r = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(r), java.util.Arrays.stream(slice_list(((int[])(q)), j_1, q.length))).toArray()));
         }
         return new InvResult(r, inv_1);
     }
@@ -74,7 +74,7 @@ public class Main {
         if (arr.length <= 1) {
             return new InvResult(arr, 0);
         }
-        int mid = arr.length / 2;
+        int mid = Math.floorDiv(arr.length, 2);
         int[] p = ((int[])(slice_list(((int[])(arr)), 0, mid)));
         int[] q = ((int[])(slice_list(((int[])(arr)), mid, arr.length)));
         InvResult res_p = count_inversions_recursive(((int[])(p)));
@@ -130,11 +130,5 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
-    }
-
-    static <T> T[] concat(T[] a, T[] b) {
-        T[] out = java.util.Arrays.copyOf(a, a.length + b.length);
-        System.arraycopy(b, 0, out, a.length, b.length);
-        return out;
     }
 }

@@ -18,7 +18,7 @@ a[j + 1] = key;
     static int[][] median_filter(int[][] gray_img, int mask) {
         int rows = gray_img.length;
         int cols = gray_img[0].length;
-        int bd = mask / 2;
+        int bd = Math.floorDiv(mask, 2);
         int[][] result = ((int[][])(new int[][]{}));
         int i_1 = 0;
         while (i_1 < rows) {
@@ -46,7 +46,7 @@ a[j + 1] = key;
                     x = x + 1;
                 }
                 kernel = ((int[])(insertion_sort(((int[])(kernel)))));
-                int idx = (mask * mask) / 2;
+                int idx = Math.floorDiv((mask * mask), 2);
 result[i_1][j_2] = kernel[idx];
                 j_2 = j_2 + 1;
             }

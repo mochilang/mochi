@@ -4,7 +4,7 @@ public class Main {
         int low = 0;
         int high = lst.length - 1;
         while (low < high) {
-            int mid = (low + high) / 2;
+            int mid = Math.floorDiv((low + high), 2);
             if (lst[mid] < lst[mid + 1]) {
                 low = mid + 1;
             } else {

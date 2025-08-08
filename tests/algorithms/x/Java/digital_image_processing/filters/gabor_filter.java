@@ -57,8 +57,8 @@ public class Main {
             double[] row = ((double[])(new double[]{}));
             int x = 0;
             while (x < size) {
-                double px = ((Number)((x - size / 2))).doubleValue();
-                double py = ((Number)((y - size / 2))).doubleValue();
+                double px = ((Number)((x - Math.floorDiv(size, 2)))).doubleValue();
+                double py = ((Number)((y - Math.floorDiv(size, 2)))).doubleValue();
                 double rad = to_radians(theta);
                 double cos_theta = cos_taylor(rad);
                 double sin_theta = sin_taylor(rad);

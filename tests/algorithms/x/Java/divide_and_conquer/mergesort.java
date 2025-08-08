@@ -38,7 +38,7 @@ public class Main {
         if (array.length <= 1) {
             return array;
         }
-        int middle = array.length / 2;
+        int middle = Math.floorDiv(array.length, 2);
         int[] left_half = ((int[])(subarray(((int[])(array)), 0, middle)));
         int[] right_half = ((int[])(subarray(((int[])(array)), middle, array.length)));
         int[] sorted_left = ((int[])(merge_sort(((int[])(left_half)))));
