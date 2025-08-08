@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-08 16:29 GMT+7
+Last updated: 2025-08-08 17:07 GMT+7
 
-## Algorithms Golden Test Checklist (877/1077)
+## Algorithms Golden Test Checklist (878/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -959,7 +959,7 @@ Last updated: 2025-08-08 16:29 GMT+7
 | 950 | sorts/cycle_sort | ✓ | 3.0ms | 18.53KB |
 | 951 | sorts/double_sort | ✓ | 2.0ms | 15.72KB |
 | 952 | sorts/dutch_national_flag_sort | ✓ | 2.0ms | 18.38KB |
-| 953 | sorts/exchange_sort |   |  |  |
+| 953 | sorts/exchange_sort | ✓ | 2.0ms | 19.59KB |
 | 954 | sorts/external_sort |   |  |  |
 | 955 | sorts/gnome_sort |   |  |  |
 | 956 | sorts/heap_sort |   |  |  |
