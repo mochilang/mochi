@@ -1,0 +1,4 @@
+exit status 1
+/tmp/TestCSTranspiler_Algorithms_Golden001_web_programming_fetch_anime_and_play2066466886/001/Program.cs(106,54): error CS0029: Cannot implicitly convert type 'ANIME_DB[]' to 'System.Collections.Generic.Dictionary<string, string>[]' [/tmp/TestCSTranspiler_Algorithms_Golden001_web_programming_fetch_anime_and_play2066466886/001/app.csproj]
+
+The build failed. Fix the build errors and run again.

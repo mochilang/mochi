@@ -1,0 +1,3 @@
+pig_latin('friends') = iendsfray
+pig_latin('smile') = ilesmay
+pig_latin('eat') = eatway
