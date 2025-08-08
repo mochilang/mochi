@@ -1,3 +1,508 @@
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-08 17:15 +0700)
+- Commit 6591c88ec5: rb: speed up assignments
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-08-07 00:17 +0700)
 - Commit 96b7a648be: feat(rb): improve float handling and builtins
 - Generated Ruby for 104/105 programs
