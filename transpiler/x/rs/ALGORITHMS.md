@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-08 15:57 GMT+7
+Last updated: 2025-08-08 16:28 GMT+7
 
-## Algorithms Golden Test Checklist (209/1077)
+## Algorithms Golden Test Checklist (247/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -217,78 +217,78 @@ Last updated: 2025-08-08 15:57 GMT+7
 | 208 | data_structures/hashing/number_theory/prime_numbers | ✓ | 39µs | 2.0 MB |
 | 209 | data_structures/hashing/quadratic_probing | ✓ | 52µs | 2.1 MB |
 | 210 | data_structures/hashing/tests/test_hash_map | ✓ | 197µs | 2.3 MB |
-| 211 | data_structures/heap/binomial_heap | error |  |  |
-| 212 | data_structures/heap/heap | error |  |  |
-| 213 | data_structures/heap/heap_generic | error |  |  |
+| 211 | data_structures/heap/binomial_heap |   |  |  |
+| 212 | data_structures/heap/heap |   |  |  |
+| 213 | data_structures/heap/heap_generic |   |  |  |
 | 214 | data_structures/heap/max_heap | ✓ | 87µs | 1.9 MB |
 | 215 | data_structures/heap/min_heap | ✓ | 104µs | 2.2 MB |
-| 216 | data_structures/heap/randomized_heap | error |  |  |
+| 216 | data_structures/heap/randomized_heap |   |  |  |
 | 217 | data_structures/kd_tree/build_kdtree | ✓ | 135µs | 2.1 MB |
-| 218 | data_structures/kd_tree/example/example_usage | error |  |  |
+| 218 | data_structures/kd_tree/example/example_usage |   |  |  |
 | 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 61µs | 1.9 MB |
 | 220 | data_structures/kd_tree/kd_node | ✓ | 95µs | 2.1 MB |
-| 221 | data_structures/kd_tree/nearest_neighbour_search | error |  |  |
+| 221 | data_structures/kd_tree/nearest_neighbour_search |   |  |  |
 | 222 | data_structures/kd_tree/tests/test_kdtree | ✓ | 256µs | 2.0 MB |
-| 223 | data_structures/linked_list/circular_linked_list | error |  |  |
-| 224 | data_structures/linked_list/deque_doubly | error |  |  |
-| 225 | data_structures/linked_list/doubly_linked_list | error |  |  |
-| 226 | data_structures/linked_list/doubly_linked_list_two | error |  |  |
+| 223 | data_structures/linked_list/circular_linked_list |   |  |  |
+| 224 | data_structures/linked_list/deque_doubly |   |  |  |
+| 225 | data_structures/linked_list/doubly_linked_list |   |  |  |
+| 226 | data_structures/linked_list/doubly_linked_list_two |   |  |  |
 | 227 | data_structures/linked_list/floyds_cycle_detection | ✓ | 95µs | 2.2 MB |
 | 228 | data_structures/linked_list/from_sequence | ✓ | 61µs | 2.1 MB |
 | 229 | data_structures/linked_list/has_loop | ✓ | 99µs | 2.1 MB |
 | 230 | data_structures/linked_list/is_palindrome | ✓ | 61µs | 2.0 MB |
-| 231 | data_structures/linked_list/merge_two_lists |   |  |  |
-| 232 | data_structures/linked_list/middle_element_of_linked_list |   |  |  |
-| 233 | data_structures/linked_list/print_reverse |   |  |  |
-| 234 | data_structures/linked_list/reverse_k_group |   |  |  |
-| 235 | data_structures/linked_list/rotate_to_the_right |   |  |  |
-| 236 | data_structures/linked_list/singly_linked_list | ✓ | 92µs | 2.1 MB |
-| 237 | data_structures/linked_list/skip_list | ✓ | 87µs | 2.0 MB |
-| 238 | data_structures/linked_list/swap_nodes | ✓ | 38µs | 2.0 MB |
-| 239 | data_structures/queues/circular_queue |   |  |  |
-| 240 | data_structures/queues/circular_queue_linked_list |   |  |  |
-| 241 | data_structures/queues/double_ended_queue |   |  |  |
-| 242 | data_structures/queues/linked_queue |   |  |  |
-| 243 | data_structures/queues/priority_queue_using_list |   |  |  |
-| 244 | data_structures/queues/queue_by_list |   |  |  |
-| 245 | data_structures/queues/queue_by_two_stacks |   |  |  |
-| 246 | data_structures/queues/queue_on_pseudo_stack |   |  |  |
-| 247 | data_structures/stacks/balanced_parentheses |   |  |  |
-| 248 | data_structures/stacks/dijkstras_two_stack_algorithm |   |  |  |
-| 249 | data_structures/stacks/infix_to_postfix_conversion |   |  |  |
-| 250 | data_structures/stacks/infix_to_prefix_conversion |   |  |  |
-| 251 | data_structures/stacks/largest_rectangle_histogram |   |  |  |
-| 252 | data_structures/stacks/lexicographical_numbers |   |  |  |
-| 253 | data_structures/stacks/next_greater_element |   |  |  |
-| 254 | data_structures/stacks/postfix_evaluation |   |  |  |
-| 255 | data_structures/stacks/prefix_evaluation |   |  |  |
-| 256 | data_structures/stacks/stack | ✓ | 82µs | 2.1 MB |
-| 257 | data_structures/stacks/stack_using_two_queues |   |  |  |
-| 258 | data_structures/stacks/stack_with_doubly_linked_list |   |  |  |
-| 259 | data_structures/stacks/stack_with_singly_linked_list |   |  |  |
-| 260 | data_structures/stacks/stock_span_problem | ✓ | 48µs | 2.1 MB |
-| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 58µs | 2.0 MB |
-| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 279µs | 2.1 MB |
-| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 70µs | 1.9 MB |
-| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 51µs | 1.8 MB |
-| 265 | data_structures/trie/radix_tree |   |  |  |
-| 266 | data_structures/trie/trie |   |  |  |
-| 267 | digital_image_processing/change_brightness |   |  |  |
-| 268 | digital_image_processing/change_contrast |   |  |  |
-| 269 | digital_image_processing/convert_to_negative |   |  |  |
-| 270 | digital_image_processing/dithering/burkes |   |  |  |
-| 271 | digital_image_processing/edge_detection/canny |   |  |  |
-| 272 | digital_image_processing/filters/bilateral_filter |   |  |  |
-| 273 | digital_image_processing/filters/convolve |   |  |  |
-| 274 | digital_image_processing/filters/gabor_filter |   |  |  |
-| 275 | digital_image_processing/filters/gaussian_filter |   |  |  |
-| 276 | digital_image_processing/filters/laplacian_filter |   |  |  |
-| 277 | digital_image_processing/filters/local_binary_pattern |   |  |  |
-| 278 | digital_image_processing/filters/median_filter |   |  |  |
-| 279 | digital_image_processing/filters/sobel_filter |   |  |  |
-| 280 | digital_image_processing/histogram_equalization/histogram_stretch |   |  |  |
-| 281 | digital_image_processing/index_calculation |   |  |  |
-| 282 | digital_image_processing/morphological_operations/dilation_operation |   |  |  |
+| 231 | data_structures/linked_list/merge_two_lists | ✓ | 83µs | 2.1 MB |
+| 232 | data_structures/linked_list/middle_element_of_linked_list | ✓ | 81µs | 2.0 MB |
+| 233 | data_structures/linked_list/print_reverse | ✓ | 88µs | 2.0 MB |
+| 234 | data_structures/linked_list/reverse_k_group | ✓ | 45µs | 2.1 MB |
+| 235 | data_structures/linked_list/rotate_to_the_right | ✓ | 36µs | 2.0 MB |
+| 236 | data_structures/linked_list/singly_linked_list | ✓ | 59µs | 2.0 MB |
+| 237 | data_structures/linked_list/skip_list | ✓ | 74µs | 1.9 MB |
+| 238 | data_structures/linked_list/swap_nodes | ✓ | 24µs | 2.1 MB |
+| 239 | data_structures/queues/circular_queue | ✓ | 55µs | 2.0 MB |
+| 240 | data_structures/queues/circular_queue_linked_list | ✓ | 162µs | 1.9 MB |
+| 241 | data_structures/queues/double_ended_queue | ✓ | 46µs | 2.1 MB |
+| 242 | data_structures/queues/linked_queue | ✓ | 65µs | 2.1 MB |
+| 243 | data_structures/queues/priority_queue_using_list | error |  |  |
+| 244 | data_structures/queues/queue_by_list | ✓ | 41µs | 2.0 MB |
+| 245 | data_structures/queues/queue_by_two_stacks | ✓ | 43µs | 2.1 MB |
+| 246 | data_structures/queues/queue_on_pseudo_stack | ✓ | 29µs | 2.1 MB |
+| 247 | data_structures/stacks/balanced_parentheses | ✓ | 94µs | 2.2 MB |
+| 248 | data_structures/stacks/dijkstras_two_stack_algorithm | ✓ | 69µs | 2.2 MB |
+| 249 | data_structures/stacks/infix_to_postfix_conversion | ✓ | 144µs | 2.1 MB |
+| 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ |  | 1.8 MB |
+| 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 54µs | 2.1 MB |
+| 252 | data_structures/stacks/lexicographical_numbers | ✓ | 119µs | 2.2 MB |
+| 253 | data_structures/stacks/next_greater_element | ✓ | 142µs | 2.1 MB |
+| 254 | data_structures/stacks/postfix_evaluation | ✓ | 42µs | 2.0 MB |
+| 255 | data_structures/stacks/prefix_evaluation | ✓ | 264µs | 2.1 MB |
+| 256 | data_structures/stacks/stack | ✓ | 31µs | 1.9 MB |
+| 257 | data_structures/stacks/stack_using_two_queues | ✓ | 47µs | 2.0 MB |
+| 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 41µs | 2.0 MB |
+| 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 60µs | 2.1 MB |
+| 260 | data_structures/stacks/stock_span_problem | ✓ | 45µs | 2.0 MB |
+| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 24µs | 2.0 MB |
+| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 251µs | 2.1 MB |
+| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 51µs | 2.1 MB |
+| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 45µs | 2.0 MB |
+| 265 | data_structures/trie/radix_tree | error |  |  |
+| 266 | data_structures/trie/trie | error |  |  |
+| 267 | digital_image_processing/change_brightness | ✓ | 76µs | 2.0 MB |
+| 268 | digital_image_processing/change_contrast | ✓ | 63µs | 2.0 MB |
+| 269 | digital_image_processing/convert_to_negative | ✓ | 41µs | 1.9 MB |
+| 270 | digital_image_processing/dithering/burkes | ✓ | 83µs | 2.1 MB |
+| 271 | digital_image_processing/edge_detection/canny | error |  |  |
+| 272 | digital_image_processing/filters/bilateral_filter | ✓ | 59µs | 2.1 MB |
+| 273 | digital_image_processing/filters/convolve | error |  |  |
+| 274 | digital_image_processing/filters/gabor_filter | ✓ | 31µs | 2.0 MB |
+| 275 | digital_image_processing/filters/gaussian_filter | ✓ | 55µs | 2.0 MB |
+| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 63µs | 2.0 MB |
+| 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 87µs | 2.1 MB |
+| 278 | digital_image_processing/filters/median_filter | ✓ | 68µs | 2.0 MB |
+| 279 | digital_image_processing/filters/sobel_filter | ✓ | 173µs | 2.2 MB |
+| 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 294µs | 2.1 MB |
+| 281 | digital_image_processing/index_calculation | ✓ | 34µs | 2.0 MB |
+| 282 | digital_image_processing/morphological_operations/dilation_operation | ✓ | 80µs | 2.2 MB |
 | 283 | digital_image_processing/morphological_operations/erosion_operation |   |  |  |
 | 284 | digital_image_processing/resize/resize |   |  |  |
 | 285 | digital_image_processing/rotation/rotation |   |  |  |
