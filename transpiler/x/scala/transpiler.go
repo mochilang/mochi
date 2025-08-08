@@ -96,6 +96,8 @@ var scalaKeywords = map[string]bool{
 	"object":   true,
 	"class":    true,
 	"trait":    true,
+	"package":  true,
+	"import":   true,
 	"case":     true,
 	"match":    true,
 	"with":     true,
