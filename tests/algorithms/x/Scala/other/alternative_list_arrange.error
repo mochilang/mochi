@@ -1,0 +1,30 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/other/alternative_list_arrange.scala:87: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Main.Item]
+ required: scala.collection.mutable.ArrayBuffer[Any]
+Note: Main.Item <: Any, but class ArrayBuffer is invariant in type A.
+You may wish to investigate a wildcard type such as `_ <: Any`. (SLS 3.2.10)
+val example1: ArrayBuffer[Any] = alternative_list_arrange(ArrayBuffer((from_int(BigInt(1))).asInstanceOf[Item], (from_int(BigInt(2))).asInstanceOf[Item], (from_int(BigInt(3))).asInstanceOf[Item], (from_int(BigInt(4))).asInstanceOf[Item], (from_int(BigInt(5))).asInstanceOf[Item]), ArrayBuffer((from_string("A")).asInstanceOf[Item], (from_string("B")).asInstanceOf[Item], (from_string("C")).asInstanceOf[Item]))
+                                                         ^
+/workspace/mochi/tests/algorithms/x/Scala/other/alternative_list_arrange.scala:89: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Main.Item]
+ required: scala.collection.mutable.ArrayBuffer[Any]
+Note: Main.Item <: Any, but class ArrayBuffer is invariant in type A.
+You may wish to investigate a wildcard type such as `_ <: Any`. (SLS 3.2.10)
+val example2: ArrayBuffer[Any] = alternative_list_arrange(ArrayBuffer((from_string("A")).asInstanceOf[Item], (from_string("B")).asInstanceOf[Item], (from_string("C")).asInstanceOf[Item]), ArrayBuffer((from_int(BigInt(1))).asInstanceOf[Item], (from_int(BigInt(2))).asInstanceOf[Item], (from_int(BigInt(3))).asInstanceOf[Item], (from_int(BigInt(4))).asInstanceOf[Item], (from_int(BigInt(5))).asInstanceOf[Item]))
+                                                         ^
+/workspace/mochi/tests/algorithms/x/Scala/other/alternative_list_arrange.scala:91: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Main.Item]
+ required: scala.collection.mutable.ArrayBuffer[Any]
+Note: Main.Item <: Any, but class ArrayBuffer is invariant in type A.
+You may wish to investigate a wildcard type such as `_ <: Any`. (SLS 3.2.10)
+val example3: ArrayBuffer[Any] = alternative_list_arrange(ArrayBuffer((from_string("X")).asInstanceOf[Item], (from_string("Y")).asInstanceOf[Item], (from_string("Z")).asInstanceOf[Item]), ArrayBuffer((from_int(BigInt(9))).asInstanceOf[Item], (from_int(BigInt(8))).asInstanceOf[Item], (from_int(BigInt(7))).asInstanceOf[Item], (from_int(BigInt(6))).asInstanceOf[Item]))
+                                                         ^
+/workspace/mochi/tests/algorithms/x/Scala/other/alternative_list_arrange.scala:93: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Main.Item]
+ required: scala.collection.mutable.ArrayBuffer[Any]
+Note: Main.Item <: Any, but class ArrayBuffer is invariant in type A.
+You may wish to investigate a wildcard type such as `_ <: Any`. (SLS 3.2.10)
+val example4: ArrayBuffer[Any] = alternative_list_arrange(ArrayBuffer((from_int(BigInt(1))).asInstanceOf[Item], (from_int(BigInt(2))).asInstanceOf[Item], (from_int(BigInt(3))).asInstanceOf[Item], (from_int(BigInt(4))).asInstanceOf[Item], (from_int(BigInt(5))).asInstanceOf[Item]), (ArrayBuffer[Item]()).asInstanceOf[ArrayBuffer[Item]])
+                                                         ^
+four errors found

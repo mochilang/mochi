@@ -112,6 +112,13 @@ var scalaKeywords = map[string]bool{
 }
 
 func escapeName(name string) string {
+	if strings.HasSuffix(name, "_") {
+		return "`" + name + "`"
+	}
+	switch name {
+	case "Int", "Double", "Long", "Short", "Float", "Boolean", "Char", "Byte", "String":
+		return name + "_"
+	}
 	if scalaKeywords[name] {
 		return "`" + name + "`"
 	}
@@ -1347,6 +1354,10 @@ func (c *CastExpr) emit(w io.Writer) {
 			return
 		}
 		typ := inferType(c.Value)
+		if typ == "Int" || typ == "BigInt" {
+			c.Value.emit(w)
+			return
+		}
 		fmt.Fprint(w, "BigInt(")
 		switch c.Value.(type) {
 		case *Name, *IntLit, *StringLit, *BoolLit, *FloatLit:
@@ -2135,9 +2146,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 			}
 		}
 		if vs, ok := s.(*VarStmt); ok {
-			if !assignedVars[vs.Name] && (vs.Value == nil || !usesAssignedVar(vs.Value)) {
-				vs.Global = true
-			}
+			vs.Global = true
 		}
 		if s != nil {
 			sc.Stmts = append(sc.Stmts, s)
@@ -3528,6 +3537,11 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 			return &CallExpr{Fn: &Name{Name: "BigInt"}, Args: []Expr{call}}, nil
 		}
 	case "float":
+		if len(args) == 1 {
+			toStr := &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "toString"}}
+			return &FieldExpr{Receiver: toStr, Name: "toDouble"}, nil
+		}
+	case "to_float":
 		if len(args) == 1 {
 			toStr := &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "toString"}}
 			return &FieldExpr{Receiver: toStr, Name: "toDouble"}, nil
