@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-08 16:11 GMT+7
+Last updated: 2025-08-08 16:58 GMT+7
 
-## Algorithms Golden Test Checklist (899/1077)
+## Algorithms Golden Test Checklist (902/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -144,11 +144,11 @@ Last updated: 2025-08-08 16:11 GMT+7
 | 135 | conversions/length_conversion | ✓ | 27.0ms | 12.84KB |
 | 136 | conversions/molecular_chemistry | ✓ | 31.0ms | 664B |
 | 137 | conversions/octal_to_binary | ✓ | 29.0ms | 33.24KB |
-| 138 | conversions/octal_to_decimal | error |  |  |
-| 139 | conversions/octal_to_hexadecimal | error |  |  |
+| 138 | conversions/octal_to_decimal | ✓ | 31.0ms | 760B |
+| 139 | conversions/octal_to_hexadecimal | ✓ | 36.0ms | 38.52KB |
 | 140 | conversions/prefix_conversions | ✓ | 49.0ms | 14.93KB |
 | 141 | conversions/prefix_conversions_string | ✓ | 64.0ms | 89.84KB |
-| 142 | conversions/pressure_conversions | error |  |  |
+| 142 | conversions/pressure_conversions | ✓ | 23.0ms | 11.90KB |
 | 143 | conversions/rectangular_to_polar | ✓ | 26.0ms | 10.45KB |
 | 144 | conversions/rgb_cmyk_conversion | ✓ | 22.0ms | 496B |
 | 145 | conversions/rgb_hsv_conversion | ✓ | 22.0ms | 10.63KB |
