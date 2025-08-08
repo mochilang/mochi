@@ -363,18 +363,17 @@ func (b *BenchStmt) emit(w io.Writer) {
 			body = append(body, st)
 		}
 	}
-	// Use real time for benchmark measurements to reflect actual runtime
-	fmt.Fprintln(w, "(let* ([_start_mem (current-memory-use)] [_start (current-inexact-monotonic-milliseconds)])")
-	fmt.Fprintln(w, "  (let/ec _return (begin")
-	for _, st := range body {
-		st.emit(w)
-	}
-	fmt.Fprintln(w, "    (void)")
-	fmt.Fprintln(w, "  ))")
-	fmt.Fprintln(w, "  (let* ([_end (current-inexact-monotonic-milliseconds)] [_end_mem (current-memory-use)]")
-	fmt.Fprintln(w, "         [_dur (- _end _start)]")
-	fmt.Fprintln(w, "         [_dur_us (exact-round (* _dur 1000))]")
-	fmt.Fprintln(w, "         [_mem (max 0 (- _end_mem _start_mem))])")
+        // Use real time for benchmark measurements to reflect actual runtime
+        fmt.Fprintln(w, "(let* ([_start_mem (current-memory-use)] [_start (current-inexact-monotonic-milliseconds)])")
+        fmt.Fprintln(w, "  (let/ec _return (begin")
+        for _, st := range body {
+                st.emit(w)
+        }
+        fmt.Fprintln(w, "    (void)")
+        fmt.Fprintln(w, "  ))")
+        fmt.Fprintln(w, "  (let* ([_end (current-inexact-monotonic-milliseconds)] [_end_mem (current-memory-use)]")
+        fmt.Fprintln(w, "         [_dur_us (max 1 (exact-ceiling (* (- _end _start) 1000)))]")
+        fmt.Fprintln(w, "         [_mem (max 0 (- _end_mem _start_mem))])")
 	io.WriteString(w, "    (displayln \"{\")\n")
 	io.WriteString(w, "    (displayln (format \"  \\\"duration_us\\\": ~a,\" _dur_us))\n")
 	io.WriteString(w, "    (displayln (format \"  \\\"memory_bytes\\\": ~a,\" _mem))\n")
@@ -420,16 +419,16 @@ type WhileStmt struct {
 }
 
 func (wst *WhileStmt) emit(w io.Writer) {
-	io.WriteString(w, "(let/ec _break (let loop ()\n  (if ")
-	wst.Cond.emit(w)
-	io.WriteString(w, " (let/ec _cont\n")
-	pushContinue("_cont")
-	for _, st := range wst.Body {
-		io.WriteString(w, "    ")
-		st.emit(w)
-	}
-	popContinue()
-	io.WriteString(w, "    (loop)) (void))))\n")
+        io.WriteString(w, "(let/ec _break (let loop ()\n  (if ")
+        wst.Cond.emit(w)
+        io.WriteString(w, " (begin\n    (let/ec _cont\n")
+        pushContinue("_cont")
+        for _, st := range wst.Body {
+                io.WriteString(w, "      ")
+                st.emit(w)
+        }
+        popContinue()
+        io.WriteString(w, "    )\n    (loop)) (void))))\n")
 }
 
 type BreakStmt struct{}
