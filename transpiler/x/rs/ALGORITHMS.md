@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-08 10:23 GMT+7
+Last updated: 2025-08-08 10:44 GMT+7
 
-## Algorithms Golden Test Checklist (190/1077)
+## Algorithms Golden Test Checklist (212/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -212,36 +212,36 @@ Last updated: 2025-08-08 10:23 GMT+7
 | 203 | data_structures/hashing/bloom_filter | ✓ | 1.788ms | 2.2 MB |
 | 204 | data_structures/hashing/double_hash | ✓ | 44µs | 2.0 MB |
 | 205 | data_structures/hashing/hash_map | error |  |  |
-| 206 | data_structures/hashing/hash_table |   |  |  |
-| 207 | data_structures/hashing/hash_table_with_linked_list |   |  |  |
-| 208 | data_structures/hashing/number_theory/prime_numbers |   |  |  |
-| 209 | data_structures/hashing/quadratic_probing |   |  |  |
-| 210 | data_structures/hashing/tests/test_hash_map |   |  |  |
-| 211 | data_structures/heap/binomial_heap |   |  |  |
-| 212 | data_structures/heap/heap |   |  |  |
-| 213 | data_structures/heap/heap_generic |   |  |  |
-| 214 | data_structures/heap/max_heap |   |  |  |
-| 215 | data_structures/heap/min_heap |   |  |  |
-| 216 | data_structures/heap/randomized_heap |   |  |  |
-| 217 | data_structures/kd_tree/build_kdtree |   |  |  |
-| 218 | data_structures/kd_tree/example/example_usage |   |  |  |
-| 219 | data_structures/kd_tree/example/hypercube_points |   |  |  |
-| 220 | data_structures/kd_tree/kd_node |   |  |  |
-| 221 | data_structures/kd_tree/nearest_neighbour_search |   |  |  |
-| 222 | data_structures/kd_tree/tests/test_kdtree |   |  |  |
-| 223 | data_structures/linked_list/circular_linked_list |   |  |  |
-| 224 | data_structures/linked_list/deque_doubly |   |  |  |
-| 225 | data_structures/linked_list/doubly_linked_list |   |  |  |
-| 226 | data_structures/linked_list/doubly_linked_list_two |   |  |  |
-| 227 | data_structures/linked_list/floyds_cycle_detection |   |  |  |
-| 228 | data_structures/linked_list/from_sequence |   |  |  |
-| 229 | data_structures/linked_list/has_loop |   |  |  |
-| 230 | data_structures/linked_list/is_palindrome |   |  |  |
-| 231 | data_structures/linked_list/merge_two_lists |   |  |  |
-| 232 | data_structures/linked_list/middle_element_of_linked_list |   |  |  |
-| 233 | data_structures/linked_list/print_reverse |   |  |  |
-| 234 | data_structures/linked_list/reverse_k_group |   |  |  |
-| 235 | data_structures/linked_list/rotate_to_the_right |   |  |  |
+| 206 | data_structures/hashing/hash_table | ✓ | 57µs | 2.0 MB |
+| 207 | data_structures/hashing/hash_table_with_linked_list | ✓ | 104µs | 2.1 MB |
+| 208 | data_structures/hashing/number_theory/prime_numbers | ✓ | 58µs | 2.1 MB |
+| 209 | data_structures/hashing/quadratic_probing | ✓ | 66µs | 1.9 MB |
+| 210 | data_structures/hashing/tests/test_hash_map | ✓ | 157µs | 2.1 MB |
+| 211 | data_structures/heap/binomial_heap | error |  |  |
+| 212 | data_structures/heap/heap | error |  |  |
+| 213 | data_structures/heap/heap_generic | error |  |  |
+| 214 | data_structures/heap/max_heap | ✓ | 79µs | 2.0 MB |
+| 215 | data_structures/heap/min_heap | ✓ | 118µs | 2.0 MB |
+| 216 | data_structures/heap/randomized_heap | error |  |  |
+| 217 | data_structures/kd_tree/build_kdtree | ✓ | 159µs | 2.1 MB |
+| 218 | data_structures/kd_tree/example/example_usage | ✓ | 2.40281s | 6.0 MB |
+| 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 81µs | 2.0 MB |
+| 220 | data_structures/kd_tree/kd_node | ✓ | 69µs | 1.9 MB |
+| 221 | data_structures/kd_tree/nearest_neighbour_search | error |  |  |
+| 222 | data_structures/kd_tree/tests/test_kdtree | ✓ | 137µs | 2.1 MB |
+| 223 | data_structures/linked_list/circular_linked_list | ✓ | 103µs | 2.1 MB |
+| 224 | data_structures/linked_list/deque_doubly | error |  |  |
+| 225 | data_structures/linked_list/doubly_linked_list | ✓ | 53µs | 2.0 MB |
+| 226 | data_structures/linked_list/doubly_linked_list_two | error |  |  |
+| 227 | data_structures/linked_list/floyds_cycle_detection | ✓ | 70µs | 1.9 MB |
+| 228 | data_structures/linked_list/from_sequence | ✓ | 82µs | 2.0 MB |
+| 229 | data_structures/linked_list/has_loop | ✓ | 43µs | 2.0 MB |
+| 230 | data_structures/linked_list/is_palindrome | ✓ | 28µs | 1.8 MB |
+| 231 | data_structures/linked_list/merge_two_lists | ✓ | 106µs | 2.1 MB |
+| 232 | data_structures/linked_list/middle_element_of_linked_list | ✓ | 127µs | 2.1 MB |
+| 233 | data_structures/linked_list/print_reverse | ✓ | 130µs | 2.0 MB |
+| 234 | data_structures/linked_list/reverse_k_group | error |  |  |
+| 235 | data_structures/linked_list/rotate_to_the_right | ✓ | 59µs | 2.1 MB |
 | 236 | data_structures/linked_list/singly_linked_list |   |  |  |
 | 237 | data_structures/linked_list/skip_list |   |  |  |
 | 238 | data_structures/linked_list/swap_nodes |   |  |  |
