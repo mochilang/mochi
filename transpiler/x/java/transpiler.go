@@ -4645,6 +4645,37 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			base := Expr(&VarExpr{Name: alias, Type: baseType})
 			return &IndexAssignStmt{Target: base, Indices: indices, Expr: val}, nil
 		}
+		if len(s.Assign.Index) > 0 && len(s.Assign.Field) > 0 {
+			idxExprs := make([]Expr, len(s.Assign.Index))
+			for i, idx := range s.Assign.Index {
+				if idx.Start == nil || idx.Colon != nil {
+					return nil, fmt.Errorf("unsupported index")
+				}
+				ex, err := compileExpr(idx.Start)
+				if err != nil {
+					return nil, err
+				}
+				idxExprs[i] = ex
+			}
+			val, err := compileExpr(s.Assign.Value)
+			if err != nil {
+				return nil, err
+			}
+			baseType := ""
+			if t, ok := varTypes[alias]; ok {
+				baseType = t
+			}
+			base := Expr(&VarExpr{Name: alias, Type: baseType})
+			for _, ix := range idxExprs {
+				base = &IndexExpr{Target: base, Index: ix}
+			}
+			for i := 0; i < len(s.Assign.Field)-1; i++ {
+				base = &IndexExpr{Target: base, Index: &StringLit{Value: s.Assign.Field[i].Name}}
+			}
+			fieldName := s.Assign.Field[len(s.Assign.Field)-1].Name
+			key := &StringLit{Value: fieldName}
+			return &IndexAssignStmt{Target: base, Indices: []Expr{key}, Expr: val}, nil
+		}
 		if len(s.Assign.Field) > 0 && len(s.Assign.Index) == 0 {
 			baseType := ""
 			if t, ok := varTypes[alias]; ok {
@@ -4654,10 +4685,16 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			for i := 0; i < len(s.Assign.Field)-1; i++ {
 				base = &IndexExpr{Target: base, Index: &StringLit{Value: s.Assign.Field[i].Name}}
 			}
-			key := &StringLit{Value: s.Assign.Field[len(s.Assign.Field)-1].Name}
+			fieldName := s.Assign.Field[len(s.Assign.Field)-1].Name
+			key := &StringLit{Value: fieldName}
 			val, err := compileExpr(s.Assign.Value)
 			if err != nil {
 				return nil, err
+			}
+			if ft, ok := fieldTypeFromVar(base, fieldName); ok {
+				if l, ok2 := val.(*ListLit); ok2 && strings.HasSuffix(ft, "[]") && l.ElemType == "" {
+					l.ElemType = strings.TrimSuffix(ft, "[]")
+				}
 			}
 			return &IndexAssignStmt{Target: base, Indices: []Expr{key}, Expr: val}, nil
 		}
@@ -5924,6 +5961,14 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 						} else if lt, ok3 := ft.(types.ListType); ok3 {
 							if ll, ok4 := v.(*ListLit); ok4 && ll.ElemType == "" {
 								ll.ElemType = toJavaTypeFromType(lt.Elem)
+								if strings.HasSuffix(ll.ElemType, "[]") {
+									inner := strings.TrimSuffix(ll.ElemType, "[]")
+									for _, el := range ll.Elems {
+										if ll2, ok5 := el.(*ListLit); ok5 && ll2.ElemType == "" {
+											ll2.ElemType = inner
+										}
+									}
+								}
 							}
 						}
 					}

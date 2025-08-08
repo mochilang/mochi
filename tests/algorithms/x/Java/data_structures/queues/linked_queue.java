@@ -46,6 +46,7 @@ q.front = idx;
 q.rear = idx;
         } else {
             Node[] nodes = ((Node[])(q.nodes));
+nodes[q.rear].next = idx;
 q.nodes = nodes;
 q.rear = idx;
         }
@@ -92,7 +93,7 @@ q.rear = 0 - 1;
     }
 
     static void clear(LinkedQueue q) {
-q.nodes = new Object[]{};
+q.nodes = new Node[]{};
 q.front = 0 - 1;
 q.rear = 0 - 1;
     }
