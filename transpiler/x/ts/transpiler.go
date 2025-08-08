@@ -820,14 +820,11 @@ func (i *IndexExpr) emit(w io.Writer) {
 	i.Target.emit(w)
 	io.WriteString(w, "[")
 	if i.Index != nil {
-		io.WriteString(w, "(")
+		io.WriteString(w, "(()=>{const _mochi_idx = ")
 		i.Index.emit(w)
-		io.WriteString(w, ") < 0 ? ")
+		io.WriteString(w, "; return _mochi_idx < 0 ? ")
 		i.Target.emit(w)
-		io.WriteString(w, ".length + (")
-		i.Index.emit(w)
-		io.WriteString(w, ") : ")
-		i.Index.emit(w)
+		io.WriteString(w, ".length + _mochi_idx : _mochi_idx;})()")
 	}
 	io.WriteString(w, "]")
 }

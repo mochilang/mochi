@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-07 23:31 UTC
+Last updated: 2025-08-08 03:16 UTC
 
-## Algorithms Golden Test Checklist (1004/1077)
+## Algorithms Golden Test Checklist (1003/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 645µs | 22.6 KB |
@@ -259,14 +259,14 @@ Last updated: 2025-08-07 23:31 UTC
 | 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ | 9µs | 3.3 KB |
 | 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 2.214ms | 35.4 KB |
 | 252 | data_structures/stacks/lexicographical_numbers | ✓ | 571.223ms | 59.0 KB |
-| 253 | data_structures/stacks/next_greater_element | ✓ | 571.223ms | 548.2 KB |
+| 253 | data_structures/stacks/next_greater_element |   |  |  |
 | 254 | data_structures/stacks/postfix_evaluation | ✓ | 4.162ms | 803.0 KB |
 | 255 | data_structures/stacks/prefix_evaluation | ✓ | 2.245ms | 27.0 KB |
 | 256 | data_structures/stacks/stack | ✓ | 1.657ms | 45.1 KB |
 | 257 | data_structures/stacks/stack_using_two_queues | ✓ | 1.046ms | 31.6 KB |
 | 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 2.417ms | 40.8 KB |
 | 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 1.542ms | 34.0 KB |
-| 260 | data_structures/stacks/stock_span_problem | ✓ | 1ms | 29.6 KB |
+| 260 | data_structures/stacks/stock_span_problem | ✓ | 571.223ms | 43.1 KB |
 | 261 | data_structures/suffix_tree/example/example_usage | ✓ | 1.106ms | 28.6 KB |
 | 262 | data_structures/suffix_tree/suffix_tree | ✓ | 3.243ms | 282.9 KB |
 | 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 1.107ms | 26.8 KB |
@@ -294,7 +294,7 @@ Last updated: 2025-08-07 23:31 UTC
 | 285 | digital_image_processing/rotation/rotation | ✓ | 1.265ms | 30.1 KB |
 | 286 | digital_image_processing/sepia | ✓ | 844µs | 17.5 KB |
 | 287 | digital_image_processing/test_digital_image_processing | ✓ | 4.53ms | 340.0 KB |
-| 288 | divide_and_conquer/closest_pair_of_points |   | 571.223ms | 29.2 KB |
+| 288 | divide_and_conquer/closest_pair_of_points |   | 571.223ms | 57.9 KB |
 | 289 | divide_and_conquer/convex_hull | ✓ | 7µs | 3.3 KB |
 | 290 | divide_and_conquer/heaps_algorithm | ✓ | 1.042ms | 580.1 KB |
 | 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 1.322ms | 275.4 KB |
