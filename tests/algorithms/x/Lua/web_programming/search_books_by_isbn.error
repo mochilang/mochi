@@ -1,0 +1,7 @@
+run: exit status 1
+Title: Fantastic Mr. Fox
+lua: ...lgorithms/x/Lua/web_programming/search_books_by_isbn.lua:289: attempt to concatenate a nil value (field 'publish_date')
+stack traceback:
+	...lgorithms/x/Lua/web_programming/search_books_by_isbn.lua:289: in function 'main'
+	...lgorithms/x/Lua/web_programming/search_books_by_isbn.lua:515: in main chunk
+	[C]: in ?

@@ -1,0 +1,7 @@
+run: exit status 1
+curl: (22) The requested URL returned error: 503
+lua: .../mochi/tests/algorithms/x/Lua/web_programming/reddit.lua:163: attempt to index a nil value (field 'data')
+stack traceback:
+	.../mochi/tests/algorithms/x/Lua/web_programming/reddit.lua:163: in function 'get_subreddit_data'
+	.../mochi/tests/algorithms/x/Lua/web_programming/reddit.lua:269: in main chunk
+	[C]: in ?

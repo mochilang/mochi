@@ -1,0 +1,7 @@
+run: exit status 1
+Dawn of the Crab
+lua: ...chi/tests/algorithms/x/Lua/web_programming/nasa_data.lua:103: attempt to index a nil value (field 'collection')
+stack traceback:
+	...chi/tests/algorithms/x/Lua/web_programming/nasa_data.lua:103: in function 'main'
+	...chi/tests/algorithms/x/Lua/web_programming/nasa_data.lua:152: in main chunk
+	[C]: in ?

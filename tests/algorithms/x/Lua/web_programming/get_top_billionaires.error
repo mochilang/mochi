@@ -1,0 +1,6 @@
+run: exit status 1
+lua: ...lgorithms/x/Lua/web_programming/get_top_billionaires.lua:67: attempt to index a nil value (field 'personList')
+stack traceback:
+	...lgorithms/x/Lua/web_programming/get_top_billionaires.lua:67: in function 'get_forbes_real_time_billionaires'
+	...lgorithms/x/Lua/web_programming/get_top_billionaires.lua:131: in main chunk
+	[C]: in ?

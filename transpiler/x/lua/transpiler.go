@@ -2689,10 +2689,14 @@ func dataExprFromFile(path, format string, typ *parser.TypeRef) (Expr, error) {
 // collectHelpers traverses the program and returns a set of helper names that
 // are required by the emitted Lua code.
 func collectHelpers(p *Program) map[string]bool {
-	used := map[string]bool{}
+        used := map[string]bool{}
 
-	var walkStmt func(Stmt)
-	var walkExpr func(Expr)
+        prevEnv := currentEnv
+        currentEnv = p.Env
+        defer func() { currentEnv = prevEnv }()
+
+        var walkStmt func(Stmt)
+        var walkExpr func(Expr)
 	walkExpr = func(e Expr) {
 		switch ex := e.(type) {
 		case *CallExpr:

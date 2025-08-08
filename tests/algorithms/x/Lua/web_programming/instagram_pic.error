@@ -1,0 +1,8 @@
+parse: error[P999]: /workspace/mochi/tests/github/TheAlgorithms/Mochi/web_programming/instagram_pic.mochi:32:17: unexpected token "-" (expected PostfixExpr)
+  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/web_programming/instagram_pic.mochi:32:17
+
+ 32 |   if idx_tag == -1 {
+    |                 ^
+
+help:
+  Parse error occurred. Check syntax near this location.
