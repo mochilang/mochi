@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-08 16:04 GMT+7
+Last updated: 2025-08-08 16:42 GMT+7
 
-## Algorithms Golden Test Checklist (296/1077)
+## Algorithms Golden Test Checklist (341/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 50.25ms | 19.66MB |
@@ -368,67 +368,67 @@ Last updated: 2025-08-08 16:04 GMT+7
 | 359 | electronics/electric_power | error |  |  |
 | 360 | electronics/electrical_impedance | ✓ | 52.539ms | 20.29MB |
 | 361 | electronics/ic_555_timer | ✓ | 38.906ms | 19.59MB |
-| 362 | electronics/ind_reactance |   |  |  |
-| 363 | electronics/ohms_law |   |  |  |
-| 364 | electronics/real_and_reactive_power |   |  |  |
-| 365 | electronics/resistor_color_code |   |  |  |
-| 366 | electronics/resistor_equivalence |   |  |  |
-| 367 | electronics/resonant_frequency |   |  |  |
-| 368 | electronics/wheatstone_bridge |   |  |  |
-| 369 | file_transfer/receive_file |   |  |  |
-| 370 | file_transfer/send_file |   |  |  |
-| 371 | file_transfer/tests/test_send_file |   |  |  |
-| 372 | financial/equated_monthly_installments |   |  |  |
-| 373 | financial/exponential_moving_average |   |  |  |
-| 374 | financial/interest |   |  |  |
-| 375 | financial/present_value |   |  |  |
-| 376 | financial/price_plus_tax |   |  |  |
-| 377 | financial/simple_moving_average |   |  |  |
-| 378 | financial/straight_line_depreciation |   |  |  |
-| 379 | financial/time_and_half_pay |   |  |  |
-| 380 | fractals/julia_sets |   |  |  |
-| 381 | fractals/koch_snowflake |   |  |  |
-| 382 | fractals/mandelbrot |   |  |  |
-| 383 | fractals/sierpinski_triangle |   |  |  |
-| 384 | fractals/vicsek |   |  |  |
-| 385 | fuzzy_logic/fuzzy_operations |   |  |  |
-| 386 | genetic_algorithm/basic_string |   |  |  |
-| 387 | geodesy/haversine_distance |   |  |  |
-| 388 | geodesy/lamberts_ellipsoidal_distance |   |  |  |
-| 389 | geometry/geometry |   |  |  |
-| 390 | graphics/bezier_curve |   |  |  |
-| 391 | graphics/butterfly_pattern |   |  |  |
-| 392 | graphics/digital_differential_analyzer_line |   |  |  |
-| 393 | graphics/vector3_for_2d_rendering |   |  |  |
-| 394 | graphs/a_star |   |  |  |
-| 395 | graphs/ant_colony_optimization_algorithms |   |  |  |
-| 396 | graphs/articulation_points |   |  |  |
-| 397 | graphs/basic_graphs |   |  |  |
-| 398 | graphs/bellman_ford |   |  |  |
-| 399 | graphs/bi_directional_dijkstra |   |  |  |
-| 400 | graphs/bidirectional_a_star |   |  |  |
-| 401 | graphs/bidirectional_breadth_first_search |   |  |  |
-| 402 | graphs/bidirectional_search |   |  |  |
-| 403 | graphs/boruvka |   |  |  |
-| 404 | graphs/breadth_first_search |   |  |  |
-| 405 | graphs/breadth_first_search_2 |   |  |  |
-| 406 | graphs/breadth_first_search_shortest_path |   |  |  |
-| 407 | graphs/breadth_first_search_shortest_path_2 |   |  |  |
-| 408 | graphs/breadth_first_search_zero_one_shortest_path |   |  |  |
-| 409 | graphs/check_bipatrite |   |  |  |
-| 410 | graphs/check_cycle |   |  |  |
-| 411 | graphs/connected_components |   |  |  |
-| 412 | graphs/deep_clone_graph |   |  |  |
-| 413 | graphs/depth_first_search |   |  |  |
-| 414 | graphs/depth_first_search_2 |   |  |  |
-| 415 | graphs/dijkstra |   |  |  |
-| 416 | graphs/dijkstra_2 |   |  |  |
-| 417 | graphs/dijkstra_algorithm |   |  |  |
-| 418 | graphs/dijkstra_alternate |   |  |  |
-| 419 | graphs/dijkstra_binary_grid |   |  |  |
-| 420 | graphs/dinic |   |  |  |
-| 421 | graphs/directed_and_undirected_weighted_graph |   |  |  |
-| 422 | graphs/edmonds_karp_multiple_source_and_sink |   |  |  |
+| 362 | electronics/ind_reactance | ✓ | 118.564ms | 21.51MB |
+| 363 | electronics/ohms_law | ✓ | 83.577ms | 22.24MB |
+| 364 | electronics/real_and_reactive_power | ✓ | 93.851ms | 20.13MB |
+| 365 | electronics/resistor_color_code | ✓ | 89.793ms | 42.51MB |
+| 366 | electronics/resistor_equivalence | ✓ | 86.638ms | 21.84MB |
+| 367 | electronics/resonant_frequency | ✓ | 90.428ms | 21.51MB |
+| 368 | electronics/wheatstone_bridge | ✓ | 86.247ms | 20.82MB |
+| 369 | file_transfer/receive_file | ✓ | 97.005ms | 21.25MB |
+| 370 | file_transfer/send_file | ✓ | 92.411ms | 20.85MB |
+| 371 | file_transfer/tests/test_send_file | ✓ |  |  |
+| 372 | financial/equated_monthly_installments | ✓ | 98.098ms | 21.52MB |
+| 373 | financial/exponential_moving_average | ✓ | 109.271ms | 21.28MB |
+| 374 | financial/interest | ✓ | 87.692ms | 20.72MB |
+| 375 | financial/present_value | ✓ | 105.661ms | 22.33MB |
+| 376 | financial/price_plus_tax | ✓ | 90.462ms | 18.77MB |
+| 377 | financial/simple_moving_average | ✓ | 90.091ms | 21.71MB |
+| 378 | financial/straight_line_depreciation | ✓ | 99.756ms | 21.54MB |
+| 379 | financial/time_and_half_pay | ✓ | 88.562ms | 21.10MB |
+| 380 | fractals/julia_sets | error |  |  |
+| 381 | fractals/koch_snowflake | error |  |  |
+| 382 | fractals/mandelbrot | ✓ | 113.736ms | 29.71MB |
+| 383 | fractals/sierpinski_triangle | ✓ | 90.75ms | 19.68MB |
+| 384 | fractals/vicsek | error |  |  |
+| 385 | fuzzy_logic/fuzzy_operations | ✓ | 82.886ms | 23.43MB |
+| 386 | genetic_algorithm/basic_string | ✓ | 90.959ms | 20.77MB |
+| 387 | geodesy/haversine_distance | ✓ | 95.388ms | 26.38MB |
+| 388 | geodesy/lamberts_ellipsoidal_distance | ✓ | 86.62ms | 23.74MB |
+| 389 | geometry/geometry | ✓ | 93.142ms | 26.06MB |
+| 390 | graphics/bezier_curve | ✓ | 169.496ms | 21.48MB |
+| 391 | graphics/butterfly_pattern | ✓ | 96.613ms | 22.05MB |
+| 392 | graphics/digital_differential_analyzer_line | ✓ | 155.171ms | 22.22MB |
+| 393 | graphics/vector3_for_2d_rendering | ✓ | 115.833ms | 25.01MB |
+| 394 | graphs/a_star | ✓ | 168.68ms | 26.77MB |
+| 395 | graphs/ant_colony_optimization_algorithms | ✓ | 2.620689s | 753.15KB |
+| 396 | graphs/articulation_points | ✓ | 133.95ms | 22.01MB |
+| 397 | graphs/basic_graphs | error |  |  |
+| 398 | graphs/bellman_ford | ✓ | 93.525ms | 21.66MB |
+| 399 | graphs/bi_directional_dijkstra | error |  |  |
+| 400 | graphs/bidirectional_a_star | ✓ | 115.296ms | 21.43MB |
+| 401 | graphs/bidirectional_breadth_first_search | ✓ | 95.401ms | 6.86MB |
+| 402 | graphs/bidirectional_search | error |  |  |
+| 403 | graphs/boruvka | error |  |  |
+| 404 | graphs/breadth_first_search | error |  |  |
+| 405 | graphs/breadth_first_search_2 | ✓ | 91.758ms | 24.31MB |
+| 406 | graphs/breadth_first_search_shortest_path | ✓ | 85.8ms | 24.49MB |
+| 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 87.688ms | 28.59MB |
+| 408 | graphs/breadth_first_search_zero_one_shortest_path | error |  |  |
+| 409 | graphs/check_bipatrite | error |  |  |
+| 410 | graphs/check_cycle | ✓ | 101.671ms | 20.44MB |
+| 411 | graphs/connected_components | error |  |  |
+| 412 | graphs/deep_clone_graph | error |  |  |
+| 413 | graphs/depth_first_search | error |  |  |
+| 414 | graphs/depth_first_search_2 | error |  |  |
+| 415 | graphs/dijkstra | error |  |  |
+| 416 | graphs/dijkstra_2 | ✓ | 99.166ms | 22.84MB |
+| 417 | graphs/dijkstra_algorithm | ✓ | 89.101ms | 20.95MB |
+| 418 | graphs/dijkstra_alternate | ✓ | 95.045ms | 22.80MB |
+| 419 | graphs/dijkstra_binary_grid | ✓ | 105.985ms | 22.07MB |
+| 420 | graphs/dinic | ✓ | 130.08ms | 26.16MB |
+| 421 | graphs/directed_and_undirected_weighted_graph | ✓ | 98.558ms | 17.89MB |
+| 422 | graphs/edmonds_karp_multiple_source_and_sink | error |  |  |
 | 423 | graphs/eulerian_path_and_circuit_for_undirected_graph |   |  |  |
 | 424 | graphs/even_tree |   |  |  |
 | 425 | graphs/finding_bridges |   |  |  |

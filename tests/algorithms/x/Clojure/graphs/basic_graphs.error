@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error (UnsupportedOperationException) at main/find-isolated-nodes (basic_graphs.clj:197).
+nth not supported on this type: PersistentArrayMap
+
+Full report at:
+/tmp/clojure-11595048543643767233.edn

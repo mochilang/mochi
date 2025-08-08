@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error (ClassCastException) at main/depth-first-search (depth_first_search.clj:43).
+class java.lang.String cannot be cast to class java.lang.Number (java.lang.String and java.lang.Number are in module java.base of loader 'bootstrap')
+
+Full report at:
+/tmp/clojure-7938315611527282780.edn
