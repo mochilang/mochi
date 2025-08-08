@@ -1,0 +1,43 @@
+warning: variable "graph" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 12 │       graph = Map.put(graph, from, ((if Map.has_key?(graph, from), do: (graph[from] ++ [to]), else: [to])))
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search.exs:12:7: Main.add_edge/3
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 38 │         {i, line} = try do
+    │          ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search.exs:38:10: Main.print_graph/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 81 │           {i, queue, visited} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search.exs:81:12: Main.bfs/2
+
+    warning: variable "head" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 92 │       {head, order, queue, visited} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search.exs:92:8: Main.bfs/2
+
+    warning: variable "queue" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 92 │       {head, order, queue, visited} = try do
+    │                     ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search.exs:92:21: Main.bfs/2
+
+    warning: variable "visited" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 92 │       {head, order, queue, visited} = try do
+    │                            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search.exs:92:28: Main.bfs/2
+
+[2]

@@ -1,0 +1,78 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 28 │       {i, idx} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bi_directional_dijkstra.exs:28:8: Main.get_min_index/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 57 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bi_directional_dijkstra.exs:57:8: Main.remove_at/2
+
+    warning: variable "parent" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 81 │           {cst_fwd, parent, q} = if new_cost < old_cost do
+    │                     ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bi_directional_dijkstra.exs:81:21: Main.pass_and_relaxation/9
+
+    warning: variable "q" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 81 │           {cst_fwd, parent, q} = if new_cost < old_cost do
+    │                             ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bi_directional_dijkstra.exs:81:29: Main.pass_and_relaxation/9
+
+    warning: variable "sd" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 89 │           {sd} = if Map.has_key?(visited_backward, nxt) do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bi_directional_dijkstra.exs:89:12: Main.pass_and_relaxation/9
+
+    warning: variable "cst_fwd" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 72 │       {cst_fwd, parent, q, sd} = Enum.reduce(graph[v], {cst_fwd, parent, q, sd}, fn e, {cst_fwd, parent, q, sd} ->
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bi_directional_dijkstra.exs:72:8: Main.pass_and_relaxation/9
+
+    warning: variable "parent" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 72 │       {cst_fwd, parent, q, sd} = Enum.reduce(graph[v], {cst_fwd, parent, q, sd}, fn e, {cst_fwd, parent, q, sd} ->
+    │                 ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bi_directional_dijkstra.exs:72:17: Main.pass_and_relaxation/9
+
+     warning: variable "queue_backward" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 158 │       {queue_backward, queue_forward, shortest_distance, visited_backward, visited_forward} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bi_directional_dijkstra.exs:158:8: Main.bidirectional_dij/4
+
+     warning: variable "queue_forward" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 158 │       {queue_backward, queue_forward, shortest_distance, visited_backward, visited_forward} = try do
+     │                        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bi_directional_dijkstra.exs:158:24: Main.bidirectional_dij/4
+
+     warning: variable "visited_backward" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 158 │       {queue_backward, queue_forward, shortest_distance, visited_backward, visited_forward} = try do
+     │                                                          ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bi_directional_dijkstra.exs:158:58: Main.bidirectional_dij/4
+
+     warning: variable "visited_forward" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 158 │       {queue_backward, queue_forward, shortest_distance, visited_backward, visited_forward} = try do
+     │                                                                            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bi_directional_dijkstra.exs:158:76: Main.bidirectional_dij/4
+
+-1

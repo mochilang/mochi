@@ -1,0 +1,128 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 51 │       {i, value} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_breadth_first_search.exs:51:8: Main.parse_int/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 114 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_breadth_first_search.exs:114:8: Main.neighbors/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 138 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_breadth_first_search.exs:138:8: Main.reverse_list/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 181 │           {i, queue, visited} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_breadth_first_search.exs:181:12: Main.bfs/2
+
+     warning: variable "head" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 192 │       {head, queue, visited} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_breadth_first_search.exs:192:8: Main.bfs/2
+
+     warning: variable "queue" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 192 │       {head, queue, visited} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_breadth_first_search.exs:192:14: Main.bfs/2
+
+     warning: variable "visited" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 192 │       {head, queue, visited} = try do
+     │                     ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_breadth_first_search.exs:192:21: Main.bfs/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 237 │                   {j, new_path} = try do
+     │                    ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_breadth_first_search.exs:237:20: Main.bidirectional_bfs/2
+
+     warning: variable "t" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 288 │                   {path_f, t} = try do
+     │                            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_breadth_first_search.exs:288:28: Main.bidirectional_bfs/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 259 │           {i, queue_f, visited_f} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_breadth_first_search.exs:259:12: Main.bidirectional_bfs/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 310 │           {j, queue_b, visited_b} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_breadth_first_search.exs:310:12: Main.bidirectional_bfs/2
+
+     warning: variable "head_b" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 321 │       {head_b, head_f, queue_b, queue_f, visited_b, visited_f} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_breadth_first_search.exs:321:8: Main.bidirectional_bfs/2
+
+     warning: variable "head_f" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 321 │       {head_b, head_f, queue_b, queue_f, visited_b, visited_f} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_breadth_first_search.exs:321:16: Main.bidirectional_bfs/2
+
+     warning: variable "queue_b" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 321 │       {head_b, head_f, queue_b, queue_f, visited_b, visited_f} = try do
+     │                        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_breadth_first_search.exs:321:24: Main.bidirectional_bfs/2
+
+     warning: variable "queue_f" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 321 │       {head_b, head_f, queue_b, queue_f, visited_b, visited_f} = try do
+     │                                 ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_breadth_first_search.exs:321:33: Main.bidirectional_bfs/2
+
+     warning: variable "visited_b" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 321 │       {head_b, head_f, queue_b, queue_f, visited_b, visited_f} = try do
+     │                                          ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_breadth_first_search.exs:321:42: Main.bidirectional_bfs/2
+
+     warning: variable "visited_f" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 321 │       {head_b, head_f, queue_b, queue_f, visited_b, visited_f} = try do
+     │                                                     ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_breadth_first_search.exs:321:53: Main.bidirectional_bfs/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 350 │       {i, s} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_breadth_first_search.exs:350:8: Main.path_to_string/1
+
+"[(0, 0), (1, 0), (2, 0), (3, 0), (3, 1), (4, 1), (5, 1), (5, 2), (5, 3), (5, 4), (5, 5), (6, 5), (6, 6)]"
+"[(0, 0), (1, 0), (2, 0), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 6), (4, 6), (5, 6), (6, 6)]"

@@ -1,0 +1,45 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 27 │           {j, row} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/eulerian_path_and_circuit_for_undirected_graph.exs:27:12: Main.make_matrix/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 40 │       {i, matrix} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/eulerian_path_and_circuit_for_undirected_graph.exs:40:8: Main.make_matrix/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 74 │         {i, path, visited_edge} = try do
+    │          ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/eulerian_path_and_circuit_for_undirected_graph.exs:74:10: Main.dfs/4
+
+    warning: variable "visited_edge" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 54 │       {path, visited_edge} = if Map.has_key?(graph, u) do
+    │              ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/eulerian_path_and_circuit_for_undirected_graph.exs:54:14: Main.dfs/4
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 114 │       {i, odd_degree_nodes, odd_node} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/eulerian_path_and_circuit_for_undirected_graph.exs:114:8: Main.check_circuit_or_path/2
+
+graph has a Euler path
+[5 4 1 2 3 1 3 2]
+graph has a Euler cycle
+[1 2 3 1 4 5 1 5 4 3 2 4 5 1 5 4]
+graph is not Eulerian
+no path
+graph has a Euler cycle
+[1 2 3 1 3 2]
+graph has a Euler cycle
+[1]

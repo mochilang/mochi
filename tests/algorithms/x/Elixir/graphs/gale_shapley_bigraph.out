@@ -1,0 +1,71 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 24 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/gale_shapley_bigraph.exs:24:7: Main.index_of/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 55 │       {i, removed, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/gale_shapley_bigraph.exs:55:8: Main.remove_item/2
+
+    warning: variable "removed" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 55 │       {i, removed, res} = try do
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/gale_shapley_bigraph.exs:55:11: Main.remove_item/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 83 │       {i, unmatched} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/gale_shapley_bigraph.exs:83:8: Main.stable_matching/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 100 │       {donor_record, i} = try do
+     │                      ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/gale_shapley_bigraph.exs:100:22: Main.stable_matching/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 117 │       {i, rec_record} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/gale_shapley_bigraph.exs:117:8: Main.stable_matching/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 134 │       {i, num_donations} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/gale_shapley_bigraph.exs:134:8: Main.stable_matching/2
+
+     warning: variable "num_donations" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 172 │       {donor_record, num_donations, rec_record, unmatched} = try do
+     │                      ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/gale_shapley_bigraph.exs:172:22: Main.stable_matching/2
+
+     warning: variable "rec_record" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 172 │       {donor_record, num_donations, rec_record, unmatched} = try do
+     │                                     ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/gale_shapley_bigraph.exs:172:37: Main.stable_matching/2
+
+     warning: variable "unmatched" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 172 │       {donor_record, num_donations, rec_record, unmatched} = try do
+     │                                                 ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/gale_shapley_bigraph.exs:172:49: Main.stable_matching/2
+
+[1, 2, 3, 0]

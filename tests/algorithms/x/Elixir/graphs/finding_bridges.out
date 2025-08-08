@@ -1,0 +1,61 @@
+warning: variable "current_id" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 19 │           {current_id, low, res_bridges} = if to == parent do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/finding_bridges.exs:19:12: Main.dfs/8
+
+    warning: variable "low" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 19 │           {current_id, low, res_bridges} = if to == parent do
+    │                        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/finding_bridges.exs:19:24: Main.dfs/8
+
+    warning: variable "res_bridges" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 19 │           {current_id, low, res_bridges} = if to == parent do
+    │                             ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/finding_bridges.exs:19:29: Main.dfs/8
+
+    warning: variable "low" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 17 │       {current_id, low, res_bridges} = Enum.reduce(graph[at], {current_id, low, res_bridges}, fn to, {current_id, low, res_bridges} ->
+    │                    ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/finding_bridges.exs:17:20: Main.dfs/8
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 80 │       {i, ids, low, visited} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/finding_bridges.exs:80:8: Main.compute_bridges/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 105 │       {bridges, i, id} = try do
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/finding_bridges.exs:105:17: Main.compute_bridges/1
+
+     warning: variable "id" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 105 │       {bridges, i, id} = try do
+     │                    ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/finding_bridges.exs:105:20: Main.compute_bridges/1
+
+    warning: function _len/1 is unused
+    │
+  3 │   defp _len(x) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/finding_bridges.exs:3:8: Main (module)
+
+[]
+[]
+[]
+[]
+[]

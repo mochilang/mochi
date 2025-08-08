@@ -1,0 +1,87 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 49 │       {i, p, q, v} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_search.exs:49:8: Main.expand_search/6
+
+    warning: variable "node_" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 73 │       {node_, path} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_search.exs:73:8: Main.construct_path/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 97 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_search.exs:97:8: Main.reverse_list/1
+
+     warning: variable "backward_queue" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 157 │       {backward_head, backward_parents, backward_queue, backward_visited, forward_head, forward_parents, forward_queue, forward_visited, intersection} = try do
+     │                                         ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_search.exs:157:41: Main.bidirectional_search/3
+
+     warning: variable "forward_queue" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 157 │       {backward_head, backward_parents, backward_queue, backward_visited, forward_head, forward_parents, forward_queue, forward_visited, intersection} = try do
+     │                                                                                                          ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_search.exs:157:106: Main.bidirectional_search/3
+
+     warning: variable "forward_head" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 157 │       {backward_head, backward_parents, backward_queue, backward_visited, forward_head, forward_parents, forward_queue, forward_visited, intersection} = try do
+     │                                                                           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_search.exs:157:75: Main.bidirectional_search/3
+
+     warning: variable "backward_head" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 157 │       {backward_head, backward_parents, backward_queue, backward_visited, forward_head, forward_parents, forward_queue, forward_visited, intersection} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_search.exs:157:8: Main.bidirectional_search/3
+
+     warning: variable "backward_visited" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 157 │       {backward_head, backward_parents, backward_queue, backward_visited, forward_head, forward_parents, forward_queue, forward_visited, intersection} = try do
+     │                                                         ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_search.exs:157:57: Main.bidirectional_search/3
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 181 │       {j, result} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_search.exs:181:8: Main.bidirectional_search/3
+
+     warning: variable "forward_visited" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 157 │       {backward_head, backward_parents, backward_queue, backward_visited, forward_head, forward_parents, forward_queue, forward_visited, intersection} = try do
+     │                                                                                                                         ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_search.exs:157:121: Main.bidirectional_search/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 207 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_search.exs:207:7: Main.is_edge/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 235 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_search.exs:235:7: Main.path_exists/2
+
+Path from 0 to 11: [0 1 3 7 11]
+Path from 5 to 5: [5]
+Path from 0 to 3: None

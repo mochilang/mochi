@@ -1,0 +1,176 @@
+warning: variable "found" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 72 │               {found} = if Enum.at(item, 0) == de do
+    │                ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/frequent_pattern_graph_miner.exs:72:16: Main.get_bitcode/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 91 │       {bitcode, i} = try do
+    │                 ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/frequent_pattern_graph_miner.exs:91:17: Main.get_bitcode/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 120 │       {c, i} = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/frequent_pattern_graph_miner.exs:120:11: Main.count_ones/1
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 161 │           {j, max_i} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/frequent_pattern_graph_miner.exs:161:12: Main.get_frequency_table/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 176 │       {i, table} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/frequent_pattern_graph_miner.exs:176:8: Main.get_frequency_table/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 232 │       {clusters, i, weights} = try do
+     │                  ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/frequent_pattern_graph_miner.exs:232:18: Main.get_cluster/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 257 │       {i, sup} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/frequent_pattern_graph_miner.exs:257:8: Main.get_support/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 284 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/frequent_pattern_graph_miner.exs:284:7: Main.contains_bits/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 314 │       {i, m} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/frequent_pattern_graph_miner.exs:314:8: Main.max_cluster_key/1
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 380 │               {count, graph, j, keys} = try do
+     │                              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/frequent_pattern_graph_miner.exs:380:30: Main.create_edge/6
+
+     warning: variable "c2" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 398 │           {c2, count, graph, keys} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/frequent_pattern_graph_miner.exs:398:12: Main.create_edge/6
+
+     warning: variable "count" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 398 │           {c2, count, graph, keys} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/frequent_pattern_graph_miner.exs:398:16: Main.create_edge/6
+
+     warning: variable "graph" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 410 │       {graph, idx1, keys} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/frequent_pattern_graph_miner.exs:410:8: Main.create_edge/6
+
+     warning: variable "idx1" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 410 │       {graph, idx1, keys} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/frequent_pattern_graph_miner.exs:410:15: Main.create_edge/6
+
+     warning: variable "nodes" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 332 │   def create_edge(nodes, graph, gkeys, clusters, c1, maxk) do
+     │                   ~~~~~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/frequent_pattern_graph_miner.exs:332:19: Main.create_edge/6
+
+     warning: variable "c" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 457 │       {c, keys} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/frequent_pattern_graph_miner.exs:457:8: Main.construct_graph/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 441 │       {graph, i, keys} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/frequent_pattern_graph_miner.exs:441:15: Main.construct_graph/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 521 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/frequent_pattern_graph_miner.exs:521:7: Main.find_freq_subgraph_given_support/3
+
+     warning: variable "e" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 561 │             {e, el} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/frequent_pattern_graph_miner.exs:561:14: Main.freq_subgraphs_edge_list/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 573 │         {el, j} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/frequent_pattern_graph_miner.exs:573:14: Main.freq_subgraphs_edge_list/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 602 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/frequent_pattern_graph_miner.exs:602:7: Main.print_all/5
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 622 │       j = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/frequent_pattern_graph_miner.exs:622:7: Main.print_all/5
+
+     warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 641 │       k = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/frequent_pattern_graph_miner.exs:641:7: Main.print_all/5
+
+     error: undefined function toi/1 (expected Main to define such a function or for it to be imported, but none are available)
+     │
+ 149 │               {max_i} = if toi(Map.get(Enum.at(table, j), "count", "")) > toi(Map.get(Enum.at(table, max_i), "count", "")) do
+     │                            ^^^
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/frequent_pattern_graph_miner.exs:149:28: Main.get_frequency_table/1
+
+     error: undefined function toi/1 (expected Main to define such a function or for it to be imported, but none are available)
+     │
+ 149 │               {max_i} = if toi(Map.get(Enum.at(table, j), "count", "")) > toi(Map.get(Enum.at(table, max_i), "count", "")) do
+     │                                                                           ^^^
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/frequent_pattern_graph_miner.exs:149:75: Main.get_frequency_table/1
+
+** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/graphs/frequent_pattern_graph_miner.exs: cannot compile module Main (errors have been logged)

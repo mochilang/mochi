@@ -1,0 +1,61 @@
+warning: variable "g" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 22 │           g = (g ++ [[]])
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search_zero_one_shortest_path.exs:22:11: Main.new_adjacency_list/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 29 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search_zero_one_shortest_path.exs:29:7: Main.new_adjacency_list/1
+
+    warning: variable "al" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 51 │       al = Map.put(al, :graph, g)
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search_zero_one_shortest_path.exs:51:7: Main.add_edge/4
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 69 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search_zero_one_shortest_path.exs:69:8: Main.push_front/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 93 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search_zero_one_shortest_path.exs:93:8: Main.pop_front/1
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 166 │             {distances, j, queue} = try do
+     │                         ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search_zero_one_shortest_path.exs:166:25: Main.get_shortest_path/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 125 │       {distances, i} = try do
+     │                   ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search_zero_one_shortest_path.exs:125:19: Main.get_shortest_path/3
+
+     warning: variable "queue" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 181 │       {distances, queue} = try do
+     │                   ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search_zero_one_shortest_path.exs:181:19: Main.get_shortest_path/3
+
+** (ArgumentError) argument error
+    :erlang.++(nil, [%{weight: 0, destination_vertex: 1}])
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search_zero_one_shortest_path.exs:50: Main.add_edge/4
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search_zero_one_shortest_path.exs:201: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/breadth_first_search_zero_one_shortest_path.exs:225: (file)

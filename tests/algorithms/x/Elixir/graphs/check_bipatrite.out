@@ -1,0 +1,15 @@
+warning: variable "queue" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 60 │           {queue, visited} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/check_bipatrite.exs:60:12: Main.is_bipartite_bfs/1
+
+    warning: variable "visited" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 33 │       {visited} = Enum.reduce(Map.keys(graph), {visited}, fn node_, {visited} ->
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/check_bipatrite.exs:33:8: Main.is_bipartite_bfs/1
+
+true

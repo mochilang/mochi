@@ -1,0 +1,158 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 33 │       {guess, i} = try do
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:33:15: Main.sqrtApprox/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 79 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:79:7: Main.contains_pos/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 104 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:104:7: Main.open_index_of_pos/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 133 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:133:8: Main.remove_node_at/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 157 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:157:8: Main.append_pos_list/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 182 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:182:8: Main.reverse_pos_list/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 206 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:206:8: Main.concat_pos_lists/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 222 │       {j, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:222:8: Main.concat_pos_lists/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 258 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:258:8: Main.get_successors/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 287 │       {best, i} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:287:14: Main.find_lowest_f/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 353 │             {i, open} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:353:14: Main.astar/2
+
+     warning: variable "closed" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 368 │       {closed, open} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:368:8: Main.astar/2
+
+     warning: variable "open" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 368 │       {closed, open} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:368:16: Main.astar/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 392 │       {bwd_copy, i} = try do
+     │                  ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:392:18: Main.combine_paths/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 466 │             {i, open_f} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:466:14: Main.bidirectional_astar/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 512 │             {i, open_b} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:512:14: Main.bidirectional_astar/2
+
+     warning: variable "closed_b" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 527 │       {closed_b, closed_f, open_b, open_f} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:527:8: Main.bidirectional_astar/2
+
+     warning: variable "closed_f" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 527 │       {closed_b, closed_f, open_b, open_f} = try do
+     │                  ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:527:18: Main.bidirectional_astar/2
+
+     warning: variable "open_b" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 527 │       {closed_b, closed_f, open_b, open_f} = try do
+     │                            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:527:28: Main.bidirectional_astar/2
+
+     warning: variable "open_f" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 527 │       {closed_b, closed_f, open_b, open_f} = try do
+     │                                    ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:527:36: Main.bidirectional_astar/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 554 │       {i, s} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:554:8: Main.path_to_string/1
+
+** (KeyError) key :y not found in: nil
+
+If you are using the dot syntax, such as map.field, make sure the left-hand side of the dot is a map
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:60: Main.pos_equal/2
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:95: anonymous fn/4 in Main.open_index_of_pos/2
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:105: Main.open_index_of_pos/2
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:327: anonymous fn/7 in Main.astar/2
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:354: anonymous fn/4 in Main.astar/2
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:369: Main.astar/2
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:572: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/graphs/bidirectional_a_star.exs:578: (file)
