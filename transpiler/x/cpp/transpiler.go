@@ -1175,28 +1175,28 @@ func (p *Program) write(w io.Writer) {
 			if i > 0 {
 				io.WriteString(w, ", ")
 			}
-                       typ := p.Type
-                       if strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") {
-                               if p.ByVal {
-                                       io.WriteString(w, typ+"&")
-                               } else {
-                                       io.WriteString(w, "const "+typ+"&")
-                               }
-                       } else if isStructType(typ) {
-                               if p.ByVal {
-                                       io.WriteString(w, typ+"&")
-                               } else {
-                                       io.WriteString(w, "const "+typ+"&")
-                               }
-                       } else {
-                               if p.ByVal {
-                                       io.WriteString(w, typ+"&")
-                               } else {
-                                       io.WriteString(w, typ)
-                               }
-                       }
-                       io.WriteString(w, " ")
-                       io.WriteString(w, safeName(p.Name))
+			typ := p.Type
+			if strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") {
+				if p.ByVal {
+					io.WriteString(w, typ+"&")
+				} else {
+					io.WriteString(w, "const "+typ+"&")
+				}
+			} else if isStructType(typ) {
+				if p.ByVal {
+					io.WriteString(w, typ+"&")
+				} else {
+					io.WriteString(w, "const "+typ+"&")
+				}
+			} else {
+				if p.ByVal {
+					io.WriteString(w, typ+"&")
+				} else {
+					io.WriteString(w, typ)
+				}
+			}
+			io.WriteString(w, " ")
+			io.WriteString(w, safeName(p.Name))
 		}
 		fmt.Fprintln(w, ");")
 	}
@@ -1254,37 +1254,37 @@ func (f *Func) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
-               typ := p.Type
-               if typ == "" {
-                       io.WriteString(w, "auto ")
-               } else if typ == "auto" {
-                       if p.ByVal {
-                               io.WriteString(w, "auto& ")
-                       } else {
-                               io.WriteString(w, "auto&& ")
-                       }
-               } else {
-                       if strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") {
-                               if p.ByVal {
-                                       io.WriteString(w, typ+"& ")
-                               } else {
-                                       io.WriteString(w, "const "+typ+"& ")
-                               }
-                       } else if isStructType(typ) {
-                               if p.ByVal {
-                                       io.WriteString(w, typ+"& ")
-                               } else {
-                                       io.WriteString(w, "const "+typ+"& ")
-                               }
-                       } else {
-                               if p.ByVal {
-                                       io.WriteString(w, typ+"& ")
-                               } else {
-                                       io.WriteString(w, typ+" ")
-                               }
-                       }
-               }
-               io.WriteString(w, safeName(p.Name))
+		typ := p.Type
+		if typ == "" {
+			io.WriteString(w, "auto ")
+		} else if typ == "auto" {
+			if p.ByVal {
+				io.WriteString(w, "auto& ")
+			} else {
+				io.WriteString(w, "auto&& ")
+			}
+		} else {
+			if strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") {
+				if p.ByVal {
+					io.WriteString(w, typ+"& ")
+				} else {
+					io.WriteString(w, "const "+typ+"& ")
+				}
+			} else if isStructType(typ) {
+				if p.ByVal {
+					io.WriteString(w, typ+"& ")
+				} else {
+					io.WriteString(w, "const "+typ+"& ")
+				}
+			} else {
+				if p.ByVal {
+					io.WriteString(w, typ+"& ")
+				} else {
+					io.WriteString(w, typ+" ")
+				}
+			}
+		}
+		io.WriteString(w, safeName(p.Name))
 	}
 	fmt.Fprintln(w, ") {")
 	for _, st := range f.Body {
@@ -5843,6 +5843,14 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return newCastExpr(arg, "int64_t"), nil
 			}
 		case "float":
+			if len(p.Call.Args) == 1 {
+				arg, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				return newCastExpr(arg, "double"), nil
+			}
+		case "to_float":
 			if len(p.Call.Args) == 1 {
 				arg, err := convertExpr(p.Call.Args[0])
 				if err != nil {
