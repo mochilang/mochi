@@ -1647,12 +1647,15 @@ func (c *ContainsExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "[")
 		c.Value.emit(w)
 		fmt.Fprint(w, "]; return ok }()")
-	default: // list
-		fmt.Fprint(w, "func() bool { for _, el := range ")
+	default: // list or unknown
+		usesReflect = true
+		fmt.Fprint(w, "func() bool { v := reflect.ValueOf(")
 		c.Collection.emit(w)
-		fmt.Fprint(w, " { if el == ")
+		fmt.Fprint(w, "); if v.Kind() == reflect.Map { key := ")
 		c.Value.emit(w)
-		fmt.Fprint(w, " { return true } } ; return false }()")
+		fmt.Fprint(w, "; return v.MapIndex(reflect.ValueOf(key)).IsValid() }; if v.Kind() == reflect.Slice || v.Kind() == reflect.Array { for i := 0; i < v.Len(); i++ { if v.Index(i).Interface() == ")
+		c.Value.emit(w)
+		fmt.Fprint(w, " { return true } } } ; return false }()")
 	}
 }
 
@@ -4327,6 +4330,9 @@ func boolExprFor(e Expr, t types.Type) Expr {
 			return e
 		}
 	}
+	if _, ok := e.(*ContainsExpr); ok {
+		return e
+	}
 	if ix, ok := e.(*IndexExpr); ok {
 		if vr, ok2 := ix.X.(*VarRef); ok2 {
 			if topEnv != nil {
@@ -4906,7 +4912,13 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 					case types.MapType:
 						kind = "map"
 						et = toGoTypeFromType(ct.Key)
+					case *types.MapType:
+						kind = "map"
+						et = toGoTypeFromType(ct.Key)
 					case types.ListType:
+						kind = "list"
+						et = toGoTypeFromType(ct.Elem)
+					case *types.ListType:
 						kind = "list"
 						et = toGoTypeFromType(ct.Elem)
 					default:

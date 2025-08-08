@@ -1,0 +1,6 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/file_transfer/tests/test_send_file.go:179:4: no new variables on left side of :=
+../../../tests/algorithms/transpiler/Go/file_transfer/tests/test_send_file.go:180:6: cannot use _ as value or type
+../../../tests/algorithms/transpiler/Go/file_transfer/tests/test_send_file.go:181:6: cannot use _ as value or type
+../../../tests/algorithms/transpiler/Go/file_transfer/tests/test_send_file.go:201: cannot convert sock (variable of struct type SocketMock) to type ConnMock

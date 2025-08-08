@@ -1,0 +1,3 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/electronics/resistor_color_code.go:208:49: cannot use color_code_list[0:sig_count] (value of type []string) as string value in variable declaration

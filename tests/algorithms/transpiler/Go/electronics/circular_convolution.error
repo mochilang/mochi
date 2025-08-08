@@ -1,0 +1,7 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/electronics/circular_convolution.go:144:8: cannot use n (variable of interface type any) as int value in argument to pad: need type assertion
+../../../tests/algorithms/transpiler/Go/electronics/circular_convolution.go:164:8: cannot use n (variable of interface type any) as int value in argument to pad: need type assertion
+../../../tests/algorithms/transpiler/Go/electronics/circular_convolution.go:170:10: invalid operation: i < n (operator < not defined on interface)
+../../../tests/algorithms/transpiler/Go/electronics/circular_convolution.go:175:11: invalid operation: k < n (operator < not defined on interface)
+../../../tests/algorithms/transpiler/Go/electronics/circular_convolution.go:176:23: cannot use n (variable of interface type any) as int value in argument to _mod: need type assertion

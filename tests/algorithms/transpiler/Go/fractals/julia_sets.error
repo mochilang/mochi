@@ -1,0 +1,4 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/fractals/julia_sets.go:322:76: cannot convert z0 (variable of interface type any) to type Complex: need type assertion
+../../../tests/algorithms/transpiler/Go/fractals/julia_sets.go:325:76: cannot convert z0 (variable of interface type any) to type Complex: need type assertion
