@@ -1,7 +1,7 @@
 # F# Algorithms Transpiler Output
 
-Completed programs: 595/1077
-Last updated: 2025-08-08 18:09 +0700
+Completed programs: 643/1077
+Last updated: 2025-08-08 18:58 +0700
 
 Checklist:
 
@@ -657,55 +657,55 @@ Checklist:
 | 648 | maths/series/geometric | ✓ | 571.223ms | 33.5 KB |
 | 649 | maths/series/geometric_series | ✓ | 571.223ms | 64.9 KB |
 | 650 | maths/series/harmonic | ✓ | 571.223ms | 36.1 KB |
-| 651 | maths/series/harmonic_series |   |  |  |
-| 652 | maths/series/hexagonal_numbers |   |  |  |
-| 653 | maths/series/p_series |   |  |  |
-| 654 | maths/sieve_of_eratosthenes |   |  |  |
-| 655 | maths/sigmoid |   |  |  |
-| 656 | maths/signum |   |  |  |
-| 657 | maths/simultaneous_linear_equation_solver |   |  |  |
-| 658 | maths/sin |   |  |  |
-| 659 | maths/sock_merchant |   |  |  |
-| 660 | maths/softmax |   |  |  |
-| 661 | maths/solovay_strassen_primality_test |   |  |  |
-| 662 | maths/spearman_rank_correlation_coefficient |   |  |  |
-| 663 | maths/special_numbers/armstrong_numbers |   |  |  |
-| 664 | maths/special_numbers/automorphic_number |   |  |  |
+| 651 | maths/series/harmonic_series | ✓ | 571.223ms | 81.0 KB |
+| 652 | maths/series/hexagonal_numbers | ✓ | 571.223ms | 78.3 KB |
+| 653 | maths/series/p_series | ✓ | 571.223ms | 85.3 KB |
+| 654 | maths/sieve_of_eratosthenes | ✓ | 571.223ms | 78.7 KB |
+| 655 | maths/sigmoid | ✓ | 571.223ms | 79.3 KB |
+| 656 | maths/signum | ✓ | 571.223ms | 56.5 KB |
+| 657 | maths/simultaneous_linear_equation_solver | ✓ | 571.223ms | 79.4 KB |
+| 658 | maths/sin | ✓ | 571.223ms | 33.2 KB |
+| 659 | maths/sock_merchant | ✓ | 571.223ms | 77.9 KB |
+| 660 | maths/softmax | ✓ | 571.223ms | 78.9 KB |
+| 661 | maths/solovay_strassen_primality_test | ✓ | 571.223ms | 77.6 KB |
+| 662 | maths/spearman_rank_correlation_coefficient | ✓ | 571.223ms | 79.0 KB |
+| 663 | maths/special_numbers/armstrong_numbers | ✓ | 571.223ms | 31.7 KB |
+| 664 | maths/special_numbers/automorphic_number | ✓ | 571.223ms | 78.2 KB |
 | 665 | maths/special_numbers/bell_numbers |   |  |  |
-| 666 | maths/special_numbers/carmichael_number |   |  |  |
-| 667 | maths/special_numbers/catalan_number |   |  |  |
-| 668 | maths/special_numbers/hamming_numbers |   |  |  |
-| 669 | maths/special_numbers/happy_number |   |  |  |
-| 670 | maths/special_numbers/harshad_numbers |   |  |  |
-| 671 | maths/special_numbers/hexagonal_number |   |  |  |
-| 672 | maths/special_numbers/krishnamurthy_number |   |  |  |
-| 673 | maths/special_numbers/perfect_number |   |  |  |
-| 674 | maths/special_numbers/polygonal_numbers |   |  |  |
-| 675 | maths/special_numbers/pronic_number |   |  |  |
-| 676 | maths/special_numbers/proth_number |   |  |  |
-| 677 | maths/special_numbers/triangular_numbers |   |  |  |
-| 678 | maths/special_numbers/ugly_numbers |   |  |  |
-| 679 | maths/special_numbers/weird_number |   |  |  |
-| 680 | maths/sum_of_arithmetic_series |   |  |  |
-| 681 | maths/sum_of_digits |   |  |  |
-| 682 | maths/sum_of_geometric_progression |   |  |  |
-| 683 | maths/sum_of_harmonic_series |   |  |  |
-| 684 | maths/sumset |   |  |  |
-| 685 | maths/sylvester_sequence |   |  |  |
-| 686 | maths/tanh |   |  |  |
-| 687 | maths/test_factorial |   |  |  |
-| 688 | maths/test_prime_check |   |  |  |
-| 689 | maths/three_sum |   |  |  |
-| 690 | maths/trapezoidal_rule |   |  |  |
-| 691 | maths/triplet_sum |   |  |  |
-| 692 | maths/twin_prime |   |  |  |
-| 693 | maths/two_pointer |   |  |  |
-| 694 | maths/two_sum |   |  |  |
-| 695 | maths/volume |   |  |  |
-| 696 | maths/zellers_congruence |   |  |  |
-| 697 | matrix/binary_search_matrix |   |  |  |
-| 698 | matrix/count_islands_in_matrix |   |  |  |
-| 699 | matrix/count_negative_numbers_in_sorted_matrix |   |  |  |
+| 666 | maths/special_numbers/carmichael_number | ✓ | 571.223ms | 81.0 KB |
+| 667 | maths/special_numbers/catalan_number | ✓ | 571.223ms | 77.5 KB |
+| 668 | maths/special_numbers/hamming_numbers | ✓ | 571.223ms | 55.5 KB |
+| 669 | maths/special_numbers/happy_number | ✓ | 571.223ms | 30.9 KB |
+| 670 | maths/special_numbers/harshad_numbers | ✓ | 571.223ms | 58.1 KB |
+| 671 | maths/special_numbers/hexagonal_number | ✓ | 571.223ms | 31.8 KB |
+| 672 | maths/special_numbers/krishnamurthy_number | ✓ | 571.223ms | 77.8 KB |
+| 673 | maths/special_numbers/perfect_number | ✓ | 571.223ms | 77.9 KB |
+| 674 | maths/special_numbers/polygonal_numbers | ✓ | 571.223ms | 77.5 KB |
+| 675 | maths/special_numbers/pronic_number | ✓ | 571.223ms | 30.9 KB |
+| 676 | maths/special_numbers/proth_number | ✓ | 571.223ms | 77.6 KB |
+| 677 | maths/special_numbers/triangular_numbers | ✓ | 571.223ms | 31.5 KB |
+| 678 | maths/special_numbers/ugly_numbers | ✓ | 571.223ms | 78.3 KB |
+| 679 | maths/special_numbers/weird_number | ✓ | 571.223ms | 77.9 KB |
+| 680 | maths/sum_of_arithmetic_series | ✓ | 571.223ms |  |
+| 681 | maths/sum_of_digits | ✓ | 571.223ms | 77.9 KB |
+| 682 | maths/sum_of_geometric_progression | ✓ | 571.223ms | 33.4 KB |
+| 683 | maths/sum_of_harmonic_series | ✓ | 571.223ms | 33.4 KB |
+| 684 | maths/sumset | ✓ | 571.223ms | 78.3 KB |
+| 685 | maths/sylvester_sequence | ✓ | 571.223ms | 77.8 KB |
+| 686 | maths/tanh | ✓ | 571.223ms | 79.4 KB |
+| 687 | maths/test_factorial | ✓ | 571.223ms | 17.8 KB |
+| 688 | maths/test_prime_check | ✓ | 571.223ms | 79.0 KB |
+| 689 | maths/three_sum | ✓ | 571.223ms | 78.5 KB |
+| 690 | maths/trapezoidal_rule | ✓ | 571.223ms | 78.8 KB |
+| 691 | maths/triplet_sum | ✓ | 571.223ms | 77.8 KB |
+| 692 | maths/twin_prime | ✓ | 571.223ms | 13.8 KB |
+| 693 | maths/two_pointer | ✓ | 571.223ms | 55.5 KB |
+| 694 | maths/two_sum | ✓ | 571.223ms | 78.4 KB |
+| 695 | maths/volume | ✓ | 571.223ms | 79.5 KB |
+| 696 | maths/zellers_congruence | ✓ | 571.223ms | 41.9 KB |
+| 697 | matrix/binary_search_matrix | ✓ | 571.223ms | 81.5 KB |
+| 698 | matrix/count_islands_in_matrix | ✓ | 571.223ms | 48.2 KB |
+| 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 571.223ms | 7.7 MB |
 | 700 | matrix/count_paths |   |  |  |
 | 701 | matrix/cramers_rule_2x2 |   |  |  |
 | 702 | matrix/inverse_of_matrix |   |  |  |

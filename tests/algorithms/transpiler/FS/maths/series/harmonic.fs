@@ -1,4 +1,4 @@
-// Generated 2025-08-08 18:09 +0700
+// Generated 2025-08-08 18:58 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -42,22 +42,22 @@ let rec is_harmonic_series (series: float array) =
         if (Seq.length (series)) = 0 then
             failwith ("Input list must be a non empty list")
         if (Seq.length (series)) = 1 then
-            if (_idx series (0)) = 0.0 then
+            if (_idx series (int 0)) = 0.0 then
                 failwith ("Input series cannot have 0 as an element")
             __ret <- true
             raise Return
         let mutable rec_series: float array = Array.empty<float>
         let mutable i: int = 0
         while i < (Seq.length (series)) do
-            let ``val``: float = _idx series (i)
+            let ``val``: float = _idx series (int i)
             if ``val`` = 0.0 then
                 failwith ("Input series cannot have 0 as an element")
             rec_series <- Array.append rec_series [|(1.0 / ``val``)|]
             i <- i + 1
-        let common_diff: float = (_idx rec_series (1)) - (_idx rec_series (0))
+        let common_diff: float = (_idx rec_series (int 1)) - (_idx rec_series (int 0))
         let mutable idx: int = 2
         while idx < (Seq.length (rec_series)) do
-            if ((_idx rec_series (idx)) - (_idx rec_series (idx - 1))) <> common_diff then
+            if ((_idx rec_series (int idx)) - (_idx rec_series (int (idx - 1)))) <> common_diff then
                 __ret <- false
                 raise Return
             idx <- idx + 1
@@ -75,7 +75,7 @@ let rec harmonic_mean (series: float array) =
         let mutable total: float = 0.0
         let mutable i: int = 0
         while i < (Seq.length (series)) do
-            total <- total + (1.0 / (_idx series (i)))
+            total <- total + (1.0 / (_idx series (int i)))
             i <- i + 1
         __ret <- (float (Seq.length (series))) / total
         raise Return
