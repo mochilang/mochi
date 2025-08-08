@@ -1781,7 +1781,13 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 		if _, ok := v.Value.(*NullLit); ok && valueAccess(targetType) == ".List" {
 			fmt.Fprintf(w, "&[_]%s{}", strings.TrimPrefix(targetType, "[]"))
 		} else {
-			v.Value.emit(w)
+			if ll, ok := v.Value.(*ListLit); ok && ll.ElemType != "" && strings.HasPrefix(targetType, "[]") {
+				io.WriteString(w, "(&(")
+				ll.emit(w)
+				io.WriteString(w, "))[0..]")
+			} else {
+				v.Value.emit(w)
+			}
 			if zigTypeFromExpr(v.Value) == "Value" {
 				io.WriteString(w, valueAccess(targetType))
 			}
@@ -1816,7 +1822,13 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 	if _, ok := a.Value.(*NullLit); ok && valueAccess(targetType) == ".List" {
 		fmt.Fprintf(w, "&[_]%s{}", strings.TrimPrefix(targetType, "[]"))
 	} else {
-		a.Value.emit(w)
+		if ll, ok := a.Value.(*ListLit); ok && ll.ElemType != "" && strings.HasPrefix(targetType, "[]") {
+			io.WriteString(w, "(&(")
+			ll.emit(w)
+			io.WriteString(w, "))[0..]")
+		} else {
+			a.Value.emit(w)
+		}
 		if zigTypeFromExpr(a.Value) == "Value" {
 			if suf := valueAccess(targetType); suf != "" {
 				io.WriteString(w, suf)
@@ -2355,44 +2367,38 @@ func precedence(op string) int {
 
 func (l *ListLit) emit(w io.Writer) {
 	if l.ElemType != "" {
-		if len(l.Elems) == 0 {
-			et := l.ElemType
-			if strings.HasPrefix(et, "const ") {
-				et = et[len("const "):]
-			}
-			fmt.Fprintf(w, "&[_]%s{}", et)
-			return
-		}
 		et := l.ElemType
 		if strings.HasPrefix(et, "const ") {
 			et = et[len("const "):]
 		}
-		lbl := fmt.Sprintf("blk%d", groupCounter)
-		tmp := fmt.Sprintf("_tmp%d", groupCounter)
-		groupCounter++
-		fmt.Fprintf(w, "%s: { var %s = std.heap.page_allocator.alloc(%s, %d) catch unreachable;", lbl, tmp, et, len(l.Elems))
+		if len(l.Elems) == 0 {
+			fmt.Fprintf(w, "[0]%s{}", et)
+			return
+		}
+		fmt.Fprintf(w, "[%d]%s{", len(l.Elems), et)
 		for i, e := range l.Elems {
-			fmt.Fprintf(w, " %s[%d] = ", tmp, i)
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
 			if l.ElemType == "Value" {
 				if ll, ok := e.(*ListLit); ok {
 					ll.ElemType = "Value"
 					io.WriteString(w, "Value{.List = ")
 					ll.emit(w)
-					io.WriteString(w, "};")
+					io.WriteString(w, "}")
 				} else if _, ok := e.(*NullLit); ok {
-					io.WriteString(w, "Value{.Null = {}};")
+					io.WriteString(w, "Value{.Null = {}}")
 				} else {
 					t := zigTypeFromExpr(e)
 					fmt.Fprintf(w, "Value{.%s = ", valueTag(t))
 					e.emit(w)
-					io.WriteString(w, "};")
+					io.WriteString(w, "}")
 				}
 			} else {
 				e.emit(w)
-				io.WriteString(w, ";")
 			}
 		}
-		fmt.Fprintf(w, " break :%s %s; }", lbl, tmp)
+		io.WriteString(w, "}")
 		return
 	} else if len(l.Elems) > 0 {
 		if _, ok := l.Elems[0].(*ListLit); ok {
@@ -4174,6 +4180,10 @@ func inferListStruct(varName string, list *ListLit) string {
 	if !ok {
 		return ""
 	}
+	if first.StructName != "" {
+		list.ElemType = first.StructName
+		return first.StructName
+	}
 	fields, ok := mapFields(first)
 	if !ok {
 		return ""
@@ -4630,28 +4640,31 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 			globalNames[alias] = true
 		}
 		if lst, ok := expr.(*ListLit); ok {
-			if funDepth <= 1 && inferListStruct(s.Let.Name, lst) != "" {
-				vd.Type = fmt.Sprintf("[%d]%s", len(lst.Elems), lst.ElemType)
-				varTypes[s.Let.Name] = "[]" + lst.ElemType
-			} else if funDepth <= 1 && len(lst.Elems) > 0 && vd.Type == "" {
-				elem := lst.ElemType
-				if elem == "" && len(lst.Elems) > 0 {
-					elem = zigTypeFromExpr(lst.Elems[0])
+			if funDepth <= 1 {
+				if infer := inferListStruct(s.Let.Name, lst); infer != "" {
+					vd.Type = fmt.Sprintf("[%d]%s", len(lst.Elems), lst.ElemType)
+					varTypes[s.Let.Name] = vd.Type
+					varTypes[alias] = vd.Type
+				} else if len(lst.Elems) > 0 && vd.Type == "" {
+					elem := lst.ElemType
+					if elem == "" && len(lst.Elems) > 0 {
+						elem = zigTypeFromExpr(lst.Elems[0])
+					}
+					if elem == "" {
+						elem = "i64"
+					}
+					if strings.HasPrefix(elem, "[]") {
+						vd.Type = "[]" + elem
+					} else {
+						vd.Type = fmt.Sprintf("[%d]%s", len(lst.Elems), elem)
+						lst.ElemType = ""
+					}
+					varTypes[s.Let.Name] = vd.Type
+				} else if lst.ElemType == "" && vd.Type != "" && strings.HasPrefix(vd.Type, "[]") {
+					lst.ElemType = vd.Type[2:]
+				} else if vd.Type == "[]Value" {
+					lst.ElemType = "Value"
 				}
-				if elem == "" {
-					elem = "i64"
-				}
-				if strings.HasPrefix(elem, "[]") {
-					vd.Type = "[]" + elem
-				} else {
-					vd.Type = fmt.Sprintf("[%d]%s", len(lst.Elems), elem)
-					lst.ElemType = ""
-				}
-				varTypes[s.Let.Name] = vd.Type
-			} else if lst.ElemType == "" && vd.Type != "" && strings.HasPrefix(vd.Type, "[]") {
-				lst.ElemType = vd.Type[2:]
-			} else if vd.Type == "[]Value" {
-				lst.ElemType = "Value"
 			}
 		}
 		if ml, ok := expr.(*MapLit); ok {
