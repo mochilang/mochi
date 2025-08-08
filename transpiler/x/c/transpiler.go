@@ -1249,28 +1249,30 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 		base := strings.TrimSuffix(typ, "[]")
 		if lst, ok := d.Value.(*ListLit); ok {
 			if indent == 0 && len(lst.Elems) > 0 {
-				fmt.Fprintf(w, "%s %s_init[%d] = {", base, d.Name, len(lst.Elems))
-				for i, e := range lst.Elems {
-					if i > 0 {
-						io.WriteString(w, ", ")
-					}
-					if base == "const char*" {
-						if inferExprType(currentEnv, e) == "const char*" {
-							e.emitExpr(w)
-						} else if lit, ok2 := e.(*IntLit); ok2 {
-							fmt.Fprintf(w, "\"%d\"", lit.Value)
-						} else {
-							e.emitExpr(w)
-						}
-					} else {
-						e.emitExpr(w)
-					}
-				}
-				io.WriteString(w, "};\n")
-				writeIndent(w, indent)
-				fmt.Fprintf(w, "%s *%s = %s_init;\n", base, d.Name, d.Name)
-				writeIndent(w, indent)
-				fmt.Fprintf(w, "size_t %s_len = %d;\n", d.Name, len(lst.Elems))
+                               fmt.Fprintf(w, "%s %s_init[%d] = {", base, d.Name, len(lst.Elems))
+                               for i, e := range lst.Elems {
+                                       if i > 0 {
+                                               io.WriteString(w, ", ")
+                                       }
+                                       if base == "const char*" {
+                                               if inferExprType(currentEnv, e) == "const char*" {
+                                                       e.emitExpr(w)
+                                               } else if lit, ok2 := e.(*IntLit); ok2 {
+                                                       fmt.Fprintf(w, "\"%d\"", lit.Value)
+                                               } else {
+                                                       e.emitExpr(w)
+                                               }
+                                       } else {
+                                               e.emitExpr(w)
+                                       }
+                               }
+                               io.WriteString(w, "};\n")
+                               writeIndent(w, indent)
+                               fmt.Fprintf(w, "%s *%s = malloc(%d * sizeof(%s));\n", base, d.Name, len(lst.Elems), base)
+                               writeIndent(w, indent)
+                               fmt.Fprintf(w, "memcpy(%s, %s_init, %d * sizeof(%s));\n", d.Name, d.Name, len(lst.Elems), base)
+                               writeIndent(w, indent)
+                               fmt.Fprintf(w, "size_t %s_len = %d;\n", d.Name, len(lst.Elems))
 			} else {
 				fmt.Fprintf(w, "%s *%s = NULL;\n", base, d.Name)
 				writeIndent(w, indent)
@@ -1284,28 +1286,40 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 					case "double":
 						needListAppendDouble = true
 						fmt.Fprintf(w, "%s = list_append_double(%s, &%s_len, ", d.Name, d.Name, d.Name)
-					case "const char*":
-						needListAppendStr = true
-						fmt.Fprintf(w, "%s = list_append_str(%s, &%s_len, ", d.Name, d.Name, d.Name)
-						if inferExprType(currentEnv, e) == "const char*" {
-							e.emitExpr(w)
-						} else {
-							needStrInt = true
-							io.WriteString(w, "str_int(")
-							e.emitExpr(w)
-							io.WriteString(w, ")")
-						}
-						io.WriteString(w, ");\n")
-						continue
-					default:
-						needListAppendInt = true
-						fmt.Fprintf(w, "%s = list_append_int(%s, &%s_len, ", d.Name, d.Name, d.Name)
-					}
-					if base != "const char*" {
-						e.emitExpr(w)
-						io.WriteString(w, ");\n")
-					}
-				}
+                                       case "const char*":
+                                               needListAppendStr = true
+                                               fmt.Fprintf(w, "%s = list_append_str(%s, &%s_len, ", d.Name, d.Name, d.Name)
+                                               if inferExprType(currentEnv, e) == "const char*" {
+                                                       e.emitExpr(w)
+                                               } else {
+                                                       needStrInt = true
+                                                       io.WriteString(w, "str_int(")
+                                                       e.emitExpr(w)
+                                                       io.WriteString(w, ")")
+                                               }
+                                               io.WriteString(w, ");\n")
+                                               continue
+                                       default:
+                                               if strings.HasSuffix(base, "*") || (base != "" && !strings.HasSuffix(base, "[]")) {
+                                                       typ := strings.TrimSuffix(base, "*")
+                                                       if typ == "" {
+                                                               typ = base
+                                                       }
+                                                       if needListAppendStruct == nil {
+                                                               needListAppendStruct = make(map[string]bool)
+                                                       }
+                                                       needListAppendStruct[typ] = true
+                                                       fmt.Fprintf(w, "%s = list_append_%s(%s, &%s_len, ", d.Name, sanitizeTypeName(typ), d.Name, d.Name)
+                                               } else {
+                                                       needListAppendInt = true
+                                                       fmt.Fprintf(w, "%s = list_append_int(%s, &%s_len, ", d.Name, d.Name, d.Name)
+                                               }
+                                       }
+                                       if base != "const char*" {
+                                               e.emitExpr(w)
+                                               io.WriteString(w, ");\n")
+                                       }
+                               }
 			}
 			return
 		}
