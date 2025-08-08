@@ -101,6 +101,7 @@ var aliasCounter int
 var usesFmt bool
 var usesRepeat bool
 var usesSubstr bool
+var usesSlice bool
 var usesLen bool
 var usesMod bool
 var usesAtoi bool
@@ -1257,16 +1258,18 @@ func (s *SliceExpr) emit(w io.Writer) {
 		s.Start.emit(w)
 		fmt.Fprint(w, "))")
 	} else {
+		t := typeOfExpr(s.Value)
+		elem := "object"
+		if strings.HasSuffix(t, "[]") {
+			elem = strings.TrimSuffix(t, "[]")
+		}
+		fmt.Fprintf(w, "_slice<%s>(", elem)
 		s.Value.emit(w)
-		fmt.Fprint(w, ".Skip((int)(")
+		fmt.Fprint(w, ", ")
 		s.Start.emit(w)
-		fmt.Fprint(w, "))")
-		fmt.Fprint(w, ".Take((int)(")
-		fmt.Fprint(w, "(")
+		fmt.Fprint(w, ", ")
 		s.End.emit(w)
-		fmt.Fprint(w, " - ")
-		s.Start.emit(w)
-		fmt.Fprint(w, "))).ToArray()")
+		fmt.Fprint(w, ")")
 	}
 }
 
@@ -2527,6 +2530,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesFmt = false
 	usesRepeat = false
 	usesSubstr = false
+	usesSlice = false
 	usesLen = false
 	usesMod = false
 	usesBigInt = false
@@ -2761,7 +2765,7 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 				usesSubstr = true
 				expr = &SubstringExpr{Str: expr, Start: start, End: end}
 			} else {
-				usesLinq = true
+				usesSlice = true
 				expr = &SliceExpr{Value: expr, Start: start, End: end}
 			}
 		case op.Field != nil:
@@ -4141,6 +4145,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 		case "slice":
 			if len(args) == 3 {
+				usesSlice = true
 				return &SliceExpr{Value: args[0], Start: args[1], End: args[2]}, nil
 			}
 		case "substring":
@@ -4901,6 +4906,19 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\t\tif (v is string s) return s.Length;\n")
 		buf.WriteString("\t\tif (v is System.Collections.ICollection c) return c.Count;\n")
 		buf.WriteString("\t\treturn Convert.ToString(v).Length;\n")
+		buf.WriteString("\t}\n")
+	}
+	if usesSlice {
+		buf.WriteString("\tstatic T[] _slice<T>(T[] arr, long start, long end) {\n")
+		buf.WriteString("\t\tif (start < 0) start = 0;\n")
+		buf.WriteString("\t\tif (end < 0) end = 0;\n")
+		buf.WriteString("\t\tif (start > arr.Length) start = arr.Length;\n")
+		buf.WriteString("\t\tif (end > arr.Length) end = arr.Length;\n")
+		buf.WriteString("\t\tif (start > end) start = end;\n")
+		buf.WriteString("\t\tvar len = end - start;\n")
+		buf.WriteString("\t\tvar res = new T[len];\n")
+		buf.WriteString("\t\tArray.Copy(arr, (int)start, res, 0, (int)len);\n")
+		buf.WriteString("\t\treturn res;\n")
 		buf.WriteString("\t}\n")
 	}
 	if usesSHA256 {
