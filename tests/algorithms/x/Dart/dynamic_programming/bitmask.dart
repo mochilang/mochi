@@ -36,6 +36,8 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+
 int count_assignments(int person, List<List<int>> task_performed, List<int> used) {
   if (person == task_performed.length) {
     return 1;
@@ -46,7 +48,7 @@ int count_assignments(int person, List<List<int>> task_performed, List<int> used
   while (i < tasks.length) {
     int t = tasks[i];
     if (!used.contains(t)) {
-    total = total + count_assignments(person + 1, task_performed, [...used, t]);
+    total = total + count_assignments(person + 1, task_performed, (used..add(t)));
   }
     i = i + 1;
   }
@@ -59,7 +61,7 @@ int count_no_of_ways(List<List<int>> task_performed) {
 
 void _main() {
   List<List<int>> task_performed = [[1, 3, 4], [1, 2, 5], [3, 4]];
-  print((count_no_of_ways(task_performed)).toString());
+  print(_str(count_no_of_ways(task_performed)));
 }
 
 void _start() {

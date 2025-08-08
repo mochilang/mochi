@@ -3,11 +3,6 @@ Original image:
 175 200 225 
 50 75 100 
 After contrast:
-Unhandled exception:
-type 'int' is not a subtype of type 'double' in type cast
-#0      change_contrast (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/change_contrast.dart:17:35)
-#1      contrasted (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/change_contrast.dart:53:30)
-#2      contrasted (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/change_contrast.dart)
-#3      main (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/change_contrast.dart:58:15)
-#4      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
-#5      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)
+0 113 234 
+255 255 255 
+0 0 0

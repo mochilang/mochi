@@ -1,10 +1,7 @@
-run: exit status 255
-Unhandled exception:
-type 'int' is not a subtype of type 'double' in type cast
-#0      get_gauss_kernel (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/filters/bilateral_filter.dart:114:38)
-#1      bilateral_filter (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/filters/bilateral_filter.dart:173:34)
-#2      result (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/filters/bilateral_filter.dart:189:17)
-#3      result (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/filters/bilateral_filter.dart)
-#4      main (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/filters/bilateral_filter.dart:197:9)
-#5      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
-#6      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)
+run: exit status 254
+../../../tests/algorithms/x/Dart/digital_image_processing/filters/bilateral_filter.dart:91:19: Error: A value of type 'int' can't be assigned to a variable of type 'double'.
+    double di = i - kernel_size ~/ 2.toDouble();
+                  ^
+../../../tests/algorithms/x/Dart/digital_image_processing/filters/bilateral_filter.dart:92:19: Error: A value of type 'int' can't be assigned to a variable of type 'double'.
+    double dj = j - kernel_size ~/ 2.toDouble();
+                  ^

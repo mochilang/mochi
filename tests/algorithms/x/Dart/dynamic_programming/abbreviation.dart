@@ -95,10 +95,10 @@ bool abbr(String a, String b) {
     List<bool> row = <bool>[];
     int j = 0;
     while (j <= m) {
-    row = [...row, false];
+    row = (row..add(false));
     j = j + 1;
   }
-    dp = ([...dp, row] as List).map((e) => (List<bool>.from(e) as List<bool>)).toList();
+    dp = ((dp..add(row)) as List).map((e) => (List<bool>.from(e) as List<bool>)).toList();
     i = i + 1;
   }
   while (dp[0]!.length <= 0) { dp[0]!.add(false); } dp[0]![0] = true;

@@ -2,10 +2,10 @@ run: exit status 255
 Unhandled exception:
 RangeError (length): Invalid value: Not in inclusive range 0..4: -1
 #0      List.[] (dart:core-patch/growable_array.dart)
-#1      pad_edge (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/filters/convolve.dart:68:25)
-#2      img_convolve (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/filters/convolve.dart:134:28)
-#3      result (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/filters/convolve.dart:174:26)
+#1      pad_edge (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/filters/convolve.dart:47:26)
+#2      img_convolve (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/filters/convolve.dart:113:28)
+#3      result (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/filters/convolve.dart:153:26)
 #4      result (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/filters/convolve.dart)
-#5      main (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/filters/convolve.dart:182:16)
+#5      main (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/filters/convolve.dart:155:16)
 #6      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
 #7      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

@@ -1,9 +1,1 @@
-Unhandled exception:
-type 'double' is not a subtype of type 'int' in type cast
-#0      round_to_int (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/rotation/rotation.dart:98:20)
-#1      get_rotation (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/rotation/rotation.dart:123:14)
-#2      rotated (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/rotation/rotation.dart:138:27)
-#3      rotated (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/rotation/rotation.dart)
-#4      main (file:///workspace/mochi/tests/algorithms/x/Dart/digital_image_processing/rotation/rotation.dart:146:10)
-#5      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
-#6      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)
+{"duration_us":17218,"memory_bytes":4849664,"name":"main"}

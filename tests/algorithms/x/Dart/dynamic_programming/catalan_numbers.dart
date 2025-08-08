@@ -36,6 +36,8 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+
 void panic(String msg) {
   print(msg);
 }
@@ -54,7 +56,7 @@ List<int> catalan_numbers(int upper_limit) {
     next_val = next_val + catalans[j] * catalans[n - j - 1];
     j = j + 1;
   }
-    catalans = [...catalans, next_val];
+    catalans = (catalans..add(next_val));
     n = n + 1;
   }
   return catalans;
@@ -67,8 +69,8 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print((catalan_numbers(5)).toString());
-  print((catalan_numbers(2)).toString());
+  print(_str(catalan_numbers(5)));
+  print(_str(catalan_numbers(2)));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
