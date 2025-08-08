@@ -1,3 +1,11 @@
+## Progress (2025-08-08 15:58 +0700)
+- clj transpiler: init generic containers
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-08 15:58 +0700)
+- clj transpiler: init generic containers
+- Regenerated golden files - 102/105 vm valid programs passing
+
 ## Progress (2025-08-08 15:31 +0700)
 - feat(ts): add closest pair algorithm transpilation
 - Regenerated golden files - 102/105 vm valid programs passing
