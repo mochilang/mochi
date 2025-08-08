@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (123/1077) - Last updated 2025-08-08 16:44 +0700:
+Checklist of programs that currently transpile and run (130/1077) - Last updated 2025-08-08 17:00 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -148,13 +148,13 @@ Checklist of programs that currently transpile and run (123/1077) - Last updated
 | 141 | conversions/prefix_conversions_string | ✓ | 521us | 1.6 MB |
 | 142 | conversions/pressure_conversions |  |  |  |
 | 143 | conversions/rectangular_to_polar | ✓ | 561us | 1.6 MB |
-| 144 | conversions/rgb_cmyk_conversion |  |  |  |
-| 145 | conversions/rgb_hsv_conversion |  |  |  |
-| 146 | conversions/roman_numerals |  |  |  |
-| 147 | conversions/speed_conversions |  |  |  |
-| 148 | conversions/temperature_conversions |  |  |  |
-| 149 | conversions/time_conversions |  |  |  |
-| 150 | conversions/volume_conversions |  |  |  |
+| 144 | conversions/rgb_cmyk_conversion | ✓ | 466us | 1.6 MB |
+| 145 | conversions/rgb_hsv_conversion | ✓ | 938us | 1.7 MB |
+| 146 | conversions/roman_numerals | ✓ |  |  |
+| 147 | conversions/speed_conversions | ✓ | 873us | 1.7 MB |
+| 148 | conversions/temperature_conversions | ✓ | 468us | 1.7 MB |
+| 149 | conversions/time_conversions | ✓ | 436us | 1.6 MB |
+| 150 | conversions/volume_conversions | ✓ | 500us | 1.5 MB |
 | 151 | conversions/weight_conversion |  |  |  |
 | 152 | data_compression/burrows_wheeler |  |  |  |
 | 153 | data_compression/huffman |  |  |  |

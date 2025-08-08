@@ -4344,6 +4344,10 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				funcAliases[name] = "user_round"
 				name = "user_round"
 			}
+			if name == "roundf" { // avoid conflict with stdlib
+				funcAliases[name] = "user_roundf"
+				name = "user_roundf"
+			}
 			if name == "double" { // avoid conflict with C keyword
 				funcAliases[name] = "user_double"
 				name = "user_double"
@@ -6616,10 +6620,7 @@ func convertUnary(u *parser.Unary) Expr {
 				return nil
 			}
 			items = append(items, MapItem{Key: key, Value: val})
-			if s, ok := evalString(key); ok && isValidIdent(s) {
-				fields = append(fields, StructField{Name: s, Value: val})
-				names = append(names, s)
-			} else if vr, ok := key.(*VarRef); ok && isValidIdent(vr.Name) {
+			if vr, ok := key.(*VarRef); ok && isValidIdent(vr.Name) {
 				fields = append(fields, StructField{Name: vr.Name, Value: val})
 				names = append(names, vr.Name)
 			} else {

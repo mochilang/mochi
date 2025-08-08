@@ -1,0 +1,9 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/conversions/weight_conversion.c: In function ‘weight_conversion’:
+/workspace/mochi/tests/algorithms/x/C/conversions/weight_conversion.c:96:37: error: ‘KILOGRAM_CHART’ undeclared (first use in this function)
+   96 |     long long has_to = contains_str(KILOGRAM_CHART.keys, KILOGRAM_CHART.len, to_type);
+      |                                     ^~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/conversions/weight_conversion.c:96:37: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/algorithms/x/C/conversions/weight_conversion.c:97:39: error: ‘WEIGHT_TYPE_CHART’ undeclared (first use in this function)
+   97 |     long long has_from = contains_str(WEIGHT_TYPE_CHART.keys, WEIGHT_TYPE_CHART.len, from_type);
+      |                                       ^~~~~~~~~~~~~~~~~
