@@ -12,7 +12,7 @@ public class Main {
                 row = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row), java.util.stream.DoubleStream.of(0.0)).toArray()));
                 x = x + 1;
             }
-            m = ((double[][])(appendObj(m, row)));
+            m = ((double[][])(appendObj((double[][])m, row)));
             y = y + 1;
         }
         return m;
@@ -58,7 +58,7 @@ ixy[y_2][x_2] = gx * gy;
             }
             y_2 = y_2 + 1;
         }
-        int offset = window / 2;
+        int offset = Math.floorDiv(window, 2);
         int[][] corners = ((int[][])(new int[][]{}));
         y_2 = offset;
         while (y_2 < h_1 - offset) {
@@ -82,7 +82,7 @@ ixy[y_2][x_2] = gx * gy;
                 double trace = wxx + wyy;
                 double r = det - k * (trace * trace);
                 if (r > thresh) {
-                    corners = ((int[][])(appendObj(corners, ((int[])(new int[]{x_3, y_2})))));
+                    corners = ((int[][])(appendObj((int[][])corners, ((int[])(new int[]{x_3, y_2})))));
                 }
                 x_3 = x_3 + 1;
             }
@@ -91,9 +91,43 @@ ixy[y_2][x_2] = gx * gy;
         return corners;
     }
     public static void main(String[] args) {
-        img = ((int[][])(new int[][]{new int[]{1, 1, 1, 1, 1}, new int[]{1, 255, 255, 255, 1}, new int[]{1, 255, 0, 255, 1}, new int[]{1, 255, 255, 255, 1}, new int[]{1, 1, 1, 1, 1}}));
-        corners_1 = ((int[][])(harris(((int[][])(img)), 0.04, 3, 10000000000.0)));
-        System.out.println(java.util.Arrays.deepToString(corners_1));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            img = ((int[][])(new int[][]{new int[]{1, 1, 1, 1, 1}, new int[]{1, 255, 255, 255, 1}, new int[]{1, 255, 0, 255, 1}, new int[]{1, 255, 255, 255, 1}, new int[]{1, 1, 1, 1, 1}}));
+            corners_1 = ((int[][])(harris(((int[][])(img)), 0.04, 3, 10000000000.0)));
+            System.out.println(java.util.Arrays.deepToString(corners_1));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static <T> T[] appendObj(T[] arr, T v) {

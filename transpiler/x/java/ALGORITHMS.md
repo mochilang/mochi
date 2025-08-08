@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-08 11:19 GMT+7
+Last updated: 2025-08-08 15:55 GMT+7
 
-## Algorithms Golden Test Checklist (895/1077)
+## Algorithms Golden Test Checklist (898/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -119,16 +119,16 @@ Last updated: 2025-08-08 11:19 GMT+7
 | 110 | ciphers/vigenere_cipher | ✓ | 26.0ms | 34.10KB |
 | 111 | ciphers/xor_cipher | ✓ | 72.0ms | 51.06KB |
 | 112 | computer_vision/cnn_classification | ✓ | 44.0ms | 58.11KB |
-| 113 | computer_vision/flip_augmentation | error |  |  |
-| 114 | computer_vision/haralick_descriptors | error |  |  |
-| 115 | computer_vision/harris_corner | ✓ | 46.0ms | 47.73KB |
-| 116 | computer_vision/horn_schunck | ✓ | 52.0ms | 56.05KB |
-| 117 | computer_vision/intensity_based_segmentation | ✓ | 48.0ms | 46.04KB |
-| 118 | computer_vision/mean_threshold | ✓ | 26.0ms | 680B |
-| 119 | computer_vision/mosaic_augmentation | error |  |  |
-| 120 | computer_vision/pooling_functions | ✓ | 46.0ms | 54.53KB |
-| 121 | conversions/astronomical_length_scale_conversion | ✓ | 25.0ms | 14.47KB |
-| 122 | conversions/binary_to_decimal | ✓ | 28.0ms | 808B |
+| 113 | computer_vision/flip_augmentation | ✓ | 37.0ms | 103.52KB |
+| 114 | computer_vision/haralick_descriptors | ✓ | 25.0ms | 57.42KB |
+| 115 | computer_vision/harris_corner | ✓ | 29.0ms | 47.84KB |
+| 116 | computer_vision/horn_schunck | ✓ | 38.0ms | 56.16KB |
+| 117 | computer_vision/intensity_based_segmentation | ✓ | 30.0ms | 46.04KB |
+| 118 | computer_vision/mean_threshold | ✓ | 14.0ms | 784B |
+| 119 | computer_vision/mosaic_augmentation | ✓ | 69.0ms | 123.92KB |
+| 120 | computer_vision/pooling_functions | ✓ | 30.0ms | 54.63KB |
+| 121 | conversions/astronomical_length_scale_conversion | ✓ | 17.0ms | 14.47KB |
+| 122 | conversions/binary_to_decimal | ✓ | 14.0ms | 808B |
 | 123 | conversions/binary_to_hexadecimal | ✓ | 35.0ms | 38.48KB |
 | 124 | conversions/binary_to_octal | ✓ | 34.0ms | 38.34KB |
 | 125 | conversions/convert_number_to_words | ✓ | 37.0ms | 47.62KB |

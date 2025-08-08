@@ -27,7 +27,7 @@ public class Main {
                 row = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row), java.util.stream.IntStream.of(0)).toArray()));
                 c = c + 1;
             }
-            output_img = ((int[][])(appendObj(output_img, row)));
+            output_img = ((int[][])(appendObj((int[][])output_img, row)));
             r = r + 1;
         }
         double scale_x = (scale_range[0] + scale_range[1]) / 2.0;
@@ -59,7 +59,7 @@ output_img[y0][x0] = i + 1;
                     double ymin = bbox[2] * scale_y;
                     double xmax = bbox[3] * scale_x;
                     double ymax = bbox[4] * scale_y;
-                    new_anno = ((double[][])(appendObj(new_anno, new double[]{bbox[0], xmin, ymin, xmax, ymax})));
+                    new_anno = ((double[][])(appendObj((double[][])new_anno, new double[]{bbox[0], xmin, ymin, xmax, ymax})));
                     j0 = j0 + 1;
                 }
             } else             if (i == 1) {
@@ -79,7 +79,7 @@ output_img[y1][x1] = i + 1;
                     double ymin1 = bbox1[2] * scale_y;
                     double xmax1 = scale_x + bbox1[3] * (1.0 - scale_x);
                     double ymax1 = bbox1[4] * scale_y;
-                    new_anno = ((double[][])(appendObj(new_anno, new double[]{bbox1[0], xmin1, ymin1, xmax1, ymax1})));
+                    new_anno = ((double[][])(appendObj((double[][])new_anno, new double[]{bbox1[0], xmin1, ymin1, xmax1, ymax1})));
                     j1 = j1 + 1;
                 }
             } else             if (i == 2) {
@@ -99,7 +99,7 @@ output_img[y2][x2] = i + 1;
                     double ymin2 = scale_y + bbox2[2] * (1.0 - scale_y);
                     double xmax2 = bbox2[3] * scale_x;
                     double ymax2 = scale_y + bbox2[4] * (1.0 - scale_y);
-                    new_anno = ((double[][])(appendObj(new_anno, new double[]{bbox2[0], xmin2, ymin2, xmax2, ymax2})));
+                    new_anno = ((double[][])(appendObj((double[][])new_anno, new double[]{bbox2[0], xmin2, ymin2, xmax2, ymax2})));
                     j2 = j2 + 1;
                 }
             } else {
@@ -119,7 +119,7 @@ output_img[y3][x3] = i + 1;
                     double ymin3 = scale_y + bbox3[2] * (1.0 - scale_y);
                     double xmax3 = scale_x + bbox3[3] * (1.0 - scale_x);
                     double ymax3 = scale_y + bbox3[4] * (1.0 - scale_y);
-                    new_anno = ((double[][])(appendObj(new_anno, new double[]{bbox3[0], xmin3, ymin3, xmax3, ymax3})));
+                    new_anno = ((double[][])(appendObj((double[][])new_anno, new double[]{bbox3[0], xmin3, ymin3, xmax3, ymax3})));
                     j3 = j3 + 1;
                 }
             }
@@ -133,7 +133,7 @@ output_img[y3][x3] = i + 1;
                 double w = anno[3] - anno[1];
                 double h = anno[4] - anno[2];
                 if (filter_scale < w && filter_scale < h) {
-                    filtered = ((double[][])(appendObj(filtered, anno)));
+                    filtered = ((double[][])(appendObj((double[][])filtered, anno)));
                 }
                 k = k + 1;
             }
@@ -157,12 +157,46 @@ output_img[y3][x3] = i + 1;
         int i_1 = 0;
         while (i_1 < new_annos.length) {
             double[] a = ((double[])(new_annos[i_1]));
-            System.out.println(_p(_geto(a, 0)) + " " + _p(_geto(a, 1)) + " " + _p(_geto(a, 2)) + " " + _p(_geto(a, 3)) + " " + _p(_geto(a, 4)));
+            System.out.println(_p(_getd(a, 0)) + " " + _p(_getd(a, 1)) + " " + _p(_getd(a, 2)) + " " + _p(_getd(a, 3)) + " " + _p(_getd(a, 4)));
             i_1 = i_1 + 1;
         }
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static <T> T[] appendObj(T[] arr, T v) {
@@ -187,7 +221,7 @@ output_img[y3][x3] = i + 1;
         return String.valueOf(v);
     }
 
-    static Object _geto(Object[] a, int i) {
+    static Double _getd(double[] a, int i) {
         return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }
