@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Python`.
-Last updated: 2025-08-08 11:22 GMT+7
+Last updated: 2025-08-08 15:52 GMT+7
 
-## Algorithms Golden Test Checklist (559/1077)
+## Algorithms Golden Test Checklist (572/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 63.0µs | 12.88MB |
@@ -612,19 +612,19 @@ Last updated: 2025-08-08 11:22 GMT+7
 | 603 | maths/monte_carlo | ✓ | 4.0ms | 13.23MB |
 | 604 | maths/monte_carlo_dice | ✓ | 15.0ms | 12.56MB |
 | 605 | maths/number_of_digits | ✓ | 18.0µs | 13.47MB |
-| 606 | maths/numerical_analysis/adams_bashforth |   |  |  |
-| 607 | maths/numerical_analysis/bisection |   |  |  |
-| 608 | maths/numerical_analysis/bisection_2 |   |  |  |
-| 609 | maths/numerical_analysis/integration_by_simpson_approx |   |  |  |
-| 610 | maths/numerical_analysis/intersection |   |  |  |
-| 611 | maths/numerical_analysis/nevilles_method |   |  |  |
-| 612 | maths/numerical_analysis/newton_forward_interpolation |   |  |  |
-| 613 | maths/numerical_analysis/newton_raphson |   |  |  |
-| 614 | maths/numerical_analysis/numerical_integration |   |  |  |
-| 615 | maths/numerical_analysis/proper_fractions |   |  |  |
-| 616 | maths/numerical_analysis/runge_kutta |   |  |  |
-| 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 |   |  |  |
-| 618 | maths/numerical_analysis/runge_kutta_gills |   |  |  |
+| 606 | maths/numerical_analysis/adams_bashforth | ✓ | 174.0µs | 14.05MB |
+| 607 | maths/numerical_analysis/bisection | ✓ | 40.0µs | 12.89MB |
+| 608 | maths/numerical_analysis/bisection_2 | ✓ | 33.0µs | 12.28MB |
+| 609 | maths/numerical_analysis/integration_by_simpson_approx | ✓ | 796.0µs | 12.18MB |
+| 610 | maths/numerical_analysis/intersection | ✓ | 41.0µs | 12.73MB |
+| 611 | maths/numerical_analysis/nevilles_method | ✓ | 64.0µs | 12.39MB |
+| 612 | maths/numerical_analysis/newton_forward_interpolation | ✓ | 38.0µs | 12.79MB |
+| 613 | maths/numerical_analysis/newton_raphson | ✓ | 1.0ms | 12.78MB |
+| 614 | maths/numerical_analysis/numerical_integration | ✓ | 37.0ms | 12.39MB |
+| 615 | maths/numerical_analysis/proper_fractions | ✓ | 73.0µs | 12.28MB |
+| 616 | maths/numerical_analysis/runge_kutta | ✓ | 1.0ms | 12.29MB |
+| 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 | ✓ | 48.0µs | 13.82MB |
+| 618 | maths/numerical_analysis/runge_kutta_gills | ✓ | 83.0µs | 12.54MB |
 | 619 | maths/numerical_analysis/secant_method |   |  |  |
 | 620 | maths/numerical_analysis/simpson_rule |   |  |  |
 | 621 | maths/numerical_analysis/square_root |   |  |  |
