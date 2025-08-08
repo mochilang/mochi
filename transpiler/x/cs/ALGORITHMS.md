@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-08 18:16 GMT+7
+Last updated: 2025-08-08 19:05 GMT+7
 
-## Algorithms Golden Test Checklist (977/1077)
+## Algorithms Golden Test Checklist (979/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -1073,8 +1073,8 @@ Last updated: 2025-08-08 18:16 GMT+7
 | 1064 | web_programming/get_top_hn_posts | error |  |  |
 | 1065 | web_programming/giphy | error |  |  |
 | 1066 | web_programming/instagram_crawler |   |  |  |
-| 1067 | web_programming/instagram_pic |   |  |  |
-| 1068 | web_programming/instagram_video |   |  |  |
+| 1067 | web_programming/instagram_pic | ✓ | 3.0ms | 15.66KB |
+| 1068 | web_programming/instagram_video | ✓ | 3.0ms | 13.38KB |
 | 1069 | web_programming/nasa_data |   |  |  |
 | 1070 | web_programming/open_google_results |   |  |  |
 | 1071 | web_programming/random_anime_character |   |  |  |
