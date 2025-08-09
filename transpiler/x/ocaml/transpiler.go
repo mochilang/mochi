@@ -4219,7 +4219,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		var body []Stmt
 		inBody := false
 		for _, st := range pr.Stmts {
-			switch s := st.(type) {
+			switch st := st.(type) {
 			case *FunStmt:
 				defs = append(defs, st)
 			case *VarStmt:
@@ -4229,11 +4229,10 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					defs = append(defs, st)
 				}
 			case *LetStmt:
-				if !inBody && isConstExpr(s.Expr) {
-					defs = append(defs, st)
-				} else {
+				if inBody {
 					body = append(body, st)
-					inBody = true
+				} else {
+					defs = append(defs, st)
 				}
 			default:
 				body = append(body, st)
@@ -6049,6 +6048,18 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			return nil, "", fmt.Errorf("abs expects numeric")
 		}
 		return &AbsBuiltin{Value: val, Typ: resTyp}, resTyp, nil
+	}
+	if c.Func == "floor" && len(c.Args) == 1 {
+		arg, typ, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if typ == "int" {
+			arg = &CastExpr{Expr: arg, Type: "int_to_float"}
+		} else if typ != "float" {
+			return nil, "", fmt.Errorf("floor expects numeric")
+		}
+		return &FuncCall{Name: "floor", Args: []Expr{arg}, Ret: "float"}, "float", nil
 	}
 	if c.Func == "int" && len(c.Args) == 1 {
 		arg, typ, err := convertExpr(c.Args[0], env, vars)
