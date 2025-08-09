@@ -150,10 +150,21 @@ func init() {
     if (v is Collection<*>) return true
     return v.javaClass.isArray
 }`,
-		"expect":       `fun expect(cond: Boolean) { if (!cond) throw RuntimeException("expect failed") }`,
-		"panic":        `fun panic(msg: String): Nothing { throw RuntimeException(msg) }`,
-		"input":        `fun input(): String = readLine() ?: ""`,
-		"_listSet":     `fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }`,
+		"expect":   `fun expect(cond: Boolean) { if (!cond) throw RuntimeException("expect failed") }`,
+		"panic":    `fun panic(msg: String): Nothing { throw RuntimeException(msg) }`,
+		"input":    `fun input(): String = readLine() ?: ""`,
+		"_listSet": `fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }`,
+		"_sliceStr": `fun _sliceStr(s: String, start: Int, end: Int): String {
+    val st = if (start < 0) 0 else start
+    val en = if (end > s.length) s.length else end
+    return if (st >= en) "" else s.substring(st, en)
+}`,
+		"_sliceList": `fun <T> _sliceList(lst: MutableList<T>, start: Int, end: Int): MutableList<T> {
+    val st = if (start < 0) 0 else start
+    val en = if (end > lst.size) lst.size else end
+    if (st >= en) return mutableListOf()
+    return lst.subList(st, en).toMutableList()
+}`,
 		"json":         `fun json(v: Any?) { println(toJson(v)) }`,
 		"importBigInt": `import java.math.BigInteger`,
 		"_lookupHost": `fun _lookupHost(host: String): MutableList<Any?> {
@@ -1947,12 +1958,13 @@ type SliceExpr struct {
 }
 
 func (s *SliceExpr) emit(w io.Writer) {
-	s.Value.emit(w)
 	if s.IsString {
-		io.WriteString(w, ".substring(")
+		io.WriteString(w, "_sliceStr(")
 	} else {
-		io.WriteString(w, ".subList(")
+		io.WriteString(w, "_sliceList(")
 	}
+	s.Value.emit(w)
+	io.WriteString(w, ", ")
 	if s.Start != nil {
 		if guessType(s.Start) == "BigInteger" {
 			io.WriteString(w, "(")
@@ -5478,6 +5490,11 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			}
 			if endExpr == nil {
 				endExpr = &LenExpr{Value: expr, IsString: isStr}
+			}
+			if isStr {
+				useHelper("_sliceStr")
+			} else {
+				useHelper("_sliceList")
 			}
 			expr = &SliceExpr{Value: expr, Start: startExpr, End: endExpr, IsString: isStr}
 		case op.Field != nil && op.Field.Name == "contains" && i+1 < len(p.Ops) && p.Ops[i+1].Call != nil:
