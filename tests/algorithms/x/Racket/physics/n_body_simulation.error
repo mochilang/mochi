@@ -1,0 +1,10 @@
+run: exit status 1
+jsexpr->string: expected argument of type <legal JSON key value>; given: "x"
+  context...:
+   /usr/share/racket/collects/json/main.rkt:132:2: loop
+   /usr/share/racket/collects/json/main.rkt:94:0: write-json*
+   /usr/share/racket/collects/json/main.rkt:511:0: jsexpr->string
+   /workspace/mochi/tests/algorithms/x/Racket/physics/n_body_simulation.rkt:157:2
+   /workspace/mochi/tests/algorithms/x/Racket/physics/n_body_simulation.rkt:183:2
+   /workspace/mochi/tests/algorithms/x/Racket/physics/n_body_simulation.rkt:182:0
+   body of "/workspace/mochi/tests/algorithms/x/Racket/physics/n_body_simulation.rkt"

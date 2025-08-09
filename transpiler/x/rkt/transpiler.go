@@ -216,6 +216,26 @@ func (m *MapAssignStmt) emit(w io.Writer) {
 	io.WriteString(w, ")))\n")
 }
 
+type FieldMapAssignStmt struct {
+	Name  string
+	Field string
+	Key   Expr
+	Expr  Expr
+}
+
+func (f *FieldMapAssignStmt) emit(w io.Writer) {
+	name := sanitizeName(f.Name)
+	fmt.Fprintf(w, "(let ([__m (hash-ref %s \"%s\" #f)]) (if (hash? __m) (hash-set! __m ", name, f.Field)
+	f.Key.emit(w)
+	io.WriteString(w, " ")
+	f.Expr.emit(w)
+	fmt.Fprintf(w, ") (begin (set! __m (make-hash)) (hash-set! %s \"%s\" __m) (hash-set! __m ", name, f.Field)
+	f.Key.emit(w)
+	io.WriteString(w, " ")
+	f.Expr.emit(w)
+	io.WriteString(w, "))))\n")
+}
+
 type HashLit struct {
 	Pairs [][2]Expr
 }
@@ -1943,6 +1963,17 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 			}
 			return &DoubleListAssignStmt{Name: name, Index1: idx1, Index2: idx2, Expr: e}, nil
+		}
+		if len(ops) == 2 && ops[0].Field != nil && ops[1].Index != nil && ops[1].Index.Colon == nil {
+			keyExpr, err := convertExpr(ops[1].Index.Start, env)
+			if err != nil {
+				return nil, err
+			}
+			return &FieldMapAssignStmt{Name: name, Field: ops[0].Field.Name, Key: keyExpr, Expr: e}, nil
+		}
+		if len(ops) == 2 && ops[0].Field != nil && ops[1].Field != nil {
+			key := &StringLit{Value: ops[1].Field.Name}
+			return &FieldMapAssignStmt{Name: name, Field: ops[0].Field.Name, Key: key, Expr: e}, nil
 		}
 		if len(ops) == 2 && ops[0].Index != nil && ops[1].Field != nil && ops[0].Index.Colon == nil {
 			idx, err := convertExpr(ops[0].Index.Start, env)

@@ -1,0 +1,7 @@
+run: exit status 1
+malus_law test3 failed
+  context...:
+   /workspace/mochi/tests/algorithms/x/Racket/physics/malus_law.rkt:137:2
+   /workspace/mochi/tests/algorithms/x/Racket/physics/malus_law.rkt:143:2
+   /workspace/mochi/tests/algorithms/x/Racket/physics/malus_law.rkt:142:0
+   body of "/workspace/mochi/tests/algorithms/x/Racket/physics/malus_law.rkt"
