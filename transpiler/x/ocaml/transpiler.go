@@ -1213,15 +1213,13 @@ func (i *IndexOfBuiltin) emit(w io.Writer) {
 func (i *IndexOfBuiltin) emitPrint(w io.Writer) { i.emit(w) }
 
 func (s *SubstringBuiltin) emit(w io.Writer) {
-	io.WriteString(w, "String.sub (")
+	io.WriteString(w, "(let __s = ")
 	s.Str.emit(w)
-	io.WriteString(w, ") (")
+	io.WriteString(w, " in let __st = ")
 	s.Start.emit(w)
-	io.WriteString(w, ") (")
+	io.WriteString(w, " in let __len = (")
 	s.End.emit(w)
-	io.WriteString(w, " - ")
-	s.Start.emit(w)
-	io.WriteString(w, ")")
+	io.WriteString(w, " - __st) in if __st + __len <= String.length __s then String.sub __s __st __len else \"\")")
 }
 
 func (s *SubstringBuiltin) emitPrint(w io.Writer) { s.emit(w) }
@@ -2343,15 +2341,13 @@ func (ix *IndexExpr) emitPrint(w io.Writer) {
 
 func (s *SliceExpr) emit(w io.Writer) {
 	if s.Typ == "string" {
-		io.WriteString(w, "String.sub (")
+		io.WriteString(w, "(let __s = ")
 		s.Col.emit(w)
-		io.WriteString(w, ") ")
+		io.WriteString(w, " in let __st = ")
 		s.Start.emit(w)
-		io.WriteString(w, " (")
+		io.WriteString(w, " in let __len = (")
 		s.End.emit(w)
-		io.WriteString(w, " - ")
-		s.Start.emit(w)
-		io.WriteString(w, ")")
+		io.WriteString(w, " - __st) in if __st + __len <= String.length __s then String.sub __s __st __len else \"\")")
 		return
 	}
 	// list slice using Seq.drop/take
