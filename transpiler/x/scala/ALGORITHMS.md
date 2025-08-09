@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
-Completed programs: 738/1077
-Last updated: 2025-08-09 10:22 +0700
+Completed programs: 730/1077
+Last updated: 2025-08-09 15:58 +0700
 
 Checklist:
 
@@ -313,7 +313,7 @@ Checklist:
 | 304 | dynamic_programming/catalan_numbers | ✓ | 5µs | 8.7 MB |
 | 305 | dynamic_programming/climbing_stairs | ✓ | 5µs | 8.7 MB |
 | 306 | dynamic_programming/combination_sum_iv | ✓ | 7µs | 8.7 MB |
-| 307 | dynamic_programming/edit_distance | error |  |  |
+| 307 | dynamic_programming/edit_distance | ✓ | 30µs | 8.7 MB |
 | 308 | dynamic_programming/factorial | ✓ | 11µs | 8.7 MB |
 | 309 | dynamic_programming/fast_fibonacci | ✓ | 9µs | 8.7 MB |
 | 310 | dynamic_programming/fibonacci | ✓ | 6µs | 8.7 MB |
@@ -801,15 +801,15 @@ Checklist:
 | 792 | physics/speed_of_sound | ✓ | 3µs | 8.7 MB |
 | 793 | physics/speeds_of_gas_molecules | ✓ | 5µs | 8.7 MB |
 | 794 | physics/terminal_velocity | ✓ | 3µs | 8.7 MB |
-| 795 | project_euler/problem_001/sol1 | ✓ | 8µs | 8.7 MB |
-| 796 | project_euler/problem_001/sol2 | ✓ | 3µs | 8.7 MB |
-| 797 | project_euler/problem_001/sol3 | ✓ | 5µs | 8.7 MB |
-| 798 | project_euler/problem_001/sol4 | ✓ | 24µs | 8.7 MB |
-| 799 | project_euler/problem_001/sol5 | ✓ | 7µs | 8.7 MB |
-| 800 | project_euler/problem_001/sol6 | ✓ | 6µs | 8.7 MB |
-| 801 | project_euler/problem_001/sol7 | ✓ | 6µs | 8.7 MB |
-| 802 | project_euler/problem_002/sol1 | ✓ | 2µs | 8.7 MB |
-| 803 | project_euler/problem_002/sol2 | ✓ | 2µs | 8.7 MB |
+| 795 | project_euler/problem_001/sol1 |   |  |  |
+| 796 | project_euler/problem_001/sol2 |   |  |  |
+| 797 | project_euler/problem_001/sol3 |   |  |  |
+| 798 | project_euler/problem_001/sol4 |   |  |  |
+| 799 | project_euler/problem_001/sol5 |   |  |  |
+| 800 | project_euler/problem_001/sol6 |   |  |  |
+| 801 | project_euler/problem_001/sol7 |   |  |  |
+| 802 | project_euler/problem_002/sol1 |   |  |  |
+| 803 | project_euler/problem_002/sol2 |   |  |  |
 | 804 | project_euler/problem_002/sol3 |   |  |  |
 | 805 | project_euler/problem_002/sol4 |   |  |  |
 | 806 | project_euler/problem_002/sol5 |   |  |  |

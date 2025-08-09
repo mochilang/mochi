@@ -2692,6 +2692,41 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 		left := operands[i]
 		right := operands[i+1]
 		var ex Expr
+		// Constant fold simple integer operations.
+		if il, ok := left.(*IntLit); ok {
+			if ir, ok2 := right.(*IntLit); ok2 {
+				var val int64
+				folded := true
+				switch op {
+				case "+":
+					val = il.Value + ir.Value
+				case "-":
+					val = il.Value - ir.Value
+				case "*":
+					val = il.Value * ir.Value
+				case "/":
+					if ir.Value != 0 {
+						val = il.Value / ir.Value
+					} else {
+						folded = false
+					}
+				case "%":
+					if ir.Value != 0 {
+						val = il.Value % ir.Value
+					} else {
+						folded = false
+					}
+				default:
+					folded = false
+				}
+				if folded {
+					operands[i] = &IntLit{Value: val}
+					operands = append(operands[:i+1], operands[i+2:]...)
+					operators = append(operators[:i], operators[i+1:]...)
+					return
+				}
+			}
+		}
 		switch op {
 		case "in":
 			ex = &CallExpr{Fn: &FieldExpr{Receiver: right, Name: "contains"}, Args: []Expr{left}}
