@@ -1,0 +1,10 @@
+exit status 1
+Unhandled Exception:
+System.Exception: malus_law test3 failed
+  at Malus_law.test_malus_law () [0x0018e] in <689715f37702062aa7450383f3159768>:0 
+  at Malus_law.main () [0x000ae] in <689715f37702062aa7450383f3159768>:0 
+  at <StartupCode$malus_law>.$Malus_law.main@ () [0x00019] in <689715f37702062aa7450383f3159768>:0 
+[ERROR] FATAL UNHANDLED EXCEPTION: System.Exception: malus_law test3 failed
+  at Malus_law.test_malus_law () [0x0018e] in <689715f37702062aa7450383f3159768>:0 
+  at Malus_law.main () [0x000ae] in <689715f37702062aa7450383f3159768>:0 
+  at <StartupCode$malus_law>.$Malus_law.main@ () [0x00019] in <689715f37702062aa7450383f3159768>:0

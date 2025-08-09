@@ -1,0 +1,10 @@
+exit status 1
+Unhandled Exception:
+System.Exception: capture_area failed
+  at Basic_orbital_capture.run_tests () [0x000b5] in <689715449e5f4611a745038344159768>:0 
+  at Basic_orbital_capture.main () [0x000f4] in <689715449e5f4611a745038344159768>:0 
+  at <StartupCode$basic_orbital_capture>.$Basic_orbital_capture.main@ () [0x00019] in <689715449e5f4611a745038344159768>:0 
+[ERROR] FATAL UNHANDLED EXCEPTION: System.Exception: capture_area failed
+  at Basic_orbital_capture.run_tests () [0x000b5] in <689715449e5f4611a745038344159768>:0 
+  at Basic_orbital_capture.main () [0x000f4] in <689715449e5f4611a745038344159768>:0 
+  at <StartupCode$basic_orbital_capture>.$Basic_orbital_capture.main@ () [0x00019] in <689715449e5f4611a745038344159768>:0

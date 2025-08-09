@@ -1518,9 +1518,7 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 			for _, ix := range indices {
 				io.WriteString(w, ".[")
 				ixT := inferType(ix)
-				if ixT == "int64" {
-					io.WriteString(w, "int64 ")
-				} else if ixT == "int" {
+				if ixT == "int64" || ixT == "int" {
 					io.WriteString(w, "int ")
 				}
 				if needsParen(ix) {
@@ -3319,7 +3317,22 @@ func Emit(prog *Program) []byte {
 	if b := buf.Bytes(); len(b) > 0 && b[len(b)-1] != '\n' {
 		buf.WriteByte('\n')
 	}
-	return buf.Bytes()
+	code := buf.Bytes()
+	lines := strings.Split(string(code), "\n")
+	prevFun := false
+	for i, line := range lines {
+		if strings.HasPrefix(line, "let rec") {
+			if prevFun {
+				lines[i] = strings.Replace(line, "let rec", "and", 1)
+			}
+			prevFun = true
+		} else if trimmed := strings.TrimSpace(line); trimmed != "" {
+			if !strings.HasPrefix(line, " ") && !strings.HasPrefix(line, "\t") {
+				prevFun = false
+			}
+		}
+	}
+	return []byte(strings.Join(lines, "\n"))
 }
 
 func header() string {
@@ -4283,7 +4296,11 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			usesSafeIndex = true
+			if isMapType(inferType(expr)) {
+				usesDictGet = true
+			} else {
+				usesSafeIndex = true
+			}
 			expr = &IndexExpr{Target: expr, Index: idx}
 		case op.Index != nil && op.Index.Colon != nil && op.Index.Step == nil && op.Index.Colon2 == nil:
 			var start, end Expr
@@ -4832,6 +4849,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				types[i] = "obj"
 			}
 		}
+		usesDictCreate = true
+		neededOpens["System.Collections.Generic"] = true
 		return &MapLit{Items: items, Types: types}, nil
 	case p.Match != nil:
 		return convertMatchExpr(p.Match)
