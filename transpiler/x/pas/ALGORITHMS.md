@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-08 19:16 GMT+7
+Last updated: 2025-08-09 16:06 GMT+7
 
-## Algorithms Golden Test Checklist (203/1077)
+## Algorithms Golden Test Checklist (197/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -179,57 +179,57 @@ Last updated: 2025-08-08 19:16 GMT+7
 | 170 | data_structures/arrays/sudoku_solver | ✓ | 1.0µs | 672B |
 | 171 | data_structures/binary_tree/avl_tree | ✓ | 0ns | 4.38KB |
 | 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 1.0µs | 320B |
-| 173 | data_structures/binary_tree/binary_search_tree | error |  |  |
-| 174 | data_structures/binary_tree/binary_search_tree_recursive | error |  |  |
-| 175 | data_structures/binary_tree/binary_tree_mirror | error |  |  |
-| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 1.0µs | 96B |
-| 177 | data_structures/binary_tree/binary_tree_path_sum | error |  |  |
+| 173 | data_structures/binary_tree/binary_search_tree |   |  |  |
+| 174 | data_structures/binary_tree/binary_search_tree_recursive |   |  |  |
+| 175 | data_structures/binary_tree/binary_tree_mirror |   |  |  |
+| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 0ns | 96B |
+| 177 | data_structures/binary_tree/binary_tree_path_sum |   |  |  |
 | 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 0ns | 448B |
 | 179 | data_structures/binary_tree/distribute_coins | ✓ | 0ns | 0B |
 | 180 | data_structures/binary_tree/fenwick_tree | ✓ | 0ns | 448B |
 | 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 0ns | 256B |
-| 182 | data_structures/binary_tree/floor_and_ceiling | error |  |  |
-| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 | ✓ | 0ns | 0B |
+| 182 | data_structures/binary_tree/floor_and_ceiling |   |  |  |
+| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 |   |  |  |
 | 184 | data_structures/binary_tree/is_sorted | ✓ | 0ns | 1.03KB |
 | 185 | data_structures/binary_tree/is_sum_tree | ✓ | 1.0µs | 0B |
-| 186 | data_structures/binary_tree/lazy_segment_tree | error |  |  |
-| 187 | data_structures/binary_tree/lowest_common_ancestor | error |  |  |
+| 186 | data_structures/binary_tree/lazy_segment_tree |   |  |  |
+| 187 | data_structures/binary_tree/lowest_common_ancestor |   |  |  |
 | 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 14.0µs | 64B |
 | 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 0ns | 0B |
-| 190 | data_structures/binary_tree/merge_two_binary_trees | error |  |  |
+| 190 | data_structures/binary_tree/merge_two_binary_trees |   |  |  |
 | 191 | data_structures/binary_tree/mirror_binary_tree | ✓ | 0ns | 0B |
 | 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 0ns | 576B |
 | 193 | data_structures/binary_tree/number_of_possible_binary_trees | ✓ | 0ns | 64B |
-| 194 | data_structures/binary_tree/red_black_tree | ✓ | 0ns | 0B |
-| 195 | data_structures/binary_tree/segment_tree | ✓ | 1.0µs | 384B |
+| 194 | data_structures/binary_tree/red_black_tree | ✓ | 1.0µs | 0B |
+| 195 | data_structures/binary_tree/segment_tree | ✓ | 0ns | 384B |
 | 196 | data_structures/binary_tree/segment_tree_other | ✓ | 4.0µs | 128B |
 | 197 | data_structures/binary_tree/serialize_deserialize_binary_tree | error |  |  |
-| 198 | data_structures/binary_tree/symmetric_tree | ✓ | 1.0µs | 1.19KB |
+| 198 | data_structures/binary_tree/symmetric_tree | ✓ | 0ns | 1.19KB |
 | 199 | data_structures/binary_tree/treap | ✓ | 0ns | 416B |
-| 200 | data_structures/binary_tree/wavelet_tree | ✓ | 1.0µs | 1.78KB |
+| 200 | data_structures/binary_tree/wavelet_tree | ✓ | 2.0µs | 1.78KB |
 | 201 | data_structures/disjoint_set/alternate_disjoint_set | ✓ | 0ns | 192B |
 | 202 | data_structures/disjoint_set/disjoint_set | ✓ | 0ns | 384B |
-| 203 | data_structures/hashing/bloom_filter | ✓ | 1.0µs | 0B |
+| 203 | data_structures/hashing/bloom_filter | ✓ | 0ns | 0B |
 | 204 | data_structures/hashing/double_hash | ✓ | 0ns | 448B |
-| 205 | data_structures/hashing/hash_map | ✓ | 0ns | 160B |
+| 205 | data_structures/hashing/hash_map | ✓ | 1.0µs | 160B |
 | 206 | data_structures/hashing/hash_table | ✓ | 0ns | 0B |
-| 207 | data_structures/hashing/hash_table_with_linked_list | ✓ | 1.0µs | 320B |
+| 207 | data_structures/hashing/hash_table_with_linked_list | ✓ | 0ns | 320B |
 | 208 | data_structures/hashing/number_theory/prime_numbers | ✓ | 0ns | 0B |
-| 209 | data_structures/hashing/quadratic_probing | error |  |  |
-| 210 | data_structures/hashing/tests/test_hash_map | ✓ | 1.0µs | 0B |
-| 211 | data_structures/heap/binomial_heap | ✓ | 0ns | 0B |
-| 212 | data_structures/heap/heap | ✓ |  |  |
-| 213 | data_structures/heap/heap_generic | error |  |  |
-| 214 | data_structures/heap/max_heap | ✓ | 0ns | 128B |
-| 215 | data_structures/heap/min_heap | error |  |  |
-| 216 | data_structures/heap/randomized_heap | ✓ | 1.0µs | 18.88KB |
-| 217 | data_structures/kd_tree/build_kdtree | error |  |  |
-| 218 | data_structures/kd_tree/example/example_usage | error |  |  |
-| 219 | data_structures/kd_tree/example/hypercube_points | error |  |  |
-| 220 | data_structures/kd_tree/kd_node | ✓ | 0ns | 480B |
-| 221 | data_structures/kd_tree/nearest_neighbour_search | ✓ | 1.0µs | 1.09KB |
-| 222 | data_structures/kd_tree/tests/test_kdtree | ✓ | 1.0µs | 2.88KB |
-| 223 | data_structures/linked_list/circular_linked_list | error |  |  |
+| 209 | data_structures/hashing/quadratic_probing |   |  |  |
+| 210 | data_structures/hashing/tests/test_hash_map | ✓ | 0ns | 0B |
+| 211 | data_structures/heap/binomial_heap |   |  |  |
+| 212 | data_structures/heap/heap |   |  |  |
+| 213 | data_structures/heap/heap_generic |   |  |  |
+| 214 | data_structures/heap/max_heap |   |  |  |
+| 215 | data_structures/heap/min_heap |   |  |  |
+| 216 | data_structures/heap/randomized_heap |   |  |  |
+| 217 | data_structures/kd_tree/build_kdtree |   |  |  |
+| 218 | data_structures/kd_tree/example/example_usage |   |  |  |
+| 219 | data_structures/kd_tree/example/hypercube_points |   |  |  |
+| 220 | data_structures/kd_tree/kd_node |   |  |  |
+| 221 | data_structures/kd_tree/nearest_neighbour_search |   |  |  |
+| 222 | data_structures/kd_tree/tests/test_kdtree |   |  |  |
+| 223 | data_structures/linked_list/circular_linked_list |   |  |  |
 | 224 | data_structures/linked_list/deque_doubly |   |  |  |
 | 225 | data_structures/linked_list/doubly_linked_list |   |  |  |
 | 226 | data_structures/linked_list/doubly_linked_list_two |   |  |  |
@@ -308,12 +308,12 @@ Last updated: 2025-08-08 19:16 GMT+7
 | 299 | divide_and_conquer/strassen_matrix_multiplication | ✓ | 2.0µs | 0B |
 | 300 | docs/conf | ✓ | 0ns | 0B |
 | 301 | dynamic_programming/abbreviation | ✓ | 1.0µs | 0B |
-| 302 | dynamic_programming/all_construct | error |  |  |
+| 302 | dynamic_programming/all_construct | ✓ | 1.0µs | 15.00KB |
 | 303 | dynamic_programming/bitmask | ✓ | 0ns | 0B |
-| 304 | dynamic_programming/catalan_numbers | error |  |  |
+| 304 | dynamic_programming/catalan_numbers | ✓ | 0ns | 128B |
 | 305 | dynamic_programming/climbing_stairs | ✓ | 0ns | 0B |
 | 306 | dynamic_programming/combination_sum_iv | ✓ | 0ns | 128B |
-| 307 | dynamic_programming/edit_distance | ✓ | 0ns | 64B |
+| 307 | dynamic_programming/edit_distance | ✓ | 1.0µs | 64B |
 | 308 | dynamic_programming/factorial | ✓ | 0ns | 320B |
 | 309 | dynamic_programming/fast_fibonacci | ✓ | 0ns | 64B |
 | 310 | dynamic_programming/fibonacci |   |  |  |

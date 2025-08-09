@@ -66,7 +66,7 @@ var
   bench_memdiff_0: int64;
   memo: array of integer;
   results: array of integer;
-  i: integer;
+  i: int64;
   num: integer;
 function factorial(num: integer): integer; forward;
 function factorial(num: integer): integer;

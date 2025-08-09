@@ -199,6 +199,7 @@ type Program struct {
 	NeedMapIntIntStr   bool
 	NeedListStr        bool
 	NeedListStr2       bool
+	NeedListStrList    bool
 	NeedListStrReal    bool
 	NeedListStrVariant bool
 	NeedIndexOf        bool
@@ -1435,6 +1436,19 @@ begin
     Result := Result + '  ''' + xs[i] + '''.' + sLineBreak;
   end;
   Result := Result + ')';
+end;
+`)
+	}
+	if p.NeedListStrList {
+		buf.WriteString(`function list_list_to_str(xs: array of StrArray): string;
+var i: integer;
+begin
+  Result := '[';
+  for i := 0 to High(xs) do begin
+    Result := Result + list_to_str(xs[i]);
+    if i < High(xs) then Result := Result + ' ';
+  end;
+  Result := Result + ']';
 end;
 `)
 	}
@@ -4585,6 +4599,11 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			if strings.HasPrefix(t, "array of string") || strings.HasPrefix(rt, "array of string") {
 				currProg.NeedListStr = true
 				return &CallExpr{Name: "list_to_str", Args: args}, nil
+			}
+			if strings.HasPrefix(rt, "array of array of string") || strings.HasPrefix(t, "array of StrArray") || strings.HasSuffix(t, "StrArrayArray") || strings.HasSuffix(rt, "StrArrayArray") {
+				currProg.NeedListStr = true
+				currProg.NeedListStrList = true
+				return &CallExpr{Name: "list_list_to_str", Args: args}, nil
 			}
 			if strings.HasPrefix(t, "array of real") || strings.HasPrefix(rt, "array of real") {
 				currProg.NeedListStrReal = true
