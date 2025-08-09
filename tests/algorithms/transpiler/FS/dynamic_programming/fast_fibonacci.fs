@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-09 15:58 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -21,14 +21,19 @@ let _now () =
 _initNow()
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
      .Replace(";", "")
      .Replace("\"", "")
+let _floordiv (a:int) (b:int) : int =
+    let q = a / b
+    let r = a % b
+    if r <> 0 && ((a < 0) <> (b < 0)) then q - 1 else q
 type FibPair = {
-    fn: int
-    fn1: int
+    mutable _fn: int
+    mutable _fn1: int
 }
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
@@ -37,17 +42,17 @@ let rec _fib (n: int) =
     let mutable n = n
     try
         if n = 0 then
-            __ret <- { fn = 0; fn1 = 1 }
+            __ret <- { _fn = 0; _fn1 = 1 }
             raise Return
-        let half: FibPair = _fib (n / 2)
-        let a: int = half.fn
-        let b: int = half.fn1
-        let c: int = a * ((b * 2) - a)
-        let d: int = (a * a) + (b * b)
+        let half: FibPair = _fib (_floordiv n 2)
+        let a: int = half._fn
+        let b: int = half._fn1
+        let c: int64 = (int64 a) * (((int64 b) * (int64 2)) - (int64 a))
+        let d: int64 = ((int64 a) * (int64 a)) + ((int64 b) * (int64 b))
         if (((n % 2 + 2) % 2)) = 0 then
-            __ret <- { fn = c; fn1 = d }
+            __ret <- { _fn = int c; _fn1 = int d }
             raise Return
-        __ret <- { fn = d; fn1 = c + d }
+        __ret <- { _fn = int d; _fn1 = int (c + d) }
         raise Return
         __ret
     with
@@ -59,7 +64,7 @@ let rec fibonacci (n: int) =
         if n < 0 then
             failwith ("Negative arguments are not supported")
         let res: FibPair = _fib (n)
-        __ret <- res.fn
+        __ret <- res._fn
         raise Return
         __ret
     with

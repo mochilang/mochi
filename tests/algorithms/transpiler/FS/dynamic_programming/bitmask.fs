@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-09 15:58 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -23,6 +23,7 @@ let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -38,10 +39,10 @@ let rec count_assignments (person: int) (task_performed: int array array) (used:
             __ret <- 1
             raise Return
         let mutable total: int = 0
-        let tasks: int array = _idx task_performed (person)
+        let tasks: int array = _idx task_performed (int person)
         let mutable i: int = 0
         while i < (Seq.length (tasks)) do
-            let t: int = _idx tasks (i)
+            let t: int = _idx tasks (int i)
             if not (Seq.contains t used) then
                 total <- total + (count_assignments (person + 1) (task_performed) (Array.append used [|t|]))
             i <- i + 1

@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-09 15:58 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -23,6 +23,7 @@ let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -30,7 +31,7 @@ let rec _str v =
      .Replace("\"", "")
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
-let mutable memo: int array = [|1; 1|]
+let mutable memo: int array = unbox<int array> [|1; 1|]
 let rec factorial (num: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable num = num
@@ -42,19 +43,19 @@ let rec factorial (num: int) =
         let mutable m: int array = memo
         let mutable i: int = Seq.length (m)
         while i <= num do
-            m <- Array.append m [|i * (_idx m (i - 1))|]
+            m <- Array.append m [|int ((int64 i) * (int64 (_idx m (int (i - 1)))))|]
             i <- i + 1
         memo <- m
-        __ret <- _idx m (num)
+        __ret <- _idx m (int num)
         raise Return
         __ret
     with
         | Return -> __ret
 printfn "%s" (_str (factorial (7)))
 factorial (-1)
-let mutable results: int array = [||]
+let mutable results: int array = Array.empty<int>
 for i in 0 .. (10 - 1) do
-    results <- Array.append results [|factorial (i)|]
+    results <- Array.append results [|(factorial (i))|]
 printfn "%s" (_str (results))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)

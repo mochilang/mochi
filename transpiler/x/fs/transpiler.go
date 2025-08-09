@@ -58,6 +58,7 @@ type Program struct {
 	UseParseIntStr bool
 	UseDictAdd     bool
 	UseDictGet     bool
+	UseDictCreate  bool
 	UseSafeIndex   bool
 	UseStr         bool
 	UseRepr        bool
@@ -87,6 +88,7 @@ var (
 	benchMain      bool
 	usesDictAdd    bool
 	usesDictGet    bool
+	usesDictCreate bool
 	currentReturn  string
 	funcDepth      int
 	methodDefs     []Stmt
@@ -1027,7 +1029,7 @@ type MapLit struct {
 }
 
 func (m *MapLit) emit(w io.Writer) {
-	usesDictAdd = true
+	usesDictCreate = true
 	neededOpens["System.Collections.Generic"] = true
 	io.WriteString(w, "_dictCreate")
 	same := true
@@ -2257,7 +2259,7 @@ func inferType(e Expr) string {
 	case *ListLit:
 		return "array"
 	case *MapLit:
-		usesDictAdd = true
+		usesDictCreate = true
 		neededOpens["System.Collections.Generic"] = true
 		if len(v.Types) > 0 {
 			valT := v.Types[0]
@@ -3222,7 +3224,7 @@ func Emit(prog *Program) []byte {
 		buf.WriteString(helperDictAdd)
 		buf.WriteString("\n")
 	}
-	if prog.UseDictAdd || prog.UseDictGet {
+	if prog.UseDictCreate {
 		buf.WriteString(helperDictCreate)
 		buf.WriteString("\n")
 	}
@@ -3353,6 +3355,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesSHA256 = false
 	usesDictAdd = false
 	usesDictGet = false
+	usesDictCreate = false
 	usesSafeIndex = false
 	usesStr = false
 	usesRepr = false
@@ -3423,8 +3426,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	p.UsePadStart = usesPadStart
 	p.UseSHA256 = usesSHA256
 	p.UseParseIntStr = useParseIntStr
-	p.UseDictAdd = true
-	p.UseDictGet = true
+	p.UseDictAdd = usesDictAdd
+	p.UseDictGet = usesDictGet
+	p.UseDictCreate = usesDictCreate
 	p.UseSafeIndex = usesSafeIndex
 	p.UseStr = usesStr
 	p.UseRepr = usesRepr

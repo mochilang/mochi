@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-09 15:58 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -23,6 +23,7 @@ let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -46,13 +47,13 @@ let rec catalan_numbers (upper_limit: int) =
             panic ("Limit for the Catalan sequence must be >= 0")
             __ret <- Array.empty<int>
             raise Return
-        let mutable catalans: int array = [|1|]
+        let mutable catalans: int array = unbox<int array> [|1|]
         let mutable n: int = 1
         while n <= upper_limit do
             let mutable next_val: int = 0
             let mutable j: int = 0
             while j < n do
-                next_val <- next_val + ((_idx catalans (j)) * (_idx catalans ((n - j) - 1)))
+                next_val <- int ((int64 next_val) + ((int64 (_idx catalans (int j))) * (int64 (_idx catalans (int ((n - j) - 1))))))
                 j <- j + 1
             catalans <- Array.append catalans [|next_val|]
             n <- n + 1
