@@ -1,0 +1,4 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/graphs/g_topological_sort.go:278:28: cannot use map[int]string{…} (value of type map[int]string) as map[any]any value in variable declaration
+../../../tests/algorithms/transpiler/Go/graphs/g_topological_sort.go:438:13: cannot use clothes (variable of type map[any]any) as map[int]string value in argument to print_stack

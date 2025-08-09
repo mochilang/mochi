@@ -1,0 +1,13 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/graphs/bidirectional_breadth_first_search.go:208:10: invalid operation: y + int(_index(_index(delta, i), 0)) (mismatched types any and int)
+../../../tests/algorithms/transpiler/Go/graphs/bidirectional_breadth_first_search.go:210:10: invalid operation: x + int(_index(_index(delta, i), 1)) (mismatched types any and int)
+../../../tests/algorithms/transpiler/Go/graphs/bidirectional_breadth_first_search.go:276:39: cannot use npos (variable of interface type any) as string value in map index: need type assertion
+../../../tests/algorithms/transpiler/Go/graphs/bidirectional_breadth_first_search.go:277:13: cannot use npos (variable of interface type any) as string value in map index: need type assertion
+../../../tests/algorithms/transpiler/Go/graphs/bidirectional_breadth_first_search.go:278:35: cannot use npos (variable of interface type any) as string value in argument to append: need type assertion
+../../../tests/algorithms/transpiler/Go/graphs/bidirectional_breadth_first_search.go:281:12: cannot use npos (variable of interface type any) as string value in struct literal: need type assertion
+../../../tests/algorithms/transpiler/Go/graphs/bidirectional_breadth_first_search.go:359:37: cannot use npos (variable of interface type any) as string value in argument to append: need type assertion
+../../../tests/algorithms/transpiler/Go/graphs/bidirectional_breadth_first_search.go:361:15: cannot use npos (variable of interface type any) as string value in map index: need type assertion
+../../../tests/algorithms/transpiler/Go/graphs/bidirectional_breadth_first_search.go:362:41: cannot use npos (variable of interface type any) as string value in map index: need type assertion
+../../../tests/algorithms/transpiler/Go/graphs/bidirectional_breadth_first_search.go:381:18: cannot use npos (variable of interface type any) as string value in map index: need type assertion
+../../../tests/algorithms/transpiler/Go/graphs/bidirectional_breadth_first_search.go:362:41: too many errors

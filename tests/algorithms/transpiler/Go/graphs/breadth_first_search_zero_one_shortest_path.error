@@ -1,0 +1,6 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/graphs/breadth_first_search_zero_one_shortest_path.go:98:24: cannot use al.Graph (variable of type [][]Edge) as AdjacencyList value in variable declaration
+../../../tests/algorithms/transpiler/Go/graphs/breadth_first_search_zero_one_shortest_path.go:100:13: g.FromVertex undefined (type AdjacencyList has no field or method FromVertex)
+../../../tests/algorithms/transpiler/Go/graphs/breadth_first_search_zero_one_shortest_path.go:102:3: invalid operation: cannot index g (variable of struct type AdjacencyList)
+../../../tests/algorithms/transpiler/Go/graphs/breadth_first_search_zero_one_shortest_path.go:106:13: cannot use g (variable of struct type AdjacencyList) as [][]Edge value in assignment

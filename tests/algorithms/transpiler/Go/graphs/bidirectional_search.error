@@ -1,0 +1,7 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/graphs/bidirectional_search.go:366:26: cannot use map[int][]int{…} (value of type map[int][]int) as map[any]any value in variable declaration
+../../../tests/algorithms/transpiler/Go/graphs/bidirectional_search.go:508:13: cannot use graph (variable of type map[any]any) as map[int][]int value in argument to print_path
+../../../tests/algorithms/transpiler/Go/graphs/bidirectional_search.go:509:13: cannot use graph (variable of type map[any]any) as map[int][]int value in argument to print_path
+../../../tests/algorithms/transpiler/Go/graphs/bidirectional_search.go:510:33: cannot use map[int][]int{…} (value of type map[int][]int) as map[any]any value in variable declaration
+../../../tests/algorithms/transpiler/Go/graphs/bidirectional_search.go:542:13: cannot use disconnected (variable of type map[any]any) as map[int][]int value in argument to print_path

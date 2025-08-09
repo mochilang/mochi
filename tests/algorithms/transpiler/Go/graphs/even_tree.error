@@ -1,0 +1,7 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/graphs/even_tree.go:74:23: cannot convert _index(func(v any) []any {…}(res), 0) (value of interface type any) to type int: need type assertion
+../../../tests/algorithms/transpiler/Go/graphs/even_tree.go:92:23: cannot convert _index(func(v any) []any {…}(res), 1) (value of interface type any) to type int: need type assertion
+../../../tests/algorithms/transpiler/Go/graphs/even_tree.go:129:28: cannot use map[int]bool{} (value of type map[int]bool) as map[any]any value in variable declaration
+../../../tests/algorithms/transpiler/Go/graphs/even_tree.go:131:16: cannot use visited (variable of type map[any]any) as map[int]bool value in argument to dfs
+../../../tests/algorithms/transpiler/Go/graphs/even_tree.go:134:18: cannot convert _index(func(v any) []any {…}(res), 1) (value of interface type any) to type int: need type assertion

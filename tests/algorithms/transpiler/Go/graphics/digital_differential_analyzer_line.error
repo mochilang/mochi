@@ -1,0 +1,5 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/graphics/digital_differential_analyzer_line.go:82:40: cannot convert steps (variable of interface type any) to type float64: need type assertion
+../../../tests/algorithms/transpiler/Go/graphics/digital_differential_analyzer_line.go:84:40: cannot convert steps (variable of interface type any) to type float64: need type assertion
+../../../tests/algorithms/transpiler/Go/graphics/digital_differential_analyzer_line.go:94:10: invalid operation: i < steps (operator < not defined on interface)

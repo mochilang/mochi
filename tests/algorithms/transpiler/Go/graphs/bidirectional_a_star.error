@@ -1,0 +1,13 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/graphs/bidirectional_a_star.go:135:28: cannot use dy (variable of type int) as float64 value in argument to math.Abs
+../../../tests/algorithms/transpiler/Go/graphs/bidirectional_a_star.go:135:43: cannot use dx (variable of type int) as float64 value in argument to math.Abs
+../../../tests/algorithms/transpiler/Go/graphs/bidirectional_a_star.go:369:19: cannot convert pos (variable of interface type any) to type Pos: need type assertion
+../../../tests/algorithms/transpiler/Go/graphs/bidirectional_a_star.go:393:17: cannot convert pos (variable of interface type any) to type Pos: need type assertion
+../../../tests/algorithms/transpiler/Go/graphs/bidirectional_a_star.go:414:26: cannot convert pos (variable of interface type any) to type Pos: need type assertion
+../../../tests/algorithms/transpiler/Go/graphs/bidirectional_a_star.go:416:24: cannot convert pos (variable of interface type any) to type Pos: need type assertion
+../../../tests/algorithms/transpiler/Go/graphs/bidirectional_a_star.go:442:13: cannot use pos (variable of interface type any) as Pos value in struct literal: need type assertion
+../../../tests/algorithms/transpiler/Go/graphs/bidirectional_a_star.go:677:21: cannot convert pos (variable of interface type any) to type Pos: need type assertion
+../../../tests/algorithms/transpiler/Go/graphs/bidirectional_a_star.go:683:23: cannot convert pos (variable of interface type any) to type Pos: need type assertion
+../../../tests/algorithms/transpiler/Go/graphs/bidirectional_a_star.go:705:19: cannot convert pos (variable of interface type any) to type Pos: need type assertion
+../../../tests/algorithms/transpiler/Go/graphs/bidirectional_a_star.go:705:19: too many errors

@@ -1,0 +1,3 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/graphs/basic_graphs.go:336:21: cannot use k (variable of interface type any) as int value in map index: need type assertion
