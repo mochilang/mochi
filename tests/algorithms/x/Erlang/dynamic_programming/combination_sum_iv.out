@@ -1,5 +1,5 @@
-/workspace/mochi/tests/algorithms/x/Erlang/dynamic_programming/combination_sum_iv.erl:114:44: Warning: the result of evaluating operator '++'/2 is ignored (suppress the warning by assigning the expression to the _ variable)
-%  114|         Dp_2 = lists:sublist(Dp, Target_3) ++ [Total_4] ++ lists:nthtail(Target_3 + 1, Dp),
+/workspace/mochi/tests/algorithms/x/Erlang/dynamic_programming/combination_sum_iv.erl:126:44: Warning: the result of evaluating operator '++'/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%  126|         Dp_2 = lists:sublist(Dp, Target_3) ++ [Total_4] ++ lists:nthtail(Target_3 + 1, Dp),
 %     |                                            ^
 
 9
