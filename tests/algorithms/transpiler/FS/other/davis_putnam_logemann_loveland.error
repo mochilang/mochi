@@ -1,0 +1,10 @@
+exit status 1
+Unhandled Exception:
+System.InvalidCastException: Specified cast is not valid.
+  at Davis_putnam_logemann_loveland.dpll_algorithm (Davis_putnam_logemann_loveland+Clause[] _clauses, System.String[] symbols, System.Collections.Generic.IDictionary`2[TKey,TValue] _model) [0x00111] in <6896c1babc9386b4a7450383bac19668>:0 
+  at Davis_putnam_logemann_loveland.dpll_algorithm (Davis_putnam_logemann_loveland+Clause[] _clauses, System.String[] symbols, System.Collections.Generic.IDictionary`2[TKey,TValue] _model) [0x00111] in <6896c1babc9386b4a7450383bac19668>:0 
+  at <StartupCode$davis_putnam_logemann_loveland>.$Davis_putnam_logemann_loveland.main@ () [0x00162] in <6896c1babc9386b4a7450383bac19668>:0 
+[ERROR] FATAL UNHANDLED EXCEPTION: System.InvalidCastException: Specified cast is not valid.
+  at Davis_putnam_logemann_loveland.dpll_algorithm (Davis_putnam_logemann_loveland+Clause[] _clauses, System.String[] symbols, System.Collections.Generic.IDictionary`2[TKey,TValue] _model) [0x00111] in <6896c1babc9386b4a7450383bac19668>:0 
+  at Davis_putnam_logemann_loveland.dpll_algorithm (Davis_putnam_logemann_loveland+Clause[] _clauses, System.String[] symbols, System.Collections.Generic.IDictionary`2[TKey,TValue] _model) [0x00111] in <6896c1babc9386b4a7450383bac19668>:0 
+  at <StartupCode$davis_putnam_logemann_loveland>.$Davis_putnam_logemann_loveland.main@ () [0x00162] in <6896c1babc9386b4a7450383bac19668>:0

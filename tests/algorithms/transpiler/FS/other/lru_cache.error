@@ -1,0 +1,7 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/algorithms/transpiler/FS/other/lru_cache.fs(198,13): error FS0374: Invalid expression on left of assignment
+
+/workspace/mochi/tests/algorithms/transpiler/FS/other/lru_cache.fs(211,13): error FS0374: Invalid expression on left of assignment

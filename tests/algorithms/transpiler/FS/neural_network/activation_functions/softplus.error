@@ -1,0 +1,12 @@
+exit status 1
+Unhandled Exception:
+System.Exception: ln domain error
+  at Softplus.ln (System.Double x) [0x000c5] in <6896c163f86efbc0a745038363c19668>:0 
+  at Softplus.softplus (System.Double[] vector) [0x0008d] in <6896c163f86efbc0a745038363c19668>:0 
+  at Softplus.main () [0x00165] in <6896c163f86efbc0a745038363c19668>:0 
+  at <StartupCode$softplus>.$Softplus.main@ () [0x00019] in <6896c163f86efbc0a745038363c19668>:0 
+[ERROR] FATAL UNHANDLED EXCEPTION: System.Exception: ln domain error
+  at Softplus.ln (System.Double x) [0x000c5] in <6896c163f86efbc0a745038363c19668>:0 
+  at Softplus.softplus (System.Double[] vector) [0x0008d] in <6896c163f86efbc0a745038363c19668>:0 
+  at Softplus.main () [0x00165] in <6896c163f86efbc0a745038363c19668>:0 
+  at <StartupCode$softplus>.$Softplus.main@ () [0x00019] in <6896c163f86efbc0a745038363c19668>:0
