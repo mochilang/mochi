@@ -1,0 +1,14 @@
+/workspace/mochi/tests/algorithms/x/Erlang/strings/manacher.erl:53:1: Warning: function mochi_safe_mul/2 is unused
+%   53| mochi_safe_mul(A, B) ->
+%     | ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/strings/manacher.erl:136:2: Warning: variable 'Diff_2' exported from 'case' (line 107, column 13)
+%  136| {Diff_2, I_4, Input_string, J, K_8, Left, Length_2, M, Max_length, Mirror_2, N, New_input_string_3, Output_string, Right, Start} = Fun_3(Diff_2, I_4, Input_string, J, K_7, Left, Length_2, M, Max_length, Mirror_2, N, New_input_string_3, Output_string, Right, Start),
+%     |  ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/strings/manacher.erl:136:68: Warning: variable 'Mirror_2' exported from 'case' (line 107, column 13)
+%  136| {Diff_2, I_4, Input_string, J, K_8, Left, Length_2, M, Max_length, Mirror_2, N, New_input_string_3, Output_string, Right, Start} = Fun_3(Diff_2, I_4, Input_string, J, K_7, Left, Length_2, M, Max_length, Mirror_2, N, New_input_string_3, Output_string, Right, Start),
+%     |                                                                    ^
+
+"abbba"
+"ababa"

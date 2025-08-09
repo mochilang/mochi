@@ -1,0 +1,14 @@
+/workspace/mochi/tests/algorithms/x/Erlang/strings/z_function.erl:105:10: Warning: variable 'Min_edge_4' exported from 'case' (line 81, column 13)
+%  105| {I_3, L, Min_edge_4, R, S, Z_5, Zi_2} = Fun_2(I_3, L, Min_edge_4, R, S, Z_4, Zi_2),
+%     |          ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/strings/z_function.erl:105:33: Warning: variable 'Zi_2' exported from 'case' (line 81, column 13)
+%  105| {I_3, L, Min_edge_4, R, S, Z_5, Zi_2} = Fun_2(I_3, L, Min_edge_4, R, S, Z_4, Zi_2),
+%     |                                 ^
+
+[0 0 0 1 0 1 0 4 0 0 1]
+[0 3 2 1]
+[0 0 0 4 0 0 1]
+2
+4
+2

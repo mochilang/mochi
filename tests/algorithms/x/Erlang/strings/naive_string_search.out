@@ -1,0 +1,5 @@
+/workspace/mochi/tests/algorithms/x/Erlang/strings/naive_string_search.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]

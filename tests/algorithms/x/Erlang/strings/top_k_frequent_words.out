@@ -1,0 +1,6 @@
+/workspace/mochi/tests/algorithms/x/Erlang/strings/top_k_frequent_words.erl:53:1: Warning: function mochi_safe_mul/2 is unused
+%   53| mochi_safe_mul(A, B) ->
+%     | ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/strings/top_k_frequent_words.erl:189:42: Warning: variable 'Limit_3' exported from 'case' (line 169, column 9)
+%  189|

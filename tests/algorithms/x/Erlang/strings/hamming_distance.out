@@ -1,0 +1,7 @@
+/workspace/mochi/tests/algorithms/x/Erlang/strings/hamming_distance.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+0
+3
+5

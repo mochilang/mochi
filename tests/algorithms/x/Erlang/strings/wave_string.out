@@ -1,0 +1,7 @@
+/workspace/mochi/tests/algorithms/x/Erlang/strings/wave_string.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+[Cat cAt caT]
+[One oNe onE]
+[Book bOok boOk booK]

@@ -1,0 +1,8 @@
+/workspace/mochi/tests/algorithms/x/Erlang/strings/snake_case_to_camel_pascal_case.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+["some", "random", "string"]
+["some", "random", "string"]
+["some", "random", "string", "with", "numbers", "123"]
+["some", "random", "string", "with", "numbers", "123"]

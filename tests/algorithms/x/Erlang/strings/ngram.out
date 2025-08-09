@@ -1,0 +1,7 @@
+/workspace/mochi/tests/algorithms/x/Erlang/strings/ngram.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+["I ", " a", "am", "m ", " a", "a ", " s", "se", "en", "nt", "te", "en", "nc", "ce"]
+["I ", " a", "am", "m ", " a", "an", "n ", " N", "NL", "LP", "Pe", "er"]
+[]
