@@ -6,6 +6,15 @@ using System.Text.Json;
 using System.Numerics;
 using System.Collections;
 
+class Fibonacci {
+    public long[] sequence;
+    public override string ToString() => $"Fibonacci {{sequence = {sequence}}}";
+}
+class FibGetResult {
+    public Fibonacci fib;
+    public long[] values;
+    public override string ToString() => $"FibGetResult {{fib = {fib}, values = {values}}}";
+}
 class Program {
     static bool seededNow = false;
     static long nowSeed = 0;
@@ -97,55 +106,41 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static string[][] allConstruct(string target_0, string[] wordBank_1) {
-        long tableSize_2 = (target_0.Length + 1);
-        string[][][] table_3 = new string[][][]{};
-        long idx_4 = 0;
-        while ((idx_4 < tableSize_2)) {
-            string[][] empty_5 = new string[][]{};
-            table_3 = (Enumerable.ToArray(Enumerable.Append<string[][]>(table_3, empty_5)));
-            idx_4 = (idx_4 + 1);
+    public static Fibonacci create_fibonacci() {
+        return new Fibonacci{sequence = new long[]{0, 1}};
+    }
+
+    public static FibGetResult fib_get(Fibonacci f_0, long index_1) {
+        long[] seq_2 = f_0.sequence;
+        while ((seq_2.Length < index_1)) {
+            long next_3 = (seq_2[(int)((seq_2.Length - 1) < 0 ? seq_2.Length + ((seq_2.Length - 1)) : (seq_2.Length - 1))] + seq_2[(int)((seq_2.Length - 2) < 0 ? seq_2.Length + ((seq_2.Length - 2)) : (seq_2.Length - 2))]);
+            seq_2 = (Enumerable.ToArray(Enumerable.Append<long>(seq_2, next_3)));
         };
-        string[] base_6 = new string[]{};
-        table_3[(int)(0)] = new string[][]{base_6};
-        long i_7 = 0;
-        while ((i_7 < tableSize_2)) {
-            if ((table_3[(int)(i_7 < 0 ? table_3.Length + (i_7) : i_7)].Length != 0)) {
-                long w_8 = 0;
-                while ((w_8 < wordBank_1.Length)) {
-                    string word_9 = wordBank_1[(int)(w_8 < 0 ? wordBank_1.Length + (w_8) : w_8)];
-                    long wordLen_10 = word_9.Length;
-                    if ((_substr(target_0, i_7, (i_7 + wordLen_10)) == word_9)) {
-                        long k_11 = 0;
-                        while ((k_11 < table_3[(int)(i_7 < 0 ? table_3.Length + (i_7) : i_7)].Length)) {
-                            string[] way_12 = table_3[(int)(i_7 < 0 ? table_3.Length + (i_7) : i_7)][(int)(k_11 < 0 ? table_3[(int)(i_7 < 0 ? table_3.Length + (i_7) : i_7)].Length + (k_11) : k_11)];
-                            string[] combination_13 = new string[]{};
-                            long m_14 = 0;
-                            while ((m_14 < way_12.Length)) {
-                                combination_13 = (Enumerable.ToArray(Enumerable.Append<string>(combination_13, way_12[(int)(m_14 < 0 ? way_12.Length + (m_14) : m_14)])));
-                                m_14 = (m_14 + 1);
-                            }
-                            combination_13 = (Enumerable.ToArray(Enumerable.Append<string>(combination_13, word_9)));
-                            long nextIndex_15 = (i_7 + wordLen_10);
-                            table_3[(int)(nextIndex_15)] = (Enumerable.ToArray(Enumerable.Append<string[]>(table_3[(int)(nextIndex_15 < 0 ? table_3.Length + (nextIndex_15) : nextIndex_15)], combination_13)));
-                            k_11 = (k_11 + 1);
-                        }
-                    }
-                    w_8 = (w_8 + 1);
-                }
-            }
-            i_7 = (i_7 + 1);
+        f_0.sequence = seq_2;
+        long[] result_4 = new long[]{};
+        long i_5 = 0;
+        while ((i_5 < index_1)) {
+            result_4 = (Enumerable.ToArray(Enumerable.Append<long>(result_4, seq_2[(int)(i_5 < 0 ? seq_2.Length + (i_5) : i_5)])));
+            i_5 = (i_5 + 1);
         };
-        return table_3[(int)(target_0.Length < 0 ? table_3.Length + (target_0.Length) : target_0.Length)];
+        return new FibGetResult{fib = f_0, values = result_4};
+    }
+
+    public static void main() {
+        Fibonacci fib_6 = Program.create_fibonacci();
+        FibGetResult res_7 = Program.fib_get(fib_6, 10);
+        fib_6 = res_7.fib;
+        Console.WriteLine(Program._fmtTop(_fmtStr(res_7.values)));
+        res_7 = Program.fib_get(fib_6, 5);
+        fib_6 = res_7.fib;
+        Console.WriteLine(Program._fmtTop(_fmtStr(res_7.values)));
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            Console.WriteLine(Program._fmtTop(_fmtStr(Program.allConstruct("jwajalapa", new string[]{"jwa", "j", "w", "a", "la", "lapa"}))));
-            Console.WriteLine(Program._fmtTop(_fmtStr(Program.allConstruct("rajamati", new string[]{"s", "raj", "amat", "raja", "ma", "i", "t"}))));
-            Console.WriteLine(Program._fmtTop(_fmtStr(Program.allConstruct("hexagonosaurus", new string[]{"h", "ex", "hex", "ag", "ago", "ru", "auru", "rus", "go", "no", "o", "s"}))));
+            Program.main();
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);
