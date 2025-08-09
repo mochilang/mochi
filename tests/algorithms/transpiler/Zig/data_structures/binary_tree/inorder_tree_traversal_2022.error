@@ -1,22 +1,22 @@
 signal: aborted
-thread 46093 panic: index out of bounds: index 1, len 1
-/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/inorder_tree_traversal_2022.zig:34:31: 0x259e87 in insert (inorder_tree_traversal_2022)
+thread 10522 panic: index out of bounds: index 1, len 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/inorder_tree_traversal_2022.zig:34:31: 0x106d039 in insert (inorder_tree_traversal_2022)
         var node: Node = nodes[@as(usize, @intCast(current))];
                               ^
-/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/inorder_tree_traversal_2022.zig:81:11: 0x2256ff in make_tree (inorder_tree_traversal_2022)
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/inorder_tree_traversal_2022.zig:81:11: 0x1037f1f in make_tree (inorder_tree_traversal_2022)
     insert(@constCast(&state), 6);
           ^
-/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/inorder_tree_traversal_2022.zig:89:37: 0x22347d in mochi_main (inorder_tree_traversal_2022)
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/inorder_tree_traversal_2022.zig:89:37: 0x10357dd in mochi_main (inorder_tree_traversal_2022)
     var state: TreeState = make_tree();
                                     ^
-/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/inorder_tree_traversal_2022.zig:99:19: 0x221fa6 in main (inorder_tree_traversal_2022)
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/inorder_tree_traversal_2022.zig:99:19: 0x1033ee6 in main (inorder_tree_traversal_2022)
         mochi_main();
                   ^
-/usr/local/zig-linux-x86_64-0.11.0/lib/std/start.zig:564:22: 0x221b49 in main (inorder_tree_traversal_2022)
+/usr/local/zig/lib/std/start.zig:514:22: 0x1033af9 in main (inorder_tree_traversal_2022)
             root.main();
                      ^
-???:?:?: 0x7fd1b63a51c9 in ??? (libc.so.6)
-Unwind information for `libc.so.6:0x7fd1b63a51c9` was not available, trace may be incomplete
+???:?:?: 0x7f55b8bff1c9 in ??? (libc.so.6)
+Unwind information for `libc.so.6:0x7f55b8bff1c9` was not available, trace may be incomplete
 
-???:?:?: 0x7fd1b63a528a in ??? (libc.so.6)
-???:?:?: 0x2217d4 in ??? (???)
+???:?:?: 0x7f55b8bff28a in ??? (libc.so.6)
+???:?:?: 0x10337a4 in ??? (???)
