@@ -1,0 +1,17 @@
+0.0
+0.0
+0.0
+0.0
+1.0
+2.0
+14.0
+2.0
+0.0
+0.0
+1.0
+0.0
+Execution error at main/ln (loss_functions.clj:243).
+ln domain error
+
+Full report at:
+/tmp/clojure-13527904077829573875.edn

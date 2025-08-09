@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error (ArithmeticException) at main/apply-pca (principle_component_analysis.clj:193).
+Divide by zero
+
+Full report at:
+/tmp/clojure-1830203675785557372.edn

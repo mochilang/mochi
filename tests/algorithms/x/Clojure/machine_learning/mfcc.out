@@ -1,0 +1,5 @@
+Execution error (ArithmeticException) at main/log10 (mfcc.clj:145).
+Divide by zero
+
+Full report at:
+/tmp/clojure-13279728680761320452.edn

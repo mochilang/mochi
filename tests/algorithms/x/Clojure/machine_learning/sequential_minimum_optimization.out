@@ -1,0 +1,5 @@
+Syntax error (UnsupportedOperationException) compiling recur at (/workspace/mochi/tests/algorithms/x/Clojure/machine_learning/sequential_minimum_optimization.clj:88:2180).
+Can only recur from tail position
+
+Full report at:
+/tmp/clojure-15033652973309064748.edn

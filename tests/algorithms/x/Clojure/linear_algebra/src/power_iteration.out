@@ -1,0 +1,5 @@
+Execution error (ArithmeticException) at main/normalize (power_iteration.clj:80).
+Divide by zero
+
+Full report at:
+/tmp/clojure-10811105195688714576.edn

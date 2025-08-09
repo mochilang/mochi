@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error (IllegalStateException) at main/predict (gradient_boosting_classifier.clj:135).
+Can't dynamically bind non-dynamic var: main/predict_raw
+
+Full report at:
+/tmp/clojure-8562626480841868867.edn

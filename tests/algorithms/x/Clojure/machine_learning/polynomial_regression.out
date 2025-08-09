@@ -1,0 +1,5 @@
+Execution error (IndexOutOfBoundsException) at main/matvec-mul (polynomial_regression.clj:130).
+null
+
+Full report at:
+/tmp/clojure-3156824000572988208.edn

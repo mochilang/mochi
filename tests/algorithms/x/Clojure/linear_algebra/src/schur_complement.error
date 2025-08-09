@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error (ClassCastException) at main/inverse (schur_complement.clj:145).
+class clojure.lang.LazySeq cannot be cast to class clojure.lang.Associative (clojure.lang.LazySeq and clojure.lang.Associative are in unnamed module of loader 'app')
+
+Full report at:
+/tmp/clojure-14764666606756992342.edn
