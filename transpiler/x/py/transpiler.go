@@ -3042,7 +3042,7 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 			return err
 		}
 	}
-	if _, err := io.WriteString(w, "import sys\nsys.set_int_max_str_digits(0)\nimport os\nif os.path.dirname(__file__) in sys.path:\n    sys.path.remove(os.path.dirname(__file__))\n\n"); err != nil {
+	if _, err := io.WriteString(w, "import sys\nif hasattr(sys, \"set_int_max_str_digits\"):\n    sys.set_int_max_str_digits(0)\nimport os\nif os.path.dirname(__file__) in sys.path:\n    sys.path.remove(os.path.dirname(__file__))\n\n"); err != nil {
 		return err
 	}
 	if _, err := io.WriteString(w, helperPanic+"\n"); err != nil {
