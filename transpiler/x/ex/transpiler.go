@@ -4464,6 +4464,7 @@ func sliceHelper(indent int) string {
 	buf.WriteString(pad + "  {start, stop}\n")
 	buf.WriteString(pad + "end\n")
 	buf.WriteString(pad + "defp _slice(base, start, len) do\n")
+	buf.WriteString(pad + "  len = if len < 0, do: 0, else: len\n")
 	buf.WriteString(pad + "  cond do\n")
 	buf.WriteString(pad + "    is_binary(base) ->\n")
 	buf.WriteString(pad + "      chars = String.graphemes(base)\n")

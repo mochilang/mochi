@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-09 11:13 GMT+7
+Last updated: 2025-08-09 16:06 GMT+7
 
-## Algorithms Golden Test Checklist (525/1077)
+## Algorithms Golden Test Checklist (526/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -306,16 +306,16 @@ Last updated: 2025-08-09 11:13 GMT+7
 | 297 | divide_and_conquer/peak | ✓ | 5.12ms | 25.0 MB |
 | 298 | divide_and_conquer/power | ✓ | 5.42ms | 25.0 MB |
 | 299 | divide_and_conquer/strassen_matrix_multiplication | ✓ | 9.16ms | 77.9 MB |
-| 300 | docs/conf | ✓ | 268us | 9.5 MB |
-| 301 | dynamic_programming/abbreviation | ✓ | 1.99ms | 12.5 MB |
-| 302 | dynamic_programming/all_construct | ✓ | 13.50ms | 25.0 MB |
-| 303 | dynamic_programming/bitmask | ✓ | 13.80ms | 17.3 MB |
-| 304 | dynamic_programming/catalan_numbers | ✓ | 13.19ms | 17.3 MB |
-| 305 | dynamic_programming/climbing_stairs | ✓ | 8.79ms | 25.0 MB |
-| 306 | dynamic_programming/combination_sum_iv | ✓ | 13.44ms | 25.0 MB |
-| 307 | dynamic_programming/edit_distance | ✓ |  |  |
-| 308 | dynamic_programming/factorial | ✓ | 31.48ms | 12.7 MB |
-| 309 | dynamic_programming/fast_fibonacci | ✓ | 12.18ms | 32.7 MB |
+| 300 | docs/conf | ✓ | 396us | 9.5 MB |
+| 301 | dynamic_programming/abbreviation | ✓ | 2.70ms | 12.5 MB |
+| 302 | dynamic_programming/all_construct | ✓ | 10.17ms | 25.0 MB |
+| 303 | dynamic_programming/bitmask | ✓ | 7.05ms | 17.3 MB |
+| 304 | dynamic_programming/catalan_numbers | ✓ | 8.46ms | 17.3 MB |
+| 305 | dynamic_programming/climbing_stairs | ✓ | 6.15ms | 25.0 MB |
+| 306 | dynamic_programming/combination_sum_iv | ✓ | 7.98ms | 25.0 MB |
+| 307 | dynamic_programming/edit_distance | ✓ | 14.40ms | 6.6 MB |
+| 308 | dynamic_programming/factorial | ✓ | 12.89ms | 12.7 MB |
+| 309 | dynamic_programming/fast_fibonacci | ✓ | 8.81ms | 32.7 MB |
 | 310 | dynamic_programming/fibonacci | ✓ | 375us | 17.4 MB |
 | 311 | dynamic_programming/fizz_buzz | ✓ | 12.04ms | 12.5 MB |
 | 312 | dynamic_programming/floyd_warshall | ✓ | 8.96ms | 17.3 MB |
@@ -638,7 +638,7 @@ Last updated: 2025-08-09 11:13 GMT+7
 | 629 | maths/points_are_collinear_3d | ✓ | 5.03ms | 33.0 MB |
 | 630 | maths/pollard_rho | ✓ | 213us | 25.0 MB |
 | 631 | maths/polynomial_evaluation | ✓ | 4.55ms | 32.7 MB |
-| 632 | maths/polynomials/single_indeterminate_operations | error |  |  |
+| 632 | maths/polynomials/single_indeterminate_operations | ✓ |  |  |
 | 633 | maths/power_using_recursion | ✓ | 4.58ms | 12.5 MB |
 | 634 | maths/prime_check | ✓ | 4.69ms | 25.0 MB |
 | 635 | maths/prime_factors | ✓ | 6.49ms | 32.7 MB |
