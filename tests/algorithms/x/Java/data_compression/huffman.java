@@ -3,8 +3,8 @@ public class Main {
 
     static class Leaf implements Huffman {
         String symbol;
-        int freq;
-        Leaf(String symbol, int freq) {
+        long freq;
+        Leaf(String symbol, long freq) {
             this.symbol = symbol;
             this.freq = freq;
         }
@@ -15,10 +15,10 @@ public class Main {
     }
 
     static class Node implements Huffman {
-        int freq;
+        long freq;
         Huffman left;
         Huffman right;
-        Node(int freq, Huffman left, Huffman right) {
+        Node(long freq, Huffman left, Huffman right) {
             this.freq = freq;
             this.left = left;
             this.right = right;
@@ -30,21 +30,21 @@ public class Main {
     }
 
 
-    static int get_freq(Huffman n) {
-        return n instanceof Leaf ? ((Leaf)(n)).freq : ((Node)(n)).freq;
+    static long get_freq(Huffman n) {
+        return ((long)(n instanceof Leaf ? ((Leaf)(n)).freq : ((Node)(n)).freq));
     }
 
     static Huffman[] sort_nodes(Huffman[] nodes) {
         Huffman[] arr = ((Huffman[])(nodes));
-        int i = 1;
+        long i = 1;
         while (i < arr.length) {
-            Huffman key = arr[i];
-            int j = i - 1;
-            while (j >= 0 && get_freq(arr[j]) > get_freq(key)) {
-arr[j + 1] = arr[j];
+            Huffman key = arr[(int)(i)];
+            long j = i - 1;
+            while (j >= 0 && get_freq(arr[(int)(j)]) > get_freq(key)) {
+arr[(int)(j + 1)] = arr[(int)(j)];
                 j = j - 1;
             }
-arr[j + 1] = key;
+arr[(int)(j + 1)] = key;
             i = i + 1;
         }
         return arr;
@@ -52,9 +52,9 @@ arr[j + 1] = key;
 
     static Huffman[] rest(Huffman[] nodes) {
         Huffman[] res = ((Huffman[])(new Huffman[]{}));
-        int i_1 = 1;
+        long i_1 = 1;
         while (i_1 < nodes.length) {
-            res = ((Huffman[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(nodes[i_1])).toArray(Huffman[]::new)));
+            res = ((Huffman[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(nodes[(int)(i_1)])).toArray(Huffman[]::new)));
             i_1 = i_1 + 1;
         }
         return res;
@@ -62,15 +62,15 @@ arr[j + 1] = key;
 
     static Huffman[] count_freq(String text) {
         String[] chars = ((String[])(new String[]{}));
-        int[] freqs = ((int[])(new int[]{}));
-        int i_2 = 0;
+        long[] freqs = ((long[])(new long[]{}));
+        long i_2 = 0;
         while (i_2 < _runeLen(text)) {
-            String c = _substr(text, i_2, i_2 + 1);
-            int j_1 = 0;
+            String c = _substr(text, (int)(i_2), (int)(i_2 + 1));
+            long j_1 = 0;
             boolean found = false;
             while (j_1 < chars.length) {
-                if ((chars[j_1].equals(c))) {
-freqs[j_1] = freqs[j_1] + 1;
+                if ((chars[(int)(j_1)].equals(c))) {
+freqs[(int)(j_1)] = freqs[(int)(j_1)] + 1;
                     found = true;
                     break;
                 }
@@ -78,38 +78,38 @@ freqs[j_1] = freqs[j_1] + 1;
             }
             if (!found) {
                 chars = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(chars), java.util.stream.Stream.of(c)).toArray(String[]::new)));
-                freqs = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(freqs), java.util.stream.IntStream.of(1)).toArray()));
+                freqs = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(freqs), java.util.stream.LongStream.of(1)).toArray()));
             }
             i_2 = i_2 + 1;
         }
-        Object leaves = new Huffman[]{};
-        int k = 0;
+        Huffman[] leaves = ((Huffman[])(new Huffman[]{}));
+        long k = 0;
         while (k < chars.length) {
-            leaves = java.util.stream.Stream.concat(java.util.Arrays.stream(leaves), java.util.stream.Stream.of(new Leaf(chars[k], freqs[k]))).toArray(Huffman[]::new);
+            leaves = java.util.stream.Stream.concat(java.util.Arrays.stream(leaves), java.util.stream.Stream.of(new Leaf(chars[(int)(k)], freqs[(int)(k)]))).toArray(Huffman[]::new);
             k = k + 1;
         }
         return sort_nodes(((Huffman[])(leaves)));
     }
 
     static Huffman build_tree(Huffman[] nodes) {
-        Object arr_1 = nodes;
+        Huffman[] arr_1 = ((Huffman[])(nodes));
         while (arr_1.length > 1) {
-            Huffman left = arr_1[0];
+            Huffman left = arr_1[(int)(0)];
             arr_1 = ((Huffman[])(rest(((Huffman[])(arr_1)))));
-            Huffman right = arr_1[0];
+            Huffman right = arr_1[(int)(0)];
             arr_1 = ((Huffman[])(rest(((Huffman[])(arr_1)))));
             Node node = new Node(get_freq(left) + get_freq(right), left, right);
             arr_1 = java.util.stream.Stream.concat(java.util.Arrays.stream(arr_1), java.util.stream.Stream.of(node)).toArray(Huffman[]::new);
             arr_1 = sort_nodes(((Huffman[])(arr_1)));
         }
-        return arr_1[0];
+        return ((Huffman)(arr_1[(int)(0)]));
     }
 
     static String[][] concat_pairs(String[][] a, String[][] b) {
         String[][] res_1 = ((String[][])(a));
-        int i_3 = 0;
+        long i_3 = 0;
         while (i_3 < b.length) {
-            res_1 = ((String[][])(appendObj(res_1, b[i_3])));
+            res_1 = ((String[][])(appendObj((String[][])res_1, b[(int)(i_3)])));
             i_3 = i_3 + 1;
         }
         return res_1;
@@ -120,10 +120,10 @@ freqs[j_1] = freqs[j_1] + 1;
     }
 
     static String find_code(String[][] pairs, String ch) {
-        int i_4 = 0;
+        long i_4 = 0;
         while (i_4 < pairs.length) {
-            if ((pairs[i_4][0].equals(ch))) {
-                return pairs[i_4][1];
+            if ((pairs[(int)(i_4)][(int)(0)].equals(ch))) {
+                return pairs[(int)(i_4)][(int)(1)];
             }
             i_4 = i_4 + 1;
         }
@@ -138,9 +138,9 @@ freqs[j_1] = freqs[j_1] + 1;
         Huffman tree = build_tree(((Huffman[])(leaves_1)));
         String[][] codes = ((String[][])(collect_codes(tree, "")));
         String encoded = "";
-        int i_5 = 0;
+        long i_5 = 0;
         while (i_5 < _runeLen(text)) {
-            String c_1 = _substr(text, i_5, i_5 + 1);
+            String c_1 = _substr(text, (int)(i_5), (int)(i_5 + 1));
             encoded = encoded + String.valueOf(find_code(((String[][])(codes)), c_1)) + " ";
             i_5 = i_5 + 1;
         }
