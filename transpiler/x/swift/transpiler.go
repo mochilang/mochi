@@ -5194,15 +5194,21 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
+			var ret Expr = &CallExpr{Func: "_append", Args: []Expr{left, right}}
 			if env != nil {
 				if lt, ok := types.TypeOfExpr(pr.Call.Args[0], env).(types.ListType); ok {
 					if _, ok2 := lt.Elem.(types.AnyType); ok2 {
 						right = &CastExpr{Expr: right, Type: "Any?"}
+						ret = &CallExpr{Func: "_append", Args: []Expr{left, right}}
+					} else if al, ok3 := right.(*ArrayLit); ok3 && len(al.Elems) == 0 {
+						right = &CastExpr{Expr: right, Type: swiftTypeOf(lt.Elem)}
+						ret = &CallExpr{Func: "_append", Args: []Expr{left, right}}
 					}
+					ret = &CastExpr{Expr: ret, Type: swiftTypeOf(lt)}
 				}
 			}
 			usesAppend = true
-			return &CallExpr{Func: "_append", Args: []Expr{left, right}}, nil
+			return ret, nil
 		}
 		if pr.Call.Func == "concat" && len(pr.Call.Args) == 2 {
 			left, err := convertExpr(env, pr.Call.Args[0])
