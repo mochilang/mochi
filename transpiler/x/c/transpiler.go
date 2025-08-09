@@ -80,9 +80,9 @@ var (
 	needContainsMapInt      bool
 	needListAppendInt       bool
 	needListAppendStr       bool
-        needListAppendPtr       bool
-        needListAppendPtrPtr    bool
-        needListAppendStrPtr    bool
+	needListAppendPtr       bool
+	needListAppendPtrPtr    bool
+	needListAppendStrPtr    bool
 	needConcatStrPtr        bool
 	needConcatLongLong      bool
 	needListAppendDouble    bool
@@ -168,16 +168,12 @@ func emitLenExpr(w io.Writer, e Expr) {
 		fmt.Fprintf(w, "%d", len(v.Elems))
 	case *IndexExpr:
 		if vr, ok := v.Target.(*VarRef); ok {
-			if currentEnv != nil {
-				if _, err := currentEnv.GetVar(vr.Name + "_lens"); err == nil {
-					io.WriteString(w, vr.Name+"_lens[")
-					v.Index.emitExpr(w)
-					io.WriteString(w, "]")
-					break
-				}
-			}
+			io.WriteString(w, vr.Name+"_lens[")
+			v.Index.emitExpr(w)
+			io.WriteString(w, "]")
+		} else {
+			io.WriteString(w, "0")
 		}
-		io.WriteString(w, "0")
 	default:
 		io.WriteString(w, "0")
 	}
@@ -1663,56 +1659,56 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 					io.WriteString(w, ");\n")
 					return
 				}
-                                if strings.HasSuffix(base, "[]") {
-                                        elemBase := strings.TrimSuffix(base, "[]")
-                                        if strings.HasSuffix(elemBase, "[]") {
-                                                // support appending list pointers (e.g. list<list<int>>)
-                                                elemElemBase := strings.TrimSuffix(elemBase, "[]")
-                                                switch elemElemBase {
-                                                case "int":
-                                                        needListAppendPtrPtr = true
-                                                        fmt.Fprintf(w, "%s = list_append_intptrptr(%s, &%s_len, ", a.Name, a.Name, a.Name)
-                                                case "double":
-                                                        needListAppendDoublePtr = true
-                                                        fmt.Fprintf(w, "%s = list_append_doubleptr(%s, &%s_len, ", a.Name, a.Name, a.Name)
-                                                default:
-                                                        if strings.Contains(elemElemBase, "char*") {
-                                                                needListAppendStrPtr = true
-                                                                fmt.Fprintf(w, "%s = list_append_strptr(%s, &%s_len, ", a.Name, a.Name, a.Name)
-                                                        } else {
-                                                                if needListAppendStructPtr == nil {
-                                                                        needListAppendStructPtr = make(map[string]bool)
-                                                                }
-                                                                needListAppendStructPtr[elemElemBase] = true
-                                                                fmt.Fprintf(w, "%s = list_append_%sptr(%s, &%s_len, ", a.Name, sanitizeTypeName(elemElemBase), a.Name, a.Name)
-                                                        }
-                                                }
-                                        } else {
-                                                switch elemBase {
-                                                case "int":
-                                                        needListAppendPtr = true
-                                                        fmt.Fprintf(w, "%s = list_append_intptr(%s, &%s_len, ", a.Name, a.Name, a.Name)
-                                                case "double":
-                                                        needListAppendDoublePtr = true
-                                                        fmt.Fprintf(w, "%s = list_append_doubleptr(%s, &%s_len, ", a.Name, a.Name, a.Name)
-                                                default:
-                                                        if strings.Contains(elemBase, "char*") {
-                                                                needListAppendStrPtr = true
-                                                                fmt.Fprintf(w, "%s = list_append_strptr(%s, &%s_len, ", a.Name, a.Name, a.Name)
-                                                        } else {
-                                                                if needListAppendStructPtr == nil {
-                                                                        needListAppendStructPtr = make(map[string]bool)
-                                                                }
-                                                                needListAppendStructPtr[elemBase] = true
-                                                                fmt.Fprintf(w, "%s = list_append_%sptr(%s, &%s_len, ", a.Name, sanitizeTypeName(elemBase), a.Name, a.Name)
-                                                        }
-                                                }
-                                        }
-                                        if lit, ok := call.Args[1].(*ListLit); ok {
-                                                fmt.Fprintf(w, "({%s *tmp = malloc(%d * sizeof(%s)); ", elemBase, len(lit.Elems), elemBase)
-                                                for i, e := range lit.Elems {
-                                                        fmt.Fprintf(w, "tmp[%d] = ", i)
-                                                        e.emitExpr(w)
+				if strings.HasSuffix(base, "[]") {
+					elemBase := strings.TrimSuffix(base, "[]")
+					if strings.HasSuffix(elemBase, "[]") {
+						// support appending list pointers (e.g. list<list<int>>)
+						elemElemBase := strings.TrimSuffix(elemBase, "[]")
+						switch elemElemBase {
+						case "int":
+							needListAppendPtrPtr = true
+							fmt.Fprintf(w, "%s = list_append_intptrptr(%s, &%s_len, ", a.Name, a.Name, a.Name)
+						case "double":
+							needListAppendDoublePtr = true
+							fmt.Fprintf(w, "%s = list_append_doubleptr(%s, &%s_len, ", a.Name, a.Name, a.Name)
+						default:
+							if strings.Contains(elemElemBase, "char*") {
+								needListAppendStrPtr = true
+								fmt.Fprintf(w, "%s = list_append_strptr(%s, &%s_len, ", a.Name, a.Name, a.Name)
+							} else {
+								if needListAppendStructPtr == nil {
+									needListAppendStructPtr = make(map[string]bool)
+								}
+								needListAppendStructPtr[elemElemBase] = true
+								fmt.Fprintf(w, "%s = list_append_%sptr(%s, &%s_len, ", a.Name, sanitizeTypeName(elemElemBase), a.Name, a.Name)
+							}
+						}
+					} else {
+						switch elemBase {
+						case "int":
+							needListAppendPtr = true
+							fmt.Fprintf(w, "%s = list_append_intptr(%s, &%s_len, ", a.Name, a.Name, a.Name)
+						case "double":
+							needListAppendDoublePtr = true
+							fmt.Fprintf(w, "%s = list_append_doubleptr(%s, &%s_len, ", a.Name, a.Name, a.Name)
+						default:
+							if strings.Contains(elemBase, "char*") {
+								needListAppendStrPtr = true
+								fmt.Fprintf(w, "%s = list_append_strptr(%s, &%s_len, ", a.Name, a.Name, a.Name)
+							} else {
+								if needListAppendStructPtr == nil {
+									needListAppendStructPtr = make(map[string]bool)
+								}
+								needListAppendStructPtr[elemBase] = true
+								fmt.Fprintf(w, "%s = list_append_%sptr(%s, &%s_len, ", a.Name, sanitizeTypeName(elemBase), a.Name, a.Name)
+							}
+						}
+					}
+					if lit, ok := call.Args[1].(*ListLit); ok {
+						fmt.Fprintf(w, "({%s *tmp = malloc(%d * sizeof(%s)); ", elemBase, len(lit.Elems), elemBase)
+						for i, e := range lit.Elems {
+							fmt.Fprintf(w, "tmp[%d] = ", i)
+							e.emitExpr(w)
 							io.WriteString(w, "; ")
 						}
 						io.WriteString(w, "tmp;})")
@@ -2512,9 +2508,11 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 	}
 	i.Target.emitExpr(w)
 	io.WriteString(w, "[")
-	io.WriteString(w, "(int)(")
+	io.WriteString(w, "(int)({long long _mochi_idx = ")
 	i.Index.emitExpr(w)
-	io.WriteString(w, ")")
+	io.WriteString(w, "; _mochi_idx < 0 ? ")
+	emitLenExpr(w, i.Target)
+	io.WriteString(w, " + _mochi_idx : _mochi_idx;})")
 	io.WriteString(w, "]")
 }
 
@@ -2548,63 +2546,63 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 		if vr, ok := c.Args[0].(*VarRef); ok {
 			base := varBaseType(vr.Name)
 			switch {
-                        case strings.HasSuffix(base, "[]"):
-                                elemBase := strings.TrimSuffix(base, "[]")
-                                if strings.HasSuffix(elemBase, "[]") {
-                                        elemElemBase := strings.TrimSuffix(elemBase, "[]")
-                                        switch elemElemBase {
-                                        case "int":
-                                                needListAppendPtrPtr = true
-                                                needListAppendSizeT = true
-                                                fmt.Fprintf(w, "(%s = list_append_intptrptr(%s, &%s_len, ", vr.Name, vr.Name, vr.Name)
-                                        case "double":
-                                                needListAppendDoublePtr = true
-                                                needListAppendSizeT = true
-                                                fmt.Fprintf(w, "(%s = list_append_doubleptr(%s, &%s_len, ", vr.Name, vr.Name, vr.Name)
-                                        default:
-                                                if strings.Contains(elemElemBase, "char*") {
-                                                        needListAppendStrPtr = true
-                                                        needListAppendSizeT = true
-                                                        fmt.Fprintf(w, "(%s = list_append_strptr(%s, &%s_len, ", vr.Name, vr.Name, vr.Name)
-                                                } else {
-                                                        if needListAppendStructPtr == nil {
-                                                                needListAppendStructPtr = make(map[string]bool)
-                                                        }
-                                                        needListAppendStructPtr[elemElemBase] = true
-                                                        needListAppendSizeT = true
-                                                        fmt.Fprintf(w, "(%s = list_append_%sptr(%s, &%s_len, ", vr.Name, sanitizeTypeName(elemElemBase), vr.Name, vr.Name)
-                                                }
-                                        }
-                                } else {
-                                        switch elemBase {
-                                        case "int":
-                                                needListAppendPtr = true
-                                                needListAppendSizeT = true
-                                                fmt.Fprintf(w, "(%s = list_append_intptr(%s, &%s_len, ", vr.Name, vr.Name, vr.Name)
-                                        case "double":
-                                                needListAppendDoublePtr = true
-                                                needListAppendSizeT = true
-                                                fmt.Fprintf(w, "(%s = list_append_doubleptr(%s, &%s_len, ", vr.Name, vr.Name, vr.Name)
-                                        default:
-                                                if strings.Contains(elemBase, "char*") {
-                                                        needListAppendStrPtr = true
-                                                        needListAppendSizeT = true
-                                                        fmt.Fprintf(w, "(%s = list_append_strptr(%s, &%s_len, ", vr.Name, vr.Name, vr.Name)
-                                                } else {
-                                                        if needListAppendStructPtr == nil {
-                                                                needListAppendStructPtr = make(map[string]bool)
-                                                        }
-                                                        needListAppendStructPtr[elemBase] = true
-                                                        needListAppendSizeT = true
-                                                        fmt.Fprintf(w, "(%s = list_append_%sptr(%s, &%s_len, ", vr.Name, sanitizeTypeName(elemBase), vr.Name, vr.Name)
-                                                }
-                                        }
-                                }
-                                if len(c.Args) > 1 && c.Args[1] != nil {
-                                        c.Args[1].emitExpr(w)
-                                }
-                                fmt.Fprintf(w, "), %s_lens = list_append_szt(%s_lens, &%s_lens_len, ", vr.Name, vr.Name, vr.Name)
-                                emitLenExpr(w, c.Args[1])
+			case strings.HasSuffix(base, "[]"):
+				elemBase := strings.TrimSuffix(base, "[]")
+				if strings.HasSuffix(elemBase, "[]") {
+					elemElemBase := strings.TrimSuffix(elemBase, "[]")
+					switch elemElemBase {
+					case "int":
+						needListAppendPtrPtr = true
+						needListAppendSizeT = true
+						fmt.Fprintf(w, "(%s = list_append_intptrptr(%s, &%s_len, ", vr.Name, vr.Name, vr.Name)
+					case "double":
+						needListAppendDoublePtr = true
+						needListAppendSizeT = true
+						fmt.Fprintf(w, "(%s = list_append_doubleptr(%s, &%s_len, ", vr.Name, vr.Name, vr.Name)
+					default:
+						if strings.Contains(elemElemBase, "char*") {
+							needListAppendStrPtr = true
+							needListAppendSizeT = true
+							fmt.Fprintf(w, "(%s = list_append_strptr(%s, &%s_len, ", vr.Name, vr.Name, vr.Name)
+						} else {
+							if needListAppendStructPtr == nil {
+								needListAppendStructPtr = make(map[string]bool)
+							}
+							needListAppendStructPtr[elemElemBase] = true
+							needListAppendSizeT = true
+							fmt.Fprintf(w, "(%s = list_append_%sptr(%s, &%s_len, ", vr.Name, sanitizeTypeName(elemElemBase), vr.Name, vr.Name)
+						}
+					}
+				} else {
+					switch elemBase {
+					case "int":
+						needListAppendPtr = true
+						needListAppendSizeT = true
+						fmt.Fprintf(w, "(%s = list_append_intptr(%s, &%s_len, ", vr.Name, vr.Name, vr.Name)
+					case "double":
+						needListAppendDoublePtr = true
+						needListAppendSizeT = true
+						fmt.Fprintf(w, "(%s = list_append_doubleptr(%s, &%s_len, ", vr.Name, vr.Name, vr.Name)
+					default:
+						if strings.Contains(elemBase, "char*") {
+							needListAppendStrPtr = true
+							needListAppendSizeT = true
+							fmt.Fprintf(w, "(%s = list_append_strptr(%s, &%s_len, ", vr.Name, vr.Name, vr.Name)
+						} else {
+							if needListAppendStructPtr == nil {
+								needListAppendStructPtr = make(map[string]bool)
+							}
+							needListAppendStructPtr[elemBase] = true
+							needListAppendSizeT = true
+							fmt.Fprintf(w, "(%s = list_append_%sptr(%s, &%s_len, ", vr.Name, sanitizeTypeName(elemBase), vr.Name, vr.Name)
+						}
+					}
+				}
+				if len(c.Args) > 1 && c.Args[1] != nil {
+					c.Args[1].emitExpr(w)
+				}
+				fmt.Fprintf(w, "), %s_lens = list_append_szt(%s_lens, &%s_lens_len, ", vr.Name, vr.Name, vr.Name)
+				emitLenExpr(w, c.Args[1])
 				fmt.Fprintf(w, "), %s_lens = %s_lens, %s)", currentFuncName, vr.Name, vr.Name)
 				return
 			default:
@@ -3573,16 +3571,16 @@ func (p *Program) Emit() []byte {
 	fmt.Fprintf(&buf, "// Generated by Mochi %s on %s\n", strings.TrimSpace(version), ts)
 	buf.WriteString("#include <stdio.h>\n")
 	buf.WriteString("#include <string.h>\n")
-       buf.WriteString("#include <stdlib.h>\n")
-       if needSHA256 || needMD5Hex {
-               buf.WriteString("#include <unistd.h>\n")
-       }
-       // Additional features may require standard library functions such as
-       // malloc, free, or atoi. Since we already include <stdlib.h> above, avoid
-       // emitting a duplicate include here.
-       if needStrConcat || needStrInt || needStrFloat || needStrBool || needStrListInt || needStrListStr || needStrListListInt || needStrListDouble || needStrListListDouble || needSubstring || needAtoi || needCharAt || needSliceInt || needSliceDouble || needSliceStr || needRepeat || needParseIntStr || needInput || needNow || needUpper || needLower || needPadStart || needListAppendInt || needListAppendStr || needListAppendPtr || needListAppendDoublePtr || needListAppendDoubleNew || needListAppendStrPtr || needListAppendSizeT || needListAppendStrNew || len(needListAppendStruct) > 0 || len(needListAppendStructNew) > 0 || needSHA256 || needMD5Hex {
-               // placeholder to keep condition for future custom includes
-       }
+	buf.WriteString("#include <stdlib.h>\n")
+	if needSHA256 || needMD5Hex {
+		buf.WriteString("#include <unistd.h>\n")
+	}
+	// Additional features may require standard library functions such as
+	// malloc, free, or atoi. Since we already include <stdlib.h> above, avoid
+	// emitting a duplicate include here.
+	if needStrConcat || needStrInt || needStrFloat || needStrBool || needStrListInt || needStrListStr || needStrListListInt || needStrListDouble || needStrListListDouble || needSubstring || needAtoi || needCharAt || needSliceInt || needSliceDouble || needSliceStr || needRepeat || needParseIntStr || needInput || needNow || needUpper || needLower || needPadStart || needListAppendInt || needListAppendStr || needListAppendPtr || needListAppendDoublePtr || needListAppendDoubleNew || needListAppendStrPtr || needListAppendSizeT || needListAppendStrNew || len(needListAppendStruct) > 0 || len(needListAppendStructNew) > 0 || needSHA256 || needMD5Hex {
+		// placeholder to keep condition for future custom includes
+	}
 	if needMem {
 		buf.WriteString("#include <unistd.h>\n")
 		buf.WriteString("#include <malloc.h>\n")
@@ -4062,22 +4060,22 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return res;\n")
 		buf.WriteString("}\n\n")
 	}
-        if needListAppendPtr {
-                buf.WriteString("static long long** list_append_intptr(long long **arr, size_t *len, long long *val) {\n")
-                buf.WriteString("    arr = realloc(arr, (*len + 1) * sizeof(long long*));\n")
-                buf.WriteString("    arr[*len] = val;\n")
-                buf.WriteString("    (*len)++;\n")
-                buf.WriteString("    return arr;\n")
-                buf.WriteString("}\n\n")
-        }
-        if needListAppendPtrPtr {
-                buf.WriteString("static long long*** list_append_intptrptr(long long ***arr, size_t *len, long long **val) {\n")
-                buf.WriteString("    arr = realloc(arr, (*len + 1) * sizeof(long long**));\n")
-                buf.WriteString("    arr[*len] = val;\n")
-                buf.WriteString("    (*len)++;\n")
-                buf.WriteString("    return arr;\n")
-                buf.WriteString("}\n\n")
-        }
+	if needListAppendPtr {
+		buf.WriteString("static long long** list_append_intptr(long long **arr, size_t *len, long long *val) {\n")
+		buf.WriteString("    arr = realloc(arr, (*len + 1) * sizeof(long long*));\n")
+		buf.WriteString("    arr[*len] = val;\n")
+		buf.WriteString("    (*len)++;\n")
+		buf.WriteString("    return arr;\n")
+		buf.WriteString("}\n\n")
+	}
+	if needListAppendPtrPtr {
+		buf.WriteString("static long long*** list_append_intptrptr(long long ***arr, size_t *len, long long **val) {\n")
+		buf.WriteString("    arr = realloc(arr, (*len + 1) * sizeof(long long**));\n")
+		buf.WriteString("    arr[*len] = val;\n")
+		buf.WriteString("    (*len)++;\n")
+		buf.WriteString("    return arr;\n")
+		buf.WriteString("}\n\n")
+	}
 	if needListAppendDoublePtr {
 		buf.WriteString("static double** list_append_doubleptr(double **arr, size_t *len, double *val) {\n")
 		buf.WriteString("    arr = realloc(arr, (*len + 1) * sizeof(double*));\n")
@@ -4620,9 +4618,9 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needContainsMapInt = false
 	needListAppendInt = false
 	needListAppendStr = false
-        needListAppendPtr = false
-        needListAppendPtrPtr = false
-        needListAppendStrPtr = false
+	needListAppendPtr = false
+	needListAppendPtrPtr = false
+	needListAppendStrPtr = false
 	needConcatStrPtr = false
 	needListAppendDouble = false
 	needListAppendDoublePtr = false
@@ -5827,39 +5825,39 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 					base = "int"
 				}
 				elemT := inferExprType(env, call.Args[1])
-                                switch base {
-                                case "int":
-                                        if strings.HasSuffix(elemT, "[]") {
-                                                needListAppendPtr = true
-                                                varTypes[s.Assign.Name] = "int[][]"
-                                                if ds, ok := declStmts[s.Assign.Name]; ok {
-                                                        ds.Type = "int[][]"
-                                                }
-                                        } else {
-                                                needListAppendInt = true
-                                        }
-                                case "const char*":
-                                        if strings.HasSuffix(elemT, "[]") {
-                                                needListAppendPtr = true
-                                                varTypes[s.Assign.Name] = "const char*[][]"
-                                                if ds, ok := declStmts[s.Assign.Name]; ok {
-                                                        ds.Type = "const char*[][]"
-                                                }
-                                        } else {
-                                                needListAppendStr = true
-                                        }
-                                default:
-                                        if strings.HasSuffix(base, "[]") {
-                                                inner := strings.TrimSuffix(base, "[]")
-                                                if strings.HasSuffix(inner, "[]") {
-                                                        needListAppendPtrPtr = true
-                                                } else {
-                                                        needListAppendPtr = true
-                                                }
-                                        }
-                                }
-                        }
-                }
+				switch base {
+				case "int":
+					if strings.HasSuffix(elemT, "[]") {
+						needListAppendPtr = true
+						varTypes[s.Assign.Name] = "int[][]"
+						if ds, ok := declStmts[s.Assign.Name]; ok {
+							ds.Type = "int[][]"
+						}
+					} else {
+						needListAppendInt = true
+					}
+				case "const char*":
+					if strings.HasSuffix(elemT, "[]") {
+						needListAppendPtr = true
+						varTypes[s.Assign.Name] = "const char*[][]"
+						if ds, ok := declStmts[s.Assign.Name]; ok {
+							ds.Type = "const char*[][]"
+						}
+					} else {
+						needListAppendStr = true
+					}
+				default:
+					if strings.HasSuffix(base, "[]") {
+						inner := strings.TrimSuffix(base, "[]")
+						if strings.HasSuffix(inner, "[]") {
+							needListAppendPtrPtr = true
+						} else {
+							needListAppendPtr = true
+						}
+					}
+				}
+			}
+		}
 		if isMapVar(s.Assign.Name) && len(idxs) == 1 && len(fields) == 0 {
 			keyT := mapKeyTypes[s.Assign.Name]
 			valT := mapValTypes[s.Assign.Name]
