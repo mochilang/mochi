@@ -4901,15 +4901,17 @@ func isIntExpr(e Expr) bool {
 }
 
 func isBigIntExpr(e Expr) bool {
-	switch v := e.(type) {
-	case *Var:
-		if transpileEnv != nil {
-			if t, err := transpileEnv.GetVar(v.Name); err == nil {
-				if _, ok := t.(types.BigIntType); ok {
-					return true
-				}
-			}
-		}
+        switch v := e.(type) {
+       case *IntLit:
+               return true
+        case *Var:
+                if transpileEnv != nil {
+                        if t, err := transpileEnv.GetVar(v.Name); err == nil {
+                               if types.IsIntType(t) || types.IsBigIntType(t) {
+                                       return true
+                               }
+                        }
+                }
 	case *BinaryExpr:
 		switch v.Op {
 		case "+", "-", "*", "/", "%":
@@ -4927,10 +4929,10 @@ func isBigIntExpr(e Expr) bool {
 			return true
 		}
 	}
-	if _, ok := exprType(e).(types.BigIntType); ok {
-		return true
-	}
-	return false
+       if t := exprType(e); types.IsIntType(t) || types.IsBigIntType(t) {
+               return true
+       }
+       return false
 }
 
 func isBigRatExpr(e Expr) bool {
