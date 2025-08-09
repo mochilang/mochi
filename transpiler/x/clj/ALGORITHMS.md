@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-09 10:41 GMT+7
+Last updated: 2025-08-09 16:06 GMT+7
 
 ## Algorithms Golden Test Checklist (419/1077)
 | Index | Name | Status | Duration | Memory |
@@ -306,16 +306,16 @@ Last updated: 2025-08-09 10:41 GMT+7
 | 297 | divide_and_conquer/peak | ✓ | 29.857ms | 19.65MB |
 | 298 | divide_and_conquer/power | ✓ | 31.917ms | 19.49MB |
 | 299 | divide_and_conquer/strassen_matrix_multiplication | ✓ | 195.425ms | 27.71MB |
-| 300 | docs/conf | ✓ | 27.855ms | 19.73MB |
-| 301 | dynamic_programming/abbreviation | ✓ | 32.373ms | 22.44MB |
-| 302 | dynamic_programming/all_construct | ✓ | 45.822ms | 20.43MB |
-| 303 | dynamic_programming/bitmask | ✓ | 28.883ms | 19.88MB |
-| 304 | dynamic_programming/catalan_numbers | ✓ | 46.773ms | 19.36MB |
-| 305 | dynamic_programming/climbing_stairs | ✓ | 38.246ms | 19.28MB |
-| 306 | dynamic_programming/combination_sum_iv | ✓ | 37.286ms | 22.13MB |
-| 307 | dynamic_programming/edit_distance | ✓ | 147.95ms | 23.41MB |
-| 308 | dynamic_programming/factorial | ✓ | 51.875ms | 19.70MB |
-| 309 | dynamic_programming/fast_fibonacci | ✓ | 37.346ms | 19.61MB |
+| 300 | docs/conf | ✓ | 45.974ms | 20.28MB |
+| 301 | dynamic_programming/abbreviation | ✓ | 51.31ms | 22.66MB |
+| 302 | dynamic_programming/all_construct | ✓ | 63.89ms | 20.40MB |
+| 303 | dynamic_programming/bitmask | ✓ | 56.138ms | 19.78MB |
+| 304 | dynamic_programming/catalan_numbers | ✓ | 58.577ms | 19.64MB |
+| 305 | dynamic_programming/climbing_stairs | ✓ | 53.545ms | 19.02MB |
+| 306 | dynamic_programming/combination_sum_iv | ✓ | 51.91ms | 21.76MB |
+| 307 | dynamic_programming/edit_distance | ✓ | 218.464ms | 23.53MB |
+| 308 | dynamic_programming/factorial | ✓ | 70.38ms | 19.61MB |
+| 309 | dynamic_programming/fast_fibonacci | ✓ | 50.072ms | 19.93MB |
 | 310 | dynamic_programming/fibonacci | ✓ | 71.727ms | 20.10MB |
 | 311 | dynamic_programming/fizz_buzz | ✓ | 39.596ms | 19.50MB |
 | 312 | dynamic_programming/floyd_warshall | ✓ | 47.381ms | 21.39MB |

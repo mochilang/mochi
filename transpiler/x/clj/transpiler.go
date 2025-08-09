@@ -3,21 +3,21 @@
 package cljt
 
 import (
-        "bytes"
-        "encoding/json"
-        "fmt"
-        "io"
-        "os"
-        "path/filepath"
-        "sort"
-        "strconv"
-        "strings"
-        "unicode"
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
+	"os"
+	"path/filepath"
+	"sort"
+	"strconv"
+	"strings"
+	"unicode"
 
-        yaml "gopkg.in/yaml.v3"
+	yaml "gopkg.in/yaml.v3"
 
-        "mochi/parser"
-        "mochi/types"
+	"mochi/parser"
+	"mochi/types"
 )
 
 // mutatingCallFuncs lists functions that mutate their first argument when
@@ -26,7 +26,7 @@ import (
 // first argument. This avoids incorrectly rewriting normal function calls
 // like `strictly_diagonally_dominant(coefficient)`.
 var mutatingCallFuncs = map[string]bool{
-        "append": true,
+	"append": true,
 }
 
 // --- Simple Clojure AST ---
@@ -1014,30 +1014,30 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 	case s.ExternVar != nil, s.ExternFun != nil, s.ExternType != nil, s.ExternObject != nil:
 		// extern declarations only affect type checking
 		return nil, nil
-       case s.Expr != nil:
-               if c := callExpr(s.Expr.Expr); c != nil {
-                       if len(c.Args) > 0 {
-                               if name, ok := identName(c.Args[0]); ok {
-                                       if transpileEnv != nil {
-                                               if _, ok := transpileEnv.GetFunc(c.Func); ok && mutatingCallFuncs[c.Func] {
-                                                       n, err := transpileExpr(s.Expr.Expr)
-                                                       if err != nil {
-                                                               return nil, err
-                                                       }
-                                                       if declVars != nil && declVars[name] {
-                                                               return &List{Elems: []Node{Symbol("set!"), Symbol(name), n}}, nil
-                                                       }
-                                                       return &List{Elems: []Node{
-                                                               Symbol("alter-var-root"),
-                                                               &List{Elems: []Node{Symbol("var"), Symbol(name)}},
-                                                               &List{Elems: []Node{Symbol("constantly"), n}},
-                                                       }}, nil
-                                               }
-                                       }
-                               }
-                       }
-               }
-               return transpileExpr(s.Expr.Expr)
+	case s.Expr != nil:
+		if c := callExpr(s.Expr.Expr); c != nil {
+			if len(c.Args) > 0 {
+				if name, ok := identName(c.Args[0]); ok {
+					if transpileEnv != nil {
+						if _, ok := transpileEnv.GetFunc(c.Func); ok && mutatingCallFuncs[c.Func] {
+							n, err := transpileExpr(s.Expr.Expr)
+							if err != nil {
+								return nil, err
+							}
+							if declVars != nil && declVars[name] {
+								return &List{Elems: []Node{Symbol("set!"), Symbol(name), n}}, nil
+							}
+							return &List{Elems: []Node{
+								Symbol("alter-var-root"),
+								&List{Elems: []Node{Symbol("var"), Symbol(name)}},
+								&List{Elems: []Node{Symbol("constantly"), n}},
+							}}, nil
+						}
+					}
+				}
+			}
+		}
+		return transpileExpr(s.Expr.Expr)
 	case s.If != nil:
 		return transpileIfStmt(s.If)
 	case s.Let != nil:
@@ -2053,7 +2053,11 @@ func transpilePostfix(p *parser.PostfixExpr) (Node, error) {
 			if err != nil {
 				return nil, err
 			}
-			if isMapNode(n) || isStringNode(i) {
+			if isStringNode(n) {
+				// Indexing a string returns a one-character substring
+				one := &List{Elems: []Node{Symbol("+"), i, IntLit(1)}}
+				n = &List{Elems: []Node{Symbol("subs"), n, i, one}}
+			} else if isMapNode(n) || isStringNode(i) {
 				n = &List{Elems: []Node{Symbol("get"), n, i}}
 			} else if l, ok := n.(*List); ok && len(l.Elems) == 2 {
 				if kw, ok1 := l.Elems[0].(Keyword); ok1 {
