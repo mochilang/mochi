@@ -298,7 +298,7 @@ func emitListConversion(w io.Writer, expr Expr, target string) error {
 				return err
 			}
 		}
-		if _, err := io.WriteString(w, " as List).map((e) => ("); err != nil {
+               if _, err := io.WriteString(w, " as List<dynamic>).map((e) => ("); err != nil {
 			return err
 		}
 		if err := emitListConversion(w, &Name{Name: "e"}, elem); err != nil {
@@ -321,7 +321,7 @@ func emitListConversion(w io.Writer, expr Expr, target string) error {
 				return err
 			}
 		}
-		if _, err := io.WriteString(w, " as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList()"); err != nil {
+               if _, err := io.WriteString(w, " as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList()"); err != nil {
 			return err
 		}
 		return nil
