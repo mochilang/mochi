@@ -1,3 +1,1 @@
-../../../tests/algorithms/x/Dart/electronics/electric_power.dart:74:10: Error: Method not found: 'floor'.
-  return floor(x * m + 0.5) / m;
-         ^^^^^
+{"duration_us":14870,"memory_bytes":4456448,"name":"main"}
