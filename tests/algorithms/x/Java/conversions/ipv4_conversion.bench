@@ -1,7 +1,5 @@
--1062731775
-167772415
--1062731775
-167772415
-Exception in thread "main" java.lang.RuntimeException: Invalid decimal IPv4 address
-	at Main.decimal_to_ipv4(Main.java:109)
-	at Main.main(Main.java:140)
+{
+  "duration_us": 40264,
+  "memory_bytes": 57712,
+  "name": "main"
+}
