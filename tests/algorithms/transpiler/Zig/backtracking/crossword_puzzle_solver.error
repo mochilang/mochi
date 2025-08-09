@@ -1,0 +1,4 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/backtracking/crossword_puzzle_solver.zig:67:56: error: expected type '[]u8', found '[]const u8'
+/workspace/mochi/tests/algorithms/transpiler/Zig/backtracking/crossword_puzzle_solver.zig:67:56: note: cast discards const qualifier
+/workspace/mochi/tests/algorithms/transpiler/Zig/backtracking/crossword_puzzle_solver.zig:12:49: note: parameter type declared here

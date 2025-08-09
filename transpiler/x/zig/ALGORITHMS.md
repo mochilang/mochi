@@ -2,24 +2,24 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-09 12:05 +0700
+Last updated: 2025-08-09 16:15 +0700
 
-## Program Checklist (168/1077)
+## Program Checklist (166/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 1.114ms | 512.0 KB |
-| 2 | backtracking/all_permutations | ✓ | 10.646ms | 2.4 MB |
-| 3 | backtracking/all_subsequences | ✓ | 1.176ms | 572.0 KB |
-| 4 | backtracking/coloring | ✓ | 600µs | 256.0 KB |
-| 5 | backtracking/combination_sum | ✓ | 893µs | 384.0 KB |
-| 6 | backtracking/crossword_puzzle_solver | ✓ | 835µs | 384.0 KB |
-| 7 | backtracking/hamiltonian_cycle | ✓ | 235µs |  |
-| 8 | backtracking/knight_tour | ✓ | 563µs | 256.0 KB |
-| 9 | backtracking/match_word_pattern | ✓ | 6.807ms | 1.4 MB |
-| 10 | backtracking/minimax | ✓ | 336µs | 256.0 KB |
-| 11 | backtracking/n_queens | ✓ | 1.663ms | 384.0 KB |
-| 12 | backtracking/n_queens_math | ✓ | 2.652ms | 768.0 KB |
-| 13 | backtracking/power_sum | ✓ | 642µs | 256.0 KB |
+| 1 | backtracking/all_combinations | ✓ | 1.401ms | 384.0 KB |
+| 2 | backtracking/all_permutations | ✓ | 10.884ms | 2.4 MB |
+| 3 | backtracking/all_subsequences | ✓ | 1.552ms | 512.0 KB |
+| 4 | backtracking/coloring | ✓ | 720µs | 384.0 KB |
+| 5 | backtracking/combination_sum | ✓ | 1.294ms | 384.0 KB |
+| 6 | backtracking/crossword_puzzle_solver |   | 835µs | 384.0 KB |
+| 7 | backtracking/hamiltonian_cycle | ✓ | 221µs |  |
+| 8 | backtracking/knight_tour |   | 563µs | 256.0 KB |
+| 9 | backtracking/match_word_pattern | ✓ | 5.871ms | 1.6 MB |
+| 10 | backtracking/minimax | ✓ | 387µs | 256.0 KB |
+| 11 | backtracking/n_queens | ✓ | 1.789ms | 512.0 KB |
+| 12 | backtracking/n_queens_math | ✓ | 2.375ms | 768.0 KB |
+| 13 | backtracking/power_sum | ✓ | 474µs | 128.0 KB |
 | 14 | backtracking/rat_in_maze | ✓ | 2.022ms | 640.0 KB |
 | 15 | backtracking/sudoku | ✓ | 47.423ms | 7.9 MB |
 | 16 | backtracking/sum_of_subsets | ✓ | 1.215ms | 256.0 KB |

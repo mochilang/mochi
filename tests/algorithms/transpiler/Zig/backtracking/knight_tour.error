@@ -1,0 +1,4 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/backtracking/knight_tour.zig:46:21: error: expected type '[][]i64', found '[]const []i64'
+/workspace/mochi/tests/algorithms/transpiler/Zig/backtracking/knight_tour.zig:46:21: note: cast discards const qualifier
+/workspace/mochi/tests/algorithms/transpiler/Zig/backtracking/knight_tour.zig:29:29: note: parameter type declared here
