@@ -7152,6 +7152,11 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("            if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);\n")
 		buf.WriteString("            return java.util.Arrays.deepToString((Object[]) v);\n")
 		buf.WriteString("        }\n")
+		buf.WriteString("        if (v instanceof Double || v instanceof Float) {\n")
+		buf.WriteString("            double d = ((Number) v).doubleValue();\n")
+		buf.WriteString("            if (d == Math.rint(d)) return String.valueOf((long) d);\n")
+		buf.WriteString("            return String.valueOf(d);\n")
+		buf.WriteString("        }\n")
 		buf.WriteString("        return String.valueOf(v);\n")
 		buf.WriteString("    }\n")
 	}

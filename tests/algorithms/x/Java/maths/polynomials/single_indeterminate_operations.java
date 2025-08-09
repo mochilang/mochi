@@ -1,8 +1,8 @@
 public class Main {
     static class Polynomial {
-        int degree;
+        long degree;
         double[] coefficients;
-        Polynomial(int degree, double[] coefficients) {
+        Polynomial(long degree, double[] coefficients) {
             this.degree = degree;
             this.coefficients = coefficients;
         }
@@ -15,15 +15,15 @@ public class Main {
 
     static double[] copy_list(double[] xs) {
         double[] res = ((double[])(new double[]{}));
-        int i = 0;
+        long i = 0;
         while (i < xs.length) {
-            res = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(res), java.util.stream.DoubleStream.of(xs[i])).toArray()));
+            res = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(res), java.util.stream.DoubleStream.of(xs[(int)(i)])).toArray()));
             i = i + 1;
         }
         return res;
     }
 
-    static Polynomial polynomial_new(int degree, double[] coeffs) {
+    static Polynomial polynomial_new(long degree, double[] coeffs) {
         if (coeffs.length != degree + 1) {
             throw new RuntimeException(String.valueOf("The number of coefficients should be equal to the degree + 1."));
         }
@@ -33,17 +33,17 @@ public class Main {
     static Polynomial add(Polynomial p, Polynomial q) {
         if (p.degree > q.degree) {
             double[] coeffs = ((double[])(copy_list(((double[])(p.coefficients)))));
-            int i_1 = 0;
+            long i_1 = 0;
             while (i_1 <= q.degree) {
-coeffs[i_1] = coeffs[i_1] + q.coefficients[i_1];
+coeffs[(int)(i_1)] = coeffs[(int)(i_1)] + q.coefficients[(int)(i_1)];
                 i_1 = i_1 + 1;
             }
             return new Polynomial(p.degree, coeffs);
         } else {
             double[] coeffs_1 = ((double[])(copy_list(((double[])(q.coefficients)))));
-            int i_2 = 0;
+            long i_2 = 0;
             while (i_2 <= p.degree) {
-coeffs_1[i_2] = coeffs_1[i_2] + p.coefficients[i_2];
+coeffs_1[(int)(i_2)] = coeffs_1[(int)(i_2)] + p.coefficients[(int)(i_2)];
                 i_2 = i_2 + 1;
             }
             return new Polynomial(q.degree, coeffs_1);
@@ -52,9 +52,9 @@ coeffs_1[i_2] = coeffs_1[i_2] + p.coefficients[i_2];
 
     static Polynomial neg(Polynomial p) {
         double[] coeffs_2 = ((double[])(new double[]{}));
-        int i_3 = 0;
+        long i_3 = 0;
         while (i_3 <= p.degree) {
-            coeffs_2 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(coeffs_2), java.util.stream.DoubleStream.of(-p.coefficients[i_3])).toArray()));
+            coeffs_2 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(coeffs_2), java.util.stream.DoubleStream.of(-p.coefficients[(int)(i_3)])).toArray()));
             i_3 = i_3 + 1;
         }
         return new Polynomial(p.degree, coeffs_2);
@@ -65,18 +65,18 @@ coeffs_1[i_2] = coeffs_1[i_2] + p.coefficients[i_2];
     }
 
     static Polynomial mul(Polynomial p, Polynomial q) {
-        int size = p.degree + q.degree + 1;
+        long size = p.degree + q.degree + 1;
         double[] coeffs_3 = ((double[])(new double[]{}));
-        int i_4 = 0;
+        long i_4 = 0;
         while (i_4 < size) {
             coeffs_3 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(coeffs_3), java.util.stream.DoubleStream.of(0.0)).toArray()));
             i_4 = i_4 + 1;
         }
         i_4 = 0;
         while (i_4 <= p.degree) {
-            int j = 0;
+            long j = 0;
             while (j <= q.degree) {
-coeffs_3[i_4 + j] = coeffs_3[i_4 + j] + p.coefficients[i_4] * q.coefficients[j];
+coeffs_3[(int)(i_4 + j)] = coeffs_3[(int)(i_4 + j)] + p.coefficients[(int)(i_4)] * q.coefficients[(int)(j)];
                 j = j + 1;
             }
             i_4 = i_4 + 1;
@@ -84,9 +84,9 @@ coeffs_3[i_4 + j] = coeffs_3[i_4 + j] + p.coefficients[i_4] * q.coefficients[j];
         return new Polynomial(p.degree + q.degree, coeffs_3);
     }
 
-    static double power(double base, int exp) {
+    static double power(double base, long exp) {
         double result = 1.0;
-        int i_5 = 0;
+        long i_5 = 0;
         while (i_5 < exp) {
             result = result * base;
             i_5 = i_5 + 1;
@@ -96,9 +96,9 @@ coeffs_3[i_4 + j] = coeffs_3[i_4 + j] + p.coefficients[i_4] * q.coefficients[j];
 
     static double evaluate(Polynomial p, double x) {
         double result_1 = 0.0;
-        int i_6 = 0;
+        long i_6 = 0;
         while (i_6 <= p.degree) {
-            result_1 = result_1 + p.coefficients[i_6] * power(x, i_6);
+            result_1 = result_1 + p.coefficients[(int)(i_6)] * power(x, i_6);
             i_6 = i_6 + 1;
         }
         return result_1;
@@ -106,9 +106,9 @@ coeffs_3[i_4 + j] = coeffs_3[i_4 + j] + p.coefficients[i_4] * q.coefficients[j];
 
     static String poly_to_string(Polynomial p) {
         String s = "";
-        int i_7 = p.degree;
+        long i_7 = p.degree;
         while (i_7 >= 0) {
-            double coeff = p.coefficients[i_7];
+            double coeff = p.coefficients[(int)(i_7)];
             if (coeff != 0.0) {
                 if (_runeLen(s) > 0) {
                     if (coeff > 0.0) {
@@ -141,9 +141,9 @@ coeffs_3[i_4 + j] = coeffs_3[i_4 + j] + p.coefficients[i_4] * q.coefficients[j];
             return new Polynomial(0, new double[]{0.0});
         }
         double[] coeffs_4 = ((double[])(new double[]{}));
-        int i_8 = 0;
+        long i_8 = 0;
         while (i_8 < p.degree) {
-            coeffs_4 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(coeffs_4), java.util.stream.DoubleStream.of(p.coefficients[i_8 + 1] * ((Number)(i_8 + 1)).doubleValue())).toArray()));
+            coeffs_4 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(coeffs_4), java.util.stream.DoubleStream.of(p.coefficients[(int)(i_8 + 1)] * ((Number)(i_8 + 1)).doubleValue())).toArray()));
             i_8 = i_8 + 1;
         }
         return new Polynomial(p.degree - 1, coeffs_4);
@@ -151,9 +151,9 @@ coeffs_3[i_4 + j] = coeffs_3[i_4 + j] + p.coefficients[i_4] * q.coefficients[j];
 
     static Polynomial integral(Polynomial p, double constant) {
         double[] coeffs_5 = ((double[])(new double[]{constant}));
-        int i_9 = 0;
+        long i_9 = 0;
         while (i_9 <= p.degree) {
-            coeffs_5 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(coeffs_5), java.util.stream.DoubleStream.of(p.coefficients[i_9] / ((Number)(i_9 + 1)).doubleValue())).toArray()));
+            coeffs_5 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(coeffs_5), java.util.stream.DoubleStream.of(p.coefficients[(int)(i_9)] / ((Number)(i_9 + 1)).doubleValue())).toArray()));
             i_9 = i_9 + 1;
         }
         return new Polynomial(p.degree + 1, coeffs_5);
@@ -163,9 +163,9 @@ coeffs_3[i_4 + j] = coeffs_3[i_4 + j] + p.coefficients[i_4] * q.coefficients[j];
         if (p.degree != q.degree) {
             return false;
         }
-        int i_10 = 0;
+        long i_10 = 0;
         while (i_10 <= p.degree) {
-            if (p.coefficients[i_10] != q.coefficients[i_10]) {
+            if (p.coefficients[(int)(i_10)] != q.coefficients[(int)(i_10)]) {
                 return false;
             }
             i_10 = i_10 + 1;
@@ -211,41 +211,7 @@ coeffs_3[i_4 + j] = coeffs_3[i_4 + j] + p.coefficients[i_4] * q.coefficients[j];
         System.out.println(poly_to_string(d));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 
     static int _runeLen(String s) {
@@ -264,6 +230,11 @@ coeffs_3[i_4 + j] = coeffs_3[i_4 + j] + p.coefficients[i_4] * q.coefficients[j];
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

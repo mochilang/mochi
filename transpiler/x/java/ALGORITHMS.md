@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-09 16:08 GMT+7
+Last updated: 2025-08-09 16:28 GMT+7
 
-## Algorithms Golden Test Checklist (920/1077)
+## Algorithms Golden Test Checklist (921/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -638,7 +638,7 @@ Last updated: 2025-08-09 16:08 GMT+7
 | 629 | maths/points_are_collinear_3d | ✓ | 15.0ms | 1.33KB |
 | 630 | maths/pollard_rho | ✓ | 17.0ms | 1.15KB |
 | 631 | maths/polynomial_evaluation | ✓ | 15.0ms | 10.25KB |
-| 632 | maths/polynomials/single_indeterminate_operations | error |  |  |
+| 632 | maths/polynomials/single_indeterminate_operations | ✓ | 45.0ms | 115.23KB |
 | 633 | maths/power_using_recursion | ✓ | 21.0ms | 448B |
 | 634 | maths/prime_check | ✓ | 16.0ms | 768B |
 | 635 | maths/prime_factors | ✓ | 26.0ms | 46.35KB |
