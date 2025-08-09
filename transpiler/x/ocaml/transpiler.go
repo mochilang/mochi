@@ -635,6 +635,7 @@ var ocamlReserved = map[string]bool{
 	"sig":  true,
 	"done": true,
 	"ref":  true,
+	"to":   true,
 }
 
 func sanitizeIdent(s string) string {
@@ -3386,6 +3387,9 @@ func defaultValueExpr(typ string) Expr {
 		}
 		return &MapLit{Items: nil}
 	}
+	if strings.HasPrefix(typ, "map-dyn") {
+		return &MapLit{Items: nil, Dynamic: true}
+	}
 	return &IntLit{Value: 0}
 }
 
@@ -3679,6 +3683,9 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		var valTyp string
 		if st.Var.Type != nil {
 			typ = typeRefString(st.Var.Type)
+			if ts := typeString(types.ResolveTypeRef(st.Var.Type, env)); ts != "" {
+				typ = ts
+			}
 		}
 		if st.Var.Value != nil {
 			valExpr, typVal, err := convertExpr(st.Var.Value, env, vars)
@@ -3828,6 +3835,11 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		if valTyp != "" && info.typ == "" {
 			info.typ = valTyp
 			vars[st.Assign.Name] = info
+		}
+		if info.typ != "" && valTyp == info.typ {
+			if strings.HasPrefix(info.typ, "map") || strings.HasPrefix(info.typ, "list") || info.typ == "map" || info.typ == "list" {
+				valExpr = &CastExpr{Expr: valExpr, Type: "obj_to_" + info.typ}
+			}
 		}
 		return &AssignStmt{Name: st.Assign.Name, Expr: valExpr}, nil
 	case st.Expr != nil:
@@ -4072,12 +4084,27 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		for _, p := range st.Fun.Params {
 			if p.Type != nil {
 				typ := typeRefString(p.Type)
+				if ts := typeString(types.ResolveTypeRef(p.Type, env)); ts != "" {
+					typ = ts
+				}
 				if typ == "int" || typ == "float" {
 					exprCode := ""
 					if mutated[p.Name] {
 						exprCode = fmt.Sprintf("(Obj.magic !%s : %s)", sanitizeIdent(p.Name), typ)
 					} else {
 						exprCode = fmt.Sprintf("(Obj.magic %s : %s)", sanitizeIdent(p.Name), typ)
+					}
+					if mutated[p.Name] {
+						casts = append(casts, &AssignStmt{Name: p.Name, Expr: &RawExpr{Code: exprCode}})
+					} else {
+						casts = append(casts, &LetStmt{Name: p.Name, Expr: &RawExpr{Code: exprCode}})
+					}
+				} else if typ != "" && typ != "bool" && typ != "string" && typ != "bigint" && typ != "bigrat" && !strings.HasPrefix(typ, "func") {
+					exprCode := ""
+					if mutated[p.Name] {
+						exprCode = fmt.Sprintf("(Obj.magic !%s : %s)", sanitizeIdent(p.Name), ocamlType(typ))
+					} else {
+						exprCode = fmt.Sprintf("(Obj.magic %s : %s)", sanitizeIdent(p.Name), ocamlType(typ))
 					}
 					if mutated[p.Name] {
 						casts = append(casts, &AssignStmt{Name: p.Name, Expr: &RawExpr{Code: exprCode}})
@@ -4923,12 +4950,17 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 					}
 					args[j] = ex
 				}
-				ret := ""
-				if strings.HasPrefix(typ, "func-") {
-					ret = strings.TrimPrefix(typ, "func-")
-					if ret == "any" {
+				ret := typ
+				for j := 0; j < len(op.Call.Args); j++ {
+					if strings.HasPrefix(ret, "func-") {
+						ret = strings.TrimPrefix(ret, "func-")
+					} else {
 						ret = ""
+						break
 					}
+				}
+				if ret == "any" {
+					ret = ""
 				}
 				expr = &ExprCall{Fn: expr, Args: args, Ret: ret}
 				typ = ret
@@ -6350,18 +6382,25 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		}
 		ret := v.ret
 		if ret == "" {
-			if strings.HasPrefix(v.typ, "func-") {
-				ret = strings.TrimPrefix(v.typ, "func-")
-				if ret == "any" {
-					ret = ""
-				}
-			} else if t, err := env.GetVar(c.Func); err == nil {
-				if ft, ok := t.(types.FuncType); ok {
-					if r := typeString(ft.Return); r != "" {
-						ret = r
+			ret = v.typ
+			if ret == "" {
+				if t, err := env.GetVar(c.Func); err == nil {
+					if ft, ok := t.(types.FuncType); ok {
+						ret = typeString(ft.Return)
 					}
 				}
 			}
+		}
+		for i := 0; i < len(c.Args); i++ {
+			if strings.HasPrefix(ret, "func-") {
+				ret = strings.TrimPrefix(ret, "func-")
+			} else {
+				ret = ""
+				break
+			}
+		}
+		if ret == "any" {
+			ret = ""
 		}
 		return &FuncCall{Name: sanitizeIdent(c.Func), Args: args, Ret: ret}, ret, nil
 	}

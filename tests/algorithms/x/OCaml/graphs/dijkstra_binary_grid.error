@@ -1,0 +1,6 @@
+exit status 2
+File "/workspace/mochi/tests/algorithms/x/OCaml/graphs/dijkstra_binary_grid.ml", line 154, characters 27-46:
+154 |   prev := ((__str (n_key), Obj.repr (!current)) :: List.remove_assoc (__str (n_key)) (Obj.magic (!prev) : (string * Obj.t) list));
+                                 ^^^^^^^^^^^^^^^^^^^
+Error: This expression has type Obj.t but an expression was expected of type
+         (string * Obj.t) list

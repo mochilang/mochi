@@ -1,0 +1,6 @@
+exit status 2
+File "/workspace/mochi/tests/algorithms/x/OCaml/graphs/prim.ml", line 160, characters 52-55:
+160 |   if (not (in_list (!known) (Obj.repr (v))) && (w < cur)) then (
+                                                          ^^^
+Error: This expression has type int but an expression was expected of type
+         string
