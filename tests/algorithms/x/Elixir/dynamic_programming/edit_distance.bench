@@ -1,24 +1,5 @@
-5
-9
-0
-5
-9
-0
 {
-  "duration_us": 66820,
-  "memory_bytes": 25576,
+  "duration_us": 14400,
+  "memory_bytes": 6752,
   "name": "main"
 }
-warning: Range.new/2 and first..last default to a step of -1 when last < first. Use Range.new(first, last, -1) or first..last//-1, or pass 1 if that was your intention
-  /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/edit_distance.exs:89: anonymous fn/3 in Main.min_dist_top_down/2
-  (elixir 1.18.3) lib/enum.ex:4507: Enum.reduce/3
-  /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/edit_distance.exs:87: Main.min_dist_top_down/2
-  /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/edit_distance.exs:153: Main.main/0
-  /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/edit_distance.exs:165: (file)
-
-warning: Range.new/2 and first..last default to a step of -1 when last < first. Use Range.new(first, last, -1) or first..last//-1, or pass 1 if that was your intention
-  /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/edit_distance.exs:87: Main.min_dist_top_down/2
-  /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/edit_distance.exs:154: Main.main/0
-  /workspace/mochi/tests/algorithms/x/Elixir/dynamic_programming/edit_distance.exs:165: (file)
-  (elixir 1.18.3) src/elixir_compiler.erl:77: :elixir_compiler.dispatch/4
-  (elixir 1.18.3) src/elixir_compiler.erl:52: :elixir_compiler.compile/4
