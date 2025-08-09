@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Python`.
-Last updated: 2025-08-09 10:48 GMT+7
+Last updated: 2025-08-09 16:11 GMT+7
 
-## Algorithms Golden Test Checklist (742/1077)
+## Algorithms Golden Test Checklist (741/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 63.0µs | 12.88MB |
@@ -306,7 +306,7 @@ Last updated: 2025-08-09 10:48 GMT+7
 | 297 | divide_and_conquer/peak | ✓ | 29.0µs | 12.63MB |
 | 298 | divide_and_conquer/power | ✓ | 48.0µs | 12.18MB |
 | 299 | divide_and_conquer/strassen_matrix_multiplication | ✓ | 4.0ms | 13.96MB |
-| 300 | docs/conf | ✓ | 18.0µs | 12.29MB |
+| 300 | docs/conf | ✓ | 18.0µs | 12.62MB |
 | 301 | dynamic_programming/abbreviation | ✓ | 130.0µs | 13.58MB |
 | 302 | dynamic_programming/all_construct | ✓ | 248.0µs | 12.60MB |
 | 303 | dynamic_programming/bitmask | ✓ | 30.0µs | 12.66MB |
@@ -328,7 +328,7 @@ Last updated: 2025-08-09 10:48 GMT+7
 | 319 | dynamic_programming/longest_common_substring | ✓ | 146.0µs | 12.32MB |
 | 320 | dynamic_programming/longest_increasing_subsequence | ✓ | 101.0µs | 12.75MB |
 | 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 131.0µs | 12.79MB |
-| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | ✓ | 62.0µs | 12.53MB |
+| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | error | 62.0µs | 12.53MB |
 | 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 134.0µs | 13.03MB |
 | 324 | dynamic_programming/matrix_chain_multiplication | ✓ | 45.0µs | 12.47MB |
 | 325 | dynamic_programming/matrix_chain_order | ✓ | 119.0µs | 13.05MB |
