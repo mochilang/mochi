@@ -1,0 +1,22 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/physics/ideal_gas_law.scala:36: error: type mismatch;
+ found   : String("Invalid inputs. Enter positive value.")
+ required: Throwable
+    "Invalid inputs. Enter positive value."
+    ^
+/workspace/mochi/tests/algorithms/x/Scala/physics/ideal_gas_law.scala:44: error: type mismatch;
+ found   : String("Invalid inputs. Enter positive value.")
+ required: Throwable
+    "Invalid inputs. Enter positive value."
+    ^
+/workspace/mochi/tests/algorithms/x/Scala/physics/ideal_gas_law.scala:52: error: type mismatch;
+ found   : String("Invalid inputs. Enter positive value.")
+ required: Throwable
+    "Invalid inputs. Enter positive value."
+    ^
+/workspace/mochi/tests/algorithms/x/Scala/physics/ideal_gas_law.scala:60: error: type mismatch;
+ found   : String("Invalid inputs. Enter positive value.")
+ required: Throwable
+    "Invalid inputs. Enter positive value."
+    ^
+four errors found
