@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Python`.
-Last updated: 2025-08-09 10:28 GMT+7
+Last updated: 2025-08-09 10:48 GMT+7
 
-## Algorithms Golden Test Checklist (741/1077)
+## Algorithms Golden Test Checklist (742/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 63.0µs | 12.88MB |
@@ -595,8 +595,8 @@ Last updated: 2025-08-09 10:28 GMT+7
 | 586 | maths/josephus_problem | ✓ | 27.0µs | 12.78MB |
 | 587 | maths/juggler_sequence | ✓ | 28.0µs | 12.66MB |
 | 588 | maths/karatsuba | ✓ | 31.0µs | 12.56MB |
-| 589 | maths/kth_lexicographic_permutation | ✓ |  |  |
-| 590 | maths/largest_of_very_large_numbers | error |  |  |
+| 589 | maths/kth_lexicographic_permutation | ✓ | 37.0µs | 13.50MB |
+| 590 | maths/largest_of_very_large_numbers | ✓ | 56.0µs | 12.43MB |
 | 591 | maths/least_common_multiple | ✓ | 15.0µs | 12.87MB |
 | 592 | maths/line_length | ✓ | 325.0µs | 12.87MB |
 | 593 | maths/liouville_lambda | ✓ | 15.0µs | 12.54MB |
