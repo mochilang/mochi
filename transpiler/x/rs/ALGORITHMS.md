@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-09 10:40 GMT+7
+Last updated: 2025-08-09 16:06 GMT+7
 
-## Algorithms Golden Test Checklist (308/1077)
+## Algorithms Golden Test Checklist (309/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -306,16 +306,16 @@ Last updated: 2025-08-09 10:40 GMT+7
 | 297 | divide_and_conquer/peak | ✓ | 36µs | 2.1 MB |
 | 298 | divide_and_conquer/power | ✓ | 43µs | 2.0 MB |
 | 299 | divide_and_conquer/strassen_matrix_multiplication | ✓ | 1.627ms | 2.1 MB |
-| 300 | docs/conf | ✓ | 19µs | 2.0 MB |
-| 301 | dynamic_programming/abbreviation | ✓ | 109µs | 1.9 MB |
-| 302 | dynamic_programming/all_construct | error |  |  |
-| 303 | dynamic_programming/bitmask | ✓ | 27µs | 2.0 MB |
-| 304 | dynamic_programming/catalan_numbers | ✓ | 66µs | 2.1 MB |
-| 305 | dynamic_programming/climbing_stairs | ✓ | 30µs | 1.9 MB |
-| 306 | dynamic_programming/combination_sum_iv | ✓ | 61µs | 1.8 MB |
-| 307 | dynamic_programming/edit_distance | ✓ | 130µs | 2.1 MB |
-| 308 | dynamic_programming/factorial | ✓ | 45µs | 2.0 MB |
-| 309 | dynamic_programming/fast_fibonacci | ✓ | 25µs | 1.8 MB |
+| 300 | docs/conf | ✓ | 55µs | 2.0 MB |
+| 301 | dynamic_programming/abbreviation | ✓ | 272µs | 2.3 MB |
+| 302 | dynamic_programming/all_construct | ✓ | 446µs | 2.1 MB |
+| 303 | dynamic_programming/bitmask | ✓ | 36µs | 2.0 MB |
+| 304 | dynamic_programming/catalan_numbers | ✓ | 86µs | 1.9 MB |
+| 305 | dynamic_programming/climbing_stairs | ✓ | 39µs | 2.0 MB |
+| 306 | dynamic_programming/combination_sum_iv | ✓ | 137µs | 1.9 MB |
+| 307 | dynamic_programming/edit_distance | ✓ | 196µs | 2.1 MB |
+| 308 | dynamic_programming/factorial | ✓ | 68µs | 2.1 MB |
+| 309 | dynamic_programming/fast_fibonacci | ✓ | 34µs | 2.0 MB |
 | 310 | dynamic_programming/fibonacci | ✓ | 90µs | 2.1 MB |
 | 311 | dynamic_programming/fizz_buzz | ✓ | 61µs | 2.2 MB |
 | 312 | dynamic_programming/floyd_warshall | ✓ | 64µs | 2.1 MB |
