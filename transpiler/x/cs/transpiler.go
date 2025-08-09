@@ -2619,7 +2619,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 				break
 			}
 		}
-		if !found && len(st.Order) > 0 {
+		if !found {
 			fields := make([]StructField, len(st.Order))
 			for i, n := range st.Order {
 				fields[i] = StructField{Name: n, Type: csTypeFromType(st.Fields[n])}
@@ -4385,6 +4385,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if name == "nil" && len(p.Selector.Tail) == 0 {
 			return &RawExpr{Code: "null", Type: "object"}, nil
 		}
+		if len(p.Selector.Tail) == 0 {
+			if st, ok := structTypes[name]; ok && len(st.Order) == 0 {
+				return &StructLit{Name: st.Name, Fields: nil}, nil
+			}
+		}
 		expr := Expr(&VarRef{Name: name})
 		for _, t := range p.Selector.Tail {
 			expr = &FieldExpr{Target: expr, Name: t}
@@ -4491,6 +4496,31 @@ func compileMatchExpr(me *parser.MatchExpr) (Expr, error) {
 				lit.emit(&lbuf)
 				body.WriteString(lbuf.String())
 				body.WriteString(") { ")
+				var rbuf bytes.Buffer
+				res.emit(&rbuf)
+				body.WriteString("return " + rbuf.String() + "; }")
+				continue
+			}
+		}
+
+		if name, ok := simpleIdent(c.Pattern); ok {
+			if st, ok2 := structTypes[name]; ok2 && len(st.Order) == 0 {
+				res, err := compileExpr(c.Result)
+				if err != nil {
+					return nil, err
+				}
+				t := typeOfExpr(res)
+				if i > 0 {
+					body.WriteString(" else ")
+				}
+				body.WriteString("if (__t is " + name + ") { ")
+				if t != "" {
+					if retType == "object" {
+						retType = t
+					} else if retType != t {
+						retType = "object"
+					}
+				}
 				var rbuf bytes.Buffer
 				res.emit(&rbuf)
 				body.WriteString("return " + rbuf.String() + "; }")

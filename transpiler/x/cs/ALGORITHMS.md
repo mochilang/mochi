@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-09 10:27 GMT+7
+Last updated: 2025-08-09 10:44 GMT+7
 
-## Algorithms Golden Test Checklist (997/1077)
+## Algorithms Golden Test Checklist (998/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -127,47 +127,47 @@ Last updated: 2025-08-09 10:27 GMT+7
 | 118 | computer_vision/mean_threshold | ✓ | 2.0ms | 17.64KB |
 | 119 | computer_vision/mosaic_augmentation | ✓ | 4.0ms | 4.76MB |
 | 120 | computer_vision/pooling_functions | ✓ | 2.0ms | 21.16KB |
-| 121 | conversions/astronomical_length_scale_conversion | ✓ | 4.0ms | 16.82KB |
+| 121 | conversions/astronomical_length_scale_conversion | ✓ | 3.0ms | 16.82KB |
 | 122 | conversions/binary_to_decimal | ✓ | 2.0ms | 18.30KB |
-| 123 | conversions/binary_to_hexadecimal | ✓ | 1.0ms | 17.53KB |
+| 123 | conversions/binary_to_hexadecimal | ✓ | 2.0ms | 17.53KB |
 | 124 | conversions/binary_to_octal | ✓ | 2.0ms | 17.96KB |
 | 125 | conversions/convert_number_to_words | ✓ | 2.0ms | 23.45KB |
-| 126 | conversions/decimal_to_any | ✓ | 1.0ms | 13.22KB |
+| 126 | conversions/decimal_to_any | ✓ | 2.0ms | 13.22KB |
 | 127 | conversions/decimal_to_binary | ✓ | 2.0ms | 17.71KB |
-| 128 | conversions/decimal_to_hexadecimal | ✓ | 1.0ms | 13.59KB |
+| 128 | conversions/decimal_to_hexadecimal | ✓ | 2.0ms | 13.59KB |
 | 129 | conversions/decimal_to_octal | ✓ | 2.0ms | 16.73KB |
 | 130 | conversions/energy_conversions | ✓ | 2.0ms | 14.88KB |
-| 131 | conversions/excel_title_to_column | ✓ | 1.0ms | 17.30KB |
-| 132 | conversions/hex_to_bin | ✓ | 2.0ms | 22.13KB |
+| 131 | conversions/excel_title_to_column | ✓ | 2.0ms | 17.30KB |
+| 132 | conversions/hex_to_bin | ✓ | 3.0ms | 22.13KB |
 | 133 | conversions/hexadecimal_to_decimal | ✓ | 2.0ms | 18.20KB |
-| 134 | conversions/ipv4_conversion | ✓ | 2.0ms | 30.16KB |
+| 134 | conversions/ipv4_conversion | ✓ | 4.0ms | 30.16KB |
 | 135 | conversions/length_conversion | ✓ | 3.0ms | 15.19KB |
-| 136 | conversions/molecular_chemistry | ✓ | 1.0ms | 16.82KB |
+| 136 | conversions/molecular_chemistry | ✓ | 2.0ms | 16.63KB |
 | 137 | conversions/octal_to_binary | ✓ | 2.0ms | 18.12KB |
 | 138 | conversions/octal_to_decimal | ✓ | 2.0ms | 18.05KB |
 | 139 | conversions/octal_to_hexadecimal | ✓ | 2.0ms | 15.14KB |
 | 140 | conversions/prefix_conversions | ✓ | 3.0ms | 17.69KB |
 | 141 | conversions/prefix_conversions_string | ✓ | 2.0ms | 15.23KB |
-| 142 | conversions/pressure_conversions | ✓ | 2.0ms | 31.48KB |
+| 142 | conversions/pressure_conversions | ✓ | 3.0ms | 31.48KB |
 | 143 | conversions/rectangular_to_polar | ✓ | 2.0ms | 16.28KB |
-| 144 | conversions/rgb_cmyk_conversion | ✓ | 1.0ms | 18.76KB |
-| 145 | conversions/rgb_hsv_conversion | ✓ | 2.0ms | 18.34KB |
+| 144 | conversions/rgb_cmyk_conversion | ✓ | 2.0ms | 18.76KB |
+| 145 | conversions/rgb_hsv_conversion | ✓ | 2.0ms | 18.24KB |
 | 146 | conversions/roman_numerals | ✓ | 1.0µs | 320B |
-| 147 | conversions/speed_conversions | ✓ | 2.0ms | 14.74KB |
+| 147 | conversions/speed_conversions | ✓ | 2.0ms | 14.75KB |
 | 148 | conversions/temperature_conversions | ✓ | 2.0ms | 14.63KB |
-| 149 | conversions/time_conversions | ✓ | 3.0ms | 15.66KB |
+| 149 | conversions/time_conversions | ✓ | 3.0ms | 15.57KB |
 | 150 | conversions/volume_conversions | ✓ | 2.0ms | 14.51KB |
-| 151 | conversions/weight_conversion | ✓ | 2.0ms | 15.85KB |
+| 151 | conversions/weight_conversion | ✓ | 3.0ms | 15.85KB |
 | 152 | data_compression/burrows_wheeler | ✓ | 1.0ms | 23.09KB |
-| 153 | data_compression/huffman | ✓ | 10.0ms | 1.20MB |
-| 154 | data_compression/lempel_ziv | ✓ | 2.0ms | 18.99KB |
+| 153 | data_compression/huffman | ✓ | 9.0ms | 1.20MB |
+| 154 | data_compression/lempel_ziv | ✓ | 3.0ms | 18.96KB |
 | 155 | data_compression/lempel_ziv_decompress | ✓ | 1.0ms | 19.69KB |
 | 156 | data_compression/lz77 | ✓ | 1.0ms | 28.47KB |
 | 157 | data_compression/peak_signal_to_noise_ratio | ✓ | 1.0µs | 43.86KB |
 | 158 | data_compression/run_length_encoding | ✓ | 2.0ms | 22.90KB |
 | 159 | data_structures/arrays/equilibrium_index_in_array | ✓ | 2.0ms | 17.89KB |
 | 160 | data_structures/arrays/find_triplets_with_0_sum | ✓ | 2.0ms | 31.78KB |
-| 161 | data_structures/arrays/index_2d_array_in_1d | ✓ | 2.0ms | 20.27KB |
+| 161 | data_structures/arrays/index_2d_array_in_1d | ✓ | 2.0ms | 20.22KB |
 | 162 | data_structures/arrays/kth_largest_element | ✓ | 2.0ms | 16.73KB |
 | 163 | data_structures/arrays/median_two_array | ✓ | 2.0ms | 16.44KB |
 | 164 | data_structures/arrays/monotonic_array | ✓ | 1.0ms | 13.27KB |
@@ -183,7 +183,7 @@ Last updated: 2025-08-09 10:27 GMT+7
 | 174 | data_structures/binary_tree/binary_search_tree_recursive |   |  |  |
 | 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 2.0ms | 19.66KB |
 | 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 1.0ms | 16.66KB |
-| 177 | data_structures/binary_tree/binary_tree_path_sum | error |  |  |
+| 177 | data_structures/binary_tree/binary_tree_path_sum | ✓ | 12.0ms | 1.39MB |
 | 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 3.0ms | 25.28KB |
 | 179 | data_structures/binary_tree/distribute_coins | ✓ | 2.0ms | 17.16KB |
 | 180 | data_structures/binary_tree/fenwick_tree | ✓ | 1.0ms | 22.91KB |
