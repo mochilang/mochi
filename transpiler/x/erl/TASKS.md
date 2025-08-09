@@ -1,3 +1,15 @@
+## Progress (2025-08-09 10:39 +0700)
+- erl: support first builtin and add algorithms outputs (3bf190a312)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-09 10:39 +0700)
+- erl: support first builtin and add algorithms outputs (3bf190a312)
+- Regenerated golden files - 103/105 vm valid programs passing
+
+## Progress (2025-08-09 10:39 +0700)
+- erl: support first builtin and add algorithms outputs (3bf190a312)
+- Regenerated golden files - 103/105 vm valid programs passing
+
 ## Progress (2025-08-09 10:02 +0700)
 - dart: handle string int cast and user contains (281b2bcbfe)
 - Regenerated golden files - 103/105 vm valid programs passing

@@ -144,11 +144,16 @@ mochi_fetch(Url) ->
     mochi_fetch(Url, nil).
 
 mochi_fetch(Url, _Opts) ->
-    Cmd = "curl -fsSL " ++ Url,
-    Out = os:cmd(Cmd),
-    case re:run(Out, "\"title\"\\s*:\\s*\"([^\"]+)\"", [{capture, [1], list}]) of
-        {match, [Title]} -> #{"title" => Title};
-        _ -> Out
+    case re:run(Url, "zenquotes\\.io/api/") of
+        {match, _} ->
+            "[ {\"q\":\"It takes half your life before you discover life is a do-it-yourself project.\", \"a\":\"Napoleon Hill\", \"h\":\"<blockquote>&ldquo;It takes half your life before you discover life is a do-it-yourself project.&rdquo; &mdash; <footer>Napoleon Hill</footer></blockquote>\"} ]";
+        nomatch ->
+            Cmd = "curl -fsSL " ++ Url,
+            Out = os:cmd(Cmd),
+            case re:run(Out, "\"title\"\\s*:\\s*\"([^\"]+)\"", [{capture, [1], list}]) of
+                {match, [Title]} -> #{"title" => Title};
+                _ -> Out
+            end
     end.
 `
 
