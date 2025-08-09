@@ -1,5 +1,5 @@
-## Progress (2025-08-08 19:19 +0700)
-- Commit e0314a74a8: chore(lua): regenerate algorithm outputs
+## Progress (2025-08-09 10:39 +0700)
+- Commit 3bf190a312: erl: support first builtin and add algorithms outputs
 - Regenerated golden files - 82/105 vm valid programs passing
 
 ## Progress (2025-07-22 14:12 +0700)
