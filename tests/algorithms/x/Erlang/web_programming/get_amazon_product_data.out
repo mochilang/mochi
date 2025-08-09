@@ -1,0 +1,5 @@
+/workspace/mochi/tests/algorithms/x/Erlang/web_programming/get_amazon_product_data.erl:53:1: Warning: function mochi_safe_mul/2 is unused
+%   53| mochi_safe_mul(A, B) ->
+%     | ^
+
+function_clause

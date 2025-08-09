@@ -1,0 +1,13 @@
+/workspace/mochi/tests/algorithms/x/Erlang/web_programming/instagram_crawler.erl:39:1: Warning: function mochi_nth/2 is unused
+%   39| mochi_nth(I, L) ->
+%     | ^
+
+"GitHub (github) is Built for developers."
+"number_of_posts = 150"
+"number_of_followers = 120000"
+"number_of_followings = 16"
+"email = support@github.com"
+"website = https://github.com/readme"
+"profile_picture_url = https://instagram.com/pic.jpg"
+"is_verified = true"
+"is_private = false"

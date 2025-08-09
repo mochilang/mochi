@@ -134,6 +134,11 @@ mochi_nth(I, L) ->
     try lists:nth(I, L) catch _:_ -> nil end.
 `
 
+const helperFirst = `
+mochi_first(L) ->
+    try hd(L) catch _:_ -> nil end.
+`
+
 const helperFetch = `
 mochi_fetch(Url) ->
     mochi_fetch(Url, nil).
@@ -277,6 +282,7 @@ var useSafeArith bool
 var useSafeFmod bool
 var useMod bool
 var useNth bool
+var useFirst bool
 var mutatedFuncs map[string]int
 var benchMain bool
 
@@ -312,6 +318,7 @@ type Program struct {
 	UseSafeFmod     bool
 	UseMod          bool
 	UseNth          bool
+	UseFirst        bool
 }
 
 // context tracks variable aliases to emulate mutable variables.
@@ -3160,7 +3167,7 @@ func mapOp(op string) string {
 
 func builtinFunc(name string) bool {
 	switch name {
-	case "print", "append", "avg", "count", "len", "concat", "str", "sum", "min", "max", "values", "keys", "exists", "contains", "sha256", "json", "now", "input", "int", "abs", "upper", "lower", "indexOf", "parseIntStr", "indexof", "parseintstr", "repeat", "padstart", "bigrat", "num", "denom", "split", "reverse":
+	case "print", "append", "avg", "count", "len", "concat", "str", "sum", "min", "max", "values", "keys", "exists", "contains", "sha256", "json", "now", "input", "int", "abs", "upper", "lower", "indexOf", "parseIntStr", "indexof", "parseintstr", "repeat", "padstart", "bigrat", "num", "denom", "split", "reverse", "first":
 		return true
 	default:
 		return false
@@ -3356,6 +3363,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useSafeFmod = false
 	useMod = false
 	useNth = true
+	useFirst = false
 	mutatedFuncs = map[string]int{
 		"topple":       0,
 		"fill":         0,
@@ -3407,6 +3415,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	p.UseSafeFmod = useSafeFmod
 	p.UseMod = useMod
 	p.UseNth = useNth
+	p.UseFirst = useFirst
 	return p, nil
 }
 
@@ -5317,6 +5326,9 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 		} else if ce.Func == "indexof" && len(ce.Args) == 2 {
 			useIndexOf = true
 			return &CallExpr{Func: "mochi_index_of", Args: ce.Args}, nil
+		} else if ce.Func == "first" && len(ce.Args) == 1 {
+			useFirst = true
+			return &CallExpr{Func: "mochi_first", Args: ce.Args}, nil
 		} else if ce.Func == "padstart" && len(ce.Args) == 3 {
 			usePadStart = true
 			return &CallExpr{Func: "mochi_pad_start", Args: ce.Args}, nil
@@ -6485,6 +6497,10 @@ func (p *Program) Emit() []byte {
 	}
 	if p.UseNth {
 		buf.WriteString(helperNth)
+		buf.WriteString("\n")
+	}
+	if p.UseFirst {
+		buf.WriteString(helperFirst)
 		buf.WriteString("\n")
 	}
 	if p.UseBigRat {

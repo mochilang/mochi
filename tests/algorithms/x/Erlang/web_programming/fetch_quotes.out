@@ -1,0 +1,5 @@
+/workspace/mochi/tests/algorithms/x/Erlang/web_programming/fetch_quotes.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+"[ {\"q\":\"It takes half your life before you discover life is a do-it-yourself project.\", \"a\":\"Napoleon Hill\", \"h\":\"<blockquote>&ldquo;It takes half your life before you discover life is a do-it-yourself project.&rdquo; &mdash; <footer>Napoleon Hill</footer></blockquote>\"} ]"

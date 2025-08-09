@@ -1,0 +1,9 @@
+/workspace/mochi/tests/algorithms/x/Erlang/web_programming/fetch_github_info.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/web_programming/fetch_github_info.erl:53:1: Warning: function mochi_fetch/1 is unused
+%   53| mochi_fetch(Url) ->
+%     | ^
+
+{badmap {\n  \login\: \octocat\ \n  \id\: 583231 \n  \node_id\: \MDQ6VXNlcjU4MzIzMQ==\ \n  \avatar_url\: \https://avatars.githubusercontent.com/u/583231?v=4\ \n  \gravatar_id\: \\ \n  \url\: \https://api.github.com/users/octocat\ \n  \html_url\: \https://github.com/octocat\ \n  \followers_url\: \https://api.github.com/users/octocat/followers\ \n  \following_url\: \https://api.github.com/users/octocat/following{/other_user}\ \n  \gists_url\: \https://api.github.com/users/octocat/gists{/gist_id}\ \n  \starred_url\: \https://api.github.com/users/octocat/starred{/owner}{/repo}\ \n  \subscriptions_url\: \https://api.github.com/users/octocat/subscriptions\ \n  \organizations_url\: \https://api.github.com/users/octocat/orgs\ \n  \repos_url\: \https://api.github.com/users/octocat/repos\ \n  \events_url\: \https://api.github.com/users/octocat/events

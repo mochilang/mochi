@@ -1,0 +1,3 @@
+/workspace/mochi/tests/algorithms/x/Erlang/web_programming/reddit.erl:201:37: Warning: variable 'Msg_2' exported from 'case' (line 144, column 9)
+%  201| {Age, I_6, Idx_2, Invalid_3, Limit, Msg_2, Resp, Result_2, Subreddit, Wanted_data} = Fun_6(Age, I_6, Idx, Invalid_3, Limit, Msg_2, Resp, Result, Subreddit, Wanted_data),
+%     |                                     ^
