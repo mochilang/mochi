@@ -1,0 +1,47 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 34 │       {i, x, y, ys} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/runge_kutta_fehlberg_45.exs:34:8: Main.runge_kutta_fehlberg_45/5
+
+    warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 34 │       {i, x, y, ys} = try do
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/runge_kutta_fehlberg_45.exs:34:11: Main.runge_kutta_fehlberg_45/5
+
+    warning: variable "y" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 34 │       {i, x, y, ys} = try do
+    │              ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/runge_kutta_fehlberg_45.exs:34:14: Main.runge_kutta_fehlberg_45/5
+
+    warning: variable "x" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 47 │       f1 = fn x, y ->
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/runge_kutta_fehlberg_45.exs:47:15: Main.main/0
+
+    warning: variable "y" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 52 │       f2 = fn x, y ->
+    │                  ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/runge_kutta_fehlberg_45.exs:52:18: Main.main/0
+
+** (Protocol.UndefinedError) protocol Enumerable not implemented for type Float
+
+Got value:
+
+    1.0
+
+    (elixir 1.18.3) lib/enum.ex:1: Enumerable.impl_for!/1
+    (elixir 1.18.3) lib/enum.ex:230: Enumerable.slice/1
+    (elixir 1.18.3) lib/enum.ex:4579: Enum.slice_forward/4
+    (elixir 1.18.3) lib/enum.ex:479: Enum.at/3
+    /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/runge_kutta_fehlberg_45.exs:51: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/runge_kutta_fehlberg_45.exs:62: (file)

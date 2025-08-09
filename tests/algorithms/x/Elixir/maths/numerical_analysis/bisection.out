@@ -1,0 +1,22 @@
+warning: variable "end_" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 47 │       {end_, mid, start} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/bisection.exs:47:8: Main.bisection/3
+
+    warning: variable "start" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 47 │       {end_, mid, start} = try do
+    │                   ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/bisection.exs:47:19: Main.bisection/3
+
+    warning: variable "f" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 14 │   def bisection(f, a, b) do
+    │                 ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/bisection.exs:14:17: Main.bisection/3
+
+2.0945515197818168

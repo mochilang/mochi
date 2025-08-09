@@ -1,0 +1,17 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 33 │       {factors, i, num} = try do
+    │                 ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/prime_factors.exs:33:17: Main.prime_factors/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 67 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/prime_factors.exs:67:7: Main.list_eq/2
+
+[2, 2, 5, 5]
+[2, 2, 2, 2, 2, 2, 2, 2, 2, 5]
+~c"a"

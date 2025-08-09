@@ -1,0 +1,22 @@
+warning: variable "b" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 32 │       {a, b, i} = try do
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/lucas_series.exs:32:11: Main.dynamic_lucas_number/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 32 │       {a, b, i} = try do
+    │              ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/lucas_series.exs:32:14: Main.dynamic_lucas_number/1
+
+1
+15127
+2
+11
+1
+15127
+2
+167761
