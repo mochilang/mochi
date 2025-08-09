@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 	"unicode"
@@ -31,9 +32,10 @@ var benchMainFlag bool
 var currentStruct string
 
 func init() {
-	v := os.Getenv("MOCHI_BENCHMARK")
-	if strings.EqualFold(v, "true") || v == "1" {
-		benchMainFlag = true
+	if v := os.Getenv("MOCHI_BENCHMARK"); v != "" {
+		if ok, err := strconv.ParseBool(v); err == nil && ok {
+			benchMainFlag = true
+		}
 	}
 }
 
