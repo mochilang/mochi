@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error at main/test-dodecahedron (dodecahedron.clj:52).
+surface area 5 failed
+
+Full report at:
+/tmp/clojure-17234855781637201422.edn

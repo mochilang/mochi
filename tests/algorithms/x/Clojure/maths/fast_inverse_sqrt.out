@@ -1,0 +1,5 @@
+Execution error at main/test-fast-inverse-sqrt (fast_inverse_sqrt.clj:130).
+fast_inverse_sqrt(10) failed
+
+Full report at:
+/tmp/clojure-13903645510349938416.edn

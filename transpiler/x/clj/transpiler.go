@@ -1829,6 +1829,13 @@ func isFloatNode(n Node) bool {
 	switch t := n.(type) {
 	case FloatLit:
 		return true
+	case *List:
+		for _, e := range t.Elems {
+			if isFloatNode(e) {
+				return true
+			}
+		}
+		return false
 	case Symbol:
 		if transpileEnv != nil {
 			name := string(t)
@@ -1836,11 +1843,21 @@ func isFloatNode(n Node) bool {
 				if _, ok := typ.(types.FloatType); ok {
 					return true
 				}
+				if fn, ok := typ.(types.FuncType); ok {
+					if _, ok := fn.Return.(types.FloatType); ok {
+						return true
+					}
+				}
 			} else {
 				if orig := originalVar(name); orig != name {
 					if typ, err := transpileEnv.GetVar(orig); err == nil {
 						if _, ok := typ.(types.FloatType); ok {
 							return true
+						}
+						if fn, ok := typ.(types.FuncType); ok {
+							if _, ok := fn.Return.(types.FloatType); ok {
+								return true
+							}
 						}
 					}
 				}
@@ -1848,6 +1865,11 @@ func isFloatNode(n Node) bool {
 					if typ, err := transpileEnv.GetVar(name[idx+1:]); err == nil {
 						if _, ok := typ.(types.FloatType); ok {
 							return true
+						}
+						if fn, ok := typ.(types.FuncType); ok {
+							if _, ok := fn.Return.(types.FloatType); ok {
+								return true
+							}
 						}
 					}
 				}
