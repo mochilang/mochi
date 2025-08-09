@@ -198,6 +198,28 @@ func isStringType(t string) bool {
 	return t == "[]const u8" || t == "[]u8"
 }
 
+// zeroValue returns a Zig expression representing the zero value for the given type.
+// This is used to synthesize return statements when a Mochi function with a
+// non-void return type reaches the end of its body without an explicit return.
+func zeroValue(t string) string {
+	switch {
+	case isIntType(t) || strings.HasPrefix(t, "f"):
+		return "0"
+	case t == "bool":
+		return "false"
+	case isStringType(t):
+		return "\"\""
+	case strings.HasPrefix(t, "[]"):
+		base := t[2:]
+		if strings.HasPrefix(base, "const ") {
+			base = base[len("const "):]
+		}
+		return "&[_]" + base + "{}"
+	default:
+		return "undefined"
+	}
+}
+
 func valueTag(t string) string {
 	switch t {
 	case "i64":
@@ -1672,6 +1694,17 @@ func (f *Func) emit(w io.Writer) {
 	}
 	for _, st := range f.Body {
 		st.emit(w, 1)
+	}
+	if ret != "void" {
+		if len(f.Body) == 0 {
+			writeIndent(w, 1)
+			fmt.Fprintf(w, "return %s;\n", zeroValue(ret))
+		} else {
+			if _, ok := f.Body[len(f.Body)-1].(*ReturnStmt); !ok {
+				writeIndent(w, 1)
+				fmt.Fprintf(w, "return %s;\n", zeroValue(ret))
+			}
+		}
 	}
 	for k, v := range backup {
 		if v == "" {
