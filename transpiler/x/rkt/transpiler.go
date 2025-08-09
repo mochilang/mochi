@@ -1500,6 +1500,7 @@ func header() string {
 	// Provide a minimal stdout object with a write method so that programs
 	// using `stdout.write` for output can run without additional setup.
 	hdr += "(define stdout (hash \"write\" (lambda (s) (display s))))\n"
+	hdr += "(define (input) (let ([ln (read-line)]) (if (eof-object? ln) \"\" ln)))\n"
 	return hdr + "\n"
 }
 
@@ -1654,9 +1655,16 @@ func dataExprFromFile(path, format string, typ *parser.TypeRef, env *types.Env) 
 		return &ListLit{}, nil
 	}
 	root := repoRoot()
-	if root != "" && strings.HasPrefix(path, "../") {
-		clean := strings.TrimPrefix(path, "../")
-		path = filepath.Join(root, "tests", clean)
+	if root != "" {
+		if strings.HasPrefix(path, "../") {
+			clean := strings.TrimPrefix(path, "../")
+			path = filepath.Join(root, "tests", clean)
+		} else if !filepath.IsAbs(path) {
+			// make paths relative to repo root if they don't exist relative to cwd
+			if _, err := os.Stat(path); err != nil {
+				path = filepath.Join(root, path)
+			}
+		}
 	}
 	data, err := os.ReadFile(path)
 	if err != nil {
