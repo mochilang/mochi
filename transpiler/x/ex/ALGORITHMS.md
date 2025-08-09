@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-08 19:30 GMT+7
+Last updated: 2025-08-08 20:56 GMT+7
 
-## Algorithms Golden Test Checklist (392/1077)
+## Algorithms Golden Test Checklist (427/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -499,56 +499,56 @@ Last updated: 2025-08-08 19:30 GMT+7
 | 490 | linear_algebra/src/power_iteration | ✓ | 15.78ms | 20.2 MB |
 | 491 | linear_algebra/src/rank_of_matrix | ✓ | 1us | 0 B |
 | 492 | linear_algebra/src/rayleigh_quotient | ✓ | 2.68ms | 27.0 MB |
-| 493 | linear_algebra/src/schur_complement |   |  |  |
-| 494 | linear_algebra/src/test_linear_algebra |   |  |  |
-| 495 | linear_algebra/src/transformations_2d |   |  |  |
-| 496 | linear_programming/simplex |   |  |  |
-| 497 | machine_learning/apriori_algorithm |   |  |  |
-| 498 | machine_learning/astar |   |  |  |
-| 499 | machine_learning/automatic_differentiation |   |  |  |
-| 500 | machine_learning/data_transformations |   |  |  |
-| 501 | machine_learning/decision_tree |   |  |  |
-| 502 | machine_learning/dimensionality_reduction |   |  |  |
-| 503 | machine_learning/forecasting/run |   |  |  |
-| 504 | machine_learning/frequent_pattern_growth |   |  |  |
-| 505 | machine_learning/gradient_boosting_classifier |   |  |  |
-| 506 | machine_learning/gradient_descent |   |  |  |
-| 507 | machine_learning/k_means_clust |   |  |  |
-| 508 | machine_learning/k_nearest_neighbours |   |  |  |
-| 509 | machine_learning/linear_discriminant_analysis |   |  |  |
+| 493 | linear_algebra/src/schur_complement | ✓ | 2.33ms | 17.7 MB |
+| 494 | linear_algebra/src/test_linear_algebra | ✓ | 1.25ms | 25.1 MB |
+| 495 | linear_algebra/src/transformations_2d | ✓ | 2.00ms | 18.7 MB |
+| 496 | linear_programming/simplex | ✓ | 6.70ms | 25.0 MB |
+| 497 | machine_learning/apriori_algorithm | ✓ | 7.66ms | 25.0 MB |
+| 498 | machine_learning/astar | error |  |  |
+| 499 | machine_learning/automatic_differentiation | ✓ | 1.47ms | 17.3 MB |
+| 500 | machine_learning/data_transformations | ✓ | 6.69ms | 25.1 MB |
+| 501 | machine_learning/decision_tree | error |  |  |
+| 502 | machine_learning/dimensionality_reduction | ✓ | 115us | 0 B |
+| 503 | machine_learning/forecasting/run | ✓ | 8.21ms | 32.7 MB |
+| 504 | machine_learning/frequent_pattern_growth | error |  |  |
+| 505 | machine_learning/gradient_boosting_classifier | ✓ | 1.77ms | 17.3 MB |
+| 506 | machine_learning/gradient_descent | ✓ | 87.89ms | 25.1 MB |
+| 507 | machine_learning/k_means_clust | ✓ | 9.99ms | 17.4 MB |
+| 508 | machine_learning/k_nearest_neighbours | error |  |  |
+| 509 | machine_learning/linear_discriminant_analysis | ✓ | 7.86ms | 25.0 MB |
 | 510 | machine_learning/linear_regression |   |  |  |
-| 511 | machine_learning/local_weighted_learning/local_weighted_learning |   |  |  |
-| 512 | machine_learning/logistic_regression |   |  |  |
-| 513 | machine_learning/loss_functions |   |  |  |
-| 514 | machine_learning/lstm/lstm_prediction |   |  |  |
+| 511 | machine_learning/local_weighted_learning/local_weighted_learning | error |  |  |
+| 512 | machine_learning/logistic_regression | ✓ | 16.06ms | 34.9 MB |
+| 513 | machine_learning/loss_functions | error |  |  |
+| 514 | machine_learning/lstm/lstm_prediction | ✓ | 23.29ms | 46.5 MB |
 | 515 | machine_learning/mfcc |   |  |  |
-| 516 | machine_learning/multilayer_perceptron_classifier |   |  |  |
+| 516 | machine_learning/multilayer_perceptron_classifier | ✓ | 61.30ms | 29.9 MB |
 | 517 | machine_learning/polynomial_regression |   |  |  |
-| 518 | machine_learning/principle_component_analysis |   |  |  |
-| 519 | machine_learning/scoring_functions |   |  |  |
-| 520 | machine_learning/self_organizing_map |   |  |  |
-| 521 | machine_learning/sequential_minimum_optimization |   |  |  |
-| 522 | machine_learning/similarity_search |   |  |  |
-| 523 | machine_learning/support_vector_machines |   |  |  |
-| 524 | machine_learning/word_frequency_functions |   |  |  |
-| 525 | machine_learning/xgboost_classifier |   |  |  |
-| 526 | machine_learning/xgboost_regressor |   |  |  |
-| 527 | maths/abs |   |  |  |
-| 528 | maths/addition_without_arithmetic |   |  |  |
-| 529 | maths/aliquot_sum |   |  |  |
-| 530 | maths/allocation_number |   |  |  |
-| 531 | maths/arc_length |   |  |  |
-| 532 | maths/area |   |  |  |
+| 518 | machine_learning/principle_component_analysis | error |  |  |
+| 519 | machine_learning/scoring_functions | ✓ | 5.42ms | 27.4 MB |
+| 520 | machine_learning/self_organizing_map | ✓ | 3.92ms | 25.0 MB |
+| 521 | machine_learning/sequential_minimum_optimization | ✓ | 5.36ms | 25.4 MB |
+| 522 | machine_learning/similarity_search | ✓ | 10.16ms | 33.0 MB |
+| 523 | machine_learning/support_vector_machines | ✓ | 7.79ms | 17.4 MB |
+| 524 | machine_learning/word_frequency_functions | error |  |  |
+| 525 | machine_learning/xgboost_classifier | ✓ | 373us | 26.9 MB |
+| 526 | machine_learning/xgboost_regressor | error |  |  |
+| 527 | maths/abs | ✓ | 4.69ms | 25.0 MB |
+| 528 | maths/addition_without_arithmetic | ✓ | 5.37ms | 17.3 MB |
+| 529 | maths/aliquot_sum | ✓ | 4.97ms | 25.0 MB |
+| 530 | maths/allocation_number | ✓ | 9.10ms | 12.5 MB |
+| 531 | maths/arc_length | ✓ | 4.48ms | 25.0 MB |
+| 532 | maths/area | ✓ | 7.36ms | 20.2 MB |
 | 533 | maths/area_under_curve |   |  |  |
-| 534 | maths/average_absolute_deviation |   |  |  |
-| 535 | maths/average_mean |   |  |  |
-| 536 | maths/average_median |   |  |  |
-| 537 | maths/average_mode |   |  |  |
-| 538 | maths/bailey_borwein_plouffe |   |  |  |
-| 539 | maths/base_neg2_conversion |   |  |  |
-| 540 | maths/basic_maths |   |  |  |
-| 541 | maths/binary_exponentiation |   |  |  |
-| 542 | maths/binary_multiplication |   |  |  |
+| 534 | maths/average_absolute_deviation | ✓ | 5.36ms | 32.9 MB |
+| 535 | maths/average_mean | ✓ | 5.18ms | 25.2 MB |
+| 536 | maths/average_median | ✓ | 6.84ms | 32.7 MB |
+| 537 | maths/average_mode | ✓ | 8.02ms | 25.0 MB |
+| 538 | maths/bailey_borwein_plouffe | error |  |  |
+| 539 | maths/base_neg2_conversion | error |  |  |
+| 540 | maths/basic_maths | ✓ | 7.18ms | 32.7 MB |
+| 541 | maths/binary_exponentiation | ✓ | 6.09ms | 32.7 MB |
+| 542 | maths/binary_multiplication | ✓ | 4.81ms | 25.0 MB |
 | 543 | maths/binomial_coefficient |   |  |  |
 | 544 | maths/binomial_distribution |   |  |  |
 | 545 | maths/ceil |   |  |  |

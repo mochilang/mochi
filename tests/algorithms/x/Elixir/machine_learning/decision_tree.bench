@@ -1,0 +1,70 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 76 │       {i, sum} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/decision_tree.exs:76:8: Main.mean/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 101 │       {i, total} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/decision_tree.exs:101:8: Main.mean_squared_error/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 153 │       {best_split, i, min_error} = try do
+     │                    ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/decision_tree.exs:153:20: Main.train_tree/4
+
+     warning: variable "min_error" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 153 │       {best_split, i, min_error} = try do
+     │                       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/decision_tree.exs:153:23: Main.train_tree/4
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 214 │       {i, y} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/decision_tree.exs:214:8: Main.main/0
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 232 │       {i, test_cases} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/decision_tree.exs:232:8: Main.main/0
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 249 │       {i, predictions} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/decision_tree.exs:249:8: Main.main/0
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 267 │       {i, sum_err} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/decision_tree.exs:267:8: Main.main/0
+
+     warning: variable "v" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 197 │       {v, x} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/decision_tree.exs:197:8: Main.main/0
+
+** (ArithmeticError) bad argument in arithmetic expression: div(-0.8414682539680065, 400)
+    :erlang.div(-0.8414682539680065, 400)
+    /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/decision_tree.exs:82: Main.mean/1
+    /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/decision_tree.exs:121: Main.train_tree/4
+    /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/decision_tree.exs:220: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/decision_tree.exs:291: Main.bench_main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/decision_tree.exs:299: (file)

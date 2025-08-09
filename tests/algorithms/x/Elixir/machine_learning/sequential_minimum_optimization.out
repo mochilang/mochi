@@ -1,0 +1,51 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 23 │       {i, sum} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/sequential_minimum_optimization.exs:23:8: Main.dot/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 68 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/sequential_minimum_optimization.exs:68:8: Main.predict_raw/5
+
+     warning: variable "h" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 116 │                     h = 0.0
+     │                     ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/sequential_minimum_optimization.exs:116:21: Main.smo_train/5
+
+     warning: variable "l" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 115 │                     l = 0.0
+     │                     ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/sequential_minimum_optimization.exs:115:21: Main.smo_train/5
+
+     warning: variable "i1" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 192 │             {alphas, b, i1, num_changed} = try do
+     │                         ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/sequential_minimum_optimization.exs:192:25: Main.smo_train/5
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 93 │       {alphas, i} = try do
+    │                ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/sequential_minimum_optimization.exs:93:16: Main.smo_train/5
+
+     warning: variable "passes" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 208 │       {alphas, b, passes} = try do
+     │                   ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/sequential_minimum_optimization.exs:208:19: Main.smo_train/5
+
+1.0
+-1.0

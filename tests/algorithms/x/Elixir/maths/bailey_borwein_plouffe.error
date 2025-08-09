@@ -1,0 +1,45 @@
+run: exit status 1
+    warning: variable "b" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 29 │       {b, e, result} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/bailey_borwein_plouffe.exs:29:8: Main.mod_pow/3
+
+    warning: variable "e" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 29 │       {b, e, result} = try do
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/bailey_borwein_plouffe.exs:29:11: Main.mod_pow/3
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 54 │           i = i + 1
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/bailey_borwein_plouffe.exs:54:11: Main.pow_float/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 92 │         i = i - 1
+    │         ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/bailey_borwein_plouffe.exs:92:9: Main.floor_float/1
+
+     warning: variable "sum_index" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 123 │       {sum_index, total} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/bailey_borwein_plouffe.exs:123:8: Main.subsum/3
+
+** (ArithmeticError) bad argument in arithmetic expression: 1.1235582092889474e307 * 16.0
+    :erlang.*(1.1235582092889474e307, 16.0)
+    /workspace/mochi/tests/algorithms/x/Elixir/maths/bailey_borwein_plouffe.exs:53: anonymous fn/4 in Main.pow_float/2
+    /workspace/mochi/tests/algorithms/x/Elixir/maths/bailey_borwein_plouffe.exs:61: Main.pow_float/2
+    /workspace/mochi/tests/algorithms/x/Elixir/maths/bailey_borwein_plouffe.exs:113: anonymous fn/6 in Main.subsum/3
+    /workspace/mochi/tests/algorithms/x/Elixir/maths/bailey_borwein_plouffe.exs:124: Main.subsum/3
+    /workspace/mochi/tests/algorithms/x/Elixir/maths/bailey_borwein_plouffe.exs:142: Main.bailey_borwein_plouffe/2
+    /workspace/mochi/tests/algorithms/x/Elixir/maths/bailey_borwein_plouffe.exs:159: anonymous fn/1 in Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/maths/bailey_borwein_plouffe.exs:167: Main.main/0

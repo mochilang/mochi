@@ -1,0 +1,84 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 105 │           {j, left_count, left_sum, right_count, right_sum} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/xgboost_regressor.exs:105:12: Main.xgboost/3
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 76 │           {j, sum_feat} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/xgboost_regressor.exs:76:12: Main.xgboost/3
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 59 │           {j, residuals} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/xgboost_regressor.exs:59:12: Main.xgboost/3
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 135 │           {j, predictions} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/xgboost_regressor.exs:135:12: Main.xgboost/3
+
+     warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 169 │           {k, pred} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/xgboost_regressor.exs:169:12: Main.xgboost/3
+
+     warning: variable "est" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 148 │       {est, predictions, trees} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/xgboost_regressor.exs:148:8: Main.xgboost/3
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 39 │       {i, predictions} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/xgboost_regressor.exs:39:8: Main.xgboost/3
+
+     warning: variable "predictions" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 148 │       {est, predictions, trees} = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/xgboost_regressor.exs:148:13: Main.xgboost/3
+
+     warning: variable "t" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 182 │       {preds, t} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/xgboost_regressor.exs:182:15: Main.xgboost/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 213 │       {i, sum} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/xgboost_regressor.exs:213:8: Main.mean_absolute_error/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 238 │       {i, sum} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/xgboost_regressor.exs:238:8: Main.mean_squared_error/2
+
+** (ArithmeticError) bad argument in arithmetic expression
+    /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/xgboost_regressor.exs:162: anonymous fn/6 in Main.xgboost/3
+    /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/xgboost_regressor.exs:170: anonymous fn/5 in Main.xgboost/3
+    /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/xgboost_regressor.exs:183: Main.xgboost/3
+    /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/xgboost_regressor.exs:257: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/xgboost_regressor.exs:272: Main.bench_main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/xgboost_regressor.exs:280: (file)

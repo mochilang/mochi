@@ -1,0 +1,17 @@
+warning: variable "first" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 61 │       {first, minRatio, row} = Enum.reduce((1..(_len(t) - 1)//1), {first, minRatio, row}, fn i, {first, minRatio, row} ->
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_programming/simplex.exs:61:8: Main.findPivot/1
+
+    warning: variable "minRatio" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 61 │       {first, minRatio, row} = Enum.reduce((1..(_len(t) - 1)//1), {first, minRatio, row}, fn i, {first, minRatio, row} ->
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/linear_programming/simplex.exs:61:15: Main.findPivot/1
+
+P: 2.0
+x1: 0.9999999999999999
+x2: 1.0000000000000002

@@ -1,0 +1,102 @@
+run: exit status 1
+     warning: variable "open" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 143 │                 open = (open ++ [%{pos: np, parent: current.pos, g: g, h: h, f: f}])
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/astar.exs:143:17: Main.astar/4
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 85 │             {i, min_index} = try do
+    │              ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/astar.exs:85:14: Main.astar/4
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 108 │             {j, new_open} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/astar.exs:108:14: Main.astar/4
+
+     warning: variable "path" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 169 │           path = (path ++ [current.pos])
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/astar.exs:169:11: Main.astar/4
+
+     warning: variable "current" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 175 │       current = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/astar.exs:175:7: Main.astar/4
+
+     warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 192 │       {k, rev} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/astar.exs:192:8: Main.astar/4
+
+     warning: variable "open" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 158 │       {closed, current, open} = try do
+     │                         ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/astar.exs:158:25: Main.astar/4
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 220 │           {j, row} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/astar.exs:220:12: Main.create_world/2
+
+     warning: variable "world" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 226 │           world = (world ++ [row])
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/astar.exs:226:11: Main.create_world/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 233 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/astar.exs:233:7: Main.create_world/2
+
+     warning: variable "world" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 247 │         world = List.replace_at(world, p.x, List.replace_at(Enum.at(world, p.x), p.y, 1))
+     │         ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/astar.exs:247:9: Main.mark_path/2
+
+path from (0, 0) to (4, 4)
+** (FunctionClauseError) no function clause matching in List.replace_at/3    
+    
+    The following arguments were given to List.replace_at/3:
+    
+        # 1
+        nil
+    
+        # 2
+        0
+    
+        # 3
+        1
+    
+    Attempted function clauses (showing 1 out of 1):
+    
+        def replace_at(+list+, +index+, +value+) when -is_list(list)- and +is_integer(index)+
+    
+    (elixir 1.18.3) lib/list.ex:814: List.replace_at/3
+    /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/astar.exs:247: anonymous fn/2 in Main.mark_path/2
+    (elixir 1.18.3) lib/enum.ex:987: Enum."-each/2-lists^foreach/1-0-"/2
+    /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/astar.exs:246: Main.mark_path/2
+    /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/astar.exs:273: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/astar.exs:282: (file)

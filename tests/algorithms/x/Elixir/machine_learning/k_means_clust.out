@@ -1,0 +1,45 @@
+warning: variable "best" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 29 │         {best, best_idx} = Enum.reduce((1..(_len(centroids) - 1)//1), {best, best_idx}, fn j, {best, best_idx} ->
+    │          ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/k_means_clust.exs:29:10: Main.assign_clusters/2
+
+    warning: variable "j" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 55 │         {row} = Enum.reduce((0..(dim - 1)//1), {row}, fn j, {row} ->
+    │                                                          ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/k_means_clust.exs:55:58: Main.revise_centroids/3
+
+    warning: variable "i" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 53 │       {counts, sums} = Enum.reduce((0..(k - 1)//1), {counts, sums}, fn i, {counts, sums} ->
+    │                                                                        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/k_means_clust.exs:53:72: Main.revise_centroids/3
+
+    warning: variable "j" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 82 │           {row} = Enum.reduce((0..(dim - 1)//1), {row}, fn j, {row} ->
+    │                                                            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/k_means_clust.exs:82:60: Main.revise_centroids/3
+
+     warning: variable "iter" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 147 │       {assignment, centroids, heterogeneity, iter, prev} = try do
+     │                                              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/k_means_clust.exs:147:46: Main.kmeans/4
+
+     warning: variable "prev" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 147 │       {assignment, centroids, heterogeneity, iter, prev} = try do
+     │                                                    ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/k_means_clust.exs:147:52: Main.kmeans/4
+
+[[1.1666666666666667, 1.4666666666666666], [6.5, 8.0], [9.0, 11.0]]
+[0 0 1 1 0 2]
+[5.8133333333333335, 5.8133333333333335]
