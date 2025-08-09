@@ -16,6 +16,10 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 function absf($x) {
   global $r1, $r2, $r3, $r4, $r5;
   if ($x < 0.0) {
@@ -36,7 +40,7 @@ function pow10($n) {
 function round_to($x, $n) {
   global $r1, $r2, $r3, $r4, $r5;
   $m = pow10($n);
-  return $floor($x * $m + 0.5) / $m;
+  return floor($x * $m + 0.5) / $m;
 }
 function electric_power($voltage, $current, $power) {
   global $r1, $r2, $r3, $r4, $r5;
@@ -51,10 +55,10 @@ function electric_power($voltage, $current, $power) {
   $zeros = $zeros + 1;
 }
   if ($zeros != 1) {
-  $panic('Exactly one argument must be 0');
+  _panic('Exactly one argument must be 0');
 } else {
   if ($power < 0.0) {
-  $panic('Power cannot be negative in any electrical/electronics system');
+  _panic('Power cannot be negative in any electrical/electronics system');
 } else {
   if ($voltage == 0.0) {
   return ['name' => 'voltage', 'value' => $power / $current];
@@ -66,7 +70,7 @@ function electric_power($voltage, $current, $power) {
   $p = absf($voltage * $current);
   return ['name' => 'power', 'value' => round_to($p, 2)];
 } else {
-  $panic('Unhandled case');
+  _panic('Unhandled case');
 };
 };
 };

@@ -1,10 +1,5 @@
 Result(name='voltage', value=2.5)
-
-Warning: Undefined variable $floor in /workspace/mochi/tests/algorithms/x/PHP/electronics/electric_power.php on line 39
-
-Fatal error: Uncaught Error: Value of type null is not callable in /workspace/mochi/tests/algorithms/x/PHP/electronics/electric_power.php:39
-Stack trace:
-#0 /workspace/mochi/tests/algorithms/x/PHP/electronics/electric_power.php(67): round_to(4.0, 2)
-#1 /workspace/mochi/tests/algorithms/x/PHP/electronics/electric_power.php(82): electric_power(2.0, 2.0, 0.0)
-#2 {main}
-  thrown in /workspace/mochi/tests/algorithms/x/PHP/electronics/electric_power.php on line 39
+Result(name='power', value=4)
+Result(name='power', value=6)
+Result(name='power', value=4.84)
+Result(name='current', value=3)

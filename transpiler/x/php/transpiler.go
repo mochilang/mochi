@@ -25,7 +25,7 @@ var builtinNames = map[string]struct{}{
 	"str": {}, "min": {}, "max": {}, "append": {}, "json": {}, "exists": {},
 	"values": {}, "keys": {}, "load": {}, "save": {}, "now": {}, "input": {},
 	"upper": {}, "lower": {}, "num": {}, "denom": {}, "indexOf": {}, "repeat": {}, "parseIntStr": {}, "slice": {}, "split": {}, "contains": {}, "substr": {}, "pow": {}, "getoutput": {}, "intval": {}, "floatval": {}, "int": {}, "float": {}, "to_float": {}, "ord": {}, "ctype_digit": {},
-	"concat": {}, "panic": {}, "error": {}, "ceil": {}, "floor": {},
+	"abs": {}, "concat": {}, "panic": {}, "error": {}, "ceil": {}, "floor": {},
 }
 
 const helperLookupHost = `function _lookup_host($host) {
