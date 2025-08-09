@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
 
 int find_min(List<int> numbers) {
   int n = numbers.length;
@@ -99,18 +104,18 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print((find_min([1, 2, 3, 4, 5])).toString());
-  print((find_min([5, 5, 5, 5, 5])).toString());
-  print((find_min([5, 5, 5, 5])).toString());
-  print((find_min([3])).toString());
-  print((find_min(<int>[])).toString());
-  print((find_min([1, 2, 3, 4])).toString());
-  print((find_min([0, 0, 0, 0])).toString());
-  print((find_min([-1, -5, 5, 1])).toString());
-  print((find_min([9, 9, 9, 9, 9])).toString());
-  print((find_min([1, 5, 10, 3])).toString());
-  print((find_min([-1, 0, 1])).toString());
-  print((find_min([10, 9, 8, 7, 6, 5, 4, 3, 2, 1])).toString());
+  print(_str(find_min([1, 2, 3, 4, 5])));
+  print(_str(find_min([5, 5, 5, 5, 5])));
+  print(_str(find_min([5, 5, 5, 5])));
+  print(_str(find_min([3])));
+  print(_str(find_min(<int>[])));
+  print(_str(find_min([1, 2, 3, 4])));
+  print(_str(find_min([0, 0, 0, 0])));
+  print(_str(find_min([-1, -5, 5, 1])));
+  print(_str(find_min([9, 9, 9, 9, 9])));
+  print(_str(find_min([1, 5, 10, 3])));
+  print(_str(find_min([-1, 0, 1])));
+  print(_str(find_min([10, 9, 8, 7, 6, 5, 4, 3, 2, 1])));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

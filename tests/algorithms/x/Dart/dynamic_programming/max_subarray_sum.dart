@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
 
 double max_subarray_sum(List<double> nums, bool allow_empty) {
   if (nums.length == 0) {
@@ -80,15 +85,15 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print((max_subarray_sum([2.0, 8.0, 9.0], false)).toString());
-  print((max_subarray_sum([0.0, 0.0], false)).toString());
-  print((max_subarray_sum(List<double>.from([-1.0, 0.0, 1.0]), false)).toString());
-  print((max_subarray_sum(List<double>.from([1.0, 2.0, 3.0, 4.0, -2.0]), false)).toString());
-  print((max_subarray_sum(List<double>.from([-2.0, 1.0, -3.0, 4.0, -1.0, 2.0, 1.0, -5.0, 4.0]), false)).toString());
-  print((max_subarray_sum(List<double>.from([2.0, 3.0, -9.0, 8.0, -2.0]), false)).toString());
-  print((max_subarray_sum([-2.0, -3.0, -1.0, -4.0, -6.0], false)).toString());
-  print((max_subarray_sum([-2.0, -3.0, -1.0, -4.0, -6.0], true)).toString());
-  print((max_subarray_sum(empty, false)).toString());
+  print(_str(max_subarray_sum([2.0, 8.0, 9.0], false)));
+  print(_str(max_subarray_sum([0.0, 0.0], false)));
+  print(_str(max_subarray_sum(List<double>.from([-1.0, 0.0, 1.0]), false)));
+  print(_str(max_subarray_sum(List<double>.from([1.0, 2.0, 3.0, 4.0, -2.0]), false)));
+  print(_str(max_subarray_sum(List<double>.from([-2.0, 1.0, -3.0, 4.0, -1.0, 2.0, 1.0, -5.0, 4.0]), false)));
+  print(_str(max_subarray_sum(List<double>.from([2.0, 3.0, -9.0, 8.0, -2.0]), false)));
+  print(_str(max_subarray_sum([-2.0, -3.0, -1.0, -4.0, -6.0], false)));
+  print(_str(max_subarray_sum([-2.0, -3.0, -1.0, -4.0, -6.0], true)));
+  print(_str(max_subarray_sum(empty, false)));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

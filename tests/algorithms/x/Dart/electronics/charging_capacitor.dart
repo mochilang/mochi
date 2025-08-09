@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,15 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 double expApprox(double x) {
@@ -47,7 +55,7 @@ double expApprox(double x) {
   double sum = 1.0;
   int n = 1;
   while (n < 30) {
-    term = term * y / (n as double);
+    term = term * y / (n.toDouble());
     sum = sum + term;
     n = n + 1;
   }
@@ -64,19 +72,19 @@ double round3(double x) {
   } else {
     scaled = scaled - 0.5;
   }
-  int scaled_int = scaled as int;
-  return (scaled_int as double) / 1000.0;
+  int scaled_int = (scaled).toInt();
+  return (scaled_int.toDouble()) / 1000.0;
 }
 
 double charging_capacitor(double source_voltage, double resistance, double capacitance, double time_sec) {
   if (source_voltage <= 0.0) {
-    throw Exception("Source voltage must be positive.");
+    _error("Source voltage must be positive.");
   }
   if (resistance <= 0.0) {
-    throw Exception("Resistance must be positive.");
+    _error("Resistance must be positive.");
   }
   if (capacitance <= 0.0) {
-    throw Exception("Capacitance must be positive.");
+    _error("Capacitance must be positive.");
   }
   double exponent = -time_sec / (resistance * capacitance);
   double voltage = source_voltage * (1.0 - expApprox(exponent));

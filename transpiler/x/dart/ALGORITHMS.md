@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-09 08:41 GMT+7
+Last updated: 2025-08-09 10:28 GMT+7
 
-## Algorithms Golden Test Checklist (864/1077)
+## Algorithms Golden Test Checklist (869/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 16.068ms | 2.7 MB |
@@ -306,67 +306,67 @@ Last updated: 2025-08-09 08:41 GMT+7
 | 297 | divide_and_conquer/peak | ✓ | 10.547ms | 1.7 MB |
 | 298 | divide_and_conquer/power | ✓ | 10.076ms | 3.2 MB |
 | 299 | divide_and_conquer/strassen_matrix_multiplication | error |  |  |
-| 300 | docs/conf | ✓ | 19.809ms | 9.7 MB |
-| 301 | dynamic_programming/abbreviation | ✓ | 23.289ms | 2.2 MB |
-| 302 | dynamic_programming/all_construct | ✓ | 28.336ms | 3.6 MB |
-| 303 | dynamic_programming/bitmask | ✓ | 12.378ms | 2.8 MB |
-| 304 | dynamic_programming/catalan_numbers | ✓ | 22.075ms | 2.6 MB |
-| 305 | dynamic_programming/climbing_stairs | ✓ | 15.739ms | 1.9 MB |
-| 306 | dynamic_programming/combination_sum_iv | ✓ | 24.077ms | 1.9 MB |
-| 307 | dynamic_programming/edit_distance | error |  |  |
-| 308 | dynamic_programming/factorial | ✓ | 20.07ms | 9.5 MB |
-| 309 | dynamic_programming/fast_fibonacci | ✓ | 11.598ms | 2.5 MB |
-| 310 | dynamic_programming/fibonacci | ✓ | 18.898ms | 2.5 MB |
-| 311 | dynamic_programming/fizz_buzz | ✓ | 20.285ms | 10.4 MB |
-| 312 | dynamic_programming/floyd_warshall | ✓ | 26.912ms | 9.7 MB |
-| 313 | dynamic_programming/integer_partition | ✓ | 40.325ms | 13.7 MB |
-| 314 | dynamic_programming/iterating_through_submasks | ✓ | 11.97ms | 2.4 MB |
-| 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 11.491ms | 4.4 MB |
+| 300 | docs/conf | ✓ | 37.675ms | 10.5 MB |
+| 301 | dynamic_programming/abbreviation | ✓ | 21.832ms | 3.9 MB |
+| 302 | dynamic_programming/all_construct | ✓ | 26.62ms | 4.2 MB |
+| 303 | dynamic_programming/bitmask | ✓ | 23.848ms | 1.9 MB |
+| 304 | dynamic_programming/catalan_numbers | ✓ | 25.514ms | 844.0 KB |
+| 305 | dynamic_programming/climbing_stairs | ✓ | 26.203ms | 1.6 MB |
+| 306 | dynamic_programming/combination_sum_iv | ✓ | 19.394ms | 3.6 MB |
+| 307 | dynamic_programming/edit_distance | ✓ | 23.192ms | 3.9 MB |
+| 308 | dynamic_programming/factorial | ✓ | 30.034ms | 9.6 MB |
+| 309 | dynamic_programming/fast_fibonacci | ✓ | 24.303ms | 484.0 KB |
+| 310 | dynamic_programming/fibonacci | ✓ | 29.368ms | 3.4 MB |
+| 311 | dynamic_programming/fizz_buzz | ✓ | 18.956ms | 3.0 MB |
+| 312 | dynamic_programming/floyd_warshall | ✓ | 23.857ms | 3.8 MB |
+| 313 | dynamic_programming/integer_partition | ✓ | 85.734ms | 4.2 MB |
+| 314 | dynamic_programming/iterating_through_submasks | ✓ | 41.795ms | 10.5 MB |
+| 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 36.421ms | 5.1 MB |
 | 316 | dynamic_programming/knapsack | error |  |  |
-| 317 | dynamic_programming/largest_divisible_subset | ✓ | 9.127ms | 3.8 MB |
-| 318 | dynamic_programming/longest_common_subsequence | ✓ | 18.222ms | 10.0 MB |
-| 319 | dynamic_programming/longest_common_substring | ✓ | 10.55ms | 4.2 MB |
-| 320 | dynamic_programming/longest_increasing_subsequence | ✓ | 10.182ms | 1.6 MB |
-| 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 10.817ms | 4.4 MB |
-| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | ✓ | 7.788ms | 3.1 MB |
-| 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 11.028ms | 4.1 MB |
-| 324 | dynamic_programming/matrix_chain_multiplication | ✓ | 7.03ms | 2.9 MB |
-| 325 | dynamic_programming/matrix_chain_order | ✓ | 10.969ms | 4.5 MB |
-| 326 | dynamic_programming/max_non_adjacent_sum | ✓ | 16.011ms | 11.3 MB |
-| 327 | dynamic_programming/max_product_subarray | ✓ | 12.899ms | 9.8 MB |
-| 328 | dynamic_programming/max_subarray_sum | ✓ | 9.722ms | 3.9 MB |
-| 329 | dynamic_programming/min_distance_up_bottom | ✓ | 11.962ms | 4.5 MB |
-| 330 | dynamic_programming/minimum_coin_change | ✓ | 15.808ms | 9.4 MB |
-| 331 | dynamic_programming/minimum_cost_path | ✓ | 10.628ms | 2.3 MB |
-| 332 | dynamic_programming/minimum_partition | ✓ | 14.533ms | 4.9 MB |
-| 333 | dynamic_programming/minimum_size_subarray_sum | ✓ | 16.564ms | 8.0 MB |
-| 334 | dynamic_programming/minimum_squares_to_represent_a_number | ✓ | 12.725ms | 2.1 MB |
-| 335 | dynamic_programming/minimum_steps_to_one | ✓ | 11.952ms | 1.8 MB |
-| 336 | dynamic_programming/minimum_tickets_cost | ✓ | 13.113ms | 2.4 MB |
-| 337 | dynamic_programming/optimal_binary_search_tree | ✓ | 12.944ms | 4.9 MB |
-| 338 | dynamic_programming/palindrome_partitioning | ✓ | 14.448ms | 3.2 MB |
-| 339 | dynamic_programming/range_sum_query | ✓ | 18.197ms | 2.2 MB |
-| 340 | dynamic_programming/regex_match | ✓ | 16.463ms | 3.4 MB |
-| 341 | dynamic_programming/rod_cutting | ✓ | 11.781ms | 2.0 MB |
-| 342 | dynamic_programming/smith_waterman | ✓ | 10.885ms | 4.4 MB |
-| 343 | dynamic_programming/subset_generation | ✓ | 13.259ms | 2.8 MB |
-| 344 | dynamic_programming/sum_of_subset | ✓ | 13.867ms | 2.7 MB |
-| 345 | dynamic_programming/trapped_water | ✓ | 17.139ms | 7.7 MB |
-| 346 | dynamic_programming/tribonacci | ✓ | 18.737ms | 10.5 MB |
-| 347 | dynamic_programming/viterbi | ✓ | 12.659ms | 3.1 MB |
-| 348 | dynamic_programming/wildcard_matching | ✓ | 20.637ms | 10.1 MB |
-| 349 | dynamic_programming/word_break | ✓ | 9.443ms | 4.0 MB |
-| 350 | electronics/apparent_power | ✓ | 15.004ms | 11.4 MB |
-| 351 | electronics/builtin_voltage | error |  |  |
-| 352 | electronics/capacitor_equivalence | ✓ | 11.481ms | 2.1 MB |
-| 353 | electronics/carrier_concentration | ✓ | 11.779ms | 7.4 MB |
-| 354 | electronics/charging_capacitor | error |  |  |
-| 355 | electronics/charging_inductor | error |  |  |
-| 356 | electronics/circular_convolution | error |  |  |
+| 317 | dynamic_programming/largest_divisible_subset | ✓ | 20.299ms | 3.5 MB |
+| 318 | dynamic_programming/longest_common_subsequence | ✓ | 22.302ms | 3.6 MB |
+| 319 | dynamic_programming/longest_common_substring | ✓ | 20.491ms | 3.5 MB |
+| 320 | dynamic_programming/longest_increasing_subsequence | ✓ | 20.579ms | 740.0 KB |
+| 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 25.774ms | 4.5 MB |
+| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | ✓ | 26.718ms | 1.3 MB |
+| 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 22.13ms | 4.0 MB |
+| 324 | dynamic_programming/matrix_chain_multiplication | ✓ | 11.894ms | 2.6 MB |
+| 325 | dynamic_programming/matrix_chain_order | ✓ | 26.526ms | 3.1 MB |
+| 326 | dynamic_programming/max_non_adjacent_sum | ✓ | 22.188ms | 2.2 MB |
+| 327 | dynamic_programming/max_product_subarray | ✓ | 26.349ms | 9.7 MB |
+| 328 | dynamic_programming/max_subarray_sum | ✓ | 27.363ms | 3.1 MB |
+| 329 | dynamic_programming/min_distance_up_bottom | ✓ | 37.861ms | 10.0 MB |
+| 330 | dynamic_programming/minimum_coin_change | ✓ | 27.581ms | 2.4 MB |
+| 331 | dynamic_programming/minimum_cost_path | ✓ | 26.209ms | 3.1 MB |
+| 332 | dynamic_programming/minimum_partition | ✓ | 30.402ms | 5.4 MB |
+| 333 | dynamic_programming/minimum_size_subarray_sum | ✓ | 19.52ms | 3.5 MB |
+| 334 | dynamic_programming/minimum_squares_to_represent_a_number | ✓ | 37.4ms | 10.5 MB |
+| 335 | dynamic_programming/minimum_steps_to_one | ✓ | 16.464ms | 3.1 MB |
+| 336 | dynamic_programming/minimum_tickets_cost | ✓ | 26.197ms | 1.7 MB |
+| 337 | dynamic_programming/optimal_binary_search_tree | ✓ | 22.87ms | 4.4 MB |
+| 338 | dynamic_programming/palindrome_partitioning | ✓ | 23.613ms | 3.6 MB |
+| 339 | dynamic_programming/range_sum_query | ✓ | 29.149ms | 1.7 MB |
+| 340 | dynamic_programming/regex_match | ✓ | 22.51ms | 4.4 MB |
+| 341 | dynamic_programming/rod_cutting | ✓ | 34.729ms | 10.6 MB |
+| 342 | dynamic_programming/smith_waterman | ✓ | 28.089ms | 3.4 MB |
+| 343 | dynamic_programming/subset_generation | ✓ | 19.819ms | 4.1 MB |
+| 344 | dynamic_programming/sum_of_subset | ✓ | 23.76ms | 4.0 MB |
+| 345 | dynamic_programming/trapped_water | ✓ | 21.948ms | 1.6 MB |
+| 346 | dynamic_programming/tribonacci | ✓ | 26.274ms | 1.2 MB |
+| 347 | dynamic_programming/viterbi | ✓ | 43.239ms | 10.5 MB |
+| 348 | dynamic_programming/wildcard_matching | ✓ | 20.627ms | 3.1 MB |
+| 349 | dynamic_programming/word_break | ✓ | 19.198ms | 2.5 MB |
+| 350 | electronics/apparent_power | ✓ | 26.713ms | 9.8 MB |
+| 351 | electronics/builtin_voltage | ✓ | 28.49ms | 2.4 MB |
+| 352 | electronics/capacitor_equivalence | ✓ | 42.789ms | 8.9 MB |
+| 353 | electronics/carrier_concentration | ✓ | 20.584ms | 3.6 MB |
+| 354 | electronics/charging_capacitor | ✓ | 23.601ms | 1.9 MB |
+| 355 | electronics/charging_inductor | ✓ | 24.253ms | 1.9 MB |
+| 356 | electronics/circular_convolution | ✓ | 22.377ms | 3.8 MB |
 | 357 | electronics/coulombs_law | error |  |  |
-| 358 | electronics/electric_conductivity | ✓ | 11.708ms | 3.4 MB |
+| 358 | electronics/electric_conductivity | ✓ | 34.039ms | 11.2 MB |
 | 359 | electronics/electric_power | error |  |  |
-| 360 | electronics/electrical_impedance | ✓ | 15.409ms | 10.3 MB |
+| 360 | electronics/electrical_impedance | ✓ | 20.943ms | 4.0 MB |
 | 361 | electronics/ic_555_timer | ✓ | 15.836ms | 10.5 MB |
 | 362 | electronics/ind_reactance | ✓ | 12.277ms | 1.7 MB |
 | 363 | electronics/ohms_law | ✓ | 12.572ms | 2.0 MB |

@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,17 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 double capacitor_parallel(List<double> capacitors) {
@@ -42,7 +52,7 @@ double capacitor_parallel(List<double> capacitors) {
   while (i < capacitors.length) {
     double c = capacitors[i];
     if (c < 0.0) {
-    throw Exception("Capacitor at index " + (i).toString() + " has a negative value!");
+    _error("Capacitor at index " + _str(i) + " has a negative value!");
     return 0.0;
   }
     sum_c = sum_c + c;
@@ -57,7 +67,7 @@ double capacitor_series(List<double> capacitors) {
   while (i < capacitors.length) {
     double c = capacitors[i];
     if (c <= 0.0) {
-    throw Exception("Capacitor at index " + (i).toString() + " has a negative or zero value!");
+    _error("Capacitor at index " + _str(i) + " has a negative or zero value!");
     return 0.0;
   }
     first_sum = first_sum + 1.0 / c;
@@ -69,8 +79,8 @@ double capacitor_series(List<double> capacitors) {
 void _main() {
   double parallel = capacitor_parallel([5.71389, 12.0, 3.0]);
   double series = capacitor_series([5.71389, 12.0, 3.0]);
-  print((parallel).toString());
-  print((series).toString());
+  print(_str(parallel));
+  print(_str(series));
 }
 
 void _start() {

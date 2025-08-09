@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,17 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 double COULOMBS_CONSTANT = 8988000000.0;
@@ -73,10 +83,10 @@ Map<String, double> coulombs_law(double force, double charge1, double charge2, d
     zero_count = zero_count + 1;
   }
   if (zero_count != 1) {
-    throw Exception("One and only one argument must be 0");
+    _error("One and only one argument must be 0");
   }
   if (distance < 0.0) {
-    throw Exception("Distance cannot be negative");
+    _error("Distance cannot be negative");
   }
   if (force == 0.0) {
     double f = COULOMBS_CONSTANT * charge_product / (distance * distance);
@@ -96,7 +106,7 @@ Map<String, double> coulombs_law(double force, double charge1, double charge2, d
 
 void print_map(Map<String, double> m) {
   for (String k in m.keys) {
-    print("{\"" + k + "\": " + (m[k]).toString() + "}");
+    print("{\"" + k + "\": " + _str((m[k]!)) + "}");
   }
 }
 

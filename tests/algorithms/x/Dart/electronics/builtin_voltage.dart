@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,17 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 double pow10(int n) {
@@ -55,7 +65,7 @@ double ln_series(double x) {
   double sum = 0.0;
   int n = 1;
   while (n <= 19) {
-    sum = sum + term / (n as double);
+    sum = sum + term / (n.toDouble());
     term = term * t * t;
     n = n + 2;
   }
@@ -73,24 +83,24 @@ double ln(double x) {
     y = y * 10.0;
     k = k - 1;
   }
-  return ln_series(y) + (k as double) * ln_series(10.0);
+  return ln_series(y) + (k.toDouble()) * ln_series(10.0);
 }
 
 double builtin_voltage(double donor_conc, double acceptor_conc, double intrinsic_conc) {
   if (donor_conc <= 0.0) {
-    throw Exception("Donor concentration should be positive");
+    _error("Donor concentration should be positive");
   }
   if (acceptor_conc <= 0.0) {
-    throw Exception("Acceptor concentration should be positive");
+    _error("Acceptor concentration should be positive");
   }
   if (intrinsic_conc <= 0.0) {
-    throw Exception("Intrinsic concentration should be positive");
+    _error("Intrinsic concentration should be positive");
   }
   if (donor_conc <= intrinsic_conc) {
-    throw Exception("Donor concentration should be greater than intrinsic concentration");
+    _error("Donor concentration should be greater than intrinsic concentration");
   }
   if (acceptor_conc <= intrinsic_conc) {
-    throw Exception("Acceptor concentration should be greater than intrinsic concentration");
+    _error("Acceptor concentration should be greater than intrinsic concentration");
   }
   return BOLTZMANN * TEMPERATURE * ln(donor_conc * acceptor_conc / (intrinsic_conc * intrinsic_conc)) / ELECTRON_VOLT;
 }
@@ -102,7 +112,7 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print((builtin_voltage(pow10(17), pow10(17), pow10(10))).toString());
+  print(_str(builtin_voltage(pow10(17), pow10(17), pow10(10))));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

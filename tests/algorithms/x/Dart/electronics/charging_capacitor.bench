@@ -1,7 +1,1 @@
-Unhandled exception:
-type 'int' is not a subtype of type 'double' in type cast
-#0      expApprox (file:///workspace/mochi/tests/algorithms/x/Dart/electronics/charging_capacitor.dart:50:26)
-#1      charging_capacitor (file:///workspace/mochi/tests/algorithms/x/Dart/electronics/charging_capacitor.dart:82:44)
-#2      main (file:///workspace/mochi/tests/algorithms/x/Dart/electronics/charging_capacitor.dart:93:9)
-#3      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
-#4      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)
+{"duration_us":23601,"memory_bytes":2039808,"name":"main"}

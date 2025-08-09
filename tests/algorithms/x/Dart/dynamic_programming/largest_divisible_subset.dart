@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
 
 List<int> sort_list(List<int> nums) {
   List<int> arr = nums;
@@ -102,7 +107,7 @@ List<int> largest_divisible_subset(List<int> items) {
 void _main() {
   List<int> items = [1, 16, 7, 8, 4];
   List<int> subset = largest_divisible_subset(items);
-  print("The longest divisible subset of " + (items).toString() + " is " + (subset).toString() + ".");
+  print("The longest divisible subset of " + _str(items) + " is " + _str(subset) + ".");
 }
 
 void _start() {

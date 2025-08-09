@@ -1,8 +1,1 @@
-Unhandled exception:
-type 'int' is not a subtype of type 'double' in type cast
-#0      ln_series (file:///workspace/mochi/tests/algorithms/x/Dart/electronics/builtin_voltage.dart:58:27)
-#1      ln (file:///workspace/mochi/tests/algorithms/x/Dart/electronics/builtin_voltage.dart:76:10)
-#2      builtin_voltage (file:///workspace/mochi/tests/algorithms/x/Dart/electronics/builtin_voltage.dart:95:36)
-#3      main (file:///workspace/mochi/tests/algorithms/x/Dart/electronics/builtin_voltage.dart:105:10)
-#4      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
-#5      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)
+{"duration_us":28490,"memory_bytes":2490368,"name":"main"}
