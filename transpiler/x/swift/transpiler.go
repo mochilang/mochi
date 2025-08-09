@@ -3181,7 +3181,14 @@ func convertFunDecl(env *types.Env, f *parser.FunStmt) (Stmt, error) {
 			pt = types.ResolveTypeRef(p.Type, env)
 		}
 		child.SetVar(p.Name, pt, true)
-		useInOut := m && (types.IsListType(pt) || types.IsMapType(pt) || types.IsStructType(pt) || types.IsUnionType(pt))
+		// Lists and maps in Mochi are reference types, but requiring
+		// callers to pass variables with `&` (inout) causes
+		// complications when immutable values are used at call sites.
+		// Instead of using Swift's `inout` for these container types,
+		// operate on a local copy when mutated. Only struct and union
+		// types still use `inout` to propagate mutations back to the
+		// caller.
+		useInOut := m && (types.IsStructType(pt) || types.IsUnionType(pt))
 		paramTypes[i] = swiftTypeOf(pt)
 		if st, ok := pt.(types.StructType); ok {
 			if classStructs[st.Name] {
