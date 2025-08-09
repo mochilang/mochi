@@ -4,7 +4,7 @@ Generated Lua code for programs in `tests/vm/valid`. Each program has a `.lua` f
 
 Transpiled programs: 104/105
 
-Last updated: 2025-08-08 18:13 GMT+7
+Last updated: 2025-08-09 10:01 GMT+7
 
 Checklist:
 
