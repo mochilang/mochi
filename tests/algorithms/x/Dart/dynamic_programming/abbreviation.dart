@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,10 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 int index_of(String s, String ch) {
@@ -95,10 +98,10 @@ bool abbr(String a, String b) {
     List<bool> row = <bool>[];
     int j = 0;
     while (j <= m) {
-    row = (row..add(false));
+    row = [...row, false];
     j = j + 1;
   }
-    dp = ((dp..add(row)) as List).map((e) => (List<bool>.from(e) as List<bool>)).toList();
+    dp = ([...dp, row] as List).map((e) => (List<bool>.from(e) as List<bool>)).toList();
     i = i + 1;
   }
   while (dp[0]!.length <= 0) { dp[0]!.add(false); } dp[0]![0] = true;

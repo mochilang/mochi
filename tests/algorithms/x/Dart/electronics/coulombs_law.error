@@ -1,4 +1,4 @@
 run: exit status 254
-../../../tests/algorithms/x/Dart/electronics/coulombs_law.dart:93:60: Error: The argument type 'int' can't be assigned to the parameter type 'double'.
+../../../tests/algorithms/x/Dart/electronics/coulombs_law.dart:103:60: Error: The argument type 'int' can't be assigned to the parameter type 'double'.
   double d = sqrtApprox(COULOMBS_CONSTANT * charge_product ~/ force.abs());
                                                            ^

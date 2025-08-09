@@ -4685,7 +4685,7 @@ func convertIfStmt(i *parser.IfStmt) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
-	thenStmts, err := convertStmtList(i.Then)
+	thenStmts, err := convertBlock(i.Then)
 	if err != nil {
 		return nil, err
 	}
@@ -4697,7 +4697,7 @@ func convertIfStmt(i *parser.IfStmt) (Stmt, error) {
 		}
 		elseStmts = []Stmt{s}
 	} else if len(i.Else) > 0 {
-		elseStmts, err = convertStmtList(i.Else)
+		elseStmts, err = convertBlock(i.Else)
 		if err != nil {
 			return nil, err
 		}
@@ -4710,7 +4710,7 @@ func convertWhileStmt(wst *parser.WhileStmt) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
-	body, err := convertStmtList(wst.Body)
+	body, err := convertBlock(wst.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -4727,7 +4727,7 @@ func convertForStmt(fst *parser.ForStmt) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		body, err := convertStmtList(fst.Body)
+		body, err := convertBlock(fst.Body)
 		if err != nil {
 			return nil, err
 		}
@@ -4757,7 +4757,7 @@ func convertForStmt(fst *parser.ForStmt) (Stmt, error) {
 	}
 	saved := compVarTypes[fst.Name]
 	compVarTypes[fst.Name] = elem
-	body, err := convertStmtList(fst.Body)
+	body, err := convertBlock(fst.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -4861,6 +4861,27 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 		}
 		if s != nil {
 			out = append(out, s)
+		}
+	}
+	return out, nil
+}
+
+// convertBlock converts a list of statements representing a lexical block
+// and ensures that any variables declared within the block do not leak into
+// the outer scope. It saves the current set of local variable types, converts
+// the statements, and then removes any newly introduced variables.
+func convertBlock(list []*parser.Statement) ([]Stmt, error) {
+	saved := map[string]struct{}{}
+	for k := range localVarTypes {
+		saved[k] = struct{}{}
+	}
+	out, err := convertStmtList(list)
+	if err != nil {
+		return nil, err
+	}
+	for k := range localVarTypes {
+		if _, ok := saved[k]; !ok {
+			delete(localVarTypes, k)
 		}
 	}
 	return out, nil

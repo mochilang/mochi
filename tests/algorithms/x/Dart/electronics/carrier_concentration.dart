@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,17 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 class CarrierResult {
@@ -64,16 +74,16 @@ CarrierResult carrier_concentration(double electron_conc, double hole_conc, doub
     zero_count = zero_count + 1;
   }
   if (zero_count != 1) {
-    throw Exception("You cannot supply more or less than 2 values");
+    _error("You cannot supply more or less than 2 values");
   }
   if (electron_conc < 0.0) {
-    throw Exception("Electron concentration cannot be negative in a semiconductor");
+    _error("Electron concentration cannot be negative in a semiconductor");
   }
   if (hole_conc < 0.0) {
-    throw Exception("Hole concentration cannot be negative in a semiconductor");
+    _error("Hole concentration cannot be negative in a semiconductor");
   }
   if (intrinsic_conc < 0.0) {
-    throw Exception("Intrinsic concentration cannot be negative in a semiconductor");
+    _error("Intrinsic concentration cannot be negative in a semiconductor");
   }
   if (electron_conc == 0.0) {
     return CarrierResult(name: "electron_conc", value: intrinsic_conc * intrinsic_conc / hole_conc);
@@ -97,9 +107,9 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print(r1.name + ", " + (r1.value).toString());
-  print(r2.name + ", " + (r2.value).toString());
-  print(r3.name + ", " + (r3.value).toString());
+  print(r1.name + ", " + _str(r1.value));
+  print(r2.name + ", " + _str(r2.value));
+  print(r3.name + ", " + _str(r3.value));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

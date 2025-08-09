@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,17 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 class Result {
@@ -76,10 +86,10 @@ Result electric_power(double voltage, double current, double power) {
     zeros = zeros + 1;
   }
   if (zeros != 1) {
-    throw Exception("Exactly one argument must be 0");
+    _error("Exactly one argument must be 0");
   } else {
     if (power < 0.0) {
-    throw Exception("Power cannot be negative in any electrical/electronics system");
+    _error("Power cannot be negative in any electrical/electronics system");
   } else {
     if (voltage == 0.0) {
     return Result(name: "voltage", value: power / current);
@@ -91,7 +101,7 @@ Result electric_power(double voltage, double current, double power) {
     double p = absf(voltage * current);
     return Result(name: "power", value: round_to(p, 2));
   } else {
-    throw Exception("Unhandled case");
+    _error("Unhandled case");
   };
   };
   };
@@ -100,7 +110,7 @@ Result electric_power(double voltage, double current, double power) {
 }
 
 String str_result(Result r) {
-  return "Result(name='" + r.name + "', value=" + (r.value).toString() + ")";
+  return "Result(name='" + r.name + "', value=" + _str(r.value) + ")";
 }
 
 Result r1 = electric_power(0.0, 2.0, 5.0);

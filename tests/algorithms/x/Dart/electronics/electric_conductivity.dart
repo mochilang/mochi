@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,17 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 class Result {
@@ -55,16 +65,16 @@ Result electric_conductivity(double conductivity, double electron_conc, double m
     zero_count = zero_count + 1;
   }
   if (zero_count != 1) {
-    throw Exception("You cannot supply more or less than 2 values");
+    _error("You cannot supply more or less than 2 values");
   }
   if (conductivity < 0.0) {
-    throw Exception("Conductivity cannot be negative");
+    _error("Conductivity cannot be negative");
   }
   if (electron_conc < 0.0) {
-    throw Exception("Electron concentration cannot be negative");
+    _error("Electron concentration cannot be negative");
   }
   if (mobility < 0.0) {
-    throw Exception("mobility cannot be negative");
+    _error("mobility cannot be negative");
   }
   if (conductivity == 0.0) {
     return Result(kind: "conductivity", value: mobility * electron_conc * ELECTRON_CHARGE);
@@ -85,9 +95,9 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print(r1.kind + " " + (r1.value).toString());
-  print(r2.kind + " " + (r2.value).toString());
-  print(r3.kind + " " + (r3.value).toString());
+  print(r1.kind + " " + _str(r1.value));
+  print(r2.kind + " " + _str(r2.value));
+  print(r3.kind + " " + _str(r3.value));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

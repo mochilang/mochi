@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
 
 class Node {
   int key;
@@ -64,7 +69,7 @@ List<Node> sort_nodes(List<Node> nodes) {
 }
 
 void print_node(Node n) {
-  print("Node(key=" + (n.key).toString() + ", freq=" + (n.freq).toString() + ")");
+  print("Node(key=" + _str(n.key) + ", freq=" + _str(n.freq) + ")");
 }
 
 void print_binary_search_tree(List<List<int>> root, List<int> keys, int i, int j, int parent, bool is_left) {
@@ -73,12 +78,12 @@ void print_binary_search_tree(List<List<int>> root, List<int> keys, int i, int j
   }
   int node = root[i][j];
   if (parent == -1) {
-    print((keys[node]).toString() + " is the root of the binary search tree.");
+    print(_str(keys[node]) + " is the root of the binary search tree.");
   } else {
     if (is_left) {
-    print((keys[node]).toString() + " is the left child of key " + (parent).toString() + ".");
+    print(_str(keys[node]) + " is the left child of key " + _str(parent) + ".");
   } else {
-    print((keys[node]).toString() + " is the right child of key " + (parent).toString() + ".");
+    print(_str(keys[node]) + " is the right child of key " + _str(parent) + ".");
   };
   }
   print_binary_search_tree(root, keys, i, node - 1, keys[node], true);
@@ -152,7 +157,7 @@ void find_optimal_binary_search_tree(List<Node> original_nodes) {
     print_node(nodes[i]);
     i = i + 1;
   }
-  print("\nThe cost of optimal BST for given tree nodes is " + (dp[0][n - 1]).toString() + ".");
+  print("\nThe cost of optimal BST for given tree nodes is " + _str(dp[0][n - 1]) + ".");
   print_binary_search_tree(root, keys, 0, n - 1, -1, false);
 }
 

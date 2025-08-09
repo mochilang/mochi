@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,10 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
 
 List<List<String>> allConstruct(String target, List<String> wordBank) {
   int tableSize = target.length + 1;
@@ -44,7 +47,7 @@ List<List<String>> allConstruct(String target, List<String> wordBank) {
   int idx = 0;
   while (idx < tableSize) {
     List<List<String>> empty = <List<String>>[];
-    table = ((table..add(empty)) as List).map((e) => ((e as List).map((e) => (List<String>.from(e) as List<String>)).toList() as List<List<String>>)).toList();
+    table = ([...table, empty] as List).map((e) => ((e as List).map((e) => (List<String>.from(e) as List<String>)).toList() as List<List<String>>)).toList();
     idx = idx + 1;
   }
   List<String> base = <String>[];
@@ -63,12 +66,12 @@ List<List<String>> allConstruct(String target, List<String> wordBank) {
     List<String> combination = <String>[];
     int m = 0;
     while (m < way.length) {
-    combination = (combination..add(way[m]));
+    combination = [...combination, way[m]];
     m = m + 1;
   }
-    combination = (combination..add(word));
+    combination = [...combination, word];
     int nextIndex = i + wordLen;
-    while (table.length <= nextIndex) { table.add(<List<String>>[]); } table[nextIndex] = ((table[nextIndex]..add(combination)) as List).map((e) => (List<String>.from(e) as List<String>)).toList();
+    while (table.length <= nextIndex) { table.add(<List<String>>[]); } table[nextIndex] = ([...table[nextIndex], combination] as List).map((e) => (List<String>.from(e) as List<String>)).toList();
     k = k + 1;
   };
   }

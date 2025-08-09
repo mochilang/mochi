@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
 
 List<int> copy_list(List<int> xs) {
   List<int> res = <int>[];
@@ -81,12 +86,12 @@ List<int> longest_subsequence(List<int> arr) {
 }
 
 void _main() {
-  print((longest_subsequence([10, 22, 9, 33, 21, 50, 41, 60, 80])).toString());
-  print((longest_subsequence([4, 8, 7, 5, 1, 12, 2, 3, 9])).toString());
-  print((longest_subsequence([9, 8, 7, 6, 5, 7])).toString());
-  print((longest_subsequence([28, 26, 12, 23, 35, 39])).toString());
-  print((longest_subsequence([1, 1, 1])).toString());
-  print((longest_subsequence(([] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList())).toString());
+  print(_str(longest_subsequence([10, 22, 9, 33, 21, 50, 41, 60, 80])));
+  print(_str(longest_subsequence([4, 8, 7, 5, 1, 12, 2, 3, 9])));
+  print(_str(longest_subsequence([9, 8, 7, 6, 5, 7])));
+  print(_str(longest_subsequence([28, 26, 12, 23, 35, 39])));
+  print(_str(longest_subsequence([1, 1, 1])));
+  print(_str(longest_subsequence(([] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList())));
 }
 
 void _start() {

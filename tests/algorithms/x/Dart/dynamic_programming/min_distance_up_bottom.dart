@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
 
 int min3(int a, int b, int c) {
   int m = a;
@@ -89,10 +94,10 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print((min_distance_up_bottom("intention", "execution")).toString());
-  print((min_distance_up_bottom("intention", "")).toString());
-  print((min_distance_up_bottom("", "")).toString());
-  print((min_distance_up_bottom("zooicoarchaeologist", "zoologist")).toString());
+  print(_str(min_distance_up_bottom("intention", "execution")));
+  print(_str(min_distance_up_bottom("intention", "")));
+  print(_str(min_distance_up_bottom("", "")));
+  print(_str(min_distance_up_bottom("zooicoarchaeologist", "zoologist")));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

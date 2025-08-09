@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,10 +33,18 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+
+
+Never _error(String msg) {
+  throw Exception(msg);
+}
 
 void panic(String msg) {
   print(msg);
@@ -44,7 +52,7 @@ void panic(String msg) {
 
 List<int> catalan_numbers(int upper_limit) {
   if (upper_limit < 0) {
-    throw Exception("Limit for the Catalan sequence must be >= 0");
+    _error("Limit for the Catalan sequence must be >= 0");
     return ([] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
   }
   List<int> catalans = [1];
@@ -56,7 +64,7 @@ List<int> catalan_numbers(int upper_limit) {
     next_val = next_val + catalans[j] * catalans[n - j - 1];
     j = j + 1;
   }
-    catalans = (catalans..add(next_val));
+    catalans = [...catalans, next_val];
     n = n + 1;
   }
   return catalans;
