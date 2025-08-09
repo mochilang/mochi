@@ -140,8 +140,18 @@ func emitLenExpr(w io.Writer, e Expr) {
 	case *VarRef:
 		io.WriteString(w, v.Name+"_len")
 	case *FieldExpr:
+		typ := inferExprType(currentEnv, v.Target)
+		base := strings.TrimPrefix(typ, "struct ")
 		v.Target.emitExpr(w)
-		io.WriteString(w, "."+v.Name+"_len")
+		if strings.HasSuffix(base, "*") {
+			if _, ok := structTypes[strings.TrimSuffix(base, "*")]; ok {
+				io.WriteString(w, "->"+v.Name+"_len")
+			} else {
+				io.WriteString(w, "."+v.Name+"_len")
+			}
+		} else {
+			io.WriteString(w, "."+v.Name+"_len")
+		}
 	case *CallExpr:
 		if v.Func == "append" && len(v.Args) == 2 {
 			emitLenExpr(w, v.Args[0])
@@ -255,14 +265,17 @@ func emitStrExpr(w io.Writer, e Expr) {
 
 func varBaseType(name string) string {
 	if t, ok := varTypes[name]; ok && t != "" {
-		return strings.TrimSuffix(t, "[]")
+		t = strings.TrimSuffix(t, "[]")
+		return strings.TrimSuffix(t, "*")
 	}
 	if ds, ok := declStmts[name]; ok && ds.Type != "" {
-		return strings.TrimSuffix(ds.Type, "[]")
+		t := strings.TrimSuffix(ds.Type, "[]")
+		return strings.TrimSuffix(t, "*")
 	}
 	if currentEnv != nil {
 		if tt, err := currentEnv.GetVar(name); err == nil {
-			return strings.TrimSuffix(cTypeFromMochiType(tt), "[]")
+			t := strings.TrimSuffix(cTypeFromMochiType(tt), "[]")
+			return strings.TrimSuffix(t, "*")
 		}
 	}
 	return ""
@@ -816,9 +829,11 @@ func (c *CallStmt) emit(w io.Writer, indent int) {
 		if !first && i >= 0 {
 			// already wrote comma above
 		}
-		pointerParam := strings.HasSuffix(paramType, "*")
-		if pointerParam {
-			io.WriteString(w, "&")
+		if strings.HasSuffix(paramType, "*") {
+			base := strings.TrimSuffix(paramType, "*")
+			if _, ok := structTypes[base]; ok {
+				io.WriteString(w, "&")
+			}
 		} else if _, ok := structTypes[paramType]; ok {
 			if vr, ok := a.(*VarRef); ok {
 				if at, ok2 := varTypes[vr.Name]; ok2 && strings.HasSuffix(at, "*") && strings.TrimSuffix(at, "*") == paramType {
@@ -828,7 +843,7 @@ func (c *CallStmt) emit(w io.Writer, indent int) {
 		}
 		if vr, ok := a.(*VarRef); ok && paramType != "" {
 			if at, ok2 := varTypes[vr.Name]; ok2 && at != paramType {
-				if !(pointerParam && at == strings.TrimSuffix(paramType, "*")) {
+				if !(strings.HasSuffix(paramType, "*") && at == strings.TrimSuffix(paramType, "*")) {
 					fmt.Fprintf(w, "(%s)", paramType)
 				}
 			}
@@ -1225,16 +1240,16 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, ";\n")
 			writeIndent(w, indent)
 			fmt.Fprintf(w, "size_t %s_len = ", d.Name)
-			fe.Target.emitExpr(w)
-			fmt.Fprintf(w, ".%s_len;\n", fe.Name)
+			(&FieldExpr{Target: fe.Target, Name: fe.Name + "_len"}).emitExpr(w)
+			io.WriteString(w, ";\n")
 			writeIndent(w, indent)
 			fmt.Fprintf(w, "size_t *%s_lens = ", d.Name)
-			fe.Target.emitExpr(w)
-			fmt.Fprintf(w, ".%s_lens;\n", fe.Name)
+			(&FieldExpr{Target: fe.Target, Name: fe.Name + "_lens"}).emitExpr(w)
+			io.WriteString(w, ";\n")
 			writeIndent(w, indent)
 			fmt.Fprintf(w, "size_t %s_lens_len = ", d.Name)
-			fe.Target.emitExpr(w)
-			fmt.Fprintf(w, ".%s_len;\n", fe.Name)
+			(&FieldExpr{Target: fe.Target, Name: fe.Name + "_len"}).emitExpr(w)
+			io.WriteString(w, ";\n")
 			return
 		}
 		if lst, ok := d.Value.(*ListLit); ok {
@@ -1406,8 +1421,8 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, ";\n")
 			writeIndent(w, indent)
 			fmt.Fprintf(w, "size_t %s_len = ", d.Name)
-			fe.Target.emitExpr(w)
-			fmt.Fprintf(w, ".%s_len;\n", fe.Name)
+			(&FieldExpr{Target: fe.Target, Name: fe.Name + "_len"}).emitExpr(w)
+			io.WriteString(w, ";\n")
 			return
 		}
 		if call, ok := d.Value.(*CallExpr); ok {
@@ -1691,17 +1706,21 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 		} else if fe, ok2 := call.Args[0].(*FieldExpr); ok2 && len(a.Fields) == 1 && len(a.Indexes) == 0 {
 			if vr, ok3 := fe.Target.(*VarRef); ok3 && vr.Name == a.Name && fe.Name == a.Fields[0] {
 				base := fieldBaseType(vr.Name, fe.Name)
+				sep := "."
+				if t, ok4 := varTypes[a.Name]; ok4 && strings.HasSuffix(t, "*") {
+					sep = "->"
+				}
 				writeIndent(w, indent)
 				switch base {
 				case "int":
 					needListAppendInt = true
-					fmt.Fprintf(w, "%s.%s = list_append_int(%s.%s, &%s.%s_len, ", a.Name, fe.Name, a.Name, fe.Name, a.Name, fe.Name)
+					fmt.Fprintf(w, "%s%s%s = list_append_int(%s%s%s, &%s%s%s_len, ", a.Name, sep, fe.Name, a.Name, sep, fe.Name, a.Name, sep, fe.Name)
 				case "double":
 					needListAppendDouble = true
-					fmt.Fprintf(w, "%s.%s = list_append_double(%s.%s, &%s.%s_len, ", a.Name, fe.Name, a.Name, fe.Name, a.Name, fe.Name)
+					fmt.Fprintf(w, "%s%s%s = list_append_double(%s%s%s, &%s%s%s_len, ", a.Name, sep, fe.Name, a.Name, sep, fe.Name, a.Name, sep, fe.Name)
 				case "const char*":
 					needListAppendStr = true
-					fmt.Fprintf(w, "%s.%s = list_append_str(%s.%s, &%s.%s_len, ", a.Name, fe.Name, a.Name, fe.Name, a.Name, fe.Name)
+					fmt.Fprintf(w, "%s%s%s = list_append_str(%s%s%s, &%s%s%s_len, ", a.Name, sep, fe.Name, a.Name, sep, fe.Name, a.Name, sep, fe.Name)
 				default:
 					if base != "" {
 						if strings.HasSuffix(base, "*") || !strings.HasSuffix(base, "[]") {
@@ -1713,14 +1732,14 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 								needListAppendStruct = make(map[string]bool)
 							}
 							needListAppendStruct[typ] = true
-							fmt.Fprintf(w, "%s.%s = list_append_%s(%s.%s, &%s.%s_len, ", a.Name, fe.Name, sanitizeTypeName(typ), a.Name, fe.Name, a.Name, fe.Name)
+							fmt.Fprintf(w, "%s%s%s = list_append_%s(%s%s%s, &%s%s%s_len, ", a.Name, sep, fe.Name, sanitizeTypeName(typ), a.Name, sep, fe.Name, a.Name, sep, fe.Name)
 						} else {
 							needListAppendInt = true
-							fmt.Fprintf(w, "%s.%s = list_append_int(%s.%s, &%s.%s_len, ", a.Name, fe.Name, a.Name, fe.Name, a.Name, fe.Name)
+							fmt.Fprintf(w, "%s%s%s = list_append_int(%s%s%s, &%s%s%s_len, ", a.Name, sep, fe.Name, a.Name, sep, fe.Name, a.Name, sep, fe.Name)
 						}
 					} else {
 						needListAppendInt = true
-						fmt.Fprintf(w, "%s.%s = list_append_int(%s.%s, &%s.%s_len, ", a.Name, fe.Name, a.Name, fe.Name, a.Name, fe.Name)
+						fmt.Fprintf(w, "%s%s%s = list_append_int(%s%s%s, &%s%s%s_len, ", a.Name, sep, fe.Name, a.Name, sep, fe.Name, a.Name, sep, fe.Name)
 					}
 				}
 				call.Args[1].emitExpr(w)
@@ -1748,9 +1767,17 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, ")")
 		io.WriteString(w, "]")
 	}
-	for _, f := range a.Fields {
-		io.WriteString(w, ".")
-		io.WriteString(w, f)
+	if len(a.Fields) > 0 {
+		sep := "."
+		if t, ok := varTypes[a.Name]; ok && strings.HasSuffix(t, "*") {
+			sep = "->"
+		}
+		io.WriteString(w, sep)
+		io.WriteString(w, a.Fields[0])
+		for _, f := range a.Fields[1:] {
+			io.WriteString(w, ".")
+			io.WriteString(w, f)
+		}
 	}
 	io.WriteString(w, " = ")
 	if a.Value != nil {
@@ -2247,9 +2274,14 @@ func (f *FieldExpr) emitExpr(w io.Writer) {
 		}
 	}
 	typ := inferExprType(currentEnv, f.Target)
+	base := strings.TrimPrefix(typ, "struct ")
 	f.Target.emitExpr(w)
-	if strings.HasPrefix(typ, "struct ") && strings.HasSuffix(typ, "*") {
-		io.WriteString(w, "->")
+	if strings.HasSuffix(base, "*") {
+		if _, ok := structTypes[strings.TrimSuffix(base, "*")]; ok {
+			io.WriteString(w, "->")
+		} else {
+			io.WriteString(w, ".")
+		}
 	} else {
 		io.WriteString(w, ".")
 	}
@@ -2755,6 +2787,10 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 			io.WriteString(w, vr.Name+"_len")
 			return
 		}
+		if fe, ok := c.Args[0].(*FieldExpr); ok {
+			emitLenExpr(w, fe)
+			return
+		}
 		t := inferExprType(currentEnv, c.Args[0])
 		if strings.HasSuffix(t, "[]") {
 			switch v := c.Args[0].(type) {
@@ -2774,10 +2810,6 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 						return
 					}
 				}
-			case *FieldExpr:
-				v.Target.emitExpr(w)
-				io.WriteString(w, "."+v.Name+"_len")
-				return
 			}
 		}
 		if t == "const char*" {
@@ -3038,8 +3070,17 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 			first = false
 			continue
 		}
-		if strings.HasPrefix(paramType, "struct ") && strings.HasSuffix(paramType, "*") {
-			io.WriteString(w, "&")
+		if strings.HasSuffix(paramType, "*") {
+			base := strings.TrimSuffix(paramType, "*")
+			if _, ok := structTypes[base]; ok {
+				io.WriteString(w, "&")
+			}
+		} else if _, ok := structTypes[paramType]; ok {
+			if vr, ok := a.(*VarRef); ok {
+				if at, ok2 := varTypes[vr.Name]; ok2 && strings.HasSuffix(at, "*") && strings.TrimSuffix(at, "*") == paramType {
+					io.WriteString(w, "*")
+				}
+			}
 		}
 		if paramType == "MapSD" {
 			if sl, ok := a.(*StructLit); ok && len(sl.Fields) == 0 {
