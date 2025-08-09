@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-09 09:03 UTC
+Last updated: 2025-08-09 09:39 UTC
 
-## Algorithms Golden Test Checklist (1050/1077)
+## Algorithms Golden Test Checklist (1051/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 645µs | 22.6 KB |
@@ -428,7 +428,7 @@ Last updated: 2025-08-09 09:03 UTC
 | 419 | graphs/dijkstra_binary_grid | ✓ | 2.307ms | 57.2 KB |
 | 420 | graphs/dinic | ✓ | 1.872ms | 64.7 KB |
 | 421 | graphs/directed_and_undirected_weighted_graph | ✓ | 3.132ms | 315.4 KB |
-| 422 | graphs/edmonds_karp_multiple_source_and_sink |   |  |  |
+| 422 | graphs/edmonds_karp_multiple_source_and_sink | ✓ | 571.223ms | 589.5 KB |
 | 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 3.748ms | 569.5 KB |
 | 424 | graphs/even_tree | ✓ | 1.817ms | 35.0 KB |
 | 425 | graphs/finding_bridges | ✓ | 571.223ms | 80.7 KB |

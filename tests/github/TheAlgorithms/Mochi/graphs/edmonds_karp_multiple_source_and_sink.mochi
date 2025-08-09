@@ -149,13 +149,13 @@ fun push_relabel_max_flow(graph: list<list<int>>, sources: list<int>, sinks: lis
       nb = 0
       while nb < n {
         if g[v][nb] - preflow[v][nb] > 0 {
-          if min_height == -1 || heights[nb] < min_height {
+          if min_height == (-1) || heights[nb] < min_height {
             min_height = heights[nb]
           }
         }
         nb = nb + 1
       }
-      if min_height != -1 {
+        if min_height != (-1) {
         heights[v] = min_height + 1
       } else {
         break
