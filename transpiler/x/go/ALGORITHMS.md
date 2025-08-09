@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 329/1077
-Last updated: 2025-08-09 10:14 +0700
+Completed programs: 333/1077
+Last updated: 2025-08-09 16:20 +0700
 
 Checklist:
 
@@ -387,17 +387,17 @@ Checklist:
 | 378 | financial/straight_line_depreciation | ✓ | 837.0µs | 2.30KB |
 | 379 | financial/time_and_half_pay | ✓ | 548.0µs | 1.01KB |
 | 380 | fractals/julia_sets |   |  |  |
-| 381 | fractals/koch_snowflake |   |  |  |
-| 382 | fractals/mandelbrot |   |  |  |
-| 383 | fractals/sierpinski_triangle |   |  |  |
-| 384 | fractals/vicsek |   |  |  |
-| 385 | fuzzy_logic/fuzzy_operations | ✓ | 523.0µs | 1.55KB |
-| 386 | genetic_algorithm/basic_string | ✓ | 419.0µs | 1.01KB |
-| 387 | geodesy/haversine_distance | ✓ | 358.0µs | 1.01KB |
-| 388 | geodesy/lamberts_ellipsoidal_distance | ✓ | 1.0ms | 1.07KB |
-| 389 | geometry/geometry | ✓ | 418.0µs | 1.42KB |
-| 390 | graphics/bezier_curve | ✓ | 404.0µs | 1.93KB |
-| 391 | graphics/butterfly_pattern | ✓ | 620.0µs | 4.20KB |
+| 381 | fractals/koch_snowflake | ✓ | 383.0µs | 2.31KB |
+| 382 | fractals/mandelbrot | ✓ | 1.0ms | 39.79KB |
+| 383 | fractals/sierpinski_triangle | ✓ | 530.0µs | 2.66KB |
+| 384 | fractals/vicsek | ✓ | 1.0ms | 23.45KB |
+| 385 | fuzzy_logic/fuzzy_operations | ✓ | 366.0µs | 1.55KB |
+| 386 | genetic_algorithm/basic_string | ✓ | 260.0µs | 1016B |
+| 387 | geodesy/haversine_distance | ✓ | 414.0µs | 1.01KB |
+| 388 | geodesy/lamberts_ellipsoidal_distance | ✓ | 520.0µs | 1.40KB |
+| 389 | geometry/geometry | ✓ | 720.0µs | 1.42KB |
+| 390 | graphics/bezier_curve | ✓ | 495.0µs | 1.93KB |
+| 391 | graphics/butterfly_pattern | ✓ | 914.0µs | 4.20KB |
 | 392 | graphics/digital_differential_analyzer_line |   |  |  |
 | 393 | graphics/vector3_for_2d_rendering |   |  |  |
 | 394 | graphs/a_star | ✓ | 872.0µs | 7.88KB |
