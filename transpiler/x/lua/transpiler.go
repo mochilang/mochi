@@ -670,6 +670,12 @@ func (c *CallExpr) emit(w io.Writer) {
 			c.Args[0].emit(w)
 		}
 		io.WriteString(w, ")")
+	case "floor":
+		io.WriteString(w, "math.floor(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		}
+		io.WriteString(w, ")")
 	case "str":
 		if len(c.Args) > 0 && (isListExpr(c.Args[0]) || isMapExpr(c.Args[0])) {
 			(&CallExpr{Func: "repr", Args: c.Args}).emit(w)

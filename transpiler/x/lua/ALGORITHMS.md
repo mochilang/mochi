@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-09 10:30 GMT+7
+Last updated: 2025-08-09 16:08 GMT+7
 
-## Algorithms Golden Test Checklist (1001/1077)
+## Algorithms Golden Test Checklist (1003/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 270µs | 912 B |
@@ -348,7 +348,7 @@ Last updated: 2025-08-09 10:30 GMT+7
 | 339 | dynamic_programming/range_sum_query | ✓ | 277µs | 1.9 KB |
 | 340 | dynamic_programming/regex_match | ✓ | 762µs | 1.1 KB |
 | 341 | dynamic_programming/rod_cutting | ✓ | 277µs | 1.1 KB |
-| 342 | dynamic_programming/smith_waterman | error |  |  |
+| 342 | dynamic_programming/smith_waterman | ✓ | 147µs | 3.2 KB |
 | 343 | dynamic_programming/subset_generation | ✓ | 417µs | 912 B |
 | 344 | dynamic_programming/sum_of_subset | ✓ | 410µs | 912 B |
 | 345 | dynamic_programming/trapped_water | ✓ | 294µs | 912 B |
@@ -365,7 +365,7 @@ Last updated: 2025-08-09 10:30 GMT+7
 | 356 | electronics/circular_convolution | ✓ | 672µs | 1.7 KB |
 | 357 | electronics/coulombs_law | ✓ | 281µs | 848 B |
 | 358 | electronics/electric_conductivity | ✓ | 115µs | 352 B |
-| 359 | electronics/electric_power | error |  |  |
+| 359 | electronics/electric_power | ✓ | 90µs | 1.5 KB |
 | 360 | electronics/electrical_impedance | ✓ | 285µs | 840 B |
 | 361 | electronics/ic_555_timer | ✓ | 117µs | 80 B |
 | 362 | electronics/ind_reactance | ✓ | 126µs | 808 B |

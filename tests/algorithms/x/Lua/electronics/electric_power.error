@@ -1,8 +1,0 @@
-run: exit status 1
-Result(name='voltage', value=2.5)
-lua: ...hi/tests/algorithms/x/Lua/electronics/electric_power.lua:50: attempt to call a nil value (global 'floor')
-stack traceback:
-	...hi/tests/algorithms/x/Lua/electronics/electric_power.lua:50: in function 'round_to'
-	...hi/tests/algorithms/x/Lua/electronics/electric_power.lua:77: in function 'electric_power'
-	...hi/tests/algorithms/x/Lua/electronics/electric_power.lua:135: in main chunk
-	[C]: in ?
