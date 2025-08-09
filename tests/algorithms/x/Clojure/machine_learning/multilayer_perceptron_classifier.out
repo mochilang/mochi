@@ -1,0 +1,5 @@
+Execution error (NumberFormatException) at java.math.BigDecimal/<init> (BigDecimal.java:988).
+Infinite or NaN
+
+Full report at:
+/tmp/clojure-1604159963876342267.edn

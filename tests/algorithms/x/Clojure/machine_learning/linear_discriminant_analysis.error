@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error (ArithmeticException) at main/predict-y-values (linear_discriminant_analysis.clj:166).
+Divide by zero
+
+Full report at:
+/tmp/clojure-14515021537404075960.edn

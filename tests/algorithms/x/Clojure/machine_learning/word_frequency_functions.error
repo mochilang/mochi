@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error (ArithmeticException) at main/log10 (word_frequency_functions.clj:133).
+Divide by zero
+
+Full report at:
+/tmp/clojure-7983931329812474406.edn
