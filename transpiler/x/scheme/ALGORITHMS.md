@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Scheme code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Scheme`.
-Last updated: 2025-08-09 10:50 GMT+7
+Last updated: 2025-08-09 16:10 GMT+7
 
 ## Algorithms Golden Test Checklist (766/1077)
 | Index | Name | Status | Duration | Memory |
@@ -306,16 +306,16 @@ Last updated: 2025-08-09 10:50 GMT+7
 | 297 | divide_and_conquer/peak | ✓ | 0s | 12.8 MB |
 | 298 | divide_and_conquer/power | ✓ | 1ms | 12.4 MB |
 | 299 | divide_and_conquer/strassen_matrix_multiplication | ✓ | 78ms | 16.7 MB |
-| 300 | docs/conf | ✓ | 0s | 12.4 MB |
-| 301 | dynamic_programming/abbreviation | ✓ | 2ms | 13.6 MB |
-| 302 | dynamic_programming/all_construct | ✓ | 4ms | 12.8 MB |
-| 303 | dynamic_programming/bitmask | ✓ | 1ms | 12.2 MB |
-| 304 | dynamic_programming/catalan_numbers | ✓ | 0s | 12.4 MB |
-| 305 | dynamic_programming/climbing_stairs | ✓ | 0s | 12.7 MB |
-| 306 | dynamic_programming/combination_sum_iv | ✓ | 4ms | 13.2 MB |
-| 307 | dynamic_programming/edit_distance | ✓ | 6ms | 13.6 MB |
-| 308 | dynamic_programming/factorial | ✓ | 0s | 12.8 MB |
-| 309 | dynamic_programming/fast_fibonacci | ✓ | 5ms | 12.2 MB |
+| 300 | docs/conf | ✓ | 1ms | 12.7 MB |
+| 301 | dynamic_programming/abbreviation | ✓ | 4ms | 13.8 MB |
+| 302 | dynamic_programming/all_construct | ✓ | 3ms | 12.8 MB |
+| 303 | dynamic_programming/bitmask | ✓ | 0s | 13.0 MB |
+| 304 | dynamic_programming/catalan_numbers | ✓ | 0s | 13.0 MB |
+| 305 | dynamic_programming/climbing_stairs | ✓ | 1ms | 12.6 MB |
+| 306 | dynamic_programming/combination_sum_iv | ✓ | 1ms | 13.4 MB |
+| 307 | dynamic_programming/edit_distance | ✓ | 3ms | 13.5 MB |
+| 308 | dynamic_programming/factorial | ✓ | 1ms | 12.5 MB |
+| 309 | dynamic_programming/fast_fibonacci | ✓ | 1ms | 12.1 MB |
 | 310 | dynamic_programming/fibonacci | ✓ | 1ms | 13.0 MB |
 | 311 | dynamic_programming/fizz_buzz | ✓ | 5ms | 12.2 MB |
 | 312 | dynamic_programming/floyd_warshall | ✓ | 1ms | 13.5 MB |
