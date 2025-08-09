@@ -208,7 +208,7 @@ func simpleUnionAlias(ut types.UnionType) string {
 func javaType(t string) string {
 	switch t {
 	case "int":
-		return "int"
+		return "long"
 	case "bool":
 		return "boolean"
 	case "boolean":
@@ -225,7 +225,7 @@ func javaType(t string) string {
 		needBigRat = true
 		return "BigRat"
 	case "int[]":
-		return "int[]"
+		return "long[]"
 	case "string[]":
 		return "String[]"
 	case "bool[]":
@@ -329,7 +329,7 @@ func javaType(t string) string {
 func javaBoxType(t string) string {
 	switch t {
 	case "int":
-		return "Integer"
+		return "Long"
 	case "float", "float64", "double":
 		return "Double"
 	case "bool", "boolean":
@@ -380,8 +380,8 @@ func mapValueType(t string) string {
 		if comma >= 0 {
 			val := strings.TrimSpace(rest[comma+1 : j-1])
 			switch val {
-			case "Integer":
-				return "int"
+			case "Integer", "Long":
+				return "long"
 			case "Double":
 				return "double"
 			case "Boolean":
@@ -416,8 +416,8 @@ func mapKeyType(t string) string {
 		if comma >= 0 {
 			k := strings.TrimSpace(rest[:comma])
 			switch k {
-			case "Integer":
-				return "int"
+			case "Integer", "Long":
+				return "long"
 			case "Double":
 				return "double"
 			case "Boolean":
@@ -480,12 +480,12 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 			return
 		}
 	}
-	if typ == "int" || typ == "double" || typ == "float" || typ == "float64" {
+	if typ == "long" || typ == "double" || typ == "float" || typ == "float64" {
 		it := inferType(e)
-		if typ == "int" && it == "java.math.BigInteger" {
+		if typ == "long" && it == "java.math.BigInteger" {
 			fmt.Fprint(w, "((java.math.BigInteger)(")
 			e.emit(w)
-			fmt.Fprint(w, ")).intValue()")
+			fmt.Fprint(w, ")).longValue()")
 			return
 		}
 		if typ == "int" {
@@ -604,7 +604,7 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 
 func typeFromName(n string) types.Type {
 	switch n {
-	case "int", "Integer":
+	case "int", "Integer", "long", "Long":
 		return types.IntType{}
 	case "double", "float", "float64":
 		return types.FloatType{}
@@ -1754,7 +1754,7 @@ func (s *VarStmt) emit(w io.Writer, indent string) {
 
 func defaultValue(t string) string {
 	switch t {
-	case "int", "Integer":
+	case "int", "Integer", "long", "Long":
 		return "0"
 	case "double", "float", "float64", "Double":
 		return "0"
@@ -1882,18 +1882,18 @@ func (s *IndexAssignStmt) emit(w io.Writer, indent string) {
 			return
 		}
 		base.emit(w)
-		fmt.Fprint(w, "[")
+		fmt.Fprint(w, "[(int)(")
 		last.emit(w)
-		fmt.Fprint(w, "] = ")
+		fmt.Fprint(w, ")] = ")
 		elem := arrayElemType(base)
 		emitCastExpr(w, s.Expr, elem)
 		fmt.Fprint(w, ";\n")
 		return
 	}
 	s.Target.emit(w)
-	fmt.Fprint(w, "[")
+	fmt.Fprint(w, "[(int)(")
 	s.Indices[0].emit(w)
-	fmt.Fprint(w, "] = ")
+	fmt.Fprint(w, ")] = ")
 	elem := arrayElemType(s.Target)
 	emitCastExpr(w, s.Expr, elem)
 	fmt.Fprint(w, ";\n")
@@ -2541,7 +2541,7 @@ type IntLit struct{ Value int }
 
 func (i *IntLit) emit(w io.Writer) {
 	if i.Value > math.MaxInt32 || i.Value < math.MinInt32 {
-		fmt.Fprintf(w, "(int)%dL", int64(i.Value))
+		fmt.Fprintf(w, "%dL", int64(i.Value))
 	} else {
 		fmt.Fprint(w, i.Value)
 	}
@@ -2816,8 +2816,8 @@ func (a *AppendExpr) emit(w io.Writer) {
 	}
 	if _, ok := a.Value.(*NullLit); ok {
 		switch elem {
-		case "int":
-			elem = "Integer"
+		case "int", "long":
+			elem = "Long"
 		case "double":
 			elem = "Double"
 		case "boolean":
@@ -3325,7 +3325,7 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		defVal := "null"
 		mvType := mapValueType(inferType(ix.Target))
 		switch mvType {
-		case "int":
+		case "int", "long":
 			useDefault = true
 			defVal = "0"
 		case "double":
@@ -3337,7 +3337,7 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		}
 		if !useDefault {
 			switch castType {
-			case "int", "Integer":
+			case "int", "Integer", "long", "Long":
 				useDefault = true
 				defVal = "0"
 			case "double", "Double":
@@ -3370,28 +3370,28 @@ func (ix *IndexExpr) emit(w io.Writer) {
 	}
 	if isStringExpr(ix.Target) {
 		ix.Target.emit(w)
-		fmt.Fprint(w, ".substring(")
+		fmt.Fprint(w, ".substring((int)(")
 		ix.Index.emit(w)
-		fmt.Fprint(w, ", ")
+		fmt.Fprint(w, "), (int)(")
 		ix.Index.emit(w)
-		fmt.Fprint(w, "+1)")
+		fmt.Fprint(w, ")+1)")
 	} else if isArrayExpr(ix.Target) {
 		needCast := ix.ResultType != "" && ix.ResultType != arrayElemType(ix.Target)
 		if needCast {
 			fmt.Fprintf(w, "((%s)(", javaType(ix.ResultType))
 		}
 		ix.Target.emit(w)
-		fmt.Fprint(w, "[")
+		fmt.Fprint(w, "[(int)(")
 		ix.Index.emit(w)
-		fmt.Fprint(w, "]")
+		fmt.Fprint(w, ")]")
 		if needCast {
 			fmt.Fprint(w, "))")
 		}
 	} else if isListExpr(ix.Target) {
 		ix.Target.emit(w)
-		fmt.Fprint(w, ".get(")
+		fmt.Fprint(w, ".get((int)(")
 		ix.Index.emit(w)
-		fmt.Fprint(w, ")")
+		fmt.Fprint(w, "))")
 	} else if isMapExpr(ix.Target) {
 		castType := "java.util.Map"
 		if ix.ResultType != "" {
@@ -5447,7 +5447,7 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 			}
 			if simple != "" {
 				switch simple {
-				case "int":
+				case "int", "long":
 					expr = &IntCastExpr{Value: expr}
 				case "float", "float64", "double":
 					expr = &FloatCastExpr{Value: expr}
@@ -5669,7 +5669,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				et = arrayElemType(args[1])
 			}
 			switch et {
-			case "int", "double", "boolean":
+			case "int", "long", "double", "boolean":
 				return &ConcatExpr{Left: args[0], Right: args[1]}, nil
 			default:
 				needConcat = true
@@ -5710,7 +5710,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				}
 				var inner Expr
 				switch et {
-				case "int":
+				case "int", "long":
 					needArrGetI = true
 					inner = &CallExpr{Func: "_geti", Args: []Expr{ix.Target, ix.Index}}
 				case "double":
@@ -7133,7 +7133,7 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("    }\n")
 	}
 	if needArrGetI {
-		buf.WriteString("\n    static Integer _geti(int[] a, int i) {\n")
+		buf.WriteString("\n    static Long _geti(long[] a, int i) {\n")
 		buf.WriteString("        return (i >= 0 && i < a.length) ? a[i] : null;\n")
 		buf.WriteString("    }\n")
 	}
@@ -7173,7 +7173,9 @@ func typeRefString(tr *parser.TypeRef) string {
 		switch name {
 		case "any":
 			return "Object"
-		case "int", "bool", "boolean", "string", "float", "float64", "double", "void", "bigint", "bigrat":
+		case "int":
+			return "long"
+		case "bool", "boolean", "string", "float", "float64", "double", "void", "bigint", "bigrat":
 			// Primitive types should not consult the environment
 			return name
 		}
@@ -7590,7 +7592,7 @@ func substituteVars(e Expr, vars map[string]Expr) Expr {
 
 func zeroValueExpr(t string) Expr {
 	switch t {
-	case "int":
+	case "int", "long":
 		return &IntLit{Value: 0}
 	case "double":
 		return &FloatLit{Value: 0}
