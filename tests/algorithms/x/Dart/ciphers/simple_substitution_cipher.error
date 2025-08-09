@@ -1,7 +1,0 @@
-run: exit status 254
-../../../tests/algorithms/x/Dart/ciphers/simple_substitution_cipher.dart:56:13: Error: A value of type 'bool?' can't be assigned to a variable of type 'bool' because 'bool?' is nullable and 'bool' isn't.
-    if (used[ch]) {
-            ^
-../../../tests/algorithms/x/Dart/ciphers/simple_substitution_cipher.dart:65:14: Error: A value of type 'bool?' can't be assigned to a variable of type 'bool' because 'bool?' is nullable and 'bool' isn't.
-    if (!used[ch]) {
-             ^

@@ -1,3 +1,4 @@
+run: exit status 254
 ../../../tests/algorithms/x/Dart/ciphers/vigenere_cipher.dart:126:5: Error: Setter not found: '_num'.
     _num = find_index(LETTERS, upper_symbol);
     ^^^^

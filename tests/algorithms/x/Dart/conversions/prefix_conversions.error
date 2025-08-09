@@ -1,4 +1,0 @@
-run: exit status 254
-../../../tests/algorithms/x/Dart/conversions/prefix_conversions.dart:61:34: Error: The argument type 'double' can't be assigned to the parameter type 'int'.
-  return known_amount * pow(2.0, diff);
-                                 ^

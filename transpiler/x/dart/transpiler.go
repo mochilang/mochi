@@ -2285,7 +2285,7 @@ func (i *IndexExpr) emit(w io.Writer) error {
 				switch vt {
 				case "int", "num":
 					val = "0"
-				case "bool":
+				case "bool", "bool?":
 					val = "false"
 				case "String":
 					val = "\"\""

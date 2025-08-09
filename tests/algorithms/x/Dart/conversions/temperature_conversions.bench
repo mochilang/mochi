@@ -1,8 +1,1 @@
-Unhandled exception:
-type 'double' is not a subtype of type 'int' in type cast
-#0      floor (file:///workspace/mochi/tests/algorithms/x/Dart/conversions/temperature_conversions.dart:40:13)
-#1      round_to (file:///workspace/mochi/tests/algorithms/x/Dart/conversions/temperature_conversions.dart:59:10)
-#2      celsius_to_fahrenheit (file:///workspace/mochi/tests/algorithms/x/Dart/conversions/temperature_conversions.dart:63:10)
-#3      main (file:///workspace/mochi/tests/algorithms/x/Dart/conversions/temperature_conversions.dart:133:9)
-#4      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
-#5      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)
+{"duration_us":15041,"memory_bytes":3932160,"name":"main"}

@@ -1,14 +1,5 @@
 Enter message: 
-Enter key [2--1]: 
-Unhandled exception:
-FormatException: Invalid number (at character 1)
-
-^
-
-#0      int._handleFormatError (dart:core-patch/integers_patch.dart:135:7)
-#1      int.parse (dart:core-patch/integers_patch.dart:53:14)
-#2      _main (file:///workspace/mochi/tests/algorithms/x/Dart/ciphers/transposition_cipher.dart:72:17)
-#3      _start (file:///workspace/mochi/tests/algorithms/x/Dart/ciphers/transposition_cipher.dart:88:3)
-#4      main (file:///workspace/mochi/tests/algorithms/x/Dart/ciphers/transposition_cipher.dart:91:16)
-#5      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
-#6      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)
+Enter key [2-12]: 
+Encryption/Decryption [e/d]: 
+Output:
+Hlia rDsahrij|
