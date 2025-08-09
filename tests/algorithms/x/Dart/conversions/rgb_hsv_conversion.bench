@@ -1,9 +1,1 @@
-Unhandled exception:
-type 'double' is not a subtype of type 'int' in type cast
-#0      fmod (file:///workspace/mochi/tests/algorithms/x/Dart/conversions/rgb_hsv_conversion.dart:47:25)
-#1      hsv_to_rgb (file:///workspace/mochi/tests/algorithms/x/Dart/conversions/rgb_hsv_conversion.dart:94:58)
-#2      rgb (file:///workspace/mochi/tests/algorithms/x/Dart/conversions/rgb_hsv_conversion.dart:180:17)
-#3      rgb (file:///workspace/mochi/tests/algorithms/x/Dart/conversions/rgb_hsv_conversion.dart)
-#4      main (file:///workspace/mochi/tests/algorithms/x/Dart/conversions/rgb_hsv_conversion.dart:189:10)
-#5      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
-#6      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)
+{"duration_us":15114,"memory_bytes":3407872,"name":"main"}

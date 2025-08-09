@@ -1,3 +1,1 @@
-../../../tests/algorithms/x/Dart/conversions/prefix_conversions.dart:84:34: Error: The argument type 'double' can't be assigned to the parameter type 'int'.
-  return known_amount * pow(2.0, diff);
-                                 ^
+{"duration_us":22063,"memory_bytes":10166272,"name":"main"}

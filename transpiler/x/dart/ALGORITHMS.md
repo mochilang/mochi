@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-08 19:09 GMT+7
+Last updated: 2025-08-08 20:56 GMT+7
 
-## Algorithms Golden Test Checklist (853/1077)
+## Algorithms Golden Test Checklist (865/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 16.068ms | 2.7 MB |
@@ -106,56 +106,56 @@ Last updated: 2025-08-08 19:09 GMT+7
 | 97 | ciphers/rail_fence_cipher | ✓ | 22.788ms | 9.7 MB |
 | 98 | ciphers/rot13 | ✓ | 15.712ms | 2.5 MB |
 | 99 | ciphers/rsa_cipher | ✓ | 10.258ms | 3.5 MB |
-| 100 | ciphers/rsa_factorization | ✓ | 15.475ms | 10.0 MB |
-| 101 | ciphers/rsa_key_generator | ✓ | 28.401ms | 10.4 MB |
-| 102 | ciphers/running_key_cipher | ✓ | 10.655ms | 3.6 MB |
-| 103 | ciphers/shuffled_shift_cipher | ✓ | 13.48ms | 4.9 MB |
-| 104 | ciphers/simple_keyword_cypher | ✓ | 20.428ms | 10.5 MB |
-| 105 | ciphers/simple_substitution_cipher | error |  |  |
-| 106 | ciphers/transposition_cipher | error |  |  |
-| 107 | ciphers/transposition_cipher_encrypt_decrypt_file | ✓ | 12.341ms | 1.6 MB |
-| 108 | ciphers/trifid_cipher | ✓ | 17.392ms | 2.6 MB |
-| 109 | ciphers/vernam_cipher | ✓ | 9.107ms | 2.6 MB |
-| 110 | ciphers/vigenere_cipher | ✓ | 23.368ms | 9.9 MB |
-| 111 | ciphers/xor_cipher | ✓ | 22.55ms | 10.7 MB |
-| 112 | computer_vision/cnn_classification | ✓ | 16.803ms | 4.3 MB |
-| 113 | computer_vision/flip_augmentation | ✓ | 15.525ms | 5.9 MB |
-| 114 | computer_vision/haralick_descriptors | ✓ | 14.403ms | 2.7 MB |
-| 115 | computer_vision/harris_corner | error |  |  |
-| 116 | computer_vision/horn_schunck | error |  |  |
-| 117 | computer_vision/intensity_based_segmentation | ✓ | 14.42ms | 2.4 MB |
-| 118 | computer_vision/mean_threshold | ✓ | 18.94ms | 10.6 MB |
-| 119 | computer_vision/mosaic_augmentation | error |  |  |
-| 120 | computer_vision/pooling_functions | ✓ | 11.241ms | 4.0 MB |
-| 121 | conversions/astronomical_length_scale_conversion | ✓ | 9.133ms | 3.4 MB |
-| 122 | conversions/binary_to_decimal | ✓ | 19.226ms | 10.3 MB |
+| 100 | ciphers/rsa_factorization | ✓ | 13.165ms | 3.4 MB |
+| 101 | ciphers/rsa_key_generator | ✓ | 21.166ms | 2.3 MB |
+| 102 | ciphers/running_key_cipher | ✓ | 13.166ms | 3.4 MB |
+| 103 | ciphers/shuffled_shift_cipher | ✓ | 17.402ms | 2.9 MB |
+| 104 | ciphers/simple_keyword_cypher | ✓ | 28.106ms | 6.0 MB |
+| 105 | ciphers/simple_substitution_cipher | ✓ | 13.371ms | 2.3 MB |
+| 106 | ciphers/transposition_cipher | ✓ | 36.535ms | 6.0 MB |
+| 107 | ciphers/transposition_cipher_encrypt_decrypt_file | ✓ | 27.792ms | 10.6 MB |
+| 108 | ciphers/trifid_cipher | ✓ | 13.656ms | 3.2 MB |
+| 109 | ciphers/vernam_cipher | ✓ | 11.629ms | 2.6 MB |
+| 110 | ciphers/vigenere_cipher | error |  |  |
+| 111 | ciphers/xor_cipher | ✓ | 14.666ms | 3.4 MB |
+| 112 | computer_vision/cnn_classification | ✓ | 25.793ms | 3.2 MB |
+| 113 | computer_vision/flip_augmentation | ✓ | 22.295ms | 4.8 MB |
+| 114 | computer_vision/haralick_descriptors | ✓ | 34.304ms | 10.2 MB |
+| 115 | computer_vision/harris_corner | ✓ | 25.092ms | 4.6 MB |
+| 116 | computer_vision/horn_schunck | ✓ | 25.828ms | 6.8 MB |
+| 117 | computer_vision/intensity_based_segmentation | ✓ | 16.932ms | 4.4 MB |
+| 118 | computer_vision/mean_threshold | ✓ | 24.462ms | 9.3 MB |
+| 119 | computer_vision/mosaic_augmentation | ✓ | 118.475ms | 5.6 MB |
+| 120 | computer_vision/pooling_functions | ✓ | 16.577ms | 3.9 MB |
+| 121 | conversions/astronomical_length_scale_conversion | ✓ | 27.367ms | 10.0 MB |
+| 122 | conversions/binary_to_decimal | ✓ | 13.399ms | 3.2 MB |
 | 123 | conversions/binary_to_hexadecimal | error |  |  |
-| 124 | conversions/binary_to_octal | ✓ | 8.337ms | 2.2 MB |
-| 125 | conversions/convert_number_to_words | ✓ | 14.003ms | 2.7 MB |
-| 126 | conversions/decimal_to_any | ✓ | 15.364ms | 9.7 MB |
-| 127 | conversions/decimal_to_binary | ✓ | 18.859ms | 6.7 MB |
-| 128 | conversions/decimal_to_hexadecimal | ✓ | 9.437ms | 3.2 MB |
-| 129 | conversions/decimal_to_octal | ✓ | 18.909ms | 11.0 MB |
-| 130 | conversions/energy_conversions | ✓ | 16.041ms | 9.7 MB |
-| 131 | conversions/excel_title_to_column | ✓ | 9.159ms | 3.5 MB |
-| 132 | conversions/hex_to_bin | ✓ | 16.871ms | 1.9 MB |
-| 133 | conversions/hexadecimal_to_decimal | ✓ | 12.811ms | 2.0 MB |
+| 124 | conversions/binary_to_octal | ✓ | 11.76ms | 3.0 MB |
+| 125 | conversions/convert_number_to_words | ✓ | 14.96ms | 3.6 MB |
+| 126 | conversions/decimal_to_any | ✓ | 32.195ms | 9.4 MB |
+| 127 | conversions/decimal_to_binary | ✓ | 12.207ms | 2.8 MB |
+| 128 | conversions/decimal_to_hexadecimal | ✓ | 26.594ms | 10.4 MB |
+| 129 | conversions/decimal_to_octal | ✓ | 11.542ms | 2.5 MB |
+| 130 | conversions/energy_conversions | ✓ | 25.653ms | 9.0 MB |
+| 131 | conversions/excel_title_to_column | ✓ | 25.24ms | 10.6 MB |
+| 132 | conversions/hex_to_bin | ✓ | 19.182ms | 2.0 MB |
+| 133 | conversions/hexadecimal_to_decimal | ✓ | 14.505ms | 3.5 MB |
 | 134 | conversions/ipv4_conversion | error |  |  |
-| 135 | conversions/length_conversion | ✓ | 12.073ms | 1.7 MB |
-| 136 | conversions/molecular_chemistry | error |  |  |
-| 137 | conversions/octal_to_binary | ✓ | 9.939ms | 1.7 MB |
-| 138 | conversions/octal_to_decimal | ✓ | 8.946ms | 3.6 MB |
-| 139 | conversions/octal_to_hexadecimal | ✓ | 7.869ms | 2.8 MB |
-| 140 | conversions/prefix_conversions | error |  |  |
-| 141 | conversions/prefix_conversions_string | ✓ | 14.304ms | 2.5 MB |
+| 135 | conversions/length_conversion | ✓ | 12.375ms | 3.4 MB |
+| 136 | conversions/molecular_chemistry | ✓ | 19.427ms | 10.3 MB |
+| 137 | conversions/octal_to_binary | ✓ | 12.124ms | 2.1 MB |
+| 138 | conversions/octal_to_decimal | ✓ | 27.033ms | 10.5 MB |
+| 139 | conversions/octal_to_hexadecimal | ✓ | 31.984ms | 11.3 MB |
+| 140 | conversions/prefix_conversions | ✓ | 22.063ms | 9.7 MB |
+| 141 | conversions/prefix_conversions_string | ✓ | 13.383ms | 3.5 MB |
 | 142 | conversions/pressure_conversions | error |  |  |
-| 143 | conversions/rectangular_to_polar | error |  |  |
-| 144 | conversions/rgb_cmyk_conversion | error |  |  |
-| 145 | conversions/rgb_hsv_conversion | error |  |  |
-| 146 | conversions/roman_numerals | ✓ | 17.371ms | 11.1 MB |
-| 147 | conversions/speed_conversions | error |  |  |
-| 148 | conversions/temperature_conversions | error |  |  |
-| 149 | conversions/time_conversions | error |  |  |
+| 143 | conversions/rectangular_to_polar | ✓ | 20.258ms | 2.3 MB |
+| 144 | conversions/rgb_cmyk_conversion | ✓ | 22.32ms | 9.2 MB |
+| 145 | conversions/rgb_hsv_conversion | ✓ | 15.114ms | 3.2 MB |
+| 146 | conversions/roman_numerals | ✓ | 17.764ms | 1.5 MB |
+| 147 | conversions/speed_conversions | ✓ | 13.208ms | 3.5 MB |
+| 148 | conversions/temperature_conversions | ✓ | 15.041ms | 3.8 MB |
+| 149 | conversions/time_conversions | ✓ | 23.367ms | 9.7 MB |
 | 150 | conversions/volume_conversions | ✓ | 17.161ms | 9.4 MB |
 | 151 | conversions/weight_conversion | ✓ | 10.026ms | 3.4 MB |
 | 152 | data_compression/burrows_wheeler | ✓ | 9.449ms | 3.4 MB |

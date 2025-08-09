@@ -1,7 +1,12 @@
-Unhandled exception:
-type 'double' is not a subtype of type 'int' in type cast
-#0      round3 (file:///workspace/mochi/tests/algorithms/x/Dart/conversions/speed_conversions.dart:45:13)
-#1      convert_speed (file:///workspace/mochi/tests/algorithms/x/Dart/conversions/speed_conversions.dart:58:14)
-#2      main (file:///workspace/mochi/tests/algorithms/x/Dart/conversions/speed_conversions.dart:63:10)
-#3      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
-#4      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)
+27.778
+62.137
+53.996
+360
+223.694
+194.384
+160.934
+44.704
+86.898
+185.2
+51.444
+115.078

@@ -1,2 +1,30 @@
-Akij ra Odrjqqs Gaisq muod Mphumrs.
-This is Harshil Darji from Dharmaj.
+../../../tests/algorithms/x/Dart/ciphers/vigenere_cipher.dart:97:5: Error: Setter not found: '_num'.
+    _num = find_index(LETTERS, upper_symbol);
+    ^^^^
+../../../tests/algorithms/x/Dart/ciphers/vigenere_cipher.dart:98:9: Error: Undefined name '_num'.
+    if (_num.compareTo(0) >= 0) {
+        ^^^^
+../../../tests/algorithms/x/Dart/ciphers/vigenere_cipher.dart:99:12: Error: Undefined name '_num'.
+    _num = _num - find_index(LETTERS, key_up.substring(key_index, key_index + 1));
+           ^^^^
+../../../tests/algorithms/x/Dart/ciphers/vigenere_cipher.dart:99:5: Error: Setter not found: '_num'.
+    _num = _num - find_index(LETTERS, key_up.substring(key_index, key_index + 1));
+    ^^^^
+../../../tests/algorithms/x/Dart/ciphers/vigenere_cipher.dart:100:12: Error: Undefined name '_num'.
+    _num = _num % LETTERS.length;
+           ^^^^
+../../../tests/algorithms/x/Dart/ciphers/vigenere_cipher.dart:100:5: Error: Setter not found: '_num'.
+    _num = _num % LETTERS.length;
+    ^^^^
+../../../tests/algorithms/x/Dart/ciphers/vigenere_cipher.dart:102:53: Error: Undefined name '_num'.
+    decrypted = decrypted + LETTERS.substring(_num, _num + 1);
+                                                    ^^^^
+../../../tests/algorithms/x/Dart/ciphers/vigenere_cipher.dart:102:47: Error: Undefined name '_num'.
+    decrypted = decrypted + LETTERS.substring(_num, _num + 1);
+                                              ^^^^
+../../../tests/algorithms/x/Dart/ciphers/vigenere_cipher.dart:104:67: Error: Undefined name '_num'.
+    decrypted = decrypted + to_lower_char(LETTERS.substring(_num, _num + 1));
+                                                                  ^^^^
+../../../tests/algorithms/x/Dart/ciphers/vigenere_cipher.dart:104:61: Error: Undefined name '_num'.
+    decrypted = decrypted + to_lower_char(LETTERS.substring(_num, _num + 1));
+                                                            ^^^^

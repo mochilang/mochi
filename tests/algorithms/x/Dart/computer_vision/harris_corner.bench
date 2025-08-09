@@ -1,9 +1,1 @@
-Unhandled exception:
-type 'int' is not a subtype of type 'double' in type cast
-#0      gradient (file:///workspace/mochi/tests/algorithms/x/Dart/computer_vision/harris_corner.dart:64:78)
-#1      harris (file:///workspace/mochi/tests/algorithms/x/Dart/computer_vision/harris_corner.dart:76:36)
-#2      corners (file:///workspace/mochi/tests/algorithms/x/Dart/computer_vision/harris_corner.dart:129:27)
-#3      corners (file:///workspace/mochi/tests/algorithms/x/Dart/computer_vision/harris_corner.dart)
-#4      main (file:///workspace/mochi/tests/algorithms/x/Dart/computer_vision/harris_corner.dart:137:15)
-#5      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
-#6      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)
+{"duration_us":25092,"memory_bytes":4849664,"name":"main"}
