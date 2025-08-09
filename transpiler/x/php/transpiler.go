@@ -193,6 +193,9 @@ const helperGetOutput = `function _getoutput($cmd) {
 }`
 
 const helperIntDiv = `function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
@@ -3310,29 +3313,6 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			elems[i] = ex
 		}
 		return &ListLit{Elems: elems}, nil
-	case p.Map != nil:
-		items := make([]MapEntry, len(p.Map.Items))
-		for i, it := range p.Map.Items {
-			k, err := convertExpr(it.Key)
-			if err != nil {
-				return nil, err
-			}
-			if v, ok := k.(*Var); ok {
-				if transpileEnv != nil {
-					if t, err := transpileEnv.GetVar(v.Name); err != nil || isFuncType(t) {
-						k = &StringLit{Value: v.Name}
-					}
-				} else {
-					k = &StringLit{Value: v.Name}
-				}
-			}
-			v, err := convertExpr(it.Value)
-			if err != nil {
-				return nil, err
-			}
-			items[i] = MapEntry{Key: k, Value: v}
-		}
-		return &MapLit{Items: items}, nil
 	case p.Struct != nil:
 		items := []MapEntry{}
 		if transpileEnv != nil {
@@ -3358,6 +3338,23 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			items[i] = MapEntry{Key: &StringLit{Value: f.Name}, Value: v}
+		}
+		return &MapLit{Items: items}, nil
+	case p.Map != nil:
+		items := make([]MapEntry, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			k, err := convertExpr(it.Key)
+			if err != nil {
+				return nil, err
+			}
+			if v, ok := k.(*Var); ok {
+				k = &StringLit{Value: v.Name}
+			}
+			v, err := convertExpr(it.Value)
+			if err != nil {
+				return nil, err
+			}
+			items[i] = MapEntry{Key: k, Value: v}
 		}
 		return &MapLit{Items: items}, nil
 	case p.FunExpr != nil:
@@ -4901,17 +4898,17 @@ func isIntExpr(e Expr) bool {
 }
 
 func isBigIntExpr(e Expr) bool {
-        switch v := e.(type) {
-       case *IntLit:
-               return true
-        case *Var:
-                if transpileEnv != nil {
-                        if t, err := transpileEnv.GetVar(v.Name); err == nil {
-                               if types.IsIntType(t) || types.IsBigIntType(t) {
-                                       return true
-                               }
-                        }
-                }
+	switch v := e.(type) {
+	case *IntLit:
+		return true
+	case *Var:
+		if transpileEnv != nil {
+			if t, err := transpileEnv.GetVar(v.Name); err == nil {
+				if types.IsIntType(t) || types.IsBigIntType(t) {
+					return true
+				}
+			}
+		}
 	case *BinaryExpr:
 		switch v.Op {
 		case "+", "-", "*", "/", "%":
@@ -4929,10 +4926,10 @@ func isBigIntExpr(e Expr) bool {
 			return true
 		}
 	}
-       if t := exprType(e); types.IsIntType(t) || types.IsBigIntType(t) {
-               return true
-       }
-       return false
+	if t := exprType(e); types.IsIntType(t) || types.IsBigIntType(t) {
+		return true
+	}
+	return false
 }
 
 func isBigRatExpr(e Expr) bool {
