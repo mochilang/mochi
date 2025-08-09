@@ -1,0 +1,29 @@
+warning: variable "coeff_a" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 41 │       {coeff_a, coeff_b, old_coeff_a, old_coeff_b, old_remainder, remainder} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/extended_euclidean_algorithm.exs:41:8: Main.extended_euclidean_algorithm/2
+
+    warning: variable "coeff_b" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 41 │       {coeff_a, coeff_b, old_coeff_a, old_coeff_b, old_remainder, remainder} = try do
+    │                 ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/extended_euclidean_algorithm.exs:41:17: Main.extended_euclidean_algorithm/2
+
+    warning: variable "old_remainder" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 41 │       {coeff_a, coeff_b, old_coeff_a, old_coeff_b, old_remainder, remainder} = try do
+    │                                                    ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/extended_euclidean_algorithm.exs:41:52: Main.extended_euclidean_algorithm/2
+
+    warning: variable "remainder" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 41 │       {coeff_a, coeff_b, old_coeff_a, old_coeff_b, old_remainder, remainder} = try do
+    │                                                                   ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/extended_euclidean_algorithm.exs:41:67: Main.extended_euclidean_algorithm/2
+
+(-9, 47)

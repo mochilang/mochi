@@ -1,0 +1,83 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 16 │       {i, result} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/fast_inverse_sqrt.exs:16:8: Main.pow2_int/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 60 │         {i, result} = try do
+    │          ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/fast_inverse_sqrt.exs:60:10: Main.pow2_float/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 41 │         {i, result} = try do
+    │          ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/fast_inverse_sqrt.exs:41:10: Main.pow2_float/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 86 │       {i, result} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/fast_inverse_sqrt.exs:86:8: Main.lshift/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 110 │       {i, result} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/fast_inverse_sqrt.exs:110:8: Main.rshift/2
+
+     warning: variable "n" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 149 │       {e, n} = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/fast_inverse_sqrt.exs:149:11: Main.log2_floor/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 224 │       {guess, i} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/fast_inverse_sqrt.exs:224:15: Main.sqrtApprox/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 282 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/fast_inverse_sqrt.exs:282:7: Main.test_fast_inverse_sqrt/0
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 306 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/fast_inverse_sqrt.exs:306:7: Main.main/0
+
+5: 7.258559051021019e-5
+10: 5.419736641122386e-4
+15: 4.480592526696636e-4
+20: 3.629279525510509e-5
+25: 3.1023481359720995e-4
+30: 1.525379880551181e-4
+35: 1.5509670322563784e-4
+40: 2.709868320561193e-4
+45: 2.1435194509125677e-4
+50: 6.54126589724191e-5
+55: 5.567691217706061e-6
+60: 2.240296263348318e-4
+65: 1.6800399454736104e-4
+70: 3.507356772014525e-5
+75: 5.363740650243809e-8
+80: 1.8146397627552546e-5
+85: 5.892821986296093e-5
+90: 1.0248089398787186e-4
+95: 1.3665874163094893e-4
+100: 1.5511740679860497e-4
