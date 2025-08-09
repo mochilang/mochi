@@ -1,0 +1,6 @@
+exit status 2
+File "/workspace/mochi/tests/algorithms/x/OCaml/graphs/multi_heuristic_astar.ml", line 329, characters 34-74:
+329 |   current := (Obj.magic (Obj.obj (List.assoc (__str (!key)) (back_pointer) : Obj.t) : ( string * Obj.t ) list) : (string * Obj.t) list);
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This expression has type (string * Obj.t) list
+       but an expression was expected of type Obj.t

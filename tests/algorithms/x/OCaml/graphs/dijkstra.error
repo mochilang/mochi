@@ -1,0 +1,6 @@
+exit status 2
+File "/workspace/mochi/tests/algorithms/x/OCaml/graphs/dijkstra.ml", line 136, characters 49-79:
+136 |   let next_cost = (cost + List.assoc (__str (v)) (List.assoc (__str (u)) (!_g))) in
+                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This expression has type Obj.t but an expression was expected of type
+         (string * 'a) list

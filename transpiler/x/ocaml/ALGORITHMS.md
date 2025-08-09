@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 343/1077
-Last updated: 2025-08-09 15:58 +0700
+Completed programs: 402/1077
+Last updated: 2025-08-09 16:24 +0700
 
 Checklist:
 
@@ -373,90 +373,90 @@ Checklist:
 | 364 | electronics/real_and_reactive_power | ✓ | 213.0µs | 4.91KB |
 | 365 | electronics/resistor_color_code | ✓ | 1.0µs | 208B |
 | 366 | electronics/resistor_equivalence | ✓ | 160.0µs | 1.62KB |
-| 367 | electronics/resonant_frequency |   |  |  |
-| 368 | electronics/wheatstone_bridge |   |  |  |
-| 369 | file_transfer/receive_file |   |  |  |
-| 370 | file_transfer/send_file |   |  |  |
+| 367 | electronics/resonant_frequency | ✓ | 267.0µs | 1.29KB |
+| 368 | electronics/wheatstone_bridge | ✓ | 207.0µs | 424B |
+| 369 | file_transfer/receive_file | ✓ | 32.0µs | 352B |
+| 370 | file_transfer/send_file | ✓ | 24.0µs | 320B |
 | 371 | file_transfer/tests/test_send_file |   |  |  |
-| 372 | financial/equated_monthly_installments |   |  |  |
-| 373 | financial/exponential_moving_average |   |  |  |
+| 372 | financial/equated_monthly_installments | ✓ | 219.0µs | 3.88KB |
+| 373 | financial/exponential_moving_average | ✓ | 200.0µs | 1016B |
 | 374 | financial/interest |   |  |  |
-| 375 | financial/present_value |   |  |  |
-| 376 | financial/price_plus_tax |   |  |  |
-| 377 | financial/simple_moving_average |   |  |  |
-| 378 | financial/straight_line_depreciation |   |  |  |
-| 379 | financial/time_and_half_pay |   |  |  |
-| 380 | fractals/julia_sets |   |  |  |
-| 381 | fractals/koch_snowflake |   |  |  |
-| 382 | fractals/mandelbrot |   |  |  |
-| 383 | fractals/sierpinski_triangle |   |  |  |
-| 384 | fractals/vicsek |   |  |  |
-| 385 | fuzzy_logic/fuzzy_operations |   |  |  |
-| 386 | genetic_algorithm/basic_string |   |  |  |
-| 387 | geodesy/haversine_distance |   |  |  |
-| 388 | geodesy/lamberts_ellipsoidal_distance |   |  |  |
-| 389 | geometry/geometry |   |  |  |
-| 390 | graphics/bezier_curve |   |  |  |
-| 391 | graphics/butterfly_pattern |   |  |  |
-| 392 | graphics/digital_differential_analyzer_line |   |  |  |
-| 393 | graphics/vector3_for_2d_rendering |   |  |  |
-| 394 | graphs/a_star |   |  |  |
+| 375 | financial/present_value | ✓ | 256.0µs | 3.13KB |
+| 376 | financial/price_plus_tax | ✓ | 192.0µs | 1.34KB |
+| 377 | financial/simple_moving_average | ✓ | 304.0µs | 5.23KB |
+| 378 | financial/straight_line_depreciation | ✓ | 258.0µs | 8.42KB |
+| 379 | financial/time_and_half_pay | ✓ | 279.0µs | 1.91KB |
+| 380 | fractals/julia_sets | ✓ | 8.0ms | 1.70MB |
+| 381 | fractals/koch_snowflake | ✓ | 228.0µs | 6.66KB |
+| 382 | fractals/mandelbrot | ✓ | 1.0ms | 241.45KB |
+| 383 | fractals/sierpinski_triangle | ✓ | 235.0µs | 8.38KB |
+| 384 | fractals/vicsek | ✓ | 157.0µs | 14.98KB |
+| 385 | fuzzy_logic/fuzzy_operations | ✓ | 278.0µs | 10.55KB |
+| 386 | genetic_algorithm/basic_string | ✓ | 216.0µs | 1.59KB |
+| 387 | geodesy/haversine_distance | ✓ | 302.0µs | 14.63KB |
+| 388 | geodesy/lamberts_ellipsoidal_distance | ✓ | 273.0µs | 8.71KB |
+| 389 | geometry/geometry | ✓ | 247.0µs | 3.50KB |
+| 390 | graphics/bezier_curve | ✓ | 239.0µs | 2.89KB |
+| 391 | graphics/butterfly_pattern | ✓ | 84.0µs | 5.30KB |
+| 392 | graphics/digital_differential_analyzer_line | ✓ | 240.0µs | 5.48KB |
+| 393 | graphics/vector3_for_2d_rendering | ✓ | 256.0µs | 7.17KB |
+| 394 | graphs/a_star | ✓ | 634.0µs | 58.62KB |
 | 395 | graphs/ant_colony_optimization_algorithms |   |  |  |
-| 396 | graphs/articulation_points |   |  |  |
+| 396 | graphs/articulation_points | ✓ | 348.0µs | 32.88KB |
 | 397 | graphs/basic_graphs |   |  |  |
-| 398 | graphs/bellman_ford |   |  |  |
-| 399 | graphs/bi_directional_dijkstra |   |  |  |
+| 398 | graphs/bellman_ford | ✓ | 166.0µs | 2.43KB |
+| 399 | graphs/bi_directional_dijkstra | ✓ | 185.0µs | 5.77KB |
 | 400 | graphs/bidirectional_a_star |   |  |  |
 | 401 | graphs/bidirectional_breadth_first_search |   |  |  |
 | 402 | graphs/bidirectional_search |   |  |  |
 | 403 | graphs/boruvka |   |  |  |
 | 404 | graphs/breadth_first_search |   |  |  |
-| 405 | graphs/breadth_first_search_2 |   |  |  |
-| 406 | graphs/breadth_first_search_shortest_path |   |  |  |
-| 407 | graphs/breadth_first_search_shortest_path_2 |   |  |  |
+| 405 | graphs/breadth_first_search_2 | ✓ | 115.0µs | 6.57KB |
+| 406 | graphs/breadth_first_search_shortest_path | ✓ | 70.0µs | 2.66KB |
+| 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 2.0µs | 208B |
 | 408 | graphs/breadth_first_search_zero_one_shortest_path |   |  |  |
 | 409 | graphs/check_bipatrite |   |  |  |
-| 410 | graphs/check_cycle |   |  |  |
-| 411 | graphs/connected_components |   |  |  |
+| 410 | graphs/check_cycle | ✓ | 77.0µs | 6.62KB |
+| 411 | graphs/connected_components | ✓ | 1.0ms | 7.46KB |
 | 412 | graphs/deep_clone_graph |   |  |  |
-| 413 | graphs/depth_first_search |   |  |  |
+| 413 | graphs/depth_first_search | ✓ | 25.0µs | 3.16KB |
 | 414 | graphs/depth_first_search_2 |   |  |  |
 | 415 | graphs/dijkstra |   |  |  |
-| 416 | graphs/dijkstra_2 |   |  |  |
-| 417 | graphs/dijkstra_algorithm |   |  |  |
-| 418 | graphs/dijkstra_alternate |   |  |  |
+| 416 | graphs/dijkstra_2 | ✓ | 232.0µs | 7.44KB |
+| 417 | graphs/dijkstra_algorithm | ✓ | 127.0µs | 408B |
+| 418 | graphs/dijkstra_alternate | ✓ | 186.0µs | 1000B |
 | 419 | graphs/dijkstra_binary_grid |   |  |  |
-| 420 | graphs/dinic |   |  |  |
+| 420 | graphs/dinic | ✓ | 2.0ms | 219.63KB |
 | 421 | graphs/directed_and_undirected_weighted_graph |   |  |  |
 | 422 | graphs/edmonds_karp_multiple_source_and_sink |   |  |  |
 | 423 | graphs/eulerian_path_and_circuit_for_undirected_graph |   |  |  |
 | 424 | graphs/even_tree |   |  |  |
-| 425 | graphs/finding_bridges |   |  |  |
+| 425 | graphs/finding_bridges | ✓ | 586.0µs | 58.26KB |
 | 426 | graphs/frequent_pattern_graph_miner |   |  |  |
-| 427 | graphs/g_topological_sort |   |  |  |
-| 428 | graphs/gale_shapley_bigraph |   |  |  |
-| 429 | graphs/graph_adjacency_list |   |  |  |
+| 427 | graphs/g_topological_sort | ✓ | 347.0µs | 14.23KB |
+| 428 | graphs/gale_shapley_bigraph | ✓ | 222.0µs | 7.48KB |
+| 429 | graphs/graph_adjacency_list | ✓ | 158.0µs | 12.41KB |
 | 430 | graphs/graph_adjacency_matrix |   |  |  |
-| 431 | graphs/graph_list |   |  |  |
-| 432 | graphs/graphs_floyd_warshall |   |  |  |
-| 433 | graphs/greedy_best_first |   |  |  |
-| 434 | graphs/greedy_min_vertex_cover |   |  |  |
-| 435 | graphs/kahns_algorithm_long |   |  |  |
+| 431 | graphs/graph_list | ✓ | 249.0µs | 14.49KB |
+| 432 | graphs/graphs_floyd_warshall | ✓ | 149.0µs | 2.80KB |
+| 433 | graphs/greedy_best_first | ✓ | 3.0ms | 290.62KB |
+| 434 | graphs/greedy_min_vertex_cover | ✓ | 77.0µs | 4.13KB |
+| 435 | graphs/kahns_algorithm_long | ✓ | 228.0µs | 12.35KB |
 | 436 | graphs/kahns_algorithm_topo |   |  |  |
 | 437 | graphs/karger |   |  |  |
-| 438 | graphs/lanczos_eigenvectors |   |  |  |
-| 439 | graphs/markov_chain |   |  |  |
-| 440 | graphs/matching_min_vertex_cover |   |  |  |
-| 441 | graphs/minimum_path_sum |   |  |  |
-| 442 | graphs/minimum_spanning_tree_boruvka |   |  |  |
-| 443 | graphs/minimum_spanning_tree_kruskal |   |  |  |
-| 444 | graphs/minimum_spanning_tree_kruskal2 |   |  |  |
-| 445 | graphs/minimum_spanning_tree_prims |   |  |  |
-| 446 | graphs/minimum_spanning_tree_prims2 |   |  |  |
+| 438 | graphs/lanczos_eigenvectors | ✓ | 243.0µs | 5.73KB |
+| 439 | graphs/markov_chain | ✓ | 10.0ms | 1.13MB |
+| 440 | graphs/matching_min_vertex_cover | ✓ | 28.0µs | 432B |
+| 441 | graphs/minimum_path_sum | ✓ | 199.0µs | 10.19KB |
+| 442 | graphs/minimum_spanning_tree_boruvka | ✓ | 234.0µs | 7.34KB |
+| 443 | graphs/minimum_spanning_tree_kruskal | ✓ | 291.0µs | 20.74KB |
+| 444 | graphs/minimum_spanning_tree_kruskal2 | ✓ | 214.0µs | 10.12KB |
+| 445 | graphs/minimum_spanning_tree_prims | ✓ | 152.0µs | 1.45KB |
+| 446 | graphs/minimum_spanning_tree_prims2 | ✓ | 206.0µs | 5.88KB |
 | 447 | graphs/multi_heuristic_astar |   |  |  |
-| 448 | graphs/page_rank |   |  |  |
+| 448 | graphs/page_rank | ✓ | 446.0µs | 22.99KB |
 | 449 | graphs/prim |   |  |  |
-| 450 | graphs/random_graph_generator |   |  |  |
+| 450 | graphs/random_graph_generator | ✓ | 197.0µs | 7.68KB |
 | 451 | graphs/scc_kosaraju |   |  |  |
 | 452 | graphs/strongly_connected_components |   |  |  |
 | 453 | graphs/tarjans_scc |   |  |  |

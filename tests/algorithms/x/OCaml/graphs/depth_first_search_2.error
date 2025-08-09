@@ -1,0 +1,7 @@
+exit status 2
+File "/workspace/mochi/tests/algorithms/x/OCaml/graphs/depth_first_search_2.ml", line 97, characters 33-35:
+97 |   if (List.mem_assoc from_vertex !v) then (
+                                      ^^
+Error: This expression has type (string * int list) list
+       but an expression was expected of type (int * 'a) list
+       Type string is not compatible with type int 
