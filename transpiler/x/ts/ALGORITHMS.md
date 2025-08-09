@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-08 12:18 UTC
+Last updated: 2025-08-09 03:36 UTC
 
 ## Algorithms Golden Test Checklist (1050/1077)
 | Index | Name | Status | Duration | Memory |
@@ -380,15 +380,15 @@ Last updated: 2025-08-08 12:18 UTC
 | 371 | file_transfer/tests/test_send_file | ✓ | 571.223ms | 21.1 KB |
 | 372 | financial/equated_monthly_installments | ✓ | 571.223ms | 19.7 KB |
 | 373 | financial/exponential_moving_average | ✓ | 571.223ms | 272.3 KB |
-| 374 | financial/interest | ✓ | 571.223ms | 318.7 KB |
+| 374 | financial/interest | ✓ | 571.223ms | 567.6 KB |
 | 375 | financial/present_value | ✓ | 571.223ms | 23.4 KB |
 | 376 | financial/price_plus_tax | ✓ | 571.223ms | 272.6 KB |
 | 377 | financial/simple_moving_average | ✓ | 571.223ms | 813.7 KB |
 | 378 | financial/straight_line_depreciation | ✓ | 571.223ms | 27.5 KB |
 | 379 | financial/time_and_half_pay | ✓ | 571.223ms | 275.4 KB |
-| 380 | fractals/julia_sets | ✓ | 571.223ms | 627.1 KB |
+| 380 | fractals/julia_sets | ✓ | 571.223ms | 1.1 MB |
 | 381 | fractals/koch_snowflake | ✓ | 571.223ms | 278.6 KB |
-| 382 | fractals/mandelbrot | ✓ | 571.223ms | 344.0 KB |
+| 382 | fractals/mandelbrot | ✓ | 571.223ms | 285.1 KB |
 | 383 | fractals/sierpinski_triangle | ✓ | 571.223ms | 327.9 KB |
 | 384 | fractals/vicsek | ✓ | 571.223ms | 117.7 KB |
 | 385 | fuzzy_logic/fuzzy_operations | ✓ | 571.223ms | 291.7 KB |
@@ -401,11 +401,11 @@ Last updated: 2025-08-08 12:18 UTC
 | 392 | graphics/digital_differential_analyzer_line | ✓ | 571.223ms | 16.3 KB |
 | 393 | graphics/vector3_for_2d_rendering | ✓ | 571.223ms | 278.3 KB |
 | 394 | graphs/a_star | ✓ | 571.223ms | 241.3 KB |
-| 395 | graphs/ant_colony_optimization_algorithms | ✓ | 445.369ms | 1.0 MB |
+| 395 | graphs/ant_colony_optimization_algorithms | ✓ | 445.369ms | 844.3 KB |
 | 396 | graphs/articulation_points | ✓ | 571.223ms | 66.8 KB |
 | 397 | graphs/basic_graphs | ✓ | 571.223ms | 230.1 KB |
 | 398 | graphs/bellman_ford | ✓ | 571.223ms | 37.4 KB |
-| 399 | graphs/bi_directional_dijkstra | ✓ | 571.223ms | 545.6 KB |
+| 399 | graphs/bi_directional_dijkstra | ✓ | 571.223ms | 545.8 KB |
 | 400 | graphs/bidirectional_a_star | ✓ | 571.223ms | 304.0 KB |
 | 401 | graphs/bidirectional_breadth_first_search | ✓ | 5.063ms | 149.4 KB |
 | 402 | graphs/bidirectional_search | ✓ | 1.454ms | 42.3 KB |

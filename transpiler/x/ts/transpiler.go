@@ -2256,6 +2256,9 @@ function _now(): number {
   if (typeof process !== 'undefined') {
     return process.memoryUsage().heapUsed;
   }
+  if (typeof performance !== 'undefined' && (performance as any).memory) {
+    return (performance as any).memory.usedJSHeapSize;
+  }
   return 0;
 }`})
 	}
