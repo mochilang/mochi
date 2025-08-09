@@ -1,0 +1,5 @@
+Execution error (OutOfMemoryError) at main/make-points (simpson_rule.clj:48).
+Java heap space
+
+Full report at:
+/tmp/clojure-1803671903072327061.edn

@@ -1,0 +1,8 @@
+The estimated value of pi is 0.0
+The numpy value of pi is 3.141592653589793
+The total error is 3.141592653589793
+Execution error (ArityException) at main/area-under-curve-estimator (monte_carlo.clj:78).
+Wrong number of args (1) passed to: main/identity-function
+
+Full report at:
+/tmp/clojure-11145756575663493652.edn

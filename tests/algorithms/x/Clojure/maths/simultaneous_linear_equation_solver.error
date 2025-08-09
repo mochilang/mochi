@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error at main/test-solver (simultaneous_linear_equation_solver.clj:94).
+test2 failed
+
+Full report at:
+/tmp/clojure-11861312310590017103.edn

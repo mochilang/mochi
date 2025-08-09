@@ -1,0 +1,5 @@
+Execution error (StackOverflowError) at main/mod (modular_division.clj:65).
+null
+
+Full report at:
+/tmp/clojure-2482307773220729347.edn

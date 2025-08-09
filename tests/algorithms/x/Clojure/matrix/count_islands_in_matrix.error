@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error (IndexOutOfBoundsException) at main/is-safe (count_islands_in_matrix.clj:61).
+null
+
+Full report at:
+/tmp/clojure-6918497235755880940.edn
