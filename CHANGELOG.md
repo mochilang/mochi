@@ -1,5 +1,24 @@
 # 📦 CHANGELOG.md
 
+## [0.10.62] – 2025-08-09T03:04:56+00:00
+
+### Added
+
+* Support char literals in the Clojure transpiler.
+* Inverse matrix algorithm in F#.
+* Transpiled additional Swift algorithms.
+
+### Changed
+
+* Lua transpiler now parses `MOCHI_BENCHMARK` using `strconv`.
+* Simplified PHP string index casts.
+
+### Fixed
+
+* Corrected for-in index iteration in the TypeScript transpiler.
+* Fixed nil return handling in Pascal.
+
+
 ## [0.10.61] – 2025-08-08T10:28:49+07:00
 
 ### Added
