@@ -63,6 +63,24 @@ func (s StringLit) Emit(w io.Writer) {
 	io.WriteString(w, esc)
 }
 
+// CharLit represents a character literal, emitted in Clojure's \c form.
+type CharLit rune
+
+func (c CharLit) Emit(w io.Writer) {
+	r := rune(c)
+	switch r {
+	case '\n':
+		io.WriteString(w, "\\newline")
+	case '\t':
+		io.WriteString(w, "\\tab")
+	case ' ':
+		io.WriteString(w, "\\space")
+	default:
+		io.WriteString(w, "\\")
+		io.WriteString(w, string(r))
+	}
+}
+
 // IntLit represents an integer literal.
 type IntLit int64
 
@@ -573,6 +591,9 @@ func valueToNode(v interface{}) Node {
 	case int64:
 		return IntLit(val)
 	case int32:
+		if r, ok := v.(rune); ok {
+			return CharLit(r)
+		}
 		return IntLit(int64(val))
 	case float32:
 		return FloatLit(float64(val))

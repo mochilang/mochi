@@ -2,22 +2,22 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-08 20:59 GMT+7
+Last updated: 2025-08-08 21:32 GMT+7
 
-## Algorithms Golden Test Checklist (381/1077)
+## Algorithms Golden Test Checklist (383/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 50.25ms | 19.66MB |
-| 2 | backtracking/all_permutations | error | 70.354ms | 20.50MB |
-| 3 | backtracking/all_subsequences | error | 50.083ms | 18.92MB |
+| 2 | backtracking/all_permutations | ✓ | 70.354ms | 20.50MB |
+| 3 | backtracking/all_subsequences | ✓ | 50.083ms | 18.92MB |
 | 4 | backtracking/coloring | ✓ | 53.736ms | 20.05MB |
 | 5 | backtracking/combination_sum | ✓ | 54.599ms | 19.62MB |
-| 6 | backtracking/crossword_puzzle_solver | error | 51.637ms | 22.30MB |
+| 6 | backtracking/crossword_puzzle_solver | ✓ | 51.637ms | 22.30MB |
 | 7 | backtracking/hamiltonian_cycle | ✓ | 37.79ms | 20.67MB |
 | 8 | backtracking/knight_tour | ✓ | 37.789ms | 22.69MB |
 | 9 | backtracking/match_word_pattern | ✓ | 61.392ms | 21.23MB |
 | 10 | backtracking/minimax | ✓ | 33.902ms | 20.10MB |
-| 11 | backtracking/n_queens | ✓ | 79.51ms | 22.10MB |
+| 11 | backtracking/n_queens |   |  |  |
 | 12 | backtracking/n_queens_math | ✓ | 54.596ms | 21.57MB |
 | 13 | backtracking/power_sum | ✓ | 45.022ms | 20.11MB |
 | 14 | backtracking/rat_in_maze | ✓ | 63.228ms | 21.36MB |
