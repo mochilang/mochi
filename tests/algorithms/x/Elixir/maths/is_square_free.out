@@ -1,0 +1,17 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 27 │           j = try do
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/is_square_free.exs:27:11: Main.is_square_free/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 39 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/is_square_free.exs:39:7: Main.is_square_free/1
+
+true
+false
+false

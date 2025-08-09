@@ -1,0 +1,25 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 30 │       {i, result} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/geometric_mean.exs:30:8: Main.pow_int/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 58 │       {guess, i} = try do
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/geometric_mean.exs:58:15: Main.nth_root/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 97 │       {i, product} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/geometric_mean.exs:97:8: Main.compute_geometric_mean/1
+
+** (RuntimeError) test4 failed
+    /workspace/mochi/tests/algorithms/x/Elixir/maths/geometric_mean.exs:142: Main.test_compute_geometric_mean/0
+    /workspace/mochi/tests/algorithms/x/Elixir/maths/geometric_mean.exs:154: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/maths/geometric_mean.exs:161: (file)

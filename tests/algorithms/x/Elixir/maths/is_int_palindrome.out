@@ -1,0 +1,13 @@
+warning: variable "n" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 19 │       {n, rev} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/is_int_palindrome.exs:19:8: Main.is_int_palindrome/1
+
+false
+true
+false
+true
+true
+false

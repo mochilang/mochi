@@ -1,0 +1,36 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 19 │       {guess, i} = try do
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/chudnovsky_algorithm.exs:19:15: Main.sqrtApprox/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 43 │       {i, result} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/chudnovsky_algorithm.exs:43:8: Main.factorial_float/1
+
+    warning: variable "exponential_term" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 82 │       {exponential_term, k, linear_term, partial_sum} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/chudnovsky_algorithm.exs:82:8: Main.pi/1
+
+    warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 82 │       {exponential_term, k, linear_term, partial_sum} = try do
+    │                          ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/chudnovsky_algorithm.exs:82:26: Main.pi/1
+
+    warning: variable "linear_term" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 82 │       {exponential_term, k, linear_term, partial_sum} = try do
+    │                             ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/chudnovsky_algorithm.exs:82:29: Main.pi/1
+
+The first 50 digits of pi is: 3.141592653589793

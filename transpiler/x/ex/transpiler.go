@@ -41,6 +41,7 @@ var elixirReserved = map[string]struct{}{
 
 var kernelReserved = map[string]int{
 	"floor": 1,
+	"ceil":  1,
 }
 
 func kernelImportExcepts() []string {
@@ -188,7 +189,7 @@ type FuncRef struct {
 }
 
 func (f *FuncRef) emit(w io.Writer) {
-	fmt.Fprintf(w, "&%s/%d", f.Name, f.Arity)
+	fmt.Fprintf(w, "&%s/%d", sanitizeCallName(f.Name), f.Arity)
 }
 
 // LetStmt binds a variable optionally to a value.
@@ -1363,12 +1364,12 @@ func isStringExpr(e Expr) bool {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
-       if c.Var && c.Func == "str" && len(c.Args) == 1 {
-               io.WriteString(w, "Kernel.inspect(")
-               c.Args[0].emit(w)
-               io.WriteString(w, ")")
-               return
-       }
+	if c.Var && c.Func == "str" && len(c.Args) == 1 {
+		io.WriteString(w, "Kernel.inspect(")
+		c.Args[0].emit(w)
+		io.WriteString(w, ")")
+		return
+	}
 	if c.Func == "" {
 		if len(c.Args) == 0 {
 			io.WriteString(w, "()")
@@ -3923,7 +3924,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			if len(args) == 1 {
 				return &CallExpr{Func: "abs", Args: []Expr{args[0]}}, nil
 			}
-		case "panic":
+		case "panic", "error":
 			if len(args) == 1 {
 				return &CallExpr{Func: "raise", Args: []Expr{args[0]}}, nil
 			}
@@ -4078,10 +4079,10 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				usedHelpers["input"] = true
 				return &CallExpr{Func: "_input", Args: nil}, nil
 			}
-               case "values":
-                       if len(args) == 1 {
-                               return &CallExpr{Func: "Map.values", Args: []Expr{args[0]}}, nil
-                       }
+		case "values":
+			if len(args) == 1 {
+				return &CallExpr{Func: "Map.values", Args: []Expr{args[0]}}, nil
+			}
 		case "substring", "substr", "slice":
 			if len(args) == 3 {
 				diff := &BinaryExpr{Left: args[2], Op: "-", Right: &GroupExpr{Expr: args[1]}}
@@ -4561,13 +4562,13 @@ func bigRatHelper(indent int) string {
 }
 
 func sha256Helper(indent int) string {
-        var buf bytes.Buffer
-        pad := strings.Repeat("  ", indent)
-        buf.WriteString(pad + "defp _sha256(bs) do\n")
-       buf.WriteString(pad + "  bin = if is_binary(bs), do: bs, else: :erlang.list_to_binary(bs)\n")
-        buf.WriteString(pad + "  :crypto.hash(:sha256, bin) |> :erlang.binary_to_list()\n")
-        buf.WriteString(pad + "end\n")
-        return buf.String()
+	var buf bytes.Buffer
+	pad := strings.Repeat("  ", indent)
+	buf.WriteString(pad + "defp _sha256(bs) do\n")
+	buf.WriteString(pad + "  bin = if is_binary(bs), do: bs, else: :erlang.list_to_binary(bs)\n")
+	buf.WriteString(pad + "  :crypto.hash(:sha256, bin) |> :erlang.binary_to_list()\n")
+	buf.WriteString(pad + "end\n")
+	return buf.String()
 }
 
 func getenvHelper(indent int) string {

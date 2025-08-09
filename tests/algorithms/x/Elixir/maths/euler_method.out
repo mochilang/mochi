@@ -1,0 +1,36 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 38 │       {i, y} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/euler_method.exs:38:8: Main.explicit_euler/5
+
+    warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 57 │       {k, x, y} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/euler_method.exs:57:8: Main.explicit_euler/5
+
+    warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 57 │       {k, x, y} = try do
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/euler_method.exs:57:11: Main.explicit_euler/5
+
+    warning: variable "x" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 77 │       f = fn x, y -> y end
+    │              ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/euler_method.exs:77:14: Main.test_explicit_euler/0
+
+    warning: variable "x" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 90 │       f = fn x, y -> y end
+    │              ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/euler_method.exs:90:14: Main.main/0
+
+144.77277243257308

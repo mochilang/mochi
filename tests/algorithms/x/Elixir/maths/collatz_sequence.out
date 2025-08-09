@@ -1,0 +1,9 @@
+warning: variable "current" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 26 │       {current, seq} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/collatz_sequence.exs:26:8: Main.collatz_sequence/1
+
+[11 34 17 52 26 13 40 20 10 5 16 8 4 2 1]
+Collatz sequence from 11 took 15 steps.

@@ -1,0 +1,109 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 23 │       {ds, i} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/dual_number_automatic_differentiation.exs:23:12: Main.make_dual/2
+
+     warning: variable "k2" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 109 │           {k2, s_dual} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/dual_number_automatic_differentiation.exs:109:12: Main.dual_add/2
+
+    warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 89 │         {k, o_dual} = try do
+    │          ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/dual_number_automatic_differentiation.exs:89:10: Main.dual_add/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 54 │       {i, s_dual} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/dual_number_automatic_differentiation.exs:54:8: Main.dual_add/2
+
+     warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 132 │       {idx, new_duals} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/dual_number_automatic_differentiation.exs:132:8: Main.dual_add/2
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 71 │       {j, o_dual} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/dual_number_automatic_differentiation.exs:71:8: Main.dual_add/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 156 │       {ds, i} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/dual_number_automatic_differentiation.exs:156:12: Main.dual_add_real/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 202 │           {j, new_duals} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/dual_number_automatic_differentiation.exs:202:12: Main.dual_mul/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 214 │       {i, new_duals} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/dual_number_automatic_differentiation.exs:214:8: Main.dual_mul/2
+
+     warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 181 │       {idx, new_duals} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/dual_number_automatic_differentiation.exs:181:8: Main.dual_mul/2
+
+     warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 231 │       {k, new_duals} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/dual_number_automatic_differentiation.exs:231:8: Main.dual_mul/2
+
+     warning: variable "l" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 248 │       {l, new_duals} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/dual_number_automatic_differentiation.exs:248:8: Main.dual_mul/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 272 │       {ds, i} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/dual_number_automatic_differentiation.exs:272:12: Main.dual_mul_real/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 302 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/dual_number_automatic_differentiation.exs:302:8: Main.dual_pow/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 326 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/dual_number_automatic_differentiation.exs:326:8: Main.factorial/1
+
+** (RuntimeError) f1 failed
+    /workspace/mochi/tests/algorithms/x/Elixir/maths/dual_number_automatic_differentiation.exs:355: Main.test_differentiate/0
+    /workspace/mochi/tests/algorithms/x/Elixir/maths/dual_number_automatic_differentiation.exs:381: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/maths/dual_number_automatic_differentiation.exs:392: (file)

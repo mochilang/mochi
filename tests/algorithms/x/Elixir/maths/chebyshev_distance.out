@@ -1,0 +1,9 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 43 │       {i, max_diff} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/chebyshev_distance.exs:43:8: Main.chebyshev_distance/2
+
+1.0
+14.2

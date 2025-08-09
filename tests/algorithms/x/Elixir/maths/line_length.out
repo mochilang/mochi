@@ -1,0 +1,38 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 19 │       {i, x} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/line_length.exs:19:8: Main.sqrt_newton/1
+
+    warning: variable "fx1" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 57 │       {fx1, i, length, x1} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/line_length.exs:57:8: Main.line_length/4
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 57 │       {fx1, i, length, x1} = try do
+    │             ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/line_length.exs:57:13: Main.line_length/4
+
+    warning: variable "x1" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 57 │       {fx1, i, length, x1} = try do
+    │                        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/line_length.exs:57:24: Main.line_length/4
+
+    warning: variable "x" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 75 │   def f2(x) do
+    │          ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/line_length.exs:75:10: Main.f2/1
+
+1.4142135623730947
+9.999999999999977
+14.78942783008959

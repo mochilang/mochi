@@ -1,0 +1,23 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 57 │       {count, i, num} = try do
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/hardy_ramanujanalgo.exs:57:15: Main.exact_prime_factor_count/1
+
+     warning: variable "n" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 123 │       {n, sum, term} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/hardy_ramanujanalgo.exs:123:8: Main.ln/1
+
+     warning: variable "term" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 123 │       {n, sum, term} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/hardy_ramanujanalgo.exs:123:16: Main.ln/1
+
+The number of distinct prime factors is/are 3
+The value of log(log(n)) is 2.8765

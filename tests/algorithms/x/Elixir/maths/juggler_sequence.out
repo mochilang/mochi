@@ -1,0 +1,23 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 27 │       {guess, i} = try do
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/juggler_sequence.exs:27:15: Main.sqrt/1
+
+    warning: variable "y" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 51 │       {n, y} = try do
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/juggler_sequence.exs:51:11: Main.floor/1
+
+    warning: variable "current" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 85 │       {current, seq} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/juggler_sequence.exs:85:8: Main.juggler_sequence/1
+
+[3, 5, 11, 36, 6, 2, 1]
+[10, 3, 5, 11, 36, 6, 2, 1]
