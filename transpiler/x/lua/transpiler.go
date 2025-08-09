@@ -561,6 +561,20 @@ func (c *CallExpr) emit(w io.Writer) {
 			}
 		}
 	}
+	if currentEnv != nil {
+		if _, ok := currentEnv.GetFunc(c.Func); ok {
+			io.WriteString(w, sanitizeName(c.Func))
+			io.WriteString(w, "(")
+			for i, a := range c.Args {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				a.emit(w)
+			}
+			io.WriteString(w, ")")
+			return
+		}
+	}
 	switch c.Func {
 	case "print":
 		if len(c.Args) == 1 && (isListExpr(c.Args[0]) || isMapExpr(c.Args[0])) {
@@ -3407,6 +3421,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			// handled during emission
 			return ce, nil
 		case "panic":
+			if _, ok := currentEnv.GetFunc("panic"); ok {
+				// user-defined panic; treat as normal call
+				return ce, nil
+			}
 			if len(p.Call.Args) != 1 {
 				return nil, fmt.Errorf("panic expects 1 arg")
 			}

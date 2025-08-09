@@ -1,5 +1,0 @@
-run: exit status 1
-lua: ...hms/x/Lua/data_structures/queues/queue_by_two_stacks.lua:301: attempt to index a nil value (global 'r1')
-stack traceback:
-	...hms/x/Lua/data_structures/queues/queue_by_two_stacks.lua:301: in main chunk
-	[C]: in ?

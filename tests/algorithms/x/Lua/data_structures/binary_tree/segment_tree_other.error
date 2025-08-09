@@ -1,9 +1,0 @@
-run: exit status 1
-**************************************************
-lua: ...x/Lua/data_structures/binary_tree/segment_tree_other.lua:193: attempt to add a 'string' with a 'number'
-stack traceback:
-	[C]: in metamethod 'add'
-	...x/Lua/data_structures/binary_tree/segment_tree_other.lua:193: in function 'node_to_string'
-	...x/Lua/data_structures/binary_tree/segment_tree_other.lua:215: in function 'print_traverse'
-	...x/Lua/data_structures/binary_tree/segment_tree_other.lua:268: in main chunk
-	[C]: in ?

@@ -1,6 +1,0 @@
-run: exit status 1
-lua: .../data_structures/disjoint_set/alternate_disjoint_set.lua:126: attempt to compare number with string
-stack traceback:
-	.../data_structures/disjoint_set/alternate_disjoint_set.lua:126: in function 'merge'
-	.../data_structures/disjoint_set/alternate_disjoint_set.lua:145: in main chunk
-	[C]: in ?

@@ -1,8 +1,8 @@
 run: exit status 1
-lua: ...s/algorithms/x/Lua/data_structures/binary_tree/treap.lua:103: attempt to perform arithmetic on a nil value (local 'left')
+lua: ...s/algorithms/x/Lua/data_structures/binary_tree/treap.lua:112: attempt to perform arithmetic on a nil value (local 'left')
 stack traceback:
-	...s/algorithms/x/Lua/data_structures/binary_tree/treap.lua:103: in function 'merge'
-	...s/algorithms/x/Lua/data_structures/binary_tree/treap.lua:113: in function 'insert'
-	...s/algorithms/x/Lua/data_structures/binary_tree/treap.lua:134: in function 'main'
-	...s/algorithms/x/Lua/data_structures/binary_tree/treap.lua:1040: in main chunk
+	...s/algorithms/x/Lua/data_structures/binary_tree/treap.lua:112: in function 'merge'
+	...s/algorithms/x/Lua/data_structures/binary_tree/treap.lua:122: in function 'insert'
+	...s/algorithms/x/Lua/data_structures/binary_tree/treap.lua:143: in function 'main'
+	...s/algorithms/x/Lua/data_structures/binary_tree/treap.lua:1049: in main chunk
 	[C]: in ?
