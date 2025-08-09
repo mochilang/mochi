@@ -1,0 +1,10 @@
+/workspace/mochi/tests/algorithms/x/Erlang/web_programming/current_stock_price.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+"Current AAPL stock price is 228.43"
+"Current AMZN stock price is 201.85"
+"Current IBM stock price is 210.30"
+"Current GOOG stock price is 177.86"
+"Current MSFT stock price is 414.82"
+"Current ORCL stock price is 188.87"

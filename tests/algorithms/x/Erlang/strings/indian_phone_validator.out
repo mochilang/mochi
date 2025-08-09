@@ -1,0 +1,10 @@
+/workspace/mochi/tests/algorithms/x/Erlang/strings/indian_phone_validator.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+false
+true
+false
+true
+false
+true

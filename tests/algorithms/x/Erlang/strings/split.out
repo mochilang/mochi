@@ -1,0 +1,9 @@
+/workspace/mochi/tests/algorithms/x/Erlang/strings/split.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+[apple banana cherry orange]
+[Hello there]
+[11 22 63]
+[12 43 39]
+[[] abbb [] c []]

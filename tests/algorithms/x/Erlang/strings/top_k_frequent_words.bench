@@ -1,0 +1,4 @@
+{Heap_4, Heap_size_3, I_4, J_2, K_value, Limit_3, Result_2, Words} = Fun_4(Heap_2, Heap_size_2, I_4, J, K_value, Limit_3, Result, Words),
+%     |                                          ^
+
+function_clause

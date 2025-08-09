@@ -1,0 +1,7 @@
+/workspace/mochi/tests/algorithms/x/Erlang/strings/pig_latin.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+"pig_latin('friends') = iendsfray"
+"pig_latin('smile') = ilesmay"
+"pig_latin('eat') = eatway"

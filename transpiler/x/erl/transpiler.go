@@ -5088,6 +5088,9 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 	case p.Lit != nil:
 		return convertLiteral(p.Lit)
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
+		if p.Selector.Root == "__name__" {
+			return &StringLit{Value: "__main__"}, nil
+		}
 		if p.Selector.Root == "nil" {
 			return &AtomLit{Name: "nil"}, nil
 		}
