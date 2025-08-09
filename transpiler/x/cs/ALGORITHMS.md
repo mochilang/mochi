@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-09 16:12 GMT+7
+Last updated: 2025-08-09 16:27 GMT+7
 
-## Algorithms Golden Test Checklist (1000/1077)
+## Algorithms Golden Test Checklist (1001/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -409,17 +409,17 @@ Last updated: 2025-08-09 16:12 GMT+7
 | 400 | graphs/bidirectional_a_star | ✓ | 2.0ms | 347.66KB |
 | 401 | graphs/bidirectional_breadth_first_search | ✓ | 1.0ms | 125.08KB |
 | 402 | graphs/bidirectional_search | ✓ | 3.0ms | 25.75KB |
-| 403 | graphs/boruvka | error |  |  |
-| 404 | graphs/breadth_first_search | ✓ | 4.0ms | 19.71KB |
-| 405 | graphs/breadth_first_search_2 | ✓ | 3.0ms | 17.83KB |
-| 406 | graphs/breadth_first_search_shortest_path | ✓ | 2.0ms | 15.09KB |
+| 403 | graphs/boruvka | ✓ | 4.0ms | 29.43KB |
+| 404 | graphs/breadth_first_search | ✓ | 5.0ms | 19.71KB |
+| 405 | graphs/breadth_first_search_2 | ✓ | 3.0ms | 17.36KB |
+| 406 | graphs/breadth_first_search_shortest_path | ✓ | 3.0ms | 15.09KB |
 | 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 1.0µs | 752B |
 | 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ | 3.0ms | 32.14KB |
-| 409 | graphs/check_bipatrite | ✓ | 4.0ms | 14.83KB |
+| 409 | graphs/check_bipatrite | ✓ | 3.0ms | 14.57KB |
 | 410 | graphs/check_cycle | ✓ | 3.0ms | 15.16KB |
 | 411 | graphs/connected_components | ✓ | 4.0ms | 25.16KB |
 | 412 | graphs/deep_clone_graph | error |  |  |
-| 413 | graphs/depth_first_search | ✓ | 2.0ms | 16.61KB |
+| 413 | graphs/depth_first_search | ✓ | 2.0ms | 16.05KB |
 | 414 | graphs/depth_first_search_2 | ✓ | 4.0ms | 20.27KB |
 | 415 | graphs/dijkstra | ✓ | 2.0ms | 26.30KB |
 | 416 | graphs/dijkstra_2 | ✓ | 3.0ms | 18.59KB |

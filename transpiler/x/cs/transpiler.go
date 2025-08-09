@@ -2659,7 +2659,7 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 	}
 	operands = append(operands, first)
 	for _, p := range e.Binary.Right {
-		r, err := compilePostfix(p.Right)
+		r, err := compileUnary(p.Right)
 		if err != nil {
 			return nil, err
 		}
@@ -3256,11 +3256,11 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		tgt := &parser.PostfixExpr{
 			Target: &parser.Primary{Selector: &parser.SelectorExpr{Root: s.Assign.Name}},
 		}
-		for _, idx := range s.Assign.Index {
-			tgt.Ops = append(tgt.Ops, &parser.PostfixOp{Index: idx})
-		}
 		for _, fld := range s.Assign.Field {
 			tgt.Ops = append(tgt.Ops, &parser.PostfixOp{Field: fld})
+		}
+		for _, idx := range s.Assign.Index {
+			tgt.Ops = append(tgt.Ops, &parser.PostfixOp{Index: idx})
 		}
 		targetExpr, err := compilePostfix(tgt)
 		if err != nil {
@@ -3472,24 +3472,24 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		return res, nil
 	case s.Return != nil:
 		var val Expr
-                if s.Return.Value != nil {
-                        var err error
-                        val, err = compileExpr(s.Return.Value)
-                        if err != nil {
-                                return nil, err
-                        }
-                        if ml, ok := val.(*MapLit); ok {
-                                if st, ok := structTypes[currentReturnType]; ok {
-                                        fields := make([]StructFieldValue, len(ml.Items))
-                                        for i, it := range ml.Items {
-                                                if k, ok := it.Key.(*StringLit); ok {
-                                                        fields[i] = StructFieldValue{Name: k.Value, Value: it.Value}
-                                                }
-                                        }
-                                        val = &StructLit{Name: st.Name, Fields: fields}
-                                }
-                        }
-                        if ml, ok := val.(*MapLit); ok && currentReturnType != "" && strings.HasPrefix(currentReturnType, "Dictionary<") {
+		if s.Return.Value != nil {
+			var err error
+			val, err = compileExpr(s.Return.Value)
+			if err != nil {
+				return nil, err
+			}
+			if ml, ok := val.(*MapLit); ok {
+				if st, ok := structTypes[currentReturnType]; ok {
+					fields := make([]StructFieldValue, len(ml.Items))
+					for i, it := range ml.Items {
+						if k, ok := it.Key.(*StringLit); ok {
+							fields[i] = StructFieldValue{Name: k.Value, Value: it.Value}
+						}
+					}
+					val = &StructLit{Name: st.Name, Fields: fields}
+				}
+			}
+			if ml, ok := val.(*MapLit); ok && currentReturnType != "" && strings.HasPrefix(currentReturnType, "Dictionary<") {
 				parts := strings.TrimPrefix(strings.TrimSuffix(currentReturnType, ">"), "Dictionary<")
 				arr := strings.Split(parts, ",")
 				if len(arr) == 2 {
