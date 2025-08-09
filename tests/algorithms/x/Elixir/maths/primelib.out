@@ -1,0 +1,160 @@
+warning: variable "y" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 31 │       {x, y} = try do
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/primelib.exs:31:11: Main.gcd_iter/2
+
+    warning: variable "d" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 59 │       d = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/primelib.exs:59:7: Main.is_prime/1
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 112 │           {j, nums} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/primelib.exs:112:12: Main.sieve_er/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 83 │       {i, nums} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/primelib.exs:83:8: Main.sieve_er/1
+
+     warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 124 │       {idx, nums} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/primelib.exs:124:8: Main.sieve_er/1
+
+     warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 147 │       {k, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/primelib.exs:147:8: Main.sieve_er/1
+
+     warning: variable "num" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 176 │       {ans, num} = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/primelib.exs:176:13: Main.get_prime_numbers/1
+
+     warning: variable "factor" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 220 │       {ans, factor, quotient} = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/primelib.exs:220:13: Main.prime_factorization/1
+
+     warning: variable "quotient" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 220 │       {ans, factor, quotient} = try do
+     │                     ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/primelib.exs:220:21: Main.prime_factorization/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 250 │       {i, m} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/primelib.exs:250:8: Main.greatest_prime_factor/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 280 │       {i, m} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/primelib.exs:280:8: Main.smallest_prime_factor/1
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 337 │           j = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/primelib.exs:337:11: Main.goldbach/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 349 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/primelib.exs:349:7: Main.goldbach/1
+
+     warning: variable "index" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 390 │       {ans, index} = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/primelib.exs:390:13: Main.get_prime/1
+
+     warning: variable "num" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 453 │       {ans, num} = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/primelib.exs:453:13: Main.get_primes_between/2
+
+     warning: variable "d" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 485 │       {ans, d} = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/primelib.exs:485:13: Main.get_divisors/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 513 │       {i, sum} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/primelib.exs:513:8: Main.is_perfect_number/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 551 │       {ans, i} = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/primelib.exs:551:13: Main.factorial/1
+
+     warning: variable "fib1" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 585 │       {ans, fib1, i, tmp} = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/primelib.exs:585:13: Main.fib/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 585 │       {ans, fib1, i, tmp} = try do
+     │                   ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/primelib.exs:585:19: Main.fib/1
+
+     warning: variable "tmp" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 585 │       {ans, fib1, i, tmp} = try do
+     │                      ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/primelib.exs:585:22: Main.fib/1
+
+true
+[2, 3, 5, 7, 11, 13, 17, 19]
+[2, 3, 5, 7, 11, 13, 17, 19]
+~c"\a)"
+41
+7
+40
+[5, 23]
+23
+** (RuntimeError) arguments must be prime and p1 < p2
+    /workspace/mochi/tests/algorithms/x/Elixir/maths/primelib.exs:406: Main.get_primes_between/2
+    /workspace/mochi/tests/algorithms/x/Elixir/maths/primelib.exs:606: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/maths/primelib.exs:614: (file)

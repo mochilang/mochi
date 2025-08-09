@@ -1,0 +1,45 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 37 │       {i, y} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/runge_kutta.exs:37:8: Main.runge_kutta/5
+
+    warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 60 │       {k, x, y} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/runge_kutta.exs:60:8: Main.runge_kutta/5
+
+    warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 60 │       {k, x, y} = try do
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/runge_kutta.exs:60:11: Main.runge_kutta/5
+
+    warning: variable "x" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 73 │       f = fn x, y ->
+    │              ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/runge_kutta.exs:73:14: Main.test_runge_kutta/0
+
+    warning: variable "x" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 96 │       f = fn x, y ->
+    │              ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/runge_kutta.exs:96:14: Main.main/0
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a list
+
+    :erlang.length(1.0)
+    /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/runge_kutta.exs:13: Main._len/1
+    /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/runge_kutta.exs:77: Main.test_runge_kutta/0
+    /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/runge_kutta.exs:95: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/runge_kutta.exs:109: Main.bench_main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/runge_kutta.exs:117: (file)

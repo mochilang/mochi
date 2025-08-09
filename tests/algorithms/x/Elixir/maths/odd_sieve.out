@@ -1,0 +1,39 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 45 │             {j, sieve} = try do
+    │              ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/odd_sieve.exs:45:14: Main.odd_sieve/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 61 │       {i, sieve} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/odd_sieve.exs:61:8: Main.odd_sieve/1
+
+    warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 23 │       {idx, sieve} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/odd_sieve.exs:23:8: Main.odd_sieve/1
+
+    warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 85 │       {k, n, primes} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/odd_sieve.exs:85:8: Main.odd_sieve/1
+
+    warning: variable "n" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 85 │       {k, n, primes} = try do
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/odd_sieve.exs:85:11: Main.odd_sieve/1
+
+[]
+[2]
+[2, 3, 5, 7]
+[2, 3, 5, 7, 11, 13, 17, 19]

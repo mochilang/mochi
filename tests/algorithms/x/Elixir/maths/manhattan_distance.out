@@ -1,0 +1,11 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 44 │       {i, total} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/manhattan_distance.exs:44:8: Main.manhattan_distance/2
+
+2.0
+1.0
+1.5
+9.0

@@ -1,0 +1,16 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 29 │       {factors, i, n} = try do
+    │                 ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/mobius_function.exs:29:17: Main.primeFactors/1
+
+    warning: variable "seen" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 49 │       {seen} = Enum.reduce(factors, {seen}, fn f, {seen} ->
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/mobius_function.exs:49:8: Main.isSquareFree/1
+
+0
+1

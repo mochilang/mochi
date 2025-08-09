@@ -1,0 +1,26 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 20 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/perfect_square.exs:20:7: Main.perfect_square/1
+
+    warning: variable "left" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 57 │       {left, right} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/perfect_square.exs:57:8: Main.perfect_square_binary_search/1
+
+    warning: variable "right" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 57 │       {left, right} = try do
+    │              ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/perfect_square.exs:57:14: Main.perfect_square_binary_search/1
+
+true
+false
+true
+false
+false

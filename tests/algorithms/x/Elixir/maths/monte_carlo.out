@@ -1,0 +1,36 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 41 │       {guess, i} = try do
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/monte_carlo.exs:41:15: Main.sqrtApprox/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 72 │       {i, inside} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/monte_carlo.exs:72:8: Main.pi_estimator/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 101 │       {i, sum} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/monte_carlo.exs:101:8: Main.area_under_curve_estimator/4
+
+The estimated value of pi is 3.196
+The numpy value of pi is 3.141592653589793
+The total error is 0.05440734641020706
+******************
+Estimating area under y=x where x varies from 0.0
+Estimated value is 0.6457883240655065
+Expected value is 0.5
+Total error is 0.14578832406550646
+******************
+******************
+Estimating pi using area_under_curve_estimator
+Estimated value is 1.5210775710861126
+Expected value is 3.141592653589793
+Total error is 1.6205150825036805
+******************

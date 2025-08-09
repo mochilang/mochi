@@ -1,0 +1,37 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 23 │       {guess, i} = try do
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/runge_kutta_gills.exs:23:15: Main.sqrt/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 54 │       {i, y} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/runge_kutta_gills.exs:54:8: Main.runge_kutta_gills/5
+
+    warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 78 │       {idx, xi, y} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/runge_kutta_gills.exs:78:8: Main.runge_kutta_gills/5
+
+    warning: variable "xi" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 78 │       {idx, xi, y} = try do
+    │             ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/runge_kutta_gills.exs:78:13: Main.runge_kutta_gills/5
+
+    warning: variable "y" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 96 │   def f2(x, y) do
+    │             ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/runge_kutta_gills.exs:96:13: Main.f2/2
+
+3.4104259225717537
+[0.0, -0.18000000000000002, -0.32000000000000006, -0.4200000000000001, -0.4800000000000001, -0.5000000000000001]

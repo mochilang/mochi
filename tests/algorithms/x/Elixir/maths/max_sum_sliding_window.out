@@ -1,0 +1,22 @@
+warning: variable "current_sum" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 49 │       {current_sum, i, max_sum} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/max_sum_sliding_window.exs:49:8: Main.max_sum_sliding_window/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 49 │       {current_sum, i, max_sum} = try do
+    │                     ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/max_sum_sliding_window.exs:49:21: Main.max_sum_sliding_window/2
+
+    warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 26 │       {current_sum, idx} = try do
+    │                     ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/max_sum_sliding_window.exs:26:21: Main.max_sum_sliding_window/2
+
+24

@@ -1,0 +1,152 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 42 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/adams_bashforth.exs:42:7: Main.validate_inputs/3
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 71 │       {i, s} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/adams_bashforth.exs:71:8: Main.list_to_string/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 109 │       {i, x0, x1, y} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/adams_bashforth.exs:109:8: Main.adams_bashforth_step2/5
+
+     warning: variable "x0" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 109 │       {i, x0, x1, y} = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/adams_bashforth.exs:109:11: Main.adams_bashforth_step2/5
+
+     warning: variable "x1" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 109 │       {i, x0, x1, y} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/adams_bashforth.exs:109:15: Main.adams_bashforth_step2/5
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 149 │       {i, x0, x1, x2, y} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/adams_bashforth.exs:149:8: Main.adams_bashforth_step3/5
+
+     warning: variable "x0" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 149 │       {i, x0, x1, x2, y} = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/adams_bashforth.exs:149:11: Main.adams_bashforth_step3/5
+
+     warning: variable "x1" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 149 │       {i, x0, x1, x2, y} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/adams_bashforth.exs:149:15: Main.adams_bashforth_step3/5
+
+     warning: variable "x2" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 149 │       {i, x0, x1, x2, y} = try do
+     │                   ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/adams_bashforth.exs:149:19: Main.adams_bashforth_step3/5
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 192 │       {i, x0, x1, x2, x3, y} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/adams_bashforth.exs:192:8: Main.adams_bashforth_step4/5
+
+     warning: variable "x0" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 192 │       {i, x0, x1, x2, x3, y} = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/adams_bashforth.exs:192:11: Main.adams_bashforth_step4/5
+
+     warning: variable "x1" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 192 │       {i, x0, x1, x2, x3, y} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/adams_bashforth.exs:192:15: Main.adams_bashforth_step4/5
+
+     warning: variable "x2" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 192 │       {i, x0, x1, x2, x3, y} = try do
+     │                   ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/adams_bashforth.exs:192:19: Main.adams_bashforth_step4/5
+
+     warning: variable "x3" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 192 │       {i, x0, x1, x2, x3, y} = try do
+     │                       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/adams_bashforth.exs:192:23: Main.adams_bashforth_step4/5
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 238 │       {i, x0, x1, x2, x3, x4, y} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/adams_bashforth.exs:238:8: Main.adams_bashforth_step5/5
+
+     warning: variable "x0" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 238 │       {i, x0, x1, x2, x3, x4, y} = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/adams_bashforth.exs:238:11: Main.adams_bashforth_step5/5
+
+     warning: variable "x1" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 238 │       {i, x0, x1, x2, x3, x4, y} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/adams_bashforth.exs:238:15: Main.adams_bashforth_step5/5
+
+     warning: variable "x2" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 238 │       {i, x0, x1, x2, x3, x4, y} = try do
+     │                   ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/adams_bashforth.exs:238:19: Main.adams_bashforth_step5/5
+
+     warning: variable "x3" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 238 │       {i, x0, x1, x2, x3, x4, y} = try do
+     │                       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/adams_bashforth.exs:238:23: Main.adams_bashforth_step5/5
+
+     warning: variable "x4" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 238 │       {i, x0, x1, x2, x3, x4, y} = try do
+     │                           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/adams_bashforth.exs:238:27: Main.adams_bashforth_step5/5
+
+     warning: variable "y" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 249 │   def f_x(x, y) do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/adams_bashforth.exs:249:14: Main.f_x/2
+
+"[0.0, 0.0, 0.06000000000000001, 0.16000000000000003, 0.30000000000000004, 0.4800000000000001]"
+0.15533333333333332
+0.30699999999999994
+0.5771083333333333
+0.05436839444444452

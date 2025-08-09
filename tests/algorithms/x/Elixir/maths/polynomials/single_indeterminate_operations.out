@@ -1,0 +1,95 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 23 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/polynomials/single_indeterminate_operations.exs:23:8: Main.copy_list/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 77 │         {coeffs, i} = try do
+    │                  ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/polynomials/single_indeterminate_operations.exs:77:18: Main.add/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 58 │         {coeffs, i} = try do
+    │                  ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/polynomials/single_indeterminate_operations.exs:58:18: Main.add/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 102 │       {coeffs, i} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/polynomials/single_indeterminate_operations.exs:102:16: Main.neg/1
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 153 │           {coeffs, j} = try do
+     │                    ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/polynomials/single_indeterminate_operations.exs:153:20: Main.mul/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 134 │       {coeffs, i} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/polynomials/single_indeterminate_operations.exs:134:16: Main.mul/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 165 │       {coeffs, i} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/polynomials/single_indeterminate_operations.exs:165:16: Main.mul/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 189 │       {i, result} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/polynomials/single_indeterminate_operations.exs:189:8: Main.power/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 213 │       {i, result} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/polynomials/single_indeterminate_operations.exs:213:8: Main.evaluate/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 268 │       {i, s} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/polynomials/single_indeterminate_operations.exs:268:8: Main.poly_to_string/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 301 │       {coeffs, i} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/polynomials/single_indeterminate_operations.exs:301:16: Main.derivative/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 325 │       {coeffs, i} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/polynomials/single_indeterminate_operations.exs:325:16: Main.integral/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 353 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/polynomials/single_indeterminate_operations.exs:353:7: Main.equals/2
+
+** (RuntimeError) add failed
+    /workspace/mochi/tests/algorithms/x/Elixir/maths/polynomials/single_indeterminate_operations.exs:376: Main.test_polynomial/0
+    /workspace/mochi/tests/algorithms/x/Elixir/maths/polynomials/single_indeterminate_operations.exs:403: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/maths/polynomials/single_indeterminate_operations.exs:412: (file)

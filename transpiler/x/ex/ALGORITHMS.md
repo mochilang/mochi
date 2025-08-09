@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-09 10:31 GMT+7
+Last updated: 2025-08-09 11:13 GMT+7
 
-## Algorithms Golden Test Checklist (475/1077)
+## Algorithms Golden Test Checklist (525/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -599,57 +599,57 @@ Last updated: 2025-08-09 10:31 GMT+7
 | 590 | maths/largest_of_very_large_numbers | ✓ | 6.31ms | 32.7 MB |
 | 591 | maths/least_common_multiple | ✓ | 7.31ms | 25.0 MB |
 | 592 | maths/line_length | ✓ | 13.73ms | 17.8 MB |
-| 593 | maths/liouville_lambda |   |  |  |
-| 594 | maths/lucas_lehmer_primality_test |   |  |  |
-| 595 | maths/lucas_series |   |  |  |
-| 596 | maths/maclaurin_series |   |  |  |
-| 597 | maths/manhattan_distance |   |  |  |
-| 598 | maths/matrix_exponentiation |   |  |  |
-| 599 | maths/max_sum_sliding_window |   |  |  |
-| 600 | maths/minkowski_distance |   |  |  |
-| 601 | maths/mobius_function |   |  |  |
-| 602 | maths/modular_division |   |  |  |
-| 603 | maths/monte_carlo |   |  |  |
-| 604 | maths/monte_carlo_dice |   |  |  |
-| 605 | maths/number_of_digits |   |  |  |
-| 606 | maths/numerical_analysis/adams_bashforth |   |  |  |
-| 607 | maths/numerical_analysis/bisection |   |  |  |
-| 608 | maths/numerical_analysis/bisection_2 |   |  |  |
-| 609 | maths/numerical_analysis/integration_by_simpson_approx |   |  |  |
-| 610 | maths/numerical_analysis/intersection |   |  |  |
-| 611 | maths/numerical_analysis/nevilles_method |   |  |  |
-| 612 | maths/numerical_analysis/newton_forward_interpolation |   |  |  |
-| 613 | maths/numerical_analysis/newton_raphson |   |  |  |
-| 614 | maths/numerical_analysis/numerical_integration |   |  |  |
-| 615 | maths/numerical_analysis/proper_fractions |   |  |  |
-| 616 | maths/numerical_analysis/runge_kutta |   |  |  |
-| 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 |   |  |  |
-| 618 | maths/numerical_analysis/runge_kutta_gills |   |  |  |
-| 619 | maths/numerical_analysis/secant_method |   |  |  |
-| 620 | maths/numerical_analysis/simpson_rule |   |  |  |
-| 621 | maths/numerical_analysis/square_root |   |  |  |
-| 622 | maths/odd_sieve |   |  |  |
-| 623 | maths/perfect_cube |   |  |  |
-| 624 | maths/perfect_number |   |  |  |
-| 625 | maths/perfect_square |   |  |  |
-| 626 | maths/persistence |   |  |  |
-| 627 | maths/pi_generator |   |  |  |
-| 628 | maths/pi_monte_carlo_estimation |   |  |  |
-| 629 | maths/points_are_collinear_3d |   |  |  |
-| 630 | maths/pollard_rho |   |  |  |
-| 631 | maths/polynomial_evaluation |   |  |  |
-| 632 | maths/polynomials/single_indeterminate_operations |   |  |  |
-| 633 | maths/power_using_recursion |   |  |  |
-| 634 | maths/prime_check |   |  |  |
-| 635 | maths/prime_factors |   |  |  |
-| 636 | maths/prime_numbers |   |  |  |
-| 637 | maths/prime_sieve_eratosthenes |   |  |  |
-| 638 | maths/primelib |   |  |  |
-| 639 | maths/print_multiplication_table |   |  |  |
-| 640 | maths/pythagoras |   |  |  |
-| 641 | maths/qr_decomposition |   |  |  |
-| 642 | maths/quadratic_equations_complex_numbers |   |  |  |
-| 643 | maths/radians |   |  |  |
+| 593 | maths/liouville_lambda | ✓ | 4.95ms | 25.0 MB |
+| 594 | maths/lucas_lehmer_primality_test | ✓ | 5.09ms | 25.0 MB |
+| 595 | maths/lucas_series | ✓ | 8.36ms | 20.2 MB |
+| 596 | maths/maclaurin_series | ✓ | 6.67ms | 32.7 MB |
+| 597 | maths/manhattan_distance | ✓ | 4.97ms | 32.7 MB |
+| 598 | maths/matrix_exponentiation | ✓ | 5.08ms | 25.0 MB |
+| 599 | maths/max_sum_sliding_window | ✓ | 4.92ms | 12.5 MB |
+| 600 | maths/minkowski_distance | ✓ | 7.17ms | 25.8 MB |
+| 601 | maths/mobius_function | ✓ | 4.52ms | 25.0 MB |
+| 602 | maths/modular_division | ✓ | 5.11ms | 25.0 MB |
+| 603 | maths/monte_carlo | ✓ | 7.91ms | 25.0 MB |
+| 604 | maths/monte_carlo_dice | ✓ | 17.63ms | 25.0 MB |
+| 605 | maths/number_of_digits | ✓ | 4.72ms | 25.0 MB |
+| 606 | maths/numerical_analysis/adams_bashforth | ✓ | 9.35ms | 18.1 MB |
+| 607 | maths/numerical_analysis/bisection | ✓ | 5.70ms | 33.1 MB |
+| 608 | maths/numerical_analysis/bisection_2 | ✓ | 3.98ms | 33.7 MB |
+| 609 | maths/numerical_analysis/integration_by_simpson_approx | ✓ | 5.40ms | 15.4 MB |
+| 610 | maths/numerical_analysis/intersection | ✓ | 4.29ms | 32.7 MB |
+| 611 | maths/numerical_analysis/nevilles_method | ✓ | 1.75ms | 25.0 MB |
+| 612 | maths/numerical_analysis/newton_forward_interpolation | ✓ | 5.59ms | 25.0 MB |
+| 613 | maths/numerical_analysis/newton_raphson | ✓ | 3.51ms | 17.3 MB |
+| 614 | maths/numerical_analysis/numerical_integration | ✓ |  |  |
+| 615 | maths/numerical_analysis/proper_fractions | ✓ | 5.99ms | 17.3 MB |
+| 616 | maths/numerical_analysis/runge_kutta | ✓ |  |  |
+| 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 | ✓ |  |  |
+| 618 | maths/numerical_analysis/runge_kutta_gills | ✓ | 8.40ms | 17.3 MB |
+| 619 | maths/numerical_analysis/secant_method | ✓ | 5.64ms | 25.0 MB |
+| 620 | maths/numerical_analysis/simpson_rule | ✓ | 3.09ms | 25.0 MB |
+| 621 | maths/numerical_analysis/square_root | ✓ | 3.31ms | 25.4 MB |
+| 622 | maths/odd_sieve | ✓ | 6.61ms | 32.7 MB |
+| 623 | maths/perfect_cube | ✓ | 4.52ms | 25.0 MB |
+| 624 | maths/perfect_number | ✓ | 193.18ms | 25.0 MB |
+| 625 | maths/perfect_square | ✓ | 6.88ms | 25.0 MB |
+| 626 | maths/persistence | ✓ | 4.43ms | 25.0 MB |
+| 627 | maths/pi_generator | ✓ | 7.42ms | 17.3 MB |
+| 628 | maths/pi_monte_carlo_estimation | ✓ | 9.23ms | 17.3 MB |
+| 629 | maths/points_are_collinear_3d | ✓ | 5.03ms | 33.0 MB |
+| 630 | maths/pollard_rho | ✓ | 213us | 25.0 MB |
+| 631 | maths/polynomial_evaluation | ✓ | 4.55ms | 32.7 MB |
+| 632 | maths/polynomials/single_indeterminate_operations | error |  |  |
+| 633 | maths/power_using_recursion | ✓ | 4.58ms | 12.5 MB |
+| 634 | maths/prime_check | ✓ | 4.69ms | 25.0 MB |
+| 635 | maths/prime_factors | ✓ | 6.49ms | 32.7 MB |
+| 636 | maths/prime_numbers | ✓ | 6.61ms | 32.7 MB |
+| 637 | maths/prime_sieve_eratosthenes | ✓ | 5.94ms | 17.3 MB |
+| 638 | maths/primelib | ✓ |  |  |
+| 639 | maths/print_multiplication_table | ✓ | 4.30ms | 12.5 MB |
+| 640 | maths/pythagoras | ✓ | 1.55ms | 17.3 MB |
+| 641 | maths/qr_decomposition | ✓ | 3.70ms | 26.7 MB |
+| 642 | maths/quadratic_equations_complex_numbers | ✓ | 1.88ms | 17.3 MB |
+| 643 | maths/radians | ✓ | 4.47ms | 25.0 MB |
 | 644 | maths/radix2_fft |   |  |  |
 | 645 | maths/remove_digit |   |  |  |
 | 646 | maths/segmented_sieve |   |  |  |

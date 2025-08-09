@@ -1,0 +1,8 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 26 │       {guess, i} = try do
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/pythagoras.exs:26:15: Main.sqrt_approx/1
+
+Distance from Point(2.0, -1.0, 7.0) to Point(1.0, -3.0, 5.0) is 3.0

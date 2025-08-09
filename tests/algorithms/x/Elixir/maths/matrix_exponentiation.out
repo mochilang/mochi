@@ -1,0 +1,73 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 27 │           {j, row} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/matrix_exponentiation.exs:27:12: Main.identity/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 40 │       {i, mat} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/matrix_exponentiation.exs:40:8: Main.identity/1
+
+    warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 73 │               {cell, k} = try do
+    │                      ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/matrix_exponentiation.exs:73:22: Main.matrix_mul/2
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 86 │           {j, row} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/matrix_exponentiation.exs:86:12: Main.matrix_mul/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 99 │       {i, result} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/matrix_exponentiation.exs:99:8: Main.matrix_mul/2
+
+     warning: variable "b" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 130 │       {b, e, result} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/matrix_exponentiation.exs:130:8: Main.matrix_pow/2
+
+     warning: variable "e" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 130 │       {b, e, result} = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/matrix_exponentiation.exs:130:11: Main.matrix_pow/2
+
+     warning: variable "a" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 178 │       {a, b, count} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/matrix_exponentiation.exs:178:8: Main.simple_fibonacci/3
+
+     warning: variable "count" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 178 │       {a, b, count} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/matrix_exponentiation.exs:178:14: Main.simple_fibonacci/3
+
+5
+11
+144
+411
+89
+5
+11
+144
+411
+89

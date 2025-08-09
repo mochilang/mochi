@@ -1,0 +1,22 @@
+warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 30 │       {points, x} = try do
+    │                ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/simpson_rule.exs:30:16: Main.make_points/3
+
+    warning: variable "cnt" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 64 │       {cnt, i, y} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/simpson_rule.exs:64:8: Main.simpson_rule/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 64 │       {cnt, i, y} = try do
+    │             ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/simpson_rule.exs:64:13: Main.simpson_rule/2
+
+0.33333333333333326

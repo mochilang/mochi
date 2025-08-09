@@ -1,0 +1,8 @@
+warning: variable "y" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 28 │       {x, y} = try do
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/modular_division.exs:28:11: Main.greatest_common_divisor/2
+
+2

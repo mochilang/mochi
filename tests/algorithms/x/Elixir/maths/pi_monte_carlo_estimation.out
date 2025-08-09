@@ -1,0 +1,8 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 54 │       {i, inside} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/pi_monte_carlo_estimation.exs:54:8: Main.estimate_pi/1
+
+An estimate of PI is 3.1356 with an error of 0.005992653589792951

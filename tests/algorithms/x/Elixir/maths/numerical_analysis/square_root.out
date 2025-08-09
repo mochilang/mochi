@@ -1,0 +1,10 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 66 │       {i, value} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/numerical_analysis/square_root.exs:66:8: Main.square_root_iterative/3
+
+2.0
+1.788854381999832
+11.832159566199232
