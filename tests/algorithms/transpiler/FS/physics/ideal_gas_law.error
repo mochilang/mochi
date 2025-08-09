@@ -1,0 +1,31 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/algorithms/transpiler/FS/physics/ideal_gas_law.fs(32,13): error FS0039: The value or constructor 'throw' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/physics/ideal_gas_law.fs(33,13): error FS0001: This expression was expected to have type
+    unit    
+but here has type
+    string    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/physics/ideal_gas_law.fs(46,13): error FS0039: The value or constructor 'throw' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/physics/ideal_gas_law.fs(47,13): error FS0001: This expression was expected to have type
+    unit    
+but here has type
+    string    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/physics/ideal_gas_law.fs(60,13): error FS0039: The value or constructor 'throw' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/physics/ideal_gas_law.fs(61,13): error FS0001: This expression was expected to have type
+    unit    
+but here has type
+    string    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/physics/ideal_gas_law.fs(74,13): error FS0039: The value or constructor 'throw' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/physics/ideal_gas_law.fs(75,13): error FS0001: This expression was expected to have type
+    unit    
+but here has type
+    string    
