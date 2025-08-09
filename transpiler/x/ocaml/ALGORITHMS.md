@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 342/1077
-Last updated: 2025-08-09 10:41 +0700
+Completed programs: 343/1077
+Last updated: 2025-08-09 15:58 +0700
 
 Checklist:
 
@@ -306,15 +306,15 @@ Checklist:
 | 297 | divide_and_conquer/peak | ✓ | 171.0µs | 1.05KB |
 | 298 | divide_and_conquer/power | ✓ | 298.0µs | 2.85KB |
 | 299 | divide_and_conquer/strassen_matrix_multiplication | ✓ | 19.0ms | 2.15MB |
-| 300 | docs/conf | ✓ | 105.0µs | 1.58KB |
-| 301 | dynamic_programming/abbreviation | ✓ | 188.0µs | 13.87KB |
-| 302 | dynamic_programming/all_construct |   |  |  |
-| 303 | dynamic_programming/bitmask | ✓ | 240.0µs | 2.30KB |
-| 304 | dynamic_programming/catalan_numbers | ✓ | 220.0µs | 2.14KB |
-| 305 | dynamic_programming/climbing_stairs | ✓ | 138.0µs | 240B |
-| 306 | dynamic_programming/combination_sum_iv | ✓ | 261.0µs | 6.98KB |
+| 300 | docs/conf | ✓ | 46.0µs | 208B |
+| 301 | dynamic_programming/abbreviation | ✓ | 142.0µs | 13.87KB |
+| 302 | dynamic_programming/all_construct | ✓ | 555.0µs | 53.28KB |
+| 303 | dynamic_programming/bitmask | ✓ | 168.0µs | 2.30KB |
+| 304 | dynamic_programming/catalan_numbers | ✓ | 167.0µs | 2.10KB |
+| 305 | dynamic_programming/climbing_stairs | ✓ | 135.0µs | 240B |
+| 306 | dynamic_programming/combination_sum_iv | ✓ | 213.0µs | 6.98KB |
 | 307 | dynamic_programming/edit_distance | ✓ | 1.0ms | 127.11KB |
-| 308 | dynamic_programming/factorial | ✓ | 167.0µs | 3.73KB |
+| 308 | dynamic_programming/factorial | ✓ | 136.0µs | 3.70KB |
 | 309 | dynamic_programming/fast_fibonacci | ✓ | 174.0µs | 5.09KB |
 | 310 | dynamic_programming/fibonacci | ✓ | 210.0µs | 4.89KB |
 | 311 | dynamic_programming/fizz_buzz | ✓ | 160.0µs | 1.95KB |
