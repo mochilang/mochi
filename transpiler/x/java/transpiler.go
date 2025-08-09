@@ -1643,15 +1643,17 @@ func (s *LetStmt) emit(w io.Writer, indent string) {
 		fmt.Fprint(w, "static ")
 	}
 	typ := s.Type
-	if typ == "" || typ == "Object" {
-		if t, ok := varTypes[s.Name]; ok && t != "" {
+	if typ == "" && s.Expr != nil {
+		if t := inferType(s.Expr); t != "" && t != "Object" {
 			typ = t
 		}
 	}
-	if typ == "" && s.Expr != nil {
-		typ = inferType(s.Expr)
+	if typ == "" || typ == "Object" {
+		if t, ok := varTypes[s.Name]; ok && t != "" && t != "Object" {
+			typ = t
+		}
 	}
-	if typ == "" {
+	if typ == "" || typ == "Object" {
 		typ = "Object"
 	}
 	fmt.Fprint(w, javaType(typ)+" "+sanitize(s.Name))
@@ -1680,15 +1682,17 @@ func (s *VarStmt) emit(w io.Writer, indent string) {
 		fmt.Fprint(w, "static ")
 	}
 	typ := s.Type
-	if typ == "" || typ == "Object" {
-		if t, ok := varTypes[s.Name]; ok && t != "" {
+	if (typ == "" || typ == "Object") && s.Expr != nil {
+		if t := inferType(s.Expr); t != "" && t != "Object" {
 			typ = t
 		}
 	}
-	if typ == "" && s.Expr != nil {
-		typ = inferType(s.Expr)
+	if typ == "" || typ == "Object" {
+		if t, ok := varTypes[s.Name]; ok && t != "" && t != "Object" {
+			typ = t
+		}
 	}
-	if typ == "" {
+	if typ == "" || typ == "Object" {
 		typ = "Object"
 	}
 	jt := javaType(typ)
@@ -2850,6 +2854,14 @@ func (a *AppendExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ")).toArray()")
 		return
 	}
+	if elem == "long" {
+		fmt.Fprint(w, "java.util.stream.LongStream.concat(java.util.Arrays.stream(")
+		a.List.emit(w)
+		fmt.Fprint(w, "), java.util.stream.LongStream.of(")
+		emitCastExpr(w, a.Value, "long")
+		fmt.Fprint(w, ")).toArray()")
+		return
+	}
 	if strings.HasSuffix(jt, "[]") || strings.Contains(jt, "<") {
 		needAppendObj = true
 		arrType := javaType(elem) + "[]"
@@ -3300,11 +3312,11 @@ func (s *SubstringExpr) emit(w io.Writer) {
 	needSubstr = true
 	fmt.Fprint(w, "_substr(")
 	s.Str.emit(w)
-	fmt.Fprint(w, ", ")
+	fmt.Fprint(w, ", (int)(")
 	s.Start.emit(w)
-	fmt.Fprint(w, ", ")
+	fmt.Fprint(w, "), (int)(")
 	s.End.emit(w)
-	fmt.Fprint(w, ")")
+	fmt.Fprint(w, "))")
 }
 
 // IndexExpr represents s[i]. For strings it emits charAt.
