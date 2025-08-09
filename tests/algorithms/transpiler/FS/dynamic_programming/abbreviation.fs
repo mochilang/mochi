@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-09 15:58 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,6 +19,16 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let _substring (s:string) (start:int) (finish:int) =
+    let len = String.length s
+    let mutable st = if start < 0 then len + start else start
+    let mutable en = if finish < 0 then len + finish else finish
+    if st < 0 then st <- 0
+    if st > len then st <- len
+    if en > len then en <- len
+    if st > en then st <- en
+    s.Substring(st, en - st)
+
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let __bench_start = _now()
@@ -65,10 +75,10 @@ let rec chr (n: int) =
         let upper: string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         let lower: string = "abcdefghijklmnopqrstuvwxyz"
         if (n >= 65) && (n < 91) then
-            __ret <- upper.Substring(n - 65, (n - 64) - (n - 65))
+            __ret <- _substring upper (n - 65) (n - 64)
             raise Return
         if (n >= 97) && (n < 123) then
-            __ret <- lower.Substring(n - 97, (n - 96) - (n - 97))
+            __ret <- _substring lower (n - 97) (n - 96)
             raise Return
         __ret <- "?"
         raise Return
@@ -105,29 +115,29 @@ let rec abbr (a: string) (b: string) =
     try
         let n: int = String.length (a)
         let m: int = String.length (b)
-        let mutable dp: bool array array = [||]
+        let mutable dp: bool array array = Array.empty<bool array>
         let mutable i: int = 0
         while i <= n do
-            let mutable row: bool array = [||]
+            let mutable row: bool array = Array.empty<bool>
             let mutable j: int = 0
             while j <= m do
                 row <- Array.append row [|false|]
                 j <- j + 1
             dp <- Array.append dp [|row|]
             i <- i + 1
-        dp.[0].[0] <- true
+        dp.[int 0].[int 0] <- true
         i <- 0
         while i < n do
             let mutable j: int = 0
             while j <= m do
-                if _idx (_idx dp (i)) (j) then
+                if _idx (_idx dp (int i)) (int j) then
                     if (j < m) && ((to_upper_char (string (a.[i]))) = (string (b.[j]))) then
-                        dp.[i + 1].[j + 1] <- true
+                        dp.[int (i + 1)].[int (j + 1)] <- true
                     if is_lower (string (a.[i])) then
-                        dp.[i + 1].[j] <- true
+                        dp.[int (i + 1)].[int j] <- true
                 j <- j + 1
             i <- i + 1
-        __ret <- _idx (_idx dp (n)) (m)
+        __ret <- _idx (_idx dp (int n)) (int m)
         raise Return
         __ret
     with

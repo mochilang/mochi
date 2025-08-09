@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-09 15:58 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -33,6 +33,7 @@ let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -70,17 +71,17 @@ let rec helper_top_down (word1: string) (word2: string) (dp: int array array) (i
         if j < 0 then
             __ret <- i + 1
             raise Return
-        if (_idx (_idx dp (i)) (j)) <> (0 - 1) then
-            __ret <- _idx (_idx dp (i)) (j)
+        if (_idx (_idx dp (int i)) (int j)) <> (0 - 1) then
+            __ret <- _idx (_idx dp (int i)) (int j)
             raise Return
         if (_substring word1 i (i + 1)) = (_substring word2 j (j + 1)) then
-            dp.[i].[j] <- helper_top_down (word1) (word2) (dp) (i - 1) (j - 1)
+            dp.[int i].[int j] <- helper_top_down (word1) (word2) (dp) (i - 1) (j - 1)
         else
             let insert: int = helper_top_down (word1) (word2) (dp) (i) (j - 1)
             let delete: int = helper_top_down (word1) (word2) (dp) (i - 1) (j)
             let replace: int = helper_top_down (word1) (word2) (dp) (i - 1) (j - 1)
-            dp.[i].[j] <- 1 + (min3 (insert) (delete) (replace))
-        __ret <- _idx (_idx dp (i)) (j)
+            dp.[int i].[int j] <- 1 + (min3 (insert) (delete) (replace))
+        __ret <- _idx (_idx dp (int i)) (int j)
         raise Return
         __ret
     with
@@ -92,11 +93,11 @@ let rec min_dist_top_down (word1: string) (word2: string) =
     try
         let mutable m: int = String.length (word1)
         let n: int = String.length (word2)
-        let mutable dp: int array array = [||]
+        let mutable dp: int array array = Array.empty<int array>
         for _ in 0 .. (m - 1) do
-            let mutable row: int array = [||]
+            let mutable row: int array = Array.empty<int>
             for _2 in 0 .. (n - 1) do
-                row <- Array.append row [|0 - 1|]
+                row <- Array.append row [|(0 - 1)|]
             dp <- Array.append dp [|row|]
         __ret <- helper_top_down (word1) (word2) (dp) (m - 1) (n - 1)
         raise Return
@@ -110,28 +111,28 @@ let rec min_dist_bottom_up (word1: string) (word2: string) =
     try
         let mutable m: int = String.length (word1)
         let n: int = String.length (word2)
-        let mutable dp: int array array = [||]
+        let mutable dp: int array array = Array.empty<int array>
         for _ in 0 .. ((m + 1) - 1) do
-            let mutable row: int array = [||]
+            let mutable row: int array = Array.empty<int>
             for _2 in 0 .. ((n + 1) - 1) do
                 row <- Array.append row [|0|]
             dp <- Array.append dp [|row|]
         for i in 0 .. ((m + 1) - 1) do
             for j in 0 .. ((n + 1) - 1) do
                 if i = 0 then
-                    dp.[i].[j] <- j
+                    dp.[int i].[int j] <- j
                 else
                     if j = 0 then
-                        dp.[i].[j] <- i
+                        dp.[int i].[int j] <- i
                     else
                         if (_substring word1 (i - 1) i) = (_substring word2 (j - 1) j) then
-                            dp.[i].[j] <- _idx (_idx dp (i - 1)) (j - 1)
+                            dp.[int i].[int j] <- _idx (_idx dp (int (i - 1))) (int (j - 1))
                         else
-                            let insert: int = _idx (_idx dp (i)) (j - 1)
-                            let delete: int = _idx (_idx dp (i - 1)) (j)
-                            let replace: int = _idx (_idx dp (i - 1)) (j - 1)
-                            dp.[i].[j] <- 1 + (min3 (insert) (delete) (replace))
-        __ret <- _idx (_idx dp (m)) (n)
+                            let insert: int = _idx (_idx dp (int i)) (int (j - 1))
+                            let delete: int = _idx (_idx dp (int (i - 1))) (int j)
+                            let replace: int = _idx (_idx dp (int (i - 1))) (int (j - 1))
+                            dp.[int i].[int j] <- 1 + (min3 (insert) (delete) (replace))
+        __ret <- _idx (_idx dp (int m)) (int n)
         raise Return
         __ret
     with

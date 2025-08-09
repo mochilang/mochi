@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-09 15:58 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -41,6 +41,7 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -54,37 +55,37 @@ let rec allConstruct (target: string) (wordBank: string array) =
     let mutable wordBank = wordBank
     try
         let tableSize: int = (String.length (target)) + 1
-        let mutable table: string array array array = [||]
+        let mutable table: string array array array = Array.empty<string array array>
         let mutable idx: int = 0
         while idx < tableSize do
-            let mutable empty: string array array = [||]
+            let mutable empty: string array array = Array.empty<string array>
             table <- Array.append table [|empty|]
             idx <- idx + 1
-        let mutable ``base``: string array = [||]
-        table.[0] <- [|``base``|]
+        let mutable ``base``: string array = Array.empty<string>
+        table.[int 0] <- [|``base``|]
         let mutable i: int = 0
         while i < tableSize do
-            if (Seq.length (_idx table (i))) <> 0 then
+            if (Seq.length (_idx table (int i))) <> 0 then
                 let mutable w: int = 0
                 while w < (Seq.length (wordBank)) do
-                    let word: string = _idx wordBank (w)
+                    let word: string = _idx wordBank (int w)
                     let wordLen: int = String.length (word)
                     if (_substring target (i) (i + wordLen)) = word then
                         let mutable k: int = 0
-                        while k < (Seq.length (_idx table (i))) do
-                            let way: string array = _idx (_idx table (i)) (k)
-                            let mutable combination: string array = [||]
+                        while k < (Seq.length (_idx table (int i))) do
+                            let way: string array = _idx (_idx table (int i)) (int k)
+                            let mutable combination: string array = Array.empty<string>
                             let mutable m: int = 0
                             while m < (Seq.length (way)) do
-                                combination <- Array.append combination [|_idx way (m)|]
+                                combination <- Array.append combination [|(_idx way (int m))|]
                                 m <- m + 1
                             combination <- Array.append combination [|word|]
                             let nextIndex: int = i + wordLen
-                            table.[nextIndex] <- Array.append (_idx table (nextIndex)) [|combination|]
+                            table.[int nextIndex] <- Array.append (_idx table (int nextIndex)) [|combination|]
                             k <- k + 1
                     w <- w + 1
             i <- i + 1
-        __ret <- _idx table (String.length (target))
+        __ret <- _idx table (int (String.length (target)))
         raise Return
         __ret
     with

@@ -1,3 +1,7 @@
+## Progress (2025-08-09 15:58 +0700)
+- zig: fix slice returns and mutable params
+- Generated F# for 103/105 programs (103 passing)
+
 ## Progress (2025-08-09 10:14 +0700)
 - lua: improve slice helper and refresh docs
 - Generated F# for 103/105 programs (103 passing)

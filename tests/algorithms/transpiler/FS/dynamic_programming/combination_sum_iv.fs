@@ -1,4 +1,4 @@
-// Generated 2025-08-07 15:46 +0700
+// Generated 2025-08-09 15:58 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -31,6 +31,7 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -43,7 +44,7 @@ let rec make_list (len: int) (value: int) =
     let mutable len = len
     let mutable value = value
     try
-        let mutable arr: int array = [||]
+        let mutable arr: int array = Array.empty<int>
         let mutable i: int = 0
         while i < len do
             arr <- Array.append arr [|value|]
@@ -67,7 +68,7 @@ let rec count_recursive (array: int array) (target: int) =
         let mutable total: int = 0
         let mutable i: int = 0
         while i < (Seq.length (array)) do
-            total <- total + (count_recursive (array) (target - (_idx array (i))))
+            total <- total + (count_recursive (array) (target - (_idx array (int i))))
             i <- i + 1
         __ret <- total
         raise Return
@@ -96,15 +97,15 @@ let rec count_dp (array: int array) (target: int) (dp: int array) =
         if target = 0 then
             __ret <- 1
             raise Return
-        if (_idx dp (target)) > (0 - 1) then
-            __ret <- _idx dp (target)
+        if (_idx dp (int target)) > (0 - 1) then
+            __ret <- _idx dp (int target)
             raise Return
         let mutable total: int = 0
         let mutable i: int = 0
         while i < (Seq.length (array)) do
-            total <- total + (count_dp (array) (target - (_idx array (i))) (dp))
+            total <- total + (count_dp (array) (target - (_idx array (int i))) (dp))
             i <- i + 1
-        dp.[target] <- total
+        dp.[int target] <- total
         __ret <- total
         raise Return
         __ret
@@ -128,16 +129,16 @@ let rec combination_sum_iv_bottom_up (n: int) (array: int array) (target: int) =
     let mutable target = target
     try
         let mutable dp: int array = make_list (target + 1) (0)
-        dp.[0] <- 1
+        dp.[int 0] <- 1
         let mutable i: int = 1
         while i <= target do
             let mutable j: int = 0
             while j < n do
-                if (i - (_idx array (j))) >= 0 then
-                    dp.[i] <- (_idx dp (i)) + (_idx dp (i - (_idx array (j))))
+                if (i - (_idx array (int j))) >= 0 then
+                    dp.[int i] <- (_idx dp (int i)) + (_idx dp (int (i - (_idx array (int j)))))
                 j <- j + 1
             i <- i + 1
-        __ret <- _idx dp (target)
+        __ret <- _idx dp (int target)
         raise Return
         __ret
     with
