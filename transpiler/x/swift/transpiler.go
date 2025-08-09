@@ -1161,6 +1161,7 @@ type IndexExpr struct {
 	Force     bool
 	KeyString bool
 	KeyAny    bool
+	Map       bool
 }
 
 // SliceExpr represents a[start:end] slicing for lists or strings.
@@ -1187,7 +1188,7 @@ func (ie *IndexExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "])")
 		return
 	}
-	if !ie.Force && !ie.KeyString && !ie.KeyAny {
+	if !ie.Force && !ie.KeyString && !ie.KeyAny && !ie.Map {
 		fmt.Fprint(w, "_idx(")
 		if be, ok := ie.Base.(*IndexExpr); ok {
 			be.emit(w)
@@ -2996,7 +2997,7 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 				}
 				cur = mt.Value
 				force := !isLast
-				lhs = &IndexExpr{Base: lhs, Index: ix, Force: force, KeyString: keyStr, KeyAny: keyAny}
+				lhs = &IndexExpr{Base: lhs, Index: ix, Force: force, KeyString: keyStr, KeyAny: keyAny, Map: true}
 			} else if lt, ok := cur.(types.ListType); ok {
 				if env != nil {
 					if ixT := types.TypeOfExpr(idx.Start, env); types.IsAnyType(ixT) {
@@ -4445,7 +4446,9 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 						}
 					}
 				}
+				mapIndex := false
 				if mt, ok := origBaseType.(types.MapType); ok {
+					mapIndex = true
 					if types.IsStringType(mt.Key) {
 						idx = &CastExpr{Expr: idx, Type: "String"}
 						keyStr = true
@@ -4460,8 +4463,8 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 					}
 					_ = lt // silence unused if lt not used
 				}
-				expr = &IndexExpr{Base: expr, Index: idx, AsString: isStr, Force: force, KeyString: keyStr, KeyAny: keyAny}
-				if !force && !keyStr && !keyAny && !isStr {
+				expr = &IndexExpr{Base: expr, Index: idx, AsString: isStr, Force: force, KeyString: keyStr, KeyAny: keyAny, Map: mapIndex}
+				if !force && !keyStr && !keyAny && !isStr && !mapIndex {
 					usesIndex = true
 				}
 			}
