@@ -59,7 +59,7 @@ List<int> sort_list(List<int> nums) {
 
 List<int> largest_divisible_subset(List<int> items) {
   if (items.length == 0) {
-    return ([] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
+    return ([] as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
   }
   List<int> nums = sort_list(items);
   int n = nums.length;
@@ -94,7 +94,7 @@ List<int> largest_divisible_subset(List<int> items) {
     i = i + 1;
   }
   if (last_index == 0 - 1) {
-    return ([] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
+    return ([] as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
   }
   List<int> result = [nums[last_index]];
   while (prev[last_index] != last_index) {

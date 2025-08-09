@@ -82,7 +82,7 @@ int min_distance_up_bottom(String word1, String word2) {
     for (int _2 = 0; _2 < len2; _2++) {
     row = [...row, 0 - 1];
   }
-    cache = ([...cache, row] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    cache = ([...cache, row] as List<dynamic>).map((e) => ((e as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
   }
   return helper(word1, word2, cache, 0, 0, len1, len2);
 }

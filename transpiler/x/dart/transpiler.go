@@ -298,7 +298,7 @@ func emitListConversion(w io.Writer, expr Expr, target string) error {
 				return err
 			}
 		}
-               if _, err := io.WriteString(w, " as List<dynamic>).map((e) => ("); err != nil {
+		if _, err := io.WriteString(w, " as List<dynamic>).map((e) => ("); err != nil {
 			return err
 		}
 		if err := emitListConversion(w, &Name{Name: "e"}, elem); err != nil {
@@ -321,7 +321,7 @@ func emitListConversion(w io.Writer, expr Expr, target string) error {
 				return err
 			}
 		}
-               if _, err := io.WriteString(w, " as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList()"); err != nil {
+		if _, err := io.WriteString(w, " as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList()"); err != nil {
 			return err
 		}
 		return nil
@@ -2189,20 +2189,12 @@ func (i *IndexExpr) emit(w io.Writer) error {
 		}
 	}
 	if t == "String" {
+		useSubstrClamp = true
+		if _, err := io.WriteString(w, "_substr("); err != nil {
+			return err
+		}
 		if err := i.Target.emit(w); err != nil {
 			return err
-		}
-		if _, err := io.WriteString(w, ".substring("); err != nil {
-			return err
-		}
-		if i.Index != nil {
-			if err := i.Index.emit(w); err != nil {
-				return err
-			}
-		} else {
-			if _, err := io.WriteString(w, "0"); err != nil {
-				return err
-			}
 		}
 		if _, err := io.WriteString(w, ", "); err != nil {
 			return err
@@ -2211,10 +2203,19 @@ func (i *IndexExpr) emit(w io.Writer) error {
 			if err := i.Index.emit(w); err != nil {
 				return err
 			}
+			if _, err := io.WriteString(w, ", "); err != nil {
+				return err
+			}
+			if err := i.Index.emit(w); err != nil {
+				return err
+			}
 			if _, err := io.WriteString(w, " + 1"); err != nil {
 				return err
 			}
 		} else {
+			if _, err := io.WriteString(w, "0, "); err != nil {
+				return err
+			}
 			if err := i.Target.emit(w); err != nil {
 				return err
 			}

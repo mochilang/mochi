@@ -53,7 +53,7 @@ List<List<bool>> make_bool_matrix(int rows, int cols) {
   List<List<bool>> matrix = <List<bool>>[];
   int i = 0;
   while (i < rows) {
-    matrix = ([...matrix, make_bool_list(cols)] as List).map((e) => (List<bool>.from(e) as List<bool>)).toList();
+    matrix = ([...matrix, make_bool_list(cols)] as List<dynamic>).map((e) => (List<bool>.from(e) as List<bool>)).toList();
     i = i + 1;
   }
   return matrix;

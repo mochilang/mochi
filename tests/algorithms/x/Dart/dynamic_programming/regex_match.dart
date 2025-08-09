@@ -75,7 +75,7 @@ bool dp_match(String text, String pattern) {
     row = [...row, false];
     j = j + 1;
   }
-    dp = ([...dp, row] as List).map((e) => (List<bool>.from(e) as List<bool>)).toList();
+    dp = ([...dp, row] as List<dynamic>).map((e) => (List<bool>.from(e) as List<bool>)).toList();
     i = i + 1;
   }
   while (dp[0]!.length <= 0) { dp[0]!.add(false); } dp[0]![0] = true;

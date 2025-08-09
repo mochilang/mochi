@@ -58,7 +58,7 @@ int find_min(List<int> numbers) {
     row = [...row, false];
     j = j + 1;
   }
-    dp = ([...dp, row] as List).map((e) => (List<bool>.from(e) as List<bool>)).toList();
+    dp = ([...dp, row] as List<dynamic>).map((e) => (List<bool>.from(e) as List<bool>)).toList();
     i = i + 1;
   }
   i = 0;

@@ -62,7 +62,7 @@ Graph new_graph(int n) {
   }
     j = j + 1;
   }
-    dp = ([...dp, row] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    dp = ([...dp, row] as List<dynamic>).map((e) => ((e as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
     i = i + 1;
   }
   return Graph(n: n, dp: dp);
