@@ -894,10 +894,15 @@ func zigTypeFromExpr(e Expr) string {
 	case *BoolLit:
 		return "bool"
 	case *NullLit:
-		if useValue {
-			return "Value"
-		}
-		return "[]const u8"
+		// Promote `null` to the dynamic `Value` type so it can
+		// participate in heterogeneous lists and variables. This
+		// allows programs that mix integers with `null` (for
+		// example, returning `[floor, ceiling]` where either value
+		// may be absent) to transpile correctly. Pointer `null`
+		// values are represented as `VarRef{Name:"null"}` and are
+		// unaffected by this promotion.
+		useValue = true
+		return "Value"
 	case *FloatLit:
 		return "f64"
 	case *IntLit:
@@ -1147,9 +1152,13 @@ func (m *MapLit) emit(w io.Writer) {
 							if strings.HasPrefix(f.Type, "[]") {
 								if ll, ok := e.Value.(*ListLit); ok {
 									ll.ElemType = strings.TrimPrefix(f.Type, "[]")
-									io.WriteString(w, "@constCast((&(")
-									ll.emit(w)
-									io.WriteString(w, "))[0..])")
+									if len(ll.Elems) == 0 {
+										ll.emit(w)
+									} else {
+										io.WriteString(w, "@constCast(&(")
+										ll.emit(w)
+										io.WriteString(w, "))[0..]")
+									}
 									goto emitted
 								}
 							}
@@ -1856,9 +1865,13 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 			fmt.Fprintf(w, "&[_]%s{}", strings.TrimPrefix(targetType, "[]"))
 		} else {
 			if ll, ok := v.Value.(*ListLit); ok && ll.ElemType != "" && strings.HasPrefix(targetType, "[]") {
-				io.WriteString(w, "@constCast((&(")
-				ll.emit(w)
-				io.WriteString(w, "))[0..])")
+				if len(ll.Elems) == 0 {
+					ll.emit(w)
+				} else {
+					io.WriteString(w, "@constCast(&(")
+					ll.emit(w)
+					io.WriteString(w, "))[0..]")
+				}
 			} else {
 				v.Value.emit(w)
 			}
@@ -1893,17 +1906,35 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 			targetType = vd.Type
 		}
 	}
-	if _, ok := a.Value.(*NullLit); ok && valueAccess(targetType) == ".List" {
+	if targetType == "Value" {
+		valType := zigTypeFromExpr(a.Value)
+		switch {
+		case strings.HasPrefix(valType, "[]"):
+			fmt.Fprintf(w, "Value{.List = ")
+			a.Value.emit(w)
+			io.WriteString(w, "}")
+		case valType != "Value":
+			fmt.Fprintf(w, "Value{.%s = ", valueTag(valType))
+			a.Value.emit(w)
+			io.WriteString(w, "}")
+		default:
+			a.Value.emit(w)
+		}
+	} else if _, ok := a.Value.(*NullLit); ok && valueAccess(targetType) == ".List" {
 		fmt.Fprintf(w, "&[_]%s{}", strings.TrimPrefix(targetType, "[]"))
 	} else {
 		if ll, ok := a.Value.(*ListLit); ok && ll.ElemType != "" && strings.HasPrefix(targetType, "[]") {
-			io.WriteString(w, "@constCast((&(")
-			ll.emit(w)
-			io.WriteString(w, "))[0..])")
+			if len(ll.Elems) == 0 {
+				ll.emit(w)
+			} else {
+				io.WriteString(w, "@constCast(&(")
+				ll.emit(w)
+				io.WriteString(w, "))[0..]")
+			}
 		} else {
 			a.Value.emit(w)
 		}
-		if zigTypeFromExpr(a.Value) == "Value" {
+		if zigTypeFromExpr(a.Value) == "Value" && targetType != "Value" {
 			if suf := valueAccess(targetType); suf != "" {
 				io.WriteString(w, suf)
 			}
@@ -2462,7 +2493,10 @@ func (l *ListLit) emit(w io.Writer) {
 			et = et[len("const "):]
 		}
 		if len(l.Elems) == 0 {
-			fmt.Fprintf(w, "[0]%s{}", et)
+			// Use slice syntax for empty lists to avoid array
+			// literal coercion errors (e.g. returning `[]i64`).
+			// `&[_]T{}` is a zero-length slice of `T`.
+			fmt.Fprintf(w, "&[_]%s{}", et)
 			return
 		}
 		fmt.Fprintf(w, "[%d]%s{", len(l.Elems), et)
@@ -2480,9 +2514,13 @@ func (l *ListLit) emit(w io.Writer) {
 					io.WriteString(w, "Value{.Null = {}}")
 				} else {
 					t := zigTypeFromExpr(e)
-					fmt.Fprintf(w, "Value{.%s = ", valueTag(t))
-					e.emit(w)
-					io.WriteString(w, "}")
+					if t == "Value" {
+						e.emit(w)
+					} else {
+						fmt.Fprintf(w, "Value{.%s = ", valueTag(t))
+						e.emit(w)
+						io.WriteString(w, "}")
+					}
 				}
 			} else {
 				e.emit(w)
@@ -2629,9 +2667,11 @@ func (b *BoolLit) emit(w io.Writer) {
 
 func (n *NullLit) emit(w io.Writer) {
 	if useValue {
-		io.WriteString(w, "(Value{.Null = {}})")
+		io.WriteString(w, "Value{.Null = {}}")
 	} else {
-		io.WriteString(w, "\"\"")
+		// Fallback to Zig's `null` when dynamic Value support is not
+		// enabled.
+		io.WriteString(w, "null")
 	}
 }
 
@@ -2784,7 +2824,17 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 		if _, ok := r.Value.(*NullLit); ok && valueAccess(currentReturnType) == ".List" {
 			fmt.Fprintf(w, "&[_]%s{}", strings.TrimPrefix(currentReturnType, "[]"))
 		} else {
-			r.Value.emit(w)
+			if ll, ok := r.Value.(*ListLit); ok && ll.ElemType != "" && strings.HasPrefix(currentReturnType, "[]") {
+				if len(ll.Elems) == 0 {
+					ll.emit(w)
+				} else {
+					io.WriteString(w, "@constCast(&(")
+					ll.emit(w)
+					io.WriteString(w, "))[0..]")
+				}
+			} else {
+				r.Value.emit(w)
+			}
 			if zigTypeFromExpr(r.Value) == "Value" {
 				io.WriteString(w, valueAccess(currentReturnType))
 			}
@@ -4700,6 +4750,14 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 	used := map[string]bool{}
 	for _, st := range body {
 		collectVarsStmt(st, used)
+		// If any return statement yields a Value list, promote the
+		// function's return type accordingly.
+		if rs, ok := st.(*ReturnStmt); ok {
+			if zigTypeFromExpr(rs.Value) == "[]Value" {
+				ret = "[]Value"
+				funcReturns[name] = ret
+			}
+		}
 	}
 	if strings.HasPrefix(ret, "std.StringHashMap(") {
 		for _, st := range body {
