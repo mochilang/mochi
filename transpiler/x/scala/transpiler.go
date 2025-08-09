@@ -1420,7 +1420,7 @@ func (c *CastExpr) emit(w io.Writer) {
 			fmt.Fprint(w, ")")
 		}
 		if typ == "Any" || typ == "" {
-			fmt.Fprint(w, ".toString.toDouble.toInt")
+			fmt.Fprint(w, ".toString.head.toInt")
 		} else if typ != "Int" && typ != "BigInt" && typ != "String" {
 			fmt.Fprint(w, ".toInt")
 		}
@@ -1452,9 +1452,8 @@ func (c *CastExpr) emit(w io.Writer) {
 				fmt.Fprint(w, ")")
 			}
 			if typ == "Any" || typ == "" {
-				// Fallback for unknown types: convert to string, then to Double before Int.
-				// This avoids runtime errors when the value is a floating point like "2.0".
-				fmt.Fprint(w, ".toString.toDouble.toInt")
+				// Fallback for unknown types: convert to string and take first character's code.
+				fmt.Fprint(w, ".toString.head.toInt")
 			} else if typ != "Int" && typ != "BigInt" && typ != "String" {
 				fmt.Fprint(w, ".toInt")
 			}
@@ -2045,7 +2044,7 @@ func Emit(p *Program) []byte {
 	}
 	if needsStr {
 		buf.WriteString("  private def _str(x: Any): String = x match {\n")
-		buf.WriteString("    case d: Double => if (d.isWhole()) d.toLong.toString else d.toString\n")
+		buf.WriteString("    case d: Double => if (d.isWhole) d.toLong.toString else d.toString\n")
 		buf.WriteString("    case other => String.valueOf(other)\n")
 		buf.WriteString("  }\n\n")
 	}

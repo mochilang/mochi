@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
-Completed programs: 730/1077
-Last updated: 2025-08-09 15:58 +0700
+Completed programs: 779/1077
+Last updated: 2025-08-09 16:31 +0700
 
 Checklist:
 
@@ -800,56 +800,56 @@ Checklist:
 | 791 | physics/shear_stress | ✓ | 2µs | 8.7 MB |
 | 792 | physics/speed_of_sound | ✓ | 3µs | 8.7 MB |
 | 793 | physics/speeds_of_gas_molecules | ✓ | 5µs | 8.7 MB |
-| 794 | physics/terminal_velocity | ✓ | 3µs | 8.7 MB |
-| 795 | project_euler/problem_001/sol1 |   |  |  |
-| 796 | project_euler/problem_001/sol2 |   |  |  |
-| 797 | project_euler/problem_001/sol3 |   |  |  |
-| 798 | project_euler/problem_001/sol4 |   |  |  |
-| 799 | project_euler/problem_001/sol5 |   |  |  |
-| 800 | project_euler/problem_001/sol6 |   |  |  |
-| 801 | project_euler/problem_001/sol7 |   |  |  |
-| 802 | project_euler/problem_002/sol1 |   |  |  |
-| 803 | project_euler/problem_002/sol2 |   |  |  |
-| 804 | project_euler/problem_002/sol3 |   |  |  |
-| 805 | project_euler/problem_002/sol4 |   |  |  |
-| 806 | project_euler/problem_002/sol5 |   |  |  |
-| 807 | project_euler/problem_003/sol1 |   |  |  |
-| 808 | project_euler/problem_003/sol2 |   |  |  |
-| 809 | project_euler/problem_003/sol3 |   |  |  |
-| 810 | project_euler/problem_004/sol1 |   |  |  |
-| 811 | project_euler/problem_004/sol2 |   |  |  |
-| 812 | project_euler/problem_005/sol1 |   |  |  |
-| 813 | project_euler/problem_005/sol2 |   |  |  |
-| 814 | project_euler/problem_006/sol1 |   |  |  |
-| 815 | project_euler/problem_006/sol2 |   |  |  |
-| 816 | project_euler/problem_006/sol3 |   |  |  |
-| 817 | project_euler/problem_006/sol4 |   |  |  |
-| 818 | project_euler/problem_007/sol1 |   |  |  |
-| 819 | project_euler/problem_007/sol2 |   |  |  |
-| 820 | project_euler/problem_007/sol3 |   |  |  |
-| 821 | project_euler/problem_008/sol1 |   |  |  |
-| 822 | project_euler/problem_008/sol2 |   |  |  |
-| 823 | project_euler/problem_008/sol3 |   |  |  |
-| 824 | project_euler/problem_009/sol1 |   |  |  |
-| 825 | project_euler/problem_009/sol2 |   |  |  |
-| 826 | project_euler/problem_009/sol3 |   |  |  |
-| 827 | project_euler/problem_010/sol1 |   |  |  |
-| 828 | project_euler/problem_010/sol2 |   |  |  |
-| 829 | project_euler/problem_010/sol3 |   |  |  |
-| 830 | project_euler/problem_011/sol1 |   |  |  |
-| 831 | project_euler/problem_011/sol2 |   |  |  |
-| 832 | project_euler/problem_012/sol1 |   |  |  |
-| 833 | project_euler/problem_012/sol2 |   |  |  |
-| 834 | project_euler/problem_013/sol1 |   |  |  |
-| 835 | project_euler/problem_014/sol1 |   |  |  |
-| 836 | project_euler/problem_014/sol2 |   |  |  |
-| 837 | project_euler/problem_015/sol1 |   |  |  |
-| 838 | project_euler/problem_016/sol1 |   |  |  |
-| 839 | project_euler/problem_016/sol2 |   |  |  |
-| 840 | project_euler/problem_017/sol1 |   |  |  |
-| 841 | project_euler/problem_018/solution |   |  |  |
-| 842 | project_euler/problem_019/sol1 |   |  |  |
-| 843 | project_euler/problem_020/sol1 |   |  |  |
+| 794 | physics/terminal_velocity | ✓ | 2µs | 3.4 MB |
+| 795 | project_euler/problem_001/sol1 | ✓ | 4µs | 3.5 MB |
+| 796 | project_euler/problem_001/sol2 | ✓ | 1µs | 3.4 MB |
+| 797 | project_euler/problem_001/sol3 | ✓ | 5µs | 3.4 MB |
+| 798 | project_euler/problem_001/sol4 | ✓ | 40µs | 3.5 MB |
+| 799 | project_euler/problem_001/sol5 | ✓ | 3µs | 3.4 MB |
+| 800 | project_euler/problem_001/sol6 | ✓ | 5µs | 3.5 MB |
+| 801 | project_euler/problem_001/sol7 | ✓ | 4µs | 3.5 MB |
+| 802 | project_euler/problem_002/sol1 | ✓ | 2µs | 3.4 MB |
+| 803 | project_euler/problem_002/sol2 | ✓ | 1µs | 3.4 MB |
+| 804 | project_euler/problem_002/sol3 | ✓ | 2µs | 3.4 MB |
+| 805 | project_euler/problem_002/sol4 | ✓ | 2µs | 3.4 MB |
+| 806 | project_euler/problem_002/sol5 | ✓ | 2µs | 3.4 MB |
+| 807 | project_euler/problem_003/sol1 | ✓ | 67µs | 3.5 MB |
+| 808 | project_euler/problem_003/sol2 | ✓ | 6µs | 3.5 MB |
+| 809 | project_euler/problem_003/sol3 | ✓ | 8µs | 3.5 MB |
+| 810 | project_euler/problem_004/sol1 | ✓ | 75µs | 3.5 MB |
+| 811 | project_euler/problem_004/sol2 | ✓ | 246µs | 3.5 MB |
+| 812 | project_euler/problem_005/sol1 | ✓ | 2µs | 3.4 MB |
+| 813 | project_euler/problem_005/sol2 | ✓ | 1µs | 3.4 MB |
+| 814 | project_euler/problem_006/sol1 | ✓ | 2µs | 3.4 MB |
+| 815 | project_euler/problem_006/sol2 | ✓ | 2µs | 3.4 MB |
+| 816 | project_euler/problem_006/sol3 | ✓ | 2µs | 3.4 MB |
+| 817 | project_euler/problem_006/sol4 | ✓ | 1µs | 3.4 MB |
+| 818 | project_euler/problem_007/sol1 | ✓ | 299µs | 3.5 MB |
+| 819 | project_euler/problem_007/sol2 | ✓ | 1µs | 3.5 MB |
+| 820 | project_euler/problem_007/sol3 | ✓ | 128µs | 3.5 MB |
+| 821 | project_euler/problem_008/sol1 | ✓ | 22µs | 3.5 MB |
+| 822 | project_euler/problem_008/sol2 | ✓ | 30µs | 3.5 MB |
+| 823 | project_euler/problem_008/sol3 | ✓ | 8µs | 3.4 MB |
+| 824 | project_euler/problem_009/sol1 | ✓ | 58µs | 3.5 MB |
+| 825 | project_euler/problem_009/sol2 | ✓ | 4µs | 3.5 MB |
+| 826 | project_euler/problem_009/sol3 | ✓ | 62µs | 3.5 MB |
+| 827 | project_euler/problem_010/sol1 | ✓ | 1µs | 3.4 MB |
+| 828 | project_euler/problem_010/sol2 | ✓ | 1.296ms | 3.5 MB |
+| 829 | project_euler/problem_010/sol3 | ✓ | 578µs | 3.5 MB |
+| 830 | project_euler/problem_011/sol1 | ✓ | 29µs | 3.5 MB |
+| 831 | project_euler/problem_011/sol2 | ✓ | 24µs | 3.5 MB |
+| 832 | project_euler/problem_012/sol1 | ✓ | 256µs | 3.5 MB |
+| 833 | project_euler/problem_012/sol2 | ✓ | 315µs | 3.5 MB |
+| 834 | project_euler/problem_013/sol1 | ✓ | 19µs | 3.4 MB |
+| 835 | project_euler/problem_014/sol1 | ✓ | 97µs | 3.5 MB |
+| 836 | project_euler/problem_014/sol2 | ✓ | 13µs | 3.5 MB |
+| 837 | project_euler/problem_015/sol1 | ✓ | 4µs | 3.4 MB |
+| 838 | project_euler/problem_016/sol1 | ✓ | 7µs | 3.5 MB |
+| 839 | project_euler/problem_016/sol2 | ✓ | 89µs | 3.5 MB |
+| 840 | project_euler/problem_017/sol1 | ✓ | 18µs | 3.5 MB |
+| 841 | project_euler/problem_018/solution | ✓ | 14µs | 3.4 MB |
+| 842 | project_euler/problem_019/sol1 | ✓ | 27µs | 3.4 MB |
+| 843 | project_euler/problem_020/sol1 | ✓ | 4µs | 3.4 MB |
 | 844 | project_euler/problem_020/sol2 |   |  |  |
 | 845 | project_euler/problem_020/sol3 |   |  |  |
 | 846 | project_euler/problem_020/sol4 |   |  |  |
