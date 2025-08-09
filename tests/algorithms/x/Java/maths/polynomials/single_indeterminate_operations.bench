@@ -1,4 +1,5 @@
-Exception in thread "main" java.lang.RuntimeException: add failed
-	at Main.test_polynomial(Main.java:184)
-	at Main.main(Main.java:208)
-	at Main.main(Main.java:217)
+{
+  "duration_us": 45930,
+  "memory_bytes": 118000,
+  "name": "main"
+}
