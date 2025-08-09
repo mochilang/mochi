@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 341/1077
-Last updated: 2025-08-09 10:14 +0700
+Completed programs: 342/1077
+Last updated: 2025-08-09 10:41 +0700
 
 Checklist:
 
@@ -372,7 +372,7 @@ Checklist:
 | 363 | electronics/ohms_law | ✓ | 282.0µs | 2.64KB |
 | 364 | electronics/real_and_reactive_power | ✓ | 213.0µs | 4.91KB |
 | 365 | electronics/resistor_color_code | ✓ | 1.0µs | 208B |
-| 366 | electronics/resistor_equivalence |   |  |  |
+| 366 | electronics/resistor_equivalence | ✓ | 160.0µs | 1.62KB |
 | 367 | electronics/resonant_frequency |   |  |  |
 | 368 | electronics/wheatstone_bridge |   |  |  |
 | 369 | file_transfer/receive_file |   |  |  |
