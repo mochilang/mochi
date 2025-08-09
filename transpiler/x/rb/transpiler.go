@@ -27,9 +27,6 @@ const helperNow = `
 $now_seed = 0
 $now_seeded = false
 s = ENV['MOCHI_NOW_SEED']
-if (!s || s == '') && ENV['MOCHI_BENCHMARK']
-  s = '1'
-end
 if s && s != ''
   begin
     $now_seed = Integer(s)
@@ -1574,7 +1571,7 @@ func (b *BenchStmt) emit(e *emitter) {
 	io.WriteString(e.w, "end_mem = _mem()")
 	e.nl()
 	e.writeIndent()
-	io.WriteString(e.w, "result = {\"duration_us\" => ((end_time - start) / 1000), \"memory_bytes\" => (end_mem - start_mem), \"name\" => \"")
+	io.WriteString(e.w, "result = {\"duration_us\" => ((end_time - start) / 1000.0).round, \"memory_bytes\" => (end_mem - start_mem), \"name\" => \"")
 	io.WriteString(e.w, b.Name)
 	io.WriteString(e.w, "\"}")
 	e.nl()
@@ -2429,9 +2426,9 @@ func (m *MethodCallExpr) emit(e *emitter) {
 func (a *AppendExpr) emit(e *emitter) {
 	io.WriteString(e.w, "(")
 	a.List.emit(e)
-	io.WriteString(e.w, " << (")
+	io.WriteString(e.w, " + [")
 	a.Elem.emit(e)
-	io.WriteString(e.w, "))")
+	io.WriteString(e.w, "])")
 }
 
 func (s *SliceExpr) emit(e *emitter) {

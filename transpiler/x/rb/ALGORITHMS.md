@@ -1,62 +1,62 @@
 # Ruby Algorithms Transpiler Output
 
 Completed programs: 1045/1077
-Last updated: 2025-08-08 17:15 +0700
+Last updated: 2025-08-09 10:22 +0700
 
 Checklist:
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 1ms | 11.9 KB |
-| 2 | backtracking/all_permutations | ✓ | 1ms | 59.0 KB |
-| 3 | backtracking/all_subsequences | ✓ | 1ms | 16.8 KB |
-| 4 | backtracking/coloring | ✓ | 1ms | 11.0 KB |
-| 5 | backtracking/combination_sum | ✓ | 1ms | 12.7 KB |
-| 6 | backtracking/crossword_puzzle_solver | ✓ | 1ms | 14.2 KB |
-| 7 | backtracking/hamiltonian_cycle | ✓ | 1ms | 2.1 KB |
-| 8 | backtracking/knight_tour | ✓ | 1ms | 9.7 KB |
-| 9 | backtracking/match_word_pattern | ✓ | 1ms | 66.5 KB |
-| 10 | backtracking/minimax | ✓ | 1ms | 9.1 KB |
-| 11 | backtracking/n_queens | ✓ | 1ms | 14.0 KB |
-| 12 | backtracking/n_queens_math | ✓ | 1ms | 18.2 KB |
-| 13 | backtracking/power_sum | ✓ | 1ms | 9.1 KB |
-| 14 | backtracking/rat_in_maze | ✓ | 1ms | 14.1 KB |
-| 15 | backtracking/sudoku | ✓ | 1ms | 81.6 KB |
-| 16 | backtracking/sum_of_subsets | ✓ | 1ms | 12.6 KB |
-| 17 | backtracking/word_break | ✓ | 1ms | 13.1 KB |
-| 18 | backtracking/word_ladder | ✓ | 1ms | 76.3 KB |
-| 19 | backtracking/word_search | ✓ | 1ms | 19.2 KB |
-| 20 | bit_manipulation/binary_and_operator | ✓ | 1ms | 23.8 KB |
-| 21 | bit_manipulation/binary_coded_decimal | ✓ | 1ms | 13.5 KB |
-| 22 | bit_manipulation/binary_count_setbits | ✓ | 1ms | 8.8 KB |
-| 23 | bit_manipulation/binary_count_trailing_zeros | ✓ | 1ms | 8.9 KB |
-| 24 | bit_manipulation/binary_or_operator | ✓ | 1ms | 12.8 KB |
-| 25 | bit_manipulation/binary_shifts | ✓ | 1ms | 12.5 KB |
-| 26 | bit_manipulation/binary_twos_complement | ✓ | 1ms | 12.9 KB |
-| 27 | bit_manipulation/binary_xor_operator | ✓ | 1ms | 22.8 KB |
-| 28 | bit_manipulation/bitwise_addition_recursive | ✓ | 1ms | 9.0 KB |
-| 29 | bit_manipulation/count_1s_brian_kernighan_method | ✓ | 1ms | 8.9 KB |
-| 30 | bit_manipulation/count_number_of_one_bits | ✓ | 1ms | 9.4 KB |
-| 31 | bit_manipulation/excess_3_code | ✓ | 1ms | 12.3 KB |
-| 32 | bit_manipulation/find_previous_power_of_two | ✓ | 1ms | 12.7 KB |
-| 33 | bit_manipulation/find_unique_number | ✓ | 1ms | 9.0 KB |
-| 34 | bit_manipulation/gray_code_sequence | ✓ | 1ms | 12.8 KB |
-| 35 | bit_manipulation/highest_set_bit | ✓ | 1ms | 8.8 KB |
-| 36 | bit_manipulation/index_of_rightmost_set_bit | ✓ | 1ms | 8.8 KB |
-| 37 | bit_manipulation/is_even | ✓ | 1ms | 8.5 KB |
-| 38 | bit_manipulation/is_power_of_two | ✓ | 1ms | 112 B |
-| 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 1ms | 8.7 KB |
-| 40 | bit_manipulation/missing_number | ✓ | 1ms | 9.0 KB |
-| 41 | bit_manipulation/numbers_different_signs | ✓ | 1ms | 8.6 KB |
-| 42 | bit_manipulation/power_of_4 | ✓ | 1ms | 8.5 KB |
-| 43 | bit_manipulation/reverse_bits | ✓ | 1ms | 27.9 KB |
-| 44 | bit_manipulation/single_bit_manipulation_operations | ✓ | 1ms | 9.2 KB |
-| 45 | bit_manipulation/swap_all_odd_and_even_bits | ✓ | 1ms | 33.4 KB |
-| 46 | blockchain/diophantine_equation | ✓ | 1ms | 13.4 KB |
-| 47 | boolean_algebra/and_gate | ✓ | 1ms | 9.2 KB |
-| 48 | boolean_algebra/imply_gate | ✓ | 1ms | 8.7 KB |
-| 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 1ms | 10.6 KB |
-| 50 | boolean_algebra/multiplexer | ✓ | 1ms | 8.7 KB |
+| 1 | backtracking/all_combinations | ✓ | 60µs | 13.2 KB |
+| 2 | backtracking/all_permutations | ✓ | 332µs | 59.8 KB |
+| 3 | backtracking/all_subsequences | ✓ | 70µs | 17.5 KB |
+| 4 | backtracking/coloring | ✓ | 104µs | 11.6 KB |
+| 5 | backtracking/combination_sum | ✓ | 78µs | 13.3 KB |
+| 6 | backtracking/crossword_puzzle_solver | ✓ | 74µs | 15.0 KB |
+| 7 | backtracking/hamiltonian_cycle | ✓ | 108µs | 2.8 KB |
+| 8 | backtracking/knight_tour | ✓ | 37µs | 10.4 KB |
+| 9 | backtracking/match_word_pattern | ✓ | 463µs | 67.3 KB |
+| 10 | backtracking/minimax | ✓ | 44µs | 9.7 KB |
+| 11 | backtracking/n_queens | ✓ | 157µs | 14.9 KB |
+| 12 | backtracking/n_queens_math | ✓ | 253µs | 19.1 KB |
+| 13 | backtracking/power_sum | ✓ | 82µs | 9.7 KB |
+| 14 | backtracking/rat_in_maze | ✓ | 79µs | 14.8 KB |
+| 15 | backtracking/sudoku | ✓ | 17.672ms | 82.5 KB |
+| 16 | backtracking/sum_of_subsets | ✓ | 78µs | 13.5 KB |
+| 17 | backtracking/word_break | ✓ | 92µs | 13.9 KB |
+| 18 | backtracking/word_ladder | ✓ | 6.16ms | 77.1 KB |
+| 19 | backtracking/word_search | ✓ | 154µs | 20.1 KB |
+| 20 | bit_manipulation/binary_and_operator | ✓ | 130µs | 24.5 KB |
+| 21 | bit_manipulation/binary_coded_decimal | ✓ | 69µs | 14.2 KB |
+| 22 | bit_manipulation/binary_count_setbits | ✓ | 78µs | 9.5 KB |
+| 23 | bit_manipulation/binary_count_trailing_zeros | ✓ | 47µs | 9.6 KB |
+| 24 | bit_manipulation/binary_or_operator | ✓ | 58µs | 13.5 KB |
+| 25 | bit_manipulation/binary_shifts | ✓ | 126µs | 13.1 KB |
+| 26 | bit_manipulation/binary_twos_complement | ✓ | 73µs | 13.7 KB |
+| 27 | bit_manipulation/binary_xor_operator | ✓ | 132µs | 23.4 KB |
+| 28 | bit_manipulation/bitwise_addition_recursive | ✓ | 71µs | 9.6 KB |
+| 29 | bit_manipulation/count_1s_brian_kernighan_method | ✓ | 43µs | 9.7 KB |
+| 30 | bit_manipulation/count_number_of_one_bits | ✓ | 82µs | 10.3 KB |
+| 31 | bit_manipulation/excess_3_code | ✓ | 54µs | 13.0 KB |
+| 32 | bit_manipulation/find_previous_power_of_two | ✓ | 71µs | 13.4 KB |
+| 33 | bit_manipulation/find_unique_number | ✓ | 51µs | 9.7 KB |
+| 34 | bit_manipulation/gray_code_sequence | ✓ | 65µs | 13.6 KB |
+| 35 | bit_manipulation/highest_set_bit | ✓ | 35µs | 9.5 KB |
+| 36 | bit_manipulation/index_of_rightmost_set_bit | ✓ | 45µs | 9.5 KB |
+| 37 | bit_manipulation/is_even | ✓ | 28µs | 9.5 KB |
+| 38 | bit_manipulation/is_power_of_two | ✓ | 16µs | 880 B |
+| 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 29µs | 9.3 KB |
+| 40 | bit_manipulation/missing_number | ✓ | 32µs | 9.3 KB |
+| 41 | bit_manipulation/numbers_different_signs | ✓ | 30µs | 9.5 KB |
+| 42 | bit_manipulation/power_of_4 | ✓ | 31µs | 9.5 KB |
+| 43 | bit_manipulation/reverse_bits | ✓ | 313µs | 28.6 KB |
+| 44 | bit_manipulation/single_bit_manipulation_operations | ✓ | 47µs | 10.1 KB |
+| 45 | bit_manipulation/swap_all_odd_and_even_bits | ✓ | 2.164ms | 34.2 KB |
+| 46 | blockchain/diophantine_equation | ✓ | 210µs | 14.4 KB |
+| 47 | boolean_algebra/and_gate | ✓ | 38µs | 9.9 KB |
+| 48 | boolean_algebra/imply_gate | ✓ | 29µs | 9.3 KB |
+| 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 57µs | 11.5 KB |
+| 50 | boolean_algebra/multiplexer | ✓ | 48µs | 9.3 KB |
 | 51 | boolean_algebra/nand_gate | ✓ | 1ms | 8.7 KB |
 | 52 | boolean_algebra/nimply_gate | ✓ | 1ms | 8.7 KB |
 | 53 | boolean_algebra/nor_gate | ✓ | 1ms | 20.4 KB |
