@@ -1,0 +1,5 @@
+Execution error at main/test-compute-geometric-mean (geometric_mean.clj:72).
+test4 failed
+
+Full report at:
+/tmp/clojure-16098474595485900796.edn

@@ -1,0 +1,5 @@
+Execution error at main/run-tests (fibonacci.clj:141).
+binet failed
+
+Full report at:
+/tmp/clojure-6370646629862520634.edn

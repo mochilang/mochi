@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-09 16:06 GMT+7
+Last updated: 2025-08-09 16:34 GMT+7
 
-## Algorithms Golden Test Checklist (419/1077)
+## Algorithms Golden Test Checklist (462/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 50.25ms | 19.66MB |
@@ -537,56 +537,56 @@ Last updated: 2025-08-09 16:06 GMT+7
 | 528 | maths/addition_without_arithmetic | ✓ | 68.33ms | 21.61MB |
 | 529 | maths/aliquot_sum | ✓ | 51.59ms | 19.34MB |
 | 530 | maths/allocation_number | ✓ | 77.683ms | 19.54MB |
-| 531 | maths/arc_length |   |  |  |
-| 532 | maths/area |   |  |  |
-| 533 | maths/area_under_curve |   |  |  |
-| 534 | maths/average_absolute_deviation |   |  |  |
-| 535 | maths/average_mean |   |  |  |
-| 536 | maths/average_median |   |  |  |
-| 537 | maths/average_mode |   |  |  |
-| 538 | maths/bailey_borwein_plouffe |   |  |  |
-| 539 | maths/base_neg2_conversion |   |  |  |
-| 540 | maths/basic_maths |   |  |  |
-| 541 | maths/binary_exponentiation |   |  |  |
-| 542 | maths/binary_multiplication |   |  |  |
-| 543 | maths/binomial_coefficient |   |  |  |
-| 544 | maths/binomial_distribution |   |  |  |
-| 545 | maths/ceil |   |  |  |
-| 546 | maths/chebyshev_distance |   |  |  |
-| 547 | maths/check_polygon |   |  |  |
-| 548 | maths/chinese_remainder_theorem |   |  |  |
-| 549 | maths/chudnovsky_algorithm |   |  |  |
-| 550 | maths/collatz_sequence |   |  |  |
-| 551 | maths/combinations |   |  |  |
-| 552 | maths/continued_fraction |   |  |  |
-| 553 | maths/decimal_isolate |   |  |  |
-| 554 | maths/decimal_to_fraction |   |  |  |
-| 555 | maths/dodecahedron |   |  |  |
-| 556 | maths/double_factorial |   |  |  |
-| 557 | maths/dual_number_automatic_differentiation |   |  |  |
-| 558 | maths/entropy |   |  |  |
-| 559 | maths/euclidean_distance |   |  |  |
-| 560 | maths/euler_method |   |  |  |
-| 561 | maths/euler_modified |   |  |  |
-| 562 | maths/eulers_totient |   |  |  |
-| 563 | maths/extended_euclidean_algorithm |   |  |  |
-| 564 | maths/factorial |   |  |  |
-| 565 | maths/factors |   |  |  |
-| 566 | maths/fast_inverse_sqrt |   |  |  |
-| 567 | maths/fermat_little_theorem |   |  |  |
-| 568 | maths/fibonacci |   |  |  |
-| 569 | maths/find_max |   |  |  |
-| 570 | maths/find_min |   |  |  |
-| 571 | maths/floor |   |  |  |
-| 572 | maths/gamma |   |  |  |
-| 573 | maths/gaussian |   |  |  |
-| 574 | maths/gcd_of_n_numbers |   |  |  |
-| 575 | maths/geometric_mean |   |  |  |
-| 576 | maths/germain_primes |   |  |  |
-| 577 | maths/greatest_common_divisor |   |  |  |
-| 578 | maths/hardy_ramanujanalgo |   |  |  |
-| 579 | maths/integer_square_root |   |  |  |
-| 580 | maths/interquartile_range |   |  |  |
+| 531 | maths/arc_length | ✓ | 53.78ms | 19.08MB |
+| 532 | maths/area | ✓ | 76.624ms | 31.22MB |
+| 533 | maths/area_under_curve | ✓ | 4.038809s | 20.35MB |
+| 534 | maths/average_absolute_deviation | ✓ | 77.008ms | 20.58MB |
+| 535 | maths/average_mean | ✓ | 84.828ms | 19.17MB |
+| 536 | maths/average_median | ✓ | 67.688ms | 20.02MB |
+| 537 | maths/average_mode | ✓ | 115.472ms | 26.13MB |
+| 538 | maths/bailey_borwein_plouffe | ✓ | 49.641436s | 22.64MB |
+| 539 | maths/base_neg2_conversion | error |  |  |
+| 540 | maths/basic_maths | ✓ | 103.563ms | 23.75MB |
+| 541 | maths/binary_exponentiation | ✓ | 62.063ms | 21.33MB |
+| 542 | maths/binary_multiplication | ✓ | 77.11ms | 20.02MB |
+| 543 | maths/binomial_coefficient | ✓ | 66.898ms | 19.76MB |
+| 544 | maths/binomial_distribution | ✓ | 55.011ms | 20.74MB |
+| 545 | maths/ceil | ✓ | 82.046ms | 21.47MB |
+| 546 | maths/chebyshev_distance | ✓ | 56.379ms | 19.92MB |
+| 547 | maths/check_polygon | error |  |  |
+| 548 | maths/chinese_remainder_theorem | ✓ | 59.396ms | 21.23MB |
+| 549 | maths/chudnovsky_algorithm | ✓ | 55.016ms | 22.80MB |
+| 550 | maths/collatz_sequence | ✓ | 89.9ms | 19.33MB |
+| 551 | maths/combinations | ✓ | 66.419ms | 19.54MB |
+| 552 | maths/continued_fraction | ✓ | 59.623ms | 20.23MB |
+| 553 | maths/decimal_isolate | ✓ | 77.909ms | 20.74MB |
+| 554 | maths/decimal_to_fraction | error |  |  |
+| 555 | maths/dodecahedron | error |  |  |
+| 556 | maths/double_factorial | ✓ | 62.323ms | 20.16MB |
+| 557 | maths/dual_number_automatic_differentiation | ✓ | 92.763ms | 27.05MB |
+| 558 | maths/entropy | ✓ |  |  |
+| 559 | maths/euclidean_distance | ✓ | 77.433ms | 21.96MB |
+| 560 | maths/euler_method | ✓ | 79.137ms | 20.97MB |
+| 561 | maths/euler_modified | ✓ | 69.286ms | 22.10MB |
+| 562 | maths/eulers_totient | ✓ | 56.374ms | 20.73MB |
+| 563 | maths/extended_euclidean_algorithm | ✓ | 67.179ms | 21.33MB |
+| 564 | maths/factorial | ✓ | 75.284ms | 19.81MB |
+| 565 | maths/factors | ✓ | 90.957ms | 20.04MB |
+| 566 | maths/fast_inverse_sqrt | error |  |  |
+| 567 | maths/fermat_little_theorem | ✓ | 57.274ms | 20.42MB |
+| 568 | maths/fibonacci | error |  |  |
+| 569 | maths/find_max | ✓ | 61.257ms | 23.00MB |
+| 570 | maths/find_min | ✓ | 69.344ms | 21.46MB |
+| 571 | maths/floor | ✓ | 57.465ms | 21.57MB |
+| 572 | maths/gamma | ✓ | 10.383546s | 22.97MB |
+| 573 | maths/gaussian | ✓ | 57.151ms | 22.70MB |
+| 574 | maths/gcd_of_n_numbers | ✓ | 62.554ms | 21.47MB |
+| 575 | maths/geometric_mean | error |  |  |
+| 576 | maths/germain_primes | ✓ | 65.705ms | 20.74MB |
+| 577 | maths/greatest_common_divisor | ✓ | 65.714ms | 19.57MB |
+| 578 | maths/hardy_ramanujanalgo | ✓ | 62.421ms | 21.85MB |
+| 579 | maths/integer_square_root | ✓ | 71.366ms | 21.72MB |
+| 580 | maths/interquartile_range | ✓ | 74.362ms | 22.56MB |
 | 581 | maths/is_int_palindrome |   |  |  |
 | 582 | maths/is_ip_v4_address_valid |   |  |  |
 | 583 | maths/is_square_free |   |  |  |
