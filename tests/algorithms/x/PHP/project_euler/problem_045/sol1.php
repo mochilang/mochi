@@ -1,20 +1,5 @@
 <?php
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -70,47 +55,75 @@ function _panic($msg) {
     fwrite(STDERR, strval($msg));
     exit(1);
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function solution() {
-  $targets = [1, 10, 100, 1000, 10000, 100000, 1000000];
-  $idx = 0;
-  $product = 1;
-  $count = 0;
-  $i = 1;
-  while ($idx < count($targets)) {
-  $s = _str($i);
-  $j = 0;
-  while ($j < strlen($s)) {
-  $count = _iadd($count, 1);
-  if ($count == $targets[$idx]) {
-  $product = _imul($product, ((ctype_digit($s[$j]) ? intval($s[$j]) : ord($s[$j]))));
-  $idx = _iadd($idx, 1);
-  if ($idx == count($targets)) {
-  break;
-};
+function to_float($x) {
+  return _imul($x, 1.0);
 }
-  $j = _iadd($j, 1);
-};
+function mochi_sqrt($x) {
+  if ($x <= 0.0) {
+  return 0.0;
+}
+  $guess = $x;
+  $i = 0;
+  while ($i < 10) {
+  $guess = ($guess + $x / $guess) / 2.0;
   $i = _iadd($i, 1);
 };
-  return $product;
+  return $guess;
+}
+function mochi_floor($x) {
+  $n = 0;
+  $y = $x;
+  while ($y >= 1.0) {
+  $y = $y - 1.0;
+  $n = _iadd($n, 1);
 };
-  function test_solution() {
-  if (solution() != 210) {
+  return $n;
+}
+function hexagonal_num($n) {
+  return _imul($n, (_isub(_imul(2, $n), 1)));
+}
+function is_pentagonal($n) {
+  $root = mochi_sqrt(1.0 + 24.0 * floatval($n));
+  $val = (1.0 + $root) / 6.0;
+  return $val == floatval(mochi_floor($val));
+}
+function solution($start) {
+  $idx = $start;
+  $num = hexagonal_num($idx);
+  while (!is_pentagonal($num)) {
+  $idx = _iadd($idx, 1);
+  $num = hexagonal_num($idx);
+};
+  return $num;
+}
+function test_hexagonal_num() {
+  if (hexagonal_num(143) != 40755) {
+  _panic('hexagonal_num(143) failed');
+}
+  if (hexagonal_num(21) != 861) {
+  _panic('hexagonal_num(21) failed');
+}
+  if (hexagonal_num(10) != 190) {
+  _panic('hexagonal_num(10) failed');
+}
+}
+function test_is_pentagonal() {
+  if (!is_pentagonal(330)) {
+  _panic('330 should be pentagonal');
+}
+  if (is_pentagonal(7683)) {
+  _panic('7683 should not be pentagonal');
+}
+  if (!is_pentagonal(2380)) {
+  _panic('2380 should be pentagonal');
+}
+}
+function test_solution() {
+  if (solution(144) != 1533776805) {
   _panic('solution failed');
 }
-};
-  function main() {
-  test_solution();
-  echo rtrim(_str(solution())), PHP_EOL;
-};
-  main();
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+test_hexagonal_num();
+test_is_pentagonal();
+test_solution();
+echo rtrim(_str(solution(144)) . ' = '), PHP_EOL;

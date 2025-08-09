@@ -31,6 +31,17 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
+function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
+    if (function_exists('bcdiv')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcdiv($sa, $sb, 0));
+    }
+    return intdiv($a, $b);
+}
 function _iadd($a, $b) {
     if (function_exists('bcadd')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
@@ -66,46 +77,53 @@ function _imod($a, $b) {
     }
     return $a % $b;
 }
-function _panic($msg) {
-    fwrite(STDERR, strval($msg));
-    exit(1);
-}
 $__start_mem = memory_get_usage();
 $__start = _now();
-  function solution() {
-  $targets = [1, 10, 100, 1000, 10000, 100000, 1000000];
-  $idx = 0;
-  $product = 1;
-  $count = 0;
-  $i = 1;
-  while ($idx < count($targets)) {
-  $s = _str($i);
-  $j = 0;
-  while ($j < strlen($s)) {
-  $count = _iadd($count, 1);
-  if ($count == $targets[$idx]) {
-  $product = _imul($product, ((ctype_digit($s[$j]) ? intval($s[$j]) : ord($s[$j]))));
-  $idx = _iadd($idx, 1);
-  if ($idx == count($targets)) {
-  break;
-};
+  function is_palindrome_str($s) {
+  $i = 0;
+  $j = _isub(strlen($s), 1);
+  while ($i < $j) {
+  if (substr($s, $i, _iadd($i, 1) - $i) != substr($s, $j, _iadd($j, 1) - $j)) {
+  return false;
 }
-  $j = _iadd($j, 1);
+  $i = _iadd($i, 1);
+  $j = _isub($j, 1);
 };
+  return true;
+};
+  function to_binary($n) {
+  if ($n == 0) {
+  return '0';
+}
+  $res = '';
+  $x = $n;
+  while ($x > 0) {
+  $res = _str(_imod($x, 2)) . $res;
+  $x = _intdiv($x, 2);
+};
+  return $res;
+};
+  function solution($n) {
+  $total = 0;
+  $i = 1;
+  while ($i < $n) {
+  $dec = _str($i);
+  $bin = to_binary($i);
+  if (is_palindrome_str($dec) && is_palindrome_str($bin)) {
+  $total = _iadd($total, $i);
+}
   $i = _iadd($i, 1);
 };
-  return $product;
+  return $total;
 };
-  function test_solution() {
-  if (solution() != 210) {
-  _panic('solution failed');
-}
-};
-  function main() {
-  test_solution();
-  echo rtrim(_str(solution())), PHP_EOL;
-};
-  main();
+  echo rtrim(json_encode(solution(1000000), 1344)), PHP_EOL;
+  echo rtrim(json_encode(solution(500000), 1344)), PHP_EOL;
+  echo rtrim(json_encode(solution(100000), 1344)), PHP_EOL;
+  echo rtrim(json_encode(solution(1000), 1344)), PHP_EOL;
+  echo rtrim(json_encode(solution(100), 1344)), PHP_EOL;
+  echo rtrim(json_encode(solution(10), 1344)), PHP_EOL;
+  echo rtrim(json_encode(solution(2), 1344)), PHP_EOL;
+  echo rtrim(json_encode(solution(1), 1344)), PHP_EOL;
 $__end = _now();
 $__end_mem = memory_get_peak_usage();
 $__duration = max(1, intdiv($__end - $__start, 1000));

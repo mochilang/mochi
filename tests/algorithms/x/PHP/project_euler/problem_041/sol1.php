@@ -31,6 +31,10 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
+function _append($arr, $x) {
+    $arr[] = $x;
+    return $arr;
+}
 function _iadd($a, $b) {
     if (function_exists('bcadd')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
@@ -66,46 +70,78 @@ function _imod($a, $b) {
     }
     return $a % $b;
 }
-function _panic($msg) {
-    fwrite(STDERR, strval($msg));
-    exit(1);
-}
 $__start_mem = memory_get_usage();
 $__start = _now();
-  function solution() {
-  $targets = [1, 10, 100, 1000, 10000, 100000, 1000000];
-  $idx = 0;
-  $product = 1;
-  $count = 0;
-  $i = 1;
-  while ($idx < count($targets)) {
-  $s = _str($i);
-  $j = 0;
-  while ($j < strlen($s)) {
-  $count = _iadd($count, 1);
-  if ($count == $targets[$idx]) {
-  $product = _imul($product, ((ctype_digit($s[$j]) ? intval($s[$j]) : ord($s[$j]))));
-  $idx = _iadd($idx, 1);
-  if ($idx == count($targets)) {
-  break;
+  function is_prime($number) {
+  if ((1 < $number) && ($number < 4)) {
+  return true;
+} else {
+  if (($number < 2) || (_imod($number, 2) == 0) || (_imod($number, 3) == 0)) {
+  return false;
 };
 }
-  $j = _iadd($j, 1);
+  $i = 5;
+  while (_imul($i, $i) <= $number) {
+  if ((_imod($number, $i) == 0) || (_imod($number, (_iadd($i, 2))) == 0)) {
+  return false;
+}
+  $i = _iadd($i, 6);
 };
+  return true;
+};
+  function remove_at($xs, $index) {
+  $res = [];
+  $i = 0;
+  while ($i < count($xs)) {
+  if ($i != $index) {
+  $res = _append($res, $xs[$i]);
+}
   $i = _iadd($i, 1);
 };
-  return $product;
+  return $res;
 };
-  function test_solution() {
-  if (solution() != 210) {
-  _panic('solution failed');
+  function collect_primes($nums, $current, $primes) {
+  if (count($nums) == 0) {
+  if (is_prime($current)) {
+  $primes = _append($primes, $current);
+};
+  return $primes;
 }
+  $i = 0;
+  $res = $primes;
+  while ($i < count($nums)) {
+  $digit = $nums[$i];
+  $remaining = remove_at($nums, $i);
+  $res = collect_primes($remaining, _iadd(_imul($current, 10), $digit), $res);
+  $i = _iadd($i, 1);
 };
-  function main() {
-  test_solution();
-  echo rtrim(_str(solution())), PHP_EOL;
+  return $res;
 };
-  main();
+  function max_list($nums) {
+  $m = 0;
+  $i = 0;
+  while ($i < count($nums)) {
+  if ($nums[$i] > $m) {
+  $m = $nums[$i];
+}
+  $i = _iadd($i, 1);
+};
+  return $m;
+};
+  function solution($n) {
+  $digits = [];
+  $i = 1;
+  while ($i <= $n) {
+  $digits = _append($digits, $i);
+  $i = _iadd($i, 1);
+};
+  $primes = collect_primes($digits, 0, []);
+  if (count($primes) == 0) {
+  return 0;
+}
+  return max_list($primes);
+};
+  echo rtrim('solution() = ' . _str(solution(7))), PHP_EOL;
 $__end = _now();
 $__end_mem = memory_get_peak_usage();
 $__duration = max(1, intdiv($__end - $__start, 1000));

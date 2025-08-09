@@ -31,6 +31,10 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
+function _append($arr, $x) {
+    $arr[] = $x;
+    return $arr;
+}
 function _iadd($a, $b) {
     if (function_exists('bcadd')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
@@ -66,46 +70,84 @@ function _imod($a, $b) {
     }
     return $a % $b;
 }
-function _panic($msg) {
-    fwrite(STDERR, strval($msg));
-    exit(1);
-}
 $__start_mem = memory_get_usage();
 $__start = _now();
-  function solution() {
-  $targets = [1, 10, 100, 1000, 10000, 100000, 1000000];
-  $idx = 0;
-  $product = 1;
-  $count = 0;
-  $i = 1;
-  while ($idx < count($targets)) {
-  $s = _str($i);
-  $j = 0;
-  while ($j < strlen($s)) {
-  $count = _iadd($count, 1);
-  if ($count == $targets[$idx]) {
-  $product = _imul($product, ((ctype_digit($s[$j]) ? intval($s[$j]) : ord($s[$j]))));
-  $idx = _iadd($idx, 1);
-  if ($idx == count($targets)) {
-  break;
+  function is_prime($number) {
+  if (1 < $number && $number < 4) {
+  return true;
+}
+  if ($number < 2 || _imod($number, 2) == 0 || _imod($number, 3) == 0) {
+  return false;
+}
+  $i = 5;
+  while (_imul($i, $i) <= $number) {
+  if (_imod($number, $i) == 0 || _imod($number, (_iadd($i, 2))) == 0) {
+  return false;
+}
+  $i = _iadd($i, 6);
 };
+  return true;
+};
+  function list_truncated_nums($n) {
+  $str_num = _str($n);
+  $list_nums = [$n];
+  $i = 1;
+  $length = strlen($str_num);
+  while ($i < $length) {
+  $right = intval(substr($str_num, $i, $length - $i));
+  $left = intval(substr($str_num, 0, _isub($length, $i)));
+  $list_nums = _append($list_nums, $right);
+  $list_nums = _append($list_nums, $left);
+  $i = _iadd($i, 1);
+};
+  return $list_nums;
+};
+  function validate($n) {
+  $s = _str($n);
+  $length = strlen($s);
+  if ($length > 3) {
+  $last3 = intval(substr($s, _isub($length, 3), $length - _isub($length, 3)));
+  $first3 = intval(substr($s, 0, 3));
+  if (!(is_prime($last3) && is_prime($first3))) {
+  return false;
+};
+}
+  return true;
+};
+  function compute_truncated_primes($count) {
+  $list_truncated_primes = [];
+  $num = 13;
+  while (count($list_truncated_primes) != $count) {
+  if (validate($num)) {
+  $list_nums = list_truncated_nums($num);
+  $all_prime = true;
+  $j = 0;
+  while ($j < count($list_nums)) {
+  if (!is_prime($list_nums[$j])) {
+  $all_prime = false;
+  break;
 }
   $j = _iadd($j, 1);
 };
+  if ($all_prime) {
+  $list_truncated_primes = _append($list_truncated_primes, $num);
+};
+}
+  $num = _iadd($num, 2);
+};
+  return $list_truncated_primes;
+};
+  function solution() {
+  $primes = compute_truncated_primes(11);
+  $total = 0;
+  $i = 0;
+  while ($i < count($primes)) {
+  $total = _iadd($total, $primes[$i]);
   $i = _iadd($i, 1);
 };
-  return $product;
+  return $total;
 };
-  function test_solution() {
-  if (solution() != 210) {
-  _panic('solution failed');
-}
-};
-  function main() {
-  test_solution();
-  echo rtrim(_str(solution())), PHP_EOL;
-};
-  main();
+  echo rtrim('sum(compute_truncated_primes(11)) = ' . _str(solution())), PHP_EOL;
 $__end = _now();
 $__end_mem = memory_get_peak_usage();
 $__duration = max(1, intdiv($__end - $__start, 1000));

@@ -31,6 +31,21 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
+function _append($arr, $x) {
+    $arr[] = $x;
+    return $arr;
+}
+function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
+    if (function_exists('bcdiv')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcdiv($sa, $sb, 0));
+    }
+    return intdiv($a, $b);
+}
 function _iadd($a, $b) {
     if (function_exists('bcadd')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
@@ -66,46 +81,59 @@ function _imod($a, $b) {
     }
     return $a % $b;
 }
-function _panic($msg) {
-    fwrite(STDERR, strval($msg));
-    exit(1);
-}
 $__start_mem = memory_get_usage();
 $__start = _now();
-  function solution() {
-  $targets = [1, 10, 100, 1000, 10000, 100000, 1000000];
-  $idx = 0;
-  $product = 1;
-  $count = 0;
-  $i = 1;
-  while ($idx < count($targets)) {
-  $s = _str($i);
-  $j = 0;
-  while ($j < strlen($s)) {
-  $count = _iadd($count, 1);
-  if ($count == $targets[$idx]) {
-  $product = _imul($product, ((ctype_digit($s[$j]) ? intval($s[$j]) : ord($s[$j]))));
-  $idx = _iadd($idx, 1);
-  if ($idx == count($targets)) {
-  break;
-};
+  function mochi_sqrt($x) {
+  global $result;
+  if ($x <= 0.0) {
+  return 0.0;
 }
-  $j = _iadd($j, 1);
-};
+  $guess = $x;
+  $i = 0;
+  while ($i < 10) {
+  $guess = ($guess + $x / $guess) / 2.0;
   $i = _iadd($i, 1);
 };
-  return $product;
+  return $guess;
 };
-  function test_solution() {
-  if (solution() != 210) {
-  _panic('solution failed');
+  function is_pentagonal($n) {
+  global $result;
+  $root = mochi_sqrt(_iadd(1.0, _imul(24.0, (_imul(1.0, $n)))));
+  $val = (1.0 + $root) / 6.0;
+  $val_int = intval($val);
+  return $val == (_imul(1.0, $val_int));
+};
+  function pentagonal($k) {
+  global $result;
+  return _intdiv((_imul($k, (_isub(_imul(3, $k), 1)))), 2);
+};
+  function solution($limit) {
+  global $result;
+  $pentagonal_nums = [];
+  $i = 1;
+  while ($i < $limit) {
+  $pentagonal_nums = _append($pentagonal_nums, pentagonal($i));
+  $i = _iadd($i, 1);
+};
+  $a_idx = 0;
+  while ($a_idx < count($pentagonal_nums)) {
+  $pentagonal_i = $pentagonal_nums[$a_idx];
+  $b_idx = $a_idx;
+  while ($b_idx < count($pentagonal_nums)) {
+  $pentagonal_j = $pentagonal_nums[$b_idx];
+  $s = _iadd($pentagonal_i, $pentagonal_j);
+  $d = _isub($pentagonal_j, $pentagonal_i);
+  if (is_pentagonal($s) && is_pentagonal($d)) {
+  return $d;
 }
+  $b_idx = _iadd($b_idx, 1);
 };
-  function main() {
-  test_solution();
-  echo rtrim(_str(solution())), PHP_EOL;
+  $a_idx = _iadd($a_idx, 1);
 };
-  main();
+  return -1;
+};
+  $result = solution(5000);
+  echo rtrim('solution() = ' . _str($result)), PHP_EOL;
 $__end = _now();
 $__end_mem = memory_get_peak_usage();
 $__duration = max(1, intdiv($__end - $__start, 1000));
