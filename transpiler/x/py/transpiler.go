@@ -1130,7 +1130,7 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		}
 		return nil
 	case *BenchStmt:
-		if _, err := io.WriteString(w, indent+"_bench_mem_start = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss\n"); err != nil {
+		if _, err := io.WriteString(w, indent+"if resource:\n"+indent+"    _bench_mem_start = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss\n"+indent+"else:\n"+indent+"    _bench_mem_start = 0\n"); err != nil {
 			return err
 		}
 		if _, err := io.WriteString(w, indent+"_bench_start = _now()\n"); err != nil {
@@ -1150,7 +1150,7 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		if _, err := io.WriteString(w, indent+"    _bench_end = _now()\n"); err != nil {
 			return err
 		}
-		if _, err := io.WriteString(w, indent+"    _bench_mem_end = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss\n"); err != nil {
+		if _, err := io.WriteString(w, indent+"    if resource:\n"+indent+"        _bench_mem_end = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss\n"+indent+"    else:\n"+indent+"        _bench_mem_end = 0\n"); err != nil {
 			return err
 		}
 		line := fmt.Sprintf("%s    print(json.dumps({\"duration_us\": (_bench_end - _bench_start)//1000, \"memory_bytes\": _bench_mem_end*1024, \"name\": %q}, indent=2))\n", indent, st.Name)
@@ -2984,6 +2984,7 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 	}
 	var imports []string
 	needDC := false
+	needResource := false
 	if currentImports != nil {
 		if currentImports["json"] && !hasImport(p, "json") {
 			imports = append(imports, "import json")
@@ -3004,7 +3005,7 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 			imports = append(imports, "import time")
 		}
 		if currentImports["resource"] && !hasImport(p, "resource") {
-			imports = append(imports, "import resource")
+			needResource = true
 		}
 	}
 	for _, s := range p.Stmts {
@@ -3039,6 +3040,11 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 	}
 	if len(imports) > 0 {
 		if _, err := io.WriteString(w, "\n"); err != nil {
+			return err
+		}
+	}
+	if needResource {
+		if _, err := io.WriteString(w, "try:\n    import resource\nexcept Exception:\n    resource = None\n"); err != nil {
 			return err
 		}
 	}
@@ -3207,7 +3213,7 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 				}
 			}
 		case *BenchStmt:
-			if _, err := io.WriteString(w, "_bench_mem_start = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss\n"); err != nil {
+			if _, err := io.WriteString(w, "if resource:\n    _bench_mem_start = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss\nelse:\n    _bench_mem_start = 0\n"); err != nil {
 				return err
 			}
 			if _, err := io.WriteString(w, "_bench_start = _now()\n"); err != nil {
@@ -3227,7 +3233,7 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 			if _, err := io.WriteString(w, "    _bench_end = _now()\n"); err != nil {
 				return err
 			}
-			if _, err := io.WriteString(w, "    _bench_mem_end = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss\n"); err != nil {
+			if _, err := io.WriteString(w, "    if resource:\n        _bench_mem_end = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss\n    else:\n        _bench_mem_end = 0\n"); err != nil {
 				return err
 			}
 			line := fmt.Sprintf("    print(json.dumps({\"duration_us\": (_bench_end - _bench_start)//1000, \"memory_bytes\": _bench_mem_end*1024, \"name\": %q}, indent=2))\n", st.Name)
