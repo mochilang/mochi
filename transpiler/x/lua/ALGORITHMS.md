@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-09 10:08 GMT+7
+Last updated: 2025-08-09 10:30 GMT+7
 
-## Algorithms Golden Test Checklist (990/1077)
+## Algorithms Golden Test Checklist (1001/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 270µs | 912 B |
@@ -181,77 +181,77 @@ Last updated: 2025-08-09 10:08 GMT+7
 | 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 152µs | 3.0 KB |
 | 173 | data_structures/binary_tree/binary_search_tree | ✓ | 158µs | 1.3 KB |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive | error |  |  |
-| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 118µs | 1016 B |
-| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 95µs | 1.3 KB |
-| 177 | data_structures/binary_tree/binary_tree_path_sum | ✓ | 175µs | 1.2 KB |
-| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 161µs | 1.6 KB |
-| 179 | data_structures/binary_tree/distribute_coins | ✓ | 142µs | 3.1 KB |
-| 180 | data_structures/binary_tree/fenwick_tree | ✓ | 158µs | 2.6 KB |
-| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 122µs | 1.8 KB |
-| 182 | data_structures/binary_tree/floor_and_ceiling | ✓ | 136µs | 2.2 KB |
-| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 | error |  |  |
-| 184 | data_structures/binary_tree/is_sorted | ✓ | 174µs | 2.2 KB |
+| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 122µs | 1.1 KB |
+| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 73µs | 1.3 KB |
+| 177 | data_structures/binary_tree/binary_tree_path_sum | ✓ | 151µs | 1.2 KB |
+| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 188µs | 1.6 KB |
+| 179 | data_structures/binary_tree/distribute_coins | ✓ | 121µs | 3.1 KB |
+| 180 | data_structures/binary_tree/fenwick_tree | ✓ | 142µs | 2.6 KB |
+| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 172µs | 1.8 KB |
+| 182 | data_structures/binary_tree/floor_and_ceiling | ✓ | 177µs | 2.2 KB |
+| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 | ✓ | 122µs | 1.1 KB |
+| 184 | data_structures/binary_tree/is_sorted | ✓ | 107µs | 2.2 KB |
 | 185 | data_structures/binary_tree/is_sum_tree | ✓ | 2µs | 144 B |
-| 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 507µs | 8.9 KB |
-| 187 | data_structures/binary_tree/lowest_common_ancestor | ✓ | 467µs | 1.0 KB |
-| 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 398.674ms | 159.8 KB |
-| 189 | data_structures/binary_tree/maximum_sum_bst | error |  |  |
-| 190 | data_structures/binary_tree/merge_two_binary_trees | ✓ | 110µs | 3.8 KB |
-| 191 | data_structures/binary_tree/mirror_binary_tree | ✓ | 268µs | 1.2 KB |
-| 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 105µs | 2.2 KB |
-| 193 | data_structures/binary_tree/number_of_possible_binary_trees | ✓ | 112µs | 216 B |
-| 194 | data_structures/binary_tree/red_black_tree | ✓ | 125µs | 1.3 KB |
-| 195 | data_structures/binary_tree/segment_tree | ✓ | 247µs | 3.9 KB |
-| 196 | data_structures/binary_tree/segment_tree_other | error |  |  |
-| 197 | data_structures/binary_tree/serialize_deserialize_binary_tree | ✓ | 145µs | 1.5 KB |
-| 198 | data_structures/binary_tree/symmetric_tree | ✓ | 131µs | 2.6 KB |
+| 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 299µs | 9.0 KB |
+| 187 | data_structures/binary_tree/lowest_common_ancestor | ✓ | 286µs | 1.0 KB |
+| 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 2.686ms | 1.0 KB |
+| 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 128µs | 1.2 KB |
+| 190 | data_structures/binary_tree/merge_two_binary_trees | ✓ | 144µs | 3.8 KB |
+| 191 | data_structures/binary_tree/mirror_binary_tree | ✓ | 296µs | 1.2 KB |
+| 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 135µs | 2.2 KB |
+| 193 | data_structures/binary_tree/number_of_possible_binary_trees | ✓ | 127µs | 946 B |
+| 194 | data_structures/binary_tree/red_black_tree | ✓ | 110µs | 1.3 KB |
+| 195 | data_structures/binary_tree/segment_tree | ✓ | 175µs | 2.7 KB |
+| 196 | data_structures/binary_tree/segment_tree_other | ✓ | 423µs | 1.8 KB |
+| 197 | data_structures/binary_tree/serialize_deserialize_binary_tree | ✓ | 197µs | 2.8 KB |
+| 198 | data_structures/binary_tree/symmetric_tree | ✓ | 80µs | 2.6 KB |
 | 199 | data_structures/binary_tree/treap | error |  |  |
-| 200 | data_structures/binary_tree/wavelet_tree | error |  |  |
-| 201 | data_structures/disjoint_set/alternate_disjoint_set | error |  |  |
-| 202 | data_structures/disjoint_set/disjoint_set | ✓ | 193µs | 1.9 KB |
-| 203 | data_structures/hashing/bloom_filter | ✓ | 14.079ms | 1.5 KB |
-| 204 | data_structures/hashing/double_hash | ✓ | 96µs | 1.1 KB |
-| 205 | data_structures/hashing/hash_map | ✓ | 126µs | 2.6 KB |
-| 206 | data_structures/hashing/hash_table | ✓ | 79µs | 1.4 KB |
-| 207 | data_structures/hashing/hash_table_with_linked_list | ✓ | 116µs | 1.3 KB |
-| 208 | data_structures/hashing/number_theory/prime_numbers | ✓ | 93µs | 136 B |
-| 209 | data_structures/hashing/quadratic_probing | ✓ | 42µs | 1.6 KB |
-| 210 | data_structures/hashing/tests/test_hash_map | ✓ | 304µs | 1.2 KB |
-| 211 | data_structures/heap/binomial_heap | ✓ | 123µs | 1.2 KB |
-| 212 | data_structures/heap/heap | ✓ | 112µs | 1.5 KB |
+| 200 | data_structures/binary_tree/wavelet_tree | ✓ | 285µs | 9.9 KB |
+| 201 | data_structures/disjoint_set/alternate_disjoint_set | ✓ | 74µs | 1.5 KB |
+| 202 | data_structures/disjoint_set/disjoint_set | ✓ | 136µs | 1.9 KB |
+| 203 | data_structures/hashing/bloom_filter | ✓ | 14.137ms | 1.6 KB |
+| 204 | data_structures/hashing/double_hash | ✓ | 159µs | 1.1 KB |
+| 205 | data_structures/hashing/hash_map | ✓ | 140µs | 2.7 KB |
+| 206 | data_structures/hashing/hash_table | ✓ | 56µs | 1.4 KB |
+| 207 | data_structures/hashing/hash_table_with_linked_list | ✓ | 129µs | 1.3 KB |
+| 208 | data_structures/hashing/number_theory/prime_numbers | ✓ | 98µs | 136 B |
+| 209 | data_structures/hashing/quadratic_probing | ✓ | 44µs | 1.6 KB |
+| 210 | data_structures/hashing/tests/test_hash_map | ✓ | 258µs | 1.3 KB |
+| 211 | data_structures/heap/binomial_heap | ✓ | 99µs | 1.2 KB |
+| 212 | data_structures/heap/heap | ✓ | 203µs | 1.5 KB |
 | 213 | data_structures/heap/heap_generic | error |  |  |
-| 214 | data_structures/heap/max_heap | ✓ | 90µs | 1.2 KB |
-| 215 | data_structures/heap/min_heap | error |  |  |
-| 216 | data_structures/heap/randomized_heap | ✓ | 119µs | 2.8 KB |
-| 217 | data_structures/kd_tree/build_kdtree | ✓ | 284µs | 2.8 KB |
-| 218 | data_structures/kd_tree/example/example_usage | error |  |  |
-| 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 110µs | 1.3 KB |
-| 220 | data_structures/kd_tree/kd_node | ✓ | 70µs | 1.5 KB |
-| 221 | data_structures/kd_tree/nearest_neighbour_search | ✓ | 172µs | 4.6 KB |
-| 222 | data_structures/kd_tree/tests/test_kdtree | ✓ | 177µs | 1.3 KB |
-| 223 | data_structures/linked_list/circular_linked_list | ✓ | 332µs | 1.2 KB |
-| 224 | data_structures/linked_list/deque_doubly | ✓ | 50µs | 1.2 KB |
-| 225 | data_structures/linked_list/doubly_linked_list | ✓ | 184µs | 1.3 KB |
-| 226 | data_structures/linked_list/doubly_linked_list_two | ✓ | 211µs | 1.4 KB |
-| 227 | data_structures/linked_list/floyds_cycle_detection | ✓ | 81µs | 1.0 KB |
-| 228 | data_structures/linked_list/from_sequence | error |  |  |
-| 229 | data_structures/linked_list/has_loop | error |  |  |
-| 230 | data_structures/linked_list/is_palindrome | ✓ | 49µs | 912 B |
-| 231 | data_structures/linked_list/merge_two_lists | ✓ | 342µs | 1.1 KB |
-| 232 | data_structures/linked_list/middle_element_of_linked_list | ✓ | 249µs | 984 B |
-| 233 | data_structures/linked_list/print_reverse | ✓ | 180µs | 1.2 KB |
-| 234 | data_structures/linked_list/reverse_k_group | ✓ | 142µs | 952 B |
-| 235 | data_structures/linked_list/rotate_to_the_right | ✓ | 181µs | 992 B |
-| 236 | data_structures/linked_list/singly_linked_list | ✓ | 320µs | 1.4 KB |
-| 237 | data_structures/linked_list/skip_list | ✓ | 213µs | 2.8 KB |
-| 238 | data_structures/linked_list/swap_nodes | ✓ | 246µs | 1.0 KB |
-| 239 | data_structures/queues/circular_queue | ✓ | 155µs | 1.1 KB |
-| 240 | data_structures/queues/circular_queue_linked_list | ✓ | 70µs | 1.1 KB |
-| 241 | data_structures/queues/double_ended_queue | ✓ | 181µs | 1.2 KB |
-| 242 | data_structures/queues/linked_queue | ✓ | 46µs | 1.4 KB |
-| 243 | data_structures/queues/priority_queue_using_list | ✓ | 438µs | 1.3 KB |
-| 244 | data_structures/queues/queue_by_list | error |  |  |
-| 245 | data_structures/queues/queue_by_two_stacks | error |  |  |
+| 214 | data_structures/heap/max_heap | ✓ | 106µs | 1.2 KB |
+| 215 | data_structures/heap/min_heap | ✓ | 161µs | 2.7 KB |
+| 216 | data_structures/heap/randomized_heap | ✓ | 122µs | 2.8 KB |
+| 217 | data_structures/kd_tree/build_kdtree | ✓ | 243µs | 4.0 KB |
+| 218 | data_structures/kd_tree/example/example_usage | ✓ | 553.195ms | 40.9 KB |
+| 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 93µs | 1.3 KB |
+| 220 | data_structures/kd_tree/kd_node | ✓ | 103µs | 1.6 KB |
+| 221 | data_structures/kd_tree/nearest_neighbour_search | ✓ | 152µs | 4.6 KB |
+| 222 | data_structures/kd_tree/tests/test_kdtree | ✓ | 67µs | 1.3 KB |
+| 223 | data_structures/linked_list/circular_linked_list | ✓ | 186µs | 1.3 KB |
+| 224 | data_structures/linked_list/deque_doubly | ✓ | 51µs | 1.3 KB |
+| 225 | data_structures/linked_list/doubly_linked_list | ✓ | 204µs | 1.4 KB |
+| 226 | data_structures/linked_list/doubly_linked_list_two | ✓ | 193µs | 1.4 KB |
+| 227 | data_structures/linked_list/floyds_cycle_detection | ✓ | 66µs | 1.0 KB |
+| 228 | data_structures/linked_list/from_sequence | ✓ | 114µs | 1.9 KB |
+| 229 | data_structures/linked_list/has_loop | ✓ | 35µs | 992 B |
+| 230 | data_structures/linked_list/is_palindrome | ✓ | 47µs | 912 B |
+| 231 | data_structures/linked_list/merge_two_lists | ✓ | 244µs | 1.2 KB |
+| 232 | data_structures/linked_list/middle_element_of_linked_list | ✓ | 162µs | 984 B |
+| 233 | data_structures/linked_list/print_reverse | ✓ | 110µs | 1.3 KB |
+| 234 | data_structures/linked_list/reverse_k_group | ✓ | 131µs | 1008 B |
+| 235 | data_structures/linked_list/rotate_to_the_right | ✓ | 181µs | 1.1 KB |
+| 236 | data_structures/linked_list/singly_linked_list | ✓ | 171µs | 1.5 KB |
+| 237 | data_structures/linked_list/skip_list | ✓ | 122µs | 2.9 KB |
+| 238 | data_structures/linked_list/swap_nodes | ✓ | 136µs | 1.0 KB |
+| 239 | data_structures/queues/circular_queue | ✓ | 116µs | 1.1 KB |
+| 240 | data_structures/queues/circular_queue_linked_list | ✓ | 31µs | 1.2 KB |
+| 241 | data_structures/queues/double_ended_queue | ✓ | 126µs | 1.3 KB |
+| 242 | data_structures/queues/linked_queue | ✓ | 37µs | 1.7 KB |
+| 243 | data_structures/queues/priority_queue_using_list | ✓ | 308µs | 1.4 KB |
+| 244 | data_structures/queues/queue_by_list | ✓ | 140µs | 1.6 KB |
+| 245 | data_structures/queues/queue_by_two_stacks | ✓ | 87µs | 2.2 KB |
 | 246 | data_structures/queues/queue_on_pseudo_stack | error |  |  |
 | 247 | data_structures/stacks/balanced_parentheses | error |  |  |
 | 248 | data_structures/stacks/dijkstras_two_stack_algorithm | ✓ | 207µs | 1.0 KB |
