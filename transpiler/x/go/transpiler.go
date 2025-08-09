@@ -3611,12 +3611,26 @@ func compileIfExpr(ie *parser.IfExpr, env *types.Env) (Expr, error) {
 			return nil, err
 		}
 	}
-	typ := toGoTypeFromType(types.ExprType(ie.Then, env))
-	other := ""
+	thenT := types.ExprType(ie.Then, env)
+	var elseT types.Type
 	if ie.ElseIf != nil {
-		other = toGoTypeFromType(types.IfExprType(ie.ElseIf, env))
+		elseT = types.IfExprType(ie.ElseIf, env)
 	} else if ie.Else != nil {
-		other = toGoTypeFromType(types.ExprType(ie.Else, env))
+		elseT = types.ExprType(ie.Else, env)
+	}
+	typ := toGoTypeFromType(thenT)
+	other := toGoTypeFromType(elseT)
+	if typ == "" && other == "" {
+		switch thenT.(type) {
+		case types.IntType:
+			if _, ok := elseT.(types.IntType); ok {
+				typ = "int"
+			}
+		case types.FloatType:
+			if _, ok := elseT.(types.FloatType); ok {
+				typ = "float64"
+			}
+		}
 	}
 	if other != "" && other != typ {
 		typ = "any"
@@ -4847,6 +4861,26 @@ func compileFunExpr(fn *parser.FunExpr, env *types.Env) (Expr, error) {
 	return &FuncLit{Params: params, Return: ret, Body: stmts}, nil
 }
 
+func isNumericAny(e Expr) bool {
+	switch ex := e.(type) {
+	case *FieldExpr:
+		name := strings.ToLower(ex.Name[:1]) + ex.Name[1:]
+		if stName := guessStructForField(name); stName != "" {
+			if st, ok := topEnv.GetStruct(stName); ok {
+				if ft, ok2 := st.Fields[name]; ok2 {
+					switch ft.(type) {
+					case types.IntType, types.FloatType:
+						return true
+					}
+				}
+			}
+		}
+	case *IntLit, *FloatLit:
+		return true
+	}
+	return false
+}
+
 func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, error) {
 	first, err := compileUnary(b.Left, env, base)
 	if err != nil {
@@ -5140,12 +5174,20 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 					if newExpr == nil && ops[i].Op == "+" {
 						if _, ok := typesList[i].(types.AnyType); ok {
 							if _, ok2 := typesList[i+1].(types.AnyType); ok2 {
-								usesPrint = true
-								left = &CallExpr{Func: "fmt.Sprint", Args: []Expr{left}}
-								right = &CallExpr{Func: "fmt.Sprint", Args: []Expr{right}}
-								newExpr = &BinaryExpr{Left: left, Op: "+", Right: right}
-								typesList[i] = types.StringType{}
-								typesList[i+1] = types.StringType{}
+								if isNumericAny(left) && isNumericAny(right) {
+									left = &CallExpr{Func: "float64", Args: []Expr{left}}
+									right = &CallExpr{Func: "float64", Args: []Expr{right}}
+									newExpr = &BinaryExpr{Left: left, Op: "+", Right: right}
+									typesList[i] = types.FloatType{}
+									typesList[i+1] = types.FloatType{}
+								} else {
+									usesPrint = true
+									left = &CallExpr{Func: "fmt.Sprint", Args: []Expr{left}}
+									right = &CallExpr{Func: "fmt.Sprint", Args: []Expr{right}}
+									newExpr = &BinaryExpr{Left: left, Op: "+", Right: right}
+									typesList[i] = types.StringType{}
+									typesList[i+1] = types.StringType{}
+								}
 							}
 						}
 					}
