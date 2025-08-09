@@ -1,7 +1,7 @@
 # Ruby Algorithms Transpiler Output
 
 Completed programs: 1045/1077
-Last updated: 2025-08-09 10:22 +0700
+Last updated: 2025-08-09 10:53 +0700
 
 Checklist:
 
@@ -57,7 +57,7 @@ Checklist:
 | 48 | boolean_algebra/imply_gate | ✓ | 29µs | 9.3 KB |
 | 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 57µs | 11.5 KB |
 | 50 | boolean_algebra/multiplexer | ✓ | 48µs | 9.3 KB |
-| 51 | boolean_algebra/nand_gate | ✓ | 1ms | 8.7 KB |
+| 51 | boolean_algebra/nand_gate | ✓ | 25µs | 9.3 KB |
 | 52 | boolean_algebra/nimply_gate | ✓ | 1ms | 8.7 KB |
 | 53 | boolean_algebra/nor_gate | ✓ | 1ms | 20.4 KB |
 | 54 | boolean_algebra/not_gate | ✓ | 1ms | 8.6 KB |
