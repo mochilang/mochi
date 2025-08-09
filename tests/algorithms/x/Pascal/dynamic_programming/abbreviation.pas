@@ -44,12 +44,12 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
+  n: integer;
+  c: string;
+  a: string;
   b: boolean;
   s: string;
-  n: integer;
   ch: string;
-  a: string;
-  c: string;
 function index_of(s: string; ch: string): integer; forward;
 function ord_(ch: string): integer; forward;
 function chr(n: integer): string; forward;

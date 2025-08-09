@@ -54,9 +54,9 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  person: integer;
   task_performed: IntArrayArray;
   used: IntArray;
+  person: integer;
 function count_assignments(person: integer; task_performed: IntArrayArray; used: IntArray): integer; forward;
 function count_no_of_ways(task_performed: IntArrayArray): integer; forward;
 procedure main(); forward;

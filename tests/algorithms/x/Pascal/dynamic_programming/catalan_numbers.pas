@@ -64,11 +64,11 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  msg: string;
   upper_limit: integer;
-procedure panic(msg: string); forward;
+  msg: string;
+procedure panic_(msg: string); forward;
 function catalan_numbers(upper_limit: integer): IntArray; forward;
-procedure panic(msg: string);
+procedure panic_(msg: string);
 begin
   writeln(msg);
 end;
@@ -80,7 +80,7 @@ var
   catalan_numbers_j: integer;
 begin
   if upper_limit < 0 then begin
-  panic('Limit for the Catalan sequence must be >= 0');
+  panic_('Limit for the Catalan sequence must be >= 0');
   exit([]);
 end;
   catalan_numbers_catalans := [1];

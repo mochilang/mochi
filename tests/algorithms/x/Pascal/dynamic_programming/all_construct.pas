@@ -2,8 +2,6 @@
 program Main;
 uses SysUtils;
 type StrArray = array of string;
-type IntArray = array of integer;
-type IntArrayArray = array of IntArray;
 type StrArrayArray = array of StrArray;
 type StrArrayArrayArray = array of StrArrayArray;
 var _nowSeed: int64 = 0;
@@ -42,22 +40,21 @@ begin
   writeln(msg);
   halt(1);
 end;
-function list_int_to_str(xs: array of integer): string;
+function list_to_str(xs: array of string): string;
 var i: integer;
 begin
-  Result := '[';
+  Result := '#(' + sLineBreak;
   for i := 0 to High(xs) do begin
-    Result := Result + IntToStr(xs[i]);
-    if i < High(xs) then Result := Result + ' ';
+    Result := Result + '  ''' + xs[i] + '''.' + sLineBreak;
   end;
-  Result := Result + ']';
+  Result := Result + ')';
 end;
-function list_list_int_to_str(xs: array of IntArray): string;
+function list_list_to_str(xs: array of StrArray): string;
 var i: integer;
 begin
   Result := '[';
   for i := 0 to High(xs) do begin
-    Result := Result + list_int_to_str(xs[i]);
+    Result := Result + list_to_str(xs[i]);
     if i < High(xs) then Result := Result + ' ';
   end;
   Result := Result + ']';
@@ -131,9 +128,9 @@ begin
   init_now();
   bench_mem_0 := _mem();
   bench_start_0 := _bench_now();
-  writeln(list_int_to_str(allConstruct('jwajalapa', ['jwa', 'j', 'w', 'a', 'la', 'lapa'])));
-  writeln(list_int_to_str(allConstruct('rajamati', ['s', 'raj', 'amat', 'raja', 'ma', 'i', 't'])));
-  writeln(list_int_to_str(allConstruct('hexagonosaurus', ['h', 'ex', 'hex', 'ag', 'ago', 'ru', 'auru', 'rus', 'go', 'no', 'o', 's'])));
+  writeln(list_list_to_str(allConstruct('jwajalapa', ['jwa', 'j', 'w', 'a', 'la', 'lapa'])));
+  writeln(list_list_to_str(allConstruct('rajamati', ['s', 'raj', 'amat', 'raja', 'ma', 'i', 't'])));
+  writeln(list_list_to_str(allConstruct('hexagonosaurus', ['h', 'ex', 'hex', 'ag', 'ago', 'ru', 'auru', 'rus', 'go', 'no', 'o', 's'])));
   bench_memdiff_0 := _mem() - bench_mem_0;
   bench_dur_0 := (_bench_now() - bench_start_0) div 1000;
   writeln('{');

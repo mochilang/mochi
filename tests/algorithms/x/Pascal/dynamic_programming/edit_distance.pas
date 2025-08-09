@@ -45,12 +45,12 @@ var
   bench_mem_0: int64;
   bench_memdiff_0: int64;
   b: integer;
-  i: integer;
-  dp: IntArrayArray;
   c: integer;
-  word1: string;
   a: integer;
+  dp: IntArrayArray;
+  i: integer;
   j: integer;
+  word1: string;
   word2: string;
 function min3(a: integer; b: integer; c: integer): integer; forward;
 function helper_top_down(word1: string; word2: string; dp: IntArrayArray; i: integer; j: integer): integer; forward;
@@ -99,9 +99,9 @@ var
   min_dist_top_down_m: integer;
   min_dist_top_down_n: integer;
   min_dist_top_down_dp: array of IntArray;
-  min_dist_top_down__: integer;
+  min_dist_top_down__: int64;
   min_dist_top_down_row: array of integer;
-  min_dist_top_down__2: integer;
+  min_dist_top_down__2: int64;
 begin
   min_dist_top_down_m := Length(word1);
   min_dist_top_down_n := Length(word2);
@@ -120,11 +120,11 @@ var
   min_dist_bottom_up_m: integer;
   min_dist_bottom_up_n: integer;
   min_dist_bottom_up_dp: array of IntArray;
-  min_dist_bottom_up__: integer;
+  min_dist_bottom_up__: int64;
   min_dist_bottom_up_row: array of integer;
-  min_dist_bottom_up__2: integer;
-  min_dist_bottom_up_i: integer;
-  min_dist_bottom_up_j: integer;
+  min_dist_bottom_up__2: int64;
+  min_dist_bottom_up_i: int64;
+  min_dist_bottom_up_j: int64;
   min_dist_bottom_up_insert: integer;
   min_dist_bottom_up_delete: integer;
   min_dist_bottom_up_replace: integer;

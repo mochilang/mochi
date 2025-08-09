@@ -43,12 +43,12 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  value: integer;
-  array_: IntArray;
   n: integer;
-  dp: IntArray;
-  target: integer;
+  value: integer;
   len: integer;
+  target: integer;
+  dp: IntArray;
+  array_: IntArray;
 function make_list(len: integer; value: integer): IntArray; forward;
 function count_recursive(array_: IntArray; target: integer): integer; forward;
 function combination_sum_iv(array_: IntArray; target: integer): integer; forward;
