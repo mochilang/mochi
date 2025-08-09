@@ -2,8 +2,8 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 521/1077
-Last updated: 2025-08-09 12:07 +0700
+Completed programs: 522/1077
+Last updated: 2025-08-09 15:58 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -306,29 +306,29 @@ Last updated: 2025-08-09 12:07 +0700
 | 297 | divide_and_conquer/peak | ✓ | 448µs | 3.0 MB |
 | 298 | divide_and_conquer/power | ✓ | 571µs | 3.4 MB |
 | 299 | divide_and_conquer/strassen_matrix_multiplication | ✓ | 13.237ms | 2.9 MB |
-| 300 | docs/conf | ✓ | 338µs | 3.2 MB |
-| 301 | dynamic_programming/abbreviation | ✓ | 1.324ms | 3.1 MB |
-| 302 | dynamic_programming/all_construct | ✓ | 2.761ms | 4.0 MB |
-| 303 | dynamic_programming/bitmask | ✓ | 603µs | 3.4 MB |
-| 304 | dynamic_programming/catalan_numbers | ✓ | 1.226ms | 3.5 MB |
-| 305 | dynamic_programming/climbing_stairs | ✓ | 487µs | 3.4 MB |
-| 306 | dynamic_programming/combination_sum_iv | ✓ | 429µs | 3.2 MB |
-| 307 | dynamic_programming/edit_distance | ✓ | 1.062ms | 3.4 MB |
-| 308 | dynamic_programming/factorial | ✓ | 991µs | 3.5 MB |
-| 309 | dynamic_programming/fast_fibonacci | ✓ | 480µs | 3.0 MB |
-| 310 | dynamic_programming/fibonacci | ✓ | 971µs | 3.3 MB |
-| 311 | dynamic_programming/fizz_buzz | ✓ | 433µs | 3.2 MB |
-| 312 | dynamic_programming/floyd_warshall | ✓ | 575µs | 3.1 MB |
-| 313 | dynamic_programming/integer_partition | ✓ | 56.423ms | 3.0 MB |
-| 314 | dynamic_programming/iterating_through_submasks | ✓ | 1.124ms | 3.3 MB |
-| 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 2.127ms | 3.9 MB |
+| 300 | docs/conf | ✓ | 321µs | 3.2 MB |
+| 301 | dynamic_programming/abbreviation | ✓ | 951µs | 3.4 MB |
+| 302 | dynamic_programming/all_construct | ✓ | 2.225ms | 3.9 MB |
+| 303 | dynamic_programming/bitmask | ✓ | 444µs | 3.3 MB |
+| 304 | dynamic_programming/catalan_numbers | ✓ | 958µs | 3.3 MB |
+| 305 | dynamic_programming/climbing_stairs | ✓ | 419µs | 3.2 MB |
+| 306 | dynamic_programming/combination_sum_iv | ✓ | 464µs | 3.2 MB |
+| 307 | dynamic_programming/edit_distance | ✓ | 3.453ms | 3.2 MB |
+| 308 | dynamic_programming/factorial | ✓ | 1.003ms | 3.5 MB |
+| 309 | dynamic_programming/fast_fibonacci | ✓ | 452µs | 3.2 MB |
+| 310 | dynamic_programming/fibonacci | ✓ | 917µs | 3.6 MB |
+| 311 | dynamic_programming/fizz_buzz | ✓ | 452µs | 3.3 MB |
+| 312 | dynamic_programming/floyd_warshall | ✓ | 582µs | 3.1 MB |
+| 313 | dynamic_programming/integer_partition | ✓ | 55.726ms | 3.2 MB |
+| 314 | dynamic_programming/iterating_through_submasks | ✓ | 1.04ms | 3.6 MB |
+| 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 1.687ms | 3.8 MB |
 | 316 | dynamic_programming/knapsack |   |  |  |
-| 317 | dynamic_programming/largest_divisible_subset | ✓ | 917µs | 3.5 MB |
-| 318 | dynamic_programming/longest_common_subsequence | ✓ | 767µs | 3.3 MB |
-| 319 | dynamic_programming/longest_common_substring | ✓ | 800µs | 3.2 MB |
-| 320 | dynamic_programming/longest_increasing_subsequence | ✓ | 515µs | 3.1 MB |
-| 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 1.267ms | 3.3 MB |
-| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | ✓ | 508µs | 3.0 MB |
+| 317 | dynamic_programming/largest_divisible_subset | ✓ | 1.078ms | 3.6 MB |
+| 318 | dynamic_programming/longest_common_subsequence | ✓ | 617µs | 3.2 MB |
+| 319 | dynamic_programming/longest_common_substring | ✓ | 616µs | 2.9 MB |
+| 320 | dynamic_programming/longest_increasing_subsequence | ✓ | 618µs | 3.3 MB |
+| 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 1.159ms | 3.5 MB |
+| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | ✓ | 487µs | 3.3 MB |
 | 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 1.131ms | 3.3 MB |
 | 324 | dynamic_programming/matrix_chain_multiplication | ✓ | 236µs | 3.2 MB |
 | 325 | dynamic_programming/matrix_chain_order | ✓ | 668µs | 3.2 MB |
@@ -574,7 +574,7 @@ Last updated: 2025-08-09 12:07 +0700
 | 565 | maths/factors | ✓ | 1.623ms | 3.5 MB |
 | 566 | maths/fast_inverse_sqrt | ✓ | 3.205ms | 3.2 MB |
 | 567 | maths/fermat_little_theorem | ✓ | 823µs | 3.3 MB |
-| 568 | maths/fibonacci |   |  |  |
+| 568 | maths/fibonacci | ✓ | 661µs | 3.3 MB |
 | 569 | maths/find_max | ✓ | 528µs | 3.2 MB |
 | 570 | maths/find_min | ✓ | 553µs | 3.3 MB |
 | 571 | maths/floor | ✓ | 617µs | 3.2 MB |
