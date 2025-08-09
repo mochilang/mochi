@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
-Completed programs: 691/1077
-Last updated: 2025-08-08 17:54 +0700
+Completed programs: 694/1077
+Last updated: 2025-08-08 18:51 +0700
 
 Checklist:
 
@@ -696,56 +696,56 @@ Checklist:
 | 687 | maths/test_factorial | ✓ | 5µs | 8.7 MB |
 | 688 | maths/test_prime_check | ✓ | 5µs | 8.7 MB |
 | 689 | maths/three_sum | ✓ | 14µs | 8.7 MB |
-| 690 | maths/trapezoidal_rule | ✓ | 5µs | 8.7 MB |
-| 691 | maths/triplet_sum | ✓ | 8µs | 8.7 MB |
-| 692 | maths/twin_prime | ✓ | 5µs | 8.7 MB |
-| 693 | maths/two_pointer | ✓ | 10µs | 8.8 MB |
-| 694 | maths/two_sum | ✓ | 9µs | 8.7 MB |
-| 695 | maths/volume | ✓ | 5µs | 8.7 MB |
-| 696 | maths/zellers_congruence | ✓ | 13µs | 8.7 MB |
-| 697 | matrix/binary_search_matrix | ✓ | 14µs | 8.7 MB |
-| 698 | matrix/count_islands_in_matrix | ✓ | 13µs | 8.7 MB |
-| 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 557µs | 170.0 MB |
-| 700 | matrix/count_paths | ✓ | 13µs | 8.7 MB |
-| 701 | matrix/cramers_rule_2x2 | ✓ | 11µs | 8.8 MB |
-| 702 | matrix/inverse_of_matrix | ✓ | 36µs | 8.8 MB |
-| 703 | matrix/largest_square_area_in_matrix | error |  |  |
-| 704 | matrix/matrix_based_game | ✓ | 9µs | 8.7 MB |
-| 705 | matrix/matrix_class | ✓ | 12µs | 8.7 MB |
-| 706 | matrix/matrix_equalization | ✓ | 5µs | 8.7 MB |
-| 707 | matrix/matrix_multiplication_recursion | ✓ | 4µs | 8.7 MB |
-| 708 | matrix/matrix_operation | ✓ | 10µs | 8.7 MB |
-| 709 | matrix/max_area_of_island | ✓ | 6µs | 8.7 MB |
-| 710 | matrix/median_matrix | ✓ | 3µs | 8.7 MB |
-| 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ | 12µs | 8.7 MB |
-| 712 | matrix/pascal_triangle | ✓ | 5µs | 8.7 MB |
-| 713 | matrix/rotate_matrix | ✓ | 7µs | 8.7 MB |
-| 714 | matrix/searching_in_sorted_matrix | ✓ | 4µs | 8.8 MB |
-| 715 | matrix/sherman_morrison | ✓ | 5µs | 8.7 MB |
-| 716 | matrix/spiral_print | ✓ | 6µs | 8.7 MB |
-| 717 | matrix/tests/test_matrix_operation | ✓ | 5µs | 8.7 MB |
-| 718 | matrix/validate_sudoku_board | ✓ | 10µs | 8.7 MB |
-| 719 | networking_flow/ford_fulkerson | ✓ | 6µs | 8.7 MB |
-| 720 | networking_flow/minimum_cut | ✓ | 3µs | 8.7 MB |
-| 721 | neural_network/activation_functions/binary_step | ✓ | 4µs | 8.7 MB |
-| 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 8µs | 8.7 MB |
-| 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 6µs | 8.8 MB |
-| 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 4µs | 8.7 MB |
-| 725 | neural_network/activation_functions/mish | ✓ | 12µs | 8.7 MB |
-| 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 5µs | 8.7 MB |
-| 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 4µs | 8.7 MB |
-| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 11µs | 8.8 MB |
-| 729 | neural_network/activation_functions/softplus | error |  |  |
-| 730 | neural_network/activation_functions/squareplus | ✓ | 6µs | 8.7 MB |
-| 731 | neural_network/activation_functions/swish | ✓ | 11µs | 8.7 MB |
-| 732 | neural_network/back_propagation_neural_network | ✓ | 948µs | 8.7 MB |
-| 733 | neural_network/convolution_neural_network | ✓ | 44µs | 8.7 MB |
-| 734 | neural_network/input_data | ✓ | 5µs | 8.7 MB |
-| 735 | neural_network/simple_neural_network | ✓ | 3µs | 8.8 MB |
-| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 36µs | 8.8 MB |
-| 737 | other/activity_selection | ✓ | 3µs | 8.8 MB |
-| 738 | other/alternative_list_arrange | error |  |  |
-| 739 | other/bankers_algorithm | ✓ | 7µs | 8.7 MB |
+| 690 | maths/trapezoidal_rule | ✓ | 7µs | 8.7 MB |
+| 691 | maths/triplet_sum | ✓ | 27µs | 8.7 MB |
+| 692 | maths/twin_prime | ✓ | 7µs | 8.7 MB |
+| 693 | maths/two_pointer | ✓ | 13µs | 8.7 MB |
+| 694 | maths/two_sum | ✓ | 13µs | 8.7 MB |
+| 695 | maths/volume | ✓ | 8µs | 8.7 MB |
+| 696 | maths/zellers_congruence | ✓ | 17µs | 8.7 MB |
+| 697 | matrix/binary_search_matrix | ✓ | 21µs | 8.7 MB |
+| 698 | matrix/count_islands_in_matrix | ✓ | 18µs | 8.7 MB |
+| 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 626µs | 170.3 MB |
+| 700 | matrix/count_paths | ✓ | 18µs | 8.7 MB |
+| 701 | matrix/cramers_rule_2x2 | ✓ | 14µs | 8.7 MB |
+| 702 | matrix/inverse_of_matrix | ✓ | 43µs | 8.8 MB |
+| 703 | matrix/largest_square_area_in_matrix | ✓ | 34µs | 8.7 MB |
+| 704 | matrix/matrix_based_game | ✓ | 37µs | 8.7 MB |
+| 705 | matrix/matrix_class | ✓ | 45µs | 8.8 MB |
+| 706 | matrix/matrix_equalization | ✓ | 17µs | 8.7 MB |
+| 707 | matrix/matrix_multiplication_recursion | ✓ | 15µs | 8.7 MB |
+| 708 | matrix/matrix_operation | ✓ | 37µs | 8.7 MB |
+| 709 | matrix/max_area_of_island | ✓ | 20µs | 8.7 MB |
+| 710 | matrix/median_matrix | ✓ | 12µs | 8.7 MB |
+| 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ | 41µs | 8.7 MB |
+| 712 | matrix/pascal_triangle | ✓ | 17µs | 8.7 MB |
+| 713 | matrix/rotate_matrix | ✓ | 25µs | 8.7 MB |
+| 714 | matrix/searching_in_sorted_matrix | ✓ | 16µs | 8.7 MB |
+| 715 | matrix/sherman_morrison | ✓ | 25µs | 8.7 MB |
+| 716 | matrix/spiral_print | ✓ | 26µs | 8.7 MB |
+| 717 | matrix/tests/test_matrix_operation | ✓ | 27µs | 8.7 MB |
+| 718 | matrix/validate_sudoku_board | ✓ | 26µs | 8.8 MB |
+| 719 | networking_flow/ford_fulkerson | ✓ | 22µs | 8.7 MB |
+| 720 | networking_flow/minimum_cut | ✓ | 7µs | 8.7 MB |
+| 721 | neural_network/activation_functions/binary_step | ✓ | 13µs | 8.7 MB |
+| 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 20µs | 8.7 MB |
+| 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 16µs | 8.8 MB |
+| 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 8µs | 8.7 MB |
+| 725 | neural_network/activation_functions/mish | ✓ | 31µs | 8.7 MB |
+| 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 11µs | 8.7 MB |
+| 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 11µs | 8.7 MB |
+| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 32µs | 8.7 MB |
+| 729 | neural_network/activation_functions/softplus | ✓ | 13µs | 8.7 MB |
+| 730 | neural_network/activation_functions/squareplus | ✓ | 13µs | 8.7 MB |
+| 731 | neural_network/activation_functions/swish | ✓ | 33µs | 8.7 MB |
+| 732 | neural_network/back_propagation_neural_network | ✓ | 2.284ms | 8.8 MB |
+| 733 | neural_network/convolution_neural_network | ✓ | 78µs | 8.8 MB |
+| 734 | neural_network/input_data | ✓ | 16µs | 8.7 MB |
+| 735 | neural_network/simple_neural_network | ✓ | 6µs | 8.8 MB |
+| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 85µs | 8.8 MB |
+| 737 | other/activity_selection | ✓ | 10µs | 8.7 MB |
+| 738 | other/alternative_list_arrange | ✓ | 9µs | 8.8 MB |
+| 739 | other/bankers_algorithm | ✓ | 27µs | 8.8 MB |
 | 740 | other/davis_putnam_logemann_loveland | ✓ | 2µs | 8.7 MB |
 | 741 | other/doomsday | ✓ | 4µs | 8.7 MB |
 | 742 | other/fischer_yates_shuffle | ✓ | 6µs | 8.7 MB |
