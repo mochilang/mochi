@@ -1,0 +1,4 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/graphics/vector3_for_2d_rendering.go:116:6: angle redeclared in this block
+	../../../tests/algorithms/transpiler/Go/graphics/vector3_for_2d_rendering.go:115:59: other declaration of angle

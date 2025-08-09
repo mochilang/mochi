@@ -186,6 +186,11 @@ func emitCastAnyToType(w io.Writer, typ, v string) {
 		fmt.Fprint(w, v)
 		return
 	}
+	if typ == "string" {
+		usesPrint = true
+		fmt.Fprintf(w, "fmt.Sprint(%s)", v)
+		return
+	}
 	vv := strings.TrimSpace(v)
 	if strings.HasPrefix(vv, "func(") {
 		fmt.Fprintf(w, "%s.(%s)", v, typ)
@@ -2250,8 +2255,10 @@ func (a *AssertExpr) emit(w io.Writer) {
 			a.Expr.emit(w)
 			return
 		}
+		usesPrint = true
+		io.WriteString(w, "fmt.Sprint(")
 		a.Expr.emit(w)
-		io.WriteString(w, ".(string)")
+		io.WriteString(w, ")")
 		return
 	}
 	if strings.HasPrefix(a.Type, "[]") {
@@ -3604,7 +3611,19 @@ func compileIfExpr(ie *parser.IfExpr, env *types.Env) (Expr, error) {
 			return nil, err
 		}
 	}
-	typ := toGoTypeFromType(types.IfExprType(ie, env))
+	typ := toGoTypeFromType(types.ExprType(ie.Then, env))
+	other := ""
+	if ie.ElseIf != nil {
+		other = toGoTypeFromType(types.IfExprType(ie.ElseIf, env))
+	} else if ie.Else != nil {
+		other = toGoTypeFromType(types.ExprType(ie.Else, env))
+	}
+	if other != "" && other != typ {
+		typ = "any"
+	}
+	if typ == "" {
+		typ = "any"
+	}
 	return &IfExpr{Cond: cond, Then: thenExpr, Else: elseExpr, Type: typ}, nil
 }
 
@@ -5115,6 +5134,18 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 									right = &CallExpr{Func: "fmt.Sprint", Args: []Expr{right}}
 								}
 								newExpr = &BinaryExpr{Left: left, Op: "+", Right: right}
+							}
+						}
+					}
+					if newExpr == nil && ops[i].Op == "+" {
+						if _, ok := typesList[i].(types.AnyType); ok {
+							if _, ok2 := typesList[i+1].(types.AnyType); ok2 {
+								usesPrint = true
+								left = &CallExpr{Func: "fmt.Sprint", Args: []Expr{left}}
+								right = &CallExpr{Func: "fmt.Sprint", Args: []Expr{right}}
+								newExpr = &BinaryExpr{Left: left, Op: "+", Right: right}
+								typesList[i] = types.StringType{}
+								typesList[i+1] = types.StringType{}
 							}
 						}
 					}

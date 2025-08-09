@@ -1,0 +1,5 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/graphs/graph_adjacency_matrix.go:218:41: cannot use idx (variable of interface type any) as int value in argument to decrement_indices: need type assertion
+../../../tests/algorithms/transpiler/Go/graphs/graph_adjacency_matrix.go:374:20: cannot use map[any]any{} (value of type map[any]any) as map[int]int value in assignment
+../../../tests/algorithms/transpiler/Go/graphs/graph_adjacency_matrix.go:375:16: cannot use []any{} (value of type []any) as [][]int value in assignment

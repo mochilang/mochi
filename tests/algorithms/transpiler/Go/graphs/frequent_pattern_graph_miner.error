@@ -1,0 +1,13 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/graphs/frequent_pattern_graph_miner.go:294:16: undefined: toi
+../../../tests/algorithms/transpiler/Go/graphs/frequent_pattern_graph_miner.go:502:22: cannot use i_code (variable of interface type any) as string value in argument to contains_bits: need type assertion
+../../../tests/algorithms/transpiler/Go/graphs/frequent_pattern_graph_miner.go:502:30: cannot use j_code (variable of interface type any) as string value in argument to contains_bits: need type assertion
+../../../tests/algorithms/transpiler/Go/graphs/frequent_pattern_graph_miner.go:504:13: cannot use i_code (variable of interface type any) as string value in map index: need type assertion
+../../../tests/algorithms/transpiler/Go/graphs/frequent_pattern_graph_miner.go:504:36: cannot use i_code (variable of interface type any) as string value in map index: need type assertion
+../../../tests/algorithms/transpiler/Go/graphs/frequent_pattern_graph_miner.go:504:45: cannot use j_code (variable of interface type any) as string value in argument to append: need type assertion
+../../../tests/algorithms/transpiler/Go/graphs/frequent_pattern_graph_miner.go:506:13: cannot use i_code (variable of interface type any) as string value in map index: need type assertion
+../../../tests/algorithms/transpiler/Go/graphs/frequent_pattern_graph_miner.go:506:23: cannot use []any{…} (value of type []any) as []string value in assignment
+../../../tests/algorithms/transpiler/Go/graphs/frequent_pattern_graph_miner.go:507:26: cannot use i_code (variable of interface type any) as string value in argument to contains: need type assertion
+../../../tests/algorithms/transpiler/Go/graphs/frequent_pattern_graph_miner.go:508:28: cannot use i_code (variable of interface type any) as string value in argument to append: need type assertion
+../../../tests/algorithms/transpiler/Go/graphs/frequent_pattern_graph_miner.go:508:28: too many errors

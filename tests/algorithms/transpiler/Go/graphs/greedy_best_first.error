@@ -1,0 +1,8 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/graphs/greedy_best_first.go:114:9: cannot use (math.Abs((x1 - x2)) + math.Abs((y1 - y2))) (value of type float64) as int value in return statement
+../../../tests/algorithms/transpiler/Go/graphs/greedy_best_first.go:114:19: cannot use (x1 - x2) (value of type int) as float64 value in argument to math.Abs
+../../../tests/algorithms/transpiler/Go/graphs/greedy_best_first.go:114:41: cannot use (y1 - y2) (value of type int) as float64 value in argument to math.Abs
+../../../tests/algorithms/transpiler/Go/graphs/greedy_best_first.go:372:31: cannot use child (variable of interface type any) as Node value in argument to contains: need type assertion
+../../../tests/algorithms/transpiler/Go/graphs/greedy_best_first.go:373:42: cannot convert child (variable of interface type any) to type Node: need type assertion
+../../../tests/algorithms/transpiler/Go/graphs/greedy_best_first.go:510:31: cannot convert p (variable of interface type any) to type Pos: need type assertion

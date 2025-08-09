@@ -1,0 +1,7 @@
+[94;1mtests/github/TheAlgorithms/Mochi/graphs/breadth_first_search_shortest_path_2.mochi[0;22m
+   [33mtest[0m path found                   ... [32mok[0m (1.0ms)
+   [33mtest[0m path to self                   ... [32mok[0m (1.0ms)
+   [33mtest[0m path not found                   ... [32mok[0m (1.0ms)
+   [33mtest[0m distance found                   ... [32mok[0m (1.0ms)
+   [33mtest[0m distance to self                   ... [32mok[0m (1.0ms)
+   [33mtest[0m distance not found                   ... [32mok[0m (1.0ms)

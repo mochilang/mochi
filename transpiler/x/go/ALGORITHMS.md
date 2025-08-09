@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 293/1077
-Last updated: 2025-08-08 19:10 +0700
+Completed programs: 329/1077
+Last updated: 2025-08-09 10:14 +0700
 
 Checklist:
 
@@ -391,57 +391,57 @@ Checklist:
 | 382 | fractals/mandelbrot |   |  |  |
 | 383 | fractals/sierpinski_triangle |   |  |  |
 | 384 | fractals/vicsek |   |  |  |
-| 385 | fuzzy_logic/fuzzy_operations |   |  |  |
-| 386 | genetic_algorithm/basic_string |   |  |  |
-| 387 | geodesy/haversine_distance |   |  |  |
-| 388 | geodesy/lamberts_ellipsoidal_distance |   |  |  |
-| 389 | geometry/geometry |   |  |  |
-| 390 | graphics/bezier_curve |   |  |  |
-| 391 | graphics/butterfly_pattern |   |  |  |
+| 385 | fuzzy_logic/fuzzy_operations | ✓ | 523.0µs | 1.55KB |
+| 386 | genetic_algorithm/basic_string | ✓ | 419.0µs | 1.01KB |
+| 387 | geodesy/haversine_distance | ✓ | 358.0µs | 1.01KB |
+| 388 | geodesy/lamberts_ellipsoidal_distance | ✓ | 1.0ms | 1.07KB |
+| 389 | geometry/geometry | ✓ | 418.0µs | 1.42KB |
+| 390 | graphics/bezier_curve | ✓ | 404.0µs | 1.93KB |
+| 391 | graphics/butterfly_pattern | ✓ | 620.0µs | 4.20KB |
 | 392 | graphics/digital_differential_analyzer_line |   |  |  |
 | 393 | graphics/vector3_for_2d_rendering |   |  |  |
-| 394 | graphs/a_star |   |  |  |
-| 395 | graphs/ant_colony_optimization_algorithms |   |  |  |
-| 396 | graphs/articulation_points |   |  |  |
+| 394 | graphs/a_star | ✓ | 872.0µs | 7.88KB |
+| 395 | graphs/ant_colony_optimization_algorithms | ✓ | 4.0ms | 286.30KB |
+| 396 | graphs/articulation_points | ✓ | 299.0µs | 1.18KB |
 | 397 | graphs/basic_graphs |   |  |  |
-| 398 | graphs/bellman_ford |   |  |  |
-| 399 | graphs/bi_directional_dijkstra |   |  |  |
+| 398 | graphs/bellman_ford | ✓ | 398.0µs | 1.20KB |
+| 399 | graphs/bi_directional_dijkstra | ✓ | 553.0µs | 2.46KB |
 | 400 | graphs/bidirectional_a_star |   |  |  |
 | 401 | graphs/bidirectional_breadth_first_search |   |  |  |
 | 402 | graphs/bidirectional_search |   |  |  |
 | 403 | graphs/boruvka |   |  |  |
-| 404 | graphs/breadth_first_search |   |  |  |
-| 405 | graphs/breadth_first_search_2 |   |  |  |
-| 406 | graphs/breadth_first_search_shortest_path |   |  |  |
-| 407 | graphs/breadth_first_search_shortest_path_2 |   |  |  |
+| 404 | graphs/breadth_first_search | ✓ | 824.0µs | 3.75KB |
+| 405 | graphs/breadth_first_search_2 | ✓ | 349.0µs | 2.40KB |
+| 406 | graphs/breadth_first_search_shortest_path | ✓ | 541.0µs | 2.27KB |
+| 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 1.0ms | 7.88KB |
 | 408 | graphs/breadth_first_search_zero_one_shortest_path |   |  |  |
-| 409 | graphs/check_bipatrite |   |  |  |
-| 410 | graphs/check_cycle |   |  |  |
-| 411 | graphs/connected_components |   |  |  |
+| 409 | graphs/check_bipatrite | ✓ | 617.0µs | 1.45KB |
+| 410 | graphs/check_cycle | ✓ | 420.0µs | 1.27KB |
+| 411 | graphs/connected_components | ✓ | 635.0µs | 2.77KB |
 | 412 | graphs/deep_clone_graph |   |  |  |
-| 413 | graphs/depth_first_search |   |  |  |
-| 414 | graphs/depth_first_search_2 |   |  |  |
-| 415 | graphs/dijkstra |   |  |  |
-| 416 | graphs/dijkstra_2 |   |  |  |
-| 417 | graphs/dijkstra_algorithm |   |  |  |
-| 418 | graphs/dijkstra_alternate |   |  |  |
-| 419 | graphs/dijkstra_binary_grid |   |  |  |
-| 420 | graphs/dinic |   |  |  |
-| 421 | graphs/directed_and_undirected_weighted_graph |   |  |  |
+| 413 | graphs/depth_first_search | ✓ | 752.0µs | 4.11KB |
+| 414 | graphs/depth_first_search_2 | ✓ | 989.0µs | 2.09KB |
+| 415 | graphs/dijkstra | ✓ | 751.0µs | 8.12KB |
+| 416 | graphs/dijkstra_2 | ✓ | 641.0µs | 1.04KB |
+| 417 | graphs/dijkstra_algorithm | ✓ | 404.0µs | 1.40KB |
+| 418 | graphs/dijkstra_alternate | ✓ | 512.0µs | 2.32KB |
+| 419 | graphs/dijkstra_binary_grid | ✓ | 852.0µs | 4.56KB |
+| 420 | graphs/dinic | ✓ | 794.0µs | 19.52KB |
+| 421 | graphs/directed_and_undirected_weighted_graph | ✓ | 682.0µs | 2.98KB |
 | 422 | graphs/edmonds_karp_multiple_source_and_sink |   |  |  |
-| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph |   |  |  |
+| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 859.0µs | 8.45KB |
 | 424 | graphs/even_tree |   |  |  |
-| 425 | graphs/finding_bridges |   |  |  |
+| 425 | graphs/finding_bridges | ✓ | 917.0µs | 9.36KB |
 | 426 | graphs/frequent_pattern_graph_miner |   |  |  |
 | 427 | graphs/g_topological_sort |   |  |  |
-| 428 | graphs/gale_shapley_bigraph |   |  |  |
-| 429 | graphs/graph_adjacency_list |   |  |  |
+| 428 | graphs/gale_shapley_bigraph | ✓ | 683.0µs | 1.92KB |
+| 429 | graphs/graph_adjacency_list | ✓ | 855.0µs | 5.41KB |
 | 430 | graphs/graph_adjacency_matrix |   |  |  |
-| 431 | graphs/graph_list |   |  |  |
-| 432 | graphs/graphs_floyd_warshall |   |  |  |
+| 431 | graphs/graph_list | ✓ | 885.0µs | 3.27KB |
+| 432 | graphs/graphs_floyd_warshall | ✓ | 413.0µs | 1.77KB |
 | 433 | graphs/greedy_best_first |   |  |  |
-| 434 | graphs/greedy_min_vertex_cover |   |  |  |
-| 435 | graphs/kahns_algorithm_long |   |  |  |
+| 434 | graphs/greedy_min_vertex_cover | ✓ | 802.0µs | 4.09KB |
+| 435 | graphs/kahns_algorithm_long | ✓ | 389.0µs | 1.53KB |
 | 436 | graphs/kahns_algorithm_topo |   |  |  |
 | 437 | graphs/karger |   |  |  |
 | 438 | graphs/lanczos_eigenvectors |   |  |  |
