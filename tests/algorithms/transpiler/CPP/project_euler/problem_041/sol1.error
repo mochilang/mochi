@@ -1,0 +1,14 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/transpiler/CPP/project_euler/problem_041/sol1.cpp:88:215: warning: multi-character character constant [-Wmultichar]
+   88 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/project_euler/problem_041/sol1.cpp:88:251: warning: multi-character character constant [-Wmultichar]
+   88 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/project_euler/problem_041/sol1.cpp: In function ‘int64_t solution(int64_t)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/project_euler/problem_041/sol1.cpp:192:75: error: cannot bind non-const lvalue reference of type ‘std::vector<long int>&’ to an rvalue of type ‘std::vector<long int>’
+  192 |     std::vector<int64_t> primes = collect_primes(digits, int64_t(0), std::vector<int64_t>{});
+      |                                                                           ^~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/project_euler/problem_041/sol1.cpp:155:110: note:   initializing argument 3 of ‘std::vector<long int> collect_primes(const std::vector<long int>&, int64_t, std::vector<long int>&)’
+  155 | std::vector<int64_t> collect_primes(const std::vector<int64_t>& nums, int64_t current, std::vector<int64_t>& primes) {
+      |                                                                                        ~~~~~~~~~~~~~~~~~~~~~~^~~~~~
