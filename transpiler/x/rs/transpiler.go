@@ -409,7 +409,11 @@ func (c *CallExpr) emit(w io.Writer) {
 			}
 			if strings.HasPrefix(pt, "&") {
 				if nr, ok := a.(*NameRef); ok {
-					if cpt, ok2 := currentParamTypes[nr.Name]; ok2 && strings.HasPrefix(cpt, "&") {
+					if _, ok2 := globalRenameBack[nr.Name]; ok2 && strings.Contains(pt, "HashMap<") {
+						io.WriteString(w, "&*")
+						io.WriteString(w, nr.Name)
+						io.WriteString(w, ".lock().unwrap()")
+					} else if cpt, ok2 := currentParamTypes[nr.Name]; ok2 && strings.HasPrefix(cpt, "&") {
 						a.emit(w)
 					} else if vt, ok2 := varTypes[nr.Name]; ok2 && strings.HasPrefix(vt, "&") {
 						a.emit(w)
@@ -2098,7 +2102,25 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 				io.WriteString(w, ".lock().unwrap(); let _val = ")
 				lockedMap = nr.Name
 				indexLHS = old
-				s.Value.emit(w)
+				if strings.Contains(inferType(idx.Target), ", String>") {
+					switch v := s.Value.(type) {
+					case *StringLit:
+						io.WriteString(w, "String::from(")
+						v.emit(w)
+						io.WriteString(w, ")")
+					case *NameRef:
+						if inferType(s.Value) == "&str" {
+							v.emit(w)
+							io.WriteString(w, ".to_string()")
+						} else {
+							s.Value.emit(w)
+						}
+					default:
+						s.Value.emit(w)
+					}
+				} else {
+					s.Value.emit(w)
+				}
 				lockedMap = ""
 				io.WriteString(w, "; _map.insert(")
 				switch inferType(idx.Index) {
@@ -2144,7 +2166,25 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 			}
 			io.WriteString(w, ", ")
 			indexLHS = old
-			s.Value.emit(w)
+			if strings.Contains(inferType(idx.Target), ", String>") {
+				switch v := s.Value.(type) {
+				case *StringLit:
+					io.WriteString(w, "String::from(")
+					v.emit(w)
+					io.WriteString(w, ")")
+				case *NameRef:
+					if inferType(s.Value) == "&str" {
+						v.emit(w)
+						io.WriteString(w, ".to_string()")
+					} else {
+						s.Value.emit(w)
+					}
+				default:
+					s.Value.emit(w)
+				}
+			} else {
+				s.Value.emit(w)
+			}
 			io.WriteString(w, ")")
 			indexLHS = old
 			return
@@ -3211,7 +3251,7 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			globalRenames[stmt.Let.Name] = newName
 			globalRenameBack[newName] = stmt.Let.Name
 			vd.Name = newName
-			globalVars[stmt.Let.Name] = true
+			globalVars[newName] = true
 			varTypes[newName] = typ
 			if strings.HasPrefix(typ, "HashMap") {
 				useLazy = true
@@ -3356,7 +3396,7 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			globalRenames[stmt.Var.Name] = newName
 			globalRenameBack[newName] = stmt.Var.Name
 			vd.Name = newName
-			globalVars[stmt.Var.Name] = true
+			globalVars[newName] = true
 			varTypes[newName] = typ
 			if strings.HasPrefix(typ, "HashMap") {
 				useLazy = true
