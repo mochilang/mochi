@@ -1918,15 +1918,9 @@ func (a *AppendExpr) emit(w io.Writer) {
 	if !inFunction {
 		cap = "[]"
 	}
-	if _, ok := a.List.(*VarRef); ok {
-		io.WriteString(w, "("+cap+"{ auto& __tmp = ")
-		a.List.emit(w)
-		io.WriteString(w, "; __tmp.push_back(")
-	} else {
-		io.WriteString(w, "("+cap+"{ auto __tmp = ")
-		a.List.emit(w)
-		io.WriteString(w, "; __tmp.push_back(")
-	}
+	io.WriteString(w, "("+cap+"{ auto __tmp = ")
+	a.List.emit(w)
+	io.WriteString(w, "; __tmp.push_back(")
 	if strings.HasPrefix(elemType, "std::shared_ptr<") {
 		if sl, ok := elem.(*StructLit); ok {
 			fmt.Fprintf(w, "std::make_shared<%s>(", sl.Name)
