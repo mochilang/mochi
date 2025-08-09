@@ -3433,12 +3433,19 @@ type SliceExpr struct {
 func (sli *SliceExpr) emit(w io.Writer) {
 	switch {
 	case isStringExpr(sli.Value):
+		// Use helper that safely slices strings by rune index
+		// and clamps out-of-range values. This mirrors Mochi's
+		// substring semantics and avoids panics from Java's
+		// String.substring when indices exceed the string length.
+		needSubstr = true
+		needRuneLen = true
+		fmt.Fprint(w, "_substr(")
 		sli.Value.emit(w)
-		fmt.Fprint(w, ".substring(")
+		fmt.Fprint(w, ", (int)(")
 		sli.Start.emit(w)
-		fmt.Fprint(w, ", ")
+		fmt.Fprint(w, "), (int)(")
 		sli.End.emit(w)
-		fmt.Fprint(w, ")")
+		fmt.Fprint(w, "))")
 	case isArrayExpr(sli.Value):
 		fmt.Fprint(w, "java.util.Arrays.copyOfRange(")
 		sli.Value.emit(w)
@@ -7071,6 +7078,10 @@ func Emit(prog *Program) []byte {
 	}
 	if needSubstr {
 		buf.WriteString("\n    static String _substr(String s, int i, int j) {\n")
+		buf.WriteString("        int len = _runeLen(s);\n")
+		buf.WriteString("        if (i < 0) i = 0;\n")
+		buf.WriteString("        if (j > len) j = len;\n")
+		buf.WriteString("        if (i > j) i = j;\n")
 		buf.WriteString("        int start = s.offsetByCodePoints(0, i);\n")
 		buf.WriteString("        int end = s.offsetByCodePoints(0, j);\n")
 		buf.WriteString("        return s.substring(start, end);\n")

@@ -1,12 +1,3 @@
-Exception in thread "main" java.lang.StringIndexOutOfBoundsException: Range [7, 10) out of bounds for length 9
-	at java.base/jdk.internal.util.Preconditions$1.apply(Preconditions.java:55)
-	at java.base/jdk.internal.util.Preconditions$1.apply(Preconditions.java:52)
-	at java.base/jdk.internal.util.Preconditions$4.apply(Preconditions.java:213)
-	at java.base/jdk.internal.util.Preconditions$4.apply(Preconditions.java:210)
-	at java.base/jdk.internal.util.Preconditions.outOfBounds(Preconditions.java:98)
-	at java.base/jdk.internal.util.Preconditions.outOfBoundsCheckFromToIndex(Preconditions.java:112)
-	at java.base/jdk.internal.util.Preconditions.checkFromToIndex(Preconditions.java:349)
-	at java.base/java.lang.String.checkBoundsBeginEnd(String.java:4865)
-	at java.base/java.lang.String.substring(String.java:2834)
-	at Main.allConstruct(Main.java:21)
-	at Main.main(Main.java:45)
+[[jwa, j, a, lapa], [j, w, a, j, a, lapa]]
+[[raj, amat, i], [raja, ma, t, i]]
+[[hex, ago, no, s, auru, s], [h, ex, ago, no, s, auru, s], [hex, ag, o, no, s, auru, s], [h, ex, ag, o, no, s, auru, s]]

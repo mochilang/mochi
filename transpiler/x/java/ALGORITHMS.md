@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-09 10:59 GMT+7
+Last updated: 2025-08-09 16:08 GMT+7
 
-## Algorithms Golden Test Checklist (919/1077)
+## Algorithms Golden Test Checklist (920/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -308,7 +308,7 @@ Last updated: 2025-08-09 10:59 GMT+7
 | 299 | divide_and_conquer/strassen_matrix_multiplication | ✓ | 62.0ms | 46.61KB |
 | 300 | docs/conf | ✓ | 19.0ms | 32.95KB |
 | 301 | dynamic_programming/abbreviation | ✓ | 21.0ms | 1.13KB |
-| 302 | dynamic_programming/all_construct | error |  |  |
+| 302 | dynamic_programming/all_construct | ✓ | 28.0ms | 48.29KB |
 | 303 | dynamic_programming/bitmask | ✓ | 40.0ms | 57.29KB |
 | 304 | dynamic_programming/catalan_numbers | ✓ | 29.0ms | 46.14KB |
 | 305 | dynamic_programming/climbing_stairs | ✓ | 16.0ms | 448B |
