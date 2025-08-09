@@ -1,0 +1,54 @@
+warning: variable "count" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 55 │       {count, i2, i3, i5, next_2, next_3, next_5, ugly_nums} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/ugly_numbers.exs:55:8: Main.ugly_numbers/1
+
+    warning: variable "i2" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 55 │       {count, i2, i3, i5, next_2, next_3, next_5, ugly_nums} = try do
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/ugly_numbers.exs:55:15: Main.ugly_numbers/1
+
+    warning: variable "i3" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 55 │       {count, i2, i3, i5, next_2, next_3, next_5, ugly_nums} = try do
+    │                   ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/ugly_numbers.exs:55:19: Main.ugly_numbers/1
+
+    warning: variable "i5" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 55 │       {count, i2, i3, i5, next_2, next_3, next_5, ugly_nums} = try do
+    │                       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/ugly_numbers.exs:55:23: Main.ugly_numbers/1
+
+    warning: variable "next_2" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 55 │       {count, i2, i3, i5, next_2, next_3, next_5, ugly_nums} = try do
+    │                           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/ugly_numbers.exs:55:27: Main.ugly_numbers/1
+
+    warning: variable "next_3" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 55 │       {count, i2, i3, i5, next_2, next_3, next_5, ugly_nums} = try do
+    │                                   ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/ugly_numbers.exs:55:35: Main.ugly_numbers/1
+
+    warning: variable "next_5" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 55 │       {count, i2, i3, i5, next_2, next_3, next_5, ugly_nums} = try do
+    │                                           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/ugly_numbers.exs:55:43: Main.ugly_numbers/1
+
+1536
+1
+36
+1
+16200

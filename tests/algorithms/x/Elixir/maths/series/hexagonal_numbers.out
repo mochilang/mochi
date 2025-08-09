@@ -1,0 +1,9 @@
+warning: variable "n" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 19 │       {n, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/series/hexagonal_numbers.exs:19:8: Main.hexagonal_numbers/1
+
+[0, 1, 6, 15, 28]
+[0, 1, 6, 15, 28, 45, 66, 91, 120, 153]

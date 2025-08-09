@@ -1,0 +1,55 @@
+warning: variable "msg" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 10 │   def panic(msg) do
+    │             ~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/harshad_numbers.exs:10:13: Main.panic/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 31 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/harshad_numbers.exs:31:7: Main.char_to_value/1
+
+    warning: variable "n" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 63 │       {n, result} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/harshad_numbers.exs:63:8: Main.int_to_base/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 94 │       {i, value} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/harshad_numbers.exs:94:8: Main.base_to_int/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 123 │       {i, total} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/harshad_numbers.exs:123:8: Main.sum_of_digits/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 160 │       {i, numbers} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/harshad_numbers.exs:160:8: Main.harshad_numbers_in_base/2
+
+"0"
+"10111"
+"213"
+"A7"
+"13"
+"30"
+"1001"
+["1", "10", "100", "110", "1000", "1010", "1100"]
+["1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B"]
+["1", "2", "3", "10", "12", "20", "21"]
+true
+true
+false

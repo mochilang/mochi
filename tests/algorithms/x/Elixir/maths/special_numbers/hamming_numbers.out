@@ -1,0 +1,31 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 87 │       {hamming_list, i, index, j, k} = try do
+    │                      ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/hamming_numbers.exs:87:22: Main.hamming/1
+
+    warning: variable "index" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 87 │       {hamming_list, i, index, j, k} = try do
+    │                         ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/hamming_numbers.exs:87:25: Main.hamming/1
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 87 │       {hamming_list, i, index, j, k} = try do
+    │                                ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/hamming_numbers.exs:87:32: Main.hamming/1
+
+    warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 87 │       {hamming_list, i, index, j, k} = try do
+    │                                   ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/hamming_numbers.exs:87:35: Main.hamming/1
+
+[1, 2, 3, 4, 5]
+[1, 2, 3, 4, 5, 6, 8, 9, 10, 12]
+[1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 16, 18, 20, 24]
