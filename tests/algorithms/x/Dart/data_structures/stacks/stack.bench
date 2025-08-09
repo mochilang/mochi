@@ -1,10 +1,1 @@
-../../../tests/algorithms/x/Dart/data_structures/stacks/stack.dart:115:12: Error: The method 'contains' isn't defined for the class 'Stack'.
- - 'Stack' is from '../../../tests/algorithms/x/Dart/data_structures/stacks/stack.dart'.
-Try correcting the name to the name of an existing method, or defining a method named 'contains'.
-  print((s.contains(1)).toString());
-           ^^^^^^^^
-../../../tests/algorithms/x/Dart/data_structures/stacks/stack.dart:116:12: Error: The method 'contains' isn't defined for the class 'Stack'.
- - 'Stack' is from '../../../tests/algorithms/x/Dart/data_structures/stacks/stack.dart'.
-Try correcting the name to the name of an existing method, or defining a method named 'contains'.
-  print((s.contains(9)).toString());
-           ^^^^^^^^
+{"duration_us":20179,"memory_bytes":10747904,"name":"_start"}

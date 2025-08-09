@@ -1,3 +1,4 @@
+run: exit status 255
 Unhandled exception:
 RangeError (length): Invalid value: Not in inclusive range 0..2: 3
 #0      List.[] (dart:core-patch/growable_array.dart)

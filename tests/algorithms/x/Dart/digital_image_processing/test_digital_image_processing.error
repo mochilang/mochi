@@ -1,4 +1,4 @@
 run: exit status 254
-../../../tests/algorithms/x/Dart/digital_image_processing/test_digital_image_processing.dart:109:31: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-    row = (row..add(int.parse(acc)));
-                              ^
+../../../tests/algorithms/x/Dart/digital_image_processing/test_digital_image_processing.dart:112:30: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    row = [...row, int.parse(acc)];
+                             ^

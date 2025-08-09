@@ -1,1 +1,18 @@
-{"duration_us":18673,"memory_bytes":5242880,"name":"_start"}
+../../../tests/algorithms/x/Dart/digital_image_processing/morphological_operations/dilation_operation.dart:118:5: Error: Setter not found: 'row'.
+    row = ([] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
+    ^^^
+../../../tests/algorithms/x/Dart/digital_image_processing/morphological_operations/dilation_operation.dart:134:15: Error: Undefined name 'row'.
+    row = [...row, 1];
+              ^^^
+../../../tests/algorithms/x/Dart/digital_image_processing/morphological_operations/dilation_operation.dart:134:5: Error: Setter not found: 'row'.
+    row = [...row, 1];
+    ^^^
+../../../tests/algorithms/x/Dart/digital_image_processing/morphological_operations/dilation_operation.dart:136:15: Error: Undefined name 'row'.
+    row = [...row, 0];
+              ^^^
+../../../tests/algorithms/x/Dart/digital_image_processing/morphological_operations/dilation_operation.dart:136:5: Error: Setter not found: 'row'.
+    row = [...row, 0];
+    ^^^
+../../../tests/algorithms/x/Dart/digital_image_processing/morphological_operations/dilation_operation.dart:140:27: Error: Undefined name 'row'.
+    output = ([...output, row] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+                          ^^^

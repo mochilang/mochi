@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-08 20:56 GMT+7
+Last updated: 2025-08-09 08:41 GMT+7
 
-## Algorithms Golden Test Checklist (865/1077)
+## Algorithms Golden Test Checklist (864/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 16.068ms | 2.7 MB |
@@ -256,56 +256,56 @@ Last updated: 2025-08-08 20:56 GMT+7
 | 247 | data_structures/stacks/balanced_parentheses | ✓ | 17.867ms | 1.5 MB |
 | 248 | data_structures/stacks/dijkstras_two_stack_algorithm | ✓ | 25.169ms | 10.4 MB |
 | 249 | data_structures/stacks/infix_to_postfix_conversion | ✓ | 28.045ms | 10.1 MB |
-| 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ | 13.814ms | 2.5 MB |
-| 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 11.062ms | 2.4 MB |
-| 252 | data_structures/stacks/lexicographical_numbers | ✓ | 13.84ms | 3.6 MB |
-| 253 | data_structures/stacks/next_greater_element |   |  |  |
-| 254 | data_structures/stacks/postfix_evaluation | ✓ | 13.254ms | 3.0 MB |
-| 255 | data_structures/stacks/prefix_evaluation | ✓ |  |  |
-| 256 | data_structures/stacks/stack | ✓ |  |  |
-| 257 | data_structures/stacks/stack_using_two_queues | ✓ | 20.412ms | 9.8 MB |
-| 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ |  |  |
-| 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 25.076ms | 10.8 MB |
-| 260 | data_structures/stacks/stock_span_problem | ✓ | 22.53ms | 2.6 MB |
-| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 26.762ms | 10.9 MB |
-| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 19.863ms | 2.4 MB |
-| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 19.469ms | 1.9 MB |
-| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 12.657ms | 3.2 MB |
-| 265 | data_structures/trie/radix_tree | ✓ | 18.374ms | 4.9 MB |
-| 266 | data_structures/trie/trie | ✓ | 16.264ms | 4.2 MB |
-| 267 | digital_image_processing/change_brightness | ✓ | 27.429ms | 9.2 MB |
-| 268 | digital_image_processing/change_contrast | ✓ | 18.718ms | 2.6 MB |
-| 269 | digital_image_processing/convert_to_negative | ✓ | 27.986ms | 10.2 MB |
-| 270 | digital_image_processing/dithering/burkes | ✓ | 27.856ms | 3.5 MB |
-| 271 | digital_image_processing/edge_detection/canny | ✓ | 19.485ms | 4.1 MB |
+| 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ | 10.489ms | 740.0 KB |
+| 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 12.003ms | 1.8 MB |
+| 252 | data_structures/stacks/lexicographical_numbers | ✓ | 14.49ms | 2.3 MB |
+| 253 | data_structures/stacks/next_greater_element | ✓ | 16.67ms | 3.2 MB |
+| 254 | data_structures/stacks/postfix_evaluation | ✓ | 14.484ms | 2.9 MB |
+| 255 | data_structures/stacks/prefix_evaluation | ✓ | 13.268ms | 3.0 MB |
+| 256 | data_structures/stacks/stack | ✓ | 20.179ms | 10.2 MB |
+| 257 | data_structures/stacks/stack_using_two_queues | ✓ | 13.082ms | 2.5 MB |
+| 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 9.007ms | 3.9 MB |
+| 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 12.225ms | 7.3 MB |
+| 260 | data_structures/stacks/stock_span_problem | ✓ | 10.066ms | 4.0 MB |
+| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 8.806ms | 3.5 MB |
+| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 15.498ms | 3.0 MB |
+| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 9.443ms | 2.4 MB |
+| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 11.8ms | 2.2 MB |
+| 265 | data_structures/trie/radix_tree | error |  |  |
+| 266 | data_structures/trie/trie | ✓ | 11.357ms | 4.4 MB |
+| 267 | digital_image_processing/change_brightness | ✓ | 21.813ms | 10.0 MB |
+| 268 | digital_image_processing/change_contrast | ✓ | 18.573ms | 10.5 MB |
+| 269 | digital_image_processing/convert_to_negative | ✓ | 19.433ms | 10.2 MB |
+| 270 | digital_image_processing/dithering/burkes | ✓ | 12.419ms | 4.2 MB |
+| 271 | digital_image_processing/edge_detection/canny | ✓ | 12.687ms | 4.8 MB |
 | 272 | digital_image_processing/filters/bilateral_filter | error |  |  |
 | 273 | digital_image_processing/filters/convolve | error |  |  |
 | 274 | digital_image_processing/filters/gabor_filter | error |  |  |
 | 275 | digital_image_processing/filters/gaussian_filter | error |  |  |
-| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 16.049ms | 3.8 MB |
-| 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 17.952ms | 1.8 MB |
-| 278 | digital_image_processing/filters/median_filter | ✓ | 21.529ms | 2.5 MB |
-| 279 | digital_image_processing/filters/sobel_filter | ✓ | 20.224ms | 4.5 MB |
-| 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 29.341ms | 10.0 MB |
-| 281 | digital_image_processing/index_calculation | ✓ | 20.51ms | 9.7 MB |
-| 282 | digital_image_processing/morphological_operations/dilation_operation | ✓ | 18.673ms | 5.0 MB |
-| 283 | digital_image_processing/morphological_operations/erosion_operation | ✓ | 26.594ms | 4.9 MB |
-| 284 | digital_image_processing/resize/resize | ✓ | 31.976ms | 9.9 MB |
-| 285 | digital_image_processing/rotation/rotation | ✓ | 17.218ms | 4.6 MB |
-| 286 | digital_image_processing/sepia | ✓ | 21.209ms | 2.7 MB |
+| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 14.196ms | 2.7 MB |
+| 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 10.335ms | 3.8 MB |
+| 278 | digital_image_processing/filters/median_filter | ✓ | 10.979ms | 3.8 MB |
+| 279 | digital_image_processing/filters/sobel_filter | ✓ | 12.954ms | 5.0 MB |
+| 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 19.169ms | 4.7 MB |
+| 281 | digital_image_processing/index_calculation | ✓ | 15.7ms | 9.6 MB |
+| 282 | digital_image_processing/morphological_operations/dilation_operation | error |  |  |
+| 283 | digital_image_processing/morphological_operations/erosion_operation | ✓ | 13.467ms | 4.5 MB |
+| 284 | digital_image_processing/resize/resize | ✓ | 20.322ms | 9.6 MB |
+| 285 | digital_image_processing/rotation/rotation | ✓ | 17.729ms | 4.4 MB |
+| 286 | digital_image_processing/sepia | ✓ | 13.374ms | 8.6 MB |
 | 287 | digital_image_processing/test_digital_image_processing | error |  |  |
-| 288 | divide_and_conquer/closest_pair_of_points | ✓ | 18.131ms | 4.4 MB |
-| 289 | divide_and_conquer/convex_hull | error |  |  |
-| 290 | divide_and_conquer/heaps_algorithm | ✓ | 17.485ms | 4.2 MB |
-| 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 16.695ms | 4.0 MB |
+| 288 | divide_and_conquer/closest_pair_of_points | ✓ | 12.533ms | 4.8 MB |
+| 289 | divide_and_conquer/convex_hull | ✓ | 11.466ms | 1.7 MB |
+| 290 | divide_and_conquer/heaps_algorithm | ✓ | 15.793ms | 2.3 MB |
+| 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 10.537ms | 4.1 MB |
 | 292 | divide_and_conquer/inversions | error |  |  |
-| 293 | divide_and_conquer/kth_order_statistic | ✓ | 13.498ms | 3.4 MB |
-| 294 | divide_and_conquer/max_difference_pair | ✓ | 13.493ms | 3.5 MB |
-| 295 | divide_and_conquer/max_subarray | ✓ | 30.544ms | 10.4 MB |
-| 296 | divide_and_conquer/mergesort | ✓ | 28.507ms | 10.2 MB |
-| 297 | divide_and_conquer/peak | ✓ | 13.552ms | 3.1 MB |
-| 298 | divide_and_conquer/power | ✓ | 10.589ms | 2.0 MB |
-| 299 | divide_and_conquer/strassen_matrix_multiplication | ✓ | 50.916ms | 11.9 MB |
+| 293 | divide_and_conquer/kth_order_statistic | ✓ | 8.836ms | 3.1 MB |
+| 294 | divide_and_conquer/max_difference_pair | ✓ | 10.107ms | 3.6 MB |
+| 295 | divide_and_conquer/max_subarray | ✓ | 11.981ms | 1.7 MB |
+| 296 | divide_and_conquer/mergesort | ✓ | 14.471ms | 3.8 MB |
+| 297 | divide_and_conquer/peak | ✓ | 10.547ms | 1.7 MB |
+| 298 | divide_and_conquer/power | ✓ | 10.076ms | 3.2 MB |
+| 299 | divide_and_conquer/strassen_matrix_multiplication | error |  |  |
 | 300 | docs/conf | ✓ | 19.809ms | 9.7 MB |
 | 301 | dynamic_programming/abbreviation | ✓ | 23.289ms | 2.2 MB |
 | 302 | dynamic_programming/all_construct | ✓ | 28.336ms | 3.6 MB |

@@ -1,3 +1,4 @@
+run: exit status 254
 ../../../tests/algorithms/x/Dart/divide_and_conquer/strassen_matrix_multiplication.dart:101:5: Error: Setter not found: 'left_row'.
     left_row = ([] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
     ^^^^^^^^

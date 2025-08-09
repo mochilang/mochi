@@ -1,12 +1,12 @@
-../../../tests/algorithms/x/Dart/divide_and_conquer/inversions.dart:111:52: Error: A value of type 'int' can't be assigned to a variable of type 'InvResult'.
+../../../tests/algorithms/x/Dart/divide_and_conquer/inversions.dart:114:52: Error: A value of type 'int' can't be assigned to a variable of type 'InvResult'.
  - 'InvResult' is from '../../../tests/algorithms/x/Dart/divide_and_conquer/inversions.dart'.
 InvResult nrec = count_inversions_recursive(arr_1).inv;
                                                    ^
-../../../tests/algorithms/x/Dart/divide_and_conquer/inversions.dart:113:53: Error: A value of type 'int' can't be assigned to a variable of type 'InvResult'.
+../../../tests/algorithms/x/Dart/divide_and_conquer/inversions.dart:116:53: Error: A value of type 'int' can't be assigned to a variable of type 'InvResult'.
  - 'InvResult' is from '../../../tests/algorithms/x/Dart/divide_and_conquer/inversions.dart'.
 InvResult nrec2 = count_inversions_recursive(arr_1).inv;
                                                     ^
-../../../tests/algorithms/x/Dart/divide_and_conquer/inversions.dart:115:53: Error: A value of type 'int' can't be assigned to a variable of type 'InvResult'.
+../../../tests/algorithms/x/Dart/divide_and_conquer/inversions.dart:118:53: Error: A value of type 'int' can't be assigned to a variable of type 'InvResult'.
  - 'InvResult' is from '../../../tests/algorithms/x/Dart/divide_and_conquer/inversions.dart'.
 InvResult nrec3 = count_inversions_recursive(arr_1).inv;
                                                     ^

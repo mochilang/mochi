@@ -1,7 +1,7 @@
 run: exit status 254
-../../../tests/algorithms/x/Dart/digital_image_processing/filters/gabor_filter.dart:72:19: Error: A value of type 'int' can't be assigned to a variable of type 'double'.
+../../../tests/algorithms/x/Dart/digital_image_processing/filters/gabor_filter.dart:75:19: Error: A value of type 'int' can't be assigned to a variable of type 'double'.
     double px = x - size ~/ 2.toDouble();
                   ^
-../../../tests/algorithms/x/Dart/digital_image_processing/filters/gabor_filter.dart:73:19: Error: A value of type 'int' can't be assigned to a variable of type 'double'.
+../../../tests/algorithms/x/Dart/digital_image_processing/filters/gabor_filter.dart:76:19: Error: A value of type 'int' can't be assigned to a variable of type 'double'.
     double py = y - size ~/ 2.toDouble();
                   ^
