@@ -1,0 +1,6 @@
+/workspace/mochi/tests/algorithms/x/Erlang/web_programming/nasa_data.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+"Dawn of the Crab"
+badarg

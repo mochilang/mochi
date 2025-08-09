@@ -1,0 +1,5 @@
+/workspace/mochi/tests/algorithms/x/Erlang/web_programming/emails_from_url.erl:201:18: Warning: variable 'Start_3' exported from 'case' (line 178, column 9)
+%  201| {I_8, Proto_pos, Start_3, Url} = Fun_5(I_7, Proto_pos, Start_3, Url),
+%     |                  ^
+
+"0 emails found:"

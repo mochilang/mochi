@@ -1,0 +1,8 @@
+/workspace/mochi/tests/algorithms/x/Erlang/web_programming/get_imdb_top_250_movies_csv.erl:29:1: Warning: function mochi_nth/2 is unused
+%   29| mochi_nth(I, L) ->
+%     | ^
+
+"Movie title, IMDb rating"
+"The Dark Knight, 9"
+"The Godfather, 9.2"
+"The Shawshank Redemption, 9.2"
