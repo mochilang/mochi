@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-09 10:57 GMT+7
+Last updated: 2025-08-09 16:07 GMT+7
 
 ## Algorithms Golden Test Checklist (870/1077)
 | Index | Name | Status | Duration | Memory |
@@ -306,16 +306,16 @@ Last updated: 2025-08-09 10:57 GMT+7
 | 297 | divide_and_conquer/peak | ✓ | 10.547ms | 1.7 MB |
 | 298 | divide_and_conquer/power | ✓ | 10.076ms | 3.2 MB |
 | 299 | divide_and_conquer/strassen_matrix_multiplication | error |  |  |
-| 300 | docs/conf | ✓ | 37.675ms | 10.5 MB |
-| 301 | dynamic_programming/abbreviation | ✓ | 21.832ms | 3.9 MB |
-| 302 | dynamic_programming/all_construct | ✓ | 26.62ms | 4.2 MB |
-| 303 | dynamic_programming/bitmask | ✓ | 23.848ms | 1.9 MB |
-| 304 | dynamic_programming/catalan_numbers | ✓ | 25.514ms | 844.0 KB |
-| 305 | dynamic_programming/climbing_stairs | ✓ | 26.203ms | 1.6 MB |
-| 306 | dynamic_programming/combination_sum_iv | ✓ | 19.394ms | 3.6 MB |
-| 307 | dynamic_programming/edit_distance | ✓ | 23.192ms | 3.9 MB |
-| 308 | dynamic_programming/factorial | ✓ | 30.034ms | 9.6 MB |
-| 309 | dynamic_programming/fast_fibonacci | ✓ | 24.303ms | 484.0 KB |
+| 300 | docs/conf | ✓ | 27.935ms | 10.8 MB |
+| 301 | dynamic_programming/abbreviation | ✓ | 29.332ms | 2.5 MB |
+| 302 | dynamic_programming/all_construct | ✓ | 22.523ms | 3.6 MB |
+| 303 | dynamic_programming/bitmask | ✓ | 28.811ms | 10.5 MB |
+| 304 | dynamic_programming/catalan_numbers | ✓ | 17.746ms | 1.8 MB |
+| 305 | dynamic_programming/climbing_stairs | ✓ | 10.224ms | 2.1 MB |
+| 306 | dynamic_programming/combination_sum_iv | ✓ | 13.57ms | 1.8 MB |
+| 307 | dynamic_programming/edit_distance | ✓ | 23.445ms | 3.2 MB |
+| 308 | dynamic_programming/factorial | ✓ | 25.203ms | 10.5 MB |
+| 309 | dynamic_programming/fast_fibonacci | ✓ | 16.256ms | 1.2 MB |
 | 310 | dynamic_programming/fibonacci | ✓ | 29.368ms | 3.4 MB |
 | 311 | dynamic_programming/fizz_buzz | ✓ | 18.956ms | 3.0 MB |
 | 312 | dynamic_programming/floyd_warshall | ✓ | 23.857ms | 3.8 MB |

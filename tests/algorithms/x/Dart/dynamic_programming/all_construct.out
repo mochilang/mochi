@@ -1,6 +1,3 @@
-../../../tests/algorithms/x/Dart/dynamic_programming/all_construct.dart:24:32: Error: Expected ')' before this.
-    table = (table..add(empty) as List).map((e) => ((e as List).map((e) => (List<String>.from(e) as List<String>)).toList() as List<List<String>>)).toList();
-                               ^^
-../../../tests/algorithms/x/Dart/dynamic_programming/all_construct.dart:48:127: Error: Expected ')' before this.
-    while (table.length <= nextIndex) { table.add(<List<String>>[]); } table[nextIndex] = (table[nextIndex]..add(combination) as List).map((e) => (List<String>.from(e) as List<String>)).toList();
-                                                                                                                              ^^
+[[jwa, j, a, lapa], [j, w, a, j, a, lapa]]
+[[raj, amat, i], [raja, ma, t, i]]
+[[hex, ago, no, s, auru, s], [h, ex, ago, no, s, auru, s], [hex, ag, o, no, s, auru, s], [h, ex, ag, o, no, s, auru, s]]
