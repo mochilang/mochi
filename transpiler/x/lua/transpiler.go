@@ -1574,7 +1574,7 @@ func (f *FunExpr) emit(w io.Writer) {
 func (c *ListCastExpr) emit(w io.Writer) { c.Expr.emit(w) }
 func sanitizeName(n string) string {
 	switch n {
-	case "table", "string", "math", "io", "os", "coroutine", "utf8", "repeat":
+	case "table", "string", "math", "io", "os", "coroutine", "utf8", "repeat", "pairs", "ipairs":
 		return "_" + n
 	}
 	switch n {
