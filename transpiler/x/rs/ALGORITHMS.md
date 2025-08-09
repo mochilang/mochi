@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-08 19:18 GMT+7
+Last updated: 2025-08-09 10:40 GMT+7
 
-## Algorithms Golden Test Checklist (301/1077)
+## Algorithms Golden Test Checklist (308/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -346,13 +346,13 @@ Last updated: 2025-08-08 19:18 GMT+7
 | 337 | dynamic_programming/optimal_binary_search_tree | ✓ | 93µs | 2.2 MB |
 | 338 | dynamic_programming/palindrome_partitioning | ✓ | 90µs | 2.2 MB |
 | 339 | dynamic_programming/range_sum_query | ✓ | 47µs | 2.0 MB |
-| 340 | dynamic_programming/regex_match |   |  |  |
-| 341 | dynamic_programming/rod_cutting |   |  |  |
-| 342 | dynamic_programming/smith_waterman |   |  |  |
-| 343 | dynamic_programming/subset_generation |   |  |  |
-| 344 | dynamic_programming/sum_of_subset |   |  |  |
-| 345 | dynamic_programming/trapped_water |   |  |  |
-| 346 | dynamic_programming/tribonacci |   |  |  |
+| 340 | dynamic_programming/regex_match | ✓ | 87µs | 2.0 MB |
+| 341 | dynamic_programming/rod_cutting | ✓ | 56µs | 2.1 MB |
+| 342 | dynamic_programming/smith_waterman | ✓ | 93µs | 2.2 MB |
+| 343 | dynamic_programming/subset_generation | ✓ | 73µs | 2.1 MB |
+| 344 | dynamic_programming/sum_of_subset | ✓ | 56µs | 2.1 MB |
+| 345 | dynamic_programming/trapped_water | ✓ | 53µs | 2.0 MB |
+| 346 | dynamic_programming/tribonacci | ✓ | 20µs | 2.0 MB |
 | 347 | dynamic_programming/viterbi |   |  |  |
 | 348 | dynamic_programming/wildcard_matching |   |  |  |
 | 349 | dynamic_programming/word_break |   |  |  |
