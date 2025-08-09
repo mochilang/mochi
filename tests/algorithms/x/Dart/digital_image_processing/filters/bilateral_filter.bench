@@ -1,6 +1,6 @@
-../../../tests/algorithms/x/Dart/digital_image_processing/filters/bilateral_filter.dart:114:19: Error: A value of type 'int' can't be assigned to a variable of type 'double'.
+../../../tests/algorithms/x/Dart/digital_image_processing/filters/bilateral_filter.dart:117:19: Error: A value of type 'int' can't be assigned to a variable of type 'double'.
     double di = i - kernel_size ~/ 2.toDouble();
                   ^
-../../../tests/algorithms/x/Dart/digital_image_processing/filters/bilateral_filter.dart:115:19: Error: A value of type 'int' can't be assigned to a variable of type 'double'.
+../../../tests/algorithms/x/Dart/digital_image_processing/filters/bilateral_filter.dart:118:19: Error: A value of type 'int' can't be assigned to a variable of type 'double'.
     double dj = j - kernel_size ~/ 2.toDouble();
                   ^

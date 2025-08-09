@@ -1665,12 +1665,31 @@ func (c *CallExpr) emit(w io.Writer) error {
 			}
 		}
 		if n.Name == "contains" && len(c.Args) == 2 {
-			typ := inferType(c.Args[0])
-			if strings.HasPrefix(typ, "Map<") {
+			applyBuiltin := true
+			if currentEnv != nil {
+				if _, ok := currentEnv.GetFunc(n.Name); ok {
+					applyBuiltin = false
+				}
+			}
+			if applyBuiltin {
+				typ := inferType(c.Args[0])
+				if strings.HasPrefix(typ, "Map<") {
+					if err := c.Args[0].emit(w); err != nil {
+						return err
+					}
+					if _, err := io.WriteString(w, ".containsKey("); err != nil {
+						return err
+					}
+					if err := c.Args[1].emit(w); err != nil {
+						return err
+					}
+					_, err := io.WriteString(w, ")")
+					return err
+				}
 				if err := c.Args[0].emit(w); err != nil {
 					return err
 				}
-				if _, err := io.WriteString(w, ".containsKey("); err != nil {
+				if _, err := io.WriteString(w, ".contains("); err != nil {
 					return err
 				}
 				if err := c.Args[1].emit(w); err != nil {
@@ -1679,17 +1698,6 @@ func (c *CallExpr) emit(w io.Writer) error {
 				_, err := io.WriteString(w, ")")
 				return err
 			}
-			if err := c.Args[0].emit(w); err != nil {
-				return err
-			}
-			if _, err := io.WriteString(w, ".contains("); err != nil {
-				return err
-			}
-			if err := c.Args[1].emit(w); err != nil {
-				return err
-			}
-			_, err := io.WriteString(w, ")")
-			return err
 		}
 	}
 	var paramTypes []string
@@ -2762,7 +2770,8 @@ func (c *CastExpr) emit(w io.Writer) error {
 		if err := c.Value.emit(w); err != nil {
 			return err
 		}
-		_, err := io.WriteString(w, ").codeUnitAt(0)")
+		// ensure the substring is treated as a String before calling codeUnitAt
+		_, err := io.WriteString(w, " as String).codeUnitAt(0)")
 		return err
 	}
 

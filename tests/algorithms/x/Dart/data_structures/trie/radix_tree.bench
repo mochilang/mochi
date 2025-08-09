@@ -1,1 +1,11 @@
-{"duration_us":18374,"memory_bytes":5111808,"name":"_start"}
+Unhandled exception:
+RangeError (length): Invalid value: Not in inclusive range 0..2: 3
+#0      List.[] (dart:core-patch/growable_array.dart)
+#1      insert (file:///workspace/mochi/tests/algorithms/x/Dart/data_structures/trie/radix_tree.dart:105:25)
+#2      insert (file:///workspace/mochi/tests/algorithms/x/Dart/data_structures/trie/radix_tree.dart:140:5)
+#3      insert_many (file:///workspace/mochi/tests/algorithms/x/Dart/data_structures/trie/radix_tree.dart:99:5)
+#4      _main (file:///workspace/mochi/tests/algorithms/x/Dart/data_structures/trie/radix_tree.dart:314:3)
+#5      _start (file:///workspace/mochi/tests/algorithms/x/Dart/data_structures/trie/radix_tree.dart:327:3)
+#6      main (file:///workspace/mochi/tests/algorithms/x/Dart/data_structures/trie/radix_tree.dart:337:16)
+#7      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#8      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

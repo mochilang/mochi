@@ -1,3 +1,4 @@
+run: exit status 254
 ../../../tests/algorithms/x/Dart/digital_image_processing/morphological_operations/dilation_operation.dart:95:5: Error: Setter not found: 'row'.
     row = ([] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
     ^^^
