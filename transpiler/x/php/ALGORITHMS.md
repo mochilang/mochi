@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-09 16:28 GMT+7
+Last updated: 2025-08-09 16:54 GMT+7
 
-## Algorithms Golden Test Checklist (788/1077)
+## Algorithms Golden Test Checklist (794/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 117µs | 38.8 KB |
@@ -872,16 +872,16 @@ Last updated: 2025-08-09 16:28 GMT+7
 | 863 | project_euler/problem_033/sol1 |   |  |  |
 | 864 | project_euler/problem_034/sol1 | ✓ | 11.295728s | 42.1 KB |
 | 865 | project_euler/problem_035/sol1 | ✓ | 67.716ms | 520.2 KB |
-| 866 | project_euler/problem_036/sol1 |   |  |  |
-| 867 | project_euler/problem_037/sol1 |   |  |  |
-| 868 | project_euler/problem_038/sol1 |   |  |  |
+| 866 | project_euler/problem_036/sol1 | ✓ | 17.379496s | 39.1 KB |
+| 867 | project_euler/problem_037/sol1 | ✓ | 1.580262s | 74.9 KB |
+| 868 | project_euler/problem_038/sol1 | ✓ | 3.104ms | 42.3 KB |
 | 869 | project_euler/problem_039/sol1 |   |  |  |
-| 870 | project_euler/problem_040/sol1 | ✓ | 71.174ms | 36.4 KB |
-| 871 | project_euler/problem_041/sol1 |   |  |  |
-| 872 | project_euler/problem_042/solution42 |   |  |  |
-| 873 | project_euler/problem_043/sol1 |   |  |  |
-| 874 | project_euler/problem_044/sol1 |   |  |  |
-| 875 | project_euler/problem_045/sol1 |   |  |  |
+| 870 | project_euler/problem_040/sol1 | ✓ | 721.455ms | 41.4 KB |
+| 871 | project_euler/problem_041/sol1 | ✓ | 269.629ms | 151.0 KB |
+| 872 | project_euler/problem_042/solution42 | error |  |  |
+| 873 | project_euler/problem_043/sol1 | ✓ | 10.504336s | 42.4 KB |
+| 874 | project_euler/problem_044/sol1 | ✓ | 49.992918s | 264.2 KB |
+| 875 | project_euler/problem_045/sol1 | error |  |  |
 | 876 | project_euler/problem_046/sol1 |   |  |  |
 | 877 | project_euler/problem_047/sol1 |   |  |  |
 | 878 | project_euler/problem_048/sol1 |   |  |  |

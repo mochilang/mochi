@@ -31,6 +31,21 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
+function _append($arr, $x) {
+    $arr[] = $x;
+    return $arr;
+}
+function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
+    if (function_exists('bcdiv')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcdiv($sa, $sb, 0));
+    }
+    return intdiv($a, $b);
+}
 function _iadd($a, $b) {
     if (function_exists('bcadd')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
@@ -66,46 +81,51 @@ function _imod($a, $b) {
     }
     return $a % $b;
 }
-function _panic($msg) {
-    fwrite(STDERR, strval($msg));
-    exit(1);
-}
 $__start_mem = memory_get_usage();
 $__start = _now();
-  function solution() {
-  $targets = [1, 10, 100, 1000, 10000, 100000, 1000000];
-  $idx = 0;
-  $product = 1;
-  $count = 0;
-  $i = 1;
-  while ($idx < count($targets)) {
-  $s = _str($i);
-  $j = 0;
-  while ($j < strlen($s)) {
-  $count = _iadd($count, 1);
-  if ($count == $targets[$idx]) {
-  $product = _imul($product, ((ctype_digit($s[$j]) ? intval($s[$j]) : ord($s[$j]))));
-  $idx = _iadd($idx, 1);
-  if ($idx == count($targets)) {
-  break;
-};
-}
-  $j = _iadd($j, 1);
-};
+  function is_9_pandigital($n) {
+  $digits = [];
+  $i = 0;
+  while ($i < 10) {
+  $digits = _append($digits, 0);
   $i = _iadd($i, 1);
 };
-  return $product;
-};
-  function test_solution() {
-  if (solution() != 210) {
-  _panic('solution failed');
+  $count = 0;
+  $x = $n;
+  while ($x > 0) {
+  $digit = _imod($x, 10);
+  if ($digit == 0) {
+  return false;
 }
+  if ($digits[$digit] == 1) {
+  return false;
+}
+  $digits[$digit] = 1;
+  $x = _intdiv($x, 10);
+  $count = _iadd($count, 1);
 };
-  function main() {
-  test_solution();
-  echo rtrim(_str(solution())), PHP_EOL;
+  return $count == 9 && $digits[1] == 1 && $digits[2] == 1 && $digits[3] == 1 && $digits[4] == 1 && $digits[5] == 1 && $digits[6] == 1 && $digits[7] == 1 && $digits[8] == 1 && $digits[9] == 1;
 };
-  main();
+  function solution() {
+  $base_num = 9999;
+  while ($base_num >= 5000) {
+  $candidate = _imul(100002, $base_num);
+  if (is_9_pandigital($candidate)) {
+  return $candidate;
+}
+  $base_num = _isub($base_num, 1);
+};
+  $base_num = 333;
+  while ($base_num >= 100) {
+  $candidate = _imul(1002003, $base_num);
+  if (is_9_pandigital($candidate)) {
+  return $candidate;
+}
+  $base_num = _isub($base_num, 1);
+};
+  return 0;
+};
+  echo rtrim('solution() = ' . _str(solution())), PHP_EOL;
 $__end = _now();
 $__end_mem = memory_get_peak_usage();
 $__duration = max(1, intdiv($__end - $__start, 1000));

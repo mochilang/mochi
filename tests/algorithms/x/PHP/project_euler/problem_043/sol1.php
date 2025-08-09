@@ -15,21 +15,9 @@ function _now() {
     }
     return hrtime(true);
 }
-function _str($x) {
-    if (is_array($x)) {
-        $isList = array_keys($x) === range(0, count($x) - 1);
-        if ($isList) {
-            $parts = [];
-            foreach ($x as $v) { $parts[] = _str($v); }
-            return '[' . implode(' ', $parts) . ']';
-        }
-        $parts = [];
-        foreach ($x as $k => $v) { $parts[] = _str($k) . ':' . _str($v); }
-        return 'map[' . implode(' ', $parts) . ']';
-    }
-    if (is_bool($x)) return $x ? 'true' : 'false';
-    if ($x === null) return 'null';
-    return strval($x);
+function _append($arr, $x) {
+    $arr[] = $x;
+    return $arr;
 }
 function _iadd($a, $b) {
     if (function_exists('bcadd')) {
@@ -66,46 +54,79 @@ function _imod($a, $b) {
     }
     return $a % $b;
 }
-function _panic($msg) {
-    fwrite(STDERR, strval($msg));
-    exit(1);
-}
 $__start_mem = memory_get_usage();
 $__start = _now();
-  function solution() {
-  $targets = [1, 10, 100, 1000, 10000, 100000, 1000000];
-  $idx = 0;
-  $product = 1;
-  $count = 0;
-  $i = 1;
-  while ($idx < count($targets)) {
-  $s = _str($i);
-  $j = 0;
-  while ($j < strlen($s)) {
-  $count = _iadd($count, 1);
-  if ($count == $targets[$idx]) {
-  $product = _imul($product, ((ctype_digit($s[$j]) ? intval($s[$j]) : ord($s[$j]))));
-  $idx = _iadd($idx, 1);
-  if ($idx == count($targets)) {
-  break;
-};
+  function is_substring_divisible($num) {
+  if (_imod($num[3], 2) != 0) {
+  return false;
 }
-  $j = _iadd($j, 1);
-};
+  if (_imod((_iadd(_iadd($num[2], $num[3]), $num[4])), 3) != 0) {
+  return false;
+}
+  if (_imod($num[5], 5) != 0) {
+  return false;
+}
+  $primes = [7, 11, 13, 17];
+  $i = 0;
+  while ($i < count($primes)) {
+  $p = $primes[$i];
+  $idx = _iadd($i, 4);
+  $val = _iadd(_iadd(_imul($num[$idx], 100), _imul($num[_iadd($idx, 1)], 10)), $num[_iadd($idx, 2)]);
+  if (_imod($val, $p) != 0) {
+  return false;
+}
   $i = _iadd($i, 1);
 };
-  return $product;
+  return true;
 };
-  function test_solution() {
-  if (solution() != 210) {
-  _panic('solution failed');
+  function remove_at($xs, $idx) {
+  $res = [];
+  $i = 0;
+  while ($i < count($xs)) {
+  if ($i != $idx) {
+  $res = _append($res, $xs[$i]);
 }
+  $i = _iadd($i, 1);
 };
-  function main() {
-  test_solution();
-  echo rtrim(_str(solution())), PHP_EOL;
+  return $res;
 };
-  main();
+  function digits_to_number($xs) {
+  $value = 0;
+  $i = 0;
+  while ($i < count($xs)) {
+  $value = _iadd(_imul($value, 10), $xs[$i]);
+  $i = _iadd($i, 1);
+};
+  return $value;
+};
+  function search($prefix, $remaining) {
+  if (count($remaining) == 0) {
+  if (is_substring_divisible($prefix)) {
+  return digits_to_number($prefix);
+};
+  return 0;
+}
+  $total = 0;
+  $i = 0;
+  while ($i < count($remaining)) {
+  $d = $remaining[$i];
+  $next_prefix = _append($prefix, $d);
+  $next_remaining = remove_at($remaining, $i);
+  $total = _iadd($total, search($next_prefix, $next_remaining));
+  $i = _iadd($i, 1);
+};
+  return $total;
+};
+  function solution($n) {
+  $digits = [];
+  $i = 0;
+  while ($i < $n) {
+  $digits = _append($digits, $i);
+  $i = _iadd($i, 1);
+};
+  return search([], $digits);
+};
+  echo rtrim('solution() =') . " " . rtrim(json_encode(solution(10), 1344)), PHP_EOL;
 $__end = _now();
 $__end_mem = memory_get_peak_usage();
 $__duration = max(1, intdiv($__end - $__start, 1000));
