@@ -1,0 +1,8 @@
+exit status 1
+Unhandled Exception:
+System.DivideByZeroException: Attempted to divide by zero.
+  at Linear_congruential_generator.next_number (Linear_congruential_generator+LCG lcg) [0x0006d] in <6896c1fd727e826ca7450383fdc19668>:0 
+  at <StartupCode$linear_congruential_generator>.$Linear_congruential_generator.main@ () [0x00071] in <6896c1fd727e826ca7450383fdc19668>:0 
+[ERROR] FATAL UNHANDLED EXCEPTION: System.DivideByZeroException: Attempted to divide by zero.
+  at Linear_congruential_generator.next_number (Linear_congruential_generator+LCG lcg) [0x0006d] in <6896c1fd727e826ca7450383fdc19668>:0 
+  at <StartupCode$linear_congruential_generator>.$Linear_congruential_generator.main@ () [0x00071] in <6896c1fd727e826ca7450383fdc19668>:0

@@ -1512,8 +1512,15 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 		if strings.HasSuffix(t, " array") || t == "" || strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") {
 			writeIndent(w)
 			io.WriteString(w, name)
+			curT := t
 			for _, ix := range indices {
-				io.WriteString(w, ".[int ")
+				io.WriteString(w, ".[")
+				ixT := inferType(ix)
+				if ixT == "int64" {
+					io.WriteString(w, "int64 ")
+				} else if ixT == "int" {
+					io.WriteString(w, "int ")
+				}
 				if needsParen(ix) {
 					io.WriteString(w, "(")
 					ix.emit(w)
@@ -1522,6 +1529,11 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 					ix.emit(w)
 				}
 				io.WriteString(w, "]")
+				if strings.HasSuffix(curT, " array") {
+					curT = strings.TrimSuffix(curT, " array")
+				} else if strings.HasPrefix(curT, "System.Collections.Generic.IDictionary<") {
+					curT = mapValueType(curT)
+				}
 			}
 			io.WriteString(w, " <- ")
 			s.Value.emit(w)
@@ -3903,6 +3915,16 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		// Ensure value type matches target element type
+		tgtType := inferType(target)
+		valType := inferType(val)
+		if tgtType == "int" && valType == "int64" {
+			val = &CastExpr{Expr: val, Type: "int"}
+		} else if tgtType == "int64" && valType == "int" {
+			val = &CastExpr{Expr: val, Type: "int64"}
+		} else if tgtType != "" && valType != "" && tgtType != valType {
+			val = &CastExpr{Expr: val, Type: fsTypeFromString(tgtType)}
+		}
 		base := target
 		idxCount := len(st.Assign.Index)
 		for {
@@ -4571,6 +4593,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			isStr := inferType(args[0]) == "string"
 			return &SliceExpr{Target: args[0], Start: args[1], End: args[2], IsString: isStr}, nil
+		case "to_float":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("to_float expects 1 arg")
+			}
+			return &CastExpr{Expr: args[0], Type: "float"}, nil
+		case "to_int":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("to_int expects 1 arg")
+			}
+			return &CastExpr{Expr: args[0], Type: "int"}, nil
 		case "indexOf":
 			if len(args) != 2 {
 				return nil, fmt.Errorf("indexOf expects 2 args")

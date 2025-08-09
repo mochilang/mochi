@@ -1,3 +1,7 @@
+## Progress (2025-08-09 10:14 +0700)
+- lua: improve slice helper and refresh docs
+- Generated F# for 103/105 programs (103 passing)
+
 ## Progress (2025-08-08 18:09 +0700)
 - fs: promote int multiplication to int64
 - Generated F# for 103/105 programs (103 passing)
