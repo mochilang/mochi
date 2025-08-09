@@ -956,6 +956,7 @@ func zigTypeFromExpr(e Expr) string {
 		if fe := e.(*FieldExpr); fe != nil {
 			if vr, ok := fe.Target.(*VarRef); ok {
 				if stName, ok := varTypes[vr.Name]; ok {
+					stName = strings.TrimPrefix(stName, "*")
 					if sd, ok2 := structDefs[stName]; ok2 {
 						for _, f := range sd.Fields {
 							if f.Name == toSnakeCase(fe.Name) {
@@ -2828,9 +2829,34 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 				if len(ll.Elems) == 0 {
 					ll.emit(w)
 				} else {
-					io.WriteString(w, "@constCast(&(")
-					ll.emit(w)
-					io.WriteString(w, "))[0..]")
+					fmt.Fprintf(w, "blk: { var _tmp = std.ArrayList(%s).init(std.heap.page_allocator);", ll.ElemType)
+					for _, e := range ll.Elems {
+						io.WriteString(w, " _tmp.append(")
+						if ll.ElemType == "Value" {
+							switch ev := e.(type) {
+							case *ListLit:
+								ev.ElemType = "Value"
+								io.WriteString(w, "Value{.List = ")
+								ev.emit(w)
+								io.WriteString(w, "}")
+							case *NullLit:
+								io.WriteString(w, "Value{.Null = {}}")
+							default:
+								t := zigTypeFromExpr(e)
+								if t == "Value" {
+									e.emit(w)
+								} else {
+									fmt.Fprintf(w, "Value{.%s = ", valueTag(t))
+									e.emit(w)
+									io.WriteString(w, "}")
+								}
+							}
+						} else {
+							e.emit(w)
+						}
+						io.WriteString(w, ") catch |err| handleError(err);")
+					}
+					io.WriteString(w, " break :blk (_tmp.toOwnedSlice() catch |err| handleError(err)); }")
 				}
 			} else {
 				r.Value.emit(w)
@@ -3097,6 +3123,14 @@ func (c *CallExpr) emit(w io.Writer) {
 				if exp != at {
 					switch {
 					case strings.HasPrefix(exp, "*") && !strings.HasPrefix(at, "*"):
+						if v, ok := a.(*VarRef); ok {
+							if vd, ok2 := varDecls[v.Name]; ok2 && !vd.Mutable {
+								io.WriteString(w, "@constCast(&")
+								a.emit(w)
+								io.WriteString(w, ")")
+								break
+							}
+						}
 						io.WriteString(w, "&")
 						a.emit(w)
 					case at == "Value":
@@ -3308,9 +3342,7 @@ func collectMutables(sts []*parser.Statement, m map[string]bool) {
 	for _, st := range sts {
 		switch {
 		case st.Assign != nil:
-			if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
-				m[st.Assign.Name] = true
-			}
+			m[st.Assign.Name] = true
 		case st.If != nil:
 			collectMutablesIf(st.If, m)
 		case st.While != nil:
@@ -4682,8 +4714,10 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 		mutable := mutables[p.Name] || varMut[fn.Name+":"+p.Name] || varMut[":"+p.Name]
 		typ := toZigType(p.Type)
 		isMap := strings.HasPrefix(typ, "std.StringHashMap(") || strings.HasPrefix(typ, "std.AutoHashMap(")
-		if mutable && isMap {
-			typ = "*" + typ
+		if mutable {
+			if isMap || (!strings.HasPrefix(typ, "[]") && !strings.HasPrefix(typ, "*") && !isIntType(typ) && typ != "f64" && typ != "bool" && typ != "Value") {
+				typ = "*" + typ
+			}
 		} else if !mutable && strings.HasPrefix(typ, "[]") && !strings.HasPrefix(typ, "[]const ") {
 			typ = "[]const " + typ[2:]
 		}
@@ -4698,12 +4732,16 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 		}
 		aliasName := paramName
 		if mutable {
-			aliasName = uniqueName(name + "_var")
-			namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
-			vd := &VarDecl{Name: aliasName, Value: &VarRef{Name: paramName}, Mutable: true, Scope: currentFunc}
-			preStmts = append(preStmts, vd)
-			varDecls[p.Name] = vd
-			varDecls[aliasName] = vd
+			if strings.HasPrefix(typ, "*") {
+				aliasName = paramName
+			} else {
+				aliasName = uniqueName(name + "_var")
+				namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
+				vd := &VarDecl{Name: aliasName, Value: &VarRef{Name: paramName}, Mutable: true, Scope: currentFunc}
+				preStmts = append(preStmts, vd)
+				varDecls[p.Name] = vd
+				varDecls[aliasName] = vd
+			}
 		}
 		aliases[name] = aliasName
 		params[i] = Param{Name: paramName, Type: typ}
@@ -5519,6 +5557,13 @@ func collectVarInfo(p *Program) (map[string]int, map[string]bool) {
 			walkExpr(t.Right)
 		case *CallExpr:
 			for _, a := range t.Args {
+				if vr, ok := a.(*VarRef); ok {
+					key := scope + ":" + vr.Name
+					muts[key] = true
+					if globalNames[vr.Name] {
+						muts[":"+vr.Name] = true
+					}
+				}
 				walkExpr(a)
 			}
 			// Count uses of the called function name even if it
