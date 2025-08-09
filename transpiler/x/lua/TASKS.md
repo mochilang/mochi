@@ -1,3 +1,211 @@
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
+## Progress (2025-08-09 10:01 GMT+7)
+- 104/105 VM tests passing
+- Added float literal support
+
 ## Progress (2025-08-08 18:13 GMT+7)
 - 104/105 VM tests passing
 - Added float literal support
