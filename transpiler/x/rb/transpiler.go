@@ -36,7 +36,9 @@ if s && s != ''
 end
 def _now()
   if $now_seeded
-    $now_seed += 1_000_000
+    # Increment by one microsecond when seeded to allow
+    # deterministic timings with microsecond resolution.
+    $now_seed += 1_000
     $now_seed
   else
     Process.clock_gettime(Process::CLOCK_MONOTONIC, :nanosecond)
