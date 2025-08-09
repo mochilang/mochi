@@ -1,0 +1,4 @@
+Warning: file(tests/github/TheAlgorithms/Mochi/project_euler/problem_022/p022_names.jsonl): Failed to open stream: No such file or directory in /workspace/mochi/tests/algorithms/x/PHP/project_euler/problem_022/sol2.php on line 98
+
+Warning: foreach() argument must be of type array|object, false given in /workspace/mochi/tests/algorithms/x/PHP/project_euler/problem_022/sol2.php on line 98
+0
