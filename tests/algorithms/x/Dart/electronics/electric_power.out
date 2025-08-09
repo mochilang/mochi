@@ -1,3 +1,5 @@
-../../../tests/algorithms/x/Dart/electronics/electric_power.dart:41:10: Error: Method not found: 'floor'.
-  return floor(x * m + 0.5) / m;
-         ^^^^^
+Result(name='voltage', value=2.5)
+Result(name='power', value=4)
+Result(name='power', value=6)
+Result(name='power', value=4.84)
+Result(name='current', value=3)

@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-09 10:28 GMT+7
+Last updated: 2025-08-09 10:57 GMT+7
 
-## Algorithms Golden Test Checklist (869/1077)
+## Algorithms Golden Test Checklist (870/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 16.068ms | 2.7 MB |
@@ -356,7 +356,7 @@ Last updated: 2025-08-09 10:28 GMT+7
 | 347 | dynamic_programming/viterbi | ✓ | 43.239ms | 10.5 MB |
 | 348 | dynamic_programming/wildcard_matching | ✓ | 20.627ms | 3.1 MB |
 | 349 | dynamic_programming/word_break | ✓ | 19.198ms | 2.5 MB |
-| 350 | electronics/apparent_power | ✓ | 26.713ms | 9.8 MB |
+| 350 | electronics/apparent_power | ✓ | 9.648ms | 1.1 MB |
 | 351 | electronics/builtin_voltage | ✓ | 28.49ms | 2.4 MB |
 | 352 | electronics/capacitor_equivalence | ✓ | 42.789ms | 8.9 MB |
 | 353 | electronics/carrier_concentration | ✓ | 20.584ms | 3.6 MB |
@@ -365,7 +365,7 @@ Last updated: 2025-08-09 10:28 GMT+7
 | 356 | electronics/circular_convolution | ✓ | 22.377ms | 3.8 MB |
 | 357 | electronics/coulombs_law | error |  |  |
 | 358 | electronics/electric_conductivity | ✓ | 34.039ms | 11.2 MB |
-| 359 | electronics/electric_power | error |  |  |
+| 359 | electronics/electric_power | ✓ | 14.87ms | 4.2 MB |
 | 360 | electronics/electrical_impedance | ✓ | 20.943ms | 4.0 MB |
 | 361 | electronics/ic_555_timer | ✓ | 15.836ms | 10.5 MB |
 | 362 | electronics/ind_reactance | ✓ | 12.277ms | 1.7 MB |

@@ -135,6 +135,7 @@ var (
 	useRepeat         bool
 	useStr            bool
 	useParseIntStr    bool
+	useFloor          bool
 	imports           []string
 	testpkgAliases    map[string]struct{}
 	netAliases        map[string]struct{}
@@ -4385,6 +4386,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if useFloor {
+		if _, err := io.WriteString(w, "double floor(num x) => x.floor().toDouble();\n\n"); err != nil {
+			return err
+		}
+	}
 	if useStr {
 		if _, err := io.WriteString(w, "String _str(dynamic v) {"+
 			" if (v is double && v == v.roundToDouble()) {"+
@@ -4630,6 +4636,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench, wrapMain bool) (*Pro
 	useRepeat = false
 	useStr = false
 	useParseIntStr = false
+	useFloor = false
 	imports = nil
 	testpkgAliases = map[string]struct{}{}
 	netAliases = map[string]struct{}{}
@@ -5751,6 +5758,14 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			return &CallExpr{Func: &SelectorExpr{Receiver: v, Field: "abs"}}, nil
+		}
+		if p.Call.Func == "floor" && len(p.Call.Args) == 1 {
+			v, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			useFloor = true
+			return &CallExpr{Func: &Name{Name: "floor"}, Args: []Expr{v}}, nil
 		}
 		if p.Call.Func == "panic" && len(p.Call.Args) == 1 {
 			useError = true
