@@ -3472,13 +3472,24 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		return res, nil
 	case s.Return != nil:
 		var val Expr
-		if s.Return.Value != nil {
-			var err error
-			val, err = compileExpr(s.Return.Value)
-			if err != nil {
-				return nil, err
-			}
-			if ml, ok := val.(*MapLit); ok && currentReturnType != "" && strings.HasPrefix(currentReturnType, "Dictionary<") {
+                if s.Return.Value != nil {
+                        var err error
+                        val, err = compileExpr(s.Return.Value)
+                        if err != nil {
+                                return nil, err
+                        }
+                        if ml, ok := val.(*MapLit); ok {
+                                if st, ok := structTypes[currentReturnType]; ok {
+                                        fields := make([]StructFieldValue, len(ml.Items))
+                                        for i, it := range ml.Items {
+                                                if k, ok := it.Key.(*StringLit); ok {
+                                                        fields[i] = StructFieldValue{Name: k.Value, Value: it.Value}
+                                                }
+                                        }
+                                        val = &StructLit{Name: st.Name, Fields: fields}
+                                }
+                        }
+                        if ml, ok := val.(*MapLit); ok && currentReturnType != "" && strings.HasPrefix(currentReturnType, "Dictionary<") {
 				parts := strings.TrimPrefix(strings.TrimSuffix(currentReturnType, ">"), "Dictionary<")
 				arr := strings.Split(parts, ",")
 				if len(arr) == 2 {

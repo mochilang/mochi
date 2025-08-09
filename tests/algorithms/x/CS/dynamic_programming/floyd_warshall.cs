@@ -6,6 +6,11 @@ using System.Text.Json;
 using System.Numerics;
 using System.Collections;
 
+class Graph {
+    public long n;
+    public long[][] dp;
+    public override string ToString() => $"Graph {{n = {n}, dp = {dp}}}";
+}
 class Program {
     static bool seededNow = false;
     static long nowSeed = 0;
@@ -27,12 +32,6 @@ class Program {
     }
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
-    }
-    static long _len(object v) {
-        if (v is Array a) return a.Length;
-        if (v is string s) return s.Length;
-        if (v is System.Collections.ICollection c) return c.Count;
-        return Convert.ToString(v).Length;
     }
     static string _substr(string s, long start, long end) {
         if (start < 0) start = 0;
@@ -97,55 +96,81 @@ class Program {
         if (v is string s) return s;
         return _fmt(v);
     }
-    public static string[][] allConstruct(string target_0, string[] wordBank_1) {
-        long tableSize_2 = (target_0.Length + 1);
-        string[][][] table_3 = new string[][][]{};
-        long idx_4 = 0;
-        while ((idx_4 < tableSize_2)) {
-            string[][] empty_5 = new string[][]{};
-            table_3 = (Enumerable.ToArray(Enumerable.Append<string[][]>(table_3, empty_5)));
-            idx_4 = (idx_4 + 1);
-        };
-        string[] base_6 = new string[]{};
-        table_3[(int)(0)] = new string[][]{base_6};
-        long i_7 = 0;
-        while ((i_7 < tableSize_2)) {
-            if ((table_3[(int)(i_7 < 0 ? table_3.Length + (i_7) : i_7)].Length != 0)) {
-                long w_8 = 0;
-                while ((w_8 < wordBank_1.Length)) {
-                    string word_9 = wordBank_1[(int)(w_8 < 0 ? wordBank_1.Length + (w_8) : w_8)];
-                    long wordLen_10 = word_9.Length;
-                    if ((_substr(target_0, i_7, (i_7 + wordLen_10)) == word_9)) {
-                        long k_11 = 0;
-                        while ((k_11 < table_3[(int)(i_7 < 0 ? table_3.Length + (i_7) : i_7)].Length)) {
-                            string[] way_12 = table_3[(int)(i_7 < 0 ? table_3.Length + (i_7) : i_7)][(int)(k_11 < 0 ? table_3[(int)(i_7 < 0 ? table_3.Length + (i_7) : i_7)].Length + (k_11) : k_11)];
-                            string[] combination_13 = new string[]{};
-                            long m_14 = 0;
-                            while ((m_14 < way_12.Length)) {
-                                combination_13 = (Enumerable.ToArray(Enumerable.Append<string>(combination_13, way_12[(int)(m_14 < 0 ? way_12.Length + (m_14) : m_14)])));
-                                m_14 = (m_14 + 1);
-                            }
-                            combination_13 = (Enumerable.ToArray(Enumerable.Append<string>(combination_13, word_9)));
-                            long nextIndex_15 = (i_7 + wordLen_10);
-                            table_3[(int)(nextIndex_15)] = (Enumerable.ToArray(Enumerable.Append<string[]>(table_3[(int)(nextIndex_15 < 0 ? table_3.Length + (nextIndex_15) : nextIndex_15)], combination_13)));
-                            k_11 = (k_11 + 1);
-                        }
-                    }
-                    w_8 = (w_8 + 1);
+    static long INF_0 = 1000000000;
+    static Graph graph_22 = Program.new_graph(5);
+    public static Graph new_graph(long n_1) {
+        long[][] dp_2 = new long[][]{};
+        long i_3 = 0;
+        while ((i_3 < n_1)) {
+            long[] row_4 = new long[]{};
+            long j_5 = 0;
+            while ((j_5 < n_1)) {
+                if ((i_3 == j_5)) {
+                    row_4 = (Enumerable.ToArray(Enumerable.Append<long>(row_4, 0)));
+                } else {
+                    row_4 = (Enumerable.ToArray(Enumerable.Append<long>(row_4, INF_0)));
                 }
+                j_5 = (j_5 + 1);
             }
-            i_7 = (i_7 + 1);
+            dp_2 = (Enumerable.ToArray(Enumerable.Append<long[]>(dp_2, row_4)));
+            i_3 = (i_3 + 1);
         };
-        return table_3[(int)(target_0.Length < 0 ? table_3.Length + (target_0.Length) : target_0.Length)];
+        return new Graph{n = n_1, dp = dp_2};
+    }
+
+    public static void add_edge(Graph g_6, long u_7, long v_8, long w_9) {
+        long[][] dp_10 = g_6.dp;
+        long[] row_11 = dp_10[(int)(u_7 < 0 ? dp_10.Length + (u_7) : u_7)];
+        row_11[(int)(v_8)] = w_9;
+        dp_10[(int)(u_7)] = row_11;
+        g_6.dp = dp_10;
+    }
+
+    public static void floyd_warshall(Graph g_12) {
+        long[][] dp_13 = g_12.dp;
+        long k_14 = 0;
+        while ((k_14 < g_12.n)) {
+            long i_15 = 0;
+            while ((i_15 < g_12.n)) {
+                long j_16 = 0;
+                while ((j_16 < g_12.n)) {
+                    long alt_17 = (dp_13[(int)(i_15 < 0 ? dp_13.Length + (i_15) : i_15)][(int)(k_14 < 0 ? dp_13[(int)(i_15 < 0 ? dp_13.Length + (i_15) : i_15)].Length + (k_14) : k_14)] + dp_13[(int)(k_14 < 0 ? dp_13.Length + (k_14) : k_14)][(int)(j_16 < 0 ? dp_13[(int)(k_14 < 0 ? dp_13.Length + (k_14) : k_14)].Length + (j_16) : j_16)]);
+                    long[] row_18 = dp_13[(int)(i_15 < 0 ? dp_13.Length + (i_15) : i_15)];
+                    if ((alt_17 < row_18[(int)(j_16 < 0 ? row_18.Length + (j_16) : j_16)])) {
+                        row_18[(int)(j_16)] = alt_17;
+                        dp_13[(int)(i_15)] = row_18;
+                    }
+                    j_16 = (j_16 + 1);
+                }
+                i_15 = (i_15 + 1);
+            }
+            k_14 = (k_14 + 1);
+        };
+        g_12.dp = dp_13;
+    }
+
+    public static long show_min(Graph g_19, long u_20, long v_21) {
+        return g_19.dp[(int)(u_20 < 0 ? g_19.dp.Length + (u_20) : u_20)][(int)(v_21 < 0 ? g_19.dp[(int)(u_20 < 0 ? g_19.dp.Length + (u_20) : u_20)].Length + (v_21) : v_21)];
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            Console.WriteLine(Program._fmtTop(_fmtStr(Program.allConstruct("jwajalapa", new string[]{"jwa", "j", "w", "a", "la", "lapa"}))));
-            Console.WriteLine(Program._fmtTop(_fmtStr(Program.allConstruct("rajamati", new string[]{"s", "raj", "amat", "raja", "ma", "i", "t"}))));
-            Console.WriteLine(Program._fmtTop(_fmtStr(Program.allConstruct("hexagonosaurus", new string[]{"h", "ex", "hex", "ag", "ago", "ru", "auru", "rus", "go", "no", "o", "s"}))));
+            Program.add_edge(graph_22, 0, 2, 9);
+            Program.add_edge(graph_22, 0, 4, 10);
+            Program.add_edge(graph_22, 1, 3, 5);
+            Program.add_edge(graph_22, 2, 3, 7);
+            Program.add_edge(graph_22, 3, 0, 10);
+            Program.add_edge(graph_22, 3, 1, 2);
+            Program.add_edge(graph_22, 3, 2, 1);
+            Program.add_edge(graph_22, 3, 4, 6);
+            Program.add_edge(graph_22, 4, 1, 3);
+            Program.add_edge(graph_22, 4, 2, 4);
+            Program.add_edge(graph_22, 4, 3, 9);
+            Program.floyd_warshall(graph_22);
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.show_min(graph_22, 1, 4))));
+            Console.WriteLine(Program._fmtTop(_fmtStr(Program.show_min(graph_22, 0, 3))));
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);

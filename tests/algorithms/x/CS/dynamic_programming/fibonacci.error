@@ -1,8 +1,0 @@
-error[T008]: type mismatch: expected Fibonacci, got [int]
-  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/dynamic_programming/fibonacci.mochi:31:16
-
- 31 |   f.sequence = seq
-    |                ^
-
-help:
-  Change the value to match the expected type.

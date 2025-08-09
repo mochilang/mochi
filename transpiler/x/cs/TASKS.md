@@ -1,3 +1,60 @@
+## Progress (2025-08-09 15:58 +0700)
+- zig: fix slice returns and mutable params (progress 103/105)
+
+## Progress (2025-08-09 15:58 +0700)
+- zig: fix slice returns and mutable params (progress 103/105)
+
+## Progress (2025-08-09 15:58 +0700)
+- zig: fix slice returns and mutable params (progress 103/105)
+
+## Progress (2025-08-09 15:58 +0700)
+- zig: fix slice returns and mutable params (progress 103/105)
+
+## Progress (2025-08-09 15:58 +0700)
+- zig: fix slice returns and mutable params (progress 103/105)
+
+## Progress (2025-08-09 15:58 +0700)
+- zig: fix slice returns and mutable params (progress 103/105)
+
+## Progress (2025-08-09 15:58 +0700)
+- zig: fix slice returns and mutable params (progress 103/105)
+
+## Progress (2025-08-09 15:58 +0700)
+- zig: fix slice returns and mutable params (progress 103/105)
+
+## Progress (2025-08-09 15:58 +0700)
+- zig: fix slice returns and mutable params (progress 103/105)
+
+## Progress (2025-08-09 15:58 +0700)
+- zig: fix slice returns and mutable params (progress 103/105)
+
+## Progress (2025-08-09 15:58 +0700)
+- zig: fix slice returns and mutable params (progress 103/105)
+
+## Progress (2025-08-09 15:58 +0700)
+- zig: fix slice returns and mutable params (progress 103/105)
+
+## Progress (2025-08-09 15:58 +0700)
+- zig: fix slice returns and mutable params (progress 103/105)
+
+## Progress (2025-08-09 15:58 +0700)
+- zig: fix slice returns and mutable params (progress 103/105)
+
+## Progress (2025-08-09 15:58 +0700)
+- zig: fix slice returns and mutable params (progress 103/105)
+
+## Progress (2025-08-09 15:58 +0700)
+- zig: fix slice returns and mutable params (progress 103/105)
+
+## Progress (2025-08-09 15:58 +0700)
+- zig: fix slice returns and mutable params (progress 103/105)
+
+## Progress (2025-08-09 15:58 +0700)
+- zig: fix slice returns and mutable params (progress 103/105)
+
+## Progress (2025-08-09 15:58 +0700)
+- zig: fix slice returns and mutable params (progress 103/105)
+
 ## Progress (2025-08-07 00:02 +0700)
 - pascal: support basic assignments (progress 103/105)
 
@@ -3217,6 +3274,25 @@
 
 ## Progress (2025-07-22 03:14 +0000)
 - cs transpiler: 100/102 tests compiled
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

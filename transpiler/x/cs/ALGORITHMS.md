@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-09 10:44 GMT+7
+Last updated: 2025-08-09 16:12 GMT+7
 
-## Algorithms Golden Test Checklist (998/1077)
+## Algorithms Golden Test Checklist (1000/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -306,22 +306,22 @@ Last updated: 2025-08-09 10:44 GMT+7
 | 297 | divide_and_conquer/peak | ✓ | 2.0ms | 17.27KB |
 | 298 | divide_and_conquer/power | ✓ | 3.0ms | 13.99KB |
 | 299 | divide_and_conquer/strassen_matrix_multiplication | ✓ | 6.0ms | 1.69MB |
-| 300 | docs/conf | ✓ | 2.0ms | 15.11KB |
-| 301 | dynamic_programming/abbreviation | ✓ | 3.0ms | 26.74KB |
-| 302 | dynamic_programming/all_construct | ✓ | 3.0ms | 52.64KB |
-| 303 | dynamic_programming/bitmask | ✓ | 3.0ms | 18.87KB |
-| 304 | dynamic_programming/catalan_numbers | ✓ | 3.0ms | 18.02KB |
-| 305 | dynamic_programming/climbing_stairs | ✓ | 3.0ms | 16.39KB |
-| 306 | dynamic_programming/combination_sum_iv | ✓ | 3.0ms | 18.12KB |
-| 307 | dynamic_programming/edit_distance | ✓ | 3.0ms | 51.69KB |
-| 308 | dynamic_programming/factorial | ✓ | 3.0ms | 19.87KB |
-| 309 | dynamic_programming/fast_fibonacci | ✓ | 2.0ms | 18.49KB |
-| 310 | dynamic_programming/fibonacci | error |  |  |
-| 311 | dynamic_programming/fizz_buzz | ✓ | 2.0ms | 19.84KB |
-| 312 | dynamic_programming/floyd_warshall | error |  |  |
-| 313 | dynamic_programming/integer_partition | ✓ | 5.0ms | 4.82MB |
-| 314 | dynamic_programming/iterating_through_submasks | ✓ | 3.0ms | 21.18KB |
-| 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 4.0ms | 25.69KB |
+| 300 | docs/conf | ✓ | 5.0ms | 15.11KB |
+| 301 | dynamic_programming/abbreviation | ✓ | 6.0ms | 26.74KB |
+| 302 | dynamic_programming/all_construct | ✓ | 7.0ms | 52.64KB |
+| 303 | dynamic_programming/bitmask | ✓ | 8.0ms | 18.87KB |
+| 304 | dynamic_programming/catalan_numbers | ✓ | 5.0ms | 18.02KB |
+| 305 | dynamic_programming/climbing_stairs | ✓ | 4.0ms | 16.39KB |
+| 306 | dynamic_programming/combination_sum_iv | ✓ | 5.0ms | 18.12KB |
+| 307 | dynamic_programming/edit_distance | ✓ | 6.0ms | 51.69KB |
+| 308 | dynamic_programming/factorial | ✓ | 5.0ms | 19.87KB |
+| 309 | dynamic_programming/fast_fibonacci | ✓ | 4.0ms | 18.49KB |
+| 310 | dynamic_programming/fibonacci | ✓ | 6.0ms | 20.79KB |
+| 311 | dynamic_programming/fizz_buzz | ✓ | 4.0ms | 19.84KB |
+| 312 | dynamic_programming/floyd_warshall | ✓ | 4.0ms | 19.86KB |
+| 313 | dynamic_programming/integer_partition | ✓ | 8.0ms | 4.82MB |
+| 314 | dynamic_programming/iterating_through_submasks | ✓ | 4.0ms | 21.18KB |
+| 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 6.0ms | 25.69KB |
 | 316 | dynamic_programming/knapsack | error |  |  |
 | 317 | dynamic_programming/largest_divisible_subset | ✓ | 3.0ms | 18.98KB |
 | 318 | dynamic_programming/longest_common_subsequence | ✓ | 2.0ms | 26.77KB |
