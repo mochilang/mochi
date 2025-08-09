@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 782/1077
-Last updated: 2025-08-09 15:58 +0700
+Completed programs: 784/1077
+Last updated: 2025-08-09 16:10 +0700
 
 Checklist:
 
@@ -856,8 +856,8 @@ Checklist:
 | 847 | project_euler/problem_021/sol1 | ✓ | 23.0ms | 3.48MB |
 | 848 | project_euler/problem_022/sol1 | ✓ | 482.0µs | 3.62MB |
 | 849 | project_euler/problem_022/sol2 | ✓ | 7.06s | 4.52MB |
-| 850 | project_euler/problem_023/sol1 |   |  |  |
-| 851 | project_euler/problem_024/sol1 |   |  |  |
+| 850 | project_euler/problem_023/sol1 | ✓ | 1.94s | 3.83MB |
+| 851 | project_euler/problem_024/sol1 | ✓ | 188.0µs | 3.59MB |
 | 852 | project_euler/problem_025/sol1 |   |  |  |
 | 853 | project_euler/problem_025/sol2 |   |  |  |
 | 854 | project_euler/problem_025/sol3 |   |  |  |

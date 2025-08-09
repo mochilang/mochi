@@ -906,6 +906,7 @@ func (p *Program) write(w io.Writer) {
 	}
 	if p.UseParseIntStr {
 		fmt.Fprintln(w, "static long _parse_int_str(const std::string& s, long base) {")
+		fmt.Fprintln(w, "    if(s.empty()) return 0;")
 		fmt.Fprintln(w, "    return std::stol(s, nullptr, base);")
 		fmt.Fprintln(w, "}")
 	}
