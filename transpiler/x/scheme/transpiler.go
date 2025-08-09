@@ -3,11 +3,16 @@
 package scheme
 
 import (
+	"bufio"
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"math"
+	"os"
 	"os/exec"
+	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 
@@ -453,7 +458,7 @@ func header() []byte {
         (else (to-str x))))`
 	prelude += "\n(define (upper s) (string-upcase s))"
 	prelude += "\n(define (lower s) (string-downcase s))"
-	prelude += "\n(define _floor floor)"
+	prelude += "\n(define (_floor x) (cond ((string? x) (let ((n (string->number x))) (if n (floor n) 0))) ((boolean? x) (if x 1 0)) (else (floor x))))"
 	prelude += "\n(define (fmod a b) (- a (* (_floor (/ a b)) b)))"
 	prelude += "\n(define (_mod a b) (if (and (integer? a) (integer? b)) (modulo a b) (fmod a b)))"
 	// Perform integer division when both operands are integers to mimic
@@ -1898,6 +1903,17 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 		return convertMatchExpr(p.Match)
 	case p.FunExpr != nil:
 		return convertFunExpr(p.FunExpr)
+	case p.Load != nil:
+		format := parseFormat(p.Load.With)
+		path := ""
+		if p.Load.Path != nil {
+			path = strings.Trim(*p.Load.Path, "\"")
+		}
+		n, err := dataExprFromFile(path, format, p.Load.Type)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
 	case p.Call != nil:
 		return convertCall(Symbol(p.Call.Func), &parser.CallOp{Args: p.Call.Args})
 	}
@@ -2062,6 +2078,151 @@ func extractVariantPattern(e *parser.Expr) (string, []string, []string, bool) {
 		}
 	}
 	return "", nil, nil, false
+}
+
+func literalString(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil {
+		return "", false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func parseFormat(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return ""
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Map == nil {
+		return ""
+	}
+	for _, it := range p.Target.Map.Items {
+		key, ok := isSimpleIdent(it.Key)
+		if !ok {
+			key, ok = literalString(it.Key)
+		}
+		if key == "format" {
+			if s, ok := literalString(it.Value); ok {
+				return s
+			}
+		}
+	}
+	return ""
+}
+
+func valueToNode(v interface{}, typ *parser.TypeRef) Node {
+	switch val := v.(type) {
+	case map[string]interface{}:
+		names := make([]string, 0, len(val))
+		for k := range val {
+			names = append(names, k)
+		}
+		sort.Strings(names)
+		pairs := []Node{Symbol("_list")}
+		for _, k := range names {
+			pair := &List{Elems: []Node{Symbol("cons"), StringLit(k), valueToNode(val[k], nil)}}
+			pairs = append(pairs, pair)
+		}
+		return &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: pairs}}}
+	case []interface{}:
+		elems := make([]Node, 0, len(val)+1)
+		elems = append(elems, Symbol("_list"))
+		for _, it := range val {
+			elems = append(elems, valueToNode(it, nil))
+		}
+		return &List{Elems: elems}
+	case string:
+		return StringLit(val)
+	case bool:
+		return BoolLit(val)
+	case float64:
+		if float64(int(val)) == val {
+			return IntLit(int(val))
+		}
+		return FloatLit(val)
+	case int:
+		return IntLit(val)
+	case int64:
+		return IntLit(int(val))
+	case nil:
+		return StringLit("")
+	default:
+		return StringLit(fmt.Sprintf("%v", val))
+	}
+}
+
+func dataExprFromFile(path, format string, typ *parser.TypeRef) (Node, error) {
+	if path == "" {
+		return &List{Elems: []Node{Symbol("_list")}}, nil
+	}
+	root := repoRoot()
+	if root != "" {
+		if strings.HasPrefix(path, "../") {
+			clean := strings.TrimPrefix(path, "../")
+			path = filepath.Join(root, "tests", clean)
+		} else if !filepath.IsAbs(path) {
+			path = filepath.Join(root, path)
+		}
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	var v interface{}
+	switch format {
+	case "jsonl":
+		var list []interface{}
+		scanner := bufio.NewScanner(bytes.NewReader(data))
+		for scanner.Scan() {
+			line := strings.TrimSpace(scanner.Text())
+			if line == "" {
+				continue
+			}
+			var item interface{}
+			if err := json.Unmarshal([]byte(line), &item); err != nil {
+				return nil, err
+			}
+			list = append(list, item)
+		}
+		if err := scanner.Err(); err != nil {
+			return nil, err
+		}
+		v = list
+	case "json":
+		if err := json.Unmarshal(data, &v); err != nil {
+			return nil, err
+		}
+	case "yaml", "csv", "":
+		return nil, fmt.Errorf("unsupported load format")
+	default:
+		return nil, fmt.Errorf("unsupported load format")
+	}
+	return valueToNode(v, typ), nil
+}
+
+func repoRoot() string {
+	out, err := exec.Command("git", "rev-parse", "--show-toplevel").CombinedOutput()
+	if err != nil {
+		return ""
+	}
+	return strings.TrimSpace(string(out))
 }
 
 func convertFunExpr(fe *parser.FunExpr) (Node, error) {
