@@ -1,5 +1,24 @@
 # 📦 CHANGELOG.md
 
+## [0.10.63] – 2025-08-09T18:16:04+07:00
+
+### Added
+
+* Broadened algorithm outputs and coverage across languages including C++, C#, Elixir, and OCaml.
+* Enhanced slice, string, and list handling in many transpilers such as Clojure, Java, Kotlin, Rust, PHP, and Zig.
+* Improved memory detection in TypeScript and guarded resource imports in Python.
+
+### Changed
+
+* Refreshed algorithm outputs and benchmarks across Scheme, Go, Ruby, Swift, and more.
+* Updated Project Euler datasets and new algorithms like OCaml resistor equivalence.
+
+### Fixed
+
+* Resolved C++ const list appends, PHP struct literal keys, and Zig slice returns.
+* Corrected benchmark timing and algorithm handling in Ruby and Java.
+
+
 ## [0.10.62] – 2025-08-09T03:04:56+00:00
 
 ### Added
