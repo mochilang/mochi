@@ -54,7 +54,7 @@ List<int> copy_list(List<int> src) {
 List<List<int>> subset_combinations(List<int> elements, int n) {
   int r = elements.length;
   if (n > r) {
-    return ([] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    return ([] as List<dynamic>).map((e) => ((e as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
   }
   List<List<List<int>>> dp = <List<List<int>>>[];
   int i = 0;
@@ -73,7 +73,7 @@ List<List<int>> subset_combinations(List<int> elements, int n) {
     List<int> prev = prevs[k];
     List<int> comb = copy_list(prev);
     comb = [...comb, elements[i - 1]];
-    while (dp.length <= j) { dp.add(<List<int>>[]); } dp[j] = ([...dp[j], comb] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    while (dp.length <= j) { dp.add(<List<int>>[]); } dp[j] = ([...dp[j], comb] as List<dynamic>).map((e) => ((e as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
     k = k + 1;
   }
     j = j - 1;

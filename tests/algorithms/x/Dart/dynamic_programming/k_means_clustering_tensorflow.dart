@@ -79,7 +79,7 @@ KMeansResult k_means(List<List<double>> vectors, int k, int iterations) {
   List<List<double>> centroids = <List<double>>[];
   int i = 0;
   while (i < k) {
-    centroids = ([...centroids, vectors[i]] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    centroids = ([...centroids, vectors[i]] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     i = i + 1;
   }
   List<int> assignments = <int>[];
@@ -113,7 +113,7 @@ KMeansResult k_means(List<List<double>> vectors, int k, int iterations) {
     int v2 = 0;
     while (v2 < n) {
     if (assignments[v2] == cIdx) {
-    cluster = ([...cluster, vectors[v2]] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    cluster = ([...cluster, vectors[v2]] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
   }
     v2 = v2 + 1;
   }

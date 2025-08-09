@@ -58,7 +58,7 @@ List<int> longest_subsequence(List<int> arr) {
   while (i < n) {
     List<int> single = <int>[];
     single = [...single, arr[i]];
-    lis = ([...lis, single] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    lis = ([...lis, single] as List<dynamic>).map((e) => ((e as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
     i = i + 1;
   }
   i = 1;
@@ -91,7 +91,7 @@ void _main() {
   print(_str(longest_subsequence([9, 8, 7, 6, 5, 7])));
   print(_str(longest_subsequence([28, 26, 12, 23, 35, 39])));
   print(_str(longest_subsequence([1, 1, 1])));
-  print(_str(longest_subsequence(([] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList())));
+  print(_str(longest_subsequence(([] as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList())));
 }
 
 void _start() {

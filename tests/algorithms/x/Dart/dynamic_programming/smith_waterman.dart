@@ -60,7 +60,7 @@ List<List<int>> smith_waterman(String query, String subject, int match_score, in
     for (int _2 = 0; _2 < n + 1; _2++) {
     row = [...row, 0];
   }
-    score = ([...score, row] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    score = ([...score, row] as List<dynamic>).map((e) => ((e as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
   }
   for (int i = 1; i < m + 1; i++) {
     for (int j = 1; j < n + 1; j++) {

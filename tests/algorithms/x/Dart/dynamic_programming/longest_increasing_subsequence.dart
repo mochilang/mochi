@@ -54,7 +54,7 @@ List<int> longest_subsequence(List<int> xs) {
     dynamic temp_array = xs.sublist(i, n);
     temp_array = longest_subsequence(temp_array);
     if (temp_array.length > longest_subseq.length) {
-    longest_subseq = (temp_array as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
+    longest_subseq = (temp_array as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
   };
   } else {
     i = i + 1;
@@ -70,7 +70,7 @@ List<int> longest_subsequence(List<int> xs) {
   }
   List<int> candidate = <int>[];
   candidate = [...candidate, pivot];
-  candidate = ([...candidate, ...longest_subsequence(filtered)] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
+  candidate = ([...candidate, ...longest_subsequence(filtered)] as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
   if (candidate.length > longest_subseq.length) {
     return candidate;
   } else {

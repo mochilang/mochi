@@ -56,7 +56,7 @@ int min_partitions(String s) {
     row = [...row, false];
     j = j + 1;
   }
-    pal = ([...pal, row] as List).map((e) => (List<bool>.from(e) as List<bool>)).toList();
+    pal = ([...pal, row] as List<dynamic>).map((e) => (List<bool>.from(e) as List<bool>)).toList();
     i = i + 1;
   }
   i = 0;
@@ -64,7 +64,7 @@ int min_partitions(String s) {
     int mincut = i;
     int j = 0;
     while (j <= i) {
-    if (s.substring(i, i + 1) == s.substring(j, j + 1) && (i - j < 2 || pal[j + 1][i - 1])) {
+    if (_substr(s, i, i + 1) == _substr(s, j, j + 1) && (i - j < 2 || pal[j + 1][i - 1])) {
     while (pal[j]!.length <= i) { pal[j]!.add(false); } pal[j]![i] = true;
     if (j == 0) {
     mincut = 0;
