@@ -1,0 +1,26 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 17 │         {i, res} = try do
+    │          ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/series/p_series.exs:17:10: Main.pow_string/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 38 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/series/p_series.exs:38:8: Main.pow_string/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 66 │       {i, series} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/series/p_series.exs:66:8: Main.p_series/2
+
+["1", "1 / 4", "1 / 9", "1 / 16", "1 / 25"]
+[]
+["1", "1 / 0.25", "1 / 0.1111111111111111", "1 / 0.0625", "1 / 0.04"]
+[]
+["1"]

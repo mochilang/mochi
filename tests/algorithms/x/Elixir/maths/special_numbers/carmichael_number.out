@@ -1,0 +1,13 @@
+warning: variable "b" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 54 │       b = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/carmichael_number.exs:54:7: Main.is_carmichael_number/1
+
+2
+5
+false
+true
+false
+true

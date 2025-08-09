@@ -1,0 +1,24 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 29 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/test_prime_check.exs:29:7: Main.is_prime/1
+
+true
+true
+true
+true
+true
+true
+true
+true
+true
+true
+false
+false
+false
+false
+false
+false
+false

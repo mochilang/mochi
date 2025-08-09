@@ -1,0 +1,62 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 16 │       {i, result} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/armstrong_numbers.exs:16:8: Main.pow_int/2
+
+    warning: variable "temp" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 43 │       {digits, temp} = try do
+    │                ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/armstrong_numbers.exs:43:16: Main.armstrong_number/1
+
+    warning: variable "temp" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 61 │       {temp, total} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/armstrong_numbers.exs:61:8: Main.armstrong_number/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 88 │       {digit_histogram, i} = try do
+    │                         ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/armstrong_numbers.exs:88:25: Main.pluperfect_number/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 129 │       {i, total} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/armstrong_numbers.exs:129:8: Main.pluperfect_number/1
+
+     warning: variable "temp" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 107 │       {digit_histogram, digit_total, temp} = try do
+     │                                      ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/armstrong_numbers.exs:107:38: Main.pluperfect_number/1
+
+     warning: variable "temp" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 156 │       {digits, temp} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/armstrong_numbers.exs:156:16: Main.narcissistic_number/1
+
+     warning: variable "temp" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 174 │       {temp, total} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/armstrong_numbers.exs:174:8: Main.narcissistic_number/1
+
+true
+false
+true
+false
+true
+false

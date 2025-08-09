@@ -1,0 +1,59 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 16 │       {i, result} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/proth_number.exs:16:8: Main.pow2/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 74 │           {i, proth_index, proth_list} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/proth_number.exs:74:12: Main.proth/1
+
+    warning: variable "block" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 87 │       {block, increment, proth_index, proth_list} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/proth_number.exs:87:8: Main.proth/1
+
+    warning: variable "increment" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 87 │       {block, increment, proth_index, proth_list} = try do
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/proth_number.exs:87:15: Main.proth/1
+
+    warning: variable "pow" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 50 │       {block_index, pow} = try do
+    │                     ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/proth_number.exs:50:21: Main.proth/1
+
+    warning: variable "proth_index" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 87 │       {block, increment, proth_index, proth_list} = try do
+    │                          ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/proth_number.exs:87:26: Main.proth/1
+
+     warning: variable "n" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 111 │       n = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/special_numbers/proth_number.exs:111:7: Main.main/0
+
+The 1th Proth number: 3
+The 2th Proth number: 5
+The 3th Proth number: 9
+The 4th Proth number: 13
+The 5th Proth number: 17
+The 6th Proth number: 25
+The 7th Proth number: 33
+The 8th Proth number: 41
+The 9th Proth number: 49
+The 10th Proth number: 57

@@ -1,0 +1,24 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 33 │           {j, rank} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/spearman_rank_correlation_coefficient.exs:33:12: Main.assign_ranks/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 46 │       {i, ranks} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/spearman_rank_correlation_coefficient.exs:46:8: Main.assign_ranks/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 77 │       {d_sq, i} = try do
+    │              ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/spearman_rank_correlation_coefficient.exs:77:14: Main.calculate_spearman_rank_correlation/2
+
+1.0
+-1.0
+0.6
