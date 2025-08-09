@@ -2,4 +2,4 @@
 %   29| mochi_nth(I, L) ->
 %     | ^
 
-"[ {\"q\":\"It takes half your life before you discover life is a do-it-yourself project.\", \"a\":\"Napoleon Hill\", \"h\":\"<blockquote>&ldquo;It takes half your life before you discover life is a do-it-yourself project.&rdquo; &mdash; <footer>Napoleon Hill</footer></blockquote>\"} ]"
+"[ {\"q\":\"It takes half your life before you discover life is a do-it-yourself project.\",  \"a\":\"Napoleon Hill\",  \"h\":\"<blockquote>&ldquo;It takes half your life before you discover life is a do-it-yourself project.&rdquo; &mdash; <footer>Napoleon Hill</footer></blockquote>\"} ]"
