@@ -1,7 +1,0 @@
-run: exit status 1
-<1, 2, 3>
-lua: ...s/x/Lua/data_structures/queues/queue_on_pseudo_stack.lua:218: attempt to index a nil value (local 'g')
-stack traceback:
-	...s/x/Lua/data_structures/queues/queue_on_pseudo_stack.lua:218: in function 'main'
-	...s/x/Lua/data_structures/queues/queue_on_pseudo_stack.lua:315: in main chunk
-	[C]: in ?

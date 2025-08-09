@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-09 16:08 GMT+7
+Last updated: 2025-08-09 16:34 GMT+7
 
-## Algorithms Golden Test Checklist (1003/1077)
+## Algorithms Golden Test Checklist (1006/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 270µs | 912 B |
@@ -252,14 +252,14 @@ Last updated: 2025-08-09 16:08 GMT+7
 | 243 | data_structures/queues/priority_queue_using_list | ✓ | 308µs | 1.4 KB |
 | 244 | data_structures/queues/queue_by_list | ✓ | 140µs | 1.6 KB |
 | 245 | data_structures/queues/queue_by_two_stacks | ✓ | 87µs | 2.2 KB |
-| 246 | data_structures/queues/queue_on_pseudo_stack | error |  |  |
-| 247 | data_structures/stacks/balanced_parentheses | error |  |  |
+| 246 | data_structures/queues/queue_on_pseudo_stack | ✓ | 194µs | 1.5 KB |
+| 247 | data_structures/stacks/balanced_parentheses | ✓ | 191µs | 1.0 KB |
 | 248 | data_structures/stacks/dijkstras_two_stack_algorithm | ✓ | 207µs | 1.0 KB |
 | 249 | data_structures/stacks/infix_to_postfix_conversion | ✓ | 277µs | 2.0 KB |
 | 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ | 3µs | 600 B |
 | 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 288µs | 808 B |
 | 252 | data_structures/stacks/lexicographical_numbers | ✓ | 931µs | 848 B |
-| 253 | data_structures/stacks/next_greater_element | error |  |  |
+| 253 | data_structures/stacks/next_greater_element | ✓ | 660µs | 1.5 KB |
 | 254 | data_structures/stacks/postfix_evaluation | ✓ | 258µs | 1.1 KB |
 | 255 | data_structures/stacks/prefix_evaluation | ✓ | 413µs | 2.7 KB |
 | 256 | data_structures/stacks/stack | ✓ | 169µs | 1.3 KB |
