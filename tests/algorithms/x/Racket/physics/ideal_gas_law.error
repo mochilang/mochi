@@ -1,0 +1,5 @@
+run: exit status 1
+/workspace/mochi/tests/algorithms/x/Racket/physics/ideal_gas_law.rkt:76:0: throw: unbound identifier
+  in: throw
+  location...:
+   /workspace/mochi/tests/algorithms/x/Racket/physics/ideal_gas_law.rkt:76:0
