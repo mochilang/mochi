@@ -1,36 +1,36 @@
 public class Main {
 
     static String[][] allConstruct(String target, String[] wordBank) {
-        int tableSize = _runeLen(target) + 1;
+        long tableSize = _runeLen(target) + 1;
         String[][][] table = ((String[][][])(new String[][][]{}));
-        int idx = 0;
+        long idx = 0;
         while (idx < tableSize) {
             String[][] empty = ((String[][])(new String[][]{}));
             table = ((String[][][])(appendObj((String[][][])table, empty)));
             idx = idx + 1;
         }
         String[] base = ((String[])(new String[]{}));
-table[0] = ((String[][])(new String[][]{base}));
-        int i = 0;
+table[(int)(0)] = ((String[][])(new String[][]{base}));
+        long i = 0;
         while (i < tableSize) {
-            if (table[i].length != 0) {
-                int w = 0;
+            if (table[(int)(i)].length != 0) {
+                long w = 0;
                 while (w < wordBank.length) {
-                    String word = wordBank[w];
-                    int wordLen = _runeLen(word);
-                    if ((target.substring(i, i + wordLen).equals(word))) {
-                        int k = 0;
-                        while (k < table[i].length) {
-                            String[] way = ((String[])(table[i][k]));
+                    String word = wordBank[(int)(w)];
+                    long wordLen = _runeLen(word);
+                    if ((_substr(target, (int)(i), (int)(i + wordLen)).equals(word))) {
+                        long k = 0;
+                        while (k < table[(int)(i)].length) {
+                            String[] way = ((String[])(table[(int)(i)][(int)(k)]));
                             String[] combination = ((String[])(new String[]{}));
-                            int m = 0;
+                            long m = 0;
                             while (m < way.length) {
-                                combination = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(combination), java.util.stream.Stream.of(way[m])).toArray(String[]::new)));
+                                combination = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(combination), java.util.stream.Stream.of(way[(int)(m)])).toArray(String[]::new)));
                                 m = m + 1;
                             }
                             combination = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(combination), java.util.stream.Stream.of(word)).toArray(String[]::new)));
-                            int nextIndex = i + wordLen;
-table[nextIndex] = ((String[][])(appendObj((String[][])table[nextIndex], combination)));
+                            long nextIndex = i + wordLen;
+table[(int)(nextIndex)] = ((String[][])(appendObj((String[][])table[(int)(nextIndex)], combination)));
                             k = k + 1;
                         }
                     }
@@ -39,7 +39,7 @@ table[nextIndex] = ((String[][])(appendObj((String[][])table[nextIndex], combina
             }
             i = i + 1;
         }
-        return table[_runeLen(target)];
+        return table[(int)(_runeLen(target))];
     }
     public static void main(String[] args) {
         System.out.println(_p(allConstruct("jwajalapa", ((String[])(new String[]{"jwa", "j", "w", "a", "la", "lapa"})))));
@@ -55,6 +55,16 @@ table[nextIndex] = ((String[][])(appendObj((String[][])table[nextIndex], combina
 
     static int _runeLen(String s) {
         return s.codePointCount(0, s.length());
+    }
+
+    static String _substr(String s, int i, int j) {
+        int len = _runeLen(s);
+        if (i < 0) i = 0;
+        if (j > len) j = len;
+        if (i > j) i = j;
+        int start = s.offsetByCodePoints(0, i);
+        int end = s.offsetByCodePoints(0, j);
+        return s.substring(start, end);
     }
 
     static String _p(Object v) {
