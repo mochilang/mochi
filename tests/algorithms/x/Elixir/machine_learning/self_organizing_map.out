@@ -1,0 +1,30 @@
+warning: variable "d0" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 14 │       {d0, d1} = Enum.reduce((0..(_len(sample) - 1)//1), {d0, d1}, fn i, {d0, d1} ->
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/self_organizing_map.exs:14:8: Main.get_winner/2
+
+    warning: variable "d1" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 14 │       {d0, d1} = Enum.reduce((0..(_len(sample) - 1)//1), {d0, d1}, fn i, {d0, d1} ->
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/self_organizing_map.exs:14:12: Main.get_winner/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 57 │       {i, s} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/self_organizing_map.exs:57:8: Main.list_to_string/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 88 │       {i, s} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/self_organizing_map.exs:88:8: Main.matrix_to_string/1
+
+Clusters that the test sample belongs to : 0
+Weights that have been trained : [[0.6000000000000001, 0.8, 0.5, 0.9], [0.3333984375, 0.0666015625, 0.7, 0.3]]

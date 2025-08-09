@@ -1,0 +1,155 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 29 │       {guess, i} = try do
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/principle_component_analysis.exs:29:15: Main.sqrt/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 53 │       {i, sum} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/principle_component_analysis.exs:53:8: Main.mean/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 84 │           {column, i} = try do
+    │                    ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/principle_component_analysis.exs:84:20: Main.standardize/1
+
+     warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 104 │           {k, variance} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/principle_component_analysis.exs:104:12: Main.standardize/1
+
+     warning: variable "c" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 138 │           {c, row} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/principle_component_analysis.exs:138:12: Main.standardize/1
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 117 │       {j, means, stds} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/principle_component_analysis.exs:117:8: Main.standardize/1
+
+     warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 151 │       {r, standardized} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/principle_component_analysis.exs:151:8: Main.standardize/1
+
+     warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 185 │               {k, sum} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/principle_component_analysis.exs:185:16: Main.covariance_matrix/1
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 198 │           {j, row} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/principle_component_analysis.exs:198:12: Main.covariance_matrix/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 211 │       {cov, i} = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/principle_component_analysis.exs:211:13: Main.covariance_matrix/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 235 │       {i, sum} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/principle_component_analysis.exs:235:8: Main.normalize/1
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 253 │       {j, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/principle_component_analysis.exs:253:8: Main.normalize/1
+
+     warning: variable "v1" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 273 │       v1 = nil
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/principle_component_analysis.exs:273:7: Main.eigen_decomposition_2x2/1
+
+     warning: variable "v2" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 274 │       v2 = nil
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/principle_component_analysis.exs:274:7: Main.eigen_decomposition_2x2/1
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 321 │           {j, row} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/principle_component_analysis.exs:321:12: Main.transpose/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 334 │       {i, trans} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/principle_component_analysis.exs:334:8: Main.transpose/1
+
+     warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 373 │               {k, sum} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/principle_component_analysis.exs:373:16: Main.matrix_multiply/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 386 │           {j, row} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/principle_component_analysis.exs:386:12: Main.matrix_multiply/2
+
+     warning: variable "result" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 392 │           result = (result ++ [row])
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/principle_component_analysis.exs:392:11: Main.matrix_multiply/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 399 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/principle_component_analysis.exs:399:7: Main.matrix_multiply/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 431 │       {i, ratios} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/principle_component_analysis.exs:431:8: Main.apply_pca/2
+
+** (ArithmeticError) bad argument in arithmetic expression: div(18.1, 10)
+    :erlang.div(18.1, 10)
+    /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/principle_component_analysis.exs:59: Main.mean/1
+    /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/principle_component_analysis.exs:90: anonymous fn/7 in Main.standardize/1
+    /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/principle_component_analysis.exs:118: Main.standardize/1
+    /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/principle_component_analysis.exs:412: Main.apply_pca/2
+    /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/principle_component_analysis.exs:448: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/principle_component_analysis.exs:474: (file)

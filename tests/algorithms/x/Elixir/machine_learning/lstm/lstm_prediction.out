@@ -1,0 +1,85 @@
+warning: variable "n" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 45 │       {n, sum, term} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/lstm/lstm_prediction.exs:45:8: Main.exp_approx/1
+
+    warning: variable "term" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 45 │       {n, sum, term} = try do
+    │                ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/lstm/lstm_prediction.exs:45:16: Main.exp_approx/1
+
+     warning: variable "t" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 103 │       {c_arr, f_arr, g_arr, h_arr, i_arr, o_arr, t} = try do
+     │                                                  ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/lstm/lstm_prediction.exs:103:50: Main.forward/2
+
+     warning: variable "t" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 178 │       {db_c, db_f, db_i, db_o, dc_next, dh_next, du_c, du_f, du_i, du_o, dw_c, dw_f, dw_i, dw_o, t} = try do
+     │                                                                                                  ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/lstm/lstm_prediction.exs:178:98: Main.backward/5
+
+     warning: variable "db_y" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 129 │       db_y = 0.0
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/lstm/lstm_prediction.exs:129:7: Main.backward/5
+
+     warning: variable "dw_y" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 128 │       dw_y = 0.0
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/lstm/lstm_prediction.exs:128:7: Main.backward/5
+
+     warning: variable "dc_next" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 178 │       {db_c, db_f, db_i, db_o, dc_next, dh_next, du_c, du_f, du_i, du_o, dw_c, dw_f, dw_i, dw_o, t} = try do
+     │                                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/lstm/lstm_prediction.exs:178:32: Main.backward/5
+
+     warning: variable "dh_next" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 178 │       {db_c, db_f, db_i, db_o, dc_next, dh_next, du_c, du_f, du_i, du_o, dw_c, dw_f, dw_i, dw_o, t} = try do
+     │                                         ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/lstm/lstm_prediction.exs:178:41: Main.backward/5
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 219 │       {x, y, i} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/lstm/lstm_prediction.exs:219:14: Main.make_samples/2
+
+     warning: variable "w" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 250 │               w = backward(seq, target, w, state, lr)
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/lstm/lstm_prediction.exs:250:15: Main.train/4
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 257 │           j = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/lstm/lstm_prediction.exs:257:11: Main.train/4
+
+     warning: variable "ep" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 269 │       ep = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/lstm/lstm_prediction.exs:269:7: Main.train/4
+
+Predicted value: 0.0037780100106015353

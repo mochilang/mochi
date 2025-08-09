@@ -1,0 +1,92 @@
+run: exit status 1
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 42 │           {found, j, res} = try do
+    │                   ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/word_frequency_functions.exs:42:19: Main.to_lowercase/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 60 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/word_frequency_functions.exs:60:8: Main.to_lowercase/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 85 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/word_frequency_functions.exs:85:7: Main.is_punct/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 127 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/word_frequency_functions.exs:127:8: Main.clean_text/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 160 │       {current, i, res} = try do
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/word_frequency_functions.exs:160:17: Main.split/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 199 │           {is_match, j} = try do
+     │                      ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/word_frequency_functions.exs:199:22: Main.contains/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 214 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/word_frequency_functions.exs:214:7: Main.contains/2
+
+     warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 262 │       {k, sum, term} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/word_frequency_functions.exs:262:8: Main.ln/1
+
+     warning: variable "term" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 262 │       {k, sum, term} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/word_frequency_functions.exs:262:16: Main.ln/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 301 │       {count, i} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/word_frequency_functions.exs:301:15: Main.term_frequency/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 333 │       {i, matches} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/word_frequency_functions.exs:333:8: Main.document_frequency/2
+
+** (Protocol.UndefinedError) protocol Enumerable not implemented for type BitString
+
+Got value:
+
+    "to be, or not to be"
+
+    (elixir 1.18.3) lib/enum.ex:1: Enumerable.impl_for!/1
+    (elixir 1.18.3) lib/enum.ex:230: Enumerable.slice/1
+    (elixir 1.18.3) lib/enum.ex:4579: Enum.slice_forward/4
+    (elixir 1.18.3) lib/enum.ex:479: Enum.at/3
+    /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/word_frequency_functions.exs:103: anonymous fn/5 in Main.clean_text/2
+    /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/word_frequency_functions.exs:128: Main.clean_text/2
+    /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/word_frequency_functions.exs:282: Main.term_frequency/2
+    /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/word_frequency_functions.exs:389: Main.main/0

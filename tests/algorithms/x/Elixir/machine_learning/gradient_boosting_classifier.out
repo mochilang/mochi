@@ -1,0 +1,106 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 25 │       {i, sum, term} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/gradient_boosting_classifier.exs:25:8: Main.exp_approx/1
+
+    warning: variable "term" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 25 │       {i, sum, term} = try do
+    │                ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/gradient_boosting_classifier.exs:25:16: Main.exp_approx/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 61 │       {i, residuals} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/gradient_boosting_classifier.exs:61:8: Main.gradient/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 119 │       {i, m, preds} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/gradient_boosting_classifier.exs:119:8: Main.predict_raw/3
+
+     warning: variable "m" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 119 │       {i, m, preds} = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/gradient_boosting_classifier.exs:119:11: Main.predict_raw/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 144 │       {i, result} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/gradient_boosting_classifier.exs:144:8: Main.predict/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 193 │               {count_left, count_right, i, sum_left, sum_right} = try do
+     │                                         ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/gradient_boosting_classifier.exs:193:41: Main.train_stump/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 226 │               {error, i} = try do
+     │                       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/gradient_boosting_classifier.exs:226:23: Main.train_stump/2
+
+     warning: variable "t_index" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 248 │           {best_error, best_feature, best_left, best_right, best_threshold, t_index} = try do
+     │                                                                             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/gradient_boosting_classifier.exs:248:77: Main.train_stump/2
+
+     warning: variable "best_error" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 260 │       {best_error, best_feature, best_left, best_right, best_threshold, j} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/gradient_boosting_classifier.exs:260:8: Main.train_stump/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 260 │       {best_error, best_feature, best_left, best_right, best_threshold, j} = try do
+     │                                                                         ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/gradient_boosting_classifier.exs:260:73: Main.train_stump/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 290 │           {i, residuals} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/gradient_boosting_classifier.exs:290:12: Main.fit/4
+
+     warning: variable "models" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 297 │           models = (models ++ [stump])
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/gradient_boosting_classifier.exs:297:11: Main.fit/4
+
+     warning: variable "m" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 304 │       m = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/gradient_boosting_classifier.exs:304:7: Main.fit/4
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 334 │       {correct, i} = try do
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/gradient_boosting_classifier.exs:334:17: Main.accuracy/2
+
+Accuracy: 0.5

@@ -1,0 +1,195 @@
+run: exit status 1
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 65 │       {i, result} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:65:8: Main.powf/2
+
+    warning: variable "exp" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 51 │   def powf(base, exp) do
+    │                  ~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:51:18: Main.powf/2
+
+    warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 97 │       {k, sum, term} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:97:8: Main.ln/1
+
+    warning: variable "term" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 97 │       {k, sum, term} = try do
+    │                ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:97:16: Main.ln/1
+
+     warning: variable "n" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 123 │       {n, sum, term} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:123:8: Main.exp/1
+
+     warning: variable "term" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 123 │       {n, sum, term} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:123:16: Main.exp/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 147 │       {i, total} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:147:8: Main.mean/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 177 │       {i, losses} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:177:8: Main.binary_cross_entropy/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 208 │       {i, losses} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:208:8: Main.binary_focal_cross_entropy/5
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 250 │           {j, sum_pred, sum_true} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:250:12: Main.categorical_cross_entropy/3
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 273 │           {j, total} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:273:12: Main.categorical_cross_entropy/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 285 │       {i, total} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:285:8: Main.categorical_cross_entropy/3
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 316 │         {j, tmp} = try do
+     │          ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:316:10: Main.categorical_focal_cross_entropy/5
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 355 │           {j, sum_pred, sum_true} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:355:12: Main.categorical_focal_cross_entropy/5
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 379 │           {j, row_loss} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:379:12: Main.categorical_focal_cross_entropy/5
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 392 │       {i, total} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:392:8: Main.categorical_focal_cross_entropy/5
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 425 │       {i, losses} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:425:8: Main.hinge_loss/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 454 │       {i, total} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:454:8: Main.huber_loss/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 482 │       {i, losses} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:482:8: Main.mean_squared_error/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 509 │       {i, total} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:509:8: Main.mean_absolute_error/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 539 │       {i, total} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:539:8: Main.mean_squared_logarithmic_error/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 573 │       {i, total} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:573:8: Main.mean_absolute_percentage_error/3
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 618 │           {j, sum_log} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:618:12: Main.perplexity_loss/3
+
+     warning: variable "b" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 633 │       {b, total_perp} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:633:8: Main.perplexity_loss/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 661 │       {i, total} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:661:8: Main.smooth_l1_loss/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 688 │       {i, total} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:688:8: Main.kullback_leibler_divergence/2
+
+0.2529995012327421
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a number
+
+    :erlang.trunc(#Function<16.61708330/1 in Main.exp>)
+    /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:55: Main.powf/2
+    /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:199: anonymous fn/8 in Main.binary_focal_cross_entropy/5
+    /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:209: Main.binary_focal_cross_entropy/5
+    /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:704: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:739: Main.bench_main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/loss_functions.exs:747: (file)

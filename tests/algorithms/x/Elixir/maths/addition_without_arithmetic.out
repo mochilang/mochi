@@ -1,0 +1,68 @@
+warning: variable "bit" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 41 │       {bit, i, res, x, y} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/addition_without_arithmetic.exs:41:8: Main.bit_and/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 41 │       {bit, i, res, x, y} = try do
+    │             ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/addition_without_arithmetic.exs:41:13: Main.bit_and/2
+
+    warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 41 │       {bit, i, res, x, y} = try do
+    │                     ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/addition_without_arithmetic.exs:41:21: Main.bit_and/2
+
+    warning: variable "y" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 41 │       {bit, i, res, x, y} = try do
+    │                        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/addition_without_arithmetic.exs:41:24: Main.bit_and/2
+
+    warning: variable "bit" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 78 │       {bit, i, res, x, y} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/addition_without_arithmetic.exs:78:8: Main.bit_xor/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 78 │       {bit, i, res, x, y} = try do
+    │             ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/addition_without_arithmetic.exs:78:13: Main.bit_xor/2
+
+    warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 78 │       {bit, i, res, x, y} = try do
+    │                     ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/addition_without_arithmetic.exs:78:21: Main.bit_xor/2
+
+    warning: variable "y" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 78 │       {bit, i, res, x, y} = try do
+    │                        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/addition_without_arithmetic.exs:78:24: Main.bit_xor/2
+
+     warning: variable "second" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 110 │       {first, second} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/addition_without_arithmetic.exs:110:15: Main.add/2
+
+8
+18
+-5
+-7
+-321

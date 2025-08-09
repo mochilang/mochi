@@ -1,0 +1,43 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 25 │       {i, sum, term} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/multilayer_perceptron_classifier.exs:25:8: Main.exp_taylor/1
+
+    warning: variable "term" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 25 │       {i, sum, term} = try do
+    │                ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/multilayer_perceptron_classifier.exs:25:16: Main.exp_taylor/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 78 │           i = try do
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/multilayer_perceptron_classifier.exs:78:11: Main.train/2
+
+    warning: variable "e" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 90 │       e = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/multilayer_perceptron_classifier.exs:90:7: Main.train/2
+
+     warning: variable "preds" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 121 │           preds = (preds ++ [label])
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/multilayer_perceptron_classifier.exs:121:11: Main.predict/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 128 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/machine_learning/multilayer_perceptron_classifier.exs:128:7: Main.predict/1
+
+[]

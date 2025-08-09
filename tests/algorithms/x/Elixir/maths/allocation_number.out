@@ -1,0 +1,9 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 25 │       {allocation_list, i} = try do
+    │                         ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/maths/allocation_number.exs:25:25: Main.allocation_num/2
+
+["1-4161", "4162-8322", "8323-12483", "12484-16647"]
+["1-10000", "10001-20000", "20001-30000", "30001-40000", "40001-50000"]
