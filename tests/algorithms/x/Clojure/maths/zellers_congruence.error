@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error (IllegalStateException) at main/zeller (zellers_congruence.clj:81).
+Can't dynamically bind non-dynamic var: main/zeller_day
+
+Full report at:
+/tmp/clojure-14986969176519907180.edn

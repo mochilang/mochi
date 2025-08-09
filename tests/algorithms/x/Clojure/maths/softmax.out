@@ -1,0 +1,5 @@
+Execution error at main/test-softmax (softmax.clj:61).
+sum test failed
+
+Full report at:
+/tmp/clojure-9446727932910079483.edn

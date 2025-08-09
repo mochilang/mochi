@@ -1,0 +1,14 @@
+true
+[2 3 5 7 11 13 17 19]
+[2 3 5 7 11 13 17 19]
+[7 41]
+41
+7
+40
+[5 23]
+23
+Execution error at main/get-primes-between (primelib.clj:152).
+arguments must be prime and p1 < p2
+
+Full report at:
+/tmp/clojure-137549623800169313.edn

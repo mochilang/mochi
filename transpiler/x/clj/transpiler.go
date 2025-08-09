@@ -1536,10 +1536,10 @@ func applyBinOp(op string, left, right Node) Node {
 		inter := &List{Elems: []Node{Symbol("clojure.set/intersection"), &List{Elems: []Node{Symbol("set"), left}}, &List{Elems: []Node{Symbol("set"), right}}}}
 		return &List{Elems: []Node{Symbol("vec"), inter}}
 	case "/":
-		if !isFloatNode(left) && !isFloatNode(right) {
+		if isIntNode(left) && isIntNode(right) {
 			return &List{Elems: []Node{Symbol("quot"), left, right}}
 		}
-		fallthrough
+		return &List{Elems: []Node{Symbol(sym), left, right}}
 	default:
 		if sym == "<" || sym == "<=" || sym == ">" || sym == ">=" {
 			if isStringNode(left) || isStringNode(right) {

@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error at main/test-polynomial (single_indeterminate_operations.clj:120).
+add failed
+
+Full report at:
+/tmp/clojure-16316699464870764627.edn
