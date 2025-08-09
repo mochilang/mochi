@@ -1,41 +1,41 @@
 signal: aborted
-Could not cast value of type 'Swift.Array<Swift.String>' (0x7f27c8eb5290) to 'Swift.String' (0x7f27c8eaec78).
+Could not cast value of type 'Swift.Array<Swift.String>' (0x7f8ac0bfd290) to 'Swift.String' (0x7f8ac0bf6c78).
 
-*** Signal 6: Backtracing from 0x7f27c7480b2c... done ***
+*** Signal 6: Backtracing from 0x7f8abf1c8b2c... done ***
 
-*** Program crashed: Aborted at 0x0000000000004028 ***
+*** Program crashed: Aborted at 0x0000000000004041 ***
 
 Thread 0 "main" crashed:
 
- 0      0x00007f27c7480b2c <unknown> in libc.so.6
- 1 [ra] 0x00007f27c742727e <unknown> in libc.so.6
- 2 [ra] 0x00007f27c740a8ff <unknown> in libc.so.6
- 3 [ra] 0x00007f27c8d4ed3c swift::fatalErrorv(unsigned int, char const*, __va_list_tag*) + 139 in libswiftCore.so
- 4 [ra] 0x00007f27c8d4edbb swift::fatalError(unsigned int, char const*, ...) + 122 in libswiftCore.so
- 5 [ra] 0x00007f27c8d460f7 swift::swift_dynamicCastFailure(void const*, char const*, void const*, char const*, char const*) + 70 in libswiftCore.so
- 6 [ra] 0x00007f27c8d4624b swift::swift_dynamicCastFailure(swift::TargetMetadata<swift::InProcess> const*, swift::TargetMetadata<swift::InProcess> const*, char const*) + 122 in libswiftCore.so
- 7 [ra] 0x00007f27c8d499c7 swift_dynamicCast + 166 in libswiftCore.so
- 8 [ra] 0x00007f27c8a75778 _swift_arrayDownCastIndirect + 311 in libswiftCore.so
- 9 [ra] 0x00007f27c8d4ac31 tryCastToArray(swift::OpaqueValue*, swift::TargetMetadata<swift::InProcess> const*, swift::OpaqueValue*, swift::TargetMetadata<swift::InProcess> const*, swift::TargetMetadata<swift::InProcess> const*&, swift::TargetMetadata<swift::InProcess> const*&, bool, bool) + 336 in libswiftCore.so
-10 [ra] 0x00007f27c8d49c29 tryCast(swift::OpaqueValue*, swift::TargetMetadata<swift::InProcess> const*, swift::OpaqueValue*, swift::TargetMetadata<swift::InProcess> const*, swift::TargetMetadata<swift::InProcess> const*&, swift::TargetMetadata<swift::InProcess> const*&, bool, bool) + 600 in libswiftCore.so
-11 [ra] 0x00007f27c8d49968 swift_dynamicCast + 71 in libswiftCore.so
-12 [ra] 0x00007f27c8be9bf2 _arrayForceCast<A, B>(_:) + 289 in libswiftCore.so
-13 [ra] 0x0000558da0b40318 apriori #1 (_:_:) in  + 5079 in main
-14 [ra] 0x0000558da0b42753 main + 226 in main
-15 [ra] 0x00007f27c740c1ca <unknown> in libc.so.6
-16 [ra] 0x00007f27c740c28b <unknown> in libc.so.6
+ 0      0x00007f8abf1c8b2c <unknown> in libc.so.6
+ 1 [ra] 0x00007f8abf16f27e <unknown> in libc.so.6
+ 2 [ra] 0x00007f8abf1528ff <unknown> in libc.so.6
+ 3 [ra] 0x00007f8ac0a96d3c swift::fatalErrorv(unsigned int, char const*, __va_list_tag*) + 139 in libswiftCore.so
+ 4 [ra] 0x00007f8ac0a96dbb swift::fatalError(unsigned int, char const*, ...) + 122 in libswiftCore.so
+ 5 [ra] 0x00007f8ac0a8e0f7 swift::swift_dynamicCastFailure(void const*, char const*, void const*, char const*, char const*) + 70 in libswiftCore.so
+ 6 [ra] 0x00007f8ac0a8e24b swift::swift_dynamicCastFailure(swift::TargetMetadata<swift::InProcess> const*, swift::TargetMetadata<swift::InProcess> const*, char const*) + 122 in libswiftCore.so
+ 7 [ra] 0x00007f8ac0a919c7 swift_dynamicCast + 166 in libswiftCore.so
+ 8 [ra] 0x00007f8ac07bd778 _swift_arrayDownCastIndirect + 311 in libswiftCore.so
+ 9 [ra] 0x00007f8ac0a92c31 tryCastToArray(swift::OpaqueValue*, swift::TargetMetadata<swift::InProcess> const*, swift::OpaqueValue*, swift::TargetMetadata<swift::InProcess> const*, swift::TargetMetadata<swift::InProcess> const*&, swift::TargetMetadata<swift::InProcess> const*&, bool, bool) + 336 in libswiftCore.so
+10 [ra] 0x00007f8ac0a91c29 tryCast(swift::OpaqueValue*, swift::TargetMetadata<swift::InProcess> const*, swift::OpaqueValue*, swift::TargetMetadata<swift::InProcess> const*, swift::TargetMetadata<swift::InProcess> const*&, swift::TargetMetadata<swift::InProcess> const*&, bool, bool) + 600 in libswiftCore.so
+11 [ra] 0x00007f8ac0a91968 swift_dynamicCast + 71 in libswiftCore.so
+12 [ra] 0x00007f8ac0931bf2 _arrayForceCast<A, B>(_:) + 289 in libswiftCore.so
+13 [ra] 0x0000557afb725318 apriori #1 (_:_:) in  + 5079 in main
+14 [ra] 0x0000557afb727753 main + 226 in main
+15 [ra] 0x00007f8abf1541ca <unknown> in libc.so.6
+16 [ra] 0x00007f8abf15428b <unknown> in libc.so.6
 
 
 Registers:
 
 rax 0x0000000000000000  0
-rdx 0x0000000000004028  16424
-rcx 0x00007f27c7480b2c  41 89 c6 41 f7 de 3d 00 f0 ff ff b8 00 00 00 00  A·ÆA÷Þ=·ðÿÿ¸····
+rdx 0x0000000000004041  16449
+rcx 0x00007f8abf1c8b2c  41 89 c6 41 f7 de 3d 00 f0 ff ff b8 00 00 00 00  A·ÆA÷Þ=·ðÿÿ¸····
 rbx 0x0000000000000006  6
-rsi 0x0000000000004028  16424
-rdi 0x0000000000004028  16424
-rbp 0x00007ffeb0992c00  20 2c 99 b0 fe 7f 00 00 7e 72 42 c7 27 7f 00 00   ,·°þ···~rBÇ'···
-rsp 0x00007ffeb0992bc0  00 00 00 00 00 00 00 00 00 1c 7d 7d c2 5b 52 b9  ··········}}Â[R¹
+rsi 0x0000000000004041  16449
+rdi 0x0000000000004041  16449
+rbp 0x00007ffc01ff1980  a0 19 ff 01 fc 7f 00 00 7e f2 16 bf 8a 7f 00 00   ·ÿ·ü···~ò·¿····
+rsp 0x00007ffc01ff1940  00 00 00 00 00 00 00 00 00 1e de 35 90 53 48 20  ··········Þ5·SH 
  r8 0x000000000000006e  110
  r9 0x0000000000000000  0
 r10 0x0000000000000008  8
@@ -43,8 +43,8 @@ r11 0x0000000000000246  582
 r12 0x0000000000000006  6
 r13 0x000000000000006f  111
 r14 0x0000000000000016  22
-r15 0x00007ffeb0992df0  30 00 00 00 30 00 00 00 30 2e 99 b0 fe 7f 00 00  0···0···0.·°þ···
-rip 0x00007f27c7480b2c  41 89 c6 41 f7 de 3d 00 f0 ff ff b8 00 00 00 00  A·ÆA÷Þ=·ðÿÿ¸····
+r15 0x00007ffc01ff1b70  30 00 00 00 30 00 00 00 b0 1b ff 01 fc 7f 00 00  0···0···°·ÿ·ü···
+rip 0x00007f8abf1c8b2c  41 89 c6 41 f7 de 3d 00 f0 ff ff b8 00 00 00 00  A·ÆA÷Þ=·ðÿÿ¸····
 
 rflags 0x0000000000000246  ZF PF
 
@@ -53,9 +53,9 @@ cs 0x0033  fs 0x0000  gs 0x0000
 
 Images (48 omitted):
 
-0x0000558da0b39000–0x0000558da0b467f8 4f635fd974b2ad2cc1eb908f845acff8f2becd01 main            /tmp/TestSwiftTranspiler_Algorithms_Golden497_machine_learning_apriori_algorithm1922396357/001/main
-0x00007f27c73e2000–0x00007f27c7591cb9 282c2c16e7b6600b0b22ea0c99010d2795752b5f libc.so.6       /usr/lib/x86_64-linux-gnu/libc.so.6
-0x00007f27c891b000–0x00007f27c8eaa2d8 7bd479aa5e6f57e6772da70789dcdfa25d5e29b0 libswiftCore.so /root/.local/share/mise/installs/swift/6.1/usr/lib/swift/linux/libswiftCore.so
+0x0000557afb71e000–0x0000557afb72b828 915cfab8891b79d24f8f3ef14b88b81bd0d50960 main            /tmp/TestSwiftTranspiler_Algorithms_Golden497_machine_learning_apriori_algorithm3744496431/001/main
+0x00007f8abf12a000–0x00007f8abf2d9cb9 282c2c16e7b6600b0b22ea0c99010d2795752b5f libc.so.6       /usr/lib/x86_64-linux-gnu/libc.so.6
+0x00007f8ac0663000–0x00007f8ac0bf22d8 7bd479aa5e6f57e6772da70789dcdfa25d5e29b0 libswiftCore.so /root/.local/share/mise/installs/swift/6.1/usr/lib/swift/linux/libswiftCore.so
 
-Backtrace took 0.06s
+Backtrace took 0.09s
 

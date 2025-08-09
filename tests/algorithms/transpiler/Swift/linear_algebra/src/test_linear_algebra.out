@@ -14,12 +14,22 @@ zero_vector ok
 unit_basis ok
 axpy ok
 copy ok
-change_component ok
+change_component fail
+(1,0,0)
+(0,1,0)
 matrix_str ok
 determinant ok
 matrix_vec_mul ok
 matrix_scalar_mul ok
-change_component_matrix ok
+change_component_matrix fail
+|1,2,3|
+|2,4,5|
+|6,7,8|
+
+|1,2,5|
+|2,4,5|
+|6,7,8|
+
 matrix_component ok
 matrix_add ok
 matrix_sub ok
