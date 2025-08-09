@@ -1571,7 +1571,7 @@ func (b *BenchStmt) emit(e *emitter) {
 	io.WriteString(e.w, "end_mem = _mem()")
 	e.nl()
 	e.writeIndent()
-	io.WriteString(e.w, "result = {\"duration_us\" => ((end_time - start) / 1000.0).round, \"memory_bytes\" => (end_mem - start_mem), \"name\" => \"")
+	io.WriteString(e.w, "result = {\"duration_us\" => ((end_time - start) / 1000), \"memory_bytes\" => (end_mem - start_mem), \"name\" => \"")
 	io.WriteString(e.w, b.Name)
 	io.WriteString(e.w, "\"}")
 	e.nl()
