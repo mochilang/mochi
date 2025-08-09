@@ -2,8 +2,8 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 475/1077
-Last updated: 2025-08-09 10:22 +0700
+Completed programs: 521/1077
+Last updated: 2025-08-09 12:07 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -538,56 +538,56 @@ Last updated: 2025-08-09 10:22 +0700
 | 529 | maths/aliquot_sum | ✓ | 374µs | 3.2 MB |
 | 530 | maths/allocation_number | ✓ | 760µs | 3.5 MB |
 | 531 | maths/arc_length | ✓ | 261µs | 3.5 MB |
-| 532 | maths/area |   |  |  |
-| 533 | maths/area_under_curve |   |  |  |
-| 534 | maths/average_absolute_deviation |   |  |  |
-| 535 | maths/average_mean |   |  |  |
-| 536 | maths/average_median |   |  |  |
-| 537 | maths/average_mode |   |  |  |
-| 538 | maths/bailey_borwein_plouffe |   |  |  |
+| 532 | maths/area | ✓ | 550µs | 3.4 MB |
+| 533 | maths/area_under_curve | ✓ | 19.067ms | 3.2 MB |
+| 534 | maths/average_absolute_deviation | ✓ | 833µs | 3.4 MB |
+| 535 | maths/average_mean | ✓ | 528µs | 3.3 MB |
+| 536 | maths/average_median | ✓ | 414µs | 3.2 MB |
+| 537 | maths/average_mode | ✓ | 2.259ms | 3.5 MB |
+| 538 | maths/bailey_borwein_plouffe | ✓ | 26.928034s | 3.3 MB |
 | 539 | maths/base_neg2_conversion |   |  |  |
-| 540 | maths/basic_maths |   |  |  |
-| 541 | maths/binary_exponentiation |   |  |  |
-| 542 | maths/binary_multiplication |   |  |  |
-| 543 | maths/binomial_coefficient |   |  |  |
-| 544 | maths/binomial_distribution |   |  |  |
-| 545 | maths/ceil |   |  |  |
-| 546 | maths/chebyshev_distance |   |  |  |
-| 547 | maths/check_polygon |   |  |  |
-| 548 | maths/chinese_remainder_theorem |   |  |  |
-| 549 | maths/chudnovsky_algorithm |   |  |  |
-| 550 | maths/collatz_sequence |   |  |  |
-| 551 | maths/combinations |   |  |  |
-| 552 | maths/continued_fraction |   |  |  |
-| 553 | maths/decimal_isolate |   |  |  |
-| 554 | maths/decimal_to_fraction |   |  |  |
-| 555 | maths/dodecahedron |   |  |  |
-| 556 | maths/double_factorial |   |  |  |
-| 557 | maths/dual_number_automatic_differentiation |   |  |  |
-| 558 | maths/entropy |   |  |  |
-| 559 | maths/euclidean_distance |   |  |  |
-| 560 | maths/euler_method |   |  |  |
-| 561 | maths/euler_modified |   |  |  |
-| 562 | maths/eulers_totient |   |  |  |
-| 563 | maths/extended_euclidean_algorithm |   |  |  |
-| 564 | maths/factorial |   |  |  |
-| 565 | maths/factors |   |  |  |
-| 566 | maths/fast_inverse_sqrt |   |  |  |
-| 567 | maths/fermat_little_theorem |   |  |  |
+| 540 | maths/basic_maths | ✓ | 1.348ms | 3.5 MB |
+| 541 | maths/binary_exponentiation | ✓ | 986µs | 3.4 MB |
+| 542 | maths/binary_multiplication | ✓ | 476µs | 3.2 MB |
+| 543 | maths/binomial_coefficient | ✓ | 700µs | 2.9 MB |
+| 544 | maths/binomial_distribution | ✓ | 163µs | 3.2 MB |
+| 545 | maths/ceil | ✓ | 648µs | 3.3 MB |
+| 546 | maths/chebyshev_distance | ✓ | 472µs | 3.4 MB |
+| 547 | maths/check_polygon | ✓ | 1.304ms | 3.6 MB |
+| 548 | maths/chinese_remainder_theorem | ✓ | 690µs | 3.2 MB |
+| 549 | maths/chudnovsky_algorithm | ✓ | 594µs | 3.2 MB |
+| 550 | maths/collatz_sequence | ✓ | 1.299ms | 3.6 MB |
+| 551 | maths/combinations | ✓ | 569µs | 3.2 MB |
+| 552 | maths/continued_fraction | ✓ | 484µs | 3.1 MB |
+| 553 | maths/decimal_isolate | ✓ | 430µs | 3.3 MB |
+| 554 | maths/decimal_to_fraction | ✓ | 952µs | 3.3 MB |
+| 555 | maths/dodecahedron | ✓ | 447µs | 3.3 MB |
+| 556 | maths/double_factorial | ✓ | 409µs | 3.2 MB |
+| 557 | maths/dual_number_automatic_differentiation | ✓ | 737µs | 3.3 MB |
+| 558 | maths/entropy | ✓ | 46.027ms | 3.4 MB |
+| 559 | maths/euclidean_distance | ✓ | 451µs | 3.2 MB |
+| 560 | maths/euler_method | ✓ | 2.273ms | 3.2 MB |
+| 561 | maths/euler_modified | ✓ | 497µs | 3.1 MB |
+| 562 | maths/eulers_totient | ✓ | 711µs | 2.9 MB |
+| 563 | maths/extended_euclidean_algorithm | ✓ | 488µs | 3.1 MB |
+| 564 | maths/factorial | ✓ | 457µs | 3.1 MB |
+| 565 | maths/factors | ✓ | 1.623ms | 3.5 MB |
+| 566 | maths/fast_inverse_sqrt | ✓ | 3.205ms | 3.2 MB |
+| 567 | maths/fermat_little_theorem | ✓ | 823µs | 3.3 MB |
 | 568 | maths/fibonacci |   |  |  |
-| 569 | maths/find_max |   |  |  |
-| 570 | maths/find_min |   |  |  |
-| 571 | maths/floor |   |  |  |
+| 569 | maths/find_max | ✓ | 528µs | 3.2 MB |
+| 570 | maths/find_min | ✓ | 553µs | 3.3 MB |
+| 571 | maths/floor | ✓ | 617µs | 3.2 MB |
 | 572 | maths/gamma |   |  |  |
-| 573 | maths/gaussian |   |  |  |
-| 574 | maths/gcd_of_n_numbers |   |  |  |
+| 573 | maths/gaussian | ✓ | 516µs | 3.4 MB |
+| 574 | maths/gcd_of_n_numbers | ✓ | 680µs | 3.4 MB |
 | 575 | maths/geometric_mean |   |  |  |
-| 576 | maths/germain_primes |   |  |  |
-| 577 | maths/greatest_common_divisor |   |  |  |
-| 578 | maths/hardy_ramanujanalgo |   |  |  |
-| 579 | maths/integer_square_root |   |  |  |
-| 580 | maths/interquartile_range |   |  |  |
-| 581 | maths/is_int_palindrome |   |  |  |
+| 576 | maths/germain_primes | ✓ | 509µs | 2.8 MB |
+| 577 | maths/greatest_common_divisor | ✓ | 744µs | 3.1 MB |
+| 578 | maths/hardy_ramanujanalgo | ✓ | 646µs | 3.2 MB |
+| 579 | maths/integer_square_root | ✓ | 551µs | 3.2 MB |
+| 580 | maths/interquartile_range | ✓ | 595µs | 3.3 MB |
+| 581 | maths/is_int_palindrome | ✓ | 441µs | 3.2 MB |
 | 582 | maths/is_ip_v4_address_valid |   |  |  |
 | 583 | maths/is_square_free |   |  |  |
 | 584 | maths/jaccard_similarity |   |  |  |
