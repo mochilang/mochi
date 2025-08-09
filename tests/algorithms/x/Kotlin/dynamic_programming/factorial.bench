@@ -1,0 +1,4 @@
+5040
+Number should not be negative.
+[1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880]
+{"duration_us":7012, "memory_bytes":135600, "name":"main"}

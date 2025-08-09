@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-08 19:22 GMT+7
+Last updated: 2025-08-09 16:11 GMT+7
 
-## Algorithms Golden Test Checklist (165/1077)
+## Algorithms Golden Test Checklist (177/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 30.54ms | 124.45KiB |
@@ -188,14 +188,14 @@ Last updated: 2025-08-08 19:22 GMT+7
 | 179 | data_structures/binary_tree/distribute_coins | ✓ | 18.49ms | 123.51KiB |
 | 180 | data_structures/binary_tree/fenwick_tree | ✓ | 7.44ms | 125.13KiB |
 | 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 7.32ms | 132.70KiB |
-| 182 | data_structures/binary_tree/floor_and_ceiling | error |  |  |
-| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 | error |  |  |
-| 184 | data_structures/binary_tree/is_sorted | error |  |  |
+| 182 | data_structures/binary_tree/floor_and_ceiling | ✓ |  |  |
+| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 | ✓ |  |  |
+| 184 | data_structures/binary_tree/is_sorted |   |  |  |
 | 185 | data_structures/binary_tree/is_sum_tree | ✓ | 16.78ms | 123.95KiB |
 | 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 6.41ms | 133.59KiB |
 | 187 | data_structures/binary_tree/lowest_common_ancestor | ✓ | 17.89ms | 123.01KiB |
 | 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 622.22ms | 818.32KiB |
-| 189 | data_structures/binary_tree/maximum_sum_bst | error |  |  |
+| 189 | data_structures/binary_tree/maximum_sum_bst |   |  |  |
 | 190 | data_structures/binary_tree/merge_two_binary_trees |   |  |  |
 | 191 | data_structures/binary_tree/mirror_binary_tree |   |  |  |
 | 192 | data_structures/binary_tree/non_recursive_segment_tree |   |  |  |
@@ -306,16 +306,16 @@ Last updated: 2025-08-08 19:22 GMT+7
 | 297 | divide_and_conquer/peak |   |  |  |
 | 298 | divide_and_conquer/power |   |  |  |
 | 299 | divide_and_conquer/strassen_matrix_multiplication |   |  |  |
-| 300 | docs/conf |   |  |  |
-| 301 | dynamic_programming/abbreviation |   |  |  |
-| 302 | dynamic_programming/all_construct |   |  |  |
-| 303 | dynamic_programming/bitmask |   |  |  |
-| 304 | dynamic_programming/catalan_numbers |   |  |  |
-| 305 | dynamic_programming/climbing_stairs |   |  |  |
-| 306 | dynamic_programming/combination_sum_iv |   |  |  |
-| 307 | dynamic_programming/edit_distance |   |  |  |
-| 308 | dynamic_programming/factorial |   |  |  |
-| 309 | dynamic_programming/fast_fibonacci |   |  |  |
+| 300 | docs/conf | ✓ | 5.09ms | 133.95KiB |
+| 301 | dynamic_programming/abbreviation | ✓ | 16.50ms | 123.80KiB |
+| 302 | dynamic_programming/all_construct | ✓ | 18.67ms | 121.95KiB |
+| 303 | dynamic_programming/bitmask | ✓ | 16.54ms | 122.00KiB |
+| 304 | dynamic_programming/catalan_numbers | ✓ | 16.37ms | 122.48KiB |
+| 305 | dynamic_programming/climbing_stairs | ✓ | 5.45ms | 133.95KiB |
+| 306 | dynamic_programming/combination_sum_iv | ✓ | 16.72ms | 122.36KiB |
+| 307 | dynamic_programming/edit_distance | ✓ | 18.02ms | 123.77KiB |
+| 308 | dynamic_programming/factorial | ✓ | 7.01ms | 132.42KiB |
+| 309 | dynamic_programming/fast_fibonacci | ✓ | 5.36ms | 133.92KiB |
 | 310 | dynamic_programming/fibonacci |   |  |  |
 | 311 | dynamic_programming/fizz_buzz |   |  |  |
 | 312 | dynamic_programming/floyd_warshall |   |  |  |
