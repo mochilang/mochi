@@ -1,5 +1,0 @@
-run: exit status 101
-
-thread 'main' panicked at /workspace/mochi/tests/algorithms/x/Rust/dynamic_programming/all_construct.rs:57:27:
-byte index 10 is out of bounds of `jwajalapa`
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

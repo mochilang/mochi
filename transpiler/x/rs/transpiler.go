@@ -969,7 +969,7 @@ type SliceExpr struct {
 
 func (s *SliceExpr) emit(w io.Writer) {
 	tgt := inferType(s.Target)
-	if tgt == "String" {
+	if tgt == "String" || tgt == "&str" {
 		s.Target.emit(w)
 		io.WriteString(w, ".chars().skip(")
 		if s.Start != nil {
