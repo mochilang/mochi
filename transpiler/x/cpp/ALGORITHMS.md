@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 727/1077
-Last updated: 2025-08-08 21:25 +0700
+Completed programs: 777/1077
+Last updated: 2025-08-09 10:14 +0700
 
 Checklist:
 
@@ -800,56 +800,56 @@ Checklist:
 | 791 | physics/shear_stress | ✓ | 555.0µs | 3.75MB |
 | 792 | physics/speed_of_sound | ✓ | 556.0µs | 3.82MB |
 | 793 | physics/speeds_of_gas_molecules | ✓ | 345.0µs | 3.71MB |
-| 794 | physics/terminal_velocity |   |  |  |
-| 795 | project_euler/problem_001/sol1 |   |  |  |
-| 796 | project_euler/problem_001/sol2 |   |  |  |
-| 797 | project_euler/problem_001/sol3 |   |  |  |
-| 798 | project_euler/problem_001/sol4 |   |  |  |
-| 799 | project_euler/problem_001/sol5 |   |  |  |
-| 800 | project_euler/problem_001/sol6 |   |  |  |
-| 801 | project_euler/problem_001/sol7 |   |  |  |
-| 802 | project_euler/problem_002/sol1 |   |  |  |
-| 803 | project_euler/problem_002/sol2 |   |  |  |
-| 804 | project_euler/problem_002/sol3 |   |  |  |
-| 805 | project_euler/problem_002/sol4 |   |  |  |
-| 806 | project_euler/problem_002/sol5 |   |  |  |
-| 807 | project_euler/problem_003/sol1 |   |  |  |
-| 808 | project_euler/problem_003/sol2 |   |  |  |
-| 809 | project_euler/problem_003/sol3 |   |  |  |
-| 810 | project_euler/problem_004/sol1 |   |  |  |
-| 811 | project_euler/problem_004/sol2 |   |  |  |
-| 812 | project_euler/problem_005/sol1 |   |  |  |
-| 813 | project_euler/problem_005/sol2 |   |  |  |
-| 814 | project_euler/problem_006/sol1 |   |  |  |
-| 815 | project_euler/problem_006/sol2 |   |  |  |
-| 816 | project_euler/problem_006/sol3 |   |  |  |
-| 817 | project_euler/problem_006/sol4 |   |  |  |
-| 818 | project_euler/problem_007/sol1 |   |  |  |
-| 819 | project_euler/problem_007/sol2 |   |  |  |
-| 820 | project_euler/problem_007/sol3 |   |  |  |
-| 821 | project_euler/problem_008/sol1 |   |  |  |
-| 822 | project_euler/problem_008/sol2 |   |  |  |
-| 823 | project_euler/problem_008/sol3 |   |  |  |
-| 824 | project_euler/problem_009/sol1 |   |  |  |
-| 825 | project_euler/problem_009/sol2 |   |  |  |
-| 826 | project_euler/problem_009/sol3 |   |  |  |
-| 827 | project_euler/problem_010/sol1 |   |  |  |
-| 828 | project_euler/problem_010/sol2 |   |  |  |
-| 829 | project_euler/problem_010/sol3 |   |  |  |
-| 830 | project_euler/problem_011/sol1 |   |  |  |
-| 831 | project_euler/problem_011/sol2 |   |  |  |
-| 832 | project_euler/problem_012/sol1 |   |  |  |
-| 833 | project_euler/problem_012/sol2 |   |  |  |
-| 834 | project_euler/problem_013/sol1 |   |  |  |
-| 835 | project_euler/problem_014/sol1 |   |  |  |
-| 836 | project_euler/problem_014/sol2 |   |  |  |
-| 837 | project_euler/problem_015/sol1 |   |  |  |
-| 838 | project_euler/problem_016/sol1 |   |  |  |
-| 839 | project_euler/problem_016/sol2 |   |  |  |
-| 840 | project_euler/problem_017/sol1 |   |  |  |
-| 841 | project_euler/problem_018/solution |   |  |  |
-| 842 | project_euler/problem_019/sol1 |   |  |  |
-| 843 | project_euler/problem_020/sol1 |   |  |  |
+| 794 | physics/terminal_velocity | ✓ | 441.0µs | 3.64MB |
+| 795 | project_euler/problem_001/sol1 | ✓ | 280.0µs | 3.55MB |
+| 796 | project_euler/problem_001/sol2 | ✓ | 314.0µs | 3.80MB |
+| 797 | project_euler/problem_001/sol3 | ✓ | 149.0µs | 3.53MB |
+| 798 | project_euler/problem_001/sol4 | ✓ | 2.0ms | 3.93MB |
+| 799 | project_euler/problem_001/sol5 | ✓ | 287.0µs | 3.69MB |
+| 800 | project_euler/problem_001/sol6 | ✓ | 244.0µs | 3.46MB |
+| 801 | project_euler/problem_001/sol7 | ✓ | 180.0µs | 3.59MB |
+| 802 | project_euler/problem_002/sol1 | ✓ | 323.0µs | 3.68MB |
+| 803 | project_euler/problem_002/sol2 | ✓ | 279.0µs | 3.53MB |
+| 804 | project_euler/problem_002/sol3 | ✓ | 263.0µs | 3.46MB |
+| 805 | project_euler/problem_002/sol4 | ✓ | 244.0µs | 3.47MB |
+| 806 | project_euler/problem_002/sol5 | ✓ | 230.0µs | 3.69MB |
+| 807 | project_euler/problem_003/sol1 | ✓ | 1.0ms | 3.54MB |
+| 808 | project_euler/problem_003/sol2 | ✓ | 264.0µs | 3.69MB |
+| 809 | project_euler/problem_003/sol3 | ✓ | 255.0µs | 3.57MB |
+| 810 | project_euler/problem_004/sol1 | ✓ | 51.0ms | 3.61MB |
+| 811 | project_euler/problem_004/sol2 | ✓ | 29.0ms | 3.54MB |
+| 812 | project_euler/problem_005/sol1 | ✓ | 175.0µs | 3.43MB |
+| 813 | project_euler/problem_005/sol2 | ✓ | 240.0µs | 3.59MB |
+| 814 | project_euler/problem_006/sol1 | ✓ | 242.0µs | 3.54MB |
+| 815 | project_euler/problem_006/sol2 | ✓ | 257.0µs | 3.71MB |
+| 816 | project_euler/problem_006/sol3 | ✓ | 312.0µs | 3.61MB |
+| 817 | project_euler/problem_006/sol4 | ✓ | 206.0µs | 3.42MB |
+| 818 | project_euler/problem_007/sol1 | ✓ | 30.0ms | 3.62MB |
+| 819 | project_euler/problem_007/sol2 | ✓ | 414.0ms | 3.78MB |
+| 820 | project_euler/problem_007/sol3 | ✓ | 5.0ms | 3.61MB |
+| 821 | project_euler/problem_008/sol1 | ✓ | 2.0ms | 3.53MB |
+| 822 | project_euler/problem_008/sol2 | ✓ | 1.0ms | 3.47MB |
+| 823 | project_euler/problem_008/sol3 | ✓ | 778.0µs | 3.47MB |
+| 824 | project_euler/problem_009/sol1 | ✓ | 552.0µs | 3.58MB |
+| 825 | project_euler/problem_009/sol2 | ✓ | 297.0µs | 3.73MB |
+| 826 | project_euler/problem_009/sol3 | ✓ | 952.0µs | 3.60MB |
+| 827 | project_euler/problem_010/sol1 | ✓ | 434.0µs | 3.54MB |
+| 828 | project_euler/problem_010/sol2 | ✓ | 5.83s | 116.58MB |
+| 829 | project_euler/problem_010/sol3 | ✓ | 35.0ms | 3.74MB |
+| 830 | project_euler/problem_011/sol1 | ✓ | 346.0µs | 3.60MB |
+| 831 | project_euler/problem_011/sol2 | ✓ | 284.0µs | 3.73MB |
+| 832 | project_euler/problem_012/sol1 | ✓ | 15.0ms | 3.59MB |
+| 833 | project_euler/problem_012/sol2 | ✓ | 15.0ms | 3.42MB |
+| 834 | project_euler/problem_013/sol1 | ✓ | 3.0ms | 3.75MB |
+| 835 | project_euler/problem_014/sol1 | ✓ | 18.0ms | 3.78MB |
+| 836 | project_euler/problem_014/sol2 | ✓ | 1.0ms | 3.69MB |
+| 837 | project_euler/problem_015/sol1 | ✓ | 446.0µs | 3.53MB |
+| 838 | project_euler/problem_016/sol1 | ✓ | 302.0µs | 3.54MB |
+| 839 | project_euler/problem_016/sol2 | ✓ | 2.0ms | 3.59MB |
+| 840 | project_euler/problem_017/sol1 | ✓ | 405.0µs | 3.68MB |
+| 841 | project_euler/problem_018/solution | ✓ | 294.0µs | 3.70MB |
+| 842 | project_euler/problem_019/sol1 | ✓ | 248.0µs | 3.48MB |
+| 843 | project_euler/problem_020/sol1 | ✓ | 243.0µs | 3.59MB |
 | 844 | project_euler/problem_020/sol2 |   |  |  |
 | 845 | project_euler/problem_020/sol3 |   |  |  |
 | 846 | project_euler/problem_020/sol4 |   |  |  |
