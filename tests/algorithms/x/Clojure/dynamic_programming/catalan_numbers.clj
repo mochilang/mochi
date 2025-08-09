@@ -14,6 +14,9 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (Integer/parseInt (str s)))
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare panic catalan_numbers)
@@ -27,7 +30,7 @@
 (def ^:dynamic catalan_numbers_next_val nil)
 
 (defn panic [panic_msg]
-  (println panic_msg))
+  (do (println panic_msg) panic_msg))
 
 (defn catalan_numbers [catalan_numbers_upper_limit]
   (binding [catalan_numbers_catalans nil catalan_numbers_j nil catalan_numbers_n nil catalan_numbers_next_val nil] (try (do (when (< catalan_numbers_upper_limit 0) (do (panic "Limit for the Catalan sequence must be >= 0") (throw (ex-info "return" {:v []})))) (set! catalan_numbers_catalans [1]) (set! catalan_numbers_n 1) (while (<= catalan_numbers_n catalan_numbers_upper_limit) (do (set! catalan_numbers_next_val 0) (set! catalan_numbers_j 0) (while (< catalan_numbers_j catalan_numbers_n) (do (set! catalan_numbers_next_val (+ catalan_numbers_next_val (* (nth catalan_numbers_catalans catalan_numbers_j) (nth catalan_numbers_catalans (- (- catalan_numbers_n catalan_numbers_j) 1))))) (set! catalan_numbers_j (+ catalan_numbers_j 1)))) (set! catalan_numbers_catalans (conj catalan_numbers_catalans catalan_numbers_next_val)) (set! catalan_numbers_n (+ catalan_numbers_n 1)))) (throw (ex-info "return" {:v catalan_numbers_catalans}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))

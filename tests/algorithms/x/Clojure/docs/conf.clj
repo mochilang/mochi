@@ -14,6 +14,9 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (Integer/parseInt (str s)))
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare parse_project_name)
@@ -25,7 +28,7 @@
 (def ^:dynamic parse_project_name_name nil)
 
 (defn parse_project_name [parse_project_name_toml]
-  (binding [parse_project_name_i nil parse_project_name_n nil parse_project_name_name nil] (try (do (set! parse_project_name_i 0) (set! parse_project_name_name "") (set! parse_project_name_n (count parse_project_name_toml)) (while (< (+ parse_project_name_i 4) parse_project_name_n) (do (when (and (and (and (= (nth parse_project_name_toml parse_project_name_i) "n") (= (nth parse_project_name_toml (+ parse_project_name_i 1)) "a")) (= (nth parse_project_name_toml (+ parse_project_name_i 2)) "m")) (= (nth parse_project_name_toml (+ parse_project_name_i 3)) "e")) (do (set! parse_project_name_i (+ parse_project_name_i 4)) (while (and (< parse_project_name_i parse_project_name_n) (not= (nth parse_project_name_toml parse_project_name_i) "\"")) (set! parse_project_name_i (+ parse_project_name_i 1))) (set! parse_project_name_i (+ parse_project_name_i 1)) (while (and (< parse_project_name_i parse_project_name_n) (not= (nth parse_project_name_toml parse_project_name_i) "\"")) (do (set! parse_project_name_name (str parse_project_name_name (nth parse_project_name_toml parse_project_name_i))) (set! parse_project_name_i (+ parse_project_name_i 1)))) (throw (ex-info "return" {:v parse_project_name_name})))) (set! parse_project_name_i (+ parse_project_name_i 1)))) (throw (ex-info "return" {:v parse_project_name_name}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
+  (binding [parse_project_name_i nil parse_project_name_n nil parse_project_name_name nil] (try (do (set! parse_project_name_i 0) (set! parse_project_name_name "") (set! parse_project_name_n (count parse_project_name_toml)) (while (< (+ parse_project_name_i 4) parse_project_name_n) (do (when (and (and (and (= (subs parse_project_name_toml parse_project_name_i (+ parse_project_name_i 1)) "n") (= (subs parse_project_name_toml (+ parse_project_name_i 1) (+ (+ parse_project_name_i 1) 1)) "a")) (= (subs parse_project_name_toml (+ parse_project_name_i 2) (+ (+ parse_project_name_i 2) 1)) "m")) (= (subs parse_project_name_toml (+ parse_project_name_i 3) (+ (+ parse_project_name_i 3) 1)) "e")) (do (set! parse_project_name_i (+ parse_project_name_i 4)) (while (and (< parse_project_name_i parse_project_name_n) (not= (subs parse_project_name_toml parse_project_name_i (+ parse_project_name_i 1)) "\"")) (set! parse_project_name_i (+ parse_project_name_i 1))) (set! parse_project_name_i (+ parse_project_name_i 1)) (while (and (< parse_project_name_i parse_project_name_n) (not= (subs parse_project_name_toml parse_project_name_i (+ parse_project_name_i 1)) "\"")) (do (set! parse_project_name_name (str parse_project_name_name (subs parse_project_name_toml parse_project_name_i (+ parse_project_name_i 1)))) (set! parse_project_name_i (+ parse_project_name_i 1)))) (throw (ex-info "return" {:v parse_project_name_name})))) (set! parse_project_name_i (+ parse_project_name_i 1)))) (throw (ex-info "return" {:v parse_project_name_name}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (def ^:dynamic main_pyproject "[project]\nname = \"thealgorithms-python\"")
 
