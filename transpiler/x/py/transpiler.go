@@ -1833,7 +1833,12 @@ func isIntOnlyExpr(e Expr, env *types.Env) bool {
 				return isIntLike(t)
 			}
 		}
-		return false
+		// Assume integers when type information is missing.
+		// This helps choose integer division for expressions
+		// like "(a - b) / 10" where "a" and "b" are local
+		// variables whose types are not tracked in the global
+		// environment during emission.
+		return true
 	case *BinaryExpr:
 		if ex.Op == "/" {
 			return isIntOnlyExpr(ex.Left, env) && isIntOnlyExpr(ex.Right, env)
@@ -1866,7 +1871,9 @@ func isLikelyIntExpr(e Expr) bool {
 				return isIntLike(t)
 			}
 		}
-		return false
+		// When type information is unavailable, treat names as
+		// integers to favour integer arithmetic.
+		return true
 	case *CallExpr:
 		if n, ok := ex.Func.(*Name); ok && n.Name == "len" {
 			return true
