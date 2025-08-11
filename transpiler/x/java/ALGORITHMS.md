@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-09 16:28 GMT+7
+Last updated: 2025-08-11 14:51 GMT+7
 
-## Algorithms Golden Test Checklist (921/1077)
+## Algorithms Golden Test Checklist (922/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -358,7 +358,7 @@ Last updated: 2025-08-09 16:28 GMT+7
 | 349 | dynamic_programming/word_break | ✓ | 25.0ms | 1.43KB |
 | 350 | electronics/apparent_power | ✓ | 15.0ms | 0B |
 | 351 | electronics/builtin_voltage | ✓ | 16.0ms | 10.45KB |
-| 352 | electronics/capacitor_equivalence | error |  |  |
+| 352 | electronics/capacitor_equivalence | ✓ | 38.0ms | 10.66KB |
 | 353 | electronics/carrier_concentration | ✓ | 35.0ms | 88.53KB |
 | 354 | electronics/charging_capacitor | ✓ | 16.0ms | 10.36KB |
 | 355 | electronics/charging_inductor | ✓ | 18.0ms | 10.25KB |
