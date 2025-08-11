@@ -1945,14 +1945,13 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 		fmt.Fprintf(w, "&[_]%s{}", strings.TrimPrefix(targetType, "[]"))
 	} else {
 		if ll, ok := a.Value.(*ListLit); ok && ll.ElemType != "" && strings.HasPrefix(targetType, "[]") {
+			elem := strings.TrimPrefix(targetType, "[]")
 			if len(ll.Elems) == 0 {
-				io.WriteString(w, "@constCast(")
-				ll.emit(w)
-				io.WriteString(w, ")[0..]")
+				fmt.Fprintf(w, "std.heap.page_allocator.alloc(%s, 0) catch unreachable", elem)
 			} else {
-				io.WriteString(w, "@constCast(&(")
+				fmt.Fprintf(w, "std.heap.page_allocator.dupe(%s, (&(", elem)
 				ll.emit(w)
-				io.WriteString(w, "))[0..]")
+				io.WriteString(w, "))[0..]) catch unreachable")
 			}
 		} else {
 			a.Value.emit(w)
@@ -4719,7 +4718,7 @@ func toZigType(t *parser.TypeRef) string {
 		case "any":
 			useValue = true
 			return "Value"
-		case "void":
+		case "void", "unit":
 			return "void"
 		}
 	}
@@ -4760,8 +4759,6 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 			if isMap || (!strings.HasPrefix(typ, "[]") && !strings.HasPrefix(typ, "*") && !isIntType(typ) && typ != "f64" && typ != "bool" && typ != "Value") {
 				typ = "*" + typ
 			}
-		} else if !mutable && strings.HasPrefix(typ, "[]") && !strings.HasPrefix(typ, "[]const ") {
-			typ = "[]const " + typ[2:]
 		}
 		name := p.Name
 		paramName := name
