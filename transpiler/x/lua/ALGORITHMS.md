@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-11 15:00 GMT+7
+Last updated: 2025-08-11 15:38 GMT+7
 
-## Algorithms Golden Test Checklist (1008/1077)
+## Algorithms Golden Test Checklist (1009/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 270µs | 912 B |
@@ -1006,8 +1006,8 @@ Last updated: 2025-08-11 15:00 GMT+7
 | 997 | strings/capitalize | ✓ | 135µs | 968 B |
 | 998 | strings/check_anagrams | ✓ | 268µs | 952 B |
 | 999 | strings/count_vowels | ✓ | 1.05ms | 1.0 KB |
-| 1000 | strings/credit_card_validator | ✓ | 86µs | 1.1 KB |
-| 1001 | strings/damerau_levenshtein_distance | error |  |  |
+| 1000 | strings/credit_card_validator | ✓ | 29µs | 1.1 KB |
+| 1001 | strings/damerau_levenshtein_distance | ✓ | 478µs | 856 B |
 | 1002 | strings/detecting_english_programmatically | ✓ | 1.886ms | 1.6 KB |
 | 1003 | strings/dna | ✓ | 74µs | 968 B |
 | 1004 | strings/edit_distance | ✓ | 159.194ms | 3.1 KB |
