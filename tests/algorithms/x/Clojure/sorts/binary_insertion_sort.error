@@ -1,0 +1,7 @@
+run: exit status 1
+Picked up JAVA_TOOL_OPTIONS: -Djava.net.preferIPv4Stack=true
+Execution error (IllegalArgumentException) at main/binary-insertion-sort (binary_insertion_sort.clj:48).
+Key must be integer
+
+Full report at:
+/tmp/clojure-12661301126111946986.edn

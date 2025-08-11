@@ -1,0 +1,7 @@
+run: exit status 1
+Picked up JAVA_TOOL_OPTIONS: -Djava.net.preferIPv4Stack=true
+Execution error (IllegalArgumentException) at main/shell-sort (shrink_shell_sort.clj:42).
+Key must be integer
+
+Full report at:
+/tmp/clojure-5205343513207054547.edn
