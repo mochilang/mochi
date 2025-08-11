@@ -95,7 +95,9 @@ end
 
 const helperStr = `
 def _str(x)
-  if x.is_a?(Float) && x == x.to_i
+  if x.is_a?(Array)
+    x.map { |e| _str(e) }.join(' ')
+  elsif x.is_a?(Float) && x == x.to_i
     x.to_i.to_s
   else
     x.to_s
@@ -3107,17 +3109,17 @@ func Emit(w io.Writer, p *Program) error {
 	if _, err := io.WriteString(w, helperStringEach+"\n"); err != nil {
 		return err
 	}
-        if _, err := io.WriteString(w, helperPanic+"\n"); err != nil {
-                return err
-        }
-       if _, err := io.WriteString(w, "__name__ = '__main__'\n"); err != nil {
-               return err
-       }
-        for _, s := range p.Stmts {
-                e.writeIndent()
-                s.emit(e)
-                e.nl()
-        }
+	if _, err := io.WriteString(w, helperPanic+"\n"); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, "__name__ = '__main__'\n"); err != nil {
+		return err
+	}
+	for _, s := range p.Stmts {
+		e.writeIndent()
+		s.emit(e)
+		e.nl()
+	}
 	return nil
 }
 
