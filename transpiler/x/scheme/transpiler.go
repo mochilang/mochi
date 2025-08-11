@@ -1367,12 +1367,17 @@ func convertParserExpr(e *parser.Expr) (Node, error) {
 	ops := []string{}
 
 	for _, part := range e.Binary.Right {
-		// part.Right is a *parser.Unary, convert accordingly.
-		right, err := convertParserUnary(part.Right)
+		// part.Right is a *parser.PostfixExpr, convert accordingly.
+		right, err := convertParserPostfix(part.Right)
 		if err != nil {
 			return nil, err
 		}
-		rightType := types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: part.Right}}, currentEnv)
+		// Determine type of the right-hand side by wrapping the postfix
+		// expression in a unary placeholder.
+		rightType := types.ExprType(
+			&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: part.Right}}},
+			currentEnv,
+		)
 
 		for len(ops) > 0 && precedence(ops[len(ops)-1]) >= precedence(part.Op) {
 			r := exprs[len(exprs)-1]
