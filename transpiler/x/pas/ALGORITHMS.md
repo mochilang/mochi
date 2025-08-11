@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-11 16:30 GMT+7
+Last updated: 2025-08-11 17:35 GMT+7
 
-## Algorithms Golden Test Checklist (264/1077)
+## Algorithms Golden Test Checklist (289/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -966,33 +966,33 @@ Last updated: 2025-08-11 16:30 GMT+7
 | 957 | sorts/insertion_sort |   |  |  |
 | 958 | sorts/intro_sort |   |  |  |
 | 959 | sorts/iterative_merge_sort |   |  |  |
-| 960 | sorts/merge_insertion_sort |   |  |  |
-| 961 | sorts/merge_sort |   |  |  |
-| 962 | sorts/msd_radix_sort |   |  |  |
-| 963 | sorts/natural_sort |   |  |  |
-| 964 | sorts/odd_even_sort |   |  |  |
-| 965 | sorts/odd_even_transposition_parallel |   |  |  |
-| 966 | sorts/odd_even_transposition_single_threaded |   |  |  |
-| 967 | sorts/pancake_sort |   |  |  |
-| 968 | sorts/patience_sort |   |  |  |
-| 969 | sorts/pigeon_sort |   |  |  |
-| 970 | sorts/pigeonhole_sort |   |  |  |
-| 971 | sorts/quick_sort |   |  |  |
-| 972 | sorts/quick_sort_3_partition |   |  |  |
-| 973 | sorts/radix_sort |   |  |  |
-| 974 | sorts/recursive_insertion_sort |   |  |  |
-| 975 | sorts/recursive_mergesort_array |   |  |  |
-| 976 | sorts/recursive_quick_sort |   |  |  |
-| 977 | sorts/selection_sort |   |  |  |
-| 978 | sorts/shell_sort |   |  |  |
-| 979 | sorts/shrink_shell_sort |   |  |  |
-| 980 | sorts/slowsort |   |  |  |
-| 981 | sorts/stooge_sort |   |  |  |
-| 982 | sorts/strand_sort |   |  |  |
-| 983 | sorts/tim_sort |   |  |  |
-| 984 | sorts/topological_sort |   |  |  |
-| 985 | sorts/tree_sort |   |  |  |
-| 986 | sorts/unknown_sort |   |  |  |
+| 960 | sorts/merge_insertion_sort | ✓ | 0ns | 0B |
+| 961 | sorts/merge_sort | ✓ | 0ns | 192B |
+| 962 | sorts/msd_radix_sort | ✓ | 0ns | 384B |
+| 963 | sorts/natural_sort | ✓ | 1.0µs | 6.75KB |
+| 964 | sorts/odd_even_sort | ✓ | 0ns | 0B |
+| 965 | sorts/odd_even_transposition_parallel | ✓ | 0ns | 0B |
+| 966 | sorts/odd_even_transposition_single_threaded | ✓ | 0ns | 192B |
+| 967 | sorts/pancake_sort | ✓ | 0ns | 0B |
+| 968 | sorts/patience_sort | ✓ | 0ns | 128B |
+| 969 | sorts/pigeon_sort | ✓ | 0ns | 128B |
+| 970 | sorts/pigeonhole_sort | ✓ | 0ns | 256B |
+| 971 | sorts/quick_sort | ✓ | 0ns | 192B |
+| 972 | sorts/quick_sort_3_partition | ✓ | 0ns | 480B |
+| 973 | sorts/radix_sort | ✓ | 0ns | 224B |
+| 974 | sorts/recursive_insertion_sort | ✓ | 0ns | 0B |
+| 975 | sorts/recursive_mergesort_array | ✓ | 0ns | 224B |
+| 976 | sorts/recursive_quick_sort | ✓ |  |  |
+| 977 | sorts/selection_sort | ✓ | 0ns | 128B |
+| 978 | sorts/shell_sort | ✓ | 0ns | 128B |
+| 979 | sorts/shrink_shell_sort | ✓ | 0ns | 0B |
+| 980 | sorts/slowsort | ✓ | 0ns | 416B |
+| 981 | sorts/stooge_sort | ✓ | 0ns | 64B |
+| 982 | sorts/strand_sort | ✓ | 0ns | 192B |
+| 983 | sorts/tim_sort | ✓ | 1.0µs | 320B |
+| 984 | sorts/topological_sort | error |  |  |
+| 985 | sorts/tree_sort | ✓ | 0ns | 64B |
+| 986 | sorts/unknown_sort | error |  |  |
 | 987 | sorts/wiggle_sort |   |  |  |
 | 988 | strings/aho_corasick |   |  |  |
 | 989 | strings/alternative_string_arrange |   |  |  |
