@@ -1,7 +1,7 @@
 # Ruby Algorithms Transpiler Output
 
-Completed programs: 1046/1077
-Last updated: 2025-08-11 16:20 +0700
+Completed programs: 1048/1077
+Last updated: 2025-08-11 17:23 +0700
 
 Checklist:
 
@@ -996,11 +996,11 @@ Checklist:
 | 987 | sorts/wiggle_sort | ✓ | 1ms | 14.2 KB |
 | 988 | strings/aho_corasick | ✓ | 1ms | 20.2 KB |
 | 989 | strings/alternative_string_arrange | ✓ | 1ms | 11.9 KB |
-| 990 | strings/anagrams |   |  |  |
+| 990 | strings/anagrams | ✓ | 183.317ms | 40.7 KB |
 | 991 | strings/autocomplete_using_trie | ✓ | 1ms | 10.8 KB |
 | 992 | strings/barcode_validator | ✓ | 1ms | 14.4 KB |
 | 993 | strings/bitap_string_match | ✓ | 1ms | 33.2 KB |
-| 994 | strings/boyer_moore_search |   |  |  |
+| 994 | strings/boyer_moore_search | ✓ | 183.317ms | 6.9 KB |
 | 995 | strings/camel_case_to_snake_case | ✓ | 1ms | 210.3 KB |
 | 996 | strings/can_string_be_rearranged_as_palindrome | ✓ | 1ms | 53.4 KB |
 | 997 | strings/capitalize | ✓ | 1ms | 14.9 KB |

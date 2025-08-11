@@ -146,6 +146,13 @@ def _split(s, sep = ' ')
 end
 `
 
+const helperReadFile = `
+def _read_file(path)
+  base = __dir__.sub(%r{tests/algorithms/transpiler/rb}, 'tests/github/TheAlgorithms/Mochi')
+  File.read(File.join(base, path))
+end
+`
+
 const helperSHA256 = `
 require 'digest'
 def _sha256(bs)
@@ -1322,6 +1329,7 @@ var (
 	usesParseIntStr bool
 	usesSplit       bool
 	usesFetch       bool
+	usesReadFile    bool
 	usesMem         bool
 	benchMain       bool
 	loopDepth       int
@@ -3086,6 +3094,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if usesReadFile {
+		if _, err := io.WriteString(w, helperReadFile+"\n"); err != nil {
+			return err
+		}
+	}
 	if usesMem {
 		if _, err := io.WriteString(w, helperMem+"\n"); err != nil {
 			return err
@@ -3155,6 +3168,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesParseIntStr = false
 	usesSplit = false
 	usesFetch = false
+	usesReadFile = false
 	usesMem = false
 	currentEnv = env
 	// track top-level variables even when benchmarking so that global
@@ -4018,7 +4032,7 @@ func convertExpr(e *parser.Expr) (Expr, error) {
 type binOp struct {
 	op    string
 	all   bool
-	right *parser.PostfixExpr
+	right *parser.Unary
 }
 
 func convertBinary(b *parser.BinaryExpr) (Expr, error) {
@@ -4034,7 +4048,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	}
 	operands = append(operands, first)
 	for _, p := range b.Right {
-		o, err := convertPostfix(p.Right)
+		o, err := convertUnary(p.Right)
 		if err != nil {
 			return nil, err
 		}
@@ -4059,7 +4073,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		var expr Expr
 		switch op.op {
 		case "in":
-			typ := types.TypeOfPostfix(op.right, currentEnv)
+			typ := types.TypeOfUnary(op.right, currentEnv)
 			if _, ok := typ.(types.MapType); ok {
 				expr = &MethodCallExpr{Target: right, Method: "key?", Args: []Expr{left}}
 			} else {
@@ -4569,6 +4583,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			usesInput = true
 			return &CallExpr{Func: "_input"}, nil
+		case "read_file":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("read_file expects 1 arg")
+			}
+			usesReadFile = true
+			return &CallExpr{Func: "_read_file", Args: args}, nil
 		case "json":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("json expects 1 arg")
