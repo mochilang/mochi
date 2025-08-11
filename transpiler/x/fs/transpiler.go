@@ -2016,11 +2016,11 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	} else if (rt == "obj" || rt == "") && (lt == "int" || lt == "float" || lt == "string" || lt == "bool") {
 		right = castIf(right, lt)
 		rt = lt
-	} else if (lt == "obj" || lt == "") && (rt == "obj" || rt == "") && (b.Op == "+" || b.Op == "-" || b.Op == "*" || b.Op == "/") {
-		left = castIf(left, "float")
-		right = castIf(right, "float")
-		lt, rt = "float", "float"
-	}
+        } else if (lt == "obj" || lt == "") && (rt == "obj" || rt == "") && (b.Op == "-" || b.Op == "*" || b.Op == "/") {
+                left = castIf(left, "float")
+                right = castIf(right, "float")
+                lt, rt = "float", "float"
+        }
 	if lt == "float" && rt == "int" {
 		right = &CastExpr{Expr: right, Type: "float"}
 	} else if rt == "float" && lt == "int" {

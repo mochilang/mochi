@@ -1,0 +1,15 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/algorithms/transpiler/FS/web_programming/crawl_google_scholar_citation.fs(119,42): warning FS0046: The identifier 'params' is reserved for future use by F#
+
+/workspace/mochi/tests/algorithms/transpiler/FS/web_programming/crawl_google_scholar_citation.fs(122,17): warning FS0046: The identifier 'params' is reserved for future use by F#
+
+/workspace/mochi/tests/algorithms/transpiler/FS/web_programming/crawl_google_scholar_citation.fs(122,26): warning FS0046: The identifier 'params' is reserved for future use by F#
+
+/workspace/mochi/tests/algorithms/transpiler/FS/web_programming/crawl_google_scholar_citation.fs(131,9): warning FS0046: The identifier 'params' is reserved for future use by F#
+
+/workspace/mochi/tests/algorithms/transpiler/FS/web_programming/crawl_google_scholar_citation.fs(132,79): warning FS0046: The identifier 'params' is reserved for future use by F#
+
+/workspace/mochi/tests/algorithms/transpiler/FS/web_programming/crawl_google_scholar_citation.fs(130,19): error FS0039: The value or constructor '__name__' is not defined
