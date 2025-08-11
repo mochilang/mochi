@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-09 16:11 GMT+7
+Last updated: 2025-08-11 14:54 GMT+7
 
-## Algorithms Golden Test Checklist (177/1077)
+## Algorithms Golden Test Checklist (178/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 30.54ms | 124.45KiB |
@@ -195,7 +195,7 @@ Last updated: 2025-08-09 16:11 GMT+7
 | 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 6.41ms | 133.59KiB |
 | 187 | data_structures/binary_tree/lowest_common_ancestor | ✓ | 17.89ms | 123.01KiB |
 | 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 622.22ms | 818.32KiB |
-| 189 | data_structures/binary_tree/maximum_sum_bst |   |  |  |
+| 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 26.32ms | 123.20KiB |
 | 190 | data_structures/binary_tree/merge_two_binary_trees |   |  |  |
 | 191 | data_structures/binary_tree/mirror_binary_tree |   |  |  |
 | 192 | data_structures/binary_tree/non_recursive_segment_tree |   |  |  |
