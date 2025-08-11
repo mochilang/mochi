@@ -3,28 +3,28 @@
 package scalat
 
 import (
-        "bufio"
-        "bytes"
-        "encoding/json"
-        "fmt"
-        "io"
-        "math"
-        "os"
-        "path/filepath"
-        "reflect"
-        "sort"
-        "strconv"
-        "strings"
-        "unicode"
-        "unicode/utf16"
-        "unicode/utf8"
+	"bufio"
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
+	"math"
+	"os"
+	"path/filepath"
+	"reflect"
+	"sort"
+	"strconv"
+	"strings"
+	"unicode"
+	"unicode/utf16"
+	"unicode/utf8"
 
-        yaml "gopkg.in/yaml.v3"
+	yaml "gopkg.in/yaml.v3"
 
-        "mochi/ast"
-        "mochi/parser"
-        meta "mochi/transpiler/meta"
-        "mochi/types"
+	"mochi/ast"
+	"mochi/parser"
+	meta "mochi/transpiler/meta"
+	"mochi/types"
 )
 
 var typeDecls []*TypeDeclStmt
@@ -116,20 +116,20 @@ var scalaKeywords = map[string]bool{
 }
 
 func escapeName(name string) string {
-        if strings.HasSuffix(name, "_") {
-                return "`" + name + "`"
-        }
-        if name != "" {
-                r, _ := utf8.DecodeRuneInString(name)
-                if !unicode.IsLetter(r) && r != '_' {
-                        name = "_" + name
-                }
-        }
-        switch name {
-        case "Int", "Double", "Long", "Short", "Float", "Boolean", "Char", "Byte", "String":
-                return name + "_"
-        }
-        if scalaKeywords[name] {
+	if strings.HasSuffix(name, "_") {
+		return "`" + name + "`"
+	}
+	if name != "" {
+		r, _ := utf8.DecodeRuneInString(name)
+		if !unicode.IsLetter(r) && r != '_' {
+			name = "_" + name
+		}
+	}
+	switch name {
+	case "Int", "Double", "Long", "Short", "Float", "Boolean", "Char", "Byte", "String":
+		return name + "_"
+	}
+	if scalaKeywords[name] {
 		return "`" + name + "`"
 	}
 	return name
@@ -2350,8 +2350,26 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 			} else if c, ok := e.(*CastExpr); ok && c.Type != "" {
 				typ = c.Type
+			} else if ce, ok := e.(*CallExpr); ok && env != nil {
+				if fn, ok2 := ce.Fn.(*Name); ok2 {
+					if t, err := env.GetVar(fn.Name); err == nil {
+						if ft, ok3 := t.(types.FuncType); ok3 {
+							typ = toScalaTypeFromType(ft.Return)
+						}
+					}
+				}
+				if typ == "" {
+					if t := inferTypeWithEnv(e, env); t != "" {
+						typ = t
+					}
+				}
 			} else if t := inferTypeWithEnv(e, env); t != "" {
 				typ = t
+			}
+			if typ == "" && st.Let.Value != nil && env != nil {
+				if tt := types.ExprType(st.Let.Value, env); tt != nil {
+					typ = toScalaTypeFromType(tt)
+				}
 			}
 		}
 		if typ != "" {
@@ -2560,16 +2578,33 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			for _, v := range st.Type.Variants {
 				var fields []Param
 				for _, f := range v.Fields {
-					fields = append(fields, Param{Name: f.Name, Type: toScalaType(f.Type)})
+					typ := toScalaType(f.Type)
+					if (typ == "" || typ == "Any") && f.Type != nil && f.Type.Simple != nil && strings.TrimSpace(*f.Type.Simple) == st.Type.Name {
+						typ = st.Type.Name
+					}
+					fields = append(fields, Param{Name: f.Name, Type: typ})
 				}
 				variants = append(variants, Variant{Name: v.Name, Fields: fields})
 			}
 			td := &TypeDeclStmt{Name: st.Type.Name, Variants: variants}
+			for i := range td.Variants {
+				for j := range td.Variants[i].Fields {
+					if td.Variants[i].Fields[j].Type == "" || td.Variants[i].Fields[j].Type == "Any" {
+						td.Variants[i].Fields[j].Type = st.Type.Name
+					}
+				}
+			}
 			typeDecls = append(typeDecls, td)
+			if env != nil {
+				env.SetStruct(st.Type.Name, types.StructType{Name: st.Type.Name})
+			}
 			return nil, nil
 		}
 		td := &TypeDeclStmt{Name: st.Type.Name}
 		typeDecls = append(typeDecls, td)
+		if env != nil {
+			env.SetStruct(st.Type.Name, types.StructType{Name: st.Type.Name})
+		}
 		if st.Type.Alias != nil {
 			td.Alias = toScalaType(st.Type.Alias)
 			return nil, nil
@@ -2633,6 +2668,21 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		}
 		return &AssignStmt{Target: target, Value: e}, nil
 	case st.Fun != nil:
+		if env != nil {
+			paramTypes := make([]types.Type, len(st.Fun.Params))
+			for i, p := range st.Fun.Params {
+				if p.Type != nil {
+					paramTypes[i] = types.ResolveTypeRef(p.Type, env)
+				} else {
+					paramTypes[i] = types.AnyType{}
+				}
+			}
+			var retT types.Type = types.AnyType{}
+			if st.Fun.Return != nil {
+				retT = types.ResolveTypeRef(st.Fun.Return, env)
+			}
+			env.SetVar(st.Fun.Name, types.FuncType{Params: paramTypes, Return: retT}, false)
+		}
 		return convertFunStmt(st.Fun, env)
 	case st.Return != nil:
 		return convertReturnStmt(st.Return, env)
@@ -5541,19 +5591,19 @@ func isBigIntExpr(e Expr) bool {
 
 // defaultExpr returns a zero value expression for the given Scala type.
 func defaultExpr(typ string) Expr {
-        switch {
-        case typ == "Int" || typ == "Long" || typ == "Double" || typ == "Float":
-                if typ == "Double" || typ == "Float" {
-                        return &FloatLit{Value: 0}
-                }
-                return &IntLit{Value: 0}
-        case typ == "BigInt":
-                needsBigInt = true
-                return &IntLit{Value: 0}
-        case typ == "String":
-                return &StringLit{Value: ""}
-        case typ == "Boolean":
-                return &BoolLit{Value: false}
+	switch {
+	case typ == "Int" || typ == "Long" || typ == "Double" || typ == "Float":
+		if typ == "Double" || typ == "Float" {
+			return &FloatLit{Value: 0}
+		}
+		return &IntLit{Value: 0}
+	case typ == "BigInt":
+		needsBigInt = true
+		return &IntLit{Value: 0}
+	case typ == "String":
+		return &StringLit{Value: ""}
+	case typ == "Boolean":
+		return &BoolLit{Value: false}
 	case strings.Contains(typ, "ArrayBuffer"):
 		if idx := strings.Index(typ, "ArrayBuffer["); idx >= 0 {
 			elem := strings.TrimSuffix(typ[idx+len("ArrayBuffer["):], "]")
