@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Scheme code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Scheme`.
-Last updated: 2025-08-11 17:29 GMT+7
+Last updated: 2025-08-11 18:24 GMT+7
 
-## Algorithms Golden Test Checklist (818/1077)
+## Algorithms Golden Test Checklist (823/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 0s | 12.4 MB |
@@ -506,55 +506,55 @@ Last updated: 2025-08-11 17:29 GMT+7
 | 497 | machine_learning/apriori_algorithm |   |  |  |
 | 498 | machine_learning/astar |   |  |  |
 | 499 | machine_learning/automatic_differentiation |   |  |  |
-| 500 | machine_learning/data_transformations |   |  |  |
-| 501 | machine_learning/decision_tree | ✓ | 2.105s | 16.5 MB |
+| 500 | machine_learning/data_transformations | ✓ | 1ms | 13.6 MB |
+| 501 | machine_learning/decision_tree | ✓ | 2.402s | 16.6 MB |
 | 502 | machine_learning/dimensionality_reduction | ✓ | 0s | 12.5 MB |
-| 503 | machine_learning/forecasting/run | ✓ | 2ms | 16.5 MB |
+| 503 | machine_learning/forecasting/run | ✓ | 1ms | 14.6 MB |
 | 504 | machine_learning/frequent_pattern_growth |   |  |  |
-| 505 | machine_learning/gradient_boosting_classifier | ✓ | 1ms | 13.9 MB |
-| 506 | machine_learning/gradient_descent | ✓ | 1.649s | 13.4 MB |
-| 507 | machine_learning/k_means_clust | ✓ | 2ms | 13.7 MB |
-| 508 | machine_learning/k_nearest_neighbours | ✓ | 1ms | 13.7 MB |
-| 509 | machine_learning/linear_discriminant_analysis |   |  |  |
-| 510 | machine_learning/linear_regression | ✓ | 3ms | 13.9 MB |
-| 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 2ms | 15.0 MB |
-| 512 | machine_learning/logistic_regression | ✓ | 170ms | 13.4 MB |
-| 513 | machine_learning/loss_functions | ✓ | 6ms | 16.9 MB |
-| 514 | machine_learning/lstm/lstm_prediction | ✓ | 393ms | 16.6 MB |
-| 515 | machine_learning/mfcc |   |  |  |
-| 516 | machine_learning/multilayer_perceptron_classifier | ✓ | 903ms | 14.4 MB |
-| 517 | machine_learning/polynomial_regression | ✓ | 1ms | 14.2 MB |
-| 518 | machine_learning/principle_component_analysis | ✓ | 1ms | 14.7 MB |
-| 519 | machine_learning/scoring_functions | ✓ | 1ms | 14.3 MB |
-| 520 | machine_learning/self_organizing_map | ✓ | 2ms | 13.5 MB |
+| 505 | machine_learning/gradient_boosting_classifier | ✓ | 3ms | 14.2 MB |
+| 506 | machine_learning/gradient_descent | ✓ | 1.077s | 13.7 MB |
+| 507 | machine_learning/k_means_clust | ✓ | 2ms | 13.8 MB |
+| 508 | machine_learning/k_nearest_neighbours | ✓ | 1ms | 13.8 MB |
+| 509 | machine_learning/linear_discriminant_analysis | ✓ | 7ms | 14.2 MB |
+| 510 | machine_learning/linear_regression | ✓ | 1ms | 13.2 MB |
+| 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 1ms | 14.1 MB |
+| 512 | machine_learning/logistic_regression | ✓ | 153ms | 13.4 MB |
+| 513 | machine_learning/loss_functions | ✓ | 5ms | 16.4 MB |
+| 514 | machine_learning/lstm/lstm_prediction | ✓ | 300ms | 16.7 MB |
+| 515 | machine_learning/mfcc | ✓ | 5ms | 14.5 MB |
+| 516 | machine_learning/multilayer_perceptron_classifier | ✓ | 850ms | 13.9 MB |
+| 517 | machine_learning/polynomial_regression | ✓ | 2ms | 13.9 MB |
+| 518 | machine_learning/principle_component_analysis | ✓ | 1ms | 14.6 MB |
+| 519 | machine_learning/scoring_functions | ✓ | 1ms | 13.6 MB |
+| 520 | machine_learning/self_organizing_map | ✓ | 1ms | 13.2 MB |
 | 521 | machine_learning/sequential_minimum_optimization |   |  |  |
-| 522 | machine_learning/similarity_search | ✓ | 1ms | 13.8 MB |
-| 523 | machine_learning/support_vector_machines |   |  |  |
-| 524 | machine_learning/word_frequency_functions |   |  |  |
-| 525 | machine_learning/xgboost_classifier | ✓ | 2ms | 13.8 MB |
-| 526 | machine_learning/xgboost_regressor | ✓ | 1ms | 13.9 MB |
-| 527 | maths/abs | ✓ | 0s | 13.8 MB |
-| 528 | maths/addition_without_arithmetic | ✓ | 5ms | 12.9 MB |
-| 529 | maths/aliquot_sum | ✓ | 1ms | 12.5 MB |
-| 530 | maths/allocation_number | ✓ | 1ms | 12.9 MB |
-| 531 | maths/arc_length | ✓ | 0s | 12.5 MB |
-| 532 | maths/area | ✓ | 1ms | 14.1 MB |
-| 533 | maths/area_under_curve | ✓ | 448ms | 12.0 MB |
+| 522 | machine_learning/similarity_search | ✓ | 1ms | 13.7 MB |
+| 523 | machine_learning/support_vector_machines | ✓ | 31ms | 13.5 MB |
+| 524 | machine_learning/word_frequency_functions | ✓ | 122ms | 16.6 MB |
+| 525 | machine_learning/xgboost_classifier | ✓ | 1ms | 13.5 MB |
+| 526 | machine_learning/xgboost_regressor | ✓ | 1ms | 14.2 MB |
+| 527 | maths/abs | ✓ | 0s | 13.5 MB |
+| 528 | maths/addition_without_arithmetic | ✓ | 5ms | 13.2 MB |
+| 529 | maths/aliquot_sum | ✓ | 0s | 12.6 MB |
+| 530 | maths/allocation_number | ✓ | 1ms | 12.2 MB |
+| 531 | maths/arc_length | ✓ | 0s | 12.6 MB |
+| 532 | maths/area | ✓ | 1ms | 14.3 MB |
+| 533 | maths/area_under_curve | ✓ | 159ms | 12.2 MB |
 | 534 | maths/average_absolute_deviation | ✓ | 1ms | 12.5 MB |
-| 535 | maths/average_mean | ✓ | 0s | 12.2 MB |
-| 536 | maths/average_median | ✓ | 0s | 12.3 MB |
-| 537 | maths/average_mode | ✓ | 9ms | 13.8 MB |
-| 538 | maths/bailey_borwein_plouffe | ✓ |  |  |
+| 535 | maths/average_mean | ✓ | 0s | 12.0 MB |
+| 536 | maths/average_median | ✓ | 1ms | 12.2 MB |
+| 537 | maths/average_mode | ✓ | 7ms | 13.6 MB |
+| 538 | maths/bailey_borwein_plouffe | ✓ | 43.104s | 13.5 MB |
 | 539 | maths/base_neg2_conversion |   |  |  |
-| 540 | maths/basic_maths | ✓ | 3ms | 13.7 MB |
-| 541 | maths/binary_exponentiation | ✓ | 0s | 12.6 MB |
-| 542 | maths/binary_multiplication | ✓ | 0s | 12.3 MB |
-| 543 | maths/binomial_coefficient | ✓ | 0s | 12.8 MB |
+| 540 | maths/basic_maths | ✓ | 1ms | 13.7 MB |
+| 541 | maths/binary_exponentiation | ✓ | 0s | 13.2 MB |
+| 542 | maths/binary_multiplication | ✓ | 0s | 12.5 MB |
+| 543 | maths/binomial_coefficient | ✓ | 1ms | 12.6 MB |
 | 544 | maths/binomial_distribution | ✓ | 0s | 12.8 MB |
-| 545 | maths/ceil | ✓ | 0s | 12.1 MB |
-| 546 | maths/chebyshev_distance | ✓ | 1ms | 12.3 MB |
-| 547 | maths/check_polygon | ✓ | 0s | 12.9 MB |
-| 548 | maths/chinese_remainder_theorem | ✓ | 1ms | 13.1 MB |
+| 545 | maths/ceil | ✓ | 0s | 12.3 MB |
+| 546 | maths/chebyshev_distance | ✓ | 0s | 12.5 MB |
+| 547 | maths/check_polygon | ✓ | 0s | 12.3 MB |
+| 548 | maths/chinese_remainder_theorem | ✓ | 1ms | 12.7 MB |
 | 549 | maths/chudnovsky_algorithm | ✓ | 0s | 12.9 MB |
 | 550 | maths/collatz_sequence | ✓ | 1ms | 12.3 MB |
 | 551 | maths/combinations | ✓ | 0s | 12.9 MB |
