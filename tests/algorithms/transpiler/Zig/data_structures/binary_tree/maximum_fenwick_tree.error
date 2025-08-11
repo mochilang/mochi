@@ -1,0 +1,17 @@
+signal: aborted
+0
+Segmentation fault at address 0x204960
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/maximum_fenwick_tree.zig:25:14: 0x223b15 in update (maximum_fenwick_tree)
+    arr_var_1[@as(usize, @intCast(idx))] = value;
+             ^
+/workspace/mochi/tests/algorithms/transpiler/Zig/data_structures/binary_tree/maximum_fenwick_tree.zig:48:15: 0x221a30 in main (maximum_fenwick_tree)
+        update(arr_var, 4, 100);
+              ^
+/tmp/zig-linux-x86_64-0.11.0/lib/std/start.zig:564:22: 0x2214c9 in main (maximum_fenwick_tree)
+            root.main();
+                     ^
+???:?:?: 0x7fad1ab751c9 in ??? (libc.so.6)
+Unwind information for `libc.so.6:0x7fad1ab751c9` was not available, trace may be incomplete
+
+???:?:?: 0x7fad1ab7528a in ??? (libc.so.6)
+???:?:?: 0x221154 in ??? (???)

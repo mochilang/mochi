@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-09 16:35 +0700
+Last updated: 2025-08-09 23:14 +0700
 
-## Program Checklist (168/1077)
+## Program Checklist (173/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -189,11 +189,11 @@ Last updated: 2025-08-09 16:35 +0700
 | 180 | data_structures/binary_tree/fenwick_tree | ✓ | 2.81ms | 384.0 KB |
 | 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 1.849ms | 512.0 KB |
 | 182 | data_structures/binary_tree/floor_and_ceiling | ✓ | 1.325ms | 512.0 KB |
-| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 |   |  |  |
-| 184 | data_structures/binary_tree/is_sorted |   |  |  |
-| 185 | data_structures/binary_tree/is_sum_tree |   |  |  |
-| 186 | data_structures/binary_tree/lazy_segment_tree |   |  |  |
-| 187 | data_structures/binary_tree/lowest_common_ancestor |   |  |  |
+| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 | ✓ | 699µs | 384.0 KB |
+| 184 | data_structures/binary_tree/is_sorted | ✓ | 889µs | 512.0 KB |
+| 185 | data_structures/binary_tree/is_sum_tree | ✓ | 213µs | 128.0 KB |
+| 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 3.717ms | 1.2 MB |
+| 187 | data_structures/binary_tree/lowest_common_ancestor | ✓ | 6.786ms | 2.4 MB |
 | 188 | data_structures/binary_tree/maximum_fenwick_tree |   |  |  |
 | 189 | data_structures/binary_tree/maximum_sum_bst |   |  |  |
 | 190 | data_structures/binary_tree/merge_two_binary_trees |   |  |  |

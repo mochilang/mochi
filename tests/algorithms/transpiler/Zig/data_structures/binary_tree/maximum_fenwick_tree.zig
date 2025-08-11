@@ -5,96 +5,65 @@ fn handleError(err: anyerror) noreturn {
     std.debug.panic("{any}", .{err});
 }
 
-const TreeState = struct {
-    nodes: []Node,
-    root: i64,
-};
+var arr_var: []i64 = &[_]i64{};
 
-const Node = struct {
-    data: i64,
-    left: i64,
-    right: i64,
-};
-
-fn new_node(state_param: *TreeState, value: i64) i64 {
-    state_param.nodes = blk: { var _tmp = std.ArrayList(Node).init(std.heap.page_allocator); _tmp.appendSlice(@as([]const Node, state_param.nodes)) catch |err| handleError(err); _tmp.append(.{ .data = value, .left = 0 - 1, .right = 0 - 1 }) catch |err| handleError(err); break :blk (_tmp.toOwnedSlice() catch |err| handleError(err)); };
-    return @as(i64, @intCast(state_param.nodes.len)) - 1;
-}
-
-fn insert(state_param: *TreeState, value: i64) void {
-    if (state_param.root == 0 - 1) {
-        state_param.root = new_node(state_param, value);
-        return;
-    }
-    var current: i64 = state_param.root;
-    current = current;
-    while (true) {
-        var node: Node = state_param.nodes[@as(usize, @intCast(current))];
-        node = node;
-        if (value < node.data) {
-            if (node.left == 0 - 1) {
-                node.left = new_node(state_param, value);
-                state_param.nodes[@as(usize, @intCast(current))] = node;
-                state_param.nodes = state_param.nodes;
-                return;
-            }
-            current = node.left;
-        } else {
-            if (node.right == 0 - 1) {
-                node.right = new_node(state_param, value);
-                state_param.nodes[@as(usize, @intCast(current))] = node;
-                state_param.nodes = state_param.nodes;
-                return;
-            }
-            current = node.right;
-        }
-    }
-}
-
-fn inorder(state: TreeState, idx: i64) []i64 {
-    if (idx == 0 - 1) {
-        return &[_]i64{};
-    }
-    const node: Node = state.nodes[@as(usize, @intCast(idx))];
-    var result: []i64 = inorder(state, node.left);
-    result = result;
-    result = blk: { var _tmp = std.ArrayList(i64).init(std.heap.page_allocator); _tmp.appendSlice(@as([]const i64, result)) catch |err| handleError(err); _tmp.append(node.data) catch |err| handleError(err); break :blk (_tmp.toOwnedSlice() catch |err| handleError(err)); };
-    var right_part: []i64 = inorder(state, node.right);
-    right_part = right_part;
+fn zeros(n: i64) []i64 {
+    var res: []i64 = @constCast(&[_]i64{})[0..];
+    res = res;
     var i: i64 = 0;
     i = i;
-    while (i < @as(i64, @intCast(right_part.len))) {
-        result = blk: { var _tmp = std.ArrayList(i64).init(std.heap.page_allocator); _tmp.appendSlice(@as([]const i64, result)) catch |err| handleError(err); _tmp.append(right_part[@as(usize, @intCast(i))]) catch |err| handleError(err); break :blk (_tmp.toOwnedSlice() catch |err| handleError(err)); };
+    while (i < n) {
+        res = blk: { var _tmp = std.ArrayList(i64).init(std.heap.page_allocator); _tmp.appendSlice(@as([]const i64, res)) catch |err| handleError(err); _tmp.append(0) catch |err| handleError(err); break :blk (_tmp.toOwnedSlice() catch |err| handleError(err)); };
+        i = i + 1;
+    }
+    return res;
+}
+
+fn update(arr_param: []i64, idx: i64, value: i64) void {
+    var arr_var_1: []i64 = arr_param;
+    arr_var_1 = arr_var_1;
+    arr_var_1[@as(usize, @intCast(idx))] = value;
+}
+
+fn query(arr_param: []const i64, left: i64, right: i64) i64 {
+    var result: i64 = 0;
+    result = result;
+    var i: i64 = left;
+    i = i;
+    while (i < right) {
+        if (arr_param[@as(usize, @intCast(i))] > result) {
+            result = arr_param[@as(usize, @intCast(i))];
+        }
         i = i + 1;
     }
     return result;
-}
-
-fn make_tree() TreeState {
-    var state: TreeState = .{ .nodes = &[_]Node{}, .root = 0 - 1 };
-    state = state;
-    insert(@constCast(&state), 15);
-    insert(@constCast(&state), 10);
-    insert(@constCast(&state), 25);
-    insert(@constCast(&state), 6);
-    insert(@constCast(&state), 14);
-    insert(@constCast(&state), 20);
-    insert(@constCast(&state), 60);
-    return state;
-}
-
-fn mochi_main() void {
-    var state: TreeState = make_tree();
-    state = state;
-    std.debug.print("{s}\n", .{"Printing values of binary search tree in Inorder Traversal."});
-    std.debug.print("{s}\n", .{_str(inorder(state, state.root))});
 }
 
 pub fn main() void {
     {
         const __start = _now();
         const __start_mem: i64 = _mem();
-        mochi_main();
+        arr_var = @constCast(&([5]i64{0, 0, 0, 0, 0}))[0..];
+        std.debug.print("{s}\n", .{_str(query(arr_var[0..], 0, 5))});
+        update(arr_var, 4, 100);
+        std.debug.print("{s}\n", .{_str(query(arr_var[0..], 0, 5))});
+        update(arr_var, 4, 0);
+        update(arr_var, 2, 20);
+        std.debug.print("{s}\n", .{_str(query(arr_var[0..], 0, 5))});
+        update(arr_var, 4, 10);
+        std.debug.print("{s}\n", .{_str(query(arr_var[0..], 2, 5))});
+        std.debug.print("{s}\n", .{_str(query(arr_var[0..], 1, 5))});
+        update(arr_var, 2, 0);
+        std.debug.print("{s}\n", .{_str(query(arr_var[0..], 0, 5))});
+        arr_var = zeros(10000);
+        update(arr_var, 255, 30);
+        std.debug.print("{s}\n", .{_str(query(arr_var[0..], 0, 10000))});
+        arr_var = zeros(6);
+        update(arr_var, 5, 1);
+        std.debug.print("{s}\n", .{_str(query(arr_var[0..], 5, 6))});
+        arr_var = zeros(6);
+        update(arr_var, 0, 1000);
+        std.debug.print("{s}\n", .{_str(query(arr_var[0..], 0, 1))});
         const __end = _now();
         const __end_mem: i64 = _mem();
         const __duration_us: i64 = @divTrunc(@as(i64, @intCast(__end - __start)), 1000);
