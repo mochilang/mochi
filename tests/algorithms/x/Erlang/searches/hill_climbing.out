@@ -1,5 +1,5 @@
-/workspace/mochi/tests/algorithms/x/Erlang/searches/hill_climbing.erl:66:1: Warning: function mochi_safe_div/2 is unused
-%   66| mochi_safe_div(A, B) ->
+/workspace/mochi/tests/algorithms/x/Erlang/searches/hill_climbing.erl:73:1: Warning: function mochi_safe_div/2 is unused
+%   73| mochi_safe_div(A, B) ->
 %     | ^
 
 badarith
