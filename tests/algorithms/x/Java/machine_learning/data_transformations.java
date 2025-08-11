@@ -1,144 +1,127 @@
 public class Main {
 
     static double floor(double x) {
-        int i = ((Number)(x)).intValue();
+        long i = ((Number)(x)).intValue();
         if ((((Number)(i)).doubleValue()) > x) {
             i = i - 1;
         }
         return ((Number)(i)).doubleValue();
     }
 
-    static double pow10(int n) {
+    static double pow10(long n) {
         double result = 1.0;
-        int i_1 = 0;
-        while (i_1 < n) {
+        long i_2 = 0;
+        while (i_2 < n) {
             result = result * 10.0;
-            i_1 = i_1 + 1;
+            i_2 = i_2 + 1;
         }
         return result;
     }
 
-    static double round(double x, int n) {
+    static double round(double x, long n) {
         double m = pow10(n);
-        double y = ((Number)(floor(x * m + 0.5))).doubleValue();
-        return y / m;
+        double y_1 = ((Number)(floor(x * m + 0.5))).doubleValue();
+        return y_1 / m;
     }
 
     static double sqrtApprox(double x) {
         double guess = x;
-        int i_2 = 0;
-        while (i_2 < 20) {
+        long i_4 = 0;
+        while (i_4 < 20) {
             guess = (guess + x / guess) / 2.0;
-            i_2 = i_2 + 1;
+            i_4 = i_4 + 1;
         }
         return guess;
     }
 
     static double mean(double[] data) {
         double total = 0.0;
-        int i_3 = 0;
-        int n = data.length;
-        while (i_3 < n) {
-            total = total + data[i_3];
-            i_3 = i_3 + 1;
+        long i_6 = 0;
+        long n_1 = data.length;
+        while (i_6 < n_1) {
+            total = total + data[(int)(i_6)];
+            i_6 = i_6 + 1;
         }
-        return total / (((Number)(n)).doubleValue());
+        return total / (((Number)(n_1)).doubleValue());
     }
 
     static double stdev(double[] data) {
-        int n_1 = data.length;
-        if (n_1 <= 1) {
+        long n_2 = data.length;
+        if (n_2 <= 1) {
             throw new RuntimeException(String.valueOf("data length must be > 1"));
         }
-        double m_1 = mean(((double[])(data)));
-        double sum_sq = 0.0;
-        int i_4 = 0;
-        while (i_4 < n_1) {
-            double diff = data[i_4] - m_1;
-            sum_sq = sum_sq + diff * diff;
-            i_4 = i_4 + 1;
+        double m_2 = mean(((double[])(data)));
+        double sum_sq_1 = 0.0;
+        long i_8 = 0;
+        while (i_8 < n_2) {
+            double diff_1 = data[(int)(i_8)] - m_2;
+            sum_sq_1 = sum_sq_1 + diff_1 * diff_1;
+            i_8 = i_8 + 1;
         }
-        return sqrtApprox(sum_sq / (((Number)((n_1 - 1))).doubleValue()));
+        return sqrtApprox(sum_sq_1 / (((Number)((n_2 - 1))).doubleValue()));
     }
 
-    static double[] normalization(double[] data, int ndigits) {
+    static double[] normalization(double[] data, long ndigits) {
         double x_min = ((Number)(_min(data))).doubleValue();
-        double x_max = ((Number)(_max(data))).doubleValue();
-        double denom = x_max - x_min;
-        double[] result_1 = ((double[])(new double[]{}));
-        int i_5 = 0;
-        int n_2 = data.length;
-        while (i_5 < n_2) {
-            double norm = (data[i_5] - x_min) / denom;
-            result_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(result_1), java.util.stream.DoubleStream.of(round(norm, ndigits))).toArray()));
-            i_5 = i_5 + 1;
-        }
-        return result_1;
-    }
-
-    static double[] standardization(double[] data, int ndigits) {
-        double mu = mean(((double[])(data)));
-        double sigma = stdev(((double[])(data)));
+        double x_max_1 = ((Number)(_max(data))).doubleValue();
+        double denom_1 = x_max_1 - x_min;
         double[] result_2 = ((double[])(new double[]{}));
-        int i_6 = 0;
-        int n_3 = data.length;
-        while (i_6 < n_3) {
-            double z = (data[i_6] - mu) / sigma;
-            result_2 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(result_2), java.util.stream.DoubleStream.of(round(z, ndigits))).toArray()));
-            i_6 = i_6 + 1;
+        long i_10 = 0;
+        long n_4 = data.length;
+        while (i_10 < n_4) {
+            double norm_1 = (data[(int)(i_10)] - x_min) / denom_1;
+            result_2 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(result_2), java.util.stream.DoubleStream.of(round(norm_1, ndigits))).toArray()));
+            i_10 = i_10 + 1;
         }
         return result_2;
     }
+
+    static double[] standardization(double[] data, long ndigits) {
+        double mu = mean(((double[])(data)));
+        double sigma_1 = stdev(((double[])(data)));
+        double[] result_4 = ((double[])(new double[]{}));
+        long i_12 = 0;
+        long n_6 = data.length;
+        while (i_12 < n_6) {
+            double z_1 = (data[(int)(i_12)] - mu) / sigma_1;
+            result_4 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(result_4), java.util.stream.DoubleStream.of(round(z_1, ndigits))).toArray()));
+            i_12 = i_12 + 1;
+        }
+        return result_4;
+    }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(_p(normalization(((double[])(new double[]{2.0, 7.0, 10.0, 20.0, 30.0, 50.0})), 3)));
-            System.out.println(_p(normalization(((double[])(new double[]{5.0, 10.0, 15.0, 20.0, 25.0})), 3)));
-            System.out.println(_p(standardization(((double[])(new double[]{2.0, 7.0, 10.0, 20.0, 30.0, 50.0})), 3)));
-            System.out.println(_p(standardization(((double[])(new double[]{5.0, 10.0, 15.0, 20.0, 25.0})), 3)));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
+        System.out.println(_p(normalization(((double[])(new double[]{2.0, 7.0, 10.0, 20.0, 30.0, 50.0})), 3)));
+        System.out.println(_p(normalization(((double[])(new double[]{5.0, 10.0, 15.0, 20.0, 25.0})), 3)));
+        System.out.println(_p(standardization(((double[])(new double[]{2.0, 7.0, 10.0, 20.0, 30.0, 50.0})), 3)));
+        System.out.println(_p(standardization(((double[])(new double[]{5.0, 10.0, 15.0, 20.0, 25.0})), 3)));
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
+    static Object[] _toObjectArray(Object v) {
+        if (v instanceof Object[]) return (Object[]) v;
+        if (v instanceof int[]) return java.util.Arrays.stream((int[]) v).boxed().toArray();
+        if (v instanceof double[]) return java.util.Arrays.stream((double[]) v).boxed().toArray();
+        if (v instanceof long[]) return java.util.Arrays.stream((long[]) v).boxed().toArray();
+        if (v instanceof boolean[]) { boolean[] a = (boolean[]) v; Object[] out = new Object[a.length]; for (int i = 0; i < a.length; i++) out[i] = a[i]; return out; }
+        return (Object[]) v;
     }
 
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
-    }
-
-    static int _min(int[] a) {
-        int m = a[0];
-        for (int i = 1; i < a.length; i++) if (a[i] < m) m = a[i];
+    static double _min(Object a) {
+        Object[] arr = _toObjectArray(a);
+        double m = ((Number)arr[0]).doubleValue();
+        for (int i = 1; i < arr.length; i++) {
+            double v = ((Number)arr[i]).doubleValue();
+            if (v < m) m = v;
+        }
         return m;
     }
 
-    static int _max(int[] a) {
-        int m = a[0];
-        for (int i = 1; i < a.length; i++) if (a[i] > m) m = a[i];
+    static double _max(Object a) {
+        Object[] arr = _toObjectArray(a);
+        double m = ((Number)arr[0]).doubleValue();
+        for (int i = 1; i < arr.length; i++) {
+            double v = ((Number)arr[i]).doubleValue();
+            if (v > m) m = v;
+        }
         return m;
     }
 
@@ -154,6 +137,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }
