@@ -82,6 +82,8 @@ func (c CharLit) Emit(w io.Writer) {
 		io.WriteString(w, "\\newline")
 	case '\t':
 		io.WriteString(w, "\\tab")
+	case '\r':
+		io.WriteString(w, "\\return")
 	case ' ':
 		io.WriteString(w, "\\space")
 	default:
