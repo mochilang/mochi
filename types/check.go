@@ -1381,7 +1381,7 @@ func checkBinaryExpr(b *parser.BinaryExpr, env *Env, expected Type) (Type, error
 	operators := []token{}
 
 	for _, part := range b.Right {
-		typ, err := checkPostfix(part.Right, env, nil)
+                typ, err := checkUnary(part.Right, env, nil)
 		if err != nil {
 			return nil, err
 		}

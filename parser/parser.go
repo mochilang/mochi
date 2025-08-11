@@ -364,7 +364,7 @@ type BinaryOp struct {
 	Pos   lexer.Position `json:"pos,omitempty" parser:""`
 	Op    string         `json:"op,omitempty" parser:"@('==' | '!=' | '<' | '<=' | '>' | '>=' | '+' | '-' | '*' | '/' | '%' | 'in' | '&&' | '||' | 'union' | 'except' | 'intersect')"`
 	All   bool           `json:"all,omitempty" parser:"[ @'all' ]"`
-	Right *PostfixExpr   `json:"right,omitempty" parser:"@@"`
+    Right *Unary         `json:"right,omitempty" parser:"@@"`
 }
 
 type Unary struct {
