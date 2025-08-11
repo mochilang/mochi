@@ -3956,26 +3956,33 @@ func inferType(e Expr) string {
 				return "double"
 			}
 			return "num"
-		case "/":
-			lt := inferType(ex.Left)
-			rt := inferType(ex.Right)
-			if lt == "BigInt" || rt == "BigInt" {
-				return "BigInt"
-			}
-			if lt == "int" && rt == "int" {
-				return "int"
-			}
-			if lt == "double" || rt == "double" || lt == "num" || rt == "num" {
-				return "double"
-			}
-			return "num"
-		case "<", "<=", ">", ">=", "==", "!=", "&&", "||":
-			return "bool"
-		case "union", "union_all", "except", "intersect":
-			return inferType(ex.Left)
-		default:
-			return "dynamic"
-		}
+               case "/":
+                       lt := inferType(ex.Left)
+                       rt := inferType(ex.Right)
+                       if lt == "BigInt" || rt == "BigInt" {
+                               return "BigInt"
+                       }
+                       if lt == "int" && rt == "int" {
+                               return "int"
+                       }
+                       if lt == "double" || rt == "double" || lt == "num" || rt == "num" {
+                               return "double"
+                       }
+                       return "num"
+               case "<", "<=", ">", ">=", "&&", "||":
+                       return "bool"
+               case "==", "!=":
+                       lt := inferType(ex.Left)
+                       rt := inferType(ex.Right)
+                       if strings.HasPrefix(lt, "List<") && strings.HasPrefix(rt, "List<") {
+                               usesJSON = true
+                       }
+                       return "bool"
+               case "union", "union_all", "except", "intersect":
+                       return inferType(ex.Left)
+               default:
+                       return "dynamic"
+               }
 	case *UnaryExpr:
 		if ex.Op == "-" {
 			t := inferType(ex.X)

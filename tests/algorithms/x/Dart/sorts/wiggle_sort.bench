@@ -1,4 +1,1 @@
-../../../tests/algorithms/x/Dart/sorts/wiggle_sort.dart:66:20: Error: A comparison expression can't be an operand of another comparison expression.
-Try putting parentheses around one of the comparisons.
-    if (i % 2 == 1 == prev > curr) {
-                   ^^
+{"duration_us":21580,"memory_bytes":10358784,"name":"main"}
