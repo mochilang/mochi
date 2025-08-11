@@ -1,0 +1,9 @@
+[TEST CASE 01]
+PID	Burst Time	Arrival Time	Waiting Time	Turnaround Time
+1	2			0				0				2
+2	5			0				5				10
+3	3			0				2				5
+4	7			0				10				17
+
+Average waiting time = 4.25
+Average turnaround time = 8.5
