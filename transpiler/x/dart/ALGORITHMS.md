@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-11 14:56 GMT+7
+Last updated: 2025-08-11 15:10 GMT+7
 
 ## Algorithms Golden Test Checklist (886/1077)
 | Index | Name | Status | Duration | Memory |
@@ -427,7 +427,7 @@ Last updated: 2025-08-11 14:56 GMT+7
 | 418 | graphs/dijkstra_alternate | ✓ | 15.612ms | 10.0 MB |
 | 419 | graphs/dijkstra_binary_grid | error |  |  |
 | 420 | graphs/dinic | ✓ | 12.131ms | 4.5 MB |
-| 421 | graphs/directed_and_undirected_weighted_graph | ✓ | 30.348ms | 9.9 MB |
+| 421 | graphs/directed_and_undirected_weighted_graph | ✓ | 40.98ms | 11.0 MB |
 | 422 | graphs/edmonds_karp_multiple_source_and_sink | ✓ | 21.688ms | 5.6 MB |
 | 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 34.622ms | 8.0 MB |
 | 424 | graphs/even_tree | ✓ | 29.213ms | 10.4 MB |
