@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (246/1077) - Last updated 2025-08-11 19:02 +0700:
+Checklist of programs that currently transpile and run (292/1077) - Last updated 2025-08-11 21:16 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -506,56 +506,56 @@ Checklist of programs that currently transpile and run (246/1077) - Last updated
 | 499 | machine_learning/automatic_differentiation |  |  |  |
 | 500 | machine_learning/data_transformations | ✓ | 412us | 1.7 MB |
 | 501 | machine_learning/decision_tree |  |  |  |
-| 502 | machine_learning/dimensionality_reduction |  |  |  |
-| 503 | machine_learning/forecasting/run |  |  |  |
+| 502 | machine_learning/dimensionality_reduction | ✓ | 441us | 1.4 MB |
+| 503 | machine_learning/forecasting/run | ✓ | 385us | 1.7 MB |
 | 504 | machine_learning/frequent_pattern_growth |  |  |  |
-| 505 | machine_learning/gradient_boosting_classifier |  |  |  |
-| 506 | machine_learning/gradient_descent |  |  |  |
-| 507 | machine_learning/k_means_clust |  |  |  |
-| 508 | machine_learning/k_nearest_neighbours |  |  |  |
-| 509 | machine_learning/linear_discriminant_analysis |  |  |  |
-| 510 | machine_learning/linear_regression |  |  |  |
-| 511 | machine_learning/local_weighted_learning/local_weighted_learning |  |  |  |
-| 512 | machine_learning/logistic_regression |  |  |  |
+| 505 | machine_learning/gradient_boosting_classifier | ✓ | 485us | 1.5 MB |
+| 506 | machine_learning/gradient_descent | ✓ | 7.88ms | 1.9 MB |
+| 507 | machine_learning/k_means_clust | ✓ | 410us | 1.6 MB |
+| 508 | machine_learning/k_nearest_neighbours | ✓ | 307us | 1.5 MB |
+| 509 | machine_learning/linear_discriminant_analysis | ✓ | 504us | 1.6 MB |
+| 510 | machine_learning/linear_regression | ✓ | 332us | 1.6 MB |
+| 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 530us | 1.5 MB |
+| 512 | machine_learning/logistic_regression | ✓ | 2.09ms | 1.7 MB |
 | 513 | machine_learning/loss_functions |  |  |  |
-| 514 | machine_learning/lstm/lstm_prediction |  |  |  |
-| 515 | machine_learning/mfcc |  |  |  |
-| 516 | machine_learning/multilayer_perceptron_classifier |  |  |  |
-| 517 | machine_learning/polynomial_regression |  |  |  |
+| 514 | machine_learning/lstm/lstm_prediction | ✓ | 669us | 1.7 MB |
+| 515 | machine_learning/mfcc | ✓ | 393us | 1.6 MB |
+| 516 | machine_learning/multilayer_perceptron_classifier | ✓ | 9.83ms | 1.5 MB |
+| 517 | machine_learning/polynomial_regression | ✓ | 286us | 1.5 MB |
 | 518 | machine_learning/principle_component_analysis |  |  |  |
-| 519 | machine_learning/scoring_functions |  |  |  |
-| 520 | machine_learning/self_organizing_map |  |  |  |
-| 521 | machine_learning/sequential_minimum_optimization |  |  |  |
-| 522 | machine_learning/similarity_search |  |  |  |
-| 523 | machine_learning/support_vector_machines |  |  |  |
-| 524 | machine_learning/word_frequency_functions |  |  |  |
-| 525 | machine_learning/xgboost_classifier |  |  |  |
-| 526 | machine_learning/xgboost_regressor |  |  |  |
-| 527 | maths/abs |  |  |  |
-| 528 | maths/addition_without_arithmetic |  |  |  |
-| 529 | maths/aliquot_sum |  |  |  |
-| 530 | maths/allocation_number |  |  |  |
-| 531 | maths/arc_length |  |  |  |
-| 532 | maths/area |  |  |  |
-| 533 | maths/area_under_curve |  |  |  |
-| 534 | maths/average_absolute_deviation |  |  |  |
-| 535 | maths/average_mean |  |  |  |
-| 536 | maths/average_median |  |  |  |
-| 537 | maths/average_mode |  |  |  |
-| 538 | maths/bailey_borwein_plouffe |  |  |  |
+| 519 | machine_learning/scoring_functions | ✓ | 711us | 1.6 MB |
+| 520 | machine_learning/self_organizing_map | ✓ | 512us | 1.6 MB |
+| 521 | machine_learning/sequential_minimum_optimization | ✓ | 297us | 1.7 MB |
+| 522 | machine_learning/similarity_search | ✓ | 258us | 1.6 MB |
+| 523 | machine_learning/support_vector_machines | ✓ | 883us | 1.6 MB |
+| 524 | machine_learning/word_frequency_functions | ✓ | 564us | 1.7 MB |
+| 525 | machine_learning/xgboost_classifier | ✓ | 282us | 1.5 MB |
+| 526 | machine_learning/xgboost_regressor | ✓ | 436us | 1.6 MB |
+| 527 | maths/abs | ✓ | 286us | 1.6 MB |
+| 528 | maths/addition_without_arithmetic | ✓ | 302us | 1.5 MB |
+| 529 | maths/aliquot_sum | ✓ | 456us | 1.4 MB |
+| 530 | maths/allocation_number | ✓ | 293us | 1.4 MB |
+| 531 | maths/arc_length | ✓ | 388us | 1.6 MB |
+| 532 | maths/area | ✓ | 376us | 1.5 MB |
+| 533 | maths/area_under_curve | ✓ | 1.25ms | 1.6 MB |
+| 534 | maths/average_absolute_deviation | ✓ | 359us | 1.7 MB |
+| 535 | maths/average_mean | ✓ | 482us | 1.6 MB |
+| 536 | maths/average_median | ✓ | 459us | 1.6 MB |
+| 537 | maths/average_mode | ✓ | 382us | 1.6 MB |
+| 538 | maths/bailey_borwein_plouffe | ✓ | 598.94ms | 1.4 MB |
 | 539 | maths/base_neg2_conversion |  |  |  |
-| 540 | maths/basic_maths |  |  |  |
-| 541 | maths/binary_exponentiation |  |  |  |
-| 542 | maths/binary_multiplication |  |  |  |
-| 543 | maths/binomial_coefficient |  |  |  |
-| 544 | maths/binomial_distribution |  |  |  |
-| 545 | maths/ceil |  |  |  |
-| 546 | maths/chebyshev_distance |  |  |  |
-| 547 | maths/check_polygon |  |  |  |
-| 548 | maths/chinese_remainder_theorem |  |  |  |
-| 549 | maths/chudnovsky_algorithm |  |  |  |
-| 550 | maths/collatz_sequence |  |  |  |
-| 551 | maths/combinations |  |  |  |
+| 540 | maths/basic_maths | ✓ | 388us | 1.4 MB |
+| 541 | maths/binary_exponentiation | ✓ | 438us | 1.7 MB |
+| 542 | maths/binary_multiplication | ✓ | 241us | 1.5 MB |
+| 543 | maths/binomial_coefficient | ✓ | 320us | 1.6 MB |
+| 544 | maths/binomial_distribution | ✓ |  |  |
+| 545 | maths/ceil | ✓ | 475us | 1.6 MB |
+| 546 | maths/chebyshev_distance | ✓ | 331us | 1.6 MB |
+| 547 | maths/check_polygon | ✓ | 315us | 1.6 MB |
+| 548 | maths/chinese_remainder_theorem | ✓ | 285us | 1.5 MB |
+| 549 | maths/chudnovsky_algorithm | ✓ | 432us | 1.7 MB |
+| 550 | maths/collatz_sequence | ✓ | 530us | 1.4 MB |
+| 551 | maths/combinations | ✓ | 754us | 1.6 MB |
 | 552 | maths/continued_fraction |  |  |  |
 | 553 | maths/decimal_isolate |  |  |  |
 | 554 | maths/decimal_to_fraction |  |  |  |

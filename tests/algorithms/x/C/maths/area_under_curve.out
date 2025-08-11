@@ -1,0 +1,7 @@
+f(x) = x^3 + x^2
+The area between the curve, x = -5, x = 5 and the x axis is:
+with 10 steps: 325
+with 100 steps: 312.79
+with 1000 steps: 312.668
+with 10000 steps: 312.667
+with 100000 steps: 312.667

@@ -1,0 +1,4 @@
+run: exit status 1
+y_true must be one-hot encoded.
+1.13842
+0.528466
