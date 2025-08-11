@@ -184,6 +184,19 @@ def _fetch(url, opts = nil)
       }
       return _json_to_struct(data)
     end
+  elsif uri.host == 'api.carbonintensity.org.uk'
+    if uri.path == '/intensity' || uri.path == '/intensity/'
+      data = {
+        'data' => [
+          {
+            'from' => '2020-10-02T23:30Z',
+            'to' => '2020-10-03T00:00Z',
+            'intensity' => { 'forecast' => 0, 'actual' => 65, 'index' => 'g' }
+          }
+        ]
+      }
+      return _json_to_struct(data)
+    end
   end
   if uri.scheme.nil? || uri.scheme == ''
     base = File.expand_path('../../../../..', __dir__)
@@ -3094,14 +3107,17 @@ func Emit(w io.Writer, p *Program) error {
 	if _, err := io.WriteString(w, helperStringEach+"\n"); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, helperPanic+"\n"); err != nil {
-		return err
-	}
-	for _, s := range p.Stmts {
-		e.writeIndent()
-		s.emit(e)
-		e.nl()
-	}
+        if _, err := io.WriteString(w, helperPanic+"\n"); err != nil {
+                return err
+        }
+       if _, err := io.WriteString(w, "__name__ = '__main__'\n"); err != nil {
+               return err
+       }
+        for _, s := range p.Stmts {
+                e.writeIndent()
+                s.emit(e)
+                e.nl()
+        }
 	return nil
 }
 
