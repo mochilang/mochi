@@ -928,7 +928,7 @@ func inferType(e Expr) string {
 		case "_p":
 			return "String"
 		case "_sha256":
-			return "int[]"
+			return "long[]"
 		case "Math.floorMod":
 			return "int"
 		default:
@@ -1563,6 +1563,78 @@ func stmtModifiesVar(s Stmt, name string) bool {
 func bodyModifiesVar(body []Stmt, name string) bool {
 	for _, st := range body {
 		if stmtModifiesVar(st, name) {
+			return true
+		}
+	}
+	return false
+}
+
+func stmtsContainBreak(stmts []Stmt) bool {
+	for _, st := range stmts {
+		if stmtContainsBreak(st) {
+			return true
+		}
+	}
+	return false
+}
+
+func stmtContainsBreak(s Stmt) bool {
+	switch st := s.(type) {
+	case *BreakStmt:
+		return true
+	case *IfStmt:
+		if stmtsContainBreak(st.Then) {
+			return true
+		}
+		if stmtsContainBreak(st.Else) {
+			return true
+		}
+	case *WhileStmt:
+		if stmtsContainBreak(st.Body) {
+			return true
+		}
+	case *ForRangeStmt:
+		if stmtsContainBreak(st.Body) {
+			return true
+		}
+	case *ForEachStmt:
+		if stmtsContainBreak(st.Body) {
+			return true
+		}
+	}
+	return false
+}
+
+func stmtsContainReturn(stmts []Stmt) bool {
+	for _, st := range stmts {
+		if stmtContainsReturn(st) {
+			return true
+		}
+	}
+	return false
+}
+
+func stmtContainsReturn(s Stmt) bool {
+	switch st := s.(type) {
+	case *ReturnStmt:
+		return true
+	case *IfStmt:
+		if stmtsContainReturn(st.Then) {
+			return true
+		}
+		if stmtsContainReturn(st.Else) {
+			return true
+		}
+	case *WhileStmt:
+		if stmtsContainReturn(st.Body) {
+			return true
+		}
+	case *ForRangeStmt:
+		if stmtsContainReturn(st.Body) {
+			return true
+		}
+	case *ForEachStmt:
+		if stmtsContainReturn(st.Body) {
 			return true
 		}
 	}
@@ -3449,11 +3521,11 @@ func (sli *SliceExpr) emit(w io.Writer) {
 	case isArrayExpr(sli.Value):
 		fmt.Fprint(w, "java.util.Arrays.copyOfRange(")
 		sli.Value.emit(w)
-		fmt.Fprint(w, ", ")
+		fmt.Fprint(w, ", (int)(")
 		sli.Start.emit(w)
-		fmt.Fprint(w, ", ")
+		fmt.Fprint(w, "), (int)(")
 		sli.End.emit(w)
-		fmt.Fprint(w, ")")
+		fmt.Fprint(w, "))")
 	case isListExpr(sli.Value):
 		fmt.Fprint(w, "new java.util.ArrayList<>(")
 		sli.Value.emit(w)
@@ -4983,11 +5055,52 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 
 func compileStmts(list []*parser.Statement) ([]Stmt, error) {
 	var out []Stmt
-	for _, s := range list {
-		st, err := compileStmt(s)
+	for i := 0; i < len(list); i++ {
+		st, err := compileStmt(list[i])
 		if err != nil {
 			return nil, err
 		}
+
+		if i+1 < len(list) {
+			next, err := compileStmt(list[i+1])
+			if err == nil {
+				if es, ok := next.(*ExprStmt); ok {
+					if v, ok := es.Expr.(*VarExpr); ok {
+						if strings.HasPrefix(v.Name, "e") {
+							if n, err := strconv.Atoi(v.Name[1:]); err == nil {
+								pow := math.Pow10(n)
+								switch cur := st.(type) {
+								case *VarStmt:
+									if fl, ok := cur.Expr.(*FloatLit); ok {
+										cur.Expr = &FloatLit{Value: fl.Value * pow}
+										i++
+									}
+								case *AssignStmt:
+									if fl, ok := cur.Expr.(*FloatLit); ok {
+										cur.Expr = &FloatLit{Value: fl.Value * pow}
+										i++
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		if w, ok := st.(*WhileStmt); ok {
+			if b, ok := w.Cond.(*BoolLit); ok && b.Value {
+				if !stmtsContainBreak(w.Body) && stmtsContainReturn(w.Body) {
+					if len(extraDecls) > 0 {
+						out = append(out, extraDecls...)
+						extraDecls = nil
+					}
+					out = append(out, st)
+					break
+				}
+			}
+		}
+
 		if _, ok := st.(*ReturnStmt); ok {
 			if len(extraDecls) > 0 {
 				out = append(out, extraDecls...)
@@ -5006,7 +5119,6 @@ func compileStmts(list []*parser.Statement) ([]Stmt, error) {
 			out = append(out, st)
 		}
 	}
-	// preserve explicit return statements even after infinite loops
 	return out, nil
 }
 
@@ -5353,6 +5465,21 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 					if funcRet != nil {
 						funcRet["Math."+fe.Name] = "double"
 					}
+				} else if fields := mapFieldsForExpr(fe.Target); fields != nil {
+					if t, ok := fields[fe.Name]; ok {
+						switch {
+						case strings.HasPrefix(t, "fn(") || strings.HasPrefix(t, "java.util.function.Function") || strings.HasPrefix(t, "java.util.function.BiFunction"):
+							expr = &MethodCallExpr{Target: fe, Name: "apply", Args: args}
+						case strings.HasPrefix(t, "java.util.function.Supplier"):
+							expr = &MethodCallExpr{Target: fe, Name: "get", Args: args}
+						case strings.HasPrefix(t, "java.util.function.Consumer") || strings.HasPrefix(t, "java.util.function.BiConsumer"):
+							expr = &MethodCallExpr{Target: fe, Name: "accept", Args: args}
+						default:
+							expr = &MethodCallExpr{Target: fe.Target, Name: fe.Name, Args: args}
+						}
+					} else {
+						expr = &MethodCallExpr{Target: fe.Target, Name: fe.Name, Args: args}
+					}
 				} else if v, ok2 := fe.Target.(*VarExpr); ok2 {
 					if kind, ok3 := builtinAliases[v.Name]; ok3 && kind == "go_testpkg" {
 						if fe.Name == "FifteenPuzzleExample" && len(args) == 0 {
@@ -5677,12 +5804,12 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		if name == "min" && len(args) == 1 {
 			needMin = true
-			funcRet["_min"] = "int"
+			funcRet["_min"] = "long"
 			return &CallExpr{Func: "_min", Args: args}, nil
 		}
 		if name == "max" && len(args) == 1 {
 			needMax = true
-			funcRet["_max"] = "int"
+			funcRet["_max"] = "long"
 			return &CallExpr{Func: "_max", Args: args}, nil
 		}
 		if name == "concat" && len(args) == 2 {
@@ -5731,19 +5858,20 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					}
 				}
 				var inner Expr
+				idxExpr := ix.Index
 				switch et {
 				case "int", "long":
 					needArrGetI = true
-					inner = &CallExpr{Func: "_geti", Args: []Expr{ix.Target, ix.Index}}
+					inner = &CallExpr{Func: "_geti", Args: []Expr{ix.Target, &IntCastExpr{Value: idxExpr}}}
 				case "double":
 					needArrGetD = true
-					inner = &CallExpr{Func: "_getd", Args: []Expr{ix.Target, ix.Index}}
+					inner = &CallExpr{Func: "_getd", Args: []Expr{ix.Target, &IntCastExpr{Value: idxExpr}}}
 				case "boolean":
 					needArrGetB = true
-					inner = &CallExpr{Func: "_getb", Args: []Expr{ix.Target, ix.Index}}
+					inner = &CallExpr{Func: "_getb", Args: []Expr{ix.Target, &IntCastExpr{Value: idxExpr}}}
 				default:
 					needArrGetD = true
-					inner = &CallExpr{Func: "_getd", Args: []Expr{ix.Target, ix.Index}}
+					inner = &CallExpr{Func: "_getd", Args: []Expr{ix.Target, &IntCastExpr{Value: idxExpr}}}
 				}
 				if wrap != nil {
 					inner = wrap(inner)
@@ -5828,12 +5956,24 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 		}
 		alias := resolveAlias(p.Selector.Root)
+		if len(p.Selector.Tail) == 0 {
+			if topEnv != nil {
+				if _, ok := topEnv.GetFunc(alias); ok {
+					return &VarExpr{Name: "Main::" + sanitize(alias)}, nil
+				}
+			}
+			if alias == "nil" {
+				return &NullLit{}, nil
+			}
+			typ := ""
+			if t, ok := varTypes[alias]; ok {
+				typ = t
+			}
+			return &VarExpr{Name: alias, Type: typ}, nil
+		}
 		typ := ""
 		if t, ok := varTypes[alias]; ok {
 			typ = t
-		}
-		if p.Selector.Root == "nil" && len(p.Selector.Tail) == 0 {
-			return &NullLit{}, nil
 		}
 		expr := Expr(&VarExpr{Name: alias, Type: typ})
 		for _, name := range p.Selector.Tail {
@@ -6927,9 +7067,9 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("    }\n")
 	}
 	if needRepeat {
-		buf.WriteString("\n    static String _repeat(String s, int n) {\n")
+		buf.WriteString("\n    static String _repeat(String s, long n) {\n")
 		buf.WriteString("        StringBuilder sb = new StringBuilder();\n")
-		buf.WriteString("        for (int i = 0; i < n; i++) sb.append(s);\n")
+		buf.WriteString("        for (long i = 0; i < n; i++) sb.append(s);\n")
 		buf.WriteString("        return sb.toString();\n")
 		buf.WriteString("    }\n")
 	}
@@ -6951,30 +7091,46 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("    }\n")
 	}
 	if needMin {
-		buf.WriteString("\n    static int _min(int[] a) {\n")
-		buf.WriteString("        int m = a[0];\n")
-		buf.WriteString("        for (int i = 1; i < a.length; i++) if (a[i] < m) m = a[i];\n")
+		buf.WriteString("\n    static long _min(Object[] a) {\n")
+		buf.WriteString("        long m = ((Number)a[0]).longValue();\n")
+		buf.WriteString("        for (int i = 1; i < a.length; i++) {\n")
+		buf.WriteString("            long v = ((Number)a[i]).longValue();\n")
+		buf.WriteString("            if (v < m) m = v;\n")
+		buf.WriteString("        }\n")
 		buf.WriteString("        return m;\n")
 		buf.WriteString("    }\n")
 	}
 	if needMax {
-		buf.WriteString("\n    static int _max(int[] a) {\n")
-		buf.WriteString("        int m = a[0];\n")
-		buf.WriteString("        for (int i = 1; i < a.length; i++) if (a[i] > m) m = a[i];\n")
+		buf.WriteString("\n    static long _max(Object[] a) {\n")
+		buf.WriteString("        long m = ((Number)a[0]).longValue();\n")
+		buf.WriteString("        for (int i = 1; i < a.length; i++) {\n")
+		buf.WriteString("            long v = ((Number)a[i]).longValue();\n")
+		buf.WriteString("            if (v > m) m = v;\n")
+		buf.WriteString("        }\n")
 		buf.WriteString("        return m;\n")
 		buf.WriteString("    }\n")
 	}
 	if needSHA256 {
-		buf.WriteString("\n    static int[] _sha256(int[] bs) {\n")
+		buf.WriteString("\n    static long[] _sha256(long[] bs) {\n")
 		buf.WriteString("        try {\n")
 		buf.WriteString("            java.security.MessageDigest md = java.security.MessageDigest.getInstance(\"SHA-256\");\n")
 		buf.WriteString("            byte[] bytes = new byte[bs.length];\n")
 		buf.WriteString("            for (int i = 0; i < bs.length; i++) bytes[i] = (byte)bs[i];\n")
 		buf.WriteString("            byte[] hash = md.digest(bytes);\n")
-		buf.WriteString("            int[] out = new int[hash.length];\n")
+		buf.WriteString("            long[] out = new long[hash.length];\n")
 		buf.WriteString("            for (int i = 0; i < hash.length; i++) out[i] = hash[i] & 0xff;\n")
 		buf.WriteString("            return out;\n")
-		buf.WriteString("        } catch (Exception e) { return new int[0]; }\n")
+		buf.WriteString("        } catch (Exception e) { return new long[0]; }\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("\n    static long[] _sha256(String s) {\n")
+		buf.WriteString("        try {\n")
+		buf.WriteString("            java.security.MessageDigest md = java.security.MessageDigest.getInstance(\"SHA-256\");\n")
+		buf.WriteString("            byte[] bytes = s.getBytes(java.nio.charset.StandardCharsets.UTF_8);\n")
+		buf.WriteString("            byte[] hash = md.digest(bytes);\n")
+		buf.WriteString("            long[] out = new long[hash.length];\n")
+		buf.WriteString("            for (int i = 0; i < hash.length; i++) out[i] = hash[i] & 0xff;\n")
+		buf.WriteString("            return out;\n")
+		buf.WriteString("        } catch (Exception e) { return new long[0]; }\n")
 		buf.WriteString("    }\n")
 	}
 	if needMD5Hex {

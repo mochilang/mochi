@@ -1,92 +1,125 @@
 public class Main {
 
-    static int[] calculate_waiting_times(int[] burst_times) {
-        int quantum = 2;
-        int[] rem = ((int[])(new int[]{}));
-        int i = 0;
-        while (i < burst_times.length) {
-            rem = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(rem), java.util.stream.IntStream.of(burst_times[i])).toArray()));
-            i = i + 1;
+    static long[] calculate_waiting_times(long[] burst_times) {
+        long quantum = 2;
+        long[] rem_1 = ((long[])(new long[]{}));
+        long i_1 = 0;
+        while (i_1 < burst_times.length) {
+            rem_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(rem_1), java.util.stream.LongStream.of(burst_times[(int)(i_1)])).toArray()));
+            i_1 = i_1 + 1;
         }
-        int[] waiting = ((int[])(new int[]{}));
-        i = 0;
-        while (i < burst_times.length) {
-            waiting = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(waiting), java.util.stream.IntStream.of(0)).toArray()));
-            i = i + 1;
+        long[] waiting_1 = ((long[])(new long[]{}));
+        i_1 = 0;
+        while (i_1 < burst_times.length) {
+            waiting_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(waiting_1), java.util.stream.LongStream.of(0)).toArray()));
+            i_1 = i_1 + 1;
         }
-        int t = 0;
+        long t_1 = 0;
         while (true) {
-            boolean done = true;
-            int j = 0;
-            while (j < burst_times.length) {
-                if (rem[j] > 0) {
-                    done = false;
-                    if (rem[j] > quantum) {
-                        t = t + quantum;
-rem[j] = rem[j] - quantum;
+            boolean done_1 = true;
+            long j_1 = 0;
+            while (j_1 < burst_times.length) {
+                if (rem_1[(int)(j_1)] > 0) {
+                    done_1 = false;
+                    if (rem_1[(int)(j_1)] > quantum) {
+                        t_1 = t_1 + quantum;
+rem_1[(int)(j_1)] = rem_1[(int)(j_1)] - quantum;
                     } else {
-                        t = t + rem[j];
-waiting[j] = t - burst_times[j];
-rem[j] = 0;
+                        t_1 = t_1 + rem_1[(int)(j_1)];
+waiting_1[(int)(j_1)] = t_1 - burst_times[(int)(j_1)];
+rem_1[(int)(j_1)] = 0;
                     }
                 }
-                j = j + 1;
+                j_1 = j_1 + 1;
             }
-            if (done) {
-                return waiting;
+            if (done_1) {
+                return waiting_1;
             }
         }
-        return waiting;
     }
 
-    static int[] calculate_turn_around_times(int[] burst_times, int[] waiting_times) {
-        int[] result = ((int[])(new int[]{}));
-        int i_1 = 0;
-        while (i_1 < burst_times.length) {
-            result = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(result), java.util.stream.IntStream.of(burst_times[i_1] + waiting_times[i_1])).toArray()));
-            i_1 = i_1 + 1;
+    static long[] calculate_turn_around_times(long[] burst_times, long[] waiting_times) {
+        long[] result = ((long[])(new long[]{}));
+        long i_3 = 0;
+        while (i_3 < burst_times.length) {
+            result = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(result), java.util.stream.LongStream.of(burst_times[(int)(i_3)] + waiting_times[(int)(i_3)])).toArray()));
+            i_3 = i_3 + 1;
         }
         return result;
     }
 
-    static double mean(int[] values) {
-        int total = 0;
-        int i_2 = 0;
-        while (i_2 < values.length) {
-            total = total + values[i_2];
-            i_2 = i_2 + 1;
+    static double mean(long[] values) {
+        long total = 0;
+        long i_5 = 0;
+        while (i_5 < values.length) {
+            total = total + values[(int)(i_5)];
+            i_5 = i_5 + 1;
         }
         return (((Number)(total)).doubleValue()) / (((Number)(values.length)).doubleValue());
     }
 
     static String format_float_5(double x) {
-        int scaled = ((Number)(x * 100000.0 + 0.5)).intValue();
-        int int_part = Math.floorDiv(scaled, 100000);
-        int frac_part = Math.floorMod(scaled, 100000);
-        String frac_str = _p(frac_part);
-        while (_runeLen(frac_str) < 5) {
-            frac_str = "0" + frac_str;
+        long scaled = ((Number)(x * 100000.0 + 0.5)).intValue();
+        long int_part_1 = Math.floorDiv(scaled, 100000);
+        long frac_part_1 = Math.floorMod(scaled, 100000);
+        String frac_str_1 = _p(frac_part_1);
+        while (_runeLen(frac_str_1) < 5) {
+            frac_str_1 = "0" + frac_str_1;
         }
-        return _p(int_part) + "." + frac_str;
+        return _p(int_part_1) + "." + frac_str_1;
     }
 
     static void main() {
-        int[] burst_times = ((int[])(new int[]{3, 5, 7}));
-        int[] waiting_times = ((int[])(calculate_waiting_times(((int[])(burst_times)))));
-        int[] turn_around_times = ((int[])(calculate_turn_around_times(((int[])(burst_times)), ((int[])(waiting_times)))));
+        long[] burst_times = ((long[])(new long[]{3, 5, 7}));
+        long[] waiting_times_1 = ((long[])(calculate_waiting_times(((long[])(burst_times)))));
+        long[] turn_around_times_1 = ((long[])(calculate_turn_around_times(((long[])(burst_times)), ((long[])(waiting_times_1)))));
         System.out.println("Process ID \tBurst Time \tWaiting Time \tTurnaround Time");
-        int i_3 = 0;
-        while (i_3 < burst_times.length) {
-            String line = "  " + _p(i_3 + 1) + "\t\t  " + _p(_geti(burst_times, i_3)) + "\t\t  " + _p(_geti(waiting_times, i_3)) + "\t\t  " + _p(_geti(turn_around_times, i_3));
-            System.out.println(line);
-            i_3 = i_3 + 1;
+        long i_7 = 0;
+        while (i_7 < burst_times.length) {
+            String line_1 = "  " + _p(i_7 + 1) + "\t\t  " + _p(_geti(burst_times, i_7)) + "\t\t  " + _p(_geti(waiting_times_1, i_7)) + "\t\t  " + _p(_geti(turn_around_times_1, i_7));
+            System.out.println(line_1);
+            i_7 = i_7 + 1;
         }
         System.out.println("");
-        System.out.println("Average waiting time = " + String.valueOf(format_float_5(mean(((int[])(waiting_times))))));
-        System.out.println("Average turn around time = " + String.valueOf(format_float_5(mean(((int[])(turn_around_times))))));
+        System.out.println("Average waiting time = " + String.valueOf(format_float_5(mean(((long[])(waiting_times_1))))));
+        System.out.println("Average turn around time = " + String.valueOf(format_float_5(mean(((long[])(turn_around_times_1))))));
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static int _runeLen(String s) {
@@ -106,10 +139,15 @@ rem[j] = 0;
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
     }
 
-    static Integer _geti(int[] a, int i) {
-        return (i >= 0 && i < a.length) ? a[i] : null;
+    static Long _geti(long[] a, long i) {
+        return (i >= 0 && i < a.length) ? a[(int)i] : null;
     }
 }

@@ -1,4 +1,148 @@
-## Progress (2025-08-04 21:28 +0700)
+## Progress (2025-08-11 16:20 +0700)
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
+- c transpiler: handle nested list slices and init (d654e04ebb)
+
 - fix java transpiler string comparisons (1601cd716f)
 
 - fix java transpiler string comparisons (1601cd716f)
