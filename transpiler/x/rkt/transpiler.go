@@ -692,22 +692,30 @@ func convertIfExpr(n *parser.IfExpr, env *types.Env) (Expr, error) {
 	if n == nil || n.Else == nil && n.ElseIf == nil {
 		return nil, fmt.Errorf("unsupported if expression")
 	}
+	// each branch of an if expression should have its own scope so that
+	// variables declared in one branch do not leak into the others. This
+	// mirrors Mochi's scoping rules and prevents the transpiler from
+	// incorrectly treating a variable declared in one branch as already
+	// defined when processing another branch.
 	cond, err := convertExpr(n.Cond, env)
 	if err != nil {
 		return nil, err
 	}
-	thenExpr, err := convertExpr(n.Then, env)
+	// evaluate the "then" branch in a child environment to isolate any
+	// variable declarations
+	thenExpr, err := convertExpr(n.Then, types.NewEnv(env))
 	if err != nil {
 		return nil, err
 	}
 	var elseExpr Expr
 	if n.ElseIf != nil {
-		elseExpr, err = convertIfExpr(n.ElseIf, env)
+		// else-if branches also execute in their own scope
+		elseExpr, err = convertIfExpr(n.ElseIf, types.NewEnv(env))
 		if err != nil {
 			return nil, err
 		}
 	} else {
-		elseExpr, err = convertExpr(n.Else, env)
+		elseExpr, err = convertExpr(n.Else, types.NewEnv(env))
 		if err != nil {
 			return nil, err
 		}
@@ -2169,24 +2177,31 @@ func convertStatements(list []*parser.Statement, env *types.Env) ([]Stmt, error)
 }
 
 func convertIfStmt(n *parser.IfStmt, env *types.Env) (Stmt, error) {
+	// Similar to convertIfExpr, each branch of an if statement should be
+	// processed within its own lexical scope. Without doing so a variable
+	// declared in one branch could be considered pre-defined in another,
+	// leading the emitter to generate `set!` without a prior `define`.
+	// Creating child environments keeps branch-local variables isolated.
 	cond, err := convertExpr(n.Cond, env)
 	if err != nil {
 		return nil, err
 	}
-	thenStmts, err := convertStatements(n.Then, env)
+	thenEnv := types.NewEnv(env)
+	thenStmts, err := convertStatements(n.Then, thenEnv)
 	if err != nil {
 		return nil, err
 	}
 	var elseStmts []Stmt
 	switch {
 	case n.ElseIf != nil:
-		s, err := convertIfStmt(n.ElseIf, env)
+		s, err := convertIfStmt(n.ElseIf, types.NewEnv(env))
 		if err != nil {
 			return nil, err
 		}
 		elseStmts = []Stmt{s}
 	case len(n.Else) > 0:
-		elseStmts, err = convertStatements(n.Else, env)
+		elseEnv := types.NewEnv(env)
+		elseStmts, err = convertStatements(n.Else, elseEnv)
 		if err != nil {
 			return nil, err
 		}
