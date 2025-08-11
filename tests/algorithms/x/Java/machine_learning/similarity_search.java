@@ -15,121 +15,87 @@ public class Main {
     static double[][] dataset;
     static double[][] value_array;
     static Neighbor[] neighbors;
-    static int k = 0;
+    static long k = 0;
 
     static double sqrt(double x) {
         if (x <= 0.0) {
             return 0.0;
         }
-        double guess = x;
-        int i = 0;
-        while (i < 10) {
-            guess = (guess + x / guess) / 2.0;
-            i = i + 1;
+        double guess_1 = x;
+        long i_1 = 0;
+        while (i_1 < 10) {
+            guess_1 = (guess_1 + x / guess_1) / 2.0;
+            i_1 = i_1 + 1;
         }
-        return guess;
+        return guess_1;
     }
 
     static double euclidean(double[] a, double[] b) {
         double sum = 0.0;
-        int i_1 = 0;
-        while (i_1 < a.length) {
-            double diff = a[i_1] - b[i_1];
-            sum = sum + diff * diff;
-            i_1 = i_1 + 1;
+        long i_3 = 0;
+        while (i_3 < a.length) {
+            double diff_1 = a[(int)(i_3)] - b[(int)(i_3)];
+            sum = sum + diff_1 * diff_1;
+            i_3 = i_3 + 1;
         }
-        double res = sqrt(sum);
-        return res;
+        double res_1 = sqrt(sum);
+        return res_1;
     }
 
     static Neighbor[] similarity_search(double[][] dataset, double[][] value_array) {
-        int dim = dataset[0].length;
-        if (dim != value_array[0].length) {
+        long dim = dataset[(int)(0)].length;
+        if (dim != value_array[(int)(0)].length) {
             return new Neighbor[]{};
         }
-        Neighbor[] result = ((Neighbor[])(new Neighbor[]{}));
-        int i_2 = 0;
-        while (i_2 < value_array.length) {
-            double[] value = ((double[])(value_array[i_2]));
-            double dist = euclidean(((double[])(value)), ((double[])(dataset[0])));
-            double[] vec = ((double[])(dataset[0]));
-            int j = 1;
-            while (j < dataset.length) {
-                double d = euclidean(((double[])(value)), ((double[])(dataset[j])));
-                if (d < dist) {
-                    dist = d;
-                    vec = ((double[])(dataset[j]));
+        Neighbor[] result_1 = ((Neighbor[])(new Neighbor[]{}));
+        long i_5 = 0;
+        while (i_5 < value_array.length) {
+            double[] value_1 = ((double[])(value_array[(int)(i_5)]));
+            double dist_1 = euclidean(((double[])(value_1)), ((double[])(dataset[(int)(0)])));
+            double[] vec_1 = ((double[])(dataset[(int)(0)]));
+            long j_1 = 1;
+            while (j_1 < dataset.length) {
+                double d_1 = euclidean(((double[])(value_1)), ((double[])(dataset[(int)(j_1)])));
+                if (d_1 < dist_1) {
+                    dist_1 = d_1;
+                    vec_1 = ((double[])(dataset[(int)(j_1)]));
                 }
-                j = j + 1;
+                j_1 = j_1 + 1;
             }
-            Neighbor nb = new Neighbor(vec, dist);
-            result = ((Neighbor[])(java.util.stream.Stream.concat(java.util.Arrays.stream(result), java.util.stream.Stream.of(nb)).toArray(Neighbor[]::new)));
-            i_2 = i_2 + 1;
+            Neighbor nb_1 = new Neighbor(vec_1, dist_1);
+            result_1 = ((Neighbor[])(java.util.stream.Stream.concat(java.util.Arrays.stream(result_1), java.util.stream.Stream.of(nb_1)).toArray(Neighbor[]::new)));
+            i_5 = i_5 + 1;
         }
-        return result;
+        return result_1;
     }
 
     static double cosine_similarity(double[] a, double[] b) {
         double dot = 0.0;
-        double norm_a = 0.0;
-        double norm_b = 0.0;
-        int i_3 = 0;
-        while (i_3 < a.length) {
-            dot = dot + a[i_3] * b[i_3];
-            norm_a = norm_a + a[i_3] * a[i_3];
-            norm_b = norm_b + b[i_3] * b[i_3];
-            i_3 = i_3 + 1;
+        double norm_a_1 = 0.0;
+        double norm_b_1 = 0.0;
+        long i_7 = 0;
+        while (i_7 < a.length) {
+            dot = dot + a[(int)(i_7)] * b[(int)(i_7)];
+            norm_a_1 = norm_a_1 + a[(int)(i_7)] * a[(int)(i_7)];
+            norm_b_1 = norm_b_1 + b[(int)(i_7)] * b[(int)(i_7)];
+            i_7 = i_7 + 1;
         }
-        if (norm_a == 0.0 || norm_b == 0.0) {
+        if (norm_a_1 == 0.0 || norm_b_1 == 0.0) {
             return 0.0;
         }
-        return dot / (sqrt(norm_a) * sqrt(norm_b));
+        return dot / (sqrt(norm_a_1) * sqrt(norm_b_1));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            dataset = ((double[][])(new double[][]{new double[]{0.0, 0.0, 0.0}, new double[]{1.0, 1.0, 1.0}, new double[]{2.0, 2.0, 2.0}}));
-            value_array = ((double[][])(new double[][]{new double[]{0.0, 0.0, 0.0}, new double[]{0.0, 0.0, 1.0}}));
-            neighbors = ((Neighbor[])(similarity_search(((double[][])(dataset)), ((double[][])(value_array)))));
-            k = 0;
-            while (k < neighbors.length) {
-                Neighbor n = neighbors[k];
-                System.out.println("[" + _p(n.vector) + ", " + _p(n.distance) + "]");
-                k = k + 1;
-            }
-            System.out.println(_p(cosine_similarity(((double[])(new double[]{1.0, 2.0})), ((double[])(new double[]{6.0, 32.0})))));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
+        dataset = ((double[][])(new double[][]{new double[]{0.0, 0.0, 0.0}, new double[]{1.0, 1.0, 1.0}, new double[]{2.0, 2.0, 2.0}}));
+        value_array = ((double[][])(new double[][]{new double[]{0.0, 0.0, 0.0}, new double[]{0.0, 0.0, 1.0}}));
+        neighbors = ((Neighbor[])(similarity_search(((double[][])(dataset)), ((double[][])(value_array)))));
+        k = 0;
+        while (k < neighbors.length) {
+            Neighbor n = neighbors[(int)(k)];
+            System.out.println("[" + _p(n.vector) + ", " + _p(n.distance) + "]");
+            k = k + 1;
         }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println(_p(cosine_similarity(((double[])(new double[]{1.0, 2.0})), ((double[])(new double[]{6.0, 32.0})))));
     }
 
     static String _p(Object v) {
@@ -144,6 +110,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

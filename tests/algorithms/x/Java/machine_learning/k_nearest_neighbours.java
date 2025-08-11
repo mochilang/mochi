@@ -1,8 +1,8 @@
 public class Main {
     static class PointLabel {
         double[] point;
-        int label;
-        PointLabel(double[] point, int label) {
+        long label;
+        PointLabel(double[] point, long label) {
             this.point = point;
             this.label = label;
         }
@@ -27,8 +27,8 @@ public class Main {
 
     static class DistLabel {
         double dist;
-        int label;
-        DistLabel(double dist, int label) {
+        long label;
+        DistLabel(double dist, long label) {
             this.dist = dist;
             this.label = label;
         }
@@ -39,7 +39,7 @@ public class Main {
     }
 
     static double[][] train_X;
-    static int[] train_y;
+    static long[] train_y;
     static String[] classes;
     static KNN knn;
     static double[] point;
@@ -48,122 +48,88 @@ public class Main {
         if (x <= 0.0) {
             return 0.0;
         }
-        double guess = x;
-        int i = 0;
-        while (i < 20) {
-            guess = (guess + x / guess) / 2.0;
-            i = i + 1;
+        double guess_1 = x;
+        long i_1 = 0;
+        while (i_1 < 20) {
+            guess_1 = (guess_1 + x / guess_1) / 2.0;
+            i_1 = i_1 + 1;
         }
-        return guess;
+        return guess_1;
     }
 
-    static KNN make_knn(double[][] train_data, int[] train_target, String[] class_labels) {
+    static KNN make_knn(double[][] train_data, long[] train_target, String[] class_labels) {
         PointLabel[] items = ((PointLabel[])(new PointLabel[]{}));
-        int i_1 = 0;
-        while (i_1 < train_data.length) {
-            PointLabel pl = new PointLabel(train_data[i_1], train_target[i_1]);
-            items = ((PointLabel[])(java.util.stream.Stream.concat(java.util.Arrays.stream(items), java.util.stream.Stream.of(pl)).toArray(PointLabel[]::new)));
-            i_1 = i_1 + 1;
+        long i_3 = 0;
+        while (i_3 < train_data.length) {
+            PointLabel pl_1 = new PointLabel(train_data[(int)(i_3)], train_target[(int)(i_3)]);
+            items = ((PointLabel[])(java.util.stream.Stream.concat(java.util.Arrays.stream(items), java.util.stream.Stream.of(pl_1)).toArray(PointLabel[]::new)));
+            i_3 = i_3 + 1;
         }
         return new KNN(items, class_labels);
     }
 
     static double euclidean_distance(double[] a, double[] b) {
         double sum = 0.0;
-        int i_2 = 0;
-        while (i_2 < a.length) {
-            double diff = a[i_2] - b[i_2];
-            sum = sum + diff * diff;
-            i_2 = i_2 + 1;
+        long i_5 = 0;
+        while (i_5 < a.length) {
+            double diff_1 = a[(int)(i_5)] - b[(int)(i_5)];
+            sum = sum + diff_1 * diff_1;
+            i_5 = i_5 + 1;
         }
         return sqrtApprox(sum);
     }
 
-    static String classify(KNN knn, double[] pred_point, int k) {
+    static String classify(KNN knn, double[] pred_point, long k) {
         DistLabel[] distances = ((DistLabel[])(new DistLabel[]{}));
-        int i_3 = 0;
-        while (i_3 < knn.data.length) {
-            double d = euclidean_distance(((double[])(knn.data[i_3].point)), ((double[])(pred_point)));
-            distances = ((DistLabel[])(java.util.stream.Stream.concat(java.util.Arrays.stream(distances), java.util.stream.Stream.of(new DistLabel(d, knn.data[i_3].label))).toArray(DistLabel[]::new)));
-            i_3 = i_3 + 1;
+        long i_7 = 0;
+        while (i_7 < knn.data.length) {
+            double d_1 = euclidean_distance(((double[])(knn.data[(int)(i_7)].point)), ((double[])(pred_point)));
+            distances = ((DistLabel[])(java.util.stream.Stream.concat(java.util.Arrays.stream(distances), java.util.stream.Stream.of(new DistLabel(d_1, knn.data[(int)(i_7)].label))).toArray(DistLabel[]::new)));
+            i_7 = i_7 + 1;
         }
-        int[] votes = ((int[])(new int[]{}));
-        int count = 0;
-        while (count < k) {
-            int min_index = 0;
-            int j = 1;
-            while (j < distances.length) {
-                if (distances[j].dist < distances[min_index].dist) {
-                    min_index = j;
+        long[] votes_1 = ((long[])(new long[]{}));
+        long count_1 = 0;
+        while (count_1 < k) {
+            long min_index_1 = 0;
+            long j_1 = 1;
+            while (j_1 < distances.length) {
+                if (distances[(int)(j_1)].dist < distances[(int)(min_index_1)].dist) {
+                    min_index_1 = j_1;
                 }
-                j = j + 1;
+                j_1 = j_1 + 1;
             }
-            votes = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(votes), java.util.stream.IntStream.of(distances[min_index].label)).toArray()));
-            e18;
-            count = count + 1;
+            votes_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(votes_1), java.util.stream.LongStream.of(distances[(int)(min_index_1)].label)).toArray()));
+distances[(int)(min_index_1)].dist = 1000000000000000000.0;
+            count_1 = count_1 + 1;
         }
-        int[] tally = ((int[])(new int[]{}));
-        int t = 0;
-        while (t < knn.labels.length) {
-            tally = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(tally), java.util.stream.IntStream.of(0)).toArray()));
-            t = t + 1;
+        long[] tally_1 = ((long[])(new long[]{}));
+        long t_1 = 0;
+        while (t_1 < knn.labels.length) {
+            tally_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(tally_1), java.util.stream.LongStream.of(0)).toArray()));
+            t_1 = t_1 + 1;
         }
-        int v = 0;
-        while (v < votes.length) {
-            int lbl = votes[v];
-tally[lbl] = tally[lbl] + 1;
-            v = v + 1;
+        long v_1 = 0;
+        while (v_1 < votes_1.length) {
+            long lbl_1 = votes_1[(int)(v_1)];
+tally_1[(int)(lbl_1)] = tally_1[(int)(lbl_1)] + 1;
+            v_1 = v_1 + 1;
         }
-        int max_idx = 0;
-        int m = 1;
-        while (m < tally.length) {
-            if (tally[m] > tally[max_idx]) {
-                max_idx = m;
+        long max_idx_1 = 0;
+        long m_1 = 1;
+        while (m_1 < tally_1.length) {
+            if (tally_1[(int)(m_1)] > tally_1[(int)(max_idx_1)]) {
+                max_idx_1 = m_1;
             }
-            m = m + 1;
+            m_1 = m_1 + 1;
         }
-        return knn.labels[max_idx];
+        return knn.labels[(int)(max_idx_1)];
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            train_X = ((double[][])(new double[][]{new double[]{0.0, 0.0}, new double[]{1.0, 0.0}, new double[]{0.0, 1.0}, new double[]{0.5, 0.5}, new double[]{3.0, 3.0}, new double[]{2.0, 3.0}, new double[]{3.0, 2.0}}));
-            train_y = ((int[])(new int[]{0, 0, 0, 0, 1, 1, 1}));
-            classes = ((String[])(new String[]{"A", "B"}));
-            knn = make_knn(((double[][])(train_X)), ((int[])(train_y)), ((String[])(classes)));
-            point = ((double[])(new double[]{1.2, 1.2}));
-            System.out.println(classify(knn, ((double[])(point)), 5));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        train_X = ((double[][])(new double[][]{new double[]{0.0, 0.0}, new double[]{1.0, 0.0}, new double[]{0.0, 1.0}, new double[]{0.5, 0.5}, new double[]{3.0, 3.0}, new double[]{2.0, 3.0}, new double[]{3.0, 2.0}}));
+        train_y = ((long[])(new long[]{0, 0, 0, 0, 1, 1, 1}));
+        classes = ((String[])(new String[]{"A", "B"}));
+        knn = make_knn(((double[][])(train_X)), ((long[])(train_y)), ((String[])(classes)));
+        point = ((double[])(new double[]{1.2, 1.2}));
+        System.out.println(classify(knn, ((double[])(point)), 5));
     }
 }

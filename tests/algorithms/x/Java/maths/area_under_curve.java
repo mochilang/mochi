@@ -1,5 +1,5 @@
 public class Main {
-    static int i_1 = 0;
+    static long i_2 = 0;
 
     static double abs_float(double x) {
         if (x < 0.0) {
@@ -9,69 +9,35 @@ public class Main {
         }
     }
 
-    static double trapezoidal_area(java.util.function.Function<Double,Double> f, double x_start, double x_end, int steps) {
+    static double trapezoidal_area(java.util.function.Function<Double,Double> f, double x_start, double x_end, long steps) {
         double step = (x_end - x_start) / (((Number)(steps)).doubleValue());
-        double x1 = x_start;
-        double fx1 = f.apply(x_start);
-        double area = 0.0;
-        int i = 0;
-        while (i < steps) {
-            double x2 = x1 + step;
-            double fx2 = f.apply(x2);
-            area = area + abs_float(fx2 + fx1) * step / 2.0;
-            x1 = x2;
-            fx1 = fx2;
-            i = i + 1;
+        double x1_1 = x_start;
+        double fx1_1 = f.apply(x_start);
+        double area_1 = 0.0;
+        long i_1 = 0;
+        while (i_1 < steps) {
+            double x2_1 = x1_1 + step;
+            double fx2_1 = f.apply(x2_1);
+            area_1 = area_1 + abs_float(fx2_1 + fx1_1) * step / 2.0;
+            x1_1 = x2_1;
+            fx1_1 = fx2_1;
+            i_1 = i_1 + 1;
         }
-        return area;
+        return area_1;
     }
 
     static double f(double x) {
         return x * x * x + x * x;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println("f(x) = x^3 + x^2");
-            System.out.println("The area between the curve, x = -5, x = 5 and the x axis is:");
-            i_1 = 10;
-            while (i_1 <= 100000) {
-                double result = trapezoidal_area(Main::f, -5.0, 5.0, i_1);
-                System.out.println("with " + _p(i_1) + " steps: " + _p(result));
-                i_1 = i_1 * 10;
-            }
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
+        System.out.println("f(x) = x^3 + x^2");
+        System.out.println("The area between the curve, x = -5, x = 5 and the x axis is:");
+        i_2 = 10;
+        while (i_2 <= 100000) {
+            double result = trapezoidal_area(Main::f, -5.0, 5.0, i_2);
+            System.out.println("with " + _p(i_2) + " steps: " + _p(result));
+            i_2 = i_2 * 10;
         }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {
@@ -86,6 +52,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

@@ -1,20 +1,16 @@
 compile: exit status 1
-/tmp/TestJavaTranspiler_Algorithms_Golden503_run257550031/001/Main.java:156: error: method appendObj in class Main cannot be applied to given types;
-            X = appendObj(X, new double[]{1.0, train_dt[i_8], train_mtch[i_8]});
-                ^
-  required: T[],T
-  found:    Object,double[]
-  reason: cannot infer type-variable(s) T
-    (argument mismatch; Object cannot be converted to T[])
-  where T is a type-variable:
-    T extends Object declared in method <T>appendObj(T[],T)
-/tmp/TestJavaTranspiler_Algorithms_Golden503_run257550031/001/Main.java:169: error: method appendObj in class Main cannot be applied to given types;
-            X_1 = appendObj(X_1, new double[]{1.0, train_user[i_9 - 1], train_match[i_9]});
-                  ^
-  required: T[],T
-  found:    Object,double[]
-  reason: cannot infer type-variable(s) T
-    (argument mismatch; Object cannot be converted to T[])
-  where T is a type-variable:
-    T extends Object declared in method <T>appendObj(T[],T)
+/tmp/TestJavaTranspiler_Algorithms_Golden503_run835963613/001/Main.java:156: error: incompatible types: inference variable A has incompatible bounds
+            X = java.util.stream.Stream.concat(java.util.Arrays.stream(X), java.util.stream.Stream.of(new Object[]{1.0, train_dt[(int)(i_16)], train_mtch[(int)(i_16)]})).toArray(Object[][]::new);
+                                                                                                                                                                                 ^
+    upper bounds: double[],Object
+    lower bounds: Object[]
+  where A is a type-variable:
+    A extends Object declared in method <A>toArray(IntFunction<A[]>)
+/tmp/TestJavaTranspiler_Algorithms_Golden503_run835963613/001/Main.java:169: error: incompatible types: inference variable A has incompatible bounds
+            X_2 = java.util.stream.Stream.concat(java.util.Arrays.stream(X_2), java.util.stream.Stream.of(new Object[]{1.0, train_user[(int)(i_18 - 1)], train_match[(int)(i_18)]})).toArray(Object[][]::new);
+                                                                                                                                                                                            ^
+    upper bounds: double[],Object
+    lower bounds: Object[]
+  where A is a type-variable:
+    A extends Object declared in method <A>toArray(IntFunction<A[]>)
 2 errors

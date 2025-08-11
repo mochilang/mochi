@@ -4,8 +4,8 @@ public class Main {
         double bias;
         double lr;
         double lambda;
-        int epochs;
-        SVC(double[] weights, double bias, double lr, double lambda, int epochs) {
+        long epochs;
+        SVC(double[] weights, double bias, double lr, double lambda, long epochs) {
             this.weights = weights;
             this.bias = bias;
             this.lr = lr;
@@ -19,62 +19,62 @@ public class Main {
     }
 
     static double[][] xs;
-    static int[] ys;
+    static long[] ys;
     static SVC base;
     static SVC model;
 
     static double dot(double[] a, double[] b) {
         double s = 0.0;
-        int i = 0;
-        while (i < a.length) {
-            s = s + a[i] * b[i];
-            i = i + 1;
+        long i_1 = 0;
+        while (i_1 < a.length) {
+            s = s + a[(int)(i_1)] * b[(int)(i_1)];
+            i_1 = i_1 + 1;
         }
         return s;
     }
 
-    static SVC new_svc(double lr, double lambda, int epochs) {
+    static SVC new_svc(double lr, double lambda, long epochs) {
         return new SVC(new double[]{}, 0.0, lr, lambda, epochs);
     }
 
-    static SVC fit(SVC model, double[][] xs, int[] ys) {
-        int n_features = xs[0].length;
-        double[] w = ((double[])(new double[]{}));
-        int i_1 = 0;
-        while (i_1 < n_features) {
-            w = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(w), java.util.stream.DoubleStream.of(0.0)).toArray()));
-            i_1 = i_1 + 1;
+    static SVC fit(SVC model, double[][] xs, long[] ys) {
+        long n_features = xs[(int)(0)].length;
+        double[] w_1 = ((double[])(new double[]{}));
+        long i_3 = 0;
+        while (i_3 < n_features) {
+            w_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(w_1), java.util.stream.DoubleStream.of(0.0)).toArray()));
+            i_3 = i_3 + 1;
         }
-        double b = 0.0;
-        int epoch = 0;
-        while (epoch < model.epochs) {
-            int j = 0;
-            while (j < xs.length) {
-                double[] x = ((double[])(xs[j]));
-                double y = ((double)(ys[j]));
-                double prod = dot(((double[])(w)), ((double[])(x))) + b;
-                if (y * prod < 1.0) {
-                    int k = 0;
-                    while (k < w.length) {
-w[k] = w[k] + model.lr * (y * x[k] - 2.0 * model.lambda * w[k]);
-                        k = k + 1;
+        double b_1 = 0.0;
+        long epoch_1 = 0;
+        while (epoch_1 < model.epochs) {
+            long j_1 = 0;
+            while (j_1 < xs.length) {
+                double[] x_1 = ((double[])(xs[(int)(j_1)]));
+                double y_1 = ((double)(ys[(int)(j_1)]));
+                double prod_1 = dot(((double[])(w_1)), ((double[])(x_1))) + b_1;
+                if (y_1 * prod_1 < 1.0) {
+                    long k_2 = 0;
+                    while (k_2 < w_1.length) {
+w_1[(int)(k_2)] = w_1[(int)(k_2)] + model.lr * (y_1 * x_1[(int)(k_2)] - 2.0 * model.lambda * w_1[(int)(k_2)]);
+                        k_2 = k_2 + 1;
                     }
-                    b = b + model.lr * y;
+                    b_1 = b_1 + model.lr * y_1;
                 } else {
-                    int k_1 = 0;
-                    while (k_1 < w.length) {
-w[k_1] = w[k_1] - model.lr * (2.0 * model.lambda * w[k_1]);
-                        k_1 = k_1 + 1;
+                    long k_3 = 0;
+                    while (k_3 < w_1.length) {
+w_1[(int)(k_3)] = w_1[(int)(k_3)] - model.lr * (2.0 * model.lambda * w_1[(int)(k_3)]);
+                        k_3 = k_3 + 1;
                     }
                 }
-                j = j + 1;
+                j_1 = j_1 + 1;
             }
-            epoch = epoch + 1;
+            epoch_1 = epoch_1 + 1;
         }
-        return new SVC(w, b, model.lr, model.lambda, model.epochs);
+        return new SVC(w_1, b_1, model.lr, model.lambda, model.epochs);
     }
 
-    static int predict(SVC model, double[] x) {
+    static long predict(SVC model, double[] x) {
         double s_1 = dot(((double[])(model.weights)), ((double[])(x))) + model.bias;
         if (s_1 >= 0.0) {
             return 1;
@@ -83,46 +83,12 @@ w[k_1] = w[k_1] - model.lr * (2.0 * model.lambda * w[k_1]);
         }
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            xs = ((double[][])(new double[][]{new double[]{0.0, 1.0}, new double[]{0.0, 2.0}, new double[]{1.0, 1.0}, new double[]{1.0, 2.0}}));
-            ys = ((int[])(new int[]{1, 1, -1, -1}));
-            base = new_svc(0.01, 0.01, 1000);
-            model = fit(base, ((double[][])(xs)), ((int[])(ys)));
-            System.out.println(predict(model, ((double[])(new double[]{0.0, 1.0}))));
-            System.out.println(predict(model, ((double[])(new double[]{1.0, 1.0}))));
-            System.out.println(predict(model, ((double[])(new double[]{2.0, 2.0}))));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        xs = ((double[][])(new double[][]{new double[]{0.0, 1.0}, new double[]{0.0, 2.0}, new double[]{1.0, 1.0}, new double[]{1.0, 2.0}}));
+        ys = ((long[])(new long[]{1, 1, -1, -1}));
+        base = new_svc(0.01, 0.01, 1000);
+        model = fit(base, ((double[][])(xs)), ((long[])(ys)));
+        System.out.println(predict(model, ((double[])(new double[]{0.0, 1.0}))));
+        System.out.println(predict(model, ((double[])(new double[]{1.0, 1.0}))));
+        System.out.println(predict(model, ((double[])(new double[]{2.0, 2.0}))));
     }
 }

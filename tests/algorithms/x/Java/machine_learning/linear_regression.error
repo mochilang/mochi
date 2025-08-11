@@ -1,6 +1,0 @@
-compile: exit status 1
-/tmp/TestJavaTranspiler_Algorithms_Golden510_linear_regression3263916300/001/Main.java:108: error: incompatible types: double[] cannot be converted to Object[]
-                System.out.println(_p(_geto(theta_1, i_5)));
-                                            ^
-Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
-1 error

@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-11 18:15 GMT+7
+Last updated: 2025-08-11 18:44 GMT+7
 
-## Algorithms Golden Test Checklist (924/1077)
+## Algorithms Golden Test Checklist (927/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -506,56 +506,56 @@ Last updated: 2025-08-11 18:15 GMT+7
 | 497 | machine_learning/apriori_algorithm | error |  |  |
 | 498 | machine_learning/astar | ✓ | 42.0ms | 108.06KB |
 | 499 | machine_learning/automatic_differentiation | ✓ | 16.0ms | 10.79KB |
-| 500 | machine_learning/data_transformations | ✓ | 56.0ms | 60.93KB |
-| 501 | machine_learning/decision_tree | ✓ | 54.0ms | 65.70KB |
+| 500 | machine_learning/data_transformations | ✓ | 31.0ms | 60.93KB |
+| 501 | machine_learning/decision_tree | ✓ | 64.0ms | 65.70KB |
 | 502 | machine_learning/dimensionality_reduction | ✓ | 14.0ms | 504B |
 | 503 | machine_learning/forecasting/run | error |  |  |
 | 504 | machine_learning/frequent_pattern_growth | error |  |  |
-| 505 | machine_learning/gradient_boosting_classifier | ✓ | 28.0ms | 66.78KB |
-| 506 | machine_learning/gradient_descent | ✓ | 67.0ms | 66.72KB |
-| 507 | machine_learning/k_means_clust | ✓ | 28.0ms | 59.73KB |
-| 508 | machine_learning/k_nearest_neighbours | error |  |  |
-| 509 | machine_learning/linear_discriminant_analysis | ✓ | 39.0ms | 58.99KB |
-| 510 | machine_learning/linear_regression | error |  |  |
-| 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 28.0ms | 57.42KB |
-| 512 | machine_learning/logistic_regression | ✓ | 39.0ms | 57.66KB |
-| 513 | machine_learning/loss_functions | ✓ | 28.0ms | 57.16KB |
-| 514 | machine_learning/lstm/lstm_prediction | ✓ | 60.0ms | 66.41KB |
-| 515 | machine_learning/mfcc | ✓ | 33.0ms | 56.99KB |
-| 516 | machine_learning/multilayer_perceptron_classifier | ✓ | 39.0ms | 46.88KB |
-| 517 | machine_learning/polynomial_regression | ✓ | 28.0ms | 140.21KB |
+| 505 | machine_learning/gradient_boosting_classifier | ✓ | 35.0ms | 57.11KB |
+| 506 | machine_learning/gradient_descent | ✓ | 68.0ms | 67.02KB |
+| 507 | machine_learning/k_means_clust | ✓ | 33.0ms | 60.48KB |
+| 508 | machine_learning/k_nearest_neighbours | ✓ | 44.0ms | 50.75KB |
+| 509 | machine_learning/linear_discriminant_analysis | ✓ | 35.0ms | 59.73KB |
+| 510 | machine_learning/linear_regression | ✓ | 43.0ms | 106.14KB |
+| 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 30.0ms | 57.42KB |
+| 512 | machine_learning/logistic_regression | ✓ | 48.0ms | 57.66KB |
+| 513 | machine_learning/loss_functions | error | 28.0ms | 57.16KB |
+| 514 | machine_learning/lstm/lstm_prediction | ✓ | 65.0ms | 66.59KB |
+| 515 | machine_learning/mfcc | ✓ | 30.0ms | 57.09KB |
+| 516 | machine_learning/multilayer_perceptron_classifier | ✓ | 48.0ms | 47.62KB |
+| 517 | machine_learning/polynomial_regression | ✓ | 28.0ms | 58.27KB |
 | 518 | machine_learning/principle_component_analysis | error |  |  |
-| 519 | machine_learning/scoring_functions | ✓ | 17.0ms | 10.45KB |
-| 520 | machine_learning/self_organizing_map | error |  |  |
-| 521 | machine_learning/sequential_minimum_optimization | ✓ | 25.0ms | 57.23KB |
-| 522 | machine_learning/similarity_search | ✓ | 37.0ms | 102.80KB |
-| 523 | machine_learning/support_vector_machines | ✓ | 25.0ms | 47.66KB |
-| 524 | machine_learning/word_frequency_functions | ✓ | 27.0ms | 60.85KB |
+| 519 | machine_learning/scoring_functions | ✓ | 15.0ms | 10.55KB |
+| 520 | machine_learning/self_organizing_map | ✓ | 28.0ms | 50.16KB |
+| 521 | machine_learning/sequential_minimum_optimization | ✓ | 30.0ms | 57.23KB |
+| 522 | machine_learning/similarity_search | ✓ | 39.0ms | 103.01KB |
+| 523 | machine_learning/support_vector_machines | ✓ | 30.0ms | 47.68KB |
+| 524 | machine_learning/word_frequency_functions | ✓ | 35.0ms | 60.85KB |
 | 525 | machine_learning/xgboost_classifier | error |  |  |
-| 526 | machine_learning/xgboost_regressor | ✓ | 33.0ms | 58.98KB |
-| 527 | maths/abs | ✓ | 27.0ms | 55.85KB |
-| 528 | maths/addition_without_arithmetic | error |  |  |
-| 529 | maths/aliquot_sum | ✓ | 13.0ms | 768B |
-| 530 | maths/allocation_number | ✓ | 37.0ms | 92.06KB |
-| 531 | maths/arc_length | ✓ | 16.0ms | 10.45KB |
-| 532 | maths/area | ✓ | 26.0ms | 51.63KB |
-| 533 | maths/area_under_curve | ✓ | 66.0ms | 98.15KB |
-| 534 | maths/average_absolute_deviation | ✓ | 17.0ms | 10.45KB |
-| 535 | maths/average_mean | ✓ | 16.0ms | 10.45KB |
-| 536 | maths/average_median | ✓ | 17.0ms | 10.55KB |
-| 537 | maths/average_mode | ✓ | 28.0ms | 47.50KB |
-| 538 | maths/bailey_borwein_plouffe | ✓ | 284.0ms | 33.55KB |
+| 526 | machine_learning/xgboost_regressor | ✓ | 27.0ms | 58.98KB |
+| 527 | maths/abs | ✓ | 29.0ms | 56.59KB |
+| 528 | maths/addition_without_arithmetic | ✓ | 15.0ms | 968B |
+| 529 | maths/aliquot_sum | ✓ | 17.0ms | 968B |
+| 530 | maths/allocation_number | ✓ | 45.0ms | 92.36KB |
+| 531 | maths/arc_length | ✓ | 14.0ms | 10.66KB |
+| 532 | maths/area | ✓ | 33.0ms | 51.73KB |
+| 533 | maths/area_under_curve | ✓ | 66.0ms | 98.35KB |
+| 534 | maths/average_absolute_deviation | ✓ | 17.0ms | 10.55KB |
+| 535 | maths/average_mean | ✓ | 19.0ms | 10.55KB |
+| 536 | maths/average_median | ✓ | 15.0ms | 10.55KB |
+| 537 | maths/average_mode | ✓ | 40.0ms | 48.23KB |
+| 538 | maths/bailey_borwein_plouffe | ✓ | 292.0ms | 33.66KB |
 | 539 | maths/base_neg2_conversion | error |  |  |
-| 540 | maths/basic_maths | ✓ | 27.0ms | 46.46KB |
-| 541 | maths/binary_exponentiation | ✓ | 17.0ms | 10.35KB |
-| 542 | maths/binary_multiplication | ✓ | 13.0ms | 656B |
-| 543 | maths/binomial_coefficient | ✓ | 27.0ms | 46.25KB |
-| 544 | maths/binomial_distribution | ✓ | 13.0ms | 0B |
+| 540 | maths/basic_maths | ✓ | 31.0ms | 47.29KB |
+| 541 | maths/binary_exponentiation | ✓ | 15.0ms | 10.35KB |
+| 542 | maths/binary_multiplication | ✓ | 18.0ms | 864B |
+| 543 | maths/binomial_coefficient | ✓ | 30.0ms | 47.18KB |
+| 544 | maths/binomial_distribution | ✓ | 14.0ms | 0B |
 | 545 | maths/ceil | ✓ | 16.0ms | 536B |
-| 546 | maths/chebyshev_distance | ✓ | 16.0ms | 10.35KB |
-| 547 | maths/check_polygon | ✓ | 23.0ms | 10.59KB |
-| 548 | maths/chinese_remainder_theorem | ✓ | 38.0ms | 78.34KB |
-| 549 | maths/chudnovsky_algorithm | ✓ | 33.0ms | 87.43KB |
+| 546 | maths/chebyshev_distance | ✓ | 17.0ms | 10.35KB |
+| 547 | maths/check_polygon | ✓ | 16.0ms | 10.80KB |
+| 548 | maths/chinese_remainder_theorem | ✓ | 35.0ms | 78.55KB |
+| 549 | maths/chudnovsky_algorithm | ✓ | 39.0ms | 87.63KB |
 | 550 | maths/collatz_sequence | ✓ | 36.0ms | 93.04KB |
 | 551 | maths/combinations | ✓ | 30.0ms | 72.49KB |
 | 552 | maths/continued_fraction | ✓ | 29.0ms | 55.70KB |

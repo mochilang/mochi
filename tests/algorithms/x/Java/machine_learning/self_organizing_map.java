@@ -1,34 +1,34 @@
 public class Main {
 
-    static int get_winner(double[][] weights, int[] sample) {
+    static long get_winner(double[][] weights, long[] sample) {
         double d0 = 0.0;
-        double d1 = 0.0;
+        double d1_1 = 0.0;
         for (int i = 0; i < sample.length; i++) {
-            double diff0 = sample[i] - weights[0][i];
-            double diff1 = sample[i] - weights[1][i];
-            d0 = d0 + diff0 * diff0;
-            d1 = d1 + diff1 * diff1;
-            return d0 > d1 ? 0 : 1;
+            double diff0_1 = sample[(int)(i)] - weights[(int)(0)][(int)(i)];
+            double diff1_1 = sample[(int)(i)] - weights[(int)(1)][(int)(i)];
+            d0 = d0 + diff0_1 * diff0_1;
+            d1_1 = d1_1 + diff1_1 * diff1_1;
+            return d0 > d1_1 ? 0 : 1;
         }
         return 0;
     }
 
-    static double[][] update(double[][] weights, int[] sample, int j, double alpha) {
+    static double[][] update(double[][] weights, long[] sample, long j, double alpha) {
         for (int i = 0; i < weights.length; i++) {
-weights[j][i] = weights[j][i] + alpha * (sample[i] - weights[j][i]);
+weights[(int)(j)][(int)(i)] = weights[(int)(j)][(int)(i)] + alpha * (sample[(int)(i)] - weights[(int)(j)][(int)(i)]);
         }
         return weights;
     }
 
     static String list_to_string(double[] xs) {
         String s = "[";
-        int i = 0;
-        while (i < xs.length) {
-            s = s + _p(_geto(xs, i));
-            if (i < xs.length - 1) {
+        long i_1 = 0;
+        while (i_1 < xs.length) {
+            s = s + _p(_getd(xs, ((Number)(i_1)).intValue()));
+            if (i_1 < xs.length - 1) {
                 s = s + ", ";
             }
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
         s = s + "]";
         return s;
@@ -36,71 +36,37 @@ weights[j][i] = weights[j][i] + alpha * (sample[i] - weights[j][i]);
 
     static String matrix_to_string(double[][] m) {
         String s_1 = "[";
-        int i_1 = 0;
-        while (i_1 < m.length) {
-            s_1 = s_1 + String.valueOf(list_to_string(((double[])(m[i_1]))));
-            if (i_1 < m.length - 1) {
+        long i_3 = 0;
+        while (i_3 < m.length) {
+            s_1 = s_1 + String.valueOf(list_to_string(((double[])(m[(int)(i_3)]))));
+            if (i_3 < m.length - 1) {
                 s_1 = s_1 + ", ";
             }
-            i_1 = i_1 + 1;
+            i_3 = i_3 + 1;
         }
         s_1 = s_1 + "]";
         return s_1;
     }
 
     static void main() {
-        int[][] training_samples = ((int[][])(new int[][]{new int[]{1, 1, 0, 0}, new int[]{0, 0, 0, 1}, new int[]{1, 0, 0, 0}, new int[]{0, 0, 1, 1}}));
-        double[][] weights = ((double[][])(new double[][]{new double[]{0.2, 0.6, 0.5, 0.9}, new double[]{0.8, 0.4, 0.7, 0.3}}));
-        int epochs = 3;
-        double alpha = 0.5;
-        for (int _v = 0; _v < epochs; _v++) {
+        long[][] training_samples = ((long[][])(new long[][]{new long[]{1, 1, 0, 0}, new long[]{0, 0, 0, 1}, new long[]{1, 0, 0, 0}, new long[]{0, 0, 1, 1}}));
+        double[][] weights_1 = ((double[][])(new double[][]{new double[]{0.2, 0.6, 0.5, 0.9}, new double[]{0.8, 0.4, 0.7, 0.3}}));
+        long epochs_1 = 3;
+        double alpha_1 = 0.5;
+        for (int _v = 0; _v < epochs_1; _v++) {
             for (int j = 0; j < training_samples.length; j++) {
-                int[] sample = ((int[])(training_samples[j]));
-                int winner = get_winner(((double[][])(weights)), ((int[])(sample)));
-                weights = ((double[][])(update(((double[][])(weights)), ((int[])(sample)), winner, alpha)));
+                long[] sample_1 = ((long[])(training_samples[(int)(j)]));
+                long winner_1 = get_winner(((double[][])(weights_1)), ((long[])(sample_1)));
+                weights_1 = ((double[][])(update(((double[][])(weights_1)), ((long[])(sample_1)), winner_1, alpha_1)));
             }
         }
-        int[] sample_1 = ((int[])(new int[]{0, 0, 0, 1}));
-        int winner_1 = get_winner(((double[][])(weights)), ((int[])(sample_1)));
-        System.out.println("Clusters that the test sample belongs to : " + _p(winner_1));
-        System.out.println("Weights that have been trained : " + String.valueOf(matrix_to_string(((double[][])(weights)))));
+        long[] sample_3 = ((long[])(new long[]{0, 0, 0, 1}));
+        long winner_3 = get_winner(((double[][])(weights_1)), ((long[])(sample_3)));
+        System.out.println("Clusters that the test sample belongs to : " + _p(winner_3));
+        System.out.println("Weights that have been trained : " + String.valueOf(matrix_to_string(((double[][])(weights_1)))));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 
     static String _p(Object v) {
@@ -116,10 +82,15 @@ weights[j][i] = weights[j][i] + alpha * (sample[i] - weights[j][i]);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
     }
 
-    static Object _geto(Object[] a, int i) {
+    static Double _getd(double[] a, int i) {
         return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }

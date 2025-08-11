@@ -1,8 +1,8 @@
 public class Main {
     static class EuclidResult {
-        int x;
-        int y;
-        EuclidResult(int x, int y) {
+        long x;
+        long y;
+        EuclidResult(long x, long y) {
             this.x = x;
             this.y = y;
         }
@@ -15,85 +15,51 @@ public class Main {
     static EuclidResult e1;
     static EuclidResult e2;
 
-    static EuclidResult extended_euclid(int a, int b) {
+    static EuclidResult extended_euclid(long a, long b) {
         if (b == 0) {
             return new EuclidResult(1, 0);
         }
-        EuclidResult res = extended_euclid(b, Math.floorMod(a, b));
-        int k = a / b;
-        return new EuclidResult(res.y, res.x - k * res.y);
+        EuclidResult res_1 = extended_euclid(b, Math.floorMod(a, b));
+        long k_1 = Math.floorDiv(a, b);
+        return new EuclidResult(res_1.y, res_1.x - k_1 * res_1.y);
     }
 
-    static int chinese_remainder_theorem(int n1, int r1, int n2, int r2) {
-        EuclidResult res_1 = extended_euclid(n1, n2);
-        int x = res_1.x;
-        int y = res_1.y;
-        int m = n1 * n2;
-        int n = r2 * x * n1 + r1 * y * n2;
-        return Math.floorMod(((Math.floorMod(n, m)) + m), m);
-    }
-
-    static int invert_modulo(int a, int n) {
-        EuclidResult res_2 = extended_euclid(a, n);
-        int b = res_2.x;
-        if (b < 0) {
-            b = Math.floorMod((Math.floorMod(b, n) + n), n);
-        }
-        return b;
-    }
-
-    static int chinese_remainder_theorem2(int n1, int r1, int n2, int r2) {
-        int x_1 = invert_modulo(n1, n2);
-        int y_1 = invert_modulo(n2, n1);
-        int m_1 = n1 * n2;
-        int n_1 = r2 * x_1 * n1 + r1 * y_1 * n2;
+    static long chinese_remainder_theorem(long n1, long r1, long n2, long r2) {
+        EuclidResult res_2 = extended_euclid(n1, n2);
+        long x_1 = res_2.x;
+        long y_1 = res_2.y;
+        long m_1 = n1 * n2;
+        long n_1 = r2 * x_1 * n1 + r1 * y_1 * n2;
         return Math.floorMod(((Math.floorMod(n_1, m_1)) + m_1), m_1);
     }
+
+    static long invert_modulo(long a, long n) {
+        EuclidResult res_3 = extended_euclid(a, n);
+        long b_1 = res_3.x;
+        if (b_1 < 0) {
+            b_1 = Math.floorMod((Math.floorMod(b_1, n) + n), n);
+        }
+        return b_1;
+    }
+
+    static long chinese_remainder_theorem2(long n1, long r1, long n2, long r2) {
+        long x_2 = invert_modulo(n1, n2);
+        long y_3 = invert_modulo(n2, n1);
+        long m_3 = n1 * n2;
+        long n_3 = r2 * x_2 * n1 + r1 * y_3 * n2;
+        return Math.floorMod(((Math.floorMod(n_3, m_3)) + m_3), m_3);
+    }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            e1 = extended_euclid(10, 6);
-            System.out.println(_p(e1.x) + "," + _p(e1.y));
-            e2 = extended_euclid(7, 5);
-            System.out.println(_p(e2.x) + "," + _p(e2.y));
-            System.out.println(_p(chinese_remainder_theorem(5, 1, 7, 3)));
-            System.out.println(_p(chinese_remainder_theorem(6, 1, 4, 3)));
-            System.out.println(_p(invert_modulo(2, 5)));
-            System.out.println(_p(invert_modulo(8, 7)));
-            System.out.println(_p(chinese_remainder_theorem2(5, 1, 7, 3)));
-            System.out.println(_p(chinese_remainder_theorem2(6, 1, 4, 3)));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        e1 = extended_euclid(10, 6);
+        System.out.println(_p(e1.x) + "," + _p(e1.y));
+        e2 = extended_euclid(7, 5);
+        System.out.println(_p(e2.x) + "," + _p(e2.y));
+        System.out.println(_p(chinese_remainder_theorem(5, 1, 7, 3)));
+        System.out.println(_p(chinese_remainder_theorem(6, 1, 4, 3)));
+        System.out.println(_p(invert_modulo(2, 5)));
+        System.out.println(_p(invert_modulo(8, 7)));
+        System.out.println(_p(chinese_remainder_theorem2(5, 1, 7, 3)));
+        System.out.println(_p(chinese_remainder_theorem2(6, 1, 4, 3)));
     }
 
     static String _p(Object v) {
@@ -108,6 +74,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

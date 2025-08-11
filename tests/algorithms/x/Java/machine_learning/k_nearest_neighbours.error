@@ -1,5 +1,0 @@
-compile: exit status 1
-/tmp/TestJavaTranspiler_Algorithms_Golden508_k_nearest_neighbours1840719061/001/Main.java:102: error: not a statement
-            e18;
-            ^
-1 error

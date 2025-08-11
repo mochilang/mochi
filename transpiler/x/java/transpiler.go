@@ -2877,6 +2877,13 @@ func (a *AppendExpr) emit(w io.Writer) {
 			elem = t
 		}
 	}
+	if elem == "Object[]" {
+		if t := arrayElemType(a.List); t != "" && t != "Object" {
+			elem = t + "[]"
+		} else if t := arrayElemType(a.Value); t != "" && t != "Object" {
+			elem = t + "[]"
+		}
+	}
 	if elem == "" {
 		elem = "Object"
 	}
@@ -2934,14 +2941,18 @@ func (a *AppendExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ")).toArray()")
 		return
 	}
-	if strings.HasSuffix(jt, "[]") || strings.Contains(jt, "<") {
+	if strings.Contains(jt, "<") {
 		needAppendObj = true
-		arrType := javaType(elem) + "[]"
+		arrElem := arrayElemType(a.List)
+		if arrElem == "" || arrElem == "Object" {
+			arrElem = elem
+		}
+		arrType := javaType(arrElem) + "[]"
 		fmt.Fprintf(w, "appendObj((%s)", arrType)
 		a.List.emit(w)
 		fmt.Fprint(w, ", ")
 		if ll, ok := a.Value.(*ListLit); ok && (ll.ElemType == "" || ll.ElemType == "Object") {
-			et := elem
+			et := arrElem
 			if strings.HasSuffix(et, "[]") {
 				et = strings.TrimSuffix(et, "[]")
 			}
@@ -2950,6 +2961,25 @@ func (a *AppendExpr) emit(w io.Writer) {
 		a.Value.emit(w)
 		fmt.Fprint(w, ")")
 		return
+	}
+	if ll, ok := a.Value.(*ListLit); ok && (ll.ElemType == "" || ll.ElemType == "Object") {
+		if t := arrayElemType(a.List); t != "" && t != "Object" {
+			et := t
+			if strings.HasSuffix(et, "[]") {
+				et = strings.TrimSuffix(et, "[]")
+			}
+			ll.ElemType = et
+		} else if t := inferType(a.Value); strings.HasSuffix(t, "[]") {
+			et := strings.TrimSuffix(t, "[]")
+			if et != "" && et != "Object" {
+				ll.ElemType = et
+			}
+		} else if len(ll.Elems) > 0 {
+			et := inferType(ll.Elems[0])
+			if et != "" && et != "Object" {
+				ll.ElemType = et
+			}
+		}
 	}
 	fmt.Fprint(w, "java.util.stream.Stream.concat(java.util.Arrays.stream(")
 	a.List.emit(w)
@@ -5271,14 +5301,14 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 	operands := []Expr{left}
 	var operators []*parser.BinaryOp
 
-       for _, part := range e.Binary.Right {
-               rhs, err := compileUnary(part.Right)
-               if err != nil {
-                       return nil, err
-               }
-               operators = append(operators, part)
-               operands = append(operands, rhs)
-       }
+	for _, part := range e.Binary.Right {
+		rhs, err := compilePostfix(part.Right)
+		if err != nil {
+			return nil, err
+		}
+		operators = append(operators, part)
+		operands = append(operands, rhs)
+	}
 
 	levels := [][]string{
 		{"*", "/", "%"},
@@ -5802,18 +5832,18 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			return &AppendExpr{List: args[0], Value: args[1], ElemType: et}, nil
 		}
-               if name == "min" && len(args) == 1 {
-                       needMin = true
-                       needToObjectArray = true
-                       funcRet["_min"] = "double"
-                       return &CallExpr{Func: "_min", Args: args}, nil
-               }
-               if name == "max" && len(args) == 1 {
-                       needMax = true
-                       needToObjectArray = true
-                       funcRet["_max"] = "double"
-                       return &CallExpr{Func: "_max", Args: args}, nil
-               }
+		if name == "min" && len(args) == 1 {
+			needMin = true
+			needToObjectArray = true
+			funcRet["_min"] = "double"
+			return &CallExpr{Func: "_min", Args: args}, nil
+		}
+		if name == "max" && len(args) == 1 {
+			needMax = true
+			needToObjectArray = true
+			funcRet["_max"] = "double"
+			return &CallExpr{Func: "_max", Args: args}, nil
+		}
 		if name == "concat" && len(args) == 2 {
 			et := arrayElemType(args[0])
 			if et == "" {
@@ -7092,28 +7122,28 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("        return (Object[]) v;\n")
 		buf.WriteString("    }\n")
 	}
-       if needMin {
-               buf.WriteString("\n    static double _min(Object a) {\n")
-               buf.WriteString("        Object[] arr = _toObjectArray(a);\n")
-               buf.WriteString("        double m = ((Number)arr[0]).doubleValue();\n")
-               buf.WriteString("        for (int i = 1; i < arr.length; i++) {\n")
-               buf.WriteString("            double v = ((Number)arr[i]).doubleValue();\n")
-               buf.WriteString("            if (v < m) m = v;\n")
-               buf.WriteString("        }\n")
-               buf.WriteString("        return m;\n")
-               buf.WriteString("    }\n")
-       }
-       if needMax {
-               buf.WriteString("\n    static double _max(Object a) {\n")
-               buf.WriteString("        Object[] arr = _toObjectArray(a);\n")
-               buf.WriteString("        double m = ((Number)arr[0]).doubleValue();\n")
-               buf.WriteString("        for (int i = 1; i < arr.length; i++) {\n")
-               buf.WriteString("            double v = ((Number)arr[i]).doubleValue();\n")
-               buf.WriteString("            if (v > m) m = v;\n")
-               buf.WriteString("        }\n")
-               buf.WriteString("        return m;\n")
-               buf.WriteString("    }\n")
-       }
+	if needMin {
+		buf.WriteString("\n    static double _min(Object a) {\n")
+		buf.WriteString("        Object[] arr = _toObjectArray(a);\n")
+		buf.WriteString("        double m = ((Number)arr[0]).doubleValue();\n")
+		buf.WriteString("        for (int i = 1; i < arr.length; i++) {\n")
+		buf.WriteString("            double v = ((Number)arr[i]).doubleValue();\n")
+		buf.WriteString("            if (v < m) m = v;\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        return m;\n")
+		buf.WriteString("    }\n")
+	}
+	if needMax {
+		buf.WriteString("\n    static double _max(Object a) {\n")
+		buf.WriteString("        Object[] arr = _toObjectArray(a);\n")
+		buf.WriteString("        double m = ((Number)arr[0]).doubleValue();\n")
+		buf.WriteString("        for (int i = 1; i < arr.length; i++) {\n")
+		buf.WriteString("            double v = ((Number)arr[i]).doubleValue();\n")
+		buf.WriteString("            if (v > m) m = v;\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        return m;\n")
+		buf.WriteString("    }\n")
+	}
 	if needSHA256 {
 		buf.WriteString("\n    static long[] _sha256(long[] bs) {\n")
 		buf.WriteString("        try {\n")

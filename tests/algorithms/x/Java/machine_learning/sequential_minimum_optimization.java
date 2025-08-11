@@ -5,10 +5,10 @@ public class Main {
 
     static double dot(double[] a, double[] b) {
         double sum = 0.0;
-        int i = 0;
-        while (i < a.length) {
-            sum = sum + a[i] * b[i];
-            i = i + 1;
+        long i_1 = 0;
+        while (i_1 < a.length) {
+            sum = sum + a[(int)(i_1)] * b[(int)(i_1)];
+            i_1 = i_1 + 1;
         }
         return sum;
     }
@@ -36,134 +36,100 @@ public class Main {
 
     static double predict_raw(double[][] samples, double[] labels, double[] alphas, double b, double[] x) {
         double res = 0.0;
-        int i_1 = 0;
-        while (i_1 < samples.length) {
-            res = res + alphas[i_1] * labels[i_1] * dot(((double[])(samples[i_1])), ((double[])(x)));
-            i_1 = i_1 + 1;
+        long i_3 = 0;
+        while (i_3 < samples.length) {
+            res = res + alphas[(int)(i_3)] * labels[(int)(i_3)] * dot(((double[])(samples[(int)(i_3)])), ((double[])(x)));
+            i_3 = i_3 + 1;
         }
         return res + b;
     }
 
-    static double[][] smo_train(double[][] samples, double[] labels, double c, double tol, int max_passes) {
-        int m = samples.length;
-        double[] alphas = ((double[])(new double[]{}));
-        int i_2 = 0;
-        while (i_2 < m) {
-            alphas = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(alphas), java.util.stream.DoubleStream.of(0.0)).toArray()));
-            i_2 = i_2 + 1;
+    static double[][] smo_train(double[][] samples, double[] labels, double c, double tol, long max_passes) {
+        long m = samples.length;
+        double[] alphas_1 = ((double[])(new double[]{}));
+        long i_5 = 0;
+        while (i_5 < m) {
+            alphas_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(alphas_1), java.util.stream.DoubleStream.of(0.0)).toArray()));
+            i_5 = i_5 + 1;
         }
-        double b = 0.0;
-        int passes = 0;
-        while (passes < max_passes) {
-            int num_changed = 0;
-            int i1 = 0;
-            while (i1 < m) {
-                double Ei = predict_raw(((double[][])(samples)), ((double[])(labels)), ((double[])(alphas)), b, ((double[])(samples[i1]))) - labels[i1];
-                if ((labels[i1] * Ei < 0.0 - tol && alphas[i1] < c) || (labels[i1] * Ei > tol && alphas[i1] > 0.0)) {
-                    int i2 = Math.floorMod((i1 + 1), m);
-                    double Ej = predict_raw(((double[][])(samples)), ((double[])(labels)), ((double[])(alphas)), b, ((double[])(samples[i2]))) - labels[i2];
-                    double alpha1_old = alphas[i1];
-                    double alpha2_old = alphas[i2];
-                    double L = 0.0;
-                    double H = 0.0;
-                    if (labels[i1] != labels[i2]) {
-                        L = maxf(0.0, alpha2_old - alpha1_old);
-                        H = minf(c, c + alpha2_old - alpha1_old);
+        double b_1 = 0.0;
+        long passes_1 = 0;
+        while (passes_1 < max_passes) {
+            long num_changed_1 = 0;
+            long i1_1 = 0;
+            while (i1_1 < m) {
+                double Ei_1 = predict_raw(((double[][])(samples)), ((double[])(labels)), ((double[])(alphas_1)), b_1, ((double[])(samples[(int)(i1_1)]))) - labels[(int)(i1_1)];
+                if ((labels[(int)(i1_1)] * Ei_1 < 0.0 - tol && alphas_1[(int)(i1_1)] < c) || (labels[(int)(i1_1)] * Ei_1 > tol && alphas_1[(int)(i1_1)] > 0.0)) {
+                    long i2_1 = Math.floorMod((i1_1 + 1), m);
+                    double Ej_1 = predict_raw(((double[][])(samples)), ((double[])(labels)), ((double[])(alphas_1)), b_1, ((double[])(samples[(int)(i2_1)]))) - labels[(int)(i2_1)];
+                    double alpha1_old_1 = alphas_1[(int)(i1_1)];
+                    double alpha2_old_1 = alphas_1[(int)(i2_1)];
+                    double L_1 = 0.0;
+                    double H_1 = 0.0;
+                    if (labels[(int)(i1_1)] != labels[(int)(i2_1)]) {
+                        L_1 = maxf(0.0, alpha2_old_1 - alpha1_old_1);
+                        H_1 = minf(c, c + alpha2_old_1 - alpha1_old_1);
                     } else {
-                        L = maxf(0.0, alpha2_old + alpha1_old - c);
-                        H = minf(c, alpha2_old + alpha1_old);
+                        L_1 = maxf(0.0, alpha2_old_1 + alpha1_old_1 - c);
+                        H_1 = minf(c, alpha2_old_1 + alpha1_old_1);
                     }
-                    if (L == H) {
-                        i1 = i1 + 1;
+                    if (L_1 == H_1) {
+                        i1_1 = i1_1 + 1;
                         continue;
                     }
-                    double eta = 2.0 * dot(((double[])(samples[i1])), ((double[])(samples[i2]))) - dot(((double[])(samples[i1])), ((double[])(samples[i1]))) - dot(((double[])(samples[i2])), ((double[])(samples[i2])));
-                    if (eta >= 0.0) {
-                        i1 = i1 + 1;
+                    double eta_1 = 2.0 * dot(((double[])(samples[(int)(i1_1)])), ((double[])(samples[(int)(i2_1)]))) - dot(((double[])(samples[(int)(i1_1)])), ((double[])(samples[(int)(i1_1)]))) - dot(((double[])(samples[(int)(i2_1)])), ((double[])(samples[(int)(i2_1)])));
+                    if (eta_1 >= 0.0) {
+                        i1_1 = i1_1 + 1;
                         continue;
                     }
-alphas[i2] = alpha2_old - labels[i2] * (Ei - Ej) / eta;
-                    if (alphas[i2] > H) {
-alphas[i2] = H;
+alphas_1[(int)(i2_1)] = alpha2_old_1 - labels[(int)(i2_1)] * (Ei_1 - Ej_1) / eta_1;
+                    if (alphas_1[(int)(i2_1)] > H_1) {
+alphas_1[(int)(i2_1)] = H_1;
                     }
-                    if (alphas[i2] < L) {
-alphas[i2] = L;
+                    if (alphas_1[(int)(i2_1)] < L_1) {
+alphas_1[(int)(i2_1)] = L_1;
                     }
-                    if (absf(alphas[i2] - alpha2_old) < 1e-05) {
-                        i1 = i1 + 1;
+                    if (absf(alphas_1[(int)(i2_1)] - alpha2_old_1) < 1e-05) {
+                        i1_1 = i1_1 + 1;
                         continue;
                     }
-alphas[i1] = alpha1_old + labels[i1] * labels[i2] * (alpha2_old - alphas[i2]);
-                    double b1 = b - Ei - labels[i1] * (alphas[i1] - alpha1_old) * dot(((double[])(samples[i1])), ((double[])(samples[i1]))) - labels[i2] * (alphas[i2] - alpha2_old) * dot(((double[])(samples[i1])), ((double[])(samples[i2])));
-                    double b2 = b - Ej - labels[i1] * (alphas[i1] - alpha1_old) * dot(((double[])(samples[i1])), ((double[])(samples[i2]))) - labels[i2] * (alphas[i2] - alpha2_old) * dot(((double[])(samples[i2])), ((double[])(samples[i2])));
-                    if (alphas[i1] > 0.0 && alphas[i1] < c) {
-                        b = b1;
-                    } else                     if (alphas[i2] > 0.0 && alphas[i2] < c) {
-                        b = b2;
+alphas_1[(int)(i1_1)] = alpha1_old_1 + labels[(int)(i1_1)] * labels[(int)(i2_1)] * (alpha2_old_1 - alphas_1[(int)(i2_1)]);
+                    double b1_1 = b_1 - Ei_1 - labels[(int)(i1_1)] * (alphas_1[(int)(i1_1)] - alpha1_old_1) * dot(((double[])(samples[(int)(i1_1)])), ((double[])(samples[(int)(i1_1)]))) - labels[(int)(i2_1)] * (alphas_1[(int)(i2_1)] - alpha2_old_1) * dot(((double[])(samples[(int)(i1_1)])), ((double[])(samples[(int)(i2_1)])));
+                    double b2_1 = b_1 - Ej_1 - labels[(int)(i1_1)] * (alphas_1[(int)(i1_1)] - alpha1_old_1) * dot(((double[])(samples[(int)(i1_1)])), ((double[])(samples[(int)(i2_1)]))) - labels[(int)(i2_1)] * (alphas_1[(int)(i2_1)] - alpha2_old_1) * dot(((double[])(samples[(int)(i2_1)])), ((double[])(samples[(int)(i2_1)])));
+                    if (alphas_1[(int)(i1_1)] > 0.0 && alphas_1[(int)(i1_1)] < c) {
+                        b_1 = b1_1;
+                    } else                     if (alphas_1[(int)(i2_1)] > 0.0 && alphas_1[(int)(i2_1)] < c) {
+                        b_1 = b2_1;
                     } else {
-                        b = (b1 + b2) / 2.0;
+                        b_1 = (b1_1 + b2_1) / 2.0;
                     }
-                    num_changed = num_changed + 1;
+                    num_changed_1 = num_changed_1 + 1;
                 }
-                i1 = i1 + 1;
+                i1_1 = i1_1 + 1;
             }
-            if (num_changed == 0) {
-                passes = passes + 1;
+            if (num_changed_1 == 0) {
+                passes_1 = passes_1 + 1;
             } else {
-                passes = 0;
+                passes_1 = 0;
             }
         }
-        return new double[][]{alphas, new double[]{b}};
+        return new double[][]{alphas_1, new double[]{b_1}};
     }
 
     static double predict(double[][] samples, double[] labels, double[][] model, double[] x) {
-        double[] alphas_1 = ((double[])(model[0]));
-        double b_1 = model[1][0];
-        double val = predict_raw(((double[][])(samples)), ((double[])(labels)), ((double[])(alphas_1)), b_1, ((double[])(x)));
-        if (val >= 0.0) {
+        double[] alphas_2 = ((double[])(model[(int)(0)]));
+        double b_3 = model[(int)(1)][(int)(0)];
+        double val_1 = predict_raw(((double[][])(samples)), ((double[])(labels)), ((double[])(alphas_2)), b_3, ((double[])(x)));
+        if (val_1 >= 0.0) {
             return 1.0;
         }
         return -1.0;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            samples = ((double[][])(new double[][]{new double[]{2.0, 2.0}, new double[]{1.5, 1.5}, new double[]{0.0, 0.0}, new double[]{0.5, 0.0}}));
-            labels = ((double[])(new double[]{1.0, 1.0, -1.0, -1.0}));
-            model = ((double[][])(smo_train(((double[][])(samples)), ((double[])(labels)), 1.0, 0.001, 10)));
-            System.out.println(predict(((double[][])(samples)), ((double[])(labels)), ((double[][])(model)), ((double[])(new double[]{1.5, 1.0}))));
-            System.out.println(predict(((double[][])(samples)), ((double[])(labels)), ((double[][])(model)), ((double[])(new double[]{0.2, 0.1}))));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        samples = ((double[][])(new double[][]{new double[]{2.0, 2.0}, new double[]{1.5, 1.5}, new double[]{0.0, 0.0}, new double[]{0.5, 0.0}}));
+        labels = ((double[])(new double[]{1.0, 1.0, -1.0, -1.0}));
+        model = ((double[][])(smo_train(((double[][])(samples)), ((double[])(labels)), 1.0, 0.001, 10)));
+        System.out.println(predict(((double[][])(samples)), ((double[])(labels)), ((double[][])(model)), ((double[])(new double[]{1.5, 1.0}))));
+        System.out.println(predict(((double[][])(samples)), ((double[])(labels)), ((double[][])(model)), ((double[])(new double[]{0.2, 0.1}))));
     }
 }

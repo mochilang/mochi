@@ -1,7 +1,7 @@
 compile: exit status 1
-/tmp/TestJavaTranspiler_Algorithms_Golden525_xgboost_classifier149400511/001/Main.java:54: error: method concat in class Main cannot be applied to given types;
-                        left = ((double[])(concat(left, new double[]{residuals[j]})));
-                                           ^
+/tmp/TestJavaTranspiler_Algorithms_Golden525_xgboost_classifier1662236903/001/Main.java:54: error: method concat in class Main cannot be applied to given types;
+                        left_1 = ((double[])(concat(left_1, new double[]{residuals[(int)(j_1)]})));
+                                             ^
   required: T[],T[]
   found:    double[],double[]
   reason: inference variable T has incompatible bounds
@@ -9,9 +9,9 @@ compile: exit status 1
     upper bounds: Object
   where T is a type-variable:
     T extends Object declared in method <T>concat(T[],T[])
-/tmp/TestJavaTranspiler_Algorithms_Golden525_xgboost_classifier149400511/001/Main.java:56: error: method concat in class Main cannot be applied to given types;
-                        right = ((double[])(concat(right, new double[]{residuals[j]})));
-                                            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden525_xgboost_classifier1662236903/001/Main.java:56: error: method concat in class Main cannot be applied to given types;
+                        right_1 = ((double[])(concat(right_1, new double[]{residuals[(int)(j_1)]})));
+                                              ^
   required: T[],T[]
   found:    double[],double[]
   reason: inference variable T has incompatible bounds
@@ -19,9 +19,9 @@ compile: exit status 1
     upper bounds: Object
   where T is a type-variable:
     T extends Object declared in method <T>concat(T[],T[])
-/tmp/TestJavaTranspiler_Algorithms_Golden525_xgboost_classifier149400511/001/Main.java:91: error: method concat in class Main cannot be applied to given types;
-            preds = ((double[])(concat(preds, new double[]{0.0})));
-                                ^
+/tmp/TestJavaTranspiler_Algorithms_Golden525_xgboost_classifier1662236903/001/Main.java:91: error: method concat in class Main cannot be applied to given types;
+            preds_1 = ((double[])(concat(preds_1, new double[]{0.0})));
+                                  ^
   required: T[],T[]
   found:    double[],double[]
   reason: inference variable T has incompatible bounds
@@ -29,9 +29,9 @@ compile: exit status 1
     upper bounds: Object
   where T is a type-variable:
     T extends Object declared in method <T>concat(T[],T[])
-/tmp/TestJavaTranspiler_Algorithms_Golden525_xgboost_classifier149400511/001/Main.java:99: error: method concat in class Main cannot be applied to given types;
-                residuals = ((double[])(concat(residuals, new double[]{targets[j_1] - preds[j_1]})));
-                                        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden525_xgboost_classifier1662236903/001/Main.java:99: error: method concat in class Main cannot be applied to given types;
+                residuals_1 = ((double[])(concat(residuals_1, new double[]{targets[(int)(j_3)] - preds_1[(int)(j_3)]})));
+                                          ^
   required: T[],T[]
   found:    double[],double[]
   reason: inference variable T has incompatible bounds
