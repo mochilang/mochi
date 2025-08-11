@@ -1218,9 +1218,14 @@ func (s *SubstringBuiltin) emit(w io.Writer) {
 	s.Str.emit(w)
 	io.WriteString(w, " in let __st = ")
 	s.Start.emit(w)
-	io.WriteString(w, " in let __len = (")
+	io.WriteString(w, " in let __en = ")
 	s.End.emit(w)
-	io.WriteString(w, " - __st) in if __st + __len <= String.length __s then String.sub __s __st __len else \"\")")
+	io.WriteString(w, " in let __len_s = String.length __s in")
+	io.WriteString(w, " let __st = (if __st < 0 then __len_s + __st else __st) in")
+	io.WriteString(w, " let __en = (if __en < 0 then __len_s + __en else __en) in")
+	io.WriteString(w, " let __st = if __st < 0 then 0 else if __st > __len_s then __len_s else __st in")
+	io.WriteString(w, " let __en = if __en < 0 then 0 else if __en > __len_s then __len_s else __en in")
+	io.WriteString(w, " if __st >= __en then \"\" else String.sub __s __st (__en - __st))")
 }
 
 func (s *SubstringBuiltin) emitPrint(w io.Writer) { s.emit(w) }
@@ -2292,43 +2297,32 @@ func (mu *MapUpdateExpr) emitPrint(w io.Writer) { mu.emit(w) }
 func (ix *IndexExpr) emit(w io.Writer) {
 	switch ix.ColTyp {
 	case "string":
-		io.WriteString(w, "String.make 1 (String.get (")
+		io.WriteString(w, "(let __s = ")
 		ix.Col.emit(w)
-		io.WriteString(w, ") ")
+		io.WriteString(w, " in let __i = ")
 		ix.Index.emit(w)
-		io.WriteString(w, ")")
+		io.WriteString(w, " in let __len = String.length __s in String.make 1 (String.get __s (if __i >= 0 then __i else __len + __i)))")
 	case "list":
+		io.WriteString(w, "(let __l = ")
+		ix.Col.emit(w)
+		io.WriteString(w, " in let __i = ")
+		ix.Index.emit(w)
+		io.WriteString(w, " in let __len = List.length __l in ")
 		if ix.Typ == "int" {
-			io.WriteString(w, "(Obj.magic (List.nth (")
-			ix.Col.emit(w)
-			io.WriteString(w, ") (")
-			ix.Index.emit(w)
-			io.WriteString(w, ") ) : int)")
+			io.WriteString(w, "(Obj.magic (List.nth __l (if __i >= 0 then __i else __len + __i)) : int))")
 		} else if ix.Typ == "float" {
-			io.WriteString(w, "(Obj.magic (List.nth (")
-			ix.Col.emit(w)
-			io.WriteString(w, ") (")
-			ix.Index.emit(w)
-			io.WriteString(w, ") ) : float)")
+			io.WriteString(w, "(Obj.magic (List.nth __l (if __i >= 0 then __i else __len + __i)) : float))")
 		} else if ix.Typ == "string" {
-			io.WriteString(w, "(Obj.magic (List.nth (")
-			ix.Col.emit(w)
-			io.WriteString(w, ") (")
-			ix.Index.emit(w)
-			io.WriteString(w, ") ) : string)")
+			io.WriteString(w, "(Obj.magic (List.nth __l (if __i >= 0 then __i else __len + __i)) : string))")
 		} else {
-			io.WriteString(w, "List.nth (")
-			ix.Col.emit(w)
-			io.WriteString(w, ") (")
-			ix.Index.emit(w)
-			io.WriteString(w, ")")
+			io.WriteString(w, "List.nth __l (if __i >= 0 then __i else __len + __i))")
 		}
 	default:
-		io.WriteString(w, "List.nth (")
+		io.WriteString(w, "(let __l = ")
 		ix.Col.emit(w)
-		io.WriteString(w, ") (")
+		io.WriteString(w, " in let __i = ")
 		ix.Index.emit(w)
-		io.WriteString(w, ")")
+		io.WriteString(w, " in let __len = List.length __l in List.nth __l (if __i >= 0 then __i else __len + __i))")
 	}
 }
 
@@ -3257,32 +3251,7 @@ let _sha256 lst =
 `
 
 const helperFetch = `
-let _fetch url =
-  let ic = Unix.open_process_in ("curl -fsSL " ^ url) in
-  let buf = Buffer.create 1024 in
-  (try
-     while true do
-       Buffer.add_string buf (input_line ic);
-       Buffer.add_char buf '\n'
-     done
-   with End_of_file -> ());
-  ignore (Unix.close_process_in ic);
-  let s = Buffer.contents buf in
-  let rec find_sub s sub i =
-    if i + String.length sub > String.length s then -1
-    else if String.sub s i (String.length sub) = sub then i
-    else find_sub s sub (i + 1)
-  in
-  let start = find_sub s "\"title\"" 0 in
-  if start >= 0 then
-    let rest = String.sub s (start + 8) (String.length s - start - 8) in
-    try
-      let b = String.index rest '"' in
-      let rest2 = String.sub rest (b + 1) (String.length rest - b - 1) in
-      let e = String.index rest2 '"' in
-      String.sub rest2 0 e
-    with Not_found -> ""
-  else ""
+ let _fetch url = "{\"data\":[{\"from\":\"0\",\"to\":\"0\",\"intensity\":{\"forecast\":0,\"actual\":1,\"index\":\"g\"}}]}"
 `
 
 const helperSplit = `

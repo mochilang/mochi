@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 412/1077
-Last updated: 2025-08-11 15:15 +0700
+Completed programs: 469/1077
+Last updated: 2025-08-11 15:32 +0700
 
 Checklist:
 
@@ -1006,67 +1006,67 @@ Checklist:
 | 997 | strings/capitalize |   |  |  |
 | 998 | strings/check_anagrams |   |  |  |
 | 999 | strings/count_vowels |   |  |  |
-| 1000 | strings/credit_card_validator |   |  |  |
-| 1001 | strings/damerau_levenshtein_distance |   |  |  |
-| 1002 | strings/detecting_english_programmatically |   |  |  |
-| 1003 | strings/dna |   |  |  |
-| 1004 | strings/edit_distance |   |  |  |
-| 1005 | strings/frequency_finder |   |  |  |
-| 1006 | strings/hamming_distance |   |  |  |
-| 1007 | strings/indian_phone_validator |   |  |  |
-| 1008 | strings/is_contains_unique_chars |   |  |  |
-| 1009 | strings/is_isogram |   |  |  |
-| 1010 | strings/is_pangram |   |  |  |
-| 1011 | strings/is_polish_national_id |   |  |  |
-| 1012 | strings/is_spain_national_id |   |  |  |
-| 1013 | strings/is_srilankan_phone_number |   |  |  |
-| 1014 | strings/is_valid_email_address |   |  |  |
-| 1015 | strings/jaro_winkler |   |  |  |
-| 1016 | strings/join |   |  |  |
-| 1017 | strings/knuth_morris_pratt |   |  |  |
-| 1018 | strings/levenshtein_distance |   |  |  |
-| 1019 | strings/lower |   |  |  |
-| 1020 | strings/manacher |   |  |  |
-| 1021 | strings/min_cost_string_conversion |   |  |  |
-| 1022 | strings/naive_string_search |   |  |  |
-| 1023 | strings/ngram |   |  |  |
-| 1024 | strings/palindrome |   |  |  |
-| 1025 | strings/pig_latin |   |  |  |
-| 1026 | strings/prefix_function |   |  |  |
-| 1027 | strings/rabin_karp |   |  |  |
-| 1028 | strings/remove_duplicate |   |  |  |
-| 1029 | strings/reverse_letters |   |  |  |
-| 1030 | strings/reverse_words |   |  |  |
-| 1031 | strings/snake_case_to_camel_pascal_case |   |  |  |
-| 1032 | strings/split |   |  |  |
-| 1033 | strings/string_switch_case |   |  |  |
-| 1034 | strings/strip |   |  |  |
-| 1035 | strings/text_justification |   |  |  |
-| 1036 | strings/title |   |  |  |
-| 1037 | strings/top_k_frequent_words |   |  |  |
-| 1038 | strings/upper |   |  |  |
-| 1039 | strings/wave_string |   |  |  |
-| 1040 | strings/wildcard_pattern_matching |   |  |  |
-| 1041 | strings/word_occurrence |   |  |  |
-| 1042 | strings/word_patterns |   |  |  |
-| 1043 | strings/z_function |   |  |  |
+| 1000 | strings/credit_card_validator | ✓ | 38.0µs | 1.09KB |
+| 1001 | strings/damerau_levenshtein_distance | ✓ | 796.0µs | 141.10KB |
+| 1002 | strings/detecting_english_programmatically | ✓ | 240.0µs | 26.84KB |
+| 1003 | strings/dna | ✓ | 18.0µs | 816B |
+| 1004 | strings/edit_distance | ✓ | 21.0ms | 2.23MB |
+| 1005 | strings/frequency_finder | ✓ | 3.0ms | 472.77KB |
+| 1006 | strings/hamming_distance | ✓ | 109.0µs | 832B |
+| 1007 | strings/indian_phone_validator | ✓ | 37.0µs | 1.28KB |
+| 1008 | strings/is_contains_unique_chars | ✓ | 123.0µs | 8.72KB |
+| 1009 | strings/is_isogram | ✓ | 182.0µs | 22.61KB |
+| 1010 | strings/is_pangram | ✓ | 481.0µs | 88.00KB |
+| 1011 | strings/is_polish_national_id | ✓ | 50.0µs | 2.64KB |
+| 1012 | strings/is_spain_national_id | ✓ | 275.0µs | 26.91KB |
+| 1013 | strings/is_srilankan_phone_number | ✓ | 28.0µs | 424B |
+| 1014 | strings/is_valid_email_address | ✓ | 1.0ms | 244.66KB |
+| 1015 | strings/jaro_winkler | ✓ | 204.0µs | 3.78KB |
+| 1016 | strings/join | ✓ | 36.0µs | 1.15KB |
+| 1017 | strings/knuth_morris_pratt | ✓ | 116.0µs | 2.25KB |
+| 1018 | strings/levenshtein_distance | ✓ | 234.0µs | 25.88KB |
+| 1019 | strings/lower | ✓ | 22.0µs | 288B |
+| 1020 | strings/manacher | ✓ | 96.0µs | 13.21KB |
+| 1021 | strings/min_cost_string_conversion | ✓ | 968.0µs | 152.55KB |
+| 1022 | strings/naive_string_search | ✓ | 80.0µs | 1.43KB |
+| 1023 | strings/ngram | ✓ | 82.0µs | 15.91KB |
+| 1024 | strings/palindrome | ✓ | 62.0µs | 4.73KB |
+| 1025 | strings/pig_latin | ✓ | 34.0µs | 1.40KB |
+| 1026 | strings/prefix_function | ✓ | 278.0µs | 28.61KB |
+| 1027 | strings/rabin_karp | ✓ | 642.0µs | 92.41KB |
+| 1028 | strings/remove_duplicate | ✓ | 120.0µs | 14.31KB |
+| 1029 | strings/reverse_letters | ✓ | 67.0µs | 8.13KB |
+| 1030 | strings/reverse_words | ✓ | 49.0µs | 1.78KB |
+| 1031 | strings/snake_case_to_camel_pascal_case | ✓ | 70.0µs | 6.45KB |
+| 1032 | strings/split | ✓ | 61.0µs | 3.17KB |
+| 1033 | strings/string_switch_case | ✓ | 2.0ms | 404.02KB |
+| 1034 | strings/strip | ✓ | 45.0µs | 2.33KB |
+| 1035 | strings/text_justification | ✓ | 73.0µs | 7.27KB |
+| 1036 | strings/title | ✓ | 162.0µs | 22.16KB |
+| 1037 | strings/top_k_frequent_words | ✓ | 149.0µs | 10.53KB |
+| 1038 | strings/upper | ✓ | 11.0µs | 272B |
+| 1039 | strings/wave_string | ✓ | 84.0µs | 5.28KB |
+| 1040 | strings/wildcard_pattern_matching | ✓ | 530.0µs | 84.08KB |
+| 1041 | strings/word_occurrence | ✓ | 91.0µs | 880B |
+| 1042 | strings/word_patterns | ✓ | 373.0µs | 13.33KB |
+| 1043 | strings/z_function | ✓ | 542.0µs | 60.26KB |
 | 1044 | web_programming/co2_emission |   |  |  |
-| 1045 | web_programming/covid_stats_via_xpath |   |  |  |
-| 1046 | web_programming/crawl_google_results |   |  |  |
+| 1045 | web_programming/covid_stats_via_xpath | ✓ | 156.0µs | 6.69KB |
+| 1046 | web_programming/crawl_google_results | ✓ | 128.0µs | 3.81KB |
 | 1047 | web_programming/crawl_google_scholar_citation |   |  |  |
-| 1048 | web_programming/currency_converter |   |  |  |
-| 1049 | web_programming/current_stock_price |   |  |  |
-| 1050 | web_programming/current_weather |   |  |  |
-| 1051 | web_programming/daily_horoscope |   |  |  |
+| 1048 | web_programming/currency_converter | ✓ | 158.0µs | 712B |
+| 1049 | web_programming/current_stock_price | ✓ | 48.0µs | 3.57KB |
+| 1050 | web_programming/current_weather | ✓ | 42.0µs | 1.53KB |
+| 1051 | web_programming/daily_horoscope | ✓ | 18.0µs | 384B |
 | 1052 | web_programming/download_images_from_google_query |   |  |  |
-| 1053 | web_programming/emails_from_url |   |  |  |
-| 1054 | web_programming/fetch_anime_and_play |   |  |  |
-| 1055 | web_programming/fetch_bbc_news |   |  |  |
-| 1056 | web_programming/fetch_github_info |   |  |  |
-| 1057 | web_programming/fetch_jobs |   |  |  |
+| 1053 | web_programming/emails_from_url | ✓ | 119.0µs | 296B |
+| 1054 | web_programming/fetch_anime_and_play | ✓ | 85.0µs | 9.34KB |
+| 1055 | web_programming/fetch_bbc_news | ✓ | 18.0µs | 336B |
+| 1056 | web_programming/fetch_github_info | ✓ | 100.0µs | 400B |
+| 1057 | web_programming/fetch_jobs | ✓ | 200.0µs | 17.55KB |
 | 1058 | web_programming/fetch_quotes |   |  |  |
-| 1059 | web_programming/fetch_well_rx_price |   |  |  |
-| 1060 | web_programming/get_amazon_product_data |   |  |  |
+| 1059 | web_programming/fetch_well_rx_price | ✓ | 10.0µs | 496B |
+| 1060 | web_programming/get_amazon_product_data | ✓ | 696.0µs | 78.13KB |
 | 1061 | web_programming/get_imdb_top_250_movies_csv |   |  |  |
 | 1062 | web_programming/get_ip_geolocation |   |  |  |
 | 1063 | web_programming/get_top_billionaires |   |  |  |

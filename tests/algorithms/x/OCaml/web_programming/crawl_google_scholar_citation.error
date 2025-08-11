@@ -1,0 +1,5 @@
+exit status 2
+File "/workspace/mochi/tests/algorithms/x/OCaml/web_programming/crawl_google_scholar_citation.ml", line 165, characters 6-14:
+165 |   if (__name__ = "__main__") then (
+            ^^^^^^^^
+Error: Unbound value __name__
