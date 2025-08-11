@@ -1,0 +1,264 @@
+error[E0425]: cannot find value `__name__` in this scope
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/crawl_google_scholar_citation.rs:92:13
+   |
+92 |         if (__name__ == "__main__") {
+   |             ^^^^^^^^ not found in this scope
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/crawl_google_scholar_citation.rs:52:2
+   |
+52 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/crawl_google_scholar_citation.rs:69:2
+   |
+69 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/crawl_google_scholar_citation.rs:87:2
+   |
+87 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/crawl_google_scholar_citation.rs:91:2
+   |
+91 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/crawl_google_scholar_citation.rs:45:11
+   |
+45 |     while (i < (g_DIGITS.len() as i64)) {
+   |           ^                           ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+45 -     while (i < (g_DIGITS.len() as i64)) {
+45 +     while i < (g_DIGITS.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/crawl_google_scholar_citation.rs:46:12
+   |
+46 |         if (g_DIGITS.chars().nth(i as usize).unwrap().to_string() == ch) {
+   |            ^                                                           ^
+   |
+help: remove these parentheses
+   |
+46 -         if (g_DIGITS.chars().nth(i as usize).unwrap().to_string() == ch) {
+46 +         if g_DIGITS.chars().nth(i as usize).unwrap().to_string() == ch {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/crawl_google_scholar_citation.rs:49:13
+   |
+49 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+49 -         i = (i + 1);
+49 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/crawl_google_scholar_citation.rs:55:11
+   |
+55 |     while (i <= ((haystack.len() as i64) - (needle.len() as i64))) {
+   |           ^                                                      ^
+   |
+help: remove these parentheses
+   |
+55 -     while (i <= ((haystack.len() as i64) - (needle.len() as i64))) {
+55 +     while i <= ((haystack.len() as i64) - (needle.len() as i64)) {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/crawl_google_scholar_citation.rs:57:15
+   |
+57 |         while (j < (needle.len() as i64)) {
+   |               ^                         ^
+   |
+help: remove these parentheses
+   |
+57 -         while (j < (needle.len() as i64)) {
+57 +         while j < (needle.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/crawl_google_scholar_citation.rs:58:16
+   |
+58 | ...if (haystack.chars().nth((i + j) as usize).unwrap().to_string().as_str() != needle.chars().nth(j as usize).unwrap().to_string().as_str()) {
+   |       ^                                                                                                                                    ^
+   |
+help: remove these parentheses
+   |
+58 -             if (haystack.chars().nth((i + j) as usize).unwrap().to_string().as_str() != needle.chars().nth(j as usize).unwrap().to_string().as_str()) {
+58 +             if haystack.chars().nth((i + j) as usize).unwrap().to_string().as_str() != needle.chars().nth(j as usize).unwrap().to_string().as_str() {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/crawl_google_scholar_citation.rs:61:17
+   |
+61 |             j = (j + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+61 -             j = (j + 1);
+61 +             j = j + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/crawl_google_scholar_citation.rs:63:12
+   |
+63 |         if (j == (needle.len() as i64)) {
+   |            ^                          ^
+   |
+help: remove these parentheses
+   |
+63 -         if (j == (needle.len() as i64)) {
+63 +         if j == (needle.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/crawl_google_scholar_citation.rs:66:13
+   |
+66 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+66 -         i = (i + 1);
+66 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/crawl_google_scholar_citation.rs:73:8
+   |
+73 |     if (idx < 0) {
+   |        ^       ^
+   |
+help: remove these parentheses
+   |
+73 -     if (idx < 0) {
+73 +     if idx < 0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/crawl_google_scholar_citation.rs:76:24
+   |
+76 |     let mut pos: i64 = (idx + (marker.len() as i64));
+   |                        ^                           ^
+   |
+help: remove these parentheses
+   |
+76 -     let mut pos: i64 = (idx + (marker.len() as i64));
+76 +     let mut pos: i64 = idx + (marker.len() as i64);
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/crawl_google_scholar_citation.rs:78:11
+   |
+78 |     while (pos < (html.len() as i64)) {
+   |           ^                         ^
+   |
+help: remove these parentheses
+   |
+78 -     while (pos < (html.len() as i64)) {
+78 +     while pos < (html.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/crawl_google_scholar_citation.rs:84:15
+   |
+84 |         pos = (pos + 1);
+   |               ^       ^
+   |
+help: remove these parentheses
+   |
+84 -         pos = (pos + 1);
+84 +         pos = pos + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/crawl_google_scholar_citation.rs:92:12
+   |
+92 |         if (__name__ == "__main__") {
+   |            ^                      ^
+   |
+help: remove these parentheses
+   |
+92 -         if (__name__ == "__main__") {
+92 +         if __name__ == "__main__" {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/crawl_google_scholar_citation.rs:97:32
+   |
+97 |         let duration_us: i64 = ((_end - _start) / 1000);
+   |                                ^                      ^
+   |
+help: remove these parentheses
+   |
+97 -         let duration_us: i64 = ((_end - _start) / 1000);
+97 +         let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/crawl_google_scholar_citation.rs:71:9
+   |
+71 |     let mut marker: String = String::from("Cited by ").clone();
+   |         ----^^^^^^
+   |         |
+   |         help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/crawl_google_scholar_citation.rs:72:9
+   |
+72 |     let mut idx: i64 = find_substring(html, &marker);
+   |         ----^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/crawl_google_scholar_citation.rs:79:13
+   |
+79 |         let mut ch: String = html.chars().nth(pos as usize).unwrap().to_string().clone();
+   |             ----^^
+   |             |
+   |             help: remove this `mut`
+
+warning: unused variable: `base_url`
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/crawl_google_scholar_citation.rs:88:32
+   |
+88 |         unsafe fn get_citation(base_url: &str, params: &HashMap<String, String>) -> String {
+   |                                ^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_base_url`
+   |
+   = note: `#[warn(unused_variables)]` on by default
+
+warning: unused variable: `params`
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/crawl_google_scholar_citation.rs:88:48
+   |
+88 |         unsafe fn get_citation(base_url: &str, params: &HashMap<String, String>) -> String {
+   |                                                ^^^^^^ help: if this is intentional, prefix it with an underscore: `_params`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/crawl_google_scholar_citation.rs:89:9
+   |
+89 |     let mut html: String = String::from("<div class=\"gs_ri\"><div class=\"gs_fl\"><a>Cited by 123</a></div></div>").clone();
+   |         ----^^^^
+   |         |
+   |         help: remove this `mut`
+
+error: aborting due to 1 previous error; 25 warnings emitted
+
+For more information about this error, try `rustc --explain E0425`.

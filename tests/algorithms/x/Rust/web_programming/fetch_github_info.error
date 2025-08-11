@@ -1,0 +1,48 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/fetch_github_info.rs:73:2
+   |
+73 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/fetch_github_info.rs:77:2
+   |
+77 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/fetch_github_info.rs:80:28
+   |
+80 |     let duration_us: i64 = ((_end - _start) / 1000);
+   |                            ^                      ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+80 -     let duration_us: i64 = ((_end - _start) / 1000);
+80 +     let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/fetch_github_info.rs:71:38
+   |
+71 |     let mut res: User = User {login: "", id: 0};
+   |                                      ^^- help: try using a conversion method: `.to_string()`
+   |                                      |
+   |                                      expected `String`, found `&str`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/fetch_github_info.rs:75:9
+   |
+75 |     let mut user: User = fetch_github_info(&"octocat");
+   |         ----^^^^
+   |         |
+   |         help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+error: aborting due to 1 previous error; 4 warnings emitted
+
+For more information about this error, try `rustc --explain E0308`.

@@ -1,0 +1,176 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/topological_sort.rs:69:2
+   |
+69 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/topological_sort.rs:73:2
+   |
+73 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/topological_sort.rs:50:11
+   |
+50 |     while (i < (neighbors.len() as i64)) {
+   |           ^                            ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+50 -     while (i < (neighbors.len() as i64)) {
+50 +     while i < (neighbors.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/topological_sort.rs:55:13
+   |
+55 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+55 -         i = (i + 1);
+55 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/topological_sort.rs:58:8
+   |
+58 |     if ((visited.len() as i64) != (g_vertices.len() as i64)) {
+   |        ^                                                   ^
+   |
+help: remove these parentheses
+   |
+58 -     if ((visited.len() as i64) != (g_vertices.len() as i64)) {
+58 +     if (visited.len() as i64) != (g_vertices.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/topological_sort.rs:60:15
+   |
+60 |         while (j < (g_vertices.len() as i64)) {
+   |               ^                             ^
+   |
+help: remove these parentheses
+   |
+60 -         while (j < (g_vertices.len() as i64)) {
+60 +         while j < (g_vertices.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/topological_sort.rs:65:17
+   |
+65 |             j = (j + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+65 -             j = (j + 1);
+65 +             j = j + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/topological_sort.rs:76:32
+   |
+76 |         let duration_us: i64 = ((_end - _start) / 1000);
+   |                                ^                      ^
+   |
+help: remove these parentheses
+   |
+76 -         let duration_us: i64 = ((_end - _start) / 1000);
+76 +         let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+error[E0277]: `Vec<String>` doesn't implement `std::fmt::Display`
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/topological_sort.rs:40:128
+   |
+40 | ...rom([(String::from("a"), format!("{}", vec![String::from("c").clone(), String::from("b").clone()])), (String::from("b"), format!("{}",...
+   |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `Vec<String>` cannot be formatted with the default formatter
+   |
+   = help: the trait `std::fmt::Display` is not implemented for `Vec<String>`
+   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
+   = note: this error originates in the macro `$crate::__export::format_args` which comes from the expansion of the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0277]: `Vec<String>` doesn't implement `std::fmt::Display`
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/topological_sort.rs:40:224
+   |
+40 | ...])), (String::from("b"), format!("{}", vec![String::from("d").clone(), String::from("e").clone()])), (String::from("c"), format!("{}",...
+   |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `Vec<String>` cannot be formatted with the default formatter
+   |
+   = help: the trait `std::fmt::Display` is not implemented for `Vec<String>`
+   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
+   = note: this error originates in the macro `$crate::__export::format_args` which comes from the expansion of the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0277]: `Vec<_>` doesn't implement `std::fmt::Display`
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/topological_sort.rs:40:320
+   |
+40 | ...e()])), (String::from("c"), format!("{}", vec![])), (String::from("d"), format!("{}", vec![])), (String::from("e"), format!("{}", vec!...
+   |                                ^^^^^^^^^^^^^^^^^^^^^ `Vec<_>` cannot be formatted with the default formatter
+   |
+   = help: the trait `std::fmt::Display` is not implemented for `Vec<_>`
+   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
+   = note: this error originates in the macro `$crate::__export::format_args` which comes from the expansion of the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0277]: `Vec<_>` doesn't implement `std::fmt::Display`
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/topological_sort.rs:40:364
+   |
+40 | ...c![])), (String::from("d"), format!("{}", vec![])), (String::from("e"), format!("{}", vec![]))])));
+   |                                ^^^^^^^^^^^^^^^^^^^^^ `Vec<_>` cannot be formatted with the default formatter
+   |
+   = help: the trait `std::fmt::Display` is not implemented for `Vec<_>`
+   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
+   = note: this error originates in the macro `$crate::__export::format_args` which comes from the expansion of the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0277]: `Vec<_>` doesn't implement `std::fmt::Display`
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/topological_sort.rs:40:408
+   |
+40 | ...c![])), (String::from("e"), format!("{}", vec![]))])));
+   |                                ^^^^^^^^^^^^^^^^^^^^^ `Vec<_>` cannot be formatted with the default formatter
+   |
+   = help: the trait `std::fmt::Display` is not implemented for `Vec<_>`
+   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
+   = note: this error originates in the macro `$crate::__export::format_args` which comes from the expansion of the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/topological_sort.rs:40:93
+   |
+40 | ...|| Mutex::new(HashMap::from([(String::from("a"), format!("{}", vec![String::from("c").clone(), String::from("b").clone()])), (String::from("b"), format!("{}", vec![String::from("d").clone(), String::from("e").clone()])), (String::from("c"), format!("{}", vec![])), (String::from("d"), format!("{}", vec![])), (String::from("e"), format!("{}", vec![]))])));
+   |       ---------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^...g, Vec<String>>`, found `HashMap<String, String>`
+   |       |
+   |       arguments to this function are incorrect
+   |
+   = note: expected struct `HashMap<_, Vec<String>>`
+              found struct `HashMap<_, String>`
+note: associated function defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/sync/poison/mutex.rs:298:18
+
+error[E0599]: no method named `get` found for struct `LazyLock<Mutex<HashMap<String, Vec<String>>>>` in the current scope
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/topological_sort.rs:48:46
+   |
+48 |     let mut neighbors: Vec<String> = g_edges.get(start).cloned().unwrap_or_default();
+   |                                      --------^^^-------
+   |                                      |       |
+   |                                      |       this is an associated function, not a method
+   |                                      help: use associated function syntax instead: `LazyLock::<Mutex<HashMap<String, Vec<String>>>>::get(&g_edges, start)`
+   |
+   = note: found the following associated functions; to be used as methods, functions must have a `self` parameter
+   = note: the candidate is defined in an impl for the type `LazyLock<T, F>`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/topological_sort.rs:71:9
+   |
+71 |     let mut result: Vec<String> = topological_sort(&"a", &mut HashMap::new(), vec![]);
+   |         ----^^^^^^
+   |         |
+   |         help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+error: aborting due to 7 previous errors; 9 warnings emitted
+
+Some errors have detailed explanations: E0277, E0308, E0599.
+For more information about an error, try `rustc --explain E0277`.

@@ -1,0 +1,477 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:68:2
+   |
+68 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:71:2
+   |
+71 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:83:2
+   |
+83 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:96:2
+   |
+96 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:116:2
+    |
+116 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:127:2
+    |
+127 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:140:2
+    |
+140 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:42:11
+   |
+42 |     while (i < (s.len() as i64)) {
+   |           ^                    ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+42 -     while (i < (s.len() as i64)) {
+42 +     while i < (s.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:44:13
+   |
+44 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+44 -         i = (i + 1);
+44 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:49:11
+   |
+49 |     while (i < (s.len() as i64)) {
+   |           ^                    ^
+   |
+help: remove these parentheses
+   |
+49 -     while (i < (s.len() as i64)) {
+49 +     while i < (s.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:50:12
+   |
+50 |         if (i <= r) {
+   |            ^      ^
+   |
+help: remove these parentheses
+   |
+50 -         if (i <= r) {
+50 +         if i <= r {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:51:37
+   |
+51 |             let mut min_edge: i64 = ((r - i) + 1);
+   |                                     ^           ^
+   |
+help: remove these parentheses
+   |
+51 -             let mut min_edge: i64 = ((r - i) + 1);
+51 +             let mut min_edge: i64 = (r - i) + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:53:16
+   |
+53 |             if (zi < min_edge) {
+   |                ^             ^
+   |
+help: remove these parentheses
+   |
+53 -             if (zi < min_edge) {
+53 +             if zi < min_edge {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:59:29
+   |
+59 |             z[i as usize] = (z[i as usize] + 1);
+   |                             ^                 ^
+   |
+help: remove these parentheses
+   |
+59 -             z[i as usize] = (z[i as usize] + 1);
+59 +             z[i as usize] = z[i as usize] + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:61:12
+   |
+61 |         if (((i + z[i as usize]) - 1) > r) {
+   |            ^                             ^
+   |
+help: remove these parentheses
+   |
+61 -         if (((i + z[i as usize]) - 1) > r) {
+61 +         if ((i + z[i as usize]) - 1) > r {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:63:17
+   |
+63 |             r = ((i + z[i as usize]) - 1);
+   |                 ^                       ^
+   |
+help: remove these parentheses
+   |
+63 -             r = ((i + z[i as usize]) - 1);
+63 +             r = (i + z[i as usize]) - 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:65:13
+   |
+65 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+65 -         i = (i + 1);
+65 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:70:12
+   |
+70 | ...rn (((i + z[i as usize]) < (s.len() as i64)) && (s.chars().nth(z[i as usize] as usize).unwrap().to_string().as_str() == s.chars().nth((i + z[i as usize]) as usize).unwrap().to_string().as_str()))
+   |       ^                                                                                                                                                                                              ^
+   |
+help: remove these parentheses
+   |
+70 -     return (((i + z[i as usize]) < (s.len() as i64)) && (s.chars().nth(z[i as usize] as usize).unwrap().to_string().as_str() == s.chars().nth((i + z[i as usize]) as usize).unwrap().to_string().as_str()))
+70 +     return ((i + z[i as usize]) < (s.len() as i64)) && (s.chars().nth(z[i as usize] as usize).unwrap().to_string().as_str() == s.chars().nth((i + z[i as usize]) as usize).unwrap().to_string().as_str())
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:76:11
+   |
+76 |     while (i < (z_res.len() as i64)) {
+   |           ^                        ^
+   |
+help: remove these parentheses
+   |
+76 -     while (i < (z_res.len() as i64)) {
+76 +     while i < (z_res.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:77:12
+   |
+77 |         if (z_res[i as usize] >= (pattern.len() as i64)) {
+   |            ^                                           ^
+   |
+help: remove these parentheses
+   |
+77 -         if (z_res[i as usize] >= (pattern.len() as i64)) {
+77 +         if z_res[i as usize] >= (pattern.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:78:22
+   |
+78 |             answer = (answer + 1);
+   |                      ^          ^
+   |
+help: remove these parentheses
+   |
+78 -             answer = (answer + 1);
+78 +             answer = answer + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:80:13
+   |
+80 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+80 -         i = (i + 1);
+80 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:85:8
+   |
+85 |     if ((a.len() as i64) != (b.len() as i64)) {
+   |        ^                                    ^
+   |
+help: remove these parentheses
+   |
+85 -     if ((a.len() as i64) != (b.len() as i64)) {
+85 +     if (a.len() as i64) != (b.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:89:11
+   |
+89 |     while (i < (a.len() as i64)) {
+   |           ^                    ^
+   |
+help: remove these parentheses
+   |
+89 -     while (i < (a.len() as i64)) {
+89 +     while i < (a.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:90:12
+   |
+90 |         if (a[i as usize] != b[i as usize]) {
+   |            ^                              ^
+   |
+help: remove these parentheses
+   |
+90 -         if (a[i as usize] != b[i as usize]) {
+90 +         if a[i as usize] != b[i as usize] {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:93:13
+   |
+93 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+93 -         i = (i + 1);
+93 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:118:8
+    |
+118 |     if (find_pattern(&"abr", &"abracadabra") != 2) {
+    |        ^                                         ^
+    |
+help: remove these parentheses
+    |
+118 -     if (find_pattern(&"abr", &"abracadabra") != 2) {
+118 +     if find_pattern(&"abr", &"abracadabra") != 2 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:121:8
+    |
+121 |     if (find_pattern(&"a", &"aaaa") != 4) {
+    |        ^                                ^
+    |
+help: remove these parentheses
+    |
+121 -     if (find_pattern(&"a", &"aaaa") != 4) {
+121 +     if find_pattern(&"a", &"aaaa") != 4 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:124:8
+    |
+124 |     if (find_pattern(&"xz", &"zxxzxxz") != 2) {
+    |        ^                                    ^
+    |
+help: remove these parentheses
+    |
+124 -     if (find_pattern(&"xz", &"zxxzxxz") != 2) {
+124 +     if find_pattern(&"xz", &"zxxzxxz") != 2 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:143:28
+    |
+143 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+143 -     let duration_us: i64 = ((_end - _start) / 1000);
+143 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0369]: cannot add `&str` to `&str`
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:74:52
+   |
+74 |     let mut z_res: Vec<i64> = z_function(&(pattern + input_str));
+   |                                            ------- ^ --------- &str
+   |                                            |       |
+   |                                            |       `+` cannot be used to concatenate two `&str` strings
+   |                                            &str
+   |
+   = note: string concatenation requires an owned `String` on the left
+help: create an owned `String` from a string reference
+   |
+74 |     let mut z_res: Vec<i64> = z_function(&(pattern.to_owned() + input_str));
+   |                                                   +++++++++++
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:52:17
+   |
+52 |             let mut zi: i64 = z[(i - l) as usize];
+   |                 ----^^
+   |                 |
+   |                 help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:69:16
+   |
+69 |     fn go_next(mut i: i64, mut z: Vec<i64>, s: &str) -> bool {
+   |                ----^
+   |                |
+   |                help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:69:28
+   |
+69 |     fn go_next(mut i: i64, mut z: Vec<i64>, s: &str) -> bool {
+   |                            ----^
+   |                            |
+   |                            help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:84:20
+   |
+84 |     fn list_eq_int(mut a: Vec<i64>, mut b: Vec<i64>) -> bool {
+   |                    ----^
+   |                    |
+   |                    help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:84:37
+   |
+84 |     fn list_eq_int(mut a: Vec<i64>, mut b: Vec<i64>) -> bool {
+   |                                     ----^
+   |                                     |
+   |                                     help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:98:9
+   |
+98 |     let mut s1: String = String::from("abracadabra").clone();
+   |         ----^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:99:9
+   |
+99 |     let mut expected1: Vec<i64> = vec![0, 0, 0, 1, 0, 1, 0, 4, 0, 0, 1];
+   |         ----^^^^^^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:100:9
+    |
+100 |     let mut r1: Vec<i64> = z_function(&s1);
+    |         ----^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:104:9
+    |
+104 |     let mut s2: String = String::from("aaaa").clone();
+    |         ----^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:105:9
+    |
+105 |     let mut expected2: Vec<i64> = vec![0, 3, 2, 1];
+    |         ----^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:106:9
+    |
+106 |     let mut r2: Vec<i64> = z_function(&s2);
+    |         ----^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:110:9
+    |
+110 |     let mut s3: String = String::from("zxxzxxz").clone();
+    |         ----^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:111:9
+    |
+111 |     let mut expected3: Vec<i64> = vec![0, 0, 0, 4, 0, 0, 1];
+    |         ----^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:112:9
+    |
+112 |     let mut r3: Vec<i64> = z_function(&s3);
+    |         ----^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:131:9
+    |
+131 |     let mut r1: Vec<i64> = z_function(&"abracadabra");
+    |         ----^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:132:9
+    |
+132 |     let mut r2: Vec<i64> = z_function(&"aaaa");
+    |         ----^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/strings/z_function.rs:133:9
+    |
+133 |     let mut r3: Vec<i64> = z_function(&"zxxzxxz");
+    |         ----^^
+    |         |
+    |         help: remove this `mut`
+
+error: aborting due to 1 previous error; 47 warnings emitted
+
+For more information about this error, try `rustc --explain E0369`.

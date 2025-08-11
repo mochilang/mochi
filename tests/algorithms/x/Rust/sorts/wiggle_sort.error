@@ -1,0 +1,193 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/wiggle_sort.rs:53:2
+   |
+53 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/wiggle_sort.rs:67:2
+   |
+67 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/wiggle_sort.rs:42:11
+   |
+42 |     while (k < (xs.len() as i64)) {
+   |           ^                     ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+42 -     while (k < (xs.len() as i64)) {
+42 +     while k < (xs.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/wiggle_sort.rs:43:12
+   |
+43 |         if (k == i) {
+   |            ^      ^
+   |
+help: remove these parentheses
+   |
+43 -         if (k == i) {
+43 +         if k == i {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/wiggle_sort.rs:45:19
+   |
+45 |         } else if (k == j) {
+   |                   ^      ^
+   |
+help: remove these parentheses
+   |
+45 -         } else if (k == j) {
+45 +         } else if k == j {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/wiggle_sort.rs:50:13
+   |
+50 |         k = (k + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+50 -         k = (k + 1);
+50 +         k = k + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/wiggle_sort.rs:57:11
+   |
+57 |     while (i < (res.len() as i64)) {
+   |           ^                      ^
+   |
+help: remove these parentheses
+   |
+57 -     while (i < (res.len() as i64)) {
+57 +     while i < (res.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/wiggle_sort.rs:58:24
+   |
+58 |         let mut j = if (i == 0) { ((res.len() as i64) - 1) } else { (i - 1) };
+   |                        ^      ^
+   |
+help: remove these parentheses
+   |
+58 -         let mut j = if (i == 0) { ((res.len() as i64) - 1) } else { (i - 1) };
+58 +         let mut j = if i == 0 { ((res.len() as i64) - 1) } else { (i - 1) };
+   |
+
+warning: unnecessary parentheses around block return value
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/wiggle_sort.rs:58:35
+   |
+58 |         let mut j = if (i == 0) { ((res.len() as i64) - 1) } else { (i - 1) };
+   |                                   ^                      ^
+   |
+help: remove these parentheses
+   |
+58 -         let mut j = if (i == 0) { ((res.len() as i64) - 1) } else { (i - 1) };
+58 +         let mut j = if (i == 0) { (res.len() as i64) - 1 } else { (i - 1) };
+   |
+
+warning: unnecessary parentheses around block return value
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/wiggle_sort.rs:58:69
+   |
+58 |         let mut j = if (i == 0) { ((res.len() as i64) - 1) } else { (i - 1) };
+   |                                                                     ^     ^
+   |
+help: remove these parentheses
+   |
+58 -         let mut j = if (i == 0) { ((res.len() as i64) - 1) } else { (i - 1) };
+58 +         let mut j = if (i == 0) { ((res.len() as i64) - 1) } else { i - 1 };
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/wiggle_sort.rs:61:12
+   |
+61 |         if ((((i % 2) == 1) as f64) == (prev > curr)) {
+   |            ^                                        ^
+   |
+help: remove these parentheses
+   |
+61 -         if ((((i % 2) == 1) as f64) == (prev > curr)) {
+61 +         if (((i % 2) == 1) as f64) == (prev > curr) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/wiggle_sort.rs:64:13
+   |
+64 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+64 -         i = (i + 1);
+64 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/wiggle_sort.rs:74:28
+   |
+74 |     let duration_us: i64 = ((_end - _start) / 1000);
+   |                            ^                      ^
+   |
+help: remove these parentheses
+   |
+74 -     let duration_us: i64 = ((_end - _start) / 1000);
+74 +     let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/wiggle_sort.rs:61:40
+   |
+61 |         if ((((i % 2) == 1) as f64) == (prev > curr)) {
+   |             -----------------------    ^^^^^^^^^^^^^ expected `f64`, found `bool`
+   |             |
+   |             expected because this is `f64`
+
+error[E0606]: casting `bool` as `f64` is invalid
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/wiggle_sort.rs:61:13
+   |
+61 |         if ((((i % 2) == 1) as f64) == (prev > curr)) {
+   |             ^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: cast through an integer first
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/wiggle_sort.rs:39:13
+   |
+39 |     fn swap(mut xs: Vec<f64>, mut i: i64, mut j: i64) -> Vec<f64> {
+   |             ----^^
+   |             |
+   |             help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/wiggle_sort.rs:39:31
+   |
+39 |     fn swap(mut xs: Vec<f64>, mut i: i64, mut j: i64) -> Vec<f64> {
+   |                               ----^
+   |                               |
+   |                               help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/sorts/wiggle_sort.rs:39:43
+   |
+39 |     fn swap(mut xs: Vec<f64>, mut i: i64, mut j: i64) -> Vec<f64> {
+   |                                           ----^
+   |                                           |
+   |                                           help: remove this `mut`
+
+error: aborting due to 2 previous errors; 16 warnings emitted
+
+Some errors have detailed explanations: E0308, E0606.
+For more information about an error, try `rustc --explain E0308`.

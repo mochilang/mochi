@@ -1,0 +1,233 @@
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_billionaires.rs:116:8
+    |
+116 |     if (value >= 0.0) {
+    |        ^            ^
+    |
+    = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+    |
+116 -     if (value >= 0.0) {
+116 +     if value >= 0.0 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_billionaires.rs:117:31
+    |
+117 |         let mut scaled: i64 = (((value * 10.0) + 0.5) as i64);
+    |                               ^                             ^
+    |
+help: remove these parentheses
+    |
+117 -         let mut scaled: i64 = (((value * 10.0) + 0.5) as i64);
+117 +         let mut scaled: i64 = ((value * 10.0) + 0.5) as i64;
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_billionaires.rs:118:16
+    |
+118 |         return ((scaled as f64) / 10.0)
+    |                ^                      ^
+    |
+help: remove these parentheses
+    |
+118 -         return ((scaled as f64) / 10.0)
+118 +         return (scaled as f64) / 10.0
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_billionaires.rs:120:27
+    |
+120 |     let mut scaled: i64 = (((value * 10.0) - 0.5) as i64);
+    |                           ^                             ^
+    |
+help: remove these parentheses
+    |
+120 -     let mut scaled: i64 = (((value * 10.0) - 0.5) as i64);
+120 +     let mut scaled: i64 = ((value * 10.0) - 0.5) as i64;
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_billionaires.rs:121:12
+    |
+121 |     return ((scaled as f64) / 10.0)
+    |            ^                      ^
+    |
+help: remove these parentheses
+    |
+121 -     return ((scaled as f64) / 10.0)
+121 +     return (scaled as f64) / 10.0
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_billionaires.rs:125:12
+    |
+125 |     return (((today_ms - birth_ms) / ms_per_year) as i64)
+    |            ^                                            ^
+    |
+help: remove these parentheses
+    |
+125 -     return (((today_ms - birth_ms) / ms_per_year) as i64)
+125 +     return ((today_ms - birth_ms) / ms_per_year) as i64
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_billionaires.rs:131:45
+    |
+131 |         let mut worth_billion: f64 = round1((person.finalWorth / 1000.0));
+    |                                             ^                          ^
+    |
+help: remove these parentheses
+    |
+131 -         let mut worth_billion: f64 = round1((person.finalWorth / 1000.0));
+131 +         let mut worth_billion: f64 = round1(person.finalWorth / 1000.0);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_billionaires.rs:145:32
+    |
+145 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+145 -         let duration_us: i64 = ((_end - _start) / 1000);
+145 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_billionaires.rs:128:56
+    |
+128 |     let mut response: Response = Response {personList: 0};
+    |                                                        ^ expected `PersonsWrapper`, found integer
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_billionaires.rs:140:197
+    |
+140 | ...format!("{}{}", format!("{}{}", (*b).clone()["Name" as usize], " | "), (*b).clone()["Source" as usize]), " | "), (*b).clone()["Country...
+    |                                                 ^^^^^^^^^^^^^^^ expected `&_`, found `usize`
+    |
+    = note: expected reference `&_`
+                    found type `usize`
+help: consider borrowing here
+    |
+140 |         println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", (*b).clone()[&("Name" as usize)], " | "), (*b).clone()["Source" as usize]), " | "), (*b).clone()["Country" as usize]), " | "), (*b).clone()["Gender" as usize]), " | "), (*b).clone()["Worth ($)" as usize]), " | "), (*b).clone()["Age" as usize]));
+    |                                                                                                                                                                                                     ++               +
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_billionaires.rs:140:236
+    |
+140 | ...ne()["Name" as usize], " | "), (*b).clone()["Source" as usize]), " | "), (*b).clone()["Country" as usize]), " | "), (*b).clone()["Gend...
+    |                                                ^^^^^^^^^^^^^^^^^ expected `&_`, found `usize`
+    |
+    = note: expected reference `&_`
+                    found type `usize`
+help: consider borrowing here
+    |
+140 |         println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", (*b).clone()["Name" as usize], " | "), (*b).clone()[&("Source" as usize)]), " | "), (*b).clone()["Country" as usize]), " | "), (*b).clone()["Gender" as usize]), " | "), (*b).clone()["Worth ($)" as usize]), " | "), (*b).clone()["Age" as usize]));
+    |                                                                                                                                                                                                                                            ++                 +
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_billionaires.rs:140:278
+    |
+140 | ...["Source" as usize]), " | "), (*b).clone()["Country" as usize]), " | "), (*b).clone()["Gender" as usize]), " | "), (*b).clone()["Worth...
+    |                                               ^^^^^^^^^^^^^^^^^^ expected `&_`, found `usize`
+    |
+    = note: expected reference `&_`
+                    found type `usize`
+help: consider borrowing here
+    |
+140 |         println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", (*b).clone()["Name" as usize], " | "), (*b).clone()["Source" as usize]), " | "), (*b).clone()[&("Country" as usize)]), " | "), (*b).clone()["Gender" as usize]), " | "), (*b).clone()["Worth ($)" as usize]), " | "), (*b).clone()["Age" as usize]));
+    |                                                                                                                                                                                                                                                                                      ++                  +
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_billionaires.rs:140:321
+    |
+140 | ...["Country" as usize]), " | "), (*b).clone()["Gender" as usize]), " | "), (*b).clone()["Worth ($)" as usize]), " | "), (*b).clone()["Ag...
+    |                                                ^^^^^^^^^^^^^^^^^ expected `&_`, found `usize`
+    |
+    = note: expected reference `&_`
+                    found type `usize`
+help: consider borrowing here
+    |
+140 |         println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", (*b).clone()["Name" as usize], " | "), (*b).clone()["Source" as usize]), " | "), (*b).clone()["Country" as usize]), " | "), (*b).clone()[&("Gender" as usize)]), " | "), (*b).clone()["Worth ($)" as usize]), " | "), (*b).clone()["Age" as usize]));
+    |                                                                                                                                                                                                                                                                                                                                 ++                 +
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_billionaires.rs:140:363
+    |
+140 | ..."Gender" as usize]), " | "), (*b).clone()["Worth ($)" as usize]), " | "), (*b).clone()["Age" as usize]));
+    |                                              ^^^^^^^^^^^^^^^^^^^^ expected `&_`, found `usize`
+    |
+    = note: expected reference `&_`
+                    found type `usize`
+help: consider borrowing here
+    |
+140 |         println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", (*b).clone()["Name" as usize], " | "), (*b).clone()["Source" as usize]), " | "), (*b).clone()["Country" as usize]), " | "), (*b).clone()["Gender" as usize]), " | "), (*b).clone()[&("Worth ($)" as usize)]), " | "), (*b).clone()["Age" as usize]));
+    |                                                                                                                                                                                                                                                                                                                                                                           ++                    +
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_billionaires.rs:140:408
+    |
+140 | ..."Worth ($)" as usize]), " | "), (*b).clone()["Age" as usize]));
+    |                                                 ^^^^^^^^^^^^^^ expected `&_`, found `usize`
+    |
+    = note: expected reference `&_`
+                    found type `usize`
+help: consider borrowing here
+    |
+140 |         println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", (*b).clone()["Name" as usize], " | "), (*b).clone()["Source" as usize]), " | "), (*b).clone()["Country" as usize]), " | "), (*b).clone()["Gender" as usize]), " | "), (*b).clone()["Worth ($)" as usize]), " | "), (*b).clone()[&("Age" as usize)]));
+    |                                                                                                                                                                                                                                                                                                                                                                                                                        ++              +
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_billionaires.rs:140:197
+    |
+140 | ...rmat!("{}{}", format!("{}{}", format!("{}{}", (*b).clone()["Name" as usize], " | "), (*b).clone()["Source" as usize]), " | "), (*b).cl...
+    |                                                               ^^^^^^^^^^^^^^^
+    |
+    = help: cast through a raw pointer first
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_billionaires.rs:140:236
+    |
+140 | ...}{}", (*b).clone()["Name" as usize], " | "), (*b).clone()["Source" as usize]), " | "), (*b).clone()["Country" as usize]), " | "), (*b)...
+    |                                                              ^^^^^^^^^^^^^^^^^
+    |
+    = help: cast through a raw pointer first
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_billionaires.rs:140:278
+    |
+140 | ...), (*b).clone()["Source" as usize]), " | "), (*b).clone()["Country" as usize]), " | "), (*b).clone()["Gender" as usize]), " | "), (*b)...
+    |                                                              ^^^^^^^^^^^^^^^^^^
+    |
+    = help: cast through a raw pointer first
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_billionaires.rs:140:321
+    |
+140 | ..., (*b).clone()["Country" as usize]), " | "), (*b).clone()["Gender" as usize]), " | "), (*b).clone()["Worth ($)" as usize]), " | "), (*...
+    |                                                              ^^^^^^^^^^^^^^^^^
+    |
+    = help: cast through a raw pointer first
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_billionaires.rs:140:363
+    |
+140 | ..., (*b).clone()["Gender" as usize]), " | "), (*b).clone()["Worth ($)" as usize]), " | "), (*b).clone()["Age" as usize]));
+    |                                                             ^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: cast through a raw pointer first
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_billionaires.rs:140:408
+    |
+140 | ..., (*b).clone()["Worth ($)" as usize]), " | "), (*b).clone()["Age" as usize]));
+    |                                                                ^^^^^^^^^^^^^^
+    |
+    = help: cast through a raw pointer first
+
+error: aborting due to 13 previous errors; 8 warnings emitted
+
+Some errors have detailed explanations: E0308, E0606.
+For more information about an error, try `rustc --explain E0308`.

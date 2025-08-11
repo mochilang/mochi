@@ -325,8 +325,50 @@ type CallExpr struct {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
+	pts, hasPts := funParamTypes[c.Func]
+	mutNames := map[string]bool{}
+	mutIdx := map[int]bool{}
+	if hasPts {
+		for i, a := range c.Args {
+			if i < len(pts) && strings.HasPrefix(pts[i], "&mut ") {
+				if nr, ok := a.(*NameRef); ok {
+					mutNames[nr.Name] = true
+					mutIdx[i] = true
+				}
+			}
+		}
+	}
+	type temp struct {
+		name string
+		expr Expr
+	}
+	var temps []temp
+	for i, a := range c.Args {
+		if mutIdx[i] {
+			continue
+		}
+		if usesAnyName(a, mutNames) {
+			tmp := fmt.Sprintf("_tmp%d", len(temps))
+			temps = append(temps, temp{name: tmp, expr: a})
+			c.Args[i] = &NameRef{Name: tmp}
+		}
+	}
+	if len(temps) > 0 {
+		io.WriteString(w, "{")
+		for _, t := range temps {
+			io.WriteString(w, " let ")
+			io.WriteString(w, t.name)
+			io.WriteString(w, " = ")
+			t.expr.emit(w)
+			io.WriteString(w, ";")
+		}
+		io.WriteString(w, " ")
+	}
 	if c.Func == "padStart" && len(c.Args) == 3 {
 		(&PadStartExpr{Str: c.Args[0], Width: c.Args[1], Pad: c.Args[2]}).emit(w)
+		if len(temps) > 0 {
+			io.WriteString(w, "}")
+		}
 		return
 	}
 	if c.Func == "panic" || c.Func == "error" {
@@ -358,6 +400,9 @@ func (c *CallExpr) emit(w io.Writer) {
 	if strings.HasSuffix(c.Func, "_clone") && len(c.Args) == 1 {
 		c.Args[0].emit(w)
 		io.WriteString(w, ".clone()")
+		if len(temps) > 0 {
+			io.WriteString(w, "}")
+		}
 		return
 	}
 	if strings.Contains(c.Func, "::") {
@@ -366,7 +411,6 @@ func (c *CallExpr) emit(w io.Writer) {
 		io.WriteString(w, rustIdent(c.Func))
 	}
 	io.WriteString(w, "(")
-	pts, hasPts := funParamTypes[c.Func]
 	for i, a := range c.Args {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -445,6 +489,60 @@ func (c *CallExpr) emit(w io.Writer) {
 		a.emit(w)
 	}
 	io.WriteString(w, ")")
+	if len(temps) > 0 {
+		io.WriteString(w, " }")
+	}
+}
+
+func usesAnyName(e Expr, names map[string]bool) bool {
+	for n := range names {
+		if usesName(e, n) {
+			return true
+		}
+	}
+	return false
+}
+
+func usesName(e Expr, name string) bool {
+	switch ex := e.(type) {
+	case *NameRef:
+		return ex.Name == name
+	case *BinaryExpr:
+		if usesName(ex.Left, name) {
+			return true
+		}
+		if usesName(ex.Right, name) {
+			return true
+		}
+	case *CallExpr:
+		for _, a := range ex.Args {
+			if usesName(a, name) {
+				return true
+			}
+		}
+	case *UnaryExpr:
+		return usesName(ex.Expr, name)
+	case *IndexExpr:
+		if usesName(ex.Target, name) || usesName(ex.Index, name) {
+			return true
+		}
+	case *ListLit:
+		for _, el := range ex.Elems {
+			if usesName(el, name) {
+				return true
+			}
+		}
+	case *MethodCallExpr:
+		if usesName(ex.Receiver, name) {
+			return true
+		}
+		for _, a := range ex.Args {
+			if usesName(a, name) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // PrintExpr emits a formatted println! call, optionally trimming trailing spaces.
@@ -473,11 +571,17 @@ func (p *PrintExpr) emit(w io.Writer) {
 			a.emit(w)
 			io.WriteString(w, " { 1 } else { 0 }")
 		} else {
-			if inferType(a) == "f64" {
+			t := inferType(a)
+			switch {
+			case t == "f64":
 				io.WriteString(w, "format!(\"{:?}\", ")
 				a.emit(w)
 				io.WriteString(w, ")")
-			} else {
+			case strings.HasPrefix(t, "Vec<") || strings.HasPrefix(t, "HashMap<"):
+				io.WriteString(w, "format!(\"{:?}\", ")
+				a.emit(w)
+				io.WriteString(w, ")")
+			default:
 				a.emit(w)
 			}
 		}
@@ -6641,7 +6745,7 @@ func rustType(t string) string {
 		// Use String for dynamic values to better support functions
 		// returning mixed types like [string, int].
 		return "String"
-	case "void":
+	case "void", "unit":
 		return ""
 	case "bool":
 		return "bool"
