@@ -1,0 +1,110 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/strings/z_function.scala:51: error: overloaded method value apply with alternatives:
+  (x: java.math.BigInteger)scala.math.BigInt <and>
+  (x: String)scala.math.BigInt <and>
+  (x: Array[Byte])scala.math.BigInt <and>
+  (l: Long)scala.math.BigInt <and>
+  (i: Int)scala.math.BigInt
+ cannot be applied to (scala.math.BigInt)
+      val zi: BigInt = z.lift(((i - l).toInt).toInt).getOrElse(BigInt(BigInt(0)))
+                                                               ^
+/workspace/mochi/tests/algorithms/x/Scala/strings/z_function.scala:58: error: overloaded method value apply with alternatives:
+  (x: java.math.BigInteger)scala.math.BigInt <and>
+  (x: String)scala.math.BigInt <and>
+  (x: Array[Byte])scala.math.BigInt <and>
+  (l: Long)scala.math.BigInt <and>
+  (i: Int)scala.math.BigInt
+ cannot be applied to (scala.math.BigInt)
+      z((i).toInt) = z.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0))) + BigInt(1)
+                                                       ^
+/workspace/mochi/tests/algorithms/x/Scala/strings/z_function.scala:60: error: overloaded method value apply with alternatives:
+  (x: java.math.BigInteger)scala.math.BigInt <and>
+  (x: String)scala.math.BigInt <and>
+  (x: Array[Byte])scala.math.BigInt <and>
+  (l: Long)scala.math.BigInt <and>
+  (i: Int)scala.math.BigInt
+ cannot be applied to (scala.math.BigInt)
+    if (i + z.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0))) - BigInt(1) > r) {
+                                              ^
+/workspace/mochi/tests/algorithms/x/Scala/strings/z_function.scala:62: error: overloaded method value apply with alternatives:
+  (x: java.math.BigInteger)scala.math.BigInt <and>
+  (x: String)scala.math.BigInt <and>
+  (x: Array[Byte])scala.math.BigInt <and>
+  (l: Long)scala.math.BigInt <and>
+  (i: Int)scala.math.BigInt
+ cannot be applied to (scala.math.BigInt)
+      r = i + z.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0))) - BigInt(1)
+                                                ^
+/workspace/mochi/tests/algorithms/x/Scala/strings/z_function.scala:70: error: overloaded method value apply with alternatives:
+  (x: java.math.BigInteger)scala.math.BigInt <and>
+  (x: String)scala.math.BigInt <and>
+  (x: Array[Byte])scala.math.BigInt <and>
+  (l: Long)scala.math.BigInt <and>
+  (i: Int)scala.math.BigInt
+ cannot be applied to (scala.math.BigInt)
+  return (i + z.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0))) < BigInt((s).size) && s.slice((z.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0))).toInt).toInt, (z.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0))).toInt).toInt + 1) == s.slice(((i + z.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0)))).toInt).toInt, ((i + z.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0)))).toInt).toInt + 1)).asInstanceOf[Boolean]
+                                                ^
+/workspace/mochi/tests/algorithms/x/Scala/strings/z_function.scala:70: error: overloaded method value apply with alternatives:
+  (x: java.math.BigInteger)scala.math.BigInt <and>
+  (x: String)scala.math.BigInt <and>
+  (x: Array[Byte])scala.math.BigInt <and>
+  (l: Long)scala.math.BigInt <and>
+  (i: Int)scala.math.BigInt
+ cannot be applied to (scala.math.BigInt)
+  return (i + z.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0))) < BigInt((s).size) && s.slice((z.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0))).toInt).toInt, (z.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0))).toInt).toInt + 1) == s.slice(((i + z.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0)))).toInt).toInt, ((i + z.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0)))).toInt).toInt + 1)).asInstanceOf[Boolean]
+                                                                                                                                    ^
+/workspace/mochi/tests/algorithms/x/Scala/strings/z_function.scala:70: error: overloaded method value apply with alternatives:
+  (x: java.math.BigInteger)scala.math.BigInt <and>
+  (x: String)scala.math.BigInt <and>
+  (x: Array[Byte])scala.math.BigInt <and>
+  (l: Long)scala.math.BigInt <and>
+  (i: Int)scala.math.BigInt
+ cannot be applied to (scala.math.BigInt)
+  return (i + z.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0))) < BigInt((s).size) && s.slice((z.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0))).toInt).toInt, (z.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0))).toInt).toInt + 1) == s.slice(((i + z.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0)))).toInt).toInt, ((i + z.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0)))).toInt).toInt + 1)).asInstanceOf[Boolean]
+                                                                                                                                                                                                        ^
+/workspace/mochi/tests/algorithms/x/Scala/strings/z_function.scala:70: error: overloaded method value apply with alternatives:
+  (x: java.math.BigInteger)scala.math.BigInt <and>
+  (x: String)scala.math.BigInt <and>
+  (x: Array[Byte])scala.math.BigInt <and>
+  (l: Long)scala.math.BigInt <and>
+  (i: Int)scala.math.BigInt
+ cannot be applied to (scala.math.BigInt)
+  return (i + z.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0))) < BigInt((s).size) && s.slice((z.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0))).toInt).toInt, (z.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0))).toInt).toInt + 1) == s.slice(((i + z.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0)))).toInt).toInt, ((i + z.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0)))).toInt).toInt + 1)).asInstanceOf[Boolean]
+                                                                                                                                                                                                                                                                                                ^
+/workspace/mochi/tests/algorithms/x/Scala/strings/z_function.scala:70: error: overloaded method value apply with alternatives:
+  (x: java.math.BigInteger)scala.math.BigInt <and>
+  (x: String)scala.math.BigInt <and>
+  (x: Array[Byte])scala.math.BigInt <and>
+  (l: Long)scala.math.BigInt <and>
+  (i: Int)scala.math.BigInt
+ cannot be applied to (scala.math.BigInt)
+  return (i + z.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0))) < BigInt((s).size) && s.slice((z.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0))).toInt).toInt, (z.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0))).toInt).toInt + 1) == s.slice(((i + z.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0)))).toInt).toInt, ((i + z.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0)))).toInt).toInt + 1)).asInstanceOf[Boolean]
+                                                                                                                                                                                                                                                                                                                                                                          ^
+/workspace/mochi/tests/algorithms/x/Scala/strings/z_function.scala:78: error: overloaded method value apply with alternatives:
+  (x: java.math.BigInteger)scala.math.BigInt <and>
+  (x: String)scala.math.BigInt <and>
+  (x: Array[Byte])scala.math.BigInt <and>
+  (l: Long)scala.math.BigInt <and>
+  (i: Int)scala.math.BigInt
+ cannot be applied to (scala.math.BigInt)
+    if (z_res.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0))) >= BigInt((pattern).size)) {
+                                              ^
+/workspace/mochi/tests/algorithms/x/Scala/strings/z_function.scala:92: error: overloaded method value apply with alternatives:
+  (x: java.math.BigInteger)scala.math.BigInt <and>
+  (x: String)scala.math.BigInt <and>
+  (x: Array[Byte])scala.math.BigInt <and>
+  (l: Long)scala.math.BigInt <and>
+  (i: Int)scala.math.BigInt
+ cannot be applied to (scala.math.BigInt)
+    if (a.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0))) != b.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0)))) {
+                                          ^
+/workspace/mochi/tests/algorithms/x/Scala/strings/z_function.scala:92: error: overloaded method value apply with alternatives:
+  (x: java.math.BigInteger)scala.math.BigInt <and>
+  (x: String)scala.math.BigInt <and>
+  (x: Array[Byte])scala.math.BigInt <and>
+  (l: Long)scala.math.BigInt <and>
+  (i: Int)scala.math.BigInt
+ cannot be applied to (scala.math.BigInt)
+    if (a.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0))) != b.lift((i.toInt).toInt).getOrElse(BigInt(BigInt(0)))) {
+                                                                                                  ^
+12 errors found

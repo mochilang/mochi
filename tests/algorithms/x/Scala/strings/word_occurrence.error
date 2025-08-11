@@ -1,0 +1,29 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/strings/word_occurrence.scala:47: error: overloaded method value apply with alternatives:
+  (x: java.math.BigInteger)scala.math.BigInt <and>
+  (x: String)scala.math.BigInt <and>
+  (x: Array[Byte])scala.math.BigInt <and>
+  (l: Long)scala.math.BigInt <and>
+  (i: Int)scala.math.BigInt
+ cannot be applied to (scala.math.BigInt)
+          occurrence.update(word, occurrence.getOrElse(word.toString, BigInt(BigInt(0))).asInstanceOf[BigInt] + BigInt(1))
+                                                                      ^
+/workspace/mochi/tests/algorithms/x/Scala/strings/word_occurrence.scala:60: error: overloaded method value apply with alternatives:
+  (x: java.math.BigInteger)scala.math.BigInt <and>
+  (x: String)scala.math.BigInt <and>
+  (x: Array[Byte])scala.math.BigInt <and>
+  (l: Long)scala.math.BigInt <and>
+  (i: Int)scala.math.BigInt
+ cannot be applied to (scala.math.BigInt)
+      occurrence.update(word, occurrence.getOrElse(word.toString, BigInt(BigInt(0))).asInstanceOf[BigInt] + BigInt(1))
+                                                                  ^
+/workspace/mochi/tests/algorithms/x/Scala/strings/word_occurrence.scala:71: error: overloaded method value apply with alternatives:
+  (x: java.math.BigInteger)scala.math.BigInt <and>
+  (x: String)scala.math.BigInt <and>
+  (x: Array[Byte])scala.math.BigInt <and>
+  (l: Long)scala.math.BigInt <and>
+  (i: Int)scala.math.BigInt
+ cannot be applied to (scala.math.BigInt)
+    println(w + ": " + _str(result.getOrElse(w.toString, BigInt(BigInt(0))).asInstanceOf[BigInt]))
+                                                         ^
+three errors found

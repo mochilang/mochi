@@ -1,0 +1,11 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/strings/top_k_frequent_words.scala:75: error: overloaded method value apply with alternatives:
+  (x: java.math.BigInteger)scala.math.BigInt <and>
+  (x: String)scala.math.BigInt <and>
+  (x: Array[Byte])scala.math.BigInt <and>
+  (l: Long)scala.math.BigInt <and>
+  (i: Int)scala.math.BigInt
+ cannot be applied to (scala.math.BigInt)
+      freq_map.update(w, freq_map.getOrElse(w.toString, BigInt(BigInt(0))).asInstanceOf[BigInt] + BigInt(1))
+                                                        ^
+one error found

@@ -1,0 +1,5 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/web_programming/crawl_google_scholar_citation.scala:104: error: not found: value __name__
+    if (`__name__` == "__main__") {
+        ^
+one error found

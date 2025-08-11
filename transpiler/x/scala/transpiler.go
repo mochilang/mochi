@@ -2623,6 +2623,28 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				vs.Type = valType
 			}
 		}
+		if ix, ok := target.(*IndexExpr); ok {
+			if n, ok2 := ix.Value.(*Name); ok2 {
+				keyType := inferTypeWithEnv(ix.Index, env)
+				if keyType == "" || keyType == "Any" {
+					if _, ok := ix.Index.(*StringLit); ok {
+						keyType = "String"
+					}
+				}
+				if keyType == "String" && valType != "" && valType != "Any" {
+					mapTyp := fmt.Sprintf("scala.collection.mutable.Map[%s,%s]", keyType, valType)
+					localVarTypes[n.Name] = mapTyp
+					if vs, ok3 := varDecls[n.Name]; ok3 {
+						vs.Type = fmt.Sprintf("Map[%s,%s]", keyType, valType)
+						vs.Value = &CallExpr{Fn: &Name{Name: fmt.Sprintf("scala.collection.mutable.Map[%s,%s]", keyType, valType)}, Args: nil}
+					}
+					e, err = convertExpr(st.Assign.Value, env)
+					if err != nil {
+						return nil, err
+					}
+				}
+			}
+		}
 		return &AssignStmt{Target: target, Value: e}, nil
 	case st.Fun != nil:
 		return convertFunStmt(st.Fun, env)
@@ -5543,6 +5565,8 @@ func defaultExpr(typ string) Expr {
 		return &StringLit{Value: ""}
 	case typ == "Boolean":
 		return &BoolLit{Value: false}
+	case typ == "BigInt":
+		return &CallExpr{Fn: &Name{Name: "BigInt"}, Args: []Expr{&IntLit{Value: 0}}}
 	case strings.Contains(typ, "ArrayBuffer"):
 		if idx := strings.Index(typ, "ArrayBuffer["); idx >= 0 {
 			elem := strings.TrimSuffix(typ[idx+len("ArrayBuffer["):], "]")
