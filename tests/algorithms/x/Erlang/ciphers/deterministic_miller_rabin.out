@@ -1,0 +1,28 @@
+/workspace/mochi/tests/algorithms/x/Erlang/ciphers/deterministic_miller_rabin.erl:150:31: Warning: variable 'Last_2' exported from 'case' (line 116, column 9)
+%  150| {Allow_probable, Bounds, I_4, Last_2, Limit, N, Plist_len_3, Primes} = Fun_2(Allow_probable, Bounds, I, Last_2, Limit, N, Plist_len, Primes),
+%     |                               ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/ciphers/deterministic_miller_rabin.erl:162:36: Warning: variable 'Last_2' exported from 'case' (line 116, column 9)
+%  162| {Allow_probable, Bounds, D_2, I_4, Last_2, Limit, N, Plist_len_3, Primes, S_2} = Fun_3(Allow_probable, Bounds, D, I_4, Last_2, Limit, N, Plist_len_3, Primes, S),
+%     |                                    ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/ciphers/deterministic_miller_rabin.erl:206:41: Warning: variable 'Last_2' exported from 'case' (line 116, column 9)
+%  206| {Allow_probable, Bounds, D_2, I_4, J_2, Last_2, Limit, N, Plist_len_3, Primes, S_2} = Fun_6(Allow_probable, Bounds, D_2, I_4, J, Last_2, Limit, N, Plist_len_3, Primes, S_2),
+%     |                                         ^
+
+false
+true
+false
+true
+false
+true
+false
+true
+false
+true
+false
+true
+false
+true
+false
+true

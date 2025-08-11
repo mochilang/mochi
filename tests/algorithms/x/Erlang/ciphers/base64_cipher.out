@@ -1,0 +1,22 @@
+/workspace/mochi/tests/algorithms/x/Erlang/ciphers/base64_cipher.erl:224:2: Warning: variable 'Bits_4' exported from 'case' (line 203, column 9)
+%  224| {Bits_4, Data, Encoded_2, I_8, J_2, Pad_bits_3} = Fun_7(Bits_4, Data, Encoded, I_8, J, Pad_bits_3),
+%     |  ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/ciphers/base64_cipher.erl:224:37: Warning: variable 'Pad_bits_3' exported from 'case' (line 203, column 9)
+%  224| {Bits_4, Data, Encoded_2, I_8, J_2, Pad_bits_3} = Fun_7(Bits_4, Data, Encoded, I_8, J, Pad_bits_3),
+%     |                                     ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/ciphers/base64_cipher.erl:235:2: Warning: variable 'Bits_4' exported from 'case' (line 203, column 9)
+%  235| {Bits_4, Data, Encoded_3, I_8, J_2, Pad_4, Pad_bits_3} = Fun_8(Bits_4, Data, Encoded_2, I_8, J_2, Pad_3, Pad_bits_3),
+%     |  ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/ciphers/base64_cipher.erl:235:44: Warning: variable 'Pad_bits_3' exported from 'case' (line 203, column 9)
+%  235| {Bits_4, Data, Encoded_3, I_8, J_2, Pad_4, Pad_bits_3} = Fun_8(Bits_4, Data, Encoded_2, I_8, J_2, Pad_3, Pad_bits_3),
+%     |                                            ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/ciphers/base64_cipher.erl:284:2: Warning: variable 'Bits_8' exported from 'case' (line 267, column 9)
+%  284| {Bits_8, Bytes_2, End_2, K_2, M_2, Padding_2, S_4} = Fun_11(Bits_8, Bytes, End_2, K_2, M, Padding_2, S_4),
+%     |  ^
+
+"TW9jaGk="
+"Mochi"

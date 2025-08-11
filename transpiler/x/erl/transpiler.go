@@ -25,7 +25,13 @@ mochi_now() ->
     case erlang:get(now_seed) of
         undefined ->
             case os:getenv("MOCHI_NOW_SEED") of
-                false -> erlang:system_time(nanosecond);
+                false ->
+                    case os:getenv("MOCHI_BENCHMARK") of
+                        false -> erlang:system_time(nanosecond);
+                        _ ->
+                            erlang:put(now_seed, 1),
+                            mochi_now()
+                    end;
                 S ->
                     case catch list_to_integer(S) of
                         {'EXIT', _} -> erlang:system_time(nanosecond);
