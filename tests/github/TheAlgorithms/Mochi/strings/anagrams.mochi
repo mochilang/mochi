@@ -72,7 +72,7 @@ fun unique_sorted(words: list<string>): list<string> {
   var seen: map<string, bool> = {}
   var res: list<string> = []
   for w in words {
-    if w != "" && !(w in seen) {
+    if w != "" && seen[w] == false {
       res = append(res, w)
       seen[w] = true
     }
@@ -104,7 +104,7 @@ fun anagram(my_word: string): list<string> {
 }
 
 fun main() {
-  let text = read_file("words.txt")
+  let text = read_file("/workspace/mochi/tests/github/TheAlgorithms/Mochi/strings/words.txt")
   let lines = split(text, "\n")
   let words = unique_sorted(lines)
   build_map(words)

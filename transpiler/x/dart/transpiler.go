@@ -100,6 +100,12 @@ Never _error(String msg) {
 }
 `
 
+const helperReadFile = `
+String _readFile(String path) {
+  return File(path).readAsStringSync();
+}
+`
+
 // --- Struct tracking for generated classes ---
 type StructField struct {
 	Name string
@@ -136,6 +142,7 @@ var (
 	useStr            bool
 	useParseIntStr    bool
 	useFloor          bool
+	useReadFile       bool
 	imports           []string
 	testpkgAliases    map[string]struct{}
 	netAliases        map[string]struct{}
@@ -3956,33 +3963,33 @@ func inferType(e Expr) string {
 				return "double"
 			}
 			return "num"
-               case "/":
-                       lt := inferType(ex.Left)
-                       rt := inferType(ex.Right)
-                       if lt == "BigInt" || rt == "BigInt" {
-                               return "BigInt"
-                       }
-                       if lt == "int" && rt == "int" {
-                               return "int"
-                       }
-                       if lt == "double" || rt == "double" || lt == "num" || rt == "num" {
-                               return "double"
-                       }
-                       return "num"
-               case "<", "<=", ">", ">=", "&&", "||":
-                       return "bool"
-               case "==", "!=":
-                       lt := inferType(ex.Left)
-                       rt := inferType(ex.Right)
-                       if strings.HasPrefix(lt, "List<") && strings.HasPrefix(rt, "List<") {
-                               usesJSON = true
-                       }
-                       return "bool"
-               case "union", "union_all", "except", "intersect":
-                       return inferType(ex.Left)
-               default:
-                       return "dynamic"
-               }
+		case "/":
+			lt := inferType(ex.Left)
+			rt := inferType(ex.Right)
+			if lt == "BigInt" || rt == "BigInt" {
+				return "BigInt"
+			}
+			if lt == "int" && rt == "int" {
+				return "int"
+			}
+			if lt == "double" || rt == "double" || lt == "num" || rt == "num" {
+				return "double"
+			}
+			return "num"
+		case "<", "<=", ">", ">=", "&&", "||":
+			return "bool"
+		case "==", "!=":
+			lt := inferType(ex.Left)
+			rt := inferType(ex.Right)
+			if strings.HasPrefix(lt, "List<") && strings.HasPrefix(rt, "List<") {
+				usesJSON = true
+			}
+			return "bool"
+		case "union", "union_all", "except", "intersect":
+			return inferType(ex.Left)
+		default:
+			return "dynamic"
+		}
 	case *UnaryExpr:
 		if ex.Op == "-" {
 			t := inferType(ex.X)
@@ -4372,12 +4379,12 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
-	if (useNow || useInput || useSHA256 || useEnv || useFetch || useMD5) && !added["dart:io"] {
+	if (useNow || useInput || useSHA256 || useEnv || useFetch || useMD5 || useReadFile) && !added["dart:io"] {
 		if _, err := io.WriteString(w, "import 'dart:io';\n"); err != nil {
 			return err
 		}
 	}
-	if len(p.Imports) > 0 || usesJSON || useNow || useInput || useSHA256 || useEnv || useFetch || useMD5 {
+	if len(p.Imports) > 0 || usesJSON || useNow || useInput || useSHA256 || useEnv || useFetch || useMD5 || useReadFile {
 		if _, err := io.WriteString(w, "\n"); err != nil {
 			return err
 		}
@@ -4471,6 +4478,11 @@ func Emit(w io.Writer, p *Program) error {
 	}
 	if useMD5 {
 		if _, err := io.WriteString(w, helperMD5+"\n"); err != nil {
+			return err
+		}
+	}
+	if useReadFile {
+		if _, err := io.WriteString(w, helperReadFile+"\n"); err != nil {
 			return err
 		}
 	}
@@ -4688,6 +4700,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench, wrapMain bool) (*Pro
 	useStr = false
 	useParseIntStr = false
 	useFloor = false
+	useReadFile = false
 	imports = nil
 	testpkgAliases = map[string]struct{}{}
 	netAliases = map[string]struct{}{}
@@ -5735,6 +5748,14 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		if p.Call.Func == "input" && len(p.Call.Args) == 0 {
 			useInput = true
 			return &InputExpr{}, nil
+		}
+		if p.Call.Func == "read_file" && len(p.Call.Args) == 1 {
+			arg, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			useReadFile = true
+			return &CallExpr{Func: &Name{Name: "_readFile"}, Args: []Expr{arg}}, nil
 		}
 		if p.Call.Func == "json" && len(p.Call.Args) == 1 {
 			usesJSON = true

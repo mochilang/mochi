@@ -548,6 +548,10 @@ func Check(prog *parser.Program, env *Env) []error {
 		Params: []Type{},
 		Return: StringType{},
 	}, false)
+	env.SetVar("read_file", FuncType{
+		Params: []Type{StringType{}},
+		Return: StringType{},
+	}, false)
 	env.SetVar("count", FuncType{
 		Params: []Type{AnyType{}},
 		Return: IntType{},
