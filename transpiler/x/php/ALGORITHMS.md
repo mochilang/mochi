@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-11 15:41 GMT+7
+Last updated: 2025-08-11 16:47 GMT+7
 
-## Algorithms Golden Test Checklist (931/1077)
+## Algorithms Golden Test Checklist (939/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 117µs | 38.8 KB |
@@ -916,58 +916,58 @@ Last updated: 2025-08-11 15:41 GMT+7
 | 907 | project_euler/problem_076/sol1 | ✓ | 23.432ms | 591.8 KB |
 | 908 | project_euler/problem_077/sol1 | ✓ |  |  |
 | 909 | project_euler/problem_078/sol1 | ✓ |  |  |
-| 910 | project_euler/problem_079/sol1 | ✓ | 13.743ms | 74.8 KB |
-| 911 | project_euler/problem_092/sol1 | ✓ | 16.171ms | 38.6 KB |
-| 912 | project_euler/problem_116/sol1 | ✓ | 7.629ms | 40.4 KB |
-| 913 | project_euler/problem_345/sol1 | ✓ | 1.973244s | 1.5 MB |
-| 914 | quantum/q_fourier_transform | ✓ | 185µs | 42.8 KB |
-| 915 | scheduling/job_sequence_with_deadline | ✓ | 182µs | 38.4 KB |
-| 916 | scheduling/job_sequencing_with_deadline | ✓ | 326µs | 70.1 KB |
-| 917 | scheduling/multi_level_feedback_queue | error |  |  |
-| 918 | scheduling/non_preemptive_shortest_job_first | ✓ | 279µs | 70.5 KB |
-| 919 | scheduling/round_robin | ✓ | 184µs | 75.0 KB |
-| 920 | scheduling/shortest_job_first | ✓ | 218µs | 74.1 KB |
-| 921 | scripts/build_directory_md | ✓ | 529µs | 76.4 KB |
-| 922 | scripts/validate_filenames | ✓ | 117µs | 72.2 KB |
-| 923 | scripts/validate_solutions | ✓ | 1.475ms | 42.0 KB |
-| 924 | searches/binary_search | ✓ | 176µs | 72.4 KB |
-| 925 | searches/double_linear_search | ✓ | 193µs | 38.2 KB |
-| 926 | searches/double_linear_search_recursion | ✓ | 117µs | 40.3 KB |
+| 910 | project_euler/problem_079/sol1 | ✓ | 10.217ms | 74.8 KB |
+| 911 | project_euler/problem_092/sol1 | ✓ | 10.939ms | 38.6 KB |
+| 912 | project_euler/problem_116/sol1 | ✓ | 5.246ms | 40.4 KB |
+| 913 | project_euler/problem_345/sol1 | ✓ | 1.334456s | 1.5 MB |
+| 914 | quantum/q_fourier_transform | ✓ | 201µs | 42.8 KB |
+| 915 | scheduling/job_sequence_with_deadline | ✓ | 142µs | 38.4 KB |
+| 916 | scheduling/job_sequencing_with_deadline | ✓ | 213µs | 70.1 KB |
+| 917 | scheduling/multi_level_feedback_queue | ✓ | 176µs | 74.8 KB |
+| 918 | scheduling/non_preemptive_shortest_job_first | ✓ | 135µs | 70.5 KB |
+| 919 | scheduling/round_robin | ✓ | 125µs | 75.0 KB |
+| 920 | scheduling/shortest_job_first | ✓ | 230µs | 74.1 KB |
+| 921 | scripts/build_directory_md | ✓ | 685µs | 76.4 KB |
+| 922 | scripts/validate_filenames | ✓ | 128µs | 72.2 KB |
+| 923 | scripts/validate_solutions | ✓ | 985µs | 42.0 KB |
+| 924 | searches/binary_search | ✓ | 127µs | 72.4 KB |
+| 925 | searches/double_linear_search | ✓ | 138µs | 38.2 KB |
+| 926 | searches/double_linear_search_recursion | ✓ | 75µs | 40.3 KB |
 | 927 | searches/exponential_search | ✓ | 1µs | 42.2 KB |
-| 928 | searches/fibonacci_search | ✓ | 245µs | 37.9 KB |
-| 929 | searches/hill_climbing | ✓ | 1.125275s | 410.6 KB |
-| 930 | searches/interpolation_search | ✓ | 122µs | 70.8 KB |
-| 931 | searches/jump_search | ✓ | 112µs | 36.9 KB |
-| 932 | searches/linear_search | ✓ | 104µs | 38.5 KB |
-| 933 | searches/median_of_medians | ✓ | 232µs | 73.2 KB |
-| 934 | searches/quick_select | ✓ | 294µs | 70.7 KB |
-| 935 | searches/sentinel_linear_search | ✓ | 267µs | 37.4 KB |
-| 936 | searches/simple_binary_search | ✓ | 110µs | 37.6 KB |
-| 937 | searches/simulated_annealing | ✓ | 30.635ms | 72.1 KB |
-| 938 | searches/tabu_search | ✓ | 1.466ms | 74.8 KB |
-| 939 | searches/ternary_search | ✓ | 112µs | 76.0 KB |
-| 940 | sorts/bead_sort | error |  |  |
-| 941 | sorts/binary_insertion_sort | ✓ | 186µs | 41.1 KB |
-| 942 | sorts/bitonic_sort | ✓ | 363µs | 71.3 KB |
-| 943 | sorts/bogo_sort | ✓ | 199µs | 42.1 KB |
-| 944 | sorts/bubble_sort | ✓ | 263µs | 72.0 KB |
-| 945 | sorts/bucket_sort | ✓ | 553µs | 70.5 KB |
-| 946 | sorts/circle_sort | ✓ | 288µs | 42.0 KB |
-| 947 | sorts/cocktail_shaker_sort | error |  |  |
+| 928 | searches/fibonacci_search | ✓ | 140µs | 37.9 KB |
+| 929 | searches/hill_climbing | ✓ | 814.092ms | 410.6 KB |
+| 930 | searches/interpolation_search | ✓ | 93µs | 70.8 KB |
+| 931 | searches/jump_search | ✓ | 80µs | 36.9 KB |
+| 932 | searches/linear_search | ✓ | 133µs | 38.5 KB |
+| 933 | searches/median_of_medians | ✓ | 181µs | 73.2 KB |
+| 934 | searches/quick_select | ✓ | 140µs | 70.7 KB |
+| 935 | searches/sentinel_linear_search | ✓ | 118µs | 37.4 KB |
+| 936 | searches/simple_binary_search | ✓ | 79µs | 37.6 KB |
+| 937 | searches/simulated_annealing | ✓ | 24.856ms | 72.1 KB |
+| 938 | searches/tabu_search | ✓ | 922µs | 74.8 KB |
+| 939 | searches/ternary_search | ✓ | 76µs | 76.0 KB |
+| 940 | sorts/bead_sort | ✓ | 255µs | 41.5 KB |
+| 941 | sorts/binary_insertion_sort | ✓ | 159µs | 41.1 KB |
+| 942 | sorts/bitonic_sort | ✓ | 288µs | 71.3 KB |
+| 943 | sorts/bogo_sort | ✓ | 137µs | 42.1 KB |
+| 944 | sorts/bubble_sort | ✓ | 174µs | 72.0 KB |
+| 945 | sorts/bucket_sort | ✓ | 367µs | 70.5 KB |
+| 946 | sorts/circle_sort | ✓ | 195µs | 42.0 KB |
+| 947 | sorts/cocktail_shaker_sort | ✓ | 127µs | 40.9 KB |
 | 948 | sorts/comb_sort | error |  |  |
-| 949 | sorts/counting_sort | ✓ | 951µs | 74.5 KB |
-| 950 | sorts/cycle_sort | error |  |  |
-| 951 | sorts/double_sort | error |  |  |
-| 952 | sorts/dutch_national_flag_sort | ✓ | 143µs | 38.6 KB |
-| 953 | sorts/exchange_sort | error |  |  |
-| 954 | sorts/external_sort | ✓ | 292µs | 73.4 KB |
-| 955 | sorts/gnome_sort | error |  |  |
-| 956 | sorts/heap_sort | ✓ | 330µs | 74.0 KB |
-| 957 | sorts/insertion_sort | error |  |  |
+| 949 | sorts/counting_sort | ✓ | 730µs | 74.5 KB |
+| 950 | sorts/cycle_sort | ✓ | 221µs | 40.8 KB |
+| 951 | sorts/double_sort | ✓ | 236µs | 42.2 KB |
+| 952 | sorts/dutch_national_flag_sort | ✓ | 102µs | 38.6 KB |
+| 953 | sorts/exchange_sort | ✓ | 117µs | 37.1 KB |
+| 954 | sorts/external_sort | ✓ | 153µs | 73.4 KB |
+| 955 | sorts/gnome_sort | ✓ | 83µs | 37.7 KB |
+| 956 | sorts/heap_sort | ✓ | 175µs | 74.0 KB |
+| 957 | sorts/insertion_sort | ✓ | 121µs | 40.8 KB |
 | 958 | sorts/intro_sort | ✓ | 150µs | 72.6 KB |
-| 959 | sorts/iterative_merge_sort | ✓ | 264µs | 71.4 KB |
-| 960 | sorts/merge_insertion_sort | ✓ | 238µs | 72.9 KB |
-| 961 | sorts/merge_sort | ✓ | 225µs | 74.0 KB |
+| 959 | sorts/iterative_merge_sort | ✓ | 187µs | 71.4 KB |
+| 960 | sorts/merge_insertion_sort | ✓ | 195µs | 72.9 KB |
+| 961 | sorts/merge_sort | ✓ | 141µs | 74.0 KB |
 | 962 | sorts/msd_radix_sort | ✓ | 809µs | 70.7 KB |
 | 963 | sorts/natural_sort | ✓ | 1.152ms | 74.3 KB |
 | 964 | sorts/odd_even_sort | ✓ | 216µs | 73.2 KB |

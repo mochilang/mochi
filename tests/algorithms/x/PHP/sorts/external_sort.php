@@ -1,20 +1,5 @@
 <?php
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
@@ -65,9 +50,7 @@ function _imod($a, $b) {
     }
     return $a % $b;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function subarray($xs, $start, $end) {
+function subarray($xs, $start, $end) {
   $result = [];
   $k = $start;
   while ($k < $end) {
@@ -75,8 +58,8 @@ $__start = _now();
   $k = _iadd($k, 1);
 };
   return $result;
-};
-  function merge($left_half, $right_half) {
+}
+function merge($left_half, $right_half) {
   $result = [];
   $i = 0;
   $j = 0;
@@ -98,8 +81,8 @@ $__start = _now();
   $j = _iadd($j, 1);
 };
   return $result;
-};
-  function merge_sort($array) {
+}
+function merge_sort($array) {
   if (count($array) <= 1) {
   return $array;
 }
@@ -109,8 +92,8 @@ $__start = _now();
   $sorted_left = merge_sort($left_half);
   $sorted_right = merge_sort($right_half);
   return merge($sorted_left, $sorted_right);
-};
-  function split_into_blocks($data, $block_size) {
+}
+function split_into_blocks($data, $block_size) {
   $blocks = [];
   $i = 0;
   while ($i < count($data)) {
@@ -121,8 +104,8 @@ $__start = _now();
   $i = $end;
 };
   return $blocks;
-};
-  function merge_blocks($blocks) {
+}
+function merge_blocks($blocks) {
   $num_blocks = count($blocks);
   $indices = [];
   $i = 0;
@@ -155,22 +138,14 @@ $__start = _now();
 }
 };
   return $result;
-};
-  function external_sort($data, $block_size) {
+}
+function external_sort($data, $block_size) {
   $blocks = split_into_blocks($data, $block_size);
   return merge_blocks($blocks);
-};
-  function main() {
+}
+function main() {
   $data = [7, 1, 5, 3, 9, 2, 6, 4, 8, 0];
   $sorted_data = external_sort($data, 3);
   echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode($sorted_data, 1344)))))), PHP_EOL;
-};
-  main();
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+main();

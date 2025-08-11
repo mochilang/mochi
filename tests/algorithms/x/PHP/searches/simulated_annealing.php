@@ -54,13 +54,11 @@ function _imod($a, $b) {
     }
     return $a % $b;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function score($p, $f) {
+function score($p, $f) {
   global $seed;
   return $f($p['x'], $p['y']);
-};
-  function get_neighbors($p) {
+}
+function get_neighbors($p) {
   global $seed;
   $s = $p['step'];
   $ns = [];
@@ -73,8 +71,8 @@ $__start = _now();
   $ns = _append($ns, ['x' => $p['x'] + $s, 'y' => $p['y'], 'step' => $s]);
   $ns = _append($ns, ['x' => $p['x'] + $s, 'y' => $p['y'] + $s, 'step' => $s]);
   return $ns;
-};
-  function remove_at($lst, $idx) {
+}
+function remove_at($lst, $idx) {
   global $seed;
   $res = [];
   $i = 0;
@@ -85,23 +83,23 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return $res;
-};
-  $seed = 1;
-  function mochi_rand() {
+}
+$seed = 1;
+function mochi_rand() {
   global $seed;
   $_t = _now();
   $seed = _imod((_iadd(_imul($seed, 1103515245), 12345)), 2147483648);
   return $seed;
-};
-  function random_float() {
+}
+function random_float() {
   global $seed;
   return (floatval(mochi_rand())) / 2147483648.0;
-};
-  function randint($low, $high) {
+}
+function randint($low, $high) {
   global $seed;
   return _iadd((_imod(mochi_rand(), (_iadd(_isub($high, $low), 1)))), $low);
-};
-  function expApprox($x) {
+}
+function expApprox($x) {
   global $seed;
   $y = $x;
   $is_neg = false;
@@ -121,8 +119,8 @@ $__start = _now();
   return 1.0 / $sum;
 }
   return $sum;
-};
-  function simulated_annealing($search_prob, $f, $find_max, $max_x, $min_x, $max_y, $min_y, $start_temp, $rate_of_decrease, $threshold_temp) {
+}
+function simulated_annealing($search_prob, $f, $find_max, $max_x, $min_x, $max_y, $min_y, $start_temp, $rate_of_decrease, $threshold_temp) {
   global $seed;
   $search_end = false;
   $current_state = $search_prob;
@@ -166,16 +164,16 @@ $__start = _now();
 }
 };
   return $best_state;
-};
-  function test_f1($x, $y) {
+}
+function test_f1($x, $y) {
   global $seed;
   return $x * $x + $y * $y;
-};
-  function test_f2($x, $y) {
+}
+function test_f2($x, $y) {
   global $seed;
   return (3.0 * $x * $x) - (6.0 * $y);
-};
-  function main() {
+}
+function main() {
   global $seed;
   $prob1 = ['x' => 12.0, 'y' => 47.0, 'step' => 1.0];
   $min_state = simulated_annealing($prob1, 'test_f1', false, 100.0, 5.0, 50.0, -5.0, 100.0, 0.01, 1.0);
@@ -189,13 +187,5 @@ $__start = _now();
   $prob4 = ['x' => 3.0, 'y' => 4.0, 'step' => 1.0];
   $max_state2 = simulated_annealing($prob4, 'test_f2', true, 1000.0, -1000.0, 1000.0, -1000.0, 100.0, 0.01, 1.0);
   echo rtrim('max2') . " " . rtrim(json_encode(test_f2($max_state2['x'], $max_state2['y']), 1344)), PHP_EOL;
-};
-  main();
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+main();

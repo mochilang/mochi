@@ -1,6 +1,0 @@
-run: exit status 255
-
-Fatal error: Uncaught Error: double_sort(): Argument #1 ($collection) could not be passed by reference in /workspace/mochi/tests/algorithms/x/PHP/sorts/double_sort.php:105
-Stack trace:
-#0 {main}
-  thrown in /workspace/mochi/tests/algorithms/x/PHP/sorts/double_sort.php on line 105

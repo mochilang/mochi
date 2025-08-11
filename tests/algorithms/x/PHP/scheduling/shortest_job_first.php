@@ -1,20 +1,5 @@
 <?php
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -70,9 +55,7 @@ function _imod($a, $b) {
     }
     return $a % $b;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function calculate_waitingtime($arrival_time, $burst_time, $no_of_processes) {
+function calculate_waitingtime($arrival_time, $burst_time, $no_of_processes) {
   $remaining_time = [];
   $i = 0;
   while ($i < $no_of_processes) {
@@ -122,8 +105,8 @@ $__start = _now();
   $increment_time = _iadd($increment_time, 1);
 };
   return $waiting_time;
-};
-  function calculate_turnaroundtime($burst_time, $no_of_processes, $waiting_time) {
+}
+function calculate_turnaroundtime($burst_time, $no_of_processes, $waiting_time) {
   $turn_around_time = [];
   $i = 0;
   while ($i < $no_of_processes) {
@@ -131,11 +114,11 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return $turn_around_time;
-};
-  function to_float($x) {
+}
+function to_float($x) {
   return _imul($x, 1.0);
-};
-  function calculate_average_times($waiting_time, $turn_around_time, $no_of_processes) {
+}
+function calculate_average_times($waiting_time, $turn_around_time, $no_of_processes) {
   $total_waiting_time = 0;
   $total_turn_around_time = 0;
   $i = 0;
@@ -148,21 +131,13 @@ $__start = _now();
   $avg_turn = floatval($total_turn_around_time) / floatval($no_of_processes);
   echo rtrim('Average waiting time = ' . _str($avg_wait)), PHP_EOL;
   echo rtrim('Average turn around time = ' . _str($avg_turn)), PHP_EOL;
-};
-  echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(calculate_waitingtime([1, 2, 3, 4], [3, 3, 5, 1], 4), 1344)))))), PHP_EOL;
-  echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(calculate_waitingtime([1, 2, 3], [2, 5, 1], 3), 1344)))))), PHP_EOL;
-  echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(calculate_waitingtime([2, 3], [5, 1], 2), 1344)))))), PHP_EOL;
-  echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(calculate_turnaroundtime([3, 3, 5, 1], 4, [0, 3, 5, 0]), 1344)))))), PHP_EOL;
-  echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(calculate_turnaroundtime([3, 3], 2, [0, 3]), 1344)))))), PHP_EOL;
-  echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(calculate_turnaroundtime([8, 10, 1], 3, [1, 0, 3]), 1344)))))), PHP_EOL;
-  calculate_average_times([0, 3, 5, 0], [3, 6, 10, 1], 4);
-  calculate_average_times([2, 3], [3, 6], 2);
-  calculate_average_times([10, 4, 3], [2, 7, 6], 3);
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(calculate_waitingtime([1, 2, 3, 4], [3, 3, 5, 1], 4), 1344)))))), PHP_EOL;
+echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(calculate_waitingtime([1, 2, 3], [2, 5, 1], 3), 1344)))))), PHP_EOL;
+echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(calculate_waitingtime([2, 3], [5, 1], 2), 1344)))))), PHP_EOL;
+echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(calculate_turnaroundtime([3, 3, 5, 1], 4, [0, 3, 5, 0]), 1344)))))), PHP_EOL;
+echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(calculate_turnaroundtime([3, 3], 2, [0, 3]), 1344)))))), PHP_EOL;
+echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode(calculate_turnaroundtime([8, 10, 1], 3, [1, 0, 3]), 1344)))))), PHP_EOL;
+calculate_average_times([0, 3, 5, 0], [3, 6, 10, 1], 4);
+calculate_average_times([2, 3], [3, 6], 2);
+calculate_average_times([10, 4, 3], [2, 7, 6], 3);

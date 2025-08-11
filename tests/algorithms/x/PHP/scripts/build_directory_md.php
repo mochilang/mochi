@@ -1,20 +1,5 @@
 <?php
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function repeat($s, $n) {
     return str_repeat($s, intval($n));
 }
@@ -57,9 +42,7 @@ function _imod($a, $b) {
     }
     return $a % $b;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function split($s, $sep) {
+function split($s, $sep) {
   global $sample;
   $parts = [];
   $cur = '';
@@ -76,8 +59,8 @@ $__start = _now();
 };
   $parts = _append($parts, $cur);
   return $parts;
-};
-  function mochi_join($xs, $sep) {
+}
+function mochi_join($xs, $sep) {
   global $sample;
   $res = '';
   $i = 0;
@@ -89,8 +72,8 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return $res;
-};
-  function mochi_repeat($s, $n) {
+}
+function mochi_repeat($s, $n) {
   global $sample;
   $out = '';
   $i = 0;
@@ -99,8 +82,8 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return $out;
-};
-  function replace_char($s, $old, $new) {
+}
+function replace_char($s, $old, $new) {
   global $sample;
   $out = '';
   $i = 0;
@@ -114,8 +97,8 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return $out;
-};
-  function contains($s, $sub) {
+}
+function contains($s, $sub) {
   global $sample;
   if (strlen($sub) == 0) {
   return true;
@@ -128,8 +111,8 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return false;
-};
-  function file_extension($name) {
+}
+function file_extension($name) {
   global $sample;
   $i = _isub(strlen($name), 1);
   while ($i >= 0) {
@@ -139,8 +122,8 @@ $__start = _now();
   $i = _isub($i, 1);
 };
   return '';
-};
-  function remove_extension($name) {
+}
+function remove_extension($name) {
   global $sample;
   $i = _isub(strlen($name), 1);
   while ($i >= 0) {
@@ -150,8 +133,8 @@ $__start = _now();
   $i = _isub($i, 1);
 };
   return $name;
-};
-  function title_case($s) {
+}
+function title_case($s) {
   global $sample;
   $out = '';
   $cap = true;
@@ -172,8 +155,8 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return $out;
-};
-  function count_char($s, $ch) {
+}
+function count_char($s, $ch) {
   global $sample;
   $cnt = 0;
   $i = 0;
@@ -184,19 +167,19 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return $cnt;
-};
-  function md_prefix($level) {
+}
+function md_prefix($level) {
   global $sample;
   if ($level == 0) {
   return '
 ##';
 }
   return repeat('  ', $level) . '*';
-};
-  function print_path($old_path, $new_path) {
+}
+function print_path($old_path, $new_path) {
   global $sample;
-  $old_parts = explode('/', $old_path);
-  $new_parts = explode('/', $new_path);
+  $old_parts = split($old_path, '/');
+  $new_parts = split($new_path, '/');
   $i = 0;
   while ($i < count($new_parts)) {
   if (($i >= count($old_parts) || $old_parts[$i] != $new_parts[$i]) && $new_parts[$i] != '') {
@@ -206,8 +189,8 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return $new_path;
-};
-  function sort_strings($xs) {
+}
+function sort_strings($xs) {
   global $sample;
   $arr = $xs;
   $i = 0;
@@ -226,12 +209,12 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return $arr;
-};
-  function good_file_paths($paths) {
+}
+function good_file_paths($paths) {
   global $sample;
   $res = [];
   foreach ($paths as $p) {
-  $parts = explode('/', $p);
+  $parts = split($p, '/');
   $skip = false;
   $k = 0;
   while ($k < _isub(count($parts), 1)) {
@@ -254,15 +237,15 @@ $__start = _now();
 }
 };
   return $res;
-};
-  function print_directory_md($paths) {
+}
+function print_directory_md($paths) {
   global $sample;
   $files = sort_strings(good_file_paths($paths));
   $old_path = '';
   $i = 0;
   while ($i < count($files)) {
   $fp = $files[$i];
-  $parts = explode('/', $fp);
+  $parts = split($fp, '/');
   $filename = $parts[_isub(count($parts), 1)];
   $filepath = '';
   if (count($parts) > 1) {
@@ -280,14 +263,6 @@ $__start = _now();
   echo rtrim(md_prefix($indent) . ' [' . $name . '](' . $url . ')'), PHP_EOL;
   $i = _iadd($i, 1);
 };
-};
-  $sample = ['data_structures/linked_list.py', 'data_structures/binary_tree.py', 'math/number_theory/prime_check.py', 'math/number_theory/greatest_common_divisor.ipynb'];
-  print_directory_md($sample);
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+$sample = ['data_structures/linked_list.py', 'data_structures/binary_tree.py', 'math/number_theory/prime_check.py', 'math/number_theory/greatest_common_divisor.ipynb'];
+print_directory_md($sample);

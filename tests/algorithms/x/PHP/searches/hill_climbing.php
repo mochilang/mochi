@@ -1,20 +1,5 @@
 <?php
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -70,19 +55,17 @@ function _imod($a, $b) {
     }
     return $a % $b;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function score($sp) {
+function score($sp) {
   return $sp['f']($sp['x'], $sp['y']);
-};
-  function neighbors($sp) {
+}
+function neighbors($sp) {
   $s = $sp['step'];
   return [['x' => $sp['x'] - $s, 'y' => $sp['y'] - $s, 'step' => $s, 'f' => $sp['f']], ['x' => $sp['x'] - $s, 'y' => $sp['y'], 'step' => $s, 'f' => $sp['f']], ['x' => $sp['x'] - $s, 'y' => $sp['y'] + $s, 'step' => $s, 'f' => $sp['f']], ['x' => $sp['x'], 'y' => $sp['y'] - $s, 'step' => $s, 'f' => $sp['f']], ['x' => $sp['x'], 'y' => $sp['y'] + $s, 'step' => $s, 'f' => $sp['f']], ['x' => $sp['x'] + $s, 'y' => $sp['y'] - $s, 'step' => $s, 'f' => $sp['f']], ['x' => $sp['x'] + $s, 'y' => $sp['y'], 'step' => $s, 'f' => $sp['f']], ['x' => $sp['x'] + $s, 'y' => $sp['y'] + $s, 'step' => $s, 'f' => $sp['f']]];
-};
-  function equal_state($a, $b) {
+}
+function equal_state($a, $b) {
   return $a['x'] == $b['x'] && $a['y'] == $b['y'];
-};
-  function contains_state($lst, $sp) {
+}
+function contains_state($lst, $sp) {
   $i = 0;
   while ($i < count($lst)) {
   if (equal_state($lst[$i], $sp)) {
@@ -91,8 +74,8 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return false;
-};
-  function hill_climbing($sp, $find_max, $max_x, $min_x, $max_y, $min_y, $max_iter) {
+}
+function hill_climbing($sp, $find_max, $max_x, $min_x, $max_y, $min_y, $max_iter) {
   $current = $sp;
   $visited = [];
   $iterations = 0;
@@ -138,11 +121,11 @@ $__start = _now();
 }
 };
   return $current;
-};
-  function test_f1($x, $y) {
+}
+function test_f1($x, $y) {
   return $x * $x + $y * $y;
-};
-  function main() {
+}
+function main() {
   $prob1 = ['x' => 3.0, 'y' => 4.0, 'step' => 1.0, 'f' => 'test_f1'];
   $local_min1 = hill_climbing($prob1, false, 1000000000.0, -1000000000.0, 1000000000.0, -1000000000.0, 10000);
   echo rtrim(_str(intval(score($local_min1)))), PHP_EOL;
@@ -152,13 +135,5 @@ $__start = _now();
   $prob3 = ['x' => 3.0, 'y' => 4.0, 'step' => 1.0, 'f' => 'test_f1'];
   $local_max = hill_climbing($prob3, true, 1000000000.0, -1000000000.0, 1000000000.0, -1000000000.0, 1000);
   echo rtrim(_str(intval(score($local_max)))), PHP_EOL;
-};
-  main();
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+main();

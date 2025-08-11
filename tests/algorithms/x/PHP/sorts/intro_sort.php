@@ -1,20 +1,5 @@
 <?php
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _intdiv($a, $b) {
     if ($b === 0 || $b === '0') {
         throw new DivisionByZeroError();
@@ -61,9 +46,7 @@ function _imod($a, $b) {
     }
     return $a % $b;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function insertion_sort($a, $start, $end_) {
+function insertion_sort($a, $start, $end_) {
   global $example1, $example2;
   $arr = $a;
   $i = $start;
@@ -78,8 +61,8 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return $arr;
-};
-  function heapify($a, $index, $heap_size) {
+}
+function heapify($a, $index, $heap_size) {
   global $example1, $example2;
   $arr = $a;
   $largest = $index;
@@ -98,8 +81,8 @@ $__start = _now();
   $arr = heapify($arr, $largest, $heap_size);
 }
   return $arr;
-};
-  function heap_sort($a) {
+}
+function heap_sort($a) {
   global $example1, $example2;
   $arr = $a;
   $n = count($arr);
@@ -123,8 +106,8 @@ $__start = _now();
   $i = _isub($i, 1);
 };
   return $arr;
-};
-  function median_of_3($arr, $first, $middle, $last) {
+}
+function median_of_3($arr, $first, $middle, $last) {
   global $example1, $example2;
   $a = $arr[$first];
   $b = $arr[$middle];
@@ -138,8 +121,8 @@ $__start = _now();
   return $c;
 };
 }
-};
-  function partition(&$arr, $low, $high, $pivot) {
+}
+function partition(&$arr, $low, $high, $pivot) {
   global $example1, $example2;
   $i = $low;
   $j = $high;
@@ -159,8 +142,8 @@ $__start = _now();
   $arr[$j] = $temp;
   $i = _iadd($i, 1);
 };
-};
-  function int_log2($n) {
+}
+function int_log2($n) {
   global $example1, $example2;
   $v = $n;
   $r = 0;
@@ -169,8 +152,8 @@ $__start = _now();
   $r = _iadd($r, 1);
 };
   return $r;
-};
-  function intro_sort($arr, $start, $end_, $size_threshold, $max_depth) {
+}
+function intro_sort($arr, $start, $end_, $size_threshold, $max_depth) {
   global $example1, $example2;
   $array = $arr;
   $s = $start;
@@ -189,8 +172,8 @@ $__start = _now();
   $res = insertion_sort($array, $s, $e);
   $_ = count($res);
   return $res;
-};
-  function intro_sort_main($arr) {
+}
+function intro_sort_main($arr) {
   global $example1, $example2;
   if (count($arr) == 0) {
   echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode($arr, 1344)))))), PHP_EOL;
@@ -199,16 +182,8 @@ $__start = _now();
   $max_depth = _imul(2, int_log2(count($arr)));
   $sorted = intro_sort($arr, 0, count($arr), 16, $max_depth);
   echo str_replace('false', 'False', str_replace('true', 'True', str_replace('"', '\'', str_replace(':', ': ', str_replace(',', ', ', json_encode($sorted, 1344)))))), PHP_EOL;
-};
-  $example1 = [4, 2, 6, 8, 1, 7, 8, 22, 14, 56, 27, 79, 23, 45, 14, 12];
-  intro_sort_main($example1);
-  $example2 = [21, 15, 11, 45, -2, -11, 46];
-  intro_sort_main($example2);
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+$example1 = [4, 2, 6, 8, 1, 7, 8, 22, 14, 56, 27, 79, 23, 45, 14, 12];
+intro_sort_main($example1);
+$example2 = [21, 15, 11, 45, -2, -11, 46];
+intro_sort_main($example2);

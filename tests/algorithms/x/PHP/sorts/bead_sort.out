@@ -1,4 +1,4 @@
-Fatal error: Uncaught Error: bead_sort(): Argument #1 ($sequence) could not be passed by reference in /workspace/mochi/tests/algorithms/x/PHP/sorts/bead_sort.php:84
-Stack trace:
-#0 {main}
-  thrown in /workspace/mochi/tests/algorithms/x/PHP/sorts/bead_sort.php on line 84
+[1 4 5 6 11 12]
+[1 2 3 4 5 6 7 8 9]
+[0 3 4 5]
+[1 2 8]

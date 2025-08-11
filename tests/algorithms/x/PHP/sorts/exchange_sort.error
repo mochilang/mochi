@@ -1,6 +1,0 @@
-run: exit status 255
-
-Fatal error: Uncaught Error: exchange_sort(): Argument #1 ($numbers) could not be passed by reference in /workspace/mochi/tests/algorithms/x/PHP/sorts/exchange_sort.php:88
-Stack trace:
-#0 {main}
-  thrown in /workspace/mochi/tests/algorithms/x/PHP/sorts/exchange_sort.php on line 88

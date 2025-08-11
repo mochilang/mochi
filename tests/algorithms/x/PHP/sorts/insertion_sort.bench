@@ -1,4 +1,5 @@
-Fatal error: Uncaught Error: insertion_sort(): Argument #1 ($xs) could not be passed by reference in /workspace/mochi/tests/algorithms/x/PHP/sorts/insertion_sort.php:85
-Stack trace:
-#0 {main}
-  thrown in /workspace/mochi/tests/algorithms/x/PHP/sorts/insertion_sort.php on line 85
+{
+  "duration_us": 121,
+  "memory_bytes": 41824,
+  "name": "main"
+}

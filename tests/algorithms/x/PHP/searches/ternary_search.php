@@ -1,20 +1,5 @@
 <?php
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -77,10 +62,8 @@ function _imod($a, $b) {
     }
     return $a % $b;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  $precision = 10;
-  function lin_search($left, $right, $array, $target) {
+$precision = 10;
+function lin_search($left, $right, $array, $target) {
   global $precision;
   $i = $left;
   while ($i < $right) {
@@ -90,8 +73,8 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return -1;
-};
-  function ite_ternary_search($array, $target) {
+}
+function ite_ternary_search($array, $target) {
   global $precision;
   $left = 0;
   $right = _isub(count($array), 1);
@@ -120,8 +103,8 @@ $__start = _now();
 }
 };
   return -1;
-};
-  function rec_ternary_search($left, $right, $array, $target) {
+}
+function rec_ternary_search($left, $right, $array, $target) {
   global $precision;
   if ($left <= $right) {
   if (_isub($right, $left) < $precision) {
@@ -145,21 +128,13 @@ $__start = _now();
   return rec_ternary_search(_iadd($one_third, 1), _isub($two_third, 1), $array, $target);
 }
   return -1;
-};
-  function main() {
+}
+function main() {
   global $precision;
   $test_list = [0, 1, 2, 8, 13, 17, 19, 32, 42];
   echo rtrim(_str(ite_ternary_search($test_list, 3))), PHP_EOL;
   echo rtrim(_str(ite_ternary_search($test_list, 13))), PHP_EOL;
   echo rtrim(_str(rec_ternary_search(0, _isub(count($test_list), 1), $test_list, 3))), PHP_EOL;
   echo rtrim(_str(rec_ternary_search(0, _isub(count($test_list), 1), $test_list, 13))), PHP_EOL;
-};
-  main();
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+main();

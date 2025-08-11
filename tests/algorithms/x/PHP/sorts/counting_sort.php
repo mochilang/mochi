@@ -1,20 +1,5 @@
 <?php
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -70,9 +55,7 @@ function _imod($a, $b) {
     }
     return $a % $b;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function max_val($arr) {
+function max_val($arr) {
   global $ascii_chars, $example1, $example2, $example3;
   $m = $arr[0];
   $i = 1;
@@ -83,8 +66,8 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return $m;
-};
-  function min_val($arr) {
+}
+function min_val($arr) {
   global $ascii_chars, $example1, $example2, $example3;
   $m = $arr[0];
   $i = 1;
@@ -95,8 +78,8 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return $m;
-};
-  function counting_sort($collection) {
+}
+function counting_sort($collection) {
   global $ascii_chars, $example1, $example2, $example3;
   if (count($collection) == 0) {
   return [];
@@ -137,34 +120,28 @@ $__start = _now();
   $idx = _isub($idx, 1);
 };
   return $ordered;
-};
-  $ascii_chars = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~';
-  function mochi_chr($code) {
+}
+$ascii_chars = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~';
+function mochi_chr($code) {
   global $ascii_chars, $example1, $example2, $example3;
   if ($code == 10) {
   return '
 ';
 }
   if ($code == 13) {
-  return '';
 }
-  if ($code == 9) {
-  return '	';
+function mochi_ord($ch) {
 }
-  if ($code >= 32 && $code < 127) {
-  return substr($ascii_chars, _isub($code, 32), _isub($code, 31) - _isub($code, 32));
 }
-  return '';
-};
-  function mochi_ord($ch) {
-  global $ascii_chars, $example1, $example2, $example3;
-  if ($ch == '
-') {
-  return 10;
+function counting_sort_string($s) {
 }
-  if ($ch == '') {
-  return 13;
-}
+$example1 = counting_sort([0, 5, 3, 2, 2]);
+echo rtrim(_str($example1)), PHP_EOL;
+$example2 = counting_sort([]);
+echo rtrim(_str($example2)), PHP_EOL;
+$example3 = counting_sort([-2, -5, -45]);
+echo rtrim(_str($example3)), PHP_EOL;
+echo rtrim(counting_sort_string('thisisthestring')), PHP_EOL;
   if ($ch == '	') {
   return 9;
 }

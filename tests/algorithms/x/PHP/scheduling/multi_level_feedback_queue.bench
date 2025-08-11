@@ -1,9 +1,5 @@
-Warning: Undefined array key "" in /workspace/mochi/tests/algorithms/x/PHP/scheduling/multi_level_feedback_queue.php on line 196
-
-Fatal error: Uncaught TypeError: array_merge(): Argument #1 must be of type array, null given in /workspace/mochi/tests/algorithms/x/PHP/scheduling/multi_level_feedback_queue.php:196
-Stack trace:
-#0 /workspace/mochi/tests/algorithms/x/PHP/scheduling/multi_level_feedback_queue.php(196): array_merge(NULL, Array)
-#1 /workspace/mochi/tests/algorithms/x/PHP/scheduling/multi_level_feedback_queue.php(203): round_robin(Array, Array, 17)
-#2 /workspace/mochi/tests/algorithms/x/PHP/scheduling/multi_level_feedback_queue.php(218): multi_level_feedback_queue(Array)
-#3 {main}
-  thrown in /workspace/mochi/tests/algorithms/x/PHP/scheduling/multi_level_feedback_queue.php on line 196
+{
+  "duration_us": 176,
+  "memory_bytes": 76568,
+  "name": "main"
+}
