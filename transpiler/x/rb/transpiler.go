@@ -34,11 +34,12 @@ if s && s != ''
   rescue StandardError
   end
 end
+if !$now_seeded && ENV['MOCHI_BENCHMARK']
+  $now_seeded = true
+end
 def _now()
   if $now_seeded
-    # Increment by one microsecond when seeded to allow
-    # deterministic timings with microsecond resolution.
-    $now_seed += 1_000
+    $now_seed = ($now_seed * 1_664_525 + 1_013_904_223) % 2_147_483_647
     $now_seed
   else
     Process.clock_gettime(Process::CLOCK_MONOTONIC, :nanosecond)
