@@ -1,0 +1,352 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:63:2
+   |
+63 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:67:2
+   |
+67 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:70:2
+   |
+70 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:80:2
+   |
+80 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:127:2
+    |
+127 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:130:2
+    |
+130 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:141:2
+    |
+141 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `return` value
+  --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:69:12
+   |
+69 |     return ((a.x == b.x) && (a.y == b.y))
+   |            ^                            ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+69 -     return ((a.x == b.x) && (a.y == b.y))
+69 +     return (a.x == b.x) && (a.y == b.y)
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:73:11
+   |
+73 |     while (i < (lst.len() as i64)) {
+   |           ^                      ^
+   |
+help: remove these parentheses
+   |
+73 -     while (i < (lst.len() as i64)) {
+73 +     while i < (lst.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:77:13
+   |
+77 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+77 -         i = (i + 1);
+77 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:86:11
+   |
+86 |     while ((solution_found == false) && (iterations < max_iter)) {
+   |           ^                                                    ^
+   |
+help: remove these parentheses
+   |
+86 -     while ((solution_found == false) && (iterations < max_iter)) {
+86 +     while (solution_found == false) && (iterations < max_iter) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:88:22
+   |
+88 |         iterations = (iterations + 1);
+   |                      ^              ^
+   |
+help: remove these parentheses
+   |
+88 -         iterations = (iterations + 1);
+88 +         iterations = iterations + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:96:15
+   |
+96 |         while (i < (neighs.len() as i64)) {
+   |               ^                         ^
+   |
+help: remove these parentheses
+   |
+96 -         while (i < (neighs.len() as i64)) {
+96 +         while i < (neighs.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:98:17
+   |
+98 |             i = (i + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+98 -             i = (i + 1);
+98 +             i = i + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:102:16
+    |
+102 |             if ((((n.x > max_x) || (n.x < min_x)) || (n.y > max_y)) || (n.y < min_y)) {
+    |                ^                                                                    ^
+    |
+help: remove these parentheses
+    |
+102 -             if ((((n.x > max_x) || (n.x < min_x)) || (n.y > max_y)) || (n.y < min_y)) {
+102 +             if (((n.x > max_x) || (n.x < min_x)) || (n.y > max_y)) || (n.y < min_y) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:105:35
+    |
+105 |             let mut change: f64 = (score(&n) - current_score);
+    |                                   ^                         ^
+    |
+help: remove these parentheses
+    |
+105 -             let mut change: f64 = (score(&n) - current_score);
+105 +             let mut change: f64 = score(&n) - current_score;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:107:20
+    |
+107 |                 if ((change > max_change) && (change > 0.0)) {
+    |                    ^                                       ^
+    |
+help: remove these parentheses
+    |
+107 -                 if ((change > max_change) && (change > 0.0)) {
+107 +                 if (change > max_change) && (change > 0.0) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:113:20
+    |
+113 |                 if ((change < min_change) && (change < 0.0)) {
+    |                    ^                                       ^
+    |
+help: remove these parentheses
+    |
+113 -                 if ((change < min_change) && (change < 0.0)) {
+113 +                 if (change < min_change) && (change < 0.0) {
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:129:12
+    |
+129 |     return ((x * x) + (y * y))
+    |            ^                 ^
+    |
+help: remove these parentheses
+    |
+129 -     return ((x * x) + (y * y))
+129 +     return (x * x) + (y * y)
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:144:28
+    |
+144 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+144 -     let duration_us: i64 = ((_end - _start) / 1000);
+144 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0425]: cannot find function, tuple struct or tuple variant `SearchProblem_f` in this scope
+  --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:62:12
+   |
+62 |     return SearchProblem_f(sp, sp.x, sp.y)
+   |            ^^^^^^^^^^^^^^^ not found in this scope
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:132:81
+    |
+132 |     let mut prob1: SearchProblem = SearchProblem {x: 3.0, y: 4.0, step: 1.0, f: test_f1};
+    |                                                                                 ^^^^^^^ expected `i64`, found fn item
+    |
+    = note: expected type `i64`
+            found fn item `fn(f64, f64) -> f64 {test_f1}`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:135:83
+    |
+135 |     let mut prob2: SearchProblem = SearchProblem {x: 12.0, y: 47.0, step: 1.0, f: test_f1};
+    |                                                                                   ^^^^^^^ expected `i64`, found fn item
+    |
+    = note: expected type `i64`
+            found fn item `fn(f64, f64) -> f64 {test_f1}`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:138:81
+    |
+138 |     let mut prob3: SearchProblem = SearchProblem {x: 3.0, y: 4.0, step: 1.0, f: test_f1};
+    |                                                                                 ^^^^^^^ expected `i64`, found fn item
+    |
+    = note: expected type `i64`
+            found fn item `fn(f64, f64) -> f64 {test_f1}`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:65:9
+   |
+65 |     let mut s: f64 = sp.step;
+   |         ----^
+   |         |
+   |         help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:71:23
+   |
+71 |     fn contains_state(mut lst: Vec<SearchProblem>, sp: &SearchProblem) -> bool {
+   |                       ----^^^
+   |                       |
+   |                       help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:81:42
+   |
+81 |     fn hill_climbing(sp: &SearchProblem, mut find_max: bool, mut max_x: f64, mut min_x: f64, mut max_y: f64, mut min_y: f64, mut max_iter...
+   |                                          ----^^^^^^^^
+   |                                          |
+   |                                          help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:81:62
+   |
+81 |     fn hill_climbing(sp: &SearchProblem, mut find_max: bool, mut max_x: f64, mut min_x: f64, mut max_y: f64, mut min_y: f64, mut max_iter...
+   |                                                              ----^^^^^
+   |                                                              |
+   |                                                              help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:81:78
+   |
+81 |     fn hill_climbing(sp: &SearchProblem, mut find_max: bool, mut max_x: f64, mut min_x: f64, mut max_y: f64, mut min_y: f64, mut max_iter...
+   |                                                                              ----^^^^^
+   |                                                                              |
+   |                                                                              help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:81:94
+   |
+81 |     fn hill_climbing(sp: &SearchProblem, mut find_max: bool, mut max_x: f64, mut min_x: f64, mut max_y: f64, mut min_y: f64, mut max_iter...
+   |                                                                                              ----^^^^^
+   |                                                                                              |
+   |                                                                                              help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:81:110
+   |
+81 | ...ool, mut max_x: f64, mut min_x: f64, mut max_y: f64, mut min_y: f64, mut max_iter: i64) -> SearchProblem {
+   |                                                         ----^^^^^
+   |                                                         |
+   |                                                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:81:126
+   |
+81 | ...f64, mut min_x: f64, mut max_y: f64, mut min_y: f64, mut max_iter: i64) -> SearchProblem {
+   |                                                         ----^^^^^^^^
+   |                                                         |
+   |                                                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:89:13
+   |
+89 |         let mut current_score: f64 = score(&current);
+   |             ----^^^^^^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:90:13
+   |
+90 |         let mut neighs: Vec<SearchProblem> = neighbors(&current);
+   |             ----^^^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:97:17
+   |
+97 |             let mut n: SearchProblem = neighs[i as usize].clone();
+   |                 ----^
+   |                 |
+   |                 help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:105:17
+    |
+105 |             let mut change: f64 = (score(&n) - current_score);
+    |                 ----^^^^^^
+    |                 |
+    |                 help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:128:16
+    |
+128 |     fn test_f1(mut x: f64, mut y: f64) -> f64 {
+    |                ----^
+    |                |
+    |                help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/searches/hill_climbing.rs:128:28
+    |
+128 |     fn test_f1(mut x: f64, mut y: f64) -> f64 {
+    |                            ----^
+    |                            |
+    |                            help: remove this `mut`
+
+error: aborting due to 4 previous errors; 34 warnings emitted
+
+Some errors have detailed explanations: E0308, E0425.
+For more information about an error, try `rustc --explain E0308`.

@@ -1,0 +1,8 @@
+## Data Structures
+  * [Binary Tree](data_structures/binary_tree.py)
+  * [Linked List](data_structures/linked_list.py)
+
+## Math
+  * Number Theory
+    * [Greatest Common Divisor](math/number_theory/greatest_common_divisor.ipynb)
+    * [Prime Check](math/number_theory/prime_check.py)
