@@ -1,0 +1,28 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/sorts/topological_sort.c: In function ‘topological_sort’:
+/workspace/mochi/tests/algorithms/x/C/sorts/topological_sort.c:127:13: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  127 |     visited[(int)(start)] = 1LL;
+      |             ^
+/workspace/mochi/tests/algorithms/x/C/sorts/topological_sort.c:127:12: error: subscripted value is neither array nor pointer nor vector
+  127 |     visited[(int)(start)] = 1LL;
+      |            ^
+/workspace/mochi/tests/algorithms/x/C/sorts/topological_sort.c:128:96: error: ‘_len’ undeclared (first use in this function)
+  128 |     const char* *neighbors = map_get_sl(edges.keys, edges.vals, edges.lens, edges.len, start, &_len);
+      |                                                                                                ^~~~
+/workspace/mochi/tests/algorithms/x/C/sorts/topological_sort.c:128:96: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/algorithms/x/C/sorts/topological_sort.c:129:38: error: array subscript is not an integer
+  129 |     size_t neighbors_len = edges_lens[start];
+      |                                      ^
+/workspace/mochi/tests/algorithms/x/C/sorts/topological_sort.c:140:9: error: ‘visited_len’ undeclared (first use in this function); did you mean ‘visited’?
+  140 |     if (visited_len != 5LL) {
+      |         ^~~~~~~~~~~
+      |         visited
+/workspace/mochi/tests/algorithms/x/C/sorts/topological_sort.c: In function ‘user_main’:
+/workspace/mochi/tests/algorithms/x/C/sorts/topological_sort.c:155:56: error: incompatible type for argument 2 of ‘topological_sort’
+  155 |     const char* *result = topological_sort("a", (Anon1){}, NULL, 0);
+      |                                                        ^~
+      |                                                        |
+      |                                                        Anon1
+/workspace/mochi/tests/algorithms/x/C/sorts/topological_sort.c:126:57: note: expected ‘MapSI’ but argument is of type ‘Anon1’
+  126 | const char* * topological_sort(const char* start, MapSI visited, const char* * sort, size_t sort_len) {
+      |                                                   ~~~~~~^~~~~~~

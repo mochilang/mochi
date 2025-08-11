@@ -1,0 +1,17 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/sorts/quick_sort.c: In function ‘str_list_int’:
+/workspace/mochi/tests/algorithms/x/C/sorts/quick_sort.c:17:38: warning: format ‘%d’ expects argument of type ‘int’, but argument 4 has type ‘long long int’ [-Wformat=]
+   17 |         snprintf(tmp, sizeof(tmp), "%d", arr[i]);
+      |                                     ~^   ~~~~~~
+      |                                      |      |
+      |                                      int    long long int
+      |                                     %lld
+/workspace/mochi/tests/algorithms/x/C/sorts/quick_sort.c: In function ‘quick_sort’:
+/workspace/mochi/tests/algorithms/x/C/sorts/quick_sort.c:96:29: warning: implicit declaration of function ‘concat’ [-Wimplicit-function-declaration]
+   96 |         long long* __ret4 = concat(({long long* __tmp5 = quick_sort(lesser, lesser_len); concat(__tmp5, ({long long *tmp = malloc(1 * sizeof(long long)); tmp[0] = pivot; tmp;}));}), quick_sort(greater, greater_len));
+      |                             ^~~~~~
+/workspace/mochi/tests/algorithms/x/C/sorts/quick_sort.c:96:29: warning: initialization of ‘long long int *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+/workspace/mochi/tests/algorithms/x/C/sorts/quick_sort.c:97:26: error: ‘concat_len’ undeclared (first use in this function)
+   97 |         quick_sort_len = concat_len;
+      |                          ^~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/sorts/quick_sort.c:97:26: note: each undeclared identifier is reported only once for each function it appears in

@@ -1,0 +1,28 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/sorts/quick_sort_3_partition.c: In function ‘str_list_int’:
+/workspace/mochi/tests/algorithms/x/C/sorts/quick_sort_3_partition.c:25:38: warning: format ‘%d’ expects argument of type ‘int’, but argument 4 has type ‘long long int’ [-Wformat=]
+   25 |         snprintf(tmp, sizeof(tmp), "%d", arr[i]);
+      |                                     ~^   ~~~~~~
+      |                                      |      |
+      |                                      int    long long int
+      |                                     %lld
+/workspace/mochi/tests/algorithms/x/C/sorts/quick_sort_3_partition.c: In function ‘three_way_radix_quicksort’:
+/workspace/mochi/tests/algorithms/x/C/sorts/quick_sort_3_partition.c:204:24: warning: initialization of ‘long long int’ from ‘long long int *’ makes integer from pointer without a cast [-Wint-conversion]
+  204 |     long long result = concat_long_long(sorted_less, sorted_less_len, equal, equal_len);
+      |                        ^~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/sorts/quick_sort_3_partition.c:205:39: error: ‘result_len’ undeclared (first use in this function); did you mean ‘result’?
+  205 |     result = concat_long_long(result, result_len, sorted_greater, sorted_greater_len);
+      |                                       ^~~~~~~~~~
+      |                                       result
+/workspace/mochi/tests/algorithms/x/C/sorts/quick_sort_3_partition.c:205:39: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/algorithms/x/C/sorts/quick_sort_3_partition.c:205:31: warning: passing argument 1 of ‘concat_long_long’ makes pointer from integer without a cast [-Wint-conversion]
+  205 |     result = concat_long_long(result, result_len, sorted_greater, sorted_greater_len);
+      |                               ^~~~~~
+      |                               |
+      |                               long long int
+/workspace/mochi/tests/algorithms/x/C/sorts/quick_sort_3_partition.c:38:47: note: expected ‘long long int *’ but argument is of type ‘long long int’
+   38 | static long long* concat_long_long(long long *a, size_t a_len, const long long *b, size_t b_len) {
+      |                                    ~~~~~~~~~~~^
+/workspace/mochi/tests/algorithms/x/C/sorts/quick_sort_3_partition.c:206:54: warning: returning ‘long long int’ from a function with return type ‘long long int *’ makes pointer from integer without a cast [-Wint-conversion]
+  206 |     return three_way_radix_quicksort_len = result_len, result;
+      |                                                      ^

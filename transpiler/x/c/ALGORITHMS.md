@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (204/1077) - Last updated 2025-08-11 15:26 +0700:
+Checklist of programs that currently transpile and run (245/1077) - Last updated 2025-08-11 17:23 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -964,56 +964,56 @@ Checklist of programs that currently transpile and run (204/1077) - Last updated
 | 957 | sorts/insertion_sort |  |  |  |
 | 958 | sorts/intro_sort |  |  |  |
 | 959 | sorts/iterative_merge_sort |  |  |  |
-| 960 | sorts/merge_insertion_sort |  |  |  |
-| 961 | sorts/merge_sort |  |  |  |
-| 962 | sorts/msd_radix_sort |  |  |  |
-| 963 | sorts/natural_sort |  |  |  |
-| 964 | sorts/odd_even_sort |  |  |  |
-| 965 | sorts/odd_even_transposition_parallel |  |  |  |
-| 966 | sorts/odd_even_transposition_single_threaded |  |  |  |
-| 967 | sorts/pancake_sort |  |  |  |
-| 968 | sorts/patience_sort |  |  |  |
-| 969 | sorts/pigeon_sort |  |  |  |
-| 970 | sorts/pigeonhole_sort |  |  |  |
+| 960 | sorts/merge_insertion_sort | ✓ | 398us | 1.4 MB |
+| 961 | sorts/merge_sort | ✓ | 502us | 1.4 MB |
+| 962 | sorts/msd_radix_sort | ✓ | 282us | 1.4 MB |
+| 963 | sorts/natural_sort | ✓ | 486us | 1.5 MB |
+| 964 | sorts/odd_even_sort | ✓ | 361us | 1.5 MB |
+| 965 | sorts/odd_even_transposition_parallel | ✓ | 589us | 1.5 MB |
+| 966 | sorts/odd_even_transposition_single_threaded | ✓ | 329us | 1.6 MB |
+| 967 | sorts/pancake_sort | ✓ | 505us | 1.5 MB |
+| 968 | sorts/patience_sort | ✓ | 414us | 1.4 MB |
+| 969 | sorts/pigeon_sort | ✓ | 457us | 1.5 MB |
+| 970 | sorts/pigeonhole_sort | ✓ | 509us | 1.5 MB |
 | 971 | sorts/quick_sort |  |  |  |
 | 972 | sorts/quick_sort_3_partition |  |  |  |
-| 973 | sorts/radix_sort |  |  |  |
-| 974 | sorts/recursive_insertion_sort |  |  |  |
-| 975 | sorts/recursive_mergesort_array |  |  |  |
+| 973 | sorts/radix_sort | ✓ | 953us | 1.4 MB |
+| 974 | sorts/recursive_insertion_sort | ✓ | 436us | 1.5 MB |
+| 975 | sorts/recursive_mergesort_array | ✓ | 490us | 1.6 MB |
 | 976 | sorts/recursive_quick_sort |  |  |  |
-| 977 | sorts/selection_sort |  |  |  |
-| 978 | sorts/shell_sort |  |  |  |
-| 979 | sorts/shrink_shell_sort |  |  |  |
-| 980 | sorts/slowsort |  |  |  |
-| 981 | sorts/stooge_sort |  |  |  |
-| 982 | sorts/strand_sort |  |  |  |
-| 983 | sorts/tim_sort |  |  |  |
+| 977 | sorts/selection_sort | ✓ | 445us | 1.5 MB |
+| 978 | sorts/shell_sort | ✓ | 310us | 1.4 MB |
+| 979 | sorts/shrink_shell_sort | ✓ | 318us | 1.5 MB |
+| 980 | sorts/slowsort | ✓ | 375us | 1.5 MB |
+| 981 | sorts/stooge_sort | ✓ | 437us | 1.6 MB |
+| 982 | sorts/strand_sort | ✓ | 392us | 1.5 MB |
+| 983 | sorts/tim_sort | ✓ | 389us | 1.5 MB |
 | 984 | sorts/topological_sort |  |  |  |
 | 985 | sorts/tree_sort |  |  |  |
 | 986 | sorts/unknown_sort |  |  |  |
 | 987 | sorts/wiggle_sort |  |  |  |
-| 988 | strings/aho_corasick |  |  |  |
-| 989 | strings/alternative_string_arrange |  |  |  |
+| 988 | strings/aho_corasick | ✓ | 813us | 1.4 MB |
+| 989 | strings/alternative_string_arrange | ✓ | 233us | 1.4 MB |
 | 990 | strings/anagrams |  |  |  |
-| 991 | strings/autocomplete_using_trie |  |  |  |
-| 992 | strings/barcode_validator |  |  |  |
-| 993 | strings/bitap_string_match |  |  |  |
-| 994 | strings/boyer_moore_search |  |  |  |
-| 995 | strings/camel_case_to_snake_case |  |  |  |
-| 996 | strings/can_string_be_rearranged_as_palindrome |  |  |  |
-| 997 | strings/capitalize |  |  |  |
-| 998 | strings/check_anagrams |  |  |  |
-| 999 | strings/count_vowels |  |  |  |
-| 1000 | strings/credit_card_validator |  |  |  |
-| 1001 | strings/damerau_levenshtein_distance |  |  |  |
-| 1002 | strings/detecting_english_programmatically |  |  |  |
-| 1003 | strings/dna |  |  |  |
-| 1004 | strings/edit_distance |  |  |  |
+| 991 | strings/autocomplete_using_trie | ✓ | 269us | 1.4 MB |
+| 992 | strings/barcode_validator | ✓ | 307us | 1.4 MB |
+| 993 | strings/bitap_string_match | ✓ | 557us | 1.6 MB |
+| 994 | strings/boyer_moore_search | ✓ |  |  |
+| 995 | strings/camel_case_to_snake_case | ✓ | 684us | 1.4 MB |
+| 996 | strings/can_string_be_rearranged_as_palindrome | ✓ | 445us | 1.5 MB |
+| 997 | strings/capitalize | ✓ | 277us | 1.6 MB |
+| 998 | strings/check_anagrams | ✓ | 418us | 1.6 MB |
+| 999 | strings/count_vowels | ✓ | 368us | 1.6 MB |
+| 1000 | strings/credit_card_validator | ✓ | 280us | 1.6 MB |
+| 1001 | strings/damerau_levenshtein_distance | ✓ | 567us | 1.6 MB |
+| 1002 | strings/detecting_english_programmatically | ✓ | 1.26ms | 1.6 MB |
+| 1003 | strings/dna | ✓ | 254us | 1.4 MB |
+| 1004 | strings/edit_distance | ✓ | 24.34ms | 6.1 MB |
 | 1005 | strings/frequency_finder |  |  |  |
-| 1006 | strings/hamming_distance |  |  |  |
-| 1007 | strings/indian_phone_validator |  |  |  |
-| 1008 | strings/is_contains_unique_chars |  |  |  |
-| 1009 | strings/is_isogram |  |  |  |
+| 1006 | strings/hamming_distance | ✓ | 1.08ms | 1.4 MB |
+| 1007 | strings/indian_phone_validator | ✓ | 277us | 1.5 MB |
+| 1008 | strings/is_contains_unique_chars | ✓ | 778us | 1.6 MB |
+| 1009 | strings/is_isogram | ✓ | 391us | 1.6 MB |
 | 1010 | strings/is_pangram |  |  |  |
 | 1011 | strings/is_polish_national_id |  |  |  |
 | 1012 | strings/is_spain_national_id |  |  |  |

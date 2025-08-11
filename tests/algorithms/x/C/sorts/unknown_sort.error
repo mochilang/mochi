@@ -1,0 +1,16 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/sorts/unknown_sort.c: In function ‘str_list_int’:
+/workspace/mochi/tests/algorithms/x/C/sorts/unknown_sort.c:25:38: warning: format ‘%d’ expects argument of type ‘int’, but argument 4 has type ‘long long int’ [-Wformat=]
+   25 |         snprintf(tmp, sizeof(tmp), "%d", arr[i]);
+      |                                     ~^   ~~~~~~
+      |                                      |      |
+      |                                      int    long long int
+      |                                     %lld
+/workspace/mochi/tests/algorithms/x/C/sorts/unknown_sort.c: In function ‘merge_sort’:
+/workspace/mochi/tests/algorithms/x/C/sorts/unknown_sort.c:169:29: warning: implicit declaration of function ‘concat’ [-Wimplicit-function-declaration]
+  169 |         long long* __ret1 = concat(concat_long_long(start, start_len, coll, coll_len), end);
+      |                             ^~~~~~
+/workspace/mochi/tests/algorithms/x/C/sorts/unknown_sort.c:169:29: warning: initialization of ‘long long int *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+/usr/bin/ld: /tmp/ccfkxFlP.o: in function `merge_sort':
+unknown_sort.c:(.text+0x9e0): undefined reference to `concat'
+collect2: error: ld returned 1 exit status
