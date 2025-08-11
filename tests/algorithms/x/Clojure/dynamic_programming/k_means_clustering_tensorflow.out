@@ -1,3 +1,2 @@
-WARNING: Implicit use of clojure.main with options is deprecated, use -M
-[[1.0 1.0] [7.0 9.0]]
+[[1.1666666666666667 1.4666666666666666] [7.333333333333333 9.0]]
 [0 0 1 1 0 1]

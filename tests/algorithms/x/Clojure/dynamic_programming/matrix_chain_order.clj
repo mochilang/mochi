@@ -14,6 +14,9 @@
 (defn split [s sep]
   (clojure.string/split s (re-pattern sep)))
 
+(defn toi [s]
+  (Integer/parseInt (str s)))
+
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
 (declare make_2d matrix_chain_order optimal_parenthesization main)
@@ -68,7 +71,7 @@
   (binding [optimal_parenthesization_left nil optimal_parenthesization_right nil] (try (if (= optimal_parenthesization_i optimal_parenthesization_j) (throw (ex-info "return" {:v (str "A" (str optimal_parenthesization_i))})) (do (set! optimal_parenthesization_left (optimal_parenthesization optimal_parenthesization_s optimal_parenthesization_i (nth (nth optimal_parenthesization_s optimal_parenthesization_i) optimal_parenthesization_j))) (set! optimal_parenthesization_right (optimal_parenthesization optimal_parenthesization_s (+ (nth (nth optimal_parenthesization_s optimal_parenthesization_i) optimal_parenthesization_j) 1) optimal_parenthesization_j)) (throw (ex-info "return" {:v (str (str (str (str "( " optimal_parenthesization_left) " ") optimal_parenthesization_right) " )")})))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e))))))
 
 (defn main []
-  (binding [main_arr nil main_m nil main_n nil main_res nil main_s nil main_seq nil] (do (set! main_arr [30 35 15 5 10 20 25]) (set! main_n (count main_arr)) (set! main_res (matrix_chain_order main_arr)) (set! main_m (:matrix main_res)) (set! main_s (:solution main_res)) (println (str "No. of Operation required: " (str (nth (nth main_m 1) (- main_n 1))))) (set! main_seq (optimal_parenthesization main_s 1 (- main_n 1))) (println main_seq))))
+  (binding [main_arr nil main_m nil main_n nil main_res nil main_s nil main_seq nil] (do (set! main_arr [30 35 15 5 10 20 25]) (set! main_n (count main_arr)) (set! main_res (matrix_chain_order main_arr)) (set! main_m (:matrix main_res)) (set! main_s (:solution main_res)) (println (str "No. of Operation required: " (str (nth (get main_m 1) (- main_n 1))))) (set! main_seq (optimal_parenthesization main_s 1 (- main_n 1))) (println main_seq))))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

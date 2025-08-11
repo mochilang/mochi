@@ -1,2 +1,1 @@
-WARNING: Implicit use of clojure.main with options is deprecated, use -M
 The longest divisible subset of [1 16 7 8 4] is [16 8 4 1].
