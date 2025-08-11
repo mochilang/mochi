@@ -15,28 +15,28 @@ let UNIVERSAL_GAS_CONSTANT: float = 8.314462
 
 fun pressure_of_gas_system(moles: float, kelvin: float, volume: float): float {
     if moles < 0 || kelvin < 0 || volume < 0 {
-        throw "Invalid inputs. Enter positive value."
+        panic("Invalid inputs. Enter positive value.")
     }
     return moles * kelvin * UNIVERSAL_GAS_CONSTANT / volume
 }
 
 fun volume_of_gas_system(moles: float, kelvin: float, pressure: float): float {
     if moles < 0 || kelvin < 0 || pressure < 0 {
-        throw "Invalid inputs. Enter positive value."
+        panic("Invalid inputs. Enter positive value.")
     }
     return moles * kelvin * UNIVERSAL_GAS_CONSTANT / pressure
 }
 
 fun temperature_of_gas_system(moles: float, volume: float, pressure: float): float {
     if moles < 0 || volume < 0 || pressure < 0 {
-        throw "Invalid inputs. Enter positive value."
+        panic("Invalid inputs. Enter positive value.")
     }
     return pressure * volume / (moles * UNIVERSAL_GAS_CONSTANT)
 }
 
 fun moles_of_gas_system(kelvin: float, volume: float, pressure: float): float {
     if kelvin < 0 || volume < 0 || pressure < 0 {
-        throw "Invalid inputs. Enter positive value."
+        panic("Invalid inputs. Enter positive value.")
     }
     return pressure * volume / (kelvin * UNIVERSAL_GAS_CONSTANT)
 }

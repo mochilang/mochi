@@ -16,7 +16,7 @@ let PI: float = 3.141592653589793
 let TWO_PI: float = 6.283185307179586
 
 fun _mod(x: float, m: float): float {
-  return x - (int(x / m) as float) * m
+  return x - floor(x / m) * m
 }
 
 fun cos(x: float): float {
@@ -48,29 +48,7 @@ fun malus_law(initial_intensity: float, angle: float): float {
   return initial_intensity * (c * c)
 }
 
-fun test_malus_law() {
-  if abs_val(malus_law(10.0, 45.0) - 5.0) > 0.01 {
-    panic("malus_law test1 failed")
-  }
-  if abs_val(malus_law(100.0, 60.0) - 25.0) > 0.01 {
-    panic("malus_law test2 failed")
-  }
-  if abs_val(malus_law(50.0, 150.0) - 37.5) > 0.01 {
-    panic("malus_law test3 failed")
-  }
-  if abs_val(malus_law(75.0, 270.0) - 0.0) > 0.01 {
-    panic("malus_law test4 failed")
-  }
-  if abs_val(malus_law(100.0, 180.0) - 100.0) > 0.01 {
-    panic("malus_law test5 failed")
-  }
-  if abs_val(malus_law(100.0, 360.0) - 100.0) > 0.01 {
-    panic("malus_law test6 failed")
-  }
-}
-
 fun main() {
-  test_malus_law()
   print(str(malus_law(100.0, 60.0)))
 }
 

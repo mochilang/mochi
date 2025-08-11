@@ -1,3 +1,7 @@
+## Progress (2025-08-09 23:14 +0700)
+- fix(py): prefer integer division
+- Generated F# for 103/105 programs (103 passing)
+
 ## Progress (2025-08-09 15:58 +0700)
 - zig: fix slice returns and mutable params
 - Generated F# for 103/105 programs (103 passing)
