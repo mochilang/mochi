@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-11 14:54 GMT+7
+Last updated: 2025-08-11 15:17 GMT+7
 
-## Algorithms Golden Test Checklist (646/1077)
+## Algorithms Golden Test Checklist (647/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -699,38 +699,38 @@ Last updated: 2025-08-11 14:54 GMT+7
 | 690 | maths/trapezoidal_rule | ✓ | 1.76ms | 25.0 MB |
 | 691 | maths/triplet_sum | ✓ | 198us | 12.5 MB |
 | 692 | maths/twin_prime | ✓ | 4.37ms | 12.5 MB |
-| 693 | maths/two_pointer | ✓ | 8.03ms | 17.3 MB |
-| 694 | maths/two_sum | ✓ | 9.73ms | 25.0 MB |
-| 695 | maths/volume | ✓ | 9.82ms | 33.4 MB |
-| 696 | maths/zellers_congruence | ✓ | 8.60ms | 25.0 MB |
-| 697 | matrix/binary_search_matrix | ✓ | 9.13ms | 25.0 MB |
-| 698 | matrix/count_islands_in_matrix | error |  |  |
+| 693 | maths/two_pointer | ✓ | 5.74ms | 17.3 MB |
+| 694 | maths/two_sum | ✓ | 6.01ms | 25.0 MB |
+| 695 | maths/volume | ✓ | 6.96ms | 33.4 MB |
+| 696 | maths/zellers_congruence | ✓ | 5.78ms | 25.0 MB |
+| 697 | matrix/binary_search_matrix | ✓ | 13.51ms | 25.0 MB |
+| 698 | matrix/count_islands_in_matrix | ✓ | 5.36ms | 12.5 MB |
 | 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ |  |  |
-| 700 | matrix/count_paths | ✓ | 6.44ms | 17.3 MB |
-| 701 | matrix/cramers_rule_2x2 | ✓ | 9.62ms | 17.3 MB |
-| 702 | matrix/inverse_of_matrix | ✓ | 11.49ms | 33.5 MB |
-| 703 | matrix/largest_square_area_in_matrix | ✓ | 7.98ms | 17.3 MB |
-| 704 | matrix/matrix_based_game | ✓ | 393us | 12.5 MB |
-| 705 | matrix/matrix_class | ✓ | 17.95ms | 26.5 MB |
-| 706 | matrix/matrix_equalization | ✓ | 6.97ms | 17.3 MB |
-| 707 | matrix/matrix_multiplication_recursion | ✓ | 9.22ms | 25.0 MB |
-| 708 | matrix/matrix_operation | ✓ | 9.22ms | 12.5 MB |
-| 709 | matrix/max_area_of_island | ✓ | 7.85ms | 17.3 MB |
-| 710 | matrix/median_matrix | ✓ | 6.86ms | 32.7 MB |
-| 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ | 7.27ms | 7.7 MB |
-| 712 | matrix/pascal_triangle | ✓ | 13.90ms | 17.3 MB |
-| 713 | matrix/rotate_matrix | ✓ | 3.13ms | 17.3 MB |
-| 714 | matrix/searching_in_sorted_matrix | ✓ | 2.49ms | 12.5 MB |
-| 715 | matrix/sherman_morrison | ✓ | 10.24ms | 25.0 MB |
-| 716 | matrix/spiral_print | ✓ | 10.48ms | 17.3 MB |
-| 717 | matrix/tests/test_matrix_operation | ✓ | 9.01ms | 25.0 MB |
+| 700 | matrix/count_paths | ✓ | 6.77ms | 17.3 MB |
+| 701 | matrix/cramers_rule_2x2 | ✓ | 6.36ms | 17.3 MB |
+| 702 | matrix/inverse_of_matrix | ✓ | 7.44ms | 33.5 MB |
+| 703 | matrix/largest_square_area_in_matrix | ✓ | 5.74ms | 17.3 MB |
+| 704 | matrix/matrix_based_game | ✓ | 292us | 12.5 MB |
+| 705 | matrix/matrix_class | ✓ | 12.05ms | 26.5 MB |
+| 706 | matrix/matrix_equalization | ✓ | 5.82ms | 17.3 MB |
+| 707 | matrix/matrix_multiplication_recursion | ✓ | 10.38ms | 25.0 MB |
+| 708 | matrix/matrix_operation | ✓ | 6.62ms | 12.5 MB |
+| 709 | matrix/max_area_of_island | ✓ | 6.84ms | 17.3 MB |
+| 710 | matrix/median_matrix | ✓ | 4.60ms | 32.7 MB |
+| 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ | 5.69ms | 7.7 MB |
+| 712 | matrix/pascal_triangle | ✓ | 9.11ms | 17.3 MB |
+| 713 | matrix/rotate_matrix | ✓ | 1.96ms | 17.3 MB |
+| 714 | matrix/searching_in_sorted_matrix | ✓ | 1.86ms | 12.5 MB |
+| 715 | matrix/sherman_morrison | ✓ | 7.00ms | 25.0 MB |
+| 716 | matrix/spiral_print | ✓ | 7.00ms | 17.3 MB |
+| 717 | matrix/tests/test_matrix_operation | ✓ | 6.08ms | 25.0 MB |
 | 718 | matrix/validate_sudoku_board | error |  |  |
 | 719 | networking_flow/ford_fulkerson | ✓ |  |  |
 | 720 | networking_flow/minimum_cut | ✓ |  |  |
-| 721 | neural_network/activation_functions/binary_step | ✓ | 14.44ms | 12.5 MB |
+| 721 | neural_network/activation_functions/binary_step | ✓ | 6.13ms | 12.5 MB |
 | 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 9.47ms | 34.7 MB |
-| 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 10.88ms | 7.7 MB |
-| 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 11.00ms | 32.8 MB |
+| 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 9.48ms | 7.7 MB |
+| 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 8.38ms | 32.8 MB |
 | 725 | neural_network/activation_functions/mish | ✓ | 9.92ms | 26.6 MB |
 | 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 7.11ms | 32.7 MB |
 | 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 7.32ms | 17.3 MB |

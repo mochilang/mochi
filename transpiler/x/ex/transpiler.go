@@ -141,6 +141,22 @@ func isBigRat(t types.Type) bool {
 	return ok
 }
 
+// zeroExpr returns an expression representing the zero value for type t.
+func zeroExpr(t types.Type) Expr {
+	switch t.(type) {
+	case types.BoolType:
+		return &BoolLit{Value: false}
+	case types.StringType:
+		return &StringLit{Value: ""}
+	case types.ListType:
+		return &ListLit{}
+	case types.IntType, types.Int64Type, types.FloatType, types.BigIntType, types.BigRatType:
+		return &NumberLit{Value: "0"}
+	default:
+		return &NilLit{}
+	}
+}
+
 // moduleMode is true when emitting a module with functions.
 var moduleMode bool
 
@@ -1427,6 +1443,7 @@ type IndexExpr struct {
 	Index        Expr
 	IsString     bool
 	UseMapSyntax bool
+	Default      Expr
 }
 
 func (i *IndexExpr) emit(w io.Writer) {
@@ -1458,6 +1475,10 @@ func (i *IndexExpr) emit(w io.Writer) {
 	i.Target.emit(w)
 	io.WriteString(w, ", ")
 	i.Index.emit(w)
+	if i.Default != nil {
+		io.WriteString(w, ", ")
+		i.Default.emit(w)
+	}
 	io.WriteString(w, ")")
 }
 
@@ -2316,34 +2337,34 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 			return &AssignStmt{Name: st.Assign.Name, Value: val}, nil
 		}
-               if len(st.Assign.Field) == 1 && len(st.Assign.Index) == 0 {
-                       val, err := compileExpr(st.Assign.Value, env)
-                       if err != nil {
-                               return nil, err
-                       }
-                       key := &AtomLit{Name: ":" + st.Assign.Field[0].Name}
-                       call := &CallExpr{Func: "Map.put", Args: []Expr{&VarRef{Name: st.Assign.Name}, key, val}}
-                       return &AssignStmt{Name: st.Assign.Name, Value: call}, nil
-               }
-               if len(st.Assign.Field) == 2 && len(st.Assign.Index) == 0 {
-                       val, err := compileExpr(st.Assign.Value, env)
-                       if err != nil {
-                               return nil, err
-                       }
-                       path := &ListLit{Elems: []Expr{
-                               &AtomLit{Name: ":" + st.Assign.Field[0].Name},
-                               &AtomLit{Name: ":" + st.Assign.Field[1].Name},
-                       }}
-                       call := &CallExpr{Func: "Kernel.put_in", Args: []Expr{&VarRef{Name: st.Assign.Name}, path, val}}
-                       return &AssignStmt{Name: st.Assign.Name, Value: call}, nil
-               }
-               if len(st.Assign.Index) == 1 && len(st.Assign.Field) == 0 {
-                       idx, err := compileExpr(st.Assign.Index[0].Start, env)
-                       if err != nil {
-                               return nil, err
-                       }
-                       val, err := compileExpr(st.Assign.Value, env)
-                       if err != nil {
+		if len(st.Assign.Field) == 1 && len(st.Assign.Index) == 0 {
+			val, err := compileExpr(st.Assign.Value, env)
+			if err != nil {
+				return nil, err
+			}
+			key := &AtomLit{Name: ":" + st.Assign.Field[0].Name}
+			call := &CallExpr{Func: "Map.put", Args: []Expr{&VarRef{Name: st.Assign.Name}, key, val}}
+			return &AssignStmt{Name: st.Assign.Name, Value: call}, nil
+		}
+		if len(st.Assign.Field) == 2 && len(st.Assign.Index) == 0 {
+			val, err := compileExpr(st.Assign.Value, env)
+			if err != nil {
+				return nil, err
+			}
+			path := &ListLit{Elems: []Expr{
+				&AtomLit{Name: ":" + st.Assign.Field[0].Name},
+				&AtomLit{Name: ":" + st.Assign.Field[1].Name},
+			}}
+			call := &CallExpr{Func: "Kernel.put_in", Args: []Expr{&VarRef{Name: st.Assign.Name}, path, val}}
+			return &AssignStmt{Name: st.Assign.Name, Value: call}, nil
+		}
+		if len(st.Assign.Index) == 1 && len(st.Assign.Field) == 0 {
+			idx, err := compileExpr(st.Assign.Index[0].Start, env)
+			if err != nil {
+				return nil, err
+			}
+			val, err := compileExpr(st.Assign.Value, env)
+			if err != nil {
 				return nil, err
 			}
 			t, _ := env.GetVar(st.Assign.Name)
@@ -3733,7 +3754,8 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				expr = &IndexExpr{Target: expr, Index: idx, IsString: true}
 				typ = types.StringType{}
 			case types.ListType:
-				expr = &IndexExpr{Target: expr, Index: idx, IsString: false}
+				def := zeroExpr(tt.Elem)
+				expr = &IndexExpr{Target: expr, Index: idx, IsString: false, Default: def}
 				typ = tt.Elem
 			case types.MapType:
 				if _, ok := tt.Value.(types.StringType); ok {
