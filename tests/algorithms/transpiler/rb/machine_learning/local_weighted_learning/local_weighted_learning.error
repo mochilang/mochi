@@ -1,0 +1,6 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/rb/machine_learning/local_weighted_learning/local_weighted_learning.rb:87:in `panic': Matrix is singular (RuntimeError)
+	from /workspace/mochi/tests/algorithms/transpiler/rb/machine_learning/local_weighted_learning/local_weighted_learning.rb:179:in `matInv'
+	from /workspace/mochi/tests/algorithms/transpiler/rb/machine_learning/local_weighted_learning/local_weighted_learning.rb:251:in `local_weight'
+	from /workspace/mochi/tests/algorithms/transpiler/rb/machine_learning/local_weighted_learning/local_weighted_learning.rb:266:in `local_weight_regression'
+	from /workspace/mochi/tests/algorithms/transpiler/rb/machine_learning/local_weighted_learning/local_weighted_learning.rb:286:in `<main>'
