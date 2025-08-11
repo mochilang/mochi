@@ -297,13 +297,12 @@ func exprToSQL(e *parser.Expr, resolve func(string) (string, bool)) (string, err
 		return "", err
 	}
 	for _, op := range e.Binary.Right {
-		// op.Right is a *parser.Unary, which may contain prefix operators
-		// and a postfix expression.  The previous implementation attempted
-		// to pass it directly to postfixToSQL which expects a *parser.PostfixExpr
-		// and resulted in a compile-time type mismatch after parser refactors.
-		// Use unaryToSQL so both prefix operators and the inner postfix
-		// expression are handled correctly.
-		right, err := unaryToSQL(op.Right, resolve)
+		// In the AST a binary operator's right-hand side is stored as a
+		// *parser.PostfixExpr.  Earlier refactoring attempted to treat it
+		// as a *parser.Unary and call unaryToSQL which caused a compile-time
+		// type mismatch.  The right-hand side does not include prefix
+		// operators, so we can convert it directly using postfixToSQL.
+		right, err := postfixToSQL(op.Right, resolve)
 		if err != nil {
 			return "", err
 		}

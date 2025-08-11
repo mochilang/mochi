@@ -947,8 +947,9 @@ func (i *Interpreter) evalBinaryExpr(b *parser.BinaryExpr) (any, error) {
 	for _, part := range b.Right {
 		p := part
 		operators = append(operators, token{p.Pos, p.Op})
-		// Each binary operation's right side is now a unary expression.
-		operands = append(operands, operand{eval: func() (any, error) { return i.evalUnary(p.Right) }})
+		// Each binary operation's right side is stored as a postfix
+		// expression in the AST, so evaluate it accordingly.
+		operands = append(operands, operand{eval: func() (any, error) { return i.evalPostfixExpr(p.Right) }})
 	}
 
 	// Step 2: Apply precedence rules (high to low)
