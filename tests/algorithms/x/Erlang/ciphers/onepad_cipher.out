@@ -1,3 +1,7 @@
+/workspace/mochi/tests/algorithms/x/Erlang/ciphers/onepad_cipher.erl:60:1: Warning: function mochi_safe_mul/2 is unused
+%   60| mochi_safe_mul(A, B) ->
+%     | ^
+
 [14833, 13452, 54205, 52780, 106150]
 [91, 76, 185, 182, 275]
 "Hello"
