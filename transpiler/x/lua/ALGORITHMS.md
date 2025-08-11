@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-09 16:34 GMT+7
+Last updated: 2025-08-11 15:00 GMT+7
 
-## Algorithms Golden Test Checklist (1006/1077)
+## Algorithms Golden Test Checklist (1008/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 270µs | 912 B |
@@ -205,7 +205,7 @@ Last updated: 2025-08-09 16:34 GMT+7
 | 196 | data_structures/binary_tree/segment_tree_other | ✓ | 423µs | 1.8 KB |
 | 197 | data_structures/binary_tree/serialize_deserialize_binary_tree | ✓ | 197µs | 2.8 KB |
 | 198 | data_structures/binary_tree/symmetric_tree | ✓ | 80µs | 2.6 KB |
-| 199 | data_structures/binary_tree/treap | error |  |  |
+| 199 | data_structures/binary_tree/treap | ✓ | 708µs | 2.4 KB |
 | 200 | data_structures/binary_tree/wavelet_tree | ✓ | 285µs | 9.9 KB |
 | 201 | data_structures/disjoint_set/alternate_disjoint_set | ✓ | 74µs | 1.5 KB |
 | 202 | data_structures/disjoint_set/disjoint_set | ✓ | 136µs | 1.9 KB |
@@ -219,7 +219,7 @@ Last updated: 2025-08-09 16:34 GMT+7
 | 210 | data_structures/hashing/tests/test_hash_map | ✓ | 258µs | 1.3 KB |
 | 211 | data_structures/heap/binomial_heap | ✓ | 99µs | 1.2 KB |
 | 212 | data_structures/heap/heap | ✓ | 203µs | 1.5 KB |
-| 213 | data_structures/heap/heap_generic | error |  |  |
+| 213 | data_structures/heap/heap_generic | ✓ | 330µs | 2.0 KB |
 | 214 | data_structures/heap/max_heap | ✓ | 106µs | 1.2 KB |
 | 215 | data_structures/heap/min_heap | ✓ | 161µs | 2.7 KB |
 | 216 | data_structures/heap/randomized_heap | ✓ | 122µs | 2.8 KB |
