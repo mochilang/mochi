@@ -1,8 +1,8 @@
 compile: exit status 1
-/tmp/TestJavaTranspiler_Algorithms_Golden518_principle_component_analysis2027322745/001/Main.java:144: error: incompatible types: Object[] cannot be converted to double[]
-            v1 = ((double[])(normalize(((double[])(new Object[]{lambda1 - c_1, b})))));
-                                                  ^
-/tmp/TestJavaTranspiler_Algorithms_Golden518_principle_component_analysis2027322745/001/Main.java:145: error: incompatible types: Object[] cannot be converted to double[]
-            v2 = ((double[])(normalize(((double[])(new Object[]{lambda2 - c_1, b})))));
-                                                  ^
+/tmp/TestJavaTranspiler_Algorithms_Golden518_principle_component_analysis2871609557/001/Main.java:144: error: incompatible types: Object[] cannot be converted to double[]
+            v1_1 = ((double[])(normalize(((double[])(new Object[]{lambda1_1 - c_3, b_1})))));
+                                                    ^
+/tmp/TestJavaTranspiler_Algorithms_Golden518_principle_component_analysis2871609557/001/Main.java:145: error: incompatible types: Object[] cannot be converted to double[]
+            v2_1 = ((double[])(normalize(((double[])(new Object[]{lambda2_1 - c_3, b_1})))));
+                                                    ^
 2 errors

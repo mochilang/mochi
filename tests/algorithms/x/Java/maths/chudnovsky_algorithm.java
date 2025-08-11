@@ -1,90 +1,56 @@
 public class Main {
-    static int n;
+    static long n;
 
     static double sqrtApprox(double x) {
         if (x <= 0.0) {
             return 0.0;
         }
-        double guess = x;
-        int i = 0;
-        while (i < 20) {
-            guess = (guess + x / guess) / 2.0;
-            i = i + 1;
+        double guess_1 = x;
+        long i_1 = 0;
+        while (i_1 < 20) {
+            guess_1 = (guess_1 + x / guess_1) / 2.0;
+            i_1 = i_1 + 1;
         }
-        return guess;
+        return guess_1;
     }
 
-    static double factorial_float(int n) {
+    static double factorial_float(long n) {
         double result = 1.0;
-        int i_1 = 2;
-        while (i_1 <= n) {
-            result = result * (((Number)(i_1)).doubleValue());
-            i_1 = i_1 + 1;
+        long i_3 = 2;
+        while (i_3 <= n) {
+            result = result * (((Number)(i_3)).doubleValue());
+            i_3 = i_3 + 1;
         }
         return result;
     }
 
-    static double pi(int n) {
+    static double pi(long n) {
         if (n < 1) {
             throw new RuntimeException(String.valueOf("Undefined for non-natural numbers"));
         }
-        int iterations = (n + 13) / 14;
-        double constant_term = 426880.0 * sqrtApprox(10005.0);
-        double exponential_term = 1.0;
-        double linear_term = 13591409.0;
-        double partial_sum = linear_term;
-        int k = 1;
-        while (k < iterations) {
-            int k6 = 6 * k;
-            int k3 = 3 * k;
-            double fact6k = factorial_float(k6);
-            double fact3k = factorial_float(k3);
-            double factk = factorial_float(k);
-            double multinomial = fact6k / (fact3k * factk * factk * factk);
-            linear_term = linear_term + 545140134.0;
-            exponential_term = exponential_term * (-262537412640768000.0);
-            partial_sum = partial_sum + multinomial * linear_term / exponential_term;
-            k = k + 1;
+        long iterations_1 = Math.floorDiv((n + 13), 14);
+        double constant_term_1 = 426880.0 * sqrtApprox(10005.0);
+        double exponential_term_1 = 1.0;
+        double linear_term_1 = 13591409.0;
+        double partial_sum_1 = linear_term_1;
+        long k_1 = 1;
+        while (k_1 < iterations_1) {
+            long k6_1 = 6 * k_1;
+            long k3_1 = 3 * k_1;
+            double fact6k_1 = factorial_float(k6_1);
+            double fact3k_1 = factorial_float(k3_1);
+            double factk_1 = factorial_float(k_1);
+            double multinomial_1 = fact6k_1 / (fact3k_1 * factk_1 * factk_1 * factk_1);
+            linear_term_1 = linear_term_1 + 545140134.0;
+            exponential_term_1 = exponential_term_1 * (-262537412640768000.0);
+            partial_sum_1 = partial_sum_1 + multinomial_1 * linear_term_1 / exponential_term_1;
+            k_1 = k_1 + 1;
         }
-        return constant_term / partial_sum;
+        return constant_term_1 / partial_sum_1;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            n = 50;
-            System.out.println("The first " + _p(n) + " digits of pi is: " + _p(pi(n)));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        n = 50;
+        System.out.println("The first " + _p(n) + " digits of pi is: " + _p(pi(n)));
     }
 
     static String _p(Object v) {
@@ -99,6 +65,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

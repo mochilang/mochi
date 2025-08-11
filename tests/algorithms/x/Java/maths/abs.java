@@ -7,31 +7,15 @@ public class Main {
         return num;
     }
 
-    static int abs_min(int[] x) {
+    static long abs_min(long[] x) {
         if (x.length == 0) {
             throw new RuntimeException(String.valueOf("abs_min() arg is an empty sequence"));
         }
-        int j = x[0];
-        int idx = 0;
-        while (idx < x.length) {
-            int i = x[idx];
-            if (abs_val(((Number)(i)).doubleValue()) < abs_val(((Number)(j)).doubleValue())) {
-                j = i;
-            }
-            idx = idx + 1;
-        }
-        return j;
-    }
-
-    static int abs_max(int[] x) {
-        if (x.length == 0) {
-            throw new RuntimeException(String.valueOf("abs_max() arg is an empty sequence"));
-        }
-        int j_1 = x[0];
-        int idx_1 = 0;
+        long j_1 = x[(int)(0)];
+        long idx_1 = 0;
         while (idx_1 < x.length) {
-            int i_1 = x[idx_1];
-            if (abs_val(((Number)(i_1)).doubleValue()) > abs_val(((Number)(j_1)).doubleValue())) {
+            long i_1 = x[(int)(idx_1)];
+            if (abs_val(((Number)(i_1)).doubleValue()) < abs_val(((Number)(j_1)).doubleValue())) {
                 j_1 = i_1;
             }
             idx_1 = idx_1 + 1;
@@ -39,31 +23,47 @@ public class Main {
         return j_1;
     }
 
-    static int abs_max_sort(int[] x) {
+    static long abs_max(long[] x) {
+        if (x.length == 0) {
+            throw new RuntimeException(String.valueOf("abs_max() arg is an empty sequence"));
+        }
+        long j_3 = x[(int)(0)];
+        long idx_3 = 0;
+        while (idx_3 < x.length) {
+            long i_3 = x[(int)(idx_3)];
+            if (abs_val(((Number)(i_3)).doubleValue()) > abs_val(((Number)(j_3)).doubleValue())) {
+                j_3 = i_3;
+            }
+            idx_3 = idx_3 + 1;
+        }
+        return j_3;
+    }
+
+    static long abs_max_sort(long[] x) {
         if (x.length == 0) {
             throw new RuntimeException(String.valueOf("abs_max_sort() arg is an empty sequence"));
         }
-        int[] arr = ((int[])(new int[]{}));
-        int i_2 = 0;
-        while (i_2 < x.length) {
-            arr = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(arr), java.util.stream.IntStream.of(x[i_2])).toArray()));
-            i_2 = i_2 + 1;
+        long[] arr_1 = ((long[])(new long[]{}));
+        long i_5 = 0;
+        while (i_5 < x.length) {
+            arr_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(arr_1), java.util.stream.LongStream.of(x[(int)(i_5)])).toArray()));
+            i_5 = i_5 + 1;
         }
-        int n = arr.length;
-        int a = 0;
-        while (a < n) {
-            int b = 0;
-            while (b < n - a - 1) {
-                if (abs_val(((Number)(arr[b])).doubleValue()) > abs_val(((Number)(arr[b + 1])).doubleValue())) {
-                    int temp = arr[b];
-arr[b] = arr[b + 1];
-arr[b + 1] = temp;
+        long n_1 = arr_1.length;
+        long a_1 = 0;
+        while (a_1 < n_1) {
+            long b_1 = 0;
+            while (b_1 < n_1 - a_1 - 1) {
+                if (abs_val(((Number)(arr_1[(int)(b_1)])).doubleValue()) > abs_val(((Number)(arr_1[(int)(b_1 + 1)])).doubleValue())) {
+                    long temp_1 = arr_1[(int)(b_1)];
+arr_1[(int)(b_1)] = arr_1[(int)(b_1 + 1)];
+arr_1[(int)(b_1 + 1)] = temp_1;
                 }
-                b = b + 1;
+                b_1 = b_1 + 1;
             }
-            a = a + 1;
+            a_1 = a_1 + 1;
         }
-        return arr[n - 1];
+        return arr_1[(int)(n_1 - 1)];
     }
 
     static void test_abs_val() {
@@ -76,14 +76,14 @@ arr[b + 1] = temp;
         if (abs_val(-100000000000.0) != 100000000000.0) {
             throw new RuntimeException(String.valueOf("abs_val large failed"));
         }
-        int[] a_1 = ((int[])(new int[]{-3, -1, 2, -11}));
-        if (abs_max(((int[])(a_1))) != (-11)) {
+        long[] a_3 = ((long[])(new long[]{-3, -1, 2, -11}));
+        if (abs_max(((long[])(a_3))) != (-11)) {
             throw new RuntimeException(String.valueOf("abs_max failed"));
         }
-        if (abs_max_sort(((int[])(a_1))) != (-11)) {
+        if (abs_max_sort(((long[])(a_3))) != (-11)) {
             throw new RuntimeException(String.valueOf("abs_max_sort failed"));
         }
-        if (abs_min(((int[])(a_1))) != (-1)) {
+        if (abs_min(((long[])(a_3))) != (-1)) {
             throw new RuntimeException(String.valueOf("abs_min failed"));
         }
     }
@@ -93,40 +93,6 @@ arr[b + 1] = temp;
         System.out.println(abs_val(-34.0));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 }

@@ -1,31 +1,31 @@
 public class Main {
 
-    static int binary_multiply(int a, int b) {
-        int x = a;
-        int y = b;
-        int res = 0;
-        while (y > 0) {
-            if (Math.floorMod(y, 2) == 1) {
-                res = res + x;
-            }
-            x = x + x;
-            y = ((Number)((y / 2))).intValue();
-        }
-        return res;
-    }
-
-    static int binary_mod_multiply(int a, int b, int modulus) {
-        int x_1 = a;
-        int y_1 = b;
-        int res_1 = 0;
+    static long binary_multiply(long a, long b) {
+        long x = a;
+        long y_1 = b;
+        long res_1 = 0;
         while (y_1 > 0) {
             if (Math.floorMod(y_1, 2) == 1) {
-                res_1 = Math.floorMod(((Math.floorMod(res_1, modulus)) + (Math.floorMod(x_1, modulus))), modulus);
+                res_1 = res_1 + x;
+            }
+            x = x + x;
+            y_1 = ((Number)((Math.floorDiv(y_1, 2)))).intValue();
+        }
+        return res_1;
+    }
+
+    static long binary_mod_multiply(long a, long b, long modulus) {
+        long x_1 = a;
+        long y_3 = b;
+        long res_3 = 0;
+        while (y_3 > 0) {
+            if (Math.floorMod(y_3, 2) == 1) {
+                res_3 = Math.floorMod(((Math.floorMod(res_3, modulus)) + (Math.floorMod(x_1, modulus))), modulus);
             }
             x_1 = x_1 + x_1;
-            y_1 = ((Number)((y_1 / 2))).intValue();
+            y_3 = ((Number)((Math.floorDiv(y_3, 2)))).intValue();
         }
-        return Math.floorMod(res_1, modulus);
+        return Math.floorMod(res_3, modulus);
     }
 
     static void main() {
@@ -35,41 +35,7 @@ public class Main {
         System.out.println(_p(binary_mod_multiply(10, 5, 13)));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 
     static String _p(Object v) {
@@ -84,6 +50,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

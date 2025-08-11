@@ -1,0 +1,5 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden513_loss_functions2985118241/001/Main.java:35: error: incompatible types: Number is not a functional interface
+        long n_1 = ((Number)(Main::exp)).intValue();
+                             ^
+1 error

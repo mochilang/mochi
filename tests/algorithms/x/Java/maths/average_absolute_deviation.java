@@ -7,61 +7,27 @@ public class Main {
         return x;
     }
 
-    static double average_absolute_deviation(int[] nums) {
+    static double average_absolute_deviation(long[] nums) {
         if (nums.length == 0) {
             throw new RuntimeException(String.valueOf("List is empty"));
         }
-        int sum = 0;
-        for (int x : nums) {
-            sum = sum + x;
+        long sum_1 = 0;
+        for (long x : nums) {
+            sum_1 = sum_1 + x;
         }
-        double n = ((Number)(nums.length)).doubleValue();
-        double mean = (((Number)(sum)).doubleValue()) / n;
-        double dev_sum = 0.0;
-        for (int x : nums) {
-            dev_sum = dev_sum + abs_float((((Number)(x)).doubleValue()) - mean);
+        double n_1 = ((Number)(nums.length)).doubleValue();
+        double mean_1 = (((Number)(sum_1)).doubleValue()) / n_1;
+        double dev_sum_1 = 0.0;
+        for (long x : nums) {
+            dev_sum_1 = dev_sum_1 + abs_float((((Number)(x)).doubleValue()) - mean_1);
         }
-        return dev_sum / n;
+        return dev_sum_1 / n_1;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(_p(average_absolute_deviation(((int[])(new int[]{0})))));
-            System.out.println(_p(average_absolute_deviation(((int[])(new int[]{4, 1, 3, 2})))));
-            System.out.println(_p(average_absolute_deviation(((int[])(new int[]{2, 70, 6, 50, 20, 8, 4, 0})))));
-            System.out.println(_p(average_absolute_deviation(((int[])(new int[]{-20, 0, 30, 15})))));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println(_p(average_absolute_deviation(((long[])(new long[]{0})))));
+        System.out.println(_p(average_absolute_deviation(((long[])(new long[]{4, 1, 3, 2})))));
+        System.out.println(_p(average_absolute_deviation(((long[])(new long[]{2, 70, 6, 50, 20, 8, 4, 0})))));
+        System.out.println(_p(average_absolute_deviation(((long[])(new long[]{-20, 0, 30, 15})))));
     }
 
     static String _p(Object v) {
@@ -76,6 +42,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

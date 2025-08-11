@@ -1,64 +1,30 @@
 public class Main {
 
-    static int binomial_coefficient(int n, int r) {
+    static long binomial_coefficient(long n, long r) {
         if (n < 0 || r < 0) {
             throw new RuntimeException(String.valueOf("n and r must be non-negative integers"));
         }
         if (n == 0 || r == 0) {
             return 1;
         }
-        int[] c = ((int[])(new int[]{}));
+        long[] c_1 = ((long[])(new long[]{}));
         for (int _v = 0; _v < (r + 1); _v++) {
-            c = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(c), java.util.stream.IntStream.of(0)).toArray()));
+            c_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(c_1), java.util.stream.LongStream.of(0)).toArray()));
         }
-c[0] = 1;
-        int i = 1;
-        while (i <= n) {
-            int j = i < r ? i : r;
-            while (j > 0) {
-c[j] = c[j] + c[j - 1];
-                j = j - 1;
+c_1[(int)(0)] = 1;
+        long i_1 = 1;
+        while (i_1 <= n) {
+            long j_1 = i_1 < r ? i_1 : r;
+            while (j_1 > 0) {
+c_1[(int)(j_1)] = c_1[(int)(j_1)] + c_1[(int)(j_1 - 1)];
+                j_1 = j_1 - 1;
             }
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
-        return c[r];
+        return c_1[(int)(r)];
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(_p(binomial_coefficient(10, 5)));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println(_p(binomial_coefficient(10, 5)));
     }
 
     static String _p(Object v) {
@@ -73,6 +39,11 @@ c[j] = c[j] + c[j - 1];
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

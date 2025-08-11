@@ -1,116 +1,82 @@
 public class Main {
-    static int MAX;
-    static int HALF;
+    static long MAX;
+    static long HALF;
 
-    static int to_unsigned(int n) {
+    static long to_unsigned(long n) {
         if (n < 0) {
             return MAX + n;
         }
         return n;
     }
 
-    static int from_unsigned(int n) {
+    static long from_unsigned(long n) {
         if (n >= HALF) {
             return n - MAX;
         }
         return n;
     }
 
-    static int bit_and(int a, int b) {
-        int x = a;
-        int y = b;
-        int res = 0;
-        int bit = 1;
-        int i = 0;
-        while (i < 32) {
-            if ((Math.floorMod(x, 2) == 1) && (Math.floorMod(y, 2) == 1)) {
-                res = res + bit;
-            }
-            x = x / 2;
-            y = y / 2;
-            bit = bit * 2;
-            i = i + 1;
-        }
-        return res;
-    }
-
-    static int bit_xor(int a, int b) {
-        int x_1 = a;
-        int y_1 = b;
-        int res_1 = 0;
-        int bit_1 = 1;
-        int i_1 = 0;
+    static long bit_and(long a, long b) {
+        long x = a;
+        long y_1 = b;
+        long res_1 = 0;
+        long bit_1 = 1;
+        long i_1 = 0;
         while (i_1 < 32) {
-            int abit = Math.floorMod(x_1, 2);
-            int bbit = Math.floorMod(y_1, 2);
-            if (Math.floorMod((abit + bbit), 2) == 1) {
+            if ((Math.floorMod(x, 2) == 1) && (Math.floorMod(y_1, 2) == 1)) {
                 res_1 = res_1 + bit_1;
             }
-            x_1 = x_1 / 2;
-            y_1 = y_1 / 2;
+            x = Math.floorDiv(x, 2);
+            y_1 = Math.floorDiv(y_1, 2);
             bit_1 = bit_1 * 2;
             i_1 = i_1 + 1;
         }
         return res_1;
     }
 
-    static int lshift1(int num) {
+    static long bit_xor(long a, long b) {
+        long x_1 = a;
+        long y_3 = b;
+        long res_3 = 0;
+        long bit_3 = 1;
+        long i_3 = 0;
+        while (i_3 < 32) {
+            long abit_1 = Math.floorMod(x_1, 2);
+            long bbit_1 = Math.floorMod(y_3, 2);
+            if (Math.floorMod((abit_1 + bbit_1), 2) == 1) {
+                res_3 = res_3 + bit_3;
+            }
+            x_1 = Math.floorDiv(x_1, 2);
+            y_3 = Math.floorDiv(y_3, 2);
+            bit_3 = bit_3 * 2;
+            i_3 = i_3 + 1;
+        }
+        return res_3;
+    }
+
+    static long lshift1(long num) {
         return Math.floorMod((num * 2), MAX);
     }
 
-    static int add(int a, int b) {
-        int first = to_unsigned(a);
-        int second = to_unsigned(b);
-        while (second != 0) {
-            int carry = bit_and(first, second);
-            first = bit_xor(first, second);
-            second = lshift1(carry);
+    static long add(long a, long b) {
+        long first = to_unsigned(a);
+        long second_1 = to_unsigned(b);
+        while (second_1 != 0) {
+            long carry_1 = bit_and(first, second_1);
+            first = bit_xor(first, second_1);
+            second_1 = lshift1(carry_1);
         }
-        int result = from_unsigned(first);
-        return result;
+        long result_1 = from_unsigned(first);
+        return result_1;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            MAX = (int)4294967296L;
-            HALF = (int)2147483648L;
-            System.out.println(_p(add(3, 5)));
-            System.out.println(_p(add(13, 5)));
-            System.out.println(_p(add(-7, 2)));
-            System.out.println(_p(add(0, -7)));
-            System.out.println(_p(add(-321, 0)));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        MAX = 4294967296L;
+        HALF = 2147483648L;
+        System.out.println(_p(add(3, 5)));
+        System.out.println(_p(add(13, 5)));
+        System.out.println(_p(add(-7, 2)));
+        System.out.println(_p(add(0, -7)));
+        System.out.println(_p(add(-321, 0)));
     }
 
     static String _p(Object v) {
@@ -125,6 +91,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }
