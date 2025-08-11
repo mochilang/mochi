@@ -1613,12 +1613,20 @@ func (lh *LookupHostExpr) emit(w io.Writer) {
 type IntCastExpr struct{ Expr Expr }
 
 func (ic *IntCastExpr) emit(w io.Writer) {
-	io.WriteString(w, "int(")
-	ic.Expr.emit(w)
 	if _, ok := ic.Expr.(*BigBinaryExpr); ok {
-		io.WriteString(w, ".Int64()")
+		io.WriteString(w, "int(")
+		ic.Expr.emit(w)
+		io.WriteString(w, ".Int64())")
+		return
 	}
-	io.WriteString(w, ")")
+	var buf bytes.Buffer
+	ic.Expr.emit(&buf)
+	s := buf.String()
+	if strings.HasPrefix(s, "(") {
+		fmt.Fprintf(w, "%s.(int)", s)
+	} else {
+		fmt.Fprintf(w, "(%s).(int)", s)
+	}
 }
 
 // ExistsExpr represents the exists() builtin result to preserve boolean output.
@@ -5609,11 +5617,14 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 					}
 				default:
 					if types.IsAnyType(t) {
-						if _, ok2 := types.TypeOfExpr(idx.Start, env).(types.IntType); ok2 {
+						idxType := types.TypeOfExpr(idx.Start, env)
+						if !types.IsStringType(idxType) {
 							usesIndex = true
-							expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "[]any"}, Index: iex, AllowNegative: true}
+							expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "[]int"}, Index: iex, AllowNegative: true}
+							t = types.IntType{}
 						} else {
 							expr = &IndexExpr{X: &AssertExpr{Expr: expr, Type: "map[string]any"}, Index: iex}
+							t = types.AnyType{}
 						}
 					} else {
 						expr = &IndexExpr{X: expr, Index: iex}
