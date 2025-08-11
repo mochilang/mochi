@@ -2505,12 +2505,22 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 			endNode := &List{Elems: []Node{Symbol("min"), endArg, &List{Elems: []Node{Symbol("count"), strArg}}}}
 			return &List{Elems: []Node{Symbol("subs"), strArg, startArg, endNode}}, nil
 		case "panic":
-			if len(c.Args) != 1 {
-				return nil, fmt.Errorf("panic expects 1 arg")
+			if len(c.Args) == 0 {
+				return nil, fmt.Errorf("panic expects at least 1 arg")
 			}
-			msg, err := transpileExpr(c.Args[0])
-			if err != nil {
-				return nil, err
+			var parts []Node
+			for _, a := range c.Args {
+				n, err := transpileExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				parts = append(parts, n)
+			}
+			var msg Node
+			if len(parts) == 1 {
+				msg = parts[0]
+			} else {
+				msg = &List{Elems: append([]Node{Symbol("str")}, parts...)}
 			}
 			ex := &List{Elems: []Node{Symbol("Exception."), msg}}
 			return &List{Elems: []Node{Symbol("throw"), ex}}, nil
