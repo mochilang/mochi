@@ -1,3 +1,4 @@
+run: exit status 1
 Execution error (ArithmeticException) at java.lang.Math/multiplyExact (Math.java:1032).
 long overflow
 

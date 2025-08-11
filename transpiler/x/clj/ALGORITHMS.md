@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-11 14:43 GMT+7
+Last updated: 2025-08-11 15:20 GMT+7
 
-## Algorithms Golden Test Checklist (572/1077)
+## Algorithms Golden Test Checklist (571/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 50.25ms | 19.66MB |
@@ -316,55 +316,55 @@ Last updated: 2025-08-11 14:43 GMT+7
 | 307 | dynamic_programming/edit_distance | ✓ | 218.464ms | 23.53MB |
 | 308 | dynamic_programming/factorial | ✓ | 70.38ms | 19.61MB |
 | 309 | dynamic_programming/fast_fibonacci | ✓ | 50.072ms | 19.93MB |
-| 310 | dynamic_programming/fibonacci | ✓ | 71.727ms | 20.10MB |
-| 311 | dynamic_programming/fizz_buzz | ✓ | 39.596ms | 19.50MB |
-| 312 | dynamic_programming/floyd_warshall | ✓ | 47.381ms | 21.39MB |
-| 313 | dynamic_programming/integer_partition | ✓ | 172.472ms | 20.70MB |
-| 314 | dynamic_programming/iterating_through_submasks | ✓ | 63.631ms | 20.10MB |
-| 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 71.927ms | 22.42MB |
+| 310 | dynamic_programming/fibonacci | ✓ | 49.564ms | 19.88MB |
+| 311 | dynamic_programming/fizz_buzz | ✓ | 38.468ms | 19.25MB |
+| 312 | dynamic_programming/floyd_warshall | ✓ | 38.745ms | 21.01MB |
+| 313 | dynamic_programming/integer_partition | ✓ | 150.758ms | 20.11MB |
+| 314 | dynamic_programming/iterating_through_submasks | error | 63.631ms | 20.10MB |
+| 315 | dynamic_programming/k_means_clustering_tensorflow | ✓ | 55.667ms | 22.13MB |
 | 316 | dynamic_programming/knapsack | error |  |  |
-| 317 | dynamic_programming/largest_divisible_subset | ✓ | 63.455ms | 21.94MB |
-| 318 | dynamic_programming/longest_common_subsequence | ✓ | 46.969ms | 21.85MB |
-| 319 | dynamic_programming/longest_common_substring | ✓ | 42.579ms | 20.61MB |
-| 320 | dynamic_programming/longest_increasing_subsequence | ✓ | 45.549ms | 20.12MB |
-| 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 67.817ms | 20.92MB |
-| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | ✓ | 47.198ms | 20.89MB |
-| 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 52.717ms | 21.28MB |
-| 324 | dynamic_programming/matrix_chain_multiplication | ✓ | 37.791ms | 20.64MB |
-| 325 | dynamic_programming/matrix_chain_order | ✓ | 48.35ms | 21.87MB |
-| 326 | dynamic_programming/max_non_adjacent_sum | ✓ | 49.877ms | 20.13MB |
-| 327 | dynamic_programming/max_product_subarray | ✓ | 44.25ms | 20.05MB |
-| 328 | dynamic_programming/max_subarray_sum | ✓ | 45.626ms | 20.78MB |
-| 329 | dynamic_programming/min_distance_up_bottom |   |  |  |
-| 330 | dynamic_programming/minimum_coin_change | ✓ | 46.033ms | 19.80MB |
-| 331 | dynamic_programming/minimum_cost_path | ✓ | 38.987ms | 20.96MB |
-| 332 | dynamic_programming/minimum_partition | ✓ | 58.535ms | 21.35MB |
-| 333 | dynamic_programming/minimum_size_subarray_sum | ✓ | 46.4ms | 20.38MB |
-| 334 | dynamic_programming/minimum_squares_to_represent_a_number | ✓ | 54.391ms | 20.65MB |
-| 335 | dynamic_programming/minimum_steps_to_one | ✓ | 41.086ms | 20.81MB |
-| 336 | dynamic_programming/minimum_tickets_cost | ✓ | 51.423ms | 21.57MB |
-| 337 | dynamic_programming/optimal_binary_search_tree | ✓ | 49.656ms | 24.02MB |
-| 338 | dynamic_programming/palindrome_partitioning | ✓ | 53.002ms | 20.32MB |
-| 339 | dynamic_programming/range_sum_query | ✓ | 61.836ms | 20.18MB |
-| 340 | dynamic_programming/regex_match | ✓ | 49.958ms | 23.23MB |
-| 341 | dynamic_programming/rod_cutting | ✓ | 51.166ms | 20.17MB |
-| 342 | dynamic_programming/smith_waterman | ✓ | 55.898ms | 27.52MB |
-| 343 | dynamic_programming/subset_generation | ✓ | 58.007ms | 20.63MB |
-| 344 | dynamic_programming/sum_of_subset | ✓ | 46.102ms | 21.07MB |
-| 345 | dynamic_programming/trapped_water | ✓ | 44.951ms | 21.37MB |
-| 346 | dynamic_programming/tribonacci | ✓ | 57.675ms | 19.47MB |
-| 347 | dynamic_programming/viterbi | ✓ | 54.079ms | 30.02MB |
-| 348 | dynamic_programming/wildcard_matching | ✓ | 51.18ms | 21.68MB |
-| 349 | dynamic_programming/word_break | ✓ | 45.501ms | 20.68MB |
-| 350 | electronics/apparent_power | ✓ | 42.316ms | 23.02MB |
-| 351 | electronics/builtin_voltage | ✓ | 44.287ms | 21.86MB |
-| 352 | electronics/capacitor_equivalence | ✓ | 42.174ms | 20.52MB |
-| 353 | electronics/carrier_concentration | ✓ | 49.315ms | 20.56MB |
-| 354 | electronics/charging_capacitor | ✓ | 43.327ms | 20.95MB |
-| 355 | electronics/charging_inductor | ✓ | 47.737ms | 21.80MB |
-| 356 | electronics/circular_convolution | ✓ | 62.502ms | 22.66MB |
-| 357 | electronics/coulombs_law | error |  |  |
-| 358 | electronics/electric_conductivity | ✓ | 38.411ms | 21.64MB |
+| 317 | dynamic_programming/largest_divisible_subset | ✓ | 53.653ms | 21.28MB |
+| 318 | dynamic_programming/longest_common_subsequence | ✓ | 31.077ms | 21.83MB |
+| 319 | dynamic_programming/longest_common_substring | ✓ | 33.955ms | 20.75MB |
+| 320 | dynamic_programming/longest_increasing_subsequence | ✓ | 33.335ms | 19.80MB |
+| 321 | dynamic_programming/longest_increasing_subsequence_iterative | ✓ | 61.863ms | 20.71MB |
+| 322 | dynamic_programming/longest_increasing_subsequence_o_nlogn | error | 47.198ms | 20.89MB |
+| 323 | dynamic_programming/longest_palindromic_subsequence | ✓ | 42.277ms | 21.02MB |
+| 324 | dynamic_programming/matrix_chain_multiplication | ✓ | 31.864ms | 20.37MB |
+| 325 | dynamic_programming/matrix_chain_order | ✓ | 36.808ms | 21.73MB |
+| 326 | dynamic_programming/max_non_adjacent_sum | ✓ | 31.17ms | 19.96MB |
+| 327 | dynamic_programming/max_product_subarray | ✓ | 31.615ms | 19.71MB |
+| 328 | dynamic_programming/max_subarray_sum | ✓ | 35.518ms | 20.30MB |
+| 329 | dynamic_programming/min_distance_up_bottom | ✓ |  |  |
+| 330 | dynamic_programming/minimum_coin_change | ✓ | 43.154ms | 19.75MB |
+| 331 | dynamic_programming/minimum_cost_path | ✓ | 38.249ms | 20.66MB |
+| 332 | dynamic_programming/minimum_partition | ✓ | 49.069ms | 20.95MB |
+| 333 | dynamic_programming/minimum_size_subarray_sum | ✓ | 35.051ms | 19.95MB |
+| 334 | dynamic_programming/minimum_squares_to_represent_a_number | ✓ | 46.104ms | 20.46MB |
+| 335 | dynamic_programming/minimum_steps_to_one | ✓ | 35.183ms | 20.74MB |
+| 336 | dynamic_programming/minimum_tickets_cost | ✓ | 46.32ms | 21.27MB |
+| 337 | dynamic_programming/optimal_binary_search_tree | ✓ | 35.403ms | 23.91MB |
+| 338 | dynamic_programming/palindrome_partitioning | ✓ | 38.302ms | 20.35MB |
+| 339 | dynamic_programming/range_sum_query | ✓ | 46.967ms | 19.75MB |
+| 340 | dynamic_programming/regex_match | ✓ | 40.434ms | 23.00MB |
+| 341 | dynamic_programming/rod_cutting | ✓ | 33.162ms | 20.14MB |
+| 342 | dynamic_programming/smith_waterman | ✓ | 35.349ms | 27.38MB |
+| 343 | dynamic_programming/subset_generation | ✓ | 51.09ms | 20.39MB |
+| 344 | dynamic_programming/sum_of_subset | ✓ | 32.972ms | 20.56MB |
+| 345 | dynamic_programming/trapped_water | ✓ | 44.518ms | 20.98MB |
+| 346 | dynamic_programming/tribonacci | ✓ | 46.14ms | 19.38MB |
+| 347 | dynamic_programming/viterbi | error | 54.079ms | 30.02MB |
+| 348 | dynamic_programming/wildcard_matching | ✓ | 37.895ms | 21.58MB |
+| 349 | dynamic_programming/word_break | ✓ | 31.472ms | 20.14MB |
+| 350 | electronics/apparent_power | ✓ | 39.972ms | 23.07MB |
+| 351 | electronics/builtin_voltage | ✓ | 36.997ms | 21.47MB |
+| 352 | electronics/capacitor_equivalence | ✓ | 34.878ms | 20.16MB |
+| 353 | electronics/carrier_concentration | ✓ | 28.643ms | 20.43MB |
+| 354 | electronics/charging_capacitor | ✓ | 40.588ms | 20.62MB |
+| 355 | electronics/charging_inductor | ✓ | 38.135ms | 21.64MB |
+| 356 | electronics/circular_convolution | ✓ | 52.652ms | 22.39MB |
+| 357 | electronics/coulombs_law | ✓ | 42.83ms | 21.21MB |
+| 358 | electronics/electric_conductivity | ✓ | 35.988ms | 19.93MB |
 | 359 | electronics/electric_power | error |  |  |
 | 360 | electronics/electrical_impedance | ✓ | 52.539ms | 20.29MB |
 | 361 | electronics/ic_555_timer | ✓ | 38.906ms | 19.59MB |

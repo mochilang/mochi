@@ -1,3 +1,4 @@
+run: exit status 1
 6
 0
 Execution error (IllegalArgumentException) at main/longest-increasing-subsequence-length (longest_increasing_subsequence_o_nlogn.clj:52).
