@@ -2726,6 +2726,56 @@ func literalString(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+func literalBool(e *parser.Expr) (bool, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return false, false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Lit == nil || p.Target.Lit.Bool == nil {
+		return false, false
+	}
+	return bool(*p.Target.Lit.Bool), true
+}
+
+func parseLoadOptions(e *parser.Expr) (format, delim string, header bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Map == nil {
+		return
+	}
+	for _, it := range p.Target.Map.Items {
+		key, ok := literalString(it.Key)
+		if !ok {
+			continue
+		}
+		switch key {
+		case "format":
+			if s, ok := literalString(it.Value); ok {
+				format = s
+			}
+		case "delimiter":
+			if s, ok := literalString(it.Value); ok {
+				delim = s
+			}
+		case "header":
+			if b, ok := literalBool(it.Value); ok {
+				header = b
+			}
+		}
+	}
+	return
+}
+
 func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return nil
@@ -5370,7 +5420,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return &CallExpr{Func: &Name{Name: "_fetch"}, Args: args}, nil
 	case p.Load != nil:
-		format := parseFormat(p.Load.With)
+		format, delim, header := parseLoadOptions(p.Load.With)
 		path := ""
 		if p.Load.Path != nil {
 			path = strings.Trim(*p.Load.Path, "\"")
@@ -5380,9 +5430,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			clean = strings.TrimPrefix(clean, "../")
 		}
 		pathExpr := fmt.Sprintf("%q", path)
-		if path != "" && strings.HasPrefix(path, "../") {
+		if path != "" && !filepath.IsAbs(path) {
 			root := repoRoot()
-			abs := filepath.ToSlash(filepath.Join(root, "tests", clean))
+			abs := filepath.ToSlash(filepath.Join(root, path))
 			pathExpr = fmt.Sprintf("%q", abs)
 		}
 		expr, err := dataExprFromFile(path, format)
@@ -5403,15 +5453,27 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if currentImports != nil {
 				currentImports["csv"] = true
 			}
-			if format == "tsv" {
-				code := fmt.Sprintf("list(csv.DictReader(open(%s), delimiter='\t'))", pathExpr)
+			d := delim
+			if d == "" {
+				if format == "tsv" {
+					d = "\t"
+				} else {
+					d = ","
+				}
+			}
+			if header {
+				code := fmt.Sprintf("list(csv.DictReader(open(%s), delimiter=%q))", pathExpr, d)
 				return &RawExpr{Code: code}, nil
 			}
-			code := fmt.Sprintf("list(csv.DictReader(open(%s)))", pathExpr)
+			code := fmt.Sprintf("[{f'c'+str(i):row[i] for i in range(len(row))} for row in csv.reader(open(%s), delimiter=%q)]", pathExpr, d)
 			return &RawExpr{Code: code}, nil
 		case "yaml":
 			return nil, err
 		default:
+			if delim != "" && !header {
+				code := fmt.Sprintf("[{f'c'+str(i):cols[i] for i in range(len(cols))} for cols in [line.strip().split(%q) for line in open(%s)]]", delim, pathExpr)
+				return &RawExpr{Code: code}, nil
+			}
 			return nil, fmt.Errorf("unsupported load format")
 		}
 	case p.Group != nil:
