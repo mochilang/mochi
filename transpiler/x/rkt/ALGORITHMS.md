@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Racket code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Racket`.
-Last updated: 2025-08-11 10:34 UTC
+Last updated: 2025-08-11 11:44 UTC
 
 ## Algorithms Golden Test Checklist (795/1077)
 | Index | Name | Status | Duration | Memory |
@@ -506,68 +506,68 @@ Last updated: 2025-08-11 10:34 UTC
 | 497 | machine_learning/apriori_algorithm |   |  |  |
 | 498 | machine_learning/astar | ✓ | 9m31.223891s | 12.2 KB |
 | 499 | machine_learning/automatic_differentiation | ✓ | 9m31.223891s | 10.6 KB |
-| 500 | machine_learning/data_transformations | ✓ | 9m31.223891s | 127.2 KB |
-| 501 | machine_learning/decision_tree | ✓ | 9m31.223891s |  |
-| 502 | machine_learning/dimensionality_reduction | ✓ | 9m31.223891s | 976 B |
-| 503 | machine_learning/forecasting/run | ✓ | 9m31.223891s | 221.4 KB |
+| 500 | machine_learning/data_transformations | ✓ | 1.686ms |  |
+| 501 | machine_learning/decision_tree | ✓ | 342.751ms | 188.9 KB |
+| 502 | machine_learning/dimensionality_reduction | ✓ | 7µs | 1.1 KB |
+| 503 | machine_learning/forecasting/run | ✓ | 196µs | 225.7 KB |
 | 504 | machine_learning/frequent_pattern_growth |   |  |  |
-| 505 | machine_learning/gradient_boosting_classifier | ✓ | 9m31.223891s | 960 B |
-| 506 | machine_learning/gradient_descent | ✓ | 9m31.223891s | 4.5 MB |
-| 507 | machine_learning/k_means_clust | ✓ | 9m31.223891s | 9.4 KB |
+| 505 | machine_learning/gradient_boosting_classifier | ✓ | 20µs | 1.1 KB |
+| 506 | machine_learning/gradient_descent | ✓ | 478µs | 1.1 MB |
+| 507 | machine_learning/k_means_clust | ✓ | 52µs | 9.5 KB |
 | 508 | machine_learning/k_nearest_neighbours |   |  |  |
-| 509 | machine_learning/linear_discriminant_analysis | ✓ | 9m31.223891s | 2.3 MB |
-| 510 | machine_learning/linear_regression | ✓ | 9m31.223891s | 4.4 KB |
+| 509 | machine_learning/linear_discriminant_analysis | ✓ | 616µs | 2.2 MB |
+| 510 | machine_learning/linear_regression | ✓ | 9µs | 4.7 KB |
 | 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 9m31.223891s | 17.0 KB |
-| 512 | machine_learning/logistic_regression | ✓ | 9m31.223891s | 3.3 KB |
+| 512 | machine_learning/logistic_regression | ✓ | 29µs | 3.5 KB |
 | 513 | machine_learning/loss_functions | ✓ | 9m31.223891s | 796.8 KB |
-| 514 | machine_learning/lstm/lstm_prediction | ✓ | 9m31.223891s | 1.7 KB |
-| 515 | machine_learning/mfcc | ✓ | 9m31.223891s | 104.2 KB |
-| 516 | machine_learning/multilayer_perceptron_classifier | ✓ | 9m31.223891s |  |
+| 514 | machine_learning/lstm/lstm_prediction | ✓ | 28µs | 1.8 KB |
+| 515 | machine_learning/mfcc | ✓ | 38µs | 101.5 KB |
+| 516 | machine_learning/multilayer_perceptron_classifier | ✓ | 136.799ms |  |
 | 517 | machine_learning/polynomial_regression |   |  |  |
-| 518 | machine_learning/principle_component_analysis | ✓ | 9m31.223891s | 18.7 KB |
-| 519 | machine_learning/scoring_functions | ✓ | 9m31.223891s | 113.7 KB |
-| 520 | machine_learning/self_organizing_map | ✓ | 9m31.223891s | 44.7 KB |
-| 521 | machine_learning/sequential_minimum_optimization | ✓ | 9m31.223891s | 21.0 KB |
-| 522 | machine_learning/similarity_search | ✓ | 9m31.223891s | 18.3 KB |
-| 523 | machine_learning/support_vector_machines | ✓ | 9m31.223891s | 7.5 KB |
-| 524 | machine_learning/word_frequency_functions | ✓ | 9m31.223891s | 3.7 MB |
-| 525 | machine_learning/xgboost_classifier | ✓ | 9m31.223891s | 186.3 KB |
-| 526 | machine_learning/xgboost_regressor | ✓ | 9m31.223891s | 43.8 KB |
-| 527 | maths/abs | ✓ | 9m31.223891s | 30.1 KB |
-| 528 | maths/addition_without_arithmetic | ✓ | 9m31.223891s | 246.0 KB |
-| 529 | maths/aliquot_sum | ✓ | 9m31.223891s | 13.9 KB |
-| 530 | maths/allocation_number | ✓ | 9m31.223891s | 9.5 KB |
-| 531 | maths/arc_length | ✓ | 9m31.223891s | 4.8 KB |
-| 532 | maths/area | ✓ | 9m31.223891s | 51.2 KB |
-| 533 | maths/area_under_curve | ✓ | 9m31.223891s | 28.0 MB |
-| 534 | maths/average_absolute_deviation | ✓ | 9m31.223891s | 29.3 KB |
-| 535 | maths/average_mean | ✓ | 9m31.223891s | 12.9 KB |
-| 536 | maths/average_median | ✓ | 9m31.223891s | 38.6 KB |
-| 537 | maths/average_mode | ✓ | 9m31.223891s | 417.5 KB |
-| 538 | maths/bailey_borwein_plouffe | ✓ | 9m31.223891s |  |
+| 518 | machine_learning/principle_component_analysis | ✓ | 43µs | 17.8 KB |
+| 519 | machine_learning/scoring_functions | ✓ | 70µs | 108.4 KB |
+| 520 | machine_learning/self_organizing_map | ✓ | 60µs | 44.5 KB |
+| 521 | machine_learning/sequential_minimum_optimization | ✓ | 33µs | 22.2 KB |
+| 522 | machine_learning/similarity_search | ✓ | 39µs | 18.9 KB |
+| 523 | machine_learning/support_vector_machines | ✓ | 17µs | 8.1 KB |
+| 524 | machine_learning/word_frequency_functions | ✓ | 1.135ms | 3.7 MB |
+| 525 | machine_learning/xgboost_classifier | ✓ | 119µs | 174.8 KB |
+| 526 | machine_learning/xgboost_regressor | ✓ | 79µs | 47.2 KB |
+| 527 | maths/abs | ✓ | 36µs | 34.4 KB |
+| 528 | maths/addition_without_arithmetic | ✓ | 82µs | 248.7 KB |
+| 529 | maths/aliquot_sum | ✓ | 21µs | 14.5 KB |
+| 530 | maths/allocation_number | ✓ | 32µs | 10.1 KB |
+| 531 | maths/arc_length | ✓ | 27µs | 5.0 KB |
+| 532 | maths/area | ✓ | 69µs | 53.0 KB |
+| 533 | maths/area_under_curve | ✓ | 43.308ms | 3.6 MB |
+| 534 | maths/average_absolute_deviation | ✓ | 56µs | 30.9 KB |
+| 535 | maths/average_mean | ✓ | 30µs | 13.3 KB |
+| 536 | maths/average_median | ✓ | 49µs | 37.6 KB |
+| 537 | maths/average_mode | ✓ | 208µs | 426.2 KB |
+| 538 | maths/bailey_borwein_plouffe | ✓ | 14.023475s |  |
 | 539 | maths/base_neg2_conversion |   |  |  |
-| 540 | maths/basic_maths | ✓ | 9m31.223891s | 30.3 KB |
-| 541 | maths/binary_exponentiation | ✓ | 9m31.223891s | 10.6 KB |
-| 542 | maths/binary_multiplication | ✓ | 9m31.223891s | 7.2 KB |
-| 543 | maths/binomial_coefficient | ✓ | 9m31.223891s | 27.8 KB |
-| 544 | maths/binomial_distribution | ✓ | 9m31.223891s | 384 B |
-| 545 | maths/ceil | ✓ | 9m31.223891s | 12.1 KB |
-| 546 | maths/chebyshev_distance | ✓ | 9m31.223891s | 7.7 KB |
-| 547 | maths/check_polygon | ✓ | 9m31.223891s | 14.6 KB |
-| 548 | maths/chinese_remainder_theorem | ✓ | 9m31.223891s | 28.7 KB |
-| 549 | maths/chudnovsky_algorithm | ✓ | 9m31.223891s | 39.4 KB |
-| 550 | maths/collatz_sequence | ✓ | 9m31.223891s | 10.7 KB |
-| 551 | maths/combinations | ✓ | 9m31.223891s | 9.7 KB |
-| 552 | maths/continued_fraction | ✓ | 9m31.223891s | 9.3 KB |
-| 553 | maths/decimal_isolate | ✓ | 9m31.223891s | 30.4 KB |
-| 554 | maths/decimal_to_fraction | ✓ | 9m31.223891s | 121.9 KB |
+| 540 | maths/basic_maths | ✓ | 37µs | 32.1 KB |
+| 541 | maths/binary_exponentiation | ✓ | 31µs | 11.1 KB |
+| 542 | maths/binary_multiplication | ✓ | 20µs | 7.6 KB |
+| 543 | maths/binomial_coefficient | ✓ | 26µs | 27.7 KB |
+| 544 | maths/binomial_distribution | ✓ | 2µs | 512 B |
+| 545 | maths/ceil | ✓ | 22µs | 12.7 KB |
+| 546 | maths/chebyshev_distance | ✓ | 28µs | 9.0 KB |
+| 547 | maths/check_polygon | ✓ | 31µs | 17.0 KB |
+| 548 | maths/chinese_remainder_theorem | ✓ | 29µs | 29.0 KB |
+| 549 | maths/chudnovsky_algorithm | ✓ | 40µs | 40.7 KB |
+| 550 | maths/collatz_sequence | ✓ | 25µs | 11.0 KB |
+| 551 | maths/combinations | ✓ | 22µs | 9.9 KB |
+| 552 | maths/continued_fraction | ✓ | 21µs | 9.9 KB |
+| 553 | maths/decimal_isolate | ✓ | 77µs | 32.3 KB |
+| 554 | maths/decimal_to_fraction | ✓ | 134µs | 121.9 KB |
 | 555 | maths/dodecahedron | ✓ | 9m31.223891s | 87.9 KB |
-| 556 | maths/double_factorial | ✓ | 9m31.223891s | 51.7 KB |
-| 557 | maths/dual_number_automatic_differentiation | ✓ | 9m31.223891s | 251.8 KB |
-| 558 | maths/entropy | ✓ | 9m31.223891s | 3.5 MB |
-| 559 | maths/euclidean_distance | ✓ | 9m31.223891s | 123.6 KB |
-| 560 | maths/euler_method | ✓ | 9m31.223891s | 2.2 MB |
-| 561 | maths/euler_modified | ✓ | 96µs | 102.6 KB |
+| 556 | maths/double_factorial | ✓ | 29µs | 54.6 KB |
+| 557 | maths/dual_number_automatic_differentiation | ✓ | 281µs | 255.2 KB |
+| 558 | maths/entropy | ✓ | 1.777ms | 3.7 MB |
+| 559 | maths/euclidean_distance | ✓ | 45µs | 60.4 KB |
+| 560 | maths/euler_method | ✓ | 135.436ms | 5.9 MB |
+| 561 | maths/euler_modified | ✓ | 44µs | 75.0 KB |
 | 562 | maths/eulers_totient | ✓ | 72µs | 54.2 KB |
 | 563 | maths/extended_euclidean_algorithm | ✓ | 41µs | 23.1 KB |
 | 564 | maths/factorial | ✓ | 46µs | 62.8 KB |
