@@ -955,13 +955,24 @@ func (b *BenchStmt) emit(w io.Writer) {
 	io.WriteString(w, "let __bench_start = _now()\n")
 	writeIndent(w)
 	io.WriteString(w, "let __mem_start = System.GC.GetTotalMemory(true)\n")
-	for i, st := range b.Body {
-		if fd, ok := st.(*FunDef); ok {
+	for i := 0; i < len(b.Body); {
+		if fd, ok := b.Body[i].(*FunDef); ok {
 			fd.emitWithPrefix(w, "let rec")
+			i++
+			for i < len(b.Body) {
+				next, ok := b.Body[i].(*FunDef)
+				if !ok {
+					break
+				}
+				w.Write([]byte{'\n'})
+				next.emitWithPrefix(w, "and")
+				i++
+			}
 		} else {
-			st.emit(w)
+			b.Body[i].emit(w)
+			i++
 		}
-		if i < len(b.Body)-1 {
+		if i < len(b.Body) {
 			w.Write([]byte{'\n'})
 		}
 	}
@@ -1458,7 +1469,13 @@ type ExprStmt struct{ Expr Expr }
 
 func (s *ExprStmt) emit(w io.Writer) {
 	writeIndent(w)
-	s.Expr.emit(w)
+	if t := inferType(s.Expr); t != "" && t != "unit" {
+		io.WriteString(w, "ignore (")
+		s.Expr.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		s.Expr.emit(w)
+	}
 }
 
 type AssignStmt struct {
@@ -4602,6 +4619,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				neededOpens["System"] = true
 				return &CallExpr{Func: "System.Console.ReadLine", Args: nil}, nil
 			}
+		case "read_file":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("read_file expects 1 arg")
+			}
+			neededOpens["System.IO"] = true
+			return &CallExpr{Func: "System.IO.File.ReadAllText", Args: args}, nil
 		case "substring", "substr":
 			if len(args) != 3 {
 				return nil, fmt.Errorf("substring expects 3 args")

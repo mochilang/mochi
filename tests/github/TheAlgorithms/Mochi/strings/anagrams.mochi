@@ -17,6 +17,8 @@ sort, keeping the implementation in pure Mochi without external
 libraries and avoiding the use of the "any" type.
 */
 
+extern fun read_file(path: string): string
+
 fun split(s: string, sep: string): list<string> {
   var res: list<string> = []
   var current = ""
@@ -72,7 +74,7 @@ fun unique_sorted(words: list<string>): list<string> {
   var seen: map<string, bool> = {}
   var res: list<string> = []
   for w in words {
-    if w != "" && !(w in seen) {
+    if w != "" && not (w in seen) {
       res = append(res, w)
       seen[w] = true
     }

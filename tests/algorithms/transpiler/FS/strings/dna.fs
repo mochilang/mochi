@@ -1,4 +1,4 @@
-// Generated 2025-08-11 15:32 +0700
+// Generated 2025-08-11 17:23 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -47,7 +47,7 @@ let rec is_valid (strand: string) =
         __ret
     with
         | Return -> __ret
-let rec dna (strand: string) =
+and dna (strand: string) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable strand = strand
     try

@@ -1,4 +1,4 @@
-// Generated 2025-08-11 15:32 +0700
+// Generated 2025-08-11 17:23 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -60,7 +60,7 @@ let rec all_digits (s: string) =
         __ret
     with
         | Return -> __ret
-let rec indian_phone_validator (phone: string) =
+and indian_phone_validator (phone: string) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable phone = phone
     try

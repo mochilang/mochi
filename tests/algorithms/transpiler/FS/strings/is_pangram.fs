@@ -1,4 +1,4 @@
-// Generated 2025-08-11 15:32 +0700
+// Generated 2025-08-11 17:23 +0700
 
 exception Break
 exception Continue
@@ -59,7 +59,7 @@ let rec is_pangram (input_str: string) =
         __ret
     with
         | Return -> __ret
-let rec is_pangram_faster (input_str: string) =
+and is_pangram_faster (input_str: string) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable input_str = input_str
     try
@@ -106,7 +106,7 @@ let rec is_pangram_faster (input_str: string) =
         __ret
     with
         | Return -> __ret
-let rec is_pangram_fastest (input_str: string) =
+and is_pangram_fastest (input_str: string) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable input_str = input_str
     try

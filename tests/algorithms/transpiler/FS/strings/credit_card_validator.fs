@@ -1,4 +1,4 @@
-// Generated 2025-08-11 15:32 +0700
+// Generated 2025-08-11 17:23 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -107,8 +107,8 @@ and main () =
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        validate_credit_card_number ("4111111111111111")
-        validate_credit_card_number ("32323")
+        ignore (validate_credit_card_number ("4111111111111111"))
+        ignore (validate_credit_card_number ("32323"))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

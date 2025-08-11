@@ -1,4 +1,4 @@
-// Generated 2025-08-11 15:32 +0700
+// Generated 2025-08-11 17:23 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -57,7 +57,7 @@ let rec index_of (s: string) (ch: string) =
         __ret
     with
         | Return -> __ret
-let rec ord (ch: string) =
+and ord (ch: string) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable ch = ch
     try
@@ -76,7 +76,7 @@ let rec ord (ch: string) =
         __ret
     with
         | Return -> __ret
-let rec chr (n: int) =
+and chr (n: int) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable n = n
     try
@@ -93,7 +93,7 @@ let rec chr (n: int) =
         __ret
     with
         | Return -> __ret
-let rec to_lower_char (c: string) =
+and to_lower_char (c: string) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable c = c
     try
@@ -106,7 +106,7 @@ let rec to_lower_char (c: string) =
         __ret
     with
         | Return -> __ret
-let rec is_alpha (c: string) =
+and is_alpha (c: string) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable c = c
     try
@@ -116,7 +116,7 @@ let rec is_alpha (c: string) =
         __ret
     with
         | Return -> __ret
-let rec is_isogram (s: string) =
+and is_isogram (s: string) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable s = s
     try

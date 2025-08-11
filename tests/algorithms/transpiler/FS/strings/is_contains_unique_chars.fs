@@ -1,4 +1,4 @@
-// Generated 2025-08-11 15:32 +0700
+// Generated 2025-08-11 17:23 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -77,7 +77,7 @@ let rec ord (ch: string) =
         __ret
     with
         | Return -> __ret
-let rec lshift (num: int) (k: int) =
+and lshift (num: int) (k: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable num = num
     let mutable k = k
@@ -92,7 +92,7 @@ let rec lshift (num: int) (k: int) =
         __ret
     with
         | Return -> __ret
-let rec rshift (num: int) (k: int) =
+and rshift (num: int) (k: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable num = num
     let mutable k = k
@@ -107,7 +107,7 @@ let rec rshift (num: int) (k: int) =
         __ret
     with
         | Return -> __ret
-let rec is_contains_unique_chars (input_str: string) =
+and is_contains_unique_chars (input_str: string) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable input_str = input_str
     try
