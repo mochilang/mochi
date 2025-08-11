@@ -2021,22 +2021,18 @@ func (m *MinExpr) emit(w io.Writer) {
 	if currentProgram != nil {
 		currentProgram.addInclude("<algorithm>")
 	}
-	io.WriteString(w, "(*std::min_element(")
+	io.WriteString(w, "([&]{ auto __tmp = ")
 	m.List.emit(w)
-	io.WriteString(w, ".begin(), ")
-	m.List.emit(w)
-	io.WriteString(w, ".end()))")
+	io.WriteString(w, "; return *std::min_element(__tmp.begin(), __tmp.end()); }())")
 }
 
 func (m *MaxExpr) emit(w io.Writer) {
 	if currentProgram != nil {
 		currentProgram.addInclude("<algorithm>")
 	}
-	io.WriteString(w, "(*std::max_element(")
+	io.WriteString(w, "([&]{ auto __tmp = ")
 	m.List.emit(w)
-	io.WriteString(w, ".begin(), ")
-	m.List.emit(w)
-	io.WriteString(w, ".end()))")
+	io.WriteString(w, "; return *std::max_element(__tmp.begin(), __tmp.end()); }())")
 }
 
 func (u *ToUpperExpr) emit(w io.Writer) {
@@ -2231,6 +2227,46 @@ func (v *VarRef) emit(w io.Writer) {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
+	if fn := findFunc(c.Name); fn != nil {
+		needWrap := false
+		for i, a := range c.Args {
+			if i < len(fn.Params) && fn.Params[i].ByVal {
+				if _, ok := a.(*VarRef); !ok {
+					needWrap = true
+					break
+				}
+			}
+		}
+		if needWrap {
+			io.WriteString(w, "([&]{")
+			for i, a := range c.Args {
+				if i < len(fn.Params) && fn.Params[i].ByVal {
+					if _, ok := a.(*VarRef); !ok {
+						fmt.Fprintf(w, " auto __arg%d = ", i)
+						a.emit(w)
+						io.WriteString(w, ";")
+					}
+				}
+			}
+			io.WriteString(w, " return ")
+			io.WriteString(w, c.Name)
+			io.WriteString(w, "(")
+			for i, a := range c.Args {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				if i < len(fn.Params) && fn.Params[i].ByVal {
+					if _, ok := a.(*VarRef); !ok {
+						fmt.Fprintf(w, "__arg%d", i)
+						continue
+					}
+				}
+				a.emit(w)
+			}
+			io.WriteString(w, "); }())")
+			return
+		}
+	}
 	io.WriteString(w, c.Name)
 	io.WriteString(w, "(")
 	for i, a := range c.Args {
