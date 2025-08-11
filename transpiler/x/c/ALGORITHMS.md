@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (245/1077) - Last updated 2025-08-11 17:23 +0700:
+Checklist of programs that currently transpile and run (246/1077) - Last updated 2025-08-11 18:06 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -504,7 +504,7 @@ Checklist of programs that currently transpile and run (245/1077) - Last updated
 | 497 | machine_learning/apriori_algorithm |  |  |  |
 | 498 | machine_learning/astar |  |  |  |
 | 499 | machine_learning/automatic_differentiation |  |  |  |
-| 500 | machine_learning/data_transformations |  |  |  |
+| 500 | machine_learning/data_transformations | ✓ | 330us | 1.6 MB |
 | 501 | machine_learning/decision_tree |  |  |  |
 | 502 | machine_learning/dimensionality_reduction |  |  |  |
 | 503 | machine_learning/forecasting/run |  |  |  |

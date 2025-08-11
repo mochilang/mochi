@@ -6417,7 +6417,8 @@ func gatherVarsExpr(e *parser.Expr, vars map[string]struct{}) {
 	}
 	gatherVarsUnary(e.Binary.Left, vars)
 	for _, p := range e.Binary.Right {
-		gatherVarsUnary(&parser.Unary{Value: p.Right}, vars)
+		// p.Right is already a *parser.Unary after parser refactor.
+		gatherVarsUnary(p.Right, vars)
 	}
 }
 
@@ -6955,7 +6956,8 @@ func convertExpr(e *parser.Expr) Expr {
 
 	// Convert remaining operators and operands
 	for _, part := range e.Binary.Right {
-		rhs := convertUnary(&parser.Unary{Value: part.Right})
+		// part.Right is a *parser.Unary now.
+		rhs := convertUnary(part.Right)
 		if rhs == nil {
 			return nil
 		}
