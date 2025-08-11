@@ -1,0 +1,33 @@
+warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 23 │       {k, result} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/recursive_mergesort_array.exs:23:8: Main.subarray/3
+
+    warning: variable "index" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 96 │         {arr, index, right_index} = try do
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/recursive_mergesort_array.exs:96:15: Main.merge/1
+
+    warning: variable "left_index" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 80 │         {arr, index, left_index} = try do
+    │                      ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/recursive_mergesort_array.exs:80:22: Main.merge/1
+
+    warning: variable "right_index" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 96 │         {arr, index, right_index} = try do
+    │                      ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/recursive_mergesort_array.exs:96:22: Main.merge/1
+
+[5, 4, 3, 2, 1, 10, 9, 8, 7, 6]
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+[3, 9, 10, 15, 22, 1, 2, 23]
+~c"d"
+[]

@@ -1,0 +1,32 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 45 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/can_string_be_rearranged_as_palindrome.exs:45:7: Main.char_to_lower/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 76 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/can_string_be_rearranged_as_palindrome.exs:76:8: Main.normalize/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 102 │       {freq, i} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/can_string_be_rearranged_as_palindrome.exs:102:14: Main.can_string_be_rearranged_as_palindrome_counter/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 141 │       {character_freq_dict, i} = try do
+     │                             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/can_string_be_rearranged_as_palindrome.exs:141:29: Main.can_string_be_rearranged_as_palindrome/1
+
+true
+false
+true
+false

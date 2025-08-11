@@ -1,0 +1,10 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 35 │       {greater, i, lesser} = try do
+    │                 ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/quick_sort.exs:35:17: Main.quick_sort/1
+
+sorted1: [0, 2, 2, 3, 5]
+sorted2: []
+sorted3: [-45, -2, 0, 5]

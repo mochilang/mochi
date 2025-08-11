@@ -1,0 +1,17 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 33 │           {arr, i} = try do
+    │                 ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/odd_even_transposition_single_threaded.exs:33:17: Main.odd_even_transposition/1
+
+    warning: variable "pass" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 45 │       {arr, pass} = try do
+    │             ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/odd_even_transposition_single_threaded.exs:45:13: Main.odd_even_transposition/1
+
+[1.0, 2.0, 3.0, 4.0, 5.0]
+[-1.0, 0.0, 11.0, 13.0, 18.0]
+[-2.9, -0.1, 0.1, 1.1]

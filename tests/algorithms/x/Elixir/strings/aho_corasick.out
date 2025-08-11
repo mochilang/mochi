@@ -1,0 +1,8 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 52 │         {i, positions} = try do
+    │          ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/aho_corasick.exs:52:10: Main.search_all/2
+
+%{"er" => [6, 10, 22, 26], "hat" => [1], "ver" => [5, 25], "what" => [0]}

@@ -1,0 +1,48 @@
+warning: variable "node_" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 32 │           {current, node_, nodes, state} = if value < node_.value do
+    │                     ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/tree_sort.exs:32:21: Main.insert/2
+
+    warning: variable "current" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 72 │       {current, nodes, state} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/tree_sort.exs:72:8: Main.insert/2
+
+    warning: variable "nodes" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 72 │       {current, nodes, state} = try do
+    │                 ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/tree_sort.exs:72:17: Main.insert/2
+
+    warning: variable "state" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 72 │       {current, nodes, state} = try do
+    │                        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/tree_sort.exs:72:24: Main.insert/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 101 │       {i, result} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/tree_sort.exs:101:8: Main.inorder/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 125 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/tree_sort.exs:125:7: Main.tree_sort/1
+
+[]
+[]
+[]
+[]
+[]
+[]

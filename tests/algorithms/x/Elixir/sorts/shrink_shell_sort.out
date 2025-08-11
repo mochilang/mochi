@@ -1,0 +1,17 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 45 │           {collection, i} = try do
+    │                        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/shrink_shell_sort.exs:45:24: Main.shell_sort/1
+
+    warning: variable "gap" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 56 │       {collection, gap} = try do
+    │                    ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/shrink_shell_sort.exs:56:20: Main.shell_sort/1
+
+[1, 2, 3]
+[]
+[1]

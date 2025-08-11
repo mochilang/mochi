@@ -1,0 +1,17 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 50 │           {arr, i} = try do
+    │                 ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/shell_sort.exs:50:17: Main.shell_sort/1
+
+    warning: variable "g" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 62 │       {arr, g} = try do
+    │             ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/shell_sort.exs:62:13: Main.shell_sort/1
+
+[0, 2, 2, 3, 5]
+[]
+[-45, -5, -2]
