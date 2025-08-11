@@ -1,0 +1,15 @@
+warning: variable "seq" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 14 │       seq = List.replace_at(seq, j, temp)
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/slowsort.exs:14:7: Main.swap/3
+
+[1, 6, 2, 5, 3, 4, 4, 5]
+[]
+[2]
+[1, 2, 3, 4]
+[4, 3, 2, 1]
+[9 8 7 6 5 4 3 2 1 0]
+[9 8 7 6 5 4 3 2 1 0]
+[9 8 7 6 5 4 3 2 1 0]

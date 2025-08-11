@@ -1,0 +1,52 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 45 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/camel_case_to_snake_case.exs:45:7: Main.is_lower/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 70 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/camel_case_to_snake_case.exs:70:7: Main.is_upper/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 95 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/camel_case_to_snake_case.exs:95:7: Main.is_digit/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 146 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/camel_case_to_snake_case.exs:146:7: Main.to_lower/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 199 │       {i, prev_is_alpha, prev_is_digit, snake_str} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/camel_case_to_snake_case.exs:199:8: Main.camel_to_snake_case/1
+
+     warning: variable "prev_is_alpha" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 199 │       {i, prev_is_alpha, prev_is_digit, snake_str} = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/camel_case_to_snake_case.exs:199:11: Main.camel_to_snake_case/1
+
+     warning: variable "prev_is_digit" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 199 │       {i, prev_is_alpha, prev_is_digit, snake_str} = try do
+     │                          ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/camel_case_to_snake_case.exs:199:26: Main.camel_to_snake_case/1
+
+"some_random_string"
+"some_random_str_ng"
+"123_some_random_123_string_123"

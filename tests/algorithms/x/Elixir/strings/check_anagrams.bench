@@ -1,0 +1,36 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 65 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/check_anagrams.exs:65:8: Main.strip_and_remove_spaces/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 99 │       {count, i} = try do
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/check_anagrams.exs:99:15: Main.check_anagrams/2
+
+** (FunctionClauseError) no function clause matching in List.replace_at/3    
+    
+    The following arguments were given to List.replace_at/3:
+    
+        # 1
+        %{}
+    
+        # 2
+        "s"
+    
+        # 3
+        1
+    
+    Attempted function clauses (showing 1 out of 1):
+    
+        def replace_at(+list+, +index+, +value+) when -is_list(list)- and -is_integer(index)-
+    
+    (elixir 1.18.3) lib/list.ex:814: List.replace_at/3
+    /workspace/mochi/tests/algorithms/x/Elixir/strings/check_anagrams.exs:91: anonymous fn/5 in Main.check_anagrams/2
+    /workspace/mochi/tests/algorithms/x/Elixir/strings/check_anagrams.exs:100: Main.check_anagrams/2
+    /workspace/mochi/tests/algorithms/x/Elixir/strings/check_anagrams.exs:130: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/strings/check_anagrams.exs:141: (file)

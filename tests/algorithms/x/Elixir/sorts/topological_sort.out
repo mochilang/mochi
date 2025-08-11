@@ -1,0 +1,15 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 54 │         {j, sort} = try do
+    │          ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/topological_sort.exs:54:10: Main.topological_sort/3
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 30 │       {i, sort} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/topological_sort.exs:30:8: Main.topological_sort/3
+
+["c", "d", "e", "e", "d", "b", "d", "e", "e", "d", "d", "e", "b", "e", "e", "b", "e", "d", "b", "d", "d", "b", "d", "c", "e", "e", "c", "e", "c", "d", "d", "c", "b", "c", "d", "e", "e", "d", "d", "c", "e", "e", "c", "e", "c", "d", "d", "c", "a", "d", ...]

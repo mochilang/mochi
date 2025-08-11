@@ -1,0 +1,18 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 35 │           {arr, i} = try do
+    │                 ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/odd_even_transposition_parallel.exs:35:17: Main.odd_even_transposition/1
+
+    warning: variable "phase" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 47 │       {arr, phase} = try do
+    │             ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/odd_even_transposition_parallel.exs:47:13: Main.odd_even_transposition/1
+
+Initial List
+[10 9 8 7 6 5 4 3 2 1]
+Sorted List
+[1 2 3 4 5 6 7 8 9 10]

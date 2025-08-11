@@ -1,80 +1,80 @@
 run: exit status 1
     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 51 │       i = try do
+ 45 │       i = try do
     │       ~
     │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:51:7: Main.etaoin_index/1
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:45:7: Main.etaoin_index/1
 
     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 76 │       {i, letter_count} = try do
+ 70 │       {i, letter_count} = try do
     │        ~
     │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:76:8: Main.get_letter_count/1
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:70:8: Main.get_letter_count/1
 
     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 99 │       {j, letter_count} = try do
+ 93 │       {j, letter_count} = try do
     │        ~
     │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:99:8: Main.get_letter_count/1
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:93:8: Main.get_letter_count/1
 
      warning: variable "b" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 189 │               {b, group} = try do
+ 183 │               {b, group} = try do
      │                ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:189:16: Main.get_frequency_order/1
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:183:16: Main.get_frequency_order/1
 
      warning: variable "a" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 201 │           {a, group} = try do
+ 195 │           {a, group} = try do
      │            ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:201:12: Main.get_frequency_order/1
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:195:12: Main.get_frequency_order/1
 
      warning: variable "g" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 217 │           {g, result} = try do
+ 211 │           {g, result} = try do
      │            ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:217:12: Main.get_frequency_order/1
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:211:12: Main.get_frequency_order/1
 
      warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 158 │           {group, j} = try do
+ 152 │           {group, j} = try do
      │                   ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:158:19: Main.get_frequency_order/1
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:152:19: Main.get_frequency_order/1
 
      warning: variable "freq" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 229 │       {freq, result} = try do
+ 223 │       {freq, result} = try do
      │        ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:229:8: Main.get_frequency_order/1
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:223:8: Main.get_frequency_order/1
 
      warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 131 │       {i, max_freq} = try do
+ 125 │       {i, max_freq} = try do
      │        ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:131:8: Main.get_frequency_order/1
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:125:8: Main.get_frequency_order/1
 
      warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 262 │       {i, score} = try do
+ 256 │       {i, score} = try do
      │        ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:262:8: Main.english_freq_match_score/1
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:256:8: Main.english_freq_match_score/1
 
      warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 284 │       {j, score} = try do
+ 278 │       {j, score} = try do
      │        ~
      │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:284:8: Main.english_freq_match_score/1
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:278:8: Main.english_freq_match_score/1
 
 ** (Protocol.UndefinedError) protocol Enumerable not implemented for type BitString
 
@@ -85,8 +85,8 @@ Got value:
     (elixir 1.18.3) lib/enum.ex:1: Enumerable.impl_for!/1
     (elixir 1.18.3) lib/enum.ex:194: Enumerable.member?/2
     (elixir 1.18.3) lib/enum.ex:2020: Enum.member?/2
-    /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:87: anonymous fn/4 in Main.get_letter_count/1
-    /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:100: Main.get_letter_count/1
-    /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:112: Main.get_frequency_order/1
-    /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:297: Main.main/0
-    /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:311: Main.bench_main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:81: anonymous fn/4 in Main.get_letter_count/1
+    /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:94: Main.get_letter_count/1
+    /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:106: Main.get_frequency_order/1
+    /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:291: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/strings/frequency_finder.exs:300: (file)

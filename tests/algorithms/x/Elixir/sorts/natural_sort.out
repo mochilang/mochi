@@ -1,0 +1,44 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 45 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/natural_sort.exs:45:7: Main.index_of/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 150 │       {i, key} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/natural_sort.exs:150:8: Main.alphanum_key/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 178 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/natural_sort.exs:178:7: Main.compare_keys/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 246 │       {i, keys, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/natural_sort.exs:246:8: Main.natural_sort/1
+
+     warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 210 │       {k, keys, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/natural_sort.exs:210:8: Main.natural_sort/1
+
+     warning: variable "keys" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 246 │       {i, keys, res} = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/natural_sort.exs:246:11: Main.natural_sort/1
+
+["1 ft 5 in", "2 ft 7 in", "2 ft 11 in", "7 ft 6 in", "10 ft 2 in"]
+["elm0", "elm1", "Elm2", "elm9", "elm10", "Elm11", "Elm12", "elm13"]

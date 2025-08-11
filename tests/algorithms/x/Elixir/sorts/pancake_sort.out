@@ -1,0 +1,29 @@
+warning: variable "end_" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 26 │       {arr, end_, start} = try do
+    │             ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/pancake_sort.exs:26:13: Main.flip/2
+
+    warning: variable "start" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 26 │       {arr, end_, start} = try do
+    │                   ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/pancake_sort.exs:26:19: Main.flip/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 55 │       {i, mi} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/pancake_sort.exs:55:8: Main.find_max_index/2
+
+    warning: variable "cur" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 80 │       {arr, cur} = try do
+    │             ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/pancake_sort.exs:80:13: Main.pancake_sort/1
+
+[1 2 3 6 10]

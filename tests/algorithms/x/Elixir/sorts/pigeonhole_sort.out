@@ -1,0 +1,36 @@
+warning: variable "count" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 79 │       {arr, count, holes, sorted_index} = try do
+    │             ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/pigeonhole_sort.exs:79:13: Main.pigeonhole_sort/1
+
+    warning: variable "holes" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 79 │       {arr, count, holes, sorted_index} = try do
+    │                    ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/pigeonhole_sort.exs:79:20: Main.pigeonhole_sort/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 29 │       {holes, i} = try do
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/pigeonhole_sort.exs:29:15: Main.pigeonhole_sort/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 47 │       {holes, i} = try do
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/pigeonhole_sort.exs:47:15: Main.pigeonhole_sort/1
+
+    warning: variable "sorted_index" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 79 │       {arr, count, holes, sorted_index} = try do
+    │                           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/pigeonhole_sort.exs:79:27: Main.pigeonhole_sort/1
+
+Sorted order is: 2 3 4 6 7 8 8

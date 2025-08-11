@@ -1,0 +1,52 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 23 │       {i, result} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/pigeon_sort.exs:23:8: Main.make_list/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 52 │       {i, m} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/pigeon_sort.exs:52:8: Main.min_value/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 81 │       {i, m} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/pigeon_sort.exs:81:8: Main.max_value/1
+
+     warning: variable "array_index" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 146 │       {array, array_index, h, holes_repeat} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/pigeon_sort.exs:146:15: Main.pigeon_sort/1
+
+     warning: variable "h" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 146 │       {array, array_index, h, holes_repeat} = try do
+     │                            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/pigeon_sort.exs:146:28: Main.pigeon_sort/1
+
+     warning: variable "holes_repeat" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 146 │       {array, array_index, h, holes_repeat} = try do
+     │                               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/pigeon_sort.exs:146:31: Main.pigeon_sort/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 114 │       {holes, holes_repeat, i} = try do
+     │                             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/sorts/pigeon_sort.exs:114:29: Main.pigeon_sort/1
+
+[0, 2, 2, 3, 5]
+[]
+[-45, -5, -2]

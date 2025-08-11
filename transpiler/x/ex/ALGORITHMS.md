@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-11 15:46 GMT+7
+Last updated: 2025-08-11 17:39 GMT+7
 
-## Algorithms Golden Test Checklist (710/1077)
+## Algorithms Golden Test Checklist (748/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -966,77 +966,77 @@ Last updated: 2025-08-11 15:46 GMT+7
 | 957 | sorts/insertion_sort |   |  |  |
 | 958 | sorts/intro_sort |   |  |  |
 | 959 | sorts/iterative_merge_sort |   |  |  |
-| 960 | sorts/merge_insertion_sort |   |  |  |
-| 961 | sorts/merge_sort |   |  |  |
-| 962 | sorts/msd_radix_sort |   |  |  |
-| 963 | sorts/natural_sort |   |  |  |
-| 964 | sorts/odd_even_sort |   |  |  |
-| 965 | sorts/odd_even_transposition_parallel |   |  |  |
-| 966 | sorts/odd_even_transposition_single_threaded |   |  |  |
-| 967 | sorts/pancake_sort |   |  |  |
-| 968 | sorts/patience_sort |   |  |  |
-| 969 | sorts/pigeon_sort |   |  |  |
-| 970 | sorts/pigeonhole_sort |   |  |  |
-| 971 | sorts/quick_sort |   |  |  |
-| 972 | sorts/quick_sort_3_partition |   |  |  |
-| 973 | sorts/radix_sort |   |  |  |
-| 974 | sorts/recursive_insertion_sort |   |  |  |
-| 975 | sorts/recursive_mergesort_array |   |  |  |
-| 976 | sorts/recursive_quick_sort |   |  |  |
-| 977 | sorts/selection_sort |   |  |  |
-| 978 | sorts/shell_sort |   |  |  |
-| 979 | sorts/shrink_shell_sort |   |  |  |
-| 980 | sorts/slowsort |   |  |  |
-| 981 | sorts/stooge_sort |   |  |  |
-| 982 | sorts/strand_sort |   |  |  |
-| 983 | sorts/tim_sort |   |  |  |
-| 984 | sorts/topological_sort |   |  |  |
-| 985 | sorts/tree_sort |   |  |  |
-| 986 | sorts/unknown_sort |   |  |  |
-| 987 | sorts/wiggle_sort |   |  |  |
-| 988 | strings/aho_corasick |   |  |  |
-| 989 | strings/alternative_string_arrange |   |  |  |
-| 990 | strings/anagrams |   |  |  |
-| 991 | strings/autocomplete_using_trie |   |  |  |
-| 992 | strings/barcode_validator |   |  |  |
-| 993 | strings/bitap_string_match |   |  |  |
-| 994 | strings/boyer_moore_search |   |  |  |
-| 995 | strings/camel_case_to_snake_case |   |  |  |
-| 996 | strings/can_string_be_rearranged_as_palindrome |   |  |  |
-| 997 | strings/capitalize |   |  |  |
-| 998 | strings/check_anagrams |   |  |  |
-| 999 | strings/count_vowels |   |  |  |
-| 1000 | strings/credit_card_validator | ✓ | 269us | 17.3 MB |
-| 1001 | strings/damerau_levenshtein_distance | ✓ | 7.48ms | 17.3 MB |
-| 1002 | strings/detecting_english_programmatically | ✓ | 10.73ms | 25.1 MB |
-| 1003 | strings/dna | ✓ | 5.20ms | 9.6 MB |
-| 1004 | strings/edit_distance | ✓ | 95.18ms | 12.5 MB |
+| 960 | sorts/merge_insertion_sort | ✓ | 9.00ms | 25.0 MB |
+| 961 | sorts/merge_sort | ✓ | 9.10ms | 17.3 MB |
+| 962 | sorts/msd_radix_sort | ✓ | 508us | 9.8 MB |
+| 963 | sorts/natural_sort | ✓ | 17.27ms | 17.3 MB |
+| 964 | sorts/odd_even_sort | ✓ | 269us | 12.5 MB |
+| 965 | sorts/odd_even_transposition_parallel | ✓ | 574us | 25.0 MB |
+| 966 | sorts/odd_even_transposition_single_threaded | ✓ | 7.64ms | 17.3 MB |
+| 967 | sorts/pancake_sort | ✓ | 211us | 12.6 MB |
+| 968 | sorts/patience_sort | ✓ | 9.25ms | 25.0 MB |
+| 969 | sorts/pigeon_sort | ✓ | 9.00ms | 25.0 MB |
+| 970 | sorts/pigeonhole_sort | ✓ | 300us | 0 B |
+| 971 | sorts/quick_sort | ✓ | 9.90ms | 17.3 MB |
+| 972 | sorts/quick_sort_3_partition | ✓ | 10.38ms | 17.3 MB |
+| 973 | sorts/radix_sort | ✓ | 7.78ms | 17.3 MB |
+| 974 | sorts/recursive_insertion_sort | ✓ | 336us | 17.4 MB |
+| 975 | sorts/recursive_mergesort_array | ✓ | 9.60ms | 17.3 MB |
+| 976 | sorts/recursive_quick_sort | ✓ | 9.23ms | 17.3 MB |
+| 977 | sorts/selection_sort | ✓ | 8.86ms | 12.5 MB |
+| 978 | sorts/shell_sort | ✓ | 8.18ms | 17.3 MB |
+| 979 | sorts/shrink_shell_sort | ✓ | 7.72ms | 25.0 MB |
+| 980 | sorts/slowsort | ✓ | 10.16ms | 12.7 MB |
+| 981 | sorts/stooge_sort | ✓ | 9.50ms | 17.3 MB |
+| 982 | sorts/strand_sort | ✓ | 7.99ms | 17.3 MB |
+| 983 | sorts/tim_sort | ✓ | 7.48ms | 17.3 MB |
+| 984 | sorts/topological_sort | ✓ | 9.03ms | 25.0 MB |
+| 985 | sorts/tree_sort | ✓ | 7.03ms | 25.0 MB |
+| 986 | sorts/unknown_sort | ✓ | 9.49ms | 17.3 MB |
+| 987 | sorts/wiggle_sort | ✓ | 9.88ms | 25.0 MB |
+| 988 | strings/aho_corasick | ✓ | 13.02ms | 25.0 MB |
+| 989 | strings/alternative_string_arrange | ✓ | 5.78ms | 17.7 MB |
+| 990 | strings/anagrams | error |  |  |
+| 991 | strings/autocomplete_using_trie | ✓ | 9.54ms | 25.0 MB |
+| 992 | strings/barcode_validator | ✓ | 10.98ms | 32.8 MB |
+| 993 | strings/bitap_string_match | ✓ | 11.43ms | 9.6 MB |
+| 994 | strings/boyer_moore_search | ✓ | 1us | 0 B |
+| 995 | strings/camel_case_to_snake_case | ✓ | 13.04ms | 25.4 MB |
+| 996 | strings/can_string_be_rearranged_as_palindrome | ✓ | 8.60ms | 17.3 MB |
+| 997 | strings/capitalize | ✓ | 7.04ms | 12.5 MB |
+| 998 | strings/check_anagrams | error |  |  |
+| 999 | strings/count_vowels | ✓ | 9.56ms | 12.6 MB |
+| 1000 | strings/credit_card_validator | ✓ | 329us | 17.3 MB |
+| 1001 | strings/damerau_levenshtein_distance | ✓ | 9.66ms | 17.3 MB |
+| 1002 | strings/detecting_english_programmatically | ✓ | 13.86ms | 25.1 MB |
+| 1003 | strings/dna | ✓ | 6.81ms | 9.6 MB |
+| 1004 | strings/edit_distance | ✓ | 137.05ms | 12.5 MB |
 | 1005 | strings/frequency_finder | error |  |  |
-| 1006 | strings/hamming_distance | ✓ | 5.03ms | 7.7 MB |
-| 1007 | strings/indian_phone_validator | ✓ | 5.57ms | 12.6 MB |
+| 1006 | strings/hamming_distance | ✓ | 6.51ms | 7.7 MB |
+| 1007 | strings/indian_phone_validator | ✓ | 7.36ms | 12.6 MB |
 | 1008 | strings/is_contains_unique_chars | error |  |  |
-| 1009 | strings/is_isogram | ✓ | 6.35ms | 17.6 MB |
+| 1009 | strings/is_isogram | ✓ | 8.27ms | 17.6 MB |
 | 1010 | strings/is_pangram | error |  |  |
-| 1011 | strings/is_polish_national_id | ✓ | 5.25ms | 25.0 MB |
+| 1011 | strings/is_polish_national_id | ✓ | 7.76ms | 25.0 MB |
 | 1012 | strings/is_spain_national_id | error |  |  |
-| 1013 | strings/is_srilankan_phone_number | ✓ | 5.97ms | 25.0 MB |
-| 1014 | strings/is_valid_email_address | ✓ | 67.33ms | 12.5 MB |
-| 1015 | strings/jaro_winkler | ✓ | 4.82ms | 17.3 MB |
-| 1016 | strings/join | ✓ | 5.35ms | 25.0 MB |
-| 1017 | strings/knuth_morris_pratt | ✓ | 5.25ms | 25.0 MB |
-| 1018 | strings/levenshtein_distance | ✓ | 5.59ms | 17.4 MB |
-| 1019 | strings/lower | ✓ | 6.14ms | 17.3 MB |
-| 1020 | strings/manacher | ✓ | 5.80ms | 7.7 MB |
-| 1021 | strings/min_cost_string_conversion | ✓ | 7.73ms | 25.0 MB |
-| 1022 | strings/naive_string_search | ✓ | 6.43ms | 17.3 MB |
-| 1023 | strings/ngram | ✓ | 7.41ms | 25.0 MB |
-| 1024 | strings/palindrome | ✓ | 2.20ms | 12.7 MB |
-| 1025 | strings/pig_latin | ✓ | 8.56ms | 32.8 MB |
-| 1026 | strings/prefix_function | ✓ | 17.45ms | 25.2 MB |
-| 1027 | strings/rabin_karp | ✓ | 4.38ms | 12.5 MB |
-| 1028 | strings/remove_duplicate | ✓ | 5.54ms | 12.5 MB |
-| 1029 | strings/reverse_letters | ✓ | 5.33ms | 17.3 MB |
-| 1030 | strings/reverse_words | ✓ | 5.33ms | 25.2 MB |
+| 1013 | strings/is_srilankan_phone_number | ✓ | 6.65ms | 25.0 MB |
+| 1014 | strings/is_valid_email_address | ✓ | 82.24ms | 12.5 MB |
+| 1015 | strings/jaro_winkler | ✓ | 7.62ms | 17.3 MB |
+| 1016 | strings/join | ✓ | 7.59ms | 25.0 MB |
+| 1017 | strings/knuth_morris_pratt | ✓ | 7.96ms | 17.3 MB |
+| 1018 | strings/levenshtein_distance | ✓ | 6.68ms | 17.4 MB |
+| 1019 | strings/lower | ✓ | 10.64ms | 17.3 MB |
+| 1020 | strings/manacher | ✓ | 10.68ms | 7.7 MB |
+| 1021 | strings/min_cost_string_conversion | ✓ | 11.46ms | 25.0 MB |
+| 1022 | strings/naive_string_search | ✓ | 10.59ms | 17.3 MB |
+| 1023 | strings/ngram | ✓ | 17.29ms | 25.0 MB |
+| 1024 | strings/palindrome | ✓ | 2.84ms | 12.7 MB |
+| 1025 | strings/pig_latin | ✓ | 11.21ms | 32.8 MB |
+| 1026 | strings/prefix_function | ✓ | 6.69ms | 25.2 MB |
+| 1027 | strings/rabin_karp | ✓ | 6.04ms | 12.5 MB |
+| 1028 | strings/remove_duplicate | ✓ | 7.78ms | 12.5 MB |
+| 1029 | strings/reverse_letters | ✓ | 8.07ms | 17.3 MB |
+| 1030 | strings/reverse_words | ✓ | 17.66ms | 25.2 MB |
 | 1031 | strings/snake_case_to_camel_pascal_case | ✓ | 14.95ms | 17.4 MB |
 | 1032 | strings/split | ✓ | 6.15ms | 17.3 MB |
 | 1033 | strings/string_switch_case | ✓ | 15.82ms | 25.0 MB |

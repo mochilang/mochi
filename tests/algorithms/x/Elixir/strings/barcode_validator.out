@@ -1,0 +1,37 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 25 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/barcode_validator.exs:25:7: Main.has_alpha/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 53 │       {i, value} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/barcode_validator.exs:53:8: Main.parse_decimal/1
+
+    warning: variable "num" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 93 │       {num, position, s} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/barcode_validator.exs:93:8: Main.get_check_digit/1
+
+    warning: variable "position" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 93 │       {num, position, s} = try do
+    │             ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/barcode_validator.exs:93:13: Main.get_check_digit/1
+
+9
+5
+9
+[0, 7, 4, 1, 8, 5, 2, 9, 6, 3]
+true
+false
+false
+false
+8718452538119
