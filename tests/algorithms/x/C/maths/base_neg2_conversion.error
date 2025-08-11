@@ -1,0 +1,8 @@
+parse error: error[P999]: /workspace/mochi/tests/github/TheAlgorithms/Mochi/maths/base_neg2_conversion.mochi:24:19: unexpected token "-" (expected PostfixExpr)
+  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/maths/base_neg2_conversion.mochi:24:19
+
+ 24 |     var rem = n % -2
+    |                   ^
+
+help:
+  Parse error occurred. Check syntax near this location.

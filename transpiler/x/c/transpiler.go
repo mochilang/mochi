@@ -912,6 +912,34 @@ func (j *JSONListIntCall) emit(w io.Writer, indent int) {
 	io.WriteString(w, "\n")
 }
 
+type JSONListDoubleCall struct {
+	Arg Expr
+}
+
+func (j *JSONListDoubleCall) emit(w io.Writer, indent int) {
+	if ce, ok := j.Arg.(*CallExpr); ok {
+		if ret, ok2 := funcReturnTypes[ce.Func]; ok2 && strings.HasSuffix(ret, "[]") {
+			tmp := fmt.Sprintf("__tmp%d", tempCounter)
+			tempCounter++
+			decl := listPtrType(ret)
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "%s %s = ", decl, tmp)
+			ce.emitExpr(w)
+			io.WriteString(w, ";\n")
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "puts(str_list_double(%s, %s_len));\n", tmp, ce.Func)
+			return
+		}
+	}
+	writeIndent(w, indent)
+	io.WriteString(w, "puts(str_list_double(")
+	j.Arg.emitExpr(w)
+	io.WriteString(w, ", ")
+	emitLenExpr(w, j.Arg)
+	io.WriteString(w, "));")
+	io.WriteString(w, "\n")
+}
+
 func (r *ReturnStmt) emit(w io.Writer, indent int) {
 	if call, ok := r.Expr.(*CallExpr); ok && strings.HasSuffix(currentFuncReturn, "[]") && !(call.Func == "append" && len(call.Args) == 2) {
 		tmp := fmt.Sprintf("__ret%d", tempCounter)
@@ -3229,6 +3257,10 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 	}
 }
 
+type LenExpr struct{ Arg Expr }
+
+func (l *LenExpr) emitExpr(w io.Writer) { emitLenExpr(w, l.Arg) }
+
 type BinaryExpr struct {
 	Op    string
 	Left  Expr
@@ -4857,6 +4889,10 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				funcAliases[name] = "user_roundf"
 				name = "user_roundf"
 			}
+			if name == "ceil" { // avoid conflict with stdlib
+				funcAliases[name] = "user_ceil"
+				name = "user_ceil"
+			}
 			if name == "double" { // avoid conflict with C keyword
 				funcAliases[name] = "user_double"
 				name = "user_double"
@@ -5213,6 +5249,10 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			if strings.HasPrefix(typ, "long long") && strings.HasSuffix(typ, "[]") {
 				needStrListInt = true
 				return &JSONListIntCall{Arg: arg}, nil
+			}
+			if strings.HasPrefix(typ, "double") && strings.HasSuffix(typ, "[]") {
+				needStrListDouble = true
+				return &JSONListDoubleCall{Arg: arg}, nil
 			}
 			return nil, fmt.Errorf("unsupported json argument")
 		}
@@ -7637,6 +7677,7 @@ func convertUnary(u *parser.Unary) Expr {
 					}
 				}
 			}
+			return &LenExpr{Arg: arg}
 		}
 		if call.Func == "count" && len(call.Args) == 1 {
 			if l, ok := evalList(convertExpr(call.Args[0])); ok {
@@ -8577,13 +8618,8 @@ func isConstExpr(e Expr) bool {
 	if _, ok := evalString(e); ok {
 		return true
 	}
-	if l, ok := evalList(e); ok {
-		for _, it := range l.Elems {
-			if !isConstExpr(it) {
-				return false
-			}
-		}
-		return true
+	if _, ok := evalList(e); ok {
+		return false
 	}
 	if s, ok := e.(*StructLit); ok {
 		for _, f := range s.Fields {
