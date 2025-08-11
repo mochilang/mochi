@@ -2717,11 +2717,20 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				typ = fetchType
 				valType = types.StructType{Name: fetchType}
 			} else if typ == "" {
-				valType = types.TypeOfExprBasic(st.Let.Value, env)
+				valType = types.TypeOfExpr(st.Let.Value, env)
 				if fe, ok := e.(*FieldExpr); ok {
 					if st, ok2 := valType.(types.StructType); ok2 {
 						if ft, ok3 := st.Fields[fe.Name]; ok3 {
 							valType = ft
+						}
+					}
+				}
+				if ce, ok := e.(*CallExpr); ok && ce.Func == "_concat" {
+					if len(ce.Args) > 0 {
+						if vr, ok2 := ce.Args[0].(*VarRef); ok2 {
+							if vd, ok3 := varDecls[vr.Name]; ok3 && strings.HasPrefix(vd.Type, "[]") && vd.Type != "[]any" {
+								valType = types.ListType{Elem: toTypeFromGoType(vd.Type[2:])}
+							}
 						}
 					}
 				}
@@ -2732,11 +2741,20 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					}
 				}
 			} else {
-				valType = types.TypeOfExprBasic(st.Let.Value, env)
+				valType = types.TypeOfExpr(st.Let.Value, env)
 				if fe, ok := e.(*FieldExpr); ok {
 					if st, ok2 := valType.(types.StructType); ok2 {
 						if ft, ok3 := st.Fields[fe.Name]; ok3 {
 							valType = ft
+						}
+					}
+				}
+				if ce, ok := e.(*CallExpr); ok && ce.Func == "_concat" {
+					if len(ce.Args) > 0 {
+						if vr, ok2 := ce.Args[0].(*VarRef); ok2 {
+							if vd, ok3 := varDecls[vr.Name]; ok3 && strings.HasPrefix(vd.Type, "[]") && vd.Type != "[]any" {
+								valType = types.ListType{Elem: toTypeFromGoType(vd.Type[2:])}
+							}
 						}
 					}
 				}
@@ -2954,6 +2972,15 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				if types.IsAnyType(valType) {
 					valType = types.TypeOfExprBasic(st.Var.Value, env)
 				}
+				if ce, ok := e.(*CallExpr); ok && ce.Func == "_concat" {
+					if len(ce.Args) > 0 {
+						if vr, ok2 := ce.Args[0].(*VarRef); ok2 {
+							if vd, ok3 := varDecls[vr.Name]; ok3 && strings.HasPrefix(vd.Type, "[]") && vd.Type != "[]any" {
+								valType = types.ListType{Elem: toTypeFromGoType(vd.Type[2:])}
+							}
+						}
+					}
+				}
 				typ = toGoTypeFromType(valType)
 				if _, ok := valType.(types.FuncType); ok {
 					if env != topEnv {
@@ -2962,6 +2989,15 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 			} else {
 				valType = types.TypeOfExpr(st.Var.Value, env)
+				if ce, ok := e.(*CallExpr); ok && ce.Func == "_concat" {
+					if len(ce.Args) > 0 {
+						if vr, ok2 := ce.Args[0].(*VarRef); ok2 {
+							if vd, ok3 := varDecls[vr.Name]; ok3 && strings.HasPrefix(vd.Type, "[]") && vd.Type != "[]any" {
+								valType = types.ListType{Elem: toTypeFromGoType(vd.Type[2:])}
+							}
+						}
+					}
+				}
 				if typ == "[]any" {
 					if lt, ok := valType.(types.ListType); ok {
 						if _, ok2 := lt.Elem.(types.AnyType); !ok2 {
@@ -4915,6 +4951,20 @@ func isNumericAny(e Expr) bool {
 				}
 			}
 		}
+	case *VarRef:
+		if vd, ok := varDecls[ex.Name]; ok {
+			if vd.Type == "int" || vd.Type == "float64" {
+				return true
+			}
+		}
+		if topEnv != nil {
+			if vt, err := topEnv.GetVar(ex.Name); err == nil {
+				switch vt.(type) {
+				case types.IntType, types.FloatType:
+					return true
+				}
+			}
+		}
 	case *IntLit, *FloatLit:
 		return true
 	}
@@ -5231,10 +5281,13 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 							}
 						}
 					}
-					// auto convert unknown types to float64 for arithmetic
+					// auto convert unknown types to numeric types for arithmetic
 					if newExpr == nil && (ops[i].Op == "+" || ops[i].Op == "-" || ops[i].Op == "*" || ops[i].Op == "/") {
 						if _, ok := typesList[i].(types.AnyType); ok {
-							if isIntType(typesList[i+1]) {
+							if isNumericAny(left) {
+								left = &AssertExpr{Expr: left, Type: "int"}
+								typesList[i] = types.IntType{}
+							} else if isIntType(typesList[i+1]) {
 								left = &AssertExpr{Expr: left, Type: "int"}
 								typesList[i] = types.IntType{}
 							} else {
@@ -5244,7 +5297,10 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 							}
 						}
 						if _, ok := typesList[i+1].(types.AnyType); ok {
-							if isIntType(typesList[i]) {
+							if isNumericAny(right) {
+								right = &AssertExpr{Expr: right, Type: "int"}
+								typesList[i+1] = types.IntType{}
+							} else if isIntType(typesList[i]) {
 								right = &AssertExpr{Expr: right, Type: "int"}
 								typesList[i+1] = types.IntType{}
 							} else {

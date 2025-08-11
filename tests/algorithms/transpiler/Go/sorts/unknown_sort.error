@@ -1,0 +1,13 @@
+exit status 1
+panic: case2 failed
+
+goroutine 1 [running]:
+main.test_merge_sort()
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/unknown_sort.go:333 +0x225
+main.mochiMain()
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/unknown_sort.go:389 +0x1f
+main.main.func1(...)
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/unknown_sort.go:442
+main.main()
+	/workspace/mochi/tests/algorithms/transpiler/Go/sorts/unknown_sort.go:449 +0x92
+exit status 2

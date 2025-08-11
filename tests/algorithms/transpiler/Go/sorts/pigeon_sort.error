@@ -1,5 +1,0 @@
-exit status 1
-# command-line-arguments
-../../../tests/algorithms/transpiler/Go/sorts/pigeon_sort.go:165:30: cannot use holes_range (variable of type float64) as int value in argument to make_list
-../../../tests/algorithms/transpiler/Go/sorts/pigeon_sort.go:167:37: cannot use holes_range (variable of type float64) as int value in argument to make_list
-../../../tests/algorithms/transpiler/Go/sorts/pigeon_sort.go:182:10: invalid operation: h < holes_range (mismatched types int and float64)
