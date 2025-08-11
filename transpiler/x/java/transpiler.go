@@ -5271,14 +5271,14 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 	operands := []Expr{left}
 	var operators []*parser.BinaryOp
 
-	for _, part := range e.Binary.Right {
-		rhs, err := compileUnary(&parser.Unary{Value: part.Right})
-		if err != nil {
-			return nil, err
-		}
-		operators = append(operators, part)
-		operands = append(operands, rhs)
-	}
+       for _, part := range e.Binary.Right {
+               rhs, err := compileUnary(part.Right)
+               if err != nil {
+                       return nil, err
+               }
+               operators = append(operators, part)
+               operands = append(operands, rhs)
+       }
 
 	levels := [][]string{
 		{"*", "/", "%"},
@@ -5802,16 +5802,18 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			return &AppendExpr{List: args[0], Value: args[1], ElemType: et}, nil
 		}
-		if name == "min" && len(args) == 1 {
-			needMin = true
-			funcRet["_min"] = "long"
-			return &CallExpr{Func: "_min", Args: args}, nil
-		}
-		if name == "max" && len(args) == 1 {
-			needMax = true
-			funcRet["_max"] = "long"
-			return &CallExpr{Func: "_max", Args: args}, nil
-		}
+               if name == "min" && len(args) == 1 {
+                       needMin = true
+                       needToObjectArray = true
+                       funcRet["_min"] = "double"
+                       return &CallExpr{Func: "_min", Args: args}, nil
+               }
+               if name == "max" && len(args) == 1 {
+                       needMax = true
+                       needToObjectArray = true
+                       funcRet["_max"] = "double"
+                       return &CallExpr{Func: "_max", Args: args}, nil
+               }
 		if name == "concat" && len(args) == 2 {
 			et := arrayElemType(args[0])
 			if et == "" {
@@ -7090,26 +7092,28 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("        return (Object[]) v;\n")
 		buf.WriteString("    }\n")
 	}
-	if needMin {
-		buf.WriteString("\n    static long _min(Object[] a) {\n")
-		buf.WriteString("        long m = ((Number)a[0]).longValue();\n")
-		buf.WriteString("        for (int i = 1; i < a.length; i++) {\n")
-		buf.WriteString("            long v = ((Number)a[i]).longValue();\n")
-		buf.WriteString("            if (v < m) m = v;\n")
-		buf.WriteString("        }\n")
-		buf.WriteString("        return m;\n")
-		buf.WriteString("    }\n")
-	}
-	if needMax {
-		buf.WriteString("\n    static long _max(Object[] a) {\n")
-		buf.WriteString("        long m = ((Number)a[0]).longValue();\n")
-		buf.WriteString("        for (int i = 1; i < a.length; i++) {\n")
-		buf.WriteString("            long v = ((Number)a[i]).longValue();\n")
-		buf.WriteString("            if (v > m) m = v;\n")
-		buf.WriteString("        }\n")
-		buf.WriteString("        return m;\n")
-		buf.WriteString("    }\n")
-	}
+       if needMin {
+               buf.WriteString("\n    static double _min(Object a) {\n")
+               buf.WriteString("        Object[] arr = _toObjectArray(a);\n")
+               buf.WriteString("        double m = ((Number)arr[0]).doubleValue();\n")
+               buf.WriteString("        for (int i = 1; i < arr.length; i++) {\n")
+               buf.WriteString("            double v = ((Number)arr[i]).doubleValue();\n")
+               buf.WriteString("            if (v < m) m = v;\n")
+               buf.WriteString("        }\n")
+               buf.WriteString("        return m;\n")
+               buf.WriteString("    }\n")
+       }
+       if needMax {
+               buf.WriteString("\n    static double _max(Object a) {\n")
+               buf.WriteString("        Object[] arr = _toObjectArray(a);\n")
+               buf.WriteString("        double m = ((Number)arr[0]).doubleValue();\n")
+               buf.WriteString("        for (int i = 1; i < arr.length; i++) {\n")
+               buf.WriteString("            double v = ((Number)arr[i]).doubleValue();\n")
+               buf.WriteString("            if (v > m) m = v;\n")
+               buf.WriteString("        }\n")
+               buf.WriteString("        return m;\n")
+               buf.WriteString("    }\n")
+       }
 	if needSHA256 {
 		buf.WriteString("\n    static long[] _sha256(long[] bs) {\n")
 		buf.WriteString("        try {\n")
