@@ -2,8 +2,8 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 522/1077
-Last updated: 2025-08-09 16:32 +0700
+Completed programs: 572/1077
+Last updated: 2025-08-09 23:14 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -588,56 +588,56 @@ Last updated: 2025-08-09 16:32 +0700
 | 579 | maths/integer_square_root | ✓ | 551µs | 3.2 MB |
 | 580 | maths/interquartile_range | ✓ | 595µs | 3.3 MB |
 | 581 | maths/is_int_palindrome | ✓ | 441µs | 3.2 MB |
-| 582 | maths/is_ip_v4_address_valid |   |  |  |
-| 583 | maths/is_square_free |   |  |  |
-| 584 | maths/jaccard_similarity |   |  |  |
-| 585 | maths/joint_probability_distribution |   |  |  |
-| 586 | maths/josephus_problem |   |  |  |
-| 587 | maths/juggler_sequence |   |  |  |
-| 588 | maths/karatsuba |   |  |  |
-| 589 | maths/kth_lexicographic_permutation |   |  |  |
-| 590 | maths/largest_of_very_large_numbers |   |  |  |
-| 591 | maths/least_common_multiple |   |  |  |
-| 592 | maths/line_length |   |  |  |
-| 593 | maths/liouville_lambda |   |  |  |
-| 594 | maths/lucas_lehmer_primality_test |   |  |  |
-| 595 | maths/lucas_series |   |  |  |
-| 596 | maths/maclaurin_series |   |  |  |
-| 597 | maths/manhattan_distance |   |  |  |
-| 598 | maths/matrix_exponentiation |   |  |  |
-| 599 | maths/max_sum_sliding_window |   |  |  |
-| 600 | maths/minkowski_distance |   |  |  |
-| 601 | maths/mobius_function |   |  |  |
-| 602 | maths/modular_division |   |  |  |
-| 603 | maths/monte_carlo |   |  |  |
-| 604 | maths/monte_carlo_dice |   |  |  |
-| 605 | maths/number_of_digits |   |  |  |
-| 606 | maths/numerical_analysis/adams_bashforth |   |  |  |
-| 607 | maths/numerical_analysis/bisection |   |  |  |
-| 608 | maths/numerical_analysis/bisection_2 |   |  |  |
-| 609 | maths/numerical_analysis/integration_by_simpson_approx |   |  |  |
-| 610 | maths/numerical_analysis/intersection |   |  |  |
-| 611 | maths/numerical_analysis/nevilles_method |   |  |  |
-| 612 | maths/numerical_analysis/newton_forward_interpolation |   |  |  |
-| 613 | maths/numerical_analysis/newton_raphson |   |  |  |
-| 614 | maths/numerical_analysis/numerical_integration |   |  |  |
-| 615 | maths/numerical_analysis/proper_fractions |   |  |  |
-| 616 | maths/numerical_analysis/runge_kutta |   |  |  |
-| 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 |   |  |  |
-| 618 | maths/numerical_analysis/runge_kutta_gills |   |  |  |
-| 619 | maths/numerical_analysis/secant_method |   |  |  |
-| 620 | maths/numerical_analysis/simpson_rule |   |  |  |
-| 621 | maths/numerical_analysis/square_root |   |  |  |
-| 622 | maths/odd_sieve |   |  |  |
-| 623 | maths/perfect_cube |   |  |  |
-| 624 | maths/perfect_number |   |  |  |
-| 625 | maths/perfect_square |   |  |  |
-| 626 | maths/persistence |   |  |  |
-| 627 | maths/pi_generator |   |  |  |
-| 628 | maths/pi_monte_carlo_estimation |   |  |  |
-| 629 | maths/points_are_collinear_3d |   |  |  |
-| 630 | maths/pollard_rho |   |  |  |
-| 631 | maths/polynomial_evaluation |   |  |  |
+| 582 | maths/is_ip_v4_address_valid | ✓ | 532µs | 3.2 MB |
+| 583 | maths/is_square_free | ✓ | 293µs | 3.2 MB |
+| 584 | maths/jaccard_similarity | ✓ | 313µs | 3.2 MB |
+| 585 | maths/joint_probability_distribution | ✓ | 497µs | 3.4 MB |
+| 586 | maths/josephus_problem | ✓ | 316µs | 3.2 MB |
+| 587 | maths/juggler_sequence | ✓ | 726µs | 3.5 MB |
+| 588 | maths/karatsuba | ✓ | 355µs | 2.9 MB |
+| 589 | maths/kth_lexicographic_permutation | ✓ | 402µs | 3.2 MB |
+| 590 | maths/largest_of_very_large_numbers | ✓ | 377µs | 3.4 MB |
+| 591 | maths/least_common_multiple | ✓ | 297µs | 2.9 MB |
+| 592 | maths/line_length | ✓ | 1.961ms | 3.3 MB |
+| 593 | maths/liouville_lambda | ✓ | 300µs | 3.3 MB |
+| 594 | maths/lucas_lehmer_primality_test | ✓ | 266µs | 3.2 MB |
+| 595 | maths/lucas_series | ✓ | 1.867ms | 3.0 MB |
+| 596 | maths/maclaurin_series | ✓ | 1.103ms | 3.1 MB |
+| 597 | maths/manhattan_distance | ✓ | 399µs | 3.1 MB |
+| 598 | maths/matrix_exponentiation | ✓ | 383µs | 3.2 MB |
+| 599 | maths/max_sum_sliding_window | ✓ | 340µs | 3.3 MB |
+| 600 | maths/minkowski_distance | ✓ | 250µs | 2.9 MB |
+| 601 | maths/mobius_function | ✓ | 333µs | 3.2 MB |
+| 602 | maths/modular_division | ✓ | 485µs | 3.3 MB |
+| 603 | maths/monte_carlo | ✓ | 3.018ms | 3.1 MB |
+| 604 | maths/monte_carlo_dice | ✓ | 12.936ms | 3.7 MB |
+| 605 | maths/number_of_digits | ✓ | 284µs | 3.3 MB |
+| 606 | maths/numerical_analysis/adams_bashforth | ✓ | 370µs | 3.5 MB |
+| 607 | maths/numerical_analysis/bisection | ✓ | 304µs | 3.2 MB |
+| 608 | maths/numerical_analysis/bisection_2 | ✓ | 251µs | 3.4 MB |
+| 609 | maths/numerical_analysis/integration_by_simpson_approx | ✓ | 527µs | 3.1 MB |
+| 610 | maths/numerical_analysis/intersection | ✓ | 225µs | 3.2 MB |
+| 611 | maths/numerical_analysis/nevilles_method | ✓ | 387µs | 3.1 MB |
+| 612 | maths/numerical_analysis/newton_forward_interpolation | ✓ | 272µs | 3.3 MB |
+| 613 | maths/numerical_analysis/newton_raphson | ✓ | 332µs | 3.2 MB |
+| 614 | maths/numerical_analysis/numerical_integration | ✓ | 17.446ms | 3.3 MB |
+| 615 | maths/numerical_analysis/proper_fractions | ✓ | 773µs | 3.3 MB |
+| 616 | maths/numerical_analysis/runge_kutta | ✓ | 840µs | 3.4 MB |
+| 617 | maths/numerical_analysis/runge_kutta_fehlberg_45 | ✓ | 298µs | 3.2 MB |
+| 618 | maths/numerical_analysis/runge_kutta_gills | ✓ | 773µs | 3.6 MB |
+| 619 | maths/numerical_analysis/secant_method | ✓ | 268µs | 3.2 MB |
+| 620 | maths/numerical_analysis/simpson_rule | ✓ | 267µs | 3.2 MB |
+| 621 | maths/numerical_analysis/square_root | ✓ | 301µs | 3.2 MB |
+| 622 | maths/odd_sieve | ✓ | 399µs | 3.2 MB |
+| 623 | maths/perfect_cube | ✓ | 314µs | 3.2 MB |
+| 624 | maths/perfect_number | ✓ | 2.500228s | 3.2 MB |
+| 625 | maths/perfect_square | ✓ | 268µs | 3.2 MB |
+| 626 | maths/persistence | ✓ | 279µs | 2.9 MB |
+| 627 | maths/pi_generator | ✓ | 217µs | 2.9 MB |
+| 628 | maths/pi_monte_carlo_estimation | ✓ | 5.175ms | 3.2 MB |
+| 629 | maths/points_are_collinear_3d | ✓ | 327µs | 3.4 MB |
+| 630 | maths/pollard_rho | ✓ | 320µs | 3.2 MB |
+| 631 | maths/polynomial_evaluation | ✓ | 239µs | 3.2 MB |
 | 632 | maths/polynomials/single_indeterminate_operations |   |  |  |
 | 633 | maths/power_using_recursion |   |  |  |
 | 634 | maths/prime_check |   |  |  |
