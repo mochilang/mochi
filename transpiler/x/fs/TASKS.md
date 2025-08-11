@@ -1,3 +1,7 @@
+## Progress (2025-08-11 15:32 +0700)
+- chore: remove knapsack error
+- Generated F# for 103/105 programs (103 passing)
+
 ## Progress (2025-08-09 23:14 +0700)
 - fix(py): prefer integer division
 - Generated F# for 103/105 programs (103 passing)

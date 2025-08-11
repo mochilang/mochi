@@ -1,0 +1,11 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/algorithms/transpiler/FS/strings/top_k_frequent_words.fs(100,25): error FS0039: The field, constructor or member 'ContainsKey' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/strings/top_k_frequent_words.fs(101,17): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/strings/top_k_frequent_words.fs(103,17): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/algorithms/transpiler/FS/strings/top_k_frequent_words.fs(106,18): error FS0693: The type 'obj' is not a type whose values can be enumerated with this syntax, i.e. is not compatible with either seq<_>, IEnumerable<_> or IEnumerable and does not have a GetEnumerator method

@@ -1,7 +1,7 @@
 # F# Algorithms Transpiler Output
 
-Completed programs: 740/1077
-Last updated: 2025-08-09 23:14 +0700
+Completed programs: 788/1077
+Last updated: 2025-08-11 15:32 +0700
 
 Checklist:
 
@@ -1006,57 +1006,57 @@ Checklist:
 | 997 | strings/capitalize |   |  |  |
 | 998 | strings/check_anagrams |   |  |  |
 | 999 | strings/count_vowels |   |  |  |
-| 1000 | strings/credit_card_validator |   |  |  |
-| 1001 | strings/damerau_levenshtein_distance |   |  |  |
-| 1002 | strings/detecting_english_programmatically |   |  |  |
-| 1003 | strings/dna |   |  |  |
-| 1004 | strings/edit_distance |   |  |  |
-| 1005 | strings/frequency_finder |   |  |  |
-| 1006 | strings/hamming_distance |   |  |  |
-| 1007 | strings/indian_phone_validator |   |  |  |
-| 1008 | strings/is_contains_unique_chars |   |  |  |
-| 1009 | strings/is_isogram |   |  |  |
-| 1010 | strings/is_pangram |   |  |  |
-| 1011 | strings/is_polish_national_id |   |  |  |
-| 1012 | strings/is_spain_national_id |   |  |  |
-| 1013 | strings/is_srilankan_phone_number |   |  |  |
-| 1014 | strings/is_valid_email_address |   |  |  |
-| 1015 | strings/jaro_winkler |   |  |  |
-| 1016 | strings/join |   |  |  |
-| 1017 | strings/knuth_morris_pratt |   |  |  |
-| 1018 | strings/levenshtein_distance |   |  |  |
-| 1019 | strings/lower |   |  |  |
-| 1020 | strings/manacher |   |  |  |
-| 1021 | strings/min_cost_string_conversion |   |  |  |
-| 1022 | strings/naive_string_search |   |  |  |
-| 1023 | strings/ngram |   |  |  |
-| 1024 | strings/palindrome |   |  |  |
-| 1025 | strings/pig_latin |   |  |  |
-| 1026 | strings/prefix_function |   |  |  |
-| 1027 | strings/rabin_karp |   |  |  |
-| 1028 | strings/remove_duplicate |   |  |  |
-| 1029 | strings/reverse_letters |   |  |  |
-| 1030 | strings/reverse_words |   |  |  |
-| 1031 | strings/snake_case_to_camel_pascal_case |   |  |  |
-| 1032 | strings/split |   |  |  |
-| 1033 | strings/string_switch_case |   |  |  |
-| 1034 | strings/strip |   |  |  |
-| 1035 | strings/text_justification |   |  |  |
-| 1036 | strings/title |   |  |  |
+| 1000 | strings/credit_card_validator | ✓ | 571.223ms | 42.1 KB |
+| 1001 | strings/damerau_levenshtein_distance | ✓ | 571.223ms | 78.6 KB |
+| 1002 | strings/detecting_english_programmatically | ✓ | 571.223ms | 91.7 KB |
+| 1003 | strings/dna | ✓ | 571.223ms | 31.6 KB |
+| 1004 | strings/edit_distance | ✓ | 571.223ms | 77.6 KB |
+| 1005 | strings/frequency_finder | ✓ | 571.223ms | 34.7 KB |
+| 1006 | strings/hamming_distance | ✓ | 571.223ms | 78.1 KB |
+| 1007 | strings/indian_phone_validator | ✓ | 571.223ms | 78.3 KB |
+| 1008 | strings/is_contains_unique_chars | ✓ | 571.223ms | 78.1 KB |
+| 1009 | strings/is_isogram | ✓ | 571.223ms | 78.0 KB |
+| 1010 | strings/is_pangram | ✓ | 571.223ms | 78.5 KB |
+| 1011 | strings/is_polish_national_id | ✓ | 571.223ms | 78.4 KB |
+| 1012 | strings/is_spain_national_id | ✓ | 571.223ms | 31.8 KB |
+| 1013 | strings/is_srilankan_phone_number | ✓ | 571.223ms | 89.9 KB |
+| 1014 | strings/is_valid_email_address | ✓ | 571.223ms | 78.1 KB |
+| 1015 | strings/jaro_winkler | ✓ | 571.223ms | 78.9 KB |
+| 1016 | strings/join | ✓ | 571.223ms | 44.4 KB |
+| 1017 | strings/knuth_morris_pratt | ✓ | 571.223ms | 31.9 KB |
+| 1018 | strings/levenshtein_distance | ✓ | 571.223ms | 77.7 KB |
+| 1019 | strings/lower | ✓ | 571.223ms | 31.7 KB |
+| 1020 | strings/manacher | ✓ | 571.223ms | 31.0 KB |
+| 1021 | strings/min_cost_string_conversion | ✓ | 571.223ms | 82.2 KB |
+| 1022 | strings/naive_string_search | ✓ | 571.223ms | 70.9 KB |
+| 1023 | strings/ngram | ✓ | 571.223ms | 63.7 KB |
+| 1024 | strings/palindrome | ✓ | 571.223ms | 77.5 KB |
+| 1025 | strings/pig_latin | ✓ | 571.223ms | 31.5 KB |
+| 1026 | strings/prefix_function | ✓ | 571.223ms | 81.1 KB |
+| 1027 | strings/rabin_karp | ✓ | 571.223ms | 31.9 KB |
+| 1028 | strings/remove_duplicate | ✓ | 571.223ms | 41.8 KB |
+| 1029 | strings/reverse_letters | ✓ | 571.223ms | 31.4 KB |
+| 1030 | strings/reverse_words | ✓ | 571.223ms | 31.0 KB |
+| 1031 | strings/snake_case_to_camel_pascal_case | ✓ | 571.223ms | 31.5 KB |
+| 1032 | strings/split | ✓ | 571.223ms | 78.6 KB |
+| 1033 | strings/string_switch_case | ✓ | 571.223ms | 33.1 KB |
+| 1034 | strings/strip | ✓ | 571.223ms | 31.2 KB |
+| 1035 | strings/text_justification | ✓ | 571.223ms | 78.4 KB |
+| 1036 | strings/title | ✓ | 571.223ms | 32.0 KB |
 | 1037 | strings/top_k_frequent_words |   |  |  |
-| 1038 | strings/upper |   |  |  |
-| 1039 | strings/wave_string |   |  |  |
-| 1040 | strings/wildcard_pattern_matching |   |  |  |
-| 1041 | strings/word_occurrence |   |  |  |
-| 1042 | strings/word_patterns |   |  |  |
-| 1043 | strings/z_function |   |  |  |
+| 1038 | strings/upper | ✓ | 571.223ms | 31.6 KB |
+| 1039 | strings/wave_string | ✓ | 571.223ms | 78.6 KB |
+| 1040 | strings/wildcard_pattern_matching | ✓ | 571.223ms | 78.1 KB |
+| 1041 | strings/word_occurrence | ✓ | 571.223ms | 78.0 KB |
+| 1042 | strings/word_patterns | ✓ | 571.223ms | 81.9 KB |
+| 1043 | strings/z_function | ✓ | 571.223ms | 81.4 KB |
 | 1044 | web_programming/co2_emission |   |  |  |
-| 1045 | web_programming/covid_stats_via_xpath |   |  |  |
-| 1046 | web_programming/crawl_google_results |   |  |  |
+| 1045 | web_programming/covid_stats_via_xpath | ✓ | 571.223ms | 78.1 KB |
+| 1046 | web_programming/crawl_google_results | ✓ | 571.223ms | 79.3 KB |
 | 1047 | web_programming/crawl_google_scholar_citation |   |  |  |
-| 1048 | web_programming/currency_converter |   |  |  |
-| 1049 | web_programming/current_stock_price |   |  |  |
-| 1050 | web_programming/current_weather |   |  |  |
+| 1048 | web_programming/currency_converter | ✓ | 571.223ms | 78.8 KB |
+| 1049 | web_programming/current_stock_price | ✓ | 571.223ms | 32.8 KB |
+| 1050 | web_programming/current_weather | ✓ | 571.223ms | 88.5 KB |
 | 1051 | web_programming/daily_horoscope |   |  |  |
 | 1052 | web_programming/download_images_from_google_query |   |  |  |
 | 1053 | web_programming/emails_from_url |   |  |  |
