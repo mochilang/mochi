@@ -268,6 +268,14 @@ type AssignStmt struct {
 }
 
 func (s *AssignStmt) emit(w io.Writer) {
+	if v, ok := s.Value.(*VarRef); ok && v.Name == s.Name {
+		// Skip generating self assignments to avoid C# warning CS1717
+		// which also pollutes program output captured by tests.
+		// The caller still emits a trailing semicolon producing an
+		// empty statement, preserving behaviour of the original Mochi
+		// no-op assignment.
+		return
+	}
 	fmt.Fprintf(w, "%s = ", safeName(s.Name))
 	ltype := finalVarTypes[s.Name]
 	rtype := typeOfExpr(s.Value)

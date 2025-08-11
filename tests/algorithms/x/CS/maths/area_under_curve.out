@@ -1,4 +1,3 @@
-/tmp/TestCSTranspiler_Algorithms_Golden001_maths_area_under_curve248924756/001/Program.cs(100,9): warning CS0162: Unreachable code detected [/tmp/TestCSTranspiler_Algorithms_Golden001_maths_area_under_curve248924756/001/app.csproj]
 f(x) = x^3 + x^2
 The area between the curve, x = -5, x = 5 and the x axis is:
 with 10 steps: 325

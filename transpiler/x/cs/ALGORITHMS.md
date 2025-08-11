@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-11 16:59 GMT+7
+Last updated: 2025-08-11 18:40 GMT+7
 
-## Algorithms Golden Test Checklist (1008/1077)
+## Algorithms Golden Test Checklist (1009/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -506,58 +506,58 @@ Last updated: 2025-08-11 16:59 GMT+7
 | 497 | machine_learning/apriori_algorithm |   |  |  |
 | 498 | machine_learning/astar |   |  |  |
 | 499 | machine_learning/automatic_differentiation |   |  |  |
-| 500 | machine_learning/data_transformations | ✓ | 4.0ms | 19.45KB |
-| 501 | machine_learning/decision_tree | ✓ | 24.0ms | 29.16MB |
-| 502 | machine_learning/dimensionality_reduction | ✓ | 2.0ms | 12.85KB |
-| 503 | machine_learning/forecasting/run | ✓ | 4.0ms | 26.36KB |
+| 500 | machine_learning/data_transformations | ✓ | 2.0ms | 19.39KB |
+| 501 | machine_learning/decision_tree | ✓ | 6.0ms | 8.25MB |
+| 502 | machine_learning/dimensionality_reduction | ✓ | 1.0ms | 12.80KB |
+| 503 | machine_learning/forecasting/run | ✓ | 2.0ms | 26.30KB |
 | 504 | machine_learning/frequent_pattern_growth | error |  |  |
-| 505 | machine_learning/gradient_boosting_classifier | ✓ | 4.0ms | 22.48KB |
-| 506 | machine_learning/gradient_descent | ✓ | 7.0ms | 2.62MB |
-| 507 | machine_learning/k_means_clust | ✓ | 3.0ms | 26.28KB |
-| 508 | machine_learning/k_nearest_neighbours | error |  |  |
-| 509 | machine_learning/linear_discriminant_analysis | ✓ | 5.0ms | 110.14KB |
-| 510 | machine_learning/linear_regression | ✓ | 38.0µs | 24.98KB |
-| 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 10.0ms | 110.33KB |
-| 512 | machine_learning/logistic_regression | ✓ | 3.0ms | 233.29KB |
-| 513 | machine_learning/loss_functions | ✓ | 4.0ms | 19.77KB |
-| 514 | machine_learning/lstm/lstm_prediction | ✓ | 3.0ms | 2.06MB |
-| 515 | machine_learning/mfcc | ✓ | 5.0ms | 28.03KB |
-| 516 | machine_learning/multilayer_perceptron_classifier | ✓ | 5.0ms | 17.58KB |
-| 517 | machine_learning/polynomial_regression | ✓ | 5.0ms | 33.69KB |
-| 518 | machine_learning/principle_component_analysis | ✓ | 3.0ms | 29.63KB |
-| 519 | machine_learning/scoring_functions | ✓ | 4.0ms | 15.10KB |
-| 520 | machine_learning/self_organizing_map | ✓ | 3.0ms | 20.46KB |
-| 521 | machine_learning/sequential_minimum_optimization | ✓ | 3.0ms | 14.74KB |
-| 522 | machine_learning/similarity_search | ✓ | 3.0ms | 15.60KB |
-| 523 | machine_learning/support_vector_machines | ✓ | 3.0ms | 18.12KB |
-| 524 | machine_learning/word_frequency_functions | ✓ | 4.0ms | 274.01KB |
-| 525 | machine_learning/xgboost_classifier | ✓ | 3.0ms | 38.91KB |
-| 526 | machine_learning/xgboost_regressor | ✓ | 4.0ms | 17.16KB |
-| 527 | maths/abs | ✓ | 4.0ms | 14.34KB |
-| 528 | maths/addition_without_arithmetic | ✓ | 3.0ms | 17.43KB |
-| 529 | maths/aliquot_sum | ✓ | 3.0ms | 16.54KB |
-| 530 | maths/allocation_number | ✓ | 3.0ms | 19.95KB |
-| 531 | maths/arc_length | ✓ | 3.0ms | 13.98KB |
-| 532 | maths/area | ✓ | 3.0ms | 16.50KB |
-| 533 | maths/area_under_curve | ✓ | 3.0ms | 18.30KB |
-| 534 | maths/average_absolute_deviation | ✓ | 3.0ms | 14.34KB |
-| 535 | maths/average_mean | ✓ | 3.0ms | 14.31KB |
-| 536 | maths/average_median | ✓ | 3.0ms | 14.16KB |
-| 537 | maths/average_mode | ✓ | 3.0ms | 27.17KB |
-| 538 | maths/bailey_borwein_plouffe | ✓ | 87.0ms | 17.12KB |
+| 505 | machine_learning/gradient_boosting_classifier | ✓ | 1.0ms | 13.76KB |
+| 506 | machine_learning/gradient_descent | ✓ | 4.0ms | 2.62MB |
+| 507 | machine_learning/k_means_clust | ✓ | 2.0ms | 19.57KB |
+| 508 | machine_learning/k_nearest_neighbours | ✓ | 2.0ms | 14.65KB |
+| 509 | machine_learning/linear_discriminant_analysis | ✓ | 3.0ms | 111.46KB |
+| 510 | machine_learning/linear_regression | ✓ | 17.0µs | 544B |
+| 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 6.0ms | 88.58KB |
+| 512 | machine_learning/logistic_regression | ✓ | 2.0ms | 13.83KB |
+| 513 | machine_learning/loss_functions | ✓ | 3.0ms | 20.16KB |
+| 514 | machine_learning/lstm/lstm_prediction | ✓ | 2.0ms | 13.84KB |
+| 515 | machine_learning/mfcc | ✓ | 2.0ms | 27.95KB |
+| 516 | machine_learning/multilayer_perceptron_classifier | ✓ | 3.0ms | 16.90KB |
+| 517 | machine_learning/polynomial_regression | ✓ | 2.0ms | 33.44KB |
+| 518 | machine_learning/principle_component_analysis | ✓ | 2.0ms | 16.79KB |
+| 519 | machine_learning/scoring_functions | ✓ | 2.0ms | 15.05KB |
+| 520 | machine_learning/self_organizing_map | ✓ | 2.0ms | 20.41KB |
+| 521 | machine_learning/sequential_minimum_optimization | ✓ | 2.0ms | 13.84KB |
+| 522 | machine_learning/similarity_search | ✓ | 2.0ms | 14.82KB |
+| 523 | machine_learning/support_vector_machines | ✓ | 1.0ms | 17.38KB |
+| 524 | machine_learning/word_frequency_functions | ✓ | 2.0ms | 273.95KB |
+| 525 | machine_learning/xgboost_classifier | ✓ | 2.0ms | 38.86KB |
+| 526 | machine_learning/xgboost_regressor | ✓ | 2.0ms | 17.11KB |
+| 527 | maths/abs | ✓ | 2.0ms | 14.28KB |
+| 528 | maths/addition_without_arithmetic | ✓ | 2.0ms | 17.38KB |
+| 529 | maths/aliquot_sum | ✓ | 1.0ms | 16.48KB |
+| 530 | maths/allocation_number | ✓ | 2.0ms | 19.89KB |
+| 531 | maths/arc_length | ✓ | 2.0ms | 13.92KB |
+| 532 | maths/area | ✓ | 2.0ms | 16.55KB |
+| 533 | maths/area_under_curve | ✓ | 2.0ms | 18.25KB |
+| 534 | maths/average_absolute_deviation | ✓ | 2.0ms | 14.28KB |
+| 535 | maths/average_mean | ✓ | 2.0ms | 14.26KB |
+| 536 | maths/average_median | ✓ | 2.0ms | 14.10KB |
+| 537 | maths/average_mode | ✓ | 2.0ms | 27.12KB |
+| 538 | maths/bailey_borwein_plouffe | ✓ | 61.0ms | 17.06KB |
 | 539 | maths/base_neg2_conversion | error |  |  |
-| 540 | maths/basic_maths | ✓ | 3.0ms | 17.92KB |
-| 541 | maths/binary_exponentiation | ✓ | 3.0ms | 17.38KB |
-| 542 | maths/binary_multiplication | ✓ | 3.0ms | 16.49KB |
-| 543 | maths/binomial_coefficient | ✓ | 3.0ms | 17.05KB |
-| 544 | maths/binomial_distribution | ✓ | 1.0µs | 43.73KB |
-| 545 | maths/ceil | ✓ | 3.0ms | 17.74KB |
-| 546 | maths/chebyshev_distance | ✓ | 3.0ms | 14.12KB |
-| 547 | maths/check_polygon | ✓ | 3.0ms | 14.67KB |
-| 548 | maths/chinese_remainder_theorem | ✓ | 2.0ms | 18.88KB |
-| 549 | maths/chudnovsky_algorithm | ✓ | 3.0ms | 17.41KB |
-| 550 | maths/collatz_sequence | ✓ | 3.0ms | 20.06KB |
-| 551 | maths/combinations | ✓ | 2.0ms | 17.17KB |
+| 540 | maths/basic_maths | ✓ | 2.0ms | 17.87KB |
+| 541 | maths/binary_exponentiation | ✓ | 2.0ms | 17.32KB |
+| 542 | maths/binary_multiplication | ✓ | 1.0ms | 16.44KB |
+| 543 | maths/binomial_coefficient | ✓ | 2.0ms | 17.00KB |
+| 544 | maths/binomial_distribution | ✓ | 1.0µs | 44.39KB |
+| 545 | maths/ceil | ✓ | 1.0ms | 17.53KB |
+| 546 | maths/chebyshev_distance | ✓ | 2.0ms | 14.06KB |
+| 547 | maths/check_polygon | ✓ | 2.0ms | 14.62KB |
+| 548 | maths/chinese_remainder_theorem | ✓ | 1.0ms | 18.70KB |
+| 549 | maths/chudnovsky_algorithm | ✓ | 1.0ms | 17.36KB |
+| 550 | maths/collatz_sequence | ✓ | 2.0ms | 20.01KB |
+| 551 | maths/combinations | ✓ | 1.0ms | 17.12KB |
 | 552 | maths/continued_fraction | ✓ | 3.0ms | 17.62KB |
 | 553 | maths/decimal_isolate | ✓ | 3.0ms | 14.21KB |
 | 554 | maths/decimal_to_fraction | ✓ | 3.0ms | 21.69KB |
@@ -948,37 +948,37 @@ Last updated: 2025-08-11 16:59 GMT+7
 | 939 | searches/ternary_search | ✓ | 3.0ms | 17.50KB |
 | 940 | sorts/bead_sort | ✓ | 2.0ms | 18.80KB |
 | 941 | sorts/binary_insertion_sort | ✓ | 2.0ms | 17.68KB |
-| 942 | sorts/bitonic_sort | ✓ | 2.0ms | 72.36KB |
-| 943 | sorts/bogo_sort | ✓ | 2.0ms | 16.65KB |
-| 944 | sorts/bubble_sort | ✓ | 2.0ms | 19.98KB |
-| 945 | sorts/bucket_sort | ✓ | 2.0ms | 48.41KB |
-| 946 | sorts/circle_sort | ✓ | 2.0ms | 18.41KB |
-| 947 | sorts/cocktail_shaker_sort | ✓ | 2.0ms | 19.03KB |
-| 948 | sorts/comb_sort | ✓ | 2.0ms | 19.09KB |
-| 949 | sorts/counting_sort | ✓ | 2.0ms | 66.05KB |
-| 950 | sorts/cycle_sort | ✓ | 2.0ms | 18.59KB |
-| 951 | sorts/double_sort | ✓ | 2.0ms | 15.77KB |
-| 952 | sorts/dutch_national_flag_sort | ✓ | 2.0ms | 18.38KB |
-| 953 | sorts/exchange_sort | ✓ | 1.0ms | 19.59KB |
-| 954 | sorts/external_sort | ✓ | 2.0ms | 24.15KB |
-| 955 | sorts/gnome_sort | ✓ | 2.0ms | 18.48KB |
-| 956 | sorts/heap_sort | ✓ | 2.0ms | 20.25KB |
-| 957 | sorts/insertion_sort | ✓ | 2.0ms | 18.61KB |
-| 958 | sorts/intro_sort | ✓ | 2.0ms | 19.47KB |
-| 959 | sorts/iterative_merge_sort | ✓ | 2.0ms | 29.31KB |
-| 960 | sorts/merge_insertion_sort | ✓ | 3.0ms | 21.32KB |
+| 942 | sorts/bitonic_sort | ✓ | 3.0ms | 72.36KB |
+| 943 | sorts/bogo_sort | ✓ | 3.0ms | 16.65KB |
+| 944 | sorts/bubble_sort | ✓ | 3.0ms | 19.98KB |
+| 945 | sorts/bucket_sort | ✓ | 4.0ms | 48.41KB |
+| 946 | sorts/circle_sort | ✓ | 3.0ms | 18.41KB |
+| 947 | sorts/cocktail_shaker_sort | ✓ | 3.0ms | 19.03KB |
+| 948 | sorts/comb_sort | ✓ | 3.0ms | 19.09KB |
+| 949 | sorts/counting_sort | ✓ | 3.0ms | 66.05KB |
+| 950 | sorts/cycle_sort | ✓ | 3.0ms | 18.59KB |
+| 951 | sorts/double_sort | ✓ | 3.0ms | 15.77KB |
+| 952 | sorts/dutch_national_flag_sort | ✓ | 3.0ms | 18.38KB |
+| 953 | sorts/exchange_sort | ✓ | 3.0ms | 19.59KB |
+| 954 | sorts/external_sort | ✓ | 3.0ms | 24.15KB |
+| 955 | sorts/gnome_sort | ✓ | 3.0ms | 18.48KB |
+| 956 | sorts/heap_sort | ✓ | 3.0ms | 20.25KB |
+| 957 | sorts/insertion_sort | ✓ | 4.0ms | 18.61KB |
+| 958 | sorts/intro_sort | ✓ | 3.0ms | 19.47KB |
+| 959 | sorts/iterative_merge_sort | ✓ | 3.0ms | 29.31KB |
+| 960 | sorts/merge_insertion_sort | ✓ | 2.0ms | 21.32KB |
 | 961 | sorts/merge_sort | ✓ | 2.0ms | 22.21KB |
-| 962 | sorts/msd_radix_sort | ✓ | 2.0ms | 28.08KB |
-| 963 | sorts/natural_sort | ✓ | 2.0ms | 94.21KB |
+| 962 | sorts/msd_radix_sort | ✓ | 2.0ms | 30.59KB |
+| 963 | sorts/natural_sort | ✓ | 2.0ms | 94.27KB |
 | 964 | sorts/odd_even_sort | ✓ | 2.0ms | 19.38KB |
 | 965 | sorts/odd_even_transposition_parallel | ✓ | 2.0ms | 18.16KB |
 | 966 | sorts/odd_even_transposition_single_threaded | ✓ | 2.0ms | 15.66KB |
 | 967 | sorts/pancake_sort | ✓ | 2.0ms | 16.98KB |
 | 968 | sorts/patience_sort | ✓ | 2.0ms | 22.16KB |
 | 969 | sorts/pigeon_sort | ✓ | 2.0ms | 42.89KB |
-| 970 | sorts/pigeonhole_sort | ✓ | 2.0ms | 17.11KB |
+| 970 | sorts/pigeonhole_sort | ✓ | 2.0ms | 18.09KB |
 | 971 | sorts/quick_sort | ✓ | 2.0ms | 22.52KB |
-| 972 | sorts/quick_sort_3_partition | ✓ | 2.0ms | 27.72KB |
+| 972 | sorts/quick_sort_3_partition | ✓ | 2.0ms | 27.86KB |
 | 973 | sorts/radix_sort | ✓ | 2.0ms | 35.31KB |
 | 974 | sorts/recursive_insertion_sort | ✓ | 2.0ms | 17.23KB |
 | 975 | sorts/recursive_mergesort_array | ✓ | 2.0ms | 29.83KB |
@@ -986,15 +986,15 @@ Last updated: 2025-08-11 16:59 GMT+7
 | 977 | sorts/selection_sort | ✓ | 2.0ms | 18.41KB |
 | 978 | sorts/shell_sort | ✓ | 2.0ms | 18.85KB |
 | 979 | sorts/shrink_shell_sort | ✓ | 2.0ms | 17.08KB |
-| 980 | sorts/slowsort | ✓ | 2.0ms | 20.81KB |
-| 981 | sorts/stooge_sort | ✓ | 2.0ms | 17.91KB |
+| 980 | sorts/slowsort | ✓ | 2.0ms | 20.96KB |
+| 981 | sorts/stooge_sort | ✓ | 1.0ms | 17.91KB |
 | 982 | sorts/strand_sort | ✓ | 2.0ms | 21.48KB |
-| 983 | sorts/tim_sort | ✓ | 2.0ms | 22.27KB |
-| 984 | sorts/topological_sort | ✓ | 2.0ms | 14.38KB |
+| 983 | sorts/tim_sort | ✓ | 2.0ms | 33.31KB |
+| 984 | sorts/topological_sort | ✓ | 2.0ms | 15.05KB |
 | 985 | sorts/tree_sort | ✓ | 2.0ms | 26.64KB |
 | 986 | sorts/unknown_sort | ✓ | 2.0ms | 22.82KB |
 | 987 | sorts/wiggle_sort | ✓ | 2.0ms | 19.50KB |
-| 988 | strings/aho_corasick | ✓ | 2.0ms | 23.37KB |
+| 988 | strings/aho_corasick | ✓ | 2.0ms | 23.42KB |
 | 989 | strings/alternative_string_arrange | ✓ | 1.0ms | 13.84KB |
 | 990 | strings/anagrams | error |  |  |
 | 991 | strings/autocomplete_using_trie | ✓ | 2.0ms | 14.21KB |
