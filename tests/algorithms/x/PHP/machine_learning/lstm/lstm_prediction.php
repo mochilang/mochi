@@ -16,6 +16,7 @@ function _now() {
     return hrtime(true);
 }
 function _len($x) {
+    if ($x === null) { return 0; }
     if (is_array($x)) { return count($x); }
     if (is_string($x)) { return strlen($x); }
     return strlen(strval($x));
@@ -40,6 +41,41 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
+function _iadd($a, $b) {
+    if (function_exists('bcadd')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcadd($sa, $sb, 0);
+    }
+    return $a + $b;
+}
+function _isub($a, $b) {
+    if (function_exists('bcsub')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcsub($sa, $sb, 0);
+    }
+    return $a - $b;
+}
+function _imul($a, $b) {
+    if (function_exists('bcmul')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcmul($sa, $sb, 0);
+    }
+    return $a * $b;
+}
+function _idiv($a, $b) {
+    return _intdiv($a, $b);
+}
+function _imod($a, $b) {
+    if (function_exists('bcmod')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcmod($sa, $sb));
+    }
+    return $a % $b;
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function exp_approx($x) {
@@ -50,7 +86,7 @@ $__start = _now();
   while ($n < 20) {
   $term = $term * $x / (floatval($n));
   $sum = $sum + $term;
-  $n = $n + 1;
+  $n = _iadd($n, 1);
 };
   return $sum;
 };
@@ -88,11 +124,11 @@ $__start = _now();
   $g_arr = _append($g_arr, $g_t);
   $c_arr = _append($c_arr, $c_t);
   $h_arr = _append($h_arr, $h_t);
-  $t = $t + 1;
+  $t = _iadd($t, 1);
 };
   return ['i' => $i_arr, 'f' => $f_arr, 'o' => $o_arr, 'g' => $g_arr, 'c' => $c_arr, 'h' => $h_arr];
 };
-  function backward($seq, $target, &$w, $s, $lr) {
+  function backward($seq, $target, $w, $s, $lr) {
   global $data, $look_back, $epochs, $test_seq, $pred;
   $dw_i = 0.0;
   $du_i = 0.0;
@@ -116,13 +152,13 @@ $__start = _now();
   $db_y = $dy;
   $dh_next = $dy * $w['w_y'];
   $dc_next = 0.0;
-  $t = $T - 1;
+  $t = _isub($T, 1);
   while ($t >= 0) {
   $i_t = $s['i'][$t];
   $f_t = $s['f'][$t];
   $o_t = $s['o'][$t];
   $g_t = $s['g'][$t];
-  $c_t = $s['c'][$t + 1];
+  $c_t = $s['c'][_iadd($t, 1)];
   $c_prev = $s['c'][$t];
   $h_prev = $s['h'][$t];
   $tanh_c = tanh_approx($c_t);
@@ -149,7 +185,7 @@ $__start = _now();
   $db_c = $db_c + $da_g;
   $dh_next = $da_i * $w['u_i'] + $da_f * $w['u_f'] + $da_o * $w['u_o'] + $da_g * $w['u_c'];
   $dc_next = $dc * $f_t;
-  $t = $t - 1;
+  $t = _isub($t, 1);
 };
   $w['w_y'] = $w['w_y'] - $lr * $dw_y;
   $w['b_y'] = $w['b_y'] - $lr * $db_y;
@@ -172,11 +208,11 @@ $__start = _now();
   $X = [];
   $Y = [];
   $i = 0;
-  while ($i + $look_back < count($data)) {
-  $seq = array_slice($data, $i, $i + $look_back - $i);
+  while (_iadd($i, $look_back) < count($data)) {
+  $seq = array_slice($data, $i, _iadd($i, $look_back) - $i);
   $X = _append($X, $seq);
-  $Y = _append($Y, $data[$i + $look_back]);
-  $i = $i + 1;
+  $Y = _append($Y, $data[_iadd($i, $look_back)]);
+  $i = _iadd($i, 1);
 };
   return ['x' => $X, 'y' => $Y];
 };
@@ -196,16 +232,16 @@ $__start = _now();
   $target = $samples['y'][$j];
   $state = forward($seq, $w);
   $w = backward($seq, $target, $w, $state, $lr);
-  $j = $j + 1;
+  $j = _iadd($j, 1);
 };
-  $ep = $ep + 1;
+  $ep = _iadd($ep, 1);
 };
   return $w;
 };
   function predict($seq, $w) {
   global $data, $look_back, $epochs, $lr, $test_seq, $pred;
   $state = forward($seq, $w);
-  $h_last = $state['h'][_len($state['h']) - 1];
+  $h_last = $state['h'][_isub(_len($state['h']), 1)];
   return $w['w_y'] * $h_last + $w['b_y'];
 };
   $data = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8];

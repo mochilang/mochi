@@ -19,6 +19,41 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
+function _iadd($a, $b) {
+    if (function_exists('bcadd')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcadd($sa, $sb, 0);
+    }
+    return $a + $b;
+}
+function _isub($a, $b) {
+    if (function_exists('bcsub')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcsub($sa, $sb, 0);
+    }
+    return $a - $b;
+}
+function _imul($a, $b) {
+    if (function_exists('bcmul')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcmul($sa, $sb, 0);
+    }
+    return $a * $b;
+}
+function _idiv($a, $b) {
+    return _intdiv($a, $b);
+}
+function _imod($a, $b) {
+    if (function_exists('bcmod')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcmod($sa, $sb));
+    }
+    return $a % $b;
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function dot($a, $b) {
@@ -27,7 +62,7 @@ $__start = _now();
   $i = 0;
   while ($i < count($a)) {
   $sum = $sum + $a[$i] * $b[$i];
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $sum;
 };
@@ -58,7 +93,7 @@ $__start = _now();
   $i = 0;
   while ($i < count($samples)) {
   $res = $res + $alphas[$i] * $labels[$i] * dot($samples[$i], $x);
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $res + $b;
 };
@@ -69,7 +104,7 @@ $__start = _now();
   $i = 0;
   while ($i < $m) {
   $alphas = _append($alphas, 0.0);
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   $b = 0.0;
   $passes = 0;
@@ -79,7 +114,7 @@ $__start = _now();
   while ($i1 < $m) {
   $Ei = predict_raw($samples, $labels, $alphas, $b, $samples[$i1]) - $labels[$i1];
   if (($labels[$i1] * $Ei < 0.0 - $tol && $alphas[$i1] < $c) || ($labels[$i1] * $Ei > $tol && $alphas[$i1] > 0.0)) {
-  $i2 = ($i1 + 1) % $m;
+  $i2 = _imod((_iadd($i1, 1)), $m);
   $Ej = predict_raw($samples, $labels, $alphas, $b, $samples[$i2]) - $labels[$i2];
   $alpha1_old = $alphas[$i1];
   $alpha2_old = $alphas[$i2];
@@ -93,12 +128,12 @@ $__start = _now();
   $H = minf($c, $alpha2_old + $alpha1_old);
 };
   if ($L == $H) {
-  $i1 = $i1 + 1;
+  $i1 = _iadd($i1, 1);
   continue;
 };
   $eta = 2.0 * dot($samples[$i1], $samples[$i2]) - dot($samples[$i1], $samples[$i1]) - dot($samples[$i2], $samples[$i2]);
   if ($eta >= 0.0) {
-  $i1 = $i1 + 1;
+  $i1 = _iadd($i1, 1);
   continue;
 };
   $alphas[$i2] = $alpha2_old - $labels[$i2] * ($Ei - $Ej) / $eta;
@@ -109,7 +144,7 @@ $__start = _now();
   $alphas[$i2] = $L;
 };
   if (absf($alphas[$i2] - $alpha2_old) < 0.00001) {
-  $i1 = $i1 + 1;
+  $i1 = _iadd($i1, 1);
   continue;
 };
   $alphas[$i1] = $alpha1_old + $labels[$i1] * $labels[$i2] * ($alpha2_old - $alphas[$i2]);
@@ -124,12 +159,12 @@ $__start = _now();
   $b = ($b1 + $b2) / 2.0;
 };
 };
-  $num_changed = $num_changed + 1;
+  $num_changed = _iadd($num_changed, 1);
 }
-  $i1 = $i1 + 1;
+  $i1 = _iadd($i1, 1);
 };
   if ($num_changed == 0) {
-  $passes = $passes + 1;
+  $passes = _iadd($passes, 1);
 } else {
   $passes = 0;
 }

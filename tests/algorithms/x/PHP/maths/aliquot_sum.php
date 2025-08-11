@@ -32,6 +32,9 @@ function _str($x) {
     return strval($x);
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
@@ -39,19 +42,58 @@ function _intdiv($a, $b) {
     }
     return intdiv($a, $b);
 }
+function _iadd($a, $b) {
+    if (function_exists('bcadd')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcadd($sa, $sb, 0);
+    }
+    return $a + $b;
+}
+function _isub($a, $b) {
+    if (function_exists('bcsub')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcsub($sa, $sb, 0);
+    }
+    return $a - $b;
+}
+function _imul($a, $b) {
+    if (function_exists('bcmul')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcmul($sa, $sb, 0);
+    }
+    return $a * $b;
+}
+function _idiv($a, $b) {
+    return _intdiv($a, $b);
+}
+function _imod($a, $b) {
+    if (function_exists('bcmod')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcmod($sa, $sb));
+    }
+    return $a % $b;
+}
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function aliquot_sum($n) {
   if ($n <= 0) {
-  $panic('Input must be positive');
+  _panic('Input must be positive');
 }
   $total = 0;
   $divisor = 1;
   while ($divisor <= _intdiv($n, 2)) {
-  if ($n % $divisor == 0) {
-  $total = $total + $divisor;
+  if (_imod($n, $divisor) == 0) {
+  $total = _iadd($total, $divisor);
 }
-  $divisor = $divisor + 1;
+  $divisor = _iadd($divisor, 1);
 };
   return $total;
 };

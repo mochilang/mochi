@@ -1,1 +1,5 @@
-Fatal error: Cannot redeclare function sqrt() in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/principle_component_analysis.php on line 24
+{
+  "duration_us": 435,
+  "memory_bytes": 78048,
+  "name": "main"
+}

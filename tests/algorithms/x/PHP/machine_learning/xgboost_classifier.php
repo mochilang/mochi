@@ -31,6 +31,52 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
+function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
+    if (function_exists('bcdiv')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcdiv($sa, $sb, 0));
+    }
+    return intdiv($a, $b);
+}
+function _iadd($a, $b) {
+    if (function_exists('bcadd')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcadd($sa, $sb, 0);
+    }
+    return $a + $b;
+}
+function _isub($a, $b) {
+    if (function_exists('bcsub')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcsub($sa, $sb, 0);
+    }
+    return $a - $b;
+}
+function _imul($a, $b) {
+    if (function_exists('bcmul')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcmul($sa, $sb, 0);
+    }
+    return $a * $b;
+}
+function _idiv($a, $b) {
+    return _intdiv($a, $b);
+}
+function _imod($a, $b) {
+    if (function_exists('bcmod')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcmod($sa, $sb));
+    }
+    return $a % $b;
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function mean($xs) {
@@ -38,9 +84,9 @@ $__start = _now();
   $i = 0;
   while ($i < count($xs)) {
   $sum = $sum + $xs[$i];
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
-  return $sum / (count($xs) * 1.0);
+  return _idiv($sum, (_imul(count($xs), 1.0)));
 };
   function stump_predict($s, $x) {
   if ($x[$s['feature']] < $s['threshold']) {
@@ -69,7 +115,7 @@ $__start = _now();
 } else {
   $right = array_merge($right, [$residuals[$j]]);
 }
-  $j = $j + 1;
+  $j = _iadd($j, 1);
 };
   if (count($left) != 0 && count($right) != 0) {
   $left_mean = mean($left);
@@ -80,7 +126,7 @@ $__start = _now();
   $pred = ($features[$j][$f] < $threshold ? $left_mean : $right_mean);
   $diff = $residuals[$j] - $pred;
   $err = $err + $diff * $diff;
-  $j = $j + 1;
+  $j = _iadd($j, 1);
 };
   if ($err < $best_error) {
   $best_error = $err;
@@ -90,9 +136,9 @@ $__start = _now();
   $best_right = $right_mean;
 };
 }
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
-  $f = $f + 1;
+  $f = _iadd($f, 1);
 };
   return ['feature' => $best_feature, 'threshold' => $best_threshold, 'left' => $best_left, 'right' => $best_right];
 };
@@ -102,24 +148,24 @@ $__start = _now();
   $i = 0;
   while ($i < count($targets)) {
   $preds = array_merge($preds, [0.0]);
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   $r = 0;
   while ($r < $rounds) {
   $residuals = [];
   $j = 0;
   while ($j < count($targets)) {
-  $residuals = array_merge($residuals, [$targets[$j] - $preds[$j]]);
-  $j = $j + 1;
+  $residuals = array_merge($residuals, [_isub($targets[$j], $preds[$j])]);
+  $j = _iadd($j, 1);
 };
   $stump = train_stump($features, $residuals);
   $model = array_merge($model, [$stump]);
   $j = 0;
   while ($j < count($preds)) {
   $preds[$j] = $preds[$j] + stump_predict($stump, $features[$j]);
-  $j = $j + 1;
+  $j = _iadd($j, 1);
 };
-  $r = $r + 1;
+  $r = _iadd($r, 1);
 };
   return $model;
 };
@@ -133,7 +179,7 @@ $__start = _now();
 } else {
   $score = $score + $s['right'];
 }
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $score;
 };
@@ -151,7 +197,7 @@ $__start = _now();
 } else {
   $out = $out . ' ' . _str($label);
 }
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   echo rtrim($out), PHP_EOL;
 };

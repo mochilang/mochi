@@ -32,12 +32,50 @@ function _str($x) {
     return strval($x);
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
     return intdiv($a, $b);
+}
+function _iadd($a, $b) {
+    if (function_exists('bcadd')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcadd($sa, $sb, 0);
+    }
+    return $a + $b;
+}
+function _isub($a, $b) {
+    if (function_exists('bcsub')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcsub($sa, $sb, 0);
+    }
+    return $a - $b;
+}
+function _imul($a, $b) {
+    if (function_exists('bcmul')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcmul($sa, $sb, 0);
+    }
+    return $a * $b;
+}
+function _idiv($a, $b) {
+    return _intdiv($a, $b);
+}
+function _imod($a, $b) {
+    if (function_exists('bcmod')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcmod($sa, $sb));
+    }
+    return $a % $b;
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
@@ -46,10 +84,10 @@ $__start = _now();
   $y = $b;
   $res = 0;
   while ($y > 0) {
-  if ($y % 2 == 1) {
-  $res = $res + $x;
+  if (_imod($y, 2) == 1) {
+  $res = _iadd($res, $x);
 }
-  $x = $x + $x;
+  $x = _iadd($x, $x);
   $y = intval((_intdiv($y, 2)));
 };
   return $res;
@@ -59,13 +97,13 @@ $__start = _now();
   $y = $b;
   $res = 0;
   while ($y > 0) {
-  if ($y % 2 == 1) {
-  $res = (($res % $modulus) + ($x % $modulus)) % $modulus;
+  if (_imod($y, 2) == 1) {
+  $res = _imod((_iadd((_imod($res, $modulus)), (_imod($x, $modulus)))), $modulus);
 }
-  $x = $x + $x;
+  $x = _iadd($x, $x);
   $y = intval((_intdiv($y, 2)));
 };
-  return $res % $modulus;
+  return _imod($res, $modulus);
 };
   function main() {
   echo rtrim(_str(binary_multiply(2, 3))), PHP_EOL;

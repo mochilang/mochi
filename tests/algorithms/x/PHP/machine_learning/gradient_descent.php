@@ -35,6 +35,41 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
+function _iadd($a, $b) {
+    if (function_exists('bcadd')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcadd($sa, $sb, 0);
+    }
+    return $a + $b;
+}
+function _isub($a, $b) {
+    if (function_exists('bcsub')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcsub($sa, $sb, 0);
+    }
+    return $a - $b;
+}
+function _imul($a, $b) {
+    if (function_exists('bcmul')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcmul($sa, $sb, 0);
+    }
+    return $a * $b;
+}
+function _idiv($a, $b) {
+    return _intdiv($a, $b);
+}
+function _imod($a, $b) {
+    if (function_exists('bcmod')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcmod($sa, $sb));
+    }
+    return $a % $b;
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function absf($x) {
@@ -49,8 +84,8 @@ $__start = _now();
   $value = $params[0];
   $i = 0;
   while ($i < count($input)) {
-  $value = $value + $input[$i] * $params[$i + 1];
-  $i = $i + 1;
+  $value = $value + $input[$i] * $params[_iadd($i, 1)];
+  $i = _iadd($i, 1);
 };
   return $value;
 };
@@ -70,7 +105,7 @@ $__start = _now();
 } else {
   $sum = $sum + $e * $dp['x'][$index];
 }
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $sum;
 };
@@ -87,7 +122,7 @@ $__start = _now();
   if ($diff > $limit) {
   return false;
 }
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return true;
 };
@@ -99,13 +134,13 @@ $__start = _now();
   $j = 0;
   $params = $initial_params;
   while (true) {
-  $j = $j + 1;
+  $j = _iadd($j, 1);
   $temp = [];
   $i = 0;
   while ($i < count($params)) {
-  $deriv = get_cost_derivative($i - 1, $params, $train_data);
+  $deriv = get_cost_derivative(_isub($i, 1), $params, $train_data);
   $temp = _append($temp, $params[$i] - $learning_rate * $deriv);
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   if (allclose($params, $temp, $absolute_error_limit, $relative_error_limit)) {
   echo rtrim('Number of iterations:' . _str($j)), PHP_EOL;
@@ -122,7 +157,7 @@ $__start = _now();
   $dp = $test_data[$i];
   echo rtrim('Actual output value:' . _str($dp['y'])), PHP_EOL;
   echo rtrim('Hypothesis output:' . _str(hypothesis_value($dp['x'], $params))), PHP_EOL;
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
 };
   $train_data = [['x' => [5.0, 2.0, 3.0], 'y' => 15.0], ['x' => [6.0, 5.0, 9.0], 'y' => 25.0], ['x' => [11.0, 12.0, 13.0], 'y' => 41.0], ['x' => [1.0, 1.0, 1.0], 'y' => 8.0], ['x' => [11.0, 12.0, 13.0], 'y' => 41.0]];

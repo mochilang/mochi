@@ -1,1 +1,8 @@
-Fatal error: Cannot redeclare function sqrt() in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/principle_component_analysis.php on line 7
+Transformed Data (first 5 rows):
+[2.050609665440988,-0.07071067811865483]
+[-0.5656854249492381,0.14142135623730948]
+[2.1920310216782974,0.49497474683058307]
+[1.48492424049175,0.2121320343559645]
+[2.8991378028648453,-0.07071067811865483]
+Explained Variance Ratio:
+[1.0,0.0]

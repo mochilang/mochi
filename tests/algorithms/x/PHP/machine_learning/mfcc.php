@@ -20,12 +20,50 @@ function _append($arr, $x) {
     return $arr;
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
     return intdiv($a, $b);
+}
+function _iadd($a, $b) {
+    if (function_exists('bcadd')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcadd($sa, $sb, 0);
+    }
+    return $a + $b;
+}
+function _isub($a, $b) {
+    if (function_exists('bcsub')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcsub($sa, $sb, 0);
+    }
+    return $a - $b;
+}
+function _imul($a, $b) {
+    if (function_exists('bcmul')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcmul($sa, $sb, 0);
+    }
+    return $a * $b;
+}
+function _idiv($a, $b) {
+    return _intdiv($a, $b);
+}
+function _imod($a, $b) {
+    if (function_exists('bcmod')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcmod($sa, $sb));
+    }
+    return $a % $b;
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
@@ -36,10 +74,10 @@ $__start = _now();
   $sum = $x;
   $n = 1;
   while ($n <= 10) {
-  $denom = floatval(((2 * $n) * (2 * $n + 1)));
+  $denom = floatval((_imul((_imul(2, $n)), (_iadd(_imul(2, $n), 1)))));
   $term = -$term * $x * $x / $denom;
   $sum = $sum + $term;
-  $n = $n + 1;
+  $n = _iadd($n, 1);
 };
   return $sum;
 };
@@ -49,10 +87,10 @@ $__start = _now();
   $sum = 1.0;
   $n = 1;
   while ($n <= 10) {
-  $denom = floatval(((2 * $n - 1) * (2 * $n)));
+  $denom = floatval((_imul((_isub(_imul(2, $n), 1)), (_imul(2, $n)))));
   $term = -$term * $x * $x / $denom;
   $sum = $sum + $term;
-  $n = $n + 1;
+  $n = _iadd($n, 1);
 };
   return $sum;
 };
@@ -64,7 +102,7 @@ $__start = _now();
   while ($n < 10) {
   $term = $term * $x / (floatval($n));
   $sum = $sum + $term;
-  $n = $n + 1;
+  $n = _iadd($n, 1);
 };
   return $sum;
 };
@@ -77,11 +115,11 @@ $__start = _now();
   while ($n <= 19) {
   $sum = $sum + $term / (floatval($n));
   $term = $term * $t * $t;
-  $n = $n + 2;
+  $n = _iadd($n, 2);
 };
   return 2.0 * $sum;
 };
-  function log10($x) {
+  function mochi_log10($x) {
   global $PI, $sample_rate, $size, $audio, $n, $t, $coeffs;
   return ln($x) / ln(10.0);
 };
@@ -94,7 +132,7 @@ $__start = _now();
   $i = 0;
   while ($i < 10) {
   $guess = ($guess + $x / $guess) / 2.0;
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $guess;
 };
@@ -114,13 +152,13 @@ $__start = _now();
   if ($v > $max_val) {
   $max_val = $v;
 }
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   $res = [];
   $i = 0;
   while ($i < count($audio)) {
   $res = _append($res, $audio[$i] / $max_val);
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $res;
 };
@@ -137,10 +175,10 @@ $__start = _now();
   $angle = -2.0 * $PI * (floatval($k)) * (floatval($n)) / (floatval($N));
   $real = $real + $frame[$n] * cosApprox($angle);
   $imag = $imag + $frame[$n] * sinApprox($angle);
-  $n = $n + 1;
+  $n = _iadd($n, 1);
 };
   $spec = _append($spec, $real * $real + $imag * $imag);
-  $k = $k + 1;
+  $k = _iadd($k, 1);
 };
   return $spec;
 };
@@ -149,7 +187,7 @@ $__start = _now();
   $filters = [];
   $b = 0;
   while ($b < $bins) {
-  $center = _intdiv((($b + 1) * $spectrum_size), ($bins + 1));
+  $center = _intdiv((_imul((_iadd($b, 1)), $spectrum_size)), (_iadd($bins, 1)));
   $filt = [];
   $i = 0;
   while ($i < $spectrum_size) {
@@ -157,13 +195,13 @@ $__start = _now();
   if ($i <= $center) {
   $v = (floatval($i)) / (floatval($center));
 } else {
-  $v = (floatval(($spectrum_size - $i))) / (floatval(($spectrum_size - $center)));
+  $v = (floatval((_isub($spectrum_size, $i)))) / (floatval((_isub($spectrum_size, $center))));
 }
   $filt = _append($filt, $v);
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   $filters = _append($filters, $filt);
-  $b = $b + 1;
+  $b = _iadd($b, 1);
 };
   return $filters;
 };
@@ -176,10 +214,10 @@ $__start = _now();
   $j = 0;
   while ($j < count($vec)) {
   $sum = $sum + $mat[$i][$j] * $vec[$j];
-  $j = $j + 1;
+  $j = _iadd($j, 1);
 };
   $res = _append($res, $sum);
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $res;
 };
@@ -194,27 +232,27 @@ $__start = _now();
   if ($i == 0) {
   $row = _append($row, 1.0 / sqrtApprox(floatval($filter_num)));
 } else {
-  $angle = (floatval((2 * $j + 1))) * (floatval($i)) * $PI / (2.0 * (floatval($filter_num)));
+  $angle = (floatval((_iadd(_imul(2, $j), 1)))) * (floatval($i)) * $PI / (2.0 * (floatval($filter_num)));
   $row = _append($row, cosApprox($angle) * sqrtApprox(2.0 / (floatval($filter_num))));
 }
-  $j = $j + 1;
+  $j = _iadd($j, 1);
 };
   $basis = _append($basis, $row);
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $basis;
 };
   function mfcc($audio, $bins, $dct_num) {
   global $PI, $sample_rate, $size, $n, $t, $coeffs;
   $norm = normalize($audio);
-  $spec = dft($norm, $bins + 2);
+  $spec = dft($norm, _iadd($bins, 2));
   $filters = triangular_filters($bins, count($spec));
   $energies = dot($filters, $spec);
   $logfb = [];
   $i = 0;
   while ($i < count($energies)) {
-  $logfb = _append($logfb, 10.0 * log10($energies[$i] + 0.0000000001));
-  $i = $i + 1;
+  $logfb = _append($logfb, 10.0 * mochi_log10($energies[$i] + 0.0000000001));
+  $i = _iadd($i, 1);
 };
   $dct_basis = discrete_cosine_transform($dct_num, $bins);
   $res = dot($dct_basis, $logfb);
@@ -230,7 +268,7 @@ $__start = _now();
   while ($n < $size) {
   $t = (floatval($n)) / (floatval($sample_rate));
   $audio = _append($audio, sinApprox(2.0 * $PI * 440.0 * $t));
-  $n = $n + 1;
+  $n = _iadd($n, 1);
 }
   $coeffs = mfcc($audio, 5, 3);
   foreach ($coeffs as $c) {

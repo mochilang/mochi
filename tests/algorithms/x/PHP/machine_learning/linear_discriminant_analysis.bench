@@ -1,1 +1,5 @@
-Fatal error: Cannot redeclare function cos() in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/linear_discriminant_analysis.php on line 40
+{
+  "duration_us": 1485,
+  "memory_bytes": 73416,
+  "name": "main"
+}

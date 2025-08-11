@@ -19,6 +19,41 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
+function _iadd($a, $b) {
+    if (function_exists('bcadd')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcadd($sa, $sb, 0);
+    }
+    return $a + $b;
+}
+function _isub($a, $b) {
+    if (function_exists('bcsub')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcsub($sa, $sb, 0);
+    }
+    return $a - $b;
+}
+function _imul($a, $b) {
+    if (function_exists('bcmul')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcmul($sa, $sb, 0);
+    }
+    return $a * $b;
+}
+function _idiv($a, $b) {
+    return _intdiv($a, $b);
+}
+function _imod($a, $b) {
+    if (function_exists('bcmod')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcmod($sa, $sb));
+    }
+    return $a % $b;
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function contains_int($xs, $x) {
@@ -27,7 +62,7 @@ $__start = _now();
   if ($xs[$i] == $x) {
   return true;
 }
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return false;
 };
@@ -37,7 +72,7 @@ $__start = _now();
   if ($xs[$i] == $x) {
   return true;
 }
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return false;
 };
@@ -46,9 +81,9 @@ $__start = _now();
   $i = 0;
   while ($i < count($xs)) {
   if ($xs[$i] == $x) {
-  $cnt = $cnt + 1;
+  $cnt = _iadd($cnt, 1);
 }
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $cnt;
 };
@@ -57,9 +92,9 @@ $__start = _now();
   $i = 0;
   while ($i < count($xs)) {
   if ($xs[$i] == $x) {
-  $cnt = $cnt + 1;
+  $cnt = _iadd($cnt, 1);
 }
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $cnt;
 };
@@ -67,16 +102,16 @@ $__start = _now();
   $arr = $xs;
   $i = 0;
   while ($i < count($arr)) {
-  $j = $i + 1;
+  $j = _iadd($i, 1);
   while ($j < count($arr)) {
   if ($arr[$j] < $arr[$i]) {
   $tmp = $arr[$i];
   $arr[$i] = $arr[$j];
   $arr[$j] = $tmp;
 }
-  $j = $j + 1;
+  $j = _iadd($j, 1);
 };
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $arr;
 };
@@ -84,16 +119,16 @@ $__start = _now();
   $arr = $xs;
   $i = 0;
   while ($i < count($arr)) {
-  $j = $i + 1;
+  $j = _iadd($i, 1);
   while ($j < count($arr)) {
   if ($arr[$j] < $arr[$i]) {
   $tmp = $arr[$i];
   $arr[$i] = $arr[$j];
   $arr[$j] = $tmp;
 }
-  $j = $j + 1;
+  $j = _iadd($j, 1);
 };
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $arr;
 };
@@ -105,7 +140,7 @@ $__start = _now();
   $i = 0;
   while ($i < count($lst)) {
   $counts = _append($counts, count_int($lst, $lst[$i]));
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   $max_count = 0;
   $i = 0;
@@ -113,7 +148,7 @@ $__start = _now();
   if ($counts[$i] > $max_count) {
   $max_count = $counts[$i];
 }
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   $modes = [];
   $i = 0;
@@ -124,7 +159,7 @@ $__start = _now();
   $modes = _append($modes, $v);
 };
 }
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return sort_int($modes);
 };
@@ -136,7 +171,7 @@ $__start = _now();
   $i = 0;
   while ($i < count($lst)) {
   $counts = _append($counts, count_string($lst, $lst[$i]));
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   $max_count = 0;
   $i = 0;
@@ -144,7 +179,7 @@ $__start = _now();
   if ($counts[$i] > $max_count) {
   $max_count = $counts[$i];
 }
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   $modes = [];
   $i = 0;
@@ -155,7 +190,7 @@ $__start = _now();
   $modes = _append($modes, $v);
 };
 }
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return sort_string($modes);
 };

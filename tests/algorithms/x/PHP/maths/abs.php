@@ -19,6 +19,45 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
+function _iadd($a, $b) {
+    if (function_exists('bcadd')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcadd($sa, $sb, 0);
+    }
+    return $a + $b;
+}
+function _isub($a, $b) {
+    if (function_exists('bcsub')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcsub($sa, $sb, 0);
+    }
+    return $a - $b;
+}
+function _imul($a, $b) {
+    if (function_exists('bcmul')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcmul($sa, $sb, 0);
+    }
+    return $a * $b;
+}
+function _idiv($a, $b) {
+    return _intdiv($a, $b);
+}
+function _imod($a, $b) {
+    if (function_exists('bcmod')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcmod($sa, $sb));
+    }
+    return $a % $b;
+}
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function abs_val($num) {
@@ -29,7 +68,7 @@ $__start = _now();
 };
   function abs_min($x) {
   if (count($x) == 0) {
-  $panic('abs_min() arg is an empty sequence');
+  _panic('abs_min() arg is an empty sequence');
 }
   $j = $x[0];
   $idx = 0;
@@ -38,13 +77,13 @@ $__start = _now();
   if (abs_val(floatval($i)) < abs_val(floatval($j))) {
   $j = $i;
 }
-  $idx = $idx + 1;
+  $idx = _iadd($idx, 1);
 };
   return $j;
 };
   function abs_max($x) {
   if (count($x) == 0) {
-  $panic('abs_max() arg is an empty sequence');
+  _panic('abs_max() arg is an empty sequence');
 }
   $j = $x[0];
   $idx = 0;
@@ -53,55 +92,55 @@ $__start = _now();
   if (abs_val(floatval($i)) > abs_val(floatval($j))) {
   $j = $i;
 }
-  $idx = $idx + 1;
+  $idx = _iadd($idx, 1);
 };
   return $j;
 };
   function abs_max_sort($x) {
   if (count($x) == 0) {
-  $panic('abs_max_sort() arg is an empty sequence');
+  _panic('abs_max_sort() arg is an empty sequence');
 }
   $arr = [];
   $i = 0;
   while ($i < count($x)) {
   $arr = _append($arr, $x[$i]);
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   $n = count($arr);
   $a = 0;
   while ($a < $n) {
   $b = 0;
-  while ($b < $n - $a - 1) {
-  if (abs_val(floatval($arr[$b])) > abs_val(floatval($arr[$b + 1]))) {
+  while ($b < _isub(_isub($n, $a), 1)) {
+  if (abs_val(floatval($arr[$b])) > abs_val(floatval($arr[_iadd($b, 1)]))) {
   $temp = $arr[$b];
-  $arr[$b] = $arr[$b + 1];
-  $arr[$b + 1] = $temp;
+  $arr[$b] = $arr[_iadd($b, 1)];
+  $arr[_iadd($b, 1)] = $temp;
 }
-  $b = $b + 1;
+  $b = _iadd($b, 1);
 };
-  $a = $a + 1;
+  $a = _iadd($a, 1);
 };
-  return $arr[$n - 1];
+  return $arr[_isub($n, 1)];
 };
   function test_abs_val() {
   if (abs_val(0.0) != 0.0) {
-  $panic('abs_val(0) failed');
+  _panic('abs_val(0) failed');
 }
   if (abs_val(34.0) != 34.0) {
-  $panic('abs_val(34) failed');
+  _panic('abs_val(34) failed');
 }
   if (abs_val(-100000000000.0) != 100000000000.0) {
-  $panic('abs_val large failed');
+  _panic('abs_val large failed');
 }
   $a = [-3, -1, 2, -11];
   if (abs_max($a) != (-11)) {
-  $panic('abs_max failed');
+  _panic('abs_max failed');
 }
   if (abs_max_sort($a) != (-11)) {
-  $panic('abs_max_sort failed');
+  _panic('abs_max_sort failed');
 }
   if (abs_min($a) != (-1)) {
-  $panic('abs_min failed');
+  _panic('abs_min failed');
 }
 };
   function main() {

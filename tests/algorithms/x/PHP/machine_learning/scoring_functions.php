@@ -31,6 +31,41 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
+function _iadd($a, $b) {
+    if (function_exists('bcadd')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcadd($sa, $sb, 0);
+    }
+    return $a + $b;
+}
+function _isub($a, $b) {
+    if (function_exists('bcsub')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcsub($sa, $sb, 0);
+    }
+    return $a - $b;
+}
+function _imul($a, $b) {
+    if (function_exists('bcmul')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcmul($sa, $sb, 0);
+    }
+    return $a * $b;
+}
+function _idiv($a, $b) {
+    return _intdiv($a, $b);
+}
+function _imod($a, $b) {
+    if (function_exists('bcmod')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcmod($sa, $sb));
+    }
+    return $a % $b;
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function absf($x) {
@@ -47,7 +82,7 @@ $__start = _now();
   $i = 0;
   while ($i < 20) {
   $guess = ($guess + $x / $guess) / 2.0;
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $guess;
 };
@@ -59,7 +94,7 @@ $__start = _now();
   while ($n <= 19) {
   $sum = $sum + $term / (floatval($n));
   $term = $term * $t * $t;
-  $n = $n + 2;
+  $n = _iadd($n, 2);
 };
   return 2.0 * $sum;
 };
@@ -68,11 +103,11 @@ $__start = _now();
   $k = 0;
   while ($y >= 10.0) {
   $y = $y / 10.0;
-  $k = $k + 1;
+  $k = _iadd($k, 1);
 };
   while ($y < 1.0) {
   $y = $y * 10.0;
-  $k = $k - 1;
+  $k = _isub($k, 1);
 };
   return ln_series($y) + (floatval($k)) * ln_series(10.0);
 };
@@ -82,7 +117,7 @@ $__start = _now();
   while ($i < count($predict)) {
   $diff = $predict[$i] - $actual[$i];
   $sum = $sum + absf($diff);
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $sum / (floatval(count($predict)));
 };
@@ -92,7 +127,7 @@ $__start = _now();
   while ($i < count($predict)) {
   $diff = $predict[$i] - $actual[$i];
   $sum = $sum + $diff * $diff;
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $sum / (floatval(count($predict)));
 };
@@ -107,7 +142,7 @@ $__start = _now();
   $la = ln($actual[$i] + 1.0);
   $diff = $lp - $la;
   $sum = $sum + $diff * $diff;
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return sqrtApprox($sum / (floatval(count($predict))));
 };
@@ -118,7 +153,7 @@ $__start = _now();
   while ($i < count($predict)) {
   $diff_sum = $diff_sum + ($predict[$i] - $actual[$i]);
   $actual_sum = $actual_sum + $actual[$i];
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   $n = floatval(count($predict));
   $numerator = $diff_sum / $n;
@@ -130,9 +165,9 @@ $__start = _now();
   $i = 0;
   while ($i < count($predict)) {
   if ($predict[$i] == $actual[$i]) {
-  $correct = $correct + 1;
+  $correct = _iadd($correct, 1);
 }
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return (floatval($correct)) / (floatval(count($predict)));
 };

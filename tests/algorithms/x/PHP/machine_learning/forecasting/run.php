@@ -19,10 +19,45 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
+function _iadd($a, $b) {
+    if (function_exists('bcadd')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcadd($sa, $sb, 0);
+    }
+    return $a + $b;
+}
+function _isub($a, $b) {
+    if (function_exists('bcsub')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcsub($sa, $sb, 0);
+    }
+    return $a - $b;
+}
+function _imul($a, $b) {
+    if (function_exists('bcmul')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcmul($sa, $sb, 0);
+    }
+    return $a * $b;
+}
+function _idiv($a, $b) {
+    return _intdiv($a, $b);
+}
+function _imod($a, $b) {
+    if (function_exists('bcmod')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcmod($sa, $sb));
+    }
+    return $a % $b;
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function int_to_float($x) {
-  return $x * 1.0;
+  return _imul($x, 1.0);
 };
   function abs_float($x) {
   if ($x < 0.0) {
@@ -37,14 +72,14 @@ $__start = _now();
   while ($i < 10) {
   $term = $term * $x / int_to_float($i);
   $sum = $sum + $term;
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $sum;
 };
   function floor_int($x) {
   $i = 0;
-  while (int_to_float($i + 1) <= $x) {
-  $i = $i + 1;
+  while (int_to_float(_iadd($i, 1)) <= $x) {
+  $i = _iadd($i, 1);
 };
   return $i;
 };
@@ -53,7 +88,7 @@ $__start = _now();
   $i = 0;
   while ($i < count($a)) {
   $s = $s + $a[$i] * $b[$i];
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $s;
 };
@@ -67,10 +102,10 @@ $__start = _now();
   $i = 0;
   while ($i < $rows) {
   $row = _append($row, $m[$i][$j]);
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   $res = _append($res, $row);
-  $j = $j + 1;
+  $j = _iadd($j, 1);
 };
   return $res;
 };
@@ -88,13 +123,13 @@ $__start = _now();
   $k = 0;
   while ($k < $p) {
   $s = $s + $a[$i][$k] * $b[$k][$j];
-  $k = $k + 1;
+  $k = _iadd($k, 1);
 };
   $row = _append($row, $s);
-  $j = $j + 1;
+  $j = _iadd($j, 1);
 };
   $res = _append($res, $row);
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $res;
 };
@@ -103,7 +138,7 @@ $__start = _now();
   $i = 0;
   while ($i < count($a)) {
   $res = _append($res, dot($a[$i], $b));
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $res;
 };
@@ -115,10 +150,10 @@ $__start = _now();
   $j = 0;
   while ($j < $n) {
   $row = _append($row, ($i == $j ? 1.0 : 0.0));
-  $j = $j + 1;
+  $j = _iadd($j, 1);
 };
   $res = _append($res, $row);
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $res;
 };
@@ -133,7 +168,7 @@ $__start = _now();
   while ($j < $n) {
   $a[$i][$j] = $a[$i][$j] / $pivot;
   $inv[$i][$j] = $inv[$i][$j] / $pivot;
-  $j = $j + 1;
+  $j = _iadd($j, 1);
 };
   $k = 0;
   while ($k < $n) {
@@ -143,12 +178,12 @@ $__start = _now();
   while ($j < $n) {
   $a[$k][$j] = $a[$k][$j] - $factor * $a[$i][$j];
   $inv[$k][$j] = $inv[$k][$j] - $factor * $inv[$i][$j];
-  $j = $j + 1;
+  $j = _iadd($j, 1);
 };
 }
-  $k = $k + 1;
+  $k = _iadd($k, 1);
 };
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $inv;
 };
@@ -164,7 +199,7 @@ $__start = _now();
   $i = 0;
   while ($i < count($train_dt)) {
   $X = _append($X, [1.0, $train_dt[$i], $train_mtch[$i]]);
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   $beta = normal_equation($X, $train_usr);
   return abs_float($beta[0] + $test_dt[0] * $beta[1] + $test_mtch[0] * $beta[2]);
@@ -175,12 +210,12 @@ $__start = _now();
   $y = [];
   $i = 1;
   while ($i < $n) {
-  $X = _append($X, [1.0, $train_user[$i - 1], $train_match[$i]]);
+  $X = _append($X, [1.0, $train_user[_isub($i, 1)], $train_match[$i]]);
   $y = _append($y, $train_user[$i]);
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   $beta = normal_equation($X, $y);
-  return $beta[0] + $beta[1] * $train_user[$n - 1] + $beta[2] * $test_match[0];
+  return $beta[0] + $beta[1] * $train_user[_isub($n, 1)] + $beta[2] * $test_match[0];
 };
   function rbf_kernel($a, $b, $gamma) {
   $sum = 0.0;
@@ -188,7 +223,7 @@ $__start = _now();
   while ($i < count($a)) {
   $diff = $a[$i] - $b[$i];
   $sum = $sum + $diff * $diff;
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return exp_approx(-$gamma * $sum);
 };
@@ -198,7 +233,7 @@ $__start = _now();
   $i = 0;
   while ($i < count($x_train)) {
   $weights = _append($weights, rbf_kernel($x_train[$i], $x_test[0], $gamma));
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   $num = 0.0;
   $den = 0.0;
@@ -206,7 +241,7 @@ $__start = _now();
   while ($i < count($train_user)) {
   $num = $num + $weights[$i] * $train_user[$i];
   $den = $den + $weights[$i];
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $num / $den;
 };
@@ -219,7 +254,7 @@ $__start = _now();
 } else {
   $res = _append($res, $xs[$i]);
 }
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $res;
 };
@@ -228,24 +263,24 @@ $__start = _now();
   $i = 1;
   while ($i < count($res)) {
   $key = $res[$i];
-  $j = $i - 1;
+  $j = _isub($i, 1);
   while ($j >= 0 && $res[$j] > $key) {
-  $res = set_at_float($res, $j + 1, $res[$j]);
-  $j = $j - 1;
+  $res = set_at_float($res, _iadd($j, 1), $res[$j]);
+  $j = _isub($j, 1);
 };
-  $res = set_at_float($res, $j + 1, $key);
-  $i = $i + 1;
+  $res = set_at_float($res, _iadd($j, 1), $key);
+  $i = _iadd($i, 1);
 };
   return $res;
 };
   function percentile($data, $q) {
   $sorted = sort_float($data);
   $n = count($sorted);
-  $pos = ($q / 100.0) * int_to_float($n - 1);
+  $pos = ($q / 100.0) * int_to_float(_isub($n, 1));
   $idx = floor_int($pos);
   $frac = $pos - int_to_float($idx);
-  if ($idx + 1 < $n) {
-  return $sorted[$idx] * (1.0 - $frac) + $sorted[$idx + 1] * $frac;
+  if (_iadd($idx, 1) < $n) {
+  return $sorted[$idx] * (1.0 - $frac) + $sorted[_iadd($idx, 1)] * $frac;
 }
   return $sorted[$idx];
 };
@@ -262,15 +297,15 @@ $__start = _now();
   while ($i < count($list_vote)) {
   $v = $list_vote[$i];
   if ($v > $actual_result) {
-  $safe = $not_safe + 1;
+  $safe = _iadd($not_safe, 1);
 } else {
   if (abs_float(abs_float($v) - abs_float($actual_result)) <= 0.1) {
-  $safe = $safe + 1;
+  $safe = _iadd($safe, 1);
 } else {
-  $not_safe = $not_safe + 1;
+  $not_safe = _iadd($not_safe, 1);
 };
 }
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $safe > $not_safe;
 };

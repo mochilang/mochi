@@ -31,6 +31,17 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
+function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
+    if (function_exists('bcdiv')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcdiv($sa, $sb, 0));
+    }
+    return intdiv($a, $b);
+}
 function _iadd($a, $b) {
     if (function_exists('bcadd')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
@@ -68,68 +79,27 @@ function _imod($a, $b) {
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
-  function get_winner($weights, $sample) {
-  $d0 = 0.0;
-  $d1 = 0.0;
-  for ($i = 0; $i < count($sample); $i++) {
-  $diff0 = _isub($sample[$i], $weights[0][$i]);
-  $diff1 = _isub($sample[$i], $weights[1][$i]);
-  $d0 = $d0 + $diff0 * $diff0;
-  $d1 = $d1 + $diff1 * $diff1;
-  return ($d0 > $d1 ? 0 : 1);
-};
+  function decimal_to_negative_base_2($num) {
+  if ($num == 0) {
   return 0;
-};
-  function update($weights, $sample, $j, $alpha) {
-  for ($i = 0; $i < count($weights); $i++) {
-  $weights[$j][$i] = _iadd($weights[$j][$i], _imul($alpha, (_isub($sample[$i], $weights[$j][$i]))));
-};
-  return $weights;
-};
-  function list_to_string($xs) {
-  $s = '[';
-  $i = 0;
-  while ($i < count($xs)) {
-  $s = $s . _str($xs[$i]);
-  if ($i < _isub(count($xs), 1)) {
-  $s = $s . ', ';
 }
-  $i = _iadd($i, 1);
-};
-  $s = $s . ']';
-  return $s;
-};
-  function matrix_to_string($m) {
-  $s = '[';
-  $i = 0;
-  while ($i < count($m)) {
-  $s = $s . list_to_string($m[$i]);
-  if ($i < _isub(count($m), 1)) {
-  $s = $s . ', ';
+  $n = $num;
+  $ans = '';
+  while ($n != 0) {
+  $rem = _imod($n, -2);
+  $n = _idiv($n, -2);
+  if ($rem < 0) {
+  $rem = _iadd($rem, 2);
+  $n = _iadd($n, 1);
 }
-  $i = _iadd($i, 1);
+  $ans = _str($rem) . $ans;
 };
-  $s = $s . ']';
-  return $s;
+  return intval($ans);
 };
-  function main() {
-  $training_samples = [[1, 1, 0, 0], [0, 0, 0, 1], [1, 0, 0, 0], [0, 0, 1, 1]];
-  $weights = [[0.2, 0.6, 0.5, 0.9], [0.8, 0.4, 0.7, 0.3]];
-  $epochs = 3;
-  $alpha = 0.5;
-  for ($_ = 0; $_ < $epochs; $_++) {
-  for ($j = 0; $j < count($training_samples); $j++) {
-  $sample = $training_samples[$j];
-  $winner = get_winner($weights, $sample);
-  $weights = update($weights, $sample, $winner, $alpha);
-};
-};
-  $sample = [0, 0, 0, 1];
-  $winner = get_winner($weights, $sample);
-  echo rtrim('Clusters that the test sample belongs to : ' . _str($winner)), PHP_EOL;
-  echo rtrim('Weights that have been trained : ' . matrix_to_string($weights)), PHP_EOL;
-};
-  main();
+  echo rtrim(json_encode(decimal_to_negative_base_2(0), 1344)), PHP_EOL;
+  echo rtrim(json_encode(decimal_to_negative_base_2(-19), 1344)), PHP_EOL;
+  echo rtrim(json_encode(decimal_to_negative_base_2(4), 1344)), PHP_EOL;
+  echo rtrim(json_encode(decimal_to_negative_base_2(7), 1344)), PHP_EOL;
 $__end = _now();
 $__end_mem = memory_get_peak_usage();
 $__duration = max(1, intdiv($__end - $__start, 1000));

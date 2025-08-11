@@ -1,1 +1,3 @@
-Fatal error: Cannot redeclare function sqrt() in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/similarity_search.php on line 23
+[[0 0 0], 0]
+[[0 0 0], 1]
+0.96152394764082

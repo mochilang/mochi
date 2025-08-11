@@ -32,12 +32,50 @@ function _str($x) {
     return strval($x);
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
     return intdiv($a, $b);
+}
+function _iadd($a, $b) {
+    if (function_exists('bcadd')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcadd($sa, $sb, 0);
+    }
+    return $a + $b;
+}
+function _isub($a, $b) {
+    if (function_exists('bcsub')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcsub($sa, $sb, 0);
+    }
+    return $a - $b;
+}
+function _imul($a, $b) {
+    if (function_exists('bcmul')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcmul($sa, $sb, 0);
+    }
+    return $a * $b;
+}
+function _idiv($a, $b) {
+    return _intdiv($a, $b);
+}
+function _imod($a, $b) {
+    if (function_exists('bcmod')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcmod($sa, $sb));
+    }
+    return $a % $b;
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
@@ -46,25 +84,25 @@ $__start = _now();
   if ($b == 0) {
   return ['x' => 1, 'y' => 0];
 }
-  $res = extended_euclid($b, $a % $b);
+  $res = extended_euclid($b, _imod($a, $b));
   $k = _intdiv($a, $b);
-  return ['x' => $res['y'], 'y' => $res['x'] - $k * $res['y']];
+  return ['x' => $res['y'], 'y' => _isub($res['x'], _imul($k, $res['y']))];
 };
   function chinese_remainder_theorem($n1, $r1, $n2, $r2) {
   global $e1, $e2;
   $res = extended_euclid($n1, $n2);
   $x = $res['x'];
   $y = $res['y'];
-  $m = $n1 * $n2;
-  $n = $r2 * $x * $n1 + $r1 * $y * $n2;
-  return (($n % $m) + $m) % $m;
+  $m = _imul($n1, $n2);
+  $n = _iadd(_imul(_imul($r2, $x), $n1), _imul(_imul($r1, $y), $n2));
+  return _imod((_iadd((_imod($n, $m)), $m)), $m);
 };
   function invert_modulo($a, $n) {
   global $e1, $e2;
   $res = extended_euclid($a, $n);
   $b = $res['x'];
   if ($b < 0) {
-  $b = ($b % $n + $n) % $n;
+  $b = _imod((_iadd(_imod($b, $n), $n)), $n);
 }
   return $b;
 };
@@ -72,9 +110,9 @@ $__start = _now();
   global $e1, $e2;
   $x = invert_modulo($n1, $n2);
   $y = invert_modulo($n2, $n1);
-  $m = $n1 * $n2;
-  $n = $r2 * $x * $n1 + $r1 * $y * $n2;
-  return (($n % $m) + $m) % $m;
+  $m = _imul($n1, $n2);
+  $n = _iadd(_imul(_imul($r2, $x), $n1), _imul(_imul($r1, $y), $n2));
+  return _imod((_iadd((_imod($n, $m)), $m)), $m);
 };
   $e1 = extended_euclid(10, 6);
   echo rtrim(_str($e1['x']) . ',' . _str($e1['y'])), PHP_EOL;
