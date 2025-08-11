@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Racket code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Racket`.
-Last updated: 2025-08-11 08:44 UTC
+Last updated: 2025-08-11 10:34 UTC
 
-## Algorithms Golden Test Checklist (794/1077)
+## Algorithms Golden Test Checklist (795/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 39µs | 18.9 KB |
@@ -966,7 +966,7 @@ Last updated: 2025-08-11 08:44 UTC
 | 957 | sorts/insertion_sort |   |  |  |
 | 958 | sorts/intro_sort |   |  |  |
 | 959 | sorts/iterative_merge_sort |   |  |  |
-| 960 | sorts/merge_insertion_sort |   |  |  |
+| 960 | sorts/merge_insertion_sort | ✓ | 70µs | 29.0 KB |
 | 961 | sorts/merge_sort |   |  |  |
 | 962 | sorts/msd_radix_sort |   |  |  |
 | 963 | sorts/natural_sort |   |  |  |
@@ -1027,7 +1027,7 @@ Last updated: 2025-08-11 08:44 UTC
 | 1018 | strings/levenshtein_distance | ✓ | 107µs | 129.2 KB |
 | 1019 | strings/lower | ✓ | 152µs | 223.5 KB |
 | 1020 | strings/manacher | ✓ | 93µs | 60.7 KB |
-| 1021 | strings/min_cost_string_conversion | ✓ | 360µs | 189.3 KB |
+| 1021 | strings/min_cost_string_conversion | ✓ | 270µs | 188.4 KB |
 | 1022 | strings/naive_string_search | ✓ | 59µs | 32.2 KB |
 | 1023 | strings/ngram | ✓ | 43µs | 18.0 KB |
 | 1024 | strings/palindrome | ✓ | 78µs | 83.3 KB |
