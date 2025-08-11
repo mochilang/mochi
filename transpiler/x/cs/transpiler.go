@@ -5377,6 +5377,7 @@ return _fmt(v);
 		buf.WriteString("\n")
 	}
 	buf.WriteString("\tstatic void Main() {\n")
+	buf.WriteString("\t\t_ = __name__;\n")
 	for _, s := range prog.Stmts {
 		buf.WriteString("\t\t")
 		s.emit(&buf)
