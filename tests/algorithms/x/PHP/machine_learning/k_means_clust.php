@@ -35,6 +35,41 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
+function _iadd($a, $b) {
+    if (function_exists('bcadd')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcadd($sa, $sb, 0);
+    }
+    return $a + $b;
+}
+function _isub($a, $b) {
+    if (function_exists('bcsub')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcsub($sa, $sb, 0);
+    }
+    return $a - $b;
+}
+function _imul($a, $b) {
+    if (function_exists('bcmul')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcmul($sa, $sb, 0);
+    }
+    return $a * $b;
+}
+function _idiv($a, $b) {
+    return _intdiv($a, $b);
+}
+function _imod($a, $b) {
+    if (function_exists('bcmod')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcmod($sa, $sb));
+    }
+    return $a % $b;
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function distance_sq($a, $b) {
@@ -78,7 +113,7 @@ $__start = _now();
 };
   for ($i = 0; $i < count($data); $i++) {
   $c = $assignment[$i];
-  $counts[$c] = $counts[$c] + 1;
+  $counts[$c] = _iadd($counts[$c], 1);
   for ($j = 0; $j < $dim; $j++) {
   $sums[$c][$j] = $sums[$c][$j] + $data[$i][$j];
 };
@@ -136,7 +171,7 @@ $__start = _now();
   break;
 }
   $prev = $assignment;
-  $iter = $iter + 1;
+  $iter = _iadd($iter, 1);
 };
   return ['centroids' => $centroids, 'assignments' => $assignment, 'heterogeneity' => $heterogeneity];
 };

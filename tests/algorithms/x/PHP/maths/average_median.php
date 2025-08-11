@@ -32,12 +32,50 @@ function _str($x) {
     return strval($x);
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
     return intdiv($a, $b);
+}
+function _iadd($a, $b) {
+    if (function_exists('bcadd')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcadd($sa, $sb, 0);
+    }
+    return $a + $b;
+}
+function _isub($a, $b) {
+    if (function_exists('bcsub')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcsub($sa, $sb, 0);
+    }
+    return $a - $b;
+}
+function _imul($a, $b) {
+    if (function_exists('bcmul')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcmul($sa, $sb, 0);
+    }
+    return $a * $b;
+}
+function _idiv($a, $b) {
+    return _intdiv($a, $b);
+}
+function _imod($a, $b) {
+    if (function_exists('bcmod')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcmod($sa, $sb));
+    }
+    return $a % $b;
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
@@ -47,16 +85,16 @@ $__start = _now();
   $i = 0;
   while ($i < $n) {
   $j = 0;
-  while ($j < $n - 1) {
+  while ($j < _isub($n, 1)) {
   $a = $arr[$j];
-  $b = $arr[$j + 1];
+  $b = $arr[_iadd($j, 1)];
   if ($a > $b) {
   $arr[$j] = $b;
-  $arr[$j + 1] = $a;
+  $arr[_iadd($j, 1)] = $a;
 }
-  $j = $j + 1;
+  $j = _iadd($j, 1);
 };
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $arr;
 };
@@ -64,8 +102,8 @@ $__start = _now();
   $sorted_list = bubble_sort($nums);
   $length = count($sorted_list);
   $mid_index = _intdiv($length, 2);
-  if ($length % 2 == 0) {
-  return (floatval(($sorted_list[$mid_index] + $sorted_list[$mid_index - 1]))) / 2.0;
+  if (_imod($length, 2) == 0) {
+  return (floatval((_iadd($sorted_list[$mid_index], $sorted_list[_isub($mid_index, 1)])))) / 2.0;
 } else {
   return floatval($sorted_list[$mid_index]);
 }

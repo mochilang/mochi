@@ -31,6 +31,41 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
+function _iadd($a, $b) {
+    if (function_exists('bcadd')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcadd($sa, $sb, 0);
+    }
+    return $a + $b;
+}
+function _isub($a, $b) {
+    if (function_exists('bcsub')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcsub($sa, $sb, 0);
+    }
+    return $a - $b;
+}
+function _imul($a, $b) {
+    if (function_exists('bcmul')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcmul($sa, $sb, 0);
+    }
+    return $a * $b;
+}
+function _idiv($a, $b) {
+    return _intdiv($a, $b);
+}
+function _imod($a, $b) {
+    if (function_exists('bcmod')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcmod($sa, $sb));
+    }
+    return $a % $b;
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function abs_float($x) {
@@ -54,7 +89,7 @@ $__start = _now();
   $area = $area + abs_float($fx2 + $fx1) * $step / 2.0;
   $x1 = $x2;
   $fx1 = $fx2;
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $area;
 };
@@ -68,7 +103,7 @@ $__start = _now();
   while ($i <= 100000) {
   $result = trapezoidal_area('f', -5.0, 5.0, $i);
   echo rtrim('with ' . _str($i) . ' steps: ' . _str($result)), PHP_EOL;
-  $i = $i * 10;
+  $i = _imul($i, 10);
 }
 $__end = _now();
 $__end_mem = memory_get_peak_usage();

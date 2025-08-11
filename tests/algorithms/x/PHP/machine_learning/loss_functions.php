@@ -19,6 +19,45 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
+function _iadd($a, $b) {
+    if (function_exists('bcadd')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcadd($sa, $sb, 0);
+    }
+    return $a + $b;
+}
+function _isub($a, $b) {
+    if (function_exists('bcsub')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcsub($sa, $sb, 0);
+    }
+    return $a - $b;
+}
+function _imul($a, $b) {
+    if (function_exists('bcmul')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcmul($sa, $sb, 0);
+    }
+    return $a * $b;
+}
+function _idiv($a, $b) {
+    return _intdiv($a, $b);
+}
+function _imod($a, $b) {
+    if (function_exists('bcmod')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcmod($sa, $sb));
+    }
+    return $a % $b;
+}
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function absf($x) {
@@ -43,7 +82,7 @@ $__start = _now();
   return maxf($lo, minf($x, $hi));
 };
   function to_float($x) {
-  return $x * 1.0;
+  return _imul($x, 1.0);
 };
   function powf($base, $exp) {
   $result = 1.0;
@@ -51,13 +90,13 @@ $__start = _now();
   $n = intval('mochi_exp');
   while ($i < $n) {
   $result = $result * $base;
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $result;
 };
   function ln($x) {
   if ($x <= 0.0) {
-  $panic('ln domain error');
+  _panic('ln domain error');
 }
   $y = ($x - 1.0) / ($x + 1.0);
   $y2 = $y * $y;
@@ -65,10 +104,10 @@ $__start = _now();
   $sum = 0.0;
   $k = 0;
   while ($k < 10) {
-  $denom = to_float(2 * $k + 1);
+  $denom = floatval(_iadd(_imul(2, $k), 1));
   $sum = $sum + $term / $denom;
   $term = $term * $y2;
-  $k = $k + 1;
+  $k = _iadd($k, 1);
 };
   return 2.0 * $sum;
 };
@@ -77,9 +116,9 @@ $__start = _now();
   $sum = 1.0;
   $n = 1;
   while ($n < 20) {
-  $term = $term * $x / to_float($n);
+  $term = $term * $x / floatval($n);
   $sum = $sum + $term;
-  $n = $n + 1;
+  $n = _iadd($n, 1);
 };
   return $sum;
 };
@@ -88,13 +127,13 @@ $__start = _now();
   $i = 0;
   while ($i < count($v)) {
   $total = $total + $v[$i];
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
-  return $total / to_float(count($v));
+  return $total / floatval(count($v));
 };
   function binary_cross_entropy($y_true, $y_pred, $epsilon) {
   if (count($y_true) != count($y_pred)) {
-  $panic('Input arrays must have the same length.');
+  _panic('Input arrays must have the same length.');
 }
   $losses = [];
   $i = 0;
@@ -103,13 +142,13 @@ $__start = _now();
   $yp = clip($y_pred[$i], $epsilon, 1.0 - $epsilon);
   $loss = -($yt * ln($yp) + (1.0 - $yt) * ln(1.0 - $yp));
   $losses = _append($losses, $loss);
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return mean($losses);
 };
   function binary_focal_cross_entropy($y_true, $y_pred, $gamma, $alpha, $epsilon) {
   if (count($y_true) != count($y_pred)) {
-  $panic('Input arrays must have the same length.');
+  _panic('Input arrays must have the same length.');
 }
   $losses = [];
   $i = 0;
@@ -119,20 +158,20 @@ $__start = _now();
   $term1 = $alpha * powf(1.0 - $yp, $gamma) * $yt * ln($yp);
   $term2 = (1.0 - $alpha) * powf($yp, $gamma) * (1.0 - $yt) * ln(1.0 - $yp);
   $losses = _append($losses, -($term1 + $term2));
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return mean($losses);
 };
   function categorical_cross_entropy($y_true, $y_pred, $epsilon) {
   if (count($y_true) != count($y_pred)) {
-  $panic('Input arrays must have the same shape.');
+  _panic('Input arrays must have the same shape.');
 }
   $rows = count($y_true);
   $total = 0.0;
   $i = 0;
   while ($i < $rows) {
   if (count($y_true[$i]) != count($y_pred[$i])) {
-  $panic('Input arrays must have the same shape.');
+  _panic('Input arrays must have the same shape.');
 }
   $sum_true = 0.0;
   $sum_pred = 0.0;
@@ -141,31 +180,31 @@ $__start = _now();
   $yt = $y_true[$i][$j];
   $yp = $y_pred[$i][$j];
   if (($yt != 0.0 && $yt != 1.0)) {
-  $panic('y_true must be one-hot encoded.');
+  _panic('y_true must be one-hot encoded.');
 }
   $sum_true = $sum_true + $yt;
   $sum_pred = $sum_pred + $yp;
-  $j = $j + 1;
+  $j = _iadd($j, 1);
 };
   if ($sum_true != 1.0) {
-  $panic('y_true must be one-hot encoded.');
+  _panic('y_true must be one-hot encoded.');
 }
   if (absf($sum_pred - 1.0) > $epsilon) {
-  $panic('Predicted probabilities must sum to approximately 1.');
+  _panic('Predicted probabilities must sum to approximately 1.');
 }
   $j = 0;
   while ($j < count($y_true[$i])) {
   $yp = clip($y_pred[$i][$j], $epsilon, 1.0);
   $total = $total - ($y_true[$i][$j] * ln($yp));
-  $j = $j + 1;
+  $j = _iadd($j, 1);
 };
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $total;
 };
   function categorical_focal_cross_entropy($y_true, $y_pred, $alpha, $gamma, $epsilon) {
   if (count($y_true) != count($y_pred)) {
-  $panic('Shape of y_true and y_pred must be the same.');
+  _panic('Shape of y_true and y_pred must be the same.');
 }
   $rows = count($y_true);
   $cols = count($y_true[0]);
@@ -175,18 +214,18 @@ $__start = _now();
   $j = 0;
   while ($j < $cols) {
   $tmp = _append($tmp, 1.0);
-  $j = $j + 1;
+  $j = _iadd($j, 1);
 };
   $a = $tmp;
 }
   if (count($a) != $cols) {
-  $panic('Length of alpha must match the number of classes.');
+  _panic('Length of alpha must match the number of classes.');
 }
   $total = 0.0;
   $i = 0;
   while ($i < $rows) {
   if (count($y_true[$i]) != $cols || count($y_pred[$i]) != $cols) {
-  $panic('Shape of y_true and y_pred must be the same.');
+  _panic('Shape of y_true and y_pred must be the same.');
 }
   $sum_true = 0.0;
   $sum_pred = 0.0;
@@ -195,51 +234,51 @@ $__start = _now();
   $yt = $y_true[$i][$j];
   $yp = $y_pred[$i][$j];
   if (($yt != 0.0 && $yt != 1.0)) {
-  $panic('y_true must be one-hot encoded.');
+  _panic('y_true must be one-hot encoded.');
 }
   $sum_true = $sum_true + $yt;
   $sum_pred = $sum_pred + $yp;
-  $j = $j + 1;
+  $j = _iadd($j, 1);
 };
   if ($sum_true != 1.0) {
-  $panic('y_true must be one-hot encoded.');
+  _panic('y_true must be one-hot encoded.');
 }
   if (absf($sum_pred - 1.0) > $epsilon) {
-  $panic('Predicted probabilities must sum to approximately 1.');
+  _panic('Predicted probabilities must sum to approximately 1.');
 }
   $row_loss = 0.0;
   $j = 0;
   while ($j < $cols) {
   $yp = clip($y_pred[$i][$j], $epsilon, 1.0);
   $row_loss = $row_loss + $a[$j] * powf(1.0 - $yp, $gamma) * $y_true[$i][$j] * ln($yp);
-  $j = $j + 1;
+  $j = _iadd($j, 1);
 };
   $total = $total - $row_loss;
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
-  return $total / to_float($rows);
+  return $total / floatval($rows);
 };
   function hinge_loss($y_true, $y_pred) {
   if (count($y_true) != count($y_pred)) {
-  $panic('Length of predicted and actual array must be same.');
+  _panic('Length of predicted and actual array must be same.');
 }
   $losses = [];
   $i = 0;
   while ($i < count($y_true)) {
   $yt = $y_true[$i];
   if (($yt != (-1.0) && $yt != 1.0)) {
-  $panic('y_true can have values -1 or 1 only.');
+  _panic('y_true can have values -1 or 1 only.');
 }
   $pred = $y_pred[$i];
   $l = maxf(0.0, 1.0 - $yt * $pred);
   $losses = _append($losses, $l);
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return mean($losses);
 };
   function huber_loss($y_true, $y_pred, $delta) {
   if (count($y_true) != count($y_pred)) {
-  $panic('Input arrays must have the same length.');
+  _panic('Input arrays must have the same length.');
 }
   $total = 0.0;
   $i = 0;
@@ -251,38 +290,38 @@ $__start = _now();
 } else {
   $total = $total + $delta * ($adiff - 0.5 * $delta);
 }
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
-  return $total / to_float(count($y_true));
+  return $total / floatval(count($y_true));
 };
   function mean_squared_error($y_true, $y_pred) {
   if (count($y_true) != count($y_pred)) {
-  $panic('Input arrays must have the same length.');
+  _panic('Input arrays must have the same length.');
 }
   $losses = [];
   $i = 0;
   while ($i < count($y_true)) {
   $diff = $y_true[$i] - $y_pred[$i];
   $losses = _append($losses, $diff * $diff);
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return mean($losses);
 };
   function mean_absolute_error($y_true, $y_pred) {
   if (count($y_true) != count($y_pred)) {
-  $panic('Input arrays must have the same length.');
+  _panic('Input arrays must have the same length.');
 }
   $total = 0.0;
   $i = 0;
   while ($i < count($y_true)) {
   $total = $total + absf($y_true[$i] - $y_pred[$i]);
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
-  return $total / to_float(count($y_true));
+  return $total / floatval(count($y_true));
 };
   function mean_squared_logarithmic_error($y_true, $y_pred) {
   if (count($y_true) != count($y_pred)) {
-  $panic('Input arrays must have the same length.');
+  _panic('Input arrays must have the same length.');
 }
   $total = 0.0;
   $i = 0;
@@ -291,13 +330,13 @@ $__start = _now();
   $b = ln(1.0 + $y_pred[$i]);
   $diff = $a - $b;
   $total = $total + $diff * $diff;
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
-  return $total / to_float(count($y_true));
+  return $total / floatval(count($y_true));
 };
   function mean_absolute_percentage_error($y_true, $y_pred, $epsilon) {
   if (count($y_true) != count($y_pred)) {
-  $panic('The length of the two arrays should be the same.');
+  _panic('The length of the two arrays should be the same.');
 }
   $total = 0.0;
   $i = 0;
@@ -307,47 +346,47 @@ $__start = _now();
   $yt = $epsilon;
 }
   $total = $total + absf(($yt - $y_pred[$i]) / $yt);
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
-  return $total / to_float(count($y_true));
+  return $total / floatval(count($y_true));
 };
   function perplexity_loss($y_true, $y_pred, $epsilon) {
   $batch = count($y_true);
   if ($batch != count($y_pred)) {
-  $panic('Batch size of y_true and y_pred must be equal.');
+  _panic('Batch size of y_true and y_pred must be equal.');
 }
   $sentence_len = count($y_true[0]);
   if ($sentence_len != count($y_pred[0])) {
-  $panic('Sentence length of y_true and y_pred must be equal.');
+  _panic('Sentence length of y_true and y_pred must be equal.');
 }
   $vocab_size = count($y_pred[0][0]);
   $b = 0;
   $total_perp = 0.0;
   while ($b < $batch) {
   if (count($y_true[$b]) != $sentence_len || count($y_pred[$b]) != $sentence_len) {
-  $panic('Sentence length of y_true and y_pred must be equal.');
+  _panic('Sentence length of y_true and y_pred must be equal.');
 }
   $sum_log = 0.0;
   $j = 0;
   while ($j < $sentence_len) {
   $label = $y_true[$b][$j];
   if ($label >= $vocab_size) {
-  $panic('Label value must not be greater than vocabulary size.');
+  _panic('Label value must not be greater than vocabulary size.');
 }
   $prob = clip($y_pred[$b][$j][$label], $epsilon, 1.0);
   $sum_log = $sum_log + ln($prob);
-  $j = $j + 1;
+  $j = _iadd($j, 1);
 };
-  $mean_log = $sum_log / to_float($sentence_len);
+  $mean_log = $sum_log / floatval($sentence_len);
   $perp = mochi_exp(-$mean_log);
   $total_perp = $total_perp + $perp;
-  $b = $b + 1;
+  $b = _iadd($b, 1);
 };
-  return $total_perp / to_float($batch);
+  return $total_perp / floatval($batch);
 };
   function smooth_l1_loss($y_true, $y_pred, $beta) {
   if (count($y_true) != count($y_pred)) {
-  $panic('The length of the two arrays should be the same.');
+  _panic('The length of the two arrays should be the same.');
 }
   $total = 0.0;
   $i = 0;
@@ -358,19 +397,19 @@ $__start = _now();
 } else {
   $total = $total + $diff - 0.5 * $beta;
 }
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
-  return $total / to_float(count($y_true));
+  return $total / floatval(count($y_true));
 };
   function kullback_leibler_divergence($y_true, $y_pred) {
   if (count($y_true) != count($y_pred)) {
-  $panic('Input arrays must have the same length.');
+  _panic('Input arrays must have the same length.');
 }
   $total = 0.0;
   $i = 0;
   while ($i < count($y_true)) {
   $total = $total + $y_true[$i] * ln($y_true[$i] / $y_pred[$i]);
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $total;
 };

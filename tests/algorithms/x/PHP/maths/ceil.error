@@ -1,3 +1,0 @@
-run: exit status 255
-
-Fatal error: Cannot redeclare function ceil() in /workspace/mochi/tests/algorithms/x/PHP/maths/ceil.php on line 20

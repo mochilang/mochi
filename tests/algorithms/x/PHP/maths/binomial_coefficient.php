@@ -35,17 +35,56 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
+function _iadd($a, $b) {
+    if (function_exists('bcadd')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcadd($sa, $sb, 0);
+    }
+    return $a + $b;
+}
+function _isub($a, $b) {
+    if (function_exists('bcsub')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcsub($sa, $sb, 0);
+    }
+    return $a - $b;
+}
+function _imul($a, $b) {
+    if (function_exists('bcmul')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcmul($sa, $sb, 0);
+    }
+    return $a * $b;
+}
+function _idiv($a, $b) {
+    return _intdiv($a, $b);
+}
+function _imod($a, $b) {
+    if (function_exists('bcmod')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcmod($sa, $sb));
+    }
+    return $a % $b;
+}
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function binomial_coefficient($n, $r) {
   if ($n < 0 || $r < 0) {
-  $panic('n and r must be non-negative integers');
+  _panic('n and r must be non-negative integers');
 }
   if ($n == 0 || $r == 0) {
   return 1;
 }
   $c = [];
-  for ($_ = 0; $_ < ($r + 1); $_++) {
+  for ($_ = 0; $_ < (_iadd($r, 1)); $_++) {
   $c = _append($c, 0);
 };
   $c[0] = 1;
@@ -53,10 +92,10 @@ $__start = _now();
   while ($i <= $n) {
   $j = ($i < $r ? $i : $r);
   while ($j > 0) {
-  $c[$j] = $c[$j] + $c[$j - 1];
-  $j = $j - 1;
+  $c[$j] = _iadd($c[$j], $c[_isub($j, 1)]);
+  $j = _isub($j, 1);
 };
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $c[$r];
 };

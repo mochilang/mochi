@@ -1,1 +1,5 @@
-Fatal error: Cannot redeclare function sqrt() in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/similarity_search.php on line 40
+{
+  "duration_us": 181,
+  "memory_bytes": 75328,
+  "name": "main"
+}

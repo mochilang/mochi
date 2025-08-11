@@ -1,44 +1,44 @@
-Deprecated: Implicit conversion from float 2.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 67
+Deprecated: Implicit conversion from float 2.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 102
 
-Deprecated: Implicit conversion from float 2.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 67
+Deprecated: Implicit conversion from float 2.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 102
 
-Deprecated: Implicit conversion from float 4.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 67
+Deprecated: Implicit conversion from float 4.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 102
 
-Deprecated: Implicit conversion from float 2.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 67
+Deprecated: Implicit conversion from float 2.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 102
 
-Deprecated: Implicit conversion from float 1.25 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 67
+Deprecated: Implicit conversion from float 1.25 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 102
 
-Deprecated: Implicit conversion from float 2.25 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 67
+Deprecated: Implicit conversion from float 2.25 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 102
 
-Deprecated: Implicit conversion from float 2.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 67
+Deprecated: Implicit conversion from float 2.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 102
 
-Deprecated: Implicit conversion from float 0.625 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 67
+Deprecated: Implicit conversion from float 0.625 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 102
 
-Deprecated: Implicit conversion from float 1.125 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 67
+Deprecated: Implicit conversion from float 1.125 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 102
 
-Warning: Undefined array key "threshold" in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 76
+Warning: Undefined array key "threshold" in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 111
 
-Warning: Undefined array key "right_value" in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 79
+Warning: Undefined array key "right_value" in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 114
 
-Warning: Undefined array key "threshold" in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 76
+Warning: Undefined array key "threshold" in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 111
 
-Warning: Undefined array key "right_value" in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 79
+Warning: Undefined array key "right_value" in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 114
 
-Warning: Undefined array key "threshold" in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 76
+Warning: Undefined array key "threshold" in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 111
 
-Warning: Undefined array key "right_value" in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 79
+Warning: Undefined array key "right_value" in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 114
 
-Warning: Undefined array key "threshold" in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 76
+Warning: Undefined array key "threshold" in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 111
 
-Warning: Undefined array key "right_value" in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 79
+Warning: Undefined array key "right_value" in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 114
 
-Warning: Undefined array key "threshold" in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 76
+Warning: Undefined array key "threshold" in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 111
 
-Warning: Undefined array key "right_value" in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 79
+Warning: Undefined array key "right_value" in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 114
 
-Warning: Undefined array key "threshold" in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 76
+Warning: Undefined array key "threshold" in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 111
 
-Warning: Undefined array key "right_value" in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 79
+Warning: Undefined array key "right_value" in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/xgboost_regressor.php on line 114
 Predictions:
 [0.0, 0.0]
 Mean Absolute Error:

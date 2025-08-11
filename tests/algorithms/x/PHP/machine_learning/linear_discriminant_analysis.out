@@ -1,1 +1,2 @@
-Fatal error: Cannot redeclare function cos() in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/linear_discriminant_analysis.php on line 23
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, '2', '2', '2', '2', '2', '2', '2', '2', '2', '2', '2', '2', '2', '2', '2', '2', '2', '2', '2', '2']
+100.0

@@ -36,6 +36,9 @@ function _append($arr, $x) {
     return $arr;
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
@@ -43,23 +46,62 @@ function _intdiv($a, $b) {
     }
     return intdiv($a, $b);
 }
+function _iadd($a, $b) {
+    if (function_exists('bcadd')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcadd($sa, $sb, 0);
+    }
+    return $a + $b;
+}
+function _isub($a, $b) {
+    if (function_exists('bcsub')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcsub($sa, $sb, 0);
+    }
+    return $a - $b;
+}
+function _imul($a, $b) {
+    if (function_exists('bcmul')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcmul($sa, $sb, 0);
+    }
+    return $a * $b;
+}
+function _idiv($a, $b) {
+    return _intdiv($a, $b);
+}
+function _imod($a, $b) {
+    if (function_exists('bcmod')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcmod($sa, $sb));
+    }
+    return $a % $b;
+}
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function allocation_num($number_of_bytes, $partitions) {
   if ($partitions <= 0) {
-  $panic('partitions must be a positive number!');
+  _panic('partitions must be a positive number!');
 }
   if ($partitions > $number_of_bytes) {
-  $panic('partitions can not > number_of_bytes!');
+  _panic('partitions can not > number_of_bytes!');
 }
   $bytes_per_partition = _intdiv($number_of_bytes, $partitions);
   $allocation_list = [];
   $i = 0;
   while ($i < $partitions) {
-  $start_bytes = $i * $bytes_per_partition + 1;
-  $end_bytes = ($i == $partitions - 1 ? $number_of_bytes : ($i + 1) * $bytes_per_partition);
+  $start_bytes = _iadd(_imul($i, $bytes_per_partition), 1);
+  $end_bytes = ($i == _isub($partitions, 1) ? $number_of_bytes : _imul((_iadd($i, 1)), $bytes_per_partition));
   $allocation_list = _append($allocation_list, _str($start_bytes) . '-' . _str($end_bytes));
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $allocation_list;
 };

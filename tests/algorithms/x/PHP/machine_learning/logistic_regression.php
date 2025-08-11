@@ -19,6 +19,41 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
+function _iadd($a, $b) {
+    if (function_exists('bcadd')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcadd($sa, $sb, 0);
+    }
+    return $a + $b;
+}
+function _isub($a, $b) {
+    if (function_exists('bcsub')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcsub($sa, $sb, 0);
+    }
+    return $a - $b;
+}
+function _imul($a, $b) {
+    if (function_exists('bcmul')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcmul($sa, $sb, 0);
+    }
+    return $a * $b;
+}
+function _idiv($a, $b) {
+    return _intdiv($a, $b);
+}
+function _imod($a, $b) {
+    if (function_exists('bcmod')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcmod($sa, $sb));
+    }
+    return $a % $b;
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function expApprox($x) {
@@ -35,7 +70,7 @@ $__start = _now();
   while ($n < 30) {
   $term = $term * $y / (floatval($n));
   $sum = $sum + $term;
-  $n = $n + 1;
+  $n = _iadd($n, 1);
 };
   if ($is_neg) {
   return 1.0 / $sum;
@@ -52,7 +87,7 @@ $__start = _now();
   $i = 0;
   while ($i < count($a)) {
   $s = $s + $a[$i] * $b[$i];
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $s;
 };
@@ -62,7 +97,7 @@ $__start = _now();
   $i = 0;
   while ($i < $n) {
   $res = _append($res, 0.0);
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $res;
 };
@@ -80,16 +115,16 @@ $__start = _now();
   $k = 0;
   while ($k < $n) {
   $grad[$k] = $grad[$k] + ($h - $y[$i]) * $x[$i][$k];
-  $k = $k + 1;
+  $k = _iadd($k, 1);
 };
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   $k2 = 0;
   while ($k2 < $n) {
   $theta[$k2] = $theta[$k2] - $alpha * $grad[$k2] / (floatval($m));
-  $k2 = $k2 + 1;
+  $k2 = _iadd($k2, 1);
 };
-  $iter = $iter + 1;
+  $iter = _iadd($iter, 1);
 };
   return $theta;
 };

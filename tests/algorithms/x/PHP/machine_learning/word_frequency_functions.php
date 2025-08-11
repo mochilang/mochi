@@ -35,6 +35,45 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
+function _iadd($a, $b) {
+    if (function_exists('bcadd')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcadd($sa, $sb, 0);
+    }
+    return $a + $b;
+}
+function _isub($a, $b) {
+    if (function_exists('bcsub')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcsub($sa, $sb, 0);
+    }
+    return $a - $b;
+}
+function _imul($a, $b) {
+    if (function_exists('bcmul')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcmul($sa, $sb, 0);
+    }
+    return $a * $b;
+}
+function _idiv($a, $b) {
+    return _intdiv($a, $b);
+}
+function _imod($a, $b) {
+    if (function_exists('bcmod')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcmod($sa, $sb));
+    }
+    return $a % $b;
+}
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   $LOWER = 'abcdefghijklmnopqrstuvwxyz';
@@ -54,12 +93,12 @@ $__start = _now();
   $found = true;
   break;
 }
-  $j = $j + 1;
+  $j = _iadd($j, 1);
 };
   if (!$found) {
   $res = $res . $c;
 }
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $res;
 };
@@ -70,7 +109,7 @@ $__start = _now();
   if ($c == substr($PUNCT, $i, $i + 1 - $i)) {
   return true;
 }
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return false;
 };
@@ -93,7 +132,7 @@ $__start = _now();
   $res = $res . $ch;
 };
 }
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $res;
 };
@@ -110,7 +149,7 @@ $__start = _now();
 } else {
   $current = $current . $ch;
 }
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   $res = _append($res, $current);
   return $res;
@@ -123,20 +162,20 @@ $__start = _now();
   return true;
 }
   $i = 0;
-  while ($i <= $n - $m) {
+  while ($i <= _isub($n, $m)) {
   $j = 0;
   $is_match = true;
   while ($j < $m) {
-  if (substr($s, $i + $j, $i + $j + 1 - ($i + $j)) != substr($sub, $j, $j + 1 - $j)) {
+  if (substr($s, _iadd($i, $j), _iadd($i, $j) + 1 - _iadd($i, $j)) != substr($sub, $j, $j + 1 - $j)) {
   $is_match = false;
   break;
 }
-  $j = $j + 1;
+  $j = _iadd($j, 1);
 };
   if ($is_match) {
   return true;
 }
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return false;
 };
@@ -144,7 +183,7 @@ $__start = _now();
   global $LOWER, $UPPER, $PUNCT, $corpus, $idf_val;
   $i = intval($x);
   if ((floatval($i)) > $x) {
-  $i = $i - 1;
+  $i = _isub($i, 1);
 }
   return floatval($i);
 };
@@ -161,42 +200,42 @@ $__start = _now();
   while ($k <= 99) {
   $sum = $sum + $term / (floatval($k));
   $term = $term * $t * $t;
-  $k = $k + 2;
+  $k = _iadd($k, 2);
 };
   return 2.0 * $sum;
 };
-  function log10($x) {
+  function mochi_log10($x) {
   global $LOWER, $UPPER, $PUNCT, $corpus, $idf_val;
   return ln($x) / ln(10.0);
 };
   function term_frequency($term, $document) {
   global $LOWER, $UPPER, $PUNCT, $corpus, $idf_val;
   $clean = clean_text($document, false);
-  $tokens = explode(' ', $clean);
+  $tokens = split($clean, ' ');
   $t = to_lowercase($term);
   $count = 0;
   $i = 0;
   while ($i < count($tokens)) {
   if ($tokens[$i] != '' && $tokens[$i] == $t) {
-  $count = $count + 1;
+  $count = _iadd($count, 1);
 }
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $count;
 };
   function document_frequency($term, $corpus) {
   global $LOWER, $UPPER, $PUNCT, $idf_val;
   $clean = clean_text($corpus, true);
-  $docs = explode('
-', $clean);
+  $docs = split($clean, '
+');
   $t = to_lowercase($term);
   $matches = 0;
   $i = 0;
   while ($i < count($docs)) {
   if (contains($docs[$i], $t)) {
-  $matches = $matches + 1;
+  $matches = _iadd($matches, 1);
 }
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return [$matches, count($docs)];
 };
@@ -204,22 +243,22 @@ $__start = _now();
   global $LOWER, $UPPER, $PUNCT, $corpus, $idf_val;
   if ($smoothing) {
   if ($n == 0) {
-  $panic('log10(0) is undefined.');
+  _panic('log10(0) is undefined.');
 };
   $ratio = (floatval($n)) / (1.0 + (floatval($df)));
-  $l = log10($ratio);
+  $l = mochi_log10($ratio);
   $result = round3(1.0 + $l);
   echo rtrim(json_encode($result, 1344)), PHP_EOL;
   return $result;
 }
   if ($df == 0) {
-  $panic('df must be > 0');
+  _panic('df must be > 0');
 }
   if ($n == 0) {
-  $panic('log10(0) is undefined.');
+  _panic('log10(0) is undefined.');
 }
   $ratio = (floatval($n)) / (floatval($df));
-  $l = log10($ratio);
+  $l = mochi_log10($ratio);
   $result = round3($l);
   echo rtrim(json_encode($result, 1344)), PHP_EOL;
   return $result;

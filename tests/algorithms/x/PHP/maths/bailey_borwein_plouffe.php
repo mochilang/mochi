@@ -32,6 +32,9 @@ function _str($x) {
     return strval($x);
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
@@ -39,18 +42,57 @@ function _intdiv($a, $b) {
     }
     return intdiv($a, $b);
 }
+function _iadd($a, $b) {
+    if (function_exists('bcadd')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcadd($sa, $sb, 0);
+    }
+    return $a + $b;
+}
+function _isub($a, $b) {
+    if (function_exists('bcsub')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcsub($sa, $sb, 0);
+    }
+    return $a - $b;
+}
+function _imul($a, $b) {
+    if (function_exists('bcmul')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcmul($sa, $sb, 0);
+    }
+    return $a * $b;
+}
+function _idiv($a, $b) {
+    return _intdiv($a, $b);
+}
+function _imod($a, $b) {
+    if (function_exists('bcmod')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcmod($sa, $sb));
+    }
+    return $a % $b;
+}
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function mod_pow($base, $exponent, $modulus) {
   global $digits, $i;
   $result = 1;
-  $b = $base % $modulus;
+  $b = _imod($base, $modulus);
   $e = $exponent;
   while ($e > 0) {
-  if ($e % 2 == 1) {
-  $result = ($result * $b) % $modulus;
+  if (_imod($e, 2) == 1) {
+  $result = _imod((_imul($result, $b)), $modulus);
 }
-  $b = ($b * $b) % $modulus;
+  $b = _imod((_imul($b, $b)), $modulus);
   $e = _intdiv($e, 2);
 };
   return $result;
@@ -65,7 +107,7 @@ $__start = _now();
   $i = 0;
   while ($i < $exp) {
   $result = $result * $base;
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   if ($exponent < 0) {
   $result = 1.0 / $result;
@@ -78,13 +120,13 @@ $__start = _now();
   return _str($n);
 }
   $letters = ['a', 'b', 'c', 'd', 'e', 'f'];
-  return $letters[$n - 10];
+  return $letters[_isub($n, 10)];
 };
   function floor_float($x) {
   global $digits;
   $i = intval($x);
   if ((floatval($i)) > $x) {
-  $i = $i - 1;
+  $i = _isub($i, 1);
 }
   return floatval($i);
 };
@@ -92,28 +134,28 @@ $__start = _now();
   global $digits, $i;
   $total = 0.0;
   $sum_index = 0;
-  while ($sum_index < $digit_pos_to_extract + $precision) {
-  $denominator = 8 * $sum_index + $denominator_addend;
+  while ($sum_index < _iadd($digit_pos_to_extract, $precision)) {
+  $denominator = _iadd(_imul(8, $sum_index), $denominator_addend);
   if ($sum_index < $digit_pos_to_extract) {
-  $exponent = $digit_pos_to_extract - 1 - $sum_index;
+  $exponent = _isub(_isub($digit_pos_to_extract, 1), $sum_index);
   $exponential_term = mod_pow(16, $exponent, $denominator);
   $total = $total + (floatval($exponential_term)) / (floatval($denominator));
 } else {
-  $exponent = $digit_pos_to_extract - 1 - $sum_index;
+  $exponent = _isub(_isub($digit_pos_to_extract, 1), $sum_index);
   $exponential_term = pow_float(16.0, $exponent);
   $total = $total + $exponential_term / (floatval($denominator));
 }
-  $sum_index = $sum_index + 1;
+  $sum_index = _iadd($sum_index, 1);
 };
   return $total;
 };
   function bailey_borwein_plouffe($digit_position, $precision) {
   global $digits, $i;
   if ($digit_position <= 0) {
-  $panic('Digit position must be a positive integer');
+  _panic('Digit position must be a positive integer');
 }
   if ($precision < 0) {
-  $panic('Precision must be a nonnegative integer');
+  _panic('Precision must be a nonnegative integer');
 }
   $sum_result = 4.0 * subsum($digit_position, 1, $precision) - 2.0 * subsum($digit_position, 4, $precision) - 1.0 * subsum($digit_position, 5, $precision) - 1.0 * subsum($digit_position, 6, $precision);
   $fraction = $sum_result - floor_float($sum_result);
@@ -125,7 +167,7 @@ $__start = _now();
   $i = 1;
   while ($i <= 10) {
   $digits = $digits . bailey_borwein_plouffe($i, 1000);
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 }
   echo rtrim($digits), PHP_EOL;
   echo rtrim(bailey_borwein_plouffe(5, 10000)), PHP_EOL;

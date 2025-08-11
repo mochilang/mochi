@@ -1,1 +1,5 @@
-Fatal error: Cannot redeclare function log10() in /workspace/mochi/tests/algorithms/x/PHP/machine_learning/mfcc.php on line 84
+{
+  "duration_us": 3075,
+  "memory_bytes": 78088,
+  "name": "main"
+}

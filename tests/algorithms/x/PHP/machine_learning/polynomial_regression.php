@@ -35,6 +35,41 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
+function _iadd($a, $b) {
+    if (function_exists('bcadd')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcadd($sa, $sb, 0);
+    }
+    return $a + $b;
+}
+function _isub($a, $b) {
+    if (function_exists('bcsub')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcsub($sa, $sb, 0);
+    }
+    return $a - $b;
+}
+function _imul($a, $b) {
+    if (function_exists('bcmul')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcmul($sa, $sb, 0);
+    }
+    return $a * $b;
+}
+function _idiv($a, $b) {
+    return _intdiv($a, $b);
+}
+function _imod($a, $b) {
+    if (function_exists('bcmod')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcmod($sa, $sb));
+    }
+    return $a % $b;
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function design_matrix($xs, $degree) {
@@ -48,10 +83,10 @@ $__start = _now();
   while ($j <= $degree) {
   $row = _append($row, $pow);
   $pow = $pow * $xs[$i];
-  $j = $j + 1;
+  $j = _iadd($j, 1);
 };
   $matrix = _append($matrix, $row);
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $matrix;
 };
@@ -66,10 +101,10 @@ $__start = _now();
   $i = 0;
   while ($i < $rows) {
   $row = _append($row, $matrix[$i][$j]);
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   $result = _append($result, $row);
-  $j = $j + 1;
+  $j = _iadd($j, 1);
 };
   return $result;
 };
@@ -88,13 +123,13 @@ $__start = _now();
   $j = 0;
   while ($j < $m) {
   $sum = $sum + $A[$i][$j] * $B[$j][$k];
-  $j = $j + 1;
+  $j = _iadd($j, 1);
 };
   $row = _append($row, $sum);
-  $k = $k + 1;
+  $k = _iadd($k, 1);
 };
   $result = _append($result, $row);
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $result;
 };
@@ -109,10 +144,10 @@ $__start = _now();
   $j = 0;
   while ($j < $m) {
   $sum = $sum + $A[$i][$j] * $v[$j];
-  $j = $j + 1;
+  $j = _iadd($j, 1);
 };
   $result = _append($result, $sum);
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $result;
 };
@@ -123,11 +158,11 @@ $__start = _now();
   $i = 0;
   while ($i < $n) {
   $M = _append($M, _append($A[$i], $b[$i]));
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   $k = 0;
   while ($k < $n) {
-  $j = $k + 1;
+  $j = _iadd($k, 1);
   while ($j < $n) {
   $factor = $M[$j][$k] / $M[$k][$k];
   $rowj = $M[$j];
@@ -135,29 +170,29 @@ $__start = _now();
   $l = $k;
   while ($l <= $n) {
   $rowj[$l] = $rowj[$l] - $factor * $rowk[$l];
-  $l = $l + 1;
+  $l = _iadd($l, 1);
 };
   $M[$j] = $rowj;
-  $j = $j + 1;
+  $j = _iadd($j, 1);
 };
-  $k = $k + 1;
+  $k = _iadd($k, 1);
 };
   $x = [];
   $t = 0;
   while ($t < $n) {
   $x = _append($x, 0.0);
-  $t = $t + 1;
+  $t = _iadd($t, 1);
 };
-  $i2 = $n - 1;
+  $i2 = _isub($n, 1);
   while ($i2 >= 0) {
   $sum = $M[$i2][$n];
-  $j2 = $i2 + 1;
+  $j2 = _iadd($i2, 1);
   while ($j2 < $n) {
   $sum = $sum - $M[$i2][$j2] * $x[$j2];
-  $j2 = $j2 + 1;
+  $j2 = _iadd($j2, 1);
 };
   $x[$i2] = $sum / $M[$i2][$i2];
-  $i2 = $i2 - 1;
+  $i2 = _isub($i2, 1);
 };
   return $x;
 };
@@ -173,10 +208,10 @@ $__start = _now();
   while ($j < count($coeffs)) {
   $sum = $sum + $coeffs[$j] * $pow;
   $pow = $pow * $x;
-  $j = $j + 1;
+  $j = _iadd($j, 1);
 };
   $result = _append($result, $sum);
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $result;
 };
@@ -186,7 +221,7 @@ $__start = _now();
   while ($i < count($xs)) {
   $x = $xs[$i];
   $ys = _append($ys, $x * $x * $x - 2.0 * $x * $x + 3.0 * $x - 5.0);
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 }
   $X = design_matrix($xs, 3);
   $Xt = transpose($X);

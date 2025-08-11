@@ -35,6 +35,52 @@ function _append($arr, $x) {
     $arr[] = $x;
     return $arr;
 }
+function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
+    if (function_exists('bcdiv')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcdiv($sa, $sb, 0));
+    }
+    return intdiv($a, $b);
+}
+function _iadd($a, $b) {
+    if (function_exists('bcadd')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcadd($sa, $sb, 0);
+    }
+    return $a + $b;
+}
+function _isub($a, $b) {
+    if (function_exists('bcsub')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcsub($sa, $sb, 0);
+    }
+    return $a - $b;
+}
+function _imul($a, $b) {
+    if (function_exists('bcmul')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcmul($sa, $sb, 0);
+    }
+    return $a * $b;
+}
+function _idiv($a, $b) {
+    return _intdiv($a, $b);
+}
+function _imod($a, $b) {
+    if (function_exists('bcmod')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcmod($sa, $sb));
+    }
+    return $a % $b;
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function dot($x, $y) {
@@ -43,7 +89,7 @@ $__start = _now();
   $i = 0;
   while ($i < count($x)) {
   $sum = $sum + $x[$i] * $y[$i];
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $sum;
 };
@@ -53,7 +99,7 @@ $__start = _now();
   $j = 0;
   while ($j < count($theta)) {
   $gradients = _append($gradients, 0.0);
-  $j = $j + 1;
+  $j = _iadd($j, 1);
 };
   $i = 0;
   while ($i < $len_data) {
@@ -62,15 +108,15 @@ $__start = _now();
   $k = 0;
   while ($k < count($theta)) {
   $gradients[$k] = $gradients[$k] + $error * $data_x[$i][$k];
-  $k = $k + 1;
+  $k = _iadd($k, 1);
 };
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   $t = [];
   $g = 0;
   while ($g < count($theta)) {
-  $t = _append($t, $theta[$g] - ($alpha / $len_data) * $gradients[$g]);
-  $g = $g + 1;
+  $t = _append($t, _isub($theta[$g], _imul((_idiv($alpha, $len_data)), $gradients[$g])));
+  $g = _iadd($g, 1);
 };
   return $t;
 };
@@ -82,9 +128,9 @@ $__start = _now();
   $prediction = dot($theta, $data_x[$i]);
   $diff = $prediction - $data_y[$i];
   $total = $total + $diff * $diff;
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
-  return $total / (2.0 * $len_data);
+  return _idiv($total, (_imul(2.0, $len_data)));
 };
   function run_linear_regression($data_x, $data_y) {
   global $predicted_y, $original_y, $mae;
@@ -96,14 +142,14 @@ $__start = _now();
   $i = 0;
   while ($i < $no_features) {
   $theta = _append($theta, 0.0);
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   $iter = 0;
   while ($iter < $iterations) {
   $theta = run_steep_gradient_descent($data_x, $data_y, $len_data, $alpha, $theta);
   $error = sum_of_square_error($data_x, $data_y, $len_data, $theta);
-  echo rtrim('At Iteration ' . _str($iter + 1) . ' - Error is ' . _str($error)), PHP_EOL;
-  $iter = $iter + 1;
+  echo rtrim('At Iteration ' . _str(_iadd($iter, 1)) . ' - Error is ' . _str($error)), PHP_EOL;
+  $iter = _iadd($iter, 1);
 };
   return $theta;
 };
@@ -122,9 +168,9 @@ $__start = _now();
   while ($i < count($predicted_y)) {
   $diff = absf($predicted_y[$i] - $original_y[$i]);
   $total = $total + $diff;
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
-  return $total / count($predicted_y);
+  return _idiv($total, count($predicted_y));
 };
   $data_x = [[1.0, 1.0], [1.0, 2.0], [1.0, 3.0]];
   $data_y = [1.0, 2.0, 3.0];
@@ -133,7 +179,7 @@ $__start = _now();
   $i = 0;
   while ($i < count($theta)) {
   echo rtrim(_str($theta[$i])), PHP_EOL;
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 }
   $predicted_y = [3.0, -0.5, 2.0, 7.0];
   $original_y = [2.5, 0.0, 2.0, 8.0];

@@ -15,6 +15,45 @@ function _now() {
     }
     return hrtime(true);
 }
+function _iadd($a, $b) {
+    if (function_exists('bcadd')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcadd($sa, $sb, 0);
+    }
+    return $a + $b;
+}
+function _isub($a, $b) {
+    if (function_exists('bcsub')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcsub($sa, $sb, 0);
+    }
+    return $a - $b;
+}
+function _imul($a, $b) {
+    if (function_exists('bcmul')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcmul($sa, $sb, 0);
+    }
+    return $a * $b;
+}
+function _idiv($a, $b) {
+    return _intdiv($a, $b);
+}
+function _imod($a, $b) {
+    if (function_exists('bcmod')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcmod($sa, $sb));
+    }
+    return $a % $b;
+}
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function mochi_abs($x) {
@@ -25,13 +64,13 @@ $__start = _now();
 };
   function factorial($n) {
   if ($n < 0) {
-  $panic('factorial is undefined for negative numbers');
+  _panic('factorial is undefined for negative numbers');
 }
   $result = 1;
   $i = 2;
   while ($i <= $n) {
-  $result = $result * $i;
-  $i = $i + 1;
+  $result = _imul($result, $i);
+  $i = _iadd($i, 1);
 };
   return $result;
 };
@@ -40,23 +79,23 @@ $__start = _now();
   $i = 0;
   while ($i < $exp) {
   $result = $result * $base;
-  $i = $i + 1;
+  $i = _iadd($i, 1);
 };
   return $result;
 };
   function binomial_distribution($successes, $trials, $prob) {
   if ($successes > $trials) {
-  $panic('successes must be lower or equal to trials');
+  _panic('successes must be lower or equal to trials');
 }
   if ($trials < 0 || $successes < 0) {
-  $panic('the function is defined for non-negative integers');
+  _panic('the function is defined for non-negative integers');
 }
   if (!(0.0 < $prob && $prob < 1.0)) {
-  $panic('prob has to be in range of 1 - 0');
+  _panic('prob has to be in range of 1 - 0');
 }
-  $probability = pow_float($prob, $successes) * pow_float(1.0 - $prob, $trials - $successes);
+  $probability = pow_float($prob, $successes) * pow_float(1.0 - $prob, _isub($trials, $successes));
   $numerator = floatval(factorial($trials));
-  $denominator = floatval((factorial($successes) * factorial($trials - $successes)));
+  $denominator = floatval((_imul(factorial($successes), factorial(_isub($trials, $successes)))));
   $coefficient = $numerator / $denominator;
   return $probability * $coefficient;
 };

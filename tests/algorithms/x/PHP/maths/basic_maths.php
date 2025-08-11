@@ -36,6 +36,9 @@ function _append($arr, $x) {
     return $arr;
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
@@ -43,34 +46,73 @@ function _intdiv($a, $b) {
     }
     return intdiv($a, $b);
 }
+function _iadd($a, $b) {
+    if (function_exists('bcadd')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcadd($sa, $sb, 0);
+    }
+    return $a + $b;
+}
+function _isub($a, $b) {
+    if (function_exists('bcsub')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcsub($sa, $sb, 0);
+    }
+    return $a - $b;
+}
+function _imul($a, $b) {
+    if (function_exists('bcmul')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return bcmul($sa, $sb, 0);
+    }
+    return $a * $b;
+}
+function _idiv($a, $b) {
+    return _intdiv($a, $b);
+}
+function _imod($a, $b) {
+    if (function_exists('bcmod')) {
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
+        return intval(bcmod($sa, $sb));
+    }
+    return $a % $b;
+}
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function pow_int($base, $exp) {
   $result = 1;
   $i = 0;
   while ($i < $exp) {
-  $result = $result * $base;
-  $i = $i + 1;
+  $result = _imul($result, $base);
+  $i = _iadd($i, 1);
 };
   return $result;
 };
   function prime_factors($n) {
   if ($n <= 0) {
-  $panic('Only positive integers have prime factors');
+  _panic('Only positive integers have prime factors');
 }
   $num = $n;
   $pf = [];
-  while ($num % 2 == 0) {
+  while (_imod($num, 2) == 0) {
   $pf = _append($pf, 2);
   $num = _intdiv($num, 2);
 };
   $i = 3;
-  while ($i * $i <= $num) {
-  while ($num % $i == 0) {
+  while (_imul($i, $i) <= $num) {
+  while (_imod($num, $i) == 0) {
   $pf = _append($pf, $i);
   $num = _intdiv($num, $i);
 };
-  $i = $i + 2;
+  $i = _iadd($i, 2);
 };
   if ($num > 2) {
   $pf = _append($pf, $num);
@@ -79,56 +121,56 @@ $__start = _now();
 };
   function number_of_divisors($n) {
   if ($n <= 0) {
-  $panic('Only positive numbers are accepted');
+  _panic('Only positive numbers are accepted');
 }
   $num = $n;
   $div = 1;
   $temp = 1;
-  while ($num % 2 == 0) {
-  $temp = $temp + 1;
+  while (_imod($num, 2) == 0) {
+  $temp = _iadd($temp, 1);
   $num = _intdiv($num, 2);
 };
-  $div = $div * $temp;
+  $div = _imul($div, $temp);
   $i = 3;
-  while ($i * $i <= $num) {
+  while (_imul($i, $i) <= $num) {
   $temp = 1;
-  while ($num % $i == 0) {
-  $temp = $temp + 1;
+  while (_imod($num, $i) == 0) {
+  $temp = _iadd($temp, 1);
   $num = _intdiv($num, $i);
 };
-  $div = $div * $temp;
-  $i = $i + 2;
+  $div = _imul($div, $temp);
+  $i = _iadd($i, 2);
 };
   if ($num > 1) {
-  $div = $div * 2;
+  $div = _imul($div, 2);
 }
   return $div;
 };
   function sum_of_divisors($n) {
   if ($n <= 0) {
-  $panic('Only positive numbers are accepted');
+  _panic('Only positive numbers are accepted');
 }
   $num = $n;
   $s = 1;
   $temp = 1;
-  while ($num % 2 == 0) {
-  $temp = $temp + 1;
+  while (_imod($num, 2) == 0) {
+  $temp = _iadd($temp, 1);
   $num = _intdiv($num, 2);
 };
   if ($temp > 1) {
-  $s = $s * ((pow_int(2, $temp) - 1) / (2 - 1));
+  $s = _imul($s, (_intdiv((_isub(pow_int(2, $temp), 1)), (_isub(2, 1)))));
 }
   $i = 3;
-  while ($i * $i <= $num) {
+  while (_imul($i, $i) <= $num) {
   $temp = 1;
-  while ($num % $i == 0) {
-  $temp = $temp + 1;
+  while (_imod($num, $i) == 0) {
+  $temp = _iadd($temp, 1);
   $num = _intdiv($num, $i);
 };
   if ($temp > 1) {
-  $s = $s * ((pow_int($i, $temp) - 1) / ($i - 1));
+  $s = _imul($s, (_intdiv((_isub(pow_int($i, $temp), 1)), (_isub($i, 1)))));
 }
-  $i = $i + 2;
+  $i = _iadd($i, 2);
 };
   return $s;
 };
@@ -138,7 +180,7 @@ $__start = _now();
   if ($arr[$idx] == $x) {
   return true;
 }
-  $idx = $idx + 1;
+  $idx = _iadd($idx, 1);
 };
   return false;
 };
@@ -150,21 +192,21 @@ $__start = _now();
   if (!contains($result, $v)) {
   $result = _append($result, $v);
 }
-  $idx = $idx + 1;
+  $idx = _iadd($idx, 1);
 };
   return $result;
 };
   function euler_phi($n) {
   if ($n <= 0) {
-  $panic('Only positive numbers are accepted');
+  _panic('Only positive numbers are accepted');
 }
   $s = $n;
   $factors = unique(prime_factors($n));
   $idx = 0;
   while ($idx < count($factors)) {
   $x = $factors[$idx];
-  $s = (_intdiv($s, $x)) * ($x - 1);
-  $idx = $idx + 1;
+  $s = _imul((_intdiv($s, $x)), (_isub($x, 1)));
+  $idx = _iadd($idx, 1);
 };
   return $s;
 };
