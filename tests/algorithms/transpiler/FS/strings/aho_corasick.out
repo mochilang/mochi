@@ -1,0 +1,3 @@
+seq
+  [[what, System.Int32[]]; [hat, System.Int32[]]; [ver, System.Int32[]];
+   [er, System.Int32[]]]

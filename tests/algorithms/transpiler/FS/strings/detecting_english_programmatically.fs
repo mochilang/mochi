@@ -1,4 +1,4 @@
-// Generated 2025-08-11 15:32 +0700
+// Generated 2025-08-11 17:23 +0700
 
 exception Break
 exception Continue
@@ -90,7 +90,7 @@ let rec to_upper (s: string) =
         __ret
     with
         | Return -> __ret
-let rec char_in (chars: string) (c: string) =
+and char_in (chars: string) (c: string) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable chars = chars
     let mutable c = c
@@ -106,7 +106,7 @@ let rec char_in (chars: string) (c: string) =
         __ret
     with
         | Return -> __ret
-let rec remove_non_letters (message: string) =
+and remove_non_letters (message: string) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable message = message
     try
@@ -122,7 +122,7 @@ let rec remove_non_letters (message: string) =
         __ret
     with
         | Return -> __ret
-let rec split_spaces (text: string) =
+and split_spaces (text: string) =
     let mutable __ret : string array = Unchecked.defaultof<string array>
     let mutable text = text
     try
@@ -143,7 +143,7 @@ let rec split_spaces (text: string) =
         __ret
     with
         | Return -> __ret
-let rec load_dictionary () =
+and load_dictionary () =
     let mutable __ret : System.Collections.Generic.IDictionary<string, bool> = Unchecked.defaultof<System.Collections.Generic.IDictionary<string, bool>>
     try
         let words: string array = unbox<string array> [|"HELLO"; "WORLD"; "HOW"; "ARE"; "YOU"; "THE"; "QUICK"; "BROWN"; "FOX"; "JUMPS"; "OVER"; "LAZY"; "DOG"|]
@@ -178,7 +178,7 @@ let rec get_english_count (message: string) =
         __ret
     with
         | Return -> __ret
-let rec is_english (message: string) (word_percentage: int) (letter_percentage: int) =
+and is_english (message: string) (word_percentage: int) (letter_percentage: int) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable message = message
     let mutable word_percentage = word_percentage
