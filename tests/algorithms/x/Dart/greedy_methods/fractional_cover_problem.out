@@ -1,12 +1,6 @@
-Unhandled exception:
-type 'int' is not a subtype of type 'double' in type cast
-#0      ratio (file:///workspace/mochi/tests/algorithms/x/Dart/greedy_methods/fractional_cover_problem.dart:23:22)
-#1      fractional_cover.<anonymous closure> (file:///workspace/mochi/tests/algorithms/x/Dart/greedy_methods/fractional_cover_problem.dart:32:77)
-#2      Sort._insertionSort (dart:_internal/sort.dart:77:36)
-#3      Sort._doSort (dart:_internal/sort.dart:62:7)
-#4      Sort.sort (dart:_internal/sort.dart:33:5)
-#5      ListBase.sort (dart:collection/list.dart:321:10)
-#6      fractional_cover (file:///workspace/mochi/tests/algorithms/x/Dart/greedy_methods/fractional_cover_problem.dart:32:61)
-#7      main (file:///workspace/mochi/tests/algorithms/x/Dart/greedy_methods/fractional_cover_problem.dart:49:10)
-#8      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
-#9      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)
+240
+135
+0
+30
+6
+0

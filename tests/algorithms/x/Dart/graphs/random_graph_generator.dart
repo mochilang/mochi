@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,10 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 int seed = 1;
@@ -68,7 +71,7 @@ Map<int, List<int>> random_graph(int vertices_number, double probability, bool d
   Map<int, List<int>> graph = <int, List<int>>{};
   int i = 0;
   while (i < vertices_number) {
-    graph[i] = ([] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
+    graph[i] = ([] as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
     i = i + 1;
   }
   if (probability >= 1.0) {
@@ -82,9 +85,9 @@ Map<int, List<int>> random_graph(int vertices_number, double probability, bool d
     int j = i + 1;
     while (j < vertices_number) {
     if (random() < probability) {
-    graph[i] = ([...graph[i], j] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
+    graph[i] = [...(graph[i]!), j];
     if (!directed) {
-    graph[j] = ([...graph[j], i] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
+    graph[j] = [...(graph[j]!), i];
   };
   }
     j = j + 1;

@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,17 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 class Graph {
@@ -56,9 +66,9 @@ Graph create_graph(List<String> vertices, List<List<String>> edges, bool directe
     if (!adj.containsKey(d)) {
     adj[d] = List<String>.from([]);
   }
-    adj[s] = List<String>.from([...adj[s], d]);
+    adj[s] = [...(adj[s]!), d];
     if (!directed) {
-    adj[d] = List<String>.from([...adj[d], s]);
+    adj[d] = [...(adj[d]!), s];
   }
   }
   return Graph(adj: adj, directed: directed);
@@ -66,11 +76,11 @@ Graph create_graph(List<String> vertices, List<List<String>> edges, bool directe
 
 Graph add_vertex(Graph graph, String v) {
   if (graph.adj.containsKey(v)) {
-    throw Exception("vertex exists");
+    _error("vertex exists");
   }
   Map<String, List<String>> adj = <String, List<String>>{};
   for (String k in graph.adj.keys) {
-    adj[k] = List<String>.from(graph.adj[k]!);
+    adj[k] = graph.adj[k]!;
   }
   adj[v] = List<String>.from([]);
   return Graph(adj: adj, directed: graph.directed);
@@ -92,7 +102,7 @@ Map<String, List<String>> remove_key(Map<String, List<String>> m, String key) {
   Map<String, List<String>> res = <String, List<String>>{};
   for (String k in m.keys) {
     if (k != key) {
-    res[k] = List<String>.from(m[k]!);
+    res[k] = m[k]!;
   }
   }
   return res;
@@ -100,14 +110,14 @@ Map<String, List<String>> remove_key(Map<String, List<String>> m, String key) {
 
 Graph add_edge(Graph graph, String s, String d) {
   if (!graph.adj.containsKey(s) || !graph.adj.containsKey(d)) {
-    throw Exception("vertex missing");
+    _error("vertex missing");
   }
   if (contains_edge(graph, s, d)) {
-    throw Exception("edge exists");
+    _error("edge exists");
   }
   Map<String, List<String>> adj = <String, List<String>>{};
   for (String k in graph.adj.keys) {
-    adj[k] = List<String>.from(graph.adj[k]!);
+    adj[k] = graph.adj[k]!;
   }
   List<String> list_s = adj[s]!;
   list_s = [...list_s, d];
@@ -122,30 +132,30 @@ Graph add_edge(Graph graph, String s, String d) {
 
 Graph remove_edge(Graph graph, String s, String d) {
   if (!graph.adj.containsKey(s) || !graph.adj.containsKey(d)) {
-    throw Exception("vertex missing");
+    _error("vertex missing");
   }
   if (!contains_edge(graph, s, d)) {
-    throw Exception("edge missing");
+    _error("edge missing");
   }
   Map<String, List<String>> adj = <String, List<String>>{};
   for (String k in graph.adj.keys) {
-    adj[k] = List<String>.from(graph.adj[k]!);
+    adj[k] = graph.adj[k]!;
   }
-  adj[s] = remove_from_list(adj[s]!, d);
+  adj[s] = remove_from_list((adj[s]!), d);
   if (!graph.directed) {
-    adj[d] = remove_from_list(adj[d]!, s);
+    adj[d] = remove_from_list((adj[d]!), s);
   }
   return Graph(adj: adj, directed: graph.directed);
 }
 
 Graph remove_vertex(Graph graph, String v) {
   if (!graph.adj.containsKey(v)) {
-    throw Exception("vertex missing");
+    _error("vertex missing");
   }
   Map<String, List<String>> adj = <String, List<String>>{};
   for (String k in graph.adj.keys) {
     if (k != v) {
-    adj[k] = remove_from_list(graph.adj[k]!, v);
+    adj[k] = remove_from_list((graph.adj[k]!), v);
   }
   }
   return Graph(adj: adj, directed: graph.directed);
@@ -157,9 +167,9 @@ bool contains_vertex(Graph graph, String v) {
 
 bool contains_edge(Graph graph, String s, String d) {
   if (!graph.adj.containsKey(s) || !graph.adj.containsKey(d)) {
-    throw Exception("vertex missing");
+    _error("vertex missing");
   }
-  for (var x in graph.adj[s]) {
+  for (var x in graph.adj[s]!) {
     if (x == d) {
     return true;
   }
@@ -172,7 +182,7 @@ Graph clear_graph(Graph graph) {
 }
 
 String to_string(Graph graph) {
-  return (graph.adj).toString();
+  return _str(graph.adj);
 }
 
 void _main() {
@@ -182,7 +192,7 @@ void _main() {
   print(to_string(g));
   g = add_vertex(g, "5");
   g = add_edge(g, "4", "5");
-  print((contains_edge(g, "4", "5")).toString());
+  print(_str(contains_edge(g, "4", "5")));
   g = remove_edge(g, "1", "2");
   g = remove_vertex(g, "3");
   print(to_string(g));

@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
 
 int MOD_ADLER = 65521;
 int ord(String ch) {
@@ -43,21 +48,21 @@ int ord(String ch) {
   String digits = "0123456789";
   int i = 0;
   while (i < lower.length) {
-    if (lower.substring(i, i + 1) == ch) {
+    if (_substr(lower, i, i + 1) == ch) {
     return 97 + i;
   }
     i = i + 1;
   }
   i = 0;
   while (i < upper.length) {
-    if (upper.substring(i, i + 1) == ch) {
+    if (_substr(upper, i, i + 1) == ch) {
     return 65 + i;
   }
     i = i + 1;
   }
   i = 0;
   while (i < digits.length) {
-    if (digits.substring(i, i + 1) == ch) {
+    if (_substr(digits, i, i + 1) == ch) {
     return 48 + i;
   }
     i = i + 1;
@@ -73,7 +78,7 @@ int adler32(String plain_text) {
   int b = 0;
   int i = 0;
   while (i < plain_text.length) {
-    int code = ord(plain_text.substring(i, i + 1));
+    int code = ord(_substr(plain_text, i, i + 1));
     a = (a + code) % MOD_ADLER;
     b = (b + a) % MOD_ADLER;
     i = i + 1;
@@ -82,8 +87,8 @@ int adler32(String plain_text) {
 }
 
 void _main() {
-  print((adler32("Algorithms")).toString());
-  print((adler32("go adler em all")).toString());
+  print(_str(adler32("Algorithms")));
+  print(_str(adler32("go adler em all")));
 }
 
 void _start() {

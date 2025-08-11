@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,10 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 List<int> remove_value(List<int> lst, int val) {
@@ -55,8 +58,8 @@ List<int> greedy_min_vertex_cover(Map<int, List<int>> graph) {
     int max_v = 0;
     int max_deg = 0;
     for (var v in g.keys) {
-    int key = v as int;
-    int deg = (g[key] ?? null).length;
+    int key = (v).toInt();
+    int deg = (g[key]!).length;
     if (deg > max_deg) {
     max_deg = deg;
     max_v = key;
@@ -70,10 +73,10 @@ List<int> greedy_min_vertex_cover(Map<int, List<int>> graph) {
     int i = 0;
     while (i < neighbors.length) {
     int n = neighbors[i];
-    g[n] = remove_value(g[n]!, max_v);
+    g[n] = remove_value((g[n]!), max_v);
     i = i + 1;
   }
-    g[max_v] = ([] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
+    g[max_v] = ([] as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
   }
   return cover;
 }

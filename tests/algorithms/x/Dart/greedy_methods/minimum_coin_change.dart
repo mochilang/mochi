@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,12 +33,17 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
 
 List<int> find_minimum_change(List<int> denominations, int value) {
   if (value <= 0) {
-    return ([] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
+    return ([] as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
   }
   int total = value;
   List<int> answer = <int>[];
@@ -61,8 +66,8 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print((find_minimum_change([1, 2, 5, 10, 20, 50, 100, 500, 2000], 987)).toString());
-  print((find_minimum_change([1, 5, 100, 500, 1000], 456)).toString());
+  print(_str(find_minimum_change([1, 2, 5, 10, 20, 50, 100, 500, 2000], 987)));
+  print(_str(find_minimum_change([1, 5, 100, 500, 1000], 456)));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

@@ -1,5 +1,1 @@
-../../../tests/algorithms/x/Dart/graphs/matching_min_vertex_cover.dart:29:24: Error: The type 'List<int>?' used in the 'for' loop must implement 'Iterable<dynamic>' because 'List<int>?' is nullable and 'Iterable<dynamic>' isn't.
- - 'List' is from 'dart:core'.
- - 'Iterable' is from 'dart:core'.
-    for (var j in graph[i]) {
-                       ^
+[4, 3, 2, 0]

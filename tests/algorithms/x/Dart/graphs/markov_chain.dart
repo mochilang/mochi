@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
 
 class Transition {
   String src;
@@ -101,7 +106,7 @@ Map<String, int> get_transitions(String start, List<Transition> trans, int steps
 dynamic _main() {
   List<Transition> transitions = [Transition(src: "a", dst: "a", prob: 0.9), Transition(src: "a", dst: "b", prob: 0.075), Transition(src: "a", dst: "c", prob: 0.025), Transition(src: "b", dst: "a", prob: 0.15), Transition(src: "b", dst: "b", prob: 0.8), Transition(src: "b", dst: "c", prob: 0.05), Transition(src: "c", dst: "a", prob: 0.25), Transition(src: "c", dst: "b", prob: 0.25), Transition(src: "c", dst: "c", prob: 0.5)];
   Map<String, int> result = get_transitions("a", transitions, 5000);
-  print((result["a"]).toString() + " " + (result["b"]).toString() + " " + (result["c"]).toString());
+  print(_str((result["a"] ?? 0)) + " " + _str((result["b"] ?? 0)) + " " + _str((result["c"] ?? 0)));
 }
 
 void _start() {

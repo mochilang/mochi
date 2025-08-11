@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,10 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 class Machine {
@@ -60,7 +63,7 @@ double round_dec(double x, int n) {
     i = i + 1;
   }
   double y = x * m10 + 0.5;
-  return 1.0 * (y as int) / m10;
+  return 1.0 * ((y).toInt()) / m10;
 }
 
 Machine reset() {
@@ -127,8 +130,8 @@ PullResult pull(Machine m) {
     while (par.length <= key) { par.add(0); } par[key] = new_r + 3.0;
     i = i + 1;
   }
-  int x = buf[(key + 2) % size] * 10000000000.0 as int;
-  int y = buf[(key + size - 2) % size] * 10000000000.0 as int;
+  int x = (buf[(key + 2) % size] * 10000000000.0).toInt();
+  int y = (buf[(key + size - 2) % size] * 10000000000.0).toInt();
   Machine new_machine = Machine(buffer: buf, params: par, time: m.time + 1);
   int value = xorshift(x, y) % 4294967295;
   return PullResult(value: value, machine: new_machine);

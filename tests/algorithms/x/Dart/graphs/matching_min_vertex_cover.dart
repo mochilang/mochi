@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
 
 bool contains(List<int> xs, int v) {
   for (int x in xs) {
@@ -49,7 +54,7 @@ List<List<int>> get_edges(Map<int, List<int>> graph) {
   int n = graph.length;
   List<List<int>> edges = <List<int>>[];
   for (int i = 0; i < n; i++) {
-    for (var j in graph[i]) {
+    for (var j in graph[i]!) {
     edges = [...edges, [i, j]];
   }
   }
@@ -62,21 +67,21 @@ List<int> matching_min_vertex_cover(Map<int, List<int>> graph) {
   while (edges.length > 0) {
     int idx = edges.length - 1;
     List<int> e = edges[idx];
-    edges = (edges.sublist(0, idx) as List).map((e) => (e as List<int>)).toList();
+    edges = (edges.sublist(0, idx) as List<dynamic>).map((e) => (e as List<int>)).toList();
     int u = e[0];
     int v = e[1];
-    if (!chosen.contains(u)) {
+    if (!contains(chosen, u)) {
     chosen = [...chosen, u];
   }
-    if (!chosen.contains(v)) {
+    if (!contains(chosen, v)) {
     chosen = [...chosen, v];
   }
     List<List<int>> filtered = <List<int>>[];
-    for (List<int> edge in edges) {
-    int a = edge[0];
-    int b = edge[1];
+    for (var edge in edges) {
+    dynamic a = edge[0];
+    dynamic b = edge[1];
     if (a != u && b != u && a != v && b != v) {
-    filtered = ([...filtered, edge] as List).map((e) => (e as List<int>)).toList();
+    filtered = [...filtered, edge];
   }
   }
     edges = filtered;
@@ -93,7 +98,7 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print((cover).toString());
+  print(_str(cover));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

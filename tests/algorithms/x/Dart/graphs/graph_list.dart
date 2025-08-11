@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
 
 class GraphAdjacencyList {
   Map<String, List<String>> adj_list;
@@ -55,15 +60,15 @@ GraphAdjacencyList add_edge(GraphAdjacencyList g, String s, String d) {
   Map<String, List<String>> adj = g.adj_list;
   if (!g.directed) {
     if (contains_vertex(adj, s) && contains_vertex(adj, d)) {
-    adj[s] = List<String>.from([...(adj[s] ?? null), d]);
-    adj[d] = List<String>.from([...(adj[d] ?? null), s]);
+    adj[s] = [...(adj[s]!), d];
+    adj[d] = [...(adj[d]!), s];
   } else {
     if (contains_vertex(adj, s)) {
-    adj[s] = List<String>.from([...(adj[s] ?? null), d]);
+    adj[s] = [...(adj[s]!), d];
     adj[d] = [s];
   } else {
     if (contains_vertex(adj, d)) {
-    adj[d] = List<String>.from([...(adj[d] ?? null), s]);
+    adj[d] = [...(adj[d]!), s];
     adj[s] = [d];
   } else {
     adj[s] = [d];
@@ -73,10 +78,10 @@ GraphAdjacencyList add_edge(GraphAdjacencyList g, String s, String d) {
   };
   } else {
     if (contains_vertex(adj, s) && contains_vertex(adj, d)) {
-    adj[s] = List<String>.from([...(adj[s] ?? null), d]);
+    adj[s] = [...(adj[s]!), d];
   } else {
     if (contains_vertex(adj, s)) {
-    adj[s] = List<String>.from([...(adj[s] ?? null), d]);
+    adj[s] = [...(adj[s]!), d];
     adj[d] = List<String>.from([]);
   } else {
     if (contains_vertex(adj, d)) {
@@ -93,7 +98,7 @@ GraphAdjacencyList add_edge(GraphAdjacencyList g, String s, String d) {
 }
 
 String graph_to_string(GraphAdjacencyList g) {
-  return (g.adj_list).toString();
+  return _str(g.adj_list);
 }
 
 GraphAdjacencyList d_graph = make_graph(true);
@@ -104,15 +109,15 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  d_graph = add_edge(d_graph, (0).toString(), (1).toString());
+  d_graph = add_edge(d_graph, _str(0), _str(1));
   print(graph_to_string(d_graph));
-  d_graph = add_edge(d_graph, (1).toString(), (2).toString());
-  d_graph = add_edge(d_graph, (1).toString(), (4).toString());
-  d_graph = add_edge(d_graph, (1).toString(), (5).toString());
+  d_graph = add_edge(d_graph, _str(1), _str(2));
+  d_graph = add_edge(d_graph, _str(1), _str(4));
+  d_graph = add_edge(d_graph, _str(1), _str(5));
   print(graph_to_string(d_graph));
-  d_graph = add_edge(d_graph, (2).toString(), (0).toString());
-  d_graph = add_edge(d_graph, (2).toString(), (6).toString());
-  d_graph = add_edge(d_graph, (2).toString(), (7).toString());
+  d_graph = add_edge(d_graph, _str(2), _str(0));
+  d_graph = add_edge(d_graph, _str(2), _str(6));
+  d_graph = add_edge(d_graph, _str(2), _str(7));
   print(graph_to_string(d_graph));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;

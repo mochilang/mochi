@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,17 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 class LanczosResult {
@@ -125,7 +135,7 @@ List<List<double>> zeros_matrix(int r, int c) {
     row = [...row, 0.0];
     j = j + 1;
   }
-    m = ([...m, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    m = ([...m, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     i = i + 1;
   }
   return m;
@@ -148,7 +158,7 @@ dynamic validate_adjacency_list(List<List<int>> graph) {
     while (j < graph[i].length) {
     int v = graph[i][j];
     if (v < 0 || v >= graph.length) {
-    throw Exception("Invalid neighbor");
+    _error("Invalid neighbor");
   }
     j = j + 1;
   }
@@ -159,7 +169,7 @@ dynamic validate_adjacency_list(List<List<int>> graph) {
 List<double> multiply_matrix_vector(List<List<int>> graph, List<double> vector) {
   int n = graph.length;
   if (vector.length != n) {
-    throw Exception("Vector length must match number of nodes");
+    _error("Vector length must match number of nodes");
   }
   List<double> result = <double>[];
   int i = 0;
@@ -180,7 +190,7 @@ List<double> multiply_matrix_vector(List<List<int>> graph, List<double> vector) 
 LanczosResult lanczos_iteration(List<List<int>> graph, int k) {
   int n = graph.length;
   if (k < 1 || k > n) {
-    throw Exception("invalid number of eigenvectors");
+    _error("invalid number of eigenvectors");
   }
   List<List<double>> q = zeros_matrix(n, k);
   List<List<double>> t = zeros_matrix(k, k);
@@ -376,7 +386,7 @@ String list_to_string(List<double> arr) {
   String s = "[";
   int i = 0;
   while (i < arr.length) {
-    s = s + (arr[i]).toString();
+    s = s + _str(arr[i]);
     if (i < arr.length - 1) {
     s = s + ", ";
   }

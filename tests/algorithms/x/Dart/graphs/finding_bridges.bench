@@ -1,0 +1,4 @@
+../../../tests/algorithms/x/Dart/graphs/finding_bridges.dart:67:36: Error: A value of type 'List<dynamic>' can't be assigned to a variable of type 'List<int>'.
+ - 'List' is from 'dart:core'.
+    res_bridges = [...res_bridges, edge];
+                                   ^

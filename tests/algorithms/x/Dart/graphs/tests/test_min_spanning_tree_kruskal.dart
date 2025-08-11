@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
 
 List<List<int>> sort_edges(List<List<int>> edges) {
   List<List<int>> es = edges;
@@ -85,7 +90,7 @@ List<List<int>> kruskal(int n, List<List<int>> edges) {
     int rv = find(parent, v);
     if (ru != rv) {
     while (parent.length <= ru) { parent.add(0); } parent[ru] = rv;
-    mst = ([...mst, [u, v, w]] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    mst = ([...mst, [u, v, w]] as List<dynamic>).map((e) => ((e as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
   }
   }
   return mst;
@@ -114,7 +119,7 @@ void _main() {
   List<List<int>> result = kruskal(num_nodes, edges);
   List<List<int>> sorted_result = sort_edges(result);
   List<List<int>> sorted_expected = sort_edges(expected);
-  print((sorted_result).toString());
+  print(_str(sorted_result));
   if (edges_equal(sorted_expected, sorted_result)) {
     print((true ? 1 : 0));
   } else {

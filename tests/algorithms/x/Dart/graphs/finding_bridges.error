@@ -1,8 +1,5 @@
-parse: error[P001]: /workspace/mochi/tests/github/TheAlgorithms/Mochi/graphs/finding_bridges.mochi:29:7: unexpected token "else" (expected "{" Statement* "}" (("else" IfStmt) | ("else" "{" Statement* "}"))?)
-  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/graphs/finding_bridges.mochi:29:7
-
- 29 |     } else if !visited[to] {
-    |       ^
-
-help:
-  Check for a missing `{` or `}` to close the block.
+run: exit status 254
+../../../tests/algorithms/x/Dart/graphs/finding_bridges.dart:44:36: Error: A value of type 'List<dynamic>' can't be assigned to a variable of type 'List<int>'.
+ - 'List' is from 'dart:core'.
+    res_bridges = [...res_bridges, edge];
+                                   ^

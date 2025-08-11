@@ -1,3 +1,1 @@
-../../../tests/algorithms/x/Dart/graphs/minimum_path_sum.dart:57:5: Error: Method not found: 'error'.
-    error("The grid does not contain the appropriate information");
-    ^^^^^
+{"duration_us":29666,"memory_bytes":10096640,"name":"main"}

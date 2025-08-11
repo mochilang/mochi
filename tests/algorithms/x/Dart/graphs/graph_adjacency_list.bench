@@ -1,11 +1,1 @@
-../../../tests/algorithms/x/Dart/graphs/graph_adjacency_list.dart:59:39: Error: An expression whose value can be 'null' must be null-checked before it can be dereferenced.
-    adj[s] = List<String>.from([...adj[s], d]);
-                                      ^
-../../../tests/algorithms/x/Dart/graphs/graph_adjacency_list.dart:61:39: Error: An expression whose value can be 'null' must be null-checked before it can be dereferenced.
-    adj[d] = List<String>.from([...adj[d], s]);
-                                      ^
-../../../tests/algorithms/x/Dart/graphs/graph_adjacency_list.dart:162:26: Error: The type 'List<String>?' used in the 'for' loop must implement 'Iterable<dynamic>' because 'List<String>?' is nullable and 'Iterable<dynamic>' isn't.
- - 'List' is from 'dart:core'.
- - 'Iterable' is from 'dart:core'.
-  for (var x in graph.adj[s]) {
-                         ^
+{"duration_us":20630,"memory_bytes":5636096,"name":"_start"}

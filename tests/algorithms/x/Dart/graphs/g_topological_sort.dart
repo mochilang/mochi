@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
 
 List<int> depth_first_search(int u, List<bool> visited, List<List<int>> graph, List<int> stack) {
   while (visited.length <= u) { visited.add(false); } visited[u] = true;
@@ -74,7 +79,7 @@ void print_stack(List<int> stack, Map<int, String> clothes) {
   while (s.length > 0) {
     int idx = s[s.length - 1];
     s = s.sublist(0, s.length - 1);
-    print((order).toString() + " " + clothes[idx]!);
+    print(_str(order) + " " + (clothes[idx] ?? ""));
     order = order + 1;
   }
 }
@@ -83,7 +88,7 @@ String format_list(List<int> xs) {
   String res = "[";
   int i = 0;
   while (i < xs.length) {
-    res = res + (xs[i]).toString();
+    res = res + _str(xs[i]);
     if (i < xs.length - 1) {
     res = res + ", ";
   }

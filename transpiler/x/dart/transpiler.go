@@ -546,8 +546,33 @@ func (s *IfStmt) emit(w io.Writer) error {
 	if _, err := io.WriteString(w, "if ("); err != nil {
 		return err
 	}
-	if err := s.Cond.emit(w); err != nil {
-		return err
+	if iex, ok := s.Cond.(*IndexExpr); ok {
+		oldBang := iex.NoBang
+		oldSuf := iex.NoSuffix
+		if t := inferType(iex.Target); strings.HasPrefix(strings.TrimSuffix(t, "?"), "Map<") {
+			kv := strings.TrimSuffix(strings.TrimPrefix(strings.TrimSuffix(t, "?"), "Map<"), ">")
+			parts := strings.SplitN(kv, ",", 2)
+			needBang := false
+			if len(parts) == 2 {
+				vt := strings.TrimSpace(parts[1])
+				if !strings.HasSuffix(vt, "?") {
+					needBang = true
+				}
+			}
+			iex.NoBang = true
+			iex.NoSuffix = !needBang
+		}
+		if err := iex.emit(w); err != nil {
+			iex.NoBang = oldBang
+			iex.NoSuffix = oldSuf
+			return err
+		}
+		iex.NoBang = oldBang
+		iex.NoSuffix = oldSuf
+	} else {
+		if err := s.Cond.emit(w); err != nil {
+			return err
+		}
 	}
 	if _, err := io.WriteString(w, ") {\n"); err != nil {
 		return err
@@ -1796,6 +1821,24 @@ func (s *SelectorExpr) emit(w io.Writer) error {
 		}
 		_, err := fmt.Fprintf(w, "[%q]", s.Field)
 		return err
+	}
+	if iex, ok := s.Receiver.(*IndexExpr); ok {
+		oldBang := iex.NoBang
+		oldSuf := iex.NoSuffix
+		if tt := inferType(iex.Target); strings.HasPrefix(strings.TrimSuffix(tt, "?"), "Map<") {
+			kv := strings.TrimSuffix(strings.TrimPrefix(strings.TrimSuffix(tt, "?"), "Map<"), ">")
+			parts := strings.SplitN(kv, ",", 2)
+			needBang := false
+			if len(parts) == 2 {
+				vt := strings.TrimSpace(parts[1])
+				if !strings.HasSuffix(vt, "?") {
+					needBang = true
+				}
+			}
+			iex.NoBang = true
+			iex.NoSuffix = !needBang
+		}
+		defer func() { iex.NoBang = oldBang; iex.NoSuffix = oldSuf }()
 	}
 	if precedence(s.Receiver) > 0 {
 		if _, err := io.WriteString(w, "("); err != nil {

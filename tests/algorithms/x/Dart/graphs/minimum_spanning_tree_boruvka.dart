@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
 
 class Edge {
   int u;
@@ -160,7 +165,7 @@ void _main() {
   List<Edge> edges = [Edge(u: 0, v: 1, w: 1), Edge(u: 0, v: 2, w: 2), Edge(u: 2, v: 3, w: 3)];
   List<Edge> mst = boruvka(4, edges);
   for (Edge e in mst) {
-    print((e.u).toString() + " - " + (e.v).toString() + " : " + (e.w).toString());
+    print(_str(e.u) + " - " + _str(e.v) + " : " + _str(e.w));
   }
 }
 

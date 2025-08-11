@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
 
 class QueueNode {
   String node;
@@ -81,10 +86,10 @@ MSTResult prims_algo(Map<String, Map<String, int>> graph) {
   }
   queue = new_q;
   dist[start] = 0;
-  for (var neighbour in graph[start].keys) {
-    dynamic w = graph[start][neighbour]!;
-    if (dist[neighbour]! > dist[start]! + w) {
-    dist[neighbour] = (dist[start]! + w).toInt();
+  for (var neighbour in graph[start]!.keys) {
+    int w = (graph[start] ?? {})[neighbour]!;
+    if ((dist[neighbour] ?? 0) > (dist[start] ?? 0) + w) {
+    dist[neighbour] = (dist[start] ?? 0) + w;
     parent[neighbour] = start;
     int k = 0;
     while (k < queue.length) {
@@ -116,10 +121,10 @@ MSTResult prims_algo(Map<String, Map<String, int>> graph) {
     q = q + 1;
   }
     queue = tmp;
-    for (var neighbour in graph[node].keys) {
-    dynamic w = graph[node][neighbour]!;
-    if (dist[neighbour]! > dist[node]! + w) {
-    dist[neighbour] = (dist[node]! + w).toInt();
+    for (var neighbour in graph[node]!.keys) {
+    int w = (graph[node] ?? {})[neighbour]!;
+    if ((dist[neighbour] ?? 0) > (dist[node] ?? 0) + w) {
+    dist[neighbour] = (dist[node] ?? 0) + w;
     parent[neighbour] = node;
     int r = 0;
     while (r < queue.length) {
@@ -156,9 +161,9 @@ void main() {
   graph["b"] = {"a": 3, "c": 10, "d": 100};
   graph["c"] = {"a": 15, "b": 10, "d": 5};
   graph["d"] = {"b": 100, "c": 5};
-  print((iabs((dist["a"]! - dist["b"]!).toInt())).toString());
-  print((iabs((dist["d"]! - dist["b"]!).toInt())).toString());
-  print((iabs((dist["a"]! - dist["c"]!).toInt())).toString());
+  print(_str(iabs((dist["a"] ?? 0) - (dist["b"] ?? 0))));
+  print(_str(iabs((dist["d"] ?? 0) - (dist["b"] ?? 0))));
+  print(_str(iabs((dist["a"] ?? 0) - (dist["c"] ?? 0))));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

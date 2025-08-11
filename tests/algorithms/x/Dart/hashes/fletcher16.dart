@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,14 +33,17 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 String ascii_chars = " !\"#\$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 int ord(String ch) {
   int i = 0;
   while (i < ascii_chars.length) {
-    if (ascii_chars.substring(i, i + 1) == ch) {
+    if (_substr(ascii_chars, i, i + 1) == ch) {
     return 32 + i;
   }
     i = i + 1;
@@ -53,7 +56,7 @@ int fletcher16(String text) {
   int sum2 = 0;
   int i = 0;
   while (i < text.length) {
-    int code = ord(text.substring(i, i + 1));
+    int code = ord(_substr(text, i, i + 1));
     sum1 = (sum1 + code) % 255;
     sum2 = (sum1 + sum2) % 255;
     i = i + 1;

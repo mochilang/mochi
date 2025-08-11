@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
 
 List<List<int>> sort_edges(List<List<int>> edges) {
   List<List<int>> es = edges;
@@ -76,7 +81,7 @@ List<List<int>> kruskal(int num_nodes, List<List<int>> edges) {
     int pa = find_parent(parent, e[0]);
     int pb = find_parent(parent, e[1]);
     if (pa != pb) {
-    mst = ([...mst, e] as List).map((e) => (e as List<int>)).toList();
+    mst = ([...mst, e] as List<dynamic>).map((e) => (e as List<int>)).toList();
     while (parent.length <= pa) { parent.add(0); } parent[pa] = pb;
   }
     idx = idx + 1;
@@ -89,7 +94,7 @@ String edges_to_string(List<List<int>> es) {
   int i = 0;
   while (i < es.length) {
     List<int> e = es[i];
-    s = s + "(" + (e[0]).toString() + ", " + (e[1]).toString() + ", " + (e[2]).toString() + ")";
+    s = s + "(" + _str(e[0]) + ", " + _str(e[1]) + ", " + _str(e[2]) + ")";
     if (i < es.length - 1) {
     s = s + ", ";
   }

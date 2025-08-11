@@ -1,7 +1,0 @@
-run: exit status 254
-../../../tests/algorithms/x/Dart/graphs/random_graph_generator.dart:85:26: Error: An expression whose value can be 'null' must be null-checked before it can be dereferenced.
-    graph[i] = ([...graph[i], j] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
-                         ^
-../../../tests/algorithms/x/Dart/graphs/random_graph_generator.dart:87:26: Error: An expression whose value can be 'null' must be null-checked before it can be dereferenced.
-    graph[j] = ([...graph[j], i] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
-                         ^

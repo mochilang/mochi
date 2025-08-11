@@ -1,9 +1,9 @@
-../../../tests/algorithms/x/Dart/hashes/chaos_machine.dart:78:47: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+../../../tests/algorithms/x/Dart/hashes/chaos_machine.dart:81:47: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
     next_value = next_value - 1.0 * int.parse(next_value);
                                               ^
-../../../tests/algorithms/x/Dart/hashes/chaos_machine.dart:80:29: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+../../../tests/algorithms/x/Dart/hashes/chaos_machine.dart:83:29: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
     r = r - 1.0 * int.parse(r);
                             ^
-../../../tests/algorithms/x/Dart/hashes/chaos_machine.dart:126:37: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+../../../tests/algorithms/x/Dart/hashes/chaos_machine.dart:129:37: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
     new_r = new_r - 1.0 * int.parse(new_r);
                                     ^

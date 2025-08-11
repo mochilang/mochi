@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
 
 class NodesData {
   Map<String, List<String>> map;
@@ -69,7 +74,7 @@ List<String> get_distinct_edge(List<List<List<String>>> edge_array) {
   for (List<List<String>> row in edge_array) {
     for (List<String> item in row) {
     String e = item[0];
-    if (!distinct.contains(e)) {
+    if (!contains(distinct, e)) {
     distinct = [...distinct, e];
   }
   }
@@ -116,7 +121,7 @@ List<Map<String, String>> get_frequency_table(List<List<List<String>>> edge_arra
   for (String e in distinct) {
     String bit = get_bitcode(edge_array, e);
     int cnt = count_ones(bit);
-    Map<String, String> entry = {"edge": e, "count": (cnt).toString(), "bit": bit};
+    Map<String, String> entry = {"edge": e, "count": _str(cnt), "bit": bit};
     table = [...table, entry];
   }
   int i = 0;
@@ -124,7 +129,7 @@ List<Map<String, String>> get_frequency_table(List<List<List<String>>> edge_arra
     int max_i = i;
     int j = i + 1;
     while (j < table.length) {
-    if (toi(table[j]["count"]!).compareTo(toi(table[max_i]["count"]!)) > 0) {
+    if (toi((table[j]["count"] ?? "")).compareTo(toi((table[max_i]["count"] ?? ""))) > 0) {
     max_i = j;
   }
     j = j + 1;
@@ -144,7 +149,7 @@ NodesData get_nodes(List<Map<String, String>> freq_table) {
     String code = f["bit"]!;
     String edge = f["edge"]!;
     if (nodes.containsKey(code)) {
-    nodes[code] = List<String>.from([...nodes[code], edge]);
+    nodes[code] = [...(nodes[code]!), edge];
   } else {
     nodes[code] = [edge];
     keys = [...keys, code];
@@ -161,7 +166,7 @@ ClusterData get_cluster(NodesData nodes) {
     String code = nodes.keys[i];
     int wt = count_ones(code);
     if (clusters.containsKey(wt)) {
-    clusters[wt] = List<String>.from([...clusters[wt], code]);
+    clusters[wt] = [...(clusters[wt]!), code];
   } else {
     clusters[wt] = [code];
     weights = [...weights, wt];
@@ -210,7 +215,7 @@ int max_cluster_key(ClusterData clusters) {
 
 List<String> get_cluster_codes(ClusterData clusters, int wt) {
   if (clusters.clusters.containsKey(wt)) {
-    return (clusters.clusters[wt])!;
+    return (clusters.clusters[wt]!);
   }
   return List<String>.from([]);
 }
@@ -230,14 +235,14 @@ List<String> create_edge(NodesData nodes, Map<String, List<String>> graph, List<
     String j_code = codes2[j];
     if (contains_bits(i_code, j_code)) {
     if (graph.containsKey(i_code)) {
-    graph[i_code] = List<String>.from([...graph[i_code], j_code]);
+    graph[i_code] = [...(graph[i_code]!), j_code];
   } else {
     graph[i_code] = [j_code];
-    if (!keys.contains(i_code)) {
+    if (!contains(keys, i_code)) {
     keys = [...keys, i_code];
   };
   };
-    if (!keys.contains(j_code)) {
+    if (!contains(keys, j_code)) {
     keys = [...keys, j_code];
   };
     count = count + 1;
@@ -264,7 +269,7 @@ GraphData construct_graph(ClusterData clusters, NodesData nodes) {
   int i = 0;
   while (i < top_codes.length) {
     String code = top_codes[i];
-    graph["Header"] = List<String>.from([...graph["Header"], code]);
+    graph["Header"] = [...(graph["Header"]!), code];
     graph[code] = ["Header"];
     keys = [...keys, code];
     i = i + 1;
@@ -290,10 +295,10 @@ dynamic my_dfs(Map<String, List<String>> graph, String start, String end, List<S
   List<String> new_path = copy_list(path);
   new_path = [...new_path, start];
   if (start == end) {
-    paths = ([...paths, new_path] as List).map((e) => (List<String>.from(e) as List<String>)).toList();
+    paths = ([...paths, new_path] as List<dynamic>).map((e) => (List<String>.from(e) as List<String>)).toList();
     return;
   }
-  for (var node in graph[start]) {
+  for (var node in graph[start]!) {
     bool seen = false;
     for (var p in new_path) {
     if (p == node) {
@@ -317,7 +322,7 @@ dynamic find_freq_subgraph_given_support(int s, ClusterData clusters, GraphData 
 }
 
 List<String> node_edges(NodesData nodes, String code) {
-  return (nodes.map[code])!;
+  return (nodes.map[code]!);
 }
 
 List<List<List<String>>> freq_subgraphs_edge_list(List<List<String>> paths, NodesData nodes) {
@@ -333,12 +338,12 @@ List<List<List<String>>> freq_subgraphs_edge_list(List<List<String>> paths, Node
     String edge = edge_list[e];
     String a = _substr(edge, 0, 1);
     String b = _substr(edge, 1, 2);
-    el = ([...el, [a, b]] as List).map((e) => (List<String>.from(e) as List<String>)).toList();
+    el = ([...el, [a, b]] as List<dynamic>).map((e) => (List<String>.from(e) as List<String>)).toList();
     e = e + 1;
   }
     j = j + 1;
   }
-    freq_sub_el = ([...freq_sub_el, el] as List).map((e) => ((e as List).map((e) => (List<String>.from(e) as List<String>)).toList() as List<List<String>>)).toList();
+    freq_sub_el = ([...freq_sub_el, el] as List<dynamic>).map((e) => ((e as List<dynamic>).map((e) => (List<String>.from(e) as List<String>)).toList() as List<List<String>>)).toList();
   }
   return freq_sub_el;
 }
@@ -349,7 +354,7 @@ dynamic print_all(NodesData nodes, List<int> support, ClusterData clusters, Grap
   while (i < nodes.keys.length) {
     String code = nodes.keys[i];
     print(code);
-    print(nodes.map[code]!);
+    print((nodes.map[code]!));
     i = i + 1;
   }
   print("\nSupport\n");
@@ -358,7 +363,7 @@ dynamic print_all(NodesData nodes, List<int> support, ClusterData clusters, Grap
   int j = 0;
   while (j < clusters.weights.length) {
     int w = clusters.weights[j];
-    print((w).toString() + ":" + (clusters.clusters[w]).toString());
+    print(_str(w) + ":" + _str((clusters.clusters[w]!)));
     j = j + 1;
   }
   print("\nGraph\n");
@@ -366,7 +371,7 @@ dynamic print_all(NodesData nodes, List<int> support, ClusterData clusters, Grap
   while (k < graph.keys.length) {
     String key = graph.keys[k];
     print(key);
-    print(graph.edges[key]!);
+    print((graph.edges[key]!));
     k = k + 1;
   }
   print("\nEdge List of Frequent subgraphs\n");
