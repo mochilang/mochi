@@ -1,12 +1,14 @@
 1 files contain uppercase characters:
 scripts/Validate_filenames.py
 
-6 files are not in a directory:
-scripts/Validate_filenames.py
-good/file.txt
+1 files contain space characters:
 bad file.txt
-/site-packages/pkg-name.py
-nopath
+
+1 files contain hyphen characters:
 src/hyphen-name.py
 
-7
+2 files are not in a directory:
+bad file.txt
+nopath
+
+5
