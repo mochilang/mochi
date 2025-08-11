@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-09 16:06 GMT+7
+Last updated: 2025-08-11 14:53 GMT+7
 
-## Algorithms Golden Test Checklist (309/1077)
+## Algorithms Golden Test Checklist (310/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -353,7 +353,7 @@ Last updated: 2025-08-09 16:06 GMT+7
 | 344 | dynamic_programming/sum_of_subset | ✓ | 56µs | 2.1 MB |
 | 345 | dynamic_programming/trapped_water | ✓ | 53µs | 2.0 MB |
 | 346 | dynamic_programming/tribonacci | ✓ | 20µs | 2.0 MB |
-| 347 | dynamic_programming/viterbi |   |  |  |
+| 347 | dynamic_programming/viterbi | ✓ | 86µs | 2.1 MB |
 | 348 | dynamic_programming/wildcard_matching |   |  |  |
 | 349 | dynamic_programming/word_break |   |  |  |
 | 350 | electronics/apparent_power |   |  |  |
