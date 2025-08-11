@@ -1355,30 +1355,54 @@ func (a *AppendBuiltin) emitPrint(w io.Writer) {
 }
 
 // MinBuiltin represents min(list).
-type MinBuiltin struct{ List Expr }
+type MinBuiltin struct {
+	List     Expr
+	ElemType string
+}
 
 func (m *MinBuiltin) emit(w io.Writer) {
-	io.WriteString(w, "(List.fold_left min max_int ")
+	io.WriteString(w, "(List.fold_left min ")
+	if m.ElemType == "float" {
+		io.WriteString(w, "infinity ")
+	} else {
+		io.WriteString(w, "max_int ")
+	}
 	m.List.emit(w)
 	io.WriteString(w, ")")
 }
 
 func (m *MinBuiltin) emitPrint(w io.Writer) {
-	io.WriteString(w, "string_of_int ")
+	if m.ElemType == "float" {
+		io.WriteString(w, "string_of_float ")
+	} else {
+		io.WriteString(w, "string_of_int ")
+	}
 	m.emit(w)
 }
 
 // MaxBuiltin represents max(list).
-type MaxBuiltin struct{ List Expr }
+type MaxBuiltin struct {
+	List     Expr
+	ElemType string
+}
 
 func (m *MaxBuiltin) emit(w io.Writer) {
-	io.WriteString(w, "(List.fold_left max min_int ")
+	io.WriteString(w, "(List.fold_left max ")
+	if m.ElemType == "float" {
+		io.WriteString(w, "neg_infinity ")
+	} else {
+		io.WriteString(w, "min_int ")
+	}
 	m.List.emit(w)
 	io.WriteString(w, ")")
 }
 
 func (m *MaxBuiltin) emitPrint(w io.Writer) {
-	io.WriteString(w, "string_of_int ")
+	if m.ElemType == "float" {
+		io.WriteString(w, "string_of_float ")
+	} else {
+		io.WriteString(w, "string_of_int ")
+	}
 	m.emit(w)
 }
 
@@ -6228,7 +6252,11 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		if !strings.HasPrefix(typ, "list") {
 			return nil, "", fmt.Errorf("min expects list")
 		}
-		return &MinBuiltin{List: listArg}, "int", nil
+		elemTyp := "int"
+		if strings.HasPrefix(typ, "list-") {
+			elemTyp = strings.TrimPrefix(typ, "list-")
+		}
+		return &MinBuiltin{List: listArg, ElemType: elemTyp}, elemTyp, nil
 	}
 	if c.Func == "max" && len(c.Args) == 1 {
 		listArg, typ, err := convertExpr(c.Args[0], env, vars)
@@ -6238,7 +6266,11 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		if !strings.HasPrefix(typ, "list") {
 			return nil, "", fmt.Errorf("max expects list")
 		}
-		return &MaxBuiltin{List: listArg}, "int", nil
+		elemTyp := "int"
+		if strings.HasPrefix(typ, "list-") {
+			elemTyp = strings.TrimPrefix(typ, "list-")
+		}
+		return &MaxBuiltin{List: listArg, ElemType: elemTyp}, elemTyp, nil
 	}
 	if c.Func == "values" && len(c.Args) == 1 {
 		mapArg, typ, err := convertExpr(c.Args[0], env, vars)
