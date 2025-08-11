@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 826/1077
-Last updated: 2025-08-09 23:14 +0700
+Completed programs: 827/1077
+Last updated: 2025-08-11 14:57 +0700
 
 Checklist:
 
@@ -280,7 +280,7 @@ Checklist:
 | 271 | digital_image_processing/edge_detection/canny | ✓ | 664.0µs | 3.80MB |
 | 272 | digital_image_processing/filters/bilateral_filter | ✓ | 975.0µs | 3.86MB |
 | 273 | digital_image_processing/filters/convolve | ✓ | 432.0µs | 3.71MB |
-| 274 | digital_image_processing/filters/gabor_filter | ✓ | 532.0µs | 3.71MB |
+| 274 | digital_image_processing/filters/gabor_filter | ✓ | 564.0µs | 3.73MB |
 | 275 | digital_image_processing/filters/gaussian_filter | ✓ | 457.0µs | 3.55MB |
 | 276 | digital_image_processing/filters/laplacian_filter | ✓ | 310.0µs | 3.76MB |
 | 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 446.0µs | 3.61MB |
@@ -294,11 +294,11 @@ Checklist:
 | 285 | digital_image_processing/rotation/rotation | ✓ | 384.0µs | 3.48MB |
 | 286 | digital_image_processing/sepia | ✓ | 451.0µs | 3.48MB |
 | 287 | digital_image_processing/test_digital_image_processing | ✓ | 933.0µs | 3.74MB |
-| 288 | divide_and_conquer/closest_pair_of_points | ✓ | 332.0µs | 3.87MB |
+| 288 | divide_and_conquer/closest_pair_of_points | ✓ | 587.0µs | 3.69MB |
 | 289 | divide_and_conquer/convex_hull | ✓ | 4.0µs | 3.52MB |
-| 290 | divide_and_conquer/heaps_algorithm |   |  |  |
+| 290 | divide_and_conquer/heaps_algorithm | ✓ | 295.0µs | 3.54MB |
 | 291 | divide_and_conquer/heaps_algorithm_iterative |   |  |  |
-| 292 | divide_and_conquer/inversions | ✓ | 501.0µs | 3.67MB |
+| 292 | divide_and_conquer/inversions | ✓ | 289.0µs | 3.56MB |
 | 293 | divide_and_conquer/kth_order_statistic | ✓ | 626.0µs | 3.54MB |
 | 294 | divide_and_conquer/max_difference_pair |   | 175.0µs | 3.61MB |
 | 295 | divide_and_conquer/max_subarray | ✓ | 903.0µs | 3.69MB |
