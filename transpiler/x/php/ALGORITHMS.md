@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-11 14:54 GMT+7
+Last updated: 2025-08-11 15:41 GMT+7
 
-## Algorithms Golden Test Checklist (882/1077)
+## Algorithms Golden Test Checklist (931/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 117µs | 38.8 KB |
@@ -1006,56 +1006,56 @@ Last updated: 2025-08-11 14:54 GMT+7
 | 997 | strings/capitalize |   |  |  |
 | 998 | strings/check_anagrams |   |  |  |
 | 999 | strings/count_vowels |   |  |  |
-| 1000 | strings/credit_card_validator |   |  |  |
-| 1001 | strings/damerau_levenshtein_distance |   |  |  |
-| 1002 | strings/detecting_english_programmatically |   |  |  |
-| 1003 | strings/dna |   |  |  |
-| 1004 | strings/edit_distance |   |  |  |
-| 1005 | strings/frequency_finder |   |  |  |
-| 1006 | strings/hamming_distance |   |  |  |
-| 1007 | strings/indian_phone_validator |   |  |  |
-| 1008 | strings/is_contains_unique_chars |   |  |  |
-| 1009 | strings/is_isogram |   |  |  |
-| 1010 | strings/is_pangram |   |  |  |
-| 1011 | strings/is_polish_national_id |   |  |  |
-| 1012 | strings/is_spain_national_id |   |  |  |
-| 1013 | strings/is_srilankan_phone_number |   |  |  |
-| 1014 | strings/is_valid_email_address |   |  |  |
-| 1015 | strings/jaro_winkler |   |  |  |
-| 1016 | strings/join |   |  |  |
-| 1017 | strings/knuth_morris_pratt |   |  |  |
-| 1018 | strings/levenshtein_distance |   |  |  |
-| 1019 | strings/lower |   |  |  |
-| 1020 | strings/manacher |   |  |  |
-| 1021 | strings/min_cost_string_conversion |   |  |  |
-| 1022 | strings/naive_string_search |   |  |  |
-| 1023 | strings/ngram |   |  |  |
-| 1024 | strings/palindrome |   |  |  |
-| 1025 | strings/pig_latin |   |  |  |
-| 1026 | strings/prefix_function |   |  |  |
-| 1027 | strings/rabin_karp |   |  |  |
-| 1028 | strings/remove_duplicate |   |  |  |
-| 1029 | strings/reverse_letters |   |  |  |
-| 1030 | strings/reverse_words |   |  |  |
-| 1031 | strings/snake_case_to_camel_pascal_case |   |  |  |
-| 1032 | strings/split |   |  |  |
-| 1033 | strings/string_switch_case |   |  |  |
-| 1034 | strings/strip |   |  |  |
-| 1035 | strings/text_justification |   |  |  |
-| 1036 | strings/title |   |  |  |
-| 1037 | strings/top_k_frequent_words |   |  |  |
-| 1038 | strings/upper |   |  |  |
-| 1039 | strings/wave_string |   |  |  |
-| 1040 | strings/wildcard_pattern_matching |   |  |  |
-| 1041 | strings/word_occurrence |   |  |  |
-| 1042 | strings/word_patterns |   |  |  |
-| 1043 | strings/z_function |   |  |  |
-| 1044 | web_programming/co2_emission |   |  |  |
-| 1045 | web_programming/covid_stats_via_xpath |   |  |  |
-| 1046 | web_programming/crawl_google_results |   |  |  |
-| 1047 | web_programming/crawl_google_scholar_citation |   |  |  |
-| 1048 | web_programming/currency_converter |   |  |  |
-| 1049 | web_programming/current_stock_price |   |  |  |
+| 1000 | strings/credit_card_validator | ✓ | 211µs | 39.3 KB |
+| 1001 | strings/damerau_levenshtein_distance | ✓ | 1.037ms | 70.9 KB |
+| 1002 | strings/detecting_english_programmatically | ✓ | 966µs | 74.5 KB |
+| 1003 | strings/dna | ✓ | 108µs | 40.5 KB |
+| 1004 | strings/edit_distance | ✓ | 68.333ms | 39.1 KB |
+| 1005 | strings/frequency_finder | ✓ | 6.741ms | 73.1 KB |
+| 1006 | strings/hamming_distance | ✓ | 286µs | 41.4 KB |
+| 1007 | strings/indian_phone_validator | ✓ | 109µs | 38.6 KB |
+| 1008 | strings/is_contains_unique_chars | ✓ | 1.61ms | 75.4 KB |
+| 1009 | strings/is_isogram | ✓ | 649µs | 43.1 KB |
+| 1010 | strings/is_pangram | ✓ | 598µs | 70.5 KB |
+| 1011 | strings/is_polish_national_id | ✓ | 238µs | 38.6 KB |
+| 1012 | strings/is_spain_national_id | ✓ | 725µs | 43.2 KB |
+| 1013 | strings/is_srilankan_phone_number | ✓ | 93µs | 42.8 KB |
+| 1014 | strings/is_valid_email_address | ✓ | 7.58ms | 75.2 KB |
+| 1015 | strings/jaro_winkler | ✓ | 206µs | 75.8 KB |
+| 1016 | strings/join | ✓ | 98µs | 40.4 KB |
+| 1017 | strings/knuth_morris_pratt | ✓ | 186µs | 41.8 KB |
+| 1018 | strings/levenshtein_distance | ✓ | 362µs | 71.9 KB |
+| 1019 | strings/lower | ✓ | 55µs | 40.7 KB |
+| 1020 | strings/manacher | ✓ | 327µs | 90.2 KB |
+| 1021 | strings/min_cost_string_conversion | ✓ | 804µs | 82.9 KB |
+| 1022 | strings/naive_string_search | ✓ | 148µs | 40.6 KB |
+| 1023 | strings/ngram | ✓ | 190µs | 37.7 KB |
+| 1024 | strings/palindrome | ✓ | 306µs | 70.7 KB |
+| 1025 | strings/pig_latin | ✓ | 113µs | 41.4 KB |
+| 1026 | strings/prefix_function | ✓ | 273µs | 70.6 KB |
+| 1027 | strings/rabin_karp | ✓ | 3.065ms | 75.1 KB |
+| 1028 | strings/remove_duplicate | ✓ | 227µs | 42.1 KB |
+| 1029 | strings/reverse_letters | ✓ | 190µs | 39.0 KB |
+| 1030 | strings/reverse_words | ✓ | 154µs | 37.9 KB |
+| 1031 | strings/snake_case_to_camel_pascal_case | ✓ | 119µs | 41.2 KB |
+| 1032 | strings/split | ✓ | 476µs | 37.8 KB |
+| 1033 | strings/string_switch_case | ✓ | 132µs | 36.8 KB |
+| 1034 | strings/strip | ✓ | 137µs | 39.5 KB |
+| 1035 | strings/text_justification | ✓ | 302µs | 74.6 KB |
+| 1036 | strings/title | ✓ | 580µs | 38.2 KB |
+| 1037 | strings/top_k_frequent_words | ✓ | 410µs | 75.6 KB |
+| 1038 | strings/upper | ✓ | 54µs | 40.5 KB |
+| 1039 | strings/wave_string | ✓ | 273µs | 41.6 KB |
+| 1040 | strings/wildcard_pattern_matching | ✓ | 784µs | 73.8 KB |
+| 1041 | strings/word_occurrence | ✓ | 132µs | 38.3 KB |
+| 1042 | strings/word_patterns | ✓ | 237µs | 39.1 KB |
+| 1043 | strings/z_function | ✓ | 618µs | 76.8 KB |
+| 1044 | web_programming/co2_emission | error |  |  |
+| 1045 | web_programming/covid_stats_via_xpath | ✓ | 441µs | 72.2 KB |
+| 1046 | web_programming/crawl_google_results | ✓ | 223µs | 40.8 KB |
+| 1047 | web_programming/crawl_google_scholar_citation | ✓ | 185µs | 42.0 KB |
+| 1048 | web_programming/currency_converter | ✓ | 78µs | 39.7 KB |
+| 1049 | web_programming/current_stock_price | ✓ | 117µs | 41.4 KB |
 | 1050 | web_programming/current_weather |   |  |  |
 | 1051 | web_programming/daily_horoscope |   |  |  |
 | 1052 | web_programming/download_images_from_google_query |   |  |  |

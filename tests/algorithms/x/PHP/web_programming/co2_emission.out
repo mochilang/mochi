@@ -1,0 +1,9 @@
+Warning: file_get_contents(https://api.carbonintensity.org.uk/intensity/2020-10-01/2020-10-03): Failed to open stream: Network is unreachable in /workspace/mochi/tests/algorithms/x/PHP/web_programming/co2_emission.php on line 60
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/web_programming/co2_emission.php on line 74
+
+Fatal error: Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /workspace/mochi/tests/algorithms/x/PHP/web_programming/co2_emission.php:80
+Stack trace:
+#0 /workspace/mochi/tests/algorithms/x/PHP/web_programming/co2_emission.php(88): main()
+#1 {main}
+  thrown in /workspace/mochi/tests/algorithms/x/PHP/web_programming/co2_emission.php on line 80

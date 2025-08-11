@@ -1,0 +1,7 @@
+[a b c o]
+[H t]
+[1 2 6]
+[1 4 3]
+
+Warning: Uninitialized string offset 9 in /workspace/mochi/tests/algorithms/x/PHP/strings/split.php on line 69
+[; a ; c ]
