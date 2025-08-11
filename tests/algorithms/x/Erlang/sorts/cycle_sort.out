@@ -1,0 +1,11 @@
+/workspace/mochi/tests/algorithms/x/Erlang/sorts/cycle_sort.erl:98:7: Warning: variable 'Cycle_start_3' exported from 'case' (line 84, column 17)
+%   98| {Arr, Cycle_start_3, I_2, Item, N, Pos_4} = Fun_2(Arr, Cycle_start_3, I_2, Item, N, Pos_3),
+%     |       ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/sorts/cycle_sort.erl:137:9: Warning: variable 'Cycle_start_3' exported from 'case' (line 84, column 17)
+%  137| {Arr_3, Cycle_start_3, I_4, Item_3, N, Pos_8, Temp} = Fun_5(Arr_2, Cycle_start_3, I_2, Item_2, N, Pos_4, Temp),
+%     |         ^
+
+[1 2 3 4]
+[-50 -4 -1 0 20 100]
+[]
