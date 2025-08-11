@@ -1,0 +1,5 @@
+Execution error (ClassCastException) at main/is-spain-national-id (is_spain_national_id.clj:74).
+class java.lang.String cannot be cast to class java.lang.Character (java.lang.String and java.lang.Character are in module java.base of loader 'bootstrap')
+
+Full report at:
+/tmp/clojure-17139762515311090228.edn

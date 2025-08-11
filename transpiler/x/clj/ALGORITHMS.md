@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-11 15:20 GMT+7
+Last updated: 2025-08-11 15:46 GMT+7
 
-## Algorithms Golden Test Checklist (571/1077)
+## Algorithms Golden Test Checklist (613/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 50.25ms | 19.66MB |
@@ -347,24 +347,24 @@ Last updated: 2025-08-11 15:20 GMT+7
 | 338 | dynamic_programming/palindrome_partitioning | ✓ | 38.302ms | 20.35MB |
 | 339 | dynamic_programming/range_sum_query | ✓ | 46.967ms | 19.75MB |
 | 340 | dynamic_programming/regex_match | ✓ | 40.434ms | 23.00MB |
-| 341 | dynamic_programming/rod_cutting | ✓ | 33.162ms | 20.14MB |
-| 342 | dynamic_programming/smith_waterman | ✓ | 35.349ms | 27.38MB |
-| 343 | dynamic_programming/subset_generation | ✓ | 51.09ms | 20.39MB |
-| 344 | dynamic_programming/sum_of_subset | ✓ | 32.972ms | 20.56MB |
-| 345 | dynamic_programming/trapped_water | ✓ | 44.518ms | 20.98MB |
-| 346 | dynamic_programming/tribonacci | ✓ | 46.14ms | 19.38MB |
-| 347 | dynamic_programming/viterbi | error | 54.079ms | 30.02MB |
-| 348 | dynamic_programming/wildcard_matching | ✓ | 37.895ms | 21.58MB |
-| 349 | dynamic_programming/word_break | ✓ | 31.472ms | 20.14MB |
-| 350 | electronics/apparent_power | ✓ | 39.972ms | 23.07MB |
-| 351 | electronics/builtin_voltage | ✓ | 36.997ms | 21.47MB |
-| 352 | electronics/capacitor_equivalence | ✓ | 34.878ms | 20.16MB |
-| 353 | electronics/carrier_concentration | ✓ | 28.643ms | 20.43MB |
-| 354 | electronics/charging_capacitor | ✓ | 40.588ms | 20.62MB |
-| 355 | electronics/charging_inductor | ✓ | 38.135ms | 21.64MB |
-| 356 | electronics/circular_convolution | ✓ | 52.652ms | 22.39MB |
-| 357 | electronics/coulombs_law | ✓ | 42.83ms | 21.21MB |
-| 358 | electronics/electric_conductivity | ✓ | 35.988ms | 19.93MB |
+| 341 | dynamic_programming/rod_cutting | ✓ | 51.166ms | 20.17MB |
+| 342 | dynamic_programming/smith_waterman | ✓ | 55.898ms | 27.52MB |
+| 343 | dynamic_programming/subset_generation | ✓ | 58.007ms | 20.63MB |
+| 344 | dynamic_programming/sum_of_subset | ✓ | 46.102ms | 21.07MB |
+| 345 | dynamic_programming/trapped_water | ✓ | 44.951ms | 21.37MB |
+| 346 | dynamic_programming/tribonacci | ✓ | 57.675ms | 19.47MB |
+| 347 | dynamic_programming/viterbi | ✓ | 54.079ms | 30.02MB |
+| 348 | dynamic_programming/wildcard_matching | ✓ | 51.18ms | 21.68MB |
+| 349 | dynamic_programming/word_break | ✓ | 45.501ms | 20.68MB |
+| 350 | electronics/apparent_power | ✓ | 42.316ms | 23.02MB |
+| 351 | electronics/builtin_voltage | ✓ | 44.287ms | 21.86MB |
+| 352 | electronics/capacitor_equivalence | ✓ | 42.174ms | 20.52MB |
+| 353 | electronics/carrier_concentration | ✓ | 49.315ms | 20.56MB |
+| 354 | electronics/charging_capacitor | ✓ | 43.327ms | 20.95MB |
+| 355 | electronics/charging_inductor | ✓ | 47.737ms | 21.80MB |
+| 356 | electronics/circular_convolution | ✓ | 62.502ms | 22.66MB |
+| 357 | electronics/coulombs_law | error |  |  |
+| 358 | electronics/electric_conductivity | ✓ | 38.411ms | 21.64MB |
 | 359 | electronics/electric_power | error |  |  |
 | 360 | electronics/electrical_impedance | ✓ | 52.539ms | 20.29MB |
 | 361 | electronics/ic_555_timer | ✓ | 38.906ms | 19.59MB |
@@ -1006,56 +1006,56 @@ Last updated: 2025-08-11 15:20 GMT+7
 | 997 | strings/capitalize |   |  |  |
 | 998 | strings/check_anagrams |   |  |  |
 | 999 | strings/count_vowels |   |  |  |
-| 1000 | strings/credit_card_validator |   |  |  |
-| 1001 | strings/damerau_levenshtein_distance |   |  |  |
-| 1002 | strings/detecting_english_programmatically |   |  |  |
-| 1003 | strings/dna |   |  |  |
-| 1004 | strings/edit_distance |   |  |  |
-| 1005 | strings/frequency_finder |   |  |  |
-| 1006 | strings/hamming_distance |   |  |  |
-| 1007 | strings/indian_phone_validator |   |  |  |
-| 1008 | strings/is_contains_unique_chars |   |  |  |
-| 1009 | strings/is_isogram |   |  |  |
-| 1010 | strings/is_pangram |   |  |  |
-| 1011 | strings/is_polish_national_id |   |  |  |
-| 1012 | strings/is_spain_national_id |   |  |  |
-| 1013 | strings/is_srilankan_phone_number |   |  |  |
-| 1014 | strings/is_valid_email_address |   |  |  |
-| 1015 | strings/jaro_winkler |   |  |  |
-| 1016 | strings/join |   |  |  |
-| 1017 | strings/knuth_morris_pratt |   |  |  |
-| 1018 | strings/levenshtein_distance |   |  |  |
-| 1019 | strings/lower |   |  |  |
-| 1020 | strings/manacher |   |  |  |
-| 1021 | strings/min_cost_string_conversion |   |  |  |
-| 1022 | strings/naive_string_search |   |  |  |
-| 1023 | strings/ngram |   |  |  |
-| 1024 | strings/palindrome |   |  |  |
-| 1025 | strings/pig_latin |   |  |  |
-| 1026 | strings/prefix_function |   |  |  |
-| 1027 | strings/rabin_karp |   |  |  |
-| 1028 | strings/remove_duplicate |   |  |  |
-| 1029 | strings/reverse_letters |   |  |  |
-| 1030 | strings/reverse_words |   |  |  |
-| 1031 | strings/snake_case_to_camel_pascal_case |   |  |  |
-| 1032 | strings/split |   |  |  |
-| 1033 | strings/string_switch_case |   |  |  |
-| 1034 | strings/strip |   |  |  |
-| 1035 | strings/text_justification |   |  |  |
-| 1036 | strings/title |   |  |  |
-| 1037 | strings/top_k_frequent_words |   |  |  |
-| 1038 | strings/upper |   |  |  |
-| 1039 | strings/wave_string |   |  |  |
-| 1040 | strings/wildcard_pattern_matching |   |  |  |
-| 1041 | strings/word_occurrence |   |  |  |
-| 1042 | strings/word_patterns |   |  |  |
-| 1043 | strings/z_function |   |  |  |
-| 1044 | web_programming/co2_emission |   |  |  |
-| 1045 | web_programming/covid_stats_via_xpath |   |  |  |
-| 1046 | web_programming/crawl_google_results |   |  |  |
-| 1047 | web_programming/crawl_google_scholar_citation |   |  |  |
-| 1048 | web_programming/currency_converter |   |  |  |
-| 1049 | web_programming/current_stock_price |   |  |  |
+| 1000 | strings/credit_card_validator | ✓ | 47.491ms | 21.90MB |
+| 1001 | strings/damerau_levenshtein_distance | ✓ | 53.787ms | 28.07MB |
+| 1002 | strings/detecting_english_programmatically | ✓ | 59.727ms | 23.74MB |
+| 1003 | strings/dna | ✓ | 45.223ms | 20.12MB |
+| 1004 | strings/edit_distance | ✓ | 2.934006s | 20.69MB |
+| 1005 | strings/frequency_finder | ✓ | 114.533ms | 23.86MB |
+| 1006 | strings/hamming_distance | ✓ | 44.6ms | 19.05MB |
+| 1007 | strings/indian_phone_validator | ✓ | 46.418ms | 21.04MB |
+| 1008 | strings/is_contains_unique_chars | error |  |  |
+| 1009 | strings/is_isogram | ✓ | 52.863ms | 22.14MB |
+| 1010 | strings/is_pangram | ✓ | 50.936ms | 21.04MB |
+| 1011 | strings/is_polish_national_id | ✓ | 50.596ms | 21.63MB |
+| 1012 | strings/is_spain_national_id | error |  |  |
+| 1013 | strings/is_srilankan_phone_number | ✓ | 50.404ms | 21.37MB |
+| 1014 | strings/is_valid_email_address | ✓ | 112.142ms | 23.28MB |
+| 1015 | strings/jaro_winkler | error |  |  |
+| 1016 | strings/join | ✓ | 53.421ms | 19.33MB |
+| 1017 | strings/knuth_morris_pratt | error |  |  |
+| 1018 | strings/levenshtein_distance | ✓ | 55.243ms | 22.84MB |
+| 1019 | strings/lower | ✓ | 57.81ms | 19.81MB |
+| 1020 | strings/manacher | ✓ | 53.191ms | 22.05MB |
+| 1021 | strings/min_cost_string_conversion | ✓ | 53.556ms | 27.54MB |
+| 1022 | strings/naive_string_search | ✓ | 73.229ms | 19.55MB |
+| 1023 | strings/ngram | ✓ | 67.586ms | 19.31MB |
+| 1024 | strings/palindrome | ✓ | 58.703ms | 22.41MB |
+| 1025 | strings/pig_latin | ✓ | 46.106ms | 21.25MB |
+| 1026 | strings/prefix_function | ✓ | 74.408ms | 21.58MB |
+| 1027 | strings/rabin_karp | ✓ | 102.338ms | 22.61MB |
+| 1028 | strings/remove_duplicate | ✓ | 58.378ms | 22.12MB |
+| 1029 | strings/reverse_letters | ✓ | 56.186ms | 21.03MB |
+| 1030 | strings/reverse_words | ✓ | 46.079ms | 19.48MB |
+| 1031 | strings/snake_case_to_camel_pascal_case | ✓ | 55.015ms | 20.68MB |
+| 1032 | strings/split | ✓ | 72.294ms | 19.80MB |
+| 1033 | strings/string_switch_case | error |  |  |
+| 1034 | strings/strip | ✓ | 50.212ms | 20.96MB |
+| 1035 | strings/text_justification | ✓ | 69.891ms | 21.74MB |
+| 1036 | strings/title | ✓ | 56.279ms | 21.64MB |
+| 1037 | strings/top_k_frequent_words | ✓ | 72.945ms | 22.04MB |
+| 1038 | strings/upper | ✓ | 55.515ms | 19.85MB |
+| 1039 | strings/wave_string | ✓ | 69.971ms | 20.72MB |
+| 1040 | strings/wildcard_pattern_matching | error |  |  |
+| 1041 | strings/word_occurrence | error |  |  |
+| 1042 | strings/word_patterns | ✓ | 49.599ms | 20.10MB |
+| 1043 | strings/z_function | ✓ | 83.02ms | 22.72MB |
+| 1044 | web_programming/co2_emission | ✓ | 60.604ms | 19.87MB |
+| 1045 | web_programming/covid_stats_via_xpath | ✓ | 52.113ms | 22.07MB |
+| 1046 | web_programming/crawl_google_results | ✓ | 50.168ms | 23.71MB |
+| 1047 | web_programming/crawl_google_scholar_citation | error |  |  |
+| 1048 | web_programming/currency_converter | ✓ | 42.548ms | 19.74MB |
+| 1049 | web_programming/current_stock_price | ✓ | 50.981ms | 24.35MB |
 | 1050 | web_programming/current_weather |   |  |  |
 | 1051 | web_programming/daily_horoscope |   |  |  |
 | 1052 | web_programming/download_images_from_google_query |   |  |  |

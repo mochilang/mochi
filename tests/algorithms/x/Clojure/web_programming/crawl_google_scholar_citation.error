@@ -1,0 +1,6 @@
+run: exit status 1
+Syntax error compiling at (/workspace/mochi/tests/algorithms/x/Clojure/web_programming/crawl_google_scholar_citation.clj:65:13).
+Unable to resolve symbol: __name__ in this context
+
+Full report at:
+/tmp/clojure-17761220541054754363.edn
