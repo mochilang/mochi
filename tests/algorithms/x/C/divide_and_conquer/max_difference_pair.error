@@ -1,0 +1,42 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/divide_and_conquer/max_difference_pair.c: In function ‘str_list_int’:
+/workspace/mochi/tests/algorithms/x/C/divide_and_conquer/max_difference_pair.c:24:38: warning: format ‘%d’ expects argument of type ‘int’, but argument 4 has type ‘long long int’ [-Wformat=]
+   24 |         snprintf(tmp, sizeof(tmp), "%d", arr[i]);
+      |                                     ~^   ~~~~~~
+      |                                      |      |
+      |                                      int    long long int
+      |                                     %lld
+/workspace/mochi/tests/algorithms/x/C/divide_and_conquer/max_difference_pair.c: In function ‘max_diff_range’:
+/workspace/mochi/tests/algorithms/x/C/divide_and_conquer/max_difference_pair.c:109:30: error: ‘v_len’ undeclared (first use in this function); did you mean ‘a_len’?
+  109 |             __tmp0_lens[0] = v_len;
+      |                              ^~~~~
+      |                              a_len
+/workspace/mochi/tests/algorithms/x/C/divide_and_conquer/max_difference_pair.c:109:30: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/algorithms/x/C/divide_and_conquer/max_difference_pair.c:114:13: error: ‘max_diff_range_lens’ undeclared (first use in this function); did you mean ‘max_diff_range_len’?
+  114 |             max_diff_range_lens = __tmp0_lens;
+      |             ^~~~~~~~~~~~~~~~~~~
+      |             max_diff_range_len
+/workspace/mochi/tests/algorithms/x/C/divide_and_conquer/max_difference_pair.c:136:30: error: ‘small2_len’ undeclared (first use in this function); did you mean ‘small2’?
+  136 |             __tmp1_lens[0] = small2_len;
+      |                              ^~~~~~~~~~
+      |                              small2
+/workspace/mochi/tests/algorithms/x/C/divide_and_conquer/max_difference_pair.c:137:30: error: ‘big2_len’ undeclared (first use in this function); did you mean ‘right_len’?
+  137 |             __tmp1_lens[1] = big2_len;
+      |                              ^~~~~~~~
+      |                              right_len
+/workspace/mochi/tests/algorithms/x/C/divide_and_conquer/max_difference_pair.c:149:34: error: ‘small1_len’ undeclared (first use in this function); did you mean ‘small1’?
+  149 |                 __tmp2_lens[0] = small1_len;
+      |                                  ^~~~~~~~~~
+      |                                  small1
+/workspace/mochi/tests/algorithms/x/C/divide_and_conquer/max_difference_pair.c:150:34: error: ‘big1_len’ undeclared (first use in this function); did you mean ‘right_len’?
+  150 |                 __tmp2_lens[1] = big1_len;
+      |                                  ^~~~~~~~
+      |                                  right_len
+/workspace/mochi/tests/algorithms/x/C/divide_and_conquer/max_difference_pair.c:161:34: error: ‘min_left_len’ undeclared (first use in this function); did you mean ‘min_left’?
+  161 |                 __tmp3_lens[0] = min_left_len;
+      |                                  ^~~~~~~~~~~~
+      |                                  min_left
+/workspace/mochi/tests/algorithms/x/C/divide_and_conquer/max_difference_pair.c:162:34: error: ‘max_right_len’ undeclared (first use in this function); did you mean ‘max_right’?
+  162 |                 __tmp3_lens[1] = max_right_len;
+      |                                  ^~~~~~~~~~~~~
+      |                                  max_right
