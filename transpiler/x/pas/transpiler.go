@@ -892,9 +892,17 @@ func (s *SliceExpr) emit(w io.Writer) {
 	s.Target.emit(w)
 	io.WriteString(w, ", ")
 	if s.Start != nil {
-		s.Start.emit(w)
-		if s.String {
-			io.WriteString(w, "+1")
+		if il, ok := s.Start.(*IntLit); ok {
+			if s.String {
+				fmt.Fprintf(w, "%d", il.Value+1)
+			} else {
+				fmt.Fprintf(w, "%d", il.Value)
+			}
+		} else {
+			s.Start.emit(w)
+			if s.String {
+				io.WriteString(w, "+1")
+			}
 		}
 	} else {
 		if s.String {
@@ -905,11 +913,23 @@ func (s *SliceExpr) emit(w io.Writer) {
 	}
 	io.WriteString(w, ", ")
 	if s.End != nil && s.Start != nil {
-		io.WriteString(w, "(")
-		s.End.emit(w)
-		io.WriteString(w, " - (")
-		s.Start.emit(w)
-		io.WriteString(w, "))")
+		if il1, ok1 := s.End.(*IntLit); ok1 {
+			if il2, ok2 := s.Start.(*IntLit); ok2 {
+				fmt.Fprintf(w, "%d", il1.Value-il2.Value)
+			} else {
+				io.WriteString(w, "(")
+				s.End.emit(w)
+				io.WriteString(w, " - (")
+				s.Start.emit(w)
+				io.WriteString(w, "))")
+			}
+		} else {
+			io.WriteString(w, "(")
+			s.End.emit(w)
+			io.WriteString(w, " - (")
+			s.Start.emit(w)
+			io.WriteString(w, "))")
+		}
 	} else if s.End != nil {
 		s.End.emit(w)
 	} else {
@@ -4331,18 +4351,18 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 						currProg.NeedContains = true
 						expr = &ContainsExpr{Collection: args[0], Value: args[1], Kind: "list"}
 					}
-                                } else if name == "sha256" && len(args) == 1 {
-                                        currProg.UseSysUtils = true
-                                        currProg.UseSHA256 = true
-                                        _ = currProg.addArrayAlias("integer")
-                                        expr = &CallExpr{Name: "_sha256", Args: args}
-                                } else if name == "floor" && len(args) == 1 {
-                                        currProg.UseMath = true
-                                        expr = &CallExpr{Name: "Floor", Args: args}
-                                } else {
-                                        expr = &CallExpr{Name: name, Args: args}
-                                }
-                        case *SelectorExpr:
+				} else if name == "sha256" && len(args) == 1 {
+					currProg.UseSysUtils = true
+					currProg.UseSHA256 = true
+					_ = currProg.addArrayAlias("integer")
+					expr = &CallExpr{Name: "_sha256", Args: args}
+				} else if name == "floor" && len(args) == 1 {
+					currProg.UseMath = true
+					expr = &CallExpr{Name: "Floor", Args: args}
+				} else {
+					expr = &CallExpr{Name: name, Args: args}
+				}
+			case *SelectorExpr:
 				if len(t.Tail) == 1 {
 					name := t.Tail[0]
 					switch t.Root {
@@ -4738,15 +4758,15 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				end = args[2]
 			}
 			return &SliceExpr{Target: args[0], Start: args[1], End: end, String: inferType(args[0]) == "string"}, nil
-                } else if name == "float" && len(args) == 1 {
-                        return &CallExpr{Name: "Double", Args: args}, nil
-                } else if name == "floor" && len(args) == 1 {
-                        currProg.UseMath = true
-                        return &CallExpr{Name: "Floor", Args: args}, nil
-                } else if name == "contains" && len(args) == 2 {
-                        if _, ok := funcNames[strings.ToLower(name)]; ok {
-                                return &CallExpr{Name: name, Args: args}, nil
-                        }
+		} else if name == "float" && len(args) == 1 {
+			return &CallExpr{Name: "Double", Args: args}, nil
+		} else if name == "floor" && len(args) == 1 {
+			currProg.UseMath = true
+			return &CallExpr{Name: "Floor", Args: args}, nil
+		} else if name == "contains" && len(args) == 2 {
+			if _, ok := funcNames[strings.ToLower(name)]; ok {
+				return &CallExpr{Name: name, Args: args}, nil
+			}
 			if inferType(args[0]) == "string" || inferType(args[1]) == "string" {
 				return &ContainsExpr{Collection: args[0], Value: args[1], Kind: "string"}, nil
 			}
