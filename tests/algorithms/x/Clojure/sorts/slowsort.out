@@ -1,0 +1,6 @@
+Picked up JAVA_TOOL_OPTIONS: -Djava.net.preferIPv4Stack=true
+Execution error (StackOverflowError) at main/slowsort-recursive (slowsort.clj:37).
+null
+
+Full report at:
+/tmp/clojure-2804948249334835446.edn

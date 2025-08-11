@@ -1,0 +1,7 @@
+run: exit status 1
+Picked up JAVA_TOOL_OPTIONS: -Djava.net.preferIPv4Stack=true
+Execution error (ClassCastException) at main/autocomplete-using-trie (autocomplete_using_trie.clj:36).
+class java.lang.String cannot be cast to class clojure.lang.IPersistentVector (java.lang.String is in module java.base of loader 'bootstrap'; clojure.lang.IPersistentVector is in unnamed module of loader 'app')
+
+Full report at:
+/tmp/clojure-2043283427289475245.edn

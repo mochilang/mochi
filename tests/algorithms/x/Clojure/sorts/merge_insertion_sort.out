@@ -1,0 +1,6 @@
+Picked up JAVA_TOOL_OPTIONS: -Djava.net.preferIPv4Stack=true
+Syntax error (UnsupportedOperationException) compiling recur at (/workspace/mochi/tests/algorithms/x/Clojure/sorts/merge_insertion_sort.clj:82:931).
+Can only recur from tail position
+
+Full report at:
+/tmp/clojure-6689085697184073542.edn

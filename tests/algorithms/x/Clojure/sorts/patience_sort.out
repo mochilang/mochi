@@ -1,0 +1,6 @@
+Picked up JAVA_TOOL_OPTIONS: -Djava.net.preferIPv4Stack=true
+Execution error (IndexOutOfBoundsException) at main/patience-sort (patience_sort.clj:80).
+null
+
+Full report at:
+/tmp/clojure-16745181046804226306.edn

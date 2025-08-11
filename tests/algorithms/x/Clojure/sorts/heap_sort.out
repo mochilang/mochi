@@ -1,0 +1,6 @@
+Picked up JAVA_TOOL_OPTIONS: -Djava.net.preferIPv4Stack=true
+Execution error (IllegalArgumentException) at main/heapify (heap_sort.clj:46).
+Key must be integer
+
+Full report at:
+/tmp/clojure-8356420735714700431.edn

@@ -1,0 +1,7 @@
+run: exit status 1
+Picked up JAVA_TOOL_OPTIONS: -Djava.net.preferIPv4Stack=true
+Execution error (StackOverflowError) at java.util.Arrays/copyOfRange (Arrays.java:3944).
+null
+
+Full report at:
+/tmp/clojure-16768258266503924757.edn

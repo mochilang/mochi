@@ -1,3 +1,207 @@
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-11 16:51 +0700)
+- lua: refresh sort outputs and restore docs
+- Regenerated golden files - 102/105 vm valid programs passing
+
 ## Progress (2025-08-08 18:03 +0700)
 - clj transpiler: handle continue in loops and add toi
 - Regenerated golden files - 102/105 vm valid programs passing
