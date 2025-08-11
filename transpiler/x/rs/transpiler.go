@@ -4843,18 +4843,18 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 						}
 					}
 				} else if strings.HasPrefix(pts[i], "&") {
-					if _, isUnary := args[i].(*UnaryExpr); !isUnary {
-						if nr, ok := args[i].(*NameRef); ok {
-							if pt, ok2 := currentParamTypes[nr.Name]; ok2 && strings.HasPrefix(pt, "&") {
-								// already reference
-							} else if vt, ok3 := varTypes[nr.Name]; ok3 && strings.HasPrefix(vt, "&") {
-								// already reference
-							} else {
-								args[i] = &UnaryExpr{Op: "&", Expr: args[i]}
-							}
+					if nr, ok := args[i].(*NameRef); ok {
+						if newName, ok2 := globalRenames[nr.Name]; ok2 && strings.Contains(pts[i], "HashMap<") {
+							args[i] = &NameRef{Name: newName}
+						} else if pt, ok2 := currentParamTypes[nr.Name]; ok2 && strings.HasPrefix(pt, "&") {
+							// already reference
+						} else if vt, ok3 := varTypes[nr.Name]; ok3 && strings.HasPrefix(vt, "&") {
+							// already reference
 						} else {
 							args[i] = &UnaryExpr{Op: "&", Expr: args[i]}
 						}
+					} else if _, isUnary := args[i].(*UnaryExpr); !isUnary {
+						args[i] = &UnaryExpr{Op: "&", Expr: args[i]}
 					}
 				} else if pts[i] == "String" {
 					if _, ok := args[i].(*StringLit); ok || inferType(args[i]) != "String" {
