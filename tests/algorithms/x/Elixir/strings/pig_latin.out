@@ -1,0 +1,10 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 82 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/pig_latin.exs:82:7: Main.is_vowel/1
+
+pig_latin('friends') = iendsfray
+pig_latin('smile') = ilesmay
+pig_latin('eat') = eatway

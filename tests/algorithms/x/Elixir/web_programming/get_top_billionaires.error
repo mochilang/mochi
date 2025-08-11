@@ -1,0 +1,7 @@
+run: exit status 1
+** (KeyError) key :personsLists not found in: 0
+
+If you are using the dot syntax, such as map.field, make sure the left-hand side of the dot is a map
+    /workspace/mochi/tests/algorithms/x/Elixir/web_programming/get_top_billionaires.exs:33: Main.get_forbes_real_time_billionaires/0
+    /workspace/mochi/tests/algorithms/x/Elixir/web_programming/get_top_billionaires.exs:61: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/web_programming/get_top_billionaires.exs:69: (file)

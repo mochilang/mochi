@@ -1,0 +1,29 @@
+warning: variable "api_key" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 15 │   def get_apod_data(api_key) do
+    │                     ~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/nasa_data.exs:15:21: Main.get_apod_data/1
+
+    warning: variable "query" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 31 │   def get_archive_data(query) do
+    │                        ~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/nasa_data.exs:31:24: Main.get_archive_data/1
+
+    error: undefined variable "first"
+    │
+ 45 │       first_item = first.(items)
+    │                    ^^^^^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/nasa_data.exs:45:20: Main.main/0
+
+    error: undefined variable "first"
+    │
+ 46 │       first_data = first.(first_item.data)
+    │                    ^^^^^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/nasa_data.exs:46:20: Main.main/0
+
+** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/web_programming/nasa_data.exs: cannot compile module Main (errors have been logged)

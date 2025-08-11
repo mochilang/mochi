@@ -1,0 +1,31 @@
+run: exit status 1
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 68 │       {i, stories} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/get_top_hn_posts.exs:68:8: Main.hackernews_top_stories/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 95 │       {i, output} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/get_top_hn_posts.exs:95:8: Main.hackernews_top_stories_as_markdown/1
+
+    error: undefined function _fetch/1 (expected Main to define such a function or for it to be imported, but none are available)
+    │
+ 55 │       ids = (_fetch(url))
+    │              ^^^^^^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/get_top_hn_posts.exs:55:14: Main.hackernews_top_stories/1
+
+    error: undefined function _fetch/1 (expected Main to define such a function or for it to be imported, but none are available)
+    │
+ 40 │       story = (_fetch(url))
+    │                ^^^^^^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/get_top_hn_posts.exs:40:16: Main.get_hackernews_story/1
+
+** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/web_programming/get_top_hn_posts.exs: cannot compile module Main (errors have been logged)
+

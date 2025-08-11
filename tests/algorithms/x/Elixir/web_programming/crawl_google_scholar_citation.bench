@@ -1,0 +1,43 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 30 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/crawl_google_scholar_citation.exs:30:7: Main.is_digit/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 73 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/crawl_google_scholar_citation.exs:73:7: Main.find_substring/2
+
+     warning: variable "pos" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 106 │       {pos, result} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/crawl_google_scholar_citation.exs:106:8: Main.extract_citation/1
+
+     warning: variable "base_url" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 117 │   def get_citation(base_url, params) do
+     │                    ~~~~~~~~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/crawl_google_scholar_citation.exs:117:20: Main.get_citation/2
+
+     warning: variable "params" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 117 │   def get_citation(base_url, params) do
+     │                              ~~~~~~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/crawl_google_scholar_citation.exs:117:30: Main.get_citation/2
+
+     error: undefined variable "__name__"
+     │
+ 130 │     if __name__ == "__main__" do
+     │        ^^^^^^^^
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/crawl_google_scholar_citation.exs:130:8: Main.main/0
+
+** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/web_programming/crawl_google_scholar_citation.exs: cannot compile module Main (errors have been logged)

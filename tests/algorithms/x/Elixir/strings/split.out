@@ -1,0 +1,19 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 58 │       {i, last, parts} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/split.exs:58:8: Main.split_with_sep/2
+
+    warning: variable "last" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 58 │       {i, last, parts} = try do
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/split.exs:58:11: Main.split_with_sep/2
+
+["apple", "banana", "cherry", "orange"]
+["Hello", "there"]
+["11", "22", "63"]
+["12", "43", "39"]
+["", "abbb", "", "c", ""]

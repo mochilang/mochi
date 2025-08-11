@@ -1,0 +1,44 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 61 │           {converted, j} = try do
+    │                       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/is_spain_national_id.exs:61:23: Main.to_upper/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 74 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/is_spain_national_id.exs:74:8: Main.to_upper/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 99 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/is_spain_national_id.exs:99:7: Main.is_digit/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 130 │       {cleaned, i} = try do
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/is_spain_national_id.exs:130:17: Main.clean_id/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 159 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/is_spain_national_id.exs:159:7: Main.is_spain_national_id/1
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a number
+
+    :erlang.trunc("12345678")
+    /workspace/mochi/tests/algorithms/x/Elixir/strings/is_spain_national_id.exs:165: Main.is_spain_national_id/1
+    /workspace/mochi/tests/algorithms/x/Elixir/strings/is_spain_national_id.exs:178: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/strings/is_spain_national_id.exs:201: Main.bench_main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/strings/is_spain_national_id.exs:209: (file)

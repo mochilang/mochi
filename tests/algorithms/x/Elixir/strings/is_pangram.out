@@ -1,0 +1,59 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 30 │       {i, letters} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/is_pangram.exs:30:8: Main.is_pangram/1
+
+    warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 81 │           {flag, k} = try do
+    │                  ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/is_pangram.exs:81:18: Main.is_pangram_faster/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 55 │       {flag, i} = try do
+    │              ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/is_pangram.exs:55:14: Main.is_pangram_faster/1
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 93 │       {flag, j} = try do
+    │              ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/is_pangram.exs:93:14: Main.is_pangram_faster/1
+
+     warning: variable "t" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 111 │       t = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/is_pangram.exs:111:7: Main.is_pangram_faster/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 139 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/is_pangram.exs:139:7: Main.is_pangram_fastest/1
+
+true
+false
+true
+false
+** (Protocol.UndefinedError) protocol Enumerable not implemented for type BitString
+
+Got value:
+
+    "the quick brown fox jumps over the lazy dog"
+
+    (elixir 1.18.3) lib/enum.ex:1: Enumerable.impl_for!/1
+    (elixir 1.18.3) lib/enum.ex:194: Enumerable.member?/2
+    (elixir 1.18.3) lib/enum.ex:2020: Enum.member?/2
+    /workspace/mochi/tests/algorithms/x/Elixir/strings/is_pangram.exs:130: anonymous fn/3 in Main.is_pangram_fastest/1
+    /workspace/mochi/tests/algorithms/x/Elixir/strings/is_pangram.exs:140: Main.is_pangram_fastest/1
+    /workspace/mochi/tests/algorithms/x/Elixir/strings/is_pangram.exs:157: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/strings/is_pangram.exs:161: (file)

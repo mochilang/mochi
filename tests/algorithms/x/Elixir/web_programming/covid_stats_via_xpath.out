@@ -1,0 +1,31 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 57 │       {i, value} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/covid_stats_via_xpath.exs:57:8: Main.parse_int/1
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 91 │           {j, matched} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/covid_stats_via_xpath.exs:91:12: Main.find/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 106 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/covid_stats_via_xpath.exs:106:7: Main.find/3
+
+     warning: variable "pos" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 142 │       {nums, pos} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/covid_stats_via_xpath.exs:142:14: Main.extract_numbers/1
+
+Total COVID-19 cases in the world: 123456
+Total deaths due to COVID-19 in the world: 7890
+Total COVID-19 patients recovered in the world: 101112

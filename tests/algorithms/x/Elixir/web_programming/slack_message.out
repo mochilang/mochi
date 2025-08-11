@@ -1,0 +1,20 @@
+warning: variable "headers" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 17 │       headers = %{"Content-Type" => "application/json"}
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/slack_message.exs:17:7: Main.send_slack_message/2
+
+    warning: variable "message_body" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 15 │   def send_slack_message(message_body, slack_url) do
+    │                          ~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/slack_message.exs:15:26: Main.send_slack_message/2
+
+curl: (22) The requested URL returned error: 405
+** (MatchError) no match of right hand side value: {"", 22}
+    /workspace/mochi/tests/algorithms/x/Elixir/web_programming/slack_message.exs:4: Main._fetch/1
+    /workspace/mochi/tests/algorithms/x/Elixir/web_programming/slack_message.exs:18: Main.send_slack_message/2
+    /workspace/mochi/tests/algorithms/x/Elixir/web_programming/slack_message.exs:29: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/web_programming/slack_message.exs:33: (file)

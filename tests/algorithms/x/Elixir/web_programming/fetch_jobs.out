@@ -1,0 +1,51 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 55 │           {j, ok} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/fetch_jobs.exs:55:12: Main.indexOf/3
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 70 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/fetch_jobs.exs:70:7: Main.indexOf/3
+
+    warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 97 │       {idx, res, start} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/fetch_jobs.exs:97:8: Main.splitBy/2
+
+     warning: variable "num" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 142 │       {digits, num} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/fetch_jobs.exs:142:16: Main.intToString/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 170 │       {i, jobs} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/fetch_jobs.exs:170:8: Main.fetch_jobs/1
+
+     warning: variable "location" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 153 │   def fetch_jobs(location) do
+     │                  ~~~~~~~~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/fetch_jobs.exs:153:18: Main.fetch_jobs/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 196 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/fetch_jobs.exs:196:7: Main.main/0
+
+Job 1 is Android Developer at ABC Corp
+Job 2 is iOS Engineer at XYZ Ltd
