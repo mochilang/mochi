@@ -460,25 +460,28 @@ type UnaryExpr struct {
 }
 
 func (dc *DynCallExpr) emit(w io.Writer) {
-	if ix, ok := dc.Fn.(*IndexExpr); ok {
-		if id, ok2 := ix.Target.(*Ident); ok2 {
-			if s, ok3 := ix.Index.(*StringLit); ok3 {
-				io.WriteString(w, sanitizeName(s.Value))
-				io.WriteString(w, "(")
-				id.emit(w)
-				for _, a := range dc.Args {
-					io.WriteString(w, ", ")
-					a.emit(w)
-				}
-				io.WriteString(w, ")")
-				return
-			}
-		}
-		if s, ok2 := ix.Index.(*StringLit); ok2 && s.Value == "slice" {
-			io.WriteString(w, "slice(")
-			ix.Target.emit(w)
-			for _, a := range dc.Args {
-				io.WriteString(w, ", ")
+       if ix, ok := dc.Fn.(*IndexExpr); ok {
+               if id, ok2 := ix.Target.(*Ident); ok2 {
+                       if s, ok3 := ix.Index.(*StringLit); ok3 {
+                               id.emit(w)
+                               io.WriteString(w, ".")
+                               io.WriteString(w, sanitizeName(s.Value))
+                               io.WriteString(w, "(")
+                               for i, a := range dc.Args {
+                                       if i > 0 {
+                                               io.WriteString(w, ", ")
+                                       }
+                                       a.emit(w)
+                               }
+                               io.WriteString(w, ")")
+                               return
+                       }
+               }
+               if s, ok2 := ix.Index.(*StringLit); ok2 && s.Value == "slice" {
+                       io.WriteString(w, "slice(")
+                       ix.Target.emit(w)
+                       for _, a := range dc.Args {
+                               io.WriteString(w, ", ")
 				a.emit(w)
 			}
 			io.WriteString(w, ")")
@@ -543,24 +546,36 @@ func (s *ExprStmt) emit(w io.Writer) {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
-	if strings.Contains(c.Func, ".") {
-		parts := strings.SplitN(c.Func, ".", 2)
-		if len(parts) == 2 {
-			if currentEnv != nil {
-				if _, err := currentEnv.GetVar(parts[1]); err == nil {
-					io.WriteString(w, sanitizeName(parts[1]))
-					io.WriteString(w, "(")
-					io.WriteString(w, sanitizeName(parts[0]))
-					for _, a := range c.Args {
-						io.WriteString(w, ", ")
-						a.emit(w)
-					}
-					io.WriteString(w, ")")
-					return
-				}
-			}
-		}
-	}
+       if strings.Contains(c.Func, ".") {
+               parts := strings.SplitN(c.Func, ".", 2)
+               if len(parts) == 2 {
+                       if currentEnv != nil {
+                               if _, ok := currentEnv.GetFunc(parts[1]); ok {
+                                       io.WriteString(w, sanitizeName(parts[1]))
+                                       io.WriteString(w, "(")
+                                       io.WriteString(w, sanitizeName(parts[0]))
+                                       for _, a := range c.Args {
+                                               io.WriteString(w, ", ")
+                                               a.emit(w)
+                                       }
+                                       io.WriteString(w, ")")
+                                       return
+                               }
+                       }
+                       io.WriteString(w, sanitizeName(parts[0]))
+                       io.WriteString(w, ".")
+                       io.WriteString(w, sanitizeName(parts[1]))
+                       io.WriteString(w, "(")
+                       for i, a := range c.Args {
+                               if i > 0 {
+                                       io.WriteString(w, ", ")
+                               }
+                               a.emit(w)
+                       }
+                       io.WriteString(w, ")")
+                       return
+               }
+       }
 	if currentEnv != nil {
 		if _, ok := currentEnv.GetFunc(c.Func); ok {
 			io.WriteString(w, sanitizeName(c.Func))
@@ -3240,20 +3255,35 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 							}
 						}
 					}
-					if currentEnv != nil {
-						if t, err := currentEnv.GetVar(op.Field.Name); err == nil {
-							if ft, ok := t.(types.FuncType); ok {
-								args = append([]Expr{expr}, args...)
-								expr = &CallExpr{Func: op.Field.Name, Args: args, ParamTypes: ft.Params}
-								continue
-							}
-						}
-					}
-					if !isMapExpr(expr) && !isListExpr(expr) && !isStringExpr(expr) {
-						args = append([]Expr{expr}, args...)
-						expr = &CallExpr{Func: op.Field.Name, Args: args}
-						continue
-					}
+                                if currentEnv != nil {
+                                        if t, err := currentEnv.GetVar(op.Field.Name); err == nil {
+                                                if ft, ok := t.(types.FuncType); ok {
+                                                        args = append([]Expr{expr}, args...)
+                                                        expr = &CallExpr{Func: op.Field.Name, Args: args, ParamTypes: ft.Params}
+                                                        continue
+                                                }
+                                        }
+                                }
+                               if currentEnv != nil {
+                                       if vt, err := currentEnv.GetVar(id.Name); err == nil {
+                                               if st, ok := vt.(types.StructType); ok {
+                                                       if info, ok := currentEnv.GetStruct(st.Name); ok {
+                                                               if tFld, ok := info.Fields[op.Field.Name]; ok {
+                                                                       if _, ok := tFld.(types.FuncType); ok {
+                                                                               fn := &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}, Kind: "map"}
+                                                                               expr = &DynCallExpr{Fn: fn, Args: args}
+                                                                               continue
+                                                                       }
+                                                               }
+                                                       }
+                                               }
+                                       }
+                               }
+                                if !isMapExpr(expr) && !isListExpr(expr) && !isStringExpr(expr) {
+                                        args = append([]Expr{expr}, args...)
+                                        expr = &CallExpr{Func: op.Field.Name, Args: args}
+                                        continue
+                                }
 					if id.Name == "net" {
 						// treat as a namespaced function call for known package
 						name := id.Name + "." + op.Field.Name

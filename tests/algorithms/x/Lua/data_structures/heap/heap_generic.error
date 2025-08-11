@@ -1,6 +1,0 @@
-run: exit status 1
-lua: ...s/algorithms/x/Lua/data_structures/heap/heap_generic.lua:171: attempt to call a nil value (global 'key')
-stack traceback:
-	...s/algorithms/x/Lua/data_structures/heap/heap_generic.lua:171: in function 'insert_item'
-	...s/algorithms/x/Lua/data_structures/heap/heap_generic.lua:219: in main chunk
-	[C]: in ?
