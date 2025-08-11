@@ -97,6 +97,8 @@ var (
 	needListAppendSizeT     bool
 	needListMin             bool
 	needListMax             bool
+	needListMinDouble       bool
+	needListMaxDouble       bool
 	needSHA256              bool
 	needMD5Hex              bool
 	needNow                 bool
@@ -2884,12 +2886,23 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 	if (c.Func == "min" || c.Func == "max") && len(c.Args) == 1 {
 		t := inferExprType(currentEnv, c.Args[0])
 		if strings.HasSuffix(t, "[]") {
-			if c.Func == "min" {
-				needListMin = true
-				io.WriteString(w, "list_min(")
+			elem := strings.TrimSuffix(t, "[]")
+			if elem == "double" {
+				if c.Func == "min" {
+					needListMinDouble = true
+					io.WriteString(w, "list_min_double(")
+				} else {
+					needListMaxDouble = true
+					io.WriteString(w, "list_max_double(")
+				}
 			} else {
-				needListMax = true
-				io.WriteString(w, "list_max(")
+				if c.Func == "min" {
+					needListMin = true
+					io.WriteString(w, "list_min(")
+				} else {
+					needListMax = true
+					io.WriteString(w, "list_max(")
+				}
 			}
 			c.Args[0].emitExpr(w)
 			io.WriteString(w, ", ")
@@ -3733,6 +3746,26 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("static long long list_max(const long long arr[], size_t len) {\n")
 		buf.WriteString("    if (len == 0) return 0;\n")
 		buf.WriteString("    long long m = arr[0];\n")
+		buf.WriteString("    for (size_t i = 1; i < len; i++) {\n")
+		buf.WriteString("        if (arr[i] > m) m = arr[i];\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    return m;\n")
+		buf.WriteString("}\n\n")
+	}
+	if needListMinDouble {
+		buf.WriteString("static double list_min_double(const double arr[], size_t len) {\n")
+		buf.WriteString("    if (len == 0) return 0;\n")
+		buf.WriteString("    double m = arr[0];\n")
+		buf.WriteString("    for (size_t i = 1; i < len; i++) {\n")
+		buf.WriteString("        if (arr[i] < m) m = arr[i];\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    return m;\n")
+		buf.WriteString("}\n\n")
+	}
+	if needListMaxDouble {
+		buf.WriteString("static double list_max_double(const double arr[], size_t len) {\n")
+		buf.WriteString("    if (len == 0) return 0;\n")
+		buf.WriteString("    double m = arr[0];\n")
 		buf.WriteString("    for (size_t i = 1; i < len; i++) {\n")
 		buf.WriteString("        if (arr[i] > m) m = arr[i];\n")
 		buf.WriteString("    }\n")
