@@ -1362,7 +1362,7 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
-	switch b.Op {
+       switch b.Op {
 	case "!=":
 		io.WriteString(w, "(not (equal? ")
 		b.Left.emit(w)
@@ -1387,17 +1387,25 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		io.WriteString(w, " ")
 		b.Right.emit(w)
 		io.WriteString(w, ")")
-	case "+":
-		io.WriteString(w, "(let ([__l ")
-		b.Left.emit(w)
-		io.WriteString(w, "] [__r ")
-		b.Right.emit(w)
-		io.WriteString(w, "]) (if (and (string? __l) (string? __r)) (string-append __l __r) (+ __l __r)))")
-	case "list-append":
-		io.WriteString(w, "(append (or ")
-		b.Left.emit(w)
-		io.WriteString(w, " '()) (or ")
-		b.Right.emit(w)
+       case "+":
+               io.WriteString(w, "(let ([__l ")
+               b.Left.emit(w)
+               io.WriteString(w, "] [__r ")
+               b.Right.emit(w)
+               io.WriteString(w, "]) (if (and (string? __l) (string? __r)) (string-append __l __r) (+ __l __r)))")
+       case "<", "<=", ">", ">=":
+               io.WriteString(w, "(let ([__l ")
+               b.Left.emit(w)
+               io.WriteString(w, "] [__r ")
+               b.Right.emit(w)
+               io.WriteString(w, "]) (")
+               io.WriteString(w, b.Op)
+               io.WriteString(w, " (int __l) (int __r)))")
+       case "list-append":
+               io.WriteString(w, "(append (or ")
+               b.Left.emit(w)
+               io.WriteString(w, " '()) (or ")
+               b.Right.emit(w)
 		io.WriteString(w, " '()))")
 	case "fmod":
 		io.WriteString(w, "(- ")
@@ -1489,9 +1497,10 @@ func header() string {
 	hdr += "(define (pad-start s width ch)\n  (let ([s (to-string s)])\n    (if (< (string-length s) width)\n        (string-append (make-string (- width (string-length s)) (string-ref ch 0)) s)\n        s)))\n"
 	hdr += "(define (index-of s ch)\n  (cond\n    [(string? s)\n     (let loop ([i 0])\n       (cond [(>= i (string-length s)) -1]\n             [(string=? (substring s i (add1 i)) ch) i]\n             [else (loop (add1 i))]))]\n    [else\n     (let loop ([i 0] [lst s])\n       (cond [(null? lst) -1]\n             [(equal? (car lst) ch) i]\n             [else (loop (add1 i) (cdr lst))]))]))\n"
 	hdr += "(define (safe-index lst idx) (let ([i (int idx)]) (if (and (>= i 0) (< i (length lst))) (list-ref lst i) #f)))\n"
-	hdr += "(define (_repeat s n)\n  (cond\n    [(string? s) (apply string-append (make-list (int n) s))]\n    [(list? s) (apply append (make-list (int n) s))]\n    [else '()]))\n"
-	hdr += "(define (_parse-int-str s base) (int (string->number s base)))\n"
-	hdr += "(define (_sha256 bs) (bytes->list (sha256-bytes (if (string? bs) (string->bytes/utf-8 bs) (list->bytes bs)))))\n"
+        hdr += "(define (_repeat s n)\n  (cond\n    [(string? s) (apply string-append (make-list (int n) s))]\n    [(list? s) (apply append (make-list (int n) s))]\n    [else '()]))\n"
+        hdr += "(define (list-set lst idx val)\n  (define i (int idx))\n  (define len (length lst))\n  (cond\n    [(>= i len) (append lst (make-list (- i len) '()) (list val))]\n    [(zero? i) (cons val (cdr lst))]\n    [else (cons (car lst) (list-set (cdr lst) (sub1 i) val))]))\n"
+        hdr += "(define (_parse-int-str s base) (int (string->number s base)))\n"
+        hdr += "(define (_sha256 bs) (bytes->list (sha256-bytes (if (string? bs) (string->bytes/utf-8 bs) (list->bytes bs)))))\n"
 	hdr += "(define (_fetch url) (let ([p (get-pure-port (string->url url))]) (define txt (port->string p)) (close-input-port p) (string->jsexpr txt)))\n"
 	hdr += "(define (num r) (numerator r))\n"
 	hdr += "(define (denom r) (denominator r))\n"
