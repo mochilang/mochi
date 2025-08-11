@@ -1,0 +1,18 @@
+compile: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/algorithms/x/Pascal/searches/hill_climbing.pas
+hill_climbing.pas(8,6) Error: Identifier not found "FuncType1"
+hill_climbing.pas(8,15) Error: Error in type definition
+hill_climbing.pas(89,84) Error: Incompatible type for arg no. 4: Got "<erroneous type>", expected "<procedure variable type of function(Real;Real):Double;Register>"
+hill_climbing.pas(89,148) Error: Incompatible type for arg no. 4: Got "<erroneous type>", expected "<procedure variable type of function(Real;Real):Double;Register>"
+hill_climbing.pas(89,226) Error: Incompatible type for arg no. 4: Got "<erroneous type>", expected "<procedure variable type of function(Real;Real):Double;Register>"
+hill_climbing.pas(89,290) Error: Incompatible type for arg no. 4: Got "<erroneous type>", expected "<procedure variable type of function(Real;Real):Double;Register>"
+hill_climbing.pas(89,354) Error: Incompatible type for arg no. 4: Got "<erroneous type>", expected "<procedure variable type of function(Real;Real):Double;Register>"
+hill_climbing.pas(89,432) Error: Incompatible type for arg no. 4: Got "<erroneous type>", expected "<procedure variable type of function(Real;Real):Double;Register>"
+hill_climbing.pas(89,496) Error: Incompatible type for arg no. 4: Got "<erroneous type>", expected "<procedure variable type of function(Real;Real):Double;Register>"
+hill_climbing.pas(89,574) Error: Incompatible type for arg no. 4: Got "<erroneous type>", expected "<procedure variable type of function(Real;Real):Double;Register>"
+hill_climbing.pas(206) Fatal: There were 10 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode
