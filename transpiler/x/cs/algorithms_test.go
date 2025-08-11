@@ -97,7 +97,8 @@ func TestCSTranspiler_Algorithms_Golden(t *testing.T) {
 				t.Fatalf("write temp code: %v", err)
 			}
 			cmd := exec.Command("dotnet", "run", "--project", proj)
-			cmd.Env = append(os.Environ(), "DOTNET_NOLOGO=1", "DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1", "MOCHI_BENCHMARK=1")
+			rootEnv := "MOCHI_ROOT=" + filepath.Dir(src)
+			cmd.Env = append(os.Environ(), "DOTNET_NOLOGO=1", "DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1", "MOCHI_BENCHMARK=1", rootEnv)
 			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 				cmd.Stdin = bytes.NewReader(data)
 			}
