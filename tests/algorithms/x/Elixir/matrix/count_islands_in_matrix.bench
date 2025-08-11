@@ -1,49 +1,5 @@
-warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 47 │       k = try do
-    │       ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/count_islands_in_matrix.exs:47:7: Main.dfs/4
-
-    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 76 │           {j, row_list} = try do
-    │            ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/count_islands_in_matrix.exs:76:12: Main.count_islands/1
-
-     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-     │
- 115 │           {count, j} = try do
-     │                   ~
-     │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/count_islands_in_matrix.exs:115:19: Main.count_islands/1
-
-    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-    │
- 89 │       {i, visited} = try do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/count_islands_in_matrix.exs:89:8: Main.count_islands/1
-
-     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-     │
- 127 │       {count, i} = try do
-     │               ~
-     │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/count_islands_in_matrix.exs:127:15: Main.count_islands/1
-
-** (Protocol.UndefinedError) protocol Enumerable not implemented for type Atom
-
-Got value:
-
-    nil
-
-    (elixir 1.18.3) lib/enum.ex:1: Enumerable.impl_for!/1
-    (elixir 1.18.3) lib/enum.ex:230: Enumerable.slice/1
-    (elixir 1.18.3) lib/enum.ex:4663: Enum.slice_count_and_fun/2
-    (elixir 1.18.3) lib/enum.ex:4561: Enum.slice_forward/4
-    (elixir 1.18.3) lib/enum.ex:479: Enum.at/3
-    /workspace/mochi/tests/algorithms/x/Elixir/matrix/count_islands_in_matrix.exs:20: Main.is_safe/4
-    /workspace/mochi/tests/algorithms/x/Elixir/matrix/count_islands_in_matrix.exs:38: anonymous fn/6 in Main.dfs/4
-    /workspace/mochi/tests/algorithms/x/Elixir/matrix/count_islands_in_matrix.exs:48: Main.dfs/4
+{
+  "duration_us": 5121,
+  "memory_bytes": 12784,
+  "name": "main"
+}

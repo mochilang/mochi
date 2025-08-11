@@ -33,17 +33,4 @@ warning: variable "k" is unused (there is a variable with the same name in the c
      │
      └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/count_islands_in_matrix.exs:121:15: Main.count_islands/1
 
-** (Protocol.UndefinedError) protocol Enumerable not implemented for type Atom
-
-Got value:
-
-    nil
-
-    (elixir 1.18.3) lib/enum.ex:1: Enumerable.impl_for!/1
-    (elixir 1.18.3) lib/enum.ex:230: Enumerable.slice/1
-    (elixir 1.18.3) lib/enum.ex:4663: Enum.slice_count_and_fun/2
-    (elixir 1.18.3) lib/enum.ex:4561: Enum.slice_forward/4
-    (elixir 1.18.3) lib/enum.ex:479: Enum.at/3
-    /workspace/mochi/tests/algorithms/x/Elixir/matrix/count_islands_in_matrix.exs:14: Main.is_safe/4
-    /workspace/mochi/tests/algorithms/x/Elixir/matrix/count_islands_in_matrix.exs:32: anonymous fn/6 in Main.dfs/4
-    /workspace/mochi/tests/algorithms/x/Elixir/matrix/count_islands_in_matrix.exs:42: Main.dfs/4
+10
