@@ -149,7 +149,7 @@ func ctorName(name string) string { return "make" + name }
 
 func pasType(t string) string {
 	switch t {
-	case "", "void":
+	case "", "void", "unit":
 		return ""
 	case "any":
 		if currProg != nil {
@@ -574,6 +574,14 @@ type CallExpr struct {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
+	if c.Name == "Length" && len(c.Args) == 1 {
+		t := resolveAlias(inferType(c.Args[0]))
+		if strings.HasPrefix(t, "specialize TFPGMap") {
+			c.Args[0].emit(w)
+			io.WriteString(w, ".Count")
+			return
+		}
+	}
 	if c.Name == "concat" && len(c.Args) == 2 {
 		if ce1, ok1 := c.Args[0].(*CallExpr); ok1 && ce1.Name == "IntArray" && len(ce1.Args) == 1 {
 			if ll1, ok2 := ce1.Args[0].(*ListLit); ok2 && len(ll1.Elems) == 0 {
@@ -1232,6 +1240,43 @@ func (p *PrintStmt) emit(w io.Writer) {
 		typ := ""
 		if i < len(p.Types) {
 			typ = p.Types[i]
+		}
+		if strings.HasPrefix(typ, "array of ") || isArrayAlias(typ) {
+			t := resolveAlias(typ)
+			switch {
+			case t == "array of string":
+				io.WriteString(w, "list_to_str(")
+				ex.emit(w)
+				io.WriteString(w, ")")
+			case strings.HasPrefix(t, "array of array") || strings.HasPrefix(t, "array of IntArray") || strings.HasPrefix(t, "array of Int64Array"):
+				currProg.NeedListStr2 = true
+				io.WriteString(w, "list_list_int_to_str(")
+				ex.emit(w)
+				io.WriteString(w, ")")
+			case strings.HasPrefix(t, "array of int64"):
+				currProg.NeedListStr2 = true
+				io.WriteString(w, "list_int_to_str(")
+				ex.emit(w)
+				io.WriteString(w, ")")
+			case strings.HasPrefix(t, "array of Variant"):
+				currProg.NeedListStrVariant = true
+				currProg.UseSysUtils = true
+				currProg.UseVariants = true
+				io.WriteString(w, "list_variant_to_str(")
+				ex.emit(w)
+				io.WriteString(w, ")")
+			case strings.HasPrefix(t, "array of real"):
+				currProg.NeedListStrReal = true
+				io.WriteString(w, "list_real_to_str(")
+				ex.emit(w)
+				io.WriteString(w, ")")
+			default:
+				currProg.NeedListStr2 = true
+				io.WriteString(w, "list_int_to_str(")
+				ex.emit(w)
+				io.WriteString(w, ")")
+			}
+			continue
 		}
 		switch typ {
 		case "real":
@@ -2374,6 +2419,15 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 					return nil, err
 				}
 				if idxExpr, ok := ex.(*IndexExpr); ok && strings.HasPrefix(inferType(idxExpr.Target), "specialize TFPGMap") {
+					if vd.Type == "" {
+						mt := inferType(idxExpr.Target)
+						parts := strings.TrimPrefix(mt, "specialize TFPGMap<")
+						parts = strings.TrimSuffix(parts, ">")
+						kv := strings.Split(parts, ",")
+						if len(kv) == 2 {
+							vd.Type = strings.TrimSpace(kv[1])
+						}
+					}
 					if !hasVar(vd.Name) {
 						currProg.Vars = append(currProg.Vars, vd)
 					}
@@ -2669,16 +2723,23 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 						tt := resolveAlias(t)
 						if strings.HasPrefix(tt, "array of string") {
 							currProg.NeedListStr = true
+							needSys = true
 						} else if strings.HasPrefix(tt, "array of array") || strings.HasPrefix(tt, "array of IntArray") || strings.HasPrefix(tt, "array of Int64Array") {
-							currProg.NeedShowList2 = true
+							currProg.NeedListStr2 = true
+							needSys = true
 						} else if strings.HasPrefix(tt, "array of int64") {
-							currProg.NeedShowListInt64 = true
+							currProg.NeedListStr2 = true
+							needSys = true
+						} else if strings.HasPrefix(tt, "array of real") {
+							currProg.NeedListStrReal = true
+							needSys = true
 						} else if strings.HasPrefix(tt, "array of Variant") {
 							currProg.NeedListStrVariant = true
 							currProg.UseVariants = true
 							needSys = true
 						} else {
-							currProg.NeedShowList = true
+							currProg.NeedListStr2 = true
+							needSys = true
 						}
 					} else if strings.HasPrefix(t, "specialize TFPGMap") {
 						currProg.NeedShowMap = true
@@ -5315,6 +5376,15 @@ func inferType(e Expr) string {
 			return ""
 		}
 		t = resolveAlias(t)
+		if strings.HasPrefix(t, "specialize TFPGMap") {
+			parts := strings.TrimPrefix(t, "specialize TFPGMap<")
+			parts = strings.TrimSuffix(parts, ">")
+			kv := strings.Split(parts, ",")
+			if len(kv) == 2 && len(v.Tail) == 1 && v.Tail[0] == "Data" {
+				val := strings.TrimSpace(kv[1])
+				return "array of " + val
+			}
+		}
 		if strings.HasPrefix(t, "array of ") {
 			t = strings.TrimPrefix(t, "array of ")
 		}
