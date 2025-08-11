@@ -4578,6 +4578,15 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			delete(paramNames, s.Var.Name)
 			return &AssignStmt{Name: s.Var.Name, Value: val}, nil
 		}
+		if currentVarDecls != nil {
+			if _, ok := currentVarDecls[s.Var.Name]; ok {
+				val, err := convertExpr(s.Var.Value)
+				if err != nil {
+					return nil, err
+				}
+				return &AssignStmt{Name: s.Var.Name, Value: val}, nil
+			}
+		}
 		var val Expr
 		var err error
 		if s.Var.Value != nil {
@@ -4841,15 +4850,23 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		}
 		newTypes[s.For.Name] = varType
 		localTypes = newTypes
+		prevDecls := currentVarDecls
+		newDecls := map[string]*LetStmt{}
+		for k, v := range prevDecls {
+			newDecls[k] = v
+		}
+		currentVarDecls = newDecls
 		for _, st := range s.For.Body {
 			cs, err := convertStmt(st)
 			if err != nil {
 				localTypes = oldTypes2
+				currentVarDecls = prevDecls
 				return nil, err
 			}
 			fs.Body = append(fs.Body, cs)
 		}
 		localTypes = oldTypes2
+		currentVarDecls = prevDecls
 		return fs, nil
 	case s.Break != nil:
 		return &BreakStmt{}, nil
