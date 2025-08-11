@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Python`.
-Last updated: 2025-08-11 17:33 GMT+7
+Last updated: 2025-08-11 18:35 GMT+7
 
 ## Algorithms Golden Test Checklist (893/1077)
 | Index | Name | Status | Duration | Memory |
@@ -506,7 +506,7 @@ Last updated: 2025-08-11 17:33 GMT+7
 | 497 | machine_learning/apriori_algorithm | ✓ | 937.0µs | 14.02MB |
 | 498 | machine_learning/astar | ✓ | 2.0ms | 13.68MB |
 | 499 | machine_learning/automatic_differentiation | ✓ | 41.0µs | 12.55MB |
-| 500 | machine_learning/data_transformations | ✓ | 104.0µs | 13.62MB |
+| 500 | machine_learning/data_transformations | ✓ | 71.0µs | 13.88MB |
 | 501 | machine_learning/decision_tree | ✓ | 53.0ms | 13.74MB |
 | 502 | machine_learning/dimensionality_reduction | ✓ | 9.0µs | 12.62MB |
 | 503 | machine_learning/forecasting/run | ✓ | 130.0µs | 14.46MB |
