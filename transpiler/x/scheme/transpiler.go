@@ -542,6 +542,7 @@ func header() []byte {
         ((hash-table? x) (hash-table-size x))
         (else (length x))))`
 	prelude += "\n(define (list-ref-safe lst idx) (if (and (integer? idx) (>= idx 0) (< idx (length lst))) (list-ref lst idx) '()))"
+	prelude += "\n(define (list-set-safe! lst idx val) (when (and (integer? idx) (>= idx 0) (< idx (length lst))) (list-set! lst idx val)))"
 	if usesInput {
 		prelude += "\n(define (_input)\n  (let ((l (read-line)))\n    (if (eof-object? l) \"\" l)))"
 	}
@@ -1095,13 +1096,13 @@ func convertStmt(st *parser.Statement) (Node, error) {
 				needHash = true
 				return &List{Elems: []Node{Symbol("hash-table-set!"), target, idxNode, val}}, nil
 			case types.ListType:
-				return &List{Elems: []Node{Symbol("list-set!"), target, idxNode, val}}, nil
+				return &List{Elems: []Node{Symbol("list-set-safe!"), target, idxNode, val}}, nil
 			default:
 				if _, ok := idxNode.(StringLit); ok {
 					needHash = true
 					return &List{Elems: []Node{Symbol("hash-table-set!"), target, idxNode, val}}, nil
 				}
-				return &List{Elems: []Node{Symbol("list-set!"), target, idxNode, val}}, nil
+				return &List{Elems: []Node{Symbol("list-set-safe!"), target, idxNode, val}}, nil
 			}
 		}
 		if last.Field != nil {
