@@ -2505,18 +2505,20 @@ func replaceFields(e Expr, target Expr, fields map[string]bool) Expr {
 
 func repoRoot() string {
 	dir, err := os.Getwd()
-	if err != nil {
-		return ""
+	if err == nil {
+		for i := 0; i < 10; i++ {
+			if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+				return dir
+			}
+			parent := filepath.Dir(dir)
+			if parent == dir {
+				break
+			}
+			dir = parent
+		}
 	}
-	for i := 0; i < 10; i++ {
-		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
-			return dir
-		}
-		parent := filepath.Dir(dir)
-		if parent == dir {
-			break
-		}
-		dir = parent
+	if out, err := exec.Command("git", "rev-parse", "--show-toplevel").Output(); err == nil {
+		return strings.TrimSpace(string(out))
 	}
 	return ""
 }
@@ -2696,10 +2698,19 @@ func dataExprFromFile(path, format string, typ *parser.TypeRef) (Expr, error) {
 	if path == "" {
 		return &ListLit{}, nil
 	}
-	root := repoRoot()
-	if root != "" && strings.HasPrefix(path, "../") {
-		clean := strings.TrimPrefix(path, "../")
-		path = filepath.Join(root, "tests", clean)
+	if !filepath.IsAbs(path) {
+		if root := repoRoot(); root != "" {
+			p := filepath.Join(root, path)
+			if _, err := os.Stat(p); err == nil {
+				path = p
+			} else if strings.HasPrefix(path, "../") {
+				clean := strings.TrimPrefix(path, "../")
+				p = filepath.Join(root, "tests", clean)
+				if _, err := os.Stat(p); err == nil {
+					path = p
+				}
+			}
+		}
 	}
 	data, err := os.ReadFile(path)
 	if err != nil {
