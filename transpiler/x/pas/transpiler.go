@@ -191,6 +191,8 @@ type Program struct {
 	NeedAvg            bool
 	NeedMin            bool
 	NeedMax            bool
+	NeedMinReal        bool
+	NeedMaxReal        bool
 	NeedContains       bool
 	NeedShowList       bool
 	NeedShowList2      bool
@@ -1478,6 +1480,12 @@ end;
 	}
 	if p.NeedMax {
 		buf.WriteString("function max(xs: array of integer): integer;\nvar i, m: integer;\nbegin\n  if Length(xs) = 0 then begin max := 0; exit; end;\n  m := xs[0];\n  for i := 1 to High(xs) do if xs[i] > m then m := xs[i];\n  max := m;\nend;\n")
+	}
+	if p.NeedMinReal {
+		buf.WriteString("function min_real(xs: array of real): real;\nvar i: integer; m: real;\nbegin\n  if Length(xs) = 0 then begin min_real := 0; exit; end;\n  m := xs[0];\n  for i := 1 to High(xs) do if xs[i] < m then m := xs[i];\n  min_real := m;\nend;\n")
+	}
+	if p.NeedMaxReal {
+		buf.WriteString("function max_real(xs: array of real): real;\nvar i: integer; m: real;\nbegin\n  if Length(xs) = 0 then begin max_real := 0; exit; end;\n  m := xs[0];\n  for i := 1 to High(xs) do if xs[i] > m then m := xs[i];\n  max_real := m;\nend;\n")
 	}
 	if p.NeedPadStart {
 		buf.WriteString("function padStart(s: string; l: integer; c: char): string;\nvar d: integer;\nbegin\n  d := l - Length(s);\n  if d > 0 then padStart := StringOfChar(c, d) + s else padStart := s;\nend;\n")
@@ -2982,7 +2990,7 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 		return left, nil
 	}
 	if len(e.Binary.Right) == 1 && e.Binary.Right[0].Op == "+" {
-		right, err := convertPostfix(env, e.Binary.Right[0].Right)
+		right, err := convertUnary(env, e.Binary.Right[0].Right)
 		if err != nil {
 			return nil, err
 		}
@@ -2993,11 +3001,11 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 		}
 	}
 	if len(e.Binary.Right) == 1 && e.Binary.Right[0].Op == "in" {
-		right, err := convertPostfix(env, e.Binary.Right[0].Right)
+		right, err := convertUnary(env, e.Binary.Right[0].Right)
 		if err != nil {
 			return nil, err
 		}
-		tmp := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: e.Binary.Right[0].Right}}}
+		tmp := &parser.Expr{Binary: &parser.BinaryExpr{Left: e.Binary.Right[0].Right}}
 		t := types.ExprType(tmp, env)
 		if _, ok := t.(types.ListType); ok {
 			currProg.NeedContains = true
@@ -3099,7 +3107,7 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 	}
 
 	for _, op := range e.Binary.Right {
-		right, err := convertPostfix(env, op.Right)
+		right, err := convertUnary(env, op.Right)
 		if err != nil {
 			return nil, err
 		}
@@ -4785,9 +4793,17 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			currProg.NeedAvg = true
 			return &CallExpr{Name: "avg", Args: args}, nil
 		} else if name == "min" && len(args) == 1 {
+			if inferType(args[0]) == "array of real" {
+				currProg.NeedMinReal = true
+				return &CallExpr{Name: "min_real", Args: args}, nil
+			}
 			currProg.NeedMin = true
 			return &CallExpr{Name: "min", Args: args}, nil
 		} else if name == "max" && len(args) == 1 {
+			if inferType(args[0]) == "array of real" {
+				currProg.NeedMaxReal = true
+				return &CallExpr{Name: "max_real", Args: args}, nil
+			}
 			currProg.NeedMax = true
 			return &CallExpr{Name: "max", Args: args}, nil
 		} else if name == "keys" && len(args) == 1 {
