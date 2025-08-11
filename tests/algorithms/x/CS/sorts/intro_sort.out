@@ -1,4 +1,2 @@
-/tmp/TestCSTranspiler_Algorithms_Golden001_sorts_intro_sort1977860308/001/Program.cs(173,9): warning CS0162: Unreachable code detected [/tmp/TestCSTranspiler_Algorithms_Golden001_sorts_intro_sort1977860308/001/app.csproj]
-/tmp/TestCSTranspiler_Algorithms_Golden001_sorts_intro_sort1977860308/001/Program.cs(195,9): warning CS0162: Unreachable code detected [/tmp/TestCSTranspiler_Algorithms_Golden001_sorts_intro_sort1977860308/001/app.csproj]
 [1, 2, 4, 6, 7, 8, 8, 12, 14, 14, 22, 23, 27, 45, 56, 79]
 [-11, -2, 11, 15, 21, 45, 46]
