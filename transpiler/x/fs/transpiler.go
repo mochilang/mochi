@@ -3366,7 +3366,22 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	currentReturn = ""
 	funcDepth = 0
 	p := &Program{}
-	for _, st := range prog.Statements {
+	for i := 0; i < len(prog.Statements); i++ {
+		st := prog.Statements[i]
+		if st.Expr != nil && st.Expr.Expr != nil && st.Expr.Expr.Binary != nil && st.Expr.Expr.Binary.Left != nil && st.Expr.Expr.Binary.Left.Value != nil && st.Expr.Expr.Binary.Left.Value.Target != nil {
+			if sel := st.Expr.Expr.Binary.Left.Value.Target.Selector; sel != nil && sel.Root == "throw" && i+1 < len(prog.Statements) {
+				if nxt := prog.Statements[i+1]; nxt.Expr != nil {
+					arg, err := convertExpr(nxt.Expr.Expr)
+					if err != nil {
+						return nil, err
+					}
+					conv := &ExprStmt{Expr: &CallExpr{Func: "failwith", Args: []Expr{arg}}}
+					p.Stmts = append(p.Stmts, optimizeFun(conv))
+					i++
+					continue
+				}
+			}
+		}
 		conv, err := convertStmt(st)
 		if err != nil {
 			return nil, err
@@ -4283,7 +4298,12 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			usesSafeIndex = true
+			t := inferType(expr)
+			if isMapType(t) {
+				usesDictGet = true
+			} else {
+				usesSafeIndex = true
+			}
 			expr = &IndexExpr{Target: expr, Index: idx}
 		case op.Index != nil && op.Index.Colon != nil && op.Index.Step == nil && op.Index.Colon2 == nil:
 			var start, end Expr
@@ -4511,6 +4531,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		case "panic":
 			return &CallExpr{Func: "failwith", Args: args}, nil
 		case "error":
+			return &CallExpr{Func: "failwith", Args: args}, nil
+		case "throw":
 			return &CallExpr{Func: "failwith", Args: args}, nil
 		case "avg":
 			fn := "Seq.averageBy float"
@@ -4832,6 +4854,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				types[i] = "obj"
 			}
 		}
+		usesDictCreate = true
 		return &MapLit{Items: items, Types: types}, nil
 	case p.Match != nil:
 		return convertMatchExpr(p.Match)
