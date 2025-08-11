@@ -1,5 +1,5 @@
-## Progress (2025-08-08 16:09 +0700)
-- Commit b98b72c66e: rkt: record real execution time in benchmarks
+## Progress (2025-08-11 16:51 +0700)
+- Commit 7038541cc1: lua: refresh sort outputs and restore docs
 - Generated Python for 104/105 programs
 - Updated README checklist and outputs
 - Removed runtime helpers and improved boolean type inference
