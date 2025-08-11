@@ -1,12 +1,12 @@
 exit status 1
-/workspace/mochi/tests/algorithms/x/Scala/machine_learning/decision_tree.scala:119: error: type mismatch;
+/workspace/mochi/tests/algorithms/x/Scala/machine_learning/decision_tree.scala:118: error: type mismatch;
  found   : Any
  required: Main.Tree
-  return (tree match { case Leaf(p) => p case Branch(b, l, r) => (if (value >= b) predict(r, value) else predict(l, value)) }).toString.toDouble
-                                                                                          ^
-/workspace/mochi/tests/algorithms/x/Scala/machine_learning/decision_tree.scala:119: error: type mismatch;
+    return (Branch(boundary, left_tree, right_tree)).asInstanceOf[Tree]
+                             ^
+/workspace/mochi/tests/algorithms/x/Scala/machine_learning/decision_tree.scala:118: error: type mismatch;
  found   : Any
  required: Main.Tree
-  return (tree match { case Leaf(p) => p case Branch(b, l, r) => (if (value >= b) predict(r, value) else predict(l, value)) }).toString.toDouble
-                                                                                                                 ^
+    return (Branch(boundary, left_tree, right_tree)).asInstanceOf[Tree]
+                                        ^
 two errors found
