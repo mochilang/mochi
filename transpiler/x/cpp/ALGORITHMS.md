@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 926/1077
-Last updated: 2025-08-11 16:51 +0700
+Completed programs: 930/1077
+Last updated: 2025-08-11 17:23 +0700
 
 Checklist:
 
@@ -947,25 +947,25 @@ Checklist:
 | 938 | searches/tabu_search | ✓ | 1.0ms | 3.53MB |
 | 939 | searches/ternary_search | ✓ | 203.0µs | 3.69MB |
 | 940 | sorts/bead_sort | ✓ | 214.0µs | 3.46MB |
-| 941 | sorts/binary_insertion_sort | ✓ | 284.0µs | 3.61MB |
-| 942 | sorts/bitonic_sort | ✓ | 404.0µs | 3.73MB |
-| 943 | sorts/bogo_sort | ✓ | 227.0µs | 3.61MB |
-| 944 | sorts/bubble_sort | ✓ | 270.0µs | 3.59MB |
-| 945 | sorts/bucket_sort | ✓ | 642.0µs | 3.86MB |
-| 946 | sorts/circle_sort | ✓ | 191.0µs | 3.46MB |
-| 947 | sorts/cocktail_shaker_sort | ✓ | 169.0µs | 3.54MB |
-| 948 | sorts/comb_sort | ✓ | 149.0µs | 3.52MB |
-| 949 | sorts/counting_sort | ✓ | 505.0µs | 3.63MB |
-| 950 | sorts/cycle_sort | ✓ | 229.0µs | 3.74MB |
-| 951 | sorts/double_sort | ✓ | 198.0µs | 3.46MB |
-| 952 | sorts/dutch_national_flag_sort | ✓ | 142.0µs | 3.64MB |
-| 953 | sorts/exchange_sort | ✓ | 263.0µs | 3.60MB |
-| 954 | sorts/external_sort | ✓ | 205.0µs | 3.70MB |
-| 955 | sorts/gnome_sort | ✓ | 170.0µs | 3.69MB |
-| 956 | sorts/heap_sort | ✓ | 193.0µs | 3.60MB |
-| 957 | sorts/insertion_sort | ✓ | 268.0µs | 3.62MB |
-| 958 | sorts/intro_sort | ✓ | 192.0µs | 3.48MB |
-| 959 | sorts/iterative_merge_sort | ✓ | 340.0µs | 3.71MB |
+| 941 | sorts/binary_insertion_sort | ✓ | 220.0µs | 3.80MB |
+| 942 | sorts/bitonic_sort | ✓ | 453.0µs | 3.68MB |
+| 943 | sorts/bogo_sort | ✓ | 205.0µs | 3.60MB |
+| 944 | sorts/bubble_sort | ✓ | 223.0µs | 3.47MB |
+| 945 | sorts/bucket_sort | ✓ | 734.0µs | 3.77MB |
+| 946 | sorts/circle_sort | ✓ | 220.0µs | 3.62MB |
+| 947 | sorts/cocktail_shaker_sort | ✓ | 279.0µs | 3.60MB |
+| 948 | sorts/comb_sort | ✓ | 165.0µs | 3.49MB |
+| 949 | sorts/counting_sort | ✓ | 496.0µs | 3.63MB |
+| 950 | sorts/cycle_sort | ✓ | 214.0µs | 3.54MB |
+| 951 | sorts/double_sort | ✓ | 238.0µs | 3.62MB |
+| 952 | sorts/dutch_national_flag_sort | ✓ | 162.0µs | 3.49MB |
+| 953 | sorts/exchange_sort | ✓ | 269.0µs | 3.60MB |
+| 954 | sorts/external_sort | ✓ | 200.0µs | 3.50MB |
+| 955 | sorts/gnome_sort | ✓ | 186.0µs | 3.63MB |
+| 956 | sorts/heap_sort | ✓ | 238.0µs | 3.69MB |
+| 957 | sorts/insertion_sort | ✓ | 219.0µs | 3.46MB |
+| 958 | sorts/intro_sort | ✓ | 224.0µs | 3.54MB |
+| 959 | sorts/iterative_merge_sort | ✓ | 288.0µs | 3.62MB |
 | 960 | sorts/merge_insertion_sort | ✓ | 227.0µs | 3.61MB |
 | 961 | sorts/merge_sort | ✓ | 226.0µs | 3.75MB |
 | 962 | sorts/msd_radix_sort | ✓ | 372.0µs | 3.62MB |
@@ -1017,10 +1017,10 @@ Checklist:
 | 1008 | strings/is_contains_unique_chars | ✓ | 306.0µs | 3.69MB |
 | 1009 | strings/is_isogram | ✓ | 405.0µs | 3.73MB |
 | 1010 | strings/is_pangram | ✓ | 560.0µs | 3.73MB |
-| 1011 | strings/is_polish_national_id |   |  |  |
-| 1012 | strings/is_spain_national_id |   |  |  |
-| 1013 | strings/is_srilankan_phone_number |   |  |  |
-| 1014 | strings/is_valid_email_address |   |  |  |
+| 1011 | strings/is_polish_national_id | ✓ | 234.0µs | 3.61MB |
+| 1012 | strings/is_spain_national_id | ✓ | 320.0µs | 3.64MB |
+| 1013 | strings/is_srilankan_phone_number | ✓ | 231.0µs | 3.68MB |
+| 1014 | strings/is_valid_email_address | ✓ | 1.0ms | 3.59MB |
 | 1015 | strings/jaro_winkler |   |  |  |
 | 1016 | strings/join |   |  |  |
 | 1017 | strings/knuth_morris_pratt |   |  |  |
