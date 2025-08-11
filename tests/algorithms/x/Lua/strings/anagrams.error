@@ -1,8 +1,8 @@
-type: error[T003]: unknown function: read_file
-  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/strings/anagrams.mochi:107:14
+parse: error[P999]: /workspace/mochi/tests/github/TheAlgorithms/Mochi/strings/anagrams.mochi:75:19: unexpected token "!" (expected PostfixExpr)
+  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/strings/anagrams.mochi:75:19
 
-107 |   let text = read_file("words.txt")
-    |              ^
+ 75 |     if w != "" && !(w in seen) {
+    |                   ^
 
 help:
-  Ensure the function is defined before it's called.
+  Parse error occurred. Check syntax near this location.

@@ -2410,31 +2410,6 @@ func intValuePostfix(p *parser.PostfixExpr) (int, bool) {
 	return int(*p.Target.Lit.Int), true
 }
 
-func intValueUnary(u *parser.Unary) (int, bool) {
-        if u == nil {
-                return 0, false
-        }
-        v, ok := intValuePostfix(u.Value)
-        if !ok {
-                return 0, false
-        }
-        for i := len(u.Ops) - 1; i >= 0; i-- {
-                switch u.Ops[i] {
-                case "-":
-                        v = -v
-                case "!":
-                        if v == 0 {
-                                v = 1
-                        } else {
-                                v = 0
-                        }
-                default:
-                        return 0, false
-                }
-        }
-        return v, true
-}
-
 // intValue returns the integer value represented by the expression if it is a
 // literal integer.
 func intValue(e *parser.Expr) (int, bool) {
@@ -2469,9 +2444,9 @@ func isStartPlusOne(start, end *parser.Expr) bool {
 	if !ok || leftName != startName {
 		return false
 	}
-        if val, ok := intValueUnary(op.Right); ok && val == 1 {
-                return true
-        }
+	if val, ok := intValuePostfix(op.Right); ok && val == 1 {
+		return true
+	}
 	return false
 }
 
@@ -3089,7 +3064,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	exprs := []Expr{left}
 	ops := []string{}
 	for _, op := range b.Right {
-                right, err := convertUnary(op.Right)
+		right, err := convertPostfix(op.Right)
 		if err != nil {
 			return nil, err
 		}

@@ -84,11 +84,11 @@ func isPureExpr(e *parser.Expr, env *Env) bool {
 	if !isPureUnary(e.Binary.Left, env) {
 		return false
 	}
-        for _, op := range e.Binary.Right {
-                if !isPureUnary(op.Right, env) {
-                        return false
-                }
-        }
+	for _, op := range e.Binary.Right {
+		if !isPurePostfix(op.Right, env) {
+			return false
+		}
+	}
 	return true
 }
 
