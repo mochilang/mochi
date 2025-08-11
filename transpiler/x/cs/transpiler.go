@@ -108,6 +108,7 @@ var usesSlice bool
 var usesLen bool
 var usesMod bool
 var usesAtoi bool
+var usesIdx bool
 var envTypes map[string]types.Type
 
 func isNullExpr(e Expr) bool {
@@ -2221,16 +2222,12 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		return
 	}
 	if strings.HasSuffix(targetType, "[]") {
+		usesIdx = true
+		fmt.Fprint(w, "_idx(")
 		ix.Target.emit(w)
-		fmt.Fprint(w, "[(int)(")
+		fmt.Fprint(w, ", ")
 		ix.Index.emit(w)
-		fmt.Fprint(w, " < 0 ? ")
-		ix.Target.emit(w)
-		fmt.Fprint(w, ".Length + (")
-		ix.Index.emit(w)
-		fmt.Fprint(w, ") : ")
-		ix.Index.emit(w)
-		fmt.Fprint(w, ")]")
+		fmt.Fprint(w, ")")
 		return
 	}
 	if targetType == "string" {
@@ -2573,6 +2570,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesBigRat = false
 	usesFetch = false
 	fetchStructs = make(map[string]bool)
+	usesIdx = true
 	currentAssign = ""
 	globalDecls = make(map[string]*Global)
 	mutatedVars = make(map[string]bool)
@@ -3472,24 +3470,24 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		return res, nil
 	case s.Return != nil:
 		var val Expr
-                if s.Return.Value != nil {
-                        var err error
-                        val, err = compileExpr(s.Return.Value)
-                        if err != nil {
-                                return nil, err
-                        }
-                        if ml, ok := val.(*MapLit); ok {
-                                if st, ok := structTypes[currentReturnType]; ok {
-                                        fields := make([]StructFieldValue, len(ml.Items))
-                                        for i, it := range ml.Items {
-                                                if k, ok := it.Key.(*StringLit); ok {
-                                                        fields[i] = StructFieldValue{Name: k.Value, Value: it.Value}
-                                                }
-                                        }
-                                        val = &StructLit{Name: st.Name, Fields: fields}
-                                }
-                        }
-                        if ml, ok := val.(*MapLit); ok && currentReturnType != "" && strings.HasPrefix(currentReturnType, "Dictionary<") {
+		if s.Return.Value != nil {
+			var err error
+			val, err = compileExpr(s.Return.Value)
+			if err != nil {
+				return nil, err
+			}
+			if ml, ok := val.(*MapLit); ok {
+				if st, ok := structTypes[currentReturnType]; ok {
+					fields := make([]StructFieldValue, len(ml.Items))
+					for i, it := range ml.Items {
+						if k, ok := it.Key.(*StringLit); ok {
+							fields[i] = StructFieldValue{Name: k.Value, Value: it.Value}
+						}
+					}
+					val = &StructLit{Name: st.Name, Fields: fields}
+				}
+			}
+			if ml, ok := val.(*MapLit); ok && currentReturnType != "" && strings.HasPrefix(currentReturnType, "Dictionary<") {
 				parts := strings.TrimPrefix(strings.TrimSuffix(currentReturnType, ">"), "Dictionary<")
 				arr := strings.Split(parts, ",")
 				if len(arr) == 2 {
@@ -5027,6 +5025,7 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("}\n")
 	}
 
+	buf.WriteString("#pragma warning disable CS0162\n")
 	buf.WriteString("class Program {\n")
 	if usesNow {
 		buf.WriteString("\tstatic bool seededNow = false;\n")
@@ -5059,6 +5058,14 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\t\tif (v is string s) return s.Length;\n")
 		buf.WriteString("\t\tif (v is System.Collections.ICollection c) return c.Count;\n")
 		buf.WriteString("\t\treturn Convert.ToString(v).Length;\n")
+		buf.WriteString("\t}\n")
+	}
+	if usesIdx {
+		buf.WriteString("\tstatic T _idx<T>(T[] arr, long i) {\n")
+		buf.WriteString("\t\tif (arr == null) return default(T);\n")
+		buf.WriteString("\t\tif (i < 0) i += arr.Length;\n")
+		buf.WriteString("\t\tif (i < 0 || i >= arr.Length) return default(T);\n")
+		buf.WriteString("\t\treturn arr[(int)i];\n")
 		buf.WriteString("\t}\n")
 	}
 	if usesSlice {

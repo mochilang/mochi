@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-09 16:12 GMT+7
+Last updated: 2025-08-11 14:50 GMT+7
 
-## Algorithms Golden Test Checklist (1000/1077)
+## Algorithms Golden Test Checklist (1006/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -685,56 +685,56 @@ Last updated: 2025-08-09 16:12 GMT+7
 | 676 | maths/special_numbers/proth_number | ✓ | 2.0ms | 25.62KB |
 | 677 | maths/special_numbers/triangular_numbers | ✓ | 1.0ms | 16.35KB |
 | 678 | maths/special_numbers/ugly_numbers | ✓ | 2.0ms | 242.23KB |
-| 679 | maths/special_numbers/weird_number | error |  |  |
-| 680 | maths/sum_of_arithmetic_series | ✓ | 2.0ms | 16.35KB |
-| 681 | maths/sum_of_digits | ✓ | 2.0ms | 17.66KB |
-| 682 | maths/sum_of_geometric_progression | ✓ | 2.0ms | 13.77KB |
-| 683 | maths/sum_of_harmonic_series | ✓ | 2.0ms | 14.52KB |
-| 684 | maths/sumset | ✓ | 2.0ms | 18.93KB |
-| 685 | maths/sylvester_sequence | ✓ | 2.0ms | 17.25KB |
-| 686 | maths/tanh | ✓ | 2.0ms | 16.85KB |
-| 687 | maths/test_factorial | ✓ | 1.0ms | 16.35KB |
-| 688 | maths/test_prime_check | ✓ | 1.0ms | 13.25KB |
-| 689 | maths/three_sum | ✓ | 2.0ms | 18.80KB |
+| 679 | maths/special_numbers/weird_number | ✓ | 3.0ms | 42.91KB |
+| 680 | maths/sum_of_arithmetic_series | ✓ | 3.0ms | 16.35KB |
+| 681 | maths/sum_of_digits | ✓ | 3.0ms | 17.66KB |
+| 682 | maths/sum_of_geometric_progression | ✓ | 5.0ms | 13.77KB |
+| 683 | maths/sum_of_harmonic_series | ✓ | 4.0ms | 14.52KB |
+| 684 | maths/sumset | ✓ | 3.0ms | 18.93KB |
+| 685 | maths/sylvester_sequence | ✓ | 3.0ms | 17.25KB |
+| 686 | maths/tanh | ✓ | 3.0ms | 16.85KB |
+| 687 | maths/test_factorial | ✓ | 3.0ms | 16.35KB |
+| 688 | maths/test_prime_check | ✓ | 3.0ms | 13.25KB |
+| 689 | maths/three_sum | ✓ | 3.0ms | 18.80KB |
 | 690 | maths/trapezoidal_rule | ✓ | 2.0ms | 15.06KB |
-| 691 | maths/triplet_sum | ✓ | 2.0ms | 20.84KB |
-| 692 | maths/twin_prime | ✓ | 1.0ms | 16.34KB |
-| 693 | maths/two_pointer | error |  |  |
-| 694 | maths/two_sum | ✓ | 2.0ms | 17.05KB |
-| 695 | maths/volume | ✓ | 2.0ms | 16.21KB |
-| 696 | maths/zellers_congruence | error |  |  |
-| 697 | matrix/binary_search_matrix | ✓ | 2.0ms | 18.70KB |
-| 698 | matrix/count_islands_in_matrix | error |  |  |
-| 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 4.0ms | 15.08GB |
+| 691 | maths/triplet_sum | ✓ | 3.0ms | 20.84KB |
+| 692 | maths/twin_prime | ✓ | 2.0ms | 16.34KB |
+| 693 | maths/two_pointer | ✓ | 3.0ms | 18.21KB |
+| 694 | maths/two_sum | ✓ | 3.0ms | 17.05KB |
+| 695 | maths/volume | ✓ | 3.0ms | 16.21KB |
+| 696 | maths/zellers_congruence | ✓ | 3.0ms | 18.36KB |
+| 697 | matrix/binary_search_matrix | ✓ | 3.0ms | 18.70KB |
+| 698 | matrix/count_islands_in_matrix | ✓ | 3.0ms | 22.65KB |
+| 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 6.0ms | 15.08GB |
 | 700 | matrix/count_paths | ✓ | 3.0ms | 21.24KB |
-| 701 | matrix/cramers_rule_2x2 |   |  |  |
-| 702 | matrix/inverse_of_matrix |   |  |  |
+| 701 | matrix/cramers_rule_2x2 | ✓ | 3.0ms | 14.52KB |
+| 702 | matrix/inverse_of_matrix | ✓ | 3.0ms | 16.75KB |
 | 703 | matrix/largest_square_area_in_matrix | ✓ | 4.0ms | 20.72KB |
-| 704 | matrix/matrix_based_game | ✓ | 4.0ms | 36.11KB |
-| 705 | matrix/matrix_class | ✓ | 6.0ms | 89.30KB |
+| 704 | matrix/matrix_based_game | ✓ | 6.0ms | 33.91KB |
+| 705 | matrix/matrix_class | ✓ | 4.0ms | 89.30KB |
 | 706 | matrix/matrix_equalization | ✓ | 3.0ms | 19.34KB |
-| 707 | matrix/matrix_multiplication_recursion | ✓ | 4.0ms | 23.36KB |
-| 708 | matrix/matrix_operation | ✓ | 6.0ms | 53.27KB |
-| 709 | matrix/max_area_of_island | ✓ | 4.0ms | 31.21KB |
+| 707 | matrix/matrix_multiplication_recursion | ✓ | 3.0ms | 23.36KB |
+| 708 | matrix/matrix_operation | ✓ | 4.0ms | 53.27KB |
+| 709 | matrix/max_area_of_island | ✓ | 3.0ms | 31.21KB |
 | 710 | matrix/median_matrix | ✓ | 3.0ms | 18.88KB |
-| 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ | 5.0ms | 50.78KB |
+| 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ | 4.0ms | 50.78KB |
 | 712 | matrix/pascal_triangle | ✓ | 3.0ms | 24.06KB |
-| 713 | matrix/rotate_matrix | ✓ | 4.0ms | 38.07KB |
+| 713 | matrix/rotate_matrix | ✓ | 2.0ms | 38.07KB |
 | 714 | matrix/searching_in_sorted_matrix | ✓ | 3.0ms | 18.92KB |
 | 715 | matrix/sherman_morrison | ✓ | 5.0ms | 26.48KB |
-| 716 | matrix/spiral_print | ✓ | 4.0ms | 21.42KB |
-| 717 | matrix/tests/test_matrix_operation | ✓ | 4.0ms | 29.18KB |
-| 718 | matrix/validate_sudoku_board | ✓ | 3.0ms | 34.80KB |
+| 716 | matrix/spiral_print | ✓ | 3.0ms | 21.42KB |
+| 717 | matrix/tests/test_matrix_operation | ✓ | 3.0ms | 29.18KB |
+| 718 | matrix/validate_sudoku_board | ✓ | 3.0ms | 36.62KB |
 | 719 | networking_flow/ford_fulkerson | ✓ | 3.0ms | 22.26KB |
-| 720 | networking_flow/minimum_cut | ✓ | 4.0ms | 28.26KB |
+| 720 | networking_flow/minimum_cut | ✓ | 2.0ms | 28.26KB |
 | 721 | neural_network/activation_functions/binary_step | ✓ | 3.0ms | 17.69KB |
-| 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 5.0ms | 16.25KB |
-| 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 3.0ms | 16.32KB |
+| 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 3.0ms | 16.25KB |
+| 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 4.0ms | 16.32KB |
 | 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 3.0ms | 15.85KB |
-| 725 | neural_network/activation_functions/mish | ✓ | 4.0ms | 16.55KB |
-| 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 4.0ms | 14.45KB |
+| 725 | neural_network/activation_functions/mish | ✓ | 3.0ms | 16.55KB |
+| 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 3.0ms | 14.45KB |
 | 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 3.0ms | 15.62KB |
-| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 10.0ms | 99.56KB |
+| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 11.0ms | 99.56KB |
 | 729 | neural_network/activation_functions/softplus | ✓ | 4.0ms | 16.57KB |
 | 730 | neural_network/activation_functions/squareplus | ✓ | 4.0ms | 16.41KB |
 | 731 | neural_network/activation_functions/swish | ✓ | 4.0ms | 19.02KB |
