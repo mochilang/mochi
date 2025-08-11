@@ -1,0 +1,6 @@
+run: exit status 255
+
+Fatal error: Uncaught Error: selection_sort(): Argument #1 ($arr) could not be passed by reference in /workspace/mochi/tests/algorithms/x/PHP/sorts/selection_sort.php:92
+Stack trace:
+#0 {main}
+  thrown in /workspace/mochi/tests/algorithms/x/PHP/sorts/selection_sort.php on line 92

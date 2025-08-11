@@ -1,0 +1,5 @@
+Fatal error: Uncaught Error: shell_sort(): Argument #1 ($collection) could not be passed by reference in /workspace/mochi/tests/algorithms/x/PHP/sorts/shrink_shell_sort.php:103
+Stack trace:
+#0 /workspace/mochi/tests/algorithms/x/PHP/sorts/shrink_shell_sort.php(107): main()
+#1 {main}
+  thrown in /workspace/mochi/tests/algorithms/x/PHP/sorts/shrink_shell_sort.php on line 103
