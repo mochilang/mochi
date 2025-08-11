@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-11 14:50 GMT+7
+Last updated: 2025-08-11 15:18 GMT+7
 
-## Algorithms Golden Test Checklist (1006/1077)
+## Algorithms Golden Test Checklist (1008/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -1050,10 +1050,10 @@ Last updated: 2025-08-11 14:50 GMT+7
 | 1041 | strings/word_occurrence | ✓ | 4.0ms | 17.25KB |
 | 1042 | strings/word_patterns | ✓ | 5.0ms | 29.72KB |
 | 1043 | strings/z_function | ✓ | 3.0ms | 37.52KB |
-| 1044 | web_programming/co2_emission | error |  |  |
+| 1044 | web_programming/co2_emission | ✓ | 168.0ms | 2.02MB |
 | 1045 | web_programming/covid_stats_via_xpath | ✓ | 3.0ms | 26.52KB |
 | 1046 | web_programming/crawl_google_results | ✓ | 3.0ms | 22.75KB |
-| 1047 | web_programming/crawl_google_scholar_citation | error |  |  |
+| 1047 | web_programming/crawl_google_scholar_citation | ✓ | 2.0ms | 16.25KB |
 | 1048 | web_programming/currency_converter | ✓ | 4.0ms | 13.99KB |
 | 1049 | web_programming/current_stock_price | ✓ | 2.0ms | 18.59KB |
 | 1050 | web_programming/current_weather | ✓ | 3.0ms | 15.68KB |
