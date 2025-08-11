@@ -1244,6 +1244,15 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	boolOp := b.Op == "&&" || b.Op == "||"
 	bigOp := leftType == "BigInteger" || rightType == "BigInteger"
 	ratOp := leftType == "BigRat" || rightType == "BigRat"
+	useLong := leftType == "Long" || rightType == "Long"
+	wrapToInt := false
+	if numOp && useLong {
+		if li, ok := b.Left.(*IntLit); ok && li.Value == 0 {
+			if ri, ok := b.Right.(*IntLit); ok && ri.Value > 2147483647 {
+				wrapToInt = true
+			}
+		}
+	}
 	cast := func(e Expr, typ string) {
 		if typ == "Double" {
 			io.WriteString(w, "(")
@@ -1468,7 +1477,6 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		return
 	}
 	if numOp && b.Op == "%" && !bigOp {
-		useLong := leftType == "Long" || rightType == "Long"
 		io.WriteString(w, "Math.floorMod(")
 		if _, ok := b.Left.(*BinaryExpr); ok {
 			io.WriteString(w, "(")
@@ -1525,6 +1533,9 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		}
 		return
 	}
+	if wrapToInt {
+		io.WriteString(w, "(")
+	}
 	if listOp {
 		io.WriteString(w, "(")
 	}
@@ -1546,6 +1557,8 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	if listOp {
 		io.WriteString(w, ")")
 		io.WriteString(w, ".toMutableList()")
+	} else if wrapToInt {
+		io.WriteString(w, ").toInt()")
 	}
 }
 
