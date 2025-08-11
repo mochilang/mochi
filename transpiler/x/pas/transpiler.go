@@ -197,6 +197,7 @@ type Program struct {
 	NeedShowListInt64  bool
 	NeedShowMap        bool
 	NeedMapIntIntStr   bool
+	NeedMapStrIntStr   bool
 	NeedListStr        bool
 	NeedListStr2       bool
 	NeedListStrList    bool
@@ -1395,6 +1396,7 @@ func (p *Program) Emit() []byte {
 	}
 	if p.UseSHA256 {
 		buf.WriteString("function _sha256(bs: IntArray): IntArray;\nvar tmp, outFile, hex: string; f: file; t: Text; i: integer; res: IntArray;\nbegin\n  tmp := GetTempFileName('', 'mochi_sha256');\n  Assign(f, tmp);\n  Rewrite(f,1);\n  for i := 0 to Length(bs)-1 do\n    BlockWrite(f, bs[i],1);\n  Close(f);\n  outFile := tmp + '.hash';\n  fpSystem(PChar(AnsiString('sha256sum ' + tmp + ' > ' + outFile)));\n  Assign(t, outFile);\n  Reset(t);\n  ReadLn(t, hex);\n  Close(t);\n  DeleteFile(tmp);\n  DeleteFile(outFile);\n  hex := Trim(hex);\n  SetLength(res, 32);\n  for i := 0 to 31 do\n    res[i] := StrToInt('$'+Copy(hex, i*2+1,2));\n  _sha256 := res;\nend;\n")
+		buf.WriteString("function _sha256_str(s: string): IntArray;\nvar i: integer; bs: IntArray;\nbegin\n  SetLength(bs, Length(s));\n  for i := 1 to Length(s) do\n    bs[i-1] := Ord(s[i]);\n  _sha256_str := _sha256(bs);\nend;\n")
 	}
 	if p.UseBigRat {
 		buf.WriteString("type BigRat = record num: int64; den: int64; end;\n")
@@ -1529,6 +1531,21 @@ begin
   Result := 'map[';
   for i := 0 to m.Count - 1 do begin
     Result := Result + IntToStr(m.Keys[i]);
+    Result := Result + ':';
+    Result := Result + IntToStr(m.Data[i]);
+    if i < m.Count - 1 then Result := Result + ' ';
+  end;
+  Result := Result + ']';
+end;
+`)
+	}
+	if p.NeedMapStrIntStr {
+		buf.WriteString(`function map_str_int_to_str(m: specialize TFPGMap<string, integer>): string;
+var i: integer;
+begin
+  Result := 'map[';
+  for i := 0 to m.Count - 1 do begin
+    Result := Result + m.Keys[i];
     Result := Result + ':';
     Result := Result + IntToStr(m.Data[i]);
     if i < m.Count - 1 then Result := Result + ' ';
@@ -4355,7 +4372,11 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 					currProg.UseSysUtils = true
 					currProg.UseSHA256 = true
 					_ = currProg.addArrayAlias("integer")
-					expr = &CallExpr{Name: "_sha256", Args: args}
+					if strings.Contains(strings.ToLower(inferType(args[0])), "string") {
+						expr = &CallExpr{Name: "_sha256_str", Args: args}
+					} else {
+						expr = &CallExpr{Name: "_sha256", Args: args}
+					}
 				} else if name == "floor" && len(args) == 1 {
 					currProg.UseMath = true
 					expr = &CallExpr{Name: "Floor", Args: args}
@@ -4616,6 +4637,11 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 						currProg.UseSysUtils = true
 						return &CallExpr{Name: "map_int_int_to_str", Args: args}, nil
 					}
+					if key == "string" && val == "integer" {
+						currProg.NeedMapStrIntStr = true
+						currProg.UseSysUtils = true
+						return &CallExpr{Name: "map_str_int_to_str", Args: args}, nil
+					}
 				}
 				return args[0], nil
 			}
@@ -4776,6 +4802,9 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			currProg.UseSysUtils = true
 			currProg.UseSHA256 = true
 			_ = currProg.addArrayAlias("integer")
+			if strings.Contains(strings.ToLower(inferType(args[0])), "string") {
+				return &CallExpr{Name: "_sha256_str", Args: args}, nil
+			}
 			return &CallExpr{Name: "_sha256", Args: args}, nil
 		}
 		if mapped, ok := nameMap[name]; ok {
