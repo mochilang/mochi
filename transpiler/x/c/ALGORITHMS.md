@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (188/1077) - Last updated 2025-08-11 14:43 +0700:
+Checklist of programs that currently transpile and run (195/1077) - Last updated 2025-08-11 14:57 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -279,14 +279,14 @@ Checklist of programs that currently transpile and run (188/1077) - Last updated
 | 272 | digital_image_processing/filters/bilateral_filter | ✓ | 847us | 1.6 MB |
 | 273 | digital_image_processing/filters/convolve | ✓ | 513us | 1.6 MB |
 | 274 | digital_image_processing/filters/gabor_filter | ✓ | 386us | 1.6 MB |
-| 275 | digital_image_processing/filters/gaussian_filter |  |  |  |
-| 276 | digital_image_processing/filters/laplacian_filter |  |  |  |
-| 277 | digital_image_processing/filters/local_binary_pattern |  |  |  |
-| 278 | digital_image_processing/filters/median_filter |  |  |  |
+| 275 | digital_image_processing/filters/gaussian_filter | ✓ | 226us | 1.6 MB |
+| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 220us | 1.4 MB |
+| 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 534us | 1.4 MB |
+| 278 | digital_image_processing/filters/median_filter | ✓ | 231us | 1.5 MB |
 | 279 | digital_image_processing/filters/sobel_filter |  |  |  |
-| 280 | digital_image_processing/histogram_equalization/histogram_stretch |  |  |  |
-| 281 | digital_image_processing/index_calculation |  |  |  |
-| 282 | digital_image_processing/morphological_operations/dilation_operation |  |  |  |
+| 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 572us | 1.6 MB |
+| 281 | digital_image_processing/index_calculation | ✓ | 359us | 1.6 MB |
+| 282 | digital_image_processing/morphological_operations/dilation_operation | ✓ | 311us | 1.6 MB |
 | 283 | digital_image_processing/morphological_operations/erosion_operation |  |  |  |
 | 284 | digital_image_processing/resize/resize |  |  |  |
 | 285 | digital_image_processing/rotation/rotation |  |  |  |

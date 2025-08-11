@@ -931,74 +931,37 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 		return
 	}
 	if lst, ok := r.Expr.(*ListLit); ok && strings.HasSuffix(currentFuncReturn, "[]") {
-		base := strings.TrimSuffix(currentFuncReturn, "[]")
-		if strings.HasSuffix(base, "[]") {
+		dims := strings.Count(currentFuncReturn, "[]")
+		base := currentFuncReturn
+		for strings.HasSuffix(base, "[]") {
 			base = strings.TrimSuffix(base, "[]")
-			tmp := fmt.Sprintf("__tmp%d", tempCounter)
-			tempCounter++
-			writeIndent(w, indent)
-			io.WriteString(w, "{\n")
-			writeIndent(w, indent+1)
-			fmt.Fprintf(w, "static size_t %s_lens[] = {", tmp)
-			for i, e := range lst.Elems {
-				if i > 0 {
-					io.WriteString(w, ", ")
-				}
-				if sub, ok := e.(*ListLit); ok {
-					fmt.Fprintf(w, "%d", len(sub.Elems))
-				} else {
-					io.WriteString(w, "0")
-				}
-			}
-			io.WriteString(w, "};\n")
-			for i, e := range lst.Elems {
-				if sub, ok := e.(*ListLit); ok {
-					writeIndent(w, indent+1)
-					fmt.Fprintf(w, "static %s %s_row%d[] = {", base, tmp, i)
-					for j, el := range sub.Elems {
-						if j > 0 {
-							io.WriteString(w, ", ")
-						}
-						el.emitExpr(w)
-					}
-					io.WriteString(w, "};\n")
-				}
-			}
-			writeIndent(w, indent+1)
-			fmt.Fprintf(w, "static %s* %s_data[] = {", base, tmp)
-			for i := range lst.Elems {
-				if i > 0 {
-					io.WriteString(w, ", ")
-				}
-				fmt.Fprintf(w, "%s_row%d", tmp, i)
-			}
-			io.WriteString(w, "};\n")
-			writeIndent(w, indent+1)
-			fmt.Fprintf(w, "%s_lens = %s_lens;\n", currentFuncName, tmp)
-			writeIndent(w, indent+1)
-			fmt.Fprintf(w, "%s_len = %d;\n", currentFuncName, len(lst.Elems))
-			writeIndent(w, indent+1)
-			fmt.Fprintf(w, "return %s_data;\n", tmp)
-			writeIndent(w, indent)
-			io.WriteString(w, "}\n")
-			return
 		}
 		tmp := fmt.Sprintf("__tmp%d", tempCounter)
 		tempCounter++
 		writeIndent(w, indent)
 		io.WriteString(w, "{\n")
 		writeIndent(w, indent+1)
-		fmt.Fprintf(w, "static %s %s_arr[%d];\n", base, tmp, len(lst.Elems))
+		fmt.Fprintf(w, "size_t *%s_lens = malloc(%d * sizeof(size_t));\n", tmp, len(lst.Elems))
 		for i, e := range lst.Elems {
 			writeIndent(w, indent+1)
-			fmt.Fprintf(w, "%s_arr[%d] = ", tmp, i)
+			fmt.Fprintf(w, "%s_lens[%d] = ", tmp, i)
+			emitLenExpr(w, e)
+			io.WriteString(w, ";\n")
+		}
+		writeIndent(w, indent+1)
+		fmt.Fprintf(w, "%s%s %s_data = malloc(%d * sizeof(%s%s));\n", base, strings.Repeat("*", dims), tmp, len(lst.Elems), base, strings.Repeat("*", dims-1))
+		for i, e := range lst.Elems {
+			writeIndent(w, indent+1)
+			fmt.Fprintf(w, "%s_data[%d] = ", tmp, i)
 			e.emitExpr(w)
 			io.WriteString(w, ";\n")
 		}
 		writeIndent(w, indent+1)
+		fmt.Fprintf(w, "%s_lens = %s_lens;\n", currentFuncName, tmp)
+		writeIndent(w, indent+1)
 		fmt.Fprintf(w, "%s_len = %d;\n", currentFuncName, len(lst.Elems))
 		writeIndent(w, indent+1)
-		fmt.Fprintf(w, "return %s_arr;\n", tmp)
+		fmt.Fprintf(w, "return %s_data;\n", tmp)
 		writeIndent(w, indent)
 		io.WriteString(w, "}\n")
 		return
@@ -1846,7 +1809,7 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 		}
 	}
 
-	if call, ok := a.Value.(*CallExpr); ok {
+	if call, ok := a.Value.(*CallExpr); ok && len(a.Indexes) == 0 && len(a.Fields) == 0 {
 		if call.Func == "_slice_int" || call.Func == "_slice_double" || call.Func == "_slice_str" {
 			sliceLen := "_slice_int_len"
 			if call.Func == "_slice_double" {
