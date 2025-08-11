@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 537/1077
-Last updated: 2025-08-11 16:20 +0700
+Completed programs: 554/1077
+Last updated: 2025-08-11 17:23 +0700
 
 Checklist:
 
@@ -987,35 +987,35 @@ Checklist:
 | 978 | sorts/shell_sort | ✓ | 132.0µs | 3.91KB |
 | 979 | sorts/shrink_shell_sort | ✓ | 104.0µs | 1.22KB |
 | 980 | sorts/slowsort | ✓ | 375.0µs | 39.94KB |
-| 981 | sorts/stooge_sort |   |  |  |
-| 982 | sorts/strand_sort |   |  |  |
-| 983 | sorts/tim_sort |   |  |  |
-| 984 | sorts/topological_sort |   |  |  |
+| 981 | sorts/stooge_sort | ✓ | 265.0µs | 4.06KB |
+| 982 | sorts/strand_sort | ✓ | 194.0µs | 3.74KB |
+| 983 | sorts/tim_sort | ✓ | 171.0µs | 3.20KB |
+| 984 | sorts/topological_sort | ✓ | 63.0µs | 1.57KB |
 | 985 | sorts/tree_sort |   |  |  |
-| 986 | sorts/unknown_sort |   |  |  |
-| 987 | sorts/wiggle_sort |   |  |  |
-| 988 | strings/aho_corasick |   |  |  |
-| 989 | strings/alternative_string_arrange |   |  |  |
+| 986 | sorts/unknown_sort | ✓ | 192.0µs | 4.31KB |
+| 987 | sorts/wiggle_sort | ✓ | 270.0µs | 5.61KB |
+| 988 | strings/aho_corasick | ✓ | 219.0µs | 5.09KB |
+| 989 | strings/alternative_string_arrange | ✓ | 21.0µs | 848B |
 | 990 | strings/anagrams |   |  |  |
-| 991 | strings/autocomplete_using_trie |   |  |  |
-| 992 | strings/barcode_validator |   |  |  |
-| 993 | strings/bitap_string_match |   |  |  |
-| 994 | strings/boyer_moore_search |   |  |  |
-| 995 | strings/camel_case_to_snake_case |   |  |  |
-| 996 | strings/can_string_be_rearranged_as_palindrome |   |  |  |
-| 997 | strings/capitalize |   |  |  |
-| 998 | strings/check_anagrams |   |  |  |
-| 999 | strings/count_vowels |   |  |  |
+| 991 | strings/autocomplete_using_trie | ✓ | 30.0µs | 984B |
+| 992 | strings/barcode_validator | ✓ | 156.0µs | 2.55KB |
+| 993 | strings/bitap_string_match | ✓ | 376.0µs | 40.92KB |
+| 994 | strings/boyer_moore_search | ✓ | 1.0µs | 208B |
+| 995 | strings/camel_case_to_snake_case | ✓ | 905.0µs | 78.76KB |
+| 996 | strings/can_string_be_rearranged_as_palindrome | ✓ | 212.0µs | 10.64KB |
+| 997 | strings/capitalize | ✓ | 59.0µs | 1.41KB |
+| 998 | strings/check_anagrams | ✓ | 179.0µs | 11.85KB |
+| 999 | strings/count_vowels | ✓ | 289.0µs | 12.23KB |
 | 1000 | strings/credit_card_validator | ✓ | 38.0µs | 1.09KB |
 | 1001 | strings/damerau_levenshtein_distance | ✓ | 796.0µs | 141.10KB |
-| 1002 | strings/detecting_english_programmatically | ✓ | 240.0µs | 26.84KB |
-| 1003 | strings/dna | ✓ | 18.0µs | 816B |
-| 1004 | strings/edit_distance | ✓ | 21.0ms | 2.23MB |
-| 1005 | strings/frequency_finder | ✓ | 3.0ms | 472.77KB |
-| 1006 | strings/hamming_distance | ✓ | 109.0µs | 832B |
-| 1007 | strings/indian_phone_validator | ✓ | 37.0µs | 1.28KB |
-| 1008 | strings/is_contains_unique_chars | ✓ | 123.0µs | 8.72KB |
-| 1009 | strings/is_isogram | ✓ | 182.0µs | 22.61KB |
+| 1002 | strings/detecting_english_programmatically | ✓ | 330.0µs | 26.84KB |
+| 1003 | strings/dna | ✓ | 49.0µs | 816B |
+| 1004 | strings/edit_distance | ✓ | 26.0ms | 1.35MB |
+| 1005 | strings/frequency_finder | ✓ | 5.0ms | 472.77KB |
+| 1006 | strings/hamming_distance | ✓ | 146.0µs | 832B |
+| 1007 | strings/indian_phone_validator | ✓ | 110.0µs | 1.28KB |
+| 1008 | strings/is_contains_unique_chars | ✓ | 200.0µs | 8.72KB |
+| 1009 | strings/is_isogram | ✓ | 318.0µs | 22.61KB |
 | 1010 | strings/is_pangram | ✓ | 481.0µs | 88.00KB |
 | 1011 | strings/is_polish_national_id | ✓ | 50.0µs | 2.64KB |
 | 1012 | strings/is_spain_national_id | ✓ | 275.0µs | 26.91KB |

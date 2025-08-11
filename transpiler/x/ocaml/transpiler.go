@@ -5315,6 +5315,11 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 			if err != nil {
 				return nil, "", err
 			}
+			if vt == "list" && strings.HasPrefix(firstType, "list-") {
+				vt = firstType
+			} else if firstType == "list" && strings.HasPrefix(vt, "list-") {
+				firstType = vt
+			}
 			if firstType == "" {
 				firstType = vt
 			} else if vt != firstType {
