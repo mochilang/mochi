@@ -900,14 +900,20 @@ func (f *FunLit) emit(w io.Writer) {
 type ListLit struct{ Elems []Expr }
 
 func (l *ListLit) emit(w io.Writer) {
-	io.WriteString(w, "vec![")
-	for i, e := range l.Elems {
-		if i > 0 {
-			io.WriteString(w, ", ")
-		}
-		e.emit(w)
-	}
-	io.WriteString(w, "]")
+       io.WriteString(w, "vec![")
+       for i, e := range l.Elems {
+               if i > 0 {
+                       io.WriteString(w, ", ")
+               }
+               e.emit(w)
+               t := inferType(e)
+               if t != "i64" && t != "bool" && t != "f64" {
+                       if _, ok := e.(*StringLit); !ok {
+                               io.WriteString(w, ".clone()")
+                       }
+               }
+       }
+       io.WriteString(w, "]")
 }
 
 type MapEntry struct {
@@ -1028,7 +1034,7 @@ func (i *IndexExpr) emit(w io.Writer) {
 		if strings.HasPrefix(ttype, "&") {
 			ttype = ttype[1:]
 		}
-		if stringVars[t.Name] || ttype == "String" || (!mapVars[t.Name] && !strings.HasPrefix(ttype, "Vec<") && !strings.HasPrefix(ttype, "HashMap")) {
+               if !strings.HasPrefix(ttype, "Vec<") && !strings.HasPrefix(ttype, "HashMap") && (stringVars[t.Name] || ttype == "String" || (ttype == "" && !mapVars[t.Name])) {
 			if inferType(i) == "i64" {
 				io.WriteString(w, "(")
 				t.emit(w)
@@ -1334,42 +1340,62 @@ type MethodCallExpr struct {
 }
 
 func (m *MethodCallExpr) emit(w io.Writer) {
-	if nr, ok := m.Receiver.(*NameRef); ok && nr.Name == "math" {
-		io.WriteString(w, "math::")
-		io.WriteString(w, m.Name)
-		io.WriteString(w, "(")
-		for i, a := range m.Args {
-			if i > 0 {
-				io.WriteString(w, ", ")
-			}
-			a.emit(w)
-		}
-		io.WriteString(w, ")")
-		return
-	}
-	if rt := inferType(m.Receiver); rt != "" {
-		if _, ok := structTypes[rt]; ok && m.Name != "clone" {
-			fmt.Fprintf(w, "%s_%s(", rustIdent(rt), rustIdent(m.Name))
-			m.Receiver.emit(w)
-			for _, a := range m.Args {
-				io.WriteString(w, ", ")
-				a.emit(w)
-			}
-			io.WriteString(w, ")")
-			return
-		}
-	}
-	m.Receiver.emit(w)
-	io.WriteString(w, ".")
-	io.WriteString(w, m.Name)
-	io.WriteString(w, "(")
-	for i, a := range m.Args {
-		if i > 0 {
-			io.WriteString(w, ", ")
-		}
-		a.emit(w)
-	}
-	io.WriteString(w, ")")
+       if nr, ok := m.Receiver.(*NameRef); ok {
+               if nr.Name == "math" {
+                       io.WriteString(w, "math::")
+                       io.WriteString(w, m.Name)
+                       io.WriteString(w, "(")
+                       for i, a := range m.Args {
+                               if i > 0 {
+                                       io.WriteString(w, ", ")
+                               }
+                               a.emit(w)
+                       }
+                       io.WriteString(w, ")")
+                       return
+               }
+               name := nr.Name
+               if newName, ok := globalRenames[nr.Name]; ok && !isLocal(nr.Name) {
+                       name = newName
+               }
+               if globalVars[name] && strings.HasPrefix(varTypes[name], "HashMap") {
+                       io.WriteString(w, name)
+                       io.WriteString(w, ".lock().unwrap().")
+                       io.WriteString(w, m.Name)
+                       io.WriteString(w, "(")
+                       for i, a := range m.Args {
+                               if i > 0 {
+                                       io.WriteString(w, ", ")
+                               }
+                               a.emit(w)
+                       }
+                       io.WriteString(w, ")")
+                       return
+               }
+       }
+       if rt := inferType(m.Receiver); rt != "" {
+               if _, ok := structTypes[rt]; ok && m.Name != "clone" {
+                       fmt.Fprintf(w, "%s_%s(", rustIdent(rt), rustIdent(m.Name))
+                       m.Receiver.emit(w)
+                       for _, a := range m.Args {
+                               io.WriteString(w, ", ")
+                               a.emit(w)
+                       }
+                       io.WriteString(w, ")")
+                       return
+               }
+       }
+       m.Receiver.emit(w)
+       io.WriteString(w, ".")
+       io.WriteString(w, m.Name)
+       io.WriteString(w, "(")
+       for i, a := range m.Args {
+               if i > 0 {
+                       io.WriteString(w, ", ")
+               }
+               a.emit(w)
+       }
+       io.WriteString(w, ")")
 }
 
 // LenExpr represents a call to the `len` builtin.
@@ -2015,31 +2041,31 @@ type AssignStmt struct {
 }
 
 func (a *AssignStmt) emit(w io.Writer) {
-	name := a.Name
-	if newName, ok := globalRenames[a.Name]; ok && !isLocal(a.Name) {
-		name = newName
-	}
-	if globalVars[a.Name] && strings.HasPrefix(varTypes[a.Name], "HashMap") {
-		io.WriteString(w, "*")
-		io.WriteString(w, name)
-		io.WriteString(w, ".lock().unwrap()")
-		io.WriteString(w, " = ")
-		a.Expr.emit(w)
-	} else {
-		io.WriteString(w, name)
-		io.WriteString(w, " = ")
-		if _, ok := a.Expr.(*NameRef); ok {
-			typ := inferType(a.Expr)
-			if typ != "i64" && typ != "bool" && typ != "f64" && !strings.HasPrefix(typ, "&") {
-				a.Expr.emit(w)
-				io.WriteString(w, ".clone()")
-			} else {
-				a.Expr.emit(w)
-			}
-		} else {
-			a.Expr.emit(w)
-		}
-	}
+       name := a.Name
+       if newName, ok := globalRenames[a.Name]; ok && !isLocal(a.Name) {
+               name = newName
+       }
+       if globalVars[name] && strings.HasPrefix(varTypes[name], "HashMap") {
+               io.WriteString(w, "*")
+               io.WriteString(w, name)
+               io.WriteString(w, ".lock().unwrap()")
+               io.WriteString(w, " = ")
+               a.Expr.emit(w)
+       } else {
+               io.WriteString(w, name)
+               io.WriteString(w, " = ")
+               if _, ok := a.Expr.(*NameRef); ok {
+                       typ := inferType(a.Expr)
+                       if typ != "i64" && typ != "bool" && typ != "f64" && !strings.HasPrefix(typ, "&") {
+                               a.Expr.emit(w)
+                               io.WriteString(w, ".clone()")
+                       } else {
+                               a.Expr.emit(w)
+                       }
+               } else {
+                       a.Expr.emit(w)
+               }
+       }
 }
 
 // IndexAssignStmt assigns to an indexed expression like x[i] = v.
@@ -2363,34 +2389,46 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			io.WriteString(w, ")")
 			return
 		}
-		if strings.HasPrefix(rt, "HashMap") {
-			if nr, ok := b.Right.(*NameRef); ok && globalVars[nr.Name] {
-				name := nr.Name
-				if newName, ok := globalRenames[nr.Name]; ok && !isLocal(nr.Name) {
-					name = newName
-				}
-				io.WriteString(w, name)
-				io.WriteString(w, ".lock().unwrap().contains_key(")
-				if t := inferType(b.Left); strings.HasPrefix(t, "&") {
-					b.Left.emit(w)
-				} else {
-					io.WriteString(w, "&")
-					b.Left.emit(w)
-				}
-				io.WriteString(w, ")")
-			} else {
-				b.Right.emit(w)
-				io.WriteString(w, ".contains_key(")
-				if t := inferType(b.Left); strings.HasPrefix(t, "&") {
-					b.Left.emit(w)
-				} else {
-					io.WriteString(w, "&")
-					b.Left.emit(w)
-				}
-				io.WriteString(w, ")")
-			}
-			return
-		}
+               if strings.HasPrefix(rt, "HashMap") {
+                       if nr, ok := b.Right.(*NameRef); ok {
+                               name := nr.Name
+                               if newName, ok := globalRenames[nr.Name]; ok && !isLocal(nr.Name) {
+                                       name = newName
+                               }
+                               if globalVars[name] {
+                                       io.WriteString(w, name)
+                                       io.WriteString(w, ".lock().unwrap().contains_key(")
+                                       if t := inferType(b.Left); strings.HasPrefix(t, "&") {
+                                               b.Left.emit(w)
+                                       } else {
+                                               io.WriteString(w, "&")
+                                               b.Left.emit(w)
+                                       }
+                                       io.WriteString(w, ")")
+                               } else {
+                                       io.WriteString(w, name)
+                                       io.WriteString(w, ".contains_key(")
+                                       if t := inferType(b.Left); strings.HasPrefix(t, "&") {
+                                               b.Left.emit(w)
+                                       } else {
+                                               io.WriteString(w, "&")
+                                               b.Left.emit(w)
+                                       }
+                                       io.WriteString(w, ")")
+                               }
+                               return
+                       }
+                       b.Right.emit(w)
+                       io.WriteString(w, ".contains_key(")
+                       if t := inferType(b.Left); strings.HasPrefix(t, "&") {
+                               b.Left.emit(w)
+                       } else {
+                               io.WriteString(w, "&")
+                               b.Left.emit(w)
+                       }
+                       io.WriteString(w, ")")
+                       return
+               }
 		if nr, ok := b.Right.(*NameRef); ok && mapVars[nr.Name] {
 			b.Right.emit(w)
 			io.WriteString(w, ".contains_key(")
@@ -3182,20 +3220,23 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 				typ = rustTypeFromType(t)
 			}
 		}
-		if typ == "" {
-			if idx, ok := e.(*IndexExpr); ok {
-				ct := inferType(idx.Target)
-				if strings.HasPrefix(ct, "&") {
-					ct = ct[1:]
-				}
-				if strings.HasPrefix(ct, "Vec<") {
-					typ = strings.TrimSuffix(strings.TrimPrefix(ct, "Vec<"), ">")
-					if typ == "" {
-						typ = "String"
-					}
-				}
-			}
-		}
+                if typ == "" {
+                        if idx, ok := e.(*IndexExpr); ok {
+                                ct := inferType(idx.Target)
+                                if strings.HasPrefix(ct, "&") {
+                                        ct = ct[1:]
+                                }
+                                if strings.HasPrefix(ct, "Vec<") {
+                                        typ = strings.TrimSuffix(strings.TrimPrefix(ct, "Vec<"), ">")
+                                        if typ == "" {
+                                                typ = "String"
+                                        }
+                                }
+                        }
+                       if _, ok := e.(*SplitExpr); ok {
+                               typ = "Vec<String>"
+                       }
+                }
 		if e == nil && typ != "" {
 			switch typ {
 			case "String":
@@ -4322,11 +4363,11 @@ func applyIndexOps(base Expr, ops []*parser.IndexOp) (Expr, error) {
 			case *StringLit:
 				base = &StringIndexExpr{Str: b, Index: idx}
 			case *NameRef:
-				if stringVars[b.Name] || inferType(b) == "String" {
-					base = &StringIndexExpr{Str: b, Index: idx}
-				} else {
-					base = &IndexExpr{Target: base, Index: idx}
-				}
+                               if inferType(b) == "String" {
+                                       base = &StringIndexExpr{Str: b, Index: idx}
+                               } else {
+                                       base = &IndexExpr{Target: base, Index: idx}
+                               }
 			default:
 				base = &IndexExpr{Target: base, Index: idx}
 			}
@@ -5883,24 +5924,24 @@ func inferType(e Expr) string {
 		if ex.Type != "" {
 			return ex.Type
 		}
-		if stringVars[ex.Name] {
-			return "String"
-		}
-		if t, ok := currentParamTypes[ex.Name]; ok && t != "" {
-			if strings.HasPrefix(t, "&") {
-				return strings.TrimPrefix(t, "&")
-			}
-			return t
-		}
-		if t, ok := varTypes[ex.Name]; ok && t != "" {
-			if t == "&str" {
-				return "String"
-			}
-			return t
-		}
-		if mapVars[ex.Name] {
-			return "HashMap<String, i64>"
-		}
+               if t, ok := currentParamTypes[ex.Name]; ok && t != "" {
+                       if strings.HasPrefix(t, "&") {
+                               return strings.TrimPrefix(t, "&")
+                       }
+                       return t
+               }
+               if t, ok := varTypes[ex.Name]; ok && t != "" {
+                       if t == "&str" {
+                               return "String"
+                       }
+                       return t
+               }
+               if stringVars[ex.Name] {
+                       return "String"
+               }
+               if mapVars[ex.Name] {
+                       return "HashMap<String, i64>"
+               }
 		if ut, ok := curEnv.FindUnionByVariant(ex.Name); ok {
 			return ut.Name
 		}

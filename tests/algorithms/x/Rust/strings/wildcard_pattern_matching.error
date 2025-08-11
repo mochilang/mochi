@@ -1,0 +1,5 @@
+run: exit status 101
+
+thread 'main' panicked at /workspace/mochi/tests/algorithms/x/Rust/strings/wildcard_pattern_matching.rs:61:36:
+index out of bounds: the len is 5 but the index is 18446744073709551615
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
