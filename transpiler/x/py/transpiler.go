@@ -46,6 +46,7 @@ var (
 	usesConcat        bool
 	usesStr           bool
 	usesSetIndex      bool
+	usesPanic         bool
 	funcDepth         int
 )
 
@@ -3139,8 +3140,10 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 	if _, err := io.WriteString(w, "import sys\nif hasattr(sys, \"set_int_max_str_digits\"):\n    sys.set_int_max_str_digits(0)\nimport os\nif os.path.dirname(__file__) in sys.path:\n    sys.path.remove(os.path.dirname(__file__))\n\n"); err != nil {
 		return err
 	}
-	if _, err := io.WriteString(w, helperPanic+"\n"); err != nil {
-		return err
+	if usesPanic {
+		if _, err := io.WriteString(w, helperPanic+"\n"); err != nil {
+			return err
+		}
 	}
 	if usesNow {
 		if _, err := io.WriteString(w, helperNow+"\n"); err != nil {
@@ -3469,6 +3472,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	usesConcat = false
 	usesStr = false
 	usesSetIndex = false
+	usesPanic = false
 	p := &Program{}
 	for _, st := range prog.Statements {
 		switch {
@@ -5116,6 +5120,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				}
 			}
 			return &CallExpr{Func: &Name{Name: "print"}, Args: outArgs}, nil
+		case "panic":
+			if len(args) == 1 {
+				usesPanic = true
+				return &CallExpr{Func: &Name{Name: "panic"}, Args: args}, nil
+			}
 		case "concat":
 			if len(args) == 2 {
 				usesConcat = true
