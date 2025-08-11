@@ -5751,7 +5751,11 @@ func toSwiftType(t *parser.TypeRef) string {
 	case "bigint":
 		usesBigInt = true
 		return "BigInt"
-	case "void":
+	case "void", "unit":
+		// Mochi uses both "void" and "unit" to represent the empty type.
+		// Swift expects the keyword "Void" for functions that do not
+		// return a value. Treat both identifiers as the same to avoid
+		// generating an undefined "unit" type.
 		return "Void"
 	case "any":
 		return "Any?"

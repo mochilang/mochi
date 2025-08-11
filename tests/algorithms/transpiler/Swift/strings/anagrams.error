@@ -1,0 +1,8 @@
+error[P999]: /workspace/mochi/tests/github/TheAlgorithms/Mochi/strings/anagrams.mochi:75:19: unexpected token "!" (expected PostfixExpr)
+  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/strings/anagrams.mochi:75:19
+
+ 75 |     if w != "" && !(w in seen) {
+    |                   ^
+
+help:
+  Parse error occurred. Check syntax near this location.

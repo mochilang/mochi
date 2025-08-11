@@ -2,8 +2,8 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 630/1077
-Last updated: 2025-08-11 16:20 +0700
+Completed programs: 669/1077
+Last updated: 2025-08-11 17:23 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -966,57 +966,57 @@ Last updated: 2025-08-11 16:20 +0700
 | 957 | sorts/insertion_sort | ✓ | 960µs | 3.6 MB |
 | 958 | sorts/intro_sort | ✓ | 390µs | 3.2 MB |
 | 959 | sorts/iterative_merge_sort | ✓ | 527µs | 3.2 MB |
-| 960 | sorts/merge_insertion_sort | ✓ | 834µs | 3.5 MB |
-| 961 | sorts/merge_sort | ✓ | 695µs | 3.5 MB |
-| 962 | sorts/msd_radix_sort | ✓ | 941µs | 3.2 MB |
-| 963 | sorts/natural_sort | ✓ | 2.773ms | 3.6 MB |
-| 964 | sorts/odd_even_sort | ✓ | 394µs | 3.2 MB |
-| 965 | sorts/odd_even_transposition_parallel | ✓ | 759µs | 3.5 MB |
-| 966 | sorts/odd_even_transposition_single_threaded | ✓ | 732µs | 3.5 MB |
-| 967 | sorts/pancake_sort | ✓ | 682µs | 3.3 MB |
-| 968 | sorts/patience_sort | ✓ | 725µs | 3.4 MB |
-| 969 | sorts/pigeon_sort | ✓ | 787µs | 3.5 MB |
-| 970 | sorts/pigeonhole_sort | ✓ | 440µs | 3.4 MB |
-| 971 | sorts/quick_sort |   |  |  |
-| 972 | sorts/quick_sort_3_partition |   |  |  |
-| 973 | sorts/radix_sort |   |  |  |
-| 974 | sorts/recursive_insertion_sort |   |  |  |
-| 975 | sorts/recursive_mergesort_array |   |  |  |
-| 976 | sorts/recursive_quick_sort |   |  |  |
-| 977 | sorts/selection_sort |   |  |  |
-| 978 | sorts/shell_sort |   |  |  |
-| 979 | sorts/shrink_shell_sort |   |  |  |
-| 980 | sorts/slowsort |   |  |  |
-| 981 | sorts/stooge_sort |   |  |  |
-| 982 | sorts/strand_sort |   |  |  |
-| 983 | sorts/tim_sort |   |  |  |
-| 984 | sorts/topological_sort |   |  |  |
-| 985 | sorts/tree_sort |   |  |  |
-| 986 | sorts/unknown_sort |   |  |  |
-| 987 | sorts/wiggle_sort |   |  |  |
-| 988 | strings/aho_corasick |   |  |  |
-| 989 | strings/alternative_string_arrange |   |  |  |
+| 960 | sorts/merge_insertion_sort | ✓ | 767µs | 3.5 MB |
+| 961 | sorts/merge_sort | ✓ | 852µs | 3.5 MB |
+| 962 | sorts/msd_radix_sort | ✓ | 976µs | 3.5 MB |
+| 963 | sorts/natural_sort | ✓ | 2.831ms | 3.8 MB |
+| 964 | sorts/odd_even_sort | ✓ | 342µs | 3.2 MB |
+| 965 | sorts/odd_even_transposition_parallel | ✓ | 849µs | 3.3 MB |
+| 966 | sorts/odd_even_transposition_single_threaded | ✓ | 681µs | 3.6 MB |
+| 967 | sorts/pancake_sort | ✓ | 781µs | 3.6 MB |
+| 968 | sorts/patience_sort | ✓ | 842µs | 3.5 MB |
+| 969 | sorts/pigeon_sort | ✓ | 762µs | 3.5 MB |
+| 970 | sorts/pigeonhole_sort | ✓ | 362µs | 3.2 MB |
+| 971 | sorts/quick_sort | ✓ | 476µs | 3.2 MB |
+| 972 | sorts/quick_sort_3_partition | ✓ | 850µs | 3.2 MB |
+| 973 | sorts/radix_sort | ✓ | 1.026ms | 3.6 MB |
+| 974 | sorts/recursive_insertion_sort | ✓ | 707µs | 3.5 MB |
+| 975 | sorts/recursive_mergesort_array | ✓ | 914µs | 3.5 MB |
+| 976 | sorts/recursive_quick_sort | ✓ | 697µs | 3.4 MB |
+| 977 | sorts/selection_sort | ✓ | 832µs | 3.6 MB |
+| 978 | sorts/shell_sort | ✓ | 762µs | 3.4 MB |
+| 979 | sorts/shrink_shell_sort | ✓ | 745µs | 3.6 MB |
+| 980 | sorts/slowsort | ✓ | 1.399ms | 3.5 MB |
+| 981 | sorts/stooge_sort | ✓ | 671µs | 3.5 MB |
+| 982 | sorts/strand_sort | ✓ | 730µs | 3.5 MB |
+| 983 | sorts/tim_sort | ✓ | 400µs | 3.3 MB |
+| 984 | sorts/topological_sort | ✓ | 1.199ms | 3.5 MB |
+| 985 | sorts/tree_sort | ✓ | 791µs | 3.6 MB |
+| 986 | sorts/unknown_sort | ✓ | 800µs | 3.2 MB |
+| 987 | sorts/wiggle_sort | ✓ | 804µs | 3.7 MB |
+| 988 | strings/aho_corasick | ✓ | 634µs | 3.3 MB |
+| 989 | strings/alternative_string_arrange | ✓ | 196µs | 3.2 MB |
 | 990 | strings/anagrams |   |  |  |
-| 991 | strings/autocomplete_using_trie |   |  |  |
-| 992 | strings/barcode_validator |   |  |  |
-| 993 | strings/bitap_string_match |   |  |  |
-| 994 | strings/boyer_moore_search |   |  |  |
-| 995 | strings/camel_case_to_snake_case |   |  |  |
-| 996 | strings/can_string_be_rearranged_as_palindrome |   |  |  |
-| 997 | strings/capitalize |   |  |  |
-| 998 | strings/check_anagrams |   |  |  |
-| 999 | strings/count_vowels |   |  |  |
-| 1000 | strings/credit_card_validator |   |  |  |
-| 1001 | strings/damerau_levenshtein_distance |   |  |  |
-| 1002 | strings/detecting_english_programmatically |   |  |  |
-| 1003 | strings/dna |   |  |  |
-| 1004 | strings/edit_distance |   |  |  |
-| 1005 | strings/frequency_finder |   |  |  |
-| 1006 | strings/hamming_distance |   |  |  |
-| 1007 | strings/indian_phone_validator |   |  |  |
-| 1008 | strings/is_contains_unique_chars |   |  |  |
-| 1009 | strings/is_isogram |   |  |  |
-| 1010 | strings/is_pangram |   |  |  |
+| 991 | strings/autocomplete_using_trie | ✓ | 613µs | 3.2 MB |
+| 992 | strings/barcode_validator | ✓ | 505µs | 3.0 MB |
+| 993 | strings/bitap_string_match | ✓ | 823µs | 3.3 MB |
+| 994 | strings/boyer_moore_search | ✓ | 219µs | 3.1 MB |
+| 995 | strings/camel_case_to_snake_case | ✓ | 4.05ms | 3.5 MB |
+| 996 | strings/can_string_be_rearranged_as_palindrome | ✓ | 1.266ms | 3.3 MB |
+| 997 | strings/capitalize | ✓ | 337µs | 2.9 MB |
+| 998 | strings/check_anagrams | ✓ | 849µs | 3.3 MB |
+| 999 | strings/count_vowels | ✓ | 614µs | 3.2 MB |
+| 1000 | strings/credit_card_validator | ✓ | 346µs | 3.2 MB |
+| 1001 | strings/damerau_levenshtein_distance | ✓ | 943µs | 3.2 MB |
+| 1002 | strings/detecting_english_programmatically | ✓ | 2.98ms | 3.4 MB |
+| 1003 | strings/dna | ✓ | 290µs | 3.4 MB |
+| 1004 | strings/edit_distance | ✓ | 110.061ms | 3.3 MB |
+| 1005 | strings/frequency_finder | ✓ | 13.346ms | 3.7 MB |
+| 1006 | strings/hamming_distance | ✓ | 336µs | 3.2 MB |
+| 1007 | strings/indian_phone_validator | ✓ | 399µs | 3.3 MB |
+| 1008 | strings/is_contains_unique_chars | ✓ | 1.469ms | 3.2 MB |
+| 1009 | strings/is_isogram | ✓ | 1.492ms | 3.4 MB |
+| 1010 | strings/is_pangram | ✓ | 1.395ms | 3.7 MB |
 | 1011 | strings/is_polish_national_id |   |  |  |
 | 1012 | strings/is_spain_national_id |   |  |  |
 | 1013 | strings/is_srilankan_phone_number |   |  |  |
