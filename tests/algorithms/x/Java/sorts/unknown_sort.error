@@ -1,5 +1,0 @@
-compile: exit status 1
-/tmp/TestJavaTranspiler_Algorithms_Golden986_unknown_sort458322357/001/Main.java:72: error: incompatible types: Object[] cannot be converted to Number
-        if (merge_sort(((int[])(new int[]{}))) != ((Number)(new Object[]{})).intValue()) {
-                                                           ^
-1 error

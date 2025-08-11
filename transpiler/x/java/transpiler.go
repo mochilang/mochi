@@ -2183,6 +2183,9 @@ func (m *MapLit) emit(w io.Writer) {
 		if len(m.Values) > 0 {
 			if ll, ok := m.Values[0].(*ListLit); ok {
 				et := ll.ElemType
+				if et == "" && len(ll.Elems) > 0 {
+					et = inferType(ll.Elems[0])
+				}
 				same := true
 				for _, v := range m.Values {
 					l2, ok := v.(*ListLit)
@@ -2191,11 +2194,15 @@ func (m *MapLit) emit(w io.Writer) {
 						break
 					}
 					if et == "" {
-						et = l2.ElemType
+						if l2.ElemType != "" {
+							et = l2.ElemType
+						} else if len(l2.Elems) > 0 {
+							et = inferType(l2.Elems[0])
+						}
 					}
 					if l2.ElemType == "" && et != "" {
 						l2.ElemType = et
-					} else if l2.ElemType != et {
+					} else if l2.ElemType != "" && et != "" && l2.ElemType != et {
 						same = false
 						break
 					}
@@ -2304,6 +2311,18 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			fmt.Fprint(w, "(")
 			b.Left.emit(w)
 			fmt.Fprint(w, ".equals(")
+			b.Right.emit(w)
+			fmt.Fprint(w, "))")
+			return
+		}
+		if strings.HasSuffix(lt, "[]") || strings.HasSuffix(rt, "[]") {
+			if b.Op == "!=" {
+				fmt.Fprint(w, "!")
+			}
+			needToObjectArray = true
+			fmt.Fprint(w, "java.util.Arrays.equals(_toObjectArray(")
+			b.Left.emit(w)
+			fmt.Fprint(w, "), _toObjectArray(")
 			b.Right.emit(w)
 			fmt.Fprint(w, "))")
 			return
@@ -3113,6 +3132,14 @@ func (c *ConcatExpr) emit(w io.Writer) {
 	}
 	if elem == "int" {
 		fmt.Fprint(w, "java.util.stream.IntStream.concat(java.util.Arrays.stream(")
+		c.Left.emit(w)
+		fmt.Fprint(w, "), java.util.Arrays.stream(")
+		c.Right.emit(w)
+		fmt.Fprint(w, ")).toArray()")
+		return
+	}
+	if elem == "long" {
+		fmt.Fprint(w, "java.util.stream.LongStream.concat(java.util.Arrays.stream(")
 		c.Left.emit(w)
 		fmt.Fprint(w, "), java.util.Arrays.stream(")
 		c.Right.emit(w)
@@ -5983,7 +6010,40 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				keyType = toJavaTypeFromType(types.ExprType(ml.Items[0].Key, currentEnv()))
 			}
 		}
-		return &MapLit{Keys: keys, Values: vals, Fields: fields, KeyType: keyType}, nil
+		valueType := ""
+		if len(vals) > 0 {
+			if ll, ok := vals[0].(*ListLit); ok {
+				et := ll.ElemType
+				if et == "" && len(ll.Elems) > 0 {
+					et = inferType(ll.Elems[0])
+				}
+				same := true
+				for _, v := range vals {
+					l2, ok := v.(*ListLit)
+					if !ok {
+						same = false
+						break
+					}
+					if et == "" {
+						if l2.ElemType != "" {
+							et = l2.ElemType
+						} else if len(l2.Elems) > 0 {
+							et = inferType(l2.Elems[0])
+						}
+					}
+					if l2.ElemType == "" && et != "" {
+						l2.ElemType = et
+					} else if l2.ElemType != "" && et != "" && l2.ElemType != et {
+						same = false
+						break
+					}
+				}
+				if same && et != "" {
+					valueType = javaType(et) + "[]"
+				}
+			}
+		}
+		return &MapLit{Keys: keys, Values: vals, Fields: fields, KeyType: keyType, ValueType: valueType}, nil
 	case p.Struct != nil:
 		var st types.StructType
 		if topEnv != nil {

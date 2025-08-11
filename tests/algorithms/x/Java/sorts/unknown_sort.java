@@ -1,85 +1,85 @@
 public class Main {
 
-    static int list_min(int[] xs) {
-        int i = 1;
-        int m = xs[0];
+    static long list_min(long[] xs) {
+        long i = 1;
+        long m = xs[(int)(0)];
         while (i < xs.length) {
-            if (xs[i] < m) {
-                m = xs[i];
+            if (xs[(int)(i)] < m) {
+                m = xs[(int)(i)];
             }
             i = i + 1;
         }
         return m;
     }
 
-    static int list_max(int[] xs) {
-        int i_1 = 1;
-        int m_1 = xs[0];
+    static long list_max(long[] xs) {
+        long i_1 = 1;
+        long m_1 = xs[(int)(0)];
         while (i_1 < xs.length) {
-            if (xs[i_1] > m_1) {
-                m_1 = xs[i_1];
+            if (xs[(int)(i_1)] > m_1) {
+                m_1 = xs[(int)(i_1)];
             }
             i_1 = i_1 + 1;
         }
         return m_1;
     }
 
-    static int[] remove_once(int[] xs, int value) {
-        int[] res = ((int[])(new int[]{}));
+    static long[] remove_once(long[] xs, long value) {
+        long[] res = ((long[])(new long[]{}));
         boolean removed = false;
-        int i_2 = 0;
+        long i_2 = 0;
         while (i_2 < xs.length) {
-            if (!(Boolean)removed && xs[i_2] == value) {
+            if (!(Boolean)removed && xs[(int)(i_2)] == value) {
                 removed = true;
             } else {
-                res = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res), java.util.stream.IntStream.of(xs[i_2])).toArray()));
+                res = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res), java.util.stream.LongStream.of(xs[(int)(i_2)])).toArray()));
             }
             i_2 = i_2 + 1;
         }
         return res;
     }
 
-    static int[] reverse_list(int[] xs) {
-        int[] res_1 = ((int[])(new int[]{}));
-        int i_3 = xs.length - 1;
+    static long[] reverse_list(long[] xs) {
+        long[] res_1 = ((long[])(new long[]{}));
+        long i_3 = xs.length - 1;
         while (i_3 >= 0) {
-            res_1 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res_1), java.util.stream.IntStream.of(xs[i_3])).toArray()));
+            res_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res_1), java.util.stream.LongStream.of(xs[(int)(i_3)])).toArray()));
             i_3 = i_3 - 1;
         }
         return res_1;
     }
 
-    static int[] merge_sort(int[] collection) {
-        int[] start = ((int[])(new int[]{}));
-        int[] end = ((int[])(new int[]{}));
-        int[] coll = ((int[])(collection));
+    static long[] merge_sort(long[] collection) {
+        long[] start = ((long[])(new long[]{}));
+        long[] end = ((long[])(new long[]{}));
+        long[] coll = ((long[])(collection));
         while (coll.length > 1) {
-            int mn = list_min(((int[])(coll)));
-            int mx = list_max(((int[])(coll)));
-            start = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(start), java.util.stream.IntStream.of(mn)).toArray()));
-            end = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(end), java.util.stream.IntStream.of(mx)).toArray()));
-            coll = ((int[])(remove_once(((int[])(coll)), mn)));
-            coll = ((int[])(remove_once(((int[])(coll)), mx)));
+            long mn = list_min(((long[])(coll)));
+            long mx = list_max(((long[])(coll)));
+            start = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(start), java.util.stream.LongStream.of(mn)).toArray()));
+            end = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(end), java.util.stream.LongStream.of(mx)).toArray()));
+            coll = ((long[])(remove_once(((long[])(coll)), mn)));
+            coll = ((long[])(remove_once(((long[])(coll)), mx)));
         }
-        end = ((int[])(reverse_list(((int[])(end)))));
-        return java.util.stream.IntStream.concat(java.util.Arrays.stream(java.util.stream.IntStream.concat(java.util.Arrays.stream(start), java.util.Arrays.stream(coll)).toArray()), java.util.Arrays.stream(end)).toArray();
+        end = ((long[])(reverse_list(((long[])(end)))));
+        return java.util.stream.LongStream.concat(java.util.Arrays.stream(java.util.stream.LongStream.concat(java.util.Arrays.stream(start), java.util.Arrays.stream(coll)).toArray()), java.util.Arrays.stream(end)).toArray();
     }
 
     static void test_merge_sort() {
-        if (merge_sort(((int[])(new int[]{0, 5, 3, 2, 2}))) != new int[]{0, 2, 2, 3, 5}) {
+        if (!java.util.Arrays.equals(_toObjectArray(merge_sort(((long[])(new long[]{0, 5, 3, 2, 2})))), _toObjectArray(new long[]{0, 2, 2, 3, 5}))) {
             throw new RuntimeException(String.valueOf("case1 failed"));
         }
-        if (merge_sort(((int[])(new int[]{}))) != ((Number)(new Object[]{})).intValue()) {
+        if (!java.util.Arrays.equals(_toObjectArray(merge_sort(((long[])(new long[]{})))), _toObjectArray(new Object[]{}))) {
             throw new RuntimeException(String.valueOf("case2 failed"));
         }
-        if (merge_sort(((int[])(new int[]{-2, -5, -45}))) != new int[]{-45, -5, -2}) {
+        if (!java.util.Arrays.equals(_toObjectArray(merge_sort(((long[])(new long[]{-2, -5, -45})))), _toObjectArray(new long[]{-45, -5, -2}))) {
             throw new RuntimeException(String.valueOf("case3 failed"));
         }
     }
 
     static void main() {
         test_merge_sort();
-        System.out.println(_p(merge_sort(((int[])(new int[]{0, 5, 3, 2, 2})))));
+        System.out.println(_p(merge_sort(((long[])(new long[]{0, 5, 3, 2, 2})))));
     }
     public static void main(String[] args) {
         {
@@ -119,6 +119,15 @@ public class Main {
         return rt.totalMemory() - rt.freeMemory();
     }
 
+    static Object[] _toObjectArray(Object v) {
+        if (v instanceof Object[]) return (Object[]) v;
+        if (v instanceof int[]) return java.util.Arrays.stream((int[]) v).boxed().toArray();
+        if (v instanceof double[]) return java.util.Arrays.stream((double[]) v).boxed().toArray();
+        if (v instanceof long[]) return java.util.Arrays.stream((long[]) v).boxed().toArray();
+        if (v instanceof boolean[]) { boolean[] a = (boolean[]) v; Object[] out = new Object[a.length]; for (int i = 0; i < a.length; i++) out[i] = a[i]; return out; }
+        return (Object[]) v;
+    }
+
     static String _p(Object v) {
         if (v == null) return "<nil>";
         if (v.getClass().isArray()) {
@@ -131,6 +140,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

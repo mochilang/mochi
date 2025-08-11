@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-11 15:48 GMT+7
+Last updated: 2025-08-11 17:08 GMT+7
 
-## Algorithms Golden Test Checklist (923/1077)
+## Algorithms Golden Test Checklist (924/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -992,7 +992,7 @@ Last updated: 2025-08-11 15:48 GMT+7
 | 983 | sorts/tim_sort | ✓ | 28.0ms | 54.93KB |
 | 984 | sorts/topological_sort | error |  |  |
 | 985 | sorts/tree_sort | ✓ | 26.0ms | 48.12KB |
-| 986 | sorts/unknown_sort | error |  |  |
+| 986 | sorts/unknown_sort | ✓ | 45.0ms | 50.77KB |
 | 987 | sorts/wiggle_sort | ✓ | 30.0ms | 56.92KB |
 | 988 | strings/aho_corasick | ✓ | 26.0ms | 46.48KB |
 | 989 | strings/alternative_string_arrange | ✓ | 19.0ms | 33.07KB |
