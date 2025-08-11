@@ -1,0 +1,3 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/strings/is_spain_national_id.go:251:14: cannot use letter (variable of type int) as string value in argument to is_digit

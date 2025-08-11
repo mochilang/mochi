@@ -1,0 +1,4 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/strings/text_justification.go:193:24: cannot use w (variable of type int) as string value in argument to append
+../../../tests/algorithms/transpiler/Go/strings/text_justification.go:215:20: cannot use w (variable of type int) as string value in array or slice literal

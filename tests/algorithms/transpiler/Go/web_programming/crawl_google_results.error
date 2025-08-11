@@ -1,0 +1,5 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/web_programming/crawl_google_results.go:109:31: invalid argument: index href_start (variable of interface type any) must be integer
+../../../tests/algorithms/transpiler/Go/web_programming/crawl_google_results.go:120:26: cannot use map[string]string{…} (value of type map[string]string) as map[any]any value in variable declaration
+../../../tests/algorithms/transpiler/Go/web_programming/crawl_google_results.go:122:21: cannot use link (variable of type map[any]any) as map[string]string value in argument to append

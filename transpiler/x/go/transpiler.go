@@ -191,6 +191,18 @@ func emitCastAnyToType(w io.Writer, typ, v string) {
 		fmt.Fprintf(w, "fmt.Sprint(%s)", v)
 		return
 	}
+	if typ == "bool" {
+		if isIdentifier(v) {
+			if assignAnyVars[v] {
+				fmt.Fprintf(w, "%s.(bool)", v)
+			} else {
+				fmt.Fprintf(w, "bool(%s)", v)
+			}
+		} else {
+			fmt.Fprintf(w, "(%s)", v)
+		}
+		return
+	}
 	vv := strings.TrimSpace(v)
 	if strings.HasPrefix(vv, "func(") {
 		fmt.Fprintf(w, "%s.(%s)", v, typ)
@@ -2183,8 +2195,17 @@ func (a *AssertExpr) emit(w io.Writer) {
 		return
 	}
 	if a.Type == "bool" {
-		if ix, ok := a.Expr.(*IndexExpr); ok {
-			if vr, ok2 := ix.X.(*VarRef); ok2 && topEnv != nil {
+		switch ex := a.Expr.(type) {
+		case *VarRef:
+			if assignAnyVars[ex.Name] {
+				a.Expr.emit(w)
+				io.WriteString(w, ".(bool)")
+			} else {
+				a.Expr.emit(w)
+			}
+			return
+		case *IndexExpr:
+			if vr, ok2 := ex.X.(*VarRef); ok2 && topEnv != nil {
 				if vt, err := topEnv.GetVar(vr.Name); err == nil {
 					if lt, ok3 := vt.(types.ListType); ok3 {
 						if _, ok4 := lt.Elem.(types.BoolType); ok4 {
@@ -2194,6 +2215,12 @@ func (a *AssertExpr) emit(w io.Writer) {
 					}
 				}
 			}
+			a.Expr.emit(w)
+			io.WriteString(w, ".(bool)")
+			return
+		default:
+			a.Expr.emit(w)
+			return
 		}
 	}
 	if a.Type == "int" {

@@ -1,0 +1,5 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/web_programming/crawl_google_scholar_citation.go:122:17: undefined: __name__
+../../../tests/algorithms/transpiler/Go/web_programming/crawl_google_scholar_citation.go:123:29: cannot use map[string]string{…} (value of type map[string]string) as map[any]any value in variable declaration
+../../../tests/algorithms/transpiler/Go/web_programming/crawl_google_scholar_citation.go:125:74: cannot use params (variable of type map[any]any) as map[string]string value in argument to get_citation

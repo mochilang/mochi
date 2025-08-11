@@ -1,0 +1,15 @@
+exit status 1
+panic: interface conversion: interface {} is []string, not []int
+
+goroutine 1 [running]:
+main.compute_transform_tables.func1(...)
+	/workspace/mochi/tests/algorithms/transpiler/Go/strings/min_cost_string_conversion.go:241
+main.compute_transform_tables({0x4ddd66?, 0x0?}, {0x4de59f, 0xa}, 0x262a28b4a4?, 0x262a297310?, 0x2, 0x2)
+	/workspace/mochi/tests/algorithms/transpiler/Go/strings/min_cost_string_conversion.go:242 +0x325
+main.mochiMain()
+	/workspace/mochi/tests/algorithms/transpiler/Go/strings/min_cost_string_conversion.go:592 +0x4d
+main.main.func1(...)
+	/workspace/mochi/tests/algorithms/transpiler/Go/strings/min_cost_string_conversion.go:807
+main.main()
+	/workspace/mochi/tests/algorithms/transpiler/Go/strings/min_cost_string_conversion.go:814 +0x92
+exit status 2

@@ -1,0 +1,15 @@
+exit status 1
+panic: interface conversion: interface {} is []string, not []int
+
+goroutine 1 [running]:
+main.reverse_words.func1(...)
+	/workspace/mochi/tests/algorithms/transpiler/Go/strings/reverse_words.go:124
+main.reverse_words({0x4dedc9?, 0x0?})
+	/workspace/mochi/tests/algorithms/transpiler/Go/strings/reverse_words.go:125 +0x45
+main.mochiMain()
+	/workspace/mochi/tests/algorithms/transpiler/Go/strings/reverse_words.go:135 +0x25
+main.main.func1(...)
+	/workspace/mochi/tests/algorithms/transpiler/Go/strings/reverse_words.go:145
+main.main()
+	/workspace/mochi/tests/algorithms/transpiler/Go/strings/reverse_words.go:152 +0x92
+exit status 2

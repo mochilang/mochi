@@ -1,0 +1,4 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/web_programming/current_stock_price.go:66:26: cannot use map[string]string{…} (value of type map[string]string) as map[any]any value in variable declaration
+../../../tests/algorithms/transpiler/Go/web_programming/current_stock_price.go:69:21: cannot use pages[symbol] (map index expression of interface type any) as string value in variable declaration: need type assertion

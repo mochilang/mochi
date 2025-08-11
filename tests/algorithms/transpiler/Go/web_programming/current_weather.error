@@ -1,0 +1,8 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/web_programming/current_weather.go:69:43: cannot use map[string]string{…} (value of type map[string]string) as map[any]any value in variable declaration
+../../../tests/algorithms/transpiler/Go/web_programming/current_weather.go:71:64: cannot use params_openweathermap (variable of type map[any]any) as map[string]string value in argument to http_get
+../../../tests/algorithms/transpiler/Go/web_programming/current_weather.go:73:39: cannot use map[string]any{…} (value of type map[string]any) as map[string]map[string]string value in argument to append
+../../../tests/algorithms/transpiler/Go/web_programming/current_weather.go:76:41: cannot use map[string]string{…} (value of type map[string]string) as map[any]any value in variable declaration
+../../../tests/algorithms/transpiler/Go/web_programming/current_weather.go:78:60: cannot use params_weatherstack (variable of type map[any]any) as map[string]string value in argument to http_get
+../../../tests/algorithms/transpiler/Go/web_programming/current_weather.go:80:39: cannot use map[string]any{…} (value of type map[string]any) as map[string]map[string]string value in argument to append

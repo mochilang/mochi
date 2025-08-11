@@ -1,0 +1,4 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/strings/is_valid_email_address.go:173:6: i redeclared in this block
+	../../../tests/algorithms/transpiler/Go/strings/is_valid_email_address.go:157:6: other declaration of i

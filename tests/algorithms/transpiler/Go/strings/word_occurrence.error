@@ -1,0 +1,13 @@
+exit status 1
+panic: interface conversion: interface {} is map[string]int, not []int
+
+goroutine 1 [running]:
+main.mochiMain.func1(...)
+	/workspace/mochi/tests/algorithms/transpiler/Go/strings/word_occurrence.go:122
+main.mochiMain()
+	/workspace/mochi/tests/algorithms/transpiler/Go/strings/word_occurrence.go:123 +0xc5
+main.main.func1(...)
+	/workspace/mochi/tests/algorithms/transpiler/Go/strings/word_occurrence.go:133
+main.main()
+	/workspace/mochi/tests/algorithms/transpiler/Go/strings/word_occurrence.go:140 +0x92
+exit status 2
