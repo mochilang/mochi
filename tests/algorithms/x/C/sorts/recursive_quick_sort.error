@@ -1,0 +1,15 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/sorts/recursive_quick_sort.c: In function ‘str_list_int’:
+/workspace/mochi/tests/algorithms/x/C/sorts/recursive_quick_sort.c:24:38: warning: format ‘%d’ expects argument of type ‘int’, but argument 4 has type ‘long long int’ [-Wformat=]
+   24 |         snprintf(tmp, sizeof(tmp), "%d", arr[i]);
+      |                                     ~^   ~~~~~~
+      |                                      |      |
+      |                                      int    long long int
+      |                                     %lld
+/workspace/mochi/tests/algorithms/x/C/sorts/recursive_quick_sort.c: At top level:
+/workspace/mochi/tests/algorithms/x/C/sorts/recursive_quick_sort.c:43:15: error: static declaration of ‘concat_len’ follows non-static declaration
+   43 | static size_t concat_len;
+      |               ^~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/sorts/recursive_quick_sort.c:8:8: note: previous declaration of ‘concat_len’ with type ‘size_t’ {aka ‘long unsigned int’}
+    8 | size_t concat_len;
+      |        ^~~~~~~~~~

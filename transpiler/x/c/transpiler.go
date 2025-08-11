@@ -942,13 +942,15 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 		tempCounter++
 		writeIndent(w, indent)
 		io.WriteString(w, "{\n")
-		writeIndent(w, indent+1)
-		fmt.Fprintf(w, "size_t *%s_lens = malloc(%d * sizeof(size_t));\n", tmp, len(lst.Elems))
-		for i, e := range lst.Elems {
+		if dims > 1 {
 			writeIndent(w, indent+1)
-			fmt.Fprintf(w, "%s_lens[%d] = ", tmp, i)
-			emitLenExpr(w, e)
-			io.WriteString(w, ";\n")
+			fmt.Fprintf(w, "size_t *%s_lens = malloc(%d * sizeof(size_t));\n", tmp, len(lst.Elems))
+			for i, e := range lst.Elems {
+				writeIndent(w, indent+1)
+				fmt.Fprintf(w, "%s_lens[%d] = ", tmp, i)
+				emitLenExpr(w, e)
+				io.WriteString(w, ";\n")
+			}
 		}
 		writeIndent(w, indent+1)
 		fmt.Fprintf(w, "%s%s %s_data = malloc(%d * sizeof(%s%s));\n", base, strings.Repeat("*", dims), tmp, len(lst.Elems), base, strings.Repeat("*", dims-1))
@@ -958,8 +960,10 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 			e.emitExpr(w)
 			io.WriteString(w, ";\n")
 		}
-		writeIndent(w, indent+1)
-		fmt.Fprintf(w, "%s_lens = %s_lens;\n", currentFuncName, tmp)
+		if dims > 1 {
+			writeIndent(w, indent+1)
+			fmt.Fprintf(w, "%s_lens = %s_lens;\n", currentFuncName, tmp)
+		}
 		writeIndent(w, indent+1)
 		fmt.Fprintf(w, "%s_len = %d;\n", currentFuncName, len(lst.Elems))
 		writeIndent(w, indent+1)

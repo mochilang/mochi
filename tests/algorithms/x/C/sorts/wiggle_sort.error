@@ -1,0 +1,21 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/sorts/wiggle_sort.c: In function ‘swap’:
+/workspace/mochi/tests/algorithms/x/C/sorts/wiggle_sort.c:91:19: warning: implicit declaration of function ‘list_append_double_new’; did you mean ‘list_append_double’? [-Wimplicit-function-declaration]
+   91 |             res = list_append_double_new(res, res_len, xs[(int)({long long _mochi_idx = j; _mochi_idx < 0 ? xs_len + _mochi_idx : _mochi_idx;})]);
+      |                   ^~~~~~~~~~~~~~~~~~~~~~
+      |                   list_append_double
+/workspace/mochi/tests/algorithms/x/C/sorts/wiggle_sort.c:91:17: warning: assignment to ‘double *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+   91 |             res = list_append_double_new(res, res_len, xs[(int)({long long _mochi_idx = j; _mochi_idx < 0 ? xs_len + _mochi_idx : _mochi_idx;})]);
+      |                 ^
+/workspace/mochi/tests/algorithms/x/C/sorts/wiggle_sort.c: In function ‘main’:
+/workspace/mochi/tests/algorithms/x/C/sorts/wiggle_sort.c:126:46: warning: passing argument 1 of ‘wiggle_sort’ from incompatible pointer type [-Wincompatible-pointer-types]
+  126 |         puts(({double *__tmp6 = wiggle_sort(({long long *tmp = malloc(5 * sizeof(long long)); tmp[0] = 0.0; tmp[1] = 5.0; tmp[2] = 3.0; tmp[3] = 2.0; tmp[4] = 2.0; tmp;}), 5); char *__res = str_list_double(__tmp6, wiggle_sort_len); __res;}));
+      |                                             ~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                              |
+      |                                              long long int *
+/workspace/mochi/tests/algorithms/x/C/sorts/wiggle_sort.c:105:31: note: expected ‘double *’ but argument is of type ‘long long int *’
+  105 | double * wiggle_sort(double * nums, size_t nums_len) {
+      |                      ~~~~~~~~~^~~~
+/usr/bin/ld: /tmp/ccYiUPYI.o: in function `swap':
+wiggle_sort.c:(.text+0x519): undefined reference to `list_append_double_new'
+collect2: error: ld returned 1 exit status
