@@ -1,13 +1,13 @@
-/workspace/mochi/tests/algorithms/x/Erlang/searches/simulated_annealing.erl:175:2: Warning: variable 'Is_neg_3' exported from 'case' (line 154, column 9)
-%  175| {Is_neg_3, N_2, Sum_2, Term_2, X, Y_3} = Fun_2(Is_neg_3, N, Sum, Term, X, Y_3),
+/workspace/mochi/tests/algorithms/x/Erlang/searches/simulated_annealing.erl:182:2: Warning: variable 'Is_neg_3' exported from 'case' (line 161, column 9)
+%  182| {Is_neg_3, N_2, Sum_2, Term_2, X, Y_3} = Fun_2(Is_neg_3, N, Sum, Term, X, Y_3),
 %     |  ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/searches/simulated_annealing.erl:175:35: Warning: variable 'Y_3' exported from 'case' (line 154, column 9)
-%  175| {Is_neg_3, N_2, Sum_2, Term_2, X, Y_3} = Fun_2(Is_neg_3, N, Sum, Term, X, Y_3),
+/workspace/mochi/tests/algorithms/x/Erlang/searches/simulated_annealing.erl:182:35: Warning: variable 'Y_3' exported from 'case' (line 161, column 9)
+%  182| {Is_neg_3, N_2, Sum_2, Term_2, X, Y_3} = Fun_2(Is_neg_3, N, Sum, Term, X, Y_3),
 %     |                                   ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/searches/simulated_annealing.erl:246:2: Warning: variable 'Best_state_3' exported from 'case' (line 194, column 17)
-%  246| {Best_state_3, Current_score, Current_state, Current_temp, F_2, Find_max, Found_next_5, Max_x, Max_y, Min_x, Min_y, Neighbors_2, Next_state_5, Rate_of_decrease, Search_end, Search_prob, Start_temp, Threshold_temp} = Fun_3(Best_state_3, Current_score, Current_state, Current_temp, F_2, Find_max, Found_next, Max_x, Max_y, Min_x, Min_y, Neighbors, Next_state, Rate_of_decrease, Search_end, Search_prob, Start_temp, Threshold_temp),
+/workspace/mochi/tests/algorithms/x/Erlang/searches/simulated_annealing.erl:253:2: Warning: variable 'Best_state_3' exported from 'case' (line 201, column 17)
+%  253| {Best_state_3, Current_score, Current_state, Current_temp, F_2, Find_max, Found_next_5, Max_x, Max_y, Min_x, Min_y, Neighbors_2, Next_state_5, Rate_of_decrease, Search_end, Search_prob, Start_temp, Threshold_temp} = Fun_3(Best_state_3, Current_score, Current_state, Current_temp, F_2, Find_max, Found_next, Max_x, Max_y, Min_x, Min_y, Neighbors, Next_state, Rate_of_decrease, Search_end, Search_prob, Start_temp, Threshold_temp),
 %     |  ^
 
 "min1" 2448.0
