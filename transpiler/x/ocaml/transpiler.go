@@ -512,6 +512,12 @@ func isDynamicMapType(typ string) bool {
 		if val == "" || val == "any" || val == "Obj.t" {
 			return true
 		}
+		// Treat maps whose values are composite types (e.g. lists or nested
+		// maps) as dynamic because the OCaml representation stores elements
+		// via Obj.repr.
+		if strings.Contains(val, "-") {
+			return true
+		}
 		return isDynamicMapType(val)
 	}
 	if _, ok := structFields[typ]; ok {
@@ -1992,6 +1998,7 @@ type MapUpdateExpr struct {
 	Key   Expr
 	Value Expr
 	Dyn   bool
+	Typ   string
 }
 
 // queryLoop is one iteration variable and its source list.
@@ -2266,10 +2273,12 @@ func (mu *MapUpdateExpr) emit(w io.Writer) {
 	mu.Key.emit(w)
 	io.WriteString(w, "), ")
 	if mu.Dyn {
-		io.WriteString(w, "Obj.repr (")
+		io.WriteString(w, "Obj.repr (Obj.magic (")
 	}
 	mu.Value.emit(w)
 	if mu.Dyn {
+		io.WriteString(w, ") : ")
+		io.WriteString(w, ocamlType(mu.Typ))
 		io.WriteString(w, ")")
 	}
 	io.WriteString(w, ") :: List.remove_assoc (__str (")
@@ -3280,7 +3289,7 @@ const helperShow = `
 let rec __is_list v =
   let open Obj in
   let r = repr v in
-  if is_int r then false
+  if is_int r then (magic v : int) = 0
   else
     match tag r with
     | 0 ->
@@ -3292,11 +3301,13 @@ let rec __is_list v =
 let rec __show v =
   let open Obj in
   let r = repr v in
-  if is_int r then
+  if __is_list v then
+    __show_list (Obj.magic v)
+  else if is_int r then
     string_of_int (magic v : int)
   else
     match tag r with
-    | 0 -> if __is_list v then __show_list (Obj.magic v) else __show_tuple (Obj.magic v)
+    | 0 -> __show_tuple (Obj.magic v)
     | 252 -> Printf.sprintf "'%s'" (String.escaped (magic v : string))
     | 253 -> string_of_float (magic v)
     | _ -> "<value>"
@@ -3315,11 +3326,13 @@ and __show_tuple t =
 and __str v =
   let open Obj in
   let r = repr v in
-  if is_int r then
+  if __is_list v then
+    __str_list (Obj.magic v)
+  else if is_int r then
     string_of_int (magic v : int)
   else
     match tag r with
-    | 0 -> if __is_list v then __str_list (Obj.magic v) else __str_tuple (Obj.magic v)
+    | 0 -> __str_tuple (Obj.magic v)
     | 252 -> (magic v : string)
     | 253 -> string_of_float (magic v)
     | _ -> "<value>"
@@ -3780,7 +3793,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		if len(st.Assign.Field) > 0 && len(st.Assign.Index) == 0 {
 			key := &StringLit{Value: st.Assign.Field[0].Name}
 			mapExpr := Expr(&Name{Ident: st.Assign.Name, Typ: info.typ, Ref: true})
-			upd := &MapUpdateExpr{Map: mapExpr, Key: key, Value: valExpr, Dyn: isDynamicMapType(info.typ)}
+			upd := &MapUpdateExpr{Map: mapExpr, Key: key, Value: valExpr, Dyn: isDynamicMapType(info.typ), Typ: valTyp}
 			return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
 		}
 		if len(st.Assign.Index) > 0 {
@@ -3794,7 +3807,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 					return nil, err
 				}
 				mapExpr := Expr(&Name{Ident: st.Assign.Name, Typ: info.typ, Ref: true})
-				upd := &MapUpdateExpr{Map: mapExpr, Key: key, Value: valExpr, Dyn: isDynamicMapType(info.typ)}
+				upd := &MapUpdateExpr{Map: mapExpr, Key: key, Value: valExpr, Dyn: isDynamicMapType(info.typ), Typ: valTyp}
 				return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
 			}
 			if strings.HasPrefix(info.typ, "map") {
@@ -6444,10 +6457,10 @@ func buildMapUpdate(mp Expr, keys []Expr, val Expr, typ string) Expr {
 	key := keys[0]
 	valTyp := strings.TrimPrefix(typ, "map-")
 	if len(keys) == 1 {
-		return &MapUpdateExpr{Map: mp, Key: key, Value: val, Dyn: isDynamicMapType(typ)}
+		return &MapUpdateExpr{Map: mp, Key: key, Value: val, Dyn: isDynamicMapType(typ), Typ: valTyp}
 	}
 	inner := buildMapUpdate(&MapIndexExpr{Map: mp, Key: key, Typ: valTyp, Dyn: true}, keys[1:], val, valTyp)
-	return &MapUpdateExpr{Map: mp, Key: key, Value: inner, Dyn: isDynamicMapType(typ)}
+	return &MapUpdateExpr{Map: mp, Key: key, Value: inner, Dyn: isDynamicMapType(typ), Typ: valTyp}
 }
 
 func substituteFieldVars(e Expr, fields map[string]bool) Expr {

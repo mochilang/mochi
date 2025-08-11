@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 537/1077
-Last updated: 2025-08-11 16:20 +0700
+Completed programs: 553/1077
+Last updated: 2025-08-11 17:23 +0700
 
 Checklist:
 
@@ -966,59 +966,59 @@ Checklist:
 | 957 | sorts/insertion_sort | ✓ | 120.0µs | 3.48KB |
 | 958 | sorts/intro_sort | ✓ | 244.0µs | 26.16KB |
 | 959 | sorts/iterative_merge_sort | ✓ | 409.0µs | 48.27KB |
-| 960 | sorts/merge_insertion_sort | ✓ | 133.0µs | 3.06KB |
-| 961 | sorts/merge_sort | ✓ | 127.0µs | 3.37KB |
-| 962 | sorts/msd_radix_sort | ✓ | 176.0µs | 7.16KB |
-| 963 | sorts/natural_sort | ✓ | 584.0µs | 69.49KB |
-| 964 | sorts/odd_even_sort | ✓ | 164.0µs | 12.14KB |
-| 965 | sorts/odd_even_transposition_parallel | ✓ | 315.0µs | 30.17KB |
-| 966 | sorts/odd_even_transposition_single_threaded | ✓ | 244.0µs | 11.03KB |
-| 967 | sorts/pancake_sort | ✓ | 146.0µs | 5.24KB |
-| 968 | sorts/patience_sort | ✓ | 163.0µs | 9.18KB |
-| 969 | sorts/pigeon_sort | ✓ | 404.0µs | 64.57KB |
-| 970 | sorts/pigeonhole_sort | ✓ | 77.0µs | 992B |
-| 971 | sorts/quick_sort | ✓ | 124.0µs | 2.41KB |
-| 972 | sorts/quick_sort_3_partition | ✓ | 245.0µs | 14.83KB |
-| 973 | sorts/radix_sort | ✓ | 437.0µs | 51.89KB |
-| 974 | sorts/recursive_insertion_sort | ✓ | 160.0µs | 9.34KB |
-| 975 | sorts/recursive_mergesort_array | ✓ | 301.0µs | 29.82KB |
-| 976 | sorts/recursive_quick_sort | ✓ | 100.0µs | 1.80KB |
-| 977 | sorts/selection_sort | ✓ | 105.0µs | 2.91KB |
-| 978 | sorts/shell_sort | ✓ | 132.0µs | 3.91KB |
-| 979 | sorts/shrink_shell_sort | ✓ | 104.0µs | 1.22KB |
-| 980 | sorts/slowsort | ✓ | 375.0µs | 39.94KB |
-| 981 | sorts/stooge_sort |   |  |  |
-| 982 | sorts/strand_sort |   |  |  |
-| 983 | sorts/tim_sort |   |  |  |
-| 984 | sorts/topological_sort |   |  |  |
+| 960 | sorts/merge_insertion_sort | ✓ | 188.0µs | 3.06KB |
+| 961 | sorts/merge_sort | ✓ | 172.0µs | 3.37KB |
+| 962 | sorts/msd_radix_sort | ✓ | 202.0µs | 7.16KB |
+| 963 | sorts/natural_sort | ✓ | 947.0µs | 69.49KB |
+| 964 | sorts/odd_even_sort | ✓ | 274.0µs | 12.14KB |
+| 965 | sorts/odd_even_transposition_parallel | ✓ | 408.0µs | 30.17KB |
+| 966 | sorts/odd_even_transposition_single_threaded | ✓ | 312.0µs | 11.03KB |
+| 967 | sorts/pancake_sort | ✓ | 187.0µs | 5.24KB |
+| 968 | sorts/patience_sort | ✓ | 233.0µs | 9.18KB |
+| 969 | sorts/pigeon_sort | ✓ | 494.0µs | 64.57KB |
+| 970 | sorts/pigeonhole_sort | ✓ | 113.0µs | 992B |
+| 971 | sorts/quick_sort | ✓ | 160.0µs | 2.41KB |
+| 972 | sorts/quick_sort_3_partition | ✓ | 273.0µs | 14.83KB |
+| 973 | sorts/radix_sort | ✓ | 517.0µs | 51.89KB |
+| 974 | sorts/recursive_insertion_sort | ✓ | 221.0µs | 9.34KB |
+| 975 | sorts/recursive_mergesort_array | ✓ | 493.0µs | 29.82KB |
+| 976 | sorts/recursive_quick_sort | ✓ | 168.0µs | 1.80KB |
+| 977 | sorts/selection_sort | ✓ | 154.0µs | 2.91KB |
+| 978 | sorts/shell_sort | ✓ | 238.0µs | 3.91KB |
+| 979 | sorts/shrink_shell_sort | ✓ | 142.0µs | 1.22KB |
+| 980 | sorts/slowsort | ✓ | 540.0µs | 39.94KB |
+| 981 | sorts/stooge_sort | ✓ | 203.0µs | 4.06KB |
+| 982 | sorts/strand_sort | ✓ | 203.0µs | 3.74KB |
+| 983 | sorts/tim_sort | ✓ | 184.0µs | 3.20KB |
+| 984 | sorts/topological_sort | ✓ | 58.0µs | 1.57KB |
 | 985 | sorts/tree_sort |   |  |  |
-| 986 | sorts/unknown_sort |   |  |  |
-| 987 | sorts/wiggle_sort |   |  |  |
+| 986 | sorts/unknown_sort | ✓ | 195.0µs | 4.30KB |
+| 987 | sorts/wiggle_sort | ✓ | 270.0µs | 5.59KB |
 | 988 | strings/aho_corasick |   |  |  |
-| 989 | strings/alternative_string_arrange |   |  |  |
+| 989 | strings/alternative_string_arrange | ✓ | 32.0µs | 848B |
 | 990 | strings/anagrams |   |  |  |
-| 991 | strings/autocomplete_using_trie |   |  |  |
-| 992 | strings/barcode_validator |   |  |  |
-| 993 | strings/bitap_string_match |   |  |  |
-| 994 | strings/boyer_moore_search |   |  |  |
-| 995 | strings/camel_case_to_snake_case |   |  |  |
-| 996 | strings/can_string_be_rearranged_as_palindrome |   |  |  |
-| 997 | strings/capitalize |   |  |  |
-| 998 | strings/check_anagrams |   |  |  |
-| 999 | strings/count_vowels |   |  |  |
-| 1000 | strings/credit_card_validator | ✓ | 38.0µs | 1.09KB |
-| 1001 | strings/damerau_levenshtein_distance | ✓ | 796.0µs | 141.10KB |
-| 1002 | strings/detecting_english_programmatically | ✓ | 240.0µs | 26.84KB |
-| 1003 | strings/dna | ✓ | 18.0µs | 816B |
-| 1004 | strings/edit_distance | ✓ | 21.0ms | 2.23MB |
-| 1005 | strings/frequency_finder | ✓ | 3.0ms | 472.77KB |
-| 1006 | strings/hamming_distance | ✓ | 109.0µs | 832B |
-| 1007 | strings/indian_phone_validator | ✓ | 37.0µs | 1.28KB |
-| 1008 | strings/is_contains_unique_chars | ✓ | 123.0µs | 8.72KB |
-| 1009 | strings/is_isogram | ✓ | 182.0µs | 22.61KB |
-| 1010 | strings/is_pangram | ✓ | 481.0µs | 88.00KB |
-| 1011 | strings/is_polish_national_id | ✓ | 50.0µs | 2.64KB |
-| 1012 | strings/is_spain_national_id | ✓ | 275.0µs | 26.91KB |
+| 991 | strings/autocomplete_using_trie | ✓ | 38.0µs | 984B |
+| 992 | strings/barcode_validator | ✓ | 185.0µs | 2.54KB |
+| 993 | strings/bitap_string_match | ✓ | 540.0µs | 40.92KB |
+| 994 | strings/boyer_moore_search | ✓ | 2.0µs | 208B |
+| 995 | strings/camel_case_to_snake_case | ✓ | 1.0ms | 78.76KB |
+| 996 | strings/can_string_be_rearranged_as_palindrome | ✓ | 244.0µs | 10.64KB |
+| 997 | strings/capitalize | ✓ | 57.0µs | 1.41KB |
+| 998 | strings/check_anagrams | ✓ | 174.0µs | 11.85KB |
+| 999 | strings/count_vowels | ✓ | 342.0µs | 12.23KB |
+| 1000 | strings/credit_card_validator | ✓ | 45.0µs | 1.09KB |
+| 1001 | strings/damerau_levenshtein_distance | ✓ | 1.0ms | 141.10KB |
+| 1002 | strings/detecting_english_programmatically | ✓ | 329.0µs | 26.84KB |
+| 1003 | strings/dna | ✓ | 26.0µs | 816B |
+| 1004 | strings/edit_distance | ✓ | 26.0ms | 1.35MB |
+| 1005 | strings/frequency_finder | ✓ | 5.0ms | 472.77KB |
+| 1006 | strings/hamming_distance | ✓ | 128.0µs | 832B |
+| 1007 | strings/indian_phone_validator | ✓ | 56.0µs | 1.28KB |
+| 1008 | strings/is_contains_unique_chars | ✓ | 203.0µs | 8.72KB |
+| 1009 | strings/is_isogram | ✓ | 339.0µs | 22.61KB |
+| 1010 | strings/is_pangram | ✓ | 1.0ms | 88.00KB |
+| 1011 | strings/is_polish_national_id | ✓ | 125.0µs | 2.64KB |
+| 1012 | strings/is_spain_national_id | ✓ | 350.0µs | 26.91KB |
 | 1013 | strings/is_srilankan_phone_number | ✓ | 28.0µs | 424B |
 | 1014 | strings/is_valid_email_address | ✓ | 1.0ms | 244.66KB |
 | 1015 | strings/jaro_winkler | ✓ | 204.0µs | 3.78KB |
