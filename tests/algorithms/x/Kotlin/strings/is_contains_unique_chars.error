@@ -1,0 +1,6 @@
+run: exit status 1
+Exception in thread "main" java.lang.ArithmeticException: / by zero
+	at Is_contains_unique_charsKt.rshift(is_contains_unique_chars.kt:16)
+	at Is_contains_unique_charsKt.is_contains_unique_chars(is_contains_unique_chars.kt:64)
+	at Is_contains_unique_charsKt.main(is_contains_unique_chars.kt:74)
+	at Is_contains_unique_charsKt.main(is_contains_unique_chars.kt)

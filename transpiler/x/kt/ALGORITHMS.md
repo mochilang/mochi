@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-11 16:59 GMT+7
+Last updated: 2025-08-11 17:45 GMT+7
 
-## Algorithms Golden Test Checklist (226/1077)
+## Algorithms Golden Test Checklist (274/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 30.54ms | 124.45KiB |
@@ -966,56 +966,56 @@ Last updated: 2025-08-11 16:59 GMT+7
 | 957 | sorts/insertion_sort | ✓ |  |  |
 | 958 | sorts/intro_sort | ✓ |  |  |
 | 959 | sorts/iterative_merge_sort | ✓ |  |  |
-| 960 | sorts/merge_insertion_sort |   |  |  |
-| 961 | sorts/merge_sort |   |  |  |
-| 962 | sorts/msd_radix_sort |   |  |  |
-| 963 | sorts/natural_sort |   |  |  |
-| 964 | sorts/odd_even_sort |   |  |  |
-| 965 | sorts/odd_even_transposition_parallel |   |  |  |
-| 966 | sorts/odd_even_transposition_single_threaded |   |  |  |
-| 967 | sorts/pancake_sort |   |  |  |
-| 968 | sorts/patience_sort |   |  |  |
-| 969 | sorts/pigeon_sort |   |  |  |
-| 970 | sorts/pigeonhole_sort |   |  |  |
-| 971 | sorts/quick_sort |   |  |  |
-| 972 | sorts/quick_sort_3_partition |   |  |  |
-| 973 | sorts/radix_sort |   |  |  |
-| 974 | sorts/recursive_insertion_sort |   |  |  |
-| 975 | sorts/recursive_mergesort_array |   |  |  |
-| 976 | sorts/recursive_quick_sort |   |  |  |
-| 977 | sorts/selection_sort |   |  |  |
-| 978 | sorts/shell_sort |   |  |  |
-| 979 | sorts/shrink_shell_sort |   |  |  |
-| 980 | sorts/slowsort |   |  |  |
-| 981 | sorts/stooge_sort |   |  |  |
-| 982 | sorts/strand_sort |   |  |  |
-| 983 | sorts/tim_sort |   |  |  |
-| 984 | sorts/topological_sort |   |  |  |
-| 985 | sorts/tree_sort |   |  |  |
-| 986 | sorts/unknown_sort |   |  |  |
-| 987 | sorts/wiggle_sort |   |  |  |
-| 988 | strings/aho_corasick |   |  |  |
-| 989 | strings/alternative_string_arrange |   |  |  |
-| 990 | strings/anagrams |   |  |  |
-| 991 | strings/autocomplete_using_trie |   |  |  |
-| 992 | strings/barcode_validator |   |  |  |
-| 993 | strings/bitap_string_match |   |  |  |
-| 994 | strings/boyer_moore_search |   |  |  |
-| 995 | strings/camel_case_to_snake_case |   |  |  |
-| 996 | strings/can_string_be_rearranged_as_palindrome |   |  |  |
-| 997 | strings/capitalize |   |  |  |
-| 998 | strings/check_anagrams |   |  |  |
-| 999 | strings/count_vowels |   |  |  |
-| 1000 | strings/credit_card_validator |   |  |  |
-| 1001 | strings/damerau_levenshtein_distance |   |  |  |
-| 1002 | strings/detecting_english_programmatically |   |  |  |
-| 1003 | strings/dna |   |  |  |
-| 1004 | strings/edit_distance |   |  |  |
-| 1005 | strings/frequency_finder |   |  |  |
-| 1006 | strings/hamming_distance |   |  |  |
-| 1007 | strings/indian_phone_validator |   |  |  |
-| 1008 | strings/is_contains_unique_chars |   |  |  |
-| 1009 | strings/is_isogram |   |  |  |
+| 960 | sorts/merge_insertion_sort | ✓ | 18.00ms | 114.51KiB |
+| 961 | sorts/merge_sort | ✓ | 17.91ms | 122.58KiB |
+| 962 | sorts/msd_radix_sort | ✓ | 7.36ms | 133.81KiB |
+| 963 | sorts/natural_sort | ✓ | 11.28ms | 122.96KiB |
+| 964 | sorts/odd_even_sort | ✓ | 17.89ms | 122.58KiB |
+| 965 | sorts/odd_even_transposition_parallel | ✓ | 15.29ms | 123.58KiB |
+| 966 | sorts/odd_even_transposition_single_threaded | ✓ | 18.02ms | 104.89KiB |
+| 967 | sorts/pancake_sort | ✓ | 18.17ms | 123.70KiB |
+| 968 | sorts/patience_sort | ✓ | 19.56ms | 114.68KiB |
+| 969 | sorts/pigeon_sort | ✓ | 15.78ms | 122.59KiB |
+| 970 | sorts/pigeonhole_sort | ✓ | 6.14ms | 134.01KiB |
+| 971 | sorts/quick_sort | ✓ | 37.13ms | 114.73KiB |
+| 972 | sorts/quick_sort_3_partition | ✓ | 7.99ms | 132.23KiB |
+| 973 | sorts/radix_sort | ✓ | 17.58ms | 122.54KiB |
+| 974 | sorts/recursive_insertion_sort | ✓ | 17.07ms | 123.68KiB |
+| 975 | sorts/recursive_mergesort_array | ✓ | 18.33ms | 122.64KiB |
+| 976 | sorts/recursive_quick_sort | ✓ | 16.46ms | 122.52KiB |
+| 977 | sorts/selection_sort | ✓ | 17.49ms | 114.81KiB |
+| 978 | sorts/shell_sort | ✓ | 17.79ms | 123.63KiB |
+| 979 | sorts/shrink_shell_sort | ✓ | 17.60ms | 123.69KiB |
+| 980 | sorts/slowsort | ✓ | 6.04ms | 133.51KiB |
+| 981 | sorts/stooge_sort | ✓ | 18.86ms | 123.63KiB |
+| 982 | sorts/strand_sort | ✓ | 22.95ms | 122.54KiB |
+| 983 | sorts/tim_sort | ✓ | 14.55ms | 133.91KiB |
+| 984 | sorts/topological_sort | ✓ | 9.87ms | 132.57KiB |
+| 985 | sorts/tree_sort | ✓ | 19.35ms | 122.15KiB |
+| 986 | sorts/unknown_sort | ✓ | 20.07ms | 114.78KiB |
+| 987 | sorts/wiggle_sort | ✓ | 17.95ms | 112.71KiB |
+| 988 | strings/aho_corasick | ✓ | 6.60ms | 132.15KiB |
+| 989 | strings/alternative_string_arrange | ✓ | 7.89ms | 130.17KiB |
+| 990 | strings/anagrams | error |  |  |
+| 991 | strings/autocomplete_using_trie | ✓ | 6.59ms | 132.85KiB |
+| 992 | strings/barcode_validator | ✓ | 19.21ms | 115.15KiB |
+| 993 | strings/bitap_string_match | ✓ | 19.15ms | 114.59KiB |
+| 994 | strings/boyer_moore_search | ✓ | 19.55ms | 114.04KiB |
+| 995 | strings/camel_case_to_snake_case | ✓ | 10.89ms | 130.13KiB |
+| 996 | strings/can_string_be_rearranged_as_palindrome | ✓ | 10.32ms | 130.41KiB |
+| 997 | strings/capitalize | ✓ | 11.64ms | 131.15KiB |
+| 998 | strings/check_anagrams | ✓ | 9.42ms | 121.45KiB |
+| 999 | strings/count_vowels | ✓ | 8.35ms | 130.34KiB |
+| 1000 | strings/credit_card_validator | ✓ | 9.67ms | 121.09KiB |
+| 1001 | strings/damerau_levenshtein_distance | ✓ | 17.93ms | 114.84KiB |
+| 1002 | strings/detecting_english_programmatically | ✓ | 10.54ms | 132.71KiB |
+| 1003 | strings/dna | ✓ | 9.93ms | 130.02KiB |
+| 1004 | strings/edit_distance | ✓ | 25.00ms | 142.08KiB |
+| 1005 | strings/frequency_finder | ✓ | 29.66ms | 109.25KiB |
+| 1006 | strings/hamming_distance | ✓ | 7.36ms | 130.34KiB |
+| 1007 | strings/indian_phone_validator | ✓ | 8.98ms | 131.00KiB |
+| 1008 | strings/is_contains_unique_chars | error |  |  |
+| 1009 | strings/is_isogram | ✓ | 12.00ms | 130.12KiB |
 | 1010 | strings/is_pangram |   |  |  |
 | 1011 | strings/is_polish_national_id |   |  |  |
 | 1012 | strings/is_spain_national_id |   |  |  |

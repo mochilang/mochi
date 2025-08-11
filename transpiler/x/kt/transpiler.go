@@ -980,7 +980,13 @@ func (m *MapLit) emit(w io.Writer) {
 			} else if valType == "Long" && v == "Int" {
 				// keep Long
 			} else if v != valType {
-				valType = "Any?"
+				if strings.HasPrefix(valType, "MutableList<") && v == "MutableList<Any>" {
+					// keep valType
+				} else if valType == "MutableList<Any>" && strings.HasPrefix(v, "MutableList<") {
+					valType = v
+				} else {
+					valType = "Any?"
+				}
 			}
 		}
 	}
@@ -993,6 +999,9 @@ func (m *MapLit) emit(w io.Writer) {
 		io.WriteString(w, " to (")
 		if valType == "Long" && guessType(it.Value) == "Int" {
 			(&CastExpr{Value: it.Value, Type: "Long"}).emit(w)
+		} else if strings.HasPrefix(valType, "MutableList<") && guessType(it.Value) == "MutableList<Any>" {
+			elem := strings.TrimSuffix(strings.TrimPrefix(valType, "MutableList<"), ">")
+			(&TypedListLit{ElemType: elem, Elems: nil}).emit(w)
 		} else {
 			it.Value.emit(w)
 		}
@@ -2750,6 +2759,8 @@ func kotlinType(t *parser.TypeRef) string {
 			return "Any?"
 		case "void":
 			return "Unit"
+		case "unit":
+			return "Unit"
 		default:
 			return *t.Simple
 		}
@@ -2987,7 +2998,13 @@ func guessType(e Expr) string {
 				} else if val == "Long" && vv == "Int" {
 					// keep Long
 				} else if vv != val {
-					val = "Any?"
+					if strings.HasPrefix(val, "MutableList<") && vv == "MutableList<Any>" {
+						// keep val
+					} else if val == "MutableList<Any>" && strings.HasPrefix(vv, "MutableList<") {
+						val = vv
+					} else {
+						val = "Any?"
+					}
 				}
 				if k == "Any?" && val == "Any?" {
 					break
@@ -3165,6 +3182,12 @@ func guessType(e Expr) string {
 			return "String"
 		case "int":
 			return "Int"
+		case "concat":
+			if len(v.Args) > 0 {
+				if t := guessType(v.Args[0]); t != "" {
+					return t
+				}
+			}
 		}
 		return ""
 	case *InvokeExpr:
@@ -3432,6 +3455,16 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				} else if strings.Contains(typ, "->") {
 					if gt := guessType(val); gt != "" && gt != "Any" && !strings.Contains(gt, "->") {
 						typ = gt
+					}
+				}
+				if typ == "MutableList<Any?>" {
+					if gt := guessType(val); strings.HasPrefix(gt, "MutableList<") && gt != "MutableList<Any?>" {
+						typ = gt
+					}
+				}
+				if typ == "MutableList<Any?>" {
+					if _, ok := val.(*CallExpr); ok {
+						typ = ""
 					}
 				}
 				if typ == "Int" {
@@ -4111,6 +4144,13 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 						if ix, ok := v.(*IndexExpr); ok && ix.Type != "" {
 							typ = ix.Type
 						}
+					}
+				}
+				if typ == "MutableList<Any?>" {
+					if gt := guessType(v); strings.HasPrefix(gt, "MutableList<") && gt != "MutableList<Any?>" {
+						typ = gt
+					} else if _, ok := v.(*CallExpr); ok {
+						typ = ""
 					}
 				}
 				if typ == "Int" {

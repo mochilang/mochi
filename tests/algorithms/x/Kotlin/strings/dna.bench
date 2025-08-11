@@ -1,0 +1,6 @@
+CGAT
+TACG
+GACT
+ValueError: Invalid Strand
+
+{"duration_us":9928, "memory_bytes":133144, "name":"main"}

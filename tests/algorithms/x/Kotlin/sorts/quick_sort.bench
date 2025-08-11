@@ -1,0 +1,4 @@
+sorted1: [0, 2, 2, 3, 5]
+sorted2: []
+sorted3: [-45, -2, 0, 5]
+{"duration_us":37134, "memory_bytes":117488, "name":"main"}
