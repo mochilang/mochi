@@ -1,9 +1,1 @@
-Unhandled exception:
-type 'int' is not a subtype of type 'double' in type cast
-#0      consistent_heuristic (file:///workspace/mochi/tests/algorithms/x/Dart/graphs/multi_heuristic_astar.dart:62:28)
-#1      heuristic (file:///workspace/mochi/tests/algorithms/x/Dart/graphs/multi_heuristic_astar.dart:85:12)
-#2      key_fn (file:///workspace/mochi/tests/algorithms/x/Dart/graphs/multi_heuristic_astar.dart:95:19)
-#3      multi_a_star (file:///workspace/mochi/tests/algorithms/x/Dart/graphs/multi_heuristic_astar.dart:229:18)
-#4      main (file:///workspace/mochi/tests/algorithms/x/Dart/graphs/multi_heuristic_astar.dart:298:3)
-#5      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
-#6      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)
+No path found to goal

@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,17 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 class Item {
@@ -43,12 +53,12 @@ class Item {
 }
 
 double ratio(Item item) {
-  return (item.value as double) / (item.weight as double);
+  return (item.value.toDouble()) / (item.weight.toDouble());
 }
 
 double fractional_cover(List<Item> items, int capacity) {
   if (capacity < 0) {
-    throw Exception("Capacity cannot be negative");
+    _error("Capacity cannot be negative");
   }
   double total = 0.0;
   int remaining = capacity;
@@ -57,7 +67,7 @@ double fractional_cover(List<Item> items, int capacity) {
   while (idx < sorted.length && remaining > 0) {
     Item item = sorted[idx];
     int take = (item.weight < remaining ? item.weight : remaining);
-    total = total + (take as double) * ratio(item);
+    total = total + (take.toDouble()) * ratio(item);
     remaining = remaining - take;
     idx = idx + 1;
   }
@@ -75,12 +85,12 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print((fractional_cover(items1, 50)).toString());
-  print((fractional_cover(items2, 25)).toString());
-  print((fractional_cover(items3, 50)).toString());
-  print((fractional_cover(items4, 5)).toString());
-  print((fractional_cover(items4, 1)).toString());
-  print((fractional_cover(items4, 0)).toString());
+  print(_str(fractional_cover(items1, 50)));
+  print(_str(fractional_cover(items2, 25)));
+  print(_str(fractional_cover(items3, 50)));
+  print(_str(fractional_cover(items4, 5)));
+  print(_str(fractional_cover(items4, 1)));
+  print(_str(fractional_cover(items4, 0)));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

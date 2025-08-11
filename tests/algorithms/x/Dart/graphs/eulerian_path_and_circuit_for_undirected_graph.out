@@ -1,5 +1,10 @@
-../../../tests/algorithms/x/Dart/graphs/eulerian_path_and_circuit_for_undirected_graph.dart:62:18: Error: Property 'length' cannot be accessed on 'List<int>?' because it is potentially null.
- - 'List' is from 'dart:core'.
-Try accessing using ?. instead.
-    if (graph[i].length % 2 == 1) {
-                 ^^^^^^
+graph has a Euler path
+[5, 4, 1, 2, 3, 1]
+graph has a Euler cycle
+[1, 2, 3, 1, 4, 5, 1]
+graph is not Eulerian
+no path
+graph has a Euler cycle
+[1, 2, 3, 1]
+graph has a Euler cycle
+[1]

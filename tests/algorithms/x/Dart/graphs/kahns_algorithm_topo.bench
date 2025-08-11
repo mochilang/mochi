@@ -1,65 +1,65 @@
-../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:82:20: Error: A comparison expression can't be an operand of another comparison expression.
+../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:85:20: Error: A comparison expression can't be an operand of another comparison expression.
 Try putting parentheses around one of the comparisons.
     return List<int>?>.from(null);
                    ^
-../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:82:21: Error: Expected an identifier, but got '?'.
+../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:85:21: Error: Expected an identifier, but got '?'.
 Try inserting an identifier before '?'.
     return List<int>?>.from(null);
                     ^
-../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:82:22: Error: Expected an identifier, but got '>'.
+../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:85:22: Error: Expected an identifier, but got '>'.
 Try inserting an identifier before '>'.
     return List<int>?>.from(null);
                      ^
-../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:82:23: Error: This requires the experimental 'dot-shorthands' language feature to be enabled.
+../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:85:23: Error: This requires the experimental 'dot-shorthands' language feature to be enabled.
 Try passing the '--enable-experiment=dot-shorthands' command line option.
     return List<int>?>.from(null);
                       ^
-../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:82:34: Error: Expected ':' before this.
+../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:85:34: Error: Expected ':' before this.
     return List<int>?>.from(null);
                                  ^
-../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:82:34: Error: Expected an identifier, but got ';'.
+../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:85:34: Error: Expected an identifier, but got ';'.
 Try inserting an identifier before ';'.
     return List<int>?>.from(null);
                                  ^
-../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:84:18: Error: A comparison expression can't be an operand of another comparison expression.
+../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:87:18: Error: A comparison expression can't be an operand of another comparison expression.
 Try putting parentheses around one of the comparisons.
   return List<int>?>.from(order);
                  ^
-../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:84:19: Error: Expected an identifier, but got '?'.
+../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:87:19: Error: Expected an identifier, but got '?'.
 Try inserting an identifier before '?'.
   return List<int>?>.from(order);
                   ^
-../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:84:20: Error: Expected an identifier, but got '>'.
+../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:87:20: Error: Expected an identifier, but got '>'.
 Try inserting an identifier before '>'.
   return List<int>?>.from(order);
                    ^
-../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:84:21: Error: This requires the experimental 'dot-shorthands' language feature to be enabled.
+../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:87:21: Error: This requires the experimental 'dot-shorthands' language feature to be enabled.
 Try passing the '--enable-experiment=dot-shorthands' command line option.
   return List<int>?>.from(order);
                     ^
-../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:84:33: Error: Expected ':' before this.
+../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:87:33: Error: Expected ':' before this.
   return List<int>?>.from(order);
                                 ^
-../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:84:33: Error: Expected an identifier, but got ';'.
+../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:87:33: Error: Expected an identifier, but got ';'.
 Try inserting an identifier before ';'.
   return List<int>?>.from(order);
                                 ^
-../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:82:16: Error: The operator '<' isn't defined for the class 'Type'.
+../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:85:16: Error: The operator '<' isn't defined for the class 'Type'.
  - 'Type' is from 'dart:core'.
 Try correcting the operator to an existing operator, or defining a '<' operator.
     return List<int>?>.from(null);
                ^
-../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:84:14: Error: The operator '<' isn't defined for the class 'Type'.
+../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:87:14: Error: The operator '<' isn't defined for the class 'Type'.
  - 'Type' is from 'dart:core'.
 Try correcting the operator to an existing operator, or defining a '<' operator.
   return List<int>?>.from(order);
              ^
-../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:89:39: Error: Method 'join' cannot be called on 'List<int>?' because it is potentially null.
+../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:92:39: Error: Method 'join' cannot be called on 'List<int>?' because it is potentially null.
  - 'List' is from 'dart:core'.
 Try calling using ?. instead.
   print("[" + topological_sort(graph).join(', ') + "]");
                                       ^^^^
-../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:91:40: Error: Method 'join' cannot be called on 'List<int>?' because it is potentially null.
+../../../tests/algorithms/x/Dart/graphs/kahns_algorithm_topo.dart:94:40: Error: Method 'join' cannot be called on 'List<int>?' because it is potentially null.
  - 'List' is from 'dart:core'.
 Try calling using ?. instead.
   print("[" + topological_sort(cyclic).join(', ') + "]");

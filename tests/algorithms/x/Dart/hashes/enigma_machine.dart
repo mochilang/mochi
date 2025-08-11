@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,10 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 String ASCII = " !\"#\$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}";
@@ -41,7 +44,7 @@ List<String> build_alphabet() {
   List<String> result = <String>[];
   int i = 0;
   while (i < ASCII.length) {
-    result = [...result, ASCII.substring(i, i + 1)];
+    result = [...result, _substr(ASCII, i, i + 1)];
     i = i + 1;
   }
   return result;
@@ -137,7 +140,7 @@ String enigma_encrypt(String message, int token) {
   String result = "";
   int idx = 0;
   while (idx < message.length) {
-    result = result + engine(message.substring(idx, idx + 1));
+    result = result + engine(_substr(message, idx, idx + 1));
     idx = idx + 1;
   }
   return result;

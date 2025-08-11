@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
 
 class Neighbor {
   int node;
@@ -63,9 +68,9 @@ List<EdgePair> prims_algorithm(Map<int, List<Neighbor>> adjacency) {
     int best_cost = 2147483647;
     for (int u_str in adjacency.keys) {
     int u = u_str as int;
-    if (visited[u]) {
-    for (var n in adjacency[u]) {
-    if (!visited[(n.node).toInt()] && n.cost.compareTo(best_cost) < 0) {
+    if (visited[u]!) {
+    for (var n in adjacency[u]!) {
+    if (!(visited[(n.node).toInt()] ?? false) && n.cost.compareTo(best_cost) < 0) {
     best_cost = n.cost;
     best_u = u;
     best_v = n.node;
@@ -93,21 +98,21 @@ bool test_prim_successful_result() {
     if (!adjacency.containsKey(v)) {
     adjacency[v] = List<Neighbor>.from([]);
   }
-    adjacency[u] = List<Neighbor>.from([...adjacency[u], Neighbor(node: v, cost: w)]);
-    adjacency[v] = List<Neighbor>.from([...adjacency[v], Neighbor(node: u, cost: w)]);
+    adjacency[u] = [...(adjacency[u]!), Neighbor(node: v, cost: w)];
+    adjacency[v] = [...(adjacency[v]!), Neighbor(node: u, cost: w)];
   }
   List<EdgePair> result = prims_algorithm(adjacency);
   Map<String, bool> seen = <String, bool>{};
   for (EdgePair e in result) {
-    String key1 = (e.u).toString() + "," + (e.v).toString();
-    String key2 = (e.v).toString() + "," + (e.u).toString();
+    String key1 = _str(e.u) + "," + _str(e.v);
+    String key2 = _str(e.v) + "," + _str(e.u);
     seen[key1] = true;
     seen[key2] = true;
   }
   List<List<int>> expected = [[7, 6, 1], [2, 8, 2], [6, 5, 2], [0, 1, 4], [2, 5, 4], [2, 3, 7], [0, 7, 8], [3, 4, 9]];
   for (List<int> ans in expected) {
-    String key = (ans[0]).toString() + "," + (ans[1]).toString();
-    if (!seen[key]) {
+    String key = _str(ans[0]) + "," + _str(ans[1]);
+    if (!(seen[key] ?? false)) {
     return false;
   }
   }

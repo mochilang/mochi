@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,10 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 class Pair {
@@ -95,17 +98,17 @@ List<Pair> partition_graph(Map<String, List<String>> graph) {
     String uv = u + v;
     List<String> uv_neighbors = <String>[];
     int i = 0;
-    while (i < graph_copy[u].length) {
-    dynamic n = graph_copy[u][i];
-    if (n != u && n != v && uv_neighbors.contains(n) == false) {
+    while (i < (graph_copy[u]!).length) {
+    String n = (graph_copy[u]!)[i];
+    if (n != u && n != v && contains(uv_neighbors, n) == false) {
     uv_neighbors = [...uv_neighbors, n];
   }
     i = i + 1;
   }
     i = 0;
-    while (i < graph_copy[v].length) {
-    dynamic n = graph_copy[v][i];
-    if (n != u && n != v && uv_neighbors.contains(n) == false) {
+    while (i < (graph_copy[v]!).length) {
+    String n = (graph_copy[v]!)[i];
+    if (n != u && n != v && contains(uv_neighbors, n) == false) {
     uv_neighbors = [...uv_neighbors, n];
   }
     i = i + 1;
@@ -114,21 +117,21 @@ List<Pair> partition_graph(Map<String, List<String>> graph) {
     int k = 0;
     while (k < uv_neighbors.length) {
     String nb = uv_neighbors[k];
-    graph_copy[nb] = List<String>.from([...graph_copy[nb], uv]);
-    graph_copy[nb] = remove_all(graph_copy[nb]!, u);
-    graph_copy[nb] = remove_all(graph_copy[nb]!, v);
+    graph_copy[nb] = [...(graph_copy[nb]!), uv];
+    graph_copy[nb] = remove_all((graph_copy[nb]!), u);
+    graph_copy[nb] = remove_all((graph_copy[nb]!), v);
     k = k + 1;
   }
     List<String> group = <String>[];
     i = 0;
-    while (i < contracted[u].length) {
-    group = [...group, contracted[u][i]];
+    while (i < (contracted[u]!).length) {
+    group = [...group, (contracted[u]!)[i]];
     i = i + 1;
   }
     i = 0;
-    while (i < contracted[v].length) {
-    dynamic val = contracted[v][i];
-    if (group.contains(val) == false) {
+    while (i < (contracted[v]!).length) {
+    String val = (contracted[v]!)[i];
+    if (contains(group, val) == false) {
     group = [...group, val];
   }
     i = i + 1;
@@ -142,7 +145,7 @@ List<Pair> partition_graph(Map<String, List<String>> graph) {
   int j = 0;
   while (j < nodes.length) {
     dynamic n = nodes[j];
-    groups = ([...groups, contracted[n]] as List).map((e) => (List<String>.from(e) as List<String>)).toList();
+    groups = ([...groups, (contracted[n]!)] as List<dynamic>).map((e) => (List<String>.from(e) as List<String>)).toList();
     j = j + 1;
   }
   List<String> groupA = groups[0];
@@ -155,7 +158,7 @@ List<Pair> partition_graph(Map<String, List<String>> graph) {
     int l = 0;
     while (l < neigh.length) {
     String nb = neigh[l];
-    if (groupB.contains(nb)) {
+    if (contains(groupB, nb)) {
     cut = [...cut, Pair(a: node, b: nb)];
   }
     l = l + 1;

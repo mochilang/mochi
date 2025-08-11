@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,16 +33,21 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
 
 int INF = 1000000000;
 Map<int, List<List<int>>> connect(Map<int, List<List<int>>> graph, int a, int b, int w) {
   int u = a - 1;
   int v = b - 1;
   Map<int, List<List<int>>> g = graph;
-  g[u] = ([...g[u], [v, w]] as List).map((e) => (e as List<int>)).toList();
-  g[v] = ([...g[v], [u, w]] as List).map((e) => (e as List<int>)).toList();
+  g[u] = ([...(g[u]!), [v, w]] as List<dynamic>).map((e) => (e as List<int>)).toList();
+  g[v] = ([...(g[v]!), [u, w]] as List<dynamic>).map((e) => (e as List<int>)).toList();
   return g;
 }
 
@@ -78,13 +83,13 @@ List<List<int>> prim(Map<int, List<List<int>>> graph, int s, int n) {
     i = i + 1;
   }
     known = [...known, u];
-    for (var e in graph[u]) {
+    for (var e in graph[u]!) {
     dynamic v = e[0];
     dynamic w = e[1];
     if (!in_list(keys, v)) {
     keys = [...keys, v];
   }
-    dynamic cur = (dist.containsKey(v) ? dist[(v).toInt()] : INF);
+    int cur = (dist.containsKey(v) ? (dist[(v).toInt()] ?? 0) : INF);
     if (!in_list(known, v) && w.compareTo(cur) < 0) {
     dist[(v).toInt()] = w;
     parent[(v).toInt()] = u;
@@ -96,7 +101,7 @@ List<List<int>> prim(Map<int, List<List<int>>> graph, int s, int n) {
   while (j < keys.length) {
     int v = keys[j];
     if (v != s) {
-    edges = [...edges, [v + 1, parent[v]! + 1]];
+    edges = ([...edges, [v + 1, (parent[v] ?? 0) + 1]] as List<dynamic>).map((e) => (e as List<int>)).toList();
   }
     j = j + 1;
   }
@@ -109,9 +114,9 @@ List<int> sort_heap(List<int> h, Map<int, int> dist) {
   while (i < a.length) {
     int j = 0;
     while (j < a.length - i - 1) {
-    dynamic dj = (dist.containsKey(a[j]) ? dist[a[j]] : INF);
-    dynamic dj1 = (dist.containsKey(a[j + 1]) ? dist[a[j + 1]] : INF);
-    if (dj.compareTo(dj1) > 0) {
+    int dj = (dist.containsKey(a[j]) ? (dist[a[j]] ?? 0) : INF);
+    int dj1 = (dist.containsKey(a[j + 1]) ? (dist[a[j + 1]] ?? 0) : INF);
+    if (dj > dj1) {
     int t = a[j];
     while (a.length <= j) { a.add(0); } a[j] = a[j + 1];
     while (a.length <= j + 1) { a.add(0); } a[j + 1] = t;
@@ -138,12 +143,12 @@ List<List<int>> prim_heap(Map<int, List<List<int>>> graph, int s, int n) {
   List<int> known = <int>[];
   while (h.length > 0) {
     int u = h[0];
-    h = (h.sublist(1, h.length) as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
+    h = (h.sublist(1, h.length) as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
     known = [...known, u];
-    for (var e in graph[u]) {
+    for (var e in graph[u]!) {
     dynamic v = e[0];
     dynamic w = e[1];
-    dynamic cur = (dist.containsKey(v) ? dist[(v).toInt()] : INF);
+    int cur = (dist.containsKey(v) ? (dist[(v).toInt()] ?? 0) : INF);
     if (!in_list(known, v) && w.compareTo(cur) < 0) {
     dist[(v).toInt()] = w;
     parent[(v).toInt()] = u;
@@ -155,7 +160,7 @@ List<List<int>> prim_heap(Map<int, List<List<int>>> graph, int s, int n) {
   int j = 0;
   while (j < n) {
     if (j != s) {
-    edges = [...edges, [j + 1, parent[j]! + 1]];
+    edges = ([...edges, [j + 1, (parent[j] ?? 0) + 1]] as List<dynamic>).map((e) => (e as List<int>)).toList();
   }
     j = j + 1;
   }
@@ -166,7 +171,7 @@ void print_edges(List<List<int>> edges) {
   int i = 0;
   while (i < edges.length) {
     List<int> e = edges[i];
-    print("(" + (e[0]).toString() + ", " + (e[1]).toString() + ")");
+    print("(" + _str(e[0]) + ", " + _str(e[1]) + ")");
     i = i + 1;
   }
 }
@@ -176,7 +181,7 @@ void test_vector() {
   Map<int, List<List<int>>> G = <int, List<List<int>>>{};
   int i = 0;
   while (i < x) {
-    G[i] = ([] as List).map((e) => (e as List<int>)).toList();
+    G[i] = ([] as List<dynamic>).map((e) => (e as List<int>)).toList();
     i = i + 1;
   }
   G = connect(G, 1, 2, 15);

@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,13 +33,16 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
 int index_of(String s, String ch) {
   int i = 0;
   while (i < s.length) {
-    if (s.substring(i, i + 1) == ch) {
+    if (_substr(s, i, i + 1) == ch) {
     return i;
   }
     i = i + 1;
@@ -73,7 +76,7 @@ int djb2(String s) {
   int hash_value = 5381;
   int i = 0;
   while (i < s.length) {
-    hash_value = hash_value * 33 + ord(s.substring(i, i + 1));
+    hash_value = hash_value * 33 + ord(_substr(s, i, i + 1));
     hash_value = hash_value % 4294967296;
     i = i + 1;
   }

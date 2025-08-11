@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
 
 class Pos {
   int y;
@@ -156,7 +161,7 @@ List<Pos> greedy_best_first(List<List<int>> grid, Pos init, Pos goal) {
     int i = 0;
     while (i < successors.length) {
     Node child = successors[i];
-    if (!closed_nodes.contains(child) && !open_nodes.contains(child)) {
+    if (!contains(closed_nodes, child) && !contains(open_nodes, child)) {
     open_nodes = [...open_nodes, child];
   }
     i = i + 1;
@@ -170,7 +175,7 @@ List<List<List<int>>> TEST_GRIDS = [[[0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 0
 void print_grid(List<List<int>> grid) {
   int i = 0;
   while (i < grid.length) {
-    print((grid[i]).toString());
+    print(_str(grid[i]));
     i = i + 1;
   }
 }
@@ -178,7 +183,7 @@ void print_grid(List<List<int>> grid) {
 void _main() {
   int idx = 0;
   while (idx < TEST_GRIDS.length) {
-    print("==grid-" + (idx + 1).toString() + "==");
+    print("==grid-" + _str(idx + 1) + "==");
     List<List<int>> grid = TEST_GRIDS[idx];
     Pos init = Pos(y: 0, x: 0);
     Pos goal = Pos(y: grid.length - 1, x: grid[0].length - 1);

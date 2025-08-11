@@ -1,4 +1,0 @@
-run: exit status 254
-../../../tests/algorithms/x/Dart/graphs/minimum_path_sum.dart:57:5: Error: Method not found: 'error'.
-    error("The grid does not contain the appropriate information");
-    ^^^^^

@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,8 +33,13 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
 
 double INF = 1000000000.0;
 List<List<double>> floyd_warshall(List<List<double>> graph) {
@@ -48,7 +53,7 @@ List<List<double>> floyd_warshall(List<List<double>> graph) {
     row = [...row, graph[i][j]];
     j = j + 1;
   }
-    dist = ([...dist, row] as List).map((e) => (List<double>.from(e) as List<double>)).toList();
+    dist = ([...dist, row] as List<dynamic>).map((e) => (List<double>.from(e) as List<double>)).toList();
     i = i + 1;
   }
   int k = 0;
@@ -79,7 +84,7 @@ dynamic print_dist(List<List<double>> dist) {
     if (dist[i][j] >= INF / 2.0) {
     line = line + "INF	";
   } else {
-    line = line + (dist[i][j] as int).toString() + "	";
+    line = line + _str((dist[i][j]).toInt()) + "	";
   }
     j = j + 1;
   }

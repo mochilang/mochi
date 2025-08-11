@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,17 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 class Graph {
@@ -65,7 +75,7 @@ bool contains_vertex(Graph g, int v) {
 
 void add_vertex(Graph g, int v) {
   if (contains_vertex(g, v)) {
-    throw Exception("vertex already exists");
+    _error("vertex already exists");
   }
   List<List<int>> matrix = g.adj_matrix;
   int i = 0;
@@ -79,7 +89,7 @@ void add_vertex(Graph g, int v) {
     row = [...row, 0];
     j = j + 1;
   }
-  matrix = ([...matrix, row] as List).map((e) => (e as List<int>)).toList();
+  matrix = ([...matrix, row] as List<dynamic>).map((e) => (e as List<int>)).toList();
   g.adj_matrix = matrix;
   Map<int, int> idx_map = g.vertex_to_index;
   idx_map[v] = matrix.length - 1;
@@ -111,7 +121,7 @@ Map<int, int> decrement_indices(Map<int, int> m, int start) {
 
 void remove_vertex(Graph g, int v) {
   if (!contains_vertex(g, v)) {
-    throw Exception("vertex does not exist");
+    _error("vertex does not exist");
   }
   int idx = g.vertex_to_index[v]!;
   List<List<int>> new_matrix = <List<int>>[];
@@ -127,7 +137,7 @@ void remove_vertex(Graph g, int v) {
   }
     j = j + 1;
   };
-    new_matrix = ([...new_matrix, new_row] as List).map((e) => (e as List<int>)).toList();
+    new_matrix = ([...new_matrix, new_row] as List<dynamic>).map((e) => (e as List<int>)).toList();
   }
     i = i + 1;
   }
@@ -138,7 +148,7 @@ void remove_vertex(Graph g, int v) {
 
 void add_edge(Graph g, int u, int v) {
   if (!(contains_vertex(g, u) && contains_vertex(g, v))) {
-    throw Exception("missing vertex");
+    _error("missing vertex");
   }
   int i = g.vertex_to_index[u]!;
   int j = g.vertex_to_index[v]!;
@@ -152,7 +162,7 @@ void add_edge(Graph g, int u, int v) {
 
 void remove_edge(Graph g, int u, int v) {
   if (!(contains_vertex(g, u) && contains_vertex(g, v))) {
-    throw Exception("missing vertex");
+    _error("missing vertex");
   }
   int i = g.vertex_to_index[u]!;
   int j = g.vertex_to_index[v]!;
@@ -166,7 +176,7 @@ void remove_edge(Graph g, int u, int v) {
 
 bool contains_edge(Graph g, int u, int v) {
   if (!(contains_vertex(g, u) && contains_vertex(g, v))) {
-    throw Exception("missing vertex");
+    _error("missing vertex");
   }
   int i = g.vertex_to_index[u]!;
   int j = g.vertex_to_index[v]!;
@@ -176,7 +186,7 @@ bool contains_edge(Graph g, int u, int v) {
 
 void clear_graph(Graph g) {
   g.vertex_to_index = <int, int>{};
-  g.adj_matrix = ([] as List).map((e) => (e as List<int>)).toList();
+  g.adj_matrix = ([] as List<dynamic>).map((e) => (e as List<int>)).toList();
 }
 
 Graph g = make_graph([1, 2, 3], [[1, 2], [2, 3]], false);
@@ -187,13 +197,13 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  print((g.adj_matrix).toString());
-  print((contains_edge(g, 1, 2)).toString());
-  print((contains_edge(g, 2, 1)).toString());
+  print(_str(g.adj_matrix));
+  print(_str(contains_edge(g, 1, 2)));
+  print(_str(contains_edge(g, 2, 1)));
   remove_edge(g, 1, 2);
-  print((contains_edge(g, 1, 2)).toString());
+  print(_str(contains_edge(g, 1, 2)));
   remove_vertex(g, 2);
-  print((g.adj_matrix).toString());
+  print(_str(g.adj_matrix));
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));

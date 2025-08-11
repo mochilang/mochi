@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,15 +33,20 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
 
 List<int> topology_sort(List<List<int>> graph, int vert, List<bool> visited) {
   while (visited.length <= vert) { visited.add(false); } visited[vert] = true;
   List<int> order = <int>[];
   for (int neighbour in graph[vert]) {
     if (!visited[neighbour]) {
-    order = ([...order, ...topology_sort(graph, neighbour, visited)] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
+    order = ([...order, ...topology_sort(graph, neighbour, visited)] as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
   }
   }
   order = [...order, vert];
@@ -53,7 +58,7 @@ List<int> find_component(List<List<int>> graph, int vert, List<bool> visited) {
   List<int> comp = [vert];
   for (int neighbour in graph[vert]) {
     if (!visited[neighbour]) {
-    comp = ([...comp, ...find_component(graph, neighbour, visited)] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
+    comp = ([...comp, ...find_component(graph, neighbour, visited)] as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
   }
   }
   return comp;
@@ -77,7 +82,7 @@ List<List<int>> strongly_connected_components(List<List<int>> graph) {
   List<int> order = <int>[];
   for (int i = 0; i < n; i++) {
     if (!visited[i]) {
-    order = ([...order, ...topology_sort(graph, i, visited)] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
+    order = ([...order, ...topology_sort(graph, i, visited)] as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
   }
   }
   visited = List<bool>.from([]);
@@ -90,7 +95,7 @@ List<List<int>> strongly_connected_components(List<List<int>> graph) {
     int v = order[n - i - 1];
     if (!visited[v]) {
     List<int> comp = find_component(reversed, v, visited);
-    components = ([...components, comp] as List).map((e) => ((e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
+    components = ([...components, comp] as List<dynamic>).map((e) => ((e as List<dynamic>).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList() as List<int>)).toList();
   }
     i = i + 1;
   }
@@ -100,8 +105,8 @@ List<List<int>> strongly_connected_components(List<List<int>> graph) {
 void _main() {
   List<List<int>> test_graph_1 = [[2, 3], [0], [1], [4], []];
   List<List<int>> test_graph_2 = [[1, 2, 3], [2], [0], [4], [5], [3]];
-  print((strongly_connected_components(test_graph_1)).toString());
-  print((strongly_connected_components(test_graph_2)).toString());
+  print(_str(strongly_connected_components(test_graph_1)));
+  print(_str(strongly_connected_components(test_graph_2)));
 }
 
 void _start() {
