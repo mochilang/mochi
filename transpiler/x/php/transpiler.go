@@ -3062,7 +3062,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("slice expects 3 args")
 			}
 			return &SliceExpr{X: args[0], Start: args[1], End: args[2]}, nil
-		} else if name == "split" {
+		} else if name == "split" && isBuiltin {
 			if len(args) != 2 {
 				return nil, fmt.Errorf("split expects 2 args")
 			}
