@@ -3,26 +3,28 @@
 package scalat
 
 import (
-	"bufio"
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"io"
-	"math"
-	"os"
-	"path/filepath"
-	"reflect"
-	"sort"
-	"strconv"
-	"strings"
-	"unicode/utf16"
+        "bufio"
+        "bytes"
+        "encoding/json"
+        "fmt"
+        "io"
+        "math"
+        "os"
+        "path/filepath"
+        "reflect"
+        "sort"
+        "strconv"
+        "strings"
+        "unicode"
+        "unicode/utf16"
+        "unicode/utf8"
 
-	yaml "gopkg.in/yaml.v3"
+        yaml "gopkg.in/yaml.v3"
 
-	"mochi/ast"
-	"mochi/parser"
-	meta "mochi/transpiler/meta"
-	"mochi/types"
+        "mochi/ast"
+        "mochi/parser"
+        meta "mochi/transpiler/meta"
+        "mochi/types"
 )
 
 var typeDecls []*TypeDeclStmt
@@ -114,14 +116,20 @@ var scalaKeywords = map[string]bool{
 }
 
 func escapeName(name string) string {
-	if strings.HasSuffix(name, "_") {
-		return "`" + name + "`"
-	}
-	switch name {
-	case "Int", "Double", "Long", "Short", "Float", "Boolean", "Char", "Byte", "String":
-		return name + "_"
-	}
-	if scalaKeywords[name] {
+        if strings.HasSuffix(name, "_") {
+                return "`" + name + "`"
+        }
+        if name != "" {
+                r, _ := utf8.DecodeRuneInString(name)
+                if !unicode.IsLetter(r) && r != '_' {
+                        name = "_" + name
+                }
+        }
+        switch name {
+        case "Int", "Double", "Long", "Short", "Float", "Boolean", "Char", "Byte", "String":
+                return name + "_"
+        }
+        if scalaKeywords[name] {
 		return "`" + name + "`"
 	}
 	return name
