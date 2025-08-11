@@ -1,4 +1,0 @@
-exit status 1
-/tmp/TestCSTranspiler_Algorithms_Golden001_web_programming_crawl_google_scholar_citation787994003/001/Program.cs(158,18): error CS0103: The name '__name__' does not exist in the current context [/tmp/TestCSTranspiler_Algorithms_Golden001_web_programming_crawl_google_scholar_citation787994003/001/app.csproj]
-
-The build failed. Fix the build errors and run again.

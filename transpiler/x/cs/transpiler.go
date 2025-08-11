@@ -2578,6 +2578,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	varAliases = make(map[string]string)
 	aliasCounter = 0
 	envTypes = env.Types()
+	prog.Globals = append(prog.Globals, &Global{Name: "__name__", Value: &StringLit{Value: "__main__"}})
 	for name, typ := range env.Types() {
 		if ft, ok := typ.(types.FuncType); ok {
 			params := make([]string, len(ft.Params))
@@ -4274,9 +4275,16 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		usesJson = true
 		usesFetch = true
 		if currentAssign != "" {
-			if t, ok := varTypes[currentAssign]; ok && t != "" && p.Fetch.With == nil {
+			if t, ok := varTypes[currentAssign]; ok && t != "" {
 				fetchStructs[t] = true
 				funRets["_fetch_"+t] = t
+				if p.Fetch.With != nil {
+					withExpr, err := compileExpr(p.Fetch.With)
+					if err != nil {
+						return nil, err
+					}
+					return &CallExpr{Func: "_fetch_" + t, Args: []Expr{urlExpr, withExpr}}, nil
+				}
 				return &CallExpr{Func: "_fetch_" + t, Args: []Expr{urlExpr}}, nil
 			}
 		}
@@ -5185,7 +5193,8 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\tstatic object _fetch(string url) {\n")
 		buf.WriteString("\t\tif (url.StartsWith(\"http://\") || url.StartsWith(\"https://\")) {\n")
 		buf.WriteString("\t\t\tusing var client = new HttpClient();\n")
-		buf.WriteString("\t\t\tusing var stream = client.GetStreamAsync(url).Result;\n")
+		buf.WriteString("\t\t\tvar resp = client.GetAsync(url).Result;\n")
+		buf.WriteString("\t\t\tusing var stream = resp.Content.ReadAsStream();\n")
 		buf.WriteString("\t\t\tvar opts = new JsonSerializerOptions{ IncludeFields = true };\n")
 		buf.WriteString("\t\t\treturn JsonSerializer.Deserialize<object>(stream, opts);\n")
 		buf.WriteString("\t\t} else {\n")
@@ -5234,11 +5243,12 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\t\t\t\tvar jsonBody = bodyObj == null ? \"\" : JsonSerializer.Serialize(bodyObj);\n")
 		buf.WriteString("\t\t\t\tvar content = new StringContent(jsonBody);\n")
 		buf.WriteString("\t\t\t\tif (headers != null) foreach (var kv in headers) content.Headers.TryAddWithoutValidation(kv.Key, kv.Value);\n")
-		buf.WriteString("\t\t\t\tclient.PostAsync(url, content).Wait();\n")
-		buf.WriteString("\t\t\t\treturn \"ok\";\n")
+		buf.WriteString("\t\t\t\tvar respPost = client.PostAsync(url, content).Result;\n")
+		buf.WriteString("\t\t\t\treturn respPost.Content.ReadAsStringAsync().Result;\n")
 		buf.WriteString("\t\t\t}\n")
 		buf.WriteString("\t\t\tif (headers != null) foreach (var kv in headers) client.DefaultRequestHeaders.TryAddWithoutValidation(kv.Key, kv.Value);\n")
-		buf.WriteString("\t\t\treturn client.GetStringAsync(url).Result;\n")
+		buf.WriteString("\t\t\tvar resp = client.GetAsync(url).Result;\n")
+		buf.WriteString("\t\t\treturn resp.Content.ReadAsStringAsync().Result;\n")
 		buf.WriteString("\t\t}\n")
 		buf.WriteString("\t\treturn Convert.ToString(_fetch(url));\n")
 		buf.WriteString("\t}\n")
@@ -5246,7 +5256,8 @@ func Emit(prog *Program) []byte {
 			buf.WriteString("\tstatic " + n + " _fetch_" + n + "(string url) {\n")
 			buf.WriteString("\t\tif (url.StartsWith(\"http://\") || url.StartsWith(\"https://\")) {\n")
 			buf.WriteString("\t\t\tusing var client = new HttpClient();\n")
-			buf.WriteString("\t\t\tusing var stream = client.GetStreamAsync(url).Result;\n")
+			buf.WriteString("\t\t\tvar resp = client.GetAsync(url).Result;\n")
+			buf.WriteString("\t\t\tusing var stream = resp.Content.ReadAsStream();\n")
 			buf.WriteString("\t\t\tvar opts = new JsonSerializerOptions{ IncludeFields = true };\n")
 			buf.WriteString("\t\t\tvar res = JsonSerializer.Deserialize<" + n + ">(stream, opts);\n")
 			buf.WriteString("\t\t\treturn res == null ? new " + n + "() : res;\n")
@@ -5264,6 +5275,12 @@ func Emit(prog *Program) []byte {
 			buf.WriteString("\t\t\tvar res = JsonSerializer.Deserialize<" + n + ">(stream, opts);\n")
 			buf.WriteString("\t\t\treturn res == null ? new " + n + "() : res;\n")
 			buf.WriteString("\t\t}\n")
+			buf.WriteString("\t}\n")
+			buf.WriteString("\tstatic " + n + " _fetch_" + n + "(string url, object optsObj) {\n")
+			buf.WriteString("\t\tvar str = _fetch(url, optsObj);\n")
+			buf.WriteString("\t\tvar opts = new JsonSerializerOptions{ IncludeFields = true };\n")
+			buf.WriteString("\t\tvar res = JsonSerializer.Deserialize<" + n + ">(str, opts);\n")
+			buf.WriteString("\t\treturn res == null ? new " + n + "() : res;\n")
 			buf.WriteString("\t}\n")
 		}
 	}
