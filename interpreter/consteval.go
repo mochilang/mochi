@@ -71,9 +71,8 @@ func isConstExpr(e *parser.Expr, env *types.Env) bool {
 		return false
 	}
 	for _, op := range e.Binary.Right {
-		// BinaryOp.Right is a *parser.Unary after parser refactor.
-		// Use isConstUnary to inspect the entire unary expression.
-		if !isConstUnary(op.Right, env) {
+		// BinaryOp.Right is a *parser.PostfixExpr; check constness directly.
+		if !isConstPostfix(op.Right, env) {
 			return false
 		}
 	}

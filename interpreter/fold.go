@@ -73,9 +73,8 @@ func foldExpr(e *parser.Expr, env *types.Env) {
 	}
 	foldUnary(e.Binary.Left, env)
 	for _, op := range e.Binary.Right {
-		// BinaryOp.Right now holds a *parser.Unary. Fold the unary
-		// expression rather than assuming a postfix expression.
-		foldUnary(op.Right, env)
+		// BinaryOp.Right is a *parser.PostfixExpr; fold it directly.
+		foldPostfixExpr(op.Right, env)
 	}
 	if call, ok := callPattern(e); ok {
 		if lit, ok := foldCall(call, env); ok {
