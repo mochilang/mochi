@@ -1,0 +1,388 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:83:2
+   |
+83 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:90:2
+   |
+90 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:125:2
+    |
+125 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:132:2
+    |
+132 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:61:25
+   |
+61 |     let mut left: i64 = ((2 * index) + 1);
+   |                         ^               ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+61 -     let mut left: i64 = ((2 * index) + 1);
+61 +     let mut left: i64 = (2 * index) + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:62:26
+   |
+62 |     let mut right: i64 = ((2 * index) + 2);
+   |                          ^               ^
+   |
+help: remove these parentheses
+   |
+62 -     let mut right: i64 = ((2 * index) + 2);
+62 +     let mut right: i64 = (2 * index) + 2;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:63:8
+   |
+63 |     if (left < heap_size) {
+   |        ^                ^
+   |
+help: remove these parentheses
+   |
+63 -     if (left < heap_size) {
+63 +     if left < heap_size {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:66:12
+   |
+66 |         if (left_item.count > largest_item.count) {
+   |            ^                                    ^
+   |
+help: remove these parentheses
+   |
+66 -         if (left_item.count > largest_item.count) {
+66 +         if left_item.count > largest_item.count {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:70:8
+   |
+70 |     if (right < heap_size) {
+   |        ^                 ^
+   |
+help: remove these parentheses
+   |
+70 -     if (right < heap_size) {
+70 +     if right < heap_size {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:73:12
+   |
+73 |         if (right_item.count > largest_item2.count) {
+   |            ^                                      ^
+   |
+help: remove these parentheses
+   |
+73 -         if (right_item.count > largest_item2.count) {
+73 +         if right_item.count > largest_item2.count {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:77:8
+   |
+77 |     if (largest != index) {
+   |        ^                ^
+   |
+help: remove these parentheses
+   |
+77 -     if (largest != index) {
+77 +     if largest != index {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:85:22
+   |
+85 |     let mut i: i64 = (((arr.len() as i64) / 2) - 1);
+   |                      ^                            ^
+   |
+help: remove these parentheses
+   |
+85 -     let mut i: i64 = (((arr.len() as i64) / 2) - 1);
+85 +     let mut i: i64 = ((arr.len() as i64) / 2) - 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:86:11
+   |
+86 |     while (i >= 0) {
+   |           ^      ^
+   |
+help: remove these parentheses
+   |
+86 -     while (i >= 0) {
+86 +     while i >= 0 {
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:87:25
+   |
+87 |         heapify(arr, i, (arr.len() as i64));
+   |                         ^                ^
+   |
+help: remove these parentheses
+   |
+87 -         heapify(arr, i, (arr.len() as i64));
+87 +         heapify(arr, i, arr.len() as i64);
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:88:13
+   |
+88 |         i = (i - 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+88 -         i = (i - 1);
+88 +         i = i - 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:94:11
+   |
+94 |     while (i < (words.len() as i64)) {
+   |           ^                        ^
+   |
+help: remove these parentheses
+   |
+94 -     while (i < (words.len() as i64)) {
+94 +     while i < (words.len() as i64) {
+   |
+
+warning: unnecessary parentheses around method argument
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:97:42
+   |
+97 |             g_freq_map.insert(w.clone(), (g_freq_map.get(w.as_str()).cloned().unwrap_or_default() + 1));
+   |                                          ^                                                           ^
+   |
+help: remove these parentheses
+   |
+97 -             g_freq_map.insert(w.clone(), (g_freq_map.get(w.as_str()).cloned().unwrap_or_default() + 1));
+97 +             g_freq_map.insert(w.clone(), g_freq_map.get(w.as_str()).cloned().unwrap_or_default() + 1);
+   |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:101:13
+    |
+101 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+101 -         i = (i + 1);
+101 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:109:30
+    |
+109 |     let mut heap_size: i64 = (heap.len() as i64);
+    |                              ^                 ^
+    |
+help: remove these parentheses
+    |
+109 -     let mut heap_size: i64 = (heap.len() as i64);
+109 +     let mut heap_size: i64 = heap.len() as i64;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:111:8
+    |
+111 |     if (limit > heap_size) {
+    |        ^                 ^
+    |
+help: remove these parentheses
+    |
+111 -     if (limit > heap_size) {
+111 +     if limit > heap_size {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:115:11
+    |
+115 |     while (j < limit) {
+    |           ^         ^
+    |
+help: remove these parentheses
+    |
+115 -     while (j < limit) {
+115 +     while j < limit {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:120:21
+    |
+120 |         heap_size = (heap_size - 1);
+    |                     ^             ^
+    |
+help: remove these parentheses
+    |
+120 -         heap_size = (heap_size - 1);
+120 +         heap_size = heap_size - 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:122:13
+    |
+122 |         j = (j + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+122 -         j = (j + 1);
+122 +         j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:135:32
+    |
+135 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+135 -         let duration_us: i64 = ((_end - _start) / 1000);
+135 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0599]: no method named `insert` found for struct `LazyLock<Mutex<HashMap<String, i64>>>` in the current scope
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:97:24
+   |
+97 |             g_freq_map.insert(w.clone(), (g_freq_map.get(w.as_str()).cloned().unwrap_or_default() + 1));
+   |                        ^^^^^^ method not found in `LazyLock<Mutex<HashMap<String, i64>>>`
+
+error[E0599]: no method named `get` found for struct `LazyLock<Mutex<HashMap<String, i64>>>` in the current scope
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:97:54
+   |
+97 |             g_freq_map.insert(w.clone(), (g_freq_map.get(w.as_str()).cloned().unwrap_or_default() + 1));
+   |                                           -----------^^^------------
+   |                                           |          |
+   |                                           |          this is an associated function, not a method
+   |                                           help: use associated function syntax instead: `LazyLock::<Mutex<HashMap<String, i64>>>::get(&g_freq_map, w.as_str())`
+   |
+   = note: found the following associated functions; to be used as methods, functions must have a `self` parameter
+   = note: the candidate is defined in an impl for the type `LazyLock<T, F>`
+
+error[E0599]: no method named `insert` found for struct `LazyLock<Mutex<HashMap<String, i64>>>` in the current scope
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:99:24
+   |
+99 |             g_freq_map.insert(w.clone(), 1);
+   |                        ^^^^^^ method not found in `LazyLock<Mutex<HashMap<String, i64>>>`
+
+error[E0599]: no method named `get` found for struct `LazyLock<Mutex<HashMap<String, i64>>>` in the current scope
+   --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:105:99
+    |
+105 | ..._v.push(WordCount {word: w.clone(), count: g_freq_map.get(w.as_str()).cloned().unwrap_or_default()}); _v };
+    |                                               -----------^^^------------
+    |                                               |          |
+    |                                               |          this is an associated function, not a method
+    |                                               help: use associated function syntax instead: `LazyLock::<Mutex<HashMap<String, i64>>>::get(&g_freq_map, w.as_str())`
+    |
+    = note: found the following associated functions; to be used as methods, functions must have a `self` parameter
+    = note: the candidate is defined in an impl for the type `LazyLock<T, F>`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:59:53
+   |
+59 |         unsafe fn heapify(arr: &mut Vec<WordCount>, mut index: i64, mut heap_size: i64) {
+   |                                                     ----^^^^^
+   |                                                     |
+   |                                                     help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:59:69
+   |
+59 |         unsafe fn heapify(arr: &mut Vec<WordCount>, mut index: i64, mut heap_size: i64) {
+   |                                                                     ----^^^^^^^^^
+   |                                                                     |
+   |                                                                     help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:61:9
+   |
+61 |     let mut left: i64 = ((2 * index) + 1);
+   |         ----^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:62:9
+   |
+62 |     let mut right: i64 = ((2 * index) + 2);
+   |         ----^^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:64:13
+   |
+64 |         let mut left_item: WordCount = arr[left as usize].clone();
+   |             ----^^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:65:13
+   |
+65 |         let mut largest_item: WordCount = arr[largest as usize].clone();
+   |             ----^^^^^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:71:13
+   |
+71 |         let mut right_item: WordCount = arr[right as usize].clone();
+   |             ----^^^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:72:13
+   |
+72 |         let mut largest_item2: WordCount = arr[largest as usize].clone();
+   |             ----^^^^^^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:78:13
+   |
+78 |         let mut temp: WordCount = arr[largest as usize].clone();
+   |             ----^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/strings/top_k_frequent_words.rs:127:9
+    |
+127 |     let mut sample: Vec<String> = vec![String::from("a").clone().clone(), String::from("b").clone().clone(), String::from("c").clone().cl...
+    |         ----^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+error: aborting due to 4 previous errors; 34 warnings emitted
+
+For more information about this error, try `rustc --explain E0599`.
