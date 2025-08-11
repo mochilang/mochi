@@ -82,8 +82,8 @@ func inferBinaryType(env *Env, b *parser.BinaryExpr) Type {
 		if op == "union" && part.All {
 			op = "union_all"
 		}
-                ops = append(ops, op)
-                operands = append(operands, inferUnaryType(env, part.Right))
+		ops = append(ops, op)
+		operands = append(operands, inferPostfixType(env, part.Right))
 	}
 
 	levels := [][]string{

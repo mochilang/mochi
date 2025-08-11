@@ -3059,9 +3059,9 @@ func (fc *funcCompiler) compileBinary(b *parser.BinaryExpr) int {
 	operands := []operand{{reg: fc.compileUnary(b.Left), done: true}}
 	ops := make([]*parser.BinaryOp, len(b.Right))
 	for i, op := range b.Right {
-                expr := op.Right
-                ops[i] = op
-                operands = append(operands, operand{compile: func() int { return fc.compileUnary(expr) }})
+		expr := op.Right
+		ops[i] = op
+		operands = append(operands, operand{compile: func() int { return fc.compilePostfix(expr) }})
 	}
 
 	levels := [][]string{
@@ -7465,7 +7465,7 @@ func (fc *funcCompiler) evalConstBinary(b *parser.BinaryExpr) (Value, bool) {
 	operands = append(operands, operand{left, true})
 	ops := make([]*parser.BinaryOp, len(b.Right))
 	for i, part := range b.Right {
-                v, ok := fc.evalConstUnary(part.Right)
+		v, ok := fc.evalConstPostfix(part.Right)
 		if !ok {
 			return Value{}, false
 		}
