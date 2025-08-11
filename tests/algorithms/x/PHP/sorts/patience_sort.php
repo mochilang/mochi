@@ -108,7 +108,7 @@ $__start = _now();
 };
   return $res;
 };
-  function patience_sort(&$collection) {
+  function patience_sort($collection) {
   $stacks = [];
   $i = 0;
   while ($i < count($collection)) {

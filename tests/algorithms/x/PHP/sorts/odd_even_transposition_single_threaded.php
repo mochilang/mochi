@@ -68,7 +68,7 @@ function _imod($a, $b) {
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
-  function odd_even_transposition(&$arr) {
+  function odd_even_transposition($arr) {
   $n = count($arr);
   $pass = 0;
   while ($pass < $n) {

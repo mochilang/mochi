@@ -79,7 +79,7 @@ function _imod($a, $b) {
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
-  function shell_sort(&$collection) {
+  function shell_sort($collection) {
   $gap = count($collection);
   $ten = 10;
   $thirteen = 13;

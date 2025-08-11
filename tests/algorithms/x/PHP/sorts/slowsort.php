@@ -98,7 +98,7 @@ $__start = _now();
 }
   slowsort_recursive($seq, $start, _isub($end_index, 1));
 };
-  function slow_sort(&$seq) {
+  function slow_sort($seq) {
   global $seq1, $seq2, $seq3, $seq4, $seq5, $seq6, $seq7, $seq8;
   if (count($seq) > 0) {
   slowsort_recursive($seq, 0, _isub(count($seq), 1));

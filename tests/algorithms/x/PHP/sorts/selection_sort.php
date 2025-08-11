@@ -68,7 +68,7 @@ function _imod($a, $b) {
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
-  function selection_sort(&$arr) {
+  function selection_sort($arr) {
   $n = count($arr);
   $i = 0;
   while ($i < _isub($n, 1)) {

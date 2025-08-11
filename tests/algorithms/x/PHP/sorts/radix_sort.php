@@ -106,7 +106,7 @@ $__start = _now();
 };
   return $max_val;
 };
-  function radix_sort(&$list_of_ints) {
+  function radix_sort($list_of_ints) {
   global $RADIX;
   $placement = 1;
   $max_digit = max_value($list_of_ints);

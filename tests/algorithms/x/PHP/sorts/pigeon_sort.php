@@ -103,7 +103,7 @@ $__start = _now();
 };
   return $m;
 };
-  function pigeon_sort(&$array) {
+  function pigeon_sort($array) {
   if (count($array) == 0) {
   return $array;
 }

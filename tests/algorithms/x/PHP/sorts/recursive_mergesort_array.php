@@ -92,7 +92,7 @@ $__start = _now();
 };
   return $result;
 };
-  function merge(&$arr) {
+  function merge($arr) {
   if (count($arr) > 1) {
   $middle_length = _idiv(count($arr), 2);
   $left_array = subarray($arr, 0, $middle_length);

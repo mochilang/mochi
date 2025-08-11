@@ -24,7 +24,7 @@ var builtinNames = map[string]struct{}{
 	"print": {}, "len": {}, "substring": {}, "count": {}, "sum": {}, "avg": {},
 	"str": {}, "min": {}, "max": {}, "append": {}, "json": {}, "exists": {},
 	"values": {}, "keys": {}, "load": {}, "save": {}, "now": {}, "input": {},
-	"upper": {}, "lower": {}, "num": {}, "denom": {}, "indexOf": {}, "repeat": {}, "parseIntStr": {}, "slice": {}, "split": {}, "contains": {}, "substr": {}, "pow": {}, "getoutput": {}, "intval": {}, "floatval": {}, "int": {}, "float": {}, "to_float": {}, "ord": {}, "ctype_digit": {},
+	"upper": {}, "lower": {}, "num": {}, "denom": {}, "indexOf": {}, "repeat": {}, "parseIntStr": {}, "slice": {}, "split": {}, "contains": {}, "substr": {}, "pow": {}, "getoutput": {}, "intval": {}, "floatval": {}, "int": {}, "float": {}, "to_float": {}, "ord": {}, "ctype_digit": {}, "read_file": {},
 	"concat": {}, "panic": {}, "error": {}, "ceil": {}, "floor": {},
 }
 
@@ -192,6 +192,16 @@ const helperGetOutput = `function _getoutput($cmd) {
     return rtrim($out);
 }`
 
+const helperReadFile = `function read_file($path) {
+    $data = @file_get_contents($path);
+    if ($data === false) {
+        $alt = __DIR__ . '/../../../../github/TheAlgorithms/Mochi/' . basename(__DIR__) . '/' . $path;
+        $data = @file_get_contents($alt);
+        if ($data === false) return '';
+    }
+    return rtrim($data);
+}`
+
 const helperIntDiv = `function _intdiv($a, $b) {
     if ($b === 0 || $b === '0') {
         throw new DivisionByZeroError();
@@ -292,6 +302,7 @@ var usesEnviron bool
 var usesPanic bool
 var usesBigIntOps bool
 var usesGetOutput bool
+var usesReadFile bool
 var usesAppend bool
 var usesFetch bool
 var benchMain bool
@@ -2461,6 +2472,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if usesReadFile {
+		if _, err := io.WriteString(w, helperReadFile+"\n"); err != nil {
+			return err
+		}
+	}
 	if usesFetch {
 		if _, err := io.WriteString(w, helperFetch+"\n"); err != nil {
 			return err
@@ -2597,7 +2613,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		strFlags = append(strFlags, false)
 	}
 	for _, p := range b.Right {
-		r, err := convertPostfix(p.Right)
+		r, err := convertUnary(p.Right)
 		if err != nil {
 			return nil, err
 		}
@@ -2608,7 +2624,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		ops = append(ops, op)
 		operands = append(operands, r)
 		if transpileEnv != nil {
-			t := types.TypeOfPostfix(p.Right, transpileEnv)
+			t := types.TypeOfUnary(p.Right, transpileEnv)
 			_, ok := t.(types.StringType)
 			strFlags = append(strFlags, ok)
 		} else {
@@ -3316,6 +3332,12 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			fgets := &CallExpr{Func: "fgets", Args: []Expr{&Name{Value: "STDIN"}}}
 			return &CallExpr{Func: "trim", Args: []Expr{fgets}}, nil
+		} else if name == "read_file" {
+			if len(args) != 1 {
+				return nil, fmt.Errorf("read_file expects 1 arg")
+			}
+			usesReadFile = true
+			return &CallExpr{Func: "read_file", Args: args}, nil
 		}
 		if transpileEnv != nil {
 			if t, err := transpileEnv.GetVar(name); err == nil {

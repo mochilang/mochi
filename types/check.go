@@ -404,6 +404,11 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: ListType{Elem: AnyType{}},
 		Pure:   true,
 	}, false)
+	env.SetVar("read_file", FuncType{
+		Params: []Type{StringType{}},
+		Return: StringType{},
+		Pure:   true,
+	}, false)
 	env.SetVar("concat", FuncType{
 		Params:   []Type{ListType{Elem: AnyType{}}},
 		Return:   ListType{Elem: AnyType{}},
@@ -1381,7 +1386,7 @@ func checkBinaryExpr(b *parser.BinaryExpr, env *Env, expected Type) (Type, error
 	operators := []token{}
 
 	for _, part := range b.Right {
-		typ, err := checkPostfix(part.Right, env, nil)
+		typ, err := checkUnary(part.Right, env, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -2583,6 +2588,7 @@ var builtinArity = map[string]int{
 	"values":      1,
 	"reduce":      3,
 	"append":      2,
+	"read_file":   1,
 	"push":        2,
 	"first":       1,
 	"substring":   3,

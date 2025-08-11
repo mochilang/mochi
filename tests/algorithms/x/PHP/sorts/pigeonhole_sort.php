@@ -72,7 +72,7 @@ function _imod($a, $b) {
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
-  function pigeonhole_sort(&$arr) {
+  function pigeonhole_sort($arr) {
   global $example, $result, $output, $j;
   if (count($arr) == 0) {
   return $arr;

@@ -68,7 +68,7 @@ function _imod($a, $b) {
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
-  function flip(&$arr, $k) {
+  function flip($arr, $k) {
   $start = 0;
   $end = $k;
   while ($start < $end) {

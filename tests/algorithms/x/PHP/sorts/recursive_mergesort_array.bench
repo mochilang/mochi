@@ -1,4 +1,5 @@
-Fatal error: Uncaught Error: merge(): Argument #1 ($arr) could not be passed by reference in /workspace/mochi/tests/algorithms/x/PHP/sorts/recursive_mergesort_array.php:130
-Stack trace:
-#0 {main}
-  thrown in /workspace/mochi/tests/algorithms/x/PHP/sorts/recursive_mergesort_array.php on line 130
+{
+  "duration_us": 302,
+  "memory_bytes": 72040,
+  "name": "main"
+}

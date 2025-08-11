@@ -1,0 +1,7 @@
+run: exit status 255
+
+Fatal error: Uncaught Error: topological_sort(): Argument #2 ($visited) could not be passed by reference in /workspace/mochi/tests/algorithms/x/PHP/sorts/topological_sort.php:87
+Stack trace:
+#0 /workspace/mochi/tests/algorithms/x/PHP/sorts/topological_sort.php(90): main()
+#1 {main}
+  thrown in /workspace/mochi/tests/algorithms/x/PHP/sorts/topological_sort.php on line 87

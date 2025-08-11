@@ -72,7 +72,7 @@ function _imod($a, $b) {
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
-  function quick_sort_3partition(&$arr, $left, $right) {
+  function quick_sort_3partition($arr, $left, $right) {
   global $array1, $array2, $array3, $nums1, $nums2, $nums3;
   if ($right <= $left) {
   return $arr;

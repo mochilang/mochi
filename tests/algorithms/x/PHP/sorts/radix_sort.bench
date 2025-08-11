@@ -1,4 +1,5 @@
-Fatal error: Uncaught Error: radix_sort(): Argument #1 ($list_of_ints) could not be passed by reference in /workspace/mochi/tests/algorithms/x/PHP/sorts/radix_sort.php:138
-Stack trace:
-#0 {main}
-  thrown in /workspace/mochi/tests/algorithms/x/PHP/sorts/radix_sort.php on line 138
+{
+  "duration_us": 496,
+  "memory_bytes": 75584,
+  "name": "main"
+}
