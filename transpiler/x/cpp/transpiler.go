@@ -5356,32 +5356,84 @@ func convertIfStmt(is *parser.IfStmt) (*IfStmt, error) {
 	if err != nil {
 		return nil, err
 	}
+	prevLocals := localTypes
+	prevDecls := currentVarDecls
+
+	// then branch scope
+	newLocals := map[string]string{}
+	for k, v := range prevLocals {
+		newLocals[k] = v
+	}
+	newDecls := map[string]*LetStmt{}
+	for k, v := range prevDecls {
+		newDecls[k] = v
+	}
+	localTypes = newLocals
+	currentVarDecls = newDecls
+
 	var then []Stmt
 	for _, st := range is.Then {
 		cs, err := convertStmt(st)
 		if err != nil {
+			localTypes = prevLocals
+			currentVarDecls = prevDecls
 			return nil, err
 		}
 		then = append(then, cs)
 	}
+
+	// restore before processing else/elseif branches
+	localTypes = prevLocals
+	currentVarDecls = prevDecls
+
 	var elseStmts []Stmt
 	if is.Else != nil {
+		newLocals2 := map[string]string{}
+		for k, v := range prevLocals {
+			newLocals2[k] = v
+		}
+		newDecls2 := map[string]*LetStmt{}
+		for k, v := range prevDecls {
+			newDecls2[k] = v
+		}
+		localTypes = newLocals2
+		currentVarDecls = newDecls2
 		for _, st := range is.Else {
 			cs, err := convertStmt(st)
 			if err != nil {
+				localTypes = prevLocals
+				currentVarDecls = prevDecls
 				return nil, err
 			}
 			elseStmts = append(elseStmts, cs)
 		}
+		localTypes = prevLocals
+		currentVarDecls = prevDecls
 	}
+
 	var elseIf *IfStmt
 	if is.ElseIf != nil {
+		newLocals3 := map[string]string{}
+		for k, v := range prevLocals {
+			newLocals3[k] = v
+		}
+		newDecls3 := map[string]*LetStmt{}
+		for k, v := range prevDecls {
+			newDecls3[k] = v
+		}
+		localTypes = newLocals3
+		currentVarDecls = newDecls3
 		ei, err := convertIfStmt(is.ElseIf)
 		if err != nil {
+			localTypes = prevLocals
+			currentVarDecls = prevDecls
 			return nil, err
 		}
 		elseIf = ei
+		localTypes = prevLocals
+		currentVarDecls = prevDecls
 	}
+
 	return &IfStmt{Cond: cond, Then: then, ElseIf: elseIf, Else: elseStmts}, nil
 }
 
@@ -5390,14 +5442,41 @@ func convertWhileStmt(ws *parser.WhileStmt) (*WhileStmt, error) {
 	if err != nil {
 		return nil, err
 	}
+	// Create new scopes for variables declared inside the loop body so that
+	// variables with the same name can be declared again after the loop
+	// without being treated as reassignments. Without this, a variable
+	// declared inside a while body would leak into the outer scope via the
+	// currentVarDecls map, causing subsequent declarations of the same
+	// variable to become assignments and leading to undeclared identifier
+	// errors in the generated C++ code (see issue with `row` in
+	// local_weighted_learning.mochi).
+	prevLocals := localTypes
+	newLocals := map[string]string{}
+	for k, v := range prevLocals {
+		newLocals[k] = v
+	}
+	localTypes = newLocals
+
+	prevDecls := currentVarDecls
+	newDecls := map[string]*LetStmt{}
+	for k, v := range prevDecls {
+		newDecls[k] = v
+	}
+	currentVarDecls = newDecls
+
 	var body []Stmt
 	for _, st := range ws.Body {
 		cs, err := convertStmt(st)
 		if err != nil {
+			localTypes = prevLocals
+			currentVarDecls = prevDecls
 			return nil, err
 		}
 		body = append(body, cs)
 	}
+
+	localTypes = prevLocals
+	currentVarDecls = prevDecls
 	return &WhileStmt{Cond: cond, Body: body}, nil
 }
 
