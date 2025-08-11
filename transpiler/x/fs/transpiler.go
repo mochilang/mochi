@@ -1710,6 +1710,11 @@ func (fst *ForStmt) emit(w io.Writer) {
 				ix.emit(w)
 				io.WriteString(w, " do\n")
 			}
+		} else if call, ok := fst.Start.(*CallExpr); ok && call.Func == "_dictGet" {
+			io.WriteString(w, fsIdent(fst.Name))
+			io.WriteString(w, " in (")
+			fst.Start.emit(w)
+			io.WriteString(w, ").Keys do\n")
 		} else if isMapType(inferType(fst.Start)) {
 			io.WriteString(w, "KeyValue(")
 			io.WriteString(w, fsIdent(fst.Name))
@@ -2016,11 +2021,11 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	} else if (rt == "obj" || rt == "") && (lt == "int" || lt == "float" || lt == "string" || lt == "bool") {
 		right = castIf(right, lt)
 		rt = lt
-        } else if (lt == "obj" || lt == "") && (rt == "obj" || rt == "") && (b.Op == "-" || b.Op == "*" || b.Op == "/") {
-                left = castIf(left, "float")
-                right = castIf(right, "float")
-                lt, rt = "float", "float"
-        }
+	} else if (lt == "obj" || lt == "") && (rt == "obj" || rt == "") && (b.Op == "-" || b.Op == "*" || b.Op == "/") {
+		left = castIf(left, "float")
+		right = castIf(right, "float")
+		lt, rt = "float", "float"
+	}
 	if lt == "float" && rt == "int" {
 		right = &CastExpr{Expr: right, Type: "float"}
 	} else if rt == "float" && lt == "int" {
@@ -4299,6 +4304,12 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				return nil, err
 			}
 			t := inferType(expr)
+			if ix, ok := idx.(*IndexExpr); ok {
+				// Re-associate nested indexing so a[b][c] doesn't become a[b[c]]
+				expr = &IndexExpr{Target: expr, Index: ix.Target}
+				expr = &IndexExpr{Target: expr, Index: ix.Index}
+				continue
+			}
 			if isMapType(t) {
 				usesDictGet = true
 			} else {
