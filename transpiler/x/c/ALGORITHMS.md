@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (195/1077) - Last updated 2025-08-11 14:57 +0700:
+Checklist of programs that currently transpile and run (204/1077) - Last updated 2025-08-11 15:26 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -289,15 +289,15 @@ Checklist of programs that currently transpile and run (195/1077) - Last updated
 | 282 | digital_image_processing/morphological_operations/dilation_operation | ✓ | 311us | 1.6 MB |
 | 283 | digital_image_processing/morphological_operations/erosion_operation |  |  |  |
 | 284 | digital_image_processing/resize/resize |  |  |  |
-| 285 | digital_image_processing/rotation/rotation |  |  |  |
-| 286 | digital_image_processing/sepia |  |  |  |
-| 287 | digital_image_processing/test_digital_image_processing |  |  |  |
-| 288 | divide_and_conquer/closest_pair_of_points |  |  |  |
-| 289 | divide_and_conquer/convex_hull |  |  |  |
-| 290 | divide_and_conquer/heaps_algorithm |  |  |  |
-| 291 | divide_and_conquer/heaps_algorithm_iterative |  |  |  |
-| 292 | divide_and_conquer/inversions |  |  |  |
-| 293 | divide_and_conquer/kth_order_statistic |  |  |  |
+| 285 | digital_image_processing/rotation/rotation | ✓ | 340us | 1.5 MB |
+| 286 | digital_image_processing/sepia | ✓ | 422us | 1.4 MB |
+| 287 | digital_image_processing/test_digital_image_processing | ✓ | 427us | 1.5 MB |
+| 288 | divide_and_conquer/closest_pair_of_points | ✓ | 806us | 1.6 MB |
+| 289 | divide_and_conquer/convex_hull | ✓ |  |  |
+| 290 | divide_and_conquer/heaps_algorithm | ✓ | 439us | 1.6 MB |
+| 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 336us | 1.4 MB |
+| 292 | divide_and_conquer/inversions | ✓ | 366us | 1.5 MB |
+| 293 | divide_and_conquer/kth_order_statistic | ✓ | 307us | 1.5 MB |
 | 294 | divide_and_conquer/max_difference_pair |  |  |  |
 | 295 | divide_and_conquer/max_subarray |  |  |  |
 | 296 | divide_and_conquer/mergesort |  |  |  |
