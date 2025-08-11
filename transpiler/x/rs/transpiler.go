@@ -1676,6 +1676,7 @@ type JoinExpr struct{ List Expr }
 func (j *JoinExpr) emit(w io.Writer) {
 	io.WriteString(w, "{ let tmp = ")
 	j.List.emit(w)
+	io.WriteString(w, ".clone()")
 	if inferType(j.List) == "String" {
 		io.WriteString(w, "; tmp.chars().map(|x| x.to_string()).collect::<Vec<_>>().join(\" \") }")
 	} else {
@@ -3148,14 +3149,11 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 		body = append(body, st)
 	}
 	prog.Stmts = body
-	if len(prog.Globals) > 0 {
-		for _, st := range prog.Stmts {
-			if fd, ok := st.(*FuncDecl); ok {
-				fd.Unsafe = true
-				unsafeFuncs[fd.Name] = true
-			}
-		}
-	}
+	// Previously all functions were marked `unsafe` whenever global
+	// variables existed.  This was overly conservative and caused functions
+	// that don't touch globals to be treated as unsafe, leading to
+	// mismatches when passing them as safe callbacks.  Only mark functions
+	// unsafe when explicitly required elsewhere.
 	if benchMain {
 		prog.Stmts = []Stmt{wrapBench("main", prog.Stmts)}
 	}
@@ -3394,6 +3392,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		mut := true
 		if typ == "" {
 			typ = inferType(e)
+		}
+		if stmt.Let.Name == "_" {
+			mut = false
 		}
 		vd := &VarDecl{Name: stmt.Let.Name, Expr: e, Type: typ, Mutable: mut}
 		global := funcDepth == 0 && len(localVarStack) == 0 && isConstExpr(e)
@@ -4501,15 +4502,12 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 	ops := make([]string, len(e.Binary.Right))
 	for i, op := range e.Binary.Right {
 		// Each operand in the expression may itself contain unary
-		// operators (for example: `-a + b`).  Previously the code
-		// attempted to compile the right hand side using
-		// `compilePostfix`, which expects a *parser.PostfixExpr.
-		// After parser updates, the Right field is now a
-		// *parser.Unary.  Using `compilePostfix` caused type
-		// mismatches and prevented algorithms from compiling.
-		// Use `compileUnary` here so any leading unary operators are
-		// handled correctly before further expression processing.
-		right, err := compileUnary(op.Right)
+		// operators (for example: `-a + b`).  The `Right` field of a
+		// `parser.BinaryOp` is a `*parser.PostfixExpr`, so we must
+		// compile it using `compilePostfix`.  Using `compileUnary` here
+		// resulted in type mismatches after parser changes and caused
+		// algorithms to fail to transpile.
+		right, err := compilePostfix(op.Right)
 		if err != nil {
 			return nil, err
 		}
@@ -5934,6 +5932,9 @@ func inferType(e Expr) string {
 		return "String"
 	case *StringCastExpr:
 		return "String"
+	case *LenExpr:
+		// `len` always yields an integer count.
+		return "i64"
 	case *SomeExpr:
 		return "Option<" + inferType(ex.Expr) + ">"
 	case *UnwrapExpr:
@@ -5986,7 +5987,12 @@ func inferType(e Expr) string {
 		case "<", "<=", ">", ">=", "==", "!=", "&&", "||", "in":
 			return "bool"
 		default:
-			return inferType(ex.Left)
+			lt := inferType(ex.Left)
+			rt := inferType(ex.Right)
+			if lt == "f64" || rt == "f64" || containsFloat(ex.Left) || containsFloat(ex.Right) {
+				return "f64"
+			}
+			return lt
 		}
 	case *IfExpr:
 		t1 := inferType(ex.Then)
@@ -7778,12 +7784,12 @@ func exprUsesNameInCall(e *parser.Expr, name string) bool {
 	}
 	for _, op := range e.Binary.Right {
 		// `op.Right` now holds a *parser.Unary.  The previous
-		// implementation expected a *parser.PostfixExpr and called
-		// `postfixUsesNameInCall`, which no longer matches the parser
-		// structure and caused compilation failures.  Delegate to
-		// `unaryUsesNameInCall` so that any nested unary or postfix
-		// expressions are inspected properly.
-		if unaryUsesNameInCall(op.Right, name) {
+		// Each `BinaryOp.Right` is a `*parser.PostfixExpr`.  The
+		// previous revision mistakenly treated it as a `*parser.Unary`
+		// and delegated to `unaryUsesNameInCall`, which caused build
+		// failures.  Inspect the postfix expression directly so that
+		// any nested calls are detected correctly.
+		if postfixUsesNameInCall(op.Right, name) {
 			return true
 		}
 	}
