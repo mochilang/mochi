@@ -83,7 +83,7 @@ func inferBinaryType(env *Env, b *parser.BinaryExpr) Type {
 			op = "union_all"
 		}
 		ops = append(ops, op)
-		operands = append(operands, inferPostfixType(env, part.Right))
+		operands = append(operands, inferUnaryType(env, part.Right))
 	}
 
 	levels := [][]string{
@@ -419,7 +419,7 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 		switch p.Call.Func {
 		case "len":
 			return IntType{}
-		case "str", "input":
+		case "str", "input", "read_file":
 			return StringType{}
 		case "count":
 			return IntType{}
@@ -1149,7 +1149,7 @@ func TypeOfPrimaryBasic(p *parser.Primary, env *Env) Type {
 		}
 	case p.Call != nil:
 		switch p.Call.Func {
-		case "to_string", "str", "input":
+		case "to_string", "str", "input", "read_file":
 			return StringType{}
 		}
 	}

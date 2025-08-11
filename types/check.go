@@ -548,6 +548,11 @@ func Check(prog *parser.Program, env *Env) []error {
 		Params: []Type{},
 		Return: StringType{},
 	}, false)
+	env.SetVar("read_file", FuncType{
+		Params: []Type{StringType{}},
+		Return: StringType{},
+		Pure:   true,
+	}, false)
 	env.SetVar("count", FuncType{
 		Params: []Type{AnyType{}},
 		Return: IntType{},
@@ -1381,7 +1386,7 @@ func checkBinaryExpr(b *parser.BinaryExpr, env *Env, expected Type) (Type, error
 	operators := []token{}
 
 	for _, part := range b.Right {
-		typ, err := checkPostfix(part.Right, env, nil)
+		typ, err := checkUnary(part.Right, env, nil)
 		if err != nil {
 			return nil, err
 		}
