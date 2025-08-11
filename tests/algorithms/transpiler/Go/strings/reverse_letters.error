@@ -1,0 +1,4 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/strings/reverse_letters.go:151:40: cannot use word (variable of type int) as string value in argument to reverse_str
+../../../tests/algorithms/transpiler/Go/strings/reverse_letters.go:153:28: cannot use word (variable of type int) as string value in argument to append

@@ -1,0 +1,4 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/strings/snake_case_to_camel_pascal_case.go:135:13: cannot use _index(func(v any) []int {…}(words), 0) (value of type int) as string value in assignment
+../../../tests/algorithms/transpiler/Go/strings/snake_case_to_camel_pascal_case.go:178:33: cannot use word (variable of type int) as string value in argument to capitalize

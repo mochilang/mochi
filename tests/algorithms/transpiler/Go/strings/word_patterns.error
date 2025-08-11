@@ -1,0 +1,4 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/strings/word_patterns.go:138:15: cannot use ch (variable of type int) as string value in argument to find_index
+../../../tests/algorithms/transpiler/Go/strings/word_patterns.go:146:30: cannot use ch (variable of type int) as string value in argument to append

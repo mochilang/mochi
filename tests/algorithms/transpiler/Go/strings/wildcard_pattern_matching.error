@@ -1,0 +1,11 @@
+exit status 1
+panic: case2 failed
+
+goroutine 1 [running]:
+main.mochiMain()
+	/workspace/mochi/tests/algorithms/transpiler/Go/strings/wildcard_pattern_matching.go:174 +0x805
+main.main.func1(...)
+	/workspace/mochi/tests/algorithms/transpiler/Go/strings/wildcard_pattern_matching.go:218
+main.main()
+	/workspace/mochi/tests/algorithms/transpiler/Go/strings/wildcard_pattern_matching.go:225 +0x92
+exit status 2
