@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-11 16:41 GMT+7
+Last updated: 2025-08-11 16:59 GMT+7
 
 ## Algorithms Golden Test Checklist (226/1077)
 | Index | Name | Status | Duration | Memory |
@@ -946,7 +946,7 @@ Last updated: 2025-08-11 16:41 GMT+7
 | 937 | searches/simulated_annealing | ✓ |  |  |
 | 938 | searches/tabu_search | error |  |  |
 | 939 | searches/ternary_search | ✓ |  |  |
-| 940 | sorts/bead_sort | ✓ |  |  |
+| 940 | sorts/bead_sort | ✓ | 29.43ms | 123.64KiB |
 | 941 | sorts/binary_insertion_sort | ✓ |  |  |
 | 942 | sorts/bitonic_sort | ✓ |  |  |
 | 943 | sorts/bogo_sort | ✓ |  |  |
