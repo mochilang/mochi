@@ -1,5 +1,5 @@
-## Progress (2025-08-09 16:15 +0700)
-- Commit 7a5abf45aa: ex: clamp negative slice lengths
+## Progress (2025-08-11 18:06 +0700)
+- Commit 7d6a02fbec: py: add not-in support and update algorithm outputs
 - Regenerated golden files - 82/105 vm valid programs passing
 
 ## Progress (2025-07-22 14:12 +0700)

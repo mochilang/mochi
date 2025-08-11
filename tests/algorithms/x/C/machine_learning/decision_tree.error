@@ -1,0 +1,32 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/machine_learning/decision_tree.c: In function ‘train_tree’:
+/workspace/mochi/tests/algorithms/x/C/machine_learning/decision_tree.c:230:31: error: incompatible types when initializing type ‘long long int’ using type ‘Anon1’
+  230 |         long long left_tree = train_tree(left_x, left_x_len, left_y, left_y_len, depth - 1LL, min_leaf_size);
+      |                               ^~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/machine_learning/decision_tree.c:231:32: error: incompatible types when initializing type ‘long long int’ using type ‘Anon1’
+  231 |         long long right_tree = train_tree(right_x, right_x_len, right_y, right_y_len, depth - 1LL, min_leaf_size);
+      |                                ^~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/machine_learning/decision_tree.c: In function ‘predict’:
+/workspace/mochi/tests/algorithms/x/C/machine_learning/decision_tree.c:238:21: error: expected expression before ‘Leaf’
+  238 |     return (tree == Leaf(p) ? p : (value >= b ? predict(r, value) : predict(l, value)));
+      |                     ^~~~
+/workspace/mochi/tests/algorithms/x/C/machine_learning/decision_tree.c: In function ‘user_main’:
+/workspace/mochi/tests/algorithms/x/C/machine_learning/decision_tree.c:246:35: warning: passing argument 1 of ‘list_append_long_long’ from incompatible pointer type [-Wincompatible-pointer-types]
+  246 |         x = list_append_long_long(x, &x_len, v);
+      |                                   ^
+      |                                   |
+      |                                   double *
+/workspace/mochi/tests/algorithms/x/C/machine_learning/decision_tree.c:132:52: note: expected ‘long long int *’ but argument is of type ‘double *’
+  132 | static long long* list_append_long_long(long long *arr, size_t *len, long long val) {
+      |                                         ~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/machine_learning/decision_tree.c:246:11: warning: assignment to ‘double *’ from incompatible pointer type ‘long long int *’ [-Wincompatible-pointer-types]
+  246 |         x = list_append_long_long(x, &x_len, v);
+      |           ^
+/workspace/mochi/tests/algorithms/x/C/machine_learning/decision_tree.c:268:81: error: incompatible type for argument 1 of ‘predict’
+  268 |         predictions = list_append_double(predictions, &predictions_len, predict(tree, test_cases[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? test_cases_len + _mochi_idx : _mochi_idx;})]));
+      |                                                                                 ^~~~
+      |                                                                                 |
+      |                                                                                 Anon1
+/workspace/mochi/tests/algorithms/x/C/machine_learning/decision_tree.c:237:20: note: expected ‘int’ but argument is of type ‘Anon1’
+  237 | double predict(int tree, double value) {
+      |                ~~~~^~~~
