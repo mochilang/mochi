@@ -2907,9 +2907,14 @@ func collectHelpers(p *Program) map[string]bool {
 		case *SaveStmt:
 			walkExpr(st.Src)
 		case *FunStmt:
+			prev := currentEnv
+			if st.Env != nil {
+				currentEnv = st.Env
+			}
 			for _, b := range st.Body {
 				walkStmt(b)
 			}
+			currentEnv = prev
 		case *ReturnStmt:
 			walkExpr(st.Value)
 		case *IfStmt:
