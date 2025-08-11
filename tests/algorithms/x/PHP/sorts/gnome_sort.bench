@@ -1,0 +1,4 @@
+Fatal error: Uncaught Error: gnome_sort(): Argument #1 ($lst) could not be passed by reference in /workspace/mochi/tests/algorithms/x/PHP/sorts/gnome_sort.php:75
+Stack trace:
+#0 {main}
+  thrown in /workspace/mochi/tests/algorithms/x/PHP/sorts/gnome_sort.php on line 75

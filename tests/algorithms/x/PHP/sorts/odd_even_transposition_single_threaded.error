@@ -1,0 +1,6 @@
+run: exit status 255
+
+Fatal error: Uncaught Error: odd_even_transposition(): Argument #1 ($arr) could not be passed by reference in /workspace/mochi/tests/algorithms/x/PHP/sorts/odd_even_transposition_single_threaded.php:88
+Stack trace:
+#0 {main}
+  thrown in /workspace/mochi/tests/algorithms/x/PHP/sorts/odd_even_transposition_single_threaded.php on line 88

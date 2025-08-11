@@ -1,0 +1,5 @@
+Fatal error: Uncaught Error: comb_sort(): Argument #1 ($data) could not be passed by reference in /workspace/mochi/tests/algorithms/x/PHP/sorts/comb_sort.php:73
+Stack trace:
+#0 /workspace/mochi/tests/algorithms/x/PHP/sorts/comb_sort.php(77): main()
+#1 {main}
+  thrown in /workspace/mochi/tests/algorithms/x/PHP/sorts/comb_sort.php on line 73
