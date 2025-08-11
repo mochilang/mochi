@@ -1,13 +1,13 @@
-/workspace/mochi/tests/algorithms/x/Erlang/ciphers/transposition_cipher_encrypt_decrypt_file.erl:90:34: Warning: variable 'Num_cols_3' exported from 'case' (line 72, column 9)
-%   90| {I_2, Key_2, Message_2, Msg_len, Num_cols_3, Num_rows, Num_shaded_boxes, Plain_2} = Fun_3(I, Key_2, Message_2, Msg_len, Num_cols_3, Num_rows, Num_shaded_boxes, Plain),
+/workspace/mochi/tests/algorithms/x/Erlang/ciphers/transposition_cipher_encrypt_decrypt_file.erl:123:34: Warning: variable 'Num_cols_3' exported from 'case' (line 105, column 9)
+%  123| {I_2, Key_2, Message_2, Msg_len, Num_cols_3, Num_rows, Num_shaded_boxes, Plain_2} = Fun_3(I, Key_2, Message_2, Msg_len, Num_cols_3, Num_rows, Num_shaded_boxes, Plain),
 %     |                                  ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/ciphers/transposition_cipher_encrypt_decrypt_file.erl:113:48: Warning: variable 'Num_cols_3' exported from 'case' (line 72, column 9)
-%  113| {Col_6, I_2, Idx_2, Key_2, Message_2, Msg_len, Num_cols_3, Num_rows, Num_shaded_boxes, Plain_3, Row_3} = Fun_4(Col_3, I_2, Idx, Key_2, Message_2, Msg_len, Num_cols_3, Num_rows, Num_shaded_boxes, Plain_2, Row),
+/workspace/mochi/tests/algorithms/x/Erlang/ciphers/transposition_cipher_encrypt_decrypt_file.erl:146:48: Warning: variable 'Num_cols_3' exported from 'case' (line 105, column 9)
+%  146| {Col_6, I_2, Idx_2, Key_2, Message_2, Msg_len, Num_cols_3, Num_rows, Num_shaded_boxes, Plain_3, Row_3} = Fun_4(Col_3, I_2, Idx, Key_2, Message_2, Msg_len, Num_cols_3, Num_rows, Num_shaded_boxes, Plain_2, Row),
 %     |                                                ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/ciphers/transposition_cipher_encrypt_decrypt_file.erl:125:48: Warning: variable 'Num_cols_3' exported from 'case' (line 72, column 9)
-%  125| {Col_6, I_4, Idx_2, Key_2, Message_2, Msg_len, Num_cols_3, Num_rows, Num_shaded_boxes, Plain_3, Result_4, Row_3} = Fun_5(Col_6, I_3, Idx_2, Key_2, Message_2, Msg_len, Num_cols_3, Num_rows, Num_shaded_boxes, Plain_3, Result_3, Row_3),
+/workspace/mochi/tests/algorithms/x/Erlang/ciphers/transposition_cipher_encrypt_decrypt_file.erl:158:48: Warning: variable 'Num_cols_3' exported from 'case' (line 105, column 9)
+%  158| {Col_6, I_4, Idx_2, Key_2, Message_2, Msg_len, Num_cols_3, Num_rows, Num_shaded_boxes, Plain_3, Result_4, Row_3} = Fun_5(Col_6, I_3, Idx_2, Key_2, Message_2, Msg_len, Num_cols_3, Num_rows, Num_shaded_boxes, Plain_3, Result_3, Row_3),
 %     |                                                ^
 
 "Hlia rDsahrij"

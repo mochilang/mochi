@@ -1,0 +1,6 @@
+/workspace/mochi/tests/algorithms/x/Erlang/ciphers/elgamal_key_generator.erl:220:21: Warning: variable 'I_5' exported from 'case' (line 192, column 17)
+%  220| {A_3, D_2, Found_3, I_5, J_2, K, N_2, R_5, X_2} = Fun_4(A_3, D_2, Found, I_5, J, K, N_2, R_5, X),
+%     |                     ^
+
+"public key: (16,  49411,  56327,  60631)"
+"private key: (16,  51649)"

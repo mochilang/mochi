@@ -1,13 +1,13 @@
-/workspace/mochi/tests/algorithms/x/Erlang/ciphers/simple_substitution_cipher.erl:258:2: Warning: variable 'Chars_a_3' exported from 'case' (line 220, column 9)
-%  258| {Chars_a_3, Chars_b_3, I_18, Key_2, Message, Mode, Tmp_3, Translated_6} = Fun_10(Chars_a_3, Chars_b_3, I_17, Key_2, Message, Mode, Tmp_3, Translated),
+/workspace/mochi/tests/algorithms/x/Erlang/ciphers/simple_substitution_cipher.erl:291:2: Warning: variable 'Chars_a_3' exported from 'case' (line 253, column 9)
+%  291| {Chars_a_3, Chars_b_3, I_18, Key_2, Message, Mode, Tmp_3, Translated_6} = Fun_10(Chars_a_3, Chars_b_3, I_17, Key_2, Message, Mode, Tmp_3, Translated),
 %     |  ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/ciphers/simple_substitution_cipher.erl:258:13: Warning: variable 'Chars_b_3' exported from 'case' (line 220, column 9)
-%  258| {Chars_a_3, Chars_b_3, I_18, Key_2, Message, Mode, Tmp_3, Translated_6} = Fun_10(Chars_a_3, Chars_b_3, I_17, Key_2, Message, Mode, Tmp_3, Translated),
+/workspace/mochi/tests/algorithms/x/Erlang/ciphers/simple_substitution_cipher.erl:291:13: Warning: variable 'Chars_b_3' exported from 'case' (line 253, column 9)
+%  291| {Chars_a_3, Chars_b_3, I_18, Key_2, Message, Mode, Tmp_3, Translated_6} = Fun_10(Chars_a_3, Chars_b_3, I_17, Key_2, Message, Mode, Tmp_3, Translated),
 %     |             ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/ciphers/simple_substitution_cipher.erl:258:52: Warning: variable 'Tmp_3' exported from 'case' (line 220, column 9)
-%  258| {Chars_a_3, Chars_b_3, I_18, Key_2, Message, Mode, Tmp_3, Translated_6} = Fun_10(Chars_a_3, Chars_b_3, I_17, Key_2, Message, Mode, Tmp_3, Translated),
+/workspace/mochi/tests/algorithms/x/Erlang/ciphers/simple_substitution_cipher.erl:291:52: Warning: variable 'Tmp_3' exported from 'case' (line 253, column 9)
+%  291| {Chars_a_3, Chars_b_3, I_18, Key_2, Message, Mode, Tmp_3, Translated_6} = Fun_10(Chars_a_3, Chars_b_3, I_17, Key_2, Message, Mode, Tmp_3, Translated),
 %     |                                                    ^
 
 "Ilcrism Olcvs"

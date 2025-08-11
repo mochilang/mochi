@@ -1,13 +1,13 @@
-/workspace/mochi/tests/algorithms/x/Erlang/ciphers/decrypt_caesar_with_chi_squared.erl:218:2: Warning: variable 'Alphabet_letters_3' exported from 'case' (line 110, column 9)
-%  218| {Alphabet_letters_3, Best_chi_3, Best_shift_3, Best_text_3, Case_sensitive, Cipher_alphabet, Ciphertext_3, Frequencies_3, Frequencies_dict, Shift_2} = Fun_5(Alphabet_letters_3, Best_chi, Best_shift, Best_text, Case_sensitive, Cipher_alphabet, Ciphertext_3, Frequencies_3, Frequencies_dict, Shift),
+/workspace/mochi/tests/algorithms/x/Erlang/ciphers/decrypt_caesar_with_chi_squared.erl:260:2: Warning: variable 'Alphabet_letters_3' exported from 'case' (line 152, column 9)
+%  260| {Alphabet_letters_3, Best_chi_3, Best_shift_3, Best_text_3, Case_sensitive, Cipher_alphabet, Ciphertext_3, Frequencies_3, Frequencies_dict, Shift_2} = Fun_5(Alphabet_letters_3, Best_chi, Best_shift, Best_text, Case_sensitive, Cipher_alphabet, Ciphertext_3, Frequencies_3, Frequencies_dict, Shift),
 %     |  ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/ciphers/decrypt_caesar_with_chi_squared.erl:218:94: Warning: variable 'Ciphertext_3' exported from 'case' (line 121, column 9)
-%  218| {Alphabet_letters_3, Best_chi_3, Best_shift_3, Best_text_3, Case_sensitive, Cipher_alphabet, Ciphertext_3, Frequencies_3, Frequencies_dict, Shift_2} = Fun_5(Alphabet_letters_3, Best_chi, Best_shift, Best_text, Case_sensitive, Cipher_alphabet, Ciphertext_3, Frequencies_3, Frequencies_dict, Shift),
+/workspace/mochi/tests/algorithms/x/Erlang/ciphers/decrypt_caesar_with_chi_squared.erl:260:94: Warning: variable 'Ciphertext_3' exported from 'case' (line 163, column 9)
+%  260| {Alphabet_letters_3, Best_chi_3, Best_shift_3, Best_text_3, Case_sensitive, Cipher_alphabet, Ciphertext_3, Frequencies_3, Frequencies_dict, Shift_2} = Fun_5(Alphabet_letters_3, Best_chi, Best_shift, Best_text, Case_sensitive, Cipher_alphabet, Ciphertext_3, Frequencies_3, Frequencies_dict, Shift),
 %     |                                                                                              ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/ciphers/decrypt_caesar_with_chi_squared.erl:218:108: Warning: variable 'Frequencies_3' exported from 'case' (line 116, column 9)
-%  218| {Alphabet_letters_3, Best_chi_3, Best_shift_3, Best_text_3, Case_sensitive, Cipher_alphabet, Ciphertext_3, Frequencies_3, Frequencies_dict, Shift_2} = Fun_5(Alphabet_letters_3, Best_chi, Best_shift, Best_text, Case_sensitive, Cipher_alphabet, Ciphertext_3, Frequencies_3, Frequencies_dict, Shift),
+/workspace/mochi/tests/algorithms/x/Erlang/ciphers/decrypt_caesar_with_chi_squared.erl:260:108: Warning: variable 'Frequencies_3' exported from 'case' (line 158, column 9)
+%  260| {Alphabet_letters_3, Best_chi_3, Best_shift_3, Best_text_3, Case_sensitive, Cipher_alphabet, Ciphertext_3, Frequencies_3, Frequencies_dict, Shift_2} = Fun_5(Alphabet_letters_3, Best_chi, Best_shift, Best_text, Case_sensitive, Cipher_alphabet, Ciphertext_3, Frequencies_3, Frequencies_dict, Shift),
 %     |                                                                                                            ^
 
 "7,  3129.22800574753,  why is the caesar cipher so popular? it is too easy to crack!"

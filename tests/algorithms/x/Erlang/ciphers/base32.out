@@ -1,0 +1,10 @@
+/workspace/mochi/tests/algorithms/x/Erlang/ciphers/base32.erl:263:16: Warning: variable 'Binary_data_4' exported from 'case' (line 245, column 9)
+%  263| {B32_result_2, Binary_data_4, Data, I_10, J_2, Remainder} = Fun_6(B32_result, Binary_data_4, Data, I_10, J, Remainder),
+%     |                ^
+
+"JBSWY3DPEBLW64TMMQQQ===="
+"GEZDGNBVGY======"
+"ONXW2ZJANRXW4ZZAMNXW24DMMV4CA43UOJUW4ZY="
+"Hello World!"
+"123456"
+"some long complex string"
