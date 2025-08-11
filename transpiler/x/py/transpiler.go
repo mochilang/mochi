@@ -1865,15 +1865,13 @@ func isLikelyIntExpr(e Expr) bool {
 	switch ex := e.(type) {
 	case *IntLit:
 		return true
-	case *Name:
-		if currentEnv != nil {
-			if t, err := currentEnv.GetVar(ex.Name); err == nil {
-				return isIntLike(t)
-			}
-		}
-		// When type information is unavailable, treat names as
-		// integers to favour integer arithmetic.
-		return true
+        case *Name:
+                if currentEnv != nil {
+                        if t, err := currentEnv.GetVar(ex.Name); err == nil {
+                                return isIntLike(t)
+                        }
+                }
+                return false
 	case *CallExpr:
 		if n, ok := ex.Func.(*Name); ok && n.Name == "len" {
 			return true
@@ -1890,11 +1888,36 @@ func isLikelyIntExpr(e Expr) bool {
 		return false
 	case *UnaryExpr:
 		return isLikelyIntExpr(ex.Expr)
-	case *ParenExpr:
-		return isLikelyIntExpr(ex.Expr)
-	default:
-		return false
-	}
+        case *ParenExpr:
+                return isLikelyIntExpr(ex.Expr)
+        case *IndexExpr:
+                if isIntLike(inferPyType(ex, currentEnv)) {
+                        return true
+                }
+                return false
+        default:
+                return false
+        }
+}
+
+func replaceIntDiv(e Expr) Expr {
+        switch ex := e.(type) {
+        case *BinaryExpr:
+                ex.Left = replaceIntDiv(ex.Left)
+                ex.Right = replaceIntDiv(ex.Right)
+                if ex.Op == "/" && isLikelyIntExpr(ex.Left) && isLikelyIntExpr(ex.Right) {
+                        ex.Op = "//"
+                }
+                return ex
+        case *UnaryExpr:
+                ex.Expr = replaceIntDiv(ex.Expr)
+                return ex
+        case *ParenExpr:
+                ex.Expr = replaceIntDiv(ex.Expr)
+                return ex
+        default:
+                return e
+        }
 }
 
 func isListOfStrings(t types.Type) bool {
@@ -4644,13 +4667,15 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	}
 
 	apply := func(left Expr, op string, right Expr) Expr {
-		if op == "/" {
-			lt := inferPyType(left, currentEnv)
-			rt := inferPyType(right, currentEnv)
-			if isIntLike(lt) && isIntLike(rt) {
-				op = "//"
-			}
-		}
+                if op == "/" {
+                        lt := inferPyType(left, currentEnv)
+                        rt := inferPyType(right, currentEnv)
+                        if isIntLike(lt) && isIntLike(rt) {
+                                op = "//"
+                        } else if isLikelyIntExpr(left) && isLikelyIntExpr(right) {
+                                op = "//"
+                        }
+                }
 		if op == "+" {
 			if s, ok := left.(*SliceExpr); ok && sliceOfStringList(s) {
 				left = &CallExpr{Func: &FieldExpr{Target: &StringLit{Value: ""}, Name: "join"}, Args: []Expr{s}}
@@ -4686,10 +4711,11 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		}
 	}
 
-	if len(operands) != 1 {
-		return nil, fmt.Errorf("expression reduction failed")
-	}
-	return operands[0], nil
+        if len(operands) != 1 {
+                return nil, fmt.Errorf("expression reduction failed")
+        }
+        expr := replaceIntDiv(operands[0])
+        return expr, nil
 }
 
 func convertUnary(u *parser.Unary) (Expr, error) {
@@ -4813,13 +4839,16 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 				}
 				expr = &SliceExpr{Target: expr, Start: start, End: end, Step: step}
 			} else {
-				idx, err := convertExpr(op.Index.Start)
-				if err != nil {
-					return nil, err
-				}
-				if mp, ok := inferPyType(expr, currentEnv).(types.MapType); ok {
-					expr = &IndexExpr{Target: expr, Index: idx, Map: true, Default: zeroValueExpr(mp.Value)}
-				} else if s, ok := idx.(*StringLit); ok {
+                                idx, err := convertExpr(op.Index.Start)
+                                if err != nil {
+                                        return nil, err
+                                }
+                                if !isIntLike(inferPyType(idx, currentEnv)) && isLikelyIntExpr(idx) {
+                                        idx = &CallExpr{Func: &Name{Name: "int"}, Args: []Expr{idx}}
+                                }
+                                if mp, ok := inferPyType(expr, currentEnv).(types.MapType); ok {
+                                        expr = &IndexExpr{Target: expr, Index: idx, Map: true, Default: zeroValueExpr(mp.Value)}
+                                } else if s, ok := idx.(*StringLit); ok {
 					if st, ok2 := inferPyType(expr, currentEnv).(types.StructType); ok2 {
 						if _, ok3 := st.Fields[s.Value]; ok3 {
 							expr = &FieldExpr{Target: expr, Name: s.Value}
@@ -5160,8 +5189,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				if currentImports != nil {
 					currentImports["hashlib"] = true
 				}
-				bytesCall := &CallExpr{Func: &Name{Name: "bytes"}, Args: []Expr{args[0]}}
-				hashCall := &CallExpr{Func: &FieldExpr{Target: &Name{Name: "hashlib"}, Name: "sha256"}, Args: []Expr{bytesCall}}
+                                encodeCall := &CallExpr{Func: &FieldExpr{Target: args[0], Name: "encode"}, Args: nil}
+                                hashCall := &CallExpr{Func: &FieldExpr{Target: &Name{Name: "hashlib"}, Name: "sha256"}, Args: []Expr{encodeCall}}
 				digest := &CallExpr{Func: &FieldExpr{Target: hashCall, Name: "digest"}, Args: nil}
 				return &CallExpr{Func: &Name{Name: "list"}, Args: []Expr{digest}}, nil
 			}
