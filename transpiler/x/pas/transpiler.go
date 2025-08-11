@@ -2990,7 +2990,7 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 		return left, nil
 	}
 	if len(e.Binary.Right) == 1 && e.Binary.Right[0].Op == "+" {
-		right, err := convertUnary(env, e.Binary.Right[0].Right)
+		right, err := convertUnary(env, &parser.Unary{Value: e.Binary.Right[0].Right})
 		if err != nil {
 			return nil, err
 		}
@@ -3001,11 +3001,11 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 		}
 	}
 	if len(e.Binary.Right) == 1 && e.Binary.Right[0].Op == "in" {
-		right, err := convertUnary(env, e.Binary.Right[0].Right)
+		right, err := convertUnary(env, &parser.Unary{Value: e.Binary.Right[0].Right})
 		if err != nil {
 			return nil, err
 		}
-		tmp := &parser.Expr{Binary: &parser.BinaryExpr{Left: e.Binary.Right[0].Right}}
+		tmp := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: e.Binary.Right[0].Right}}}
 		t := types.ExprType(tmp, env)
 		if _, ok := t.(types.ListType); ok {
 			currProg.NeedContains = true
@@ -3107,7 +3107,7 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 	}
 
 	for _, op := range e.Binary.Right {
-		right, err := convertUnary(env, op.Right)
+		right, err := convertUnary(env, &parser.Unary{Value: op.Right})
 		if err != nil {
 			return nil, err
 		}
