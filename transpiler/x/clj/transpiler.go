@@ -2473,6 +2473,9 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 			userFun = true
 		}
 	}
+	if c.Func == "error" {
+		userFun = false
+	}
 	if !userFun {
 		switch c.Func {
 		case "print":
@@ -2529,9 +2532,9 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 			}
 			endNode := &List{Elems: []Node{Symbol("min"), endArg, &List{Elems: []Node{Symbol("count"), strArg}}}}
 			return &List{Elems: []Node{Symbol("subs"), strArg, startArg, endNode}}, nil
-		case "panic":
+		case "panic", "error":
 			if len(c.Args) == 0 {
-				return nil, fmt.Errorf("panic expects at least 1 arg")
+				return nil, fmt.Errorf("%s expects at least 1 arg", c.Func)
 			}
 			var parts []Node
 			for _, a := range c.Args {
