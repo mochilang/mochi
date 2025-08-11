@@ -1,5 +1,5 @@
-/workspace/mochi/tests/algorithms/x/Erlang/sorts/merge_sort.erl:53:1: Warning: function mochi_safe_mul/2 is unused
-%   53| mochi_safe_mul(A, B) ->
+/workspace/mochi/tests/algorithms/x/Erlang/sorts/merge_sort.erl:60:1: Warning: function mochi_safe_mul/2 is unused
+%   60| mochi_safe_mul(A, B) ->
 %     | ^
 
 [0 2 2 3 5]
