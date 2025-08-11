@@ -1,0 +1,17 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 48 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/fetch_anime_and_play.exs:48:7: Main.contains_str/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 79 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/fetch_anime_and_play.exs:79:8: Main.search_scraper/1
+
+[%{"title" => "Demon Slayer", "url" => "/anime/kimetsu-no-yaiba"}]
+[%{"title" => "Episode 1", "url" => "/watch/kimetsu-no-yaiba/1"}, %{"title" => "Episode 2", "url" => "/watch/kimetsu-no-yaiba/2"}]
+["https://ww7.gogoanime2.org/embed/kimetsu-no-yaiba/1", "https://ww7.gogoanime2.org/playlist/kimetsu-no-yaiba/1.m3u8"]

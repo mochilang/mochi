@@ -1,0 +1,23 @@
+warning: variable "url" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 21 │       url = ((((Process.get(:base_url) <> "/") <> start) <> "/") <> end_)
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/co2_emission.exs:21:7: Main.fetch_from_to/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 42 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/co2_emission.exs:42:7: Main.main/0
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a list
+
+    :erlang.length(0)
+    /workspace/mochi/tests/algorithms/x/Elixir/web_programming/co2_emission.exs:7: Main._len/1
+    /workspace/mochi/tests/algorithms/x/Elixir/web_programming/co2_emission.exs:33: anonymous fn/3 in Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/web_programming/co2_emission.exs:43: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/web_programming/co2_emission.exs:56: (file)

@@ -1,0 +1,44 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 53 │           {j, ok} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/get_amazon_product_data.exs:53:12: Main.find_index/3
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 68 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/get_amazon_product_data.exs:68:7: Main.find_index/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 148 │       {i, n} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/get_amazon_product_data.exs:148:8: Main.parse_int/1
+
+     warning: variable "start" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 217 │       {out, start} = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/get_amazon_product_data.exs:217:13: Main.get_amazon_product_data/1
+
+     warning: variable "product" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 194 │   def get_amazon_product_data(product) do
+     │                               ~~~~~~~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/get_amazon_product_data.exs:194:31: Main.get_amazon_product_data/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 242 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/get_amazon_product_data.exs:242:7: Main.main/0
+
+Sample Product | https://www.amazon.in/sample_product | ₹900 | 4.3 out of 5 stars | ₹1000 | 10.0
+Another Product | https://www.amazon.in/item2 | ₹500 | 3.8 out of 5 stars | ₹800 | 37.5

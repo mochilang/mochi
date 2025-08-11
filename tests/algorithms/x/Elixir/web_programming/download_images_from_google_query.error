@@ -1,0 +1,8 @@
+parse: error[P999]: /workspace/mochi/tests/github/TheAlgorithms/Mochi/web_programming/download_images_from_google_query.mochi:40:30: unexpected token "!" (expected PostfixExpr)
+  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/web_programming/download_images_from_google_query.mochi:40:30
+
+ 40 |       while j < len(html) && !(j + 4 <= len(html) && html[j:j+4] == ".jpg") {
+    |                              ^
+
+help:
+  Parse error occurred. Check syntax near this location.

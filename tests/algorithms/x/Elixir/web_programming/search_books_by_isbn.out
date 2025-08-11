@@ -1,0 +1,38 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 62 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/search_books_by_isbn.exs:62:8: Main.join/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 91 │       {cnt, i} = try do
+    │             ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/search_books_by_isbn.exs:91:13: Main.count_char/2
+
+     warning: variable "url" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 201 │       url = (("https://openlibrary.org/" <> norm) <> ".json")
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/search_books_by_isbn.exs:201:7: Main.get_author_data/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 223 │       {i, names} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/search_books_by_isbn.exs:223:8: Main.summarize_book/1
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a list
+
+    :erlang.length(0)
+    /workspace/mochi/tests/algorithms/x/Elixir/web_programming/search_books_by_isbn.exs:28: Main._len/1
+    /workspace/mochi/tests/algorithms/x/Elixir/web_programming/search_books_by_isbn.exs:213: anonymous fn/4 in Main.summarize_book/1
+    /workspace/mochi/tests/algorithms/x/Elixir/web_programming/search_books_by_isbn.exs:224: Main.summarize_book/1
+    /workspace/mochi/tests/algorithms/x/Elixir/web_programming/search_books_by_isbn.exs:237: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/web_programming/search_books_by_isbn.exs:249: (file)

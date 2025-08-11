@@ -1,0 +1,5 @@
+** (BadMapError) expected a map, got: ""
+    :erlang.is_map_key("city", "")
+    /workspace/mochi/tests/algorithms/x/Elixir/web_programming/get_ip_geolocation.exs:26: Main.get_ip_geolocation/1
+    /workspace/mochi/tests/algorithms/x/Elixir/web_programming/get_ip_geolocation.exs:36: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/web_programming/get_ip_geolocation.exs:40: (file)

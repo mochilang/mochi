@@ -1,0 +1,23 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 45 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/instagram_crawler.exs:45:7: Main.index_of/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 69 │       {i, value} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/instagram_crawler.exs:69:8: Main.parse_int/1
+
+GitHub (github) is Built for developers.
+number_of_posts = 150
+number_of_followers = 120000
+number_of_followings = 16
+email = support@github.com
+website = https://github.com/readme
+profile_picture_url = https://instagram.com/pic.jpg
+is_verified = true
+is_private = false

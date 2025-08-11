@@ -1,0 +1,18 @@
+warning: variable "url" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+  3 │   def get_imdb_top_250_movies(url) do
+    │                               ~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/get_imdb_top_250_movies_csv.exs:3:31: Main.get_imdb_top_250_movies/1
+
+    warning: variable "filename" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 11 │   def write_movies(filename) do
+    │                    ~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/get_imdb_top_250_movies_csv.exs:11:20: Main.write_movies/1
+
+Movie title,IMDb rating
+The Dark Knight,9.0
+The Godfather,9.2
+The Shawshank Redemption,9.2

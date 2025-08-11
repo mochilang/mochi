@@ -1,0 +1,47 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 24 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/word_patterns.exs:24:7: Main.find_index/2
+
+    warning: variable "num_str" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 47 │           num_str = ""
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/word_patterns.exs:47:11: Main.get_word_pattern/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 71 │       {i, letters, next_num, numbers, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/word_patterns.exs:71:8: Main.get_word_pattern/1
+
+    warning: variable "letters" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 71 │       {i, letters, next_num, numbers, res} = try do
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/word_patterns.exs:71:11: Main.get_word_pattern/1
+
+    warning: variable "next_num" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 71 │       {i, letters, next_num, numbers, res} = try do
+    │                    ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/word_patterns.exs:71:20: Main.get_word_pattern/1
+
+    warning: variable "numbers" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 71 │       {i, letters, next_num, numbers, res} = try do
+    │                              ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/word_patterns.exs:71:30: Main.get_word_pattern/1
+
+""
+"0"
+"0.1.2.2.3.4.5"
+"0.1.2.3.4.5.6.7.7.8.2.9"
+"0.1.2.3.4.5.6.7.3.8.9.2.2.1.6.10"

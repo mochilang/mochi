@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-11 15:13 GMT+7
+Last updated: 2025-08-11 15:46 GMT+7
 
-## Algorithms Golden Test Checklist (647/1077)
+## Algorithms Golden Test Checklist (710/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -1006,81 +1006,81 @@ Last updated: 2025-08-11 15:13 GMT+7
 | 997 | strings/capitalize |   |  |  |
 | 998 | strings/check_anagrams |   |  |  |
 | 999 | strings/count_vowels |   |  |  |
-| 1000 | strings/credit_card_validator |   |  |  |
-| 1001 | strings/damerau_levenshtein_distance |   |  |  |
-| 1002 | strings/detecting_english_programmatically |   |  |  |
-| 1003 | strings/dna |   |  |  |
-| 1004 | strings/edit_distance |   |  |  |
-| 1005 | strings/frequency_finder |   |  |  |
-| 1006 | strings/hamming_distance |   |  |  |
-| 1007 | strings/indian_phone_validator |   |  |  |
-| 1008 | strings/is_contains_unique_chars |   |  |  |
-| 1009 | strings/is_isogram |   |  |  |
-| 1010 | strings/is_pangram |   |  |  |
-| 1011 | strings/is_polish_national_id |   |  |  |
-| 1012 | strings/is_spain_national_id |   |  |  |
-| 1013 | strings/is_srilankan_phone_number |   |  |  |
-| 1014 | strings/is_valid_email_address |   |  |  |
-| 1015 | strings/jaro_winkler |   |  |  |
-| 1016 | strings/join |   |  |  |
-| 1017 | strings/knuth_morris_pratt |   |  |  |
-| 1018 | strings/levenshtein_distance |   |  |  |
-| 1019 | strings/lower |   |  |  |
-| 1020 | strings/manacher |   |  |  |
-| 1021 | strings/min_cost_string_conversion |   |  |  |
-| 1022 | strings/naive_string_search |   |  |  |
-| 1023 | strings/ngram |   |  |  |
-| 1024 | strings/palindrome |   |  |  |
-| 1025 | strings/pig_latin |   |  |  |
-| 1026 | strings/prefix_function |   |  |  |
-| 1027 | strings/rabin_karp |   |  |  |
-| 1028 | strings/remove_duplicate |   |  |  |
-| 1029 | strings/reverse_letters |   |  |  |
-| 1030 | strings/reverse_words |   |  |  |
-| 1031 | strings/snake_case_to_camel_pascal_case |   |  |  |
-| 1032 | strings/split |   |  |  |
-| 1033 | strings/string_switch_case |   |  |  |
-| 1034 | strings/strip |   |  |  |
-| 1035 | strings/text_justification |   |  |  |
-| 1036 | strings/title |   |  |  |
-| 1037 | strings/top_k_frequent_words |   |  |  |
-| 1038 | strings/upper |   |  |  |
-| 1039 | strings/wave_string |   |  |  |
-| 1040 | strings/wildcard_pattern_matching |   |  |  |
-| 1041 | strings/word_occurrence |   |  |  |
-| 1042 | strings/word_patterns |   |  |  |
-| 1043 | strings/z_function |   |  |  |
-| 1044 | web_programming/co2_emission |   |  |  |
-| 1045 | web_programming/covid_stats_via_xpath |   |  |  |
-| 1046 | web_programming/crawl_google_results |   |  |  |
-| 1047 | web_programming/crawl_google_scholar_citation |   |  |  |
-| 1048 | web_programming/currency_converter |   |  |  |
-| 1049 | web_programming/current_stock_price |   |  |  |
-| 1050 | web_programming/current_weather |   |  |  |
-| 1051 | web_programming/daily_horoscope |   |  |  |
-| 1052 | web_programming/download_images_from_google_query |   |  |  |
-| 1053 | web_programming/emails_from_url |   |  |  |
-| 1054 | web_programming/fetch_anime_and_play |   |  |  |
-| 1055 | web_programming/fetch_bbc_news |   |  |  |
-| 1056 | web_programming/fetch_github_info |   |  |  |
-| 1057 | web_programming/fetch_jobs |   |  |  |
-| 1058 | web_programming/fetch_quotes |   |  |  |
-| 1059 | web_programming/fetch_well_rx_price |   |  |  |
-| 1060 | web_programming/get_amazon_product_data |   |  |  |
-| 1061 | web_programming/get_imdb_top_250_movies_csv |   |  |  |
-| 1062 | web_programming/get_ip_geolocation |   |  |  |
-| 1063 | web_programming/get_top_billionaires |   |  |  |
-| 1064 | web_programming/get_top_hn_posts |   |  |  |
-| 1065 | web_programming/giphy |   |  |  |
-| 1066 | web_programming/instagram_crawler |   |  |  |
-| 1067 | web_programming/instagram_pic |   |  |  |
-| 1068 | web_programming/instagram_video |   |  |  |
-| 1069 | web_programming/nasa_data |   |  |  |
-| 1070 | web_programming/open_google_results |   |  |  |
-| 1071 | web_programming/random_anime_character |   |  |  |
-| 1072 | web_programming/recaptcha_verification |   |  |  |
-| 1073 | web_programming/reddit |   |  |  |
-| 1074 | web_programming/search_books_by_isbn |   |  |  |
-| 1075 | web_programming/slack_message |   |  |  |
-| 1076 | web_programming/test_fetch_github_info |   |  |  |
-| 1077 | web_programming/world_covid19_stats |   |  |  |
+| 1000 | strings/credit_card_validator | ✓ | 269us | 17.3 MB |
+| 1001 | strings/damerau_levenshtein_distance | ✓ | 7.48ms | 17.3 MB |
+| 1002 | strings/detecting_english_programmatically | ✓ | 10.73ms | 25.1 MB |
+| 1003 | strings/dna | ✓ | 5.20ms | 9.6 MB |
+| 1004 | strings/edit_distance | ✓ | 95.18ms | 12.5 MB |
+| 1005 | strings/frequency_finder | error |  |  |
+| 1006 | strings/hamming_distance | ✓ | 5.03ms | 7.7 MB |
+| 1007 | strings/indian_phone_validator | ✓ | 5.57ms | 12.6 MB |
+| 1008 | strings/is_contains_unique_chars | error |  |  |
+| 1009 | strings/is_isogram | ✓ | 6.35ms | 17.6 MB |
+| 1010 | strings/is_pangram | error |  |  |
+| 1011 | strings/is_polish_national_id | ✓ | 5.25ms | 25.0 MB |
+| 1012 | strings/is_spain_national_id | error |  |  |
+| 1013 | strings/is_srilankan_phone_number | ✓ | 5.97ms | 25.0 MB |
+| 1014 | strings/is_valid_email_address | ✓ | 67.33ms | 12.5 MB |
+| 1015 | strings/jaro_winkler | ✓ | 4.82ms | 17.3 MB |
+| 1016 | strings/join | ✓ | 5.35ms | 25.0 MB |
+| 1017 | strings/knuth_morris_pratt | ✓ | 5.25ms | 25.0 MB |
+| 1018 | strings/levenshtein_distance | ✓ | 5.59ms | 17.4 MB |
+| 1019 | strings/lower | ✓ | 6.14ms | 17.3 MB |
+| 1020 | strings/manacher | ✓ | 5.80ms | 7.7 MB |
+| 1021 | strings/min_cost_string_conversion | ✓ | 7.73ms | 25.0 MB |
+| 1022 | strings/naive_string_search | ✓ | 6.43ms | 17.3 MB |
+| 1023 | strings/ngram | ✓ | 7.41ms | 25.0 MB |
+| 1024 | strings/palindrome | ✓ | 2.20ms | 12.7 MB |
+| 1025 | strings/pig_latin | ✓ | 8.56ms | 32.8 MB |
+| 1026 | strings/prefix_function | ✓ | 17.45ms | 25.2 MB |
+| 1027 | strings/rabin_karp | ✓ | 4.38ms | 12.5 MB |
+| 1028 | strings/remove_duplicate | ✓ | 5.54ms | 12.5 MB |
+| 1029 | strings/reverse_letters | ✓ | 5.33ms | 17.3 MB |
+| 1030 | strings/reverse_words | ✓ | 5.33ms | 25.2 MB |
+| 1031 | strings/snake_case_to_camel_pascal_case | ✓ | 14.95ms | 17.4 MB |
+| 1032 | strings/split | ✓ | 6.15ms | 17.3 MB |
+| 1033 | strings/string_switch_case | ✓ | 15.82ms | 25.0 MB |
+| 1034 | strings/strip | ✓ | 6.17ms | 7.7 MB |
+| 1035 | strings/text_justification | ✓ | 7.99ms | 17.3 MB |
+| 1036 | strings/title | ✓ | 7.50ms | 12.6 MB |
+| 1037 | strings/top_k_frequent_words | ✓ | 6.96ms | 17.3 MB |
+| 1038 | strings/upper | ✓ | 5.48ms | 7.7 MB |
+| 1039 | strings/wave_string | ✓ | 7.03ms | 25.0 MB |
+| 1040 | strings/wildcard_pattern_matching | ✓ | 7.98ms | 25.0 MB |
+| 1041 | strings/word_occurrence | ✓ | 209us | 25.0 MB |
+| 1042 | strings/word_patterns | ✓ | 14.47ms | 33.1 MB |
+| 1043 | strings/z_function | ✓ | 5.53ms | 25.1 MB |
+| 1044 | web_programming/co2_emission | error |  |  |
+| 1045 | web_programming/covid_stats_via_xpath | ✓ | 1.90ms | 45.2 MB |
+| 1046 | web_programming/crawl_google_results | ✓ | 6.75ms | 78.0 MB |
+| 1047 | web_programming/crawl_google_scholar_citation | error |  |  |
+| 1048 | web_programming/currency_converter | ✓ | 3.32ms | 25.0 MB |
+| 1049 | web_programming/current_stock_price | ✓ | 565us | 9.5 MB |
+| 1050 | web_programming/current_weather | ✓ | 7.70ms | 25.0 MB |
+| 1051 | web_programming/daily_horoscope | ✓ | 244us | 0 B |
+| 1052 | web_programming/download_images_from_google_query | error |  |  |
+| 1053 | web_programming/emails_from_url | ✓ | 7.05ms | 17.3 MB |
+| 1054 | web_programming/fetch_anime_and_play | ✓ | 15.34ms | 25.0 MB |
+| 1055 | web_programming/fetch_bbc_news | error |  |  |
+| 1056 | web_programming/fetch_github_info | ✓ | 97us | 0 B |
+| 1057 | web_programming/fetch_jobs | ✓ | 6.50ms | 32.7 MB |
+| 1058 | web_programming/fetch_quotes | ✓ | 199.13ms | 98.1 MB |
+| 1059 | web_programming/fetch_well_rx_price | ✓ | 4.61ms | 77.9 MB |
+| 1060 | web_programming/get_amazon_product_data | ✓ | 16.79ms | 98.5 MB |
+| 1061 | web_programming/get_imdb_top_250_movies_csv | ✓ | 1.79ms | 12.5 MB |
+| 1062 | web_programming/get_ip_geolocation | error |  |  |
+| 1063 | web_programming/get_top_billionaires | error |  |  |
+| 1064 | web_programming/get_top_hn_posts | error |  |  |
+| 1065 | web_programming/giphy | ✓ | 6.67ms | 25.0 MB |
+| 1066 | web_programming/instagram_crawler | ✓ | 93.25ms | 37.5 MB |
+| 1067 | web_programming/instagram_pic | ✓ | 5.17ms | 32.7 MB |
+| 1068 | web_programming/instagram_video | ✓ | 122us | 0 B |
+| 1069 | web_programming/nasa_data | error |  |  |
+| 1070 | web_programming/open_google_results | ✓ |  |  |
+| 1071 | web_programming/random_anime_character | ✓ | 346us | 0 B |
+| 1072 | web_programming/recaptcha_verification | ✓ | 4.63ms | 25.0 MB |
+| 1073 | web_programming/reddit | error |  |  |
+| 1074 | web_programming/search_books_by_isbn | error |  |  |
+| 1075 | web_programming/slack_message | error |  |  |
+| 1076 | web_programming/test_fetch_github_info | ✓ | 209us | 48 B |
+| 1077 | web_programming/world_covid19_stats | ✓ |  |  |

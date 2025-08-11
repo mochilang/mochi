@@ -1,0 +1,13 @@
+warning: variable "first" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 135 │         {first, res} = Enum.reduce(sub, {first, res}, fn w, {first, res} ->
+     │          ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/strings/string_switch_case.exs:135:10: Main.to_complex_case/3
+
+"OneTwo31235three4four"
+"oneTwo31235three4four"
+"ONE_TWO_31235THREE4FOUR"
+"one_two_31235three4four"
+"ONE-TWO-31235THREE4FOUR"
+"one-two-31235three4four"

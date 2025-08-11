@@ -3872,6 +3872,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
+		usedHelpers["fetch"] = true
 		return &FetchExpr{URL: urlExpr}, nil
 	case p.Call != nil:
 		args := make([]Expr, len(p.Call.Args))

@@ -1,0 +1,56 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 24 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/reddit.exs:24:7: Main.contains/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 54 │       {i, s} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/reddit.exs:54:8: Main.join_with_comma/1
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 135 │             {j, post_map} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/reddit.exs:135:14: Main.get_subreddit_data/4
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 84 │       {i, invalid} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/reddit.exs:84:8: Main.get_subreddit_data/4
+
+     warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 150 │       {idx, result} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/reddit.exs:150:8: Main.get_subreddit_data/4
+
+    warning: variable "age" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 65 │   def get_subreddit_data(subreddit, limit, age, wanted_data) do
+    │                                            ~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/reddit.exs:65:44: Main.get_subreddit_data/4
+
+    warning: variable "subreddit" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 65 │   def get_subreddit_data(subreddit, limit, age, wanted_data) do
+    │                          ~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/reddit.exs:65:26: Main.get_subreddit_data/4
+
+** (KeyError) key :children not found in: 0
+
+If you are using the dot syntax, such as map.field, make sure the left-hand side of the dot is a map
+    /workspace/mochi/tests/algorithms/x/Elixir/web_programming/reddit.exs:99: anonymous fn/5 in Main.get_subreddit_data/4
+    /workspace/mochi/tests/algorithms/x/Elixir/web_programming/reddit.exs:151: Main.get_subreddit_data/4
+    /workspace/mochi/tests/algorithms/x/Elixir/web_programming/reddit.exs:163: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/web_programming/reddit.exs:166: (file)

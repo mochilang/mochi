@@ -1,0 +1,22 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 29 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/fetch_bbc_news.exs:29:7: Main.fetch_bbc_news/1
+
+    warning: variable "url" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 12 │       url = ("https://newsapi.org/v1/articles?source=bbc-news&sortBy=top&apiKey=" <> api_key)
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/web_programming/fetch_bbc_news.exs:12:7: Main.fetch_bbc_news/1
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a list
+
+    :erlang.length(0)
+    /workspace/mochi/tests/algorithms/x/Elixir/web_programming/fetch_bbc_news.exs:7: Main._len/1
+    /workspace/mochi/tests/algorithms/x/Elixir/web_programming/fetch_bbc_news.exs:14: Main.fetch_bbc_news/1
+    /workspace/mochi/tests/algorithms/x/Elixir/web_programming/fetch_bbc_news.exs:43: (file)
