@@ -1,0 +1,18 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 32 │       {i, j} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/searching_in_sorted_matrix.exs:32:8: Main.search_in_sorted_matrix/4
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 32 │       {i, j} = try do
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/searching_in_sorted_matrix.exs:32:11: Main.search_in_sorted_matrix/4
+
+Key 5.0 found at row- 1 column- 2
+Key 21.0 not found
+Key 2.1 found at row- 1 column- 1
+Key 2.2 not found

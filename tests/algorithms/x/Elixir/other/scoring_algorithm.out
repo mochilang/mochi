@@ -1,0 +1,64 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 34 │           {data_lists, j} = try do
+    │                        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/other/scoring_algorithm.exs:34:24: Main.get_data/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 46 │       {data_lists, i} = try do
+    │                    ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/other/scoring_algorithm.exs:46:20: Main.get_data/1
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 89 │           {j, maxd, mind} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/other/scoring_algorithm.exs:89:12: Main.calculate_each_score/2
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 97 │           {j, score} = if weight == 0 do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/other/scoring_algorithm.exs:97:12: Main.calculate_each_score/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 141 │       {i, score_lists} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/scoring_algorithm.exs:141:8: Main.calculate_each_score/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 186 │           {final_scores, j} = try do
+     │                          ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/scoring_algorithm.exs:186:26: Main.generate_final_scores/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 166 │       {final_scores, i} = try do
+     │                      ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/scoring_algorithm.exs:166:22: Main.generate_final_scores/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 198 │       {final_scores, i} = try do
+     │                      ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/scoring_algorithm.exs:198:22: Main.generate_final_scores/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 224 │       {i, source_data} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/scoring_algorithm.exs:224:8: Main.procentual_proximity/2
+
+[[20.0, 60.0, 2012.0, 2.0], [23.0, 90.0, 2015.0, 1.0], [22.0, 50.0, 2011.0, 1.3333333333333335]]

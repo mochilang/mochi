@@ -1,0 +1,8 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 24 │       {i, result} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/activation_functions/rectified_linear_unit.exs:24:8: Main.relu/1
+
+[0.0, 0.0, 5.0]

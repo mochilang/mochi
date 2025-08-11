@@ -1,0 +1,30 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 34 │           {arr, j} = try do
+    │                 ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/median_matrix.exs:34:17: Main.bubble_sort/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 46 │       {arr, i} = try do
+    │             ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/median_matrix.exs:46:13: Main.bubble_sort/1
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 74 │           {j, linear} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/median_matrix.exs:74:12: Main.median/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 86 │       {i, linear} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/median_matrix.exs:86:8: Main.median/1
+
+5
+3

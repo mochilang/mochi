@@ -1,0 +1,17 @@
+warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+  7 │       {k, p} = if n >= 0 do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/physics/escape_velocity.exs:7:8: Main.pow10/1
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 64 │       {j, x} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/physics/escape_velocity.exs:64:8: Main.sqrt_newton/1
+
+11185.978
+2376.307
+60199.545

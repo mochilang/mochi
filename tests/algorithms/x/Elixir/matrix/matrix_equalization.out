@@ -1,0 +1,33 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 34 │           {found, j} = try do
+    │                   ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_equalization.exs:34:19: Main.unique/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 52 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_equalization.exs:52:8: Main.unique/1
+
+    warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 91 │           {idx, updates} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_equalization.exs:91:12: Main.array_equalization/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 109 │       {i, min_updates} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_equalization.exs:109:8: Main.array_equalization/2
+
+4
+5
+0
+2
+1

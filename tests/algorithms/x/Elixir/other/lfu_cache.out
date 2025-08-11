@@ -1,0 +1,27 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 32 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/other/lfu_cache.exs:32:7: Main.find_entry/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 85 │       {i, min_idx} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/other/lfu_cache.exs:85:8: Main.remove_lfu/1
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 107 │       {j, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/lfu_cache.exs:107:8: Main.remove_lfu/1
+
+1
+None
+1
+None
+4
+"CacheInfo(hits=3, misses=2, capacity=2, current_size=2)"

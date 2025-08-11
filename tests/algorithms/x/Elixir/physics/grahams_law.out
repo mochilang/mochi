@@ -1,0 +1,19 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 38 │       {guess, i} = try do
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/physics/grahams_law.exs:38:15: Main.sqrtApprox/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 66 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/physics/grahams_law.exs:66:7: Main.validate/1
+
+1.408943
+1.408943
+0.709752
+0.507524
+1.970351

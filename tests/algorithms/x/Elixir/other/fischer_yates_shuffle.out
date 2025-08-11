@@ -1,0 +1,17 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 43 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/other/fischer_yates_shuffle.exs:43:8: Main.fisher_yates_shuffle_int/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 71 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/other/fischer_yates_shuffle.exs:71:8: Main.fisher_yates_shuffle_str/1
+
+Fisher-Yates Shuffle:
+List [0 1 2 3 4 5 6 7] ["python", "says", "hello", "!"]
+FY Shuffle [0, 5, 1, 2, 6, 7, 4, 3] ["python", "hello", "!", "says"]

@@ -1,0 +1,55 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 50 │           {i, result} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/spiral_print.exs:50:12: Main.spiral_traversal/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 96 │           {i, left, result} = if left <= right do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/spiral_print.exs:96:12: Main.spiral_traversal/1
+
+     warning: variable "bottom" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 123 │       {bottom, left, result, right, top} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/spiral_print.exs:123:8: Main.spiral_traversal/1
+
+     warning: variable "left" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 123 │       {bottom, left, result, right, top} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/spiral_print.exs:123:16: Main.spiral_traversal/1
+
+     warning: variable "right" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 123 │       {bottom, left, result, right, top} = try do
+     │                              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/spiral_print.exs:123:30: Main.spiral_traversal/1
+
+     warning: variable "top" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 123 │       {bottom, left, result, right, top} = try do
+     │                                     ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/spiral_print.exs:123:37: Main.spiral_traversal/1
+
+1
+2
+3
+4
+8
+12
+11
+10
+9
+5
+6
+7
+[1, 2, 3, 4, 8, 12, 11, 10, 9, 5, 6, 7]

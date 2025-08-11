@@ -1,0 +1,16 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 26 │       {guess, i} = try do
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/activation_functions/squareplus.exs:26:15: Main.sqrtApprox/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 52 │       {i, result} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/activation_functions/squareplus.exs:52:8: Main.squareplus/2
+
+[2.5, 1.0681145747868608, 0.22474487139158894, 0.12731349327132913]
+[0.08081189538738087, 0.7289197915623472, 1.1197765084086642, 0.15893419345418192]

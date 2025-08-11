@@ -1,0 +1,225 @@
+run: exit status 1
+    warning: variable "n" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 49 │       {n, sum, term} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:49:8: Main.expApprox/1
+
+    warning: variable "term" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 49 │       {n, sum, term} = try do
+    │                ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:49:16: Main.expApprox/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 83 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:83:8: Main.sigmoid_vec/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 108 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:108:8: Main.sigmoid_derivative/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 132 │       {i, v} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:132:8: Main.random_vector/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 156 │       {i, m} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:156:8: Main.random_matrix/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 184 │           {j, s} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:184:12: Main.matvec/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 197 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:197:8: Main.matvec/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 226 │           {i, s} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:226:12: Main.matTvec/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 239 │       {j, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:239:8: Main.matTvec/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 263 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:263:8: Main.vec_sub/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 287 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:287:8: Main.vec_mul/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 311 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:311:8: Main.vec_scalar_mul/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 339 │           {j, row} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:339:12: Main.outer/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 352 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:352:8: Main.outer/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 380 │           {j, row} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:380:12: Main.mat_scalar_mul/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 393 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:393:8: Main.mat_scalar_mul/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 421 │           {j, row} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:421:12: Main.mat_sub/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 434 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:434:8: Main.mat_sub/2
+
+     warning: variable "data" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 476 │       {data, i, layers} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:476:8: Main.forward/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 476 │       {data, i, layers} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:476:14: Main.forward/2
+
+     warning: variable "g" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 507 │       {g, i, layers} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:507:8: Main.backward/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 507 │       {g, i, layers} = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:507:11: Main.backward/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 532 │       {i, s} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:532:8: Main.calc_loss/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 556 │       {g, i} = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:556:11: Main.calc_gradient/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 585 │           {i, layers} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:585:12: Main.train/5
+
+     warning: variable "layers" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 597 │       {layers, r} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:597:8: Main.train/5
+
+     warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 597 │       {layers, r} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:597:16: Main.train/5
+
+     warning: variable "acc" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 567 │   def train(layers, xdata, ydata, rounds, acc) do
+     │                                           ~~~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:567:43: Main.train/5
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 621 │       {i, x} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:621:8: Main.create_data/0
+
+** (Protocol.UndefinedError) protocol Enumerable not implemented for type Atom
+
+Got value:
+
+    nil
+
+    (elixir 1.18.3) lib/enum.ex:1: Enumerable.impl_for!/1
+    (elixir 1.18.3) lib/enum.ex:230: Enumerable.slice/1
+    (elixir 1.18.3) lib/enum.ex:4579: Enum.slice_forward/4
+    (elixir 1.18.3) lib/enum.ex:479: Enum.at/3
+    /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:549: anonymous fn/5 in Main.calc_gradient/2
+    /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:557: Main.calc_gradient/2
+    /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:577: anonymous fn/5 in Main.train/5
+    /workspace/mochi/tests/algorithms/x/Elixir/neural_network/back_propagation_neural_network.exs:586: anonymous fn/6 in Main.train/5

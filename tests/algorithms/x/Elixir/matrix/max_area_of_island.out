@@ -1,0 +1,22 @@
+warning: variable "seen" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 36 │       {seen} = if is_safe(row, col, rows, cols) && (!has(seen, key)) && Enum.at(Enum.at(mat, row), col) == 1 do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/max_area_of_island.exs:36:8: Main.depth_first_search/4
+
+    warning: variable "c" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 85 │           {c, max_area} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/max_area_of_island.exs:85:12: Main.find_max_area/1
+
+    warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 97 │       {max_area, r} = try do
+    │                  ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/max_area_of_island.exs:97:18: Main.find_max_area/1
+
+9

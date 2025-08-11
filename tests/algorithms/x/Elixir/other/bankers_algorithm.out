@@ -1,0 +1,171 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 28 │           {j, total} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/other/bankers_algorithm.exs:28:12: Main.processes_resource_summation/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 41 │       {i, sums} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/other/bankers_algorithm.exs:41:8: Main.processes_resource_summation/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 65 │       {avail, i} = try do
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/other/bankers_algorithm.exs:65:15: Main.available_resources/2
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 93 │           {j, row} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/other/bankers_algorithm.exs:93:12: Main.need/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 106 │       {i, needs} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/bankers_algorithm.exs:106:8: Main.need/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 141 │           {j, line} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/bankers_algorithm.exs:141:12: Main.pretty_print/3
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 183 │           {j, line} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/bankers_algorithm.exs:183:12: Main.pretty_print/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 155 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/bankers_algorithm.exs:155:7: Main.pretty_print/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 197 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/bankers_algorithm.exs:197:7: Main.pretty_print/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 220 │       {i, usage} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/bankers_algorithm.exs:220:8: Main.pretty_print/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 245 │       {avail_str, i} = try do
+     │                   ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/bankers_algorithm.exs:245:19: Main.pretty_print/3
+
+     warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 325 │                   {avail, r} = try do
+     │                           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/bankers_algorithm.exs:325:27: Main.bankers_algorithm/3
+
+     warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 312 │                 {avail, finished, r, remaining, safe} = if exec do
+     │                                   ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/bankers_algorithm.exs:312:35: Main.bankers_algorithm/3
+
+     warning: variable "p" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 373 │           {avail, finished, p, remaining, safe} = try do
+     │                             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/bankers_algorithm.exs:373:29: Main.bankers_algorithm/3
+
+     warning: variable "avail" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 389 │       {avail, finished, remaining} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/bankers_algorithm.exs:389:8: Main.bankers_algorithm/3
+
+     warning: variable "finished" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 389 │       {avail, finished, remaining} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/bankers_algorithm.exs:389:15: Main.bankers_algorithm/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 275 │       {finished, i} = try do
+     │                  ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/bankers_algorithm.exs:275:18: Main.bankers_algorithm/3
+
+     warning: variable "remaining" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 389 │       {avail, finished, remaining} = try do
+     │                         ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/bankers_algorithm.exs:389:25: Main.bankers_algorithm/3
+
+         Allocated Resource Table
+P1       2        0        1        1
+
+P2       0        1        2        1
+
+P3       4        0        0        3
+
+P4       0        2        1        0
+
+P5       1        0        3        0
+
+         System Resource Table
+P1       3        2        1        4
+
+P2       0        2        5        2
+
+P3       5        1        0        5
+
+P4       1        5        3        0
+
+P5       3        0        3        3
+
+Current Usage by Active Processes: 8 5 9 7
+Initial Available Resources:       1 2 2 2
+__________________________________________________
+
+Process 3 is executing.
+Updated available resource stack for processes: 5 2 2 5
+The process is in a safe state.
+
+Process 5 is executing.
+Updated available resource stack for processes: 6 2 5 5
+The process is in a safe state.
+
+Process 1 is executing.
+Updated available resource stack for processes: 8 2 6 6
+The process is in a safe state.
+
+Process 2 is executing.
+Updated available resource stack for processes: 8 3 8 7
+The process is in a safe state.
+
+Process 4 is executing.
+Updated available resource stack for processes: 8 5 9 7
+The process is in a safe state.

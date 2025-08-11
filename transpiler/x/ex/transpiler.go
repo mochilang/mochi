@@ -2316,22 +2316,34 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 			return &AssignStmt{Name: st.Assign.Name, Value: val}, nil
 		}
-		if len(st.Assign.Field) == 1 && len(st.Assign.Index) == 0 {
-			val, err := compileExpr(st.Assign.Value, env)
-			if err != nil {
-				return nil, err
-			}
-			key := &AtomLit{Name: ":" + st.Assign.Field[0].Name}
-			call := &CallExpr{Func: "Map.put", Args: []Expr{&VarRef{Name: st.Assign.Name}, key, val}}
-			return &AssignStmt{Name: st.Assign.Name, Value: call}, nil
-		}
-		if len(st.Assign.Index) == 1 && len(st.Assign.Field) == 0 {
-			idx, err := compileExpr(st.Assign.Index[0].Start, env)
-			if err != nil {
-				return nil, err
-			}
-			val, err := compileExpr(st.Assign.Value, env)
-			if err != nil {
+               if len(st.Assign.Field) == 1 && len(st.Assign.Index) == 0 {
+                       val, err := compileExpr(st.Assign.Value, env)
+                       if err != nil {
+                               return nil, err
+                       }
+                       key := &AtomLit{Name: ":" + st.Assign.Field[0].Name}
+                       call := &CallExpr{Func: "Map.put", Args: []Expr{&VarRef{Name: st.Assign.Name}, key, val}}
+                       return &AssignStmt{Name: st.Assign.Name, Value: call}, nil
+               }
+               if len(st.Assign.Field) == 2 && len(st.Assign.Index) == 0 {
+                       val, err := compileExpr(st.Assign.Value, env)
+                       if err != nil {
+                               return nil, err
+                       }
+                       path := &ListLit{Elems: []Expr{
+                               &AtomLit{Name: ":" + st.Assign.Field[0].Name},
+                               &AtomLit{Name: ":" + st.Assign.Field[1].Name},
+                       }}
+                       call := &CallExpr{Func: "Kernel.put_in", Args: []Expr{&VarRef{Name: st.Assign.Name}, path, val}}
+                       return &AssignStmt{Name: st.Assign.Name, Value: call}, nil
+               }
+               if len(st.Assign.Index) == 1 && len(st.Assign.Field) == 0 {
+                       idx, err := compileExpr(st.Assign.Index[0].Start, env)
+                       if err != nil {
+                               return nil, err
+                       }
+                       val, err := compileExpr(st.Assign.Value, env)
+                       if err != nil {
 				return nil, err
 			}
 			t, _ := env.GetVar(st.Assign.Name)

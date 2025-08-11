@@ -1,0 +1,12 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 44 │       {i, p} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/physics/centripetal_force.exs:44:8: Main.pow10/1
+
+1395.0
+450.0
+3333.33
+784.0
+10000.0
