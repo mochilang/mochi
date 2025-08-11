@@ -5541,16 +5541,19 @@ func isBigIntExpr(e Expr) bool {
 
 // defaultExpr returns a zero value expression for the given Scala type.
 func defaultExpr(typ string) Expr {
-	switch {
-	case typ == "Int" || typ == "Long" || typ == "Double" || typ == "Float":
-		if typ == "Double" || typ == "Float" {
-			return &FloatLit{Value: 0}
-		}
-		return &IntLit{Value: 0}
-	case typ == "String":
-		return &StringLit{Value: ""}
-	case typ == "Boolean":
-		return &BoolLit{Value: false}
+        switch {
+        case typ == "Int" || typ == "Long" || typ == "Double" || typ == "Float":
+                if typ == "Double" || typ == "Float" {
+                        return &FloatLit{Value: 0}
+                }
+                return &IntLit{Value: 0}
+        case typ == "BigInt":
+                needsBigInt = true
+                return &IntLit{Value: 0}
+        case typ == "String":
+                return &StringLit{Value: ""}
+        case typ == "Boolean":
+                return &BoolLit{Value: false}
 	case strings.Contains(typ, "ArrayBuffer"):
 		if idx := strings.Index(typ, "ArrayBuffer["); idx >= 0 {
 			elem := strings.TrimSuffix(typ[idx+len("ArrayBuffer["):], "]")
