@@ -2658,7 +2658,7 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 	}
 	operands = append(operands, first)
 	for _, p := range e.Binary.Right {
-		r, err := compileUnary(p.Right)
+		r, err := compilePostfix(p.Right)
 		if err != nil {
 			return nil, err
 		}
@@ -4220,11 +4220,6 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				usesInput = true
 				return &RawExpr{Code: "_input()", Type: "string"}, nil
 			}
-		case "read_file":
-			if len(args) == 1 {
-				usesInput = true
-				return &CallExpr{Func: "_read_file", Args: args}, nil
-			}
 		case "min":
 			if len(args) == 1 {
 				usesLinq = true
@@ -5130,16 +5125,6 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\t\t}\n")
 		buf.WriteString("\t\tvar line = Console.ReadLine();\n")
 		buf.WriteString("\t\treturn line == null ? \"\" : line;\n")
-		buf.WriteString("\t}\n")
-		buf.WriteString("\tstatic string _read_file(string path) {\n")
-		buf.WriteString("\t\tif (!System.IO.Path.IsPathRooted(path)) {\n")
-		buf.WriteString("\t\t\tvar root = Environment.GetEnvironmentVariable(\"MOCHI_ROOT\");\n")
-		buf.WriteString("\t\t\tif (!string.IsNullOrEmpty(root)) {\n")
-		buf.WriteString("\t\t\t\tvar combined = System.IO.Path.Combine(root, path.Replace('/', System.IO.Path.DirectorySeparatorChar));\n")
-		buf.WriteString("\t\t\t\tif (System.IO.File.Exists(combined)) path = combined;\n")
-		buf.WriteString("\t\t\t}\n")
-		buf.WriteString("\t\t}\n")
-		buf.WriteString("\t\treturn System.IO.File.ReadAllText(path);\n")
 		buf.WriteString("\t}\n")
 	}
 	if usesAtoi {
