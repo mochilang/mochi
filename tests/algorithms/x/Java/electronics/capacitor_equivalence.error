@@ -1,8 +1,0 @@
-compile: exit status 1
-/tmp/TestJavaTranspiler_Algorithms_Golden352_capacitor_equivalence2079013970/001/Main.java:10: error: unreachable statement
-                return 0.0;
-                ^
-/tmp/TestJavaTranspiler_Algorithms_Golden352_capacitor_equivalence2079013970/001/Main.java:25: error: unreachable statement
-                return 0.0;
-                ^
-2 errors

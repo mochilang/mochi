@@ -1106,6 +1106,23 @@ type Stmt interface{ emit(io.Writer, string) }
 
 type Expr interface{ emit(io.Writer) }
 
+func emitBlock(w io.Writer, indent string, body []Stmt) {
+	for i := 0; i < len(body); i++ {
+		if es, ok := body[i].(*ExprStmt); ok {
+			if call, ok2 := es.Expr.(*CallExpr); ok2 && (call.Func == "panic" || call.Func == "error") && len(call.Args) == 1 {
+				es.emit(w, indent)
+				if i+1 < len(body) {
+					if _, ok3 := body[i+1].(*ReturnStmt); ok3 {
+						i++
+					}
+				}
+				continue
+			}
+		}
+		body[i].emit(w, indent)
+	}
+}
+
 func (t *TypeDeclStmt) emit(w io.Writer, indent string) {
 	decl := "static class " + sanitize(t.Name)
 	if t.Extends != "" {
@@ -1149,9 +1166,7 @@ func (t *TypeDeclStmt) emit(w io.Writer, indent string) {
 			fmt.Fprintf(w, "%s %s", typ, sanitize(p.Name))
 		}
 		fmt.Fprint(w, ") {\n")
-		for _, st := range m.Body {
-			st.emit(w, indent+"        ")
-		}
+		emitBlock(w, indent+"        ", m.Body)
 		fmt.Fprint(w, indent+"    }\n")
 	}
 	fmt.Fprint(w, indent+"    @Override public String toString() {\n")
@@ -1575,9 +1590,7 @@ func (l *LambdaExpr) emit(w io.Writer) {
 		}
 	}
 	fmt.Fprint(w, "{\n")
-	for _, st := range l.Body {
-		st.emit(w, "        ")
-	}
+	emitBlock(w, "        ", l.Body)
 	fmt.Fprint(w, "}")
 }
 
@@ -1591,9 +1604,7 @@ func (s *IfStmt) emit(w io.Writer, indent string) {
 	fmt.Fprint(w, indent+"if (")
 	emitCastExpr(w, s.Cond, "boolean")
 	fmt.Fprint(w, ") {\n")
-	for _, st := range s.Then {
-		st.emit(w, indent+"    ")
-	}
+	emitBlock(w, indent+"    ", s.Then)
 	fmt.Fprint(w, indent+"}")
 	if len(s.Else) > 0 {
 		if len(s.Else) == 1 {
@@ -1604,9 +1615,7 @@ func (s *IfStmt) emit(w io.Writer, indent string) {
 			}
 		}
 		fmt.Fprint(w, " else {\n")
-		for _, st := range s.Else {
-			st.emit(w, indent+"    ")
-		}
+		emitBlock(w, indent+"    ", s.Else)
 		fmt.Fprint(w, indent+"}\n")
 	} else {
 		fmt.Fprint(w, "\n")
@@ -1914,9 +1923,7 @@ func (wst *WhileStmt) emit(w io.Writer, indent string) {
 		wst.Cond.emit(w)
 	}
 	fmt.Fprint(w, ") {\n")
-	for _, st := range wst.Body {
-		st.emit(w, indent+"    ")
-	}
+	emitBlock(w, indent+"    ", wst.Body)
 	fmt.Fprint(w, indent+"}\n")
 }
 
@@ -1941,9 +1948,7 @@ func (fr *ForRangeStmt) emit(w io.Writer, indent string) {
 	fmt.Fprint(w, "; ")
 	fmt.Fprint(w, name+"++")
 	fmt.Fprint(w, ") {\n")
-	for _, st := range fr.Body {
-		st.emit(w, indent+"    ")
-	}
+	emitBlock(w, indent+"    ", fr.Body)
 	fmt.Fprint(w, indent+"}\n")
 }
 
@@ -1968,9 +1973,7 @@ func (fe *ForEachStmt) emit(w io.Writer, indent string) {
 		fmt.Fprintf(w, indent+"    %s %s = ", t, sanitize(fe.Name))
 		fe.Iterable.emit(w)
 		fmt.Fprint(w, ".substring(_i, _i + 1);\n")
-		for _, st := range fe.Body {
-			st.emit(w, indent+"    ")
-		}
+		emitBlock(w, indent+"    ", fe.Body)
 		fmt.Fprint(w, indent+"}\n")
 		return
 	}
@@ -1986,9 +1989,7 @@ func (fe *ForEachStmt) emit(w io.Writer, indent string) {
 		fmt.Fprint(w, ".keySet()")
 	}
 	fmt.Fprint(w, ") {\n")
-	for _, st := range fe.Body {
-		st.emit(w, indent+"    ")
-	}
+	emitBlock(w, indent+"    ", fe.Body)
 	fmt.Fprint(w, indent+"}\n")
 }
 
@@ -2012,9 +2013,7 @@ func (b *BenchStmt) emit(w io.Writer, indent string) {
 	fmt.Fprint(w, indent+"{\n")
 	fmt.Fprint(w, indent+"    long _benchStart = _now();\n")
 	fmt.Fprint(w, indent+"    long _benchMem = _mem();\n")
-	for _, st := range b.Body {
-		st.emit(w, indent+"    ")
-	}
+	emitBlock(w, indent+"    ", b.Body)
 	fmt.Fprint(w, indent+"    long _benchDuration = _now() - _benchStart;\n")
 	fmt.Fprint(w, indent+"    long _benchMemory = _mem() - _benchMem;\n")
 	fmt.Fprint(w, indent+"    System.out.println(\"{\");\n")
