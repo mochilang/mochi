@@ -4770,12 +4770,12 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 			if strings.HasPrefix(typ, "*") {
 				aliasName = paramName
 			} else {
-				aliasName = uniqueName(name + "_var")
-				namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
-				vd := &VarDecl{Name: aliasName, Value: &VarRef{Name: paramName}, Mutable: true, Scope: currentFunc}
-				preStmts = append(preStmts, vd)
-				varDecls[p.Name] = vd
-				varDecls[aliasName] = vd
+                               aliasName = uniqueName(name + "_var")
+                               namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
+                               vd := &VarDecl{Name: aliasName, Value: &VarRef{Name: paramName}, Mutable: true, Scope: fn.Name}
+                               preStmts = append(preStmts, vd)
+                               varDecls[p.Name] = vd
+                               varDecls[aliasName] = vd
 			}
 		}
 		aliases[name] = aliasName
@@ -4917,12 +4917,23 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		var expr Expr
 		var err error
 		mutable := false
-		if s.Let.Value != nil {
-			expr, err = compileExpr(s.Let.Value)
-			if err != nil {
-				return nil, err
-			}
-		} else {
+               if s.Let.Value != nil {
+                       expr, err = compileExpr(s.Let.Value)
+                       if err != nil {
+                               return nil, err
+                       }
+                       if _, ok := expr.(*FieldExpr); ok {
+                               if str, ok := exprToString(expr); ok {
+                                       t := zigTypeFromExpr(expr)
+                                       if strings.HasPrefix(t, "[]") || strings.HasPrefix(t, "std.StringHashMap(") || strings.HasPrefix(t, "std.AutoHashMap(") {
+                                               aliasStack[len(aliasStack)-1][s.Let.Name] = str
+                                               varTypes[s.Let.Name] = t
+                                               varTypes[str] = t
+                                               return nil, nil
+                                       }
+                               }
+                       }
+               } else {
 			if s.Let.Type != nil && toZigType(s.Let.Type) == "[]const u8" {
 				expr = &StringLit{Value: ""}
 			} else {
@@ -5036,12 +5047,23 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 	case s.Var != nil:
 		var expr Expr
 		var err error
-		if s.Var.Value != nil {
-			expr, err = compileExpr(s.Var.Value)
-			if err != nil {
-				return nil, err
-			}
-		} else {
+               if s.Var.Value != nil {
+                       expr, err = compileExpr(s.Var.Value)
+                       if err != nil {
+                               return nil, err
+                       }
+                       if _, ok := expr.(*FieldExpr); ok {
+                               if str, ok := exprToString(expr); ok {
+                                       t := zigTypeFromExpr(expr)
+                                       if strings.HasPrefix(t, "[]") || strings.HasPrefix(t, "std.StringHashMap(") || strings.HasPrefix(t, "std.AutoHashMap(") {
+                                               aliasStack[len(aliasStack)-1][s.Var.Name] = str
+                                               varTypes[s.Var.Name] = t
+                                               varTypes[str] = t
+                                               return nil, nil
+                                       }
+                               }
+                       }
+               } else {
 			if s.Var.Type != nil {
 				t := toZigType(s.Var.Type)
 				if strings.HasPrefix(t, "[]") || strings.HasPrefix(t, "std.StringHashMap(") || strings.HasPrefix(t, "std.AutoHashMap(") {
