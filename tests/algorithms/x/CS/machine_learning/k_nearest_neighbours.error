@@ -1,5 +1,0 @@
-exit status 1
-/tmp/TestCSTranspiler_Algorithms_Golden001_machine_learning_k_nearest_neighbours472771797/001/Program.cs(176,13): error CS0103: The name 'e18' does not exist in the current context [/tmp/TestCSTranspiler_Algorithms_Golden001_machine_learning_k_nearest_neighbours472771797/001/app.csproj]
-/tmp/TestCSTranspiler_Algorithms_Golden001_machine_learning_k_nearest_neighbours472771797/001/Program.cs(176,13): error CS0201: Only assignment, call, increment, decrement, await, and new object expressions can be used as a statement [/tmp/TestCSTranspiler_Algorithms_Golden001_machine_learning_k_nearest_neighbours472771797/001/app.csproj]
-
-The build failed. Fix the build errors and run again.

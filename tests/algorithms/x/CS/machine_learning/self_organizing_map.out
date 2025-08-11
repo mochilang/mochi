@@ -1,3 +1,2 @@
-/tmp/TestCSTranspiler_Algorithms_Golden001_machine_learning_self_organizing_map1449383126/001/Program.cs(102,50): warning CS0162: Unreachable code detected [/tmp/TestCSTranspiler_Algorithms_Golden001_machine_learning_self_organizing_map1449383126/001/app.csproj]
 Clusters that the test sample belongs to : 0
 Weights that have been trained : [[0.6000000000000001, 0.8, 0.5, 0.9], [0.3333984375, 0.0666015625, 0.7, 0.3]]
