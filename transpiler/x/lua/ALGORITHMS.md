@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-11 16:33 GMT+7
+Last updated: 2025-08-11 17:06 GMT+7
 
-## Algorithms Golden Test Checklist (1011/1077)
+## Algorithms Golden Test Checklist (1014/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 270µs | 912 B |
@@ -1038,7 +1038,7 @@ Last updated: 2025-08-11 16:33 GMT+7
 | 1029 | strings/reverse_letters | ✓ | 173µs | 1.3 KB |
 | 1030 | strings/reverse_words | ✓ | 154µs | 1016 B |
 | 1031 | strings/snake_case_to_camel_pascal_case | ✓ | 227µs | 1.0 KB |
-| 1032 | strings/split | error |  |  |
+| 1032 | strings/split | ✓ | 213µs | 896 B |
 | 1033 | strings/string_switch_case | ✓ | 453µs | 1.3 KB |
 | 1034 | strings/strip | ✓ | 86µs | 1.2 KB |
 | 1035 | strings/text_justification | ✓ | 296µs | 984 B |
@@ -1071,9 +1071,9 @@ Last updated: 2025-08-11 16:33 GMT+7
 | 1062 | web_programming/get_ip_geolocation | ✓ | 510µs | 896 B |
 | 1063 | web_programming/get_top_billionaires | error |  |  |
 | 1064 | web_programming/get_top_hn_posts | ✓ | 1.044ms | 1.4 KB |
-| 1065 | web_programming/giphy | error |  |  |
+| 1065 | web_programming/giphy | ✓ | 55µs | 952 B |
 | 1066 | web_programming/instagram_crawler | ✓ | 5.971ms | 2.1 KB |
-| 1067 | web_programming/instagram_pic | error |  |  |
+| 1067 | web_programming/instagram_pic | ✓ | 90µs | 968 B |
 | 1068 | web_programming/instagram_video | ✓ | 82µs | 169 B |
 | 1069 | web_programming/nasa_data | error |  |  |
 | 1070 | web_programming/open_google_results | ✓ | 98µs | 1.3 KB |
