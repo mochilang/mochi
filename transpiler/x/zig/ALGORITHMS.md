@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-09 23:14 +0700
+Last updated: 2025-08-11 16:20 +0700
 
-## Program Checklist (173/1077)
+## Program Checklist (194/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -916,46 +916,46 @@ Last updated: 2025-08-09 23:14 +0700
 | 907 | project_euler/problem_076/sol1 |   |  |  |
 | 908 | project_euler/problem_077/sol1 |   |  |  |
 | 909 | project_euler/problem_078/sol1 |   |  |  |
-| 910 | project_euler/problem_079/sol1 |   |  |  |
-| 911 | project_euler/problem_092/sol1 |   |  |  |
-| 912 | project_euler/problem_116/sol1 |   |  |  |
+| 910 | project_euler/problem_079/sol1 | ✓ | 107.794ms | 34.1 MB |
+| 911 | project_euler/problem_092/sol1 | ✓ | 747µs | 256.0 KB |
+| 912 | project_euler/problem_116/sol1 | ✓ | 3.356ms | 1.1 MB |
 | 913 | project_euler/problem_345/sol1 |   |  |  |
-| 914 | quantum/q_fourier_transform |   |  |  |
+| 914 | quantum/q_fourier_transform | ✓ | 1.702ms | 512.0 KB |
 | 915 | scheduling/job_sequence_with_deadline |   |  |  |
 | 916 | scheduling/job_sequencing_with_deadline |   |  |  |
 | 917 | scheduling/multi_level_feedback_queue |   |  |  |
-| 918 | scheduling/non_preemptive_shortest_job_first |   |  |  |
-| 919 | scheduling/round_robin |   |  |  |
+| 918 | scheduling/non_preemptive_shortest_job_first | ✓ | 1.347ms | 700.0 KB |
+| 919 | scheduling/round_robin | ✓ | 1.166ms | 384.0 KB |
 | 920 | scheduling/shortest_job_first |   |  |  |
 | 921 | scripts/build_directory_md |   |  |  |
-| 922 | scripts/validate_filenames |   |  |  |
+| 922 | scripts/validate_filenames | ✓ | 524µs | 256.0 KB |
 | 923 | scripts/validate_solutions |   |  |  |
-| 924 | searches/binary_search |   |  |  |
-| 925 | searches/double_linear_search |   |  |  |
-| 926 | searches/double_linear_search_recursion |   |  |  |
-| 927 | searches/exponential_search |   |  |  |
-| 928 | searches/fibonacci_search |   |  |  |
+| 924 | searches/binary_search | ✓ | 513µs | 256.0 KB |
+| 925 | searches/double_linear_search | ✓ | 1.528ms | 640.0 KB |
+| 926 | searches/double_linear_search_recursion | ✓ | 356µs | 256.0 KB |
+| 927 | searches/exponential_search | ✓ | 228µs |  |
+| 928 | searches/fibonacci_search | ✓ | 438µs | 256.0 KB |
 | 929 | searches/hill_climbing |   |  |  |
-| 930 | searches/interpolation_search |   |  |  |
-| 931 | searches/jump_search |   |  |  |
-| 932 | searches/linear_search |   |  |  |
+| 930 | searches/interpolation_search | ✓ | 423µs | 256.0 KB |
+| 931 | searches/jump_search | ✓ | 408µs | 384.0 KB |
+| 932 | searches/linear_search | ✓ | 430µs | 256.0 KB |
 | 933 | searches/median_of_medians |   |  |  |
-| 934 | searches/quick_select |   |  |  |
-| 935 | searches/sentinel_linear_search |   |  |  |
-| 936 | searches/simple_binary_search |   |  |  |
+| 934 | searches/quick_select | ✓ | 1.452ms | 768.0 KB |
+| 935 | searches/sentinel_linear_search | ✓ | 748µs | 128.0 KB |
+| 936 | searches/simple_binary_search | ✓ | 605µs | 128.0 KB |
 | 937 | searches/simulated_annealing |   |  |  |
 | 938 | searches/tabu_search |   |  |  |
-| 939 | searches/ternary_search |   |  |  |
+| 939 | searches/ternary_search | ✓ | 338µs | 256.0 KB |
 | 940 | sorts/bead_sort |   |  |  |
 | 941 | sorts/binary_insertion_sort |   |  |  |
 | 942 | sorts/bitonic_sort |   |  |  |
 | 943 | sorts/bogo_sort |   |  |  |
-| 944 | sorts/bubble_sort |   |  |  |
+| 944 | sorts/bubble_sort | ✓ | 1.187ms | 384.0 KB |
 | 945 | sorts/bucket_sort |   |  |  |
 | 946 | sorts/circle_sort |   |  |  |
 | 947 | sorts/cocktail_shaker_sort |   |  |  |
 | 948 | sorts/comb_sort |   |  |  |
-| 949 | sorts/counting_sort |   |  |  |
+| 949 | sorts/counting_sort | ✓ | 2.067ms | 640.0 KB |
 | 950 | sorts/cycle_sort |   |  |  |
 | 951 | sorts/double_sort |   |  |  |
 | 952 | sorts/dutch_national_flag_sort |   |  |  |
