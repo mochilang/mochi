@@ -1,0 +1,6 @@
+exit status 2
+File "/workspace/mochi/tests/algorithms/x/OCaml/strings/aho_corasick.ml", line 113, characters 28-72:
+113 |   result := ((__str (word), Obj.repr (Obj.magic (!positions) : int list)) :: List.remove_assoc (__str (word)) (Obj.magic (!result) : (string * Obj.t) list));
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This expression has type Obj.t but an expression was expected of type
+         int list
