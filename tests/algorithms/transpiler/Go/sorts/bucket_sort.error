@@ -1,0 +1,3 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/sorts/bucket_sort.go:335:28: invalid operation: _index(func(v any) []int {…}(sorted_bucket), j) (value of type int) is not an interface

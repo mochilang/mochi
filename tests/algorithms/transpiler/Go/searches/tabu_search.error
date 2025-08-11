@@ -1,0 +1,9 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/searches/tabu_search.go:448:15: cannot convert cand (variable of type int) to type Solution
+../../../tests/algorithms/transpiler/Go/searches/tabu_search.go:455:31: invalid operation: _index(tabu, t).A == _toFloat(Swap(move).A) (mismatched types string and float64)
+../../../tests/algorithms/transpiler/Go/searches/tabu_search.go:455:80: invalid operation: _index(tabu, t).B == _toFloat(Swap(move).B) (mismatched types string and float64)
+../../../tests/algorithms/transpiler/Go/searches/tabu_search.go:455:131: invalid operation: _index(tabu, t).A == _toFloat(Swap(move).B) (mismatched types string and float64)
+../../../tests/algorithms/transpiler/Go/searches/tabu_search.go:455:180: invalid operation: _index(tabu, t).B == _toFloat(Swap(move).A) (mismatched types string and float64)
+../../../tests/algorithms/transpiler/Go/searches/tabu_search.go:460:50: cannot convert cand (variable of type int) to type Solution
+../../../tests/algorithms/transpiler/Go/searches/tabu_search.go:466:14: cannot use best_neighbor (variable of interface type any) as Solution value in assignment: need type assertion

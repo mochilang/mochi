@@ -1,0 +1,3 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/scripts/validate_solutions.go:118:12: cannot use s (variable of type string) as []int value in argument to _sha256

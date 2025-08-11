@@ -1,0 +1,7 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/searches/hill_climbing.go:226:30: cannot convert n (variable of type int) to type SearchProblem
+../../../tests/algorithms/transpiler/Go/searches/hill_climbing.go:229:33: cannot convert n (variable of type int) to type SearchProblem
+../../../tests/algorithms/transpiler/Go/searches/hill_climbing.go:232:35: cannot convert n (variable of type int) to type SearchProblem
+../../../tests/algorithms/transpiler/Go/searches/hill_climbing.go:237:13: cannot use n (variable of type int) as SearchProblem value in assignment
+../../../tests/algorithms/transpiler/Go/searches/hill_climbing.go:243:13: cannot use n (variable of type int) as SearchProblem value in assignment

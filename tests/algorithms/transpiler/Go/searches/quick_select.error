@@ -1,0 +1,4 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/searches/quick_select.go:211:30: invalid operation: index < (fmt.Sprint(m) + fmt.Sprint(count)) (mismatched types int and string)
+../../../tests/algorithms/transpiler/Go/searches/quick_select.go:289:33: cannot convert (fmt.Sprint(m) + fmt.Sprint(count)) (value of type string) to type int

@@ -1631,14 +1631,9 @@ func (ic *IntCastExpr) emit(w io.Writer) {
 		io.WriteString(w, ".Int64())")
 		return
 	}
-	var buf bytes.Buffer
-	ic.Expr.emit(&buf)
-	s := buf.String()
-	if strings.HasPrefix(s, "(") {
-		fmt.Fprintf(w, "%s.(int)", s)
-	} else {
-		fmt.Fprintf(w, "(%s).(int)", s)
-	}
+	io.WriteString(w, "int(")
+	ic.Expr.emit(w)
+	io.WriteString(w, ")")
 }
 
 // ExistsExpr represents the exists() builtin result to preserve boolean output.
@@ -2890,6 +2885,11 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 			}
 			vd := &VarDecl{Name: name, Type: typ, Value: e, Global: global}
+			if strings.Contains(vd.Type, "map[any]any") {
+				if ml, ok := vd.Value.(*MapLit); ok && ml.KeyType != "" && ml.ValueType != "" {
+					vd.Type = fmt.Sprintf("map[%s]%s", ml.KeyType, ml.ValueType)
+				}
+			}
 			if vd.Type == "" {
 				switch vd.Value.(type) {
 				case *IntCastExpr:
@@ -3072,6 +3072,11 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				varNameMap[origName] = name
 			}
 			vd := &VarDecl{Name: name, Type: typ, Value: e, Global: global}
+			if strings.Contains(vd.Type, "map[any]any") {
+				if ml, ok := vd.Value.(*MapLit); ok && ml.KeyType != "" && ml.ValueType != "" {
+					vd.Type = fmt.Sprintf("map[%s]%s", ml.KeyType, ml.ValueType)
+				}
+			}
 			varDecls[st.Var.Name] = vd
 			if vd.Global && vd.Value != nil {
 				extraDecls = append(extraDecls, &AssignStmt{Name: vd.Name, Value: vd.Value})
