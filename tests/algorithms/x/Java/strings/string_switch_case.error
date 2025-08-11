@@ -1,5 +1,0 @@
-compile: exit status 1
-/tmp/TestJavaTranspiler_Algorithms_Golden1033_string_switch_case1181438790/001/Main.java:8: error: incompatible types: String cannot be converted to Number
-            if (((Number)(ch)).intValue() == " ") {
-                         ^
-1 error

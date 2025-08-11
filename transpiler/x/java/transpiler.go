@@ -263,7 +263,7 @@ func javaType(t string) string {
 			if comma >= 0 {
 				key := strings.TrimSpace(rest[:comma])
 				val := strings.TrimSpace(rest[comma+1:])
-				return fmt.Sprintf("java.util.Map<%s, %s>", javaType(key), javaType(val))
+				return fmt.Sprintf("java.util.Map<%s, %s>", javaBoxType(javaType(key)), javaBoxType(javaType(val)))
 			}
 		}
 		if strings.HasPrefix(t, "fn(") {
@@ -328,7 +328,7 @@ func javaType(t string) string {
 
 func javaBoxType(t string) string {
 	switch t {
-	case "int":
+	case "int", "long":
 		return "Long"
 	case "float", "float64", "double":
 		return "Double"
@@ -480,7 +480,7 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 			return
 		}
 	}
-	if typ == "long" || typ == "double" || typ == "float" || typ == "float64" {
+	if typ == "int" || typ == "long" || typ == "double" || typ == "float" || typ == "float64" {
 		it := inferType(e)
 		if typ == "long" && it == "java.math.BigInteger" {
 			fmt.Fprint(w, "((java.math.BigInteger)(")
@@ -488,10 +488,8 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 			fmt.Fprint(w, ")).longValue()")
 			return
 		}
-		if typ == "int" {
-			if it == "double" {
-				typ = "double"
-			} else if ce, ok := e.(*CallExpr); ok {
+		if typ == "int" || typ == "long" {
+			if ce, ok := e.(*CallExpr); ok {
 				if strings.HasPrefix(ce.Func, "Math.") {
 					e.emit(w)
 					return
@@ -501,9 +499,12 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 		if it == "" || it == "Object" {
 			fmt.Fprint(w, "((Number)(")
 			e.emit(w)
-			if typ == "int" {
+			switch typ {
+			case "int":
 				fmt.Fprint(w, ")).intValue()")
-			} else {
+			case "long":
+				fmt.Fprint(w, ")).longValue()")
+			default:
 				fmt.Fprint(w, ")).doubleValue()")
 			}
 			return
@@ -803,7 +804,7 @@ func inferType(e Expr) string {
 			if sameK && sameV {
 				ex.KeyType = kt
 				ex.ValueType = vt
-				return fmt.Sprintf("java.util.Map<%s, %s>", javaType(kt), javaType(vt))
+				return fmt.Sprintf("java.util.Map<%s, %s>", javaBoxType(javaType(kt)), javaBoxType(javaType(vt)))
 			}
 		}
 		return "java.util.Map"
@@ -4870,6 +4871,9 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		elem := arrayElemType(iter)
+		if elem == "" && isStringExpr(iter) {
+			elem = "string"
+		}
 		isMap := false
 		keyType := ""
 		switch it := iter.(type) {
