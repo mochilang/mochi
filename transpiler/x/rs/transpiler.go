@@ -1696,18 +1696,23 @@ func (a *AvgExpr) emit(w io.Writer) {
 type MinExpr struct{ List Expr }
 
 func (m *MinExpr) emit(w io.Writer) {
+	// Using `Iterator::min` requires the element type to implement `Ord`.
+	// `f64` only implements `PartialOrd`, which caused compilation errors
+	// for algorithms operating on floating point slices.  Iterate manually
+	// and compare via `<` so both integers and floats are supported.
 	io.WriteString(w, "{ let tmp = ")
 	m.List.emit(w)
-	io.WriteString(w, ".clone(); *tmp.iter().min().unwrap_or(&0) }")
+	io.WriteString(w, ".clone(); let mut it = tmp.iter(); let first = *it.next().unwrap_or(&Default::default()); it.fold(first, |a, b| if *b < a { *b } else { a }) }")
 }
 
 // MaxExpr represents a call to the `max` builtin.
 type MaxExpr struct{ List Expr }
 
 func (m *MaxExpr) emit(w io.Writer) {
+	// See MinExpr.emit for rationale.
 	io.WriteString(w, "{ let tmp = ")
 	m.List.emit(w)
-	io.WriteString(w, ".clone(); *tmp.iter().max().unwrap_or(&0) }")
+	io.WriteString(w, ".clone(); let mut it = tmp.iter(); let first = *it.next().unwrap_or(&Default::default()); it.fold(first, |a, b| if *b > a { *b } else { a }) }")
 }
 
 // ExistsExpr represents a call to the `exists` builtin.
@@ -4495,7 +4500,16 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 	operands := []Expr{first}
 	ops := make([]string, len(e.Binary.Right))
 	for i, op := range e.Binary.Right {
-		right, err := compilePostfix(op.Right)
+		// Each operand in the expression may itself contain unary
+		// operators (for example: `-a + b`).  Previously the code
+		// attempted to compile the right hand side using
+		// `compilePostfix`, which expects a *parser.PostfixExpr.
+		// After parser updates, the Right field is now a
+		// *parser.Unary.  Using `compilePostfix` caused type
+		// mismatches and prevented algorithms from compiling.
+		// Use `compileUnary` here so any leading unary operators are
+		// handled correctly before further expression processing.
+		right, err := compileUnary(op.Right)
 		if err != nil {
 			return nil, err
 		}
@@ -7763,7 +7777,13 @@ func exprUsesNameInCall(e *parser.Expr, name string) bool {
 		return true
 	}
 	for _, op := range e.Binary.Right {
-		if postfixUsesNameInCall(op.Right, name) {
+		// `op.Right` now holds a *parser.Unary.  The previous
+		// implementation expected a *parser.PostfixExpr and called
+		// `postfixUsesNameInCall`, which no longer matches the parser
+		// structure and caused compilation failures.  Delegate to
+		// `unaryUsesNameInCall` so that any nested unary or postfix
+		// expressions are inspected properly.
+		if unaryUsesNameInCall(op.Right, name) {
 			return true
 		}
 	}
