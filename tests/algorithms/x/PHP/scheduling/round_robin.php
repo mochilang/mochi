@@ -1,20 +1,5 @@
 <?php
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -81,9 +66,7 @@ function _imod($a, $b) {
     }
     return $a % $b;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function calculate_waiting_times($burst_times) {
+function calculate_waiting_times($burst_times) {
   $quantum = 2;
   $rem = [];
   $i = 0;
@@ -120,8 +103,8 @@ $__start = _now();
 }
 };
   return $waiting;
-};
-  function calculate_turn_around_times($burst_times, $waiting_times) {
+}
+function calculate_turn_around_times($burst_times, $waiting_times) {
   $result = [];
   $i = 0;
   while ($i < count($burst_times)) {
@@ -129,8 +112,8 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return $result;
-};
-  function mean($values) {
+}
+function mean($values) {
   $total = 0;
   $i = 0;
   while ($i < count($values)) {
@@ -138,8 +121,8 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return (floatval($total)) / (floatval(count($values)));
-};
-  function format_float_5($x) {
+}
+function format_float_5($x) {
   $scaled = intval($x * 100000.0 + 0.5);
   $int_part = _intdiv($scaled, 100000);
   $frac_part = _imod($scaled, 100000);
@@ -148,8 +131,8 @@ $__start = _now();
   $frac_str = '0' . $frac_str;
 };
   return _str($int_part) . '.' . $frac_str;
-};
-  function main() {
+}
+function main() {
   $burst_times = [3, 5, 7];
   $waiting_times = calculate_waiting_times($burst_times);
   $turn_around_times = calculate_turn_around_times($burst_times, $waiting_times);
@@ -163,13 +146,5 @@ $__start = _now();
   echo rtrim(''), PHP_EOL;
   echo rtrim('Average waiting time = ' . format_float_5(mean($waiting_times))), PHP_EOL;
   echo rtrim('Average turn around time = ' . format_float_5(mean($turn_around_times))), PHP_EOL;
-};
-  main();
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+main();

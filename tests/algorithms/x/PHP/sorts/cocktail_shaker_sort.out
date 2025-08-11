@@ -1,4 +1,3 @@
-Fatal error: Uncaught Error: cocktail_shaker_sort(): Argument #1 ($arr) could not be passed by reference in /workspace/mochi/tests/algorithms/x/PHP/sorts/cocktail_shaker_sort.php:90
-Stack trace:
-#0 {main}
-  thrown in /workspace/mochi/tests/algorithms/x/PHP/sorts/cocktail_shaker_sort.php on line 90
+[1 2 2 4 5]
+[-4 0 1 2 5 11]
+[1 2 3 4 5]

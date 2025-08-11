@@ -1,20 +1,5 @@
 <?php
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _len($x) {
     if ($x === null) { return 0; }
     if (is_array($x)) { return count($x); }
@@ -76,9 +61,7 @@ function _imod($a, $b) {
     }
     return $a % $b;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function path_cost($path, $graph) {
+function path_cost($path, $graph) {
   global $first, $best;
   $total = 0;
   $i = 0;
@@ -89,8 +72,8 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return $total;
-};
-  function generate_first_solution($graph, $start) {
+}
+function generate_first_solution($graph, $start) {
   global $first, $best;
   $path = [];
   $visiting = $start;
@@ -114,8 +97,8 @@ $__start = _now();
   $path = _append($path, $start);
   $total = _iadd($total, $graph[$visiting][$start]);
   return ['path' => $path, 'cost' => $total];
-};
-  function copy_path($path) {
+}
+function copy_path($path) {
   global $graph, $first, $best;
   $res = [];
   $i = 0;
@@ -124,8 +107,8 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return $res;
-};
-  function find_neighborhood($sol, $graph) {
+}
+function find_neighborhood($sol, $graph) {
   global $first, $best;
   $neighbors = [];
   $i = 1;
@@ -145,8 +128,8 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return $neighbors;
-};
-  function find_swap($a, $b) {
+}
+function find_swap($a, $b) {
   global $graph, $first, $best;
   $i = 0;
   while ($i < count($a)) {
@@ -156,8 +139,8 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return ['a' => '', 'b' => ''];
-};
-  function tabu_search($first, $graph, $iters, $size) {
+}
+function tabu_search($first, $graph, $iters, $size) {
   $solution = $first;
   $best = $first;
   $tabu = [];
@@ -204,17 +187,9 @@ $__start = _now();
   $count = _iadd($count, 1);
 };
   return $best;
-};
-  $graph = ['a' => ['b' => 20, 'c' => 18, 'd' => 22, 'e' => 26], 'b' => ['a' => 20, 'c' => 10, 'd' => 11, 'e' => 12], 'c' => ['a' => 18, 'b' => 10, 'd' => 23, 'e' => 24], 'd' => ['a' => 22, 'b' => 11, 'c' => 23, 'e' => 40], 'e' => ['a' => 26, 'b' => 12, 'c' => 24, 'd' => 40]];
-  $first = generate_first_solution($graph, 'a');
-  $best = tabu_search($first, $graph, 4, 3);
-  echo rtrim(_str($best['path'])), PHP_EOL;
-  echo rtrim(_str($best['cost'])), PHP_EOL;
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+$graph = ['a' => ['b' => 20, 'c' => 18, 'd' => 22, 'e' => 26], 'b' => ['a' => 20, 'c' => 10, 'd' => 11, 'e' => 12], 'c' => ['a' => 18, 'b' => 10, 'd' => 23, 'e' => 24], 'd' => ['a' => 22, 'b' => 11, 'c' => 23, 'e' => 40], 'e' => ['a' => 26, 'b' => 12, 'c' => 24, 'd' => 40]];
+$first = generate_first_solution($graph, 'a');
+$best = tabu_search($first, $graph, 4, 3);
+echo rtrim(_str($best['path'])), PHP_EOL;
+echo rtrim(_str($best['cost'])), PHP_EOL;

@@ -1,20 +1,5 @@
 <?php
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -77,9 +62,7 @@ function _imod($a, $b) {
     }
     return $a % $b;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function is_sorted($arr) {
+function is_sorted($arr) {
   $i = 1;
   while ($i < count($arr)) {
   if ($arr[_isub($i, 1)] > $arr[$i]) {
@@ -88,8 +71,8 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return true;
-};
-  function binary_search($sorted_collection, $item) {
+}
+function binary_search($sorted_collection, $item) {
   if (!is_sorted($sorted_collection)) {
   return -1;
 }
@@ -108,8 +91,8 @@ $__start = _now();
 }
 };
   return -1;
-};
-  function binary_search_by_recursion($sorted_collection, $item, $left, $right) {
+}
+function binary_search_by_recursion($sorted_collection, $item, $left, $right) {
   if ($right < $left) {
   return -1;
 }
@@ -121,8 +104,8 @@ $__start = _now();
   return binary_search_by_recursion($sorted_collection, $item, $left, _isub($midpoint, 1));
 }
   return binary_search_by_recursion($sorted_collection, $item, _iadd($midpoint, 1), $right);
-};
-  function exponential_search($sorted_collection, $item) {
+}
+function exponential_search($sorted_collection, $item) {
   if (!is_sorted($sorted_collection)) {
   return -1;
 }
@@ -136,8 +119,8 @@ $__start = _now();
   $left = _intdiv($bound, 2);
   $right = min([$bound, _isub(count($sorted_collection), 1)]);
   return binary_search_by_recursion($sorted_collection, $item, $left, $right);
-};
-  function main() {
+}
+function main() {
   $data = [0, 5, 7, 10, 15];
   echo rtrim(_str(binary_search($data, 0))), PHP_EOL;
   echo rtrim(_str(binary_search($data, 15))), PHP_EOL;
@@ -151,13 +134,5 @@ $__start = _now();
   echo rtrim(_str(exponential_search($data, 15))), PHP_EOL;
   echo rtrim(_str(exponential_search($data, 5))), PHP_EOL;
   echo rtrim(_str(exponential_search($data, 6))), PHP_EOL;
-};
-  main();
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+main();

@@ -1,20 +1,5 @@
 <?php
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -70,9 +55,7 @@ function _imod($a, $b) {
     }
     return $a % $b;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function calculate_waitingtime($arrival_time, $burst_time, $no_of_processes) {
+function calculate_waitingtime($arrival_time, $burst_time, $no_of_processes) {
   global $turn_around_time, $pid, $avg_wait, $avg_turn;
   $waiting_time = null;
   $remaining_time = null;
@@ -113,8 +96,8 @@ $__start = _now();
 }
 };
   return $waiting_time;
-};
-  function calculate_turnaroundtime($burst_time, $no_of_processes, $waiting_time) {
+}
+function calculate_turnaroundtime($burst_time, $no_of_processes, $waiting_time) {
   global $arrival_time, $pid, $avg_wait, $avg_turn;
   $turn_around_time = null;
   $i = 0;
@@ -123,8 +106,8 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return $turn_around_time;
-};
-  function average($values) {
+}
+function average($values) {
   global $no_of_processes, $burst_time, $arrival_time, $waiting_time, $turn_around_time, $pid, $avg_wait, $avg_turn;
   $total = 0;
   $i = 0;
@@ -133,30 +116,22 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return (floatval($total)) / (floatval(count($values)));
-};
-  echo rtrim('[TEST CASE 01]'), PHP_EOL;
-  $no_of_processes = 4;
-  $burst_time = [2, 5, 3, 7];
-  $arrival_time = [0, 0, 0, 0];
-  $waiting_time = calculate_waitingtime($arrival_time, $burst_time, $no_of_processes);
-  $turn_around_time = calculate_turnaroundtime($burst_time, $no_of_processes, $waiting_time);
-  echo rtrim('PID	Burst Time	Arrival Time	Waiting Time	Turnaround Time'), PHP_EOL;
-  $i = 0;
-  while ($i < $no_of_processes) {
+}
+echo rtrim('[TEST CASE 01]'), PHP_EOL;
+$no_of_processes = 4;
+$burst_time = [2, 5, 3, 7];
+$arrival_time = [0, 0, 0, 0];
+$waiting_time = calculate_waitingtime($arrival_time, $burst_time, $no_of_processes);
+$turn_around_time = calculate_turnaroundtime($burst_time, $no_of_processes, $waiting_time);
+echo rtrim('PID	Burst Time	Arrival Time	Waiting Time	Turnaround Time'), PHP_EOL;
+$i = 0;
+while ($i < $no_of_processes) {
   $pid = _iadd($i, 1);
   echo rtrim(_str($pid) . '	' . _str($burst_time[$i]) . '			' . _str($arrival_time[$i]) . '				' . _str($waiting_time[$i]) . '				' . _str($turn_around_time[$i])), PHP_EOL;
   $i = _iadd($i, 1);
 }
-  $avg_wait = average($waiting_time);
-  $avg_turn = average($turn_around_time);
-  echo rtrim('
+$avg_wait = average($waiting_time);
+$avg_turn = average($turn_around_time);
+echo rtrim('
 Average waiting time = ' . _str($avg_wait)), PHP_EOL;
-  echo rtrim('Average turnaround time = ' . _str($avg_turn)), PHP_EOL;
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+echo rtrim('Average turnaround time = ' . _str($avg_turn)), PHP_EOL;

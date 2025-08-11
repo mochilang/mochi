@@ -1,20 +1,5 @@
 <?php
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -74,9 +59,7 @@ function _panic($msg) {
     fwrite(STDERR, strval($msg));
     exit(1);
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function bubble_sort_iterative(&$collection) {
+function bubble_sort_iterative($collection) {
   $n = count($collection);
   while ($n > 0) {
   $swapped = false;
@@ -96,8 +79,8 @@ $__start = _now();
   $n = _isub($n, 1);
 };
   return $collection;
-};
-  function bubble_sort_recursive(&$collection) {
+}
+function bubble_sort_recursive($collection) {
   $n = count($collection);
   $swapped = false;
   $i = 0;
@@ -114,8 +97,8 @@ $__start = _now();
   return bubble_sort_recursive($collection);
 }
   return $collection;
-};
-  function copy_list($xs) {
+}
+function copy_list($xs) {
   $out = [];
   $i = 0;
   while ($i < count($xs)) {
@@ -123,8 +106,8 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return $out;
-};
-  function list_eq($a, $b) {
+}
+function list_eq($a, $b) {
   if (count($a) != count($b)) {
   return false;
 }
@@ -136,8 +119,8 @@ $__start = _now();
   $k = _iadd($k, 1);
 };
   return true;
-};
-  function test_bubble_sort() {
+}
+function test_bubble_sort() {
   $example = [0, 5, 2, 3, 2];
   $expected = [0, 2, 2, 3, 5];
   if (!list_eq(bubble_sort_iterative(copy_list($example)), $expected)) {
@@ -153,19 +136,11 @@ $__start = _now();
   if (count(bubble_sort_recursive(copy_list($empty))) != 0) {
   _panic('empty recursive failed');
 }
-};
-  function main() {
+}
+function main() {
   test_bubble_sort();
   $arr = [5, 1, 4, 2, 8];
   echo rtrim(_str(bubble_sort_iterative(copy_list($arr)))), PHP_EOL;
   echo rtrim(_str(bubble_sort_recursive(copy_list($arr)))), PHP_EOL;
-};
-  main();
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+main();

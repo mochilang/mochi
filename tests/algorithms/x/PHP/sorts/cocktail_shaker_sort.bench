@@ -1,4 +1,5 @@
-Fatal error: Uncaught Error: cocktail_shaker_sort(): Argument #1 ($arr) could not be passed by reference in /workspace/mochi/tests/algorithms/x/PHP/sorts/cocktail_shaker_sort.php:107
-Stack trace:
-#0 {main}
-  thrown in /workspace/mochi/tests/algorithms/x/PHP/sorts/cocktail_shaker_sort.php on line 107
+{
+  "duration_us": 127,
+  "memory_bytes": 41920,
+  "name": "main"
+}

@@ -1,20 +1,5 @@
 <?php
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -81,9 +66,7 @@ function _imod($a, $b) {
     }
     return $a % $b;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function partition($data, $pivot) {
+function partition($data, $pivot) {
   $less = [];
   $equal = [];
   $greater = [];
@@ -100,8 +83,8 @@ $__start = _now();
 }
 };
   return [$less, $equal, $greater];
-};
-  function quick_select($items, $index) {
+}
+function quick_select($items, $index) {
   if ($index < 0 || $index >= count($items)) {
   return -1;
 }
@@ -121,8 +104,8 @@ $__start = _now();
   return quick_select($larger, _isub($index, (_iadd($m, $count))));
 };
 }
-};
-  function median($items) {
+}
+function median($items) {
   $n = count($items);
   $mid = _intdiv($n, 2);
   if (_imod($n, 2) != 0) {
@@ -132,18 +115,10 @@ $__start = _now();
   $high = quick_select($items, $mid);
   return _idiv((_imul(1.0, (_iadd($low, $high)))), 2.0);
 }
-};
-  echo rtrim(_str(quick_select([2, 4, 5, 7, 899, 54, 32], 5))), PHP_EOL;
-  echo rtrim(_str(quick_select([2, 4, 5, 7, 899, 54, 32], 1))), PHP_EOL;
-  echo rtrim(_str(quick_select([5, 4, 3, 2], 2))), PHP_EOL;
-  echo rtrim(_str(quick_select([3, 5, 7, 10, 2, 12], 3))), PHP_EOL;
-  echo rtrim(_str(median([3, 2, 2, 9, 9]))), PHP_EOL;
-  echo rtrim(_str(median([2, 2, 9, 9, 9, 3]))), PHP_EOL;
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+echo rtrim(_str(quick_select([2, 4, 5, 7, 899, 54, 32], 5))), PHP_EOL;
+echo rtrim(_str(quick_select([2, 4, 5, 7, 899, 54, 32], 1))), PHP_EOL;
+echo rtrim(_str(quick_select([5, 4, 3, 2], 2))), PHP_EOL;
+echo rtrim(_str(quick_select([3, 5, 7, 10, 2, 12], 3))), PHP_EOL;
+echo rtrim(_str(median([3, 2, 2, 9, 9]))), PHP_EOL;
+echo rtrim(_str(median([2, 2, 9, 9, 9, 3]))), PHP_EOL;

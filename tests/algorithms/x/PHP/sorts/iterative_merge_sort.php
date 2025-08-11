@@ -1,20 +1,5 @@
 <?php
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -81,9 +66,7 @@ function _imod($a, $b) {
     }
     return $a % $b;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function merge(&$a, $low, $mid, $high) {
+function merge($a, $low, $mid, $high) {
   $left = array_slice($a, $low, $mid - $low);
   $right = array_slice($a, $mid, _iadd($high, 1) - $mid);
   $result = [];
@@ -112,8 +95,8 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return $a;
-};
-  function iter_merge_sort($items) {
+}
+function iter_merge_sort($items) {
   $n = count($items);
   if ($n <= 1) {
   return $items;
@@ -140,8 +123,8 @@ $__start = _now();
   $p = _imul($p, 2);
 };
   return $arr;
-};
-  function list_to_string($arr) {
+}
+function list_to_string($arr) {
   $s = '[';
   $i = 0;
   while ($i < count($arr)) {
@@ -152,19 +135,11 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return $s . ']';
-};
-  echo rtrim(list_to_string(iter_merge_sort([5, 9, 8, 7, 1, 2, 7]))), PHP_EOL;
-  echo rtrim(list_to_string(iter_merge_sort([1]))), PHP_EOL;
-  echo rtrim(list_to_string(iter_merge_sort([2, 1]))), PHP_EOL;
-  echo rtrim(list_to_string(iter_merge_sort([4, 3, 2, 1]))), PHP_EOL;
-  echo rtrim(list_to_string(iter_merge_sort([5, 4, 3, 2, 1]))), PHP_EOL;
-  echo rtrim(list_to_string(iter_merge_sort([-2, -9, -1, -4]))), PHP_EOL;
-  echo rtrim(list_to_string(iter_merge_sort([]))), PHP_EOL;
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+echo rtrim(list_to_string(iter_merge_sort([5, 9, 8, 7, 1, 2, 7]))), PHP_EOL;
+echo rtrim(list_to_string(iter_merge_sort([1]))), PHP_EOL;
+echo rtrim(list_to_string(iter_merge_sort([2, 1]))), PHP_EOL;
+echo rtrim(list_to_string(iter_merge_sort([4, 3, 2, 1]))), PHP_EOL;
+echo rtrim(list_to_string(iter_merge_sort([5, 4, 3, 2, 1]))), PHP_EOL;
+echo rtrim(list_to_string(iter_merge_sort([-2, -9, -1, -4]))), PHP_EOL;
+echo rtrim(list_to_string(iter_merge_sort([]))), PHP_EOL;

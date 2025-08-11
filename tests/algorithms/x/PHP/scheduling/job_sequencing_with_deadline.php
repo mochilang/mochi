@@ -1,20 +1,5 @@
 <?php
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -70,9 +55,7 @@ function _imod($a, $b) {
     }
     return $a % $b;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function sort_jobs_by_profit($jobs) {
+function sort_jobs_by_profit($jobs) {
   global $jobs1, $jobs2;
   $js = $jobs;
   $i = 0;
@@ -90,8 +73,8 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return $js;
-};
-  function max_deadline($jobs) {
+}
+function max_deadline($jobs) {
   global $jobs1, $jobs2;
   $max_d = 0;
   $i = 0;
@@ -104,8 +87,8 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return $max_d;
-};
-  function job_sequencing_with_deadlines($jobs) {
+}
+function job_sequencing_with_deadlines($jobs) {
   global $jobs1, $jobs2;
   $js = sort_jobs_by_profit($jobs);
   $max_d = max_deadline($js);
@@ -136,25 +119,17 @@ $__start = _now();
   $result = _append($result, $count);
   $result = _append($result, $max_profit);
   return $result;
-};
-  $jobs1 = [];
-  $jobs1 = _append($jobs1, ['id' => 1, 'deadline' => 4, 'profit' => 20]);
-  $jobs1 = _append($jobs1, ['id' => 2, 'deadline' => 1, 'profit' => 10]);
-  $jobs1 = _append($jobs1, ['id' => 3, 'deadline' => 1, 'profit' => 40]);
-  $jobs1 = _append($jobs1, ['id' => 4, 'deadline' => 1, 'profit' => 30]);
-  echo rtrim(_str(job_sequencing_with_deadlines($jobs1))), PHP_EOL;
-  $jobs2 = [];
-  $jobs2 = _append($jobs2, ['id' => 1, 'deadline' => 2, 'profit' => 100]);
-  $jobs2 = _append($jobs2, ['id' => 2, 'deadline' => 1, 'profit' => 19]);
-  $jobs2 = _append($jobs2, ['id' => 3, 'deadline' => 2, 'profit' => 27]);
-  $jobs2 = _append($jobs2, ['id' => 4, 'deadline' => 1, 'profit' => 25]);
-  $jobs2 = _append($jobs2, ['id' => 5, 'deadline' => 1, 'profit' => 15]);
-  echo rtrim(_str(job_sequencing_with_deadlines($jobs2))), PHP_EOL;
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+$jobs1 = [];
+$jobs1 = _append($jobs1, ['id' => 1, 'deadline' => 4, 'profit' => 20]);
+$jobs1 = _append($jobs1, ['id' => 2, 'deadline' => 1, 'profit' => 10]);
+$jobs1 = _append($jobs1, ['id' => 3, 'deadline' => 1, 'profit' => 40]);
+$jobs1 = _append($jobs1, ['id' => 4, 'deadline' => 1, 'profit' => 30]);
+echo rtrim(_str(job_sequencing_with_deadlines($jobs1))), PHP_EOL;
+$jobs2 = [];
+$jobs2 = _append($jobs2, ['id' => 1, 'deadline' => 2, 'profit' => 100]);
+$jobs2 = _append($jobs2, ['id' => 2, 'deadline' => 1, 'profit' => 19]);
+$jobs2 = _append($jobs2, ['id' => 3, 'deadline' => 2, 'profit' => 27]);
+$jobs2 = _append($jobs2, ['id' => 4, 'deadline' => 1, 'profit' => 25]);
+$jobs2 = _append($jobs2, ['id' => 5, 'deadline' => 1, 'profit' => 15]);
+echo rtrim(_str(job_sequencing_with_deadlines($jobs2))), PHP_EOL;

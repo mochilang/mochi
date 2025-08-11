@@ -1,20 +1,5 @@
 <?php
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -66,19 +51,17 @@ function _imod($a, $b) {
     }
     return $a % $b;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  $seed = 1;
-  function mochi_rand() {
+$seed = 1;
+function mochi_rand() {
   global $seed, $data;
   $seed = _imod((_iadd(_imul($seed, 1103515245), 12345)), 2147483648);
   return $seed;
-};
-  function rand_range($max) {
+}
+function rand_range($max) {
   global $seed, $data;
   return _imod(mochi_rand(), $max);
-};
-  function mochi_shuffle(&$list_int) {
+}
+function mochi_shuffle($list_int) {
   global $seed, $data;
   $i = _isub(count($list_int), 1);
   while ($i > 0) {
@@ -89,8 +72,8 @@ $__start = _now();
   $i = _isub($i, 1);
 };
   return $list_int;
-};
-  function is_sorted($list_int) {
+}
+function is_sorted($list_int) {
   global $seed, $data;
   $i = 0;
   while ($i < _isub(count($list_int), 1)) {
@@ -100,22 +83,14 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return true;
-};
-  function bogo_sort($list_int) {
+}
+function bogo_sort($list_int) {
   global $seed, $data;
   $res = $list_int;
   while (!is_sorted($res)) {
   $res = mochi_shuffle($res);
 };
   return $res;
-};
-  $data = [3, 2, 1];
-  echo rtrim(_str(bogo_sort($data))), PHP_EOL;
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+$data = [3, 2, 1];
+echo rtrim(_str(bogo_sort($data))), PHP_EOL;

@@ -1,20 +1,5 @@
 <?php
 ini_set('memory_limit', '-1');
-$now_seed = 0;
-$now_seeded = false;
-$s = getenv('MOCHI_NOW_SEED');
-if ($s !== false && $s !== '') {
-    $now_seed = intval($s);
-    $now_seeded = true;
-}
-function _now() {
-    global $now_seed, $now_seeded;
-    if ($now_seeded) {
-        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
-        return $now_seed;
-    }
-    return hrtime(true);
-}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -70,9 +55,7 @@ function _imod($a, $b) {
     }
     return $a % $b;
 }
-$__start_mem = memory_get_usage();
-$__start = _now();
-  function parse_int($s) {
+function parse_int($s) {
   global $logins1, $logins2;
   $value = 0;
   $i = 0;
@@ -82,8 +65,8 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return $value;
-};
-  function mochi_join($xs) {
+}
+function mochi_join($xs) {
   global $logins1, $logins2;
   $s = '';
   $i = 0;
@@ -92,8 +75,8 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return $s;
-};
-  function contains($xs, $c) {
+}
+function contains($xs, $c) {
   global $logins1, $logins2;
   $i = 0;
   while ($i < count($xs)) {
@@ -103,8 +86,8 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return false;
-};
-  function index_of($xs, $c) {
+}
+function index_of($xs, $c) {
   global $logins1, $logins2;
   $i = 0;
   while ($i < count($xs)) {
@@ -114,8 +97,8 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return -1;
-};
-  function remove_at($xs, $idx) {
+}
+function remove_at($xs, $idx) {
   global $logins1, $logins2;
   $res = [];
   $i = 0;
@@ -126,8 +109,8 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return $res;
-};
-  function unique_chars($logins) {
+}
+function unique_chars($logins) {
   global $logins1, $logins2;
   $chars = [];
   $i = 0;
@@ -144,8 +127,8 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return $chars;
-};
-  function satisfies($permutation, $logins) {
+}
+function satisfies($permutation, $logins) {
   global $logins1, $logins2;
   $i = 0;
   while ($i < count($logins)) {
@@ -159,8 +142,8 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return true;
-};
-  function search($chars, $current, $logins) {
+}
+function search($chars, $current, $logins) {
   global $logins1, $logins2;
   if (count($chars) == 0) {
   if (satisfies($current, $logins)) {
@@ -180,8 +163,8 @@ $__start = _now();
   $i = _iadd($i, 1);
 };
   return '';
-};
-  function find_secret_passcode($logins) {
+}
+function find_secret_passcode($logins) {
   global $logins1, $logins2;
   $chars = unique_chars($logins);
   $s = search($chars, [], $logins);
@@ -189,16 +172,8 @@ $__start = _now();
   return -1;
 }
   return parse_int($s);
-};
-  $logins1 = ['135', '259', '235', '189', '690', '168', '120', '136', '289', '589', '160', '165', '580', '369', '250', '280'];
-  echo rtrim(_str(find_secret_passcode($logins1))), PHP_EOL;
-  $logins2 = ['426', '281', '061', '819', '268', '406', '420', '428', '209', '689', '019', '421', '469', '261', '681', '201'];
-  echo rtrim(_str(find_secret_passcode($logins2))), PHP_EOL;
-$__end = _now();
-$__end_mem = memory_get_peak_usage();
-$__duration = max(1, intdiv($__end - $__start, 1000));
-$__mem_diff = max(0, $__end_mem - $__start_mem);
-$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
-$__j = json_encode($__bench, 128);
-$__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;
+}
+$logins1 = ['135', '259', '235', '189', '690', '168', '120', '136', '289', '589', '160', '165', '580', '369', '250', '280'];
+echo rtrim(_str(find_secret_passcode($logins1))), PHP_EOL;
+$logins2 = ['426', '281', '061', '819', '268', '406', '420', '428', '209', '689', '019', '421', '469', '261', '681', '201'];
+echo rtrim(_str(find_secret_passcode($logins2))), PHP_EOL;

@@ -960,6 +960,40 @@ func markRefParams(body []Stmt, params []string) []bool {
 		}
 	}
 
+	ret := map[string]struct{}{}
+
+	var collect func(Stmt)
+	collect = func(s Stmt) {
+		switch st := s.(type) {
+		case *ReturnStmt:
+			if v, ok := st.Value.(*Var); ok {
+				ret[v.Name] = struct{}{}
+			}
+		case *IfStmt:
+			for _, t := range st.Then {
+				collect(t)
+			}
+			for _, e := range st.Else {
+				collect(e)
+			}
+		case *WhileStmt:
+			for _, b := range st.Body {
+				collect(b)
+			}
+		case *ForRangeStmt:
+			for _, b := range st.Body {
+				collect(b)
+			}
+		case *ForEachStmt:
+			for _, b := range st.Body {
+				collect(b)
+			}
+		}
+	}
+	for _, st := range body {
+		collect(st)
+	}
+
 	var walkExpr func(Expr)
 	walkExpr = func(e Expr) {
 		switch ex := e.(type) {
@@ -969,7 +1003,9 @@ func markRefParams(body []Stmt, params []string) []bool {
 					if iArg < len(flags) && flags[iArg] {
 						if name := rootVar(a); name != "" {
 							if idxPos, ok := idx[name]; ok {
-								ref[idxPos] = true
+								if _, ok := ret[name]; !ok {
+									ref[idxPos] = true
+								}
 							}
 						}
 					}
@@ -1059,7 +1095,9 @@ func markRefParams(body []Stmt, params []string) []bool {
 		case *IndexAssignStmt:
 			if name := rootVar(st.Target); name != "" {
 				if i, ok := idx[name]; ok {
-					ref[i] = true
+					if _, ok := ret[name]; !ok {
+						ref[i] = true
+					}
 				}
 			}
 			walkExpr(st.Value)
@@ -4542,6 +4580,14 @@ func exprType(e Expr) types.Type {
 				return ft.Return
 			}
 		}
+		switch v.Func {
+		case "len":
+			return types.IntType{}
+		case "append":
+			if len(v.Args) > 0 {
+				return exprType(v.Args[0])
+			}
+		}
 	}
 	return types.AnyType{}
 }
@@ -4592,7 +4638,9 @@ func replaceStringNamesWithVars(e Expr) Expr {
 		}
 	case *IndexExpr:
 		v.X = replaceStringNamesWithVars(v.X)
-		v.Index = replaceStringNamesWithVars(v.Index)
+		if _, ok := v.Index.(*StringLit); !ok {
+			v.Index = replaceStringNamesWithVars(v.Index)
+		}
 	case *SliceExpr:
 		v.X = replaceStringNamesWithVars(v.X)
 		v.Start = replaceStringNamesWithVars(v.Start)
