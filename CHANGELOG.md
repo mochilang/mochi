@@ -1,5 +1,24 @@
 # 📦 CHANGELOG.md
 
+## [0.10.64] – 2025-08-11T11:27:00+00:00
+
+### Added
+
+* Min/max operations across Pascal real arrays, Java primitive arrays, and Go floats.
+* Unit return handling in Zig and Rust, with Swift treating unit as `Void`.
+* Python transpiler adds `not-in`; F# handles forward references and I/O.
+* Algorithm outputs expanded for Scheme, Scala, and Elixir.
+
+### Changed
+
+* Go transpiler now handles numeric `any` concatenation; Kotlin improves list type inference.
+* Pascal refines array printing and void functions; Racket isolates `if` branches.
+
+### Fixed
+
+* Parser unary usage alignment.
+* OCaml dynamic map handling.
+
 ## [0.10.63] – 2025-08-09T18:16:04+07:00
 
 ### Added
