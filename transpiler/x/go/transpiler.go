@@ -1462,28 +1462,54 @@ func (s *SumExpr) emit(w io.Writer) {
 	}
 }
 
-type MinExpr struct{ List Expr }
-
-func (m *MinExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "func() int { if len(")
-	m.List.emit(w)
-	fmt.Fprint(w, ") == 0 { return 0 }; m := ")
-	m.List.emit(w)
-	fmt.Fprint(w, "[0]; for _, n := range ")
-	m.List.emit(w)
-	fmt.Fprint(w, "[1:] { if n < m { m = n } }; return m }()")
+type MinExpr struct {
+	List    Expr
+	IsFloat bool
 }
 
-type MaxExpr struct{ List Expr }
+func (m *MinExpr) emit(w io.Writer) {
+	if m.IsFloat {
+		fmt.Fprint(w, "func() float64 { if len(")
+		m.List.emit(w)
+		fmt.Fprint(w, ") == 0 { return 0 }; m := ")
+		m.List.emit(w)
+		fmt.Fprint(w, "[0]; for _, n := range ")
+		m.List.emit(w)
+		fmt.Fprint(w, "[1:] { if n < m { m = n } }; return m }()")
+	} else {
+		fmt.Fprint(w, "func() int { if len(")
+		m.List.emit(w)
+		fmt.Fprint(w, ") == 0 { return 0 }; m := ")
+		m.List.emit(w)
+		fmt.Fprint(w, "[0]; for _, n := range ")
+		m.List.emit(w)
+		fmt.Fprint(w, "[1:] { if n < m { m = n } }; return m }()")
+	}
+}
+
+type MaxExpr struct {
+	List    Expr
+	IsFloat bool
+}
 
 func (m *MaxExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "func() int { if len(")
-	m.List.emit(w)
-	fmt.Fprint(w, ") == 0 { return 0 }; m := ")
-	m.List.emit(w)
-	fmt.Fprint(w, "[0]; for _, n := range ")
-	m.List.emit(w)
-	fmt.Fprint(w, "[1:] { if n > m { m = n } }; return m }()")
+	if m.IsFloat {
+		fmt.Fprint(w, "func() float64 { if len(")
+		m.List.emit(w)
+		fmt.Fprint(w, ") == 0 { return 0 }; m := ")
+		m.List.emit(w)
+		fmt.Fprint(w, "[0]; for _, n := range ")
+		m.List.emit(w)
+		fmt.Fprint(w, "[1:] { if n > m { m = n } }; return m }()")
+	} else {
+		fmt.Fprint(w, "func() int { if len(")
+		m.List.emit(w)
+		fmt.Fprint(w, ") == 0 { return 0 }; m := ")
+		m.List.emit(w)
+		fmt.Fprint(w, "[0]; for _, n := range ")
+		m.List.emit(w)
+		fmt.Fprint(w, "[1:] { if n > m { m = n } }; return m }()")
+	}
 }
 
 // ValuesExpr collects all values from a map.
@@ -4981,13 +5007,13 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 	typesList := []types.Type{firstType}
 	ops := make([]*parser.BinaryOp, len(b.Right))
 	for i, op := range b.Right {
-		expr, err := compilePostfix(op.Right, env, base)
+		expr, err := compileUnary(op.Right, env, base)
 		if err != nil {
 			return nil, err
 		}
 		ops[i] = op
 		operands = append(operands, expr)
-		typesList = append(typesList, types.TypeOfPostfix(op.Right, env))
+		typesList = append(typesList, types.TypeOfUnary(op.Right, env))
 	}
 
 	levels := [][]string{
@@ -6105,9 +6131,21 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			}
 			return &SumExpr{List: args[0], IsFloat: isFloat}, nil
 		case "min":
-			return &MinExpr{List: args[0]}, nil
+			isFloat := false
+			if lt, ok := types.TypeOfExpr(p.Call.Args[0], env).(types.ListType); ok {
+				if toGoTypeFromType(lt.Elem) == "float64" {
+					isFloat = true
+				}
+			}
+			return &MinExpr{List: args[0], IsFloat: isFloat}, nil
 		case "max":
-			return &MaxExpr{List: args[0]}, nil
+			isFloat := false
+			if lt, ok := types.TypeOfExpr(p.Call.Args[0], env).(types.ListType); ok {
+				if toGoTypeFromType(lt.Elem) == "float64" {
+					isFloat = true
+				}
+			}
+			return &MaxExpr{List: args[0], IsFloat: isFloat}, nil
 		case "keys":
 			mt, _ := types.TypeOfExpr(p.Call.Args[0], env).(types.MapType)
 			usesSort = true
