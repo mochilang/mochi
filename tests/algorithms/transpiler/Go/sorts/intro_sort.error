@@ -1,0 +1,5 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/sorts/intro_sort.go:385:4: no new variables on left side of :=
+../../../tests/algorithms/transpiler/Go/sorts/intro_sort.go:386:6: cannot use _ as value or type
+../../../tests/algorithms/transpiler/Go/sorts/intro_sort.go:387:6: cannot use _ as value or type

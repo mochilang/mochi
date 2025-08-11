@@ -1,0 +1,3 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/searches/jump_search.go:82:10: cannot use step (variable of interface type any) as int value in assignment: need type assertion

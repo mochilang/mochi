@@ -1,0 +1,10 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/searches/simulated_annealing.go:272:24: invalid operation: SearchProblem(min_state).X (value of type float64) is not an interface
+../../../tests/algorithms/transpiler/Go/searches/simulated_annealing.go:272:62: invalid operation: SearchProblem(min_state).Y (value of type float64) is not an interface
+../../../tests/algorithms/transpiler/Go/searches/simulated_annealing.go:291:24: invalid operation: SearchProblem(max_state).X (value of type float64) is not an interface
+../../../tests/algorithms/transpiler/Go/searches/simulated_annealing.go:291:62: invalid operation: SearchProblem(max_state).Y (value of type float64) is not an interface
+../../../tests/algorithms/transpiler/Go/searches/simulated_annealing.go:310:24: invalid operation: SearchProblem(min_state2).X (value of type float64) is not an interface
+../../../tests/algorithms/transpiler/Go/searches/simulated_annealing.go:310:63: invalid operation: SearchProblem(min_state2).Y (value of type float64) is not an interface
+../../../tests/algorithms/transpiler/Go/searches/simulated_annealing.go:329:24: invalid operation: SearchProblem(max_state2).X (value of type float64) is not an interface
+../../../tests/algorithms/transpiler/Go/searches/simulated_annealing.go:329:63: invalid operation: SearchProblem(max_state2).Y (value of type float64) is not an interface

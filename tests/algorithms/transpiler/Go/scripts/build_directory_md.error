@@ -1,0 +1,6 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/scripts/build_directory_md.go:425:56: invalid operation: cannot slice part (variable of type int)
+../../../tests/algorithms/transpiler/Go/scripts/build_directory_md.go:425:123: cannot use part (variable of type int) as string value in argument to contains
+../../../tests/algorithms/transpiler/Go/scripts/build_directory_md.go:456:25: cannot use filename (variable of type int) as string value in argument to file_extension
+../../../tests/algorithms/transpiler/Go/scripts/build_directory_md.go:584:52: cannot use filename (variable of type int) as string value in argument to remove_extension

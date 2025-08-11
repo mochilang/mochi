@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 366/1077
-Last updated: 2025-08-11 15:32 +0700
+Completed programs: 417/1077
+Last updated: 2025-08-11 16:20 +0700
 
 Checklist:
 
@@ -916,67 +916,67 @@ Checklist:
 | 907 | project_euler/problem_076/sol1 |   |  |  |
 | 908 | project_euler/problem_077/sol1 |   |  |  |
 | 909 | project_euler/problem_078/sol1 |   |  |  |
-| 910 | project_euler/problem_079/sol1 |   |  |  |
-| 911 | project_euler/problem_092/sol1 |   |  |  |
-| 912 | project_euler/problem_116/sol1 |   |  |  |
-| 913 | project_euler/problem_345/sol1 |   |  |  |
-| 914 | quantum/q_fourier_transform |   |  |  |
-| 915 | scheduling/job_sequence_with_deadline |   |  |  |
-| 916 | scheduling/job_sequencing_with_deadline |   |  |  |
-| 917 | scheduling/multi_level_feedback_queue |   |  |  |
-| 918 | scheduling/non_preemptive_shortest_job_first |   |  |  |
-| 919 | scheduling/round_robin |   |  |  |
-| 920 | scheduling/shortest_job_first |   |  |  |
+| 910 | project_euler/problem_079/sol1 | ✓ | 1.0ms | 143.65KB |
+| 911 | project_euler/problem_092/sol1 | ✓ | 419.0µs | 1.07KB |
+| 912 | project_euler/problem_116/sol1 | ✓ | 633.0µs | 7.76KB |
+| 913 | project_euler/problem_345/sol1 | ✓ | 1.0ms | 231.47KB |
+| 914 | quantum/q_fourier_transform | ✓ | 733.0µs | 2.48KB |
+| 915 | scheduling/job_sequence_with_deadline | ✓ | 336.0µs | 1.20KB |
+| 916 | scheduling/job_sequencing_with_deadline | ✓ | 499.0µs | 1.68KB |
+| 917 | scheduling/multi_level_feedback_queue | ✓ | 807.0µs | 2.95KB |
+| 918 | scheduling/non_preemptive_shortest_job_first | ✓ | 527.0µs | 1.63KB |
+| 919 | scheduling/round_robin | ✓ | 411.0µs | 1.41KB |
+| 920 | scheduling/shortest_job_first | ✓ | 467.0µs | 4.24KB |
 | 921 | scripts/build_directory_md |   |  |  |
-| 922 | scripts/validate_filenames |   |  |  |
+| 922 | scripts/validate_filenames | ✓ | 465.0µs | 1.41KB |
 | 923 | scripts/validate_solutions |   |  |  |
-| 924 | searches/binary_search |   |  |  |
-| 925 | searches/double_linear_search |   |  |  |
-| 926 | searches/double_linear_search_recursion |   |  |  |
-| 927 | searches/exponential_search |   |  |  |
-| 928 | searches/fibonacci_search |   |  |  |
+| 924 | searches/binary_search | ✓ | 441.0µs | 1.15KB |
+| 925 | searches/double_linear_search | ✓ | 401.0µs | 2.93KB |
+| 926 | searches/double_linear_search_recursion | ✓ | 392.0µs | 952B |
+| 927 | searches/exponential_search | ✓ | 388.0µs | 1.13KB |
+| 928 | searches/fibonacci_search | ✓ | 400.0µs | 1.13KB |
 | 929 | searches/hill_climbing |   |  |  |
-| 930 | searches/interpolation_search |   |  |  |
+| 930 | searches/interpolation_search | ✓ | 496.0µs | 1.04KB |
 | 931 | searches/jump_search |   |  |  |
-| 932 | searches/linear_search |   |  |  |
-| 933 | searches/median_of_medians |   |  |  |
+| 932 | searches/linear_search | ✓ | 293.0µs | 1.07KB |
+| 933 | searches/median_of_medians | ✓ | 336.0µs | 2.68KB |
 | 934 | searches/quick_select |   |  |  |
-| 935 | searches/sentinel_linear_search |   |  |  |
-| 936 | searches/simple_binary_search |   |  |  |
+| 935 | searches/sentinel_linear_search | ✓ | 499.0µs | 1.77KB |
+| 936 | searches/simple_binary_search | ✓ | 288.0µs | 1.05KB |
 | 937 | searches/simulated_annealing |   |  |  |
 | 938 | searches/tabu_search |   |  |  |
-| 939 | searches/ternary_search |   |  |  |
-| 940 | sorts/bead_sort |   |  |  |
-| 941 | sorts/binary_insertion_sort |   |  |  |
-| 942 | sorts/bitonic_sort |   |  |  |
-| 943 | sorts/bogo_sort |   |  |  |
-| 944 | sorts/bubble_sort |   |  |  |
+| 939 | searches/ternary_search | ✓ | 237.0µs | 1.01KB |
+| 940 | sorts/bead_sort | ✓ | 797.0µs | 1.52KB |
+| 941 | sorts/binary_insertion_sort | ✓ | 379.0µs | 1.27KB |
+| 942 | sorts/bitonic_sort | ✓ | 478.0µs | 7.62KB |
+| 943 | sorts/bogo_sort | ✓ | 453.0µs | 1.01KB |
+| 944 | sorts/bubble_sort | ✓ | 723.0µs | 1.59KB |
 | 945 | sorts/bucket_sort |   |  |  |
-| 946 | sorts/circle_sort |   |  |  |
-| 947 | sorts/cocktail_shaker_sort |   |  |  |
-| 948 | sorts/comb_sort |   |  |  |
-| 949 | sorts/counting_sort |   |  |  |
-| 950 | sorts/cycle_sort |   |  |  |
-| 951 | sorts/double_sort |   |  |  |
-| 952 | sorts/dutch_national_flag_sort |   |  |  |
-| 953 | sorts/exchange_sort |   |  |  |
-| 954 | sorts/external_sort |   |  |  |
-| 955 | sorts/gnome_sort |   |  |  |
-| 956 | sorts/heap_sort |   |  |  |
-| 957 | sorts/insertion_sort |   |  |  |
+| 946 | sorts/circle_sort | ✓ | 434.0µs | 1.22KB |
+| 947 | sorts/cocktail_shaker_sort | ✓ | 604.0µs | 1.36KB |
+| 948 | sorts/comb_sort | ✓ | 468.0µs | 3.34KB |
+| 949 | sorts/counting_sort | ✓ | 2.0ms | 451.09KB |
+| 950 | sorts/cycle_sort | ✓ | 352.0µs | 1.27KB |
+| 951 | sorts/double_sort | ✓ | 733.0µs | 1.50KB |
+| 952 | sorts/dutch_national_flag_sort | ✓ | 628.0µs | 3.49KB |
+| 953 | sorts/exchange_sort | ✓ | 490.0µs | 1.49KB |
+| 954 | sorts/external_sort | ✓ | 558.0µs | 2.07KB |
+| 955 | sorts/gnome_sort | ✓ | 441.0µs | 3.38KB |
+| 956 | sorts/heap_sort | ✓ | 832.0µs | 3.59KB |
+| 957 | sorts/insertion_sort | ✓ | 384.0µs | 1.31KB |
 | 958 | sorts/intro_sort |   |  |  |
-| 959 | sorts/iterative_merge_sort |   |  |  |
-| 960 | sorts/merge_insertion_sort |   |  |  |
-| 961 | sorts/merge_sort |   |  |  |
-| 962 | sorts/msd_radix_sort |   |  |  |
-| 963 | sorts/natural_sort |   |  |  |
-| 964 | sorts/odd_even_sort |   |  |  |
-| 965 | sorts/odd_even_transposition_parallel |   |  |  |
-| 966 | sorts/odd_even_transposition_single_threaded |   |  |  |
-| 967 | sorts/pancake_sort |   |  |  |
-| 968 | sorts/patience_sort |   |  |  |
+| 959 | sorts/iterative_merge_sort | ✓ | 309.0µs | 2.39KB |
+| 960 | sorts/merge_insertion_sort | ✓ | 376.0µs | 1.80KB |
+| 961 | sorts/merge_sort | ✓ | 391.0µs | 1.70KB |
+| 962 | sorts/msd_radix_sort | ✓ | 392.0µs | 3.07KB |
+| 963 | sorts/natural_sort | ✓ | 1.0ms | 4.85KB |
+| 964 | sorts/odd_even_sort | ✓ | 254.0µs | 1.34KB |
+| 965 | sorts/odd_even_transposition_parallel | ✓ | 328.0µs | 1.30KB |
+| 966 | sorts/odd_even_transposition_single_threaded | ✓ | 462.0µs | 1.37KB |
+| 967 | sorts/pancake_sort | ✓ | 298.0µs | 1.06KB |
+| 968 | sorts/patience_sort | ✓ | 416.0µs | 1.93KB |
 | 969 | sorts/pigeon_sort |   |  |  |
-| 970 | sorts/pigeonhole_sort |   |  |  |
+| 970 | sorts/pigeonhole_sort | ✓ | 552.0µs | 1.32KB |
 | 971 | sorts/quick_sort |   |  |  |
 | 972 | sorts/quick_sort_3_partition |   |  |  |
 | 973 | sorts/radix_sort |   |  |  |
