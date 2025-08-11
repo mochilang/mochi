@@ -110,7 +110,7 @@ fun knapsack_with_example_solution(w: int, wt: list<int>, val: list<int>): Knaps
   let dp_table = knapsack(w, wt, val, num_items)
   let optimal_val = dp_table[num_items][w]
   let subset = construct_solution(dp_table, wt, num_items, w, [])
-  return { value: optimal_val, subset: subset }
+  return KnapsackResult{ value: optimal_val, subset: subset }
 }
 
 fun format_set(xs: list<int>): string {
