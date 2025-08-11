@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error (ClassCastException) at main/in (string_switch_case.clj:6).
+class java.lang.Character cannot be cast to class java.lang.CharSequence (java.lang.Character and java.lang.CharSequence are in module java.base of loader 'bootstrap')
+
+Full report at:
+/tmp/clojure-3704935891113911677.edn

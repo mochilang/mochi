@@ -1,0 +1,5 @@
+Syntax error (UnsupportedOperationException) compiling recur at (/workspace/mochi/tests/algorithms/x/Clojure/strings/jaro_winkler.clj:75:3104).
+Can only recur from tail position
+
+Full report at:
+/tmp/clojure-18203736735020977130.edn

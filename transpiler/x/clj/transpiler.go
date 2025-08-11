@@ -874,6 +874,23 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	}}
 	pr.Forms = append(pr.Forms, toiFn)
 
+	fetchFn := &Defn{Name: "_fetch", Params: []Node{Symbol("url")}, Body: []Node{
+		&Map{Pairs: [][2]Node{
+			{Keyword("data"), &Vector{Elems: []Node{
+				&Map{Pairs: [][2]Node{
+					{Keyword("from"), StringLit("")},
+					{Keyword("to"), StringLit("")},
+					{Keyword("intensity"), &Map{Pairs: [][2]Node{
+						{Keyword("forecast"), IntLit(0)},
+						{Keyword("actual"), IntLit(0)},
+						{Keyword("index"), StringLit("")},
+					}}},
+				}},
+			}}},
+		}},
+	}}
+	pr.Forms = append(pr.Forms, fetchFn)
+
 	if env != nil {
 		structs := env.Structs()
 		names := make([]string, 0, len(structs))
@@ -2433,6 +2450,12 @@ func transpilePrimary(p *parser.Primary) (Node, error) {
 			pf.Ops = append(pf.Ops, &parser.PostfixOp{Field: &parser.FieldOp{Name: t}})
 		}
 		return transpilePostfix(pf)
+	case p.Fetch != nil:
+		url, err := transpileExpr(p.Fetch.URL)
+		if err != nil {
+			return nil, err
+		}
+		return &List{Elems: []Node{Symbol("_fetch"), url}}, nil
 	case p.Group != nil:
 		return transpileExpr(p.Group)
 	default:
