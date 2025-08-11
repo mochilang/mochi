@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Python`.
-Last updated: 2025-08-11 16:35 GMT+7
+Last updated: 2025-08-11 17:33 GMT+7
 
-## Algorithms Golden Test Checklist (842/1077)
+## Algorithms Golden Test Checklist (893/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 63.0µs | 12.88MB |
@@ -966,58 +966,58 @@ Last updated: 2025-08-11 16:35 GMT+7
 | 957 | sorts/insertion_sort | ✓ | 39.0µs | 12.68MB |
 | 958 | sorts/intro_sort | ✓ | 30.0µs | 14.00MB |
 | 959 | sorts/iterative_merge_sort | ✓ | 90.0µs | 13.84MB |
-| 960 | sorts/merge_insertion_sort |   |  |  |
-| 961 | sorts/merge_sort |   |  |  |
-| 962 | sorts/msd_radix_sort |   |  |  |
-| 963 | sorts/natural_sort |   |  |  |
-| 964 | sorts/odd_even_sort |   |  |  |
-| 965 | sorts/odd_even_transposition_parallel |   |  |  |
-| 966 | sorts/odd_even_transposition_single_threaded |   |  |  |
-| 967 | sorts/pancake_sort |   |  |  |
-| 968 | sorts/patience_sort |   |  |  |
-| 969 | sorts/pigeon_sort |   |  |  |
-| 970 | sorts/pigeonhole_sort |   |  |  |
-| 971 | sorts/quick_sort |   |  |  |
-| 972 | sorts/quick_sort_3_partition |   |  |  |
-| 973 | sorts/radix_sort |   |  |  |
-| 974 | sorts/recursive_insertion_sort |   |  |  |
-| 975 | sorts/recursive_mergesort_array |   |  |  |
-| 976 | sorts/recursive_quick_sort |   |  |  |
-| 977 | sorts/selection_sort |   |  |  |
-| 978 | sorts/shell_sort |   |  |  |
-| 979 | sorts/shrink_shell_sort |   |  |  |
-| 980 | sorts/slowsort |   |  |  |
-| 981 | sorts/stooge_sort |   |  |  |
-| 982 | sorts/strand_sort |   |  |  |
-| 983 | sorts/tim_sort |   |  |  |
-| 984 | sorts/topological_sort |   |  |  |
-| 985 | sorts/tree_sort |   |  |  |
-| 986 | sorts/unknown_sort |   |  |  |
-| 987 | sorts/wiggle_sort |   |  |  |
-| 988 | strings/aho_corasick |   |  |  |
-| 989 | strings/alternative_string_arrange |   |  |  |
-| 990 | strings/anagrams |   |  |  |
-| 991 | strings/autocomplete_using_trie |   |  |  |
-| 992 | strings/barcode_validator |   |  |  |
-| 993 | strings/bitap_string_match |   |  |  |
-| 994 | strings/boyer_moore_search |   |  |  |
-| 995 | strings/camel_case_to_snake_case |   |  |  |
-| 996 | strings/can_string_be_rearranged_as_palindrome |   |  |  |
-| 997 | strings/capitalize |   |  |  |
-| 998 | strings/check_anagrams |   |  |  |
-| 999 | strings/count_vowels |   |  |  |
-| 1000 | strings/credit_card_validator |   |  |  |
-| 1001 | strings/damerau_levenshtein_distance |   |  |  |
-| 1002 | strings/detecting_english_programmatically |   |  |  |
-| 1003 | strings/dna |   |  |  |
-| 1004 | strings/edit_distance |   |  |  |
-| 1005 | strings/frequency_finder |   |  |  |
-| 1006 | strings/hamming_distance |   |  |  |
-| 1007 | strings/indian_phone_validator |   |  |  |
-| 1008 | strings/is_contains_unique_chars |   |  |  |
-| 1009 | strings/is_isogram |   |  |  |
-| 1010 | strings/is_pangram |   |  |  |
-| 1011 | strings/is_polish_national_id |   |  |  |
+| 960 | sorts/merge_insertion_sort | ✓ | 42.0µs | 14.12MB |
+| 961 | sorts/merge_sort | ✓ | 38.0µs | 12.47MB |
+| 962 | sorts/msd_radix_sort | ✓ | 128.0µs | 13.42MB |
+| 963 | sorts/natural_sort | ✓ | 300.0µs | 13.96MB |
+| 964 | sorts/odd_even_sort | ✓ | 31.0µs | 13.59MB |
+| 965 | sorts/odd_even_transposition_parallel | ✓ | 35.0µs | 12.36MB |
+| 966 | sorts/odd_even_transposition_single_threaded | ✓ | 31.0µs | 12.63MB |
+| 967 | sorts/pancake_sort | ✓ | 19.0µs | 12.35MB |
+| 968 | sorts/patience_sort | ✓ | 48.0µs | 13.27MB |
+| 969 | sorts/pigeon_sort | ✓ | 53.0µs | 12.42MB |
+| 970 | sorts/pigeonhole_sort | ✓ | 23.0µs | 12.56MB |
+| 971 | sorts/quick_sort | ✓ | 30.0µs | 12.38MB |
+| 972 | sorts/quick_sort_3_partition | ✓ | 61.0µs | 13.68MB |
+| 973 | sorts/radix_sort | ✓ | 92.0µs | 12.49MB |
+| 974 | sorts/recursive_insertion_sort | ✓ | 24.0µs | 12.57MB |
+| 975 | sorts/recursive_mergesort_array | ✓ | 71.0µs | 12.68MB |
+| 976 | sorts/recursive_quick_sort | ✓ | 26.0µs | 12.43MB |
+| 977 | sorts/selection_sort | ✓ | 20.0µs | 12.74MB |
+| 978 | sorts/shell_sort | ✓ | 24.0µs | 12.49MB |
+| 979 | sorts/shrink_shell_sort | ✓ | 18.0µs | 12.82MB |
+| 980 | sorts/slowsort | ✓ | 59.0µs | 12.50MB |
+| 981 | sorts/stooge_sort | ✓ | 24.0µs | 12.57MB |
+| 982 | sorts/strand_sort | ✓ | 33.0µs | 12.74MB |
+| 983 | sorts/tim_sort | ✓ | 110.0µs | 13.62MB |
+| 984 | sorts/topological_sort | ✓ | 19.0µs | 12.90MB |
+| 985 | sorts/tree_sort | ✓ | 1.0ms | 13.06MB |
+| 986 | sorts/unknown_sort | ✓ | 50.0µs | 12.56MB |
+| 987 | sorts/wiggle_sort | ✓ | 81.0µs | 12.31MB |
+| 988 | strings/aho_corasick | ✓ | 38.0µs | 12.71MB |
+| 989 | strings/alternative_string_arrange | ✓ | 14.0µs | 12.71MB |
+| 990 | strings/anagrams | error |  |  |
+| 991 | strings/autocomplete_using_trie | ✓ | 17.0µs | 12.55MB |
+| 992 | strings/barcode_validator | ✓ | 131.0µs | 13.08MB |
+| 993 | strings/bitap_string_match | ✓ | 246.0µs | 13.30MB |
+| 994 | strings/boyer_moore_search | ✓ | 21.0µs | 12.54MB |
+| 995 | strings/camel_case_to_snake_case | ✓ | 367.0µs | 13.06MB |
+| 996 | strings/can_string_be_rearranged_as_palindrome | ✓ | 113.0µs | 12.50MB |
+| 997 | strings/capitalize | ✓ | 25.0µs | 12.36MB |
+| 998 | strings/check_anagrams | ✓ | 45.0µs | 12.49MB |
+| 999 | strings/count_vowels | ✓ | 76.0µs | 12.61MB |
+| 1000 | strings/credit_card_validator | ✓ | 68.0µs | 12.87MB |
+| 1001 | strings/damerau_levenshtein_distance | ✓ | 214.0µs | 12.99MB |
+| 1002 | strings/detecting_english_programmatically | ✓ | 242.0µs | 13.26MB |
+| 1003 | strings/dna | ✓ | 31.0µs | 12.68MB |
+| 1004 | strings/edit_distance | ✓ | 20.0ms | 12.52MB |
+| 1005 | strings/frequency_finder | ✓ | 1.0ms | 13.96MB |
+| 1006 | strings/hamming_distance | ✓ | 16.0µs | 12.56MB |
+| 1007 | strings/indian_phone_validator | ✓ | 27.0µs | 12.77MB |
+| 1008 | strings/is_contains_unique_chars | ✓ | 280.0µs | 12.69MB |
+| 1009 | strings/is_isogram | ✓ | 117.0µs | 12.61MB |
+| 1010 | strings/is_pangram | ✓ | 130.0µs | 12.62MB |
+| 1011 | strings/is_polish_national_id | ✓ |  |  |
 | 1012 | strings/is_spain_national_id |   |  |  |
 | 1013 | strings/is_srilankan_phone_number |   |  |  |
 | 1014 | strings/is_valid_email_address |   |  |  |
