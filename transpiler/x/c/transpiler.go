@@ -2127,6 +2127,8 @@ func exprIsFloat(e Expr) bool {
 		}
 	case *VarRef, *FieldExpr, *IndexExpr:
 		return inferExprType(currentEnv, e) == "double"
+	case *CallExpr:
+		return inferExprType(currentEnv, v) == "double"
 	}
 	return false
 }
@@ -5768,6 +5770,8 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			return &RawStmt{Code: buf.String()}, nil
 		}
 		ds := &DeclStmt{Name: s.Var.Name, Value: valExpr, Type: declType}
+		// track variable type for later inference
+		varTypes[s.Var.Name] = declType
 		if declStmts != nil {
 			declStmts[s.Var.Name] = ds
 		}
