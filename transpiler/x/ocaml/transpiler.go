@@ -3248,6 +3248,13 @@ let _sha256 lst =
     if i < 0 then acc else loop (i - 1) ((Char.code digest.[i]) :: acc)
   in
   loop (String.length digest - 1) []
+
+let _sha256_str s =
+  let digest = Sha256.to_bin (Sha256.string s) in
+  let rec loop i acc =
+    if i < 0 then acc else loop (i - 1) ((Char.code digest.[i]) :: acc)
+  in
+  loop (String.length digest - 1) []
 `
 
 const helperFetch = `
@@ -6181,10 +6188,13 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		if err != nil {
 			return nil, "", err
 		}
-		if typ != "list-int" && typ != "list" {
-			return nil, "", fmt.Errorf("sha256 expects list<int>")
-		}
 		usesSHA = true
+		if typ == "string" {
+			return &FuncCall{Name: "_sha256_str", Args: []Expr{arg}, Ret: "list-int"}, "list-int", nil
+		}
+		if typ != "list-int" && typ != "list" {
+			return nil, "", fmt.Errorf("sha256 expects string or list<int>")
+		}
 		return &FuncCall{Name: "_sha256", Args: []Expr{arg}, Ret: "list-int"}, "list-int", nil
 	}
 	if c.Func == "net.LookupHost" && len(c.Args) == 1 {

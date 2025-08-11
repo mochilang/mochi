@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 469/1077
-Last updated: 2025-08-11 15:32 +0700
+Completed programs: 537/1077
+Last updated: 2025-08-11 16:20 +0700
 
 Checklist:
 
@@ -916,77 +916,77 @@ Checklist:
 | 907 | project_euler/problem_076/sol1 |   |  |  |
 | 908 | project_euler/problem_077/sol1 |   |  |  |
 | 909 | project_euler/problem_078/sol1 |   |  |  |
-| 910 | project_euler/problem_079/sol1 |   |  |  |
-| 911 | project_euler/problem_092/sol1 |   |  |  |
-| 912 | project_euler/problem_116/sol1 |   |  |  |
+| 910 | project_euler/problem_079/sol1 | ✓ | 22.0ms | 1.95MB |
+| 911 | project_euler/problem_092/sol1 | ✓ | 706.0µs | 288B |
+| 912 | project_euler/problem_116/sol1 | ✓ | 21.0ms | 5.19MB |
 | 913 | project_euler/problem_345/sol1 |   |  |  |
-| 914 | quantum/q_fourier_transform |   |  |  |
-| 915 | scheduling/job_sequence_with_deadline |   |  |  |
-| 916 | scheduling/job_sequencing_with_deadline |   |  |  |
-| 917 | scheduling/multi_level_feedback_queue |   |  |  |
-| 918 | scheduling/non_preemptive_shortest_job_first |   |  |  |
-| 919 | scheduling/round_robin |   |  |  |
-| 920 | scheduling/shortest_job_first |   |  |  |
-| 921 | scripts/build_directory_md |   |  |  |
-| 922 | scripts/validate_filenames |   |  |  |
-| 923 | scripts/validate_solutions |   |  |  |
-| 924 | searches/binary_search |   |  |  |
-| 925 | searches/double_linear_search |   |  |  |
-| 926 | searches/double_linear_search_recursion |   |  |  |
-| 927 | searches/exponential_search |   |  |  |
-| 928 | searches/fibonacci_search |   |  |  |
+| 914 | quantum/q_fourier_transform | ✓ | 255.0µs | 7.90KB |
+| 915 | scheduling/job_sequence_with_deadline | ✓ | 134.0µs | 6.70KB |
+| 916 | scheduling/job_sequencing_with_deadline | ✓ | 161.0µs | 7.09KB |
+| 917 | scheduling/multi_level_feedback_queue | ✓ | 113.0µs | 2.30KB |
+| 918 | scheduling/non_preemptive_shortest_job_first | ✓ | 309.0µs | 7.28KB |
+| 919 | scheduling/round_robin | ✓ | 168.0µs | 4.48KB |
+| 920 | scheduling/shortest_job_first | ✓ | 320.0µs | 18.87KB |
+| 921 | scripts/build_directory_md | ✓ | 348.0µs | 39.97KB |
+| 922 | scripts/validate_filenames | ✓ | 106.0µs | 936B |
+| 923 | scripts/validate_solutions | ✓ | 17.0µs | 208B |
+| 924 | searches/binary_search | ✓ | 134.0µs | 3.20KB |
+| 925 | searches/double_linear_search | ✓ | 589.0µs | 120.48KB |
+| 926 | searches/double_linear_search_recursion | ✓ | 105.0µs | 840B |
+| 927 | searches/exponential_search | ✓ | 1.0µs | 208B |
+| 928 | searches/fibonacci_search | ✓ | 116.0µs | 768B |
 | 929 | searches/hill_climbing |   |  |  |
-| 930 | searches/interpolation_search |   |  |  |
-| 931 | searches/jump_search |   |  |  |
-| 932 | searches/linear_search |   |  |  |
-| 933 | searches/median_of_medians |   |  |  |
-| 934 | searches/quick_select |   |  |  |
-| 935 | searches/sentinel_linear_search |   |  |  |
-| 936 | searches/simple_binary_search |   |  |  |
-| 937 | searches/simulated_annealing |   |  |  |
-| 938 | searches/tabu_search |   |  |  |
-| 939 | searches/ternary_search |   |  |  |
-| 940 | sorts/bead_sort |   |  |  |
-| 941 | sorts/binary_insertion_sort |   |  |  |
-| 942 | sorts/bitonic_sort |   |  |  |
-| 943 | sorts/bogo_sort |   |  |  |
-| 944 | sorts/bubble_sort |   |  |  |
-| 945 | sorts/bucket_sort |   |  |  |
+| 930 | searches/interpolation_search | ✓ | 104.0µs | 888B |
+| 931 | searches/jump_search | ✓ | 89.0µs | 728B |
+| 932 | searches/linear_search | ✓ | 168.0µs | 936B |
+| 933 | searches/median_of_medians | ✓ | 186.0µs | 10.99KB |
+| 934 | searches/quick_select | ✓ | 240.0µs | 7.59KB |
+| 935 | searches/sentinel_linear_search | ✓ | 308.0µs | 3.03KB |
+| 936 | searches/simple_binary_search | ✓ | 33.0µs | 472B |
+| 937 | searches/simulated_annealing | ✓ | 28.0ms | 7.75MB |
+| 938 | searches/tabu_search | ✓ | 108.0µs | 440B |
+| 939 | searches/ternary_search | ✓ | 94.0µs | 944B |
+| 940 | sorts/bead_sort | ✓ | 402.0µs | 32.02KB |
+| 941 | sorts/binary_insertion_sort | ✓ | 173.0µs | 6.16KB |
+| 942 | sorts/bitonic_sort | ✓ | 464.0µs | 57.17KB |
+| 943 | sorts/bogo_sort | ✓ | 92.0µs | 1.09KB |
+| 944 | sorts/bubble_sort | ✓ | 186.0µs | 11.09KB |
+| 945 | sorts/bucket_sort | ✓ | 447.0µs | 40.17KB |
 | 946 | sorts/circle_sort |   |  |  |
-| 947 | sorts/cocktail_shaker_sort |   |  |  |
-| 948 | sorts/comb_sort |   |  |  |
-| 949 | sorts/counting_sort |   |  |  |
-| 950 | sorts/cycle_sort |   |  |  |
-| 951 | sorts/double_sort |   |  |  |
-| 952 | sorts/dutch_national_flag_sort |   |  |  |
-| 953 | sorts/exchange_sort |   |  |  |
-| 954 | sorts/external_sort |   |  |  |
-| 955 | sorts/gnome_sort |   |  |  |
-| 956 | sorts/heap_sort |   |  |  |
-| 957 | sorts/insertion_sort |   |  |  |
-| 958 | sorts/intro_sort |   |  |  |
-| 959 | sorts/iterative_merge_sort |   |  |  |
-| 960 | sorts/merge_insertion_sort |   |  |  |
-| 961 | sorts/merge_sort |   |  |  |
-| 962 | sorts/msd_radix_sort |   |  |  |
-| 963 | sorts/natural_sort |   |  |  |
-| 964 | sorts/odd_even_sort |   |  |  |
-| 965 | sorts/odd_even_transposition_parallel |   |  |  |
-| 966 | sorts/odd_even_transposition_single_threaded |   |  |  |
-| 967 | sorts/pancake_sort |   |  |  |
-| 968 | sorts/patience_sort |   |  |  |
-| 969 | sorts/pigeon_sort |   |  |  |
-| 970 | sorts/pigeonhole_sort |   |  |  |
-| 971 | sorts/quick_sort |   |  |  |
-| 972 | sorts/quick_sort_3_partition |   |  |  |
-| 973 | sorts/radix_sort |   |  |  |
-| 974 | sorts/recursive_insertion_sort |   |  |  |
-| 975 | sorts/recursive_mergesort_array |   |  |  |
-| 976 | sorts/recursive_quick_sort |   |  |  |
-| 977 | sorts/selection_sort |   |  |  |
-| 978 | sorts/shell_sort |   |  |  |
-| 979 | sorts/shrink_shell_sort |   |  |  |
-| 980 | sorts/slowsort |   |  |  |
+| 947 | sorts/cocktail_shaker_sort | ✓ | 158.0µs | 6.12KB |
+| 948 | sorts/comb_sort | ✓ | 174.0µs | 7.91KB |
+| 949 | sorts/counting_sort | ✓ | 952.0µs | 133.91KB |
+| 950 | sorts/cycle_sort | ✓ | 131.0µs | 4.52KB |
+| 951 | sorts/double_sort | ✓ | 246.0µs | 22.95KB |
+| 952 | sorts/dutch_national_flag_sort | ✓ | 137.0µs | 8.13KB |
+| 953 | sorts/exchange_sort | ✓ | 210.0µs | 9.52KB |
+| 954 | sorts/external_sort | ✓ | 198.0µs | 10.34KB |
+| 955 | sorts/gnome_sort | ✓ | 138.0µs | 4.27KB |
+| 956 | sorts/heap_sort | ✓ | 154.0µs | 1.87KB |
+| 957 | sorts/insertion_sort | ✓ | 120.0µs | 3.48KB |
+| 958 | sorts/intro_sort | ✓ | 244.0µs | 26.16KB |
+| 959 | sorts/iterative_merge_sort | ✓ | 409.0µs | 48.27KB |
+| 960 | sorts/merge_insertion_sort | ✓ | 133.0µs | 3.06KB |
+| 961 | sorts/merge_sort | ✓ | 127.0µs | 3.37KB |
+| 962 | sorts/msd_radix_sort | ✓ | 176.0µs | 7.16KB |
+| 963 | sorts/natural_sort | ✓ | 584.0µs | 69.49KB |
+| 964 | sorts/odd_even_sort | ✓ | 164.0µs | 12.14KB |
+| 965 | sorts/odd_even_transposition_parallel | ✓ | 315.0µs | 30.17KB |
+| 966 | sorts/odd_even_transposition_single_threaded | ✓ | 244.0µs | 11.03KB |
+| 967 | sorts/pancake_sort | ✓ | 146.0µs | 5.24KB |
+| 968 | sorts/patience_sort | ✓ | 163.0µs | 9.18KB |
+| 969 | sorts/pigeon_sort | ✓ | 404.0µs | 64.57KB |
+| 970 | sorts/pigeonhole_sort | ✓ | 77.0µs | 992B |
+| 971 | sorts/quick_sort | ✓ | 124.0µs | 2.41KB |
+| 972 | sorts/quick_sort_3_partition | ✓ | 245.0µs | 14.83KB |
+| 973 | sorts/radix_sort | ✓ | 437.0µs | 51.89KB |
+| 974 | sorts/recursive_insertion_sort | ✓ | 160.0µs | 9.34KB |
+| 975 | sorts/recursive_mergesort_array | ✓ | 301.0µs | 29.82KB |
+| 976 | sorts/recursive_quick_sort | ✓ | 100.0µs | 1.80KB |
+| 977 | sorts/selection_sort | ✓ | 105.0µs | 2.91KB |
+| 978 | sorts/shell_sort | ✓ | 132.0µs | 3.91KB |
+| 979 | sorts/shrink_shell_sort | ✓ | 104.0µs | 1.22KB |
+| 980 | sorts/slowsort | ✓ | 375.0µs | 39.94KB |
 | 981 | sorts/stooge_sort |   |  |  |
 | 982 | sorts/strand_sort |   |  |  |
 | 983 | sorts/tim_sort |   |  |  |

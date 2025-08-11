@@ -1,0 +1,11 @@
+1 files contain uppercase characters:
+scripts/Validate_filenames.py
+
+1 files contain space characters:
+bad file.txt
+
+2 files are not in a directory:
+bad file.txt
+nopath
+
+4
