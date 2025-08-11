@@ -1,0 +1,7 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/project_euler/problem_049/sol1.scala:225: error: type mismatch;
+ found   : String
+ required: scala.math.BigInt
+    val `val`: BigInt = BigInt((_str(seq.lift((BigInt(0).toInt).toInt).getOrElse(null))).toString.head.asDigit) + BigInt((_str(seq.lift((BigInt(1).toInt).toInt).getOrElse(null))).toString.head.asDigit) + _str(seq.lift((BigInt(2).toInt).toInt).getOrElse(null))
+                                                                                                                                                                                                          ^
+one error found

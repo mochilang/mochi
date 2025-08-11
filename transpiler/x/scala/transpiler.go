@@ -1420,7 +1420,7 @@ func (c *CastExpr) emit(w io.Writer) {
 			fmt.Fprint(w, ")")
 		}
 		if typ == "Any" || typ == "" {
-			fmt.Fprint(w, ".toString.head.toInt")
+			fmt.Fprint(w, ".toString.head.asDigit")
 		} else if typ != "Int" && typ != "BigInt" && typ != "String" {
 			fmt.Fprint(w, ".toInt")
 		}
@@ -1452,8 +1452,8 @@ func (c *CastExpr) emit(w io.Writer) {
 				fmt.Fprint(w, ")")
 			}
 			if typ == "Any" || typ == "" {
-				// Fallback for unknown types: convert to string and take first character's code.
-				fmt.Fprint(w, ".toString.head.toInt")
+				// Fallback for unknown types: convert to string and take first character's digit.
+				fmt.Fprint(w, ".toString.head.asDigit")
 			} else if typ != "Int" && typ != "BigInt" && typ != "String" {
 				fmt.Fprint(w, ".toInt")
 			}

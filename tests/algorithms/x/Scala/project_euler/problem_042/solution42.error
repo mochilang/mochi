@@ -1,0 +1,8 @@
+error[P001]: /workspace/mochi/tests/github/TheAlgorithms/Mochi/project_euler/problem_042/solution42.mochi:34:22: unexpected token "" (expected "{" Statement* "}" (("else" IfStmt) | ("else" "{" Statement* "}"))?)
+  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/project_euler/problem_042/solution42.mochi:34:22
+
+ 34 |     } else if c == """" {
+    |                      ^
+
+help:
+  Check for a missing `{` or `}` to close the block.
