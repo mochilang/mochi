@@ -3999,6 +3999,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("float expects one argument")
 			}
 			return &CallExpr{Func: "Number", Args: args}, nil
+		case "to_float":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("to_float expects one argument")
+			}
+			return &CallExpr{Func: "Number", Args: args}, nil
 		case "floor":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("floor expects one argument")

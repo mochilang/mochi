@@ -2,9 +2,9 @@ run: exit status 1
 [0m[1m[31merror[0m: Uncaught (in promise) Error: ln domain error
 function _panic(msg: any): never { throw new Error(String(msg)); }
 [0m[31m                                         ^[0m
-    at [0m[1m[3m_panic[0m ([0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/neural_network/activation_functions/softplus.ts[0m:[0m[33m103[0m:[0m[33m42[0m)
+    at [0m[1m[3m_panic[0m ([0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/neural_network/activation_functions/softplus.ts[0m:[0m[33m109[0m:[0m[33m42[0m)
     at [0m[1m[3mln[0m ([0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/neural_network/activation_functions/softplus.ts[0m:[0m[33m5[0m:[0m[33m5[0m)
     at [0m[1m[3msoftplus[0m ([0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/neural_network/activation_functions/softplus.ts[0m:[0m[33m36[0m:[0m[33m25[0m)
     at [0m[1m[3mmain[0m ([0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/neural_network/activation_functions/softplus.ts[0m:[0m[33m46[0m:[0m[33m22[0m)
-    at [0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/neural_network/activation_functions/softplus.ts[0m:[0m[33m108[0m:[0m[33m3[0m
-    at [0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/neural_network/activation_functions/softplus.ts[0m:[0m[33m120[0m:[0m[33m2[0m
+    at [0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/neural_network/activation_functions/softplus.ts[0m:[0m[33m114[0m:[0m[33m3[0m
+    at [0m[36mfile:///workspace/mochi/tests/algorithms/x/TypeScript/neural_network/activation_functions/softplus.ts[0m:[0m[33m126[0m:[0m[33m2[0m
