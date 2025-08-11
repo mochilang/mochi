@@ -1,0 +1,14 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/algorithms/x/Kotlin/searches/tabu_search.kt:36:146: error: expecting a '>'
+            if ((!(n in path) as Boolean) && (((((graph)[visiting] as MutableMap<String, Int>) as MutableMap<String, Int>))[n] as Int < best_cost)) {
+                                                                                                                                                 ^
+/workspace/mochi/tests/algorithms/x/Kotlin/searches/tabu_search.kt:35:64: error: unresolved reference: keys
+        for (n in (graph)[visiting] as MutableMap<String, Int>.keys) {
+                                                               ^
+/workspace/mochi/tests/algorithms/x/Kotlin/searches/tabu_search.kt:36:137: error: unresolved reference: best_cost
+            if ((!(n in path) as Boolean) && (((((graph)[visiting] as MutableMap<String, Int>) as MutableMap<String, Int>))[n] as Int < best_cost)) {
+                                                                                                                                        ^
+/workspace/mochi/tests/algorithms/x/Kotlin/searches/tabu_search.kt:124:20: error: type mismatch: inferred type is Any? but Solution was expected
+        solution = best_neighbor
+                   ^

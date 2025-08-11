@@ -230,13 +230,26 @@ fun _add(a: BigRat, b: BigRat): BigRat = a.add(b)
 fun _sub(a: BigRat, b: BigRat): BigRat = a.sub(b)
 fun _mul(a: BigRat, b: BigRat): BigRat = a.mul(b)
 fun _div(a: BigRat, b: BigRat): BigRat = a.div(b)`,
-		"sha256": `fun _sha256(bs: List<Int>): MutableList<Int> {
+		"sha256": `fun _sha256(data: Any?): MutableList<Int> {
+val bytes = when (data) {
+    is String -> data.toByteArray()
+    is List<*> -> {
+        val arr = ByteArray(data.size)
+        for (i in data.indices) {
+            val v = data[i]
+            arr[i] = when (v) {
+                is Number -> v.toInt().toByte()
+                else -> 0
+            }
+        }
+        arr
+    }
+    else -> ByteArray(0)
+}
 val md = java.security.MessageDigest.getInstance("SHA-256")
-val arr = ByteArray(bs.size)
-for (i in bs.indices) arr[i] = bs[i].toByte()
-val hash = md.digest(arr)
+val hash = md.digest(bytes)
 val res = mutableListOf<Int>()
-for (b in hash) res.add((b.toInt() and 0xff))
+for (b in hash) res.add(b.toInt() and 0xff)
 return res
 }`,
 		"pow2": `fun pow2(n: Int): Int {
@@ -2209,14 +2222,14 @@ type MinExpr struct{ Value Expr }
 
 func (m *MinExpr) emit(w io.Writer) {
 	m.Value.emit(w)
-	io.WriteString(w, ".min()")
+	io.WriteString(w, ".min()!!")
 }
 
 type MaxExpr struct{ Value Expr }
 
 func (m *MaxExpr) emit(w io.Writer) {
 	m.Value.emit(w)
-	io.WriteString(w, ".max()")
+	io.WriteString(w, ".max()!!")
 }
 
 // NowExpr expands to a deterministic timestamp similar to the VM's now() builtin.
@@ -5817,6 +5830,11 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			isStr := types.IsStringExpr(p.Call.Args[0], env)
+			if isStr {
+				useHelper("_sliceStr")
+			} else {
+				useHelper("_sliceList")
+			}
 			return &SliceExpr{Value: expr, Start: startExpr, End: endExpr, IsString: isStr}, nil
 		case "repeat":
 			if len(p.Call.Args) != 2 {

@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-11 14:54 GMT+7
+Last updated: 2025-08-11 16:41 GMT+7
 
-## Algorithms Golden Test Checklist (178/1077)
+## Algorithms Golden Test Checklist (226/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 30.54ms | 124.45KiB |
@@ -916,56 +916,56 @@ Last updated: 2025-08-11 14:54 GMT+7
 | 907 | project_euler/problem_076/sol1 |   |  |  |
 | 908 | project_euler/problem_077/sol1 |   |  |  |
 | 909 | project_euler/problem_078/sol1 |   |  |  |
-| 910 | project_euler/problem_079/sol1 |   |  |  |
-| 911 | project_euler/problem_092/sol1 |   |  |  |
-| 912 | project_euler/problem_116/sol1 |   |  |  |
-| 913 | project_euler/problem_345/sol1 |   |  |  |
-| 914 | quantum/q_fourier_transform |   |  |  |
-| 915 | scheduling/job_sequence_with_deadline |   |  |  |
-| 916 | scheduling/job_sequencing_with_deadline |   |  |  |
-| 917 | scheduling/multi_level_feedback_queue |   |  |  |
-| 918 | scheduling/non_preemptive_shortest_job_first |   |  |  |
-| 919 | scheduling/round_robin |   |  |  |
-| 920 | scheduling/shortest_job_first |   |  |  |
-| 921 | scripts/build_directory_md |   |  |  |
-| 922 | scripts/validate_filenames |   |  |  |
-| 923 | scripts/validate_solutions |   |  |  |
-| 924 | searches/binary_search |   |  |  |
-| 925 | searches/double_linear_search |   |  |  |
-| 926 | searches/double_linear_search_recursion |   |  |  |
-| 927 | searches/exponential_search |   |  |  |
-| 928 | searches/fibonacci_search |   |  |  |
-| 929 | searches/hill_climbing |   |  |  |
-| 930 | searches/interpolation_search |   |  |  |
-| 931 | searches/jump_search |   |  |  |
-| 932 | searches/linear_search |   |  |  |
-| 933 | searches/median_of_medians |   |  |  |
-| 934 | searches/quick_select |   |  |  |
-| 935 | searches/sentinel_linear_search |   |  |  |
-| 936 | searches/simple_binary_search |   |  |  |
-| 937 | searches/simulated_annealing |   |  |  |
-| 938 | searches/tabu_search |   |  |  |
-| 939 | searches/ternary_search |   |  |  |
-| 940 | sorts/bead_sort |   |  |  |
-| 941 | sorts/binary_insertion_sort |   |  |  |
-| 942 | sorts/bitonic_sort |   |  |  |
-| 943 | sorts/bogo_sort |   |  |  |
-| 944 | sorts/bubble_sort |   |  |  |
-| 945 | sorts/bucket_sort |   |  |  |
-| 946 | sorts/circle_sort |   |  |  |
-| 947 | sorts/cocktail_shaker_sort |   |  |  |
-| 948 | sorts/comb_sort |   |  |  |
-| 949 | sorts/counting_sort |   |  |  |
-| 950 | sorts/cycle_sort |   |  |  |
-| 951 | sorts/double_sort |   |  |  |
-| 952 | sorts/dutch_national_flag_sort |   |  |  |
-| 953 | sorts/exchange_sort |   |  |  |
-| 954 | sorts/external_sort |   |  |  |
-| 955 | sorts/gnome_sort |   |  |  |
-| 956 | sorts/heap_sort |   |  |  |
-| 957 | sorts/insertion_sort |   |  |  |
-| 958 | sorts/intro_sort |   |  |  |
-| 959 | sorts/iterative_merge_sort |   |  |  |
+| 910 | project_euler/problem_079/sol1 | ✓ | 21.76ms | 121.46KiB |
+| 911 | project_euler/problem_092/sol1 | ✓ | 7.09ms | 133.84KiB |
+| 912 | project_euler/problem_116/sol1 | ✓ | 22.01ms | 123.61KiB |
+| 913 | project_euler/problem_345/sol1 | ✓ | 7.23ms | 834.86KiB |
+| 914 | quantum/q_fourier_transform | ✓ | 5.43ms | 133.50KiB |
+| 915 | scheduling/job_sequence_with_deadline | ✓ | 19.67ms | 114.30KiB |
+| 916 | scheduling/job_sequencing_with_deadline | ✓ | 19.57ms | 114.58KiB |
+| 917 | scheduling/multi_level_feedback_queue | ✓ | 7.58ms | 133.65KiB |
+| 918 | scheduling/non_preemptive_shortest_job_first | ✓ |  |  |
+| 919 | scheduling/round_robin | ✓ |  |  |
+| 920 | scheduling/shortest_job_first | ✓ |  |  |
+| 921 | scripts/build_directory_md | ✓ |  |  |
+| 922 | scripts/validate_filenames | ✓ |  |  |
+| 923 | scripts/validate_solutions | ✓ |  |  |
+| 924 | searches/binary_search | ✓ |  |  |
+| 925 | searches/double_linear_search | ✓ |  |  |
+| 926 | searches/double_linear_search_recursion | ✓ |  |  |
+| 927 | searches/exponential_search | ✓ |  |  |
+| 928 | searches/fibonacci_search | ✓ |  |  |
+| 929 | searches/hill_climbing | error |  |  |
+| 930 | searches/interpolation_search | ✓ |  |  |
+| 931 | searches/jump_search | ✓ |  |  |
+| 932 | searches/linear_search | ✓ |  |  |
+| 933 | searches/median_of_medians | ✓ |  |  |
+| 934 | searches/quick_select | ✓ |  |  |
+| 935 | searches/sentinel_linear_search | ✓ |  |  |
+| 936 | searches/simple_binary_search | ✓ |  |  |
+| 937 | searches/simulated_annealing | ✓ |  |  |
+| 938 | searches/tabu_search | error |  |  |
+| 939 | searches/ternary_search | ✓ |  |  |
+| 940 | sorts/bead_sort | ✓ |  |  |
+| 941 | sorts/binary_insertion_sort | ✓ |  |  |
+| 942 | sorts/bitonic_sort | ✓ |  |  |
+| 943 | sorts/bogo_sort | ✓ |  |  |
+| 944 | sorts/bubble_sort | ✓ |  |  |
+| 945 | sorts/bucket_sort | ✓ |  |  |
+| 946 | sorts/circle_sort | ✓ |  |  |
+| 947 | sorts/cocktail_shaker_sort | ✓ |  |  |
+| 948 | sorts/comb_sort | ✓ |  |  |
+| 949 | sorts/counting_sort | ✓ |  |  |
+| 950 | sorts/cycle_sort | ✓ |  |  |
+| 951 | sorts/double_sort | ✓ |  |  |
+| 952 | sorts/dutch_national_flag_sort | ✓ |  |  |
+| 953 | sorts/exchange_sort | ✓ |  |  |
+| 954 | sorts/external_sort | ✓ |  |  |
+| 955 | sorts/gnome_sort | ✓ |  |  |
+| 956 | sorts/heap_sort | ✓ |  |  |
+| 957 | sorts/insertion_sort | ✓ |  |  |
+| 958 | sorts/intro_sort | ✓ |  |  |
+| 959 | sorts/iterative_merge_sort | ✓ |  |  |
 | 960 | sorts/merge_insertion_sort |   |  |  |
 | 961 | sorts/merge_sort |   |  |  |
 | 962 | sorts/msd_radix_sort |   |  |  |

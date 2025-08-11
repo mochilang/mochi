@@ -1,0 +1,5 @@
+waiting time:			[83, 17, 94, 101]
+completion time:		[136, 34, 162, 125]
+turnaround time:		[136, 34, 162, 125]
+sequence of finished processes:	[P2, P4, P1, P3]
+{"duration_us":7585, "memory_bytes":136856, "name":"main"}
