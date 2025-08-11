@@ -1,7 +1,0 @@
-run: exit status 1
-lua: ...lgorithms/x/Lua/machine_learning/self_organizing_map.lua:79: attempt to index a nil value (local 'sample')
-stack traceback:
-	...lgorithms/x/Lua/machine_learning/self_organizing_map.lua:79: in function 'update'
-	...lgorithms/x/Lua/machine_learning/self_organizing_map.lua:198: in function 'main'
-	...lgorithms/x/Lua/machine_learning/self_organizing_map.lua:294: in main chunk
-	[C]: in ?
