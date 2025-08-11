@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Scheme code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Scheme`.
-Last updated: 2025-08-11 16:36 GMT+7
+Last updated: 2025-08-11 17:29 GMT+7
 
-## Algorithms Golden Test Checklist (768/1077)
+## Algorithms Golden Test Checklist (818/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 0s | 12.4 MB |
@@ -966,57 +966,57 @@ Last updated: 2025-08-11 16:36 GMT+7
 | 957 | sorts/insertion_sort |   |  |  |
 | 958 | sorts/intro_sort |   |  |  |
 | 959 | sorts/iterative_merge_sort |   |  |  |
-| 960 | sorts/merge_insertion_sort |   |  |  |
-| 961 | sorts/merge_sort |   |  |  |
-| 962 | sorts/msd_radix_sort |   |  |  |
-| 963 | sorts/natural_sort |   |  |  |
-| 964 | sorts/odd_even_sort |   |  |  |
-| 965 | sorts/odd_even_transposition_parallel |   |  |  |
-| 966 | sorts/odd_even_transposition_single_threaded |   |  |  |
-| 967 | sorts/pancake_sort |   |  |  |
-| 968 | sorts/patience_sort |   |  |  |
-| 969 | sorts/pigeon_sort |   |  |  |
-| 970 | sorts/pigeonhole_sort |   |  |  |
-| 971 | sorts/quick_sort |   |  |  |
-| 972 | sorts/quick_sort_3_partition |   |  |  |
-| 973 | sorts/radix_sort |   |  |  |
-| 974 | sorts/recursive_insertion_sort |   |  |  |
-| 975 | sorts/recursive_mergesort_array |   |  |  |
-| 976 | sorts/recursive_quick_sort |   |  |  |
-| 977 | sorts/selection_sort |   |  |  |
-| 978 | sorts/shell_sort |   |  |  |
-| 979 | sorts/shrink_shell_sort |   |  |  |
-| 980 | sorts/slowsort |   |  |  |
-| 981 | sorts/stooge_sort |   |  |  |
-| 982 | sorts/strand_sort |   |  |  |
-| 983 | sorts/tim_sort |   |  |  |
-| 984 | sorts/topological_sort |   |  |  |
-| 985 | sorts/tree_sort |   |  |  |
-| 986 | sorts/unknown_sort |   |  |  |
-| 987 | sorts/wiggle_sort |   |  |  |
-| 988 | strings/aho_corasick |   |  |  |
-| 989 | strings/alternative_string_arrange |   |  |  |
+| 960 | sorts/merge_insertion_sort | ✓ | 0s | 13.8 MB |
+| 961 | sorts/merge_sort | ✓ | 0s | 12.5 MB |
+| 962 | sorts/msd_radix_sort | ✓ | 1ms | 13.4 MB |
+| 963 | sorts/natural_sort | ✓ | 43ms | 13.6 MB |
+| 964 | sorts/odd_even_sort | ✓ | 1ms | 13.4 MB |
+| 965 | sorts/odd_even_transposition_parallel | ✓ | 1ms | 12.6 MB |
+| 966 | sorts/odd_even_transposition_single_threaded | ✓ | 1ms | 13.0 MB |
+| 967 | sorts/pancake_sort | ✓ | 0s | 12.7 MB |
+| 968 | sorts/patience_sort | ✓ | 0s | 13.7 MB |
+| 969 | sorts/pigeon_sort | ✓ | 1ms | 13.2 MB |
+| 970 | sorts/pigeonhole_sort | ✓ | 1ms | 12.6 MB |
+| 971 | sorts/quick_sort | ✓ | 1ms | 12.5 MB |
+| 972 | sorts/quick_sort_3_partition | ✓ | 2ms | 13.7 MB |
+| 973 | sorts/radix_sort | ✓ | 1ms | 12.8 MB |
+| 974 | sorts/recursive_insertion_sort | ✓ | 0s | 13.1 MB |
+| 975 | sorts/recursive_mergesort_array | ✓ | 1ms | 12.7 MB |
+| 976 | sorts/recursive_quick_sort | ✓ | 0s | 12.5 MB |
+| 977 | sorts/selection_sort | ✓ | 1ms | 12.6 MB |
+| 978 | sorts/shell_sort | ✓ | 1ms | 12.8 MB |
+| 979 | sorts/shrink_shell_sort | ✓ | 0s | 12.6 MB |
+| 980 | sorts/slowsort | ✓ | 5ms | 12.4 MB |
+| 981 | sorts/stooge_sort | ✓ | 0s | 12.3 MB |
+| 982 | sorts/strand_sort | ✓ | 1ms | 13.5 MB |
+| 983 | sorts/tim_sort | ✓ | 0s | 13.6 MB |
+| 984 | sorts/topological_sort | ✓ | 0s | 12.5 MB |
+| 985 | sorts/tree_sort | ✓ | 1ms | 13.3 MB |
+| 986 | sorts/unknown_sort | ✓ | 0s | 13.2 MB |
+| 987 | sorts/wiggle_sort | ✓ | 1ms | 12.8 MB |
+| 988 | strings/aho_corasick | ✓ | 1ms | 12.1 MB |
+| 989 | strings/alternative_string_arrange | ✓ | 0s | 12.5 MB |
 | 990 | strings/anagrams |   |  |  |
-| 991 | strings/autocomplete_using_trie |   |  |  |
-| 992 | strings/barcode_validator |   |  |  |
-| 993 | strings/bitap_string_match |   |  |  |
-| 994 | strings/boyer_moore_search |   |  |  |
-| 995 | strings/camel_case_to_snake_case |   |  |  |
-| 996 | strings/can_string_be_rearranged_as_palindrome |   |  |  |
-| 997 | strings/capitalize |   |  |  |
-| 998 | strings/check_anagrams |   |  |  |
-| 999 | strings/count_vowels |   |  |  |
-| 1000 | strings/credit_card_validator |   |  |  |
-| 1001 | strings/damerau_levenshtein_distance |   |  |  |
-| 1002 | strings/detecting_english_programmatically |   |  |  |
-| 1003 | strings/dna |   |  |  |
-| 1004 | strings/edit_distance |   |  |  |
-| 1005 | strings/frequency_finder |   |  |  |
-| 1006 | strings/hamming_distance |   |  |  |
-| 1007 | strings/indian_phone_validator |   |  |  |
-| 1008 | strings/is_contains_unique_chars |   |  |  |
-| 1009 | strings/is_isogram |   |  |  |
-| 1010 | strings/is_pangram |   |  |  |
+| 991 | strings/autocomplete_using_trie | ✓ | 1ms | 12.6 MB |
+| 992 | strings/barcode_validator | ✓ | 1ms | 12.4 MB |
+| 993 | strings/bitap_string_match | ✓ | 8ms | 13.6 MB |
+| 994 | strings/boyer_moore_search | ✓ | 0s | 12.4 MB |
+| 995 | strings/camel_case_to_snake_case | ✓ | 63ms | 13.4 MB |
+| 996 | strings/can_string_be_rearranged_as_palindrome | ✓ | 7ms | 13.4 MB |
+| 997 | strings/capitalize | ✓ | 1ms | 12.0 MB |
+| 998 | strings/check_anagrams | ✓ | 5ms | 13.1 MB |
+| 999 | strings/count_vowels | ✓ | 8ms | 12.5 MB |
+| 1000 | strings/credit_card_validator | ✓ | 1ms | 12.5 MB |
+| 1001 | strings/damerau_levenshtein_distance | ✓ | 8ms | 13.4 MB |
+| 1002 | strings/detecting_english_programmatically | ✓ | 43ms | 16.6 MB |
+| 1003 | strings/dna | ✓ | 0s | 13.1 MB |
+| 1004 | strings/edit_distance | ✓ | 1.051s | 12.5 MB |
+| 1005 | strings/frequency_finder | ✓ | 159ms | 13.7 MB |
+| 1006 | strings/hamming_distance | ✓ | 0s | 12.4 MB |
+| 1007 | strings/indian_phone_validator | ✓ | 0s | 12.4 MB |
+| 1008 | strings/is_contains_unique_chars | ✓ | 9ms | 12.9 MB |
+| 1009 | strings/is_isogram | ✓ | 16ms | 12.6 MB |
+| 1010 | strings/is_pangram | ✓ | 28ms | 12.6 MB |
 | 1011 | strings/is_polish_national_id |   |  |  |
 | 1012 | strings/is_spain_national_id |   |  |  |
 | 1013 | strings/is_srilankan_phone_number |   |  |  |
