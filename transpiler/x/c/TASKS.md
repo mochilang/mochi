@@ -1,5 +1,5 @@
-## Progress (2025-08-11 18:06 +0700)
-- Commit 7d6a02fbec: py: add not-in support and update algorithm outputs
+## Progress (2025-08-11 18:16 +0700)
+- Commit 3dddfc926c: fix: align parser unary usage
 - Regenerated golden files - 82/105 vm valid programs passing
 
 ## Progress (2025-07-22 14:12 +0700)
