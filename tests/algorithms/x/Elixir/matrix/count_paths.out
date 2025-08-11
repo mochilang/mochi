@@ -1,0 +1,23 @@
+warning: variable "visit" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 32 │       visit = List.replace_at(visit, row, List.replace_at(Enum.at(visit, row), col, false))
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/count_paths.exs:32:7: Main.depth_first_search/4
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 57 │           {j, row_visit} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/count_paths.exs:57:12: Main.count_paths/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 70 │       {i, visit} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/count_paths.exs:70:8: Main.count_paths/1
+
+2
+2

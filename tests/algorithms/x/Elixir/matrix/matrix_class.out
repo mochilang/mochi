@@ -1,0 +1,204 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 29 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_class.exs:29:7: Main.make_matrix/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 57 │           {col, i} = try do
+    │                 ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_class.exs:57:17: Main.matrix_columns/1
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 70 │       {cols, j} = try do
+    │              ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_class.exs:70:14: Main.matrix_columns/1
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 99 │           {j, row} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_class.exs:99:12: Main.matrix_identity/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 112 │       {i, vals} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_class.exs:112:8: Main.matrix_identity/1
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 146 │             {j, row} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_class.exs:146:14: Main.matrix_minor/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 163 │       {i, vals} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_class.exs:163:8: Main.matrix_minor/3
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 203 │           {j, row} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_class.exs:203:12: Main.matrix_minors/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 216 │       {i, vals} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_class.exs:216:8: Main.matrix_minors/1
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 244 │           {j, row} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_class.exs:244:12: Main.matrix_cofactors/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 257 │       {i, vals} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_class.exs:257:8: Main.matrix_cofactors/1
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 293 │       {j, sum} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_class.exs:293:8: Main.matrix_determinant/1
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 329 │           {j, row} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_class.exs:329:12: Main.matrix_adjugate/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 342 │       {i, vals} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_class.exs:342:8: Main.matrix_adjugate/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 387 │       {i, newData} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_class.exs:387:8: Main.matrix_add_column/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 415 │           {j, row} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_class.exs:415:12: Main.matrix_mul_scalar/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 428 │       {i, vals} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_class.exs:428:8: Main.matrix_mul_scalar/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 466 │           {j, row} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_class.exs:466:12: Main.matrix_add/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 479 │       {i, vals} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_class.exs:479:8: Main.matrix_add/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 510 │           {j, row} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_class.exs:510:12: Main.matrix_sub/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 523 │       {i, vals} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_class.exs:523:8: Main.matrix_sub/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 547 │       {i, sum} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_class.exs:547:8: Main.matrix_dot/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 579 │           {j, row} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_class.exs:579:12: Main.matrix_mul/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 592 │       {i, vals} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_class.exs:592:8: Main.matrix_mul/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 625 │       {i, result} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_class.exs:625:8: Main.matrix_pow/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 662 │           {j, s} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_class.exs:662:12: Main.matrix_to_string/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 681 │       {i, s} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_class.exs:681:8: Main.matrix_to_string/1
+
+"[[1.0 2.0 3.0]\n [4.0 5.0 6.0]\n [7.0 8.0 9.0]]"
+[[1.0, 4.0, 7.0], [2.0, 5.0, 8.0], [3.0, 6.0, 9.0]]
+3,3
+false
+"[[1.0 0.0 0.0]\n [0.0 1.0 0.0]\n [0.0 0.0 1.0]]"
+0.0
+"[[-3.0 -6.0 -3.0]\n [-6.0 -12.0 -6.0]\n [-3.0 -6.0 -3.0]]"
+"[[-3.0 6.0 -3.0]\n [6.0 -12.0 6.0]\n [-3.0 6.0 -3.0]]"
+"[[-3.0 6.0 -3.0]\n [6.0 -12.0 6.0]\n [-3.0 6.0 -3.0]]"
+"[[3.0 6.0 9.0]\n [12.0 15.0 18.0]\n [21.0 24.0 27.0]]"
+"[[4.0 8.0 12.0]\n [16.0 20.0 24.0]\n [28.0 32.0 36.0]]"
+"[[-2.0 -4.0 -6.0]\n [-8.0 -10.0 -12.0]\n [-14.0 -16.0 -18.0]]"
+"[[468.0 576.0 684.0]\n [1062.0 1305.0 1548.0]\n [1656.0 2034.0 2412.0]]"
+"[[1.0 2.0 3.0]\n [4.0 5.0 6.0]\n [7.0 8.0 9.0]\n [10.0 11.0 12.0]]"
+"[[90.0 108.0 126.0 136.0]\n [198.0 243.0 288.0 304.0]\n [306.0 378.0 450.0 472.0]\n [414.0 513.0 612.0 640.0]]"

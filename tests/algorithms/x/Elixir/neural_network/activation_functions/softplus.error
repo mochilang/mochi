@@ -1,0 +1,42 @@
+run: exit status 1
+    warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 31 │       {k, sum, term} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/activation_functions/softplus.exs:31:8: Main.ln/1
+
+    warning: variable "term" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 31 │       {k, sum, term} = try do
+    │                ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/activation_functions/softplus.exs:31:16: Main.ln/1
+
+    warning: variable "n" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 57 │       {n, sum, term} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/activation_functions/softplus.exs:57:8: Main.exp/1
+
+    warning: variable "term" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 57 │       {n, sum, term} = try do
+    │                ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/activation_functions/softplus.exs:57:16: Main.exp/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 83 │       {i, result} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/activation_functions/softplus.exs:83:8: Main.softplus/1
+
+** (RuntimeError) ln domain error
+    /workspace/mochi/tests/algorithms/x/Elixir/neural_network/activation_functions/softplus.exs:13: Main.ln/1
+    /workspace/mochi/tests/algorithms/x/Elixir/neural_network/activation_functions/softplus.exs:75: anonymous fn/4 in Main.softplus/1
+    /workspace/mochi/tests/algorithms/x/Elixir/neural_network/activation_functions/softplus.exs:84: Main.softplus/1
+    /workspace/mochi/tests/algorithms/x/Elixir/neural_network/activation_functions/softplus.exs:99: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/neural_network/activation_functions/softplus.exs:107: (file)

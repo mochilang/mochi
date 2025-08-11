@@ -1,0 +1,84 @@
+warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 53 │               {k, val} = try do
+    │                ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/nth_fibonacci_using_matrix_exponentiation.exs:53:16: Main.multiply/2
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 66 │           {j, row} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/nth_fibonacci_using_matrix_exponentiation.exs:66:12: Main.multiply/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 79 │       {i, matrix_c} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/nth_fibonacci_using_matrix_exponentiation.exs:79:8: Main.multiply/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 107 │           {j, row} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/nth_fibonacci_using_matrix_exponentiation.exs:107:12: Main.identity/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 120 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/nth_fibonacci_using_matrix_exponentiation.exs:120:8: Main.identity/1
+
+     warning: variable "fib_matrix" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 154 │       {fib_matrix, m, res_matrix} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/nth_fibonacci_using_matrix_exponentiation.exs:154:8: Main.nth_fibonacci_matrix/1
+
+     warning: variable "m" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 154 │       {fib_matrix, m, res_matrix} = try do
+     │                    ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/nth_fibonacci_using_matrix_exponentiation.exs:154:20: Main.nth_fibonacci_matrix/1
+
+     warning: variable "fib0" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 184 │       {fib0, fib1, i} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/nth_fibonacci_using_matrix_exponentiation.exs:184:8: Main.nth_fibonacci_bruteforce/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 184 │       {fib0, fib1, i} = try do
+     │                    ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/nth_fibonacci_using_matrix_exponentiation.exs:184:20: Main.nth_fibonacci_bruteforce/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 214 │       {i, result} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/nth_fibonacci_using_matrix_exponentiation.exs:214:8: Main.parse_number/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 241 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/nth_fibonacci_using_matrix_exponentiation.exs:241:7: Main.main/0
+
+0th fibonacci number using matrix exponentiation is 0 and using bruteforce is 0
+1st fibonacci number using matrix exponentiation is 1 and using bruteforce is 1
+2nd fibonacci number using matrix exponentiation is 1 and using bruteforce is 1
+3rd fibonacci number using matrix exponentiation is 2 and using bruteforce is 2
+10th fibonacci number using matrix exponentiation is 55 and using bruteforce is 55
+100th fibonacci number using matrix exponentiation is 354224848179261915075 and using bruteforce is 354224848179261915075
+1000th fibonacci number using matrix exponentiation is 43466557686937456435688527675040625802564660517371780402481729089536555417949051890403879840079255169295922593080322634775209689623239873322471161642996440906533187938298969649928516003704476137795166849228875 and using bruteforce is 43466557686937456435688527675040625802564660517371780402481729089536555417949051890403879840079255169295922593080322634775209689623239873322471161642996440906533187938298969649928516003704476137795166849228875

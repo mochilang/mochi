@@ -1,0 +1,44 @@
+warning: variable "boxes" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 76 │                   boxes = List.replace_at(boxes, box, (Enum.at(boxes, box) ++ [value]))
+    │                   ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/validate_sudoku_board.exs:76:19: Main.is_valid_sudoku_board/1
+
+    warning: variable "cols" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 75 │                   cols = List.replace_at(cols, c, (Enum.at(cols, c) ++ [value]))
+    │                   ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/validate_sudoku_board.exs:75:19: Main.is_valid_sudoku_board/1
+
+    warning: variable "rows" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 74 │                   rows = List.replace_at(rows, r, (Enum.at(rows, r) ++ [value]))
+    │                   ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/validate_sudoku_board.exs:74:19: Main.is_valid_sudoku_board/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 33 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/validate_sudoku_board.exs:33:7: Main.is_valid_sudoku_board/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 54 │       {boxes, cols, i, rows} = try do
+    │                     ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/validate_sudoku_board.exs:54:21: Main.is_valid_sudoku_board/1
+
+** (throw) {:continue, {[[], [], [], [], [], [], [], [], []], [[], [], [], [], [], [], [], [], []], [[], [], [], [], [], [], [], [], []]}}
+    /workspace/mochi/tests/algorithms/x/Elixir/matrix/validate_sudoku_board.exs:68: anonymous fn/6 in Main.is_valid_sudoku_board/1
+    (elixir 1.18.3) lib/enum.ex:4484: Enum.map_range/4
+    (elixir 1.18.3) lib/enum.ex:4484: Enum.map/2
+    /workspace/mochi/tests/algorithms/x/Elixir/matrix/validate_sudoku_board.exs:64: anonymous fn/5 in Main.is_valid_sudoku_board/1
+    (elixir 1.18.3) lib/enum.ex:4484: Enum.map/2
+    /workspace/mochi/tests/algorithms/x/Elixir/matrix/validate_sudoku_board.exs:61: Main.is_valid_sudoku_board/1
+    /workspace/mochi/tests/algorithms/x/Elixir/matrix/validate_sudoku_board.exs:104: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/matrix/validate_sudoku_board.exs:113: (file)

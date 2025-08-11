@@ -1,0 +1,16 @@
+warning: variable "last_highest" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 63 │       {last_highest, last_lowest, last_numbers} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/other/guess_the_number_search.exs:63:8: Main.guess_the_number/3
+
+    warning: variable "last_lowest" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 63 │       {last_highest, last_lowest, last_numbers} = try do
+    │                      ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/other/guess_the_number_search.exs:63:22: Main.guess_the_number/3
+
+started...
+started...

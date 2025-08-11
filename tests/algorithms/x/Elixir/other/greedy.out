@@ -1,0 +1,45 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 51 │       {i, menu} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/other/greedy.exs:51:8: Main.build_menu/3
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 75 │       {arr, i} = try do
+    │             ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/other/greedy.exs:75:13: Main.sort_desc/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 109 │       {arr, j} = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/greedy.exs:109:13: Main.sort_desc/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 145 │       {i, result, total_cost, total_value} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/greedy.exs:145:8: Main.greedy/3
+
+     warning: variable "total_cost" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 145 │       {i, result, total_cost, total_value} = try do
+     │                   ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/greedy.exs:145:19: Main.greedy/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 182 │       {i, s} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/greedy.exs:182:8: Main.list_to_string/1
+
+"[Thing(Burger, 80.0, 40.0), Thing(Pizza, 100.0, 60.0), Thing(Coca Cola, 60.0, 40.0), Thing(Rice, 70.0, 70.0), Thing(Sambhar, 50.0, 100.0), Thing(Chicken, 110.0, 85.0), Thing(Fries, 90.0, 55.0), Thing(Milk, 60.0, 70.0)]"
+"[Thing(Chicken, 110.0, 85.0), Thing(Pizza, 100.0, 60.0), Thing(Fries, 90.0, 55.0), Thing(Burger, 80.0, 40.0), Thing(Rice, 70.0, 70.0), Thing(Coca Cola, 60.0, 40.0), Thing(Milk, 60.0, 70.0)]"
+570.0

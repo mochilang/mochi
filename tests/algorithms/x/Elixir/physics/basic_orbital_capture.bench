@@ -1,0 +1,19 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 22 │       {i, result} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/physics/basic_orbital_capture.exs:22:8: Main.pow10/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 49 │       {guess, i} = try do
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/physics/basic_orbital_capture.exs:49:15: Main.sqrt/1
+
+** (RuntimeError) capture_area failed
+    /workspace/mochi/tests/algorithms/x/Elixir/physics/basic_orbital_capture.exs:105: Main.run_tests/0
+    /workspace/mochi/tests/algorithms/x/Elixir/physics/basic_orbital_capture.exs:113: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/physics/basic_orbital_capture.exs:131: Main.bench_main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/physics/basic_orbital_capture.exs:139: (file)

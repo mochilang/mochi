@@ -1,0 +1,78 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 47 │       {i, m, names} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/other/davis_putnam_logemann_loveland.exs:47:8: Main.new_clause/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 85 │       {i, lits} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/other/davis_putnam_logemann_loveland.exs:85:8: Main.assign_clause/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 113 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/davis_putnam_logemann_loveland.exs:113:7: Main.evaluate_clause/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 137 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/davis_putnam_logemann_loveland.exs:137:7: Main.evaluate_clause/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 160 │       {any_true, i} = try do
+     │                  ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/davis_putnam_logemann_loveland.exs:160:18: Main.evaluate_clause/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 196 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/davis_putnam_logemann_loveland.exs:196:8: Main.remove_symbol/2
+
+     warning: variable "clauses" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 214 │           clauses = List.replace_at(clauses, i, ev.clause)
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/davis_putnam_logemann_loveland.exs:214:11: Main.dpll_algorithm/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 233 │       {all_true, i} = try do
+     │                  ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/davis_putnam_logemann_loveland.exs:233:18: Main.dpll_algorithm/3
+
+     warning: variable "first" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 279 │       {first, i, line} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/davis_putnam_logemann_loveland.exs:279:8: Main.str_clause/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 279 │       {first, i, line} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/davis_putnam_logemann_loveland.exs:279:15: Main.str_clause/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 310 │       {i, line} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/davis_putnam_logemann_loveland.exs:310:8: Main.str_formula/1
+
+The formula {{A4 , A3 , A5' , A1 , A3'} , {A4}} is satisfiable.

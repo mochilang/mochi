@@ -1,0 +1,59 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 24 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/other/majority_vote_algorithm.exs:24:7: Main.index_of/2
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 66 │               {counts, j} = try do
+    │                        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/other/majority_vote_algorithm.exs:66:24: Main.majority_vote/2
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 90 │               {j, new_candidates, new_counts} = try do
+    │                ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/other/majority_vote_algorithm.exs:90:16: Main.majority_vote/2
+
+     warning: variable "counts" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 108 │       {candidates, counts, i} = try do
+     │                    ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/majority_vote_algorithm.exs:108:20: Main.majority_vote/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 108 │       {candidates, counts, i} = try do
+     │                            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/majority_vote_algorithm.exs:108:28: Main.majority_vote/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 148 │       {final_counts, i} = try do
+     │                      ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/majority_vote_algorithm.exs:148:22: Main.majority_vote/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 125 │       {final_counts, j} = try do
+     │                      ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/majority_vote_algorithm.exs:125:22: Main.majority_vote/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 170 │       {j, result} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/majority_vote_algorithm.exs:170:8: Main.majority_vote/2
+
+[2]
+[]
+[1, 2, 3]

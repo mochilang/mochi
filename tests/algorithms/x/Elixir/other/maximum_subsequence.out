@@ -1,0 +1,9 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 39 │       {ans, i} = try do
+    │             ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/other/maximum_subsequence.exs:39:13: Main.max_subsequence_sum/1
+
+10
+-1

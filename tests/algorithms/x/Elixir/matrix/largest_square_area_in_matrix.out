@@ -1,0 +1,123 @@
+warning: variable "largest_square_area" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 11 │       {largest_square_area} = if Enum.at(Enum.at(mat, row), col) == 1 do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/largest_square_area_in_matrix.exs:11:8: Main.update_area_of_max_square/6
+
+    warning: variable "dp_array" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 49 │       {dp_array, largest_square_area} = if Enum.at(Enum.at(mat, row), col) == 1 do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/largest_square_area_in_matrix.exs:49:8: Main.update_area_of_max_square_with_dp/7
+
+    warning: variable "largest_square_area" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 49 │       {dp_array, largest_square_area} = if Enum.at(Enum.at(mat, row), col) == 1 do
+    │                  ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/largest_square_area_in_matrix.exs:49:18: Main.update_area_of_max_square_with_dp/7
+
+    warning: variable "c" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 87 │           {c, row_list} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/largest_square_area_in_matrix.exs:87:12: Main.largest_square_area_in_matrix_top_down_with_dp/3
+
+     warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 100 │       {dp_array, r} = try do
+     │                  ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/largest_square_area_in_matrix.exs:100:18: Main.largest_square_area_in_matrix_top_down_with_dp/3
+
+     warning: variable "c" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 129 │           {c, row_list} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/largest_square_area_in_matrix.exs:129:12: Main.largest_square_area_in_matrix_bottom_up/3
+
+     warning: variable "col" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 178 │           {col, dp_array, largest} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/largest_square_area_in_matrix.exs:178:12: Main.largest_square_area_in_matrix_bottom_up/3
+
+     warning: variable "dp_array" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 190 │       {dp_array, largest, row} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/largest_square_area_in_matrix.exs:190:8: Main.largest_square_area_in_matrix_bottom_up/3
+
+     warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 142 │       {dp_array, r} = try do
+     │                  ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/largest_square_area_in_matrix.exs:142:18: Main.largest_square_area_in_matrix_bottom_up/3
+
+     warning: variable "row" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 190 │       {dp_array, largest, row} = try do
+     │                           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/largest_square_area_in_matrix.exs:190:27: Main.largest_square_area_in_matrix_bottom_up/3
+
+     warning: variable "col" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 267 │           {col, current_row, largest} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/largest_square_area_in_matrix.exs:267:12: Main.largest_square_area_in_matrix_bottom_up_space_optimization/3
+
+     warning: variable "t" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 285 │           {current_row, t} = try do
+     │                         ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/largest_square_area_in_matrix.exs:285:25: Main.largest_square_area_in_matrix_bottom_up_space_optimization/3
+
+     warning: variable "current_row" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 297 │       {current_row, largest, next_row, row} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/largest_square_area_in_matrix.exs:297:8: Main.largest_square_area_in_matrix_bottom_up_space_optimization/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 214 │       {current_row, i} = try do
+     │                     ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/largest_square_area_in_matrix.exs:214:21: Main.largest_square_area_in_matrix_bottom_up_space_optimization/3
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 231 │       {j, next_row} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/largest_square_area_in_matrix.exs:231:8: Main.largest_square_area_in_matrix_bottom_up_space_optimization/3
+
+     warning: variable "next_row" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 297 │       {current_row, largest, next_row, row} = try do
+     │                              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/largest_square_area_in_matrix.exs:297:30: Main.largest_square_area_in_matrix_bottom_up_space_optimization/3
+
+     warning: variable "row" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 297 │       {current_row, largest, next_row, row} = try do
+     │                                        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/largest_square_area_in_matrix.exs:297:40: Main.largest_square_area_in_matrix_bottom_up_space_optimization/3
+
+0
+0
+2
+2

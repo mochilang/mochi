@@ -1,0 +1,169 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 51 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_based_game.exs:51:8: Main.to_int/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 84 │       {current, i, res} = try do
+    │                 ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_based_game.exs:84:17: Main.split/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 129 │           {j, num, numbers} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_based_game.exs:129:12: Main.parse_moves/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 153 │       {i, moves} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_based_game.exs:153:8: Main.parse_moves/1
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 198 │           j = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_based_game.exs:198:11: Main.validate_matrix_content/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 210 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_based_game.exs:210:7: Main.validate_matrix_content/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 235 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_based_game.exs:235:7: Main.validate_moves/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 260 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_based_game.exs:260:7: Main.contains/3
+
+     warning: variable "stack" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 313 │       {repeated, stack, visited} = try do
+     │                  ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_based_game.exs:313:18: Main.find_repeat/4
+
+     warning: variable "visited" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 313 │       {repeated, stack, visited} = try do
+     │                         ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_based_game.exs:313:25: Main.find_repeat/4
+
+     warning: variable "row" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 345 │       {new_list, row} = try do
+     │                  ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_based_game.exs:345:18: Main.move_x/3
+
+     warning: variable "row" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 361 │       {matrix_g, row} = try do
+     │                  ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_based_game.exs:361:18: Main.move_x/3
+
+     warning: variable "row" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 395 │           {all_empty, row} = try do
+     │                       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_based_game.exs:395:23: Main.move_y/2
+
+     warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 436 │               {matrix_g, r} = try do
+     │                          ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_based_game.exs:436:26: Main.move_y/2
+
+     warning: variable "c" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 448 │           {c, matrix_g} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_based_game.exs:448:12: Main.move_y/2
+
+     warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 464 │           {matrix_g, r} = try do
+     │                      ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_based_game.exs:464:22: Main.move_y/2
+
+     warning: variable "column" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 413 │       {column, empty_cols} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_based_game.exs:413:8: Main.move_y/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 476 │       {i, matrix_g} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_based_game.exs:476:8: Main.move_y/2
+
+     warning: variable "column" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 518 │         {column, matrix_g} = try do
+     │          ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_based_game.exs:518:10: Main.play/4
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 502 │         {i, matrix_g} = try do
+     │          ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_based_game.exs:502:10: Main.play/4
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 553 │           {j, row_list} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_based_game.exs:553:12: Main.build_matrix/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 566 │       {i, res} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_based_game.exs:566:8: Main.build_matrix/1
+
+     warning: variable "game_matrix" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 594 │       {game_matrix, i, total} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_based_game.exs:594:8: Main.process_game/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 594 │       {game_matrix, i, total} = try do
+     │                     ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/matrix_based_game.exs:594:21: Main.process_game/3
+
+12

@@ -1,0 +1,85 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 61 │       {i, list_int} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/other/word_search.exs:61:8: Main.shuffle/1
+
+    warning: variable "c" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 98 │           {c, row} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/other/word_search.exs:98:12: Main.make_word_search/3
+
+     warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 111 │       {board, r} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/word_search.exs:111:15: Main.make_word_search/3
+
+     warning: variable "row_list" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 176 │                         row_list = List.replace_at(row_list, cc2, _slice(word, k, (k + 1) - k))
+     │                         ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/word_search.exs:176:25: Main.insert_dir/6
+
+     warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 169 │                   {k} = if ok do
+     │                    ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/word_search.exs:169:20: Main.insert_dir/6
+
+     warning: variable "ci" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 204 │             ci = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/word_search.exs:204:13: Main.insert_dir/6
+
+     warning: variable "ri" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 220 │       ri = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/word_search.exs:220:7: Main.insert_dir/6
+
+     warning: variable "c" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 267 │           {c, cols} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/word_search.exs:267:12: Main.generate_board/1
+
+     warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 250 │           {r, rows} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/word_search.exs:250:12: Main.generate_board/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 283 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/word_search.exs:283:7: Main.generate_board/1
+
+     warning: variable "c" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 316 │           {c, result} = try do
+     │            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/word_search.exs:316:12: Main.visualise/2
+
+     warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 329 │       {r, result} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/other/word_search.exs:329:8: Main.visualise/2
+
+"y n m f q t o z u p \ni p y p k h e l u n \nw p i b u f g v s h \nq x w l s d g f s h \ne n m t c f i l i p \ni l i f e f i d a t \ns b a t s n c t a b \no l w h y j w v q v \nu f y b e h q t k t \nw v i n u z s t s d \n"

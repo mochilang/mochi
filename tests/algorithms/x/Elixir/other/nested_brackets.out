@@ -1,0 +1,30 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 44 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/other/nested_brackets.exs:44:8: Main.slice_without_last/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 87 │       {i, stack} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/other/nested_brackets.exs:87:8: Main.is_balanced/1
+
+true
+true
+true
+true
+true
+true
+false
+true
+false
+false
+true
+true
+false
+true
+true
+false

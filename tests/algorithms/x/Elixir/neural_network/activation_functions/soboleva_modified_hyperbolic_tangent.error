@@ -1,0 +1,31 @@
+run: exit status 1
+    warning: variable "n" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 25 │       {n, sum, term} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/activation_functions/soboleva_modified_hyperbolic_tangent.exs:25:8: Main.exp/1
+
+    warning: variable "term" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 25 │       {n, sum, term} = try do
+    │                ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/activation_functions/soboleva_modified_hyperbolic_tangent.exs:25:16: Main.exp/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 52 │       {i, result} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/activation_functions/soboleva_modified_hyperbolic_tangent.exs:52:8: Main.soboleva_modified_hyperbolic_tangent/5
+
+    error: undefined function to_float/1 (expected Main to define such a function or for it to be imported, but none are available)
+    │
+ 17 │           term = term * x / to_float(n)
+    │                             ^^^^^^^^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/activation_functions/soboleva_modified_hyperbolic_tangent.exs:17:29: Main.exp/1
+
+** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/neural_network/activation_functions/soboleva_modified_hyperbolic_tangent.exs: cannot compile module Main (errors have been logged)
+

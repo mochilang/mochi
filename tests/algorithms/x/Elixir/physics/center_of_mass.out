@@ -1,0 +1,16 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 39 │       {i, total_mass} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/physics/center_of_mass.exs:39:8: Main.center_of_mass/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 61 │       {i, sum_x, sum_y, sum_z} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/physics/center_of_mass.exs:61:8: Main.center_of_mass/1
+
+"Coord3D(x=6.61, y=7.98, z=8.69)"
+"Coord3D(x=6.33, y=7.33, z=8.33)"
