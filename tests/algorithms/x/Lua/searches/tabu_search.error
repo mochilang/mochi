@@ -1,5 +1,5 @@
 run: exit status 1
-lua: ...ce/mochi/tests/algorithms/x/Lua/searches/tabu_search.lua:114: attempt to compare string with number
+lua: ...ce/mochi/tests/algorithms/x/Lua/searches/tabu_search.lua:114: attempt to compare table with number
 stack traceback:
 	...ce/mochi/tests/algorithms/x/Lua/searches/tabu_search.lua:114: in function 'generate_first_solution'
 	...ce/mochi/tests/algorithms/x/Lua/searches/tabu_search.lua:381: in main chunk

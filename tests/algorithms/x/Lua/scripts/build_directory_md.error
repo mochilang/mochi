@@ -1,8 +1,0 @@
-run: exit status 1
-lua: ...hi/tests/algorithms/x/Lua/scripts/build_directory_md.lua:615: bad argument #1 to 'sub' (string expected, got nil)
-stack traceback:
-	[C]: in function 'string.sub'
-	...hi/tests/algorithms/x/Lua/scripts/build_directory_md.lua:615: in function 'good_file_paths'
-	...hi/tests/algorithms/x/Lua/scripts/build_directory_md.lua:663: in function 'print_directory_md'
-	...hi/tests/algorithms/x/Lua/scripts/build_directory_md.lua:818: in main chunk
-	[C]: in ?
