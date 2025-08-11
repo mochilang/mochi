@@ -1,0 +1,123 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/current_weather.rs:78:2
+   |
+78 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/current_weather.rs:95:2
+   |
+95 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/current_weather.rs:99:2
+   |
+99 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/current_weather.rs:81:8
+   |
+81 |     if (g_OPENWEATHERMAP_API_KEY.as_str() != "") {
+   |        ^                                       ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+81 -     if (g_OPENWEATHERMAP_API_KEY.as_str() != "") {
+81 +     if g_OPENWEATHERMAP_API_KEY.as_str() != "" {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/current_weather.rs:86:8
+   |
+86 |     if (g_WEATHERSTACK_API_KEY.as_str() != "") {
+   |        ^                                     ^
+   |
+help: remove these parentheses
+   |
+86 -     if (g_WEATHERSTACK_API_KEY.as_str() != "") {
+86 +     if g_WEATHERSTACK_API_KEY.as_str() != "" {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/current_weather.rs:91:8
+   |
+91 |     if ((weather_data.len() as i64) == 0) {
+   |        ^                                ^
+   |
+help: remove these parentheses
+   |
+91 -     if ((weather_data.len() as i64) == 0) {
+91 +     if (weather_data.len() as i64) == 0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/current_weather.rs:102:32
+    |
+102 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+102 -         let duration_us: i64 = ((_end - _start) / 1000);
+102 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0277]: the trait bound `String: Borrow<&str>` is not satisfied
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/current_weather.rs:74:28
+   |
+74 |     if params.contains_key(&"q") {
+   |               ------------ ^^^^ the trait `Borrow<&str>` is not implemented for `String`
+   |               |
+   |               required by a bound introduced by this call
+   |
+   = help: the trait `Borrow<&_>` is not implemented for `String`
+           but trait `Borrow<_>` is implemented for it
+   = help: for that trait implementation, expected `str`, found `&str`
+note: required by a bound in `HashMap::<K, V, S>::contains_key`
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1137:5
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/current_weather.rs:84:69
+   |
+84 |         weather_data = { let mut _v = weather_data.clone(); _v.push(Map {OpenWeatherMap: response_openweathermap}); _v };
+   |                                                                ---- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `HashMap<String, HashMap<String, String>>`, found `Map`
+   |                                                                |
+   |                                                                arguments to this method are incorrect
+   |
+   = note: expected struct `HashMap<String, HashMap<String, String>>`
+              found struct `Map`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/current_weather.rs:89:69
+   |
+89 |         weather_data = { let mut _v = weather_data.clone(); _v.push(Map1 {Weatherstack: response_weatherstack}); _v };
+   |                                                                ---- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `HashMap<String, HashMap<String, String>>`, found `Map1`
+   |                                                                |
+   |                                                                arguments to this method are incorrect
+   |
+   = note: expected struct `HashMap<String, HashMap<String, String>>`
+              found struct `Map1`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/current_weather.rs:97:9
+   |
+97 |     let mut data: Vec<HashMap<String, HashMap<String, String>>> = current_weather(&"New York");
+   |         ----^^^^
+   |         |
+   |         help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+error: aborting due to 3 previous errors; 8 warnings emitted
+
+Some errors have detailed explanations: E0277, E0308.
+For more information about an error, try `rustc --explain E0277`.

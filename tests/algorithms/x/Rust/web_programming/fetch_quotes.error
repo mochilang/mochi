@@ -1,0 +1,62 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/fetch_quotes.rs:74:2
+   |
+74 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/fetch_quotes.rs:77:2
+   |
+77 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/fetch_quotes.rs:81:28
+   |
+81 |     let duration_us: i64 = ((_end - _start) / 1000);
+   |                            ^                      ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+81 -     let duration_us: i64 = ((_end - _start) / 1000);
+81 +     let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/fetch_quotes.rs:73:12
+   |
+72 |     fn quote_of_the_day() -> Vec<Quote> {
+   |                              ---------- expected `Vec<Quote>` because of return type
+73 |     return _fetch("https://zenquotes.io/api/today")
+   |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<Quote>`, found `String`
+   |
+   = note: expected struct `Vec<Quote>`
+              found struct `String`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/fetch_quotes.rs:76:12
+   |
+75 |     fn random_quotes() -> Vec<Quote> {
+   |                           ---------- expected `Vec<Quote>` because of return type
+76 |     return _fetch("https://zenquotes.io/api/random")
+   |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Vec<Quote>`, found `String`
+   |
+   = note: expected struct `Vec<Quote>`
+              found struct `String`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/fetch_quotes.rs:78:9
+   |
+78 |     let mut response: Vec<Quote> = random_quotes();
+   |         ----^^^^^^^^
+   |         |
+   |         help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+error: aborting due to 2 previous errors; 4 warnings emitted
+
+For more information about this error, try `rustc --explain E0308`.

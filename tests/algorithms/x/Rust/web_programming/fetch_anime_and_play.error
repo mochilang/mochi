@@ -1,0 +1,188 @@
+warning: type `ANIME_DBItem` should have an upper camel case name
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/fetch_anime_and_play.rs:41:8
+   |
+41 | struct ANIME_DBItem {
+   |        ^^^^^^^^^^^^ help: convert the identifier to upper camel case: `AnimeDbitem`
+   |
+   = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/fetch_anime_and_play.rs:76:2
+   |
+76 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/fetch_anime_and_play.rs:89:2
+   |
+89 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/fetch_anime_and_play.rs:96:2
+   |
+96 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/fetch_anime_and_play.rs:99:2
+   |
+99 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/fetch_anime_and_play.rs:109:2
+    |
+109 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/fetch_anime_and_play.rs:117:2
+    |
+117 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/fetch_anime_and_play.rs:65:8
+   |
+65 |     if ((sub.len() as i64) == 0) {
+   |        ^                       ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+65 -     if ((sub.len() as i64) == 0) {
+65 +     if (sub.len() as i64) == 0 {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/fetch_anime_and_play.rs:69:11
+   |
+69 |     while ((i + (sub.len() as i64)) <= (s.len() as i64)) {
+   |           ^                                            ^
+   |
+help: remove these parentheses
+   |
+69 -     while ((i + (sub.len() as i64)) <= (s.len() as i64)) {
+69 +     while (i + (sub.len() as i64)) <= (s.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/fetch_anime_and_play.rs:73:13
+   |
+73 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+73 -         i = (i + 1);
+73 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/fetch_anime_and_play.rs:81:11
+   |
+81 |     while (i < (g_ANIME_DB.len() as i64)) {
+   |           ^                             ^
+   |
+help: remove these parentheses
+   |
+81 -     while (i < (g_ANIME_DB.len() as i64)) {
+81 +     while i < (g_ANIME_DB.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/fetch_anime_and_play.rs:86:13
+   |
+86 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+86 -         i = (i + 1);
+86 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/fetch_anime_and_play.rs:120:32
+    |
+120 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+120 -         let duration_us: i64 = ((_end - _start) / 1000);
+120 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0599]: no method named `get` found for struct `LazyLock<Mutex<HashMap<String, Vec<HashMap<String, String>>>>>` in the current scope
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/fetch_anime_and_play.rs:92:29
+   |
+92 |         return g_EPISODE_DB.get(endpoint).cloned().unwrap_or_default()
+   |                -------------^^^----------
+   |                |            |
+   |                |            this is an associated function, not a method
+   |                help: use associated function syntax instead: `LazyLock::<Mutex<HashMap<String, Vec<HashMap<String, String>>>>>::get(&g_EPISODE_DB, endpoint)`
+   |
+   = note: found the following associated functions; to be used as methods, functions must have a `self` parameter
+   = note: the candidate is defined in an impl for the type `LazyLock<T, F>`
+
+error[E0599]: no method named `get` found for struct `LazyLock<Mutex<HashMap<String, String>>>` in the current scope
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/fetch_anime_and_play.rs:102:49
+    |
+102 |         let mut embed: String = g_EPISODE_EMBED.get(endpoint).cloned().unwrap_or_default().clone();
+    |                                 ----------------^^^----------
+    |                                 |               |
+    |                                 |               this is an associated function, not a method
+    |                                 help: use associated function syntax instead: `LazyLock::<Mutex<HashMap<String, String>>>::get(&g_EPISODE_EMBED, endpoint)`
+    |
+    = note: found the following associated functions; to be used as methods, functions must have a `self` parameter
+    = note: the candidate is defined in an impl for the type `LazyLock<T, F>`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/fetch_anime_and_play.rs:78:9
+   |
+78 |     let mut term: String = (anime_name.to_lowercase()).clone();
+   |         ----^^^^
+   |         |
+   |         help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/fetch_anime_and_play.rs:82:13
+   |
+82 |         let mut item: HashMap<String, String> = g_ANIME_DB[i as usize].clone();
+   |             ----^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/fetch_anime_and_play.rs:111:9
+    |
+111 |     let mut animes: Vec<HashMap<String, String>> = search_scraper(&"demon");
+    |         ----^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/fetch_anime_and_play.rs:113:9
+    |
+113 |     let mut episodes: Vec<HashMap<String, String>> = search_anime_episode_list(&"/anime/kimetsu-no-yaiba");
+    |         ----^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/fetch_anime_and_play.rs:115:9
+    |
+115 |     let mut links: Vec<String> = get_anime_episode(&"/watch/kimetsu-no-yaiba/1");
+    |         ----^^^^^
+    |         |
+    |         help: remove this `mut`
+
+error: aborting due to 2 previous errors; 18 warnings emitted
+
+For more information about this error, try `rustc --explain E0599`.

@@ -1,0 +1,104 @@
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/co2_emission.rs:109:2
+    |
+109 | };
+    |  ^ help: remove this semicolon
+    |
+    = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/co2_emission.rs:114:2
+    |
+114 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/co2_emission.rs:125:2
+    |
+125 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/co2_emission.rs:118:11
+    |
+118 |     while (i < (entries.len() as i64)) {
+    |           ^                          ^
+    |
+    = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+    |
+118 -     while (i < (entries.len() as i64)) {
+118 +     while i < (entries.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/co2_emission.rs:121:13
+    |
+121 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+121 -         i = (i + 1);
+121 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/co2_emission.rs:128:32
+    |
+128 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+128 -         let duration_us: i64 = ((_end - _start) / 1000);
+128 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/co2_emission.rs:106:46
+    |
+106 |     let mut resp: Response = Response {data: 0};
+    |                                              ^ expected `Vec<Entry>`, found integer
+    |
+    = note: expected struct `Vec<Entry>`
+                 found type `{integer}`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/co2_emission.rs:112:46
+    |
+112 |     let mut resp: Response = Response {data: 0};
+    |                                              ^ expected `Vec<Entry>`, found integer
+    |
+    = note: expected struct `Vec<Entry>`
+                 found type `{integer}`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/co2_emission.rs:116:9
+    |
+116 |     let mut entries: Vec<Entry> = fetch_from_to(&"2020-10-01", &"2020-10-03");
+    |         ----^^^^^^^
+    |         |
+    |         help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/co2_emission.rs:119:13
+    |
+119 |         let mut e: Entry = entries[i as usize].clone();
+    |             ----^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/co2_emission.rs:123:9
+    |
+123 |     let mut last: i64 = fetch_last_half_hour();
+    |         ----^^^^
+    |         |
+    |         help: remove this `mut`
+
+error: aborting due to 2 previous errors; 9 warnings emitted
+
+For more information about this error, try `rustc --explain E0308`.

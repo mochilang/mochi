@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-11 16:32 GMT+7
+Last updated: 2025-08-11 17:36 GMT+7
 
-## Algorithms Golden Test Checklist (368/1077)
+## Algorithms Golden Test Checklist (417/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -966,46 +966,46 @@ Last updated: 2025-08-11 16:32 GMT+7
 | 957 | sorts/insertion_sort |   |  |  |
 | 958 | sorts/intro_sort |   |  |  |
 | 959 | sorts/iterative_merge_sort |   |  |  |
-| 960 | sorts/merge_insertion_sort |   |  |  |
-| 961 | sorts/merge_sort |   |  |  |
-| 962 | sorts/msd_radix_sort |   |  |  |
-| 963 | sorts/natural_sort |   |  |  |
-| 964 | sorts/odd_even_sort |   |  |  |
-| 965 | sorts/odd_even_transposition_parallel |   |  |  |
-| 966 | sorts/odd_even_transposition_single_threaded |   |  |  |
-| 967 | sorts/pancake_sort |   |  |  |
-| 968 | sorts/patience_sort |   |  |  |
-| 969 | sorts/pigeon_sort |   |  |  |
-| 970 | sorts/pigeonhole_sort |   |  |  |
-| 971 | sorts/quick_sort |   |  |  |
-| 972 | sorts/quick_sort_3_partition |   |  |  |
-| 973 | sorts/radix_sort |   |  |  |
-| 974 | sorts/recursive_insertion_sort |   |  |  |
-| 975 | sorts/recursive_mergesort_array |   |  |  |
-| 976 | sorts/recursive_quick_sort |   |  |  |
-| 977 | sorts/selection_sort |   |  |  |
-| 978 | sorts/shell_sort |   |  |  |
-| 979 | sorts/shrink_shell_sort |   |  |  |
-| 980 | sorts/slowsort |   |  |  |
-| 981 | sorts/stooge_sort |   |  |  |
-| 982 | sorts/strand_sort |   |  |  |
-| 983 | sorts/tim_sort |   |  |  |
-| 984 | sorts/topological_sort |   |  |  |
-| 985 | sorts/tree_sort |   |  |  |
-| 986 | sorts/unknown_sort |   |  |  |
-| 987 | sorts/wiggle_sort |   |  |  |
-| 988 | strings/aho_corasick |   |  |  |
-| 989 | strings/alternative_string_arrange |   |  |  |
-| 990 | strings/anagrams |   |  |  |
-| 991 | strings/autocomplete_using_trie |   |  |  |
-| 992 | strings/barcode_validator |   |  |  |
-| 993 | strings/bitap_string_match |   |  |  |
-| 994 | strings/boyer_moore_search |   |  |  |
-| 995 | strings/camel_case_to_snake_case |   |  |  |
-| 996 | strings/can_string_be_rearranged_as_palindrome |   |  |  |
-| 997 | strings/capitalize |   |  |  |
-| 998 | strings/check_anagrams |   |  |  |
-| 999 | strings/count_vowels |   |  |  |
+| 960 | sorts/merge_insertion_sort | ✓ | 45µs | 2.1 MB |
+| 961 | sorts/merge_sort | ✓ | 25µs | 2.1 MB |
+| 962 | sorts/msd_radix_sort | ✓ | 51µs | 2.1 MB |
+| 963 | sorts/natural_sort | ✓ | 247µs | 2.1 MB |
+| 964 | sorts/odd_even_sort | ✓ | 35µs | 2.0 MB |
+| 965 | sorts/odd_even_transposition_parallel | ✓ | 39µs | 1.9 MB |
+| 966 | sorts/odd_even_transposition_single_threaded | ✓ | 50µs | 1.9 MB |
+| 967 | sorts/pancake_sort | ✓ | 18µs | 2.0 MB |
+| 968 | sorts/patience_sort | ✓ | 86µs | 2.0 MB |
+| 969 | sorts/pigeon_sort | ✓ | 301µs | 2.1 MB |
+| 970 | sorts/pigeonhole_sort | ✓ | 54µs | 2.1 MB |
+| 971 | sorts/quick_sort | ✓ | 55µs | 2.0 MB |
+| 972 | sorts/quick_sort_3_partition | ✓ | 76µs | 2.1 MB |
+| 973 | sorts/radix_sort | ✓ | 119µs | 1.9 MB |
+| 974 | sorts/recursive_insertion_sort | ✓ | 37µs | 2.1 MB |
+| 975 | sorts/recursive_mergesort_array | ✓ | 46µs | 2.0 MB |
+| 976 | sorts/recursive_quick_sort | ✓ | 30µs | 2.1 MB |
+| 977 | sorts/selection_sort | ✓ | 25µs | 2.0 MB |
+| 978 | sorts/shell_sort | ✓ | 53µs | 2.0 MB |
+| 979 | sorts/shrink_shell_sort | ✓ | 28µs | 1.8 MB |
+| 980 | sorts/slowsort | ✓ | 78µs | 2.1 MB |
+| 981 | sorts/stooge_sort | error |  |  |
+| 982 | sorts/strand_sort | ✓ | 58µs | 2.1 MB |
+| 983 | sorts/tim_sort | ✓ | 134µs | 2.2 MB |
+| 984 | sorts/topological_sort | error |  |  |
+| 985 | sorts/tree_sort | ✓ | 44µs | 2.0 MB |
+| 986 | sorts/unknown_sort | ✓ | 37µs | 2.1 MB |
+| 987 | sorts/wiggle_sort | error |  |  |
+| 988 | strings/aho_corasick | ✓ | 74µs | 2.0 MB |
+| 989 | strings/alternative_string_arrange | ✓ | 31µs | 2.1 MB |
+| 990 | strings/anagrams | error |  |  |
+| 991 | strings/autocomplete_using_trie | ✓ | 33µs | 2.1 MB |
+| 992 | strings/barcode_validator | ✓ | 26µs | 2.0 MB |
+| 993 | strings/bitap_string_match | ✓ | 128µs | 2.1 MB |
+| 994 | strings/boyer_moore_search | ✓ |  | 2.0 MB |
+| 995 | strings/camel_case_to_snake_case | ✓ | 188µs | 2.0 MB |
+| 996 | strings/can_string_be_rearranged_as_palindrome | ✓ | 68µs | 1.9 MB |
+| 997 | strings/capitalize | ✓ | 28µs | 2.1 MB |
+| 998 | strings/check_anagrams | ✓ | 69µs | 2.2 MB |
+| 999 | strings/count_vowels | ✓ | 54µs | 1.9 MB |
 | 1000 | strings/credit_card_validator | ✓ | 42µs | 2.0 MB |
 | 1001 | strings/damerau_levenshtein_distance | ✓ | 245µs | 2.0 MB |
 | 1002 | strings/detecting_english_programmatically | ✓ | 350µs | 2.1 MB |
@@ -1049,34 +1049,34 @@ Last updated: 2025-08-11 16:32 GMT+7
 | 1040 | strings/wildcard_pattern_matching | error |  |  |
 | 1041 | strings/word_occurrence | ✓ | 44µs | 1.9 MB |
 | 1042 | strings/word_patterns |   |  |  |
-| 1043 | strings/z_function |   |  |  |
-| 1044 | web_programming/co2_emission |   |  |  |
-| 1045 | web_programming/covid_stats_via_xpath |   |  |  |
-| 1046 | web_programming/crawl_google_results |   |  |  |
-| 1047 | web_programming/crawl_google_scholar_citation |   |  |  |
-| 1048 | web_programming/currency_converter |   |  |  |
-| 1049 | web_programming/current_stock_price |   |  |  |
-| 1050 | web_programming/current_weather |   |  |  |
-| 1051 | web_programming/daily_horoscope |   |  |  |
-| 1052 | web_programming/download_images_from_google_query |   |  |  |
-| 1053 | web_programming/emails_from_url |   |  |  |
-| 1054 | web_programming/fetch_anime_and_play |   |  |  |
-| 1055 | web_programming/fetch_bbc_news |   |  |  |
-| 1056 | web_programming/fetch_github_info |   |  |  |
-| 1057 | web_programming/fetch_jobs |   |  |  |
-| 1058 | web_programming/fetch_quotes |   |  |  |
-| 1059 | web_programming/fetch_well_rx_price |   |  |  |
-| 1060 | web_programming/get_amazon_product_data |   |  |  |
-| 1061 | web_programming/get_imdb_top_250_movies_csv |   |  |  |
-| 1062 | web_programming/get_ip_geolocation |   |  |  |
-| 1063 | web_programming/get_top_billionaires |   |  |  |
-| 1064 | web_programming/get_top_hn_posts |   |  |  |
-| 1065 | web_programming/giphy |   |  |  |
-| 1066 | web_programming/instagram_crawler |   |  |  |
-| 1067 | web_programming/instagram_pic |   |  |  |
-| 1068 | web_programming/instagram_video |   |  |  |
-| 1069 | web_programming/nasa_data |   |  |  |
-| 1070 | web_programming/open_google_results |   |  |  |
+| 1043 | strings/z_function | error |  |  |
+| 1044 | web_programming/co2_emission | error |  |  |
+| 1045 | web_programming/covid_stats_via_xpath | ✓ | 176µs | 1.9 MB |
+| 1046 | web_programming/crawl_google_results | ✓ | 95µs | 2.0 MB |
+| 1047 | web_programming/crawl_google_scholar_citation | error |  |  |
+| 1048 | web_programming/currency_converter | ✓ | 83µs | 2.1 MB |
+| 1049 | web_programming/current_stock_price | ✓ | 70µs | 1.8 MB |
+| 1050 | web_programming/current_weather | error |  |  |
+| 1051 | web_programming/daily_horoscope | ✓ | 18µs | 2.2 MB |
+| 1052 | web_programming/download_images_from_google_query | error |  |  |
+| 1053 | web_programming/emails_from_url | ✓ | 108µs | 2.1 MB |
+| 1054 | web_programming/fetch_anime_and_play | error |  |  |
+| 1055 | web_programming/fetch_bbc_news | error |  |  |
+| 1056 | web_programming/fetch_github_info | error |  |  |
+| 1057 | web_programming/fetch_jobs | ✓ | 128µs | 2.0 MB |
+| 1058 | web_programming/fetch_quotes | error |  |  |
+| 1059 | web_programming/fetch_well_rx_price | ✓ | 74µs | 2.1 MB |
+| 1060 | web_programming/get_amazon_product_data | error |  |  |
+| 1061 | web_programming/get_imdb_top_250_movies_csv | ✓ | 73µs | 2.0 MB |
+| 1062 | web_programming/get_ip_geolocation | error |  |  |
+| 1063 | web_programming/get_top_billionaires | error |  |  |
+| 1064 | web_programming/get_top_hn_posts | error |  |  |
+| 1065 | web_programming/giphy | error |  |  |
+| 1066 | web_programming/instagram_crawler | ✓ | 392µs | 2.3 MB |
+| 1067 | web_programming/instagram_pic | ✓ | 64µs | 2.0 MB |
+| 1068 | web_programming/instagram_video | ✓ | 39µs | 2.1 MB |
+| 1069 | web_programming/nasa_data | error |  |  |
+| 1070 | web_programming/open_google_results | ✓ | 74µs | 1.9 MB |
 | 1071 | web_programming/random_anime_character |   |  |  |
 | 1072 | web_programming/recaptcha_verification |   |  |  |
 | 1073 | web_programming/reddit |   |  |  |

@@ -1,0 +1,197 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_hn_posts.rs:76:2
+   |
+76 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_hn_posts.rs:88:2
+   |
+88 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_hn_posts.rs:104:2
+    |
+104 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_hn_posts.rs:72:8
+   |
+72 |     if (story.url.clone().as_str() == "") {
+   |        ^                                ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+72 -     if (story.url.clone().as_str() == "") {
+72 +     if story.url.clone().as_str() == "" {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_hn_posts.rs:83:11
+   |
+83 |     while (i < (ids.len() as i64)) {
+   |           ^                      ^
+   |
+help: remove these parentheses
+   |
+83 -     while (i < (ids.len() as i64)) {
+83 +     while i < (ids.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_hn_posts.rs:85:13
+   |
+85 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+85 -         i = (i + 1);
+85 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_hn_posts.rs:93:11
+   |
+93 |     while (i < (stories.len() as i64)) {
+   |           ^                          ^
+   |
+help: remove these parentheses
+   |
+93 -     while (i < (stories.len() as i64)) {
+93 +     while i < (stories.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_hn_posts.rs:96:12
+   |
+96 |         if (i == 0) {
+   |            ^      ^
+   |
+help: remove these parentheses
+   |
+96 -         if (i == 0) {
+96 +         if i == 0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_hn_posts.rs:101:13
+    |
+101 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+101 -         i = (i + 1);
+101 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_hn_posts.rs:107:28
+    |
+107 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+107 -     let duration_us: i64 = ((_end - _start) / 1000);
+107 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_hn_posts.rs:71:35
+   |
+71 |     let mut story: Story = _fetch(url);
+   |                            ------ ^^^ expected `&str`, found `String`
+   |                            |
+   |                            arguments to this function are incorrect
+   |
+note: function defined here
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_hn_posts.rs:38:4
+   |
+38 | fn _fetch(url: &str) -> String {
+   |    ^^^^^^ ---------
+help: consider borrowing here
+   |
+71 |     let mut story: Story = _fetch(&url);
+   |                                   +
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_hn_posts.rs:71:28
+   |
+71 |     let mut story: Story = _fetch(url);
+   |                    -----   ^^^^^^^^^^^ expected `Story`, found `String`
+   |                    |
+   |                    expected due to this
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_hn_posts.rs:79:36
+   |
+79 |     let mut ids: Vec<i64> = _fetch(url);
+   |                             ------ ^^^ expected `&str`, found `String`
+   |                             |
+   |                             arguments to this function are incorrect
+   |
+note: function defined here
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_hn_posts.rs:38:4
+   |
+38 | fn _fetch(url: &str) -> String {
+   |    ^^^^^^ ---------
+help: consider borrowing here
+   |
+79 |     let mut ids: Vec<i64> = _fetch(&url);
+   |                                    +
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_hn_posts.rs:79:29
+   |
+79 |     let mut ids: Vec<i64> = _fetch(url);
+   |                  --------   ^^^^^^^^^^^ expected `Vec<i64>`, found `String`
+   |                  |
+   |                  expected due to this
+   |
+   = note: expected struct `Vec<i64>`
+              found struct `String`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_hn_posts.rs:89:43
+   |
+89 |     fn hackernews_top_stories_as_markdown(mut max_stories: i64) -> String {
+   |                                           ----^^^^^^^^^^^
+   |                                           |
+   |                                           help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_hn_posts.rs:90:9
+   |
+90 |     let mut stories: Vec<Story> = hackernews_top_stories(max_stories);
+   |         ----^^^^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_hn_posts.rs:94:13
+   |
+94 |         let mut s: Story = stories[i as usize].clone();
+   |             ----^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_top_hn_posts.rs:95:13
+   |
+95 | ...   let mut line: String = format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "* [", s.title.clone()), "]("), s.url.clone(...
+   |           ----^^^^
+   |           |
+   |           help: remove this `mut`
+
+error: aborting due to 4 previous errors; 14 warnings emitted
+
+For more information about this error, try `rustc --explain E0308`.

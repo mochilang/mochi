@@ -1,0 +1,140 @@
+warning: unused import: `self`
+ --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_ip_geolocation.rs:5:15
+  |
+5 | use std::io::{self, Read};
+  |               ^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_ip_geolocation.rs:68:2
+   |
+68 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_ip_geolocation.rs:64:8
+   |
+64 |     if ((data.contains_key(&"city") && data.contains_key(&"region")) && data.contains_key(&"country")) {
+   |        ^                                                                                             ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+64 -     if ((data.contains_key(&"city") && data.contains_key(&"region")) && data.contains_key(&"country")) {
+64 +     if (data.contains_key(&"city") && data.contains_key(&"region")) && data.contains_key(&"country") {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_ip_geolocation.rs:73:28
+   |
+73 |     let duration_us: i64 = ((_end - _start) / 1000);
+   |                            ^                      ^
+   |
+help: remove these parentheses
+   |
+73 -     let duration_us: i64 = ((_end - _start) / 1000);
+73 +     let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_ip_geolocation.rs:63:52
+   |
+63 |     let mut data: HashMap<String, String> = _fetch(url);
+   |                                             ------ ^^^ expected `&str`, found `String`
+   |                                             |
+   |                                             arguments to this function are incorrect
+   |
+note: function defined here
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_ip_geolocation.rs:45:4
+   |
+45 | fn _fetch(url: &str) -> String {
+   |    ^^^^^^ ---------
+help: consider borrowing here
+   |
+63 |     let mut data: HashMap<String, String> = _fetch(&url);
+   |                                                    +
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_ip_geolocation.rs:63:45
+   |
+63 |     let mut data: HashMap<String, String> = _fetch(url);
+   |                   -----------------------   ^^^^^^^^^^^ expected `HashMap<String, String>`, found `String`
+   |                   |
+   |                   expected due to this
+   |
+   = note: expected struct `HashMap<String, String>`
+              found struct `String`
+
+error[E0277]: the trait bound `String: Borrow<&str>` is not satisfied
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_ip_geolocation.rs:64:28
+   |
+64 |     if ((data.contains_key(&"city") && data.contains_key(&"region")) && data.contains_key(&"country")) {
+   |               ------------ ^^^^^^^ the trait `Borrow<&str>` is not implemented for `String`
+   |               |
+   |               required by a bound introduced by this call
+   |
+   = help: the trait `Borrow<&_>` is not implemented for `String`
+           but trait `Borrow<_>` is implemented for it
+   = help: for that trait implementation, expected `str`, found `&str`
+note: required by a bound in `HashMap::<K, V, S>::contains_key`
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1137:5
+
+error[E0277]: the trait bound `String: Borrow<&str>` is not satisfied
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_ip_geolocation.rs:64:58
+   |
+64 |     if ((data.contains_key(&"city") && data.contains_key(&"region")) && data.contains_key(&"country")) {
+   |                                             ------------ ^^^^^^^^^ the trait `Borrow<&str>` is not implemented for `String`
+   |                                             |
+   |                                             required by a bound introduced by this call
+   |
+   = help: the trait `Borrow<&_>` is not implemented for `String`
+           but trait `Borrow<_>` is implemented for it
+   = help: for that trait implementation, expected `str`, found `&str`
+note: required by a bound in `HashMap::<K, V, S>::contains_key`
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1137:5
+
+error[E0277]: the trait bound `String: Borrow<&str>` is not satisfied
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_ip_geolocation.rs:64:91
+   |
+64 |     if ((data.contains_key(&"city") && data.contains_key(&"region")) && data.contains_key(&"country")) {
+   |                                                                              ------------ ^^^^^^^^^^ the trait `Borrow<&str>` is not implemented for `String`
+   |                                                                              |
+   |                                                                              required by a bound introduced by this call
+   |
+   = help: the trait `Borrow<&_>` is not implemented for `String`
+           but trait `Borrow<_>` is implemented for it
+   = help: for that trait implementation, expected `str`, found `&str`
+note: required by a bound in `HashMap::<K, V, S>::contains_key`
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1137:5
+
+warning: unused import: `Read`
+ --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_ip_geolocation.rs:5:21
+  |
+5 | use std::io::{self, Read};
+  |                     ^^^^
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_ip_geolocation.rs:69:9
+   |
+69 |     let mut ip_address: String = input().clone();
+   |         ----^^^^^^^^^^
+   |         |
+   |         help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/get_ip_geolocation.rs:70:9
+   |
+70 |     let mut location: String = get_ip_geolocation(&ip_address).clone();
+   |         ----^^^^^^^^
+   |         |
+   |         help: remove this `mut`
+
+error: aborting due to 5 previous errors; 7 warnings emitted
+
+Some errors have detailed explanations: E0277, E0308.
+For more information about an error, try `rustc --explain E0277`.

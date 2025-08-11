@@ -1,0 +1,85 @@
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/nasa_data.rs:120:2
+    |
+120 | };
+    |  ^ help: remove this semicolon
+    |
+    = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/nasa_data.rs:124:2
+    |
+124 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/nasa_data.rs:128:2
+    |
+128 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/nasa_data.rs:137:2
+    |
+137 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/nasa_data.rs:140:28
+    |
+140 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+    = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+    |
+140 -     let duration_us: i64 = ((_end - _start) / 1000);
+140 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/nasa_data.rs:118:45
+    |
+118 |     let mut data: ApodData = ApodData {url: "", title: _fetch("https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY")};
+    |                                             ^^- help: try using a conversion method: `.to_string()`
+    |                                             |
+    |                                             expected `String`, found `&str`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/nasa_data.rs:126:62
+    |
+126 |     let mut data: ArchiveResult = ArchiveResult {collection: 0};
+    |                                                              ^ expected `ArchiveCollection`, found integer
+
+error[E0425]: cannot find function `first` in this scope
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/nasa_data.rs:134:26
+    |
+134 |     let mut first_item = first(items.clone());
+    |                          ^^^^^ not found in this scope
+    |
+help: use the `.` operator to call the method `first` on `&[ArchiveItem]`
+    |
+134 -     let mut first_item = first(items.clone());
+134 +     let mut first_item = items.clone().first();
+    |
+
+error[E0425]: cannot find function `first` in this scope
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/nasa_data.rs:135:26
+    |
+135 |     let mut first_data = first(first_item.data);
+    |                          ^^^^^ not found in this scope
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/algorithms/x/Rust/web_programming/nasa_data.rs:122:9
+    |
+122 |     let mut apod: ApodData = get_apod_data(api_key);
+    |         ----^^^^
+    |         |
+    |         help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` on by default
+
+error: aborting due to 4 previous errors; 6 warnings emitted
+
+Some errors have detailed explanations: E0308, E0425.
+For more information about an error, try `rustc --explain E0308`.
