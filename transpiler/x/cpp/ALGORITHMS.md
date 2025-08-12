@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 933/1077
-Last updated: 2025-08-12 08:38 +0700
+Completed programs: 934/1077
+Last updated: 2025-08-12 09:13 +0700
 
 Checklist:
 
@@ -706,56 +706,56 @@ Checklist:
 | 697 | matrix/binary_search_matrix | ✓ | 452.0µs | 3.61MB |
 | 698 | matrix/count_islands_in_matrix |   |  |  |
 | 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 3.85s | 49.57MB |
-| 700 | matrix/count_paths | ✓ | 809.0µs | 3.64MB |
-| 701 | matrix/cramers_rule_2x2 | ✓ | 610.0µs | 3.69MB |
-| 702 | matrix/inverse_of_matrix | ✓ | 546.0µs | 3.68MB |
-| 703 | matrix/largest_square_area_in_matrix |   |  |  |
-| 704 | matrix/matrix_based_game | ✓ | 804.0µs | 3.79MB |
-| 705 | matrix/matrix_class | ✓ | 1.0ms | 3.83MB |
-| 706 | matrix/matrix_equalization | ✓ | 360.0µs | 3.58MB |
-| 707 | matrix/matrix_multiplication_recursion | ✓ | 716.0µs | 3.75MB |
-| 708 | matrix/matrix_operation | ✓ | 1.0ms | 3.84MB |
-| 709 | matrix/max_area_of_island | ✓ | 2.0ms | 3.64MB |
-| 710 | matrix/median_matrix | ✓ | 522.0µs | 3.55MB |
-| 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ | 758.0µs | 3.71MB |
-| 712 | matrix/pascal_triangle | ✓ | 433.0µs | 3.53MB |
-| 713 | matrix/rotate_matrix | ✓ | 654.0µs | 3.62MB |
-| 714 | matrix/searching_in_sorted_matrix | ✓ | 900.0µs | 3.73MB |
-| 715 | matrix/sherman_morrison | ✓ | 822.0µs | 3.87MB |
-| 716 | matrix/spiral_print | ✓ | 414.0µs | 3.52MB |
-| 717 | matrix/tests/test_matrix_operation | ✓ | 727.0µs | 3.76MB |
-| 718 | matrix/validate_sudoku_board | ✓ | 586.0µs | 3.66MB |
-| 719 | networking_flow/ford_fulkerson | ✓ | 291.0µs | 3.70MB |
-| 720 | networking_flow/minimum_cut | ✓ | 404.0µs | 3.64MB |
-| 721 | neural_network/activation_functions/binary_step | ✓ | 241.0µs | 3.52MB |
-| 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 483.0µs | 3.73MB |
-| 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 564.0µs | 3.77MB |
-| 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 534.0µs | 3.84MB |
-| 725 | neural_network/activation_functions/mish | ✓ | 678.0µs | 3.77MB |
-| 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 551.0µs | 3.83MB |
-| 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 467.0µs | 3.69MB |
-| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 342.0µs | 3.64MB |
-| 729 | neural_network/activation_functions/softplus | ✓ | 695.0µs | 3.90MB |
-| 730 | neural_network/activation_functions/squareplus | ✓ | 820.0µs | 3.73MB |
-| 731 | neural_network/activation_functions/swish | ✓ | 569.0µs | 3.80MB |
-| 732 | neural_network/back_propagation_neural_network | ✓ | 2.54s | 3.89MB |
-| 733 | neural_network/convolution_neural_network | ✓ | 2.0ms | 3.79MB |
-| 734 | neural_network/input_data | ✓ | 669.0µs | 3.66MB |
-| 735 | neural_network/simple_neural_network | ✓ | 145.0ms | 3.84MB |
-| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 2.0ms | 3.73MB |
-| 737 | other/activity_selection | ✓ | 333.0µs | 3.72MB |
-| 738 | other/alternative_list_arrange | ✓ | 449.0µs | 3.71MB |
-| 739 | other/bankers_algorithm | ✓ | 547.0µs | 3.64MB |
-| 740 | other/davis_putnam_logemann_loveland | ✓ | 291.0µs | 3.59MB |
-| 741 | other/doomsday | ✓ | 180.0µs | 3.66MB |
-| 742 | other/fischer_yates_shuffle | ✓ | 285.0µs | 3.62MB |
-| 743 | other/gauss_easter | ✓ | 323.0µs | 3.76MB |
-| 744 | other/greedy | ✓ | 659.0µs | 3.73MB |
-| 745 | other/guess_the_number_search | ✓ | 403.0µs | 3.56MB |
-| 746 | other/h_index | ✓ | 324.0µs | 3.55MB |
-| 747 | other/least_recently_used | ✓ | 397.0µs | 3.57MB |
-| 748 | other/lfu_cache | ✓ | 343.0µs | 3.58MB |
-| 749 | other/linear_congruential_generator | ✓ | 313.0µs | 3.69MB |
+| 700 | matrix/count_paths | ✓ | 263.0µs | 3.62MB |
+| 701 | matrix/cramers_rule_2x2 | ✓ | 358.0µs | 3.63MB |
+| 702 | matrix/inverse_of_matrix | ✓ | 368.0µs | 3.85MB |
+| 703 | matrix/largest_square_area_in_matrix | ✓ | 226.0µs | 3.59MB |
+| 704 | matrix/matrix_based_game | ✓ | 451.0µs | 3.75MB |
+| 705 | matrix/matrix_class | ✓ | 843.0µs | 3.78MB |
+| 706 | matrix/matrix_equalization | ✓ | 238.0µs | 3.54MB |
+| 707 | matrix/matrix_multiplication_recursion | ✓ | 300.0µs | 3.59MB |
+| 708 | matrix/matrix_operation | ✓ | 605.0µs | 3.78MB |
+| 709 | matrix/max_area_of_island | ✓ | 418.0µs | 3.56MB |
+| 710 | matrix/median_matrix | ✓ | 188.0µs | 3.69MB |
+| 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ | 411.0µs | 3.55MB |
+| 712 | matrix/pascal_triangle | ✓ | 351.0µs | 3.57MB |
+| 713 | matrix/rotate_matrix | ✓ | 486.0µs | 3.81MB |
+| 714 | matrix/searching_in_sorted_matrix | ✓ | 416.0µs | 3.74MB |
+| 715 | matrix/sherman_morrison | ✓ | 370.0µs | 3.68MB |
+| 716 | matrix/spiral_print | ✓ | 266.0µs | 3.55MB |
+| 717 | matrix/tests/test_matrix_operation | ✓ | 568.0µs | 3.75MB |
+| 718 | matrix/validate_sudoku_board | ✓ | 305.0µs | 3.60MB |
+| 719 | networking_flow/ford_fulkerson | ✓ | 262.0µs | 3.62MB |
+| 720 | networking_flow/minimum_cut | ✓ | 298.0µs | 3.71MB |
+| 721 | neural_network/activation_functions/binary_step | ✓ | 165.0µs | 3.48MB |
+| 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 425.0µs | 3.72MB |
+| 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 384.0µs | 3.77MB |
+| 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 384.0µs | 3.72MB |
+| 725 | neural_network/activation_functions/mish | ✓ | 490.0µs | 3.98MB |
+| 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 347.0µs | 3.75MB |
+| 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 360.0µs | 3.51MB |
+| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 221.0µs | 3.79MB |
+| 729 | neural_network/activation_functions/softplus | ✓ | 472.0µs | 3.92MB |
+| 730 | neural_network/activation_functions/squareplus | ✓ | 452.0µs | 3.72MB |
+| 731 | neural_network/activation_functions/swish | ✓ | 354.0µs | 3.85MB |
+| 732 | neural_network/back_propagation_neural_network | ✓ | 1.70s | 4.09MB |
+| 733 | neural_network/convolution_neural_network | ✓ | 1.0ms | 3.95MB |
+| 734 | neural_network/input_data | ✓ | 291.0µs | 3.57MB |
+| 735 | neural_network/simple_neural_network | ✓ | 106.0ms | 3.75MB |
+| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 2.0ms | 3.65MB |
+| 737 | other/activity_selection | ✓ | 208.0µs | 3.55MB |
+| 738 | other/alternative_list_arrange | ✓ | 254.0µs | 3.63MB |
+| 739 | other/bankers_algorithm | ✓ | 297.0µs | 3.61MB |
+| 740 | other/davis_putnam_logemann_loveland | ✓ | 187.0µs | 3.57MB |
+| 741 | other/doomsday | ✓ | 95.0µs | 3.52MB |
+| 742 | other/fischer_yates_shuffle | ✓ | 311.0µs | 3.62MB |
+| 743 | other/gauss_easter | ✓ | 229.0µs | 3.66MB |
+| 744 | other/greedy | ✓ | 439.0µs | 3.87MB |
+| 745 | other/guess_the_number_search | ✓ | 241.0µs | 3.76MB |
+| 746 | other/h_index | ✓ | 264.0µs | 3.58MB |
+| 747 | other/least_recently_used | ✓ | 189.0µs | 3.63MB |
+| 748 | other/lfu_cache | ✓ | 228.0µs | 3.64MB |
+| 749 | other/linear_congruential_generator | ✓ | 219.0µs | 3.62MB |
 | 750 | other/lru_cache | ✓ | 410.0µs | 3.60MB |
 | 751 | other/magicdiamondpattern | ✓ | 271.0µs | 3.64MB |
 | 752 | other/majority_vote_algorithm | ✓ | 288.0µs | 3.77MB |
