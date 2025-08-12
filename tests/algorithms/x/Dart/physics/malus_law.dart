@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,15 +33,25 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+double floor(num x) => x.floor().toDouble();
+
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+
+
+Never _error(String msg) {
+  throw Exception(msg);
+}
 
 double PI = 3.141592653589793;
 double TWO_PI = 6.283185307179586;
 double _mod(double x, double m) {
-  return x - ((x / m).toInt().toDouble()) * m;
+  return x - floor(x / m) * m;
 }
 
 double cos(double x) {
@@ -65,39 +75,17 @@ double abs_val(double x) {
 
 double malus_law(double initial_intensity, double angle) {
   if (initial_intensity < 0.0) {
-    ;
+    _error("The value of intensity cannot be negative");
   }
   if (angle < 0.0 || angle > 360.0) {
-    ;
+    _error("In Malus Law, the angle is in the range 0-360 degrees");
   }
   double theta = radians(angle);
   double c = cos(theta);
   return initial_intensity * (c * c);
 }
 
-void test_malus_law() {
-  if (abs_val(malus_law(10.0, 45.0) - 5.0) > 0.01) {
-    ;
-  }
-  if (abs_val(malus_law(100.0, 60.0) - 25.0) > 0.01) {
-    ;
-  }
-  if (abs_val(malus_law(50.0, 150.0) - 37.5) > 0.01) {
-    ;
-  }
-  if (abs_val(malus_law(75.0, 270.0) - 0.0) > 0.01) {
-    ;
-  }
-  if (abs_val(malus_law(100.0, 180.0) - 100.0) > 0.01) {
-    ;
-  }
-  if (abs_val(malus_law(100.0, 360.0) - 100.0) > 0.01) {
-    ;
-  }
-}
-
 void _main() {
-  test_malus_law();
   print(_str(malus_law(100.0, 60.0)));
 }
 

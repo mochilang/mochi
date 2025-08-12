@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,16 +33,24 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 double doppler_effect(double org_freq, double wave_vel, double obs_vel, double src_vel) {
   if (wave_vel == src_vel) {
-    ;
+    _error("division by zero implies vs=v and observer in front of the source");
   }
   double doppler_freq = org_freq * (wave_vel + obs_vel) / (wave_vel - src_vel);
   if (doppler_freq <= 0.0) {
-    ;
+    _error("non-positive frequency implies vs>v or v0>v (in the opposite direction)");
   }
   return doppler_freq;
 }
@@ -60,22 +68,22 @@ bool almost_equal(double a, double b, double tol) {
 
 void test_doppler_effect() {
   if (!almost_equal(doppler_effect(100.0, 330.0, 10.0, 0.0), 103.03030303030303, 0.0000001)) {
-    ;
+    _error("test 1 failed");
   }
   if (!almost_equal(doppler_effect(100.0, 330.0, -10.0, 0.0), 96.96969696969697, 0.0000001)) {
-    ;
+    _error("test 2 failed");
   }
   if (!almost_equal(doppler_effect(100.0, 330.0, 0.0, 10.0), 103.125, 0.0000001)) {
-    ;
+    _error("test 3 failed");
   }
   if (!almost_equal(doppler_effect(100.0, 330.0, 0.0, -10.0), 97.05882352941177, 0.0000001)) {
-    ;
+    _error("test 4 failed");
   }
   if (!almost_equal(doppler_effect(100.0, 330.0, 10.0, 10.0), 106.25, 0.0000001)) {
-    ;
+    _error("test 5 failed");
   }
   if (!almost_equal(doppler_effect(100.0, 330.0, -10.0, -10.0), 94.11764705882354, 0.0000001)) {
-    ;
+    _error("test 6 failed");
   }
 }
 
