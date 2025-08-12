@@ -1,0 +1,2 @@
+Warning: file_get_contents(https://httpbin.org/post): Failed to open stream: Network is unreachable in /workspace/mochi/tests/algorithms/x/PHP/web_programming/slack_message.php on line 69
+Request to slack returned an error:
