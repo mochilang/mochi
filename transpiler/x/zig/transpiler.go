@@ -671,10 +671,22 @@ func (ce *ConcatExpr) emit(w io.Writer) {
 	elem = strings.TrimPrefix(elem, "const ")
 	fmt.Fprintf(w, "blk: { var _tmp = std.ArrayList(%s).init(std.heap.page_allocator); ", elem)
 	fmt.Fprintf(w, "_tmp.appendSlice(@as([]const %s, ", elem)
-	ce.A.emit(w)
+	if ll, ok := ce.A.(*ListLit); ok {
+		io.WriteString(w, "(&(")
+		ll.emit(w)
+		io.WriteString(w, "))[0..]")
+	} else {
+		ce.A.emit(w)
+	}
 	io.WriteString(w, ")) catch |err| handleError(err); ")
 	fmt.Fprintf(w, "_tmp.appendSlice(@as([]const %s, ", elem)
-	ce.B.emit(w)
+	if ll, ok := ce.B.(*ListLit); ok {
+		io.WriteString(w, "(&(")
+		ll.emit(w)
+		io.WriteString(w, "))[0..]")
+	} else {
+		ce.B.emit(w)
+	}
 	io.WriteString(w, ")) catch |err| handleError(err); break :blk (_tmp.toOwnedSlice() catch |err| handleError(err)); }")
 }
 
@@ -1936,14 +1948,16 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 			fmt.Fprintf(w, "&[_]%s{}", strings.TrimPrefix(targetType, "[]"))
 		} else {
 			if ll, ok := v.Value.(*ListLit); ok && ll.ElemType != "" && strings.HasPrefix(targetType, "[]") {
+				elem := strings.TrimPrefix(targetType, "[]")
+				if strings.HasPrefix(elem, "const ") {
+					elem = elem[len("const "):]
+				}
 				if len(ll.Elems) == 0 {
-					io.WriteString(w, "@constCast(")
-					ll.emit(w)
-					io.WriteString(w, ")[0..]")
+					fmt.Fprintf(w, "std.heap.page_allocator.alloc(%s, 0) catch unreachable", elem)
 				} else {
-					io.WriteString(w, "@constCast(&(")
+					fmt.Fprintf(w, "std.heap.page_allocator.dupe(%s, (&(", elem)
 					ll.emit(w)
-					io.WriteString(w, "))[0..]")
+					io.WriteString(w, "))[0..]) catch unreachable")
 				}
 			} else {
 				v.Value.emit(w)
@@ -2609,11 +2623,11 @@ func (l *ListLit) emit(w io.Writer) {
 				if ll, ok := e.(*ListLit); ok {
 					ll.ElemType = inner
 					if len(ll.Elems) == 0 {
-						ll.emit(w)
+						fmt.Fprintf(w, "std.heap.page_allocator.alloc(%s, 0) catch unreachable", inner)
 					} else {
-						io.WriteString(w, "@constCast(&(")
+						fmt.Fprintf(w, "std.heap.page_allocator.dupe(%s, (&(", inner)
 						ll.emit(w)
-						io.WriteString(w, "))[0..]")
+						io.WriteString(w, "))[0..]) catch unreachable")
 					}
 				} else {
 					e.emit(w)
