@@ -7,6 +7,7 @@
 (import (srfi 1))
 (define _list list)
 (define (void) '())
+(import (chibi io))
 (import (chibi time))
 (define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))
 (import (chibi json))
@@ -106,15 +107,18 @@
         (else (length x))))
 (define (list-ref-safe lst idx) (if (and (integer? idx) (>= idx 0) (< idx (length lst))) (list-ref lst idx) '()))
 (define (list-set-safe! lst idx val) (when (and (integer? idx) (>= idx 0) (< idx (length lst))) (list-set! lst idx val)))
+(define (_input)
+  (let ((l (read-line)))
+    (if (eof-object? l) "" l)))
 (
   let (
     (
-      start2 (
+      start9 (
         current-jiffy
       )
     )
      (
-      jps5 (
+      jps12 (
         jiffies-per-second
       )
     )
@@ -122,88 +126,289 @@
    (
     begin (
       define (
-        binary_step vector
+        one_pence
+      )
+       1
+    )
+     (
+      define (
+        two_pence x
       )
        (
-        let (
-          (
-            out (
-              _list
-            )
+        call/cc (
+          lambda (
+            ret1
           )
-        )
-         (
-          begin (
-            let (
-              (
-                i 0
+           (
+            begin (
+              if (
+                < x 0
+              )
+               (
+                begin (
+                  ret1 0
+                )
+              )
+               (
+                void
               )
             )
              (
-              begin (
-                letrec (
-                  (
-                    loop1 (
-                      lambda (
-                        
-                      )
-                       (
-                        if (
-                          < i (
-                            _len vector
-                          )
-                        )
-                         (
-                          begin (
-                            if (
-                              >= (
-                                list-ref-safe vector i
-                              )
-                               0.0
-                            )
-                             (
-                              begin (
-                                set! out (
-                                  append out (
-                                    _list 1
-                                  )
-                                )
-                              )
-                            )
-                             (
-                              begin (
-                                set! out (
-                                  append out (
-                                    _list 0
-                                  )
-                                )
-                              )
-                            )
-                          )
-                           (
-                            set! i (
-                              + i 1
-                            )
-                          )
-                           (
-                            loop1
-                          )
-                        )
-                         (
-                          void
-                        )
-                      )
-                    )
+              ret1 (
+                _add (
+                  two_pence (
+                    - x 2
                   )
                 )
                  (
-                  loop1
+                  one_pence
                 )
               )
-               out
             )
           )
         )
+      )
+    )
+     (
+      define (
+        five_pence x
+      )
+       (
+        call/cc (
+          lambda (
+            ret2
+          )
+           (
+            begin (
+              if (
+                < x 0
+              )
+               (
+                begin (
+                  ret2 0
+                )
+              )
+               (
+                void
+              )
+            )
+             (
+              ret2 (
+                _add (
+                  five_pence (
+                    - x 5
+                  )
+                )
+                 (
+                  two_pence x
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+     (
+      define (
+        ten_pence x
+      )
+       (
+        call/cc (
+          lambda (
+            ret3
+          )
+           (
+            begin (
+              if (
+                < x 0
+              )
+               (
+                begin (
+                  ret3 0
+                )
+              )
+               (
+                void
+              )
+            )
+             (
+              ret3 (
+                _add (
+                  ten_pence (
+                    - x 10
+                  )
+                )
+                 (
+                  five_pence x
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+     (
+      define (
+        twenty_pence x
+      )
+       (
+        call/cc (
+          lambda (
+            ret4
+          )
+           (
+            begin (
+              if (
+                < x 0
+              )
+               (
+                begin (
+                  ret4 0
+                )
+              )
+               (
+                void
+              )
+            )
+             (
+              ret4 (
+                _add (
+                  twenty_pence (
+                    - x 20
+                  )
+                )
+                 (
+                  ten_pence x
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+     (
+      define (
+        fifty_pence x
+      )
+       (
+        call/cc (
+          lambda (
+            ret5
+          )
+           (
+            begin (
+              if (
+                < x 0
+              )
+               (
+                begin (
+                  ret5 0
+                )
+              )
+               (
+                void
+              )
+            )
+             (
+              ret5 (
+                _add (
+                  fifty_pence (
+                    - x 50
+                  )
+                )
+                 (
+                  twenty_pence x
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+     (
+      define (
+        one_pound x
+      )
+       (
+        call/cc (
+          lambda (
+            ret6
+          )
+           (
+            begin (
+              if (
+                < x 0
+              )
+               (
+                begin (
+                  ret6 0
+                )
+              )
+               (
+                void
+              )
+            )
+             (
+              ret6 (
+                _add (
+                  one_pound (
+                    - x 100
+                  )
+                )
+                 (
+                  fifty_pence x
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+     (
+      define (
+        two_pound x
+      )
+       (
+        call/cc (
+          lambda (
+            ret7
+          )
+           (
+            begin (
+              if (
+                < x 0
+              )
+               (
+                begin (
+                  ret7 0
+                )
+              )
+               (
+                void
+              )
+            )
+             (
+              ret7 (
+                _add (
+                  two_pound (
+                    - x 200
+                  )
+                )
+                 (
+                  one_pound x
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+     (
+      define (
+        solution n
+      )
+       (
+        two_pound n
       )
     )
      (
@@ -213,41 +418,72 @@
        (
         let (
           (
-            vector (
-              _list (
-                - 1.2
+            n (
+              let (
+                (
+                  v8 (
+                    _input
+                  )
+                )
               )
-               0.0 2.0 1.45 (
-                - 3.7
+               (
+                cond (
+                  (
+                    string? v8
+                  )
+                   (
+                    exact (
+                      _floor (
+                        string->number v8
+                      )
+                    )
+                  )
+                )
+                 (
+                  (
+                    boolean? v8
+                  )
+                   (
+                    if v8 1 0
+                  )
+                )
+                 (
+                  else (
+                    exact (
+                      _floor v8
+                    )
+                  )
+                )
               )
-               0.3
             )
           )
         )
          (
           begin (
-            let (
-              (
-                result (
-                  binary_step vector
-                )
-              )
-            )
-             (
-              begin (
-                _display (
-                  if (
-                    string? result
-                  )
-                   result (
-                    to-str result
+            _display (
+              if (
+                string? (
+                  to-str-space (
+                    solution n
                   )
                 )
               )
                (
-                newline
+                to-str-space (
+                  solution n
+                )
+              )
+               (
+                to-str (
+                  to-str-space (
+                    solution n
+                  )
+                )
               )
             )
+          )
+           (
+            newline
           )
         )
       )
@@ -258,7 +494,7 @@
      (
       let (
         (
-          end3 (
+          end10 (
             current-jiffy
           )
         )
@@ -266,14 +502,14 @@
        (
         let (
           (
-            dur4 (
+            dur11 (
               quotient (
                 * (
-                  - end3 start2
+                  - end10 start9
                 )
                  1000000
               )
-               jps5
+               jps12
             )
           )
         )
@@ -281,7 +517,7 @@
           begin (
             _display (
               string-append "{\n  \"duration_us\": " (
-                number->string dur4
+                number->string dur11
               )
                ",\n  \"memory_bytes\": " (
                 number->string (

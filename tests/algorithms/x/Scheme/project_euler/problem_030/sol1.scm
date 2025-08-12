@@ -109,156 +109,199 @@
 (
   let (
     (
-      start2 (
+      start3 (
         current-jiffy
       )
     )
      (
-      jps5 (
+      jps6 (
         jiffies-per-second
       )
     )
   )
    (
     begin (
-      define (
-        binary_step vector
-      )
-       (
-        let (
-          (
-            out (
-              _list
-            )
+      let (
+        (
+          DIGITS_FIFTH_POWER (
+            _list 0 1 32 243 1024 3125 7776 16807 32768 59049
           )
         )
-         (
-          begin (
+      )
+       (
+        begin (
+          define (
+            digits_fifth_powers_sum number
+          )
+           (
             let (
               (
-                i 0
+                total 0
               )
             )
              (
               begin (
-                letrec (
+                let (
                   (
-                    loop1 (
-                      lambda (
-                        
-                      )
-                       (
-                        if (
-                          < i (
-                            _len vector
-                          )
-                        )
-                         (
-                          begin (
-                            if (
-                              >= (
-                                list-ref-safe vector i
-                              )
-                               0.0
-                            )
-                             (
-                              begin (
-                                set! out (
-                                  append out (
-                                    _list 1
-                                  )
-                                )
-                              )
-                            )
-                             (
-                              begin (
-                                set! out (
-                                  append out (
-                                    _list 0
-                                  )
-                                )
-                              )
-                            )
-                          )
-                           (
-                            set! i (
-                              + i 1
-                            )
-                          )
-                           (
-                            loop1
-                          )
-                        )
-                         (
-                          void
-                        )
-                      )
-                    )
+                    n number
                   )
                 )
                  (
-                  loop1
+                  begin (
+                    letrec (
+                      (
+                        loop1 (
+                          lambda (
+                            
+                          )
+                           (
+                            if (
+                              > n 0
+                            )
+                             (
+                              begin (
+                                let (
+                                  (
+                                    digit (
+                                      _mod n 10
+                                    )
+                                  )
+                                )
+                                 (
+                                  begin (
+                                    set! total (
+                                      + total (
+                                        list-ref-safe DIGITS_FIFTH_POWER digit
+                                      )
+                                    )
+                                  )
+                                   (
+                                    set! n (
+                                      _div n 10
+                                    )
+                                  )
+                                )
+                              )
+                               (
+                                loop1
+                              )
+                            )
+                             (
+                              void
+                            )
+                          )
+                        )
+                      )
+                    )
+                     (
+                      loop1
+                    )
+                  )
+                   total
                 )
               )
-               out
-            )
-          )
-        )
-      )
-    )
-     (
-      define (
-        main
-      )
-       (
-        let (
-          (
-            vector (
-              _list (
-                - 1.2
-              )
-               0.0 2.0 1.45 (
-                - 3.7
-              )
-               0.3
             )
           )
         )
          (
-          begin (
+          define (
+            solution
+          )
+           (
             let (
               (
-                result (
-                  binary_step vector
-                )
+                total 0
               )
             )
              (
               begin (
-                _display (
-                  if (
-                    string? result
-                  )
-                   result (
-                    to-str result
+                let (
+                  (
+                    num 1000
                   )
                 )
-              )
-               (
-                newline
+                 (
+                  begin (
+                    letrec (
+                      (
+                        loop2 (
+                          lambda (
+                            
+                          )
+                           (
+                            if (
+                              < num 1000000
+                            )
+                             (
+                              begin (
+                                if (
+                                  equal? num (
+                                    digits_fifth_powers_sum num
+                                  )
+                                )
+                                 (
+                                  begin (
+                                    set! total (
+                                      + total num
+                                    )
+                                  )
+                                )
+                                 (
+                                  void
+                                )
+                              )
+                               (
+                                set! num (
+                                  + num 1
+                                )
+                              )
+                               (
+                                loop2
+                              )
+                            )
+                             (
+                              void
+                            )
+                          )
+                        )
+                      )
+                    )
+                     (
+                      loop2
+                    )
+                  )
+                   total
+                )
               )
             )
           )
         )
+         (
+          _display (
+            if (
+              string? (
+                solution
+              )
+            )
+             (
+              solution
+            )
+             (
+              to-str (
+                solution
+              )
+            )
+          )
+        )
+         (
+          newline
+        )
       )
-    )
-     (
-      main
     )
      (
       let (
         (
-          end3 (
+          end4 (
             current-jiffy
           )
         )
@@ -266,14 +309,14 @@
        (
         let (
           (
-            dur4 (
+            dur5 (
               quotient (
                 * (
-                  - end3 start2
+                  - end4 start3
                 )
                  1000000
               )
-               jps5
+               jps6
             )
           )
         )
@@ -281,7 +324,7 @@
           begin (
             _display (
               string-append "{\n  \"duration_us\": " (
-                number->string dur4
+                number->string dur5
               )
                ",\n  \"memory_bytes\": " (
                 number->string (

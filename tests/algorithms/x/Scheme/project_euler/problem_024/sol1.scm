@@ -109,12 +109,12 @@
 (
   let (
     (
-      start2 (
+      start3 (
         current-jiffy
       )
     )
      (
-      jps5 (
+      jps6 (
         jiffies-per-second
       )
     )
@@ -122,21 +122,19 @@
    (
     begin (
       define (
-        binary_step vector
+        factorial n
       )
        (
         let (
           (
-            out (
-              _list
-            )
+            result 1
           )
         )
          (
           begin (
             let (
               (
-                i 0
+                i 2
               )
             )
              (
@@ -149,35 +147,12 @@
                       )
                        (
                         if (
-                          < i (
-                            _len vector
-                          )
+                          <= i n
                         )
                          (
                           begin (
-                            if (
-                              >= (
-                                list-ref-safe vector i
-                              )
-                               0.0
-                            )
-                             (
-                              begin (
-                                set! out (
-                                  append out (
-                                    _list 1
-                                  )
-                                )
-                              )
-                            )
-                             (
-                              begin (
-                                set! out (
-                                  append out (
-                                    _list 0
-                                  )
-                                )
-                              )
+                            set! result (
+                              * result i
                             )
                           )
                            (
@@ -200,7 +175,7 @@
                   loop1
                 )
               )
-               out
+               result
             )
           )
         )
@@ -208,47 +183,165 @@
     )
      (
       define (
-        main
+        nth_permutation digits index
       )
        (
         let (
           (
-            vector (
-              _list (
-                - 1.2
-              )
-               0.0 2.0 1.45 (
-                - 3.7
-              )
-               0.3
-            )
+            chars digits
           )
         )
          (
           begin (
             let (
               (
-                result (
-                  binary_step vector
-                )
+                n index
               )
             )
              (
               begin (
-                _display (
-                  if (
-                    string? result
+                let (
+                  (
+                    res ""
                   )
-                   result (
-                    to-str result
+                )
+                 (
+                  begin (
+                    let (
+                      (
+                        k (
+                          _len chars
+                        )
+                      )
+                    )
+                     (
+                      begin (
+                        letrec (
+                          (
+                            loop2 (
+                              lambda (
+                                
+                              )
+                               (
+                                if (
+                                  > k 0
+                                )
+                                 (
+                                  begin (
+                                    let (
+                                      (
+                                        f (
+                                          factorial (
+                                            - k 1
+                                          )
+                                        )
+                                      )
+                                    )
+                                     (
+                                      begin (
+                                        let (
+                                          (
+                                            pos (
+                                              _div n f
+                                            )
+                                          )
+                                        )
+                                         (
+                                          begin (
+                                            set! n (
+                                              _mod n f
+                                            )
+                                          )
+                                           (
+                                            set! res (
+                                              string-append res (
+                                                _substring chars pos (
+                                                  _add pos 1
+                                                )
+                                              )
+                                            )
+                                          )
+                                           (
+                                            set! chars (
+                                              string-append (
+                                                _substring chars 0 pos
+                                              )
+                                               (
+                                                _substring chars (
+                                                  _add pos 1
+                                                )
+                                                 (
+                                                  _len chars
+                                                )
+                                              )
+                                            )
+                                          )
+                                           (
+                                            set! k (
+                                              - k 1
+                                            )
+                                          )
+                                        )
+                                      )
+                                    )
+                                  )
+                                   (
+                                    loop2
+                                  )
+                                )
+                                 (
+                                  void
+                                )
+                              )
+                            )
+                          )
+                        )
+                         (
+                          loop2
+                        )
+                      )
+                       res
+                    )
                   )
                 )
               )
-               (
-                newline
+            )
+          )
+        )
+      )
+    )
+     (
+      define (
+        solution
+      )
+       (
+        nth_permutation "0123456789" 999999
+      )
+    )
+     (
+      define (
+        main
+      )
+       (
+        begin (
+          _display (
+            if (
+              string? (
+                solution
+              )
+            )
+             (
+              solution
+            )
+             (
+              to-str (
+                solution
               )
             )
           )
+        )
+         (
+          newline
         )
       )
     )
@@ -258,7 +351,7 @@
      (
       let (
         (
-          end3 (
+          end4 (
             current-jiffy
           )
         )
@@ -266,14 +359,14 @@
        (
         let (
           (
-            dur4 (
+            dur5 (
               quotient (
                 * (
-                  - end3 start2
+                  - end4 start3
                 )
                  1000000
               )
-               jps5
+               jps6
             )
           )
         )
@@ -281,7 +374,7 @@
           begin (
             _display (
               string-append "{\n  \"duration_us\": " (
-                number->string dur4
+                number->string dur5
               )
                ",\n  \"memory_bytes\": " (
                 number->string (

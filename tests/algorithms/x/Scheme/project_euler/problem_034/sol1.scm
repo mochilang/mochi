@@ -109,156 +109,248 @@
 (
   let (
     (
-      start2 (
+      start4 (
         current-jiffy
       )
     )
      (
-      jps5 (
+      jps7 (
         jiffies-per-second
       )
     )
   )
    (
     begin (
-      define (
-        binary_step vector
-      )
-       (
-        let (
-          (
-            out (
-              _list
-            )
+      let (
+        (
+          DIGIT_FACTORIALS (
+            _list 1 1 2 6 24 120 720 5040 40320 362880
           )
         )
-         (
-          begin (
-            let (
-              (
-                i 0
+      )
+       (
+        begin (
+          define (
+            sum_of_digit_factorial n
+          )
+           (
+            call/cc (
+              lambda (
+                ret1
               )
-            )
-             (
-              begin (
-                letrec (
-                  (
-                    loop1 (
-                      lambda (
-                        
+               (
+                begin (
+                  if (
+                    equal? n 0
+                  )
+                   (
+                    begin (
+                      ret1 (
+                        list-ref-safe DIGIT_FACTORIALS 0
+                      )
+                    )
+                  )
+                   (
+                    void
+                  )
+                )
+                 (
+                  let (
+                    (
+                      total 0
+                    )
+                  )
+                   (
+                    begin (
+                      let (
+                        (
+                          num n
+                        )
                       )
                        (
-                        if (
-                          < i (
-                            _len vector
-                          )
-                        )
-                         (
-                          begin (
-                            if (
-                              >= (
-                                list-ref-safe vector i
-                              )
-                               0.0
-                            )
-                             (
-                              begin (
-                                set! out (
-                                  append out (
-                                    _list 1
-                                  )
+                        begin (
+                          letrec (
+                            (
+                              loop2 (
+                                lambda (
+                                  
                                 )
-                              )
-                            )
-                             (
-                              begin (
-                                set! out (
-                                  append out (
-                                    _list 0
+                                 (
+                                  if (
+                                    > num 0
+                                  )
+                                   (
+                                    begin (
+                                      let (
+                                        (
+                                          digit (
+                                            _mod num 10
+                                          )
+                                        )
+                                      )
+                                       (
+                                        begin (
+                                          set! total (
+                                            + total (
+                                              list-ref-safe DIGIT_FACTORIALS digit
+                                            )
+                                          )
+                                        )
+                                         (
+                                          set! num (
+                                            _div num 10
+                                          )
+                                        )
+                                      )
+                                    )
+                                     (
+                                      loop2
+                                    )
+                                  )
+                                   (
+                                    void
                                   )
                                 )
                               )
                             )
                           )
                            (
-                            set! i (
-                              + i 1
-                            )
-                          )
-                           (
-                            loop1
+                            loop2
                           )
                         )
                          (
-                          void
+                          ret1 total
                         )
                       )
                     )
                   )
                 )
-                 (
-                  loop1
-                )
               )
-               out
-            )
-          )
-        )
-      )
-    )
-     (
-      define (
-        main
-      )
-       (
-        let (
-          (
-            vector (
-              _list (
-                - 1.2
-              )
-               0.0 2.0 1.45 (
-                - 3.7
-              )
-               0.3
             )
           )
         )
          (
-          begin (
+          define (
+            solution
+          )
+           (
             let (
               (
-                result (
-                  binary_step vector
+                limit (
+                  + (
+                    * 7 (
+                      list-ref-safe DIGIT_FACTORIALS 9
+                    )
+                  )
+                   1
                 )
               )
             )
              (
               begin (
-                _display (
-                  if (
-                    string? result
-                  )
-                   result (
-                    to-str result
+                let (
+                  (
+                    total 0
                   )
                 )
-              )
-               (
-                newline
+                 (
+                  begin (
+                    let (
+                      (
+                        i 3
+                      )
+                    )
+                     (
+                      begin (
+                        letrec (
+                          (
+                            loop3 (
+                              lambda (
+                                
+                              )
+                               (
+                                if (
+                                  < i limit
+                                )
+                                 (
+                                  begin (
+                                    if (
+                                      equal? (
+                                        sum_of_digit_factorial i
+                                      )
+                                       i
+                                    )
+                                     (
+                                      begin (
+                                        set! total (
+                                          + total i
+                                        )
+                                      )
+                                    )
+                                     (
+                                      void
+                                    )
+                                  )
+                                   (
+                                    set! i (
+                                      + i 1
+                                    )
+                                  )
+                                   (
+                                    loop3
+                                  )
+                                )
+                                 (
+                                  void
+                                )
+                              )
+                            )
+                          )
+                        )
+                         (
+                          loop3
+                        )
+                      )
+                       total
+                    )
+                  )
+                )
               )
             )
           )
         )
+         (
+          _display (
+            if (
+              string? (
+                to-str-space (
+                  solution
+                )
+              )
+            )
+             (
+              to-str-space (
+                solution
+              )
+            )
+             (
+              to-str (
+                to-str-space (
+                  solution
+                )
+              )
+            )
+          )
+        )
+         (
+          newline
+        )
       )
-    )
-     (
-      main
     )
      (
       let (
         (
-          end3 (
+          end5 (
             current-jiffy
           )
         )
@@ -266,14 +358,14 @@
        (
         let (
           (
-            dur4 (
+            dur6 (
               quotient (
                 * (
-                  - end3 start2
+                  - end5 start4
                 )
                  1000000
               )
-               jps5
+               jps7
             )
           )
         )
@@ -281,7 +373,7 @@
           begin (
             _display (
               string-append "{\n  \"duration_us\": " (
-                number->string dur4
+                number->string dur6
               )
                ",\n  \"memory_bytes\": " (
                 number->string (

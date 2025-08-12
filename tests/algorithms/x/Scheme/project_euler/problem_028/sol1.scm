@@ -122,138 +122,243 @@
    (
     begin (
       define (
-        binary_step vector
+        solution n
       )
        (
         let (
           (
-            out (
-              _list
-            )
+            total 1
           )
         )
          (
           begin (
             let (
               (
-                i 0
+                i 1
               )
             )
              (
               begin (
-                letrec (
+                let (
                   (
-                    loop1 (
-                      lambda (
-                        
+                    limit (
+                      _div (
+                        + n 1
                       )
-                       (
-                        if (
-                          < i (
-                            _len vector
-                          )
-                        )
-                         (
-                          begin (
-                            if (
-                              >= (
-                                list-ref-safe vector i
-                              )
-                               0.0
-                            )
-                             (
-                              begin (
-                                set! out (
-                                  append out (
-                                    _list 1
-                                  )
-                                )
-                              )
-                            )
-                             (
-                              begin (
-                                set! out (
-                                  append out (
-                                    _list 0
-                                  )
-                                )
-                              )
-                            )
-                          )
-                           (
-                            set! i (
-                              + i 1
-                            )
-                          )
-                           (
-                            loop1
-                          )
-                        )
-                         (
-                          void
-                        )
-                      )
+                       2
                     )
                   )
                 )
                  (
-                  loop1
+                  begin (
+                    letrec (
+                      (
+                        loop1 (
+                          lambda (
+                            
+                          )
+                           (
+                            if (
+                              < i limit
+                            )
+                             (
+                              begin (
+                                let (
+                                  (
+                                    odd (
+                                      + (
+                                        * 2 i
+                                      )
+                                       1
+                                    )
+                                  )
+                                )
+                                 (
+                                  begin (
+                                    let (
+                                      (
+                                        even (
+                                          * 2 i
+                                        )
+                                      )
+                                    )
+                                     (
+                                      begin (
+                                        set! total (
+                                          - (
+                                            + total (
+                                              * (
+                                                * 4 odd
+                                              )
+                                               odd
+                                            )
+                                          )
+                                           (
+                                            * 6 even
+                                          )
+                                        )
+                                      )
+                                       (
+                                        set! i (
+                                          + i 1
+                                        )
+                                      )
+                                    )
+                                  )
+                                )
+                              )
+                               (
+                                loop1
+                              )
+                            )
+                             (
+                              void
+                            )
+                          )
+                        )
+                      )
+                    )
+                     (
+                      loop1
+                    )
+                  )
+                   total
                 )
               )
-               out
             )
           )
         )
       )
     )
      (
-      define (
-        main
-      )
-       (
-        let (
-          (
-            vector (
-              _list (
-                - 1.2
-              )
-               0.0 2.0 1.45 (
-                - 3.7
-              )
-               0.3
+      _display (
+        if (
+          string? (
+            to-str-space (
+              solution 1001
             )
           )
         )
          (
-          begin (
-            let (
-              (
-                result (
-                  binary_step vector
-                )
-              )
-            )
-             (
-              begin (
-                _display (
-                  if (
-                    string? result
-                  )
-                   result (
-                    to-str result
-                  )
-                )
-              )
-               (
-                newline
-              )
+          to-str-space (
+            solution 1001
+          )
+        )
+         (
+          to-str (
+            to-str-space (
+              solution 1001
             )
           )
         )
       )
     )
      (
-      main
+      newline
+    )
+     (
+      _display (
+        if (
+          string? (
+            to-str-space (
+              solution 500
+            )
+          )
+        )
+         (
+          to-str-space (
+            solution 500
+          )
+        )
+         (
+          to-str (
+            to-str-space (
+              solution 500
+            )
+          )
+        )
+      )
+    )
+     (
+      newline
+    )
+     (
+      _display (
+        if (
+          string? (
+            to-str-space (
+              solution 100
+            )
+          )
+        )
+         (
+          to-str-space (
+            solution 100
+          )
+        )
+         (
+          to-str (
+            to-str-space (
+              solution 100
+            )
+          )
+        )
+      )
+    )
+     (
+      newline
+    )
+     (
+      _display (
+        if (
+          string? (
+            to-str-space (
+              solution 50
+            )
+          )
+        )
+         (
+          to-str-space (
+            solution 50
+          )
+        )
+         (
+          to-str (
+            to-str-space (
+              solution 50
+            )
+          )
+        )
+      )
+    )
+     (
+      newline
+    )
+     (
+      _display (
+        if (
+          string? (
+            to-str-space (
+              solution 10
+            )
+          )
+        )
+         (
+          to-str-space (
+            solution 10
+          )
+        )
+         (
+          to-str (
+            to-str-space (
+              solution 10
+            )
+          )
+        )
+      )
+    )
+     (
+      newline
     )
      (
       let (

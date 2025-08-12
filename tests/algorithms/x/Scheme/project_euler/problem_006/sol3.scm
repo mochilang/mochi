@@ -122,130 +122,117 @@
    (
     begin (
       define (
-        binary_step vector
+        solution n
       )
        (
         let (
           (
-            out (
-              _list
-            )
+            i 1
           )
         )
          (
           begin (
             let (
               (
-                i 0
+                sum 0
               )
             )
              (
               begin (
-                letrec (
+                let (
                   (
-                    loop1 (
-                      lambda (
-                        
-                      )
-                       (
-                        if (
-                          < i (
-                            _len vector
+                    sum_of_squares 0
+                  )
+                )
+                 (
+                  begin (
+                    letrec (
+                      (
+                        loop1 (
+                          lambda (
+                            
                           )
-                        )
-                         (
-                          begin (
+                           (
                             if (
-                              >= (
-                                list-ref-safe vector i
-                              )
-                               0.0
+                              <= i n
                             )
                              (
                               begin (
-                                set! out (
-                                  append out (
-                                    _list 1
+                                set! sum (
+                                  + sum i
+                                )
+                              )
+                               (
+                                set! sum_of_squares (
+                                  + sum_of_squares (
+                                    * i i
                                   )
                                 )
+                              )
+                               (
+                                set! i (
+                                  + i 1
+                                )
+                              )
+                               (
+                                loop1
                               )
                             )
                              (
-                              begin (
-                                set! out (
-                                  append out (
-                                    _list 0
-                                  )
-                                )
-                              )
+                              void
                             )
                           )
-                           (
-                            set! i (
-                              + i 1
-                            )
-                          )
-                           (
-                            loop1
-                          )
                         )
-                         (
-                          void
+                      )
+                    )
+                     (
+                      loop1
+                    )
+                  )
+                   (
+                    let (
+                      (
+                        square_of_sum (
+                          * sum sum
                         )
+                      )
+                    )
+                     (
+                      begin (
+                        - square_of_sum sum_of_squares
                       )
                     )
                   )
                 )
-                 (
-                  loop1
-                )
               )
-               out
             )
           )
         )
       )
     )
      (
-      define (
-        main
-      )
-       (
-        let (
-          (
-            vector (
-              _list (
-                - 1.2
+      _display (
+        if (
+          string? (
+            string-append "solution() = " (
+              to-str-space (
+                solution 100
               )
-               0.0 2.0 1.45 (
-                - 3.7
-              )
-               0.3
             )
           )
         )
          (
-          begin (
-            let (
-              (
-                result (
-                  binary_step vector
-                )
-              )
+          string-append "solution() = " (
+            to-str-space (
+              solution 100
             )
-             (
-              begin (
-                _display (
-                  if (
-                    string? result
-                  )
-                   result (
-                    to-str result
-                  )
-                )
-              )
-               (
-                newline
+          )
+        )
+         (
+          to-str (
+            string-append "solution() = " (
+              to-str-space (
+                solution 100
               )
             )
           )
@@ -253,7 +240,7 @@
       )
     )
      (
-      main
+      newline
     )
      (
       let (
