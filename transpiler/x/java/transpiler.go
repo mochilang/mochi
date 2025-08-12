@@ -2546,7 +2546,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			emitCastExpr(w, b.Right, "boolean")
 			return
 		}
-		if lt == "double" || rt == "double" {
+		if lt == "double" || rt == "double" || lt == "float" || rt == "float" {
 			typ = "double"
 		}
 		if lt == "" && rt == "" && (b.Op == "<" || b.Op == "<=" || b.Op == ">" || b.Op == ">=") {
@@ -6091,9 +6091,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		alias := resolveAlias(p.Selector.Root)
 		if len(p.Selector.Tail) == 0 {
-			if topEnv != nil {
-				if _, ok := topEnv.GetFunc(alias); ok {
-					return &VarExpr{Name: "Main::" + sanitize(alias)}, nil
+			if _, ok := varTypes[alias]; !ok {
+				if topEnv != nil {
+					if _, ok := topEnv.GetFunc(alias); ok {
+						return &VarExpr{Name: "Main::" + sanitize(alias)}, nil
+					}
 				}
 			}
 			if alias == "nil" {
