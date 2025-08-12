@@ -2745,14 +2745,24 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		name := safeName(s.Fun.Name)
 		fd := &FuncDecl{Name: name, Params: params, ParamTypes: typesArr, ReturnType: retType, Body: body, Async: useFetch}
 		// Map single-argument ln/exp helpers to native Math routines.
-		// Many algorithm implementations include series approximations
-		// for logarithm and exponential helpers. Previously these
-		// single-argument functions named `ln` and `exp` were replaced
-		// with `Math.log`/`Math.exp` for stability, but this caused
-		// tiny floating‑point deviations for algorithms that rely on
-		// their own series implementations. Preserve the user-defined
-		// bodies to keep behaviour consistent with the reference
-		// Mochi code.
+		// Many algorithm implementations include hand-written series
+		// approximations for logarithm and exponential functions. The
+		// approximations can suffer from precision issues (for example
+		// softplus using a truncated Maclaurin series). Replace trivial
+		// single-argument functions named `ln` or `exp` with calls to
+		// the built-in `Math.log` and `Math.exp` to improve numerical
+		// stability and avoid domain errors.
+		if len(params) == 1 {
+			var call string
+			if name == "ln" {
+				call = "Math.log"
+			} else if name == "exp" {
+				call = "Math.exp"
+			}
+			if call != "" {
+				fd.Body = []Stmt{&ReturnStmt{Value: &CallExpr{Func: call, Args: []Expr{&NameRef{Name: params[0]}}}}}
+			}
+		}
 		if fd.Async {
 			asyncFuncs[name] = true
 		}
