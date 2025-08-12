@@ -100,7 +100,7 @@ fn main() {
     let mut j: i64 = 1;
     while (j < (arr.len() as i64)) {
         let key_item: Thing = arr[j as usize].clone();
-        let key_val = key_func(key_item);
+        let key_val = key_func(key_item.clone());
         let mut k: i64 = (j - 1);
         while ((k >= 0) && (key_func(arr[k as usize].clone()) < key_val)) {
             arr[(k + 1) as usize] = arr[k as usize].clone();

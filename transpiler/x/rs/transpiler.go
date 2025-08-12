@@ -5184,6 +5184,13 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			for i := 0; i < len(args) && i < len(paramTypes); i++ {
 				if paramTypes[i] == "f64" && inferType(args[i]) == "i64" {
 					args[i] = &FloatCastExpr{Expr: args[i]}
+				} else if _, ok := args[i].(*NameRef); ok && !strings.HasPrefix(paramTypes[i], "&") {
+					t := inferType(args[i])
+					if t == "String" || strings.HasPrefix(t, "Vec<") || strings.HasPrefix(t, "HashMap<") || (t != "i64" && t != "bool" && t != "f64" && t != "String" && !strings.HasPrefix(t, "Vec<") && !strings.HasPrefix(t, "HashMap<")) {
+						args[i] = &MethodCallExpr{Receiver: args[i], Name: "clone"}
+					}
+				} else if _, ok := args[i].(*FieldExpr); ok && !strings.HasPrefix(paramTypes[i], "&") && (paramTypes[i] == "String" || strings.HasPrefix(paramTypes[i], "Vec<") || strings.HasPrefix(paramTypes[i], "HashMap<")) {
+					args[i] = &MethodCallExpr{Receiver: args[i], Name: "clone"}
 				}
 			}
 			for i, a := range args {
