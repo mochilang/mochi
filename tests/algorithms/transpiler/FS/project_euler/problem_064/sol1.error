@@ -1,0 +1,12 @@
+exit status 1
+Unhandled Exception:
+System.ArgumentNullException: Value cannot be null.
+Parameter name: s
+  at Microsoft.FSharp.Core.LanguagePrimitives.ParseInt32 (System.String s) [0x0000a] in <65d1017bc6ad35d9a74503837b01d165>:0 
+  at Sol1.main () [0x000a4] in <689ae9d99e02ff62a7450383d9e99a68>:0 
+  at <StartupCode$sol1>.$Sol1.main@ () [0x00019] in <689ae9d99e02ff62a7450383d9e99a68>:0 
+[ERROR] FATAL UNHANDLED EXCEPTION: System.ArgumentNullException: Value cannot be null.
+Parameter name: s
+  at Microsoft.FSharp.Core.LanguagePrimitives.ParseInt32 (System.String s) [0x0000a] in <65d1017bc6ad35d9a74503837b01d165>:0 
+  at Sol1.main () [0x000a4] in <689ae9d99e02ff62a7450383d9e99a68>:0 
+  at <StartupCode$sol1>.$Sol1.main@ () [0x00019] in <689ae9d99e02ff62a7450383d9e99a68>:0
