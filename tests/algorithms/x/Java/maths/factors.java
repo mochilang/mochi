@@ -17,7 +17,7 @@ public class Main {
         }
         long[] small_1 = ((long[])(new long[]{}));
         long[] large_1 = ((long[])(new long[]{}));
-        long i_3 = 1;
+        long i_3 = 1L;
         while (i_3 * i_3 <= num) {
             if (Math.floorMod(num, i_3) == 0) {
                 small_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(small_1), java.util.stream.LongStream.of(i_3)).toArray()));
@@ -28,28 +28,28 @@ public class Main {
             }
             i_3 = i_3 + 1;
         }
-        facs = ((long[])(concat(small_1, reverse(((long[])(large_1))))));
+        facs = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(small_1), java.util.Arrays.stream(reverse(((long[])(large_1))))).toArray()));
         return facs;
     }
 
     static void run_tests() {
-        if (factors_of_a_number(1) != new long[]{1}) {
+        if (!java.util.Arrays.equals(factors_of_a_number(1L), new long[]{1})) {
             throw new RuntimeException(String.valueOf("case1 failed"));
         }
-        if (factors_of_a_number(5) != new long[]{1, 5}) {
+        if (!java.util.Arrays.equals(factors_of_a_number(5L), new long[]{1, 5})) {
             throw new RuntimeException(String.valueOf("case2 failed"));
         }
-        if (factors_of_a_number(24) != new long[]{1, 2, 3, 4, 6, 8, 12, 24}) {
+        if (!java.util.Arrays.equals(factors_of_a_number(24L), new long[]{1, 2, 3, 4, 6, 8, 12, 24})) {
             throw new RuntimeException(String.valueOf("case3 failed"));
         }
-        if (factors_of_a_number(-24) != ((Number)(new Object[]{})).intValue()) {
+        if (!java.util.Arrays.equals(factors_of_a_number(-24), new long[]{})) {
             throw new RuntimeException(String.valueOf("case4 failed"));
         }
     }
 
     static void main() {
         run_tests();
-        System.out.println(_p(factors_of_a_number(24)));
+        System.out.println(_p(factors_of_a_number(24L)));
     }
     public static void main(String[] args) {
         {
@@ -87,12 +87,6 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
-    }
-
-    static <T> T[] concat(T[] a, T[] b) {
-        T[] out = java.util.Arrays.copyOf(a, a.length + b.length);
-        System.arraycopy(b, 0, out, a.length, b.length);
-        return out;
     }
 
     static String _p(Object v) {

@@ -481,6 +481,12 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 			return
 		}
 	}
+	if typ == "long" {
+		if il, ok := e.(*IntLit); ok {
+			fmt.Fprintf(w, "%dL", il.Value)
+			return
+		}
+	}
 	if typ == "int" || typ == "long" || typ == "double" || typ == "float" || typ == "float64" {
 		it := inferType(e)
 		if typ == "long" && it == "java.math.BigInteger" {
@@ -1136,7 +1142,7 @@ func (t *TypeDeclStmt) emit(w io.Writer, indent string) {
 		if typ == "" {
 			typ = f.Type
 		}
-		fmt.Fprintf(w, indent+"    %s %s;\n", typ, f.Name)
+		fmt.Fprintf(w, indent+"    %s %s;\n", typ, sanitize(f.Name))
 	}
 	fmt.Fprintf(w, indent+"    %s(", sanitize(t.Name))
 	for i, f := range t.Fields {
@@ -1196,7 +1202,7 @@ func (t *TypeDeclStmt) emit(w io.Writer, indent string) {
 			if i > 0 {
 				fmt.Fprint(w, ", ")
 			}
-			fmt.Fprintf(w, "String.valueOf(%s)", f.Name)
+			fmt.Fprintf(w, "String.valueOf(%s)", sanitize(f.Name))
 		}
 		fmt.Fprint(w, ");\n")
 	}
@@ -1877,7 +1883,7 @@ func (s *AssignStmt) emit(w io.Writer, indent string) {
 	emitCastExpr(w, s.Expr, typ)
 	fmt.Fprint(w, ";\n")
 	if ref, ok := listVarRefs[s.Name]; ok {
-		fmt.Fprintf(w, "%s%s.%s = %s;\n", indent, sanitize(ref.Obj), ref.Field, sanitize(s.Name))
+		fmt.Fprintf(w, "%s%s.%s = %s;\n", indent, sanitize(ref.Obj), sanitize(ref.Field), sanitize(s.Name))
 	}
 }
 
@@ -1925,7 +1931,7 @@ func (s *IndexAssignStmt) emit(w io.Writer, indent string) {
 		}
 		if key, ok := s.Indices[0].(*StringLit); ok && !isMapExpr(s.Target) {
 			s.Target.emit(w)
-			fmt.Fprintf(w, ".%s = ", key.Value)
+			fmt.Fprintf(w, ".%s = ", sanitize(key.Value))
 			s.Expr.emit(w)
 			fmt.Fprint(w, ";\n")
 			return
@@ -2116,14 +2122,14 @@ func (u *UpdateStmt) emit(w io.Writer, indent string) {
 		fmt.Fprint(w, ") {\n")
 		inner := indent + "        "
 		for i, f := range u.Fields {
-			fmt.Fprintf(w, inner+"item.%s = ", f)
+			fmt.Fprintf(w, inner+"item.%s = ", sanitize(f))
 			u.Values[i].emit(w)
 			fmt.Fprint(w, ";\n")
 		}
 		fmt.Fprint(w, indent+"    }\n")
 	} else {
 		for i, f := range u.Fields {
-			fmt.Fprintf(w, indent+"    item.%s = ", f)
+			fmt.Fprintf(w, indent+"    item.%s = ", sanitize(f))
 			u.Values[i].emit(w)
 			fmt.Fprint(w, ";\n")
 		}
@@ -2305,7 +2311,13 @@ func (m *MapLit) emit(w io.Writer) {
 					fmt.Fprint(w, ", ")
 				}
 				fmt.Fprint(w, "java.util.Map.entry(")
-				m.Keys[i].emit(w)
+				if m.KeyType != "" {
+					emitCastExpr(w, m.Keys[i], javaType(m.KeyType))
+				} else if keyType != "String" {
+					emitCastExpr(w, m.Keys[i], strings.ToLower(keyType))
+				} else {
+					m.Keys[i].emit(w)
+				}
 				fmt.Fprint(w, ", ")
 				if m.ValueType != "" {
 					if ll, ok := m.Values[i].(*ListLit); ok && ll.ElemType == "" {
@@ -2315,7 +2327,7 @@ func (m *MapLit) emit(w io.Writer) {
 					}
 					emitCastExpr(w, m.Values[i], m.ValueType)
 				} else if valType != "Object" {
-					emitCastExpr(w, m.Values[i], valType)
+					emitCastExpr(w, m.Values[i], strings.ToLower(valType))
 				} else {
 					fmt.Fprint(w, "(Object)(")
 					m.Values[i].emit(w)
@@ -2367,6 +2379,31 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		}
 	}
 	if b.Op == "==" || b.Op == "!=" {
+		if arrayElemType(b.Left) != "" || arrayElemType(b.Right) != "" {
+			if b.Op == "!=" {
+				fmt.Fprint(w, "!")
+			}
+			fmt.Fprint(w, "java.util.Arrays.equals(")
+			elem := arrayElemType(b.Left)
+			if elem == "" {
+				elem = arrayElemType(b.Right)
+			}
+			emitArr := func(ex Expr) {
+				if ll, ok := ex.(*ListLit); ok && ll.ElemType == "" {
+					old := ll.ElemType
+					ll.ElemType = elem
+					ll.emit(w)
+					ll.ElemType = old
+				} else {
+					ex.emit(w)
+				}
+			}
+			emitArr(b.Left)
+			fmt.Fprint(w, ", ")
+			emitArr(b.Right)
+			fmt.Fprint(w, ")")
+			return
+		}
 		lt := inferType(b.Left)
 		rt := inferType(b.Right)
 		if (lt == "string" || lt == "String" || isStringExpr(b.Left)) &&
@@ -2674,7 +2711,7 @@ func (f *FieldExpr) emit(w io.Writer) {
 		if t, ok2 := varTypes[v.Name]; ok2 && t != "map" && !strings.Contains(t, "Map") {
 			if t != "Object" {
 				f.Target.emit(w)
-				fmt.Fprint(w, "."+f.Name)
+				fmt.Fprint(w, "."+sanitize(f.Name))
 				return
 			}
 			if structDefs != nil {
@@ -2691,7 +2728,7 @@ func (f *FieldExpr) emit(w io.Writer) {
 				if found != "" {
 					fmt.Fprintf(w, "((%s)", found)
 					f.Target.emit(w)
-					fmt.Fprintf(w, ").%s", f.Name)
+					fmt.Fprintf(w, ").%s", sanitize(f.Name))
 					return
 				}
 			}
@@ -2714,7 +2751,7 @@ func (f *FieldExpr) emit(w io.Writer) {
 		return
 	}
 	f.Target.emit(w)
-	fmt.Fprint(w, "."+f.Name)
+	fmt.Fprint(w, "."+sanitize(f.Name))
 }
 
 type LenExpr struct{ Value Expr }
@@ -2848,7 +2885,7 @@ func (v *ValuesExpr) emit(w io.Writer) {
 					if i > 0 {
 						fmt.Fprint(w, ", ")
 					}
-					fmt.Fprintf(w, "%s.%s", ve.Name, fn)
+					fmt.Fprintf(w, "%s.%s", ve.Name, sanitize(fn))
 				}
 				fmt.Fprint(w, ")")
 				return
@@ -3223,6 +3260,14 @@ func (c *ConcatExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ")).toArray()")
 		return
 	}
+	if elem == "long" {
+		fmt.Fprint(w, "java.util.stream.LongStream.concat(java.util.Arrays.stream(")
+		c.Left.emit(w)
+		fmt.Fprint(w, "), java.util.Arrays.stream(")
+		c.Right.emit(w)
+		fmt.Fprint(w, ")).toArray()")
+		return
+	}
 	if elem == "double" {
 		fmt.Fprint(w, "java.util.stream.DoubleStream.concat(java.util.Arrays.stream(")
 		c.Left.emit(w)
@@ -3441,9 +3486,12 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		defVal := "null"
 		mvType := mapValueType(inferType(ix.Target))
 		switch mvType {
-		case "int", "long":
+		case "int":
 			useDefault = true
 			defVal = "0"
+		case "long":
+			useDefault = true
+			defVal = "0L"
 		case "double":
 			useDefault = true
 			defVal = "0.0"
@@ -3453,9 +3501,12 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		}
 		if !useDefault {
 			switch castType {
-			case "int", "Integer", "long", "Long":
+			case "int", "Integer":
 				useDefault = true
 				defVal = "0"
+			case "long", "Long":
+				useDefault = true
+				defVal = "0L"
 			case "double", "Double":
 				useDefault = true
 				defVal = "0.0"
