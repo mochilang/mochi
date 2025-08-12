@@ -2714,8 +2714,8 @@ func (n *NowExpr) emit(w io.Writer) error {
 type InputExpr struct{}
 
 func (in *InputExpr) emit(w io.Writer) error {
-	_, err := io.WriteString(w, "stdin.readLineSync() ?? ''")
-	return err
+        _, err := io.WriteString(w, "stdin.readLineSync()?.trim() ?? ''")
+        return err
 }
 
 func isMaybeString(e Expr) bool {
