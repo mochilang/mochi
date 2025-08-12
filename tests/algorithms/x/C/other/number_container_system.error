@@ -1,0 +1,91 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/other/number_container_system.c:85:5: error: unknown type name ‘MapII’
+   85 |     MapII indexmap;
+      |     ^~~~~
+/workspace/mochi/tests/algorithms/x/C/other/number_container_system.c: In function ‘change’:
+/workspace/mochi/tests/algorithms/x/C/other/number_container_system.c:185:5: error: unknown type name ‘MapII’; did you mean ‘MapIL’?
+  185 |     MapII indexmap = cont.indexmap;
+      |     ^~~~~
+      |     MapIL
+/workspace/mochi/tests/algorithms/x/C/other/number_container_system.c:186:40: error: request for member ‘len’ in something not a structure or union
+  186 |     size_t indexmap_len = cont.indexmap.len;
+      |                                        ^
+/workspace/mochi/tests/algorithms/x/C/other/number_container_system.c:187:12: error: expected ‘)’ before ‘in’
+  187 |     if (idx in indexmap) {
+      |        ~   ^~~
+      |            )
+/workspace/mochi/tests/algorithms/x/C/other/number_container_system.c:188:44: error: request for member ‘keys’ in something not a structure or union
+  188 |         long long old = map_get_ii(indexmap.keys, indexmap.vals, indexmap.len, idx);
+      |                                            ^
+/workspace/mochi/tests/algorithms/x/C/other/number_container_system.c:188:59: error: request for member ‘vals’ in something not a structure or union
+  188 |         long long old = map_get_ii(indexmap.keys, indexmap.vals, indexmap.len, idx);
+      |                                                           ^
+/workspace/mochi/tests/algorithms/x/C/other/number_container_system.c:188:74: error: request for member ‘len’ in something not a structure or union
+  188 |         long long old = map_get_ii(indexmap.keys, indexmap.vals, indexmap.len, idx);
+      |                                                                          ^
+/workspace/mochi/tests/algorithms/x/C/other/number_container_system.c:189:35: error: ‘numbermap_keys’ undeclared (first use in this function); did you mean ‘numbermap_len’?
+  189 |         int *indexes = map_get_il(numbermap_keys, numbermap_vals, numbermap_lens, numbermap_len, old, NULL);
+      |                                   ^~~~~~~~~~~~~~
+      |                                   numbermap_len
+/workspace/mochi/tests/algorithms/x/C/other/number_container_system.c:189:35: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/algorithms/x/C/other/number_container_system.c:189:51: error: ‘numbermap_vals’ undeclared (first use in this function); did you mean ‘numbermap_len’?
+  189 |         int *indexes = map_get_il(numbermap_keys, numbermap_vals, numbermap_lens, numbermap_len, old, NULL);
+      |                                                   ^~~~~~~~~~~~~~
+      |                                                   numbermap_len
+/workspace/mochi/tests/algorithms/x/C/other/number_container_system.c:189:67: error: ‘numbermap_lens’ undeclared (first use in this function); did you mean ‘numbermap_len’?
+  189 |         int *indexes = map_get_il(numbermap_keys, numbermap_vals, numbermap_lens, numbermap_len, old, NULL);
+      |                                                                   ^~~~~~~~~~~~~~
+      |                                                                   numbermap_len
+/workspace/mochi/tests/algorithms/x/C/other/number_container_system.c:194:114: warning: passing argument 1 of ‘binary_search_delete’ from incompatible pointer type [-Wincompatible-pointer-types]
+  194 |             map_set_il(numbermap_keys, numbermap_vals, numbermap_lens, &numbermap_len, old, binary_search_delete(indexes, indexes_len, idx), binary_search_delete_len);
+      |                                                                                                                  ^~~~~~~
+      |                                                                                                                  |
+      |                                                                                                                  int *
+/workspace/mochi/tests/algorithms/x/C/other/number_container_system.c:135:46: note: expected ‘long long int *’ but argument is of type ‘int *’
+  135 | long long * binary_search_delete(long long * array, size_t array_len, long long item) {
+      |                                  ~~~~~~~~~~~~^~~~~
+/workspace/mochi/tests/algorithms/x/C/other/number_container_system.c:197:13: error: subscripted value is neither array nor pointer nor vector
+  197 |     indexmap[(int)(idx)] = num;
+      |             ^
+/workspace/mochi/tests/algorithms/x/C/other/number_container_system.c: In function ‘find’:
+/workspace/mochi/tests/algorithms/x/C/other/number_container_system.c:210:31: error: ‘numbermap_keys’ undeclared (first use in this function); did you mean ‘numbermap_len’?
+  210 |         int *arr = map_get_il(numbermap_keys, numbermap_vals, numbermap_lens, numbermap_len, num, NULL);
+      |                               ^~~~~~~~~~~~~~
+      |                               numbermap_len
+/workspace/mochi/tests/algorithms/x/C/other/number_container_system.c:210:47: error: ‘numbermap_vals’ undeclared (first use in this function); did you mean ‘numbermap_len’?
+  210 |         int *arr = map_get_il(numbermap_keys, numbermap_vals, numbermap_lens, numbermap_len, num, NULL);
+      |                                               ^~~~~~~~~~~~~~
+      |                                               numbermap_len
+/workspace/mochi/tests/algorithms/x/C/other/number_container_system.c:210:63: error: ‘numbermap_lens’ undeclared (first use in this function); did you mean ‘numbermap_len’?
+  210 |         int *arr = map_get_il(numbermap_keys, numbermap_vals, numbermap_lens, numbermap_len, num, NULL);
+      |                                                               ^~~~~~~~~~~~~~
+      |                                                               numbermap_len
+/workspace/mochi/tests/algorithms/x/C/other/number_container_system.c: In function ‘main’:
+/workspace/mochi/tests/algorithms/x/C/other/number_container_system.c:230:63: error: ‘im’ undeclared (first use in this function); did you mean ‘nm’?
+  230 |         cont = (NumberContainer){.numbermap = nm, .indexmap = im};
+      |                                                               ^~
+      |                                                               nm
+/workspace/mochi/tests/algorithms/x/C/other/number_container_system.c:231:18: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘long long int’ [-Wformat=]
+  231 |         printf("%d\n", find(cont, 10LL));
+      |                 ~^     ~~~~~~~~~~~~~~~~
+      |                  |     |
+      |                  int   long long int
+      |                 %lld
+/workspace/mochi/tests/algorithms/x/C/other/number_container_system.c:233:18: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘long long int’ [-Wformat=]
+  233 |         printf("%d\n", find(cont, 10LL));
+      |                 ~^     ~~~~~~~~~~~~~~~~
+      |                  |     |
+      |                  int   long long int
+      |                 %lld
+/workspace/mochi/tests/algorithms/x/C/other/number_container_system.c:235:18: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘long long int’ [-Wformat=]
+  235 |         printf("%d\n", find(cont, 10LL));
+      |                 ~^     ~~~~~~~~~~~~~~~~
+      |                  |     |
+      |                  int   long long int
+      |                 %lld
+/workspace/mochi/tests/algorithms/x/C/other/number_container_system.c:236:18: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘long long int’ [-Wformat=]
+  236 |         printf("%d\n", find(cont, 20LL));
+      |                 ~^     ~~~~~~~~~~~~~~~~
+      |                  |     |
+      |                  int   long long int
+      |                 %lld

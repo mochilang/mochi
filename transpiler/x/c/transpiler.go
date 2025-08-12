@@ -1647,7 +1647,7 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 				call.Args[1].emitExpr(w)
 				io.WriteString(w, ");\n")
 				return
-			case "const char*":
+			case "const char*", "const char":
 				needListAppendStr = true
 				fmt.Fprintf(w, "%s = list_append_str(%s, &%s_len, ", a.Name, a.Name, a.Name)
 				call.Args[1].emitExpr(w)
@@ -2540,6 +2540,48 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 			return
 		}
 	}
+	if t := inferExprType(currentEnv, i.Target); t == "MapSI" {
+		needMapGetSI = true
+		funcReturnTypes["map_get_si"] = "int"
+		io.WriteString(w, "map_get_si(")
+		i.Target.emitExpr(w)
+		io.WriteString(w, ".keys, ")
+		i.Target.emitExpr(w)
+		io.WriteString(w, ".vals, ")
+		i.Target.emitExpr(w)
+		io.WriteString(w, ".len, ")
+		i.Index.emitExpr(w)
+		io.WriteString(w, ")")
+		return
+	}
+	if t := inferExprType(currentEnv, i.Target); t == "MapIS" {
+		needMapGetIS = true
+		funcReturnTypes["map_get_is"] = "const char*"
+		io.WriteString(w, "map_get_is(")
+		i.Target.emitExpr(w)
+		io.WriteString(w, ".keys, ")
+		i.Target.emitExpr(w)
+		io.WriteString(w, ".vals, ")
+		i.Target.emitExpr(w)
+		io.WriteString(w, ".len, ")
+		i.Index.emitExpr(w)
+		io.WriteString(w, ")")
+		return
+	}
+	if t := inferExprType(currentEnv, i.Target); t == "MapII" {
+		needMapGetII = true
+		funcReturnTypes["map_get_ii"] = "int"
+		io.WriteString(w, "map_get_ii(")
+		i.Target.emitExpr(w)
+		io.WriteString(w, ".keys, ")
+		i.Target.emitExpr(w)
+		io.WriteString(w, ".vals, ")
+		i.Target.emitExpr(w)
+		io.WriteString(w, ".len, ")
+		i.Index.emitExpr(w)
+		io.WriteString(w, ")")
+		return
+	}
 	if t := inferExprType(currentEnv, i.Target); t == "MapSS" {
 		needMapGetSS = true
 		io.WriteString(w, "map_get_ss(")
@@ -3385,6 +3427,32 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 				b.Left.emitExpr(w)
 				io.WriteString(w, ")")
 				return
+			}
+		}
+		if fe, ok := b.Right.(*FieldExpr); ok {
+			if t := inferExprType(currentEnv, fe); strings.HasPrefix(t, "Map") {
+				if strings.HasPrefix(t, "MapS") {
+					needContainsStr = true
+					io.WriteString(w, "contains_str(")
+					fe.emitExpr(w)
+					io.WriteString(w, ".keys, ")
+					fe.emitExpr(w)
+					io.WriteString(w, ".len, ")
+					b.Left.emitExpr(w)
+					io.WriteString(w, ")")
+					return
+				}
+				if strings.HasPrefix(t, "MapI") {
+					needContainsMapInt = true
+					io.WriteString(w, "contains_map_int(")
+					fe.emitExpr(w)
+					io.WriteString(w, ".keys, ")
+					fe.emitExpr(w)
+					io.WriteString(w, ".len, ")
+					b.Left.emitExpr(w)
+					io.WriteString(w, ")")
+					return
+				}
 			}
 		}
 		if vr, ok := b.Right.(*VarRef); ok {
@@ -5969,6 +6037,10 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 					var buf bytes.Buffer
 					fmt.Fprintf(&buf, "MapIS %s = { NULL, NULL, 0, 0 };\n", s.Var.Name)
 					return &RawStmt{Code: buf.String()}, nil
+				} else if valT == "int" && keyT == "const char*" {
+					var buf bytes.Buffer
+					fmt.Fprintf(&buf, "MapSI %s = { NULL, NULL, 0, 0 };\n", s.Var.Name)
+					return &RawStmt{Code: buf.String()}, nil
 				}
 			}
 			var buf bytes.Buffer
@@ -6021,7 +6093,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				}
 				buf.WriteString("};\n")
 			} else if valT == "const char*" {
-				fmt.Fprintf(&buf, "const char* %s_vals[%d] = {", s.Var.Name, len(m.Items)+16)
+				fmt.Fprintf(&buf, "static const char* %s_vals[%d] = {", s.Var.Name, len(m.Items)+16)
 				for i, it := range m.Items {
 					if i > 0 {
 						buf.WriteString(", ")
@@ -6030,7 +6102,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				}
 				buf.WriteString("};\n")
 			} else {
-				fmt.Fprintf(&buf, "%s %s_vals[%d] = {", valT, s.Var.Name, len(m.Items)+16)
+				fmt.Fprintf(&buf, "static %s %s_vals[%d] = {", valT, s.Var.Name, len(m.Items)+16)
 				for i, it := range m.Items {
 					if i > 0 {
 						buf.WriteString(", ")
