@@ -1,0 +1,7 @@
+exit status 2
+File "/workspace/mochi/tests/algorithms/x/OCaml/maths/fibonacci.ml", line 202, characters 23-40:
+202 |   if (List.mem_assoc i !fib_cache_global) then (
+                             ^^^^^^^^^^^^^^^^^
+Error: This expression has type (string * int) list
+       but an expression was expected of type (int * 'a) list
+       Type string is not compatible with type int 

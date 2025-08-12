@@ -1,0 +1,6 @@
+exit status 2
+File "/workspace/mochi/tests/algorithms/x/OCaml/maths/floor.ml", line 113, characters 140-281:
+113 |   if (floor ((let __l = !nums in let __i = !idx in let __len = List.length __l in List.nth __l (if __i >= 0 then __i else __len + __i))) <> float_of_int ((let __l = !expected in let __i = !idx in let __len = List.length __l in List.nth __l (if __i >= 0 then __i else __len + __i)))) then (
+                                                                                                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This expression has type float but an expression was expected of type
+         int

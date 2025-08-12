@@ -1,0 +1,7 @@
+exit status 2
+File "/workspace/mochi/tests/algorithms/x/OCaml/maths/mobius_function.ml", line 127, characters 25-34:
+127 |     with Continue -> ()) (factors) with Break -> ());
+                               ^^^^^^^^^
+Error: This expression has type int list
+       but an expression was expected of type string list
+       Type int is not compatible with type string 

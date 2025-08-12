@@ -1,0 +1,11 @@
+exit status 2
+true
+[2 3 5 7 11 13 17 19]
+[2 3 5 7 11 13 17 19]
+[7 41]
+41
+7
+40
+[5 23]
+23
+Fatal error: exception Failure("arguments must be prime and p1 < p2")
