@@ -1194,7 +1194,7 @@ func (s *StructLit) emit(w io.Writer) {
 	fmt.Fprint(w, ")")
 }
 
-// AppendExpr represents append(list, elem) as `list :+ elem`.
+// AppendExpr represents append(list, elem) as `list += elem`.
 type AppendExpr struct {
 	List Expr
 	Elem Expr
@@ -1202,7 +1202,7 @@ type AppendExpr struct {
 
 func (a *AppendExpr) emit(w io.Writer) {
 	a.List.emit(w)
-	fmt.Fprint(w, " :+ ")
+	fmt.Fprint(w, " += ")
 	if ie, ok := a.Elem.(*IfExpr); ok {
 		if inferTypeWithEnv(ie.Then, nil) == "BigInt" && inferTypeWithEnv(ie.Else, nil) == "BigInt" {
 			needsBigInt = true
