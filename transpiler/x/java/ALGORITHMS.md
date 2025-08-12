@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-12 07:52 GMT+7
+Last updated: 2025-08-12 08:29 GMT+7
 
-## Algorithms Golden Test Checklist (929/1077)
+## Algorithms Golden Test Checklist (932/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -564,17 +564,17 @@ Last updated: 2025-08-12 07:52 GMT+7
 | 555 | maths/dodecahedron | ✓ | 16.0ms | 10.36KB |
 | 556 | maths/double_factorial | ✓ | 20.0ms | 448B |
 | 557 | maths/dual_number_automatic_differentiation | ✓ | 36.0ms | 60.98KB |
-| 558 | maths/entropy | error |  |  |
+| 558 | maths/entropy | ✓ | 33.0ms | 41.04KB |
 | 559 | maths/euclidean_distance | ✓ | 14.0ms | 10.45KB |
 | 560 | maths/euler_method | ✓ | 36.0ms | 48.90KB |
 | 561 | maths/euler_modified | ✓ | 31.0ms | 50.81KB |
 | 562 | maths/eulers_totient | ✓ | 61.0ms | 93.91KB |
 | 563 | maths/extended_euclidean_algorithm | ✓ | 42.0ms | 78.22KB |
 | 564 | maths/factorial | ✓ | 17.0ms | 448B |
-| 565 | maths/factors | error |  |  |
+| 565 | maths/factors | ✓ | 25.0ms | 47.18KB |
 | 566 | maths/fast_inverse_sqrt | ✓ | 43.0ms | 87.55KB |
 | 567 | maths/fermat_little_theorem | ✓ | 25.0ms | 712B |
-| 568 | maths/fibonacci | error |  |  |
+| 568 | maths/fibonacci | ✓ | 24.0ms | 48.52KB |
 | 569 | maths/find_max | ✓ | 17.0ms | 10.35KB |
 | 570 | maths/find_min | ✓ | 17.0ms | 864B |
 | 571 | maths/floor | ✓ | 18.0ms | 656B |

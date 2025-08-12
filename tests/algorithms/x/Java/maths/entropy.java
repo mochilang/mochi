@@ -1,14 +1,14 @@
 public class Main {
     static class TextCounts {
-        java.util.Map<String,Integer> single;
-        java.util.Map<String,Integer> double;
-        TextCounts(java.util.Map<String,Integer> single, java.util.Map<String,Integer> double_) {
+        java.util.Map<String,Long> single;
+        java.util.Map<String,Long> double_;
+        TextCounts(java.util.Map<String,Long> single, java.util.Map<String,Long> double_) {
             this.single = single;
             this.double_ = double_;
         }
         TextCounts() {}
         @Override public String toString() {
-            return String.format("{'single': %s, 'double': %s}", String.valueOf(single), String.valueOf(double));
+            return String.format("{'single': %s, 'double': %s}", String.valueOf(single), String.valueOf(double_));
         }
     }
 
@@ -17,64 +17,64 @@ public class Main {
 
     static double log2(double x) {
         double k = 0.0;
-        double v = x;
-        while (v >= 2.0) {
-            v = v / 2.0;
+        double v_1 = x;
+        while (v_1 >= 2.0) {
+            v_1 = v_1 / 2.0;
             k = k + 1.0;
         }
-        while (v < 1.0) {
-            v = v * 2.0;
+        while (v_1 < 1.0) {
+            v_1 = v_1 * 2.0;
             k = k - 1.0;
         }
-        double z = (v - 1.0) / (v + 1.0);
-        double zpow = z;
-        double sum = z;
-        int i = 3;
-        while (i <= 9) {
-            zpow = zpow * z * z;
-            sum = sum + zpow / (((Number)(i)).doubleValue());
-            i = i + 2;
+        double z_1 = (v_1 - 1.0) / (v_1 + 1.0);
+        double zpow_1 = z_1;
+        double sum_1 = z_1;
+        long i_1 = 3L;
+        while (i_1 <= 9) {
+            zpow_1 = zpow_1 * z_1 * z_1;
+            sum_1 = sum_1 + zpow_1 / (((Number)(i_1)).doubleValue());
+            i_1 = i_1 + 2;
         }
-        double ln2 = 0.6931471805599453;
-        return k + 2.0 * sum / ln2;
+        double ln2_1 = 0.6931471805599453;
+        return k + 2.0 * sum_1 / ln2_1;
     }
 
     static TextCounts analyze_text(String text) {
-        java.util.Map<String,Integer> single = ((java.util.Map<String,Integer>)(new java.util.LinkedHashMap<String, Integer>()));
-        java.util.Map<String,Integer> double_ = ((java.util.Map<String,Integer>)(new java.util.LinkedHashMap<String, Integer>()));
-        int n = _runeLen(text);
-        if (n == 0) {
-            return new TextCounts(single, double_);
+        java.util.Map<String,Long> single = ((java.util.Map<String,Long>)(new java.util.LinkedHashMap<String, Long>()));
+        java.util.Map<String,Long> double_1 = ((java.util.Map<String,Long>)(new java.util.LinkedHashMap<String, Long>()));
+        long n_1 = _runeLen(text);
+        if (n_1 == 0) {
+            return new TextCounts(single, double_1);
         }
-        String last = _substr(text, n - 1, n);
-        if (((Boolean)(single.containsKey(last)))) {
-single.put(last, (int)(((int)(single).getOrDefault(last, 0))) + 1);
+        String last_1 = _substr(text, (int)(n_1 - 1), (int)(n_1));
+        if (single.containsKey(last_1)) {
+single.put(last_1, (long)(((long)(single).getOrDefault(last_1, 0L))) + 1);
         } else {
-single.put(last, 1);
+single.put(last_1, 1L);
         }
-        String first = _substr(text, 0, 1);
-        String pair0 = " " + first;
-double_.put(pair0, 1);
-        int i_1 = 0;
-        while (i_1 < n - 1) {
-            String ch = _substr(text, i_1, i_1 + 1);
-            if (((Boolean)(single.containsKey(ch)))) {
-single.put(ch, (int)(((int)(single).getOrDefault(ch, 0))) + 1);
+        String first_1 = _substr(text, (int)(0), (int)(1));
+        String pair0_1 = " " + first_1;
+double_1.put(pair0_1, 1L);
+        long i_3 = 0L;
+        while (i_3 < n_1 - 1) {
+            String ch_1 = _substr(text, (int)(i_3), (int)(i_3 + 1));
+            if (single.containsKey(ch_1)) {
+single.put(ch_1, (long)(((long)(single).getOrDefault(ch_1, 0L))) + 1);
             } else {
-single.put(ch, 1);
+single.put(ch_1, 1L);
             }
-            String seq = _substr(text, i_1, i_1 + 2);
-            if (((Boolean)(double_.containsKey(seq)))) {
-double_.put(seq, (int)(((int)(double_).getOrDefault(seq, 0))) + 1);
+            String seq_1 = _substr(text, (int)(i_3), (int)(i_3 + 2));
+            if (double_1.containsKey(seq_1)) {
+double_1.put(seq_1, (long)(((long)(double_1).getOrDefault(seq_1, 0L))) + 1);
             } else {
-double_.put(seq, 1);
+double_1.put(seq_1, 1L);
             }
-            i_1 = i_1 + 1;
+            i_3 = i_3 + 1;
         }
-        return new TextCounts(single, double_);
+        return new TextCounts(single, double_1);
     }
 
-    static int round_to_int(double x) {
+    static long round_to_int(double x) {
         if (x < 0.0) {
             return ((Number)((x - 0.5))).intValue();
         }
@@ -83,47 +83,47 @@ double_.put(seq, 1);
 
     static void calculate_entropy(String text) {
         TextCounts counts = analyze_text(text);
-        String alphas = " abcdefghijklmnopqrstuvwxyz";
-        int total1 = 0;
+        String alphas_1 = " abcdefghijklmnopqrstuvwxyz";
+        long total1_1 = 0L;
         for (String ch : counts.single.keySet()) {
-            total1 = total1 + (int)(((int)(counts.single).getOrDefault(ch, 0)));
+            total1_1 = total1_1 + (long)(((long)(counts.single).getOrDefault(ch, 0L)));
         }
-        double h1 = 0.0;
-        int i_2 = 0;
-        while (i_2 < _runeLen(alphas)) {
-            String ch_1 = _substr(alphas, i_2, i_2 + 1);
-            if (((Boolean)(counts.single.containsKey(ch_1)))) {
-                double prob = (((double)(counts.single).getOrDefault(ch_1, 0))) / (((Number)(total1)).doubleValue());
-                h1 = h1 + prob * log2(prob);
+        double h1_1 = 0.0;
+        long i_5 = 0L;
+        while (i_5 < _runeLen(alphas_1)) {
+            String ch_3 = _substr(alphas_1, (int)(i_5), (int)(i_5 + 1));
+            if (counts.single.containsKey(ch_3)) {
+                double prob_1 = (((double)(counts.single).getOrDefault(ch_3, 0L))) / (((Number)(total1_1)).doubleValue());
+                h1_1 = h1_1 + prob_1 * log2(prob_1);
             }
-            i_2 = i_2 + 1;
+            i_5 = i_5 + 1;
         }
-        double first_entropy = -h1;
-        System.out.println(_p(round_to_int(first_entropy)) + ".0");
-        int total2 = 0;
-        for (String seq : counts.double.keySet()) {
-            total2 = total2 + (int)(((int)(counts.double).getOrDefault(seq, 0)));
+        double first_entropy_1 = -h1_1;
+        System.out.println(_p(round_to_int(first_entropy_1)) + ".0");
+        long total2_1 = 0L;
+        for (String seq : counts.double_.keySet()) {
+            total2_1 = total2_1 + (long)(((long)(counts.double_).getOrDefault(seq, 0L)));
         }
-        double h2 = 0.0;
-        int a0 = 0;
-        while (a0 < _runeLen(alphas)) {
-            String ch0 = _substr(alphas, a0, a0 + 1);
-            int a1 = 0;
-            while (a1 < _runeLen(alphas)) {
-                String ch1 = _substr(alphas, a1, a1 + 1);
-                String seq_1 = ch0 + ch1;
-                if (((Boolean)(counts.double.containsKey(seq_1)))) {
-                    double prob_1 = (((double)(counts.double).getOrDefault(seq_1, 0))) / (((Number)(total2)).doubleValue());
-                    h2 = h2 + prob_1 * log2(prob_1);
+        double h2_1 = 0.0;
+        long a0_1 = 0L;
+        while (a0_1 < _runeLen(alphas_1)) {
+            String ch0_1 = _substr(alphas_1, (int)(a0_1), (int)(a0_1 + 1));
+            long a1_1 = 0L;
+            while (a1_1 < _runeLen(alphas_1)) {
+                String ch1_1 = _substr(alphas_1, (int)(a1_1), (int)(a1_1 + 1));
+                String seq_3 = ch0_1 + ch1_1;
+                if (counts.double_.containsKey(seq_3)) {
+                    double prob_3 = (((double)(counts.double_).getOrDefault(seq_3, 0L))) / (((Number)(total2_1)).doubleValue());
+                    h2_1 = h2_1 + prob_3 * log2(prob_3);
                 }
-                a1 = a1 + 1;
+                a1_1 = a1_1 + 1;
             }
-            a0 = a0 + 1;
+            a0_1 = a0_1 + 1;
         }
-        double second_entropy = -h2;
-        System.out.println(_p(round_to_int(second_entropy)) + ".0");
-        double diff = second_entropy - first_entropy;
-        System.out.println(_p(round_to_int(diff)) + ".0");
+        double second_entropy_1 = -h2_1;
+        System.out.println(_p(round_to_int(second_entropy_1)) + ".0");
+        double diff_1 = second_entropy_1 - first_entropy_1;
+        System.out.println(_p(round_to_int(diff_1)) + ".0");
     }
     public static void main(String[] args) {
         {
@@ -171,6 +171,10 @@ double_.put(seq, 1);
     }
 
     static String _substr(String s, int i, int j) {
+        int len = _runeLen(s);
+        if (i < 0) i = 0;
+        if (j > len) j = len;
+        if (i > j) i = j;
         int start = s.offsetByCodePoints(0, i);
         int end = s.offsetByCodePoints(0, j);
         return s.substring(start, end);
@@ -188,6 +192,11 @@ double_.put(seq, 1);
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }
