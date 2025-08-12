@@ -1382,7 +1382,20 @@ func (ie *IfExpr) emit(w io.Writer) {
 
 func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
 func (i *IntLit) emit(w io.Writer)    { fmt.Fprintf(w, "%d", i.Value) }
-func (f *FloatLit) emit(w io.Writer)  { fmt.Fprintf(w, "%g", f.Value) }
+
+// Emit float literals with an explicit decimal point when the formatted
+// representation would otherwise look like an integer. Lua treats bare
+// numerals as integers when possible, which can lead to unintended integer
+// arithmetic (and overflow) for constants meant to be floating point values.
+// Using FormatFloat ensures numbers are printed in a consistent form and the
+// trailing ".0" keeps Lua in floating-point mode.
+func (f *FloatLit) emit(w io.Writer) {
+	s := strconv.FormatFloat(f.Value, 'g', -1, 64)
+	if !strings.ContainsAny(s, ".eE") {
+		s += ".0"
+	}
+	io.WriteString(w, s)
+}
 func (b *BoolLit) emit(w io.Writer) {
 	if b.Value {
 		io.WriteString(w, "true")
