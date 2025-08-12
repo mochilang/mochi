@@ -3234,7 +3234,9 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 			return &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: pairs}}}, nil
 		}
 		if _, ok := currentEnv.GetFunc(string(sym)); ok {
-			return &List{Elems: append([]Node{Symbol(string(sym))}, args...)}, nil
+			if string(sym) != "ln" && string(sym) != "exp" {
+				return &List{Elems: append([]Node{Symbol(string(sym))}, args...)}, nil
+			}
 		}
 		switch sym {
 		case "testpkg.ECDSAExample":
@@ -3350,6 +3352,21 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 				return nil, fmt.Errorf("float expects 1 arg")
 			}
 			return &List{Elems: []Node{Symbol("exact->inexact"), args[0]}}, nil
+		case "to_float":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("to_float expects 1 arg")
+			}
+			return &List{Elems: []Node{Symbol("exact->inexact"), args[0]}}, nil
+		case "ln":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("ln expects 1 arg")
+			}
+			return &List{Elems: []Node{Symbol("log"), args[0]}}, nil
+		case "exp":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("exp expects 1 arg")
+			}
+			return &List{Elems: []Node{Symbol("exp"), args[0]}}, nil
 		case "str":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("str expects 1 arg")
