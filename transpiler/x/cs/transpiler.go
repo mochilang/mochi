@@ -87,6 +87,7 @@ var usesJson bool
 var usesNow bool
 var usesSHA256 bool
 var usesInput bool
+var usesReadFile bool
 var usesMem bool
 var usesBigInt bool
 var usesBigRat bool
@@ -2567,6 +2568,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesJson = false
 	usesNow = false
 	usesInput = false
+	usesReadFile = false
 	usesMem = false
 	usesFmt = false
 	usesRepeat = false
@@ -2759,13 +2761,14 @@ func compileUnary(u *parser.Unary) (Expr, error) {
 		return nil, err
 	}
 	for i := len(u.Ops) - 1; i >= 0; i-- {
-		if u.Ops[i] == "!" {
+		op := u.Ops[i]
+		if op == "!" || op == "not" {
 			if typeOfExpr(expr) != "bool" {
 				expr = &CallExpr{Func: "Convert.ToBoolean", Args: []Expr{expr}}
 			}
 			expr = &NotExpr{Val: expr}
 		} else {
-			expr = &UnaryExpr{Op: u.Ops[i], Val: expr}
+			expr = &UnaryExpr{Op: op, Val: expr}
 		}
 	}
 	return expr, nil
@@ -4228,6 +4231,21 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				usesInput = true
 				return &RawExpr{Code: "_input()", Type: "string"}, nil
 			}
+		case "not":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("not expects 1 arg")
+			}
+			expr := args[0]
+			if typeOfExpr(expr) != "bool" {
+				expr = &CallExpr{Func: "Convert.ToBoolean", Args: []Expr{expr}}
+			}
+			return &NotExpr{Val: expr}, nil
+		case "read_file":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("read_file expects 1 arg")
+			}
+			usesReadFile = true
+			return &CallExpr{Func: "File.ReadAllText", Args: args}, nil
 		case "min":
 			if len(args) == 1 {
 				usesLinq = true
@@ -4996,7 +5014,7 @@ func Emit(prog *Program) []byte {
 	if usesSHA256 {
 		buf.WriteString("using System.Security.Cryptography;\n")
 	}
-	if usesInput {
+	if usesInput || usesReadFile {
 		buf.WriteString("using System.IO;\n")
 	}
 	if usesFmt {

@@ -96,7 +96,20 @@ func TestCSTranspiler_Algorithms_Golden(t *testing.T) {
 			if err := os.WriteFile(file, code, 0644); err != nil {
 				t.Fatalf("write temp code: %v", err)
 			}
+			// copy auxiliary text files if present
+			srcDir := filepath.Dir(src)
+			if entries, err := os.ReadDir(srcDir); err == nil {
+				for _, ent := range entries {
+					if ent.IsDir() || !strings.HasSuffix(ent.Name(), ".txt") {
+						continue
+					}
+					if data, err := os.ReadFile(filepath.Join(srcDir, ent.Name())); err == nil {
+						_ = os.WriteFile(filepath.Join(tmp, ent.Name()), data, 0o644)
+					}
+				}
+			}
 			cmd := exec.Command("dotnet", "run", "--project", proj)
+			cmd.Dir = tmp
 			cmd.Env = append(os.Environ(), "DOTNET_NOLOGO=1", "DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1", "MOCHI_BENCHMARK=1")
 			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 				cmd.Stdin = bytes.NewReader(data)
