@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 751/1077
-Last updated: 2025-08-12 12:29 +0700
+Completed programs: 760/1077
+Last updated: 2025-08-12 13:41 +0700
 
 Checklist:
 
@@ -696,15 +696,15 @@ Checklist:
 | 687 | maths/test_factorial |   |  |  |
 | 688 | maths/test_prime_check |   |  |  |
 | 689 | maths/three_sum |   |  |  |
-| 690 | maths/trapezoidal_rule |   |  |  |
-| 691 | maths/triplet_sum |   |  |  |
-| 692 | maths/twin_prime |   |  |  |
-| 693 | maths/two_pointer |   |  |  |
-| 694 | maths/two_sum |   |  |  |
-| 695 | maths/volume |   |  |  |
-| 696 | maths/zellers_congruence |   |  |  |
-| 697 | matrix/binary_search_matrix |   |  |  |
-| 698 | matrix/count_islands_in_matrix |   |  |  |
+| 690 | maths/trapezoidal_rule | ✓ | 122.0µs | 776B |
+| 691 | maths/triplet_sum | ✓ | 213.0µs | 23.73KB |
+| 692 | maths/twin_prime | ✓ | 98.0µs | 224B |
+| 693 | maths/two_pointer | ✓ | 110.0µs | 2.86KB |
+| 694 | maths/two_sum | ✓ | 100.0µs | 592B |
+| 695 | maths/volume | ✓ | 336.0µs | 11.11KB |
+| 696 | maths/zellers_congruence | ✓ | 118.0µs | 4.16KB |
+| 697 | matrix/binary_search_matrix | ✓ | 103.0µs | 2.70KB |
+| 698 | matrix/count_islands_in_matrix | ✓ | 248.0µs | 26.60KB |
 | 699 | matrix/count_negative_numbers_in_sorted_matrix |   |  |  |
 | 700 | matrix/count_paths | ✓ | 315.0µs | 31.94KB |
 | 701 | matrix/cramers_rule_2x2 | ✓ | 144.0µs | 1.65KB |
