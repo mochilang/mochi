@@ -8,11 +8,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"math"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -235,11 +235,12 @@ type FloatLit float64
 
 func (f FloatLit) Emit(w io.Writer) {
 	v := float64(f)
-	if math.Trunc(v) == v {
-		fmt.Fprintf(w, "%.1f", v)
-	} else {
-		fmt.Fprintf(w, "%g", v)
+	s := strconv.FormatFloat(v, 'g', -1, 64)
+	if !strings.ContainsAny(s, ".e") {
+		// ensure a decimal point so the literal is treated as inexact
+		s += ".0"
 	}
+	io.WriteString(w, s)
 }
 
 type BoolLit bool
