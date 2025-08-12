@@ -1,7 +1,190 @@
-## Progress (2025-08-09 10:41 +0700)
-- ocaml: refresh electric power bench (9e732500e1)
+## Progress (2025-08-12 13:56 +0700)
+- ocaml: handle negative list indices (1a86a5d0b1)
 
 - VM valid programs compiled: 102/105
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: handle negative list indices (1a86a5d0b1)
+
+
+- ocaml: refresh electric power bench (9e732500e1)
+
 
 - ocaml: refresh electric power bench (9e732500e1)
 
