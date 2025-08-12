@@ -1,5 +1,1 @@
-Execution error (IndexOutOfBoundsException) at main/generate-final-scores (scoring_algorithm.clj:86).
-null
-
-Full report at:
-/tmp/clojure-3521543246499527799.edn
+[[20.0 60.0 2012.0 2.0] [23.0 90.0 2015.0 1.0] [22.0 50.0 2011.0 1.3333333333333335]]
