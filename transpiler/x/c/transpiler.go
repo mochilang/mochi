@@ -1578,16 +1578,18 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 				declAliases[a.Name] = false
 			}
 			base := varBaseType(a.Name)
-			if t := inferExprType(currentEnv, call.Args[1]); t != "" {
-				base = t
-			} else if vr, ok := call.Args[1].(*VarRef); ok {
-				if vt, ok2 := varTypes[vr.Name]; ok2 && vt != "" {
-					base = vt
-				} else if ds, ok2 := declStmts[vr.Name]; ok2 && ds.Type != "" {
-					base = ds.Type
-				} else if currentEnv != nil {
-					if tt, err := currentEnv.GetVar(vr.Name); err == nil {
-						base = cTypeFromMochiType(tt)
+			if base == "" {
+				if t := inferExprType(currentEnv, call.Args[1]); t != "" {
+					base = t
+				} else if vr, ok := call.Args[1].(*VarRef); ok {
+					if vt, ok2 := varTypes[vr.Name]; ok2 && vt != "" {
+						base = vt
+					} else if ds, ok2 := declStmts[vr.Name]; ok2 && ds.Type != "" {
+						base = ds.Type
+					} else if currentEnv != nil {
+						if tt, err := currentEnv.GetVar(vr.Name); err == nil {
+							base = cTypeFromMochiType(tt)
+						}
 					}
 				}
 			}
@@ -2585,6 +2587,9 @@ func (v *VarRef) emitExpr(w io.Writer) {
 		}
 	}
 	name := aliasName(v.Name)
+	if newName, ok := funcAliases[name]; ok {
+		name = newName
+	}
 	switch name {
 	case "math.pi":
 		io.WriteString(w, "3.141592653589793")
@@ -6017,6 +6022,16 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 					} else {
 						needListAppendInt = true
 					}
+				case "double":
+					if strings.HasSuffix(elemT, "[]") {
+						needListAppendPtr = true
+						varTypes[s.Assign.Name] = "double[][]"
+						if ds, ok := declStmts[s.Assign.Name]; ok {
+							ds.Type = "double[][]"
+						}
+					} else {
+						needListAppendDouble = true
+					}
 				case "const char*":
 					if strings.HasSuffix(elemT, "[]") {
 						needListAppendPtr = true
@@ -8880,6 +8895,11 @@ func inferExprType(env *types.Env, e Expr) string {
 		default:
 			if t, ok := funcReturnTypes[v.Func]; ok {
 				return t
+			}
+			if t, ok := varTypes[v.Func]; ok {
+				if i := strings.Index(t, "(*"); i >= 0 {
+					return strings.TrimSpace(t[:i])
+				}
 			}
 			if fn, ok := env.GetFunc(v.Func); ok && fn.Return != nil {
 				if fn.Return.Simple != nil {

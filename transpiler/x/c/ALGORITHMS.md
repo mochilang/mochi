@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (312/1077) - Last updated 2025-08-12 07:47 +0700:
+Checklist of programs that currently transpile and run (312/1077) - Last updated 2025-08-12 08:11 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -554,13 +554,13 @@ Checklist of programs that currently transpile and run (312/1077) - Last updated
 | 547 | maths/check_polygon | ✓ | 315us | 1.6 MB |
 | 548 | maths/chinese_remainder_theorem | ✓ | 285us | 1.5 MB |
 | 549 | maths/chudnovsky_algorithm | ✓ | 432us | 1.7 MB |
-| 550 | maths/collatz_sequence | ✓ | 389us | 1.4 MB |
-| 551 | maths/combinations | ✓ | 754us | 1.6 MB |
-| 552 | maths/continued_fraction | ✓ | 253us | 1.5 MB |
-| 553 | maths/decimal_isolate | ✓ | 337us | 1.6 MB |
-| 554 | maths/decimal_to_fraction | ✓ | 472us | 1.7 MB |
-| 555 | maths/dodecahedron | ✓ | 404us | 1.7 MB |
-| 556 | maths/double_factorial | ✓ | 296us | 1.6 MB |
+| 550 | maths/collatz_sequence | ✓ | 785us | 1.4 MB |
+| 551 | maths/combinations | ✓ | 428us | 1.4 MB |
+| 552 | maths/continued_fraction | ✓ | 591us | 1.5 MB |
+| 553 | maths/decimal_isolate | ✓ | 281us | 1.6 MB |
+| 554 | maths/decimal_to_fraction | ✓ | 907us | 1.5 MB |
+| 555 | maths/dodecahedron | ✓ | 699us | 1.7 MB |
+| 556 | maths/double_factorial | ✓ | 451us | 1.6 MB |
 | 557 | maths/dual_number_automatic_differentiation |  |  |  |
 | 558 | maths/entropy |  |  |  |
 | 559 | maths/euclidean_distance | ✓ | 534us | 1.6 MB |
