@@ -1,0 +1,6 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/rb/web_programming/get_top_billionaires.rb:233:in `get_forbes_real_time_billionaires': undefined method `each' for nil:NilClass (NoMethodError)
+
+    __tmp1.each do |person|
+          ^^^^^
+	from /workspace/mochi/tests/algorithms/transpiler/rb/web_programming/get_top_billionaires.rb:259:in `<main>'
