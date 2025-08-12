@@ -1,6 +1,6 @@
-/tmp/TestCSTranspiler_Algorithms_Golden001_other_bankers_algorithm2261598157/001/Program.cs(12,21): warning CS0649: Field 'State.max' is never assigned to, and will always have its default value null [/tmp/TestCSTranspiler_Algorithms_Golden001_other_bankers_algorithm2261598157/001/app.csproj]
-/tmp/TestCSTranspiler_Algorithms_Golden001_other_bankers_algorithm2261598157/001/Program.cs(10,19): warning CS0649: Field 'State.claim' is never assigned to, and will always have its default value null [/tmp/TestCSTranspiler_Algorithms_Golden001_other_bankers_algorithm2261598157/001/app.csproj]
-/tmp/TestCSTranspiler_Algorithms_Golden001_other_bankers_algorithm2261598157/001/Program.cs(11,21): warning CS0649: Field 'State.alloc' is never assigned to, and will always have its default value null [/tmp/TestCSTranspiler_Algorithms_Golden001_other_bankers_algorithm2261598157/001/app.csproj]
+/tmp/TestCSTranspiler_Algorithms_Golden001_other_bankers_algorithm3148163288/001/Program.cs(12,21): warning CS0649: Field 'State.max' is never assigned to, and will always have its default value null [/tmp/TestCSTranspiler_Algorithms_Golden001_other_bankers_algorithm3148163288/001/app.csproj]
+/tmp/TestCSTranspiler_Algorithms_Golden001_other_bankers_algorithm3148163288/001/Program.cs(10,19): warning CS0649: Field 'State.claim' is never assigned to, and will always have its default value null [/tmp/TestCSTranspiler_Algorithms_Golden001_other_bankers_algorithm3148163288/001/app.csproj]
+/tmp/TestCSTranspiler_Algorithms_Golden001_other_bankers_algorithm3148163288/001/Program.cs(11,21): warning CS0649: Field 'State.alloc' is never assigned to, and will always have its default value null [/tmp/TestCSTranspiler_Algorithms_Golden001_other_bankers_algorithm3148163288/001/app.csproj]
          Allocated Resource Table
 P1       2        0        1        1
 
