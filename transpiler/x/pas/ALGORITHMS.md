@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-12 16:15 GMT+7
+Last updated: 2025-08-12 16:26 GMT+7
 
-## Algorithms Golden Test Checklist (402/1077)
+## Algorithms Golden Test Checklist (403/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -734,7 +734,7 @@ Last updated: 2025-08-12 16:15 GMT+7
 | 725 | neural_network/activation_functions/mish | ✓ | 0ns | 0B |
 | 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 0ns | 128B |
 | 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 0ns | 192B |
-| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | error | 0ns | 0B |
+| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 0ns | 0B |
 | 729 | neural_network/activation_functions/softplus | ✓ | 0ns | 0B |
 | 730 | neural_network/activation_functions/squareplus | ✓ | 0ns | 0B |
 | 731 | neural_network/activation_functions/swish | ✓ | 0ns | 0B |
