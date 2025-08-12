@@ -1155,7 +1155,14 @@ func (af *AnonFun) emit(w io.Writer) {
 		io.WriteString(w, sanitizeIdent(p))
 	}
 	io.WriteString(w, " ->")
-	if len(af.Body) == 1 {
+	needsCatch := false
+	for _, st := range af.Body {
+		if _, ok := st.(*ReturnStmt); ok {
+			needsCatch = true
+			break
+		}
+	}
+	if !needsCatch && len(af.Body) == 1 {
 		if es, ok := af.Body[0].(*ExprStmt); ok {
 			io.WriteString(w, " ")
 			es.Expr.emit(w)
@@ -1164,9 +1171,20 @@ func (af *AnonFun) emit(w io.Writer) {
 		}
 	}
 	io.WriteString(w, "\n")
-	for _, st := range af.Body {
-		st.emit(w, 1)
-		io.WriteString(w, "\n")
+	if needsCatch {
+		io.WriteString(w, "  try do\n")
+		for _, st := range af.Body {
+			st.emit(w, 2)
+			io.WriteString(w, "\n")
+		}
+		io.WriteString(w, "  catch\n")
+		io.WriteString(w, "    {:return, val} -> val\n")
+		io.WriteString(w, "  end\n")
+	} else {
+		for _, st := range af.Body {
+			st.emit(w, 1)
+			io.WriteString(w, "\n")
+		}
 	}
 	io.WriteString(w, "end")
 }

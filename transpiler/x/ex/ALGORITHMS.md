@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-11 17:39 GMT+7
+Last updated: 2025-08-12 07:58 GMT+7
 
-## Algorithms Golden Test Checklist (748/1077)
+## Algorithms Golden Test Checklist (749/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -563,7 +563,7 @@ Last updated: 2025-08-11 17:39 GMT+7
 | 554 | maths/decimal_to_fraction | ✓ | 3.04ms | 12.5 MB |
 | 555 | maths/dodecahedron | ✓ | 8.81ms | 17.3 MB |
 | 556 | maths/double_factorial | ✓ | 9.66ms | 12.5 MB |
-| 557 | maths/dual_number_automatic_differentiation | error |  |  |
+| 557 | maths/dual_number_automatic_differentiation | ✓ |  |  |
 | 558 | maths/entropy | ✓ | 86.67ms | 163.6 MB |
 | 559 | maths/euclidean_distance | ✓ | 8.23ms | 32.8 MB |
 | 560 | maths/euler_method | ✓ | 10.10ms | 77.9 MB |
