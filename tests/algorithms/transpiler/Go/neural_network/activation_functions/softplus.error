@@ -1,0 +1,15 @@
+exit status 1
+panic: ln domain error
+
+goroutine 1 [running]:
+main.ln(0xc0000100f0?)
+	/workspace/mochi/tests/algorithms/transpiler/Go/neural_network/activation_functions/softplus.go:58 +0x8a
+main.softplus({0xc0000ca790, 0x4, 0x0?})
+	/workspace/mochi/tests/algorithms/transpiler/Go/neural_network/activation_functions/softplus.go:103 +0xcf
+main.mochiMain()
+	/workspace/mochi/tests/algorithms/transpiler/Go/neural_network/activation_functions/softplus.go:137 +0x125
+main.main.func1(...)
+	/workspace/mochi/tests/algorithms/transpiler/Go/neural_network/activation_functions/softplus.go:182
+main.main()
+	/workspace/mochi/tests/algorithms/transpiler/Go/neural_network/activation_functions/softplus.go:189 +0x92
+exit status 2
