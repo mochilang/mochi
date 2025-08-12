@@ -2,70 +2,42 @@ public class Main {
 
     static double exp(double x) {
         double term = 1.0;
-        double sum = 1.0;
-        int n = 1;
-        while (n < 20) {
-            term = term * x / ((Number)(to_float(n))).doubleValue();
-            sum = sum + term;
-            n = n + 1;
+        double sum_1 = 1.0;
+        long n_1 = 1L;
+        while ((long)(n_1) < (long)(20)) {
+            term = term * (double)(x) / ((Number)(n_1)).doubleValue();
+            sum_1 = sum_1 + term;
+            n_1 = (long)((long)(n_1) + (long)(1));
         }
-        return sum;
+        return sum_1;
     }
 
     static double[] soboleva_modified_hyperbolic_tangent(double[] vector, double a_value, double b_value, double c_value, double d_value) {
         double[] result = ((double[])(new double[]{}));
-        int i = 0;
-        while (i < vector.length) {
-            double x = vector[i];
-            double numerator = exp(a_value * x) - exp(-b_value * x);
-            double denominator = exp(c_value * x) + exp(-d_value * x);
-            result = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(result), java.util.stream.DoubleStream.of(numerator / denominator)).toArray()));
-            i = i + 1;
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(vector.length)) {
+            double x_1 = (double)(vector[(int)((long)(i_1))]);
+            double numerator_1 = (double)(exp((double)(a_value) * (double)(x_1))) - (double)(exp((double)(-b_value) * (double)(x_1)));
+            double denominator_1 = (double)(exp((double)(c_value) * (double)(x_1))) + (double)(exp((double)(-d_value) * (double)(x_1)));
+            result = ((double[])(appendDouble(result, numerator_1 / denominator_1)));
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
         return result;
     }
 
     static void main() {
         double[] vector = ((double[])(new double[]{5.4, -2.4, 6.3, -5.23, 3.27, 0.56}));
-        double[] res = ((double[])(soboleva_modified_hyperbolic_tangent(((double[])(vector)), 0.2, 0.4, 0.6, 0.8)));
-        json(res);
+        double[] res_1 = ((double[])(soboleva_modified_hyperbolic_tangent(((double[])(vector)), 0.2, 0.4, 0.6, 0.8)));
+        json(res_1);
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
+        main();
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 
     static void json(Object v) {
