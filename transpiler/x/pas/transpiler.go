@@ -175,49 +175,50 @@ func pasType(t string) string {
 // Program is a minimal Pascal AST consisting of a sequence of statements
 // plus optional variable declarations.
 type Program struct {
-	Funs               []FunDecl
-	Vars               []VarDecl
-	Records            []RecordDef
-	ArrayAliases       map[string]string
-	LateAliases        map[string]string
-	FuncAliases        map[string]string
-	FuncAliasDefs      map[string]string
-	FuncAliasRet       map[string]string
-	UseFGL             bool
-	Stmts              []Stmt
-	UseSysUtils        bool
-	UseStrUtils        bool
-	UseVariants        bool
-	UseMath            bool
-	NeedAvg            bool
-	NeedMin            bool
-	NeedMax            bool
-	NeedMinReal        bool
-	NeedMaxReal        bool
-	NeedContains       bool
-	NeedShowList       bool
-	NeedShowList2      bool
-	NeedShowListInt64  bool
-	NeedShowMap        bool
-	NeedMapIntIntStr   bool
-	NeedMapStrIntStr   bool
-	NeedListStr        bool
-	NeedListStr2       bool
-	NeedListStrList    bool
-	NeedListStrReal    bool
-	NeedListStrVariant bool
-	NeedIndexOf        bool
-	UseLookupHost      bool
-	UseNow             bool
-	UseMem             bool
-	NeedBenchNow       bool
-	UseInput           bool
-	UseBigRat          bool
-	UseSHA256          bool
-	NeedPadStart       bool
-	NeedJSON           bool
-	Maps               []MapLitDef
-	VarTypes           map[string]string
+	Funs                []FunDecl
+	Vars                []VarDecl
+	Records             []RecordDef
+	ArrayAliases        map[string]string
+	LateAliases         map[string]string
+	FuncAliases         map[string]string
+	FuncAliasDefs       map[string]string
+	FuncAliasRet        map[string]string
+	UseFGL              bool
+	Stmts               []Stmt
+	UseSysUtils         bool
+	UseStrUtils         bool
+	UseVariants         bool
+	UseMath             bool
+	NeedAvg             bool
+	NeedMin             bool
+	NeedMax             bool
+	NeedMinReal         bool
+	NeedMaxReal         bool
+	NeedContains        bool
+	NeedShowList        bool
+	NeedShowList2       bool
+	NeedShowListInt64   bool
+	NeedShowMap         bool
+	NeedShowMapIntArray bool
+	NeedMapIntIntStr    bool
+	NeedMapStrIntStr    bool
+	NeedListStr         bool
+	NeedListStr2        bool
+	NeedListStrList     bool
+	NeedListStrReal     bool
+	NeedListStrVariant  bool
+	NeedIndexOf         bool
+	UseLookupHost       bool
+	UseNow              bool
+	UseMem              bool
+	NeedBenchNow        bool
+	UseInput            bool
+	UseBigRat           bool
+	UseSHA256           bool
+	NeedPadStart        bool
+	NeedJSON            bool
+	Maps                []MapLitDef
+	VarTypes            map[string]string
 }
 
 func collectVarNames(e Expr, set map[string]struct{}) {
@@ -1231,10 +1232,18 @@ func (p *PrintStmt) emit(w io.Writer) {
 		return
 	}
 	if len(p.Exprs) == 1 && len(p.Types) == 1 && strings.HasPrefix(p.Types[0], "specialize TFPGMap") {
-		currProg.NeedShowMap = true
-		io.WriteString(w, "show_map(")
-		p.Exprs[0].emit(w)
-		io.WriteString(w, ");")
+		t := p.Types[0]
+		if t == "specialize TFPGMap<integer, IntArray>" {
+			currProg.NeedShowMapIntArray = true
+			io.WriteString(w, "show_map_int_array(")
+			p.Exprs[0].emit(w)
+			io.WriteString(w, ");")
+		} else {
+			currProg.NeedShowMap = true
+			io.WriteString(w, "show_map(")
+			p.Exprs[0].emit(w)
+			io.WriteString(w, ");")
+		}
 		return
 	}
 
@@ -1623,6 +1632,9 @@ end;
 	if p.NeedShowMap {
 		buf.WriteString("procedure show_map(m: specialize TFPGMap<string, Variant>);\nvar i: integer;\nbegin\n  write('map[');\n  for i := 0 to m.Count - 1 do begin\n    write(m.Keys[i]);\n    write(':');\n    write(m.Data[i]);\n    if i < m.Count - 1 then write(' ');\n  end;\n  writeln(']');\nend;\n")
 	}
+	if p.NeedShowMapIntArray {
+		buf.WriteString("procedure show_map_int_array(m: specialize TFPGMap<integer, IntArray>);\nvar i,j: integer;\nbegin\n  write('map[');\n  for i := 0 to m.Count - 1 do begin\n    write(m.Keys[i]);\n    write(':');\n    write('[');\n    for j := 0 to Length(m.Data[i]) - 1 do begin\n      write(m.Data[i][j]);\n      if j < Length(m.Data[i]) - 1 then write(' ');\n    end;\n    write(']');\n    if i < m.Count - 1 then write(' ');\n  end;\n  writeln(']');\nend;\n")
+	}
 	if len(p.Vars) > 0 {
 		buf.WriteString("var\n")
 		for _, v := range p.Vars {
@@ -1787,7 +1799,12 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 								pr.NeedShowList = true
 							}
 						} else if strings.HasPrefix(t, "specialize TFPGMap") {
-							pr.NeedShowMap = true
+							tt := strings.ToLower(t)
+							if strings.Contains(tt, "tfpgmap<integer") && (strings.Contains(tt, "intarray") || strings.Contains(tt, "array of integer")) {
+								pr.NeedShowMapIntArray = true
+							} else {
+								pr.NeedShowMap = true
+							}
 						}
 					}
 					pr.Stmts = append(pr.Stmts, &PrintStmt{Exprs: parts, Types: typesList, NeedSysUtils: needSys})
@@ -2763,7 +2780,12 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 							needSys = true
 						}
 					} else if strings.HasPrefix(t, "specialize TFPGMap") {
-						currProg.NeedShowMap = true
+						tt := strings.ToLower(t)
+						if strings.Contains(tt, "tfpgmap<integer") && (strings.Contains(tt, "intarray") || strings.Contains(tt, "array of integer")) {
+							currProg.NeedShowMapIntArray = true
+						} else {
+							currProg.NeedShowMap = true
+						}
 					}
 				}
 				out = append(out, &PrintStmt{Exprs: parts, Types: typesList, NeedSysUtils: needSys})
