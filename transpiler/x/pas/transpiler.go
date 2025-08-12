@@ -1496,8 +1496,8 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("function _input(): string;\nvar s: string;\nbegin\n  if EOF(Input) then s := '' else ReadLn(s);\n  _input := s;\nend;\n")
 	}
 	buf.WriteString("procedure panic(msg: string);\nbegin\n  writeln(msg);\n  halt(1);\nend;\n")
-	buf.WriteString("procedure error(msg: string);\nbegin\n  panic(msg);\nend;\n")
-	buf.WriteString("function to_float(x: integer): real;\nbegin\n  to_float := x;\nend;\n")
+        buf.WriteString("procedure error(msg: string);\nbegin\n  panic(msg);\nend;\n")
+        buf.WriteString("function _to_float(x: integer): real;\nbegin\n  _to_float := x;\nend;\n")
 	buf.WriteString("procedure json(xs: array of real);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(', ');\n  end;\n  writeln(']');\nend;\n")
 	if p.NeedJSON {
 		buf.WriteString("procedure json_intarray(xs: IntArray);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(',');\n  end;\n  write(']');\nend;\n")
@@ -1506,9 +1506,9 @@ func (p *Program) Emit() []byte {
 		}
 		buf.WriteString("procedure json(xs: IntArrayArray);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    if i > 0 then write(',');\n    json_intarray(xs[i]);\n  end;\n  writeln(']');\nend;\n")
 	}
-	if p.NeedToFloat {
-		buf.WriteString("function to_float(x: real): real; begin to_float := x; end;\n")
-	}
+        if p.NeedToFloat {
+                buf.WriteString("function _to_float(x: real): real; begin _to_float := x; end;\n")
+        }
 	if p.UseSHA256 {
 		buf.WriteString("function _sha256(bs: IntArray): IntArray;\nvar tmp, outFile, hex: string; f: file; t: Text; i: integer; res: IntArray;\nbegin\n  tmp := GetTempFileName('', 'mochi_sha256');\n  Assign(f, tmp);\n  Rewrite(f,1);\n  for i := 0 to Length(bs)-1 do\n    BlockWrite(f, bs[i],1);\n  Close(f);\n  outFile := tmp + '.hash';\n  fpSystem(PChar(AnsiString('sha256sum ' + tmp + ' > ' + outFile)));\n  Assign(t, outFile);\n  Reset(t);\n  ReadLn(t, hex);\n  Close(t);\n  DeleteFile(tmp);\n  DeleteFile(outFile);\n  hex := Trim(hex);\n  SetLength(res, 32);\n  for i := 0 to 31 do\n    res[i] := StrToInt('$'+Copy(hex, i*2+1,2));\n  _sha256 := res;\nend;\n")
 		buf.WriteString("function _sha256_str(s: string): IntArray;\nvar i: integer; bs: IntArray;\nbegin\n  SetLength(bs, Length(s));\n  for i := 1 to Length(s) do\n    bs[i-1] := Ord(s[i]);\n  _sha256_str := _sha256(bs);\nend;\n")
@@ -2258,20 +2258,22 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					funcReturns[fn.Name] = rt
 				}
 				paramNames := map[string]string{}
-				for _, p := range st.Fun.Params {
-					typ := "int64"
-					if p.Type != nil {
-						typ = typeFromRef(p.Type)
-					}
-					if strings.HasPrefix(typ, "array of ") {
-						elem := strings.TrimPrefix(typ, "array of ")
-						typ = currProg.addArrayAlias(elem)
-					}
-					name := sanitize(p.Name)
-					paramNames[p.Name] = name
-					local[name] = typ
-					currentScope()[p.Name] = name
-				}
+                                for _, p := range st.Fun.Params {
+                                        typ := "int64"
+                                        if p.Type != nil {
+                                                typ = typeFromRef(p.Type)
+                                        }
+                                        if strings.HasPrefix(typ, "array of ") {
+                                                elem := strings.TrimPrefix(typ, "array of ")
+                                                typ = currProg.addArrayAlias(elem)
+                                        }
+                                        prev := currentFunc
+                                        currentFunc = ""
+                                        name := declareName(p.Name)
+                                        currentFunc = prev
+                                        paramNames[p.Name] = name
+                                        local[name] = typ
+                                }
 				fnBody, err := convertBody(env, st.Fun.Body, local)
 				if err != nil {
 					return nil, err
@@ -4586,10 +4588,10 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 						_ = currProg.addArrayAlias(arr)
 						expr = &CallExpr{Name: "json_intarray", Args: args}
 					}
-				} else if name == "to_float" && len(args) == 1 {
-					currProg.NeedToFloat = true
-					expr = &CallExpr{Name: "to_float", Args: args}
-				} else if name == "indexOf" && len(args) == 2 {
+                                } else if name == "to_float" && len(args) == 1 {
+                                        currProg.NeedToFloat = true
+                                        expr = &CallExpr{Name: "_to_float", Args: args}
+                                } else if name == "indexOf" && len(args) == 2 {
 					currProg.NeedIndexOf = true
 					expr = &CallExpr{Name: name, Args: args}
 				} else if name == "parseIntStr" && len(args) == 1 {

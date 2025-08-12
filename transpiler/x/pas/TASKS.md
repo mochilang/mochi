@@ -1,3 +1,6 @@
+## Progress (2025-08-12 15:27 +0700)
+- php: support union patterns and map key strings (progress 88/105)
+
 ## Progress (2025-08-07 15:53 +0700)
 - pas: support function parameters (progress 88/105)
 
