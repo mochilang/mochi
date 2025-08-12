@@ -5601,7 +5601,15 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 						}
 					}
 				}
-				expr = &FieldExpr{Receiver: expr, Name: op.Field.Name}
+				if st, ok := findStructByField(env, op.Field.Name); ok {
+					if ft, ok2 := st.Fields[op.Field.Name]; ok2 {
+						expr = &FieldExpr{Receiver: expr, Name: op.Field.Name, Type: kotlinTypeFromType(ft)}
+					} else {
+						expr = &FieldExpr{Receiver: expr, Name: op.Field.Name}
+					}
+				} else {
+					expr = &FieldExpr{Receiver: expr, Name: op.Field.Name}
+				}
 			}
 		case op.Cast != nil:
 			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
@@ -5704,6 +5712,17 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 	switch {
 	case p.Call != nil:
+		if localFuncs[p.Call.Func] {
+			args := make([]Expr, len(p.Call.Args))
+			for i, a := range p.Call.Args {
+				ex, err := convertExpr(env, a)
+				if err != nil {
+					return nil, err
+				}
+				args[i] = ex
+			}
+			return &CallExpr{Func: p.Call.Func, Args: args}, nil
+		}
 		switch p.Call.Func {
 		case "count", "sum", "avg", "len", "str", "abs":
 			if len(p.Call.Args) != 1 {
