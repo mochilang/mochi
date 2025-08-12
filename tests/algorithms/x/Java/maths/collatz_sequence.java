@@ -1,64 +1,30 @@
 public class Main {
 
-    static int[] collatz_sequence(int n) {
+    static long[] collatz_sequence(long n) {
         if (n < 1) {
             throw new RuntimeException(String.valueOf("Sequence only defined for positive integers"));
         }
-        int[] seq = ((int[])(new int[]{n}));
-        int current = n;
-        while (current != 1) {
-            if (Math.floorMod(current, 2) == 0) {
-                current = current / 2;
+        long[] seq_1 = ((long[])(new long[]{n}));
+        long current_1 = n;
+        while (current_1 != 1) {
+            if (Math.floorMod(current_1, 2) == 0) {
+                current_1 = Math.floorDiv(current_1, 2);
             } else {
-                current = 3 * current + 1;
+                current_1 = 3 * current_1 + 1;
             }
-            seq = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(seq), java.util.stream.IntStream.of(current)).toArray()));
+            seq_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(seq_1), java.util.stream.LongStream.of(current_1)).toArray()));
         }
-        return seq;
+        return seq_1;
     }
 
     static void main() {
-        int n = 11;
-        int[] seq_1 = ((int[])(collatz_sequence(n)));
-        System.out.println(_p(seq_1));
-        System.out.println("Collatz sequence from " + _p(n) + " took " + _p(seq_1.length) + " steps.");
+        long n = 11;
+        long[] seq_3 = ((long[])(collatz_sequence(n)));
+        System.out.println(_p(seq_3));
+        System.out.println("Collatz sequence from " + _p(n) + " took " + _p(seq_3.length) + " steps.");
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 
     static String _p(Object v) {
@@ -73,6 +39,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }
