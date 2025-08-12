@@ -1,0 +1,29 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/get_ip_geolocation.cpp:83:215: warning: multi-character character constant [-Wmultichar]
+   83 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/get_ip_geolocation.cpp:83:251: warning: multi-character character constant [-Wmultichar]
+   83 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/get_ip_geolocation.cpp:136:43: error: ‘_fetch_std’ has not been declared
+  136 | static std::map<std::string, std::string> _fetch_std::map<std::string, std::string>(const std::string& url) {
+      |                                           ^~~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/get_ip_geolocation.cpp:136:58: error: expected initializer before ‘<’ token
+  136 | static std::map<std::string, std::string> _fetch_std::map<std::string, std::string>(const std::string& url) {
+      |                                                          ^
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/get_ip_geolocation.cpp: In function ‘std::string get_ip_geolocation(std::string)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/get_ip_geolocation.cpp:150:17: error: ‘_fetch_std’ has not been declared
+  150 |     auto data = _fetch_std::map<std::string, std::string>(url);
+      |                 ^~~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/get_ip_geolocation.cpp:150:44: error: expected primary-expression before ‘,’ token
+  150 |     auto data = _fetch_std::map<std::string, std::string>(url);
+      |                                            ^
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/get_ip_geolocation.cpp:152:54: error: invalid ‘static_cast’ from type ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to type ‘size_t’ {aka ‘long unsigned int’}
+  152 |         return (((((std::string("Location: ") + data[static_cast<size_t>(std::string("city"))]) + std::string(", ")) + data[static_cast<size_t>(std::string("region"))]) + std::string(", ")) + data[static_cast<size_t>(std::string("country"))]);
+      |                                                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/get_ip_geolocation.cpp:152:125: error: invalid ‘static_cast’ from type ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to type ‘size_t’ {aka ‘long unsigned int’}
+  152 |         return (((((std::string("Location: ") + data[static_cast<size_t>(std::string("city"))]) + std::string(", ")) + data[static_cast<size_t>(std::string("region"))]) + std::string(", ")) + data[static_cast<size_t>(std::string("country"))]);
+      |                                                                                                                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/get_ip_geolocation.cpp:152:198: error: invalid ‘static_cast’ from type ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to type ‘size_t’ {aka ‘long unsigned int’}
+  152 |         return (((((std::string("Location: ") + data[static_cast<size_t>(std::string("city"))]) + std::string(", ")) + data[static_cast<size_t>(std::string("region"))]) + std::string(", ")) + data[static_cast<size_t>(std::string("country"))]);
+      |                                                                                                                                                                                                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

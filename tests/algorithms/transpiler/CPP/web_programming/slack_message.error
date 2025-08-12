@@ -1,0 +1,116 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/slack_message.cpp:82:215: warning: multi-character character constant [-Wmultichar]
+   82 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/slack_message.cpp:82:251: warning: multi-character character constant [-Wmultichar]
+   82 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/slack_message.cpp:135:20: error: ‘_fetch_std’ has not been declared
+  135 | static std::string _fetch_std::string(const std::string& url) {
+      |                    ^~~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/slack_message.cpp: In function ‘std::string string(const std::string&)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/slack_message.cpp:137:61: error: no matching function for call to ‘std::__cxx11::basic_string<char>::basic_string(<brace-enclosed initializer list>)’
+  137 |         return std::string{1, 1, "delectus aut autem", false};
+      |                                                             ^
+In file included from /usr/include/c++/13/string:54,
+                 from /usr/include/c++/13/bits/locale_classes.h:40,
+                 from /usr/include/c++/13/bits/ios_base.h:41,
+                 from /usr/include/c++/13/ios:44,
+                 from /usr/include/c++/13/ostream:40,
+                 from /usr/include/c++/13/iostream:41,
+                 from /workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/slack_message.cpp:2:
+/usr/include/c++/13/bits/basic_string.h:795:9: note: candidate: ‘template<class _Tp, class> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const _Tp&, const _Alloc&) [with <template-parameter-2-2> = _Tp; _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+  795 |         basic_string(const _Tp& __t, const _Alloc& __a = _Alloc())
+      |         ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:795:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/slack_message.cpp:137:61: note:   candidate expects 2 arguments, 4 provided
+  137 |         return std::string{1, 1, "delectus aut autem", false};
+      |                                                             ^
+/usr/include/c++/13/bits/basic_string.h:783:9: note: candidate: ‘template<class _Tp, class> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const _Tp&, size_type, size_type, const _Alloc&) [with <template-parameter-2-2> = _Tp; _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+  783 |         basic_string(const _Tp& __t, size_type __pos, size_type __n,
+      |         ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:783:9: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/13/bits/move.h:37,
+                 from /usr/include/c++/13/bits/exception_ptr.h:41,
+                 from /usr/include/c++/13/exception:164,
+                 from /usr/include/c++/13/ios:41:
+/usr/include/c++/13/type_traits: In substitution of ‘template<bool _Cond, class _Tp> using std::enable_if_t = typename std::enable_if::type [with bool _Cond = false; _Tp = void]’:
+/usr/include/c++/13/bits/basic_string.h:781:9:   required from here
+/usr/include/c++/13/type_traits:2610:11: error: no type named ‘type’ in ‘struct std::enable_if<false, void>’
+ 2610 |     using enable_if_t = typename enable_if<_Cond, _Tp>::type;
+      |           ^~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:760:9: note: candidate: ‘template<class _InputIterator, class> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(_InputIterator, _InputIterator, const _Alloc&) [with <template-parameter-2-2> = _InputIterator; _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+  760 |         basic_string(_InputIterator __beg, _InputIterator __end,
+      |         ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:760:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/slack_message.cpp:137:61: note:   candidate expects 3 arguments, 4 provided
+  137 |         return std::string{1, 1, "delectus aut autem", false};
+      |                                                             ^
+/usr/include/c++/13/bits/basic_string.h:664:7: note: candidate: ‘template<class> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(size_type, _CharT, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+  664 |       basic_string(size_type __n, _CharT __c, const _Alloc& __a = _Alloc())
+      |       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:664:7: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/slack_message.cpp:137:61: note:   candidate expects 3 arguments, 4 provided
+  137 |         return std::string{1, 1, "delectus aut autem", false};
+      |                                                             ^
+/usr/include/c++/13/bits/basic_string.h:641:7: note: candidate: ‘template<class> constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const _CharT*, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+  641 |       basic_string(const _CharT* __s, const _Alloc& __a = _Alloc())
+      |       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:641:7: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/slack_message.cpp:137:61: note:   candidate expects 2 arguments, 4 provided
+  137 |         return std::string{1, 1, "delectus aut autem", false};
+      |                                                             ^
+/usr/include/c++/13/bits/basic_string.h:716:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+  716 |       basic_string(basic_string&& __str, const _Alloc& __a)
+      |       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:716:7: note:   candidate expects 2 arguments, 4 provided
+/usr/include/c++/13/bits/basic_string.h:711:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+  711 |       basic_string(const basic_string& __str, const _Alloc& __a)
+      |       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:711:7: note:   candidate expects 2 arguments, 4 provided
+/usr/include/c++/13/bits/basic_string.h:706:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(std::initializer_list<_Tp>, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+  706 |       basic_string(initializer_list<_CharT> __l, const _Alloc& __a = _Alloc())
+      |       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:706:7: note:   candidate expects 2 arguments, 4 provided
+/usr/include/c++/13/bits/basic_string.h:677:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+  677 |       basic_string(basic_string&& __str) noexcept
+      |       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:677:7: note:   candidate expects 1 argument, 4 provided
+/usr/include/c++/13/bits/basic_string.h:619:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const _CharT*, size_type, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>; size_type = long unsigned int]’
+  619 |       basic_string(const _CharT* __s, size_type __n,
+      |       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:619:7: note:   candidate expects 3 arguments, 4 provided
+/usr/include/c++/13/bits/basic_string.h:599:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&, size_type, size_type, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>; size_type = long unsigned int]’
+  599 |       basic_string(const basic_string& __str, size_type __pos,
+      |       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:599:40: note:   no known conversion for argument 1 from ‘int’ to ‘const std::__cxx11::basic_string<char>&’
+  599 |       basic_string(const basic_string& __str, size_type __pos,
+      |                    ~~~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/bits/basic_string.h:581:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&, size_type, size_type) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>; size_type = long unsigned int]’
+  581 |       basic_string(const basic_string& __str, size_type __pos,
+      |       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:581:7: note:   candidate expects 3 arguments, 4 provided
+/usr/include/c++/13/bits/basic_string.h:564:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&, size_type, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>; size_type = long unsigned int]’
+  564 |       basic_string(const basic_string& __str, size_type __pos,
+      |       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:564:7: note:   candidate expects 3 arguments, 4 provided
+/usr/include/c++/13/bits/basic_string.h:547:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+  547 |       basic_string(const basic_string& __str)
+      |       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:547:7: note:   candidate expects 1 argument, 4 provided
+/usr/include/c++/13/bits/basic_string.h:535:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+  535 |       basic_string(const _Alloc& __a) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:535:7: note:   candidate expects 1 argument, 4 provided
+/usr/include/c++/13/bits/basic_string.h:522:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string() [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+  522 |       basic_string()
+      |       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:522:7: note:   candidate expects 0 arguments, 4 provided
+/usr/include/c++/13/bits/basic_string.h:176:7: note: candidate: ‘constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(__sv_wrapper, const _Alloc&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]’
+  176 |       basic_string(__sv_wrapper __svw, const _Alloc& __a)
+      |       ^~~~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:176:7: note:   candidate expects 2 arguments, 4 provided
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/slack_message.cpp: In function ‘std::string send_slack_message(std::string, std::string)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/slack_message.cpp:148:28: error: ‘_fetch_std’ has not been declared
+  148 |     std::string response = _fetch_std::string((std::string)(slack_url));
+      |                            ^~~~~~~~~~

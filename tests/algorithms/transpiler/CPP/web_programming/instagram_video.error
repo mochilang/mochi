@@ -1,0 +1,18 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/instagram_video.cpp:81:215: warning: multi-character character constant [-Wmultichar]
+   81 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/instagram_video.cpp:81:251: warning: multi-character character constant [-Wmultichar]
+   81 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/instagram_video.cpp:133:13: error: ‘std::string link’ redeclared as different kind of entity
+  133 | std::string link = std::string();
+      |             ^~~~
+In file included from /workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/instagram_video.cpp:15:
+/usr/include/unistd.h:819:12: note: previous declaration ‘int link(const char*, const char*)’
+  819 | extern int link (const char *__from, const char *__to)
+      |            ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/instagram_video.cpp: In function ‘int main()’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/instagram_video.cpp:152:14: error: assignment of function ‘int link(const char*, const char*)’
+  152 |         link = download_video(sample_url);
+      |         ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~
