@@ -1,0 +1,19 @@
+Warning: file_get_contents(https://openlibrary.org/isbn/0140328726.json): Failed to open stream: Network is unreachable in /workspace/mochi/tests/algorithms/x/PHP/web_programming/search_books_by_isbn.php on line 70
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/web_programming/search_books_by_isbn.php on line 167
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/web_programming/search_books_by_isbn.php on line 173
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/web_programming/search_books_by_isbn.php on line 173
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/web_programming/search_books_by_isbn.php on line 173
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/web_programming/search_books_by_isbn.php on line 173
+
+Fatal error: Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /workspace/mochi/tests/algorithms/x/PHP/web_programming/search_books_by_isbn.php:102
+Stack trace:
+#0 /workspace/mochi/tests/algorithms/x/PHP/web_programming/search_books_by_isbn.php(173): mochi_join(NULL, ', ')
+#1 /workspace/mochi/tests/algorithms/x/PHP/web_programming/search_books_by_isbn.php(177): summarize_book(NULL)
+#2 /workspace/mochi/tests/algorithms/x/PHP/web_programming/search_books_by_isbn.php(185): main()
+#3 {main}
+  thrown in /workspace/mochi/tests/algorithms/x/PHP/web_programming/search_books_by_isbn.php on line 102

@@ -274,6 +274,31 @@ const helperFetch = `function _fetch($url, $opts = null) {
     return json_decode($data, true);
 }`
 
+const helperFetchStr = `function _fetch_str($url, $opts = null) {
+    $method = 'GET';
+    $headers = [];
+    $body = null;
+    $query = null;
+    $timeout = 0;
+    if ($opts !== null) {
+        if (isset($opts['method'])) $method = strtoupper($opts['method']);
+        if (isset($opts['headers'])) {
+            foreach ($opts['headers'] as $k => $v) { $headers[] = "$k: $v"; }
+        }
+        if (isset($opts['body'])) $body = json_encode($opts['body']);
+        if (isset($opts['query'])) $query = http_build_query($opts['query']);
+        if (isset($opts['timeout'])) $timeout = intval($opts['timeout']);
+    }
+    if ($query !== null) {
+        $url .= (strpos($url, '?') !== false ? '&' : '?') . $query;
+    }
+    $context = ['http' => ['method' => $method, 'header' => implode("\r\n", $headers)]];
+    if ($body !== null) $context['http']['content'] = $body;
+    if ($timeout > 0) $context['http']['timeout'] = $timeout / 1000.0;
+    $ctx = stream_context_create($context);
+    return file_get_contents($url, false, $ctx);
+}`
+
 const helperPanic = `function _panic($msg) {
     fwrite(STDERR, strval($msg));
     exit(1);
@@ -2519,7 +2544,7 @@ func Emit(w io.Writer, p *Program) error {
 		}
 	}
 	if usesFetch {
-		if _, err := io.WriteString(w, helperFetch+"\n"); err != nil {
+		if _, err := io.WriteString(w, helperFetch+"\n"+helperFetchStr+"\n"); err != nil {
 			return err
 		}
 	}
@@ -3692,17 +3717,34 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				funcStack[len(funcStack)-1] = append(funcStack[len(funcStack)-1], st.Let.Name)
 				defer func() { funcStack[len(funcStack)-1] = funcStack[len(funcStack)-1][:len(funcStack[len(funcStack)-1])-1] }()
 			}
-			v, err := convertExpr(st.Let.Value)
-			if err != nil {
-				return nil, err
-			}
-			if q, ok := v.(*QueryExpr); ok {
-				if len(funcStack) == 0 {
-					addGlobal(st.Let.Name)
+			if f := fetchExprOnly(st.Let.Value); f != nil && st.Let.Type != nil && st.Let.Type.Simple != nil && *st.Let.Type.Simple == "string" {
+				urlExpr, err := convertExpr(f.URL)
+				if err != nil {
+					return nil, err
 				}
-				return &QueryLetStmt{Name: st.Let.Name, Query: q}, nil
+				usesFetch = true
+				args := []Expr{urlExpr}
+				if f.With != nil {
+					withExpr, err := convertExpr(f.With)
+					if err != nil {
+						return nil, err
+					}
+					args = append(args, withExpr)
+				}
+				val = &CallExpr{Func: "_fetch_str", Args: args}
+			} else {
+				v, err := convertExpr(st.Let.Value)
+				if err != nil {
+					return nil, err
+				}
+				if q, ok := v.(*QueryExpr); ok {
+					if len(funcStack) == 0 {
+						addGlobal(st.Let.Name)
+					}
+					return &QueryLetStmt{Name: st.Let.Name, Query: q}, nil
+				}
+				val = v
 			}
-			val = v
 		} else if st.Let.Type != nil && st.Let.Type.Simple != nil {
 			switch *st.Let.Type.Simple {
 			case "int":
@@ -3742,11 +3784,28 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				funcStack[len(funcStack)-1] = append(funcStack[len(funcStack)-1], st.Var.Name)
 				defer func() { funcStack[len(funcStack)-1] = funcStack[len(funcStack)-1][:len(funcStack[len(funcStack)-1])-1] }()
 			}
-			v, err := convertExpr(st.Var.Value)
-			if err != nil {
-				return nil, err
+			if f := fetchExprOnly(st.Var.Value); f != nil && st.Var.Type != nil && st.Var.Type.Simple != nil && *st.Var.Type.Simple == "string" {
+				urlExpr, err := convertExpr(f.URL)
+				if err != nil {
+					return nil, err
+				}
+				usesFetch = true
+				args := []Expr{urlExpr}
+				if f.With != nil {
+					withExpr, err := convertExpr(f.With)
+					if err != nil {
+						return nil, err
+					}
+					args = append(args, withExpr)
+				}
+				val = &CallExpr{Func: "_fetch_str", Args: args}
+			} else {
+				v, err := convertExpr(st.Var.Value)
+				if err != nil {
+					return nil, err
+				}
+				val = v
 			}
-			val = v
 		} else if st.Var.Type != nil && st.Var.Type.Simple != nil {
 			switch *st.Var.Type.Simple {
 			case "int":
@@ -5593,6 +5652,20 @@ func substituteFields(e Expr, varName string, fields map[string]bool) Expr {
 	default:
 		return ex
 	}
+}
+
+func fetchExprOnly(e *parser.Expr) *parser.FetchExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 {
+		return nil
+	}
+	if u.Value == nil || u.Value.Target == nil || len(u.Value.Ops) > 0 {
+		return nil
+	}
+	return u.Value.Target.Fetch
 }
 
 func repoRoot() string {
