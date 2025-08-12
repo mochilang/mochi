@@ -6,16 +6,16 @@
 #include <malloc.h>
 #include <math.h>
 
-size_t binary_step_len;
+size_t softplus_len;
 
-static char* str_list_int(const long long *arr, size_t len) {
+static char* str_list_double(const double *arr, size_t len) {
     size_t cap = len * 32 + 2;
     char *buf = malloc(cap);
     size_t pos = 0;
     buf[pos++] = '[';
     for (size_t i = 0; i < len; i++) {
-        char tmp[32];
-        snprintf(tmp, sizeof(tmp), "%lld", arr[i]);
+        char tmp[64];
+        snprintf(tmp, sizeof(tmp), "%g", arr[i]);
         size_t n = strlen(tmp);
         if (pos + n + 2 >= cap) { cap = cap * 2 + n + 2; buf = realloc(buf, cap); }
         memcpy(buf + pos, tmp, n);
@@ -71,44 +71,74 @@ static void panic(const char *msg) {
     exit(1);
 }
 
-static long long* list_append_long_long(long long *arr, size_t *len, long long val) {
-    arr = realloc(arr, (*len + 1) * sizeof(long long));
-    arr[*len] = val;
-    (*len)++;
-    return arr;
-}
-
-long long * binary_step(double * vector, size_t vector_len);
+double user_ln(double x);
+double user_exp(double x);
+double * softplus(double * vector, size_t vector_len);
 void user_main();
 int main(void);
 
-long long * binary_step(double * vector, size_t vector_len) {
-    long long *out = NULL;
-    size_t out_len = 0;
+double user_ln(double x) {
+    if (x <= 0.0) {
+        panic("ln domain error");
+    }
+    double y = (x - 1.0) / (x + 1.0);
+    double y2 = y * y;
+    double term = y;
+    double sum = 0.0;
+    long long k = 0LL;
+    while (k < 10LL) {
+        double denom = (2LL * k) + 1LL;
+        sum = sum + (term / denom);
+        term = term * y2;
+        k = k + 1LL;
+    }
+    return 2.0 * sum;
+}
+
+double user_exp(double x) {
+    double term = 1.0;
+    double sum = 1.0;
+    long long n = 1LL;
+    while (n < 20LL) {
+        term = (term * x) / (double)(n);
+        sum = sum + term;
+        n = n + 1LL;
+    }
+    return sum;
+}
+
+double * softplus(double * vector, size_t vector_len) {
+    double *result = NULL;
+    size_t result_len = 0;
     long long i = 0LL;
     while (i < vector_len) {
-        if (vector[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? vector_len + _mochi_idx : _mochi_idx;})] >= 0.0) {
-            out = list_append_long_long(out, &out_len, 1LL);
-        } else {
-            out = list_append_long_long(out, &out_len, 0LL);
-        }
+        double x = vector[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? vector_len + _mochi_idx : _mochi_idx;})];
+        double value = log(1.0 + exp(x));
+        result = list_append_double(result, &result_len, value);
         i = i + 1LL;
     }
-    return binary_step_len = out_len, out;
+    return softplus_len = result_len, result;
 }
 
 void user_main() {
-    double *vector = NULL;
-    size_t vector_len = 0;
-    vector = list_append_double(vector, &vector_len, -1.2);
-    vector = list_append_double(vector, &vector_len, 0.0);
-    vector = list_append_double(vector, &vector_len, 2.0);
-    vector = list_append_double(vector, &vector_len, 1.45);
-    vector = list_append_double(vector, &vector_len, -3.7);
-    vector = list_append_double(vector, &vector_len, 0.3);
-    long long *result = binary_step(vector, vector_len);
-    size_t result_len = binary_step_len;
-    puts(str_list_int(result, result_len));
+    double *v1 = NULL;
+    size_t v1_len = 0;
+    v1 = list_append_double(v1, &v1_len, 2.3);
+    v1 = list_append_double(v1, &v1_len, 0.6);
+    v1 = list_append_double(v1, &v1_len, -2.0);
+    v1 = list_append_double(v1, &v1_len, -3.8);
+    double *v2 = NULL;
+    size_t v2_len = 0;
+    v2 = list_append_double(v2, &v2_len, -9.2);
+    v2 = list_append_double(v2, &v2_len, -0.3);
+    v2 = list_append_double(v2, &v2_len, 0.45);
+    v2 = list_append_double(v2, &v2_len, -4.56);
+    double *r1 = softplus(v1, v1_len);
+    size_t r1_len = softplus_len;
+    double *r2 = softplus(v2, v2_len);
+    size_t r2_len = softplus_len;
+    puts(str_list_double(r1, r1_len));
+    puts(str_list_double(r2, r2_len));
 }
 
 int main(void) {

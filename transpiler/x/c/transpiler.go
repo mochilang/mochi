@@ -2358,7 +2358,7 @@ func (f *FieldExpr) emitExpr(w io.Writer) {
 		case "e":
 			io.WriteString(w, "2.718281828459045")
 			return
-		case "sqrt", "pow", "sin", "log":
+		case "sqrt", "pow", "sin", "log", "exp":
 			io.WriteString(w, f.Name)
 			return
 		}
@@ -5049,6 +5049,14 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				funcAliases[name] = "user_random"
 				name = "user_random"
 			}
+			if name == "exp" { // avoid conflict with stdlib
+				funcAliases[name] = "user_exp"
+				name = "user_exp"
+			}
+			if name == "ln" { // avoid conflict with stdlib
+				funcAliases[name] = "user_ln"
+				name = "user_ln"
+			}
 			if name == "repeat" { // avoid conflict with builtin helper
 				funcAliases[name] = "user_repeat"
 				name = "user_repeat"
@@ -5635,7 +5643,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			markMath()
 		}
 		if list, ok := convertListExpr(s.Let.Value); ok {
-			if len(list) > 0 && !strings.HasSuffix(declType, "[][]") {
+			if _, isCall := valExpr.(*CallExpr); !isCall && len(list) > 0 && !strings.HasSuffix(declType, "[][]") {
 				constLists[s.Let.Name] = &ListLit{Elems: list}
 			} else {
 				delete(constLists, s.Let.Name)
@@ -7381,7 +7389,9 @@ func convertUnary(u *parser.Unary) Expr {
 		for i := len(u.Ops) - 1; i >= 0; i-- {
 			switch u.Ops[i] {
 			case "-":
-				if v, ok := evalInt(base); ok {
+				if f, ok := evalFloat(base); ok {
+					base = &FloatLit{Value: -f}
+				} else if v, ok := evalInt(base); ok {
 					base = &IntLit{Value: -v}
 				} else {
 					base = &UnaryExpr{Op: "-", Expr: base}
@@ -7549,7 +7559,7 @@ func convertUnary(u *parser.Unary) Expr {
 				}
 			case "python_math":
 				switch method {
-				case "sqrt", "sin", "log", "pow":
+				case "sqrt", "sin", "log", "pow", "exp":
 					markMath()
 					return &CallExpr{Func: method, Args: args}
 				}
@@ -8296,6 +8306,24 @@ func convertUnary(u *parser.Unary) Expr {
 					return &StringLit{Value: string(b)}
 				}
 			}
+		}
+		if call.Func == "exp" && len(call.Args) == 1 {
+			arg := convertExpr(call.Args[0])
+			if arg == nil {
+				return nil
+			}
+			markMath()
+			funcReturnTypes["exp"] = "double"
+			return &CallExpr{Func: "exp", Args: []Expr{arg}}
+		}
+		if call.Func == "ln" && len(call.Args) == 1 {
+			arg := convertExpr(call.Args[0])
+			if arg == nil {
+				return nil
+			}
+			markMath()
+			funcReturnTypes["log"] = "double"
+			return &CallExpr{Func: "log", Args: []Expr{arg}}
 		}
 		var args []Expr
 		for _, a := range call.Args {
@@ -9230,6 +9258,16 @@ func inferCType(env *types.Env, name string, e Expr) string {
 						return "double[][]"
 					}
 					return "long long[][]"
+				}
+				hasFloat := false
+				for _, it := range lst.Elems {
+					if _, okf := it.(*FloatLit); okf || inferExprType(env, it) == "double" || exprIsFloat(it) {
+						hasFloat = true
+						break
+					}
+				}
+				if hasFloat {
+					return "double[]"
 				}
 			}
 		}
