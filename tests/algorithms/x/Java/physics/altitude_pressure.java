@@ -1,52 +1,52 @@
 public class Main {
 
-    static double to_float(int x) {
-        return x * 1.0;
+    static double to_float(long x) {
+        return (double)(x) * 1.0;
     }
 
     static double ln(double x) {
-        if (x <= 0.0) {
+        if ((double)(x) <= 0.0) {
             throw new RuntimeException(String.valueOf("ln domain error"));
         }
-        double y = (x - 1.0) / (x + 1.0);
-        double y2 = y * y;
-        double term = y;
-        double sum = 0.0;
-        int k = 0;
-        while (k < 10) {
-            double denom = to_float(2 * k + 1);
-            sum = sum + term / denom;
-            term = term * y2;
-            k = k + 1;
+        double y_1 = ((double)(x) - 1.0) / ((double)(x) + 1.0);
+        double y2_1 = y_1 * y_1;
+        double term_1 = y_1;
+        double sum_1 = 0.0;
+        long k_1 = 0L;
+        while ((long)(k_1) < (long)(10)) {
+            double denom_1 = ((Number)((long)((long)(2) * (long)(k_1)) + (long)(1))).doubleValue();
+            sum_1 = sum_1 + term_1 / denom_1;
+            term_1 = term_1 * y2_1;
+            k_1 = (long)((long)(k_1) + (long)(1));
         }
-        return 2.0 * sum;
+        return 2.0 * sum_1;
     }
 
     static double exp(double x) {
-        double term_1 = 1.0;
-        double sum_1 = 1.0;
-        int n = 1;
-        while (n < 20) {
-            term_1 = term_1 * x / to_float(n);
-            sum_1 = sum_1 + term_1;
-            n = n + 1;
+        double term_2 = 1.0;
+        double sum_3 = 1.0;
+        long n_1 = 1L;
+        while ((long)(n_1) < (long)(20)) {
+            term_2 = term_2 * (double)(x) / ((Number)(n_1)).doubleValue();
+            sum_3 = sum_3 + term_2;
+            n_1 = (long)((long)(n_1) + (long)(1));
         }
-        return sum_1;
+        return sum_3;
     }
 
     static double pow_float(double base, double exponent) {
-        return exp(exponent * ln(base));
+        return exp((double)(exponent) * (double)(ln((double)(base))));
     }
 
     static double get_altitude_at_pressure(double pressure) {
-        if (pressure > 101325.0) {
+        if ((double)(pressure) > 101325.0) {
             throw new RuntimeException(String.valueOf("Value Higher than Pressure at Sea Level !"));
         }
-        if (pressure < 0.0) {
+        if ((double)(pressure) < 0.0) {
             throw new RuntimeException(String.valueOf("Atmospheric Pressure can not be negative !"));
         }
-        double ratio = pressure / 101325.0;
-        return 44330.0 * (1.0 - pow_float(ratio, 1.0 / 5.5255));
+        double ratio_1 = (double)(pressure) / 101325.0;
+        return 44330.0 * (1.0 - (double)(pow_float(ratio_1, 1.0 / 5.5255)));
     }
     public static void main(String[] args) {
         {
@@ -100,6 +100,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

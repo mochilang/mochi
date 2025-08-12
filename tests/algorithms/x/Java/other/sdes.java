@@ -1,145 +1,145 @@
 public class Main {
-    static int[] p4_table;
+    static long[] p4_table;
     static String key;
     static String message;
-    static int[] p8_table;
-    static int[] p10_table;
-    static int[] IP;
-    static int[] IP_inv;
-    static int[] expansion;
-    static int[][] s0;
-    static int[][] s1;
-    static String temp_1 = null;
+    static long[] p8_table;
+    static long[] p10_table;
+    static long[] IP;
+    static long[] IP_inv;
+    static long[] expansion;
+    static long[][] s0;
+    static long[][] s1;
+    static String temp_2 = null;
     static String left_1 = null;
-    static String right_1 = null;
+    static String right_2 = null;
     static String key1;
     static String key2;
     static String CT;
     static String PT;
 
-    static String apply_table(String inp, int[] table) {
+    static String apply_table(String inp, long[] table) {
         String res = "";
-        int i = 0;
-        while (i < table.length) {
-            int idx = table[i] - 1;
-            if (idx < 0) {
-                idx = _runeLen(inp) - 1;
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(table.length)) {
+            long idx_1 = (long)(table[(int)((long)(i_1))] - (long)(1));
+            if ((long)(idx_1) < (long)(0)) {
+                idx_1 = (long)((long)(_runeLen(inp)) - (long)(1));
             }
-            res = res + inp.substring(idx, idx + 1);
-            i = i + 1;
+            res = res + _substr(inp, (int)((long)(idx_1)), (int)((long)((long)(idx_1) + (long)(1)))));
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
         return res;
     }
 
     static String left_shift(String data) {
-        return data.substring(1, _runeLen(data)) + data.substring(0, 1);
+        return _substr(data, (int)((long)(1)), (int)((long)(_runeLen(data))))) + _substr(data, (int)((long)(0)), (int)((long)(1))));
     }
 
     static String xor(String a, String b) {
         String res_1 = "";
-        int i_1 = 0;
-        while (i_1 < _runeLen(a) && i_1 < _runeLen(b)) {
-            if ((a.substring(i_1, i_1 + 1).equals(b.substring(i_1, i_1 + 1)))) {
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(_runeLen(a)) && (long)(i_3) < (long)(_runeLen(b))) {
+            if ((_substr(a, (int)((long)(i_3)), (int)((long)((long)(i_3) + (long)(1))))).equals(_substr(b, (int)((long)(i_3)), (int)((long)((long)(i_3) + (long)(1)))))))) {
                 res_1 = res_1 + "0";
             } else {
                 res_1 = res_1 + "1";
             }
-            i_1 = i_1 + 1;
+            i_3 = (long)((long)(i_3) + (long)(1));
         }
         return res_1;
     }
 
-    static String int_to_binary(int n) {
-        if (n == 0) {
+    static String int_to_binary(long n) {
+        if (n == (long)(0)) {
             return "0";
         }
-        String res_2 = "";
-        int num = n;
-        while (num > 0) {
-            res_2 = _p(Math.floorMod(num, 2)) + res_2;
-            num = Math.floorDiv(num, 2);
-        }
-        return res_2;
-    }
-
-    static String pad_left(String s, int width) {
-        String res_3 = s;
-        while (_runeLen(res_3) < width) {
-            res_3 = "0" + res_3;
+        String res_3 = "";
+        long num_1 = n;
+        while ((long)(num_1) > (long)(0)) {
+            res_3 = _p(Math.floorMod(num_1, 2)) + res_3;
+            num_1 = Math.floorDiv(num_1, 2);
         }
         return res_3;
     }
 
-    static int bin_to_int(String s) {
-        int result = 0;
-        int i_2 = 0;
-        while (i_2 < _runeLen(s)) {
-            int digit = Integer.parseInt(s.substring(i_2, i_2 + 1));
-            result = result * 2 + digit;
-            i_2 = i_2 + 1;
+    static String pad_left(String s, long width) {
+        String res_4 = s;
+        while ((long)(_runeLen(res_4)) < width) {
+            res_4 = "0" + res_4;
+        }
+        return res_4;
+    }
+
+    static long bin_to_int(String s) {
+        long result = 0L;
+        long i_5 = 0L;
+        while ((long)(i_5) < (long)(_runeLen(s))) {
+            long digit_1 = (long)(Integer.parseInt(_substr(s, (int)((long)(i_5)), (int)((long)((long)(i_5) + (long)(1)))))));
+            result = (long)((long)((long)(result) * (long)(2)) + (long)(digit_1));
+            i_5 = (long)((long)(i_5) + (long)(1));
         }
         return result;
     }
 
-    static String apply_sbox(int[][] s, String data) {
-        String row_bits = data.substring(0, 1) + data.substring(_runeLen(data) - 1, _runeLen(data));
-        String col_bits = data.substring(1, 3);
-        int row = bin_to_int(row_bits);
-        int col = bin_to_int(col_bits);
-        int val = s[row][col];
-        String out = String.valueOf(int_to_binary(val));
-        return out;
+    static String apply_sbox(long[][] s, String data) {
+        String row_bits = _substr(data, (int)((long)(0)), (int)((long)(1)))) + _substr(data, (int)((long)((long)(_runeLen(data)) - (long)(1))), (int)((long)(_runeLen(data)))));
+        String col_bits_1 = _substr(data, (int)((long)(1)), (int)((long)(3))));
+        long row_1 = bin_to_int(row_bits);
+        long col_1 = bin_to_int(col_bits_1);
+        long val_1 = s[(int)((long)(row_1))][(int)((long)(col_1))];
+        String out_1 = String.valueOf(int_to_binary(val_1));
+        return out_1;
     }
 
-    static String f(int[] expansion, int[][] s0, int[][] s1, String key, String message) {
-        String left = message.substring(0, 4);
-        String right = message.substring(4, 8);
-        String temp = String.valueOf(apply_table(right, ((int[])(expansion))));
-        temp = String.valueOf(xor(temp, key));
-        String left_bin_str = String.valueOf(apply_sbox(((int[][])(s0)), temp.substring(0, 4)));
-        String right_bin_str = String.valueOf(apply_sbox(((int[][])(s1)), temp.substring(4, 8)));
-        left_bin_str = String.valueOf(pad_left(left_bin_str, 2));
-        right_bin_str = String.valueOf(pad_left(right_bin_str, 2));
-        temp = String.valueOf(apply_table(left_bin_str + right_bin_str, ((int[])(p4_table))));
-        temp = String.valueOf(xor(left, temp));
-        return temp + right;
+    static String f(long[] expansion, long[][] s0, long[][] s1, String key, String message) {
+        String left = _substr(message, (int)((long)(0)), (int)((long)(4))));
+        String right_1 = _substr(message, (int)((long)(4)), (int)((long)(8))));
+        String temp_1 = String.valueOf(apply_table(right_1, ((long[])(expansion))));
+        temp_1 = String.valueOf(xor(temp_1, key));
+        String left_bin_str_1 = String.valueOf(apply_sbox(((long[][])(s0)), _substr(temp_1, (int)((long)(0)), (int)((long)(4))))));
+        String right_bin_str_1 = String.valueOf(apply_sbox(((long[][])(s1)), _substr(temp_1, (int)((long)(4)), (int)((long)(8))))));
+        left_bin_str_1 = String.valueOf(pad_left(left_bin_str_1, 2L));
+        right_bin_str_1 = String.valueOf(pad_left(right_bin_str_1, 2L));
+        temp_1 = String.valueOf(apply_table(left_bin_str_1 + right_bin_str_1, ((long[])(p4_table))));
+        temp_1 = String.valueOf(xor(left, temp_1));
+        return temp_1 + right_1;
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            p4_table = ((int[])(new int[]{2, 4, 3, 1}));
+            p4_table = ((long[])(new long[]{2, 4, 3, 1}));
             key = "1010000010";
             message = "11010111";
-            p8_table = ((int[])(new int[]{6, 3, 7, 4, 8, 5, 10, 9}));
-            p10_table = ((int[])(new int[]{3, 5, 2, 7, 4, 10, 1, 9, 8, 6}));
-            IP = ((int[])(new int[]{2, 6, 3, 1, 4, 8, 5, 7}));
-            IP_inv = ((int[])(new int[]{4, 1, 3, 5, 7, 2, 8, 6}));
-            expansion = ((int[])(new int[]{4, 1, 2, 3, 2, 3, 4, 1}));
-            s0 = ((int[][])(new int[][]{new int[]{1, 0, 3, 2}, new int[]{3, 2, 1, 0}, new int[]{0, 2, 1, 3}, new int[]{3, 1, 3, 2}}));
-            s1 = ((int[][])(new int[][]{new int[]{0, 1, 2, 3}, new int[]{2, 0, 1, 3}, new int[]{3, 0, 1, 0}, new int[]{2, 1, 0, 3}}));
-            temp_1 = String.valueOf(apply_table(key, ((int[])(p10_table))));
-            left_1 = temp_1.substring(0, 5);
-            right_1 = temp_1.substring(5, 10);
+            p8_table = ((long[])(new long[]{6, 3, 7, 4, 8, 5, 10, 9}));
+            p10_table = ((long[])(new long[]{3, 5, 2, 7, 4, 10, 1, 9, 8, 6}));
+            IP = ((long[])(new long[]{2, 6, 3, 1, 4, 8, 5, 7}));
+            IP_inv = ((long[])(new long[]{4, 1, 3, 5, 7, 2, 8, 6}));
+            expansion = ((long[])(new long[]{4, 1, 2, 3, 2, 3, 4, 1}));
+            s0 = ((long[][])(new long[][]{new long[]{1, 0, 3, 2}, new long[]{3, 2, 1, 0}, new long[]{0, 2, 1, 3}, new long[]{3, 1, 3, 2}}));
+            s1 = ((long[][])(new long[][]{new long[]{0, 1, 2, 3}, new long[]{2, 0, 1, 3}, new long[]{3, 0, 1, 0}, new long[]{2, 1, 0, 3}}));
+            temp_2 = String.valueOf(apply_table(key, ((long[])(p10_table))));
+            left_1 = _substr(temp_2, (int)((long)(0)), (int)((long)(5))));
+            right_2 = _substr(temp_2, (int)((long)(5)), (int)((long)(10))));
             left_1 = String.valueOf(left_shift(left_1));
-            right_1 = String.valueOf(left_shift(right_1));
-            key1 = String.valueOf(apply_table(left_1 + right_1, ((int[])(p8_table))));
+            right_2 = String.valueOf(left_shift(right_2));
+            key1 = String.valueOf(apply_table(left_1 + right_2, ((long[])(p8_table))));
             left_1 = String.valueOf(left_shift(left_1));
-            right_1 = String.valueOf(left_shift(right_1));
+            right_2 = String.valueOf(left_shift(right_2));
             left_1 = String.valueOf(left_shift(left_1));
-            right_1 = String.valueOf(left_shift(right_1));
-            key2 = String.valueOf(apply_table(left_1 + right_1, ((int[])(p8_table))));
-            temp_1 = String.valueOf(apply_table(message, ((int[])(IP))));
-            temp_1 = String.valueOf(f(((int[])(expansion)), ((int[][])(s0)), ((int[][])(s1)), key1, temp_1));
-            temp_1 = temp_1.substring(4, 8) + temp_1.substring(0, 4);
-            temp_1 = String.valueOf(f(((int[])(expansion)), ((int[][])(s0)), ((int[][])(s1)), key2, temp_1));
-            CT = String.valueOf(apply_table(temp_1, ((int[])(IP_inv))));
+            right_2 = String.valueOf(left_shift(right_2));
+            key2 = String.valueOf(apply_table(left_1 + right_2, ((long[])(p8_table))));
+            temp_2 = String.valueOf(apply_table(message, ((long[])(IP))));
+            temp_2 = String.valueOf(f(((long[])(expansion)), ((long[][])(s0)), ((long[][])(s1)), key1, temp_2));
+            temp_2 = _substr(temp_2, (int)((long)(4)), (int)((long)(8)))) + _substr(temp_2, (int)((long)(0)), (int)((long)(4))));
+            temp_2 = String.valueOf(f(((long[])(expansion)), ((long[][])(s0)), ((long[][])(s1)), key2, temp_2));
+            CT = String.valueOf(apply_table(temp_2, ((long[])(IP_inv))));
             System.out.println("Cipher text is: " + CT);
-            temp_1 = String.valueOf(apply_table(CT, ((int[])(IP))));
-            temp_1 = String.valueOf(f(((int[])(expansion)), ((int[][])(s0)), ((int[][])(s1)), key2, temp_1));
-            temp_1 = temp_1.substring(4, 8) + temp_1.substring(0, 4);
-            temp_1 = String.valueOf(f(((int[])(expansion)), ((int[][])(s0)), ((int[][])(s1)), key1, temp_1));
-            PT = String.valueOf(apply_table(temp_1, ((int[])(IP_inv))));
+            temp_2 = String.valueOf(apply_table(CT, ((long[])(IP))));
+            temp_2 = String.valueOf(f(((long[])(expansion)), ((long[][])(s0)), ((long[][])(s1)), key2, temp_2));
+            temp_2 = _substr(temp_2, (int)((long)(4)), (int)((long)(8)))) + _substr(temp_2, (int)((long)(0)), (int)((long)(4))));
+            temp_2 = String.valueOf(f(((long[])(expansion)), ((long[][])(s0)), ((long[][])(s1)), key1, temp_2));
+            PT = String.valueOf(apply_table(temp_2, ((long[])(IP_inv))));
             System.out.println("Plain text after decypting is: " + PT);
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
@@ -178,6 +178,16 @@ public class Main {
         return s.codePointCount(0, s.length());
     }
 
+    static String _substr(String s, int i, int j) {
+        int len = _runeLen(s);
+        if (i < 0) i = 0;
+        if (j > len) j = len;
+        if (i > j) i = j;
+        int start = s.offsetByCodePoints(0, i);
+        int end = s.offsetByCodePoints(0, j);
+        return s.substring(start, end);
+    }
+
     static String _p(Object v) {
         if (v == null) return "<nil>";
         if (v.getClass().isArray()) {
@@ -190,6 +200,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

@@ -1,42 +1,42 @@
 public class Main {
-    static int seed = 0;
-    static int[] integers;
+    static long seed = 0;
+    static long[] integers;
     static String[] strings;
 
-    static int rand() {
-        seed = ((int)(Math.floorMod(((long)((seed * 1103515245 + 12345))), 2147483648L)));
-        return Math.floorDiv(seed, 65536);
+    static long rand() {
+        seed = (long)(((long)(Math.floorMod(((long)(((long)((long)(seed) * (long)(1103515245)) + (long)(12345)))), 2147483648L))));
+        return ((long)(Math.floorDiv(seed, 65536)));
     }
 
-    static int randint(int a, int b) {
-        int r = rand();
-        return a + Math.floorMod(r, (b - a + 1));
+    static long randint(long a, long b) {
+        long r = rand();
+        return a + Math.floorMod(r, ((long)(b - a) + (long)(1)));
     }
 
-    static int[] fisher_yates_shuffle_int(int[] data) {
-        int[] res = ((int[])(data));
-        int i = 0;
-        while (i < res.length) {
-            int a = randint(0, res.length - 1);
-            int b = randint(0, res.length - 1);
-            int temp = res[a];
-res[a] = res[b];
-res[b] = temp;
-            i = i + 1;
+    static long[] fisher_yates_shuffle_int(long[] data) {
+        long[] res = ((long[])(data));
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(res.length)) {
+            long a_1 = randint(0L, (long)((long)(res.length) - (long)(1)));
+            long b_1 = randint(0L, (long)((long)(res.length) - (long)(1)));
+            long temp_1 = res[(int)((long)(a_1))];
+res[(int)((long)(a_1))] = res[(int)((long)(b_1))];
+res[(int)((long)(b_1))] = temp_1;
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
         return res;
     }
 
     static String[] fisher_yates_shuffle_str(String[] data) {
         String[] res_1 = ((String[])(data));
-        int i_1 = 0;
-        while (i_1 < res_1.length) {
-            int a_1 = randint(0, res_1.length - 1);
-            int b_1 = randint(0, res_1.length - 1);
-            String temp_1 = res_1[a_1];
-res_1[a_1] = res_1[b_1];
-res_1[b_1] = temp_1;
-            i_1 = i_1 + 1;
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(res_1.length)) {
+            long a_3 = randint(0L, (long)((long)(res_1.length) - (long)(1)));
+            long b_3 = randint(0L, (long)((long)(res_1.length) - (long)(1)));
+            String temp_3 = res_1[(int)((long)(a_3))];
+res_1[(int)((long)(a_3))] = res_1[(int)((long)(b_3))];
+res_1[(int)((long)(b_3))] = temp_3;
+            i_3 = (long)((long)(i_3) + (long)(1));
         }
         return res_1;
     }
@@ -44,12 +44,12 @@ res_1[b_1] = temp_1;
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            seed = 1;
-            integers = ((int[])(new int[]{0, 1, 2, 3, 4, 5, 6, 7}));
+            seed = (long)(1);
+            integers = ((long[])(new long[]{0, 1, 2, 3, 4, 5, 6, 7}));
             strings = ((String[])(new String[]{"python", "says", "hello", "!"}));
             System.out.println("Fisher-Yates Shuffle:");
             System.out.println("List " + _p(integers) + " " + _p(strings));
-            System.out.println("FY Shuffle " + _p(fisher_yates_shuffle_int(((int[])(integers)))) + " " + _p(fisher_yates_shuffle_str(((String[])(strings)))));
+            System.out.println("FY Shuffle " + _p(fisher_yates_shuffle_int(((long[])(integers)))) + " " + _p(fisher_yates_shuffle_str(((String[])(strings)))));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -95,6 +95,11 @@ res_1[b_1] = temp_1;
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

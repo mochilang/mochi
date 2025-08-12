@@ -3,76 +3,76 @@ public class Main {
     static double C;
     static double PI;
 
-    static double pow10(int n) {
+    static double pow10(long n) {
         double result = 1.0;
-        int i = 0;
-        while (i < n) {
+        long i_1 = 0L;
+        while ((long)(i_1) < n) {
             result = result * 10.0;
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
         return result;
     }
 
     static double sqrt(double x) {
-        if (x <= 0.0) {
+        if ((double)(x) <= 0.0) {
             return 0.0;
         }
-        double guess = x;
-        int i_1 = 0;
-        while (i_1 < 20) {
-            guess = (guess + x / guess) / 2.0;
-            i_1 = i_1 + 1;
+        double guess_1 = (double)(x);
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(20)) {
+            guess_1 = (guess_1 + (double)(x) / guess_1) / 2.0;
+            i_3 = (long)((long)(i_3) + (long)(1));
         }
-        return guess;
+        return guess_1;
     }
 
     static double abs(double x) {
-        if (x < 0.0) {
+        if ((double)(x) < 0.0) {
             return -x;
         }
         return x;
     }
 
     static double capture_radii(double target_body_radius, double target_body_mass, double projectile_velocity) {
-        if (target_body_mass < 0.0) {
+        if ((double)(target_body_mass) < 0.0) {
             throw new RuntimeException(String.valueOf("Mass cannot be less than 0"));
         }
-        if (target_body_radius < 0.0) {
+        if ((double)(target_body_radius) < 0.0) {
             throw new RuntimeException(String.valueOf("Radius cannot be less than 0"));
         }
-        if (projectile_velocity > C) {
+        if ((double)(projectile_velocity) > (double)(C)) {
             throw new RuntimeException(String.valueOf("Cannot go beyond speed of light"));
         }
-        double escape_velocity_squared = (2.0 * G * target_body_mass) / target_body_radius;
-        double denom = projectile_velocity * projectile_velocity;
-        double capture_radius = target_body_radius * sqrt(1.0 + escape_velocity_squared / denom);
-        return capture_radius;
+        double escape_velocity_squared_1 = (2.0 * (double)(G) * (double)(target_body_mass)) / (double)(target_body_radius);
+        double denom_1 = (double)(projectile_velocity) * (double)(projectile_velocity);
+        double capture_radius_1 = (double)(target_body_radius) * (double)(sqrt(1.0 + escape_velocity_squared_1 / denom_1));
+        return capture_radius_1;
     }
 
     static double capture_area(double capture_radius) {
-        if (capture_radius < 0.0) {
+        if ((double)(capture_radius) < 0.0) {
             throw new RuntimeException(String.valueOf("Cannot have a capture radius less than 0"));
         }
-        double sigma = PI * capture_radius * capture_radius;
-        return sigma;
+        double sigma_1 = (double)(PI) * (double)(capture_radius) * (double)(capture_radius);
+        return sigma_1;
     }
 
     static void run_tests() {
-        double r = capture_radii(6.957 * pow10(8), 1.99 * pow10(30), 25000.0);
-        if (Math.abs(r - 1.720959069143714 * pow10(10)) > 1.0) {
+        double r = (double)(capture_radii(6.957 * (double)(pow10(8L)), 1.99 * (double)(pow10(30L)), 25000.0));
+        if (Math.abs((double)(r) - 1.720959069143714 * (double)(pow10(10L))) > 1.0) {
             throw new RuntimeException(String.valueOf("capture_radii failed"));
         }
-        double a = capture_area(r);
-        if (Math.abs(a - 9.304455331801812 * pow10(20)) > 1.0) {
+        double a_1 = (double)(capture_area((double)(r)));
+        if (Math.abs((double)(a_1) - 9.304455331801812 * (double)(pow10(20L))) > 1.0) {
             throw new RuntimeException(String.valueOf("capture_area failed"));
         }
     }
 
     static void main() {
         run_tests();
-        double r_1 = capture_radii(6.957 * pow10(8), 1.99 * pow10(30), 25000.0);
-        System.out.println(_p(r_1));
-        System.out.println(_p(capture_area(r_1)));
+        double r_2 = (double)(capture_radii(6.957 * (double)(pow10(8L)), 1.99 * (double)(pow10(30L)), 25000.0));
+        System.out.println(_p(r_2));
+        System.out.println(_p(capture_area((double)(r_2))));
     }
     public static void main(String[] args) {
         {
@@ -127,6 +127,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

@@ -1,43 +1,43 @@
 public class Main {
-    static int[] DOOMSDAY_LEAP;
-    static int[] DOOMSDAY_NOT_LEAP;
-    static java.util.Map<Integer,String> WEEK_DAY_NAMES;
+    static long[] DOOMSDAY_LEAP;
+    static long[] DOOMSDAY_NOT_LEAP;
+    static java.util.Map<Long,String> WEEK_DAY_NAMES;
 
-    static String get_week_day(int year, int month, int day) {
-        if (year < 100) {
+    static String get_week_day(long year, long month, long day) {
+        if (year < (long)(100)) {
             throw new RuntimeException(String.valueOf("year should be in YYYY format"));
         }
-        if (month < 1 || month > 12) {
+        if (month < (long)(1) || month > (long)(12)) {
             throw new RuntimeException(String.valueOf("month should be between 1 to 12"));
         }
-        if (day < 1 || day > 31) {
+        if (day < (long)(1) || day > (long)(31)) {
             throw new RuntimeException(String.valueOf("day should be between 1 to 31"));
         }
-        int century = Math.floorDiv(year, 100);
-        int century_anchor = Math.floorMod((5 * (Math.floorMod(century, 4)) + 2), 7);
-        int centurian = Math.floorMod(year, 100);
-        int centurian_m = Math.floorMod(centurian, 12);
-        int dooms_day = Math.floorMod((((Number)((Math.floorDiv(centurian, 12)))).intValue() + centurian_m + ((Number)((Math.floorDiv(centurian_m, 4)))).intValue() + century_anchor), 7);
-        int day_anchor = Math.floorMod(year, 4) != 0 || (centurian == 0 && Math.floorMod(year, 400) != 0) ? DOOMSDAY_NOT_LEAP[month - 1] : DOOMSDAY_LEAP[month - 1];
-        int week_day = Math.floorMod((dooms_day + day - day_anchor), 7);
-        if (week_day < 0) {
-            week_day = week_day + 7;
+        long century_1 = Math.floorDiv(year, 100);
+        long century_anchor_1 = Math.floorMod(((long)((long)(5) * (long)((Math.floorMod(century_1, 4)))) + (long)(2)), 7);
+        long centurian_1 = Math.floorMod(year, 100);
+        long centurian_m_1 = Math.floorMod(centurian_1, 12);
+        long dooms_day_1 = Math.floorMod(((long)((long)(((Number)((Math.floorDiv(centurian_1, 12)))).intValue() + (long)(centurian_m_1)) + ((Number)((Math.floorDiv(centurian_m_1, 4)))).intValue()) + (long)(century_anchor_1)), 7);
+        long day_anchor_1 = Math.floorMod(year, 4) != (long)(0) || ((long)(centurian_1) == (long)(0) && Math.floorMod(year, 400) != (long)(0)) ? DOOMSDAY_NOT_LEAP[(int)((long)(month - (long)(1)))] : DOOMSDAY_LEAP[(int)((long)(month - (long)(1)))];
+        long week_day_1 = Math.floorMod(((long)((long)(dooms_day_1) + day) - day_anchor_1), 7);
+        if ((long)(week_day_1) < (long)(0)) {
+            week_day_1 = (long)((long)(week_day_1) + (long)(7));
         }
-        return ((String)(WEEK_DAY_NAMES).get(week_day));
+        return ((String)(WEEK_DAY_NAMES).get(week_day_1));
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            DOOMSDAY_LEAP = ((int[])(new int[]{4, 1, 7, 4, 2, 6, 4, 1, 5, 3, 7, 5}));
-            DOOMSDAY_NOT_LEAP = ((int[])(new int[]{3, 7, 7, 4, 2, 6, 4, 1, 5, 3, 7, 5}));
-            WEEK_DAY_NAMES = ((java.util.Map<Integer,String>)(new java.util.LinkedHashMap<Integer, String>(java.util.Map.ofEntries(java.util.Map.entry(0, "Sunday"), java.util.Map.entry(1, "Monday"), java.util.Map.entry(2, "Tuesday"), java.util.Map.entry(3, "Wednesday"), java.util.Map.entry(4, "Thursday"), java.util.Map.entry(5, "Friday"), java.util.Map.entry(6, "Saturday")))));
-            System.out.println(get_week_day(2020, 10, 24));
-            System.out.println(get_week_day(2017, 10, 24));
-            System.out.println(get_week_day(2019, 5, 3));
-            System.out.println(get_week_day(1970, 9, 16));
-            System.out.println(get_week_day(1870, 8, 13));
-            System.out.println(get_week_day(2040, 3, 14));
+            DOOMSDAY_LEAP = ((long[])(new long[]{4, 1, 7, 4, 2, 6, 4, 1, 5, 3, 7, 5}));
+            DOOMSDAY_NOT_LEAP = ((long[])(new long[]{3, 7, 7, 4, 2, 6, 4, 1, 5, 3, 7, 5}));
+            WEEK_DAY_NAMES = ((java.util.Map<Long,String>)(new java.util.LinkedHashMap<Long, String>(java.util.Map.ofEntries(java.util.Map.entry(0L, "Sunday"), java.util.Map.entry(1L, "Monday"), java.util.Map.entry(2L, "Tuesday"), java.util.Map.entry(3L, "Wednesday"), java.util.Map.entry(4L, "Thursday"), java.util.Map.entry(5L, "Friday"), java.util.Map.entry(6L, "Saturday")))));
+            System.out.println(get_week_day(2020L, 10L, 24L));
+            System.out.println(get_week_day(2017L, 10L, 24L));
+            System.out.println(get_week_day(2019L, 5L, 3L));
+            System.out.println(get_week_day(1970L, 9L, 16L));
+            System.out.println(get_week_day(1870L, 8L, 13L));
+            System.out.println(get_week_day(2040L, 3L, 14L));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");

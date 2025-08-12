@@ -3,34 +3,34 @@ public class Main {
 
     static String[] slice_without_last(String[] xs) {
         String[] res = ((String[])(new String[]{}));
-        int i = 0;
-        while (i < xs.length - 1) {
-            res = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(xs[i])).toArray(String[]::new)));
-            i = i + 1;
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)((long)(xs.length) - (long)(1))) {
+            res = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(xs[(int)((long)(i_1))])).toArray(String[]::new)));
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
         return res;
     }
 
     static boolean is_balanced(String s) {
         String[] stack = ((String[])(new String[]{}));
-        int i_1 = 0;
-        while (i_1 < _runeLen(s)) {
-            String symbol = _substr(s, i_1, i_1 + 1);
-            if (((Boolean)(OPEN_TO_CLOSED.containsKey(symbol)))) {
-                stack = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(stack), java.util.stream.Stream.of(symbol)).toArray(String[]::new)));
-            } else             if ((symbol.equals(")")) || (symbol.equals("]")) || (symbol.equals("}"))) {
-                if (stack.length == 0) {
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(_runeLen(s))) {
+            String symbol_1 = _substr(s, (int)((long)(i_3)), (int)((long)((long)(i_3) + (long)(1))));
+            if (OPEN_TO_CLOSED.containsKey(symbol_1)) {
+                stack = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(stack), java.util.stream.Stream.of(symbol_1)).toArray(String[]::new)));
+            } else             if ((symbol_1.equals(")")) || (symbol_1.equals("]")) || (symbol_1.equals("}"))) {
+                if ((long)(stack.length) == (long)(0)) {
                     return false;
                 }
-                String top = stack[stack.length - 1];
-                if (!(((String)(OPEN_TO_CLOSED).get(top)).equals(symbol))) {
+                String top_1 = stack[(int)((long)((long)(stack.length) - (long)(1)))];
+                if (!(((String)(OPEN_TO_CLOSED).get(top_1)).equals(symbol_1))) {
                     return false;
                 }
                 stack = ((String[])(slice_without_last(((String[])(stack)))));
             }
-            i_1 = i_1 + 1;
+            i_3 = (long)((long)(i_3) + (long)(1));
         }
-        return stack.length == 0;
+        return (long)(stack.length) == (long)(0);
     }
 
     static void main() {
@@ -95,6 +95,10 @@ public class Main {
     }
 
     static String _substr(String s, int i, int j) {
+        int len = _runeLen(s);
+        if (i < 0) i = 0;
+        if (j > len) j = len;
+        if (i > j) i = j;
         int start = s.offsetByCodePoints(0, i);
         int end = s.offsetByCodePoints(0, j);
         return s.substring(start, end);

@@ -3,36 +3,36 @@ public class Main {
 
     static double exp_taylor(double x) {
         double term = 1.0;
-        double sum = 1.0;
-        double i = 1.0;
-        while (i < 20.0) {
-            term = term * x / i;
-            sum = sum + term;
-            i = i + 1.0;
+        double sum_1 = 1.0;
+        double i_1 = 1.0;
+        while (i_1 < 20.0) {
+            term = term * (double)(x) / i_1;
+            sum_1 = sum_1 + term;
+            i_1 = i_1 + 1.0;
         }
-        return sum;
+        return sum_1;
     }
 
     static double[] sigmoid(double[] vector) {
         double[] result = ((double[])(new double[]{}));
-        int i_1 = 0;
-        while (i_1 < vector.length) {
-            double x = vector[i_1];
-            double value = 1.0 / (1.0 + exp_taylor(-x));
-            result = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(result), java.util.stream.DoubleStream.of(value)).toArray()));
-            i_1 = i_1 + 1;
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(vector.length)) {
+            double x_1 = (double)(vector[(int)((long)(i_3))]);
+            double value_1 = 1.0 / (1.0 + (double)(exp_taylor((double)(-x_1))));
+            result = ((double[])(appendDouble(result, value_1)));
+            i_3 = (long)((long)(i_3) + (long)(1));
         }
         return result;
     }
 
     static double[] gaussian_error_linear_unit(double[] vector) {
         double[] result_1 = ((double[])(new double[]{}));
-        int i_2 = 0;
-        while (i_2 < vector.length) {
-            double x_1 = vector[i_2];
-            double gelu = x_1 * (1.0 / (1.0 + exp_taylor(-1.702 * x_1)));
-            result_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(result_1), java.util.stream.DoubleStream.of(gelu)).toArray()));
-            i_2 = i_2 + 1;
+        long i_5 = 0L;
+        while ((long)(i_5) < (long)(vector.length)) {
+            double x_3 = (double)(vector[(int)((long)(i_5))]);
+            double gelu_1 = (double)(x_3) * (1.0 / (1.0 + (double)(exp_taylor(-1.702 * (double)(x_3)))));
+            result_1 = ((double[])(appendDouble(result_1, gelu_1)));
+            i_5 = (long)((long)(i_5) + (long)(1));
         }
         return result_1;
     }
@@ -75,5 +75,11 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 }

@@ -51,53 +51,53 @@ public class Main {
 
     static Thing[] build_menu(String[] names, double[] values, double[] weights) {
         Thing[] menu = ((Thing[])(new Thing[]{}));
-        int i = 0;
-        while (i < values.length && i < names.length && i < weights.length) {
-            menu = ((Thing[])(java.util.stream.Stream.concat(java.util.Arrays.stream(menu), java.util.stream.Stream.of(new Thing(names[i], values[i], weights[i]))).toArray(Thing[]::new)));
-            i = i + 1;
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(values.length) && (long)(i_1) < (long)(names.length) && (long)(i_1) < (long)(weights.length)) {
+            menu = ((Thing[])(java.util.stream.Stream.concat(java.util.Arrays.stream(menu), java.util.stream.Stream.of(new Thing(names[(int)((long)(i_1))], values[(int)((long)(i_1))], weights[(int)((long)(i_1))]))).toArray(Thing[]::new)));
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
         return menu;
     }
 
     static Thing[] sort_desc(Thing[] items, java.util.function.Function<Thing,Double> key_func) {
         Thing[] arr = ((Thing[])(new Thing[]{}));
-        int i_1 = 0;
-        while (i_1 < items.length) {
-            arr = ((Thing[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr), java.util.stream.Stream.of(items[i_1])).toArray(Thing[]::new)));
-            i_1 = i_1 + 1;
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(items.length)) {
+            arr = ((Thing[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr), java.util.stream.Stream.of(items[(int)((long)(i_3))])).toArray(Thing[]::new)));
+            i_3 = (long)((long)(i_3) + (long)(1));
         }
-        int j = 1;
-        while (j < arr.length) {
-            Thing key_item = arr[j];
-            double key_val = key_func.apply(key_item);
-            int k = j - 1;
-            while (k >= 0 && key_func.apply(arr[k]) < key_val) {
-arr[k + 1] = arr[k];
-                k = k - 1;
+        long j_1 = 1L;
+        while ((long)(j_1) < (long)(arr.length)) {
+            Thing key_item_1 = arr[(int)((long)(j_1))];
+            double key_val_1 = (double)(key_func.apply(key_item_1));
+            long k_1 = (long)((long)(j_1) - (long)(1));
+            while ((long)(k_1) >= (long)(0) && (double)(key_func.apply(arr[(int)((long)(k_1))])) < (double)(key_val_1)) {
+arr[(int)((long)((long)(k_1) + (long)(1)))] = arr[(int)((long)(k_1))];
+                k_1 = (long)((long)(k_1) - (long)(1));
             }
-arr[k + 1] = key_item;
-            j = j + 1;
+arr[(int)((long)((long)(k_1) + (long)(1)))] = key_item_1;
+            j_1 = (long)((long)(j_1) + (long)(1));
         }
         return arr;
     }
 
     static GreedyResult greedy(Thing[] items, double max_cost, java.util.function.Function<Thing,Double> key_func) {
         Thing[] items_copy = ((Thing[])(sort_desc(((Thing[])(items)), key_func)));
-        Thing[] result = ((Thing[])(new Thing[]{}));
-        double total_value = 0.0;
-        double total_cost = 0.0;
-        int i_2 = 0;
-        while (i_2 < items_copy.length) {
-            Thing it = items_copy[i_2];
-            double w = get_weight(it);
-            if (total_cost + w <= max_cost) {
-                result = ((Thing[])(java.util.stream.Stream.concat(java.util.Arrays.stream(result), java.util.stream.Stream.of(it)).toArray(Thing[]::new)));
-                total_cost = total_cost + w;
-                total_value = total_value + get_value(it);
+        Thing[] result_1 = ((Thing[])(new Thing[]{}));
+        double total_value_1 = 0.0;
+        double total_cost_1 = 0.0;
+        long i_5 = 0L;
+        while ((long)(i_5) < (long)(items_copy.length)) {
+            Thing it_1 = items_copy[(int)((long)(i_5))];
+            double w_1 = (double)(get_weight(it_1));
+            if (total_cost_1 + (double)(w_1) <= (double)(max_cost)) {
+                result_1 = ((Thing[])(java.util.stream.Stream.concat(java.util.Arrays.stream(result_1), java.util.stream.Stream.of(it_1)).toArray(Thing[]::new)));
+                total_cost_1 = total_cost_1 + (double)(w_1);
+                total_value_1 = total_value_1 + (double)(get_value(it_1));
             }
-            i_2 = i_2 + 1;
+            i_5 = (long)((long)(i_5) + (long)(1));
         }
-        return new GreedyResult(result, total_value);
+        return new GreedyResult(result_1, total_value_1);
     }
 
     static String thing_to_string(Thing t) {
@@ -106,13 +106,13 @@ arr[k + 1] = key_item;
 
     static String list_to_string(Thing[] ts) {
         String s = "[";
-        int i_3 = 0;
-        while (i_3 < ts.length) {
-            s = s + String.valueOf(thing_to_string(ts[i_3]));
-            if (i_3 < ts.length - 1) {
+        long i_7 = 0L;
+        while ((long)(i_7) < (long)(ts.length)) {
+            s = s + String.valueOf(thing_to_string(ts[(int)((long)(i_7))]));
+            if ((long)(i_7) < (long)((long)(ts.length) - (long)(1))) {
                 s = s + ", ";
             }
-            i_3 = i_3 + 1;
+            i_7 = (long)((long)(i_7) + (long)(1));
         }
         s = s + "]";
         return s;
@@ -174,6 +174,11 @@ arr[k + 1] = key_item;
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

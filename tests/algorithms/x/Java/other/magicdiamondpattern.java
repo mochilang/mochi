@@ -1,57 +1,57 @@
 public class Main {
 
-    static String floyd(int n) {
+    static String floyd(long n) {
         String result = "";
-        int i = 0;
-        while (i < n) {
-            int j = 0;
-            while (j < n - i - 1) {
+        long i_1 = 0L;
+        while ((long)(i_1) < n) {
+            long j_1 = 0L;
+            while ((long)(j_1) < (long)((long)(n - (long)(i_1)) - (long)(1))) {
                 result = result + " ";
-                j = j + 1;
+                j_1 = (long)((long)(j_1) + (long)(1));
             }
-            int k = 0;
-            while (k < i + 1) {
+            long k_1 = 0L;
+            while ((long)(k_1) < (long)((long)(i_1) + (long)(1))) {
                 result = result + "* ";
-                k = k + 1;
+                k_1 = (long)((long)(k_1) + (long)(1));
             }
             result = result + "\n";
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
         return result;
     }
 
-    static String reverse_floyd(int n) {
+    static String reverse_floyd(long n) {
         String result_1 = "";
-        int i_1 = n;
-        while (i_1 > 0) {
-            int j_1 = i_1;
-            while (j_1 > 0) {
+        long i_3 = n;
+        while ((long)(i_3) > (long)(0)) {
+            long j_3 = (long)(i_3);
+            while ((long)(j_3) > (long)(0)) {
                 result_1 = result_1 + "* ";
-                j_1 = j_1 - 1;
+                j_3 = (long)((long)(j_3) - (long)(1));
             }
             result_1 = result_1 + "\n";
-            int k_1 = n - i_1 + 1;
-            while (k_1 > 0) {
+            long k_3 = (long)((long)(n - (long)(i_3)) + (long)(1));
+            while ((long)(k_3) > (long)(0)) {
                 result_1 = result_1 + " ";
-                k_1 = k_1 - 1;
+                k_3 = (long)((long)(k_3) - (long)(1));
             }
-            i_1 = i_1 - 1;
+            i_3 = (long)((long)(i_3) - (long)(1));
         }
         return result_1;
     }
 
-    static String pretty_print(int n) {
-        if (n <= 0) {
+    static String pretty_print(long n) {
+        if (n <= (long)(0)) {
             return "       ...       ....        nothing printing :(";
         }
-        String upper_half = String.valueOf(floyd(n));
-        String lower_half = String.valueOf(reverse_floyd(n));
-        return upper_half + lower_half;
+        String upper_half_1 = String.valueOf(floyd(n));
+        String lower_half_1 = String.valueOf(reverse_floyd(n));
+        return upper_half_1 + lower_half_1;
     }
 
     static void main() {
-        System.out.println(pretty_print(3));
-        System.out.println(pretty_print(0));
+        System.out.println(pretty_print(3L));
+        System.out.println(pretty_print(0L));
     }
     public static void main(String[] args) {
         {

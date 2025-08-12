@@ -1,34 +1,34 @@
 public class Main {
 
-    static double to_float(int x) {
-        return x * 1.0;
+    static double to_float(long x) {
+        return (double)(x) * 1.0;
     }
 
     static double round6(double x) {
         double factor = 1000000.0;
-        return to_float(((Number)(x * factor + 0.5)).intValue()) / factor;
+        return ((Number)(((Number)((double)(x) * factor + 0.5)).intValue())).doubleValue() / factor;
     }
 
     static double sqrtApprox(double x) {
-        double guess = x / 2.0;
-        int i = 0;
-        while (i < 20) {
-            guess = (guess + x / guess) / 2.0;
-            i = i + 1;
+        double guess = (double)(x) / 2.0;
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(20)) {
+            guess = (guess + (double)(x) / guess) / 2.0;
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
         return guess;
     }
 
     static boolean validate(double[] values) {
-        if (values.length == 0) {
+        if ((long)(values.length) == (long)(0)) {
             return false;
         }
-        int i_1 = 0;
-        while (i_1 < values.length) {
-            if (values[i_1] <= 0.0) {
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(values.length)) {
+            if ((double)(values[(int)((long)(i_3))]) <= 0.0) {
                 return false;
             }
-            i_1 = i_1 + 1;
+            i_3 = (long)((long)(i_3) + (long)(1));
         }
         return true;
     }
@@ -38,7 +38,7 @@ public class Main {
             System.out.println("ValueError: Molar mass values must greater than 0.");
             return 0.0;
         }
-        return round6(sqrtApprox(m2 / m1));
+        return round6((double)(sqrtApprox((double)(m2) / (double)(m1))));
     }
 
     static double first_effusion_rate(double rate, double m1, double m2) {
@@ -46,7 +46,7 @@ public class Main {
             System.out.println("ValueError: Molar mass and effusion rate values must greater than 0.");
             return 0.0;
         }
-        return round6(rate * sqrtApprox(m2 / m1));
+        return round6((double)(rate) * (double)(sqrtApprox((double)(m2) / (double)(m1))));
     }
 
     static double second_effusion_rate(double rate, double m1, double m2) {
@@ -54,7 +54,7 @@ public class Main {
             System.out.println("ValueError: Molar mass and effusion rate values must greater than 0.");
             return 0.0;
         }
-        return round6(rate / sqrtApprox(m2 / m1));
+        return round6((double)(rate) / (double)(sqrtApprox((double)(m2) / (double)(m1))));
     }
 
     static double first_molar_mass(double mass, double r1, double r2) {
@@ -62,8 +62,8 @@ public class Main {
             System.out.println("ValueError: Molar mass and effusion rate values must greater than 0.");
             return 0.0;
         }
-        double ratio = r1 / r2;
-        return round6(mass / (ratio * ratio));
+        double ratio_1 = (double)(r1) / (double)(r2);
+        return round6((double)(mass) / (ratio_1 * ratio_1));
     }
 
     static double second_molar_mass(double mass, double r1, double r2) {
@@ -71,14 +71,48 @@ public class Main {
             System.out.println("ValueError: Molar mass and effusion rate values must greater than 0.");
             return 0.0;
         }
-        double ratio_1 = r1 / r2;
-        return round6((ratio_1 * ratio_1) / mass);
+        double ratio_3 = (double)(r1) / (double)(r2);
+        return round6((ratio_3 * ratio_3) / (double)(mass));
     }
     public static void main(String[] args) {
-        System.out.println(effusion_ratio(2.016, 4.002));
-        System.out.println(first_effusion_rate(1.0, 2.016, 4.002));
-        System.out.println(second_effusion_rate(1.0, 2.016, 4.002));
-        System.out.println(first_molar_mass(2.0, 1.408943, 0.709752));
-        System.out.println(second_molar_mass(2.0, 1.408943, 0.709752));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            System.out.println(effusion_ratio(2.016, 4.002));
+            System.out.println(first_effusion_rate(1.0, 2.016, 4.002));
+            System.out.println(second_effusion_rate(1.0, 2.016, 4.002));
+            System.out.println(first_molar_mass(2.0, 1.408943, 0.709752));
+            System.out.println(second_molar_mass(2.0, 1.408943, 0.709752));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 }

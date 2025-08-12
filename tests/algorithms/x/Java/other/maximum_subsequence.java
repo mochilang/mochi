@@ -1,6 +1,6 @@
 public class Main {
 
-    static int max_int(int a, int b) {
+    static long max_int(long a, long b) {
         if (a >= b) {
             return a;
         } else {
@@ -8,26 +8,26 @@ public class Main {
         }
     }
 
-    static int max_subsequence_sum(int[] nums) {
-        if (nums.length == 0) {
+    static long max_subsequence_sum(long[] nums) {
+        if ((long)(nums.length) == (long)(0)) {
             throw new RuntimeException(String.valueOf("input sequence should not be empty"));
         }
-        int ans = nums[0];
-        int i = 1;
-        while (i < nums.length) {
-            int num = nums[i];
-            int extended = ans + num;
-            ans = max_int(max_int(ans, extended), num);
-            i = i + 1;
+        long ans_1 = nums[(int)((long)(0))];
+        long i_1 = 1L;
+        while ((long)(i_1) < (long)(nums.length)) {
+            long num_1 = nums[(int)((long)(i_1))];
+            long extended_1 = (long)(ans_1 + num_1);
+            ans_1 = max_int(max_int(ans_1, (long)(extended_1)), num_1);
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
-        return ans;
+        return ans_1;
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            System.out.println(max_subsequence_sum(((int[])(new int[]{1, 2, 3, 4, -2}))));
-            System.out.println(max_subsequence_sum(((int[])(new int[]{-2, -3, -1, -4, -6}))));
+            System.out.println(max_subsequence_sum(((long[])(new long[]{1, 2, 3, 4, -2}))));
+            System.out.println(max_subsequence_sum(((long[])(new long[]{-2, -3, -1, -4, -6}))));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");

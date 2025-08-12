@@ -2,15 +2,15 @@ public class Main {
 
     static double[] relu(double[] vector) {
         double[] result = ((double[])(new double[]{}));
-        int i = 0;
-        while (i < vector.length) {
-            double v = vector[i];
-            if (v > 0.0) {
-                result = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(result), java.util.stream.DoubleStream.of(v)).toArray()));
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(vector.length)) {
+            double v_1 = (double)(vector[(int)((long)(i_1))]);
+            if ((double)(v_1) > 0.0) {
+                result = ((double[])(appendDouble(result, (double)(v_1))));
             } else {
-                result = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(result), java.util.stream.DoubleStream.of(0.0)).toArray()));
+                result = ((double[])(appendDouble(result, 0.0)));
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
         return result;
     }
@@ -52,6 +52,12 @@ public class Main {
         return rt.totalMemory() - rt.freeMemory();
     }
 
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
+    }
+
     static String _p(Object v) {
         if (v == null) return "<nil>";
         if (v.getClass().isArray()) {
@@ -64,6 +70,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

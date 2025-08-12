@@ -1,8 +1,8 @@
 public class Main {
     static class LRUCache {
-        int max_capacity;
+        long max_capacity;
         String[] store;
-        LRUCache(int max_capacity, String[] store) {
+        LRUCache(long max_capacity, String[] store) {
             this.max_capacity = max_capacity;
             this.store = store;
         }
@@ -15,72 +15,72 @@ public class Main {
     static LRUCache lru = null;
     static String r = null;
 
-    static LRUCache new_cache(int n) {
-        if (n < 0) {
+    static LRUCache new_cache(long n) {
+        if (n < (long)(0)) {
             throw new RuntimeException(String.valueOf("n should be an integer greater than 0."));
         }
-        int cap = n == 0 ? 2147483647 : n;
-        return new LRUCache(cap, new String[]{});
+        long cap_1 = (long)(n == (long)(0) ? 2147483647 : n);
+        return new LRUCache(cap_1, new String[]{});
     }
 
     static String[] remove_element(String[] xs, String x) {
         String[] res = ((String[])(new String[]{}));
-        boolean removed = false;
-        int i = 0;
-        while (i < xs.length) {
-            String v = xs[i];
-            if (removed == false && (v.equals(x))) {
-                removed = true;
+        boolean removed_1 = false;
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(xs.length)) {
+            String v_1 = xs[(int)((long)(i_1))];
+            if ((removed_1 == false) && (v_1.equals(x))) {
+                removed_1 = true;
             } else {
-                res = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.Arrays.stream(new String[]{v})).toArray(String[]::new)));
+                res = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.Arrays.stream(new String[]{v_1})).toArray(String[]::new)));
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
         return res;
     }
 
     static LRUCache refer(LRUCache cache, String x) {
         String[] store = ((String[])(cache.store));
-        boolean exists = false;
-        int i_1 = 0;
-        while (i_1 < store.length) {
-            if ((store[i_1].equals(x))) {
-                exists = true;
+        boolean exists_1 = false;
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(store.length)) {
+            if ((store[(int)((long)(i_3))].equals(x))) {
+                exists_1 = true;
             }
-            i_1 = i_1 + 1;
+            i_3 = (long)((long)(i_3) + (long)(1));
         }
-        if (exists) {
+        if (exists_1) {
             store = ((String[])(remove_element(((String[])(store)), x)));
-        } else         if (store.length == cache.max_capacity) {
-            String[] new_store = ((String[])(new String[]{}));
-            int j = 0;
-            while (j < store.length - 1) {
-                new_store = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(new_store), java.util.Arrays.stream(new String[]{store[j]})).toArray(String[]::new)));
-                j = j + 1;
+        } else         if ((long)(store.length) == (long)(cache.max_capacity)) {
+            String[] new_store_1 = ((String[])(new String[]{}));
+            long j_1 = 0L;
+            while ((long)(j_1) < (long)((long)(store.length) - (long)(1))) {
+                new_store_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(new_store_1), java.util.Arrays.stream(new String[]{store[(int)((long)(j_1))]})).toArray(String[]::new)));
+                j_1 = (long)((long)(j_1) + (long)(1));
             }
-            store = ((String[])(new_store));
+            store = ((String[])(new_store_1));
         }
         store = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(new String[]{x}), java.util.Arrays.stream(store)).toArray(String[]::new)));
         return new LRUCache(cache.max_capacity, store);
     }
 
     static void display(LRUCache cache) {
-        int i_2 = 0;
-        while (i_2 < cache.store.length) {
-            System.out.println(cache.store[i_2]);
-            i_2 = i_2 + 1;
+        long i_4 = 0L;
+        while ((long)(i_4) < (long)(cache.store.length)) {
+            System.out.println(cache.store[(int)((long)(i_4))]);
+            i_4 = (long)((long)(i_4) + (long)(1));
         }
     }
 
     static String repr_item(String s) {
         boolean all_digits = true;
-        int i_3 = 0;
-        while (i_3 < _runeLen(s)) {
-            String ch = s.substring(i_3, i_3+1);
-            if ((ch.compareTo("0") < 0) || (ch.compareTo("9") > 0)) {
+        long i_6 = 0L;
+        while ((long)(i_6) < (long)(_runeLen(s))) {
+            String ch_1 = s.substring((int)((long)(i_6)), (int)((long)(i_6))+1);
+            if ((ch_1.compareTo("0") < 0) || (ch_1.compareTo("9") > 0)) {
                 all_digits = false;
             }
-            i_3 = i_3 + 1;
+            i_6 = (long)((long)(i_6) + (long)(1));
         }
         if (all_digits) {
             return s;
@@ -90,13 +90,13 @@ public class Main {
 
     static String cache_repr(LRUCache cache) {
         String res_1 = "LRUCache(" + _p(cache.max_capacity) + ") => [";
-        int i_4 = 0;
-        while (i_4 < cache.store.length) {
-            res_1 = res_1 + String.valueOf(repr_item(cache.store[i_4]));
-            if (i_4 < cache.store.length - 1) {
+        long i_8 = 0L;
+        while ((long)(i_8) < (long)(cache.store.length)) {
+            res_1 = res_1 + String.valueOf(repr_item(cache.store[(int)((long)(i_8))]));
+            if ((long)(i_8) < (long)((long)(cache.store.length) - (long)(1))) {
                 res_1 = res_1 + ", ";
             }
-            i_4 = i_4 + 1;
+            i_8 = (long)((long)(i_8) + (long)(1));
         }
         res_1 = res_1 + "]";
         return res_1;
@@ -105,7 +105,7 @@ public class Main {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            lru = new_cache(4);
+            lru = new_cache(4L);
             lru = refer(lru, "A");
             lru = refer(lru, "2");
             lru = refer(lru, "3");
@@ -166,6 +166,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }
