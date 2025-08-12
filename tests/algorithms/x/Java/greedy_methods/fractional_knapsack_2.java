@@ -15,99 +15,71 @@ public class Main {
     static double[] v;
     static double[] w;
 
-    static int[] sort_by_ratio(int[] index, double[] ratio) {
-        int i = 1;
+    static long[] sort_by_ratio(long[] index, double[] ratio) {
+        long i = 1L;
         while (i < index.length) {
-            int key = index[i];
-            double key_ratio = ratio[key];
-            int j = i - 1;
-            while (j >= 0 && ratio[index[j]] < key_ratio) {
-index[j + 1] = index[j];
-                j = j - 1;
+            long key_1 = index[(int)((long)(i))];
+            double key_ratio_1 = ratio[(int)((long)(key_1))];
+            long j_1 = i - 1;
+            while (j_1 >= 0 && ratio[(int)((long)(index[(int)((long)(j_1))]))] < key_ratio_1) {
+index[(int)((long)(j_1 + 1))] = index[(int)((long)(j_1))];
+                j_1 = j_1 - 1;
             }
-index[j + 1] = key;
+index[(int)((long)(j_1 + 1))] = key_1;
             i = i + 1;
         }
         return index;
     }
 
     static KnapsackResult fractional_knapsack(double[] value, double[] weight, double capacity) {
-        int n = value.length;
-        int[] index = ((int[])(new int[]{}));
-        int i_1 = 0;
-        while (i_1 < n) {
-            index = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(index), java.util.stream.IntStream.of(i_1)).toArray()));
-            i_1 = i_1 + 1;
+        long n = value.length;
+        long[] index_1 = ((long[])(new long[]{}));
+        long i_2 = 0L;
+        while (i_2 < n) {
+            index_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(index_1), java.util.stream.LongStream.of(i_2)).toArray()));
+            i_2 = i_2 + 1;
         }
-        double[] ratio = ((double[])(new double[]{}));
-        i_1 = 0;
-        while (i_1 < n) {
-            ratio = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(ratio), java.util.stream.DoubleStream.of(value[i_1] / weight[i_1])).toArray()));
-            i_1 = i_1 + 1;
+        double[] ratio_1 = ((double[])(new double[]{}));
+        i_2 = 0;
+        while (i_2 < n) {
+            ratio_1 = ((double[])(appendDouble(ratio_1, value[(int)((long)(i_2))] / weight[(int)((long)(i_2))])));
+            i_2 = i_2 + 1;
         }
-        index = ((int[])(sort_by_ratio(((int[])(index)), ((double[])(ratio)))));
-        double[] fractions = ((double[])(new double[]{}));
-        i_1 = 0;
-        while (i_1 < n) {
-            fractions = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(fractions), java.util.stream.DoubleStream.of(0.0)).toArray()));
-            i_1 = i_1 + 1;
+        index_1 = ((long[])(sort_by_ratio(((long[])(index_1)), ((double[])(ratio_1)))));
+        double[] fractions_1 = ((double[])(new double[]{}));
+        i_2 = 0;
+        while (i_2 < n) {
+            fractions_1 = ((double[])(appendDouble(fractions_1, 0.0)));
+            i_2 = i_2 + 1;
         }
-        double max_value = 0.0;
-        int idx = 0;
-        while (idx < index.length) {
-            int item = index[idx];
-            if (weight[item] <= capacity) {
-fractions[item] = 1.0;
-                max_value = max_value + value[item];
-                capacity = capacity - weight[item];
+        double max_value_1 = 0.0;
+        long idx_1 = 0L;
+        while (idx_1 < index_1.length) {
+            long item_1 = index_1[(int)((long)(idx_1))];
+            if (weight[(int)((long)(item_1))] <= capacity) {
+fractions_1[(int)((long)(item_1))] = 1.0;
+                max_value_1 = max_value_1 + value[(int)((long)(item_1))];
+                capacity = capacity - weight[(int)((long)(item_1))];
             } else {
-fractions[item] = capacity / weight[item];
-                max_value = max_value + value[item] * capacity / weight[item];
+fractions_1[(int)((long)(item_1))] = capacity / weight[(int)((long)(item_1))];
+                max_value_1 = max_value_1 + value[(int)((long)(item_1))] * capacity / weight[(int)((long)(item_1))];
                 break;
             }
-            idx = idx + 1;
+            idx_1 = idx_1 + 1;
         }
-        return new KnapsackResult(max_value, fractions);
+        return new KnapsackResult(max_value_1, fractions_1);
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            v = ((double[])(new double[]{1.0, 3.0, 5.0, 7.0, 9.0}));
-            w = ((double[])(new double[]{0.9, 0.7, 0.5, 0.3, 0.1}));
-            System.out.println(fractional_knapsack(((double[])(v)), ((double[])(w)), 5.0));
-            System.out.println(fractional_knapsack(((double[])(new double[]{1.0, 3.0, 5.0, 7.0})), ((double[])(new double[]{0.9, 0.7, 0.5, 0.3})), 30.0));
-            System.out.println(fractional_knapsack(((double[])(new double[]{})), ((double[])(new double[]{})), 30.0));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
+        v = ((double[])(new double[]{1.0, 3.0, 5.0, 7.0, 9.0}));
+        w = ((double[])(new double[]{0.9, 0.7, 0.5, 0.3, 0.1}));
+        System.out.println(fractional_knapsack(((double[])(v)), ((double[])(w)), 5.0));
+        System.out.println(fractional_knapsack(((double[])(new double[]{1.0, 3.0, 5.0, 7.0})), ((double[])(new double[]{0.9, 0.7, 0.5, 0.3})), 30.0));
+        System.out.println(fractional_knapsack(((double[])(new double[]{})), ((double[])(new double[]{})), 30.0));
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 }

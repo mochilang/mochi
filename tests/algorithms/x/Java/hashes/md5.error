@@ -1,0 +1,50 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden473_md52886285323/001/Main.java:8: error: illegal start of expression
+            if ((_substr(ASCII, (int)((long)(i)), (int)((long)(i + 1)))).equals(ch))) {
+                                                                                    ^
+/tmp/TestJavaTranspiler_Algorithms_Golden473_md52886285323/001/Main.java:20: error: ';' expected
+        return _substr(s, (int)((long)(24)), (int)((long)(32)))) + _substr(s, (int)((long)(16)), (int)((long)(24)))) + _substr(s, (int)((long)(8)), (int)((long)(16)))) + _substr(s, (int)((long)(0)), (int)((long)(8))));
+                                                               ^
+/tmp/TestJavaTranspiler_Algorithms_Golden473_md52886285323/001/Main.java:20: error: ';' expected
+        return _substr(s, (int)((long)(24)), (int)((long)(32)))) + _substr(s, (int)((long)(16)), (int)((long)(24)))) + _substr(s, (int)((long)(8)), (int)((long)(16)))) + _substr(s, (int)((long)(0)), (int)((long)(8))));
+                                                                                                                   ^
+/tmp/TestJavaTranspiler_Algorithms_Golden473_md52886285323/001/Main.java:20: error: ';' expected
+        return _substr(s, (int)((long)(24)), (int)((long)(32)))) + _substr(s, (int)((long)(16)), (int)((long)(24)))) + _substr(s, (int)((long)(8)), (int)((long)(16)))) + _substr(s, (int)((long)(0)), (int)((long)(8))));
+                                                                                                                                                                      ^
+/tmp/TestJavaTranspiler_Algorithms_Golden473_md52886285323/001/Main.java:20: error: ';' expected
+        return _substr(s, (int)((long)(24)), (int)((long)(32)))) + _substr(s, (int)((long)(16)), (int)((long)(24)))) + _substr(s, (int)((long)(8)), (int)((long)(16)))) + _substr(s, (int)((long)(0)), (int)((long)(8))));
+                                                                                                                                                                                                                        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden473_md52886285323/001/Main.java:34: error: ';' expected
+            bits = _substr(bits, (int)((long)(_runeLen(bits) - width)), (int)((long)(_runeLen(bits)))));
+                                                                                                      ^
+/tmp/TestJavaTranspiler_Algorithms_Golden473_md52886285323/001/Main.java:43: error: illegal start of expression
+            if ((_substr(bits, (int)((long)(i_2)), (int)((long)(i_2 + 1)))).equals("1"))) {
+                                                                                        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden473_md52886285323/001/Main.java:45: error: 'else' without 'if'
+            } else {
+              ^
+/tmp/TestJavaTranspiler_Algorithms_Golden473_md52886285323/001/Main.java:62: error: ';' expected
+            s_1 = _substr(digits, (int)((long)(d_1)), (int)((long)(d_1 + 1)))) + s_1;
+                                                                             ^
+/tmp/TestJavaTranspiler_Algorithms_Golden473_md52886285323/001/Main.java:62: error: not a statement
+            s_1 = _substr(digits, (int)((long)(d_1)), (int)((long)(d_1 + 1)))) + s_1;
+                                                                                 ^
+/tmp/TestJavaTranspiler_Algorithms_Golden473_md52886285323/001/Main.java:77: error: ';' expected
+            hex_1 = _substr(hex_1, (int)((long)(_runeLen(hex_1) - 8)), (int)((long)(_runeLen(hex_1)))));
+                                                                                                      ^
+/tmp/TestJavaTranspiler_Algorithms_Golden473_md52886285323/001/Main.java:82: error: ';' expected
+            le_1 = le_1 + _substr(hex_1, (int)((long)(j_1)), (int)((long)(j_1 + 2))));
+                                                                                    ^
+/tmp/TestJavaTranspiler_Algorithms_Golden473_md52886285323/001/Main.java:92: error: ';' expected
+            String ch_1 = _substr(message, (int)((long)(i_4)), (int)((long)(i_4 + 1))));
+                                                                                      ^
+/tmp/TestJavaTranspiler_Algorithms_Golden473_md52886285323/001/Main.java:101: error: ';' expected
+        bit_string = bit_string + String.valueOf(to_little_endian(_substr(start_len_1, (int)((long)(32)), (int)((long)(64)))))) + String.valueOf(to_little_endian(_substr(start_len_1, (int)((long)(0)), (int)((long)(32))))));
+                                                                                                                              ^
+/tmp/TestJavaTranspiler_Algorithms_Golden473_md52886285323/001/Main.java:101: error: ';' expected
+        bit_string = bit_string + String.valueOf(to_little_endian(_substr(start_len_1, (int)((long)(32)), (int)((long)(64)))))) + String.valueOf(to_little_endian(_substr(start_len_1, (int)((long)(0)), (int)((long)(32))))));
+                                                                                                                                                                                                                             ^
+/tmp/TestJavaTranspiler_Algorithms_Golden473_md52886285323/001/Main.java:115: error: ';' expected
+                String part_1 = _substr(bit_string, (int)((long)(pos_1 + i_6)), (int)((long)(pos_1 + i_6 + 32))));
+                                                                                                                ^
+16 errors

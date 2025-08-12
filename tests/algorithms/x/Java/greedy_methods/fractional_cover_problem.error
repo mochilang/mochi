@@ -1,7 +1,11 @@
-compile: exit status 1
-/tmp/TestJavaTranspiler_Algorithms_Golden457_fractional_cover_problem185940141/001/Main.java:33: error: array required, but List<Item> found
-            Item item = sorted[idx];
-                              ^
-Note: /tmp/TestJavaTranspiler_Algorithms_Golden457_fractional_cover_problem185940141/001/Main.java uses unchecked or unsafe operations.
-Note: Recompile with -Xlint:unchecked for details.
-1 error
+run: exit status 1
+240
+135
+Exception in thread "main" java.lang.IndexOutOfBoundsException: Index 0 out of bounds for length 0
+	at java.base/jdk.internal.util.Preconditions.outOfBounds(Preconditions.java:100)
+	at java.base/jdk.internal.util.Preconditions.outOfBoundsCheckIndex(Preconditions.java:106)
+	at java.base/jdk.internal.util.Preconditions.checkIndex(Preconditions.java:302)
+	at java.base/java.util.Objects.checkIndex(Objects.java:385)
+	at java.base/java.util.ArrayList.get(ArrayList.java:427)
+	at Main.fractional_cover(Main.java:33)
+	at Main.main(Main.java:47)

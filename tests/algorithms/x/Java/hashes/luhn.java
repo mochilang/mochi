@@ -1,66 +1,32 @@
 public class Main {
 
     static boolean is_luhn(String s) {
-        int n = _runeLen(s);
+        long n = _runeLen(s);
         if (n <= 1) {
             return false;
         }
-        int check_digit = Integer.parseInt(_substr(s, n - 1, n));
-        int i = n - 2;
-        boolean even = true;
-        while (i >= 0) {
-            int digit = Integer.parseInt(_substr(s, i, i + 1));
-            if (even) {
-                int doubled = digit * 2;
-                if (doubled > 9) {
-                    doubled = doubled - 9;
+        long check_digit_1 = Integer.parseInt(_substr(s, (int)((long)(n - 1)), (int)((long)(n)))));
+        long i_1 = n - 2;
+        boolean even_1 = true;
+        while (i_1 >= 0) {
+            long digit_1 = Integer.parseInt(_substr(s, (int)((long)(i_1)), (int)((long)(i_1 + 1)))));
+            if (even_1) {
+                long doubled_1 = digit_1 * 2;
+                if (doubled_1 > 9) {
+                    doubled_1 = doubled_1 - 9;
                 }
-                check_digit = check_digit + doubled;
+                check_digit_1 = check_digit_1 + doubled_1;
             } else {
-                check_digit = check_digit + digit;
+                check_digit_1 = check_digit_1 + digit_1;
             }
-            even = !even;
-            i = i - 1;
+            even_1 = !even_1;
+            i_1 = i_1 - 1;
         }
-        return Math.floorMod(check_digit, 10) == 0;
+        return Math.floorMod(check_digit_1, 10) == 0;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            json(is_luhn("79927398713"));
-            json(is_luhn("79927398714"));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        json(is_luhn("79927398713"));
+        json(is_luhn("79927398714"));
     }
 
     static int _runeLen(String s) {
@@ -68,6 +34,10 @@ public class Main {
     }
 
     static String _substr(String s, int i, int j) {
+        int len = _runeLen(s);
+        if (i < 0) i = 0;
+        if (j > len) j = len;
+        if (i > j) i = j;
         int start = s.offsetByCodePoints(0, i);
         int end = s.offsetByCodePoints(0, j);
         return s.substring(start, end);

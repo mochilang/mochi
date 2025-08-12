@@ -1,0 +1,11 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden494_test_linear_algebra526757953/001/Main.java:38: error: ';' expected
+            String ch_1 = _substr("0123456789", (int)((long)(digit_1)), (int)((long)(digit_1 + 1))));
+                                                                                                   ^
+/tmp/TestJavaTranspiler_Algorithms_Golden494_test_linear_algebra526757953/001/Main.java:64: error: ';' expected
+                res_3 = res_3 + _substr("0123456789", (int)((long)(digit_3)), (int)((long)(digit_3 + 1))));
+                                                                                                         ^
+/tmp/TestJavaTranspiler_Algorithms_Golden494_test_linear_algebra526757953/001/Main.java:431: error: illegal start of expression
+            if ((_substr(zstr, (int)((long)(zi)), (int)((long)(zi + 1)))).equals("0"))) {
+                                                                                      ^
+3 errors

@@ -1,8 +1,8 @@
 public class Main {
-    static int seed = 0;
+    static long seed = 0;
 
-    static int rand() {
-        seed = ((int)(Math.floorMod(((long)((seed * 1103515245 + 12345))), 2147483648L)));
+    static long rand() {
+        seed = ((long)(Math.floorMod(((long)((seed * 1103515245 + 12345))), 2147483648L)));
         return seed;
     }
 
@@ -10,30 +10,30 @@ public class Main {
         return (1.0 * rand()) / 2147483648.0;
     }
 
-    static java.util.Map<Integer,int[]> complete_graph(int vertices_number) {
-        java.util.Map<Integer,int[]> graph = ((java.util.Map<Integer,int[]>)(new java.util.LinkedHashMap<Integer, int[]>()));
-        int i = 0;
-        while (i < vertices_number) {
-            int[] neighbors = ((int[])(new int[]{}));
-            int j = 0;
-            while (j < vertices_number) {
-                if (j != i) {
-                    neighbors = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(neighbors), java.util.stream.IntStream.of(j)).toArray()));
+    static java.util.Map<Long,long[]> complete_graph(long vertices_number) {
+        java.util.Map<Long,long[]> graph = ((java.util.Map<Long,long[]>)(new java.util.LinkedHashMap<Long, long[]>()));
+        long i_1 = 0L;
+        while (i_1 < vertices_number) {
+            long[] neighbors_1 = ((long[])(new long[]{}));
+            long j_1 = 0L;
+            while (j_1 < vertices_number) {
+                if (j_1 != i_1) {
+                    neighbors_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(neighbors_1), java.util.stream.LongStream.of(j_1)).toArray()));
                 }
-                j = j + 1;
+                j_1 = j_1 + 1;
             }
-graph.put(i, ((int[])(neighbors)));
-            i = i + 1;
+graph.put(i_1, ((long[])(neighbors_1)));
+            i_1 = i_1 + 1;
         }
         return graph;
     }
 
-    static java.util.Map<Integer,int[]> random_graph(int vertices_number, double probability, boolean directed) {
-        java.util.Map<Integer,int[]> graph_1 = ((java.util.Map<Integer,int[]>)(new java.util.LinkedHashMap<Integer, int[]>()));
-        int i_1 = 0;
-        while (i_1 < vertices_number) {
-graph_1.put(i_1, ((int[])(new int[]{})));
-            i_1 = i_1 + 1;
+    static java.util.Map<Long,long[]> random_graph(long vertices_number, double probability, boolean directed) {
+        java.util.Map<Long,long[]> graph_1 = ((java.util.Map<Long,long[]>)(new java.util.LinkedHashMap<Long, long[]>()));
+        long i_3 = 0L;
+        while (i_3 < vertices_number) {
+graph_1.put(i_3, ((long[])(new long[]{})));
+            i_3 = i_3 + 1;
         }
         if (probability >= 1.0) {
             return complete_graph(vertices_number);
@@ -41,67 +41,33 @@ graph_1.put(i_1, ((int[])(new int[]{})));
         if (probability <= 0.0) {
             return graph_1;
         }
-        i_1 = 0;
-        while (i_1 < vertices_number) {
-            int j_1 = i_1 + 1;
-            while (j_1 < vertices_number) {
+        i_3 = 0;
+        while (i_3 < vertices_number) {
+            long j_3 = i_3 + 1;
+            while (j_3 < vertices_number) {
                 if (random() < probability) {
-graph_1.put(i_1, ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(((int[])(graph_1).get(i_1))), java.util.stream.IntStream.of(j_1)).toArray())));
+graph_1.put(i_3, ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(((long[])(graph_1).get(i_3))), java.util.stream.LongStream.of(j_3)).toArray())));
                     if (!(Boolean)directed) {
-graph_1.put(j_1, ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(((int[])(graph_1).get(j_1))), java.util.stream.IntStream.of(i_1)).toArray())));
+graph_1.put(j_3, ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(((long[])(graph_1).get(j_3))), java.util.stream.LongStream.of(i_3)).toArray())));
                     }
                 }
-                j_1 = j_1 + 1;
+                j_3 = j_3 + 1;
             }
-            i_1 = i_1 + 1;
+            i_3 = i_3 + 1;
         }
         return graph_1;
     }
 
     static void main() {
         seed = 1;
-        java.util.Map<Integer,int[]> g1 = random_graph(4, 0.5, false);
-        System.out.println(g1);
+        java.util.Map<Long,long[]> g1_1 = random_graph(4L, 0.5, false);
+        System.out.println(g1_1);
         seed = 1;
-        java.util.Map<Integer,int[]> g2 = random_graph(4, 0.5, true);
-        System.out.println(g2);
+        java.util.Map<Long,long[]> g2_1 = random_graph(4L, 0.5, true);
+        System.out.println(g2_1);
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            seed = 1;
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        seed = 1;
+        main();
     }
 }

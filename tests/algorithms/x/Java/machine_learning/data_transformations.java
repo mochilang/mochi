@@ -10,7 +10,7 @@ public class Main {
 
     static double pow10(long n) {
         double result = 1.0;
-        long i_2 = 0;
+        long i_2 = 0L;
         while (i_2 < n) {
             result = result * 10.0;
             i_2 = i_2 + 1;
@@ -26,7 +26,7 @@ public class Main {
 
     static double sqrtApprox(double x) {
         double guess = x;
-        long i_4 = 0;
+        long i_4 = 0L;
         while (i_4 < 20) {
             guess = (guess + x / guess) / 2.0;
             i_4 = i_4 + 1;
@@ -36,7 +36,7 @@ public class Main {
 
     static double mean(double[] data) {
         double total = 0.0;
-        long i_6 = 0;
+        long i_6 = 0L;
         long n_1 = data.length;
         while (i_6 < n_1) {
             total = total + data[(int)(i_6)];
@@ -52,7 +52,7 @@ public class Main {
         }
         double m_2 = mean(((double[])(data)));
         double sum_sq_1 = 0.0;
-        long i_8 = 0;
+        long i_8 = 0L;
         while (i_8 < n_2) {
             double diff_1 = data[(int)(i_8)] - m_2;
             sum_sq_1 = sum_sq_1 + diff_1 * diff_1;
@@ -66,11 +66,11 @@ public class Main {
         double x_max_1 = ((Number)(_max(data))).doubleValue();
         double denom_1 = x_max_1 - x_min;
         double[] result_2 = ((double[])(new double[]{}));
-        long i_10 = 0;
+        long i_10 = 0L;
         long n_4 = data.length;
         while (i_10 < n_4) {
             double norm_1 = (data[(int)(i_10)] - x_min) / denom_1;
-            result_2 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(result_2), java.util.stream.DoubleStream.of(round(norm_1, ndigits))).toArray()));
+            result_2 = ((double[])(appendDouble(result_2, round(norm_1, ndigits))));
             i_10 = i_10 + 1;
         }
         return result_2;
@@ -80,20 +80,60 @@ public class Main {
         double mu = mean(((double[])(data)));
         double sigma_1 = stdev(((double[])(data)));
         double[] result_4 = ((double[])(new double[]{}));
-        long i_12 = 0;
+        long i_12 = 0L;
         long n_6 = data.length;
         while (i_12 < n_6) {
             double z_1 = (data[(int)(i_12)] - mu) / sigma_1;
-            result_4 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(result_4), java.util.stream.DoubleStream.of(round(z_1, ndigits))).toArray()));
+            result_4 = ((double[])(appendDouble(result_4, round(z_1, ndigits))));
             i_12 = i_12 + 1;
         }
         return result_4;
     }
     public static void main(String[] args) {
-        System.out.println(_p(normalization(((double[])(new double[]{2.0, 7.0, 10.0, 20.0, 30.0, 50.0})), 3)));
-        System.out.println(_p(normalization(((double[])(new double[]{5.0, 10.0, 15.0, 20.0, 25.0})), 3)));
-        System.out.println(_p(standardization(((double[])(new double[]{2.0, 7.0, 10.0, 20.0, 30.0, 50.0})), 3)));
-        System.out.println(_p(standardization(((double[])(new double[]{5.0, 10.0, 15.0, 20.0, 25.0})), 3)));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            System.out.println(_p(normalization(((double[])(new double[]{2.0, 7.0, 10.0, 20.0, 30.0, 50.0})), 3L)));
+            System.out.println(_p(normalization(((double[])(new double[]{5.0, 10.0, 15.0, 20.0, 25.0})), 3L)));
+            System.out.println(_p(standardization(((double[])(new double[]{2.0, 7.0, 10.0, 20.0, 30.0, 50.0})), 3L)));
+            System.out.println(_p(standardization(((double[])(new double[]{5.0, 10.0, 15.0, 20.0, 25.0})), 3L)));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 
     static Object[] _toObjectArray(Object v) {

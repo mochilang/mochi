@@ -1,9 +1,9 @@
 public class Main {
 
-    static boolean contains_int(int[] xs, int x) {
-        int i = 0;
+    static boolean contains_int(long[] xs, long x) {
+        long i = 0L;
         while (i < xs.length) {
-            if (xs[i] == x) {
+            if (xs[(int)((long)(i))] == x) {
                 return true;
             }
             i = i + 1;
@@ -13,179 +13,145 @@ public class Main {
 
     static String[] split(String s, String sep) {
         String[] res = ((String[])(new String[]{}));
-        String current = "";
-        int i_1 = 0;
-        while (i_1 < _runeLen(s)) {
-            String ch = _substr(s, i_1, i_1 + 1);
-            if ((ch.equals(sep))) {
-                res = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(current)).toArray(String[]::new)));
-                current = "";
+        String current_1 = "";
+        long i_2 = 0L;
+        while (i_2 < _runeLen(s)) {
+            String ch_1 = _substr(s, (int)((long)(i_2)), (int)((long)(i_2 + 1))));
+            if ((ch_1.equals(sep))) {
+                res = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(current_1)).toArray(String[]::new)));
+                current_1 = "";
             } else {
-                current = current + ch;
+                current_1 = current_1 + ch_1;
             }
-            i_1 = i_1 + 1;
+            i_2 = i_2 + 1;
         }
-        res = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(current)).toArray(String[]::new)));
+        res = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(current_1)).toArray(String[]::new)));
         return res;
     }
 
-    static double pow_int_float(int base, int exp) {
+    static double pow_int_float(long base, long exp) {
         double result = 1.0;
-        int i_2 = 0;
-        while (i_2 < exp) {
+        long i_4 = 0L;
+        while (i_4 < exp) {
             result = result * (((Number)(base)).doubleValue());
-            i_2 = i_2 + 1;
+            i_4 = i_4 + 1;
         }
         return result;
     }
 
-    static String points_to_polynomial(int[][] coordinates) {
+    static String points_to_polynomial(long[][] coordinates) {
         if (coordinates.length == 0) {
             throw new RuntimeException(String.valueOf("The program cannot work out a fitting polynomial."));
         }
-        int i_3 = 0;
-        while (i_3 < coordinates.length) {
-            if (coordinates[i_3].length != 2) {
+        long i_6 = 0L;
+        while (i_6 < coordinates.length) {
+            if (coordinates[(int)((long)(i_6))].length != 2) {
                 throw new RuntimeException(String.valueOf("The program cannot work out a fitting polynomial."));
             }
-            i_3 = i_3 + 1;
+            i_6 = i_6 + 1;
         }
-        int j = 0;
-        while (j < coordinates.length) {
-            int k = j + 1;
-            while (k < coordinates.length) {
-                if (coordinates[j][0] == coordinates[k][0] && coordinates[j][1] == coordinates[k][1]) {
+        long j_1 = 0L;
+        while (j_1 < coordinates.length) {
+            long k_1 = j_1 + 1;
+            while (k_1 < coordinates.length) {
+                if (coordinates[(int)((long)(j_1))][(int)((long)(0))] == coordinates[(int)((long)(k_1))][(int)((long)(0))] && coordinates[(int)((long)(j_1))][(int)((long)(1))] == coordinates[(int)((long)(k_1))][(int)((long)(1))]) {
                     throw new RuntimeException(String.valueOf("The program cannot work out a fitting polynomial."));
                 }
-                k = k + 1;
+                k_1 = k_1 + 1;
             }
-            j = j + 1;
+            j_1 = j_1 + 1;
         }
-        int[] set_x = ((int[])(new int[]{}));
-        i_3 = 0;
-        while (i_3 < coordinates.length) {
-            int x_val = coordinates[i_3][0];
-            if (!(Boolean)contains_int(((int[])(set_x)), x_val)) {
-                set_x = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(set_x), java.util.stream.IntStream.of(x_val)).toArray()));
+        long[] set_x_1 = ((long[])(new long[]{}));
+        i_6 = 0;
+        while (i_6 < coordinates.length) {
+            long x_val_1 = coordinates[(int)((long)(i_6))][(int)((long)(0))];
+            if (!(Boolean)contains_int(((long[])(set_x_1)), x_val_1)) {
+                set_x_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(set_x_1), java.util.stream.LongStream.of(x_val_1)).toArray()));
             }
-            i_3 = i_3 + 1;
+            i_6 = i_6 + 1;
         }
-        if (set_x.length == 1) {
-            return "x=" + _p(_geti(coordinates[0], 0));
+        if (set_x_1.length == 1) {
+            return "x=" + _p(_geti(coordinates[(int)((long)(0))], ((Number)(0)).intValue()));
         }
-        if (set_x.length != coordinates.length) {
+        if (set_x_1.length != coordinates.length) {
             throw new RuntimeException(String.valueOf("The program cannot work out a fitting polynomial."));
         }
-        int n = coordinates.length;
-        double[][] matrix = ((double[][])(new double[][]{}));
-        int row = 0;
-        while (row < n) {
-            double[] line = ((double[])(new double[]{}));
-            int col = 0;
-            while (col < n) {
-                double power = pow_int_float(coordinates[row][0], n - (col + 1));
-                line = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(line), java.util.stream.DoubleStream.of(power)).toArray()));
-                col = col + 1;
+        long n_1 = coordinates.length;
+        double[][] matrix_1 = ((double[][])(new double[][]{}));
+        long row_1 = 0L;
+        while (row_1 < n_1) {
+            double[] line_1 = ((double[])(new double[]{}));
+            long col_1 = 0L;
+            while (col_1 < n_1) {
+                double power_1 = pow_int_float(coordinates[(int)((long)(row_1))][(int)((long)(0))], n_1 - (col_1 + 1));
+                line_1 = ((double[])(appendDouble(line_1, power_1)));
+                col_1 = col_1 + 1;
             }
-            matrix = ((double[][])(appendObj(matrix, line)));
-            row = row + 1;
+            matrix_1 = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(matrix_1), java.util.stream.Stream.of(line_1)).toArray(double[][]::new)));
+            row_1 = row_1 + 1;
         }
-        double[] vector = ((double[])(new double[]{}));
-        row = 0;
-        while (row < n) {
-            vector = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(vector), java.util.stream.DoubleStream.of(((double)(coordinates[row][1])))).toArray()));
-            row = row + 1;
+        double[] vector_1 = ((double[])(new double[]{}));
+        row_1 = 0;
+        while (row_1 < n_1) {
+            vector_1 = ((double[])(appendDouble(vector_1, ((double)(coordinates[(int)((long)(row_1))][(int)((long)(1))])))));
+            row_1 = row_1 + 1;
         }
-        int count = 0;
-        while (count < n) {
-            int number = 0;
-            while (number < n) {
-                if (count != number) {
-                    double fraction = matrix[number][count] / matrix[count][count];
-                    int cc = 0;
-                    while (cc < n) {
-matrix[number][cc] = matrix[number][cc] - matrix[count][cc] * fraction;
-                        cc = cc + 1;
+        long count_1 = 0L;
+        while (count_1 < n_1) {
+            long number_1 = 0L;
+            while (number_1 < n_1) {
+                if (count_1 != number_1) {
+                    double fraction_1 = matrix_1[(int)((long)(number_1))][(int)((long)(count_1))] / matrix_1[(int)((long)(count_1))][(int)((long)(count_1))];
+                    long cc_1 = 0L;
+                    while (cc_1 < n_1) {
+matrix_1[(int)((long)(number_1))][(int)((long)(cc_1))] = matrix_1[(int)((long)(number_1))][(int)((long)(cc_1))] - matrix_1[(int)((long)(count_1))][(int)((long)(cc_1))] * fraction_1;
+                        cc_1 = cc_1 + 1;
                     }
-vector[number] = vector[number] - vector[count] * fraction;
+vector_1[(int)((long)(number_1))] = vector_1[(int)((long)(number_1))] - vector_1[(int)((long)(count_1))] * fraction_1;
                 }
-                number = number + 1;
+                number_1 = number_1 + 1;
             }
-            count = count + 1;
+            count_1 = count_1 + 1;
         }
-        String[] solution = ((String[])(new String[]{}));
-        count = 0;
-        while (count < n) {
-            double value = vector[count] / matrix[count][count];
-            solution = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(solution), java.util.stream.Stream.of(_p(value))).toArray(String[]::new)));
-            count = count + 1;
+        String[] solution_1 = ((String[])(new String[]{}));
+        count_1 = 0;
+        while (count_1 < n_1) {
+            double value_1 = vector_1[(int)((long)(count_1))] / matrix_1[(int)((long)(count_1))][(int)((long)(count_1))];
+            solution_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(solution_1), java.util.stream.Stream.of(_p(value_1))).toArray(String[]::new)));
+            count_1 = count_1 + 1;
         }
-        String solved = "f(x)=";
-        count = 0;
-        while (count < n) {
-            String[] parts = ((String[])(solution[count].split(java.util.regex.Pattern.quote("e"))));
-            String coeff = solution[count];
-            if (parts.length > 1) {
-                coeff = parts[0] + "*10^" + parts[1];
+        String solved_1 = "f(x)=";
+        count_1 = 0;
+        while (count_1 < n_1) {
+            String[] parts_1 = ((String[])(solution_1[(int)((long)(count_1))].split(java.util.regex.Pattern.quote("e"))));
+            String coeff_1 = solution_1[(int)((long)(count_1))];
+            if (parts_1.length > 1) {
+                coeff_1 = parts_1[(int)((long)(0))] + "*10^" + parts_1[(int)((long)(1))];
             }
-            solved = solved + "x^" + _p(n - (count + 1)) + "*" + coeff;
-            if (count + 1 != n) {
-                solved = solved + "+";
+            solved_1 = solved_1 + "x^" + _p(n_1 - (count_1 + 1)) + "*" + coeff_1;
+            if (count_1 + 1 != n_1) {
+                solved_1 = solved_1 + "+";
             }
-            count = count + 1;
+            count_1 = count_1 + 1;
         }
-        return solved;
+        return solved_1;
     }
 
     static void main() {
-        System.out.println(points_to_polynomial(((int[][])(new int[][]{new int[]{1, 0}, new int[]{2, 0}, new int[]{3, 0}}))));
-        System.out.println(points_to_polynomial(((int[][])(new int[][]{new int[]{1, 1}, new int[]{2, 1}, new int[]{3, 1}}))));
-        System.out.println(points_to_polynomial(((int[][])(new int[][]{new int[]{1, 1}, new int[]{2, 4}, new int[]{3, 9}}))));
-        System.out.println(points_to_polynomial(((int[][])(new int[][]{new int[]{1, 3}, new int[]{2, 6}, new int[]{3, 11}}))));
-        System.out.println(points_to_polynomial(((int[][])(new int[][]{new int[]{1, -3}, new int[]{2, -6}, new int[]{3, -11}}))));
-        System.out.println(points_to_polynomial(((int[][])(new int[][]{new int[]{1, 1}, new int[]{1, 2}, new int[]{1, 3}}))));
-        System.out.println(points_to_polynomial(((int[][])(new int[][]{new int[]{1, 5}, new int[]{2, 2}, new int[]{3, 9}}))));
+        System.out.println(points_to_polynomial(((long[][])(new long[][]{new long[]{1, 0}, new long[]{2, 0}, new long[]{3, 0}}))));
+        System.out.println(points_to_polynomial(((long[][])(new long[][]{new long[]{1, 1}, new long[]{2, 1}, new long[]{3, 1}}))));
+        System.out.println(points_to_polynomial(((long[][])(new long[][]{new long[]{1, 1}, new long[]{2, 4}, new long[]{3, 9}}))));
+        System.out.println(points_to_polynomial(((long[][])(new long[][]{new long[]{1, 3}, new long[]{2, 6}, new long[]{3, 11}}))));
+        System.out.println(points_to_polynomial(((long[][])(new long[][]{new long[]{1, -3}, new long[]{2, -6}, new long[]{3, -11}}))));
+        System.out.println(points_to_polynomial(((long[][])(new long[][]{new long[]{1, 1}, new long[]{1, 2}, new long[]{1, 3}}))));
+        System.out.println(points_to_polynomial(((long[][])(new long[][]{new long[]{1, 5}, new long[]{2, 2}, new long[]{3, 9}}))));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
+        main();
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
-    }
-
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
         out[arr.length] = v;
         return out;
     }
@@ -195,6 +161,10 @@ vector[number] = vector[number] - vector[count] * fraction;
     }
 
     static String _substr(String s, int i, int j) {
+        int len = _runeLen(s);
+        if (i < 0) i = 0;
+        if (j > len) j = len;
+        if (i > j) i = j;
         int start = s.offsetByCodePoints(0, i);
         int end = s.offsetByCodePoints(0, j);
         return s.substring(start, end);
@@ -213,10 +183,15 @@ vector[number] = vector[number] - vector[count] * fraction;
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
     }
 
-    static Integer _geti(int[] a, int i) {
+    static Long _geti(long[] a, int i) {
         return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }

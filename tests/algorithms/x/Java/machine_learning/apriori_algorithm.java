@@ -1,8 +1,8 @@
 public class Main {
     static class Itemset {
         String[] items;
-        int support;
-        Itemset(String[] items, int support) {
+        long support;
+        Itemset(String[] items, long support) {
             this.items = items;
             this.support = support;
         }
@@ -40,12 +40,12 @@ public class Main {
         if (a.length != b.length) {
             return false;
         }
-        int i = 0;
-        while (i < a.length) {
-            if (!(a[i].equals(b[i]))) {
+        long i_1 = 0L;
+        while (i_1 < a.length) {
+            if (!(a[(int)((long)(i_1))].equals(b[(int)((long)(i_1))]))) {
                 return false;
             }
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
         return true;
     }
@@ -59,8 +59,8 @@ public class Main {
         return false;
     }
 
-    static int count_list(String[][] itemset, String[] item) {
-        int c = 0;
+    static long count_list(String[][] itemset, String[] item) {
+        long c = 0L;
         for (String[] l : itemset) {
             if (((Boolean)(lists_equal(((String[])(l)), ((String[])(item)))))) {
                 c = c + 1;
@@ -69,52 +69,52 @@ public class Main {
         return c;
     }
 
-    static String[][] slice_list(String[][] xs, int start) {
+    static String[][] slice_list(String[][] xs, long start) {
         String[][] res = ((String[][])(new String[][]{}));
-        int i_1 = start;
-        while (i_1 < xs.length) {
-            res = ((String[][])(appendObj(res, xs[i_1])));
-            i_1 = i_1 + 1;
+        long i_3 = start;
+        while (i_3 < xs.length) {
+            res = ((String[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(xs[(int)((long)(i_3))])).toArray(String[][]::new)));
+            i_3 = i_3 + 1;
         }
         return res;
     }
 
-    static String[][][] combinations_lists(String[][] xs, int k) {
+    static String[][][] combinations_lists(String[][] xs, long k) {
         String[][][] result = ((String[][][])(new String[][][]{}));
         if (k == 0) {
-            result = ((String[][][])(appendObj(result, new String[][]{})));
+            result = ((String[][][])(java.util.stream.Stream.concat(java.util.Arrays.stream(result), java.util.stream.Stream.of(new String[][]{})).toArray(String[][][]::new)));
             return result;
         }
-        int i_2 = 0;
-        while (i_2 < xs.length) {
-            String[] head = ((String[])(xs[i_2]));
-            String[][] tail = ((String[][])(slice_list(((String[][])(xs)), i_2 + 1)));
-            String[][][] tail_combos = ((String[][][])(combinations_lists(((String[][])(tail)), k - 1)));
-            for (String[][] combo : tail_combos) {
-                String[][] new_combo = ((String[][])(new String[][]{}));
-                new_combo = ((String[][])(appendObj(new_combo, head)));
+        long i_5 = 0L;
+        while (i_5 < xs.length) {
+            String[] head_1 = ((String[])(xs[(int)((long)(i_5))]));
+            String[][] tail_1 = ((String[][])(slice_list(((String[][])(xs)), i_5 + 1)));
+            String[][][] tail_combos_1 = ((String[][][])(combinations_lists(((String[][])(tail_1)), k - 1)));
+            for (String[][] combo : tail_combos_1) {
+                String[][] new_combo_1 = ((String[][])(new String[][]{}));
+                new_combo_1 = ((String[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(new_combo_1), java.util.stream.Stream.of(head_1)).toArray(String[][]::new)));
                 for (String[] c : combo) {
-                    new_combo = ((String[][])(appendObj(new_combo, c)));
+                    new_combo_1 = ((String[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(new_combo_1), java.util.stream.Stream.of(c)).toArray(String[][]::new)));
                 }
-                result = ((String[][][])(appendObj(result, new_combo)));
+                result = ((String[][][])(java.util.stream.Stream.concat(java.util.Arrays.stream(result), java.util.stream.Stream.of(new_combo_1)).toArray(String[][][]::new)));
             }
-            i_2 = i_2 + 1;
+            i_5 = i_5 + 1;
         }
         return result;
     }
 
-    static String[][][] prune(String[][] itemset, String[][][] candidates, int length) {
+    static String[][][] prune(String[][] itemset, String[][][] candidates, long length) {
         String[][][] pruned = ((String[][][])(new String[][][]{}));
         for (String[][] candidate : candidates) {
-            boolean is_subsequence = true;
+            boolean is_subsequence_1 = true;
             for (String[] item : candidate) {
                 if (!(Boolean)contains_list(((String[][])(itemset)), ((String[])(item))) || count_list(((String[][])(itemset)), ((String[])(item))) < length - 1) {
-                    is_subsequence = false;
+                    is_subsequence_1 = false;
                     break;
                 }
             }
-            if (is_subsequence) {
-                pruned = ((String[][][])(appendObj(pruned, candidate)));
+            if (is_subsequence_1) {
+                pruned = ((String[][][])(java.util.stream.Stream.concat(java.util.Arrays.stream(pruned), java.util.stream.Stream.of(candidate)).toArray(String[][][]::new)));
             }
         }
         return pruned;
@@ -125,130 +125,90 @@ public class Main {
         for (String s : xs) {
             res_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_1), java.util.stream.Stream.of(s)).toArray(String[]::new)));
         }
-        int i_3 = 0;
-        while (i_3 < res_1.length) {
-            int j = i_3 + 1;
-            while (j < res_1.length) {
-                if ((res_1[j].compareTo(res_1[i_3]) < 0)) {
-                    String tmp = res_1[i_3];
-res_1[i_3] = res_1[j];
-res_1[j] = tmp;
+        long i_7 = 0L;
+        while (i_7 < res_1.length) {
+            long j_1 = i_7 + 1;
+            while (j_1 < res_1.length) {
+                if ((res_1[(int)((long)(j_1))].compareTo(res_1[(int)((long)(i_7))]) < 0)) {
+                    String tmp_1 = res_1[(int)((long)(i_7))];
+res_1[(int)((long)(i_7))] = res_1[(int)((long)(j_1))];
+res_1[(int)((long)(j_1))] = tmp_1;
                 }
-                j = j + 1;
+                j_1 = j_1 + 1;
             }
-            i_3 = i_3 + 1;
+            i_7 = i_7 + 1;
         }
         return res_1;
     }
 
     static String itemset_to_string(String[] xs) {
         String s = "[";
-        int i_4 = 0;
-        while (i_4 < xs.length) {
-            if (i_4 > 0) {
+        long i_9 = 0L;
+        while (i_9 < xs.length) {
+            if (i_9 > 0) {
                 s = s + ", ";
             }
-            s = s + "'" + xs[i_4] + "'";
-            i_4 = i_4 + 1;
+            s = s + "'" + xs[(int)((long)(i_9))] + "'";
+            i_9 = i_9 + 1;
         }
         s = s + "]";
         return s;
     }
 
-    static Itemset[] apriori(String[][] data, int min_support) {
-        Object itemset = new String[][]{};
+    static Itemset[] apriori(String[][] data, long min_support) {
+        String[][] itemset = ((String[][])(new String[][]{}));
         for (String[] transaction : data) {
-            String[] t = ((String[])(new String[]{}));
+            String[] t_1 = ((String[])(new String[]{}));
             for (String v : transaction) {
-                t = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(t), java.util.stream.Stream.of(v)).toArray(String[]::new)));
+                t_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(t_1), java.util.stream.Stream.of(v)).toArray(String[]::new)));
             }
-            itemset = ((String[][])(appendObj(itemset, t)));
+            itemset = ((String[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(itemset), java.util.stream.Stream.of(t_1)).toArray(String[][]::new)));
         }
-        Itemset[] frequent = ((Itemset[])(new Itemset[]{}));
-        int length = 1;
+        Itemset[] frequent_1 = ((Itemset[])(new Itemset[]{}));
+        long length_1 = 1L;
         while (itemset.length > 0) {
-            int[] counts = ((int[])(new int[]{}));
-            int idx = 0;
-            while (idx < itemset.length) {
-                counts = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(counts), java.util.stream.IntStream.of(0)).toArray()));
-                idx = idx + 1;
+            long[] counts_1 = ((long[])(new long[]{}));
+            long idx_1 = 0L;
+            while (idx_1 < itemset.length) {
+                counts_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(counts_1), java.util.stream.LongStream.of(0L)).toArray()));
+                idx_1 = idx_1 + 1;
             }
             for (String[] transaction : data) {
-                int j_1 = 0;
-                while (j_1 < itemset.length) {
-                    String[] candidate = ((String[])(itemset[j_1]));
-                    if (((Boolean)(is_subset(((String[])(candidate)), ((String[])(transaction)))))) {
-counts[j_1] = counts[j_1] + 1;
+                long j_3 = 0L;
+                while (j_3 < itemset.length) {
+                    Object candidate_1 = itemset[(int)((long)(j_3))];
+                    if (((Boolean)(is_subset(((String[])(candidate_1)), ((String[])(transaction)))))) {
+counts_1[(int)((long)(j_3))] = counts_1[(int)((long)(j_3))] + 1;
                     }
-                    j_1 = j_1 + 1;
+                    j_3 = j_3 + 1;
                 }
             }
-            String[][] new_itemset = ((String[][])(new String[][]{}));
-            int k = 0;
-            while (k < itemset.length) {
-                if (counts[k] >= min_support) {
-                    new_itemset = ((String[][])(appendObj(new_itemset, itemset[k])));
+            String[][] new_itemset_1 = ((String[][])(new String[][]{}));
+            long k_1 = 0L;
+            while (k_1 < itemset.length) {
+                if (counts_1[(int)((long)(k_1))] >= min_support) {
+                    new_itemset_1 = ((String[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(new_itemset_1), java.util.stream.Stream.of(itemset[(int)((long)(k_1))])).toArray(String[][]::new)));
                 }
-                k = k + 1;
+                k_1 = k_1 + 1;
             }
-            itemset = ((String[][])(new_itemset));
-            int m = 0;
-            while (m < itemset.length) {
-                String[] sorted_item = ((String[])(sort_strings(((String[])(itemset[m])))));
-                frequent = ((Itemset[])(java.util.stream.Stream.concat(java.util.Arrays.stream(frequent), java.util.stream.Stream.of(new Itemset(sorted_item, counts[m]))).toArray(Itemset[]::new)));
-                m = m + 1;
+            itemset = new_itemset_1;
+            long m_1 = 0L;
+            while (m_1 < itemset.length) {
+                String[] sorted_item_1 = ((String[])(sort_strings(((String[])(itemset[(int)((long)(m_1))])))));
+                frequent_1 = ((Itemset[])(java.util.stream.Stream.concat(java.util.Arrays.stream(frequent_1), java.util.stream.Stream.of(new Itemset(sorted_item_1, counts_1[(int)((long)(m_1))]))).toArray(Itemset[]::new)));
+                m_1 = m_1 + 1;
             }
-            length = length + 1;
-            String[][][] combos = ((String[][][])(combinations_lists(((String[][])(itemset)), length)));
-            itemset = prune(((String[][])(itemset)), ((String[][][])(combos)), length);
+            length_1 = length_1 + 1;
+            String[][][] combos_1 = ((String[][][])(combinations_lists(((String[][])(itemset)), length_1)));
+            itemset = prune(((String[][])(itemset)), ((String[][][])(combos_1)), length_1);
         }
-        return frequent;
+        return frequent_1;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            frequent_itemsets = ((Itemset[])(apriori(((String[][])(load_data())), 2)));
-            for (Itemset fi : frequent_itemsets) {
-                System.out.println(String.valueOf(itemset_to_string(((String[])(fi.items)))) + ": " + _p(fi.support));
-            }
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
+        frequent_itemsets = ((Itemset[])(apriori(((String[][])(load_data())), 2L)));
+        for (Itemset fi : frequent_itemsets) {
+            System.out.println(String.valueOf(itemset_to_string(((String[])(fi.items)))) + ": " + _p(fi.support));
         }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
-    }
-
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
     }
 
     static String _p(Object v) {
@@ -263,6 +223,11 @@ counts[j_1] = counts[j_1] + 1;
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

@@ -1,8 +1,8 @@
 public class Main {
     static class Neighbor {
-        int node;
-        int cost;
-        Neighbor(int node, int cost) {
+        long node;
+        long cost;
+        Neighbor(long node, long cost) {
             this.node = node;
             this.cost = cost;
         }
@@ -13,9 +13,9 @@ public class Main {
     }
 
     static class EdgePair {
-        int u;
-        int v;
-        EdgePair(int u, int v) {
+        long u;
+        long v;
+        EdgePair(long u, long v) {
             this.u = u;
             this.v = v;
         }
@@ -26,108 +26,74 @@ public class Main {
     }
 
 
-    static EdgePair[] prims_algorithm(java.util.Map<Integer,Neighbor[]> adjacency) {
-        java.util.Map<Integer,Boolean> visited = ((java.util.Map<Integer,Boolean>)(new java.util.LinkedHashMap<Integer, Boolean>()));
+    static EdgePair[] prims_algorithm(java.util.Map<Long,Neighbor[]> adjacency) {
+        java.util.Map<Long,Boolean> visited = ((java.util.Map<Long,Boolean>)(new java.util.LinkedHashMap<Long, Boolean>()));
 visited.put(0, true);
-        EdgePair[] mst = ((EdgePair[])(new EdgePair[]{}));
-        int count = 1;
-        int total = 0;
-        for (int k : adjacency.keySet()) {
-            total = total + 1;
+        EdgePair[] mst_1 = ((EdgePair[])(new EdgePair[]{}));
+        long count_1 = 1L;
+        long total_1 = 0L;
+        for (long k : adjacency.keySet()) {
+            total_1 = total_1 + 1;
         }
-        while (count < total) {
-            int best_u = 0;
-            int best_v = 0;
-            int best_cost = 2147483647;
-            for (int u_str : adjacency.keySet()) {
-                int u = ((Number)(u_str)).intValue();
-                if (((boolean)(visited).getOrDefault(u, false))) {
-                    for (Neighbor n : ((Neighbor[])(adjacency).get(u))) {
-                        if (!((boolean)(visited).getOrDefault(n.node, false)) && n.cost < best_cost) {
-                            best_cost = n.cost;
-                            best_u = u;
-                            best_v = n.node;
+        while (count_1 < total_1) {
+            long best_u_1 = 0L;
+            long best_v_1 = 0L;
+            long best_cost_1 = 2147483647L;
+            for (long u_str : adjacency.keySet()) {
+                long u_1 = ((Number)(u_str)).intValue();
+                if (((boolean)(visited).getOrDefault(u_1, false))) {
+                    for (Neighbor n : ((Neighbor[])(adjacency).get(u_1))) {
+                        if (!((boolean)(visited).getOrDefault(n.node, false)) && n.cost < best_cost_1) {
+                            best_cost_1 = n.cost;
+                            best_u_1 = u_1;
+                            best_v_1 = n.node;
                         }
                     }
                 }
             }
-visited.put(best_v, true);
-            mst = ((EdgePair[])(java.util.stream.Stream.concat(java.util.Arrays.stream(mst), java.util.stream.Stream.of(new EdgePair(best_u, best_v))).toArray(EdgePair[]::new)));
-            count = count + 1;
+visited.put(best_v_1, true);
+            mst_1 = ((EdgePair[])(java.util.stream.Stream.concat(java.util.Arrays.stream(mst_1), java.util.stream.Stream.of(new EdgePair(best_u_1, best_v_1))).toArray(EdgePair[]::new)));
+            count_1 = count_1 + 1;
         }
-        return mst;
+        return mst_1;
     }
 
     static boolean test_prim_successful_result() {
-        int[][] edges = ((int[][])(new int[][]{new int[]{0, 1, 4}, new int[]{0, 7, 8}, new int[]{1, 2, 8}, new int[]{7, 8, 7}, new int[]{7, 6, 1}, new int[]{2, 8, 2}, new int[]{8, 6, 6}, new int[]{2, 3, 7}, new int[]{2, 5, 4}, new int[]{6, 5, 2}, new int[]{3, 5, 14}, new int[]{3, 4, 9}, new int[]{5, 4, 10}, new int[]{1, 7, 11}}));
-        java.util.Map<Integer,Neighbor[]> adjacency = ((java.util.Map<Integer,Neighbor[]>)(new java.util.LinkedHashMap<Integer, Neighbor[]>()));
-        for (int[] e : edges) {
-            int u_1 = e[0];
-            int v = e[1];
-            int w = e[2];
-            if (!(Boolean)(adjacency.containsKey(u_1))) {
-adjacency.put(u_1, ((Neighbor[])(new Neighbor[]{})));
+        long[][] edges = ((long[][])(new long[][]{new long[]{0, 1, 4}, new long[]{0, 7, 8}, new long[]{1, 2, 8}, new long[]{7, 8, 7}, new long[]{7, 6, 1}, new long[]{2, 8, 2}, new long[]{8, 6, 6}, new long[]{2, 3, 7}, new long[]{2, 5, 4}, new long[]{6, 5, 2}, new long[]{3, 5, 14}, new long[]{3, 4, 9}, new long[]{5, 4, 10}, new long[]{1, 7, 11}}));
+        java.util.Map<Long,Neighbor[]> adjacency_1 = ((java.util.Map<Long,Neighbor[]>)(new java.util.LinkedHashMap<Long, Neighbor[]>()));
+        for (long[] e : edges) {
+            long u_3 = e[(int)((long)(0))];
+            long v_1 = e[(int)((long)(1))];
+            long w_1 = e[(int)((long)(2))];
+            if (!(adjacency_1.containsKey(u_3))) {
+adjacency_1.put(u_3, ((Neighbor[])(new Neighbor[]{})));
             }
-            if (!(Boolean)(adjacency.containsKey(v))) {
-adjacency.put(v, ((Neighbor[])(new Neighbor[]{})));
+            if (!(adjacency_1.containsKey(v_1))) {
+adjacency_1.put(v_1, ((Neighbor[])(new Neighbor[]{})));
             }
-adjacency.put(u_1, ((Neighbor[])(java.util.stream.Stream.concat(java.util.Arrays.stream(((Neighbor[])(adjacency).get(u_1))), java.util.stream.Stream.of(new Neighbor(v, w))).toArray(Neighbor[]::new))));
-adjacency.put(v, ((Neighbor[])(java.util.stream.Stream.concat(java.util.Arrays.stream(((Neighbor[])(adjacency).get(v))), java.util.stream.Stream.of(new Neighbor(u_1, w))).toArray(Neighbor[]::new))));
+adjacency_1.put(u_3, ((Neighbor[])(java.util.stream.Stream.concat(java.util.Arrays.stream(((Neighbor[])(adjacency_1).get(u_3))), java.util.stream.Stream.of(new Neighbor(v_1, w_1))).toArray(Neighbor[]::new))));
+adjacency_1.put(v_1, ((Neighbor[])(java.util.stream.Stream.concat(java.util.Arrays.stream(((Neighbor[])(adjacency_1).get(v_1))), java.util.stream.Stream.of(new Neighbor(u_3, w_1))).toArray(Neighbor[]::new))));
         }
-        EdgePair[] result = ((EdgePair[])(prims_algorithm(adjacency)));
-        java.util.Map<String,Boolean> seen = ((java.util.Map<String,Boolean>)(new java.util.LinkedHashMap<String, Boolean>()));
-        for (EdgePair e : result) {
-            String key1 = _p(e.u) + "," + _p(e.v);
-            String key2 = _p(e.v) + "," + _p(e.u);
-seen.put(key1, true);
-seen.put(key2, true);
+        EdgePair[] result_1 = ((EdgePair[])(prims_algorithm(adjacency_1)));
+        java.util.Map<String,Boolean> seen_1 = ((java.util.Map<String,Boolean>)(new java.util.LinkedHashMap<String, Boolean>()));
+        for (EdgePair e : result_1) {
+            String key1_1 = _p(e.u) + "," + _p(e.v);
+            String key2_1 = _p(e.v) + "," + _p(e.u);
+seen_1.put(key1_1, true);
+seen_1.put(key2_1, true);
         }
-        int[][] expected = ((int[][])(new int[][]{new int[]{7, 6, 1}, new int[]{2, 8, 2}, new int[]{6, 5, 2}, new int[]{0, 1, 4}, new int[]{2, 5, 4}, new int[]{2, 3, 7}, new int[]{0, 7, 8}, new int[]{3, 4, 9}}));
-        for (int[] ans : expected) {
-            String key = _p(_geti(ans, 0)) + "," + _p(_geti(ans, 1));
-            if (!((boolean)(seen).getOrDefault(key, false))) {
+        long[][] expected_1 = ((long[][])(new long[][]{new long[]{7, 6, 1}, new long[]{2, 8, 2}, new long[]{6, 5, 2}, new long[]{0, 1, 4}, new long[]{2, 5, 4}, new long[]{2, 3, 7}, new long[]{0, 7, 8}, new long[]{3, 4, 9}}));
+        for (long[] ans : expected_1) {
+            String key_1 = _p(_geti(ans, ((Number)(0)).intValue())) + "," + _p(_geti(ans, ((Number)(1)).intValue()));
+            if (!((boolean)(seen_1).getOrDefault(key_1, false))) {
                 return false;
             }
         }
         return true;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(test_prim_successful_result());
-            System.out.println(true ? "True" : "False");
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println(test_prim_successful_result());
+        System.out.println(true ? "True" : "False");
     }
 
     static String _p(Object v) {
@@ -143,10 +109,15 @@ seen.put(key2, true);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
     }
 
-    static Integer _geti(int[] a, int i) {
+    static Long _geti(long[] a, int i) {
         return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }

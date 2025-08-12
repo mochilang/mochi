@@ -27,115 +27,87 @@ public class Main {
         if (x == 0.0) {
             return 0.0;
         }
-        double guess = x / 2.0;
-        int i = 0;
-        while (i < 20) {
-            guess = (guess + x / guess) / 2.0;
-            i = i + 1;
+        double guess_1 = x / 2.0;
+        long i_1 = 0L;
+        while (i_1 < 20) {
+            guess_1 = (guess_1 + x / guess_1) / 2.0;
+            i_1 = i_1 + 1;
         }
-        return guess;
+        return guess_1;
     }
 
     static double dot(double[] a, double[] b) {
         double sum = 0.0;
-        int i_1 = 0;
-        while (i_1 < a.length) {
-            sum = sum + a[i_1] * b[i_1];
-            i_1 = i_1 + 1;
+        long i_3 = 0L;
+        while (i_3 < a.length) {
+            sum = sum + a[(int)((long)(i_3))] * b[(int)((long)(i_3))];
+            i_3 = i_3 + 1;
         }
         return sum;
     }
 
     static double[] mat_vec_mult(double[][] mat, double[] vec) {
         double[] res = ((double[])(new double[]{}));
-        int i_2 = 0;
-        while (i_2 < mat.length) {
-            res = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(res), java.util.stream.DoubleStream.of(dot(((double[])(mat[i_2])), ((double[])(vec))))).toArray()));
-            i_2 = i_2 + 1;
+        long i_5 = 0L;
+        while (i_5 < mat.length) {
+            res = ((double[])(appendDouble(res, dot(((double[])(mat[(int)((long)(i_5))])), ((double[])(vec))))));
+            i_5 = i_5 + 1;
         }
         return res;
     }
 
     static double norm(double[] vec) {
         double sum_1 = 0.0;
-        int i_3 = 0;
-        while (i_3 < vec.length) {
-            sum_1 = sum_1 + vec[i_3] * vec[i_3];
-            i_3 = i_3 + 1;
+        long i_7 = 0L;
+        while (i_7 < vec.length) {
+            sum_1 = sum_1 + vec[(int)((long)(i_7))] * vec[(int)((long)(i_7))];
+            i_7 = i_7 + 1;
         }
-        double root = sqrtApprox(sum_1);
-        return root;
+        double root_1 = sqrtApprox(sum_1);
+        return root_1;
     }
 
     static double[] normalize(double[] vec) {
         double n = norm(((double[])(vec)));
-        double[] res_1 = ((double[])(new double[]{}));
-        int i_4 = 0;
-        while (i_4 < vec.length) {
-            res_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(res_1), java.util.stream.DoubleStream.of(vec[i_4] / n)).toArray()));
-            i_4 = i_4 + 1;
+        double[] res_2 = ((double[])(new double[]{}));
+        long i_9 = 0L;
+        while (i_9 < vec.length) {
+            res_2 = ((double[])(appendDouble(res_2, vec[(int)((long)(i_9))] / n)));
+            i_9 = i_9 + 1;
         }
-        return res_1;
+        return res_2;
     }
 
-    static PowerResult power_iteration(double[][] matrix, double[] vector, double error_tol, int max_iterations) {
+    static PowerResult power_iteration(double[][] matrix, double[] vector, double error_tol, long max_iterations) {
         double[] v = ((double[])(normalize(((double[])(vector)))));
-        double lambda_prev = 0.0;
-        double lambda = 0.0;
-        double err = 1000000000000.0;
-        int iterations = 0;
-        while (err > error_tol && iterations < max_iterations) {
-            double[] w = ((double[])(mat_vec_mult(((double[][])(matrix)), ((double[])(v)))));
-            v = ((double[])(normalize(((double[])(w)))));
-            double[] mv = ((double[])(mat_vec_mult(((double[][])(matrix)), ((double[])(v)))));
-            lambda = dot(((double[])(v)), ((double[])(mv)));
-            double denom = lambda != 0.0 ? Math.abs(lambda) : 1.0;
-            err = Math.abs(lambda - lambda_prev) / denom;
-            lambda_prev = lambda;
-            iterations = iterations + 1;
+        double lambda_prev_1 = 0.0;
+        double lambda_1 = 0.0;
+        double err_1 = 1000000000000.0;
+        long iterations_1 = 0L;
+        while (err_1 > error_tol && iterations_1 < max_iterations) {
+            double[] w_1 = ((double[])(mat_vec_mult(((double[][])(matrix)), ((double[])(v)))));
+            v = ((double[])(normalize(((double[])(w_1)))));
+            double[] mv_1 = ((double[])(mat_vec_mult(((double[][])(matrix)), ((double[])(v)))));
+            lambda_1 = dot(((double[])(v)), ((double[])(mv_1)));
+            double denom_1 = lambda_1 != 0.0 ? Math.abs(lambda_1) : 1.0;
+            err_1 = Math.abs(lambda_1 - lambda_prev_1) / denom_1;
+            lambda_prev_1 = lambda_1;
+            iterations_1 = iterations_1 + 1;
         }
-        return new PowerResult(lambda, v);
+        return new PowerResult(lambda_1, v);
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            input_matrix = ((double[][])(new double[][]{new double[]{41.0, 4.0, 20.0}, new double[]{4.0, 26.0, 30.0}, new double[]{20.0, 30.0, 50.0}}));
-            vector = ((double[])(new double[]{41.0, 4.0, 20.0}));
-            result = power_iteration(((double[][])(input_matrix)), ((double[])(vector)), 1e-12, 100);
-            System.out.println(_p(result.eigenvalue));
-            System.out.println(_p(result.eigenvector));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
+        input_matrix = ((double[][])(new double[][]{new double[]{41.0, 4.0, 20.0}, new double[]{4.0, 26.0, 30.0}, new double[]{20.0, 30.0, 50.0}}));
+        vector = ((double[])(new double[]{41.0, 4.0, 20.0}));
+        result = power_iteration(((double[][])(input_matrix)), ((double[])(vector)), 1e-12, 100L);
+        System.out.println(_p(result.eigenvalue));
+        System.out.println(_p(result.eigenvector));
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 
     static String _p(Object v) {
@@ -150,6 +122,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

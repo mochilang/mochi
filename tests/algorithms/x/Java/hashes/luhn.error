@@ -1,0 +1,8 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden472_luhn2841813563/001/Main.java:8: error: ';' expected
+        long check_digit_1 = Integer.parseInt(_substr(s, (int)((long)(n - 1)), (int)((long)(n)))));
+                                                                                                 ^
+/tmp/TestJavaTranspiler_Algorithms_Golden472_luhn2841813563/001/Main.java:12: error: ';' expected
+            long digit_1 = Integer.parseInt(_substr(s, (int)((long)(i_1)), (int)((long)(i_1 + 1)))));
+                                                                                                   ^
+2 errors

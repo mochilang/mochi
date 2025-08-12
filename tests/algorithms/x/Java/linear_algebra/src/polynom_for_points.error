@@ -1,0 +1,5 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden489_polynom_for_points2443051536/001/Main.java:19: error: ';' expected
+            String ch_1 = _substr(s, (int)((long)(i_2)), (int)((long)(i_2 + 1))));
+                                                                                ^
+1 error

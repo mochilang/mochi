@@ -3,141 +3,113 @@ public class Main {
     static double[][] finalTab = new double[0][];
     static java.util.Map<String,Double> res;
 
-    static double[][] pivot(double[][] t, int row, int col) {
+    static double[][] pivot(double[][] t, long row, long col) {
         double[] pivotRow = ((double[])(new double[]{}));
-        double pivotVal = t[row][col];
-        for (int j = 0; j < t[row].length; j++) {
-            pivotRow = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(pivotRow), java.util.stream.DoubleStream.of(t[row][j] / pivotVal)).toArray()));
+        double pivotVal_1 = t[(int)((long)(row))][(int)((long)(col))];
+        for (int j = 0; j < t[(int)((long)(row))].length; j++) {
+            pivotRow = ((double[])(appendDouble(pivotRow, t[(int)((long)(row))][(int)((long)(j))] / pivotVal_1)));
         }
-t[row] = ((double[])(pivotRow));
+t[(int)((long)(row))] = ((double[])(pivotRow));
         for (int i = 0; i < t.length; i++) {
             if (i != row) {
-                double factor = t[i][col];
-                double[] newRow = ((double[])(new double[]{}));
-                for (int j = 0; j < t[i].length; j++) {
-                    double value = t[i][j] - factor * pivotRow[j];
-                    newRow = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(newRow), java.util.stream.DoubleStream.of(value)).toArray()));
+                double factor_1 = t[(int)((long)(i))][(int)((long)(col))];
+                double[] newRow_1 = ((double[])(new double[]{}));
+                for (int j = 0; j < t[(int)((long)(i))].length; j++) {
+                    double value_1 = t[(int)((long)(i))][(int)((long)(j))] - factor_1 * pivotRow[(int)((long)(j))];
+                    newRow_1 = ((double[])(appendDouble(newRow_1, value_1)));
                 }
-t[i] = ((double[])(newRow));
+t[(int)((long)(i))] = ((double[])(newRow_1));
             }
         }
         return t;
     }
 
-    static int[] findPivot(double[][] t) {
-        int col = 0;
-        double minVal = 0.0;
-        for (int j = 0; j < t[0].length - 1; j++) {
-            double v = t[0][j];
-            if (v < minVal) {
-                minVal = v;
+    static long[] findPivot(double[][] t) {
+        long col = 0L;
+        double minVal_1 = 0.0;
+        for (int j = 0; j < t[(int)((long)(0))].length - 1; j++) {
+            double v_1 = t[(int)((long)(0))][(int)((long)(j))];
+            if (v_1 < minVal_1) {
+                minVal_1 = v_1;
                 col = j;
             }
         }
-        if (minVal >= 0.0) {
-            return new int[]{-1, -1};
+        if (minVal_1 >= 0.0) {
+            return new long[]{-1, -1};
         }
-        int row = -1;
-        double minRatio = 0.0;
-        boolean first = true;
+        long row_1 = -1;
+        double minRatio_1 = 0.0;
+        boolean first_1 = true;
         for (int i = 1; i < t.length; i++) {
-            double coeff = t[i][col];
-            if (coeff > 0.0) {
-                double rhs = t[i][t[i].length - 1];
-                double ratio = rhs / coeff;
-                if (first || ratio < minRatio) {
-                    minRatio = ratio;
-                    row = i;
-                    first = false;
+            double coeff_1 = t[(int)((long)(i))][(int)((long)(col))];
+            if (coeff_1 > 0.0) {
+                double rhs_1 = t[(int)((long)(i))][(int)((long)(t[(int)((long)(i))].length - 1))];
+                double ratio_1 = rhs_1 / coeff_1;
+                if (first_1 || ratio_1 < minRatio_1) {
+                    minRatio_1 = ratio_1;
+                    row_1 = i;
+                    first_1 = false;
                 }
             }
         }
-        return new int[]{row, col};
+        return new long[]{row_1, col};
     }
 
-    static java.util.Map<String,Double> interpret(double[][] t, int nVars) {
-        int lastCol = t[0].length - 1;
-        double p = t[0][lastCol];
-        if (p < 0.0) {
-            p = -p;
+    static java.util.Map<String,Double> interpret(double[][] t, long nVars) {
+        long lastCol = t[(int)((long)(0))].length - 1;
+        double p_1 = t[(int)((long)(0))][(int)((long)(lastCol))];
+        if (p_1 < 0.0) {
+            p_1 = -p_1;
         }
-        java.util.Map<String,Double> result = ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>()));
-result.put("P", p);
+        java.util.Map<String,Double> result_1 = ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>()));
+result_1.put("P", p_1);
         for (int i = 0; i < nVars; i++) {
-            int nzRow = -1;
-            int nzCount = 0;
+            long nzRow_1 = -1;
+            long nzCount_1 = 0L;
             for (int r = 0; r < t.length; r++) {
-                double val = t[r][i];
-                if (val != 0.0) {
-                    nzCount = nzCount + 1;
-                    nzRow = r;
+                double val_1 = t[(int)((long)(r))][(int)((long)(i))];
+                if (val_1 != 0.0) {
+                    nzCount_1 = nzCount_1 + 1;
+                    nzRow_1 = r;
                 }
             }
-            if (nzCount == 1 && t[nzRow][i] == 1.0) {
-result.put("x" + _p(i + 1), t[nzRow][lastCol]);
+            if (nzCount_1 == 1 && t[(int)((long)(nzRow_1))][(int)((long)(i))] == 1.0) {
+result_1.put("x" + _p(i + 1), t[(int)((long)(nzRow_1))][(int)((long)(lastCol))]);
             }
         }
-        return result;
+        return result_1;
     }
 
     static double[][] simplex(double[][] tab) {
         double[][] t = ((double[][])(tab));
         while (true) {
-            int[] p_1 = ((int[])(findPivot(((double[][])(t)))));
-            int row_1 = p_1[0];
-            int col_1 = p_1[1];
-            if (row_1 < 0) {
+            long[] p_3 = ((long[])(findPivot(((double[][])(t)))));
+            long row_3 = p_3[(int)((long)(0))];
+            long col_2 = p_3[(int)((long)(1))];
+            if (row_3 < 0) {
                 break;
             }
-            t = ((double[][])(pivot(((double[][])(t)), row_1, col_1)));
+            t = ((double[][])(pivot(((double[][])(t)), row_3, col_2)));
         }
         return t;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            tableau = ((double[][])(new double[][]{new double[]{-1.0, -1.0, 0.0, 0.0, 0.0}, new double[]{1.0, 3.0, 1.0, 0.0, 4.0}, new double[]{3.0, 1.0, 0.0, 1.0, 4.0}}));
-            finalTab = ((double[][])(simplex(((double[][])(tableau)))));
-            res = interpret(((double[][])(finalTab)), 2);
-            System.out.println("P: " + _p(((double)(res).getOrDefault("P", 0.0))));
-            for (int i = 0; i < 2; i++) {
-                String key = "x" + _p(i + 1);
-                if (((Boolean)(res.containsKey(key)))) {
-                    System.out.println(key + ": " + _p(((double)(res).getOrDefault(key, 0.0))));
-                }
+        tableau = ((double[][])(new double[][]{new double[]{-1.0, -1.0, 0.0, 0.0, 0.0}, new double[]{1.0, 3.0, 1.0, 0.0, 4.0}, new double[]{3.0, 1.0, 0.0, 1.0, 4.0}}));
+        finalTab = ((double[][])(simplex(((double[][])(tableau)))));
+        res = interpret(((double[][])(finalTab)), 2L);
+        System.out.println("P: " + _p(((double)(res).getOrDefault("P", 0.0))));
+        for (int i = 0; i < 2; i++) {
+            String key = "x" + _p(i + 1);
+            if (res.containsKey(key)) {
+                System.out.println(key + ": " + _p(((double)(res).getOrDefault(key, 0.0))));
             }
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
         }
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 
     static String _p(Object v) {
@@ -152,6 +124,11 @@ result.put("x" + _p(i + 1), t[nzRow][lastCol]);
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

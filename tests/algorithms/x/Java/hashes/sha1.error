@@ -1,7 +1,17 @@
-run: exit status 1
-Exception in thread "main" java.lang.ArithmeticException: / by zero
-	at java.base/java.lang.Math.floorMod(Math.java:1583)
-	at Main.rotate_left(Main.java:89)
-	at Main.sha1(Main.java:170)
-	at Main.main(Main.java:214)
-	at Main.main(Main.java:222)
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden475_sha12414322648/001/Main.java:8: error: illegal start of expression
+            if ((_substr(ASCII, (int)((long)(i)), (int)((long)(i + 1)))).equals(ch))) {
+                                                                                    ^
+/tmp/TestJavaTranspiler_Algorithms_Golden475_sha12414322648/001/Main.java:103: error: ';' expected
+            s_1 = _substr(digits, (int)((long)(d_1)), (int)((long)(d_1 + 1)))) + s_1;
+                                                                             ^
+/tmp/TestJavaTranspiler_Algorithms_Golden475_sha12414322648/001/Main.java:103: error: not a statement
+            s_1 = _substr(digits, (int)((long)(d_1)), (int)((long)(d_1 + 1)))) + s_1;
+                                                                                 ^
+/tmp/TestJavaTranspiler_Algorithms_Golden475_sha12414322648/001/Main.java:110: error: ';' expected
+            s_1 = _substr(s_1, (int)((long)(_runeLen(s_1) - 8)), (int)((long)(_runeLen(s_1)))));
+                                                                                              ^
+/tmp/TestJavaTranspiler_Algorithms_Golden475_sha12414322648/001/Main.java:119: error: ';' expected
+            bytes = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(bytes), java.util.stream.LongStream.of(ord(_substr(message, (int)((long)(i_10)), (int)((long)(i_10 + 1))))))).toArray()));
+                                                                                                                                                                                                                 ^
+5 errors
