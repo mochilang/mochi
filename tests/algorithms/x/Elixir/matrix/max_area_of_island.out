@@ -1,6 +1,6 @@
 warning: variable "seen" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 36 │       {seen} = if is_safe(row, col, rows, cols) && (!has(seen, key)) && Enum.at(Enum.at(mat, row), col) == 1 do
+ 36 │       {seen} = if is_safe(row, col, rows, cols) && (!has(seen, key)) && Enum.at(Enum.at(mat, row, []), col, 0) == 1 do
     │        ~
     │
     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/max_area_of_island.exs:36:8: Main.depth_first_search/4

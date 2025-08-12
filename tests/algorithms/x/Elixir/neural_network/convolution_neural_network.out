@@ -194,6 +194,13 @@ warning: variable "n" is unused (there is a variable with the same name in the c
      │
      └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/convolution_neural_network.exs:658:20: Main.train/3
 
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 583 │               {i, maps} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/convolution_neural_network.exs:583:16: Main.train/3
+
      warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
  639 │               {b_out, j} = try do
@@ -207,13 +214,6 @@ warning: variable "n" is unused (there is a variable with the same name in the c
      │                ~
      │
      └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/convolution_neural_network.exs:670:16: Main.train/3
-
-     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
-     │
- 583 │               {i, maps} = try do
-     │                ~
-     │
-     └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/convolution_neural_network.exs:583:16: Main.train/3
 
      warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
@@ -244,8 +244,8 @@ warning: variable "n" is unused (there is a variable with the same name in the c
      └─ /workspace/mochi/tests/algorithms/x/Elixir/neural_network/convolution_neural_network.exs:710:25: Main.train/3
 
 Before training: [0.4950789572027328, 0.4852103276380401]
-** (ArithmeticError) bad argument in arithmetic expression: 0.30000000000000004 * nil
-    :erlang.*(0.30000000000000004, nil)
+** (ArithmeticError) bad argument in arithmetic expression: 0.30000000000000004 * []
+    :erlang.*(0.30000000000000004, [])
     /workspace/mochi/tests/algorithms/x/Elixir/neural_network/convolution_neural_network.exs:312: anonymous fn/6 in Main.matT_vec_mul/2
     /workspace/mochi/tests/algorithms/x/Elixir/neural_network/convolution_neural_network.exs:320: anonymous fn/5 in Main.matT_vec_mul/2
     /workspace/mochi/tests/algorithms/x/Elixir/neural_network/convolution_neural_network.exs:333: Main.matT_vec_mul/2
