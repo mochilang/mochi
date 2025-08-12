@@ -81,7 +81,9 @@ func declareName(name string) string {
 	case "label", "xor", "and", "or", "div", "mod", "type", "set", "result", "repeat", "end", "nil", "length", "ord",
 		"array", "real", "integer", "string", "boolean", "char",
 		// Additional common Pascal keywords
-		"begin", "var", "procedure", "function", "unit", "uses", "const", "file", "out":
+		"begin", "var", "procedure", "function", "unit", "uses", "const", "file", "out",
+		// Math functions that should map to Pascal's built-ins
+		"ln", "exp":
 		// Avoid Pascal reserved keywords and built-in types (case-insensitive)
 		newName = name + "_"
 	}
@@ -113,7 +115,7 @@ func declareName(name string) string {
 func sanitizeField(name string) string {
 	switch strings.ToLower(name) {
 	case "label", "xor", "and", "or", "div", "mod", "type", "set", "result", "repeat", "end", "nil", "length", "ord",
-		"begin", "var", "procedure", "function", "unit", "uses", "const", "file", "out":
+		"begin", "var", "procedure", "function", "unit", "uses", "const", "file", "out", "ln", "exp":
 		return name + "_"
 	}
 	return name
@@ -2874,13 +2876,17 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 			fn := st.Fun
 			name := fn.Name
 			switch name {
-			case "xor", "and", "or", "div", "mod", "type", "set", "label", "repeat", "panic":
+			case "xor", "and", "or", "div", "mod", "type", "set", "label", "repeat", "panic", "ln", "exp":
 				name = name + "_"
 			}
 			funcNames[strings.ToLower(name)] = struct{}{}
 			if name != fn.Name {
-				nameMap[fn.Name] = name
-				fn.Name = name
+				if name == "ln_" || name == "exp_" {
+					fn.Name = name
+				} else {
+					nameMap[fn.Name] = name
+					fn.Name = name
+				}
 			}
 			local := map[string]string{}
 			for k, v := range varTypes {
@@ -4608,6 +4614,12 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 					} else {
 						expr = &CallExpr{Name: "_sha256", Args: args}
 					}
+				} else if name == "exp" && len(args) == 1 {
+					currProg.UseMath = true
+					expr = &CallExpr{Name: "Exp", Args: args}
+				} else if name == "ln" && len(args) == 1 {
+					currProg.UseMath = true
+					expr = &CallExpr{Name: "Ln", Args: args}
 				} else if name == "floor" && len(args) == 1 {
 					currProg.UseMath = true
 					expr = &CallExpr{Name: "Floor", Args: args}

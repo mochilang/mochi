@@ -38,15 +38,33 @@ begin
   writeln(msg);
   halt(1);
 end;
-function list_real_to_str(xs: array of real): string;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function to_float(x: integer): real;
+begin
+  to_float := x;
+end;
+procedure json(xs: array of real);
 var i: integer;
 begin
-  Result := '[';
+  write('[');
   for i := 0 to High(xs) do begin
-    Result := Result + FloatToStr(xs[i]);
-    if i < High(xs) then Result := Result + ' ';
+    write(xs[i]);
+    if i < High(xs) then write(', ');
   end;
-  Result := Result + ']';
+  writeln(']');
+end;
+procedure show_list_real(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(' ');
+  end;
+  write(']');
 end;
 var
   bench_start_0: integer;
@@ -55,50 +73,50 @@ var
   bench_memdiff_0: int64;
   vector: RealArray;
   x: real;
-function ln(x: real): real; forward;
-function exp(x: real): real; forward;
+function ln_(x: real): real; forward;
+function exp_(x: real): real; forward;
 function softplus(vector: RealArray): RealArray; forward;
 procedure main(); forward;
-function ln(x: real): real;
+function ln_(x: real): real;
 var
-  ln_y: real;
-  ln_y2: real;
-  ln_term: real;
-  ln_sum: real;
-  ln_k: integer;
-  ln_denom: real;
+  ln__y: real;
+  ln__y2: real;
+  ln__term: real;
+  ln__sum: real;
+  ln__k: integer;
+  ln__denom: real;
 begin
   if x <= 0 then begin
   panic('ln domain error');
 end;
-  ln_y := (x - 1) / (x + 1);
-  ln_y2 := ln_y * ln_y;
-  ln_term := ln_y;
-  ln_sum := 0;
-  ln_k := 0;
-  while ln_k < 10 do begin
-  ln_denom := Double((2 * ln_k) + 1);
-  ln_sum := ln_sum + (ln_term / ln_denom);
-  ln_term := ln_term * ln_y2;
-  ln_k := ln_k + 1;
+  ln__y := (x - 1) / (x + 1);
+  ln__y2 := ln__y * ln__y;
+  ln__term := ln__y;
+  ln__sum := 0;
+  ln__k := 0;
+  while ln__k < 10 do begin
+  ln__denom := Double((2 * ln__k) + 1);
+  ln__sum := ln__sum + (ln__term / ln__denom);
+  ln__term := ln__term * ln__y2;
+  ln__k := ln__k + 1;
 end;
-  exit(2 * ln_sum);
+  exit(2 * ln__sum);
 end;
-function exp(x: real): real;
+function exp_(x: real): real;
 var
-  exp_term: real;
-  exp_sum: real;
-  exp_n: integer;
+  exp__term: real;
+  exp__sum: real;
+  exp__n: integer;
 begin
-  exp_term := 1;
-  exp_sum := 1;
-  exp_n := 1;
-  while exp_n < 20 do begin
-  exp_term := (exp_term * x) / Double(exp_n);
-  exp_sum := exp_sum + exp_term;
-  exp_n := exp_n + 1;
+  exp__term := 1;
+  exp__sum := 1;
+  exp__n := 1;
+  while exp__n < 20 do begin
+  exp__term := (exp__term * x) / Double(exp__n);
+  exp__sum := exp__sum + exp__term;
+  exp__n := exp__n + 1;
 end;
-  exit(exp_sum);
+  exit(exp__sum);
 end;
 function softplus(vector: RealArray): RealArray;
 var
@@ -128,8 +146,8 @@ begin
   main_v2 := [-9.2, -0.3, 0.45, -4.56];
   main_r1 := softplus(main_v1);
   main_r2 := softplus(main_v2);
-  writeln(list_real_to_str(main_r1));
-  writeln(list_real_to_str(main_r2));
+  show_list_real(main_r1);
+  show_list_real(main_r2);
 end;
 begin
   init_now();
