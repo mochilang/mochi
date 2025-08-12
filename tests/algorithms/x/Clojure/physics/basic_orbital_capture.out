@@ -1,0 +1,5 @@
+Execution error at main/run-tests (basic_orbital_capture.clj:71).
+capture_area failed
+
+Full report at:
+/tmp/clojure-12260445240446029361.edn
