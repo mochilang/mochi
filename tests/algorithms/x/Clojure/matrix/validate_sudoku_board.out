@@ -1,0 +1,5 @@
+Execution error (IllegalArgumentException) at main/is-valid-sudoku-board (validate_sudoku_board.clj:44).
+Don't know how to create ISeq from: java.lang.Long
+
+Full report at:
+/tmp/clojure-6304493292497526289.edn

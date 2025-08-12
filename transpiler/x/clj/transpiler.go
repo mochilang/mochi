@@ -2247,13 +2247,35 @@ func hasLoopCtrl(stmts []*parser.Statement) bool {
 		switch {
 		case st.Break != nil, st.Continue != nil:
 			return true
+		case st.For != nil:
+			if hasLoopCtrl(st.For.Body) {
+				return true
+			}
+		case st.While != nil:
+			if hasLoopCtrl(st.While.Body) {
+				return true
+			}
 		case st.If != nil:
-			if hasLoopCtrl(st.If.Then) || (st.If.ElseIf != nil && hasLoopCtrl(st.If.ElseIf.Then)) || (len(st.If.Else) > 0 && hasLoopCtrl(st.If.Else)) {
+			if hasLoopCtrl(st.If.Then) || hasLoopCtrlIf(st.If.ElseIf) || hasLoopCtrl(st.If.Else) {
+				return true
+			}
+		case st.Fun != nil:
+			if hasLoopCtrl(st.Fun.Body) {
 				return true
 			}
 		}
 	}
 	return false
+}
+
+func hasLoopCtrlIf(ifst *parser.IfStmt) bool {
+	if ifst == nil {
+		return false
+	}
+	if hasLoopCtrl(ifst.Then) || hasLoopCtrl(ifst.Else) {
+		return true
+	}
+	return hasLoopCtrlIf(ifst.ElseIf)
 }
 func transpileIfStmt(s *parser.IfStmt) (Node, error) {
 	cond, err := transpileExpr(s.Cond)
