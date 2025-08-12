@@ -1,0 +1,10 @@
+compile: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/algorithms/x/Pascal/matrix/matrix_multiplication_recursion.pas
+matrix_multiplication_recursion.pas(190,3) Error: Identifier not found "show_list_list"
+matrix_multiplication_recursion.pas(191,3) Error: Identifier not found "show_list_list"
+matrix_multiplication_recursion.pas(200) Fatal: There were 2 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

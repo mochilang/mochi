@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-12 08:47 GMT+7
+Last updated: 2025-08-12 09:20 GMT+7
 
-## Algorithms Golden Test Checklist (318/1077)
+## Algorithms Golden Test Checklist (352/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -706,56 +706,56 @@ Last updated: 2025-08-12 08:47 GMT+7
 | 697 | matrix/binary_search_matrix |   |  |  |
 | 698 | matrix/count_islands_in_matrix |   |  |  |
 | 699 | matrix/count_negative_numbers_in_sorted_matrix |   |  |  |
-| 700 | matrix/count_paths |   |  |  |
-| 701 | matrix/cramers_rule_2x2 |   |  |  |
-| 702 | matrix/inverse_of_matrix |   |  |  |
-| 703 | matrix/largest_square_area_in_matrix |   |  |  |
-| 704 | matrix/matrix_based_game |   |  |  |
-| 705 | matrix/matrix_class |   |  |  |
-| 706 | matrix/matrix_equalization |   |  |  |
-| 707 | matrix/matrix_multiplication_recursion |   |  |  |
-| 708 | matrix/matrix_operation |   |  |  |
-| 709 | matrix/max_area_of_island |   |  |  |
-| 710 | matrix/median_matrix |   |  |  |
-| 711 | matrix/nth_fibonacci_using_matrix_exponentiation |   |  |  |
-| 712 | matrix/pascal_triangle |   |  |  |
-| 713 | matrix/rotate_matrix |   |  |  |
-| 714 | matrix/searching_in_sorted_matrix |   |  |  |
-| 715 | matrix/sherman_morrison |   |  |  |
-| 716 | matrix/spiral_print |   |  |  |
-| 717 | matrix/tests/test_matrix_operation |   |  |  |
-| 718 | matrix/validate_sudoku_board |   |  |  |
-| 719 | networking_flow/ford_fulkerson |   |  |  |
-| 720 | networking_flow/minimum_cut |   |  |  |
-| 721 | neural_network/activation_functions/binary_step |   |  |  |
-| 722 | neural_network/activation_functions/exponential_linear_unit |   |  |  |
-| 723 | neural_network/activation_functions/gaussian_error_linear_unit |   |  |  |
-| 724 | neural_network/activation_functions/leaky_rectified_linear_unit |   |  |  |
-| 725 | neural_network/activation_functions/mish |   |  |  |
-| 726 | neural_network/activation_functions/rectified_linear_unit |   |  |  |
-| 727 | neural_network/activation_functions/scaled_exponential_linear_unit |   |  |  |
-| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent |   |  |  |
-| 729 | neural_network/activation_functions/softplus |   |  |  |
-| 730 | neural_network/activation_functions/squareplus |   |  |  |
-| 731 | neural_network/activation_functions/swish |   |  |  |
-| 732 | neural_network/back_propagation_neural_network |   |  |  |
-| 733 | neural_network/convolution_neural_network |   |  |  |
-| 734 | neural_network/input_data |   |  |  |
-| 735 | neural_network/simple_neural_network |   |  |  |
-| 736 | neural_network/two_hidden_layers_neural_network |   |  |  |
-| 737 | other/activity_selection |   |  |  |
-| 738 | other/alternative_list_arrange |   |  |  |
-| 739 | other/bankers_algorithm |   |  |  |
-| 740 | other/davis_putnam_logemann_loveland |   |  |  |
-| 741 | other/doomsday |   |  |  |
-| 742 | other/fischer_yates_shuffle |   |  |  |
-| 743 | other/gauss_easter |   |  |  |
-| 744 | other/greedy |   |  |  |
-| 745 | other/guess_the_number_search |   |  |  |
-| 746 | other/h_index |   |  |  |
-| 747 | other/least_recently_used |   |  |  |
-| 748 | other/lfu_cache |   |  |  |
-| 749 | other/linear_congruential_generator |   |  |  |
+| 700 | matrix/count_paths | ✓ | 0ns | 0B |
+| 701 | matrix/cramers_rule_2x2 | ✓ | 0ns | 0B |
+| 702 | matrix/inverse_of_matrix | error |  |  |
+| 703 | matrix/largest_square_area_in_matrix | ✓ | 0ns | 128B |
+| 704 | matrix/matrix_based_game | ✓ | 0ns | 0B |
+| 705 | matrix/matrix_class | error |  |  |
+| 706 | matrix/matrix_equalization | error |  |  |
+| 707 | matrix/matrix_multiplication_recursion | error |  |  |
+| 708 | matrix/matrix_operation | error |  |  |
+| 709 | matrix/max_area_of_island | ✓ | 0ns | 8.28KB |
+| 710 | matrix/median_matrix | ✓ | 0ns | 512B |
+| 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ | 0ns | 0B |
+| 712 | matrix/pascal_triangle | ✓ | 0ns | 0B |
+| 713 | matrix/rotate_matrix | ✓ | 0ns | 1.25KB |
+| 714 | matrix/searching_in_sorted_matrix | ✓ | 0ns | 0B |
+| 715 | matrix/sherman_morrison | ✓ | 0ns | 0B |
+| 716 | matrix/spiral_print | ✓ | 0ns | 0B |
+| 717 | matrix/tests/test_matrix_operation | error |  |  |
+| 718 | matrix/validate_sudoku_board | error |  |  |
+| 719 | networking_flow/ford_fulkerson | ✓ | 0ns | 544B |
+| 720 | networking_flow/minimum_cut | ✓ | 0ns | 640B |
+| 721 | neural_network/activation_functions/binary_step | error |  |  |
+| 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 1.0µs | 192B |
+| 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 0ns | 256B |
+| 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 0ns | 256B |
+| 725 | neural_network/activation_functions/mish | ✓ | 0ns | 0B |
+| 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 0ns | 128B |
+| 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 0ns | 192B |
+| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | error |  |  |
+| 729 | neural_network/activation_functions/softplus | error |  |  |
+| 730 | neural_network/activation_functions/squareplus | ✓ | 0ns | 0B |
+| 731 | neural_network/activation_functions/swish | ✓ | 0ns | 0B |
+| 732 | neural_network/back_propagation_neural_network | error |  |  |
+| 733 | neural_network/convolution_neural_network | error |  |  |
+| 734 | neural_network/input_data | error |  |  |
+| 735 | neural_network/simple_neural_network | ✓ | 103.0µs | 0B |
+| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 0ns | 0B |
+| 737 | other/activity_selection | ✓ | 0ns | 128B |
+| 738 | other/alternative_list_arrange | error |  |  |
+| 739 | other/bankers_algorithm | ✓ | 1.0µs | 832B |
+| 740 | other/davis_putnam_logemann_loveland | ✓ | 0ns | 9.66KB |
+| 741 | other/doomsday | ✓ | 1.0µs | 3.66KB |
+| 742 | other/fischer_yates_shuffle | ✓ | 1.0µs | 1.12KB |
+| 743 | other/gauss_easter | error |  |  |
+| 744 | other/greedy | ✓ | 1.0µs | 6.41KB |
+| 745 | other/guess_the_number_search | ✓ | 0ns | 0B |
+| 746 | other/h_index | ✓ | 0ns | 128B |
+| 747 | other/least_recently_used | ✓ | 0ns | 4.56KB |
+| 748 | other/lfu_cache | ✓ | 0ns | 0B |
+| 749 | other/linear_congruential_generator | error |  |  |
 | 750 | other/lru_cache |   |  |  |
 | 751 | other/magicdiamondpattern |   |  |  |
 | 752 | other/majority_vote_algorithm |   |  |  |

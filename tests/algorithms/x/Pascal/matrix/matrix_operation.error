@@ -1,0 +1,17 @@
+compile: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/algorithms/x/Pascal/matrix/matrix_operation.pas
+matrix_operation.pas(170,3) Note: Local variable "multiply_rowsB" is assigned but never used
+matrix_operation.pas(364,109) Error: Incompatible type for arg no. 1: Got "RealArrayArray", expected "{Open} Array Of LongInt"
+matrix_operation.pas(365,122) Error: Incompatible type for arg no. 1: Got "RealArrayArray", expected "{Open} Array Of LongInt"
+matrix_operation.pas(366,54) Error: Incompatible type for arg no. 1: Got "RealArrayArray", expected "{Open} Array Of LongInt"
+matrix_operation.pas(367,62) Error: Incompatible type for arg no. 1: Got "{Dynamic} Array Of {Dynamic} Array Of Real", expected "{Open} Array Of IntArray"
+matrix_operation.pas(367,118) Error: Incompatible type for arg no. 1: Got "RealArrayArray", expected "{Open} Array Of LongInt"
+matrix_operation.pas(368,68) Error: Incompatible type for arg no. 1: Got "{Dynamic} Array Of {Dynamic} Array Of Real", expected "{Open} Array Of IntArray"
+matrix_operation.pas(369,64) Error: Incompatible type for arg no. 1: Got "{Dynamic} Array Of {Dynamic} Array Of Real", expected "{Open} Array Of IntArray"
+matrix_operation.pas(369,116) Error: Incompatible type for arg no. 1: Got "RealArrayArray", expected "{Open} Array Of LongInt"
+matrix_operation.pas(384) Fatal: There were 8 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

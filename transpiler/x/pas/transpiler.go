@@ -1217,6 +1217,10 @@ func (p *PrintStmt) emit(w io.Writer) {
 			io.WriteString(w, "show_list_int64(")
 			p.Exprs[0].emit(w)
 			io.WriteString(w, ");")
+		} else if strings.HasPrefix(t, "array of real") {
+			io.WriteString(w, "writeln(list_real_to_str(")
+			p.Exprs[0].emit(w)
+			io.WriteString(w, "));")
 		} else if t == "array of Variant" {
 			currProg.NeedListStrVariant = true
 			currProg.UseSysUtils = true
