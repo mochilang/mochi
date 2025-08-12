@@ -118,7 +118,7 @@ fn main() {
     fn new_dataset(mut images: Vec<Vec<i64>>, mut labels: Vec<Vec<i64>>) -> DataSet {
     return DataSet {images: images.clone(), labels: labels.clone(), num_examples: (images.len() as i64), index_in_epoch: 0, epochs_completed: 0}
 };
-    fn next_batch(ds: &DataSet, mut batch_size: i64) -> BatchResult {
+    fn next_batch(mut ds: DataSet, mut batch_size: i64) -> BatchResult {
     let start: i64 = ds.index_in_epoch;
     if ((start + batch_size) > ds.num_examples) {
         let rest: i64 = (ds.num_examples - start);
@@ -158,15 +158,15 @@ fn main() {
     let test_labels_raw: Vec<i64> = vec![5, 6];
     let data: Datasets = read_data_sets(train_images.clone(), train_labels_raw.clone(), test_images.clone(), test_labels_raw.clone(), 2, 10);
     let mut ds: DataSet = data.train.clone();
-    let mut res: BatchResult = next_batch(&ds, 2);
+    let mut res: BatchResult = next_batch(ds.clone(), 2);
     ds = res.dataset.clone();
     println!("{}", format!("{:?}", res.images.clone()));
     println!("{}", format!("{:?}", res.labels.clone()));
-    res = next_batch(&ds, 2);
+    res = next_batch(ds.clone(), 2);
     ds = res.dataset.clone();
     println!("{}", format!("{:?}", res.images.clone()));
     println!("{}", format!("{:?}", res.labels.clone()));
-    res = next_batch(&ds, 2);
+    res = next_batch(ds.clone(), 2);
     ds = res.dataset.clone();
     println!("{}", format!("{:?}", res.images.clone()));
     println!("{}", format!("{:?}", res.labels.clone()));
