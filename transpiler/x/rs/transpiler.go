@@ -1973,6 +1973,18 @@ func (n *NameRef) emit(w io.Writer) {
 		io.WriteString(w, rustIdent(name))
 		return
 	}
+	// Accessing a mutable static variable requires an unsafe block in Rust.
+	// Wrap global variable references in `unsafe {}` so functions using
+	// globals don't themselves need to be marked unsafe.  This mirrors the
+	// unsafe block wrapped around `main` for global initialisation.
+	if globalVars[name] && !isLocal(n.Name) {
+		if t, ok := varTypes[name]; !ok || !strings.HasPrefix(t, "HashMap") {
+			io.WriteString(w, "unsafe { ")
+			io.WriteString(w, rustIdent(name))
+			io.WriteString(w, " }")
+			return
+		}
+	}
 	if cloneVars[n.Name] {
 		typ := n.Type
 		if typ == "" {
@@ -2179,7 +2191,11 @@ func (a *AssignStmt) emit(w io.Writer) {
 		io.WriteString(w, ".lock().unwrap()")
 		io.WriteString(w, " = ")
 		a.Expr.emit(w)
-	} else {
+		return
+	}
+	if globalVars[name] && !isLocal(a.Name) {
+		// Assignments to mutable statics require an unsafe block.
+		io.WriteString(w, "unsafe { ")
 		io.WriteString(w, name)
 		io.WriteString(w, " = ")
 		if _, ok := a.Expr.(*NameRef); ok {
@@ -2193,6 +2209,21 @@ func (a *AssignStmt) emit(w io.Writer) {
 		} else {
 			a.Expr.emit(w)
 		}
+		io.WriteString(w, " }")
+		return
+	}
+	io.WriteString(w, name)
+	io.WriteString(w, " = ")
+	if _, ok := a.Expr.(*NameRef); ok {
+		typ := inferType(a.Expr)
+		if typ != "i64" && typ != "bool" && typ != "f64" && !strings.HasPrefix(typ, "&") {
+			a.Expr.emit(w)
+			io.WriteString(w, ".clone()")
+		} else {
+			a.Expr.emit(w)
+		}
+	} else {
+		a.Expr.emit(w)
 	}
 }
 
