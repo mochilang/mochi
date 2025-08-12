@@ -1,4 +1,4 @@
-// Generated 2025-08-12 07:47 +0700
+// Generated 2025-08-12 08:17 +0700
 
 exception Break
 exception Continue
@@ -65,7 +65,7 @@ and continued_fraction (numerator: int) (denominator: int) =
                 try
                     let integer_part: int = floor_div (num) (den)
                     result <- Array.append result [|integer_part|]
-                    num <- int ((int64 num) - ((int64 integer_part) * (int64 den)))
+                    num <- num - (integer_part * den)
                     if num = 0 then
                         raise Break
                     let tmp: int = num

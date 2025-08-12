@@ -1,4 +1,4 @@
-// Generated 2025-08-12 07:47 +0700
+// Generated 2025-08-12 08:17 +0700
 
 exception Break
 exception Continue
@@ -55,7 +55,7 @@ let rec pow10 (n: int) =
         let mutable result: int = 1
         let mutable i: int = 0
         while i < n do
-            result <- int ((int64 result) * (int64 10))
+            result <- result * 10
             i <- i + 1
         __ret <- result
         raise Return
@@ -151,7 +151,7 @@ and parse_decimal (s: string) =
                     failwith ("invalid number")
             if (String.length (exp_str)) = 0 then
                 failwith ("invalid number")
-            exp <- int ((int64 exp_sign) * (int64 (int (int (exp_str)))))
+            exp <- exp_sign * (int (int (exp_str)))
         if idx <> (String.length (s)) then
             failwith ("invalid number")
         if (String.length (int_part)) = 0 then
@@ -162,10 +162,10 @@ and parse_decimal (s: string) =
             _numerator <- 0 - _numerator
         let mutable _denominator: int = pow10 (String.length (frac_part))
         if exp > 0 then
-            _numerator <- int ((int64 _numerator) * (int64 (pow10 (exp))))
+            _numerator <- _numerator * (pow10 (exp))
         else
             if exp < 0 then
-                _denominator <- int ((int64 _denominator) * (int64 (pow10 (-exp))))
+                _denominator <- _denominator * (pow10 (-exp))
         __ret <- { _numerator = _numerator; _denominator = _denominator }
         raise Return
         __ret

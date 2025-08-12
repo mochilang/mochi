@@ -1,4 +1,4 @@
-// Generated 2025-08-12 07:47 +0700
+// Generated 2025-08-12 08:17 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -63,15 +63,15 @@ and extended_euclidean_algorithm (a: int) (b: int) =
         let mutable coeff_b: int = 1
         while remainder <> 0 do
             let quotient: int = _floordiv old_remainder remainder
-            let temp_remainder: int64 = (int64 old_remainder) - ((int64 quotient) * (int64 remainder))
+            let temp_remainder: int = old_remainder - (quotient * remainder)
             old_remainder <- remainder
-            remainder <- int temp_remainder
-            let temp_a: int64 = (int64 old_coeff_a) - ((int64 quotient) * (int64 coeff_a))
+            remainder <- temp_remainder
+            let temp_a: int = old_coeff_a - (quotient * coeff_a)
             old_coeff_a <- coeff_a
-            coeff_a <- int temp_a
-            let temp_b: int64 = (int64 old_coeff_b) - ((int64 quotient) * (int64 coeff_b))
+            coeff_a <- temp_a
+            let temp_b: int = old_coeff_b - (quotient * coeff_b)
             old_coeff_b <- coeff_b
-            coeff_b <- int temp_b
+            coeff_b <- temp_b
         if a < 0 then
             old_coeff_a <- -old_coeff_a
         if b < 0 then

@@ -1,4 +1,4 @@
-// Generated 2025-08-12 07:47 +0700
+// Generated 2025-08-12 08:17 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,6 +19,9 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
+    d.[k] <- v
+    d
 let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
     let d = System.Collections.Generic.Dictionary<'K, 'V>()
     for (k, v) in pairs do
@@ -63,7 +66,7 @@ and joint_probability_distribution (x_values: int array) (y_values: int array) (
             let mutable j: int = 0
             while j < (Seq.length (y_values)) do
                 let k: string = key (_idx x_values (int i)) (_idx y_values (int j))
-                result.[k] <- (_idx x_probabilities (int i)) * (_idx y_probabilities (int j))
+                result <- _dictAdd (result) (string (k)) ((_idx x_probabilities (int i)) * (_idx y_probabilities (int j)))
                 j <- j + 1
             i <- i + 1
         __ret <- result

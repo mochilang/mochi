@@ -1,4 +1,4 @@
-// Generated 2025-08-12 07:47 +0700
+// Generated 2025-08-12 08:17 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -46,11 +46,11 @@ let rec integer_square_root (num: int) =
         let mutable right_bound: int = _floordiv num 2
         while left_bound <= right_bound do
             let mid: int = left_bound + (_floordiv (right_bound - left_bound) 2)
-            let mid_squared: int64 = (int64 mid) * (int64 mid)
-            if mid_squared = (int64 num) then
+            let mid_squared: int = mid * mid
+            if mid_squared = num then
                 __ret <- mid
                 raise Return
-            if mid_squared < (int64 num) then
+            if mid_squared < num then
                 left_bound <- mid + 1
             else
                 right_bound <- mid - 1

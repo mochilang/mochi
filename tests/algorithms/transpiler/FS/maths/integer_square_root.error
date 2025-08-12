@@ -1,0 +1,10 @@
+exit status 1
+Unhandled Exception:
+System.Exception: sqrt of max int incorrect
+  at Integer_square_root.test_integer_square_root () [0x000ae] in <689a9890920d99f1a745038390989a68>:0 
+  at Integer_square_root.main () [0x000a1] in <689a9890920d99f1a745038390989a68>:0 
+  at <StartupCode$integer_square_root>.$Integer_square_root.main@ () [0x00019] in <689a9890920d99f1a745038390989a68>:0 
+[ERROR] FATAL UNHANDLED EXCEPTION: System.Exception: sqrt of max int incorrect
+  at Integer_square_root.test_integer_square_root () [0x000ae] in <689a9890920d99f1a745038390989a68>:0 
+  at Integer_square_root.main () [0x000a1] in <689a9890920d99f1a745038390989a68>:0 
+  at <StartupCode$integer_square_root>.$Integer_square_root.main@ () [0x00019] in <689a9890920d99f1a745038390989a68>:0

@@ -1,4 +1,4 @@
-// Generated 2025-08-12 07:47 +0700
+// Generated 2025-08-12 08:17 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -59,10 +59,10 @@ and kth_permutation (k: int) (n: int) =
         let mutable factorials: int array = unbox<int array> [|1|]
         let mutable i: int = 2
         while i < n do
-            factorials <- Array.append factorials [|int ((int64 (_idx factorials (int ((Seq.length (factorials)) - 1)))) * (int64 i))|]
+            factorials <- Array.append factorials [|((_idx factorials (int ((Seq.length (factorials)) - 1))) * i)|]
             i <- i + 1
-        let total: int64 = (int64 (_idx factorials (int ((Seq.length (factorials)) - 1)))) * (int64 n)
-        if (k < 0) || ((int64 k) >= total) then
+        let total: int = (_idx factorials (int ((Seq.length (factorials)) - 1))) * n
+        if (k < 0) || (k >= total) then
             failwith ("k out of bounds")
         let mutable elements: int array = Array.empty<int>
         let mutable e: int = 0

@@ -1,4 +1,4 @@
-// Generated 2025-08-12 07:47 +0700
+// Generated 2025-08-12 08:17 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -42,7 +42,7 @@ let rec exact_prime_factor_count (n: int) =
             while (((num % 2 + 2) % 2)) = 0 do
                 num <- _floordiv num 2
         let mutable i: int = 3
-        while ((int64 i) * (int64 i)) <= (int64 num) do
+        while (i * i) <= num do
             if (((num % i + i) % i)) = 0 then
                 count <- count + 1
                 while (((num % i + i) % i)) = 0 do

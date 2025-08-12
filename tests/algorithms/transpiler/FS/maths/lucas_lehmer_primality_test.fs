@@ -1,4 +1,4 @@
-// Generated 2025-08-12 07:47 +0700
+// Generated 2025-08-12 08:17 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -34,7 +34,7 @@ let rec pow2 (p: int) =
         let mutable result: int = 1
         let mutable i: int = 0
         while i < p do
-            result <- int ((int64 result) * (int64 2))
+            result <- result * 2
             i <- i + 1
         __ret <- result
         raise Return
@@ -54,7 +54,7 @@ and lucas_lehmer_test (p: int) =
         let m: int = (pow2 (p)) - 1
         let mutable i: int = 0
         while i < (p - 2) do
-            s <- int ((((((int64 s) * (int64 s)) - (int64 2)) % (int64 m) + (int64 m)) % (int64 m)))
+            s <- ((((s * s) - 2) % m + m) % m)
             i <- i + 1
         __ret <- s = 0
         raise Return

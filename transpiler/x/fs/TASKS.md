@@ -1,3 +1,7 @@
+## Progress (2025-08-12 08:17 +0700)
+- fs: handle int math without int64 promotion
+- Generated F# for 103/105 programs (103 passing)
+
 ## Progress (2025-08-11 17:23 +0700)
 - erl: update algorithm outputs 940-989
 - Generated F# for 103/105 programs (103 passing)

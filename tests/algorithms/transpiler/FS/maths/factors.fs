@@ -1,4 +1,4 @@
-// Generated 2025-08-12 07:47 +0700
+// Generated 2025-08-12 08:17 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -58,7 +58,7 @@ and factors_of_a_number (num: int) =
         let mutable small: int array = Array.empty<int>
         let mutable large: int array = Array.empty<int>
         let mutable i: int = 1
-        while ((int64 i) * (int64 i)) <= (int64 num) do
+        while (i * i) <= num do
             if (((num % i + i) % i)) = 0 then
                 small <- Array.append small [|i|]
                 let d: int = _floordiv num i

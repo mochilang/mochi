@@ -1,4 +1,4 @@
-// Generated 2025-08-12 07:47 +0700
+// Generated 2025-08-12 08:17 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -79,7 +79,7 @@ and parse_decimal (s: string) =
         let mutable i: int = 0
         while i < (String.length (s)) do
             let c: string = string (s.[i])
-            value <- int (((int64 value) * (int64 10)) + (int64 (int c)))
+            value <- (value * 10) + (int c)
             i <- i + 1
         __ret <- value
         raise Return

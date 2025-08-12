@@ -1,4 +1,4 @@
-// Generated 2025-08-12 07:47 +0700
+// Generated 2025-08-12 08:17 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -43,7 +43,7 @@ let rec collatz_sequence (n: int) =
             if (((current % 2 + 2) % 2)) = 0 then
                 current <- _floordiv current 2
             else
-                current <- int (((int64 3) * (int64 current)) + (int64 1))
+                current <- (3 * current) + 1
             seq <- Array.append seq [|current|]
         __ret <- seq
         raise Return

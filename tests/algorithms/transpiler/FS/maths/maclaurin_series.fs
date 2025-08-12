@@ -1,4 +1,4 @@
-// Generated 2025-08-12 07:47 +0700
+// Generated 2025-08-12 08:17 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -82,9 +82,9 @@ and maclaurin_sin (theta: float) (accuracy: int) =
         let mutable sum: float = 0.0
         let mutable r: int = 0
         while r < accuracy do
-            let power: int64 = ((int64 2) * (int64 r)) + (int64 1)
+            let power: int = (2 * r) + 1
             let sign: float = if (((r % 2 + 2) % 2)) = 0 then 1.0 else (-1.0)
-            sum <- sum + ((sign * (pow (t) (int power))) / (factorial (int power)))
+            sum <- sum + ((sign * (pow (t) (power))) / (factorial (power)))
             r <- r + 1
         __ret <- sum
         raise Return
@@ -102,9 +102,9 @@ and maclaurin_cos (theta: float) (accuracy: int) =
         let mutable sum: float = 0.0
         let mutable r: int = 0
         while r < accuracy do
-            let power: int64 = (int64 2) * (int64 r)
+            let power: int = 2 * r
             let sign: float = if (((r % 2 + 2) % 2)) = 0 then 1.0 else (-1.0)
-            sum <- sum + ((sign * (pow (t) (int power))) / (factorial (int power)))
+            sum <- sum + ((sign * (pow (t) (power))) / (factorial (power)))
             r <- r + 1
         __ret <- sum
         raise Return
