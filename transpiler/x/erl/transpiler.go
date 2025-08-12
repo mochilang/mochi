@@ -79,6 +79,14 @@ mochi_to_int(V) ->
     end.
 `
 
+const helperToFloat = `
+to_float(V) ->
+    case erlang:is_float(V) of
+        true -> V;
+        _ -> float(V)
+    end.
+`
+
 const helperPadStart = `
 mochi_pad_start(S, Len, Ch) ->
     Fill0 = case Ch of
@@ -279,6 +287,7 @@ mochi_repr(V) ->
 var useNow bool
 var useLookupHost bool
 var useToInt bool
+var useToFloat bool
 var useMemberHelper bool
 var usePadStart bool
 var useExists bool
@@ -315,6 +324,7 @@ type Program struct {
 	UseNow          bool
 	UseLookupHost   bool
 	UseToInt        bool
+	UseToFloat      bool
 	UseMemberHelper bool
 	UsePadStart     bool
 	UseExists       bool
@@ -3357,6 +3367,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useNow = false
 	useLookupHost = false
 	useToInt = false
+	useToFloat = true
 	useMemberHelper = false
 	usePadStart = false
 	useExists = false
@@ -3409,6 +3420,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	p.UseNow = useNow
 	p.UseLookupHost = useLookupHost
 	p.UseToInt = useToInt
+	p.UseToFloat = useToFloat
 	p.UseMemberHelper = useMemberHelper
 	p.UsePadStart = usePadStart
 	p.UseExists = useExists
@@ -4659,7 +4671,8 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 			if err != nil {
 				return nil, err
 			}
-			return &CallExpr{Func: "float", Args: []Expr{arg}}, nil
+			useToFloat = true
+			return &CallExpr{Func: "to_float", Args: []Expr{arg}}, nil
 		}
 		if mod, ok := ctx.autoModule(name); ok && mod == "mochi/runtime/ffi/go/testpkg" && len(pf.Target.Selector.Tail) == 1 {
 			f := pf.Target.Selector.Tail[0]
@@ -4771,7 +4784,8 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 						if len(args) != 1 {
 							return nil, fmt.Errorf("to_float expects 1 arg")
 						}
-						expr = &CallExpr{Func: "float", Args: args}
+						useToFloat = true
+						expr = &CallExpr{Func: "to_float", Args: args}
 					} else {
 						ce := &CallExpr{Func: nr.Name, Args: args}
 						expr = ce
@@ -6524,6 +6538,19 @@ func (p *Program) Emit() []byte {
 	if p.UseToInt {
 		buf.WriteString(helperToInt)
 		buf.WriteString("\n")
+	}
+	if p.UseToFloat {
+		defined := false
+		for _, f := range p.Funs {
+			if f.Name == "to_float" && len(f.Params) == 1 {
+				defined = true
+				break
+			}
+		}
+		if !defined {
+			buf.WriteString(helperToFloat)
+			buf.WriteString("\n")
+		}
 	}
 	if p.UseMemberHelper {
 		buf.WriteString(helperMember)
