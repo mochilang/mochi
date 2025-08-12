@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-11 17:47 +0700
+Last updated: 2025-08-12 07:47 +0700
 
-## Program Checklist (175/1077)
+## Program Checklist (205/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -556,53 +556,53 @@ Last updated: 2025-08-11 17:47 +0700
 | 547 | maths/check_polygon |   |  |  |
 | 548 | maths/chinese_remainder_theorem |   |  |  |
 | 549 | maths/chudnovsky_algorithm |   |  |  |
-| 550 | maths/collatz_sequence |   |  |  |
-| 551 | maths/combinations |   |  |  |
-| 552 | maths/continued_fraction |   |  |  |
-| 553 | maths/decimal_isolate |   |  |  |
-| 554 | maths/decimal_to_fraction |   |  |  |
-| 555 | maths/dodecahedron |   |  |  |
-| 556 | maths/double_factorial |   |  |  |
-| 557 | maths/dual_number_automatic_differentiation |   |  |  |
+| 550 | maths/collatz_sequence | ✓ | 690µs | 384.0 KB |
+| 551 | maths/combinations | ✓ | 397µs | 384.0 KB |
+| 552 | maths/continued_fraction | ✓ | 537µs | 384.0 KB |
+| 553 | maths/decimal_isolate | ✓ | 445µs | 520.0 KB |
+| 554 | maths/decimal_to_fraction | ✓ | 1.43ms | 768.0 KB |
+| 555 | maths/dodecahedron | ✓ | 242µs | 256.0 KB |
+| 556 | maths/double_factorial | ✓ | 249µs | 256.0 KB |
+| 557 | maths/dual_number_automatic_differentiation | ✓ | 1.567ms | 768.0 KB |
 | 558 | maths/entropy |   |  |  |
 | 559 | maths/euclidean_distance |   |  |  |
 | 560 | maths/euler_method |   |  |  |
-| 561 | maths/euler_modified |   |  |  |
-| 562 | maths/eulers_totient |   |  |  |
-| 563 | maths/extended_euclidean_algorithm |   |  |  |
-| 564 | maths/factorial |   |  |  |
+| 561 | maths/euler_modified | ✓ | 379µs | 384.0 KB |
+| 562 | maths/eulers_totient | ✓ | 1.503ms | 640.0 KB |
+| 563 | maths/extended_euclidean_algorithm | ✓ | 312µs | 384.0 KB |
+| 564 | maths/factorial | ✓ | 308µs | 256.0 KB |
 | 565 | maths/factors |   |  |  |
 | 566 | maths/fast_inverse_sqrt |   |  |  |
-| 567 | maths/fermat_little_theorem |   |  |  |
+| 567 | maths/fermat_little_theorem | ✓ | 321µs | 128.0 KB |
 | 568 | maths/fibonacci |   |  |  |
 | 569 | maths/find_max |   |  |  |
 | 570 | maths/find_min |   |  |  |
 | 571 | maths/floor |   |  |  |
-| 572 | maths/gamma |   |  |  |
-| 573 | maths/gaussian |   |  |  |
+| 572 | maths/gamma | ✓ | 24.699ms | 128.0 KB |
+| 573 | maths/gaussian | ✓ | 234µs | 128.0 KB |
 | 574 | maths/gcd_of_n_numbers |   |  |  |
 | 575 | maths/geometric_mean |   |  |  |
-| 576 | maths/germain_primes |   |  |  |
-| 577 | maths/greatest_common_divisor |   |  |  |
-| 578 | maths/hardy_ramanujanalgo |   |  |  |
-| 579 | maths/integer_square_root |   |  |  |
+| 576 | maths/germain_primes | ✓ | 325µs | 256.0 KB |
+| 577 | maths/greatest_common_divisor | ✓ | 558µs | 384.0 KB |
+| 578 | maths/hardy_ramanujanalgo | ✓ | 489µs | 384.0 KB |
+| 579 | maths/integer_square_root | ✓ | 269µs | 256.0 KB |
 | 580 | maths/interquartile_range |   |  |  |
-| 581 | maths/is_int_palindrome |   |  |  |
-| 582 | maths/is_ip_v4_address_valid |   |  |  |
+| 581 | maths/is_int_palindrome | ✓ | 354µs | 384.0 KB |
+| 582 | maths/is_ip_v4_address_valid | ✓ | 2.282ms | 896.0 KB |
 | 583 | maths/is_square_free |   |  |  |
 | 584 | maths/jaccard_similarity |   |  |  |
 | 585 | maths/joint_probability_distribution |   |  |  |
-| 586 | maths/josephus_problem |   |  |  |
+| 586 | maths/josephus_problem | ✓ | 669µs | 256.0 KB |
 | 587 | maths/juggler_sequence |   |  |  |
-| 588 | maths/karatsuba |   |  |  |
+| 588 | maths/karatsuba | ✓ | 938µs | 384.0 KB |
 | 589 | maths/kth_lexicographic_permutation |   |  |  |
-| 590 | maths/largest_of_very_large_numbers |   |  |  |
-| 591 | maths/least_common_multiple |   |  |  |
-| 592 | maths/line_length |   |  |  |
-| 593 | maths/liouville_lambda |   |  |  |
-| 594 | maths/lucas_lehmer_primality_test |   |  |  |
-| 595 | maths/lucas_series |   |  |  |
-| 596 | maths/maclaurin_series |   |  |  |
+| 590 | maths/largest_of_very_large_numbers | ✓ | 296µs | 256.0 KB |
+| 591 | maths/least_common_multiple | ✓ | 322µs | 256.0 KB |
+| 592 | maths/line_length | ✓ | 375µs | 128.0 KB |
+| 593 | maths/liouville_lambda | ✓ | 316µs | 256.0 KB |
+| 594 | maths/lucas_lehmer_primality_test | ✓ | 281µs | 128.0 KB |
+| 595 | maths/lucas_series | ✓ | 472µs | 384.0 KB |
+| 596 | maths/maclaurin_series | ✓ | 449µs | 384.0 KB |
 | 597 | maths/manhattan_distance |   |  |  |
 | 598 | maths/matrix_exponentiation |   |  |  |
 | 599 | maths/max_sum_sliding_window |   |  |  |
