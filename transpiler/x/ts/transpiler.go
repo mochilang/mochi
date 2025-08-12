@@ -47,6 +47,7 @@ var useFetch bool
 var useLookupHost bool
 var useStr bool
 var useLen bool
+var useEqual bool
 var usePanic bool
 var usePyName bool
 var funcDepth int
@@ -55,6 +56,24 @@ var paramStack []map[string]bool
 var asyncFuncs map[string]bool
 
 const maxSafeMul = 94906265 // sqrt(2^53 - 1)
+
+const helperEqual = `function _equal(a: unknown, b: unknown): boolean {
+  if (typeof a === 'number' && typeof b === 'number') {
+    return Math.abs(a - b) < 1e-9;
+  }
+  if (Array.isArray(a) && Array.isArray(b)) {
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
+    return true;
+  }
+  if (a && b && typeof a === 'object' && typeof b === 'object') {
+    const ak = Object.keys(a); const bk = Object.keys(b);
+    if (ak.length !== bk.length) return false;
+    for (const k of ak) { if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) return false; }
+    return true;
+  }
+  return a === b;
+}`
 
 var reserved = map[string]bool{
 	"break": true, "case": true, "catch": true, "class": true, "const": true,
@@ -2332,6 +2351,9 @@ function sha256(bs: number[]): number[] {
   return String(x);
 }`})
 	}
+	if useEqual {
+		prelude = append(prelude, &RawStmt{Code: helperEqual})
+	}
 	if usePanic {
 		prelude = append(prelude, &RawStmt{Code: `function _panic(msg: any): never { throw new Error(String(msg)); }`})
 	}
@@ -2722,18 +2744,18 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		}
 		name := safeName(s.Fun.Name)
 		fd := &FuncDecl{Name: name, Params: params, ParamTypes: typesArr, ReturnType: retType, Body: body, Async: useFetch}
-               // Map single-argument ln/exp helpers to native Math routines.
-               // Many algorithm implementations include series approximations
-               // for these functions which can become unstable for extreme
-               // inputs (e.g. softplus for very negative values). Using
-               // Math.log/Math.exp ensures consistent behaviour across
-               // transpiled programs regardless of custom approximation
-               // bodies.
-               if name == "ln" && len(params) == 1 {
-                       fd.Body = []Stmt{&ReturnStmt{Value: &CallExpr{Func: "Math.log", Args: []Expr{&NameRef{Name: params[0]}}}}}
-               } else if name == "exp" && len(params) == 1 {
-                       fd.Body = []Stmt{&ReturnStmt{Value: &CallExpr{Func: "Math.exp", Args: []Expr{&NameRef{Name: params[0]}}}}}
-               }
+		// Map single-argument ln/exp helpers to native Math routines.
+		// Many algorithm implementations include series approximations
+		// for these functions which can become unstable for extreme
+		// inputs (e.g. softplus for very negative values). Using
+		// Math.log/Math.exp ensures consistent behaviour across
+		// transpiled programs regardless of custom approximation
+		// bodies.
+		if name == "ln" && len(params) == 1 {
+			fd.Body = []Stmt{&ReturnStmt{Value: &CallExpr{Func: "Math.log", Args: []Expr{&NameRef{Name: params[0]}}}}}
+		} else if name == "exp" && len(params) == 1 {
+			fd.Body = []Stmt{&ReturnStmt{Value: &CallExpr{Func: "Math.exp", Args: []Expr{&NameRef{Name: params[0]}}}}}
+		}
 		if fd.Async {
 			asyncFuncs[name] = true
 		}
@@ -3516,6 +3538,25 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 			operands[i] = &ExceptExpr{Left: operands[i], Right: operands[i+1]}
 		case "intersect":
 			operands[i] = &IntersectExpr{Left: operands[i], Right: operands[i+1]}
+		case "==", "!=":
+			leftDeep := needsDeepEqual(typesArr[i])
+			rightDeep := needsDeepEqual(typesArr[i+1])
+			if leftDeep || rightDeep {
+				useEqual = true
+				call := &CallExpr{Func: "_equal", Args: []Expr{operands[i], operands[i+1]}}
+				if ops[i] == "!=" {
+					operands[i] = &UnaryExpr{Op: "!", Expr: call}
+				} else {
+					operands[i] = call
+				}
+			} else {
+				op := "==="
+				if ops[i] == "!=" {
+					op = "!=="
+				}
+				operands[i] = &BinaryExpr{Left: operands[i], Op: op, Right: operands[i+1]}
+			}
+			typesArr[i] = types.BoolType{}
 		default:
 			if isBigIntType(typesArr[i]) || isBigIntType(typesArr[i+1]) {
 				if !isBigIntType(typesArr[i]) {
@@ -4712,6 +4753,17 @@ func isListType(t types.Type) bool {
 		return true
 	case types.OptionType:
 		return isListType(tt.Elem)
+	default:
+		return false
+	}
+}
+
+func needsDeepEqual(t types.Type) bool {
+	switch tt := t.(type) {
+	case types.ListType, types.MapType, types.StructType:
+		return true
+	case types.OptionType:
+		return needsDeepEqual(tt.Elem)
 	default:
 		return false
 	}
