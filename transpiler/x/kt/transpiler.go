@@ -5996,6 +5996,12 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				}
 				return &CallExpr{Func: "kotlin.math.abs", Args: args}, nil
 			}
+			if name == "floor" {
+				if len(args) != 1 {
+					return nil, fmt.Errorf("floor expects 1 arg")
+				}
+				return &CallExpr{Func: "kotlin.math.floor", Args: args}, nil
+			}
 			if name == "num" {
 				if len(args) != 1 {
 					return nil, fmt.Errorf("num expects 1 arg")

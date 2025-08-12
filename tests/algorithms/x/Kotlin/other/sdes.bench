@@ -1,0 +1,3 @@
+Cipher text is: 10101000
+Plain text after decypting is: 11010111
+{"duration_us":7582, "memory_bytes":136184, "name":"main"}

@@ -1,0 +1,7 @@
+run: exit status 1
+Exception in thread "main" java.lang.RuntimeException: capture_area failed
+	at Basic_orbital_captureKt.panic(basic_orbital_capture.kt:1)
+	at Basic_orbital_captureKt.run_tests(basic_orbital_capture.kt:93)
+	at Basic_orbital_captureKt.user_main(basic_orbital_capture.kt:98)
+	at Basic_orbital_captureKt.main(basic_orbital_capture.kt:109)
+	at Basic_orbital_captureKt.main(basic_orbital_capture.kt)
