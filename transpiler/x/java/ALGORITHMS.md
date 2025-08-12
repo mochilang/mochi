@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-12 08:56 GMT+7
+Last updated: 2025-08-12 09:25 GMT+7
 
 ## Algorithms Golden Test Checklist (931/1077)
 | Index | Name | Status | Duration | Memory |
@@ -709,7 +709,7 @@ Last updated: 2025-08-12 08:56 GMT+7
 | 700 | matrix/count_paths | ✓ | 30.0ms | 992B |
 | 701 | matrix/cramers_rule_2x2 | ✓ | 27.0ms | 496B |
 | 702 | matrix/inverse_of_matrix | ✓ | 28.0ms | 704B |
-| 703 | matrix/largest_square_area_in_matrix | ✓ | 62.0ms | 46.11KB |
+| 703 | matrix/largest_square_area_in_matrix | ✓ | 39.0ms | 48.75KB |
 | 704 | matrix/matrix_based_game | ✓ | 62.0ms | 65.01KB |
 | 705 | matrix/matrix_class | ✓ | 80.0ms | 107.25KB |
 | 706 | matrix/matrix_equalization | error |  |  |
