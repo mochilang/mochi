@@ -18,9 +18,43 @@ public class Main {
         System.out.println(result_1);
     }
     public static void main(String[] args) {
-        start = ((long[])(new long[]{1, 3, 0, 5, 8, 5}));
-        finish = ((long[])(new long[]{2, 4, 6, 7, 9, 9}));
-        print_max_activities(((long[])(start)), ((long[])(finish)));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            start = ((long[])(new long[]{1, 3, 0, 5, 8, 5}));
+            finish = ((long[])(new long[]{2, 4, 6, 7, 9, 9}));
+            print_max_activities(((long[])(start)), ((long[])(finish)));
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _p(Object v) {

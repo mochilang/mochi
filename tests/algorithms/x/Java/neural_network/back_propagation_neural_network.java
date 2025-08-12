@@ -1,13 +1,13 @@
 public class Main {
-    static int seed = 0;
+    static long seed = 0;
     static class Layer {
-        int units;
+        long units;
         double[][] weight;
         double[] bias;
         double[] output;
         double[] xdata;
         double learn_rate;
-        Layer(int units, double[][] weight, double[] bias, double[] output, double[] xdata, double learn_rate) {
+        Layer(long units, double[][] weight, double[] bias, double[] output, double[] xdata, double learn_rate) {
             this.units = units;
             this.weight = weight;
             this.bias = bias;
@@ -35,297 +35,297 @@ public class Main {
     }
 
 
-    static int rand() {
-        seed = ((int)(Math.floorMod(((long)((seed * 1103515245 + 12345))), 2147483648L)));
+    static long rand() {
+        seed = (long)(((long)(Math.floorMod(((long)(((long)((long)(seed) * (long)(1103515245)) + (long)(12345)))), 2147483648L))));
         return seed;
     }
 
     static double random() {
-        return (1.0 * rand()) / 2147483648.0;
+        return (1.0 * (double)(rand())) / 2147483648.0;
     }
 
     static double expApprox(double x) {
-        double y = x;
-        boolean is_neg = false;
-        if (x < 0.0) {
-            is_neg = true;
-            y = -x;
+        double y = (double)(x);
+        boolean is_neg_1 = false;
+        if ((double)(x) < 0.0) {
+            is_neg_1 = true;
+            y = (double)(-x);
         }
-        double term = 1.0;
-        double sum = 1.0;
-        int n = 1;
-        while (n < 30) {
-            term = term * y / (((Number)(n)).doubleValue());
-            sum = sum + term;
-            n = n + 1;
+        double term_1 = 1.0;
+        double sum_1 = 1.0;
+        long n_1 = 1L;
+        while (n_1 < (long)(30)) {
+            term_1 = (double)(term_1) * (double)(y) / (((Number)(n_1)).doubleValue());
+            sum_1 = (double)(sum_1) + (double)(term_1);
+            n_1 = (long)(n_1 + (long)(1));
         }
-        if (((Boolean)(is_neg))) {
-            return 1.0 / sum;
+        if (is_neg_1) {
+            return 1.0 / (double)(sum_1);
         }
-        return sum;
+        return sum_1;
     }
 
     static double sigmoid(double z) {
-        return 1.0 / (1.0 + expApprox(-z));
+        return 1.0 / (1.0 + (double)(expApprox((double)(-z))));
     }
 
     static double[] sigmoid_vec(double[] v) {
         double[] res = ((double[])(new double[]{}));
-        int i = 0;
-        while (i < v.length) {
-            res = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(res), java.util.stream.DoubleStream.of(sigmoid(v[i]))).toArray()));
-            i = i + 1;
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(v.length)) {
+            res = ((double[])(appendDouble(res, (double)(sigmoid((double)(v[(int)((long)(i_1))]))))));
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
         return res;
     }
 
     static double[] sigmoid_derivative(double[] out) {
         double[] res_1 = ((double[])(new double[]{}));
-        int i_1 = 0;
-        while (i_1 < out.length) {
-            double val = out[i_1];
-            res_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(res_1), java.util.stream.DoubleStream.of(val * (1.0 - val))).toArray()));
-            i_1 = i_1 + 1;
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(out.length)) {
+            double val_1 = (double)(out[(int)((long)(i_3))]);
+            res_1 = ((double[])(appendDouble(res_1, (double)(val_1) * (1.0 - (double)(val_1)))));
+            i_3 = (long)((long)(i_3) + (long)(1));
         }
         return res_1;
     }
 
-    static double[] random_vector(int n) {
+    static double[] random_vector(long n) {
         double[] v = ((double[])(new double[]{}));
-        int i_2 = 0;
-        while (i_2 < n) {
-            v = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(v), java.util.stream.DoubleStream.of(random() - 0.5)).toArray()));
-            i_2 = i_2 + 1;
+        long i_5 = 0L;
+        while ((long)(i_5) < n) {
+            v = ((double[])(appendDouble(v, (double)(random()) - 0.5)));
+            i_5 = (long)((long)(i_5) + (long)(1));
         }
         return v;
     }
 
-    static double[][] random_matrix(int r, int c) {
+    static double[][] random_matrix(long r, long c) {
         double[][] m = ((double[][])(new double[][]{}));
-        int i_3 = 0;
-        while (i_3 < r) {
-            m = ((double[][])(appendObj(m, random_vector(c))));
-            i_3 = i_3 + 1;
+        long i_7 = 0L;
+        while ((long)(i_7) < r) {
+            m = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(m), java.util.stream.Stream.of(random_vector(c))).toArray(double[][]::new)));
+            i_7 = (long)((long)(i_7) + (long)(1));
         }
         return m;
     }
 
     static double[] matvec(double[][] mat, double[] vec) {
         double[] res_2 = ((double[])(new double[]{}));
-        int i_4 = 0;
-        while (i_4 < mat.length) {
-            double s = 0.0;
-            int j = 0;
-            while (j < vec.length) {
-                s = s + mat[i_4][j] * vec[j];
-                j = j + 1;
+        long i_9 = 0L;
+        while ((long)(i_9) < (long)(mat.length)) {
+            double s_1 = 0.0;
+            long j_1 = 0L;
+            while ((long)(j_1) < (long)(vec.length)) {
+                s_1 = s_1 + (double)(mat[(int)((long)(i_9))][(int)((long)(j_1))]) * (double)(vec[(int)((long)(j_1))]);
+                j_1 = (long)((long)(j_1) + (long)(1));
             }
-            res_2 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(res_2), java.util.stream.DoubleStream.of(s)).toArray()));
-            i_4 = i_4 + 1;
+            res_2 = ((double[])(appendDouble(res_2, s_1)));
+            i_9 = (long)((long)(i_9) + (long)(1));
         }
         return res_2;
     }
 
     static double[] matTvec(double[][] mat, double[] vec) {
-        int cols = mat[0].length;
-        double[] res_3 = ((double[])(new double[]{}));
-        int j_1 = 0;
-        while (j_1 < cols) {
-            double s_1 = 0.0;
-            int i_5 = 0;
-            while (i_5 < mat.length) {
-                s_1 = s_1 + mat[i_5][j_1] * vec[i_5];
-                i_5 = i_5 + 1;
-            }
-            res_3 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(res_3), java.util.stream.DoubleStream.of(s_1)).toArray()));
-            j_1 = j_1 + 1;
-        }
-        return res_3;
-    }
-
-    static double[] vec_sub(double[] a, double[] b) {
+        long cols = (long)(mat[(int)((long)(0))].length);
         double[] res_4 = ((double[])(new double[]{}));
-        int i_6 = 0;
-        while (i_6 < a.length) {
-            res_4 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(res_4), java.util.stream.DoubleStream.of(a[i_6] - b[i_6])).toArray()));
-            i_6 = i_6 + 1;
+        long j_3 = 0L;
+        while ((long)(j_3) < (long)(cols)) {
+            double s_3 = 0.0;
+            long i_11 = 0L;
+            while ((long)(i_11) < (long)(mat.length)) {
+                s_3 = s_3 + (double)(mat[(int)((long)(i_11))][(int)((long)(j_3))]) * (double)(vec[(int)((long)(i_11))]);
+                i_11 = (long)((long)(i_11) + (long)(1));
+            }
+            res_4 = ((double[])(appendDouble(res_4, s_3)));
+            j_3 = (long)((long)(j_3) + (long)(1));
         }
         return res_4;
     }
 
-    static double[] vec_mul(double[] a, double[] b) {
+    static double[] vec_sub(double[] a, double[] b) {
         double[] res_5 = ((double[])(new double[]{}));
-        int i_7 = 0;
-        while (i_7 < a.length) {
-            res_5 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(res_5), java.util.stream.DoubleStream.of(a[i_7] * b[i_7])).toArray()));
-            i_7 = i_7 + 1;
+        long i_13 = 0L;
+        while ((long)(i_13) < (long)(a.length)) {
+            res_5 = ((double[])(appendDouble(res_5, (double)(a[(int)((long)(i_13))]) - (double)(b[(int)((long)(i_13))]))));
+            i_13 = (long)((long)(i_13) + (long)(1));
         }
         return res_5;
     }
 
-    static double[] vec_scalar_mul(double[] v, double s) {
+    static double[] vec_mul(double[] a, double[] b) {
         double[] res_6 = ((double[])(new double[]{}));
-        int i_8 = 0;
-        while (i_8 < v.length) {
-            res_6 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(res_6), java.util.stream.DoubleStream.of(v[i_8] * s)).toArray()));
-            i_8 = i_8 + 1;
+        long i_15 = 0L;
+        while ((long)(i_15) < (long)(a.length)) {
+            res_6 = ((double[])(appendDouble(res_6, (double)(a[(int)((long)(i_15))]) * (double)(b[(int)((long)(i_15))]))));
+            i_15 = (long)((long)(i_15) + (long)(1));
         }
         return res_6;
     }
 
-    static double[][] outer(double[] a, double[] b) {
-        double[][] res_7 = ((double[][])(new double[][]{}));
-        int i_9 = 0;
-        while (i_9 < a.length) {
-            double[] row = ((double[])(new double[]{}));
-            int j_2 = 0;
-            while (j_2 < b.length) {
-                row = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row), java.util.stream.DoubleStream.of(a[i_9] * b[j_2])).toArray()));
-                j_2 = j_2 + 1;
-            }
-            res_7 = ((double[][])(appendObj(res_7, row)));
-            i_9 = i_9 + 1;
+    static double[] vec_scalar_mul(double[] v, double s) {
+        double[] res_7 = ((double[])(new double[]{}));
+        long i_17 = 0L;
+        while ((long)(i_17) < (long)(v.length)) {
+            res_7 = ((double[])(appendDouble(res_7, (double)(v[(int)((long)(i_17))]) * (double)(s))));
+            i_17 = (long)((long)(i_17) + (long)(1));
         }
         return res_7;
     }
 
-    static double[][] mat_scalar_mul(double[][] mat, double s) {
+    static double[][] outer(double[] a, double[] b) {
         double[][] res_8 = ((double[][])(new double[][]{}));
-        int i_10 = 0;
-        while (i_10 < mat.length) {
+        long i_19 = 0L;
+        while ((long)(i_19) < (long)(a.length)) {
             double[] row_1 = ((double[])(new double[]{}));
-            int j_3 = 0;
-            while (j_3 < mat[i_10].length) {
-                row_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row_1), java.util.stream.DoubleStream.of(mat[i_10][j_3] * s)).toArray()));
-                j_3 = j_3 + 1;
+            long j_5 = 0L;
+            while ((long)(j_5) < (long)(b.length)) {
+                row_1 = ((double[])(appendDouble(row_1, (double)(a[(int)((long)(i_19))]) * (double)(b[(int)((long)(j_5))]))));
+                j_5 = (long)((long)(j_5) + (long)(1));
             }
-            res_8 = ((double[][])(appendObj(res_8, row_1)));
-            i_10 = i_10 + 1;
+            res_8 = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_8), java.util.stream.Stream.of(row_1)).toArray(double[][]::new)));
+            i_19 = (long)((long)(i_19) + (long)(1));
         }
         return res_8;
     }
 
-    static double[][] mat_sub(double[][] a, double[][] b) {
+    static double[][] mat_scalar_mul(double[][] mat, double s) {
         double[][] res_9 = ((double[][])(new double[][]{}));
-        int i_11 = 0;
-        while (i_11 < a.length) {
-            double[] row_2 = ((double[])(new double[]{}));
-            int j_4 = 0;
-            while (j_4 < a[i_11].length) {
-                row_2 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row_2), java.util.stream.DoubleStream.of(a[i_11][j_4] - b[i_11][j_4])).toArray()));
-                j_4 = j_4 + 1;
+        long i_21 = 0L;
+        while ((long)(i_21) < (long)(mat.length)) {
+            double[] row_3 = ((double[])(new double[]{}));
+            long j_7 = 0L;
+            while ((long)(j_7) < (long)(mat[(int)((long)(i_21))].length)) {
+                row_3 = ((double[])(appendDouble(row_3, (double)(mat[(int)((long)(i_21))][(int)((long)(j_7))]) * (double)(s))));
+                j_7 = (long)((long)(j_7) + (long)(1));
             }
-            res_9 = ((double[][])(appendObj(res_9, row_2)));
-            i_11 = i_11 + 1;
+            res_9 = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_9), java.util.stream.Stream.of(row_3)).toArray(double[][]::new)));
+            i_21 = (long)((long)(i_21) + (long)(1));
         }
         return res_9;
     }
 
-    static Layer init_layer(int units, int back_units, double lr) {
+    static double[][] mat_sub(double[][] a, double[][] b) {
+        double[][] res_10 = ((double[][])(new double[][]{}));
+        long i_23 = 0L;
+        while ((long)(i_23) < (long)(a.length)) {
+            double[] row_5 = ((double[])(new double[]{}));
+            long j_9 = 0L;
+            while ((long)(j_9) < (long)(a[(int)((long)(i_23))].length)) {
+                row_5 = ((double[])(appendDouble(row_5, (double)(a[(int)((long)(i_23))][(int)((long)(j_9))]) - (double)(b[(int)((long)(i_23))][(int)((long)(j_9))]))));
+                j_9 = (long)((long)(j_9) + (long)(1));
+            }
+            res_10 = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_10), java.util.stream.Stream.of(row_5)).toArray(double[][]::new)));
+            i_23 = (long)((long)(i_23) + (long)(1));
+        }
+        return res_10;
+    }
+
+    static Layer init_layer(long units, long back_units, double lr) {
         return new Layer(units, random_matrix(units, back_units), random_vector(units), new double[]{}, new double[]{}, lr);
     }
 
     static Layer[] forward(Layer[] layers, double[] x) {
         double[] data = ((double[])(x));
-        int i_12 = 0;
-        while (i_12 < layers.length) {
-            Layer layer = layers[i_12];
-layer.xdata = data;
-            if (i_12 == 0) {
-layer.output = data;
+        long i_25 = 0L;
+        while ((long)(i_25) < (long)(layers.length)) {
+            Layer layer_1 = layers[(int)((long)(i_25))];
+layer_1.xdata = data;
+            if ((long)(i_25) == (long)(0)) {
+layer_1.output = data;
             } else {
-                double[] z = ((double[])(vec_sub(((double[])(matvec(((double[][])(layer.weight)), ((double[])(data))))), ((double[])(layer.bias)))));
-layer.output = sigmoid_vec(((double[])(z)));
-                data = ((double[])(layer.output));
+                double[] z_1 = ((double[])(vec_sub(((double[])(matvec(((double[][])(layer_1.weight)), ((double[])(data))))), ((double[])(layer_1.bias)))));
+layer_1.output = sigmoid_vec(((double[])(z_1)));
+                data = ((double[])(layer_1.output));
             }
-layers[i_12] = layer;
-            i_12 = i_12 + 1;
+layers[(int)((long)(i_25))] = layer_1;
+            i_25 = (long)((long)(i_25) + (long)(1));
         }
         return layers;
     }
 
     static Layer[] backward(Layer[] layers, double[] grad) {
         double[] g = ((double[])(grad));
-        int i_13 = layers.length - 1;
-        while (i_13 > 0) {
-            Layer layer_1 = layers[i_13];
-            double[] deriv = ((double[])(sigmoid_derivative(((double[])(layer_1.output)))));
-            double[] delta = ((double[])(vec_mul(((double[])(g)), ((double[])(deriv)))));
-            double[][] grad_w = ((double[][])(outer(((double[])(delta)), ((double[])(layer_1.xdata)))));
-layer_1.weight = mat_sub(((double[][])(layer_1.weight)), ((double[][])(mat_scalar_mul(((double[][])(grad_w)), layer_1.learn_rate))));
-layer_1.bias = vec_sub(((double[])(layer_1.bias)), ((double[])(vec_scalar_mul(((double[])(delta)), layer_1.learn_rate))));
-            g = ((double[])(matTvec(((double[][])(layer_1.weight)), ((double[])(delta)))));
-layers[i_13] = layer_1;
-            i_13 = i_13 - 1;
+        long i_27 = (long)((long)(layers.length) - (long)(1));
+        while ((long)(i_27) > (long)(0)) {
+            Layer layer_3 = layers[(int)((long)(i_27))];
+            double[] deriv_1 = ((double[])(sigmoid_derivative(((double[])(layer_3.output)))));
+            double[] delta_1 = ((double[])(vec_mul(((double[])(g)), ((double[])(deriv_1)))));
+            double[][] grad_w_1 = ((double[][])(outer(((double[])(delta_1)), ((double[])(layer_3.xdata)))));
+layer_3.weight = mat_sub(((double[][])(layer_3.weight)), ((double[][])(mat_scalar_mul(((double[][])(grad_w_1)), layer_3.learn_rate))));
+layer_3.bias = vec_sub(((double[])(layer_3.bias)), ((double[])(vec_scalar_mul(((double[])(delta_1)), layer_3.learn_rate))));
+            g = ((double[])(matTvec(((double[][])(layer_3.weight)), ((double[])(delta_1)))));
+layers[(int)((long)(i_27))] = layer_3;
+            i_27 = (long)((long)(i_27) - (long)(1));
         }
         return layers;
     }
 
     static double calc_loss(double[] y, double[] yhat) {
-        double s_2 = 0.0;
-        int i_14 = 0;
-        while (i_14 < y.length) {
-            double d = y[i_14] - yhat[i_14];
-            s_2 = s_2 + d * d;
-            i_14 = i_14 + 1;
+        double s_4 = 0.0;
+        long i_29 = 0L;
+        while ((long)(i_29) < (long)(y.length)) {
+            double d_1 = (double)(y[(int)((long)(i_29))]) - (double)(yhat[(int)((long)(i_29))]);
+            s_4 = s_4 + d_1 * d_1;
+            i_29 = (long)((long)(i_29) + (long)(1));
         }
-        return s_2;
+        return s_4;
     }
 
     static double[] calc_gradient(double[] y, double[] yhat) {
         double[] g_1 = ((double[])(new double[]{}));
-        int i_15 = 0;
-        while (i_15 < y.length) {
-            g_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(g_1), java.util.stream.DoubleStream.of(2.0 * (yhat[i_15] - y[i_15]))).toArray()));
-            i_15 = i_15 + 1;
+        long i_31 = 0L;
+        while ((long)(i_31) < (long)(y.length)) {
+            g_1 = ((double[])(appendDouble(g_1, 2.0 * ((double)(yhat[(int)((long)(i_31))]) - (double)(y[(int)((long)(i_31))])))));
+            i_31 = (long)((long)(i_31) + (long)(1));
         }
         return g_1;
     }
 
-    static double train(Layer[] layers, double[][] xdata, double[][] ydata, int rounds, double acc) {
-        int r = 0;
-        while (r < rounds) {
-            int i_16 = 0;
-            while (i_16 < xdata.length) {
-                layers = ((Layer[])(forward(((Layer[])(layers)), ((double[])(xdata[i_16])))));
-                double[] out = ((double[])(layers[layers.length - 1].output));
-                double[] grad = ((double[])(calc_gradient(((double[])(ydata[i_16])), ((double[])(out)))));
-                layers = ((Layer[])(backward(((Layer[])(layers)), ((double[])(grad)))));
-                i_16 = i_16 + 1;
+    static double train(Layer[] layers, double[][] xdata, double[][] ydata, long rounds, double acc) {
+        long r = 0L;
+        while ((long)(r) < rounds) {
+            long i_33 = 0L;
+            while ((long)(i_33) < (long)(xdata.length)) {
+                layers = ((Layer[])(forward(((Layer[])(layers)), ((double[])(xdata[(int)((long)(i_33))])))));
+                double[] out_1 = ((double[])(layers[(int)((long)((long)(layers.length) - (long)(1)))].output));
+                double[] grad_1 = ((double[])(calc_gradient(((double[])(ydata[(int)((long)(i_33))])), ((double[])(out_1)))));
+                layers = ((Layer[])(backward(((Layer[])(layers)), ((double[])(grad_1)))));
+                i_33 = (long)((long)(i_33) + (long)(1));
             }
-            r = r + 1;
+            r = (long)((long)(r) + (long)(1));
         }
         return 0.0;
     }
 
     static Data create_data() {
         double[][] x = ((double[][])(new double[][]{}));
-        int i_17 = 0;
-        while (i_17 < 10) {
-            x = ((double[][])(appendObj(x, random_vector(10))));
-            i_17 = i_17 + 1;
+        long i_35 = 0L;
+        while ((long)(i_35) < (long)(10)) {
+            x = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(x), java.util.stream.Stream.of(random_vector(10L))).toArray(double[][]::new)));
+            i_35 = (long)((long)(i_35) + (long)(1));
         }
-        double[][] y_1 = ((double[][])(new double[][]{new double[]{0.8, 0.4}, new double[]{0.4, 0.3}, new double[]{0.34, 0.45}, new double[]{0.67, 0.32}, new double[]{0.88, 0.67}, new double[]{0.78, 0.77}, new double[]{0.55, 0.66}, new double[]{0.55, 0.43}, new double[]{0.54, 0.1}, new double[]{0.1, 0.5}}));
-        return new Data(x, y_1);
+        double[][] y_2 = ((double[][])(new double[][]{new double[]{0.8, 0.4}, new double[]{0.4, 0.3}, new double[]{0.34, 0.45}, new double[]{0.67, 0.32}, new double[]{0.88, 0.67}, new double[]{0.78, 0.77}, new double[]{0.55, 0.66}, new double[]{0.55, 0.43}, new double[]{0.54, 0.1}, new double[]{0.1, 0.5}}));
+        return new Data(x, y_2);
     }
 
     static void main() {
         Data data_1 = create_data();
-        double[][] x_1 = ((double[][])(data_1.x));
-        double[][] y_2 = ((double[][])(data_1.y));
-        Layer[] layers = ((Layer[])(new Layer[]{}));
-        layers = ((Layer[])(java.util.stream.Stream.concat(java.util.Arrays.stream(layers), java.util.stream.Stream.of(init_layer(10, 0, 0.3))).toArray(Layer[]::new)));
-        layers = ((Layer[])(java.util.stream.Stream.concat(java.util.Arrays.stream(layers), java.util.stream.Stream.of(init_layer(20, 10, 0.3))).toArray(Layer[]::new)));
-        layers = ((Layer[])(java.util.stream.Stream.concat(java.util.Arrays.stream(layers), java.util.stream.Stream.of(init_layer(30, 20, 0.3))).toArray(Layer[]::new)));
-        layers = ((Layer[])(java.util.stream.Stream.concat(java.util.Arrays.stream(layers), java.util.stream.Stream.of(init_layer(2, 30, 0.3))).toArray(Layer[]::new)));
-        double final_mse = train(((Layer[])(layers)), ((double[][])(x_1)), ((double[][])(y_2)), 100, 0.01);
-        System.out.println(final_mse);
+        double[][] x_2 = ((double[][])(data_1.x));
+        double[][] y_4 = ((double[][])(data_1.y));
+        Layer[] layers_1 = ((Layer[])(new Layer[]{}));
+        layers_1 = ((Layer[])(java.util.stream.Stream.concat(java.util.Arrays.stream(layers_1), java.util.stream.Stream.of(init_layer(10L, 0L, 0.3))).toArray(Layer[]::new)));
+        layers_1 = ((Layer[])(java.util.stream.Stream.concat(java.util.Arrays.stream(layers_1), java.util.stream.Stream.of(init_layer(20L, 10L, 0.3))).toArray(Layer[]::new)));
+        layers_1 = ((Layer[])(java.util.stream.Stream.concat(java.util.Arrays.stream(layers_1), java.util.stream.Stream.of(init_layer(30L, 20L, 0.3))).toArray(Layer[]::new)));
+        layers_1 = ((Layer[])(java.util.stream.Stream.concat(java.util.Arrays.stream(layers_1), java.util.stream.Stream.of(init_layer(2L, 30L, 0.3))).toArray(Layer[]::new)));
+        double final_mse_1 = (double)(train(((Layer[])(layers_1)), ((double[][])(x_2)), ((double[][])(y_4)), 100L, 0.01));
+        System.out.println(final_mse_1);
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            seed = 1;
+            seed = (long)(1);
             main();
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
@@ -360,8 +360,8 @@ layers[i_13] = layer_1;
         return rt.totalMemory() - rt.freeMemory();
     }
 
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
         out[arr.length] = v;
         return out;
     }

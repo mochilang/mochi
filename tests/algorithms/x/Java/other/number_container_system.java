@@ -1,8 +1,8 @@
 public class Main {
     static class NumberContainer {
-        java.util.Map<Integer,int[]> numbermap;
-        java.util.Map<Integer,Integer> indexmap;
-        NumberContainer(java.util.Map<Integer,int[]> numbermap, java.util.Map<Integer,Integer> indexmap) {
+        java.util.Map<Long,long[]> numbermap;
+        java.util.Map<Long,Long> indexmap;
+        NumberContainer(java.util.Map<Long,long[]> numbermap, java.util.Map<Long,Long> indexmap) {
             this.numbermap = numbermap;
             this.indexmap = indexmap;
         }
@@ -12,103 +12,103 @@ public class Main {
         }
     }
 
-    static java.util.Map<Integer,int[]> nm = null;
-    static java.util.Map<Integer,Integer> im = null;
+    static java.util.Map<Long,long[]> nm = null;
+    static java.util.Map<Long,Long> im = null;
     static NumberContainer cont = null;
 
-    static int[] remove_at(int[] xs, int idx) {
-        int[] res = ((int[])(new int[]{}));
-        int i = 0;
-        while (i < xs.length) {
-            if (i != idx) {
-                res = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res), java.util.stream.IntStream.of(xs[i])).toArray()));
+    static long[] remove_at(long[] xs, long idx) {
+        long[] res = ((long[])(new long[]{}));
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(xs.length)) {
+            if ((long)(i_1) != idx) {
+                res = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res), java.util.stream.LongStream.of(xs[(int)((long)(i_1))])).toArray()));
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
         return res;
     }
 
-    static int[] insert_at(int[] xs, int idx, int val) {
-        int[] res_1 = ((int[])(new int[]{}));
-        int i_1 = 0;
-        while (i_1 < xs.length) {
-            if (i_1 == idx) {
-                res_1 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res_1), java.util.stream.IntStream.of(val)).toArray()));
+    static long[] insert_at(long[] xs, long idx, long val) {
+        long[] res_1 = ((long[])(new long[]{}));
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(xs.length)) {
+            if ((long)(i_3) == idx) {
+                res_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res_1), java.util.stream.LongStream.of(val)).toArray()));
             }
-            res_1 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res_1), java.util.stream.IntStream.of(xs[i_1])).toArray()));
-            i_1 = i_1 + 1;
+            res_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res_1), java.util.stream.LongStream.of(xs[(int)((long)(i_3))])).toArray()));
+            i_3 = (long)((long)(i_3) + (long)(1));
         }
-        if (idx == xs.length) {
-            res_1 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res_1), java.util.stream.IntStream.of(val)).toArray()));
+        if (idx == (long)(xs.length)) {
+            res_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res_1), java.util.stream.LongStream.of(val)).toArray()));
         }
         return res_1;
     }
 
-    static int[] binary_search_delete(int[] array, int item) {
-        int low = 0;
-        int high = array.length - 1;
-        int[] arr = ((int[])(array));
-        while (low <= high) {
-            int mid = Math.floorDiv((low + high), 2);
-            if (arr[mid] == item) {
-                arr = ((int[])(remove_at(((int[])(arr)), mid)));
-                return arr;
-            } else             if (arr[mid] < item) {
-                low = mid + 1;
+    static long[] binary_search_delete(long[] array, long item) {
+        long low = 0L;
+        long high_1 = (long)((long)(array.length) - (long)(1));
+        long[] arr_1 = ((long[])(array));
+        while ((long)(low) <= (long)(high_1)) {
+            long mid_1 = Math.floorDiv(((long)(low) + (long)(high_1)), 2);
+            if (arr_1[(int)((long)(mid_1))] == item) {
+                arr_1 = ((long[])(remove_at(((long[])(arr_1)), (long)(mid_1))));
+                return arr_1;
+            } else             if (arr_1[(int)((long)(mid_1))] < item) {
+                low = (long)((long)(mid_1) + (long)(1));
             } else {
-                high = mid - 1;
+                high_1 = (long)((long)(mid_1) - (long)(1));
             }
         }
         System.out.println("ValueError: Either the item is not in the array or the array was unsorted");
-        return arr;
-    }
-
-    static int[] binary_search_insert(int[] array, int index) {
-        int low_1 = 0;
-        int high_1 = array.length - 1;
-        int[] arr_1 = ((int[])(array));
-        while (low_1 <= high_1) {
-            Object mid_1 = Math.floorDiv((low_1 + high_1), 2);
-            if (arr_1[mid_1] == index) {
-                arr_1 = ((int[])(insert_at(((int[])(arr_1)), ((Number)(mid_1)).intValue() + 1, index)));
-                return arr_1;
-            } else             if (arr_1[mid_1] < index) {
-                low_1 = ((Number)(mid_1)).intValue() + 1;
-            } else {
-                high_1 = ((Number)(mid_1)).intValue() - 1;
-            }
-        }
-        arr_1 = ((int[])(insert_at(((int[])(arr_1)), low_1, index)));
         return arr_1;
     }
 
-    static NumberContainer change(NumberContainer cont, int idx, int num) {
-        java.util.Map<Integer,int[]> numbermap = cont.numbermap;
-        java.util.Map<Integer,Integer> indexmap = cont.indexmap;
-        if (((Boolean)(indexmap.containsKey(idx)))) {
-            int old = (int)(((int)(indexmap).getOrDefault(idx, 0)));
-            int[] indexes = (int[])(((int[])(numbermap).get(old)));
-            if (indexes.length == 1) {
-numbermap.put(old, ((int[])(new int[]{})));
+    static long[] binary_search_insert(long[] array, long index) {
+        long low_1 = 0L;
+        long high_3 = (long)((long)(array.length) - (long)(1));
+        long[] arr_3 = ((long[])(array));
+        while ((long)(low_1) <= (long)(high_3)) {
+            Object mid_3 = Math.floorDiv(((long)(low_1) + (long)(high_3)), 2);
+            if (arr_3[(int)((long)(mid_3))] == index) {
+                arr_3 = ((long[])(insert_at(((long[])(arr_3)), (long)(((Number)(mid_3)).intValue() + (long)(1)), index)));
+                return arr_3;
+            } else             if (arr_3[(int)((long)(mid_3))] < index) {
+                low_1 = (long)(((Number)(mid_3)).intValue() + (long)(1));
             } else {
-numbermap.put(old, ((int[])(binary_search_delete(((int[])(indexes)), idx))));
+                high_3 = (long)(((Number)(mid_3)).intValue() - (long)(1));
             }
         }
-indexmap.put(idx, num);
-        if (((Boolean)(numbermap.containsKey(num)))) {
-numbermap.put(num, ((int[])(binary_search_insert((int[])(((int[])(numbermap).get(num))), idx))));
-        } else {
-numbermap.put(num, ((int[])(new int[]{idx})));
-        }
-        return new NumberContainer(numbermap, indexmap);
+        arr_3 = ((long[])(insert_at(((long[])(arr_3)), (long)(low_1), index)));
+        return arr_3;
     }
 
-    static int find(NumberContainer cont, int num) {
-        java.util.Map<Integer,int[]> numbermap_1 = cont.numbermap;
-        if (((Boolean)(numbermap_1.containsKey(num)))) {
-            int[] arr_2 = (int[])(((int[])(numbermap_1).get(num)));
-            if (arr_2.length > 0) {
-                return arr_2[0];
+    static NumberContainer change(NumberContainer cont, long idx, long num) {
+        java.util.Map<Long,long[]> numbermap = cont.numbermap;
+        java.util.Map<Long,Long> indexmap_1 = cont.indexmap;
+        if (indexmap_1.containsKey(idx)) {
+            long old_1 = (long)(((long)(indexmap_1).getOrDefault(idx, 0L)));
+            long[] indexes_1 = (long[])(((long[])(numbermap).get(old_1)));
+            if ((long)(indexes_1.length) == (long)(1)) {
+numbermap.put(old_1, ((long[])(new long[]{})));
+            } else {
+numbermap.put(old_1, ((long[])(binary_search_delete(((long[])(indexes_1)), idx))));
+            }
+        }
+indexmap_1.put(idx, num);
+        if (numbermap.containsKey(num)) {
+numbermap.put(num, ((long[])(binary_search_insert((long[])(((long[])(numbermap).get(num))), idx))));
+        } else {
+numbermap.put(num, ((long[])(new long[]{idx})));
+        }
+        return new NumberContainer(numbermap, indexmap_1);
+    }
+
+    static long find(NumberContainer cont, long num) {
+        java.util.Map<Long,long[]> numbermap_1 = cont.numbermap;
+        if (numbermap_1.containsKey(num)) {
+            long[] arr_5 = (long[])(((long[])(numbermap_1).get(num)));
+            if ((long)(arr_5.length) > (long)(0)) {
+                return arr_5[(int)((long)(0))];
             }
         }
         return -1;
@@ -117,15 +117,15 @@ numbermap.put(num, ((int[])(new int[]{idx})));
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            nm = ((java.util.Map<Integer,int[]>)(new java.util.LinkedHashMap<Integer, int[]>()));
-            im = ((java.util.Map<Integer,Integer>)(new java.util.LinkedHashMap<Integer, Integer>()));
+            nm = ((java.util.Map<Long,long[]>)(new java.util.LinkedHashMap<Long, long[]>()));
+            im = ((java.util.Map<Long,Long>)(new java.util.LinkedHashMap<Long, Long>()));
             cont = new NumberContainer(nm, im);
-            System.out.println(find(cont, 10));
-            cont = change(cont, 0, 10);
-            System.out.println(find(cont, 10));
-            cont = change(cont, 0, 20);
-            System.out.println(find(cont, 10));
-            System.out.println(find(cont, 20));
+            System.out.println(find(cont, 10L));
+            cont = change(cont, 0L, 10L);
+            System.out.println(find(cont, 10L));
+            cont = change(cont, 0L, 20L);
+            System.out.println(find(cont, 10L));
+            System.out.println(find(cont, 20L));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");

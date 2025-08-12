@@ -2,20 +2,20 @@ public class Main {
     static double G;
 
     static double archimedes_principle(double fluid_density, double volume, double gravity) {
-        if (fluid_density <= 0.0) {
+        if ((double)(fluid_density) <= 0.0) {
             throw new RuntimeException(String.valueOf("Impossible fluid density"));
         }
-        if (volume <= 0.0) {
+        if ((double)(volume) <= 0.0) {
             throw new RuntimeException(String.valueOf("Impossible object volume"));
         }
-        if (gravity < 0.0) {
+        if ((double)(gravity) < 0.0) {
             throw new RuntimeException(String.valueOf("Impossible gravity"));
         }
-        return fluid_density * volume * gravity;
+        return (double)(fluid_density) * (double)(volume) * (double)(gravity);
     }
 
     static double archimedes_principle_default(double fluid_density, double volume) {
-        double res = archimedes_principle(fluid_density, volume, G);
+        double res = (double)(archimedes_principle((double)(fluid_density), (double)(volume), G));
         return res;
     }
     public static void main(String[] args) {

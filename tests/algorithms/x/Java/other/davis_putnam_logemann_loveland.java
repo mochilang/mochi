@@ -1,8 +1,8 @@
 public class Main {
     static class Clause {
-        java.util.Map<String,Integer> literals;
+        java.util.Map<String,Long> literals;
         String[] names;
-        Clause(java.util.Map<String,Integer> literals, String[] names) {
+        Clause(java.util.Map<String,Long> literals, String[] names) {
             this.literals = literals;
             this.names = names;
         }
@@ -13,9 +13,9 @@ public class Main {
     }
 
     static class EvalResult {
-        int value;
+        long value;
         Clause clause;
-        EvalResult(int value, Clause clause) {
+        EvalResult(long value, Clause clause) {
             this.value = value;
             this.clause = clause;
         }
@@ -38,8 +38,8 @@ public class Main {
 
     static class DPLLResult {
         boolean sat;
-        java.util.Map<String,Integer> model;
-        DPLLResult(boolean sat, java.util.Map<String,Integer> model) {
+        java.util.Map<String,Long> model;
+        DPLLResult(boolean sat, java.util.Map<String,Long> model) {
             this.sat = sat;
             this.model = model;
         }
@@ -55,74 +55,74 @@ public class Main {
     static String formula_str;
     static Clause[] clauses;
     static String[] symbols;
-    static java.util.Map<String,Integer> model = null;
+    static java.util.Map<String,Long> model = null;
     static DPLLResult result;
 
     static Clause new_clause(String[] lits) {
-        java.util.Map<String,Integer> m = ((java.util.Map<String,Integer>)(new java.util.LinkedHashMap<String, Integer>()));
-        String[] names = ((String[])(new String[]{}));
-        int i = 0;
-        while (i < lits.length) {
-            String lit = lits[i];
-m.put(lit, 0 - 1);
-            names = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(names), java.util.stream.Stream.of(lit)).toArray(String[]::new)));
-            i = i + 1;
+        java.util.Map<String,Long> m = ((java.util.Map<String,Long>)(new java.util.LinkedHashMap<String, Long>()));
+        String[] names_1 = ((String[])(new String[]{}));
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(lits.length)) {
+            String lit_1 = lits[(int)((long)(i_1))];
+m.put(lit_1, (long)((long)(0) - (long)(1)));
+            names_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(names_1), java.util.stream.Stream.of(lit_1)).toArray(String[]::new)));
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
-        return new Clause(m, names);
+        return new Clause(m, names_1);
     }
 
-    static Clause assign_clause(Clause c, java.util.Map<String,Integer> model) {
-        java.util.Map<String,Integer> lits = c.literals;
-        int i_1 = 0;
-        while (i_1 < c.names.length) {
-            String lit_1 = c.names[i_1];
-            String symbol = _substr(lit_1, 0, 2);
-            if (((Boolean)(model.containsKey(symbol)))) {
-                int value = (int)(((int)(model).getOrDefault(symbol, 0)));
-                if ((_substr(lit_1, _runeLen(lit_1) - 1, _runeLen(lit_1)).equals("'")) && value != 0 - 1) {
-                    value = 1 - value;
+    static Clause assign_clause(Clause c, java.util.Map<String,Long> model) {
+        java.util.Map<String,Long> lits = c.literals;
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(c.names.length)) {
+            String lit_3 = c.names[(int)((long)(i_3))];
+            String symbol_1 = _substr(lit_3, (int)((long)(0)), (int)((long)(2)));
+            if (model.containsKey(symbol_1)) {
+                long value_1 = (long)(((long)(model).getOrDefault(symbol_1, 0L)));
+                if ((_substr(lit_3, (int)((long)((long)(_runeLen(lit_3)) - (long)(1))), (int)((long)(_runeLen(lit_3)))).equals("'")) && value_1 != (long)((long)(0) - (long)(1))) {
+                    value_1 = (long)((long)(1) - value_1);
                 }
-lits.put(lit_1, value);
+lits.put(lit_3, value_1);
             }
-            i_1 = i_1 + 1;
+            i_3 = (long)((long)(i_3) + (long)(1));
         }
 c.literals = lits;
         return c;
     }
 
-    static EvalResult evaluate_clause(Clause c, java.util.Map<String,Integer> model) {
-        int i_2 = 0;
-        while (i_2 < c.names.length) {
-            String lit_2 = c.names[i_2];
-            String sym = String.valueOf((_substr(lit_2, _runeLen(lit_2) - 1, _runeLen(lit_2)).equals("'")) ? _substr(lit_2, 0, 2) : lit_2 + "'");
-            if (((Boolean)(c.literals.containsKey(sym)))) {
+    static EvalResult evaluate_clause(Clause c, java.util.Map<String,Long> model) {
+        long i_4 = 0L;
+        while ((long)(i_4) < (long)(c.names.length)) {
+            String lit_5 = c.names[(int)((long)(i_4))];
+            String sym_1 = String.valueOf((_substr(lit_5, (int)((long)((long)(_runeLen(lit_5)) - (long)(1))), (int)((long)(_runeLen(lit_5)))).equals("'")) ? _substr(lit_5, (int)((long)(0)), (int)((long)(2))) : lit_5 + "'");
+            if (c.literals.containsKey(sym_1)) {
                 return new EvalResult(1, c);
             }
-            i_2 = i_2 + 1;
+            i_4 = (long)((long)(i_4) + (long)(1));
         }
         c = assign_clause(c, model);
-        i_2 = 0;
-        while (i_2 < c.names.length) {
-            String lit_3 = c.names[i_2];
-            int value_1 = (int)(((int)(c.literals).getOrDefault(lit_3, 0)));
-            if (value_1 == 1) {
+        i_4 = (long)(0);
+        while ((long)(i_4) < (long)(c.names.length)) {
+            String lit_7 = c.names[(int)((long)(i_4))];
+            long value_3 = (long)(((long)(c.literals).getOrDefault(lit_7, 0L)));
+            if (value_3 == (long)(1)) {
                 return new EvalResult(1, c);
             }
-            if (value_1 == 0 - 1) {
-                return new EvalResult(0 - 1, c);
+            if (value_3 == (long)((long)(0) - (long)(1))) {
+                return new EvalResult((long)(0) - (long)(1), c);
             }
-            i_2 = i_2 + 1;
+            i_4 = (long)((long)(i_4) + (long)(1));
         }
-        int any_true = 0;
-        i_2 = 0;
-        while (i_2 < c.names.length) {
-            String lit_4 = c.names[i_2];
-            if ((int)(((int)(c.literals).getOrDefault(lit_4, 0))) == 1) {
-                any_true = 1;
+        long any_true_1 = 0L;
+        i_4 = (long)(0);
+        while ((long)(i_4) < (long)(c.names.length)) {
+            String lit_9 = c.names[(int)((long)(i_4))];
+            if ((long)(((long)(c.literals).getOrDefault(lit_9, 0L))) == (long)(1)) {
+                any_true_1 = (long)(1);
             }
-            i_2 = i_2 + 1;
+            i_4 = (long)((long)(i_4) + (long)(1));
         }
-        return new EvalResult(any_true, c);
+        return new EvalResult(any_true_1, c);
     }
 
     static Formula new_formula(Clause[] cs) {
@@ -131,58 +131,58 @@ c.literals = lits;
 
     static String[] remove_symbol(String[] symbols, String s) {
         String[] res = ((String[])(new String[]{}));
-        int i_3 = 0;
-        while (i_3 < symbols.length) {
-            if (!(symbols[i_3].equals(s))) {
-                res = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(symbols[i_3])).toArray(String[]::new)));
+        long i_6 = 0L;
+        while ((long)(i_6) < (long)(symbols.length)) {
+            if (!(symbols[(int)((long)(i_6))].equals(s))) {
+                res = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(symbols[(int)((long)(i_6))])).toArray(String[]::new)));
             }
-            i_3 = i_3 + 1;
+            i_6 = (long)((long)(i_6) + (long)(1));
         }
         return res;
     }
 
-    static DPLLResult dpll_algorithm(Clause[] clauses, String[] symbols, java.util.Map<String,Integer> model) {
+    static DPLLResult dpll_algorithm(Clause[] clauses, String[] symbols, java.util.Map<String,Long> model) {
         boolean all_true = true;
-        int i_4 = 0;
-        while (i_4 < clauses.length) {
-            EvalResult ev = evaluate_clause(clauses[i_4], model);
-clauses[i_4] = ev.clause;
-            if (ev.value == 0) {
-                return new DPLLResult(false, new java.util.LinkedHashMap<String, Integer>());
-            } else             if (ev.value == 0 - 1) {
+        long i_8 = 0L;
+        while ((long)(i_8) < (long)(clauses.length)) {
+            EvalResult ev_1 = evaluate_clause(clauses[(int)((long)(i_8))], model);
+clauses[(int)((long)(i_8))] = ev_1.clause;
+            if ((long)(ev_1.value) == (long)(0)) {
+                return new DPLLResult(false, new java.util.LinkedHashMap<String, Long>());
+            } else             if ((long)(ev_1.value) == (long)((long)(0) - (long)(1))) {
                 all_true = false;
             }
-            i_4 = i_4 + 1;
+            i_8 = (long)((long)(i_8) + (long)(1));
         }
         if (all_true) {
             return new DPLLResult(true, model);
         }
-        String p = symbols[0];
-        String[] rest = ((String[])(remove_symbol(((String[])(symbols)), p)));
-        java.util.Map<String,Integer> tmp1 = model;
-        java.util.Map<String,Integer> tmp2 = model;
-tmp1.put(p, 1);
-tmp2.put(p, 0);
-        DPLLResult res1 = dpll_algorithm(((Clause[])(clauses)), ((String[])(rest)), tmp1);
-        if (res1.sat) {
-            return res1;
+        String p_1 = symbols[(int)((long)(0))];
+        String[] rest_1 = ((String[])(remove_symbol(((String[])(symbols)), p_1)));
+        java.util.Map<String,Long> tmp1_1 = model;
+        java.util.Map<String,Long> tmp2_1 = model;
+tmp1_1.put(p_1, 1L);
+tmp2_1.put(p_1, 0L);
+        DPLLResult res1_1 = dpll_algorithm(((Clause[])(clauses)), ((String[])(rest_1)), tmp1_1);
+        if (res1_1.sat) {
+            return res1_1;
         }
-        return dpll_algorithm(((Clause[])(clauses)), ((String[])(rest)), tmp2);
+        return dpll_algorithm(((Clause[])(clauses)), ((String[])(rest_1)), tmp2_1);
     }
 
     static String str_clause(Clause c) {
         String line = "{";
-        boolean first = true;
-        int i_5 = 0;
-        while (i_5 < c.names.length) {
-            String lit_5 = c.names[i_5];
-            if (first) {
-                first = false;
+        boolean first_1 = true;
+        long i_10 = 0L;
+        while ((long)(i_10) < (long)(c.names.length)) {
+            String lit_11 = c.names[(int)((long)(i_10))];
+            if (first_1) {
+                first_1 = false;
             } else {
                 line = line + " , ";
             }
-            line = line + lit_5;
-            i_5 = i_5 + 1;
+            line = line + lit_11;
+            i_10 = (long)((long)(i_10) + (long)(1));
         }
         line = line + "}";
         return line;
@@ -190,13 +190,13 @@ tmp2.put(p, 0);
 
     static String str_formula(Formula f) {
         String line_1 = "{";
-        int i_6 = 0;
-        while (i_6 < f.clauses.length) {
-            line_1 = line_1 + String.valueOf(str_clause(f.clauses[i_6]));
-            if (i_6 < f.clauses.length - 1) {
+        long i_12 = 0L;
+        while ((long)(i_12) < (long)(f.clauses.length)) {
+            line_1 = line_1 + String.valueOf(str_clause(f.clauses[(int)((long)(i_12))]));
+            if ((long)(i_12) < (long)((long)(f.clauses.length) - (long)(1))) {
                 line_1 = line_1 + " , ";
             }
-            i_6 = i_6 + 1;
+            i_12 = (long)((long)(i_12) + (long)(1));
         }
         line_1 = line_1 + "}";
         return line_1;
@@ -211,7 +211,7 @@ tmp2.put(p, 0);
             formula_str = String.valueOf(str_formula(formula));
             clauses = ((Clause[])(new Clause[]{clause1, clause2}));
             symbols = ((String[])(new String[]{"A4", "A3", "A5", "A1"}));
-            model = ((java.util.Map<String,Integer>)(new java.util.LinkedHashMap<String, Integer>()));
+            model = ((java.util.Map<String,Long>)(new java.util.LinkedHashMap<String, Long>()));
             result = dpll_algorithm(((Clause[])(clauses)), ((String[])(symbols)), model);
             if (result.sat) {
                 System.out.println("The formula " + formula_str + " is satisfiable.");
@@ -256,6 +256,10 @@ tmp2.put(p, 0);
     }
 
     static String _substr(String s, int i, int j) {
+        int len = _runeLen(s);
+        if (i < 0) i = 0;
+        if (j > len) j = len;
+        if (i > j) i = j;
         int start = s.offsetByCodePoints(0, i);
         int end = s.offsetByCodePoints(0, j);
         return s.substring(start, end);

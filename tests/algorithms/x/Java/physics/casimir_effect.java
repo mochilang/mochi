@@ -4,58 +4,58 @@ public class Main {
     static double SPEED_OF_LIGHT;
 
     static double sqrtApprox(double x) {
-        if (x <= 0.0) {
+        if ((double)(x) <= 0.0) {
             return 0.0;
         }
-        double guess = x;
-        int i = 0;
-        while (i < 100) {
-            guess = (guess + x / guess) / 2.0;
-            i = i + 1;
+        double guess_1 = (double)(x);
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(100)) {
+            guess_1 = (guess_1 + (double)(x) / guess_1) / 2.0;
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
-        return guess;
+        return guess_1;
     }
 
     static java.util.Map<String,Double> casimir_force(double force, double area, double distance) {
-        int zero_count = 0;
-        if (force == 0.0) {
-            zero_count = zero_count + 1;
+        long zero_count = 0L;
+        if ((double)(force) == 0.0) {
+            zero_count = (long)((long)(zero_count) + (long)(1));
         }
-        if (area == 0.0) {
-            zero_count = zero_count + 1;
+        if ((double)(area) == 0.0) {
+            zero_count = (long)((long)(zero_count) + (long)(1));
         }
-        if (distance == 0.0) {
-            zero_count = zero_count + 1;
+        if ((double)(distance) == 0.0) {
+            zero_count = (long)((long)(zero_count) + (long)(1));
         }
-        if (zero_count != 1) {
+        if ((long)(zero_count) != (long)(1)) {
             throw new RuntimeException(String.valueOf("One and only one argument must be 0"));
         }
-        if (force < 0.0) {
+        if ((double)(force) < 0.0) {
             throw new RuntimeException(String.valueOf("Magnitude of force can not be negative"));
         }
-        if (distance < 0.0) {
+        if ((double)(distance) < 0.0) {
             throw new RuntimeException(String.valueOf("Distance can not be negative"));
         }
-        if (area < 0.0) {
+        if ((double)(area) < 0.0) {
             throw new RuntimeException(String.valueOf("Area can not be negative"));
         }
-        if (force == 0.0) {
-            double num = REDUCED_PLANCK_CONSTANT * SPEED_OF_LIGHT * PI * PI * area;
-            double den = 240.0 * distance * distance * distance * distance;
-            double f = num / den;
-            return new java.util.LinkedHashMap<String, Double>(java.util.Map.ofEntries(java.util.Map.entry("force", f)));
+        if ((double)(force) == 0.0) {
+            double num_1 = (double)(REDUCED_PLANCK_CONSTANT) * (double)(SPEED_OF_LIGHT) * (double)(PI) * (double)(PI) * (double)(area);
+            double den_1 = 240.0 * (double)(distance) * (double)(distance) * (double)(distance) * (double)(distance);
+            double f_1 = num_1 / den_1;
+            return ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>(java.util.Map.ofEntries(java.util.Map.entry("force", f_1)))));
         }
-        if (area == 0.0) {
-            double num_1 = 240.0 * force * distance * distance * distance * distance;
-            double den_1 = REDUCED_PLANCK_CONSTANT * SPEED_OF_LIGHT * PI * PI;
-            double a = num_1 / den_1;
-            return new java.util.LinkedHashMap<String, Double>(java.util.Map.ofEntries(java.util.Map.entry("area", a)));
+        if ((double)(area) == 0.0) {
+            double num_3 = 240.0 * (double)(force) * (double)(distance) * (double)(distance) * (double)(distance) * (double)(distance);
+            double den_3 = (double)(REDUCED_PLANCK_CONSTANT) * (double)(SPEED_OF_LIGHT) * (double)(PI) * (double)(PI);
+            double a_1 = num_3 / den_3;
+            return ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>(java.util.Map.ofEntries(java.util.Map.entry("area", a_1)))));
         }
-        double num_2 = REDUCED_PLANCK_CONSTANT * SPEED_OF_LIGHT * PI * PI * area;
-        double den_2 = 240.0 * force;
-        double inner = num_2 / den_2;
-        double d = sqrtApprox(sqrtApprox(inner));
-        return new java.util.LinkedHashMap<String, Double>(java.util.Map.ofEntries(java.util.Map.entry("distance", d)));
+        double num_5 = (double)(REDUCED_PLANCK_CONSTANT) * (double)(SPEED_OF_LIGHT) * (double)(PI) * (double)(PI) * (double)(area);
+        double den_5 = 240.0 * (double)(force);
+        double inner_1 = num_5 / den_5;
+        double d_1 = (double)(sqrtApprox((double)(sqrtApprox(inner_1))));
+        return ((java.util.Map<String,Double>)(new java.util.LinkedHashMap<String, Double>(java.util.Map.ofEntries(java.util.Map.entry("distance", (double)(d_1))))));
     }
 
     static void main() {
@@ -116,6 +116,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

@@ -1,0 +1,8 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden760_word_search4043880/001/Main.java:45: error: ';' expected
+        return _substr(letters, (int)((long)(i_2)), (int)((long)(i_2 + (long)(1)))));
+                                                                                   ^
+/tmp/TestJavaTranspiler_Algorithms_Golden760_word_search4043880/001/Main.java:95: error: ';' expected
+row_list_1[(int)((long)(cc2_1))] = _substr(word, (int)((long)(k_1)), (int)((long)((long)(k_1) + (long)(1)))));
+                                                                                                            ^
+2 errors

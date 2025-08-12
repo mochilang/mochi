@@ -3468,7 +3468,7 @@ func (m *MethodCallExpr) emit(w io.Writer) {
 			typ = params[i]
 		}
 		if name == "apply" && typ == "" {
-			typ = "long"
+			typ = inferType(a)
 		}
 		emitCastExpr(w, a, typ)
 	}

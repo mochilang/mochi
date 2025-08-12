@@ -1,54 +1,54 @@
 public class Main {
 
     static double ln(double x) {
-        if (x <= 0.0) {
+        if ((double)(x) <= 0.0) {
             throw new RuntimeException(String.valueOf("ln domain error"));
         }
-        double y = (x - 1.0) / (x + 1.0);
-        double y2 = y * y;
-        double term = y;
-        double sum = 0.0;
-        int k = 0;
-        while (k < 10) {
-            double denom = ((Number)((2 * k + 1))).doubleValue();
-            sum = sum + term / denom;
-            term = term * y2;
-            k = k + 1;
+        double y_1 = ((double)(x) - 1.0) / ((double)(x) + 1.0);
+        double y2_1 = y_1 * y_1;
+        double term_1 = y_1;
+        double sum_1 = 0.0;
+        long k_1 = 0L;
+        while ((long)(k_1) < (long)(10)) {
+            double denom_1 = ((Number)(((long)((long)(2) * (long)(k_1)) + (long)(1)))).doubleValue();
+            sum_1 = sum_1 + term_1 / denom_1;
+            term_1 = term_1 * y2_1;
+            k_1 = (long)((long)(k_1) + (long)(1));
         }
-        return 2.0 * sum;
+        return 2.0 * sum_1;
     }
 
     static double exp(double x) {
-        double term_1 = 1.0;
-        double sum_1 = 1.0;
-        int n = 1;
-        while (n < 20) {
-            term_1 = term_1 * x / (((Number)(n)).doubleValue());
-            sum_1 = sum_1 + term_1;
-            n = n + 1;
+        double term_2 = 1.0;
+        double sum_3 = 1.0;
+        long n_1 = 1L;
+        while ((long)(n_1) < (long)(20)) {
+            term_2 = term_2 * (double)(x) / (((Number)(n_1)).doubleValue());
+            sum_3 = sum_3 + term_2;
+            n_1 = (long)((long)(n_1) + (long)(1));
         }
-        return sum_1;
+        return sum_3;
     }
 
     static double[] softplus(double[] vector) {
         double[] result = ((double[])(new double[]{}));
-        int i = 0;
-        while (i < vector.length) {
-            double x = vector[i];
-            double value = ln(1.0 + exp(x));
-            result = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(result), java.util.stream.DoubleStream.of(value)).toArray()));
-            i = i + 1;
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(vector.length)) {
+            double x_1 = (double)(vector[(int)((long)(i_1))]);
+            double value_1 = (double)(ln(1.0 + (double)(exp((double)(x_1)))));
+            result = ((double[])(appendDouble(result, (double)(value_1))));
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
         return result;
     }
 
     static void main() {
         double[] v1 = ((double[])(new double[]{2.3, 0.6, -2.0, -3.8}));
-        double[] v2 = ((double[])(new double[]{-9.2, -0.3, 0.45, -4.56}));
-        double[] r1 = ((double[])(softplus(((double[])(v1)))));
-        double[] r2 = ((double[])(softplus(((double[])(v2)))));
-        System.out.println(java.util.Arrays.toString(r1));
-        System.out.println(java.util.Arrays.toString(r2));
+        double[] v2_1 = ((double[])(new double[]{-9.2, -0.3, 0.45, -4.56}));
+        double[] r1_1 = ((double[])(softplus(((double[])(v1)))));
+        double[] r2_1 = ((double[])(softplus(((double[])(v2_1)))));
+        System.out.println(java.util.Arrays.toString(r1_1));
+        System.out.println(java.util.Arrays.toString(r2_1));
     }
     public static void main(String[] args) {
         {
@@ -86,5 +86,11 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 }

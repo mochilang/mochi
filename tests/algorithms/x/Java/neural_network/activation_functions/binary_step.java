@@ -1,23 +1,23 @@
 public class Main {
 
-    static int[] binary_step(double[] vector) {
-        int[] out = ((int[])(new int[]{}));
-        int i = 0;
-        while (i < vector.length) {
-            if (vector[i] >= 0.0) {
-                out = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(out), java.util.stream.IntStream.of(1)).toArray()));
+    static long[] binary_step(double[] vector) {
+        long[] out = ((long[])(new long[]{}));
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(vector.length)) {
+            if ((double)(vector[(int)((long)(i_1))]) >= 0.0) {
+                out = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(out), java.util.stream.LongStream.of(1L)).toArray()));
             } else {
-                out = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(out), java.util.stream.IntStream.of(0)).toArray()));
+                out = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(out), java.util.stream.LongStream.of(0L)).toArray()));
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
         return out;
     }
 
     static void main() {
         double[] vector = ((double[])(new double[]{-1.2, 0.0, 2.0, 1.45, -3.7, 0.3}));
-        int[] result = ((int[])(binary_step(((double[])(vector)))));
-        System.out.println(java.util.Arrays.toString(result));
+        long[] result_1 = ((long[])(binary_step(((double[])(vector)))));
+        System.out.println(java.util.Arrays.toString(result_1));
     }
     public static void main(String[] args) {
         {

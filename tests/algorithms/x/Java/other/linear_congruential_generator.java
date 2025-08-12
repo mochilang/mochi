@@ -1,10 +1,10 @@
 public class Main {
     static class LCG {
-        int multiplier;
-        int increment;
-        int modulo;
-        int seed;
-        LCG(int multiplier, int increment, int modulo, int seed) {
+        long multiplier;
+        long increment;
+        long modulo;
+        long seed;
+        LCG(long multiplier, long increment, long modulo, long seed) {
             this.multiplier = multiplier;
             this.increment = increment;
             this.modulo = modulo;
@@ -17,25 +17,25 @@ public class Main {
     }
 
     static LCG lcg = null;
-    static int i = 0;
+    static long i = 0;
 
-    static LCG make_lcg(int multiplier, int increment, int modulo, int seed) {
+    static LCG make_lcg(long multiplier, long increment, long modulo, long seed) {
         return new LCG(multiplier, increment, modulo, seed);
     }
 
-    static int next_number(LCG lcg) {
-lcg.seed = Math.floorMod((lcg.multiplier * lcg.seed + lcg.increment), lcg.modulo);
+    static long next_number(LCG lcg) {
+lcg.seed = Math.floorMod(((long)((long)(lcg.multiplier) * (long)(lcg.seed)) + (long)(lcg.increment)), lcg.modulo);
         return lcg.seed;
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            lcg = make_lcg(1664525, 1013904223, (int)4294967296L, _now());
-            i = 0;
-            while (i < 5) {
+            lcg = make_lcg(1664525L, 1013904223L, 4294967296L, (long)(_now()));
+            i = (long)(0);
+            while ((long)(i) < (long)(5)) {
                 System.out.println(_p(next_number(lcg)));
-                i = i + 1;
+                i = (long)((long)(i) + (long)(1));
             }
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
@@ -82,6 +82,11 @@ lcg.seed = Math.floorMod((lcg.multiplier * lcg.seed + lcg.increment), lcg.modulo
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

@@ -1,10 +1,10 @@
 public class Main {
     static class WordSearch {
         String[] words;
-        int width;
-        int height;
+        long width;
+        long height;
         String[][] board;
-        WordSearch(String[] words, int width, int height, String[][] board) {
+        WordSearch(String[] words, long width, long height, String[][] board) {
             this.words = words;
             this.width = width;
             this.height = height;
@@ -16,154 +16,154 @@ public class Main {
         }
     }
 
-    static int seed = 0;
+    static long seed = 0;
 
-    static int rand() {
-        seed = ((int)(Math.floorMod(((long)((seed * 1103515245 + 12345))), 2147483648L)));
+    static long rand() {
+        seed = (long)(((long)(Math.floorMod(((long)(((long)((long)(seed) * (long)(1103515245)) + (long)(12345)))), 2147483648L))));
         return seed;
     }
 
-    static int rand_range(int max) {
+    static long rand_range(long max) {
         return Math.floorMod(rand(), max);
     }
 
-    static int[] shuffle(int[] list_int) {
-        int i = list_int.length - 1;
-        while (i > 0) {
-            int j = rand_range(i + 1);
-            int tmp = list_int[i];
-list_int[i] = list_int[j];
-list_int[j] = tmp;
-            i = i - 1;
+    static long[] shuffle(long[] list_int) {
+        long i = (long)((long)(list_int.length) - (long)(1));
+        while ((long)(i) > (long)(0)) {
+            long j_1 = rand_range((long)((long)(i) + (long)(1)));
+            long tmp_1 = list_int[(int)((long)(i))];
+list_int[(int)((long)(i))] = list_int[(int)((long)(j_1))];
+list_int[(int)((long)(j_1))] = tmp_1;
+            i = (long)((long)(i) - (long)(1));
         }
         return list_int;
     }
 
     static String rand_letter() {
         String letters = "abcdefghijklmnopqrstuvwxyz";
-        int i_1 = rand_range(26);
-        return letters.substring(i_1, i_1 + 1);
+        long i_2 = rand_range(26L);
+        return _substr(letters, (int)((long)(i_2)), (int)((long)(i_2 + (long)(1)))));
     }
 
-    static WordSearch make_word_search(String[] words, int width, int height) {
+    static WordSearch make_word_search(String[] words, long width, long height) {
         String[][] board = ((String[][])(new String[][]{}));
-        int r = 0;
-        while (r < height) {
-            String[] row = ((String[])(new String[]{}));
-            int c = 0;
-            while (c < width) {
-                row = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(row), java.util.stream.Stream.of("")).toArray(String[]::new)));
-                c = c + 1;
+        long r_1 = 0L;
+        while ((long)(r_1) < height) {
+            String[] row_1 = ((String[])(new String[]{}));
+            long c_1 = 0L;
+            while ((long)(c_1) < width) {
+                row_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(row_1), java.util.stream.Stream.of("")).toArray(String[]::new)));
+                c_1 = (long)((long)(c_1) + (long)(1));
             }
-            board = ((String[][])(appendObj(board, row)));
-            r = r + 1;
+            board = ((String[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(board), java.util.stream.Stream.of(row_1)).toArray(String[][]::new)));
+            r_1 = (long)((long)(r_1) + (long)(1));
         }
         return new WordSearch(words, width, height, board);
     }
 
-    static boolean insert_dir(WordSearch ws, String word, int dr, int dc, int[] rows, int[] cols) {
-        int word_len = _runeLen(word);
-        int ri = 0;
-        while (ri < rows.length) {
-            int row_1 = rows[ri];
-            int ci = 0;
-            while (ci < cols.length) {
-                int col = cols[ci];
-                int end_r = row_1 + dr * (word_len - 1);
-                int end_c = col + dc * (word_len - 1);
-                if (end_r < 0 || end_r >= ws.height || end_c < 0 || end_c >= ws.width) {
-                    ci = ci + 1;
+    static boolean insert_dir(WordSearch ws, String word, long dr, long dc, long[] rows, long[] cols) {
+        long word_len = (long)(_runeLen(word));
+        long ri_1 = 0L;
+        while ((long)(ri_1) < (long)(rows.length)) {
+            long row_3 = rows[(int)((long)(ri_1))];
+            long ci_1 = 0L;
+            while ((long)(ci_1) < (long)(cols.length)) {
+                long col_1 = cols[(int)((long)(ci_1))];
+                long end_r_1 = (long)(row_3 + (long)(dr * (long)(((long)(word_len) - (long)(1)))));
+                long end_c_1 = (long)(col_1 + (long)(dc * (long)(((long)(word_len) - (long)(1)))));
+                if ((long)(end_r_1) < (long)(0) || (long)(end_r_1) >= (long)(ws.height) || (long)(end_c_1) < (long)(0) || (long)(end_c_1) >= (long)(ws.width)) {
+                    ci_1 = (long)((long)(ci_1) + (long)(1));
                     continue;
                 }
-                int k = 0;
-                boolean ok = true;
-                while (k < word_len) {
-                    int rr = row_1 + dr * k;
-                    int cc = col + dc * k;
-                    if (!(ws.board[rr][cc].equals(""))) {
-                        ok = false;
+                long k_1 = 0L;
+                boolean ok_1 = true;
+                while ((long)(k_1) < (long)(word_len)) {
+                    long rr_1 = (long)(row_3 + (long)(dr * (long)(k_1)));
+                    long cc_1 = (long)(col_1 + (long)(dc * (long)(k_1)));
+                    if (!(ws.board[(int)((long)(rr_1))][(int)((long)(cc_1))].equals(""))) {
+                        ok_1 = false;
                         break;
                     }
-                    k = k + 1;
+                    k_1 = (long)((long)(k_1) + (long)(1));
                 }
-                if (ok) {
-                    k = 0;
-                    while (k < word_len) {
-                        int rr2 = row_1 + dr * k;
-                        int cc2 = col + dc * k;
-                        String[] row_list = ((String[])(ws.board[rr2]));
-row_list[cc2] = word.substring(k, k + 1);
-                        k = k + 1;
+                if (ok_1) {
+                    k_1 = (long)(0);
+                    while ((long)(k_1) < (long)(word_len)) {
+                        long rr2_1 = (long)(row_3 + (long)(dr * (long)(k_1)));
+                        long cc2_1 = (long)(col_1 + (long)(dc * (long)(k_1)));
+                        String[] row_list_1 = ((String[])(ws.board[(int)((long)(rr2_1))]));
+row_list_1[(int)((long)(cc2_1))] = _substr(word, (int)((long)(k_1)), (int)((long)((long)(k_1) + (long)(1)))));
+                        k_1 = (long)((long)(k_1) + (long)(1));
                     }
                     return true;
                 }
-                ci = ci + 1;
+                ci_1 = (long)((long)(ci_1) + (long)(1));
             }
-            ri = ri + 1;
+            ri_1 = (long)((long)(ri_1) + (long)(1));
         }
         return false;
     }
 
     static void generate_board(WordSearch ws) {
-        int[] dirs_r = ((int[])(new int[]{-1, -1, 0, 1, 1, 1, 0, -1}));
-        int[] dirs_c = ((int[])(new int[]{0, 1, 1, 1, 0, -1, -1, -1}));
-        int i_2 = 0;
-        while (i_2 < ws.words.length) {
-            String word = ws.words[i_2];
-            int[] rows = ((int[])(new int[]{}));
-            int r_1 = 0;
-            while (r_1 < ws.height) {
-                rows = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(rows), java.util.stream.IntStream.of(r_1)).toArray()));
-                r_1 = r_1 + 1;
+        long[] dirs_r = ((long[])(new long[]{-1, -1, 0, 1, 1, 1, 0, -1}));
+        long[] dirs_c_1 = ((long[])(new long[]{0, 1, 1, 1, 0, -1, -1, -1}));
+        long i_4 = 0L;
+        while ((long)(i_4) < (long)(ws.words.length)) {
+            String word_1 = ws.words[(int)((long)(i_4))];
+            long[] rows_1 = ((long[])(new long[]{}));
+            long r_3 = 0L;
+            while ((long)(r_3) < (long)(ws.height)) {
+                rows_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(rows_1), java.util.stream.LongStream.of((long)(r_3))).toArray()));
+                r_3 = (long)((long)(r_3) + (long)(1));
             }
-            int[] cols = ((int[])(new int[]{}));
-            int c_1 = 0;
-            while (c_1 < ws.width) {
-                cols = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(cols), java.util.stream.IntStream.of(c_1)).toArray()));
-                c_1 = c_1 + 1;
+            long[] cols_1 = ((long[])(new long[]{}));
+            long c_3 = 0L;
+            while ((long)(c_3) < (long)(ws.width)) {
+                cols_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(cols_1), java.util.stream.LongStream.of((long)(c_3))).toArray()));
+                c_3 = (long)((long)(c_3) + (long)(1));
             }
-            rows = ((int[])(shuffle(((int[])(rows)))));
-            cols = ((int[])(shuffle(((int[])(cols)))));
-            int d = rand_range(8);
-            insert_dir(ws, word, dirs_r[d], dirs_c[d], ((int[])(rows)), ((int[])(cols)));
-            i_2 = i_2 + 1;
+            rows_1 = ((long[])(shuffle(((long[])(rows_1)))));
+            cols_1 = ((long[])(shuffle(((long[])(cols_1)))));
+            long d_1 = rand_range(8L);
+            insert_dir(ws, word_1, (long)(dirs_r[(int)((long)(d_1))]), (long)(dirs_c_1[(int)((long)(d_1))]), ((long[])(rows_1)), ((long[])(cols_1)));
+            i_4 = (long)((long)(i_4) + (long)(1));
         }
     }
 
     static String visualise(WordSearch ws, boolean add_fake_chars) {
         String result = "";
-        int r_2 = 0;
-        while (r_2 < ws.height) {
-            int c_2 = 0;
-            while (c_2 < ws.width) {
-                String ch = ws.board[r_2][c_2];
-                if ((ch.equals(""))) {
-                    if (((Boolean)(add_fake_chars))) {
-                        ch = String.valueOf(rand_letter());
+        long r_5 = 0L;
+        while ((long)(r_5) < (long)(ws.height)) {
+            long c_5 = 0L;
+            while ((long)(c_5) < (long)(ws.width)) {
+                String ch_1 = ws.board[(int)((long)(r_5))][(int)((long)(c_5))];
+                if ((ch_1.equals(""))) {
+                    if (add_fake_chars) {
+                        ch_1 = String.valueOf(rand_letter());
                     } else {
-                        ch = "#";
+                        ch_1 = "#";
                     }
                 }
-                result = result + ch + " ";
-                c_2 = c_2 + 1;
+                result = result + ch_1 + " ";
+                c_5 = (long)((long)(c_5) + (long)(1));
             }
             result = result + "\n";
-            r_2 = r_2 + 1;
+            r_5 = (long)((long)(r_5) + (long)(1));
         }
         return result;
     }
 
     static void main() {
         String[] words = ((String[])(new String[]{"cat", "dog", "snake", "fish"}));
-        WordSearch ws = make_word_search(((String[])(words)), 10, 10);
-        generate_board(ws);
-        System.out.println(visualise(ws, true));
+        WordSearch ws_1 = make_word_search(((String[])(words)), 10L, 10L);
+        generate_board(ws_1);
+        System.out.println(visualise(ws_1, true));
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            seed = 123456789;
+            seed = (long)(123456789);
             main();
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
@@ -198,13 +198,17 @@ row_list[cc2] = word.substring(k, k + 1);
         return rt.totalMemory() - rt.freeMemory();
     }
 
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
-    }
-
     static int _runeLen(String s) {
         return s.codePointCount(0, s.length());
+    }
+
+    static String _substr(String s, int i, int j) {
+        int len = _runeLen(s);
+        if (i < 0) i = 0;
+        if (j > len) j = len;
+        if (i > j) i = j;
+        int start = s.offsetByCodePoints(0, i);
+        int end = s.offsetByCodePoints(0, j);
+        return s.substring(start, end);
     }
 }
