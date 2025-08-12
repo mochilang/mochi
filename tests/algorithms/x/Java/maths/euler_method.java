@@ -1,7 +1,7 @@
 public class Main {
 
-    static int ceil_int(double x) {
-        int n = ((Number)(x)).intValue();
+    static long ceil_int(double x) {
+        long n = ((Number)(x)).intValue();
         if (((Number)(n)).doubleValue() < x) {
             n = n + 1;
         }
@@ -9,22 +9,22 @@ public class Main {
     }
 
     static double[] explicit_euler(java.util.function.BiFunction<Double,Double,Double> ode_func, double y0, double x0, double step_size, double x_end) {
-        int n_1 = ceil_int((x_end - x0) / step_size);
-        double[] y = ((double[])(new double[]{}));
-        int i = 0;
-        while (i <= n_1) {
-            y = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(y), java.util.stream.DoubleStream.of(0.0)).toArray()));
-            i = i + 1;
+        long n_1 = ceil_int((x_end - x0) / step_size);
+        double[] y_1 = ((double[])(new double[]{}));
+        long i_1 = 0;
+        while (i_1 <= n_1) {
+            y_1 = ((double[])(appendDouble(y_1, 0.0)));
+            i_1 = i_1 + 1;
         }
-y[0] = y0;
-        double x = x0;
-        int k = 0;
-        while (k < n_1) {
-y[k + 1] = y[k] + step_size * ode_func.apply(x, y[k]);
-            x = x + step_size;
-            k = k + 1;
+y_1[(int)(0)] = y0;
+        double x_1 = x0;
+        long k_1 = 0;
+        while (k_1 < n_1) {
+y_1[(int)(k_1 + 1)] = y_1[(int)(k_1)] + step_size * ode_func.apply(x_1, y_1[(int)(k_1)]);
+            x_1 = x_1 + step_size;
+            k_1 = k_1 + 1;
         }
-        return y;
+        return y_1;
     }
 
     static double abs_float(double a) {
@@ -35,19 +35,19 @@ y[k + 1] = y[k] + step_size * ode_func.apply(x, y[k]);
     }
 
     static void test_explicit_euler() {
-        java.util.function.BiFunction<Double,Double,Double> f = (x_1, y_1) -> y_1;
-        double[] ys = ((double[])(explicit_euler(f, 1.0, 0.0, 0.01, 5.0)));
-        double last = ys[ys.length - 1];
-        if (abs_float(last - 144.77277243257308) > 0.001) {
+        java.util.function.BiFunction<Double,Double,Double> f = (x_2, y_2) -> y_2;
+        double[] ys_1 = ((double[])(explicit_euler(f, 1.0, 0.0, 0.01, 5.0)));
+        double last_1 = ys_1[(int)(ys_1.length - 1)];
+        if (abs_float(last_1 - 144.77277243257308) > 0.001) {
             throw new RuntimeException(String.valueOf("explicit_euler failed"));
         }
     }
 
     static void main() {
         test_explicit_euler();
-        java.util.function.BiFunction<Double,Double,Double> f_1 = (x_2, y_2) -> y_2;
-        double[] ys_1 = ((double[])(explicit_euler(f_1, 1.0, 0.0, 0.01, 5.0)));
-        System.out.println(ys_1[ys_1.length - 1]);
+        java.util.function.BiFunction<Double,Double,Double> f_2 = (x_4, y_4) -> y_4;
+        double[] ys_3 = ((double[])(explicit_euler(f_2, 1.0, 0.0, 0.01, 5.0)));
+        System.out.println(ys_3[(int)(ys_3.length - 1)]);
     }
     public static void main(String[] args) {
         {
@@ -85,5 +85,11 @@ y[k + 1] = y[k] + step_size * ode_func.apply(x, y[k]);
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 }

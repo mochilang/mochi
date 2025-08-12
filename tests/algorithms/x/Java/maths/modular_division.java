@@ -1,54 +1,54 @@
 public class Main {
 
-    static int mod(int a, int n) {
-        int r = Math.floorMod(a, n);
+    static long mod(long a, long n) {
+        long r = Math.floorMod(a, n);
         if (r < 0) {
             return r + n;
         }
         return r;
     }
 
-    static int greatest_common_divisor(int a, int b) {
-        int x = a < 0 ? -a : a;
-        int y = b < 0 ? -b : b;
-        while (y != 0) {
-            int t = Math.floorMod(x, y);
-            x = y;
-            y = t;
+    static long greatest_common_divisor(long a, long b) {
+        long x = a < 0 ? -a : a;
+        long y_1 = b < 0 ? -b : b;
+        while (y_1 != 0) {
+            long t_1 = Math.floorMod(x, y_1);
+            x = y_1;
+            y_1 = t_1;
         }
         return x;
     }
 
-    static int[] extended_gcd(int a, int b) {
+    static long[] extended_gcd(long a, long b) {
         if (b == 0) {
-            return new int[]{a, 1, 0};
+            return new long[]{a, 1, 0};
         }
-        int[] res = ((int[])(extended_gcd(b, Math.floorMod(a, b))));
-        int d = res[0];
-        int p = res[1];
-        int q = res[2];
-        int x_1 = q;
-        int y_1 = p - q * (a / b);
-        return new int[]{d, x_1, y_1};
+        long[] res_1 = ((long[])(extended_gcd(b, Math.floorMod(a, b))));
+        long d_1 = res_1[(int)(0)];
+        long p_1 = res_1[(int)(1)];
+        long q_1 = res_1[(int)(2)];
+        long x_2 = q_1;
+        long y_3 = p_1 - q_1 * ((Number)((Math.floorDiv(a, b)))).intValue();
+        return new long[]{d_1, x_2, y_3};
     }
 
-    static int[] extended_euclid(int a, int b) {
+    static long[] extended_euclid(long a, long b) {
         if (b == 0) {
-            return new int[]{1, 0};
+            return new long[]{1, 0};
         }
-        int[] res_1 = ((int[])(extended_euclid(b, Math.floorMod(a, b))));
-        int x_2 = res_1[1];
-        int y_2 = res_1[0] - (a / b) * res_1[1];
-        return new int[]{x_2, y_2};
+        long[] res_3 = ((long[])(extended_euclid(b, Math.floorMod(a, b))));
+        long x_4 = res_3[(int)(1)];
+        long y_5 = res_3[(int)(0)] - ((Number)((Math.floorDiv(a, b)))).intValue() * res_3[(int)(1)];
+        return new long[]{x_4, y_5};
     }
 
-    static int invert_modulo(int a, int n) {
-        int[] res_2 = ((int[])(extended_euclid(a, n)));
-        int inv = res_2[0];
-        return mod(inv, n);
+    static long invert_modulo(long a, long n) {
+        long[] res_4 = ((long[])(extended_euclid(a, n)));
+        long inv_1 = res_4[(int)(0)];
+        return mod(inv_1, n);
     }
 
-    static int modular_division(int a, int b, int n) {
+    static long modular_division(long a, long b, long n) {
         if (n <= 1) {
             throw new RuntimeException(String.valueOf("n must be > 1"));
         }
@@ -58,14 +58,14 @@ public class Main {
         if (greatest_common_divisor(a, n) != 1) {
             throw new RuntimeException(String.valueOf("gcd(a,n) != 1"));
         }
-        int[] eg = ((int[])(extended_gcd(n, a)));
-        int s = eg[2];
-        return mod(b * s, n);
+        long[] eg_1 = ((long[])(extended_gcd(n, a)));
+        long s_1 = eg_1[(int)(2)];
+        return mod(b * s_1, n);
     }
 
-    static int modular_division2(int a, int b, int n) {
-        int s_1 = invert_modulo(a, n);
-        return mod(b * s_1, n);
+    static long modular_division2(long a, long b, long n) {
+        long s_2 = invert_modulo(a, n);
+        return mod(b * s_2, n);
     }
 
     static void tests() {
@@ -90,12 +90,12 @@ public class Main {
         if (invert_modulo(2, 5) != 3) {
             throw new RuntimeException(String.valueOf("inv"));
         }
-        int[] eg_1 = ((int[])(extended_gcd(10, 6)));
-        if (eg_1[0] != 2 || eg_1[1] != (-1) || eg_1[2] != 2) {
+        long[] eg_3 = ((long[])(extended_gcd(10, 6)));
+        if (eg_3[(int)(0)] != 2 || eg_3[(int)(1)] != (-1) || eg_3[(int)(2)] != 2) {
             throw new RuntimeException(String.valueOf("eg"));
         }
-        int[] eu = ((int[])(extended_euclid(10, 6)));
-        if (eu[0] != (-1) || eu[1] != 2) {
+        long[] eu_1 = ((long[])(extended_euclid(10, 6)));
+        if (eu_1[(int)(0)] != (-1) || eu_1[(int)(1)] != 2) {
             throw new RuntimeException(String.valueOf("eu"));
         }
         if (greatest_common_divisor(121, 11) != 11) {
@@ -157,6 +157,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

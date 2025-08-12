@@ -1,6 +1,6 @@
 public class Main {
 
-    static boolean is_prime(int n) {
+    static boolean is_prime(long n) {
         if (n <= 1) {
             return false;
         }
@@ -10,31 +10,31 @@ public class Main {
         if (Math.floorMod(n, 2) == 0) {
             return false;
         }
-        int i = 3;
-        while (i * i <= n) {
-            if (Math.floorMod(n, i) == 0) {
+        long i_1 = 3;
+        while (i_1 * i_1 <= n) {
+            if (Math.floorMod(n, i_1) == 0) {
                 return false;
             }
-            i = i + 2;
+            i_1 = i_1 + 2;
         }
         return true;
     }
 
-    static boolean is_germain_prime(int number) {
+    static boolean is_germain_prime(long number) {
         if (number < 1) {
             throw new RuntimeException(String.valueOf("Input value must be a positive integer"));
         }
         return ((Boolean)(is_prime(number))) && ((Boolean)(is_prime(2 * number + 1)));
     }
 
-    static boolean is_safe_prime(int number) {
+    static boolean is_safe_prime(long number) {
         if (number < 1) {
             throw new RuntimeException(String.valueOf("Input value must be a positive integer"));
         }
         if (Math.floorMod((number - 1), 2) != 0) {
             return false;
         }
-        return ((Boolean)(is_prime(number))) && ((Boolean)(is_prime((number - 1) / 2)));
+        return ((Boolean)(is_prime(number))) && ((Boolean)(is_prime(Math.floorDiv((number - 1), 2))));
     }
 
     static void test_is_germain_prime() {

@@ -1,6 +1,6 @@
 public class Main {
 
-    static int normalize_index(int index, int n) {
+    static long normalize_index(long index, long n) {
         if (index < 0) {
             return n + index;
         }
@@ -11,38 +11,38 @@ public class Main {
         if (nums.length == 0) {
             throw new RuntimeException(String.valueOf("find_max_iterative() arg is an empty sequence"));
         }
-        double max_num = nums[0];
-        int i = 0;
-        while (i < nums.length) {
-            double x = nums[i];
-            if (x > max_num) {
-                max_num = x;
+        double max_num_1 = nums[(int)(0)];
+        long i_1 = 0;
+        while (i_1 < nums.length) {
+            double x_1 = nums[(int)(i_1)];
+            if (x_1 > max_num_1) {
+                max_num_1 = x_1;
             }
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
-        return max_num;
+        return max_num_1;
     }
 
-    static double find_max_recursive(double[] nums, int left, int right) {
-        int n = nums.length;
+    static double find_max_recursive(double[] nums, long left, long right) {
+        long n = nums.length;
         if (n == 0) {
             throw new RuntimeException(String.valueOf("find_max_recursive() arg is an empty sequence"));
         }
         if (left >= n || left < (0 - n) || right >= n || right < (0 - n)) {
             throw new RuntimeException(String.valueOf("list index out of range"));
         }
-        int l = normalize_index(left, n);
-        int r = normalize_index(right, n);
-        if (l == r) {
-            return nums[l];
+        long l_1 = normalize_index(left, n);
+        long r_1 = normalize_index(right, n);
+        if (l_1 == r_1) {
+            return nums[(int)(l_1)];
         }
-        int mid = (l + r) / 2;
-        double left_max = find_max_recursive(((double[])(nums)), l, mid);
-        double right_max = find_max_recursive(((double[])(nums)), mid + 1, r);
-        if (left_max >= right_max) {
-            return left_max;
+        long mid_1 = Math.floorDiv((l_1 + r_1), 2);
+        double left_max_1 = find_max_recursive(((double[])(nums)), l_1, mid_1);
+        double right_max_1 = find_max_recursive(((double[])(nums)), mid_1 + 1, r_1);
+        if (left_max_1 >= right_max_1) {
+            return left_max_1;
         }
-        return right_max;
+        return right_max_1;
     }
 
     static void test_find_max() {
@@ -60,9 +60,9 @@ public class Main {
 
     static void main() {
         test_find_max();
-        double[] nums = ((double[])(new double[]{2.0, 4.0, 9.0, 7.0, 19.0, 94.0, 5.0}));
-        System.out.println(find_max_iterative(((double[])(nums))));
-        System.out.println(find_max_recursive(((double[])(nums)), 0, nums.length - 1));
+        double[] nums_1 = ((double[])(new double[]{2.0, 4.0, 9.0, 7.0, 19.0, 94.0, 5.0}));
+        System.out.println(find_max_iterative(((double[])(nums_1))));
+        System.out.println(find_max_recursive(((double[])(nums_1)), 0, nums_1.length - 1));
     }
     public static void main(String[] args) {
         {

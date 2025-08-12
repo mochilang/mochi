@@ -1,12 +1,12 @@
 public class Main {
 
-    static int gcd(int a, int b) {
-        int x = a;
-        int y = b;
-        while (y != 0) {
-            int r = Math.floorMod(x, y);
-            x = y;
-            y = r;
+    static long gcd(long a, long b) {
+        long x = a;
+        long y_1 = b;
+        while (y_1 != 0) {
+            long r_1 = Math.floorMod(x, y_1);
+            x = y_1;
+            y_1 = r_1;
         }
         if (x < 0) {
             return -x;
@@ -14,33 +14,33 @@ public class Main {
         return x;
     }
 
-    static int get_greatest_common_divisor(int[] nums) {
+    static long get_greatest_common_divisor(long[] nums) {
         if (nums.length == 0) {
             throw new RuntimeException(String.valueOf("at least one number is required"));
         }
-        int g = nums[0];
-        if (g <= 0) {
+        long g_1 = nums[(int)(0)];
+        if (g_1 <= 0) {
             throw new RuntimeException(String.valueOf("numbers must be integer and greater than zero"));
         }
-        int i = 1;
-        while (i < nums.length) {
-            int n = nums[i];
-            if (n <= 0) {
+        long i_1 = 1;
+        while (i_1 < nums.length) {
+            long n_1 = nums[(int)(i_1)];
+            if (n_1 <= 0) {
                 throw new RuntimeException(String.valueOf("numbers must be integer and greater than zero"));
             }
-            g = gcd(g, n);
-            i = i + 1;
+            g_1 = gcd(g_1, n_1);
+            i_1 = i_1 + 1;
         }
-        return g;
+        return g_1;
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            System.out.println(_p(get_greatest_common_divisor(((int[])(new int[]{18, 45})))));
-            System.out.println(_p(get_greatest_common_divisor(((int[])(new int[]{23, 37})))));
-            System.out.println(_p(get_greatest_common_divisor(((int[])(new int[]{2520, 8350})))));
-            System.out.println(_p(get_greatest_common_divisor(((int[])(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10})))));
+            System.out.println(_p(get_greatest_common_divisor(((long[])(new long[]{18, 45})))));
+            System.out.println(_p(get_greatest_common_divisor(((long[])(new long[]{23, 37})))));
+            System.out.println(_p(get_greatest_common_divisor(((long[])(new long[]{2520, 8350})))));
+            System.out.println(_p(get_greatest_common_divisor(((long[])(new long[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10})))));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -86,6 +86,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

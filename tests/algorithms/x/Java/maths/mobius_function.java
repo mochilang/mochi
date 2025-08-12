@@ -1,26 +1,26 @@
 public class Main {
 
-    static int[] primeFactors(int n) {
-        int i = 2;
-        int[] factors = ((int[])(new int[]{}));
+    static long[] primeFactors(long n) {
+        long i = 2;
+        long[] factors_1 = ((long[])(new long[]{}));
         while (((i * i) <= n)) {
             if (((Math.floorMod(n, i)) == 0)) {
-                factors = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(factors), java.util.stream.IntStream.of(i)).toArray()));
-                n = (n / i);
+                factors_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(factors_1), java.util.stream.LongStream.of(i)).toArray()));
+                n = ((Number)((Math.floorDiv(n, i)))).longValue();
             } else {
                 i = (i + 1);
             }
         }
         if ((n > 1)) {
-            factors = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(factors), java.util.stream.IntStream.of(n)).toArray()));
+            factors_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(factors_1), java.util.stream.LongStream.of(n)).toArray()));
         }
-        return factors;
+        return factors_1;
     }
 
-    static boolean isSquareFree(int[] factors) {
-        java.util.Map<Integer,Boolean> seen = ((java.util.Map<Integer,Boolean>)(new java.util.LinkedHashMap<Integer, Boolean>()));
-        for (int f : factors) {
-            if (((Boolean)((seen.containsKey(f))))) {
+    static boolean isSquareFree(long[] factors) {
+        java.util.Map<Long,Boolean> seen = ((java.util.Map<Long,Boolean>)(new java.util.LinkedHashMap<Long, Boolean>()));
+        for (long f : factors) {
+            if ((seen.containsKey(f))) {
                 return false;
             }
 seen.put(f, true);
@@ -28,10 +28,10 @@ seen.put(f, true);
         return true;
     }
 
-    static int mobius(int n) {
-        int[] factors_1 = ((int[])(primeFactors(n)));
-        if (((Boolean)((isSquareFree(((int[])(factors_1))))))) {
-            return ((Math.floorMod(factors_1.length, 2)) == 0) ? 1 : (-1);
+    static long mobius(long n) {
+        long[] factors_2 = ((long[])(primeFactors(n)));
+        if (((Boolean)((isSquareFree(((long[])(factors_2))))))) {
+            return ((Math.floorMod(factors_2.length, 2)) == 0) ? 1 : (-1);
         }
         return 0;
     }

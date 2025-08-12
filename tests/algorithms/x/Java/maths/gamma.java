@@ -12,43 +12,43 @@ public class Main {
         if (x < 0.0) {
             throw new RuntimeException(String.valueOf("sqrt domain error"));
         }
-        double guess = x / 2.0;
-        int i = 0;
-        while (i < 20) {
-            guess = (guess + x / guess) / 2.0;
-            i = i + 1;
+        double guess_1 = x / 2.0;
+        long i_1 = 0;
+        while (i_1 < 20) {
+            guess_1 = (guess_1 + x / guess_1) / 2.0;
+            i_1 = i_1 + 1;
         }
-        return guess;
+        return guess_1;
     }
 
     static double ln(double x) {
         if (x <= 0.0) {
             throw new RuntimeException(String.valueOf("ln domain error"));
         }
-        double y = (x - 1.0) / (x + 1.0);
-        double y2 = y * y;
-        double term = y;
-        double sum = 0.0;
-        int k = 0;
-        while (k < 10) {
-            double denom = ((Number)((2 * k + 1))).doubleValue();
-            sum = sum + term / denom;
-            term = term * y2;
-            k = k + 1;
+        double y_1 = (x - 1.0) / (x + 1.0);
+        double y2_1 = y_1 * y_1;
+        double term_1 = y_1;
+        double sum_1 = 0.0;
+        long k_1 = 0;
+        while (k_1 < 10) {
+            double denom_1 = ((Number)((2 * k_1 + 1))).doubleValue();
+            sum_1 = sum_1 + term_1 / denom_1;
+            term_1 = term_1 * y2_1;
+            k_1 = k_1 + 1;
         }
-        return 2.0 * sum;
+        return 2.0 * sum_1;
     }
 
     static double exp_series(double x) {
-        double term_1 = 1.0;
-        double sum_1 = 1.0;
-        int n = 1;
-        while (n < 20) {
-            term_1 = term_1 * x / (((Number)(n)).doubleValue());
-            sum_1 = sum_1 + term_1;
-            n = n + 1;
+        double term_2 = 1.0;
+        double sum_3 = 1.0;
+        long n_1 = 1;
+        while (n_1 < 20) {
+            term_2 = term_2 * x / (((Number)(n_1)).doubleValue());
+            sum_3 = sum_3 + term_2;
+            n_1 = n_1 + 1;
         }
-        return sum_1;
+        return sum_3;
     }
 
     static double powf(double base, double exponent) {
@@ -66,15 +66,15 @@ public class Main {
         if (num <= 0.0) {
             throw new RuntimeException(String.valueOf("math domain error"));
         }
-        double step = 0.001;
-        double limit = 100.0;
-        double x = step;
-        double total = 0.0;
-        while (x < limit) {
-            total = total + integrand(x, num) * step;
-            x = x + step;
+        double step_1 = 0.001;
+        double limit_1 = 100.0;
+        double x_1 = step_1;
+        double total_1 = 0.0;
+        while (x_1 < limit_1) {
+            total_1 = total_1 + integrand(x_1, num) * step_1;
+            x_1 = x_1 + step_1;
         }
-        return total;
+        return total_1;
     }
 
     static double gamma_recursive(double num) {
@@ -84,9 +84,9 @@ public class Main {
         if (num > 171.5) {
             throw new RuntimeException(String.valueOf("math range error"));
         }
-        int int_part = ((Number)(num)).intValue();
-        double frac = num - (((Number)(int_part)).doubleValue());
-        if (!(absf(frac) < 1e-06 || absf(frac - 0.5) < 1e-06)) {
+        long int_part_1 = ((Number)(num)).intValue();
+        double frac_1 = num - (((Number)(int_part_1)).doubleValue());
+        if (!(absf(frac_1) < 1e-06 || absf(frac_1 - 0.5) < 1e-06)) {
             throw new RuntimeException(String.valueOf("num must be an integer or a half-integer"));
         }
         if (absf(num - 0.5) < 1e-06) {

@@ -1,54 +1,54 @@
 public class Main {
-    static java.util.Map<Integer,Integer> fib_cache_global = null;
-    static java.util.Map<Integer,Integer> fib_memo_cache = null;
+    static java.util.Map<Long,Long> fib_cache_global = null;
+    static java.util.Map<Long,Long> fib_memo_cache = null;
 
     static double sqrt(double x) {
         if (x <= 0.0) {
             return 0.0;
         }
-        double guess = x;
-        int i = 0;
-        while (i < 10) {
-            guess = (guess + x / guess) / 2.0;
-            i = i + 1;
+        double guess_1 = x;
+        long i_1 = 0;
+        while (i_1 < 10) {
+            guess_1 = (guess_1 + x / guess_1) / 2.0;
+            i_1 = i_1 + 1;
         }
-        return guess;
+        return guess_1;
     }
 
-    static double powf(double x, int n) {
+    static double powf(double x, long n) {
         double res = 1.0;
-        int i_1 = 0;
-        while (i_1 < n) {
+        long i_3 = 0;
+        while (i_3 < n) {
             res = res * x;
-            i_1 = i_1 + 1;
+            i_3 = i_3 + 1;
         }
         return res;
     }
 
-    static int roundf(double x) {
+    static long roundf(double x) {
         if (x >= 0.0) {
             return ((Number)((x + 0.5))).intValue();
         }
         return ((Number)((x - 0.5))).intValue();
     }
 
-    static int[] fib_iterative(int n) {
+    static long[] fib_iterative(long n) {
         if (n < 0) {
             throw new RuntimeException(String.valueOf("n is negative"));
         }
         if (n == 0) {
-            return new int[]{0};
+            return new long[]{0};
         }
-        int[] fib = ((int[])(new int[]{0, 1}));
-        int i_2 = 2;
-        while (i_2 <= n) {
-            fib = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(fib), java.util.stream.IntStream.of(fib[i_2 - 1] + fib[i_2 - 2])).toArray()));
-            i_2 = i_2 + 1;
+        long[] fib_1 = ((long[])(new long[]{0, 1}));
+        long i_5 = 2;
+        while (i_5 <= n) {
+            fib_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(fib_1), java.util.stream.LongStream.of(fib_1[(int)(i_5 - 1)] + fib_1[(int)(i_5 - 2)])).toArray()));
+            i_5 = i_5 + 1;
         }
-        return fib;
+        return fib_1;
     }
 
-    static int fib_recursive_term(int i) {
+    static long fib_recursive_term(long i) {
         if (i < 0) {
             throw new RuntimeException(String.valueOf("n is negative"));
         }
@@ -58,159 +58,159 @@ public class Main {
         return fib_recursive_term(i - 1) + fib_recursive_term(i - 2);
     }
 
-    static int[] fib_recursive(int n) {
+    static long[] fib_recursive(long n) {
         if (n < 0) {
             throw new RuntimeException(String.valueOf("n is negative"));
         }
-        int[] res_1 = ((int[])(new int[]{}));
-        int i_3 = 0;
-        while (i_3 <= n) {
-            res_1 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res_1), java.util.stream.IntStream.of(fib_recursive_term(i_3))).toArray()));
-            i_3 = i_3 + 1;
+        long[] res_2 = ((long[])(new long[]{}));
+        long i_7 = 0;
+        while (i_7 <= n) {
+            res_2 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res_2), java.util.stream.LongStream.of(fib_recursive_term(i_7))).toArray()));
+            i_7 = i_7 + 1;
         }
-        return res_1;
+        return res_2;
     }
 
-    static int fib_recursive_cached_term(int i) {
+    static long fib_recursive_cached_term(long i) {
         if (i < 0) {
             throw new RuntimeException(String.valueOf("n is negative"));
         }
         if (i < 2) {
             return i;
         }
-        if (((Boolean)(fib_cache_global.containsKey(i)))) {
-            return ((int)(fib_cache_global).getOrDefault(i, 0));
+        if (fib_cache_global.containsKey(i)) {
+            return ((long)(fib_cache_global).getOrDefault(i, 0));
         }
-        int val = fib_recursive_cached_term(i - 1) + fib_recursive_cached_term(i - 2);
-fib_cache_global.put(i, val);
-        return val;
+        long val_1 = fib_recursive_cached_term(i - 1) + fib_recursive_cached_term(i - 2);
+fib_cache_global.put(i, val_1);
+        return val_1;
     }
 
-    static int[] fib_recursive_cached(int n) {
+    static long[] fib_recursive_cached(long n) {
         if (n < 0) {
             throw new RuntimeException(String.valueOf("n is negative"));
         }
-        int[] res_2 = ((int[])(new int[]{}));
-        int j = 0;
-        while (j <= n) {
-            res_2 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res_2), java.util.stream.IntStream.of(fib_recursive_cached_term(j))).toArray()));
-            j = j + 1;
+        long[] res_4 = ((long[])(new long[]{}));
+        long j_1 = 0;
+        while (j_1 <= n) {
+            res_4 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res_4), java.util.stream.LongStream.of(fib_recursive_cached_term(j_1))).toArray()));
+            j_1 = j_1 + 1;
         }
-        return res_2;
+        return res_4;
     }
 
-    static int fib_memoization_term(int num) {
-        if (((Boolean)(fib_memo_cache.containsKey(num)))) {
-            return ((int)(fib_memo_cache).getOrDefault(num, 0));
+    static long fib_memoization_term(long num) {
+        if (fib_memo_cache.containsKey(num)) {
+            return ((long)(fib_memo_cache).getOrDefault(num, 0));
         }
-        int value = fib_memoization_term(num - 1) + fib_memoization_term(num - 2);
-fib_memo_cache.put(num, value);
-        return value;
+        long value_1 = fib_memoization_term(num - 1) + fib_memoization_term(num - 2);
+fib_memo_cache.put(num, value_1);
+        return value_1;
     }
 
-    static int[] fib_memoization(int n) {
+    static long[] fib_memoization(long n) {
         if (n < 0) {
             throw new RuntimeException(String.valueOf("n is negative"));
         }
-        int[] out = ((int[])(new int[]{}));
-        int i_4 = 0;
-        while (i_4 <= n) {
-            out = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(out), java.util.stream.IntStream.of(fib_memoization_term(i_4))).toArray()));
-            i_4 = i_4 + 1;
+        long[] out_1 = ((long[])(new long[]{}));
+        long i_9 = 0;
+        while (i_9 <= n) {
+            out_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(out_1), java.util.stream.LongStream.of(fib_memoization_term(i_9))).toArray()));
+            i_9 = i_9 + 1;
         }
-        return out;
+        return out_1;
     }
 
-    static int[] fib_binet(int n) {
+    static long[] fib_binet(long n) {
         if (n < 0) {
             throw new RuntimeException(String.valueOf("n is negative"));
         }
         if (n >= 1475) {
             throw new RuntimeException(String.valueOf("n is too large"));
         }
-        double sqrt5 = sqrt(5.0);
-        double phi = (1.0 + sqrt5) / 2.0;
-        int[] res_3 = ((int[])(new int[]{}));
-        int i_5 = 0;
-        while (i_5 <= n) {
-            int val_1 = roundf(powf(phi, i_5) / sqrt5);
-            res_3 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res_3), java.util.stream.IntStream.of(val_1)).toArray()));
-            i_5 = i_5 + 1;
+        double sqrt5_1 = sqrt(5.0);
+        double phi_1 = (1.0 + sqrt5_1) / 2.0;
+        long[] res_6 = ((long[])(new long[]{}));
+        long i_11 = 0;
+        while (i_11 <= n) {
+            long val_3 = roundf(powf(phi_1, i_11) / sqrt5_1);
+            res_6 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res_6), java.util.stream.LongStream.of(val_3)).toArray()));
+            i_11 = i_11 + 1;
         }
-        return res_3;
+        return res_6;
     }
 
-    static int[][] matrix_mul(int[][] a, int[][] b) {
-        int a00 = a[0][0] * b[0][0] + a[0][1] * b[1][0];
-        int a01 = a[0][0] * b[0][1] + a[0][1] * b[1][1];
-        int a10 = a[1][0] * b[0][0] + a[1][1] * b[1][0];
-        int a11 = a[1][0] * b[0][1] + a[1][1] * b[1][1];
-        return new int[][]{new int[]{a00, a01}, new int[]{a10, a11}};
+    static long[][] matrix_mul(long[][] a, long[][] b) {
+        long a00 = a[(int)(0)][(int)(0)] * b[(int)(0)][(int)(0)] + a[(int)(0)][(int)(1)] * b[(int)(1)][(int)(0)];
+        long a01_1 = a[(int)(0)][(int)(0)] * b[(int)(0)][(int)(1)] + a[(int)(0)][(int)(1)] * b[(int)(1)][(int)(1)];
+        long a10_1 = a[(int)(1)][(int)(0)] * b[(int)(0)][(int)(0)] + a[(int)(1)][(int)(1)] * b[(int)(1)][(int)(0)];
+        long a11_1 = a[(int)(1)][(int)(0)] * b[(int)(0)][(int)(1)] + a[(int)(1)][(int)(1)] * b[(int)(1)][(int)(1)];
+        return new long[][]{new long[]{a00, a01_1}, new long[]{a10_1, a11_1}};
     }
 
-    static int[][] matrix_pow(int[][] m, int power) {
+    static long[][] matrix_pow(long[][] m, long power) {
         if (power < 0) {
             throw new RuntimeException(String.valueOf("power is negative"));
         }
-        int[][] result = ((int[][])(new int[][]{new int[]{1, 0}, new int[]{0, 1}}));
-        int[][] base = ((int[][])(m));
-        int p = power;
-        while (p > 0) {
-            if (Math.floorMod(p, 2) == 1) {
-                result = ((int[][])(matrix_mul(((int[][])(result)), ((int[][])(base)))));
+        long[][] result_1 = ((long[][])(new long[][]{new long[]{1, 0}, new long[]{0, 1}}));
+        long[][] base_1 = ((long[][])(m));
+        long p_1 = power;
+        while (p_1 > 0) {
+            if (Math.floorMod(p_1, 2) == 1) {
+                result_1 = ((long[][])(matrix_mul(((long[][])(result_1)), ((long[][])(base_1)))));
             }
-            base = ((int[][])(matrix_mul(((int[][])(base)), ((int[][])(base)))));
-            p = ((Number)((p / 2))).intValue();
+            base_1 = ((long[][])(matrix_mul(((long[][])(base_1)), ((long[][])(base_1)))));
+            p_1 = ((Number)((Math.floorDiv(p_1, 2)))).intValue();
         }
-        return result;
+        return result_1;
     }
 
-    static int fib_matrix(int n) {
+    static long fib_matrix(long n) {
         if (n < 0) {
             throw new RuntimeException(String.valueOf("n is negative"));
         }
         if (n == 0) {
             return 0;
         }
-        int[][] m = ((int[][])(new int[][]{new int[]{1, 1}, new int[]{1, 0}}));
-        int[][] res_4 = ((int[][])(matrix_pow(((int[][])(m)), n - 1)));
-        return res_4[0][0];
+        long[][] m_1 = ((long[][])(new long[][]{new long[]{1, 1}, new long[]{1, 0}}));
+        long[][] res_8 = ((long[][])(matrix_pow(((long[][])(m_1)), n - 1)));
+        return res_8[(int)(0)][(int)(0)];
     }
 
-    static int run_tests() {
-        int[] expected = ((int[])(new int[]{0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55}));
-        int[] it = ((int[])(fib_iterative(10)));
-        int[] rec = ((int[])(fib_recursive(10)));
-        int[] cache = ((int[])(fib_recursive_cached(10)));
-        int[] memo = ((int[])(fib_memoization(10)));
-        int[] bin = ((int[])(fib_binet(10)));
-        int m_1 = fib_matrix(10);
-        if (it != expected) {
+    static long run_tests() {
+        long[] expected = ((long[])(new long[]{0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55}));
+        long[] it_1 = ((long[])(fib_iterative(10)));
+        long[] rec_1 = ((long[])(fib_recursive(10)));
+        long[] cache_1 = ((long[])(fib_recursive_cached(10)));
+        long[] memo_1 = ((long[])(fib_memoization(10)));
+        long[] bin_1 = ((long[])(fib_binet(10)));
+        long m_3 = fib_matrix(10);
+        if (it_1 != expected) {
             throw new RuntimeException(String.valueOf("iterative failed"));
         }
-        if (rec != expected) {
+        if (rec_1 != expected) {
             throw new RuntimeException(String.valueOf("recursive failed"));
         }
-        if (cache != expected) {
+        if (cache_1 != expected) {
             throw new RuntimeException(String.valueOf("cached failed"));
         }
-        if (memo != expected) {
+        if (memo_1 != expected) {
             throw new RuntimeException(String.valueOf("memoization failed"));
         }
-        if (bin != expected) {
+        if (bin_1 != expected) {
             throw new RuntimeException(String.valueOf("binet failed"));
         }
-        if (m_1 != 55) {
+        if (m_3 != 55) {
             throw new RuntimeException(String.valueOf("matrix failed"));
         }
-        return m_1;
+        return m_3;
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            fib_cache_global = ((java.util.Map<Integer,Integer>)(new java.util.LinkedHashMap<Integer, Integer>()));
-            fib_memo_cache = ((java.util.Map<Integer,Integer>)(new java.util.LinkedHashMap<Integer, Integer>(java.util.Map.ofEntries(java.util.Map.entry(0, 0), java.util.Map.entry(1, 1), java.util.Map.entry(2, 1)))));
+            fib_cache_global = ((java.util.Map<Long,Long>)(new java.util.LinkedHashMap<Long, Long>()));
+            fib_memo_cache = ((java.util.Map<Long,Long>)(new java.util.LinkedHashMap<Long, Long>(java.util.Map.ofEntries(java.util.Map.entry(0, 0), java.util.Map.entry(1, 1), java.util.Map.entry(2, 1)))));
             System.out.println(_p(run_tests()));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
@@ -257,6 +257,11 @@ fib_memo_cache.put(num, value);
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

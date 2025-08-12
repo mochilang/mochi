@@ -1,35 +1,35 @@
 public class Main {
 
-    static int int_pow(int base, int exp) {
-        int result = 1;
-        int i = 0;
-        while (i < exp) {
+    static long int_pow(long base, long exp) {
+        long result = 1;
+        long i_1 = 0;
+        while (i_1 < exp) {
             result = result * base;
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
         return result;
     }
 
-    static int karatsuba(int a, int b) {
+    static long karatsuba(long a, long b) {
         if (_runeLen(_p(a)) == 1 || _runeLen(_p(b)) == 1) {
             return a * b;
         }
-        int m1 = _runeLen(_p(a));
-        int lb = _runeLen(_p(b));
-        if (lb > m1) {
-            m1 = lb;
+        long m1_1 = _runeLen(_p(a));
+        long lb_1 = _runeLen(_p(b));
+        if (lb_1 > m1_1) {
+            m1_1 = lb_1;
         }
-        int m2 = m1 / 2;
-        int power = int_pow(10, m2);
-        int a1 = a / power;
-        int a2 = Math.floorMod(a, power);
-        int b1 = b / power;
-        int b2 = Math.floorMod(b, power);
-        int x = karatsuba(a2, b2);
-        int y = karatsuba(a1 + a2, b1 + b2);
-        int z = karatsuba(a1, b1);
-        int result_1 = z * int_pow(10, 2 * m2) + (y - z - x) * power + x;
-        return result_1;
+        long m2_1 = Math.floorDiv(m1_1, 2);
+        long power_1 = int_pow(10, m2_1);
+        long a1_1 = Math.floorDiv(a, power_1);
+        long a2_1 = Math.floorMod(a, power_1);
+        long b1_1 = Math.floorDiv(b, power_1);
+        long b2_1 = Math.floorMod(b, power_1);
+        long x_1 = karatsuba(a2_1, b2_1);
+        long y_1 = karatsuba(a1_1 + a2_1, b1_1 + b2_1);
+        long z_1 = karatsuba(a1_1, b1_1);
+        long result_2 = z_1 * int_pow(10, 2 * m2_1) + (y_1 - z_1 - x_1) * power_1 + x_1;
+        return result_2;
     }
 
     static void main() {
@@ -89,6 +89,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

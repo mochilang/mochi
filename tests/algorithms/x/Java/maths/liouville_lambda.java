@@ -1,29 +1,29 @@
 public class Main {
 
-    static int[] prime_factors(int n) {
-        int i = 2;
-        int x = n;
-        int[] factors = ((int[])(new int[]{}));
-        while (i * i <= x) {
-            if (Math.floorMod(x, i) == 0) {
-                factors = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(factors), java.util.stream.IntStream.of(i)).toArray()));
-                x = ((Number)((x / i))).intValue();
+    static long[] prime_factors(long n) {
+        long i = 2;
+        long x_1 = n;
+        long[] factors_1 = ((long[])(new long[]{}));
+        while (i * i <= x_1) {
+            if (Math.floorMod(x_1, i) == 0) {
+                factors_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(factors_1), java.util.stream.LongStream.of(i)).toArray()));
+                x_1 = ((Number)((Math.floorDiv(x_1, i)))).intValue();
             } else {
                 i = i + 1;
             }
         }
-        if (x > 1) {
-            factors = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(factors), java.util.stream.IntStream.of(x)).toArray()));
+        if (x_1 > 1) {
+            factors_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(factors_1), java.util.stream.LongStream.of(x_1)).toArray()));
         }
-        return factors;
+        return factors_1;
     }
 
-    static int liouville_lambda(int n) {
+    static long liouville_lambda(long n) {
         if (n < 1) {
             throw new RuntimeException(String.valueOf("Input must be a positive integer"));
         }
-        int cnt = prime_factors(n).length;
-        if (Math.floorMod(cnt, 2) == 0) {
+        long cnt_1 = prime_factors(n).length;
+        if (Math.floorMod(cnt_1, 2) == 0) {
             return 1;
         }
         return 0 - 1;

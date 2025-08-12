@@ -1,4 +1,210 @@
-## Progress (2025-08-11 16:20 +0700)
+## Progress (2025-08-11 22:40 +0700)
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
+- java: improve expression and append handling (17a8038da6)
+
 - c transpiler: handle nested list slices and init (d654e04ebb)
 
 - c transpiler: handle nested list slices and init (d654e04ebb)

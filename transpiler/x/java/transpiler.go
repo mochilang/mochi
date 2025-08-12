@@ -35,6 +35,7 @@ var needSaveJsonl bool
 var needInput bool
 var needNow bool
 var needAppendBool bool
+var needAppendDouble bool
 var needAppendObj bool
 var needConcat bool
 var needConcatBool bool
@@ -2918,11 +2919,12 @@ func (a *AppendExpr) emit(w io.Writer) {
 		return
 	}
 	if elem == "double" {
-		fmt.Fprint(w, "java.util.stream.DoubleStream.concat(java.util.Arrays.stream(")
+		needAppendDouble = true
+		fmt.Fprint(w, "appendDouble(")
 		a.List.emit(w)
-		fmt.Fprint(w, "), java.util.stream.DoubleStream.of(")
+		fmt.Fprint(w, ", ")
 		emitCastExpr(w, a.Value, "double")
-		fmt.Fprint(w, ")).toArray()")
+		fmt.Fprint(w, ")")
 		return
 	}
 	if elem == "int" {
@@ -7045,6 +7047,13 @@ func Emit(prog *Program) []byte {
 	if needAppendBool {
 		buf.WriteString("\n    static boolean[] appendBool(boolean[] arr, boolean v) {\n")
 		buf.WriteString("        boolean[] out = java.util.Arrays.copyOf(arr, arr.length + 1);\n")
+		buf.WriteString("        out[arr.length] = v;\n")
+		buf.WriteString("        return out;\n")
+		buf.WriteString("    }\n")
+	}
+	if needAppendDouble {
+		buf.WriteString("\n    static double[] appendDouble(double[] arr, double v) {\n")
+		buf.WriteString("        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);\n")
 		buf.WriteString("        out[arr.length] = v;\n")
 		buf.WriteString("        return out;\n")
 		buf.WriteString("    }\n")

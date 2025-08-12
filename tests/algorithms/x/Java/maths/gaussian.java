@@ -3,39 +3,39 @@ public class Main {
 
     static double sqrtApprox(double x) {
         double guess = x / 2.0;
-        int i = 0;
-        while (i < 20) {
+        long i_1 = 0;
+        while (i_1 < 20) {
             guess = (guess + x / guess) / 2.0;
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
         return guess;
     }
 
     static double expApprox(double x) {
         boolean is_neg = false;
-        double y = x;
+        double y_1 = x;
         if (x < 0.0) {
             is_neg = true;
-            y = -x;
+            y_1 = -x;
         }
-        double term = 1.0;
-        double sum = 1.0;
-        int n = 1;
-        while (n < 30) {
-            term = term * y / (((Number)(n)).doubleValue());
-            sum = sum + term;
-            n = n + 1;
+        double term_1 = 1.0;
+        double sum_1 = 1.0;
+        long n_1 = 1;
+        while (n_1 < 30) {
+            term_1 = term_1 * y_1 / (((Number)(n_1)).doubleValue());
+            sum_1 = sum_1 + term_1;
+            n_1 = n_1 + 1;
         }
         if (is_neg) {
-            return 1.0 / sum;
+            return 1.0 / sum_1;
         }
-        return sum;
+        return sum_1;
     }
 
     static double gaussian(double x, double mu, double sigma) {
         double coeff = 1.0 / sqrtApprox(2.0 * PI * sigma * sigma);
-        double exponent = -((x - mu) * (x - mu)) / (2.0 * sigma * sigma);
-        return coeff * expApprox(exponent);
+        double exponent_1 = -((x - mu) * (x - mu)) / (2.0 * sigma * sigma);
+        return coeff * expApprox(exponent_1);
     }
 
     static void main() {

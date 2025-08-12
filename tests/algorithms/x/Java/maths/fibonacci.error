@@ -1,4 +1,23 @@
-run: exit status 1
-Exception in thread "main" java.lang.RuntimeException: iterative failed
-	at Main.run_tests(Main.java:189)
-	at Main.main(Main.java:214)
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden568_fibonacci1504722845/001/Main.java:82: error: incompatible types: int cannot be converted to Long
+            return ((long)(fib_cache_global).getOrDefault(i, 0));
+                                                             ^
+/tmp/TestJavaTranspiler_Algorithms_Golden568_fibonacci1504722845/001/Main.java:104: error: incompatible types: int cannot be converted to Long
+            return ((long)(fib_memo_cache).getOrDefault(num, 0));
+                                                             ^
+/tmp/TestJavaTranspiler_Algorithms_Golden568_fibonacci1504722845/001/Main.java:213: error: no suitable constructor found for LinkedHashMap(Map<Integer,Integer>)
+            fib_memo_cache = ((java.util.Map<Long,Long>)(new java.util.LinkedHashMap<Long, Long>(java.util.Map.ofEntries(java.util.Map.entry(0, 0), java.util.Map.entry(1, 1), java.util.Map.entry(2, 1)))));
+                                                         ^
+    constructor LinkedHashMap.LinkedHashMap(int) is not applicable
+      (argument mismatch; no instance(s) of type variable(s) K#1,V#1,K#2,V#2,K#2,V#2,K#2,V#2 exist so that Map<K#1,V#1> conforms to int)
+    constructor LinkedHashMap.LinkedHashMap(Map<? extends Long,? extends Long>) is not applicable
+      (argument mismatch; inference variable K#1 has incompatible bounds
+          upper bounds: Long,Object
+          lower bounds: K#2,K#2,K#2,Integer)
+  where K#1,V#1,K#2,V#2 are type-variables:
+    K#1 extends Object declared in method <K#1,V#1>ofEntries(Entry<? extends K#1,? extends V#1>...)
+    V#1 extends Object declared in method <K#1,V#1>ofEntries(Entry<? extends K#1,? extends V#1>...)
+    K#2 extends Object declared in method <K#2,V#2>entry(K#2,V#2)
+    V#2 extends Object declared in method <K#2,V#2>entry(K#2,V#2)
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+3 errors

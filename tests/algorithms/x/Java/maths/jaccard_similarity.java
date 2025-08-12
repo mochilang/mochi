@@ -1,9 +1,9 @@
 public class Main {
 
     static boolean contains(String[] xs, String value) {
-        int i = 0;
+        long i = 0;
         while (i < xs.length) {
-            if ((xs[i].equals(value))) {
+            if ((xs[(int)(i)].equals(value))) {
                 return true;
             }
             i = i + 1;
@@ -12,44 +12,44 @@ public class Main {
     }
 
     static double jaccard_similarity(String[] set_a, String[] set_b, boolean alternative_union) {
-        int intersection_len = 0;
-        int i_1 = 0;
-        while (i_1 < set_a.length) {
-            if (((Boolean)(contains(((String[])(set_b)), set_a[i_1])))) {
+        long intersection_len = 0;
+        long i_2 = 0;
+        while (i_2 < set_a.length) {
+            if (((Boolean)(contains(((String[])(set_b)), set_a[(int)(i_2)])))) {
                 intersection_len = intersection_len + 1;
             }
-            i_1 = i_1 + 1;
+            i_2 = i_2 + 1;
         }
-        int union_len = 0;
+        long union_len_1 = 0;
         if (((Boolean)(alternative_union))) {
-            union_len = set_a.length + set_b.length;
+            union_len_1 = set_a.length + set_b.length;
         } else {
-            String[] union_list = ((String[])(new String[]{}));
-            i_1 = 0;
-            while (i_1 < set_a.length) {
-                String val_a = set_a[i_1];
-                if (!(Boolean)contains(((String[])(union_list)), val_a)) {
-                    union_list = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(union_list), java.util.stream.Stream.of(val_a)).toArray(String[]::new)));
+            String[] union_list_1 = ((String[])(new String[]{}));
+            i_2 = 0;
+            while (i_2 < set_a.length) {
+                String val_a_1 = set_a[(int)(i_2)];
+                if (!(Boolean)contains(((String[])(union_list_1)), val_a_1)) {
+                    union_list_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(union_list_1), java.util.stream.Stream.of(val_a_1)).toArray(String[]::new)));
                 }
-                i_1 = i_1 + 1;
+                i_2 = i_2 + 1;
             }
-            i_1 = 0;
-            while (i_1 < set_b.length) {
-                String val_b = set_b[i_1];
-                if (!(Boolean)contains(((String[])(union_list)), val_b)) {
-                    union_list = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(union_list), java.util.stream.Stream.of(val_b)).toArray(String[]::new)));
+            i_2 = 0;
+            while (i_2 < set_b.length) {
+                String val_b_1 = set_b[(int)(i_2)];
+                if (!(Boolean)contains(((String[])(union_list_1)), val_b_1)) {
+                    union_list_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(union_list_1), java.util.stream.Stream.of(val_b_1)).toArray(String[]::new)));
                 }
-                i_1 = i_1 + 1;
+                i_2 = i_2 + 1;
             }
-            union_len = union_list.length;
+            union_len_1 = union_list_1.length;
         }
-        return 1.0 * intersection_len / union_len;
+        return 1.0 * intersection_len / union_len_1;
     }
 
     static void main() {
         String[] set_a = ((String[])(new String[]{"a", "b", "c", "d", "e"}));
-        String[] set_b = ((String[])(new String[]{"c", "d", "e", "f", "h", "i"}));
-        System.out.println(jaccard_similarity(((String[])(set_a)), ((String[])(set_b)), false));
+        String[] set_b_1 = ((String[])(new String[]{"c", "d", "e", "f", "h", "i"}));
+        System.out.println(jaccard_similarity(((String[])(set_a)), ((String[])(set_b_1)), false));
     }
     public static void main(String[] args) {
         {

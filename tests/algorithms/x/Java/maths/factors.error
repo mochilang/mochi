@@ -1,15 +1,15 @@
 compile: exit status 1
-/tmp/TestJavaTranspiler_Algorithms_Golden565_factors3363974882/001/Main.java:31: error: method concat in class Main cannot be applied to given types;
-        facs = ((int[])(concat(small, reverse(((int[])(large))))));
-                        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden565_factors3753304137/001/Main.java:31: error: method concat in class Main cannot be applied to given types;
+        facs = ((long[])(concat(small_1, reverse(((long[])(large_1))))));
+                         ^
   required: T[],T[]
-  found:    int[],int[]
+  found:    long[],long[]
   reason: inference variable T has incompatible bounds
-    equality constraints: int
+    equality constraints: long
     upper bounds: Object
   where T is a type-variable:
     T extends Object declared in method <T>concat(T[],T[])
-/tmp/TestJavaTranspiler_Algorithms_Golden565_factors3363974882/001/Main.java:45: error: incompatible types: Object[] cannot be converted to Number
+/tmp/TestJavaTranspiler_Algorithms_Golden565_factors3753304137/001/Main.java:45: error: incompatible types: Object[] cannot be converted to Number
         if (factors_of_a_number(-24) != ((Number)(new Object[]{})).intValue()) {
                                                  ^
 2 errors

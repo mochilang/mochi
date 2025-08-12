@@ -1,59 +1,59 @@
 public class Main {
 
-    static int[] totient(int n) {
+    static long[] totient(long n) {
         boolean[] is_prime = ((boolean[])(new boolean[]{}));
-        int[] totients = ((int[])(new int[]{}));
-        int[] primes = ((int[])(new int[]{}));
-        int i = 0;
-        while (i <= n) {
+        long[] totients_1 = ((long[])(new long[]{}));
+        long[] primes_1 = ((long[])(new long[]{}));
+        long i_1 = 0;
+        while (i_1 <= n) {
             is_prime = ((boolean[])(appendBool(is_prime, true)));
-            totients = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(totients), java.util.stream.IntStream.of(i - 1)).toArray()));
-            i = i + 1;
+            totients_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(totients_1), java.util.stream.LongStream.of(i_1 - 1)).toArray()));
+            i_1 = i_1 + 1;
         }
-        i = 2;
-        while (i <= n) {
-            if (((Boolean)(is_prime[i]))) {
-                primes = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(primes), java.util.stream.IntStream.of(i)).toArray()));
+        i_1 = 2;
+        while (i_1 <= n) {
+            if (((Boolean)(is_prime[(int)(i_1)]))) {
+                primes_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(primes_1), java.util.stream.LongStream.of(i_1)).toArray()));
             }
-            int j = 0;
-            while (j < primes.length) {
-                int p = primes[j];
-                if (i * p >= n) {
+            long j_1 = 0;
+            while (j_1 < primes_1.length) {
+                long p_1 = primes_1[(int)(j_1)];
+                if (i_1 * p_1 >= n) {
                     break;
                 }
-is_prime[i * p] = false;
-                if (Math.floorMod(i, p) == 0) {
-totients[i * p] = totients[i] * p;
+is_prime[(int)(i_1 * p_1)] = false;
+                if (Math.floorMod(i_1, p_1) == 0) {
+totients_1[(int)(i_1 * p_1)] = totients_1[(int)(i_1)] * p_1;
                     break;
                 }
-totients[i * p] = totients[i] * (p - 1);
-                j = j + 1;
+totients_1[(int)(i_1 * p_1)] = totients_1[(int)(i_1)] * (p_1 - 1);
+                j_1 = j_1 + 1;
             }
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
-        return totients;
+        return totients_1;
     }
 
     static void test_totient() {
-        int[] expected = ((int[])(new int[]{-1, 0, 1, 2, 2, 4, 2, 6, 4, 6, 9}));
-        int[] res = ((int[])(totient(10)));
-        int idx = 0;
-        while (idx < expected.length) {
-            if (res[idx] != expected[idx]) {
-                throw new RuntimeException(String.valueOf("totient mismatch at " + _p(idx)));
+        long[] expected = ((long[])(new long[]{-1, 0, 1, 2, 2, 4, 2, 6, 4, 6, 9}));
+        long[] res_1 = ((long[])(totient(10)));
+        long idx_1 = 0;
+        while (idx_1 < expected.length) {
+            if (res_1[(int)(idx_1)] != expected[(int)(idx_1)]) {
+                throw new RuntimeException(String.valueOf("totient mismatch at " + _p(idx_1)));
             }
-            idx = idx + 1;
+            idx_1 = idx_1 + 1;
         }
     }
 
     static void main() {
         test_totient();
-        int n = 10;
-        int[] res_1 = ((int[])(totient(n)));
-        int i_1 = 1;
-        while (i_1 < n) {
-            System.out.println(_p(i_1) + " has " + _p(_geti(res_1, i_1)) + " relative primes.");
-            i_1 = i_1 + 1;
+        long n_1 = 10;
+        long[] res_3 = ((long[])(totient(n_1)));
+        long i_3 = 1;
+        while (i_3 < n_1) {
+            System.out.println(_p(i_3) + " has " + _p(_geti(res_3, ((Number)(i_3)).intValue())) + " relative primes.");
+            i_3 = i_3 + 1;
         }
     }
     public static void main(String[] args) {
@@ -113,10 +113,15 @@ totients[i * p] = totients[i] * (p - 1);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
     }
 
-    static Integer _geti(int[] a, int i) {
+    static Long _geti(long[] a, int i) {
         return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }

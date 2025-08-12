@@ -1,30 +1,30 @@
 public class Main {
 
-    static int pow2(int p) {
-        int result = 1;
-        int i = 0;
-        while (i < p) {
+    static long pow2(long p) {
+        long result = 1;
+        long i_1 = 0;
+        while (i_1 < p) {
             result = result * 2;
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
         return result;
     }
 
-    static boolean lucas_lehmer_test(int p) {
+    static boolean lucas_lehmer_test(long p) {
         if (p < 2) {
             throw new RuntimeException(String.valueOf("p should not be less than 2!"));
         }
         if (p == 2) {
             return true;
         }
-        int s = 4;
-        int m = pow2(p) - 1;
-        int i_1 = 0;
-        while (i_1 < p - 2) {
-            s = Math.floorMod(((s * s) - 2), m);
-            i_1 = i_1 + 1;
+        long s_1 = 4;
+        long m_1 = pow2(p) - 1;
+        long i_3 = 0;
+        while (i_3 < p - 2) {
+            s_1 = Math.floorMod(((s_1 * s_1) - 2), m_1);
+            i_3 = i_3 + 1;
         }
-        return s == 0;
+        return s_1 == 0;
     }
 
     static void main() {
@@ -81,6 +81,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

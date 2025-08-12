@@ -1,6 +1,6 @@
 public class Main {
 
-    static int recursive_lucas_number(int n) {
+    static long recursive_lucas_number(long n) {
         if (n == 0) {
             return 2;
         }
@@ -10,15 +10,15 @@ public class Main {
         return recursive_lucas_number(n - 1) + recursive_lucas_number(n - 2);
     }
 
-    static int dynamic_lucas_number(int n) {
-        int a = 2;
-        int b = 1;
-        int i = 0;
-        while (i < n) {
-            int next = a + b;
-            a = b;
-            b = next;
-            i = i + 1;
+    static long dynamic_lucas_number(long n) {
+        long a = 2;
+        long b_1 = 1;
+        long i_1 = 0;
+        while (i_1 < n) {
+            long next_1 = a + b_1;
+            a = b_1;
+            b_1 = next_1;
+            i_1 = i_1 + 1;
         }
         return a;
     }
@@ -79,6 +79,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

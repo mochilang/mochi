@@ -1,7 +1,7 @@
 public class Main {
 
-    static int ceil_float(double x) {
-        int i = ((Number)(x)).intValue();
+    static long ceil_float(double x) {
+        long i = ((Number)(x)).intValue();
         if (x > (((Number)(i)).doubleValue())) {
             return i + 1;
         }
@@ -10,31 +10,31 @@ public class Main {
 
     static double exp_approx(double x) {
         double term = 1.0;
-        double sum = 1.0;
-        int n = 1;
-        while (n < 20) {
-            term = term * x / (((Number)(n)).doubleValue());
-            sum = sum + term;
-            n = n + 1;
+        double sum_1 = 1.0;
+        long n_1 = 1;
+        while (n_1 < 20) {
+            term = term * x / (((Number)(n_1)).doubleValue());
+            sum_1 = sum_1 + term;
+            n_1 = n_1 + 1;
         }
-        return sum;
+        return sum_1;
     }
 
     static double[] euler_modified(java.util.function.BiFunction<Double,Double,Double> ode_func, double y0, double x0, double step, double x_end) {
-        int n_1 = ceil_float((x_end - x0) / step);
-        double[] y = ((double[])(new double[]{y0}));
-        double x = x0;
-        int k = 0;
-        while (k < n_1) {
-            double y_predict = y[k] + step * ode_func.apply(x, y[k]);
-            double slope1 = ode_func.apply(x, y[k]);
-            double slope2 = ode_func.apply(x + step, y_predict);
-            double y_next = y[k] + (step / 2.0) * (slope1 + slope2);
-            y = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(y), java.util.stream.DoubleStream.of(y_next)).toArray()));
-            x = x + step;
-            k = k + 1;
+        long n_2 = ceil_float((x_end - x0) / step);
+        double[] y_1 = ((double[])(new double[]{y0}));
+        double x_1 = x0;
+        long k_1 = 0;
+        while (k_1 < n_2) {
+            double y_predict_1 = y_1[(int)(k_1)] + step * ode_func.apply(x_1, y_1[(int)(k_1)]);
+            double slope1_1 = ode_func.apply(x_1, y_1[(int)(k_1)]);
+            double slope2_1 = ode_func.apply(x_1 + step, y_predict_1);
+            double y_next_1 = y_1[(int)(k_1)] + (step / 2.0) * (slope1_1 + slope2_1);
+            y_1 = ((double[])(appendDouble(y_1, y_next_1)));
+            x_1 = x_1 + step;
+            k_1 = k_1 + 1;
         }
-        return y;
+        return y_1;
     }
 
     static double f1(double x, double y) {
@@ -47,9 +47,9 @@ public class Main {
 
     static void main() {
         double[] y1 = ((double[])(euler_modified(Main::f1, 1.0, 0.0, 0.2, 1.0)));
-        System.out.println(y1[y1.length - 1]);
-        double[] y2 = ((double[])(euler_modified(Main::f2, 1.0, 0.0, 0.1, 0.3)));
-        System.out.println(y2[y2.length - 1]);
+        System.out.println(y1[(int)(y1.length - 1)]);
+        double[] y2_1 = ((double[])(euler_modified(Main::f2, 1.0, 0.0, 0.1, 0.3)));
+        System.out.println(y2_1[(int)(y2_1.length - 1)]);
     }
     public static void main(String[] args) {
         {
@@ -87,5 +87,11 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 }

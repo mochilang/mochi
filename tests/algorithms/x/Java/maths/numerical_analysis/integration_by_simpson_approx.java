@@ -1,48 +1,48 @@
 public class Main {
-    static int N_STEPS;
+    static long N_STEPS;
 
     static double floor(double x) {
-        int i = ((Number)(x)).intValue();
+        long i = ((Number)(x)).intValue();
         if ((((Number)(i)).doubleValue()) > x) {
             i = i - 1;
         }
         return ((Number)(i)).doubleValue();
     }
 
-    static double pow10(int n) {
+    static double pow10(long n) {
         double p = 1.0;
-        int i_1 = 0;
-        while (i_1 < n) {
+        long i_2 = 0;
+        while (i_2 < n) {
             p = p * 10.0;
-            i_1 = i_1 + 1;
+            i_2 = i_2 + 1;
         }
         return p;
     }
 
-    static double round(double x, int n) {
+    static double round(double x, long n) {
         double m = pow10(n);
         return floor(x * m + 0.5) / m;
     }
 
-    static double simpson_integration(java.util.function.Function<Double,Double> f, double a, double b, int precision) {
+    static double simpson_integration(java.util.function.Function<Double,Double> f, double a, double b, long precision) {
         if (precision <= 0) {
             throw new RuntimeException(String.valueOf("precision should be positive"));
         }
-        double h = (b - a) / (((Number)(N_STEPS)).doubleValue());
-        double result = f.apply(a) + f.apply(b);
-        int i_2 = 1;
-        while (i_2 < N_STEPS) {
-            double x = a + h * (((Number)(i_2)).doubleValue());
-            if (Math.floorMod(i_2, 2) == 1) {
-                result = result + 4.0 * f.apply(x);
+        double h_1 = (b - a) / (((Number)(N_STEPS)).doubleValue());
+        double result_1 = f.apply(a) + f.apply(b);
+        long i_4 = 1;
+        while (i_4 < N_STEPS) {
+            double x_1 = a + h_1 * (((Number)(i_4)).doubleValue());
+            if (Math.floorMod(i_4, 2) == 1) {
+                result_1 = result_1 + 4.0 * f.apply(x_1);
             } else {
-                result = result + 2.0 * f.apply(x);
+                result_1 = result_1 + 2.0 * f.apply(x_1);
             }
-            i_2 = i_2 + 1;
+            i_4 = i_4 + 1;
         }
-        result = result * (h / 3.0);
-        double r = round(result, precision);
-        return r;
+        result_1 = result_1 * (h_1 / 3.0);
+        double r_1 = round(result_1, precision);
+        return r_1;
     }
 
     static double square(double x) {
@@ -100,6 +100,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }
