@@ -74,7 +74,7 @@ fn main() {
     fn new_network() -> Network {
     return Network {w1: vec![vec![0.1, 0.2, 0.3, 0.4].clone(), vec![0.5, 0.6, 0.7, 0.8].clone(), vec![0.9, 1.0, 1.1, 1.2].clone()], w2: vec![vec![0.1, 0.2, 0.3].clone(), vec![0.4, 0.5, 0.6].clone(), vec![0.7, 0.8, 0.9].clone(), vec![1.0, 1.1, 1.2].clone()], w3: vec![vec![0.1].clone(), vec![0.2].clone(), vec![0.3].clone()]}
 };
-    fn feedforward(net: &Network, mut input: Vec<f64>) -> f64 {
+    fn feedforward(mut net: Network, mut input: Vec<f64>) -> f64 {
     let mut hidden1: Vec<f64> = vec![];
     let mut j: i64 = 0;
     while (j < 4) {
@@ -209,8 +209,8 @@ fn main() {
         iter = (iter + 1);
     }
 };
-    fn predict(net: &Network, mut input: Vec<f64>) -> i64 {
-    let out: f64 = feedforward(net, input.clone());
+    fn predict(mut net: Network, mut input: Vec<f64>) -> i64 {
+    let out: f64 = feedforward(net.clone(), input.clone());
     if (out > 0.6) {
         return 1
     }
@@ -221,7 +221,7 @@ fn main() {
     let outputs: Vec<f64> = vec![0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0];
     let mut net: Network = new_network();
     train(&mut net, inputs.clone(), outputs.clone(), 10);
-    let result: i64 = predict(&net, vec![1.0, 1.0, 1.0]);
+    let result: i64 = predict(net.clone(), vec![1.0, 1.0, 1.0]);
     println!("{}", result.to_string());
     return result
 };

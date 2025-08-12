@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-12 13:50 GMT+7
+Last updated: 2025-08-12 14:22 GMT+7
 
-## Algorithms Golden Test Checklist (646/1077)
+## Algorithms Golden Test Checklist (645/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -731,20 +731,20 @@ Last updated: 2025-08-12 13:50 GMT+7
 | 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 67µs | 1.9 MB |
 | 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 39µs | 2.2 MB |
 | 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 62µs | 2.3 MB |
-| 725 | neural_network/activation_functions/mish | ✓ | 66µs | 2.0 MB |
-| 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 61µs | 2.1 MB |
-| 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 48µs | 1.9 MB |
-| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 57µs | 2.1 MB |
+| 725 | neural_network/activation_functions/mish | ✓ | 157µs | 2.1 MB |
+| 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 107µs | 2.3 MB |
+| 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 156µs | 1.8 MB |
+| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 92µs | 1.8 MB |
 | 729 | neural_network/activation_functions/softplus | error |  |  |
-| 730 | neural_network/activation_functions/squareplus | ✓ | 89µs | 2.1 MB |
-| 731 | neural_network/activation_functions/swish | ✓ | 62µs | 2.0 MB |
-| 732 | neural_network/back_propagation_neural_network | ✓ | 570.085ms | 2.2 MB |
-| 733 | neural_network/convolution_neural_network | ✓ | 642µs | 2.1 MB |
-| 734 | neural_network/input_data | ✓ | 140µs | 2.2 MB |
-| 735 | neural_network/simple_neural_network | ✓ | 98.423ms | 2.2 MB |
-| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 819µs | 2.3 MB |
-| 737 | other/activity_selection | ✓ | 42µs | 2.0 MB |
-| 738 | other/alternative_list_arrange | ✓ | 110µs | 2.1 MB |
+| 730 | neural_network/activation_functions/squareplus | ✓ | 148µs | 2.0 MB |
+| 731 | neural_network/activation_functions/swish | ✓ | 72µs | 2.0 MB |
+| 732 | neural_network/back_propagation_neural_network | ✓ | 1.42231s | 2.4 MB |
+| 733 | neural_network/convolution_neural_network | ✓ | 1.483ms | 2.1 MB |
+| 734 | neural_network/input_data | ✓ | 249µs | 2.1 MB |
+| 735 | neural_network/simple_neural_network | ✓ | 184.125ms | 2.0 MB |
+| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 2.033ms | 2.1 MB |
+| 737 | other/activity_selection | ✓ | 88µs | 2.0 MB |
+| 738 | other/alternative_list_arrange | error | 110µs | 2.1 MB |
 | 739 | other/bankers_algorithm | ✓ | 144µs | 2.0 MB |
 | 740 | other/davis_putnam_logemann_loveland | ✓ | 141µs | 2.2 MB |
 | 741 | other/doomsday | ✓ | 40µs | 2.0 MB |

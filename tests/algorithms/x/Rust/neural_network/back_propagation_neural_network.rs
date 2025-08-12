@@ -330,7 +330,7 @@ fn main() {
         i = (i + 1);
     }
     let y: Vec<Vec<f64>> = vec![vec![0.8, 0.4].clone(), vec![0.4, 0.3].clone(), vec![0.34, 0.45].clone(), vec![0.67, 0.32].clone(), vec![0.88, 0.67].clone(), vec![0.78, 0.77].clone(), vec![0.55, 0.66].clone(), vec![0.55, 0.43].clone(), vec![0.54, 0.1].clone(), vec![0.1, 0.5].clone()];
-    return Data {x: x, y: y}
+    return Data {x: x.clone(), y: y.clone()}
 };
         fn mochi_main() {
     let data: Data = create_data();

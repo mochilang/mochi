@@ -288,7 +288,7 @@ fn main() {
     let b_out: Vec<f64> = vec![0.0, 0.0];
     return CNN {conv_kernels: conv_kernels.clone(), conv_bias: conv_bias.clone(), conv_step: conv_step, pool_size: pool_size, w_hidden: w_hidden.clone(), w_out: w_out.clone(), b_hidden: b_hidden.clone(), b_out: b_out.clone(), rate_weight: 0.2, rate_bias: 0.2}
 };
-        fn forward(cnn: &CNN, mut data: Vec<Vec<f64>>) -> Vec<f64> {
+        fn forward(mut cnn: CNN, mut data: Vec<Vec<f64>>) -> Vec<f64> {
     let mut maps: Vec<Vec<Vec<f64>>> = vec![];
     let mut i: i64 = 0;
     while (i < (cnn.conv_kernels.clone().len() as i64)) {
@@ -304,7 +304,7 @@ fn main() {
     let out: Vec<f64> = vec_map_sig(out_net.clone());
     return out
 };
-        fn train(cnn: &CNN, mut samples: Vec<TrainSample>, mut epochs: i64) -> CNN {
+        fn train(mut cnn: CNN, mut samples: Vec<TrainSample>, mut epochs: i64) -> CNN {
     let mut w_out: Vec<Vec<f64>> = cnn.w_out.clone();
     let mut b_out: Vec<f64> = cnn.b_out.clone();
     let mut w_hidden: Vec<Vec<f64>> = cnn.w_hidden.clone();
@@ -370,9 +370,9 @@ fn main() {
     let cnn: CNN = new_cnn();
     let image: Vec<Vec<f64>> = vec![vec![1.0, 0.0, 1.0, 0.0].clone(), vec![0.0, 1.0, 0.0, 1.0].clone(), vec![1.0, 0.0, 1.0, 0.0].clone(), vec![0.0, 1.0, 0.0, 1.0].clone()];
     let sample: TrainSample = TrainSample {image: image.clone(), target: vec![1.0, 0.0]};
-    println!("{}", format!("{} {}", "Before training:", format!("{:?}", forward(&cnn, image.clone()))).trim_end());
-    let trained: CNN = train(&cnn, vec![sample.clone()], 50);
-    println!("{}", format!("{} {}", "After training:", format!("{:?}", forward(&trained, image.clone()))).trim_end());
+    println!("{}", format!("{} {}", "Before training:", format!("{:?}", forward(cnn.clone(), image.clone()))).trim_end());
+    let trained: CNN = train(cnn.clone(), vec![sample.clone()], 50);
+    println!("{}", format!("{} {}", "After training:", format!("{:?}", forward(trained.clone(), image.clone()))).trim_end());
 };
         mochi_main();
         let _end: i64 = _now();
