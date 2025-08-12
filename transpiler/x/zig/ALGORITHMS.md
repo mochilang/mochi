@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-12 12:29 +0700
+Last updated: 2025-08-12 13:41 +0700
 
-## Program Checklist (197/1077)
+## Program Checklist (207/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -696,18 +696,18 @@ Last updated: 2025-08-12 12:29 +0700
 | 687 | maths/test_factorial |   |  |  |
 | 688 | maths/test_prime_check |   |  |  |
 | 689 | maths/three_sum |   |  |  |
-| 690 | maths/trapezoidal_rule |   |  |  |
-| 691 | maths/triplet_sum |   |  |  |
-| 692 | maths/twin_prime |   |  |  |
-| 693 | maths/two_pointer |   |  |  |
-| 694 | maths/two_sum |   |  |  |
-| 695 | maths/volume |   |  |  |
-| 696 | maths/zellers_congruence |   |  |  |
-| 697 | matrix/binary_search_matrix |   |  |  |
-| 698 | matrix/count_islands_in_matrix |   |  |  |
+| 690 | maths/trapezoidal_rule | ✓ | 433µs | 512.0 KB |
+| 691 | maths/triplet_sum | ✓ | 721µs | 512.0 KB |
+| 692 | maths/twin_prime | ✓ | 272µs | 256.0 KB |
+| 693 | maths/two_pointer | ✓ | 415µs | 384.0 KB |
+| 694 | maths/two_sum | ✓ | 386µs | 384.0 KB |
+| 695 | maths/volume | ✓ | 1.051ms | 384.0 KB |
+| 696 | maths/zellers_congruence | ✓ | 587µs | 384.0 KB |
+| 697 | matrix/binary_search_matrix | ✓ | 348µs | 384.0 KB |
+| 698 | matrix/count_islands_in_matrix | ✓ | 638µs | 384.0 KB |
 | 699 | matrix/count_negative_numbers_in_sorted_matrix |   |  |  |
 | 700 | matrix/count_paths | ✓ | 819µs | 384.0 KB |
-| 701 | matrix/cramers_rule_2x2 |   |  |  |
+| 701 | matrix/cramers_rule_2x2 | ✓ | 379µs | 384.0 KB |
 | 702 | matrix/inverse_of_matrix |   |  |  |
 | 703 | matrix/largest_square_area_in_matrix |   |  |  |
 | 704 | matrix/matrix_based_game |   |  |  |
