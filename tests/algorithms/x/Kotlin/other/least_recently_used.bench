@@ -1,0 +1,2 @@
+LRUCache(4) => [5, 4, 'A', 3]
+{"duration_us":27128, "memory_bytes":128912, "name":"main"}

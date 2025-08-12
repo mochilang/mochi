@@ -1,0 +1,7 @@
+1
+None
+1
+None
+4
+CacheInfo(hits=3, misses=2, capacity=2, current_size=2)
+{"duration_us":26350, "memory_bytes":126336, "name":"main"}

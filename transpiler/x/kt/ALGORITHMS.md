@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-12 08:30 GMT+7
+Last updated: 2025-08-12 09:36 GMT+7
 
-## Algorithms Golden Test Checklist (345/1077)
+## Algorithms Golden Test Checklist (384/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 30.54ms | 124.45KiB |
@@ -706,56 +706,56 @@ Last updated: 2025-08-12 08:30 GMT+7
 | 697 | matrix/binary_search_matrix |   |  |  |
 | 698 | matrix/count_islands_in_matrix |   |  |  |
 | 699 | matrix/count_negative_numbers_in_sorted_matrix |   |  |  |
-| 700 | matrix/count_paths |   |  |  |
-| 701 | matrix/cramers_rule_2x2 |   |  |  |
-| 702 | matrix/inverse_of_matrix |   |  |  |
-| 703 | matrix/largest_square_area_in_matrix |   |  |  |
-| 704 | matrix/matrix_based_game |   |  |  |
-| 705 | matrix/matrix_class |   |  |  |
-| 706 | matrix/matrix_equalization |   |  |  |
-| 707 | matrix/matrix_multiplication_recursion |   |  |  |
-| 708 | matrix/matrix_operation |   |  |  |
-| 709 | matrix/max_area_of_island |   |  |  |
-| 710 | matrix/median_matrix |   |  |  |
-| 711 | matrix/nth_fibonacci_using_matrix_exponentiation |   |  |  |
-| 712 | matrix/pascal_triangle |   |  |  |
-| 713 | matrix/rotate_matrix |   |  |  |
-| 714 | matrix/searching_in_sorted_matrix |   |  |  |
-| 715 | matrix/sherman_morrison |   |  |  |
-| 716 | matrix/spiral_print |   |  |  |
-| 717 | matrix/tests/test_matrix_operation |   |  |  |
-| 718 | matrix/validate_sudoku_board |   |  |  |
-| 719 | networking_flow/ford_fulkerson |   |  |  |
-| 720 | networking_flow/minimum_cut |   |  |  |
-| 721 | neural_network/activation_functions/binary_step |   |  |  |
-| 722 | neural_network/activation_functions/exponential_linear_unit |   |  |  |
-| 723 | neural_network/activation_functions/gaussian_error_linear_unit |   |  |  |
-| 724 | neural_network/activation_functions/leaky_rectified_linear_unit |   |  |  |
-| 725 | neural_network/activation_functions/mish |   |  |  |
-| 726 | neural_network/activation_functions/rectified_linear_unit |   |  |  |
-| 727 | neural_network/activation_functions/scaled_exponential_linear_unit |   |  |  |
-| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent |   |  |  |
-| 729 | neural_network/activation_functions/softplus |   |  |  |
-| 730 | neural_network/activation_functions/squareplus |   |  |  |
-| 731 | neural_network/activation_functions/swish |   |  |  |
-| 732 | neural_network/back_propagation_neural_network |   |  |  |
-| 733 | neural_network/convolution_neural_network |   |  |  |
-| 734 | neural_network/input_data |   |  |  |
-| 735 | neural_network/simple_neural_network |   |  |  |
-| 736 | neural_network/two_hidden_layers_neural_network |   |  |  |
-| 737 | other/activity_selection |   |  |  |
-| 738 | other/alternative_list_arrange |   |  |  |
-| 739 | other/bankers_algorithm |   |  |  |
-| 740 | other/davis_putnam_logemann_loveland |   |  |  |
-| 741 | other/doomsday |   |  |  |
-| 742 | other/fischer_yates_shuffle |   |  |  |
-| 743 | other/gauss_easter |   |  |  |
-| 744 | other/greedy |   |  |  |
-| 745 | other/guess_the_number_search |   |  |  |
-| 746 | other/h_index |   |  |  |
-| 747 | other/least_recently_used |   |  |  |
-| 748 | other/lfu_cache |   |  |  |
-| 749 | other/linear_congruential_generator |   |  |  |
+| 700 | matrix/count_paths | ✓ | 27.37ms | 123.02KiB |
+| 701 | matrix/cramers_rule_2x2 | ✓ | 27.76ms | 113.73KiB |
+| 702 | matrix/inverse_of_matrix | ✓ | 10.93ms | 122.86KiB |
+| 703 | matrix/largest_square_area_in_matrix | ✓ | 18.56ms | 123.13KiB |
+| 704 | matrix/matrix_based_game | error |  |  |
+| 705 | matrix/matrix_class | ✓ | 39.18ms | 112.91KiB |
+| 706 | matrix/matrix_equalization | error |  |  |
+| 707 | matrix/matrix_multiplication_recursion | ✓ | 12.32ms | 131.98KiB |
+| 708 | matrix/matrix_operation | ✓ | 34.04ms | 112.63KiB |
+| 709 | matrix/max_area_of_island | ✓ | 9.80ms | 133.16KiB |
+| 710 | matrix/median_matrix | ✓ | 17.67ms | 132.73KiB |
+| 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ | 40.01ms | 31.46KiB |
+| 712 | matrix/pascal_triangle | ✓ | 42.17ms | 115.48KiB |
+| 713 | matrix/rotate_matrix | ✓ | 16.42ms | 122.84KiB |
+| 714 | matrix/searching_in_sorted_matrix | ✓ | 40.75ms | 105.02KiB |
+| 715 | matrix/sherman_morrison | ✓ | 45.59ms | 112.84KiB |
+| 716 | matrix/spiral_print | ✓ | 31.40ms | 114.20KiB |
+| 717 | matrix/tests/test_matrix_operation | ✓ | 95.18ms | 113.27KiB |
+| 718 | matrix/validate_sudoku_board | ✓ | 26.45ms | 132.62KiB |
+| 719 | networking_flow/ford_fulkerson | ✓ | 24.32ms | 132.37KiB |
+| 720 | networking_flow/minimum_cut | ✓ | 8.82ms | 134.08KiB |
+| 721 | neural_network/activation_functions/binary_step | ✓ | 27.65ms | 122.48KiB |
+| 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 29.82ms | 112.65KiB |
+| 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 19.51ms | 123.10KiB |
+| 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 15.63ms | 123.95KiB |
+| 725 | neural_network/activation_functions/mish | ✓ | 49.14ms | 112.77KiB |
+| 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 29.81ms | 112.72KiB |
+| 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 33.98ms | 112.65KiB |
+| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | error |  |  |
+| 729 | neural_network/activation_functions/softplus | error |  |  |
+| 730 | neural_network/activation_functions/squareplus | ✓ | 27.83ms | 112.77KiB |
+| 731 | neural_network/activation_functions/swish | ✓ | 37.20ms | 112.73KiB |
+| 732 | neural_network/back_propagation_neural_network | error |  |  |
+| 733 | neural_network/convolution_neural_network | error |  |  |
+| 734 | neural_network/input_data | error |  |  |
+| 735 | neural_network/simple_neural_network | ✓ | 161.52ms | 124.12KiB |
+| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 58.44ms | 122.64KiB |
+| 737 | other/activity_selection | ✓ | 11.88ms | 133.76KiB |
+| 738 | other/alternative_list_arrange | error |  |  |
+| 739 | other/bankers_algorithm | ✓ | 18.13ms | 131.50KiB |
+| 740 | other/davis_putnam_logemann_loveland | error |  |  |
+| 741 | other/doomsday | ✓ | 12.44ms | 125.28KiB |
+| 742 | other/fischer_yates_shuffle | ✓ | 13.08ms | 133.57KiB |
+| 743 | other/gauss_easter | error |  |  |
+| 744 | other/greedy | ✓ | 19.70ms | 110.47KiB |
+| 745 | other/guess_the_number_search | ✓ | 32.93ms | 122.91KiB |
+| 746 | other/h_index | ✓ | 30.44ms | 122.42KiB |
+| 747 | other/least_recently_used | ✓ | 27.13ms | 125.89KiB |
+| 748 | other/lfu_cache | ✓ | 26.35ms | 123.38KiB |
+| 749 | other/linear_congruential_generator | error |  |  |
 | 750 | other/lru_cache |   |  |  |
 | 751 | other/magicdiamondpattern |   |  |  |
 | 752 | other/majority_vote_algorithm |   |  |  |

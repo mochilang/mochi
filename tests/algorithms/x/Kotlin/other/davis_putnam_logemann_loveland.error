@@ -1,0 +1,14 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/algorithms/x/Kotlin/other/davis_putnam_logemann_loveland.kt:63:29: error: type mismatch: inferred type is Int? but Int was expected
+                value = 1 - value
+                            ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/davis_putnam_logemann_loveland.kt:65:13: error: type inference failed: Cannot infer type parameter V in inline operator fun <K, V> MutableMap<K, V>.set(key: K, value: V): Unit
+None of the following substitutions
+receiver: MutableMap<String, Int>  arguments: (String,Int)
+receiver: MutableMap<String, Int?>  arguments: (String,Int?)
+can be applied to
+receiver: MutableMap<String, Int>  arguments: (String,Int?)
+
+            (lits)[lit] = value
+            ^

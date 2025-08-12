@@ -1,0 +1,38 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/algorithms/x/Kotlin/other/gauss_easter.kt:39:38: error: type mismatch: inferred type is Int but Double was expected
+    var secular_moon_shift: Double = Math.floorMod((((15.0 - ((lunar_orbit_correction.toDouble()))) + ((leap_day_inhibits.toDouble()))) - leap_day_reinstall_number), 30.0)
+                                     ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/gauss_easter.kt:39:53: error: type mismatch: inferred type is Double but Int was expected
+    var secular_moon_shift: Double = Math.floorMod((((15.0 - ((lunar_orbit_correction.toDouble()))) + ((leap_day_inhibits.toDouble()))) - leap_day_reinstall_number), 30.0)
+                                                    ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/gauss_easter.kt:39:167: error: the floating-point literal does not conform to the expected type Int
+    var secular_moon_shift: Double = Math.floorMod((((15.0 - ((lunar_orbit_correction.toDouble()))) + ((leap_day_inhibits.toDouble()))) - leap_day_reinstall_number), 30.0)
+                                                                                                                                                                      ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/gauss_easter.kt:40:42: error: type mismatch: inferred type is Int but Double was expected
+    var century_starting_point: Double = Math.floorMod(((4.0 + ((leap_day_inhibits.toDouble()))) - leap_day_reinstall_number), 7.0)
+                                         ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/gauss_easter.kt:40:57: error: type mismatch: inferred type is Double but Int was expected
+    var century_starting_point: Double = Math.floorMod(((4.0 + ((leap_day_inhibits.toDouble()))) - leap_day_reinstall_number), 7.0)
+                                                        ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/gauss_easter.kt:40:128: error: the floating-point literal does not conform to the expected type Int
+    var century_starting_point: Double = Math.floorMod(((4.0 + ((leap_day_inhibits.toDouble()))) - leap_day_reinstall_number), 7.0)
+                                                                                                                               ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/gauss_easter.kt:41:31: error: type mismatch: inferred type is Int but Double was expected
+    var days_to_add: Double = Math.floorMod(((19.0 * ((metonic_cycle.toDouble()))) + secular_moon_shift), 30.0)
+                              ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/gauss_easter.kt:41:46: error: type mismatch: inferred type is Double but Int was expected
+    var days_to_add: Double = Math.floorMod(((19.0 * ((metonic_cycle.toDouble()))) + secular_moon_shift), 30.0)
+                                             ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/gauss_easter.kt:41:107: error: the floating-point literal does not conform to the expected type Int
+    var days_to_add: Double = Math.floorMod(((19.0 * ((metonic_cycle.toDouble()))) + secular_moon_shift), 30.0)
+                                                                                                          ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/gauss_easter.kt:42:43: error: type mismatch: inferred type is Int but Double was expected
+    var days_from_phm_to_sunday: Double = Math.floorMod(((((2.0 * ((julian_leap_year.toDouble()))) + (4.0 * ((non_leap_year.toDouble())))) + (6.0 * days_to_add)) + century_starting_point), 7.0)
+                                          ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/gauss_easter.kt:42:58: error: type mismatch: inferred type is Double but Int was expected
+    var days_from_phm_to_sunday: Double = Math.floorMod(((((2.0 * ((julian_leap_year.toDouble()))) + (4.0 * ((non_leap_year.toDouble())))) + (6.0 * days_to_add)) + century_starting_point), 7.0)
+                                                         ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/gauss_easter.kt:42:190: error: the floating-point literal does not conform to the expected type Int
+    var days_from_phm_to_sunday: Double = Math.floorMod(((((2.0 * ((julian_leap_year.toDouble()))) + (4.0 * ((non_leap_year.toDouble())))) + (6.0 * days_to_add)) + century_starting_point), 7.0)
+                                                                                                                                                                                             ^

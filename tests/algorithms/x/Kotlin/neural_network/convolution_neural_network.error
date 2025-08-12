@@ -1,0 +1,7 @@
+run: exit status 1
+Before training: [0.4950789572027328, 0.4852103276380401]
+Exception in thread "main" java.lang.ClassCastException: class java.util.ArrayList cannot be cast to class TrainSample (java.util.ArrayList is in module java.base of loader 'bootstrap'; TrainSample is in unnamed module of loader 'app')
+	at Convolution_neural_networkKt.train(convolution_neural_network.kt:267)
+	at Convolution_neural_networkKt.user_main(convolution_neural_network.kt:326)
+	at Convolution_neural_networkKt.main(convolution_neural_network.kt:335)
+	at Convolution_neural_networkKt.main(convolution_neural_network.kt)
