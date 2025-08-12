@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
 Completed programs: 946/1077
-Last updated: 2025-08-12 11:18 +0700
+Last updated: 2025-08-12 12:29 +0700
 
 Checklist:
 
@@ -786,7 +786,7 @@ Checklist:
 | 777 | physics/lorentz_transformation_four_vector | ✓ | 652.0µs | 3.75MB |
 | 778 | physics/malus_law | ✓ | 413.0µs | 3.78MB |
 | 779 | physics/mass_energy_equivalence | ✓ | 382.0µs | 3.82MB |
-| 780 | physics/mirror_formulae | ✓ | 477.0µs | 3.72MB |
+| 780 | physics/mirror_formulae | ✓ | 290.0µs | 3.73MB |
 | 781 | physics/n_body_simulation | ✓ | 140.0µs | 3.38MB |
 | 782 | physics/newtons_law_of_gravitation | ✓ | 295.0µs | 3.70MB |
 | 783 | physics/newtons_second_law_of_motion | ✓ | 316.0µs | 3.69MB |

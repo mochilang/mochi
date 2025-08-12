@@ -120,16 +120,15 @@ func safeName(n string) string {
 
 func emitIndex(w io.Writer, e Expr) {
 	t := exprType(e)
-	switch t {
-	case "int64_t", "size_t":
-		// already an integer type; emit as-is
-		e.emit(w)
-	default:
-		// ensure non-integer expressions are converted to size_t
+	// always cast to size_t unless already size_t to avoid signed/unsigned
+	// mismatches and to ensure consistent index expressions
+	if t != "size_t" {
 		io.WriteString(w, "static_cast<size_t>(")
 		e.emit(w)
 		io.WriteString(w, ")")
+		return
 	}
+	e.emit(w)
 }
 
 func isLiteralExpr(e Expr) bool {
