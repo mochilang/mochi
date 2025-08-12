@@ -1010,16 +1010,16 @@ type BenchStmt struct {
 }
 
 func (b *BenchStmt) emit(w io.Writer) {
-	io.WriteString(w, "  let mem_start = _mem () in\n")
-	io.WriteString(w, "  let start = _now () in\n")
+	io.WriteString(w, "  let bench_mem_start = _mem () in\n")
+	io.WriteString(w, "  let bench_start = _now () in\n")
 	for _, st := range b.Body {
 		st.emit(w)
 	}
-	io.WriteString(w, "  let finish = _now () in\n")
-	io.WriteString(w, "  let mem_end = _mem () in\n")
-	io.WriteString(w, "  let dur = (finish - start) / 1000 in\n")
-	io.WriteString(w, "  let mem_bytes = Stdlib.max 0 (mem_end - mem_start) in\n")
-	fmt.Fprintf(w, "  Printf.printf \"{\\n  \\\"duration_us\\\": %%d,\\n  \\\"memory_bytes\\\": %%d,\\n  \\\"name\\\": \\\"%%s\\\"\\n}\\n\" dur mem_bytes %q;\n", b.Name)
+	io.WriteString(w, "  let bench_finish = _now () in\n")
+	io.WriteString(w, "  let bench_mem_end = _mem () in\n")
+	io.WriteString(w, "  let bench_dur = (bench_finish - bench_start) / 1000 in\n")
+	io.WriteString(w, "  let bench_mem_bytes = Stdlib.max 0 (bench_mem_end - bench_mem_start) in\n")
+	fmt.Fprintf(w, "  Printf.printf \"{\\n  \\\"duration_us\\\": %%d,\\n  \\\"memory_bytes\\\": %%d,\\n  \\\"name\\\": \\\"%%s\\\"\\n}\\n\" bench_dur bench_mem_bytes %q;\n", b.Name)
 }
 
 // FunStmt represents a simple function declaration with no parameters.
@@ -2484,11 +2484,11 @@ func (c *CastExpr) emit(w io.Writer) {
 	switch c.Type {
 	case "str_to_int":
 		if s, ok := c.Expr.(*SubstringBuiltin); ok {
-			io.WriteString(w, "Char.code (String.get (")
+			io.WriteString(w, "((Char.code (String.get (")
 			s.Str.emit(w)
 			io.WriteString(w, ") ")
 			s.Start.emit(w)
-			io.WriteString(w, ")")
+			io.WriteString(w, ")) - 48)")
 		} else {
 			io.WriteString(w, "int_of_string (")
 			c.Expr.emit(w)
@@ -6164,6 +6164,16 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			return arg, "float", nil
 		}
 		return &CastExpr{Expr: arg, Type: castType}, "float", nil
+	}
+	if c.Func == "to_float" && len(c.Args) == 1 {
+		arg, typ, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if typ != "int" {
+			return nil, "", fmt.Errorf("to_float expects int")
+		}
+		return &CastExpr{Expr: arg, Type: "int_to_float"}, "float", nil
 	}
 	if (c.Func == "panic" || c.Func == "error") && len(c.Args) == 1 {
 		arg, typ, err := convertExpr(c.Args[0], env, vars)
