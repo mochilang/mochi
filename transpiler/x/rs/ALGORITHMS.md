@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-11 18:42 GMT+7
+Last updated: 2025-08-12 08:11 GMT+7
 
-## Algorithms Golden Test Checklist (465/1077)
+## Algorithms Golden Test Checklist (515/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -556,57 +556,57 @@ Last updated: 2025-08-11 18:42 GMT+7
 | 547 | maths/check_polygon | ✓ | 63µs | 2.2 MB |
 | 548 | maths/chinese_remainder_theorem | ✓ | 23µs | 2.0 MB |
 | 549 | maths/chudnovsky_algorithm | ✓ | 63µs | 2.0 MB |
-| 550 | maths/collatz_sequence |   |  |  |
-| 551 | maths/combinations |   |  |  |
-| 552 | maths/continued_fraction |   |  |  |
-| 553 | maths/decimal_isolate |   |  |  |
-| 554 | maths/decimal_to_fraction |   |  |  |
-| 555 | maths/dodecahedron |   |  |  |
-| 556 | maths/double_factorial |   |  |  |
-| 557 | maths/dual_number_automatic_differentiation |   |  |  |
-| 558 | maths/entropy |   |  |  |
-| 559 | maths/euclidean_distance |   |  |  |
-| 560 | maths/euler_method |   |  |  |
-| 561 | maths/euler_modified |   |  |  |
-| 562 | maths/eulers_totient |   |  |  |
-| 563 | maths/extended_euclidean_algorithm |   |  |  |
-| 564 | maths/factorial |   |  |  |
-| 565 | maths/factors |   |  |  |
-| 566 | maths/fast_inverse_sqrt |   |  |  |
-| 567 | maths/fermat_little_theorem |   |  |  |
-| 568 | maths/fibonacci |   |  |  |
-| 569 | maths/find_max |   |  |  |
-| 570 | maths/find_min |   |  |  |
-| 571 | maths/floor |   |  |  |
-| 572 | maths/gamma |   |  |  |
-| 573 | maths/gaussian |   |  |  |
-| 574 | maths/gcd_of_n_numbers |   |  |  |
-| 575 | maths/geometric_mean |   |  |  |
-| 576 | maths/germain_primes |   |  |  |
-| 577 | maths/greatest_common_divisor |   |  |  |
-| 578 | maths/hardy_ramanujanalgo |   |  |  |
-| 579 | maths/integer_square_root |   |  |  |
-| 580 | maths/interquartile_range |   |  |  |
-| 581 | maths/is_int_palindrome |   |  |  |
-| 582 | maths/is_ip_v4_address_valid |   |  |  |
-| 583 | maths/is_square_free |   |  |  |
-| 584 | maths/jaccard_similarity |   |  |  |
-| 585 | maths/joint_probability_distribution |   |  |  |
-| 586 | maths/josephus_problem |   |  |  |
-| 587 | maths/juggler_sequence |   |  |  |
-| 588 | maths/karatsuba |   |  |  |
-| 589 | maths/kth_lexicographic_permutation |   |  |  |
-| 590 | maths/largest_of_very_large_numbers |   |  |  |
-| 591 | maths/least_common_multiple |   |  |  |
-| 592 | maths/line_length |   |  |  |
-| 593 | maths/liouville_lambda |   |  |  |
-| 594 | maths/lucas_lehmer_primality_test |   |  |  |
-| 595 | maths/lucas_series |   |  |  |
-| 596 | maths/maclaurin_series |   |  |  |
-| 597 | maths/manhattan_distance |   |  |  |
-| 598 | maths/matrix_exponentiation |   |  |  |
-| 599 | maths/max_sum_sliding_window |   |  |  |
-| 600 | maths/minkowski_distance |   |  |  |
+| 550 | maths/collatz_sequence | ✓ | 53µs | 2.2 MB |
+| 551 | maths/combinations | ✓ | 36µs | 2.1 MB |
+| 552 | maths/continued_fraction | ✓ | 24µs | 1.9 MB |
+| 553 | maths/decimal_isolate | ✓ | 35µs | 2.0 MB |
+| 554 | maths/decimal_to_fraction | ✓ | 57µs | 2.2 MB |
+| 555 | maths/dodecahedron | ✓ | 37µs | 1.9 MB |
+| 556 | maths/double_factorial | ✓ | 53µs | 2.2 MB |
+| 557 | maths/dual_number_automatic_differentiation | ✓ | 73µs | 2.2 MB |
+| 558 | maths/entropy | ✓ | 12.566ms | 2.2 MB |
+| 559 | maths/euclidean_distance | ✓ | 41µs | 2.3 MB |
+| 560 | maths/euler_method | ✓ | 362µs | 2.1 MB |
+| 561 | maths/euler_modified | ✓ | 38µs | 2.0 MB |
+| 562 | maths/eulers_totient | ✓ | 53µs | 2.3 MB |
+| 563 | maths/extended_euclidean_algorithm | ✓ | 25µs | 2.0 MB |
+| 564 | maths/factorial | ✓ | 29µs | 1.9 MB |
+| 565 | maths/factors | ✓ | 25µs | 2.1 MB |
+| 566 | maths/fast_inverse_sqrt | ✓ | 49µs | 2.0 MB |
+| 567 | maths/fermat_little_theorem | ✓ | 28µs | 2.0 MB |
+| 568 | maths/fibonacci | ✓ | 107µs | 2.0 MB |
+| 569 | maths/find_max | ✓ | 106µs | 1.9 MB |
+| 570 | maths/find_min | ✓ | 32µs | 2.2 MB |
+| 571 | maths/floor | ✓ | 35µs | 2.0 MB |
+| 572 | maths/gamma | ✓ | 6.634ms | 2.0 MB |
+| 573 | maths/gaussian | ✓ | 37µs | 2.0 MB |
+| 574 | maths/gcd_of_n_numbers | ✓ | 36µs | 1.9 MB |
+| 575 | maths/geometric_mean | error |  |  |
+| 576 | maths/germain_primes | ✓ | 30µs | 2.0 MB |
+| 577 | maths/greatest_common_divisor | ✓ | 24µs | 2.1 MB |
+| 578 | maths/hardy_ramanujanalgo | ✓ | 32µs | 1.9 MB |
+| 579 | maths/integer_square_root | ✓ | 28µs | 2.0 MB |
+| 580 | maths/interquartile_range | ✓ | 62µs | 2.0 MB |
+| 581 | maths/is_int_palindrome | ✓ | 34µs | 2.1 MB |
+| 582 | maths/is_ip_v4_address_valid | ✓ | 89µs | 2.0 MB |
+| 583 | maths/is_square_free | ✓ | 20µs | 1.8 MB |
+| 584 | maths/jaccard_similarity | ✓ | 76µs | 2.1 MB |
+| 585 | maths/joint_probability_distribution | ✓ | 69µs | 2.3 MB |
+| 586 | maths/josephus_problem | ✓ | 172µs | 2.1 MB |
+| 587 | maths/juggler_sequence | ✓ | 37µs | 2.0 MB |
+| 588 | maths/karatsuba | ✓ | 41µs | 2.0 MB |
+| 589 | maths/kth_lexicographic_permutation | ✓ | 76µs | 2.1 MB |
+| 590 | maths/largest_of_very_large_numbers | ✓ | 28µs | 2.0 MB |
+| 591 | maths/least_common_multiple | ✓ | 20µs | 2.0 MB |
+| 592 | maths/line_length | ✓ | 92µs | 2.3 MB |
+| 593 | maths/liouville_lambda | ✓ | 27µs | 2.0 MB |
+| 594 | maths/lucas_lehmer_primality_test | ✓ | 41µs | 2.1 MB |
+| 595 | maths/lucas_series | ✓ | 77µs | 2.1 MB |
+| 596 | maths/maclaurin_series | ✓ | 36µs | 1.9 MB |
+| 597 | maths/manhattan_distance | ✓ | 20µs | 2.0 MB |
+| 598 | maths/matrix_exponentiation | ✓ | 76µs | 2.1 MB |
+| 599 | maths/max_sum_sliding_window | ✓ | 35µs | 2.0 MB |
+| 600 | maths/minkowski_distance | ✓ | 42µs | 2.1 MB |
 | 601 | maths/mobius_function |   |  |  |
 | 602 | maths/modular_division |   |  |  |
 | 603 | maths/monte_carlo |   |  |  |
