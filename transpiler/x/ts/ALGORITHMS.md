@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-12 03:16 UTC
+Last updated: 2025-08-12 04:52 UTC
 
 ## Algorithms Golden Test Checklist (1053/1077)
 | Index | Name | Status | Duration | Memory |
@@ -726,7 +726,7 @@ Last updated: 2025-08-12 03:16 UTC
 | 717 | matrix/tests/test_matrix_operation | ✓ | 571.223ms | 315.9 KB |
 | 718 | matrix/validate_sudoku_board | ✓ | 571.223ms | 80.8 KB |
 | 719 | networking_flow/ford_fulkerson | ✓ | 571.223ms | 78.5 KB |
-| 720 | networking_flow/minimum_cut | ✓ | 571.223ms | 856.9 KB |
+| 720 | networking_flow/minimum_cut | ✓ | 571.223ms | 636.4 KB |
 | 721 | neural_network/activation_functions/binary_step | ✓ | 571.223ms | 16.3 KB |
 | 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 571.223ms | 281.1 KB |
 | 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 571.223ms | 286.0 KB |
