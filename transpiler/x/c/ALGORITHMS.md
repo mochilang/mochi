@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (328/1077) - Last updated 2025-08-12 09:08 +0700:
+Checklist of programs that currently transpile and run (333/1077) - Last updated 2025-08-12 10:04 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -754,11 +754,11 @@ Checklist of programs that currently transpile and run (328/1077) - Last updated
 | 747 | other/least_recently_used |  |  |  |
 | 748 | other/lfu_cache |  |  |  |
 | 749 | other/linear_congruential_generator |  |  |  |
-| 750 | other/lru_cache |  |  |  |
-| 751 | other/magicdiamondpattern |  |  |  |
-| 752 | other/majority_vote_algorithm |  |  |  |
-| 753 | other/maximum_subsequence |  |  |  |
-| 754 | other/nested_brackets |  |  |  |
+| 750 | other/lru_cache | ✓ | 323us | 1.6 MB |
+| 751 | other/magicdiamondpattern | ✓ | 125us | 1.4 MB |
+| 752 | other/majority_vote_algorithm | ✓ | 252us | 1.6 MB |
+| 753 | other/maximum_subsequence | ✓ | 206us | 1.6 MB |
+| 754 | other/nested_brackets | ✓ | 391us | 1.6 MB |
 | 755 | other/number_container_system |  |  |  |
 | 756 | other/quine |  |  |  |
 | 757 | other/scoring_algorithm |  |  |  |
