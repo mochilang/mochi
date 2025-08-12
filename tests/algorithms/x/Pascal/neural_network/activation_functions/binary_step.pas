@@ -3,7 +3,6 @@ program Main;
 uses SysUtils;
 type RealArray = array of real;
 type IntArray = array of integer;
-type IntArrayArray = array of IntArray;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
 procedure init_now();
@@ -40,25 +39,15 @@ begin
   writeln(msg);
   halt(1);
 end;
-function list_int_to_str(xs: array of integer): string;
+procedure show_list(xs: array of integer);
 var i: integer;
 begin
-  Result := '[';
+  write('[');
   for i := 0 to High(xs) do begin
-    Result := Result + IntToStr(xs[i]);
-    if i < High(xs) then Result := Result + ' ';
+    write(xs[i]);
+    if i < High(xs) then write(' ');
   end;
-  Result := Result + ']';
-end;
-function list_list_int_to_str(xs: array of IntArray): string;
-var i: integer;
-begin
-  Result := '[';
-  for i := 0 to High(xs) do begin
-    Result := Result + list_int_to_str(xs[i]);
-    if i < High(xs) then Result := Result + ' ';
-  end;
-  Result := Result + ']';
+  write(']');
 end;
 var
   bench_start_0: integer;
