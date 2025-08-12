@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-12 16:08 GMT+7
+Last updated: 2025-08-12 16:24 GMT+7
 
 ## Algorithms Golden Test Checklist (1013/1077)
 | Index | Name | Status | Duration | Memory |
@@ -727,7 +727,7 @@ Last updated: 2025-08-12 16:08 GMT+7
 | 718 | matrix/validate_sudoku_board | ✓ | 2.0ms | 61.36KB |
 | 719 | networking_flow/ford_fulkerson | ✓ | 2.0ms | 28.61KB |
 | 720 | networking_flow/minimum_cut | ✓ | 1.0ms | 17.33KB |
-| 721 | neural_network/activation_functions/binary_step | ✓ | 2.0ms | 18.54KB |
+| 721 | neural_network/activation_functions/binary_step | ✓ | 1.0µs | 18.56KB |
 | 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 2.0ms | 17.62KB |
 | 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 2.0ms | 17.21KB |
 | 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 2.0ms | 15.91KB |
