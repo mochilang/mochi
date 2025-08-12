@@ -1816,26 +1816,34 @@ func isIntNode(n Node) bool {
 	case Symbol:
 		if transpileEnv != nil {
 			name := string(t)
+			// try the full name first
 			if typ, err := transpileEnv.GetVar(name); err == nil {
 				switch typ.(type) {
 				case types.IntType, types.BigIntType:
 					return true
 				}
-			} else {
-				if orig := originalVar(name); orig != name {
-					if typ, err := transpileEnv.GetVar(orig); err == nil {
-						switch typ.(type) {
-						case types.IntType, types.BigIntType:
-							return true
-						}
+			}
+			// if the variable was renamed, look up the original name
+			if orig := originalVar(name); orig != name {
+				if typ, err := transpileEnv.GetVar(orig); err == nil {
+					switch typ.(type) {
+					case types.IntType, types.BigIntType:
+						return true
 					}
 				}
-				if idx := strings.Index(name, "_"); idx >= 0 {
-					if typ, err := transpileEnv.GetVar(name[idx+1:]); err == nil {
-						switch typ.(type) {
-						case types.IntType, types.BigIntType:
-							return true
-						}
+				name = orig
+			}
+			// strip prefixes separated by underscores until a type is found
+			for {
+				idx := strings.Index(name, "_")
+				if idx < 0 {
+					break
+				}
+				name = name[idx+1:]
+				if typ, err := transpileEnv.GetVar(name); err == nil {
+					switch typ.(type) {
+					case types.IntType, types.BigIntType:
+						return true
 					}
 				}
 			}
@@ -2578,7 +2586,9 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 			if err != nil {
 				return nil, err
 			}
-			return &List{Elems: []Node{Symbol("int"), arg}}, nil
+			// int() in Mochi parses strings or numbers to integers.
+			// Use the helper toi which always parses via Integer/parseInt.
+			return &List{Elems: []Node{Symbol("toi"), arg}}, nil
 		case "parseIntStr":
 			switch len(c.Args) {
 			case 1:

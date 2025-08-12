@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-11 18:54 GMT+7
+Last updated: 2025-08-12 08:01 GMT+7
 
-## Algorithms Golden Test Checklist (657/1077)
+## Algorithms Golden Test Checklist (658/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 50.25ms | 19.66MB |
@@ -515,22 +515,22 @@ Last updated: 2025-08-11 18:54 GMT+7
 | 506 | machine_learning/gradient_descent | ✓ | 216.382ms | 22.99MB |
 | 507 | machine_learning/k_means_clust | ✓ | 72.645ms | 25.24MB |
 | 508 | machine_learning/k_nearest_neighbours | ✓ | 58.161ms | 22.39MB |
-| 509 | machine_learning/linear_discriminant_analysis | error | 137.579ms | 28.68MB |
+| 509 | machine_learning/linear_discriminant_analysis | error |  |  |
 | 510 | machine_learning/linear_regression | ✓ | 52.012ms | 24.19MB |
 | 511 | machine_learning/local_weighted_learning/local_weighted_learning | ✓ | 49.433ms | 28.11MB |
 | 512 | machine_learning/logistic_regression | ✓ | 38.39ms | 16.33MB |
-| 513 | machine_learning/loss_functions | error | 106.461ms | 38.02MB |
+| 513 | machine_learning/loss_functions | error |  |  |
 | 514 | machine_learning/lstm/lstm_prediction | ✓ | 46.85ms | 47.87MB |
 | 515 | machine_learning/mfcc | error |  |  |
-| 516 | machine_learning/multilayer_perceptron_classifier | error | 2.333668s | 25.93MB |
+| 516 | machine_learning/multilayer_perceptron_classifier | error |  |  |
 | 517 | machine_learning/polynomial_regression | error |  |  |
-| 518 | machine_learning/principle_component_analysis | error | 80.71ms | 28.12MB |
+| 518 | machine_learning/principle_component_analysis | error |  |  |
 | 519 | machine_learning/scoring_functions | ✓ | 53.962ms | 25.29MB |
 | 520 | machine_learning/self_organizing_map | ✓ | 52.261ms | 22.37MB |
 | 521 | machine_learning/sequential_minimum_optimization | error |  |  |
 | 522 | machine_learning/similarity_search | ✓ | 66.53ms | 22.39MB |
 | 523 | machine_learning/support_vector_machines | ✓ | 75.962ms | 49.46MB |
-| 524 | machine_learning/word_frequency_functions | error | 113.311ms | 26.43MB |
+| 524 | machine_learning/word_frequency_functions | error |  |  |
 | 525 | machine_learning/xgboost_classifier | error |  |  |
 | 526 | machine_learning/xgboost_regressor | ✓ | 74.938ms | 23.85MB |
 | 527 | maths/abs | ✓ | 58.294ms | 22.51MB |
@@ -560,7 +560,7 @@ Last updated: 2025-08-11 18:54 GMT+7
 | 551 | maths/combinations | ✓ | 66.419ms | 19.54MB |
 | 552 | maths/continued_fraction | ✓ | 59.623ms | 20.23MB |
 | 553 | maths/decimal_isolate | ✓ | 77.909ms | 20.74MB |
-| 554 | maths/decimal_to_fraction | error |  |  |
+| 554 | maths/decimal_to_fraction | ✓ | 46.546ms | 24.97MB |
 | 555 | maths/dodecahedron | error |  |  |
 | 556 | maths/double_factorial | ✓ | 62.323ms | 20.16MB |
 | 557 | maths/dual_number_automatic_differentiation | ✓ | 92.763ms | 27.05MB |
