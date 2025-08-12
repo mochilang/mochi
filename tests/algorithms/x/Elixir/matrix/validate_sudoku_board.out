@@ -1,20 +1,20 @@
 warning: variable "boxes" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 70 │                   boxes = List.replace_at(boxes, box, (Enum.at(boxes, box) ++ [value]))
+ 70 │                   boxes = List.replace_at(boxes, box, (Enum.at(boxes, box, []) ++ [value]))
     │                   ~
     │
     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/validate_sudoku_board.exs:70:19: Main.is_valid_sudoku_board/1
 
     warning: variable "cols" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 69 │                   cols = List.replace_at(cols, c, (Enum.at(cols, c) ++ [value]))
+ 69 │                   cols = List.replace_at(cols, c, (Enum.at(cols, c, []) ++ [value]))
     │                   ~
     │
     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/validate_sudoku_board.exs:69:19: Main.is_valid_sudoku_board/1
 
     warning: variable "rows" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
     │
- 68 │                   rows = List.replace_at(rows, r, (Enum.at(rows, r) ++ [value]))
+ 68 │                   rows = List.replace_at(rows, r, (Enum.at(rows, r, []) ++ [value]))
     │                   ~
     │
     └─ /workspace/mochi/tests/algorithms/x/Elixir/matrix/validate_sudoku_board.exs:68:19: Main.is_valid_sudoku_board/1
