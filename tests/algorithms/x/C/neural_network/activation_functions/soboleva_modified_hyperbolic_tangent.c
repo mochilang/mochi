@@ -6,16 +6,16 @@
 #include <malloc.h>
 #include <math.h>
 
-size_t binary_step_len;
+size_t soboleva_modified_hyperbolic_tangent_len;
 
-static char* str_list_int(const long long *arr, size_t len) {
+static char* str_list_double(const double *arr, size_t len) {
     size_t cap = len * 32 + 2;
     char *buf = malloc(cap);
     size_t pos = 0;
     buf[pos++] = '[';
     for (size_t i = 0; i < len; i++) {
-        char tmp[32];
-        snprintf(tmp, sizeof(tmp), "%lld", arr[i]);
+        char tmp[64];
+        snprintf(tmp, sizeof(tmp), "%g", arr[i]);
         size_t n = strlen(tmp);
         if (pos + n + 2 >= cap) { cap = cap * 2 + n + 2; buf = realloc(buf, cap); }
         memcpy(buf + pos, tmp, n);
@@ -71,44 +71,53 @@ static void panic(const char *msg) {
     exit(1);
 }
 
-static long long* list_append_long_long(long long *arr, size_t *len, long long val) {
-    arr = realloc(arr, (*len + 1) * sizeof(long long));
-    arr[*len] = val;
-    (*len)++;
-    return arr;
+static double to_float(long long x) {
+    return (double)x;
 }
 
-long long * binary_step(double * vector, size_t vector_len);
+double user_exp(double x);
+double * soboleva_modified_hyperbolic_tangent(double * vector, size_t vector_len, double a_value, double b_value, double c_value, double d_value);
 void user_main();
 int main(void);
 
-long long * binary_step(double * vector, size_t vector_len) {
-    long long *out = NULL;
-    size_t out_len = 0;
+double user_exp(double x) {
+    double term = 1.0;
+    double sum = 1.0;
+    long long n = 1LL;
+    while (n < 20LL) {
+        term = (term * x) / to_float(n);
+        sum = sum + term;
+        n = n + 1LL;
+    }
+    return sum;
+}
+
+double * soboleva_modified_hyperbolic_tangent(double * vector, size_t vector_len, double a_value, double b_value, double c_value, double d_value) {
+    double *result = NULL;
+    size_t result_len = 0;
     long long i = 0LL;
     while (i < vector_len) {
-        if (vector[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? vector_len + _mochi_idx : _mochi_idx;})] >= 0.0) {
-            out = list_append_long_long(out, &out_len, 1LL);
-        } else {
-            out = list_append_long_long(out, &out_len, 0LL);
-        }
+        double x = vector[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? vector_len + _mochi_idx : _mochi_idx;})];
+        double numerator = exp(a_value * x) - exp(-(b_value) * x);
+        double denominator = exp(c_value * x) + exp(-(d_value) * x);
+        result = list_append_double(result, &result_len, numerator / denominator);
         i = i + 1LL;
     }
-    return binary_step_len = out_len, out;
+    return soboleva_modified_hyperbolic_tangent_len = result_len, result;
 }
 
 void user_main() {
     double *vector = NULL;
     size_t vector_len = 0;
-    vector = list_append_double(vector, &vector_len, -1.2);
-    vector = list_append_double(vector, &vector_len, 0.0);
-    vector = list_append_double(vector, &vector_len, 2.0);
-    vector = list_append_double(vector, &vector_len, 1.45);
-    vector = list_append_double(vector, &vector_len, -3.7);
-    vector = list_append_double(vector, &vector_len, 0.3);
-    long long *result = binary_step(vector, vector_len);
-    size_t result_len = binary_step_len;
-    puts(str_list_int(result, result_len));
+    vector = list_append_double(vector, &vector_len, 5.4);
+    vector = list_append_double(vector, &vector_len, -2.4);
+    vector = list_append_double(vector, &vector_len, 6.3);
+    vector = list_append_double(vector, &vector_len, -5.23);
+    vector = list_append_double(vector, &vector_len, 3.27);
+    vector = list_append_double(vector, &vector_len, 0.56);
+    double *res = soboleva_modified_hyperbolic_tangent(vector, vector_len, 0.2, 0.4, 0.6, 0.8);
+    size_t res_len = soboleva_modified_hyperbolic_tangent_len;
+    puts(str_list_double(res, res_len));
 }
 
 int main(void) {

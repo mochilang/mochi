@@ -6,16 +6,22 @@
 #include <malloc.h>
 #include <math.h>
 
-size_t binary_step_len;
+size_t leaky_rectified_linear_unit_len;
 
-static char* str_list_int(const long long *arr, size_t len) {
+static char* str_int(long long v) {
+    char buf[32];
+    snprintf(buf, sizeof(buf), "%lld", v);
+    return strdup(buf);
+}
+
+static char* str_list_double(const double *arr, size_t len) {
     size_t cap = len * 32 + 2;
     char *buf = malloc(cap);
     size_t pos = 0;
     buf[pos++] = '[';
     for (size_t i = 0; i < len; i++) {
-        char tmp[32];
-        snprintf(tmp, sizeof(tmp), "%lld", arr[i]);
+        char tmp[64];
+        snprintf(tmp, sizeof(tmp), "%g", arr[i]);
         size_t n = strlen(tmp);
         if (pos + n + 2 >= cap) { cap = cap * 2 + n + 2; buf = realloc(buf, cap); }
         memcpy(buf + pos, tmp, n);
@@ -71,50 +77,47 @@ static void panic(const char *msg) {
     exit(1);
 }
 
-static long long* list_append_long_long(long long *arr, size_t *len, long long val) {
-    arr = realloc(arr, (*len + 1) * sizeof(long long));
-    arr[*len] = val;
-    (*len)++;
-    return arr;
-}
+double *vector1 = NULL;
+size_t vector1_len = 0;
+double *result1 = NULL;
+size_t result1_len = 0;
+double *vector2 = NULL;
+size_t vector2_len = 0;
+double *result2 = NULL;
+size_t result2_len = 0;
 
-long long * binary_step(double * vector, size_t vector_len);
-void user_main();
+double * leaky_rectified_linear_unit(double * vector, size_t vector_len, double alpha);
 int main(void);
 
-long long * binary_step(double * vector, size_t vector_len) {
-    long long *out = NULL;
-    size_t out_len = 0;
+double * leaky_rectified_linear_unit(double * vector, size_t vector_len, double alpha) {
+    double *result = NULL;
+    size_t result_len = 0;
     long long i = 0LL;
     while (i < vector_len) {
-        if (vector[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? vector_len + _mochi_idx : _mochi_idx;})] >= 0.0) {
-            out = list_append_long_long(out, &out_len, 1LL);
+        double x = vector[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? vector_len + _mochi_idx : _mochi_idx;})];
+        if (x > 0.0) {
+            result = list_append_double(result, &result_len, x);
         } else {
-            out = list_append_long_long(out, &out_len, 0LL);
+            result = list_append_double(result, &result_len, alpha * x);
         }
         i = i + 1LL;
     }
-    return binary_step_len = out_len, out;
-}
-
-void user_main() {
-    double *vector = NULL;
-    size_t vector_len = 0;
-    vector = list_append_double(vector, &vector_len, -1.2);
-    vector = list_append_double(vector, &vector_len, 0.0);
-    vector = list_append_double(vector, &vector_len, 2.0);
-    vector = list_append_double(vector, &vector_len, 1.45);
-    vector = list_append_double(vector, &vector_len, -3.7);
-    vector = list_append_double(vector, &vector_len, 0.3);
-    long long *result = binary_step(vector, vector_len);
-    size_t result_len = binary_step_len;
-    puts(str_list_int(result, result_len));
+    return leaky_rectified_linear_unit_len = result_len, result;
 }
 
 int main(void) {
     {
         long long __start = _now();
-        user_main();
+        vector1 = ({double *tmp = malloc(4 * sizeof(double)); tmp[0] = 2.3; tmp[1] = 0.6; tmp[2] = -2.0; tmp[3] = -3.8; tmp;});
+        vector1_len = 4;
+        result1 = leaky_rectified_linear_unit(vector1, vector1_len, 0.3);
+        result1_len = leaky_rectified_linear_unit_len;
+        puts(str_list_double(result1, result1_len));
+        vector2 = ({double *tmp = malloc(4 * sizeof(double)); tmp[0] = -9.2; tmp[1] = -0.3; tmp[2] = 0.45; tmp[3] = -4.56; tmp;});
+        vector2_len = 4;
+        result2 = leaky_rectified_linear_unit(vector2, vector2_len, 0.067);
+        result2_len = leaky_rectified_linear_unit_len;
+        puts(str_list_double(result2, result2_len));
         long long __end = _now();
         long long __dur_us = (__end - __start) / 1000;
         long long __mem_bytes = _mem();

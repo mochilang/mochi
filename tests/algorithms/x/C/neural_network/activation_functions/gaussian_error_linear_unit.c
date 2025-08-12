@@ -6,16 +6,17 @@
 #include <malloc.h>
 #include <math.h>
 
-size_t binary_step_len;
+size_t sigmoid_len;
+size_t gaussian_error_linear_unit_len;
 
-static char* str_list_int(const long long *arr, size_t len) {
+static char* str_list_double(const double *arr, size_t len) {
     size_t cap = len * 32 + 2;
     char *buf = malloc(cap);
     size_t pos = 0;
     buf[pos++] = '[';
     for (size_t i = 0; i < len; i++) {
-        char tmp[32];
-        snprintf(tmp, sizeof(tmp), "%lld", arr[i]);
+        char tmp[64];
+        snprintf(tmp, sizeof(tmp), "%g", arr[i]);
         size_t n = strlen(tmp);
         if (pos + n + 2 >= cap) { cap = cap * 2 + n + 2; buf = realloc(buf, cap); }
         memcpy(buf + pos, tmp, n);
@@ -71,50 +72,63 @@ static void panic(const char *msg) {
     exit(1);
 }
 
-static long long* list_append_long_long(long long *arr, size_t *len, long long val) {
-    arr = realloc(arr, (*len + 1) * sizeof(long long));
-    arr[*len] = val;
-    (*len)++;
-    return arr;
-}
+double *sample = NULL;
+size_t sample_len = 0;
 
-long long * binary_step(double * vector, size_t vector_len);
-void user_main();
+double exp_taylor(double x);
+double * sigmoid(double * vector, size_t vector_len);
+double * gaussian_error_linear_unit(double * vector, size_t vector_len);
 int main(void);
 
-long long * binary_step(double * vector, size_t vector_len) {
-    long long *out = NULL;
-    size_t out_len = 0;
-    long long i = 0LL;
-    while (i < vector_len) {
-        if (vector[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? vector_len + _mochi_idx : _mochi_idx;})] >= 0.0) {
-            out = list_append_long_long(out, &out_len, 1LL);
-        } else {
-            out = list_append_long_long(out, &out_len, 0LL);
-        }
-        i = i + 1LL;
+double exp_taylor(double x) {
+    double term = 1.0;
+    double sum = 1.0;
+    double i = 1.0;
+    while (i < 20.0) {
+        term = (term * x) / i;
+        sum = sum + term;
+        i = i + 1.0;
     }
-    return binary_step_len = out_len, out;
+    return sum;
 }
 
-void user_main() {
-    double *vector = NULL;
-    size_t vector_len = 0;
-    vector = list_append_double(vector, &vector_len, -1.2);
-    vector = list_append_double(vector, &vector_len, 0.0);
-    vector = list_append_double(vector, &vector_len, 2.0);
-    vector = list_append_double(vector, &vector_len, 1.45);
-    vector = list_append_double(vector, &vector_len, -3.7);
-    vector = list_append_double(vector, &vector_len, 0.3);
-    long long *result = binary_step(vector, vector_len);
-    size_t result_len = binary_step_len;
-    puts(str_list_int(result, result_len));
+double * sigmoid(double * vector, size_t vector_len) {
+    double *result = NULL;
+    size_t result_len = 0;
+    long long i = 0LL;
+    while (i < vector_len) {
+        double x = vector[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? vector_len + _mochi_idx : _mochi_idx;})];
+        double value = 1.0 / (1.0 + exp_taylor(-(x)));
+        result = list_append_double(result, &result_len, value);
+        i = i + 1LL;
+    }
+    return sigmoid_len = result_len, result;
+}
+
+double * gaussian_error_linear_unit(double * vector, size_t vector_len) {
+    double *result = NULL;
+    size_t result_len = 0;
+    long long i = 0LL;
+    while (i < vector_len) {
+        double x = vector[(int)({long long _mochi_idx = i; _mochi_idx < 0 ? vector_len + _mochi_idx : _mochi_idx;})];
+        double gelu = x * (1.0 / (1.0 + exp_taylor(-1.702 * x)));
+        result = list_append_double(result, &result_len, gelu);
+        i = i + 1LL;
+    }
+    return gaussian_error_linear_unit_len = result_len, result;
 }
 
 int main(void) {
     {
         long long __start = _now();
-        user_main();
+        sample = ({double *tmp = malloc(3 * sizeof(double)); tmp[0] = -1.0; tmp[1] = 1.0; tmp[2] = 2.0; tmp;});
+        sample_len = 3;
+        double* __tmp3 = sigmoid(sample, sample_len);
+        puts(str_list_double(__tmp3, sigmoid_len));
+        double* __tmp4 = gaussian_error_linear_unit(sample, sample_len);
+        puts(str_list_double(__tmp4, gaussian_error_linear_unit_len));
+        double* __tmp5 = gaussian_error_linear_unit(({double *tmp = malloc(1 * sizeof(double)); tmp[0] = -3.0; tmp;}), 1);
+        puts(str_list_double(__tmp5, gaussian_error_linear_unit_len));
         long long __end = _now();
         long long __dur_us = (__end - __start) / 1000;
         long long __mem_bytes = _mem();
