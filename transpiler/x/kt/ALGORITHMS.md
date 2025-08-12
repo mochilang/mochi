@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-12 10:22 GMT+7
+Last updated: 2025-08-12 11:55 GMT+7
 
-## Algorithms Golden Test Checklist (432/1077)
+## Algorithms Golden Test Checklist (433/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 30.54ms | 124.45KiB |
@@ -726,15 +726,15 @@ Last updated: 2025-08-12 10:22 GMT+7
 | 717 | matrix/tests/test_matrix_operation | ✓ | 95.18ms | 113.27KiB |
 | 718 | matrix/validate_sudoku_board | ✓ | 26.45ms | 132.62KiB |
 | 719 | networking_flow/ford_fulkerson | ✓ | 24.32ms | 132.37KiB |
-| 720 | networking_flow/minimum_cut | ✓ | 8.82ms | 134.08KiB |
-| 721 | neural_network/activation_functions/binary_step | ✓ | 27.65ms | 122.48KiB |
-| 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 29.82ms | 112.65KiB |
-| 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 19.51ms | 123.10KiB |
-| 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 15.63ms | 123.95KiB |
-| 725 | neural_network/activation_functions/mish | ✓ | 49.14ms | 112.77KiB |
-| 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 29.81ms | 112.72KiB |
-| 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 33.98ms | 112.65KiB |
-| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | error |  |  |
+| 720 | networking_flow/minimum_cut | ✓ | 4.11ms | 28.62KiB |
+| 721 | neural_network/activation_functions/binary_step | ✓ | 17.14ms | 40.28KiB |
+| 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 16.74ms | 41.36KiB |
+| 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 6.86ms | 30.84KiB |
+| 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 5.68ms | 29.97KiB |
+| 725 | neural_network/activation_functions/mish | ✓ | 17.58ms | 41.23KiB |
+| 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 17.17ms | 41.33KiB |
+| 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 16.27ms | 41.33KiB |
+| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 26.23ms | 49.81KiB |
 | 729 | neural_network/activation_functions/softplus | error |  |  |
 | 730 | neural_network/activation_functions/squareplus | ✓ | 27.83ms | 112.77KiB |
 | 731 | neural_network/activation_functions/swish | ✓ | 37.20ms | 112.73KiB |
