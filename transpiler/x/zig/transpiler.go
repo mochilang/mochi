@@ -1067,6 +1067,8 @@ func zigTypeFromExpr(e Expr) string {
 			return "i64"
 		case "int":
 			return "i64"
+		case "to_float":
+			return "f64"
 		case "_lower", "_upper":
 			return "[]const u8"
 		case "sum":
@@ -1871,6 +1873,10 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 			targetType = zigTypeFromExpr(v.Value)
 		}
 	}
+	varTypes[v.Name] = targetType
+	if len(namesStack) > 0 {
+		namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], v.Name)
+	}
 	if strings.HasPrefix(targetType, "const ") {
 		targetType = strings.TrimPrefix(targetType, "const ")
 	}
@@ -2517,7 +2523,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		if isIntType(lt) && rt == "f64" {
 			io.WriteString(w, "@as(f64, @floatFromInt(")
 			b.Left.emit(w)
-			io.WriteString(w, ") "+op+" ")
+			io.WriteString(w, ")) "+op+" ")
 			b.Right.emit(w)
 			return
 		}
@@ -3107,6 +3113,14 @@ func (c *CallExpr) emit(w io.Writer) {
 		} else {
 			io.WriteString(w, "0")
 		}
+	case "to_float":
+		if len(c.Args) == 1 {
+			io.WriteString(w, "@as(f64, @floatFromInt(")
+			c.Args[0].emit(w)
+			io.WriteString(w, "))")
+		} else {
+			io.WriteString(w, "0.0")
+		}
 	case "avg":
 		if len(c.Args) == 1 {
 			io.WriteString(w, "blk: { var arr = ")
@@ -3239,11 +3253,24 @@ func (c *CallExpr) emit(w io.Writer) {
 			}
 			if params, ok := funcParamTypes[c.Func]; ok && i < len(params) {
 				exp := params[i]
-				if lit, ok := a.(*ListLit); ok && lit.ElemType == "" {
+				if lit, ok := a.(*ListLit); ok {
+					if lit.ElemType == "" {
+						if strings.HasPrefix(exp, "[]") {
+							lit.ElemType = exp[2:]
+						} else if exp == "Value" {
+							lit.ElemType = "[]i64"
+						}
+					}
 					if strings.HasPrefix(exp, "[]") {
-						lit.ElemType = exp[2:]
-					} else if exp == "Value" {
-						lit.ElemType = "[]i64"
+						elem := strings.TrimPrefix(exp, "[]")
+						if len(lit.Elems) == 0 {
+							fmt.Fprintf(w, "@constCast(&[_]%s{})", elem)
+						} else {
+							io.WriteString(w, "@constCast(&(")
+							lit.emit(w)
+							io.WriteString(w, "))[0..]")
+						}
+						continue
 					}
 				}
 				at := zigTypeFromExpr(a)
@@ -3290,9 +3317,14 @@ func (c *CallExpr) emit(w io.Writer) {
 						io.WriteString(w, "))")
 					case strings.HasPrefix(exp, "[]") && strings.HasPrefix(at, "["):
 						if ll, ok := a.(*ListLit); ok {
-							io.WriteString(w, "(")
-							ll.emit(w)
-							io.WriteString(w, ")[0..]")
+							elem := strings.TrimPrefix(exp, "[]")
+							if len(ll.Elems) == 0 {
+								fmt.Fprintf(w, "@constCast(&[_]%s{})", elem)
+							} else {
+								io.WriteString(w, "@constCast(&(")
+								ll.emit(w)
+								io.WriteString(w, "))[0..]")
+							}
 						} else {
 							a.emit(w)
 							io.WriteString(w, "[0..]")

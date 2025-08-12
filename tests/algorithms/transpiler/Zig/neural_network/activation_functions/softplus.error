@@ -1,0 +1,22 @@
+signal: aborted
+thread 13830 panic: ln domain error
+/workspace/mochi/tests/algorithms/transpiler/Zig/neural_network/activation_functions/softplus.zig:12:9: 0x1072b0d in ln (softplus)
+        @panic("ln domain error");
+        ^
+/workspace/mochi/tests/algorithms/transpiler/Zig/neural_network/activation_functions/softplus.zig:57:30: 0x103c599 in softplus (softplus)
+        const value: f64 = ln(1.0 + exp(x));
+                             ^
+/workspace/mochi/tests/algorithms/transpiler/Zig/neural_network/activation_functions/softplus.zig:68:31: 0x103991b in mochi_main (softplus)
+    const r2: []f64 = softplus(v2);
+                              ^
+/workspace/mochi/tests/algorithms/transpiler/Zig/neural_network/activation_functions/softplus.zig:77:19: 0x1037fc6 in main (softplus)
+        mochi_main();
+                  ^
+/usr/local/zig-0.12.0/lib/std/start.zig:501:22: 0x1037bd9 in main (softplus)
+            root.main();
+                     ^
+???:?:?: 0x7f651b9b11c9 in ??? (libc.so.6)
+Unwind information for `libc.so.6:0x7f651b9b11c9` was not available, trace may be incomplete
+
+???:?:?: 0x7f651b9b128a in ??? (libc.so.6)
+???:?:?: 0x1037884 in ??? (???)
