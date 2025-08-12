@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-12 15:27 +0700
+Last updated: 2025-08-12 16:13 +0700
 
-## Program Checklist (207/1077)
+## Program Checklist (210/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.121ms | 512.0 KB |
@@ -708,9 +708,9 @@ Last updated: 2025-08-12 15:27 +0700
 | 699 | matrix/count_negative_numbers_in_sorted_matrix |   |  |  |
 | 700 | matrix/count_paths | ✓ | 819µs | 384.0 KB |
 | 701 | matrix/cramers_rule_2x2 | ✓ | 379µs | 384.0 KB |
-| 702 | matrix/inverse_of_matrix |   |  |  |
-| 703 | matrix/largest_square_area_in_matrix |   |  |  |
-| 704 | matrix/matrix_based_game |   |  |  |
+| 702 | matrix/inverse_of_matrix | ✓ | 1.374ms | 384.0 KB |
+| 703 | matrix/largest_square_area_in_matrix | ✓ | 1.15ms | 572.0 KB |
+| 704 | matrix/matrix_based_game | ✓ | 2.896ms | 768.0 KB |
 | 705 | matrix/matrix_class |   |  |  |
 | 706 | matrix/matrix_equalization |   |  |  |
 | 707 | matrix/matrix_multiplication_recursion |   |  |  |
