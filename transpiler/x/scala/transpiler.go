@@ -2254,7 +2254,9 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 			}
 		}
 		if vs, ok := s.(*VarStmt); ok {
-			vs.Global = true
+			if vs.Value == nil || !usesAssignedVar(vs.Value) {
+				vs.Global = true
+			}
 		}
 		if s != nil {
 			sc.Stmts = append(sc.Stmts, s)
@@ -3432,6 +3434,16 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				args[j] = ex
 			}
 			skipCall := false
+			if n, ok := expr.(*Name); ok && len(args) == 1 {
+				switch n.Name {
+				case "ln":
+					expr = &CallExpr{Fn: &FieldExpr{Receiver: &Name{Name: "math"}, Name: "log"}, Args: args}
+					skipCall = true
+				case "exp":
+					expr = &CallExpr{Fn: &FieldExpr{Receiver: &Name{Name: "math"}, Name: "exp"}, Args: args}
+					skipCall = true
+				}
+			}
 			if fe, ok := expr.(*FieldExpr); ok && fe.Name == "get" && len(args) == 2 {
 				expr = &CallExpr{Fn: &FieldExpr{Receiver: fe.Receiver, Name: "getOrElse"}, Args: args}
 				skipCall = true
@@ -3746,6 +3758,14 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 			toStr := &CallExpr{Fn: &FieldExpr{Receiver: args[0], Name: "toString"}}
 			return &FieldExpr{Receiver: toStr, Name: "toDouble"}, nil
 		}
+	case "ln":
+		if len(args) == 1 {
+			return &CallExpr{Fn: &FieldExpr{Receiver: &Name{Name: "math"}, Name: "log"}, Args: args}, nil
+		}
+	case "exp":
+		if len(args) == 1 {
+			return &CallExpr{Fn: &FieldExpr{Receiver: &Name{Name: "math"}, Name: "exp"}, Args: args}, nil
+		}
 	case "abs":
 		if len(args) == 1 {
 			if inferTypeWithEnv(args[0], env) == "BigInt" {
@@ -3851,7 +3871,11 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		}
 	case "concat":
 		if len(args) == 2 {
-			return &BinaryExpr{Left: args[0], Op: "++", Right: args[1]}, nil
+			expr := Expr(&BinaryExpr{Left: args[0], Op: "++", Right: args[1]})
+			if lt := inferTypeWithEnv(args[0], env); strings.HasPrefix(lt, "ArrayBuffer[") {
+				expr = &CastExpr{Value: expr, Type: lt}
+			}
+			return expr, nil
 		}
 	case "contains":
 		if len(args) == 2 {
