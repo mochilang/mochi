@@ -2577,6 +2577,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesNow = false
 	usesInput = false
 	usesReadFile = false
+	usesSHA256 = false
 	usesMem = false
 	usesFmt = false
 	usesRepeat = false
@@ -5082,10 +5083,11 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\t\t\t}\n")
 		buf.WriteString("\t\t}\n")
 		buf.WriteString("\t\tif (seededNow) {\n")
+		buf.WriteString("\t\t\tvar v = nowSeed;\n")
 		buf.WriteString("\t\t\tnowSeed = unchecked(nowSeed * 1664525 + 1013904223);\n")
 		buf.WriteString("\t\t\tnowSeed %= 9223372036854775783L;\n")
 		buf.WriteString("\t\t\tif (nowSeed < 0) nowSeed += 9223372036854775783L;\n")
-		buf.WriteString("\t\t\treturn nowSeed;\n")
+		buf.WriteString("\t\t\treturn v;\n")
 		buf.WriteString("\t\t}\n")
 		buf.WriteString("\t\treturn DateTime.UtcNow.Ticks / 100;\n")
 		buf.WriteString("\t}\n")
