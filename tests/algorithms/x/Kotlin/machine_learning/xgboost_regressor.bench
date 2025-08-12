@@ -1,0 +1,7 @@
+Predictions:
+[2.1875, 3.9375]
+Mean Absolute Error:
+0.4375
+Mean Square Error:
+0.20703125
+{"duration_us":27772, "memory_bytes":115208, "name":"main"}

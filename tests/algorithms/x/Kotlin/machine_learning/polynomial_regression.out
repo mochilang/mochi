@@ -1,0 +1,9 @@
+Exception in thread "main" java.lang.ExceptionInInitializerError
+Caused by: java.lang.IndexOutOfBoundsException: Index 0 out of bounds for length 0
+	at java.base/jdk.internal.util.Preconditions.outOfBounds(Preconditions.java:100)
+	at java.base/jdk.internal.util.Preconditions.outOfBoundsCheckIndex(Preconditions.java:106)
+	at java.base/jdk.internal.util.Preconditions.checkIndex(Preconditions.java:302)
+	at java.base/java.util.Objects.checkIndex(Objects.java:385)
+	at java.base/java.util.ArrayList.get(ArrayList.java:427)
+	at Polynomial_regressionKt.matvec_mul(polynomial_regression.kt:83)
+	at Polynomial_regressionKt.<clinit>(polynomial_regression.kt:11)
