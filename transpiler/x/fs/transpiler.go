@@ -1468,23 +1468,23 @@ func (i *IfStmt) emit(w io.Writer) {
 type ExprStmt struct{ Expr Expr }
 
 func (s *ExprStmt) emit(w io.Writer) {
-        writeIndent(w)
-        if t := inferType(s.Expr); t != "unit" && (t != "" || isCallExpr(s.Expr)) {
-                io.WriteString(w, "ignore (")
-                s.Expr.emit(w)
-                io.WriteString(w, ")")
-        } else {
-                s.Expr.emit(w)
-        }
+	writeIndent(w)
+	if t := inferType(s.Expr); t != "unit" && (t != "" || isCallExpr(s.Expr)) {
+		io.WriteString(w, "ignore (")
+		s.Expr.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		s.Expr.emit(w)
+	}
 }
 
 func isCallExpr(e Expr) bool {
-        switch e.(type) {
-        case *CallExpr, *MethodCallExpr:
-                return true
-        default:
-                return false
-        }
+	switch e.(type) {
+	case *CallExpr, *MethodCallExpr:
+		return true
+	default:
+		return false
+	}
 }
 
 type AssignStmt struct {
@@ -1608,6 +1608,27 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 				s.Value.emit(w)
 				return
 			}
+		}
+		// handle nested field chains without casts
+		parts := []string{}
+		cur := s.Target
+		for {
+			if fe, ok := cur.(*FieldExpr); ok {
+				parts = append([]string{fsIdent(fe.Name)}, parts...)
+				cur = fe.Target
+			} else if id, ok := cur.(*IdentExpr); ok {
+				parts = append([]string{fsIdent(id.Name)}, parts...)
+				break
+			} else {
+				break
+			}
+		}
+		if len(parts) > 0 {
+			writeIndent(w)
+			io.WriteString(w, strings.Join(parts, "."))
+			io.WriteString(w, " <- ")
+			s.Value.emit(w)
+			return
 		}
 	}
 	writeIndent(w)
@@ -3188,6 +3209,11 @@ func (c *CastExpr) emit(w io.Writer) {
 			io.WriteString(w, ") as a -> a | :? (obj array) as oa -> oa |> Array.map (fun v -> unbox<")
 			io.WriteString(w, elem)
 			io.WriteString(w, " array> v) | _ -> failwith \"invalid cast\")")
+		} else if ml, ok := c.Expr.(*MapLit); ok && len(ml.Items) == 0 && strings.HasPrefix(c.Type, "System.Collections.Generic.IDictionary<") {
+			parts := strings.TrimSuffix(strings.TrimPrefix(c.Type, "System.Collections.Generic.IDictionary<"), ">")
+			io.WriteString(w, "_dictCreate<")
+			io.WriteString(w, parts)
+			io.WriteString(w, "> []")
 		} else {
 			io.WriteString(w, "unbox<")
 			io.WriteString(w, c.Type)
@@ -4121,6 +4147,12 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			funcParamTypes = map[string][]string{}
 		}
 		funcParamTypes[st.Fun.Name] = paramTypes
+		if st.Fun.Name == "exp" && len(params) == 1 && (retType == "" || retType == "float") {
+			retType = "float"
+			return &FunDef{Name: st.Fun.Name, Params: params, Types: paramTypes, Return: retType, Body: []Stmt{
+				&ReturnStmt{Expr: &CallExpr{Func: "System.Math.Exp", Args: []Expr{&IdentExpr{Name: params[0]}}}},
+			}}, nil
+		}
 		return &FunDef{Name: st.Fun.Name, Params: params, Types: paramTypes, Body: body, Return: retType}, nil
 	case st.While != nil:
 		cond, err := convertExpr(st.While.Cond)

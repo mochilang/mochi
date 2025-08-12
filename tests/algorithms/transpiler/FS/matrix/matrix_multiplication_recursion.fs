@@ -1,4 +1,4 @@
-// Generated 2025-08-09 10:14 +0700
+// Generated 2025-08-12 09:13 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _repr v =
@@ -56,7 +44,7 @@ let rec is_square (matrix: int array array) =
         __ret
     with
         | Return -> __ret
-let rec matrix_multiply (a: int array array) (b: int array array) =
+and matrix_multiply (a: int array array) (b: int array array) =
     let mutable __ret : int array array = Unchecked.defaultof<int array array>
     let mutable a = a
     let mutable b = b
@@ -73,7 +61,7 @@ let rec matrix_multiply (a: int array array) (b: int array array) =
                 let mutable sum: int = 0
                 let mutable k: int = 0
                 while k < inner do
-                    sum <- int ((int64 sum) + ((int64 (_idx (_idx a (int i)) (int k))) * (int64 (_idx (_idx b (int k)) (int j)))))
+                    sum <- sum + ((_idx (_idx a (int i)) (int k)) * (_idx (_idx b (int k)) (int j)))
                     k <- k + 1
                 row <- Array.append row [|sum|]
                 j <- j + 1
@@ -84,7 +72,7 @@ let rec matrix_multiply (a: int array array) (b: int array array) =
         __ret
     with
         | Return -> __ret
-let rec multiply (i: int) (j: int) (k: int) (a: int array array) (b: int array array) (result: int array array) (n: int) (m: int) =
+and multiply (i: int) (j: int) (k: int) (a: int array array) (b: int array array) (result: int array array) (n: int) (m: int) =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     let mutable i = i
     let mutable j = j
@@ -106,12 +94,12 @@ let rec multiply (i: int) (j: int) (k: int) (a: int array array) (b: int array a
             multiply (i) (j + 1) (0) (a) (b) (result) (n) (m)
             __ret <- ()
             raise Return
-        result.[int i].[int j] <- int ((int64 (_idx (_idx result (int i)) (int j))) + ((int64 (_idx (_idx a (int i)) (int k))) * (int64 (_idx (_idx b (int k)) (int j)))))
+        result.[i].[j] <- (_idx (_idx result (int i)) (int j)) + ((_idx (_idx a (int i)) (int k)) * (_idx (_idx b (int k)) (int j)))
         multiply (i) (j) (k + 1) (a) (b) (result) (n) (m)
         __ret
     with
         | Return -> __ret
-let rec matrix_multiply_recursive (a: int array array) (b: int array array) =
+and matrix_multiply_recursive (a: int array array) (b: int array array) =
     let mutable __ret : int array array = Unchecked.defaultof<int array array>
     let mutable a = a
     let mutable b = b
@@ -120,7 +108,7 @@ let rec matrix_multiply_recursive (a: int array array) (b: int array array) =
             __ret <- Array.empty<int array>
             raise Return
         if (((Seq.length (a)) <> (Seq.length (b))) || (not (is_square (a)))) || (not (is_square (b))) then
-            failwith ("Invalid matrix dimensions")
+            ignore (failwith ("Invalid matrix dimensions"))
         let n: int = Seq.length (a)
         let m: int = Seq.length (_idx b (int 0))
         let mutable result: int array array = Array.empty<int array>
@@ -143,8 +131,8 @@ let matrix_1_to_4: int array array = [|[|1; 2|]; [|3; 4|]|]
 let matrix_5_to_8: int array array = [|[|5; 6|]; [|7; 8|]|]
 let matrix_count_up: int array array = [|[|1; 2; 3; 4|]; [|5; 6; 7; 8|]; [|9; 10; 11; 12|]; [|13; 14; 15; 16|]|]
 let matrix_unordered: int array array = [|[|5; 8; 1; 2|]; [|6; 7; 3; 0|]; [|4; 5; 9; 1|]; [|2; 6; 10; 14|]|]
-printfn "%s" (_repr (matrix_multiply_recursive (matrix_1_to_4) (matrix_5_to_8)))
-printfn "%s" (_repr (matrix_multiply_recursive (matrix_count_up) (matrix_unordered)))
+ignore (printfn "%s" (_repr (matrix_multiply_recursive (matrix_1_to_4) (matrix_5_to_8))))
+ignore (printfn "%s" (_repr (matrix_multiply_recursive (matrix_count_up) (matrix_unordered))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

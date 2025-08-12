@@ -1,4 +1,4 @@
-// Generated 2025-08-09 10:14 +0700
+// Generated 2025-08-12 09:13 +0700
 
 exception Break
 exception Continue
@@ -22,18 +22,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
@@ -60,16 +48,16 @@ let rec get_avg (number_1: int) (number_2: int) =
         __ret
     with
         | Return -> __ret
-let rec guess_the_number (lower: int) (higher: int) (to_guess: int) =
+and guess_the_number (lower: int) (higher: int) (to_guess: int) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable lower = lower
     let mutable higher = higher
     let mutable to_guess = to_guess
     try
         if lower > higher then
-            failwith ("argument value for lower and higher must be(lower > higher)")
+            ignore (failwith ("argument value for lower and higher must be(lower > higher)"))
         if not ((lower < to_guess) && (to_guess < higher)) then
-            failwith ("guess value must be within the range of lower and higher value")
+            ignore (failwith ("guess value must be within the range of lower and higher value"))
         let rec answer (number: int) =
             let mutable __ret : string = Unchecked.defaultof<string>
             let mutable number = number
@@ -87,7 +75,7 @@ let rec guess_the_number (lower: int) (higher: int) (to_guess: int) =
                 __ret
             with
                 | Return -> __ret
-        printfn "%s" ("started...")
+        ignore (printfn "%s" ("started..."))
         let mutable last_lowest: int = lower
         let mutable last_highest: int = higher
         let mutable last_numbers: int array = Array.empty<int>
@@ -110,15 +98,15 @@ let rec guess_the_number (lower: int) (higher: int) (to_guess: int) =
         with
         | Break -> ()
         | Continue -> ()
-        printfn "%s" ("guess the number : " + (_str (_idx last_numbers (int ((Seq.length (last_numbers)) - 1)))))
-        printfn "%s" ("details : " + (_str (last_numbers)))
+        ignore (printfn "%s" ("guess the number : " + (_str (_idx last_numbers (int ((Seq.length (last_numbers)) - 1))))))
+        ignore (printfn "%s" ("details : " + (_str (last_numbers))))
         __ret <- last_numbers
         raise Return
         __ret
     with
         | Return -> __ret
-guess_the_number (10) (1000) (17)
-guess_the_number (-10000) (10000) (7)
+ignore (guess_the_number (10) (1000) (17))
+ignore (guess_the_number (-10000) (10000) (7))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

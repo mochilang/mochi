@@ -1,4 +1,4 @@
-// Generated 2025-08-09 10:14 +0700
+// Generated 2025-08-12 09:13 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -57,7 +45,7 @@ let mutable _seed: int = 1
 let rec rand () =
     let mutable __ret : int = Unchecked.defaultof<int>
     try
-        _seed <- int ((((((int64 _seed) * (int64 1103515245)) + (int64 12345)) % 2147483648L + 2147483648L) % 2147483648L))
+        _seed <- int ((((int64 ((_seed * 1103515245) + 12345)) % 2147483648L + 2147483648L) % 2147483648L))
         __ret <- _seed
         raise Return
         __ret
@@ -335,7 +323,7 @@ and forward (layers: Layer array) (_x: float array) =
                 let z: float array = vec_sub (matvec (layer._weight) (data)) (layer._bias)
                 layer._output <- sigmoid_vec (z)
                 data <- layer._output
-            layers.[int i] <- layer
+            layers.[i] <- layer
             i <- i + 1
         __ret <- layers
         raise Return
@@ -357,7 +345,7 @@ and backward (layers: Layer array) (grad: float array) =
             layer._weight <- mat_sub (layer._weight) (mat_scalar_mul (grad_w) (layer._learn_rate))
             layer._bias <- vec_sub (layer._bias) (vec_scalar_mul (delta) (layer._learn_rate))
             g <- matTvec (layer._weight) (delta)
-            layers.[int i] <- layer
+            layers.[i] <- layer
             i <- i - 1
         __ret <- layers
         raise Return
@@ -446,7 +434,7 @@ and main () =
         layers <- Array.append layers [|(init_layer (30) (20) (0.3))|]
         layers <- Array.append layers [|(init_layer (2) (30) (0.3))|]
         let final_mse: float = train (layers) (_x) (_y) (100) (0.01)
-        printfn "%g" (final_mse)
+        ignore (printfn "%g" (final_mse))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

@@ -1,4 +1,4 @@
-// Generated 2025-08-09 10:14 +0700
+// Generated 2025-08-12 09:13 +0700
 
 exception Break
 exception Continue
@@ -32,18 +32,6 @@ let _substring (s:string) (start:int) (finish:int) =
     if st > en then st <- en
     s.Substring(st, en - st)
 
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
@@ -54,6 +42,10 @@ let rec _str v =
      .Replace("; ", " ")
      .Replace(";", "")
      .Replace("\"", "")
+let _floordiv (a:int) (b:int) : int =
+    let q = a / b
+    let r = a % b
+    if r <> 0 && ((a < 0) <> (b < 0)) then q - 1 else q
 type Coord = {
     mutable _x: int
     mutable _y: int
@@ -78,7 +70,7 @@ and to_int (token: string) =
         let mutable res: int = 0
         let mutable i: int = 0
         while i < (String.length (token)) do
-            res <- int (((int64 res) * (int64 10)) + (int64 (int (_substring token i (i + 1)))))
+            res <- (res * 10) + (int (_substring token i (i + 1)))
             i <- i + 1
         __ret <- res
         raise Return
@@ -131,7 +123,7 @@ and parse_moves (input_str: string) =
             if num <> "" then
                 numbers <- Array.append numbers [|num|]
             if (Seq.length (numbers)) <> 2 then
-                failwith ("Each move must have exactly two numbers.")
+                ignore (failwith ("Each move must have exactly two numbers."))
             let _x: int = to_int (_idx numbers (int 0))
             let _y: int = to_int (_idx numbers (int 1))
             moves <- Array.append moves [|{ _x = _x; _y = _y }|]
@@ -146,7 +138,7 @@ and validate_matrix_size (size: int) =
     let mutable size = size
     try
         if size <= 0 then
-            failwith ("Matrix size must be a positive integer.")
+            ignore (failwith ("Matrix size must be a positive integer."))
         __ret
     with
         | Return -> __ret
@@ -156,17 +148,17 @@ and validate_matrix_content (_matrix: string array) (size: int) =
     let mutable size = size
     try
         if (Seq.length (_matrix)) <> size then
-            failwith ("The matrix dont match with size.")
+            ignore (failwith ("The matrix dont match with size."))
         let mutable i: int = 0
         while i < size do
             let mutable row: string = _idx _matrix (int i)
             if (String.length (row)) <> size then
-                failwith (("Each row in the matrix must have exactly " + (_str (size))) + " characters.")
+                ignore (failwith (("Each row in the matrix must have exactly " + (_str (size))) + " characters."))
             let mutable j: int = 0
             while j < size do
                 let ch: string = _substring row j (j + 1)
                 if not (is_alnum (ch)) then
-                    failwith ("Matrix rows can only contain letters and numbers.")
+                    ignore (failwith ("Matrix rows can only contain letters and numbers."))
                 j <- j + 1
             i <- i + 1
         __ret
@@ -181,7 +173,7 @@ and validate_moves (moves: Coord array) (size: int) =
         while i < (Seq.length (moves)) do
             let mv: Coord = _idx moves (int i)
             if ((((mv._x) < 0) || ((mv._x) >= size)) || ((mv._y) < 0)) || ((mv._y) >= size) then
-                failwith ("Move is out of bounds for a matrix.")
+                ignore (failwith ("Move is out of bounds for a matrix."))
             i <- i + 1
         __ret
     with
@@ -251,7 +243,7 @@ and increment_score (count: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable count = count
     try
-        __ret <- int (((int64 count) * (int64 (count + 1))) / (int64 2))
+        __ret <- _floordiv (count * (count + 1)) 2
         raise Return
         __ret
     with
@@ -273,7 +265,7 @@ and move_x (matrix_g: string array array) (column: int) (size: int) =
             row <- row + 1
         row <- 0
         while row < size do
-            matrix_g.[int row].[int column] <- _idx new_list (int row)
+            matrix_g.[row].[column] <- _idx new_list (int row)
             row <- row + 1
         __ret <- matrix_g
         raise Return
@@ -321,12 +313,12 @@ and move_y (matrix_g: string array array) (size: int) =
             while c < size do
                 let mutable r: int = 0
                 while r < size do
-                    matrix_g.[int r].[int (c - 1)] <- _idx (_idx matrix_g (int r)) (int c)
+                    matrix_g.[r].[(c - 1)] <- _idx (_idx matrix_g (int r)) (int c)
                     r <- r + 1
                 c <- c + 1
             let mutable r: int = 0
             while r < size do
-                matrix_g.[int r].[int (size - 1)] <- "-"
+                matrix_g.[r].[(size - 1)] <- "-"
                 r <- r + 1
             i <- i + 1
         __ret <- matrix_g
@@ -346,7 +338,7 @@ and play (matrix_g: string array array) (pos_x: int) (pos_y: int) (size: int) =
             let mutable i: int = 0
             while i < (Seq.length (same_colors)) do
                 let p: Coord = _idx same_colors (int i)
-                matrix_g.[int (p._x)].[int (p._y)] <- "-"
+                matrix_g.[(p._x)].[(p._y)] <- "-"
                 i <- i + 1
             let mutable column: int = 0
             while column < size do
@@ -411,7 +403,7 @@ and main () =
         validate_matrix_content (_matrix) (size)
         validate_moves (moves) (size)
         let _score: int = process_game (size) (_matrix) (moves)
-        printfn "%s" (_str (_score))
+        ignore (printfn "%s" (_str (_score)))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

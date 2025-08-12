@@ -1,4 +1,4 @@
-// Generated 2025-08-09 10:14 +0700
+// Generated 2025-08-12 09:13 +0700
 
 exception Break
 exception Continue
@@ -22,18 +22,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
@@ -85,13 +73,13 @@ let rec unique (nums: int array) =
         __ret
     with
         | Return -> __ret
-let rec array_equalization (vector: int array) (step_size: int) =
+and array_equalization (vector: int array) (step_size: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable vector = vector
     let mutable step_size = step_size
     try
         if step_size <= 0 then
-            failwith ("Step size must be positive and non-zero.")
+            ignore (failwith ("Step size must be positive and non-zero."))
         let elems: int array = unique (vector)
         let mutable min_updates: int = Seq.length (vector)
         let mutable i: int = 0
@@ -113,11 +101,11 @@ let rec array_equalization (vector: int array) (step_size: int) =
         __ret
     with
         | Return -> __ret
-printfn "%s" (_str (array_equalization (unbox<int array> [|1; 1; 6; 2; 4; 6; 5; 1; 7; 2; 2; 1; 7; 2; 2|]) (4)))
-printfn "%s" (_str (array_equalization (unbox<int array> [|22; 81; 88; 71; 22; 81; 632; 81; 81; 22; 92|]) (2)))
-printfn "%s" (_str (array_equalization (unbox<int array> [|0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0|]) (5)))
-printfn "%s" (_str (array_equalization (unbox<int array> [|22; 22; 22; 33; 33; 33|]) (2)))
-printfn "%s" (_str (array_equalization (unbox<int array> [|1; 2; 3|]) (2147483647)))
+ignore (printfn "%s" (_str (array_equalization (unbox<int array> [|1; 1; 6; 2; 4; 6; 5; 1; 7; 2; 2; 1; 7; 2; 2|]) (4))))
+ignore (printfn "%s" (_str (array_equalization (unbox<int array> [|22; 81; 88; 71; 22; 81; 632; 81; 81; 22; 92|]) (2))))
+ignore (printfn "%s" (_str (array_equalization (unbox<int array> [|0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0|]) (5))))
+ignore (printfn "%s" (_str (array_equalization (unbox<int array> [|22; 22; 22; 33; 33; 33|]) (2))))
+ignore (printfn "%s" (_str (array_equalization (unbox<int array> [|1; 2; 3|]) (2147483647))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

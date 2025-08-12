@@ -1,4 +1,4 @@
-// Generated 2025-08-09 10:14 +0700
+// Generated 2025-08-12 09:13 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,31 +19,19 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
 let mutable _seed: int = 1
 let rec rand () =
     let mutable __ret : int = Unchecked.defaultof<int>
     try
-        _seed <- int ((((((int64 _seed) * (int64 1103515245)) + (int64 12345)) % 2147483648L + 2147483648L) % 2147483648L))
+        _seed <- int ((((int64 ((_seed * 1103515245) + 12345)) % 2147483648L + 2147483648L) % 2147483648L))
         __ret <- _seed
         raise Return
         __ret
     with
         | Return -> __ret
-let rec randint (low: int) (high: int) =
+and randint (low: int) (high: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable low = low
     let mutable high = high
@@ -53,7 +41,7 @@ let rec randint (low: int) (high: int) =
         __ret
     with
         | Return -> __ret
-let rec expApprox (x: float) =
+and expApprox (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -77,7 +65,7 @@ let rec expApprox (x: float) =
         __ret
     with
         | Return -> __ret
-let rec sigmoid (x: float) =
+and sigmoid (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -86,7 +74,7 @@ let rec sigmoid (x: float) =
         __ret
     with
         | Return -> __ret
-let rec sigmoid_derivative (sig_val: float) =
+and sigmoid_derivative (sig_val: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable sig_val = sig_val
     try
@@ -117,7 +105,7 @@ let rec forward_propagation (expected: int) (number_propagations: int) =
         | Return -> __ret
 _seed <- 1
 let result: float = forward_propagation (32) (450000)
-printfn "%g" (result)
+ignore (printfn "%g" (result))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

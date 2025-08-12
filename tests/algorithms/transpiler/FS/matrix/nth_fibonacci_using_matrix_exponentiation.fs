@@ -1,4 +1,4 @@
-// Generated 2025-08-09 10:14 +0700
+// Generated 2025-08-12 09:13 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -29,18 +29,6 @@ let _substring (s:string) (start:int) (finish:int) =
     if st > en then st <- en
     s.Substring(st, en - st)
 
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
@@ -70,7 +58,7 @@ let rec multiply (matrix_a: int array array) (matrix_b: int array array) =
                 let mutable ``val``: int = 0
                 let mutable k: int = 0
                 while k < n do
-                    ``val`` <- int ((int64 ``val``) + ((int64 (_idx (_idx matrix_a (int i)) (int k))) * (int64 (_idx (_idx matrix_b (int k)) (int j)))))
+                    ``val`` <- ``val`` + ((_idx (_idx matrix_a (int i)) (int k)) * (_idx (_idx matrix_b (int k)) (int j)))
                     k <- k + 1
                 row <- Array.append row [|``val``|]
                 j <- j + 1
@@ -152,7 +140,7 @@ and parse_number (s: string) =
         while i < (String.length (s)) do
             let ch: string = _substring s i (i + 1)
             if (ch >= "0") && (ch <= "9") then
-                result <- int (((int64 result) * (int64 10)) + (int64 (int ch)))
+                result <- (result * 10) + (int ch)
             i <- i + 1
         __ret <- result
         raise Return
@@ -170,7 +158,7 @@ and main () =
             let ordinal: string = _idx ordinals (int i)
             let n: int = parse_number (ordinal)
             let msg: string = (((ordinal + " fibonacci number using matrix exponentiation is ") + (_str (nth_fibonacci_matrix (n)))) + " and using bruteforce is ") + (_str (nth_fibonacci_bruteforce (n)))
-            printfn "%s" (msg)
+            ignore (printfn "%s" (msg))
             i <- i + 1
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)

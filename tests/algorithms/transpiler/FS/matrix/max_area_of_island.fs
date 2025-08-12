@@ -1,4 +1,4 @@
-// Generated 2025-08-09 10:14 +0700
+// Generated 2025-08-12 09:13 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -27,10 +27,6 @@ let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collec
     for (k, v) in pairs do
         d.[k] <- v
     upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
@@ -55,7 +51,7 @@ let rec encode (row: int) (col: int) =
         __ret
     with
         | Return -> __ret
-let rec is_safe (row: int) (col: int) (rows: int) (cols: int) =
+and is_safe (row: int) (col: int) (rows: int) (cols: int) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable row = row
     let mutable col = col
@@ -67,7 +63,7 @@ let rec is_safe (row: int) (col: int) (rows: int) (cols: int) =
         __ret
     with
         | Return -> __ret
-let rec has (seen: System.Collections.Generic.IDictionary<string, bool>) (key: string) =
+and has (seen: System.Collections.Generic.IDictionary<string, bool>) (key: string) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable seen = seen
     let mutable key = key
@@ -77,7 +73,7 @@ let rec has (seen: System.Collections.Generic.IDictionary<string, bool>) (key: s
         __ret
     with
         | Return -> __ret
-let rec depth_first_search (row: int) (col: int) (seen: System.Collections.Generic.IDictionary<string, bool>) (mat: int array array) =
+and depth_first_search (row: int) (col: int) (seen: System.Collections.Generic.IDictionary<string, bool>) (mat: int array array) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable row = row
     let mutable col = col
@@ -88,7 +84,7 @@ let rec depth_first_search (row: int) (col: int) (seen: System.Collections.Gener
         let cols: int = Seq.length (_idx mat (int 0))
         let key: string = encode (row) (col)
         if ((is_safe (row) (col) (rows) (cols)) && (not (has (seen) (key)))) && ((_idx (_idx mat (int row)) (int col)) = 1) then
-            seen.[key] <- true
+            seen <- _dictAdd (seen) (string (key)) (true)
             __ret <- (((1 + (depth_first_search (row + 1) (col) (seen) (mat))) + (depth_first_search (row - 1) (col) (seen) (mat))) + (depth_first_search (row) (col + 1) (seen) (mat))) + (depth_first_search (row) (col - 1) (seen) (mat))
             raise Return
         else
@@ -97,7 +93,7 @@ let rec depth_first_search (row: int) (col: int) (seen: System.Collections.Gener
         __ret
     with
         | Return -> __ret
-let rec find_max_area (mat: int array array) =
+and find_max_area (mat: int array array) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable mat = mat
     try
@@ -124,7 +120,7 @@ let rec find_max_area (mat: int array array) =
     with
         | Return -> __ret
 let matrix: int array array = [|[|0; 0; 1; 0; 0; 0; 0; 1; 0; 0; 0; 0; 0|]; [|0; 0; 0; 0; 0; 0; 0; 1; 1; 1; 0; 0; 0|]; [|0; 1; 1; 0; 1; 0; 0; 0; 0; 0; 0; 0; 0|]; [|0; 1; 0; 0; 1; 1; 0; 0; 1; 0; 1; 0; 0|]; [|0; 1; 0; 0; 1; 1; 0; 0; 1; 1; 1; 0; 0|]; [|0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 1; 0; 0|]; [|0; 0; 0; 0; 0; 0; 0; 1; 1; 1; 0; 0; 0|]; [|0; 0; 0; 0; 0; 0; 0; 1; 1; 0; 0; 0; 0|]|]
-printfn "%d" (find_max_area (matrix))
+ignore (printfn "%d" (find_max_area (matrix)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

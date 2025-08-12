@@ -1,4 +1,4 @@
-// Generated 2025-08-09 10:14 +0700
+// Generated 2025-08-12 09:13 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
@@ -269,12 +257,12 @@ and main () =
         let matrix_b: float array array = [|[|3.0; 4.0|]; [|7.0; 4.0|]|]
         let matrix_c: float array array = [|[|11.0; 12.0; 13.0; 14.0|]; [|21.0; 22.0; 23.0; 24.0|]; [|31.0; 32.0; 33.0; 34.0|]; [|41.0; 42.0; 43.0; 44.0|]|]
         let matrix_d: float array array = [|[|3.0; 0.0; 2.0|]; [|2.0; 0.0; -2.0|]; [|0.0; 1.0; 1.0|]|]
-        printfn "%s" (("Add Operation, add(matrix_a, matrix_b) = " + (_str (add ([|matrix_a; matrix_b|])))) + " \n")
-        printfn "%s" (("Multiply Operation, multiply(matrix_a, matrix_b) = " + (_str (multiply (matrix_a) (matrix_b)))) + " \n")
-        printfn "%s" (("Identity: " + (_str (identity (5)))) + "\n")
-        printfn "%s" (((("Minor of " + (_str (matrix_c))) + " = ") + (_str (minor (matrix_c) (1) (2)))) + " \n")
-        printfn "%s" (((("Determinant of " + (_str (matrix_b))) + " = ") + (_str (determinant (matrix_b)))) + " \n")
-        printfn "%s" (((("Inverse of " + (_str (matrix_d))) + " = ") + (_str (inverse (matrix_d)))) + "\n")
+        ignore (printfn "%s" (("Add Operation, add(matrix_a, matrix_b) = " + (_str (add ([|matrix_a; matrix_b|])))) + " \n"))
+        ignore (printfn "%s" (("Multiply Operation, multiply(matrix_a, matrix_b) = " + (_str (multiply (matrix_a) (matrix_b)))) + " \n"))
+        ignore (printfn "%s" (("Identity: " + (_str (identity (5)))) + "\n"))
+        ignore (printfn "%s" (((("Minor of " + (_str (matrix_c))) + " = ") + (_str (minor (matrix_c) (1) (2)))) + " \n"))
+        ignore (printfn "%s" (((("Determinant of " + (_str (matrix_b))) + " = ") + (_str (determinant (matrix_b)))) + " \n"))
+        ignore (printfn "%s" (((("Inverse of " + (_str (matrix_d))) + " = ") + (_str (inverse (matrix_d)))) + "\n"))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

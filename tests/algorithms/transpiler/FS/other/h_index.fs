@@ -1,4 +1,4 @@
-// Generated 2025-08-09 10:14 +0700
+// Generated 2025-08-12 09:13 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
@@ -63,7 +51,7 @@ let rec subarray (xs: int array) (start: int) (``end``: int) =
         __ret
     with
         | Return -> __ret
-let rec merge (left_half: int array) (right_half: int array) =
+and merge (left_half: int array) (right_half: int array) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable left_half = left_half
     let mutable right_half = right_half
@@ -89,7 +77,7 @@ let rec merge (left_half: int array) (right_half: int array) =
         __ret
     with
         | Return -> __ret
-let rec merge_sort (array: int array) =
+and merge_sort (array: int array) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable array = array
     try
@@ -106,14 +94,14 @@ let rec merge_sort (array: int array) =
         __ret
     with
         | Return -> __ret
-let rec h_index (citations: int array) =
+and h_index (citations: int array) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable citations = citations
     try
         let mutable idx: int = 0
         while idx < (Seq.length (citations)) do
             if (_idx citations (int idx)) < 0 then
-                failwith ("The citations should be a list of non negative integers.")
+                ignore (failwith ("The citations should be a list of non negative integers."))
             idx <- idx + 1
         let sorted: int array = merge_sort (citations)
         let n: int = Seq.length (sorted)
@@ -128,9 +116,9 @@ let rec h_index (citations: int array) =
         __ret
     with
         | Return -> __ret
-printfn "%s" (_str (h_index (unbox<int array> [|3; 0; 6; 1; 5|])))
-printfn "%s" (_str (h_index (unbox<int array> [|1; 3; 1|])))
-printfn "%s" (_str (h_index (unbox<int array> [|1; 2; 3|])))
+ignore (printfn "%s" (_str (h_index (unbox<int array> [|3; 0; 6; 1; 5|]))))
+ignore (printfn "%s" (_str (h_index (unbox<int array> [|1; 3; 1|]))))
+ignore (printfn "%s" (_str (h_index (unbox<int array> [|1; 2; 3|]))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

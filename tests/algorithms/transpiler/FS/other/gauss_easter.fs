@@ -1,4 +1,4 @@
-// Generated 2025-08-09 10:14 +0700
+// Generated 2025-08-12 09:13 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
@@ -59,7 +47,7 @@ let rec gauss_easter (year: int) =
         let julian_leap_year: int = ((year % 4 + 4) % 4)
         let non_leap_year: int = ((year % 7 + 7) % 7)
         let leap_day_inhibits: int = _floordiv year 100
-        let lunar_orbit_correction: int64 = ((int64 13) + ((int64 8) * (int64 leap_day_inhibits))) / (int64 25)
+        let lunar_orbit_correction: int = _floordiv (13 + (8 * leap_day_inhibits)) 25
         let leap_day_reinstall_number: float = (float leap_day_inhibits) / 4.0
         let secular_moon_shift: float = (((((15.0 - (float lunar_orbit_correction)) + (float leap_day_inhibits)) - leap_day_reinstall_number) % 30.0 + 30.0) % 30.0)
         let century_starting_point: float = ((((4.0 + (float leap_day_inhibits)) - leap_day_reinstall_number) % 7.0 + 7.0) % 7.0)
@@ -81,7 +69,7 @@ let rec gauss_easter (year: int) =
         __ret
     with
         | Return -> __ret
-let rec format_date (year: int) (d: EasterDate) =
+and format_date (year: int) (d: EasterDate) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable year = year
     let mutable d = d
@@ -98,7 +86,7 @@ let mutable i: int = 0
 while i < (Seq.length (years)) do
     let y: int = _idx years (int i)
     let e: EasterDate = gauss_easter (y)
-    printfn "%s" ((("Easter in " + (_str (y))) + " is ") + (format_date (y) (e)))
+    ignore (printfn "%s" ((("Easter in " + (_str (y))) + " is ") + (format_date (y) (e))))
     i <- i + 1
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)

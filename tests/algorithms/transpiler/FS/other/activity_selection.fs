@@ -1,4 +1,4 @@
-// Generated 2025-08-09 10:14 +0700
+// Generated 2025-08-12 09:13 +0700
 
 let mutable _nowSeed:int64 = 0L
 let mutable _nowSeeded = false
@@ -18,18 +18,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
@@ -48,7 +36,7 @@ let rec print_max_activities (start: int array) (finish: int array) =
     let mutable finish = finish
     try
         let n: int = Seq.length (finish)
-        printfn "%s" ("The following activities are selected:")
+        ignore (printfn "%s" ("The following activities are selected:"))
         let mutable i: int = 0
         let mutable result: string = "0,"
         let mutable j: int = 1
@@ -57,7 +45,7 @@ let rec print_max_activities (start: int array) (finish: int array) =
                 result <- (result + (_str (j))) + ","
                 i <- j
             j <- j + 1
-        printfn "%s" (result)
+        ignore (printfn "%s" (result))
         __ret
     with
         | Return -> __ret
