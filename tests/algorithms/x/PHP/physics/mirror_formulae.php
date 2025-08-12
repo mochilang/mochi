@@ -53,16 +53,16 @@ $__start = _now();
   return 1.0 / ((1.0 / $distance_of_object) + (1.0 / $distance_of_image));
 };
   function object_distance($focal_length, $distance_of_image) {
-  if ($distance_of_image == 0.0 || 'focal_length' == 0.0) {
+  if ($distance_of_image == 0.0 || $focal_length == 0.0) {
   _panic('Invalid inputs. Enter non zero values with respect to the sign convention.');
 }
-  return 1.0 / ((1.0 / 'focal_length') - (1.0 / $distance_of_image));
+  return 1.0 / ((1.0 / $focal_length) - (1.0 / $distance_of_image));
 };
   function image_distance($focal_length, $distance_of_object) {
-  if ($distance_of_object == 0.0 || 'focal_length' == 0.0) {
+  if ($distance_of_object == 0.0 || $focal_length == 0.0) {
   _panic('Invalid inputs. Enter non zero values with respect to the sign convention.');
 }
-  return 1.0 / ((1.0 / 'focal_length') - (1.0 / $distance_of_object));
+  return 1.0 / ((1.0 / $focal_length) - (1.0 / $distance_of_object));
 };
   function test_focal_length() {
   $f1 = focal_length(10.0, 20.0);

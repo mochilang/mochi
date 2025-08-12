@@ -125,7 +125,7 @@ $__start = _now();
 };
   return $final_scores;
 };
-  function procentual_proximity(&$source_data, $weights) {
+  function procentual_proximity($source_data, $weights) {
   global $vehicles, $result;
   $data_lists = get_data($source_data);
   $score_lists = calculate_each_score($data_lists, $weights);

@@ -44,16 +44,16 @@ $__start = _now();
   return 1.0 / ((1.0 / $image_distance_from_lens) - (1.0 / $object_distance_from_lens));
 };
   function object_distance($focal_length_of_lens, $image_distance_from_lens) {
-  if ($image_distance_from_lens == 0.0 || 'focal_length_of_lens' == 0.0) {
+  if ($image_distance_from_lens == 0.0 || $focal_length_of_lens == 0.0) {
   _panic('Invalid inputs. Enter non zero values with respect to the sign convention.');
 }
-  return 1.0 / ((1.0 / $image_distance_from_lens) - (1.0 / 'focal_length_of_lens'));
+  return 1.0 / ((1.0 / $image_distance_from_lens) - (1.0 / $focal_length_of_lens));
 };
   function image_distance($focal_length_of_lens, $object_distance_from_lens) {
-  if ($object_distance_from_lens == 0.0 || 'focal_length_of_lens' == 0.0) {
+  if ($object_distance_from_lens == 0.0 || $focal_length_of_lens == 0.0) {
   _panic('Invalid inputs. Enter non zero values with respect to the sign convention.');
 }
-  return 1.0 / ((1.0 / $object_distance_from_lens) + (1.0 / 'focal_length_of_lens'));
+  return 1.0 / ((1.0 / $object_distance_from_lens) + (1.0 / $focal_length_of_lens));
 };
   echo rtrim(_str(focal_length_of_lens(10.0, 4.0))), PHP_EOL;
   echo rtrim(_str(focal_length_of_lens(2.7, 5.8))), PHP_EOL;

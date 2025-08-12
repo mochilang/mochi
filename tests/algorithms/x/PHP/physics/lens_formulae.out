@@ -1,8 +1,6 @@
 6.6666666666667
 -5.0516129032258
-
-Fatal error: Uncaught TypeError: Unsupported operand types: float / string in /workspace/mochi/tests/algorithms/x/PHP/physics/lens_formulae.php:33
-Stack trace:
-#0 /workspace/mochi/tests/algorithms/x/PHP/physics/lens_formulae.php(43): object_distance(10.0, 40.0)
-#1 {main}
-  thrown in /workspace/mochi/tests/algorithms/x/PHP/physics/lens_formulae.php on line 33
+-13.333333333333
+1.9787234042553
+22.222222222222
+3.1719696969697

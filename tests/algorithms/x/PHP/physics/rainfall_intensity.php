@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,7 +35,9 @@ function _panic($msg) {
     fwrite(STDERR, strval($msg));
     exit(1);
 }
-function exp_approx($x) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function exp_approx($x) {
   global $r1, $r2, $r3;
   $y = $x;
   $is_neg = false;
@@ -40,8 +57,8 @@ function exp_approx($x) {
   return 1.0 / $sum;
 }
   return $sum;
-}
-function ln_series($x) {
+};
+  function ln_series($x) {
   global $r1, $r2, $r3;
   $t = ($x - 1.0) / ($x + 1.0);
   $term = $t;
@@ -53,8 +70,8 @@ function ln_series($x) {
   $n = $n + 2;
 };
   return 2.0 * $sum;
-}
-function ln($x) {
+};
+  function ln($x) {
   global $r1, $r2, $r3;
   $y = $x;
   $k = 0;
@@ -67,12 +84,12 @@ function ln($x) {
   $k = $k - 1;
 };
   return ln_series($y) + (floatval($k)) * ln_series(10.0);
-}
-function powf($base, $exponent) {
+};
+  function powf($base, $exponent) {
   global $r1, $r2, $r3;
   return exp_approx($exponent * ln($base));
-}
-function rainfall_intensity($coefficient_k, $coefficient_a, $coefficient_b, $coefficient_c, $return_period, $duration) {
+};
+  function rainfall_intensity($coefficient_k, $coefficient_a, $coefficient_b, $coefficient_c, $return_period, $duration) {
   global $r1, $r2, $r3;
   if ($coefficient_k <= 0.0) {
   _panic('All parameters must be positive.');
@@ -95,10 +112,18 @@ function rainfall_intensity($coefficient_k, $coefficient_a, $coefficient_b, $coe
   $numerator = $coefficient_k * powf($return_period, $coefficient_a);
   $denominator = powf($duration + $coefficient_b, $coefficient_c);
   return $numerator / $denominator;
-}
-$r1 = rainfall_intensity(1000.0, 0.2, 11.6, 0.81, 10.0, 60.0);
-echo rtrim(_str($r1)), PHP_EOL;
-$r2 = rainfall_intensity(1000.0, 0.2, 11.6, 0.81, 10.0, 30.0);
-echo rtrim(_str($r2)), PHP_EOL;
-$r3 = rainfall_intensity(1000.0, 0.2, 11.6, 0.81, 5.0, 60.0);
-echo rtrim(_str($r3)), PHP_EOL;
+};
+  $r1 = rainfall_intensity(1000.0, 0.2, 11.6, 0.81, 10.0, 60.0);
+  echo rtrim(_str($r1)), PHP_EOL;
+  $r2 = rainfall_intensity(1000.0, 0.2, 11.6, 0.81, 10.0, 30.0);
+  echo rtrim(_str($r2)), PHP_EOL;
+  $r3 = rainfall_intensity(1000.0, 0.2, 11.6, 0.81, 5.0, 60.0);
+  echo rtrim(_str($r3)), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;
