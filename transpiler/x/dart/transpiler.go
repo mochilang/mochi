@@ -1800,6 +1800,10 @@ func (n *Name) emit(w io.Writer) error {
 		return err
 	}
 	name := n.Name
+	if name == "error" {
+		useError = true
+		name = "_error"
+	}
 	if (benchMain || renameMain) && name == "main" {
 		name = "_main"
 	}
@@ -2809,14 +2813,13 @@ func (c *CastExpr) emit(w io.Writer) error {
 	}
 
 	if c.Type == "int" && valType == "String" {
-		if _, err := io.WriteString(w, "("); err != nil {
+		if _, err := io.WriteString(w, "int.parse("); err != nil {
 			return err
 		}
 		if err := c.Value.emit(w); err != nil {
 			return err
 		}
-		// ensure the substring is treated as a String before calling codeUnitAt
-		_, err := io.WriteString(w, " as String).codeUnitAt(0)")
+		_, err := io.WriteString(w, ")")
 		return err
 	}
 
@@ -4137,7 +4140,19 @@ func inferType(e Expr) string {
 			return "List<dynamic>"
 		}
 		return "List<dynamic>"
-	case *AvgExpr, *SumExpr, *MinExpr, *MaxExpr:
+	case *AvgExpr, *SumExpr:
+		return "num"
+	case *MinExpr:
+		lt := inferType(ex.List)
+		if strings.HasPrefix(lt, "List<") && strings.HasSuffix(lt, ">") {
+			return strings.TrimSuffix(strings.TrimPrefix(lt, "List<"), ">")
+		}
+		return "num"
+	case *MaxExpr:
+		lt := inferType(ex.List)
+		if strings.HasPrefix(lt, "List<") && strings.HasSuffix(lt, ">") {
+			return strings.TrimSuffix(strings.TrimPrefix(lt, "List<"), ">")
+		}
 		return "num"
 	case *NowExpr:
 		return "int"
