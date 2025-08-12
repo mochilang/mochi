@@ -2,6 +2,32 @@ import java.math.BigInteger
 
 fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }
 
+var _nowSeed = 0L
+var _nowSeeded = false
+fun _now(): Long {
+    if (!_nowSeeded) {
+        System.getenv("MOCHI_NOW_SEED")?.toLongOrNull()?.let {
+            _nowSeed = it
+            _nowSeeded = true
+        }
+    }
+    return if (_nowSeeded) {
+        _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647
+        kotlin.math.abs(_nowSeed)
+    } else {
+        kotlin.math.abs(System.nanoTime())
+    }
+}
+
+fun toJson(v: Any?): String = when (v) {
+    null -> "null"
+    is String -> "\"" + v.replace("\"", "\\\"") + "\""
+    is Boolean, is Number -> v.toString()
+    is Map<*, *> -> v.entries.joinToString(prefix = "{", postfix = "}") { toJson(it.key.toString()) + ":" + toJson(it.value) }
+    is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
+    else -> toJson(v.toString())
+}
+
 data class Layer(var units: Int = 0, var weight: MutableList<MutableList<Double>> = mutableListOf<MutableList<Double>>(), var bias: MutableList<Double> = mutableListOf<Double>(), var output: MutableList<Double> = mutableListOf<Double>(), var xdata: MutableList<Double> = mutableListOf<Double>(), var learn_rate: Double = 0.0)
 data class Data(var x: MutableList<MutableList<Double>> = mutableListOf<MutableList<Double>>(), var y: MutableList<MutableList<Double>> = mutableListOf<MutableList<Double>>())
 var seed: Int = (1).toInt()
@@ -216,17 +242,17 @@ fun forward(layers: MutableList<Layer>, x: MutableList<Double>): MutableList<Lay
 
 fun backward(layers: MutableList<Layer>, grad: MutableList<Double>): MutableList<Layer> {
     var g: MutableList<Double> = grad
-    var i: BigInteger = ((layers.size - 1).toBigInteger())
-    while (i.compareTo((0).toBigInteger()) > 0) {
-        var layer: Layer = layers[(i).toInt()]!!
+    var i: Int = (layers.size - 1).toInt()
+    while (i > 0) {
+        var layer: Layer = layers[i]!!
         var deriv: MutableList<Double> = sigmoid_derivative(layer.output)
         var delta: MutableList<Double> = vec_mul(g, deriv)
         var grad_w: MutableList<MutableList<Double>> = outer(delta, layer.xdata)
         layer.weight = mat_sub(layer.weight, mat_scalar_mul(grad_w, layer.learn_rate))
         layer.bias = vec_sub(layer.bias, vec_scalar_mul(delta, layer.learn_rate))
         g = matTvec(layer.weight, delta)
-        _listSet(layers, (i).toInt(), layer)
-        i = i.subtract((1).toBigInteger())
+        _listSet(layers, i, layer)
+        i = i - 1
     }
     return layers
 }
@@ -260,8 +286,8 @@ fun train(layers: MutableList<Layer>, xdata: MutableList<MutableList<Double>>, y
         while (i < xdata.size) {
             layers = forward(layers, xdata[i]!!)
             var out: Layer = ((layers[layers.size - 1]!!.output) as Layer)
-            var grad: MutableList<Double> = calc_gradient(ydata[i]!!, (out as MutableList<Double>))
-            layers = backward(layers, (grad as MutableList<Double>))
+            var grad: MutableList<Double> = calc_gradient(ydata[i]!!, out)
+            layers = backward(layers, grad)
             i = i + 1
         }
         r = r + 1
@@ -294,5 +320,17 @@ fun user_main(): Unit {
 }
 
 fun main() {
-    user_main()
+    run {
+        System.gc()
+        val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
+        val _start = _now()
+        user_main()
+        System.gc()
+        val _end = _now()
+        val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
+        val _durationUs = (_end - _start) / 1000
+        val _memDiff = kotlin.math.abs(_endMem - _startMem)
+        val _res = mapOf("duration_us" to _durationUs, "memory_bytes" to _memDiff, "name" to "main")
+        println(toJson(_res))
+    }
 }

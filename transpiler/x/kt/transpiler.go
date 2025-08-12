@@ -4144,6 +4144,11 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 						}
 					}
 				}
+				if typ != "" {
+					if gt := guessType(v); gt != "" && gt != typ {
+						typ = gt
+					}
+				}
 				if typ == "" || typ == "Any" || typ == "Any?" {
 					typ = guessType(v)
 					if typ == "" {
