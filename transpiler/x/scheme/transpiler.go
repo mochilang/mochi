@@ -358,6 +358,7 @@ func header() []byte {
 	prelude += "(import (srfi 69))\n"
 	prelude += "(import (srfi 1))\n"
 	prelude += "(define _list list)\n"
+	prelude += "(define (void) '())\n"
 	if needMD5Hex {
 		prelude += "(import (chibi crypto md5))\n"
 	}
@@ -550,7 +551,10 @@ func header() []byte {
 		ts.In(loc).Format("2006-01-02 15:04 -0700"), prelude))
 }
 
-func voidSym() Node { return Symbol("'()") }
+// voidSym produces an expression that evaluates to no value. Scheme lacks a
+// standard literal for this, so we call a small `(void)` procedure defined in
+// the generated prelude.
+func voidSym() Node { return &List{Elems: []Node{Symbol("void")}} }
 
 func typedDefault(t *parser.TypeRef) Node {
 	if t == nil || t.Simple == nil {
