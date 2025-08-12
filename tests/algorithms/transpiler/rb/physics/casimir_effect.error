@@ -1,6 +1,0 @@
-exit status 1
-/workspace/mochi/tests/algorithms/transpiler/rb/physics/casimir_effect.rb:109:in `panic': One and only one argument must be 0 (RuntimeError)
-	from /workspace/mochi/tests/algorithms/transpiler/rb/physics/casimir_effect.rb:139:in `casimir_force'
-	from /workspace/mochi/tests/algorithms/transpiler/rb/physics/casimir_effect.rb:170:in `main'
-	from /workspace/mochi/tests/algorithms/transpiler/rb/physics/casimir_effect.rb:176:in `<main>'
-{"force"=>6.4248189174864216e-21}
