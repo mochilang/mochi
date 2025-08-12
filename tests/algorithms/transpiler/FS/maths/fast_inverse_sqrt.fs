@@ -1,4 +1,4 @@
-// Generated 2025-08-12 07:47 +0700
+// Generated 2025-08-12 08:17 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -38,7 +38,7 @@ let rec pow2_int (n: int) =
         let mutable result: int = 1
         let mutable i: int = 0
         while i < n do
-            result <- int ((int64 result) * (int64 2))
+            result <- result * 2
             i <- i + 1
         __ret <- result
         raise Return
@@ -74,7 +74,7 @@ and lshift (num: int) (k: int) =
         let mutable result: int = num
         let mutable i: int = 0
         while i < k do
-            result <- int ((int64 result) * (int64 2))
+            result <- result * 2
             i <- i + 1
         __ret <- result
         raise Return

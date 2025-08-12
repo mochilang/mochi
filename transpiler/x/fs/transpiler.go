@@ -3956,17 +3956,27 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		} else if tgtType != "" && valType != "" && tgtType != valType {
 			val = &CastExpr{Expr: val, Type: fsTypeFromString(tgtType)}
 		}
+		// Walk down any indexing to find the base identifier and collect indices.
 		base := target
+		indices := []Expr{}
 		idxCount := len(st.Assign.Index)
 		for {
 			if ix, ok := base.(*IndexExpr); ok {
+				indices = append([]Expr{ix.Index}, indices...)
 				base = ix.Target
 			} else {
 				break
 			}
 		}
-		if id, ok := base.(*IdentExpr); ok && idxCount == 1 {
-			if strings.HasSuffix(inferType(id), " array") {
+		if id, ok := base.(*IdentExpr); ok {
+			t := inferType(id)
+			// Map assignment: use helper to update dictionary
+			if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") && len(indices) > 0 {
+				expr := buildMapUpdate(&IdentExpr{Name: id.Name}, indices, val)
+				return &AssignStmt{Name: fsIdent(id.Name), Expr: expr}, nil
+			}
+			// Array assignment with single index uses dynamic resize helper
+			if strings.HasSuffix(t, " array") && idxCount == 1 {
 				usesArraySet = true
 			}
 		}
@@ -5098,6 +5108,12 @@ func buildListUpdate(list Expr, indexes []Expr, val Expr) Expr {
 
 func buildMapUpdate(m Expr, keys []Expr, val Expr) Expr {
 	key := keys[0]
+	keyT := mapKeyType(inferType(m))
+	if keyT == "string" {
+		key = &CallExpr{Func: "string", Args: []Expr{key}}
+	} else if keyT == "int" && inferType(key) == "int64" {
+		key = &CastExpr{Expr: key, Type: "int"}
+	}
 	if len(keys) == 1 {
 		mapVal := mapValueType(inferType(m))
 		v := val

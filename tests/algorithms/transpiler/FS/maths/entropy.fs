@@ -1,4 +1,4 @@
-// Generated 2025-08-12 07:47 +0700
+// Generated 2025-08-12 08:17 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -29,6 +29,9 @@ let _substring (s:string) (start:int) (finish:int) =
     if st > en then st <- en
     s.Substring(st, en - st)
 
+let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
+    d.[k] <- v
+    d
 let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
     let d = System.Collections.Generic.Dictionary<'K, 'V>()
     for (k, v) in pairs do
@@ -92,24 +95,24 @@ and analyze_text (text: string) =
             raise Return
         let last: string = _substring text (n - 1) n
         if _single.ContainsKey(last) then
-            _single.[last] <- (_dictGet _single ((string (last)))) + 1
+            _single <- _dictAdd (_single) (string (last)) ((_dictGet _single ((string (last)))) + 1)
         else
-            _single.[last] <- 1
+            _single <- _dictAdd (_single) (string (last)) (1)
         let first: string = _substring text 0 1
         let pair0: string = " " + first
-        _double.[pair0] <- 1
+        _double <- _dictAdd (_double) (string (pair0)) (1)
         let mutable i: int = 0
         while i < (n - 1) do
             let ch: string = _substring text i (i + 1)
             if _single.ContainsKey(ch) then
-                _single.[ch] <- (_dictGet _single ((string (ch)))) + 1
+                _single <- _dictAdd (_single) (string (ch)) ((_dictGet _single ((string (ch)))) + 1)
             else
-                _single.[ch] <- 1
+                _single <- _dictAdd (_single) (string (ch)) (1)
             let seq: string = _substring text i (i + 2)
             if _double.ContainsKey(seq) then
-                _double.[seq] <- (_dictGet _double ((string (seq)))) + 1
+                _double <- _dictAdd (_double) (string (seq)) ((_dictGet _double ((string (seq)))) + 1)
             else
-                _double.[seq] <- 1
+                _double <- _dictAdd (_double) (string (seq)) (1)
             i <- i + 1
         __ret <- { _single = _single; _double = _double }
         raise Return

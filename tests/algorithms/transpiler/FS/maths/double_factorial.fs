@@ -1,4 +1,4 @@
-// Generated 2025-08-12 07:47 +0700
+// Generated 2025-08-12 08:17 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -28,7 +28,7 @@ let rec double_factorial_recursive (n: int) =
         if n <= 1 then
             __ret <- 1
             raise Return
-        __ret <- int ((int64 n) * (int64 (double_factorial_recursive (n - 2))))
+        __ret <- n * (double_factorial_recursive (n - 2))
         raise Return
         __ret
     with
@@ -42,7 +42,7 @@ and double_factorial_iterative (n: int) =
         let mutable result: int = 1
         let mutable i: int = n
         while i > 0 do
-            result <- int ((int64 result) * (int64 i))
+            result <- result * i
             i <- i - 2
         __ret <- result
         raise Return

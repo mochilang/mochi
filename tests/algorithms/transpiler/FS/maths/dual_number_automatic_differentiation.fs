@@ -1,4 +1,4 @@
-// Generated 2025-08-12 07:47 +0700
+// Generated 2025-08-12 08:17 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -128,18 +128,18 @@ and dual_mul (a: Dual) (b: Dual) =
             while j < (Seq.length (b._duals)) do
                 let pos: int = (i + j) + 1
                 let ``val``: float = (_idx new_duals (int pos)) + ((_idx (a._duals) (int i)) * (_idx (b._duals) (int j)))
-                new_duals.[int pos] <- ``val``
+                new_duals.[pos] <- ``val``
                 j <- j + 1
             i <- i + 1
         let mutable k: int = 0
         while k < (Seq.length (a._duals)) do
             let ``val``: float = (_idx new_duals (int k)) + ((_idx (a._duals) (int k)) * (b._real))
-            new_duals.[int k] <- ``val``
+            new_duals.[k] <- ``val``
             k <- k + 1
         let mutable l: int = 0
         while l < (Seq.length (b._duals)) do
             let ``val``: float = (_idx new_duals (int l)) + ((_idx (b._duals) (int l)) * (a._real))
-            new_duals.[int l] <- ``val``
+            new_duals.[l] <- ``val``
             l <- l + 1
         __ret <- { _real = (a._real) * (b._real); _duals = new_duals }
         raise Return

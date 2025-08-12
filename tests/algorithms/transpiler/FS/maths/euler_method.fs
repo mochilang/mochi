@@ -1,4 +1,4 @@
-// Generated 2025-08-12 07:47 +0700
+// Generated 2025-08-12 08:17 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -55,11 +55,11 @@ and explicit_euler (ode_func: float -> float -> float) (y0: float) (x0: float) (
         while i <= n do
             y <- Array.append y [|0.0|]
             i <- i + 1
-        y.[int 0] <- y0
+        y.[0] <- y0
         let mutable x: float = x0
         let mutable k: int = 0
         while k < n do
-            y.[int (k + 1)] <- (_idx y (int k)) + (float (step_size * (float (ode_func (x) (_idx y (int k))))))
+            y.[(k + 1)] <- (_idx y (int k)) + (float (step_size * (float (ode_func (x) (_idx y (int k))))))
             x <- x + step_size
             k <- k + 1
         __ret <- y

@@ -1,4 +1,4 @@
-// Generated 2025-08-12 07:47 +0700
+// Generated 2025-08-12 08:17 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -37,7 +37,7 @@ let rec is_prime (n: int) =
             __ret <- false
             raise Return
         let mutable i: int = 3
-        while ((int64 i) * (int64 i)) <= (int64 n) do
+        while (i * i) <= n do
             if (((n % i + i) % i)) = 0 then
                 __ret <- false
                 raise Return
@@ -53,7 +53,7 @@ and is_germain_prime (number: int) =
     try
         if number < 1 then
             failwith ("Input value must be a positive integer")
-        __ret <- (is_prime (number)) && (is_prime (int (((int64 2) * (int64 number)) + (int64 1))))
+        __ret <- (is_prime (number)) && (is_prime ((2 * number) + 1))
         raise Return
         __ret
     with

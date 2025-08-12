@@ -1,4 +1,4 @@
-// Generated 2025-08-12 07:47 +0700
+// Generated 2025-08-12 08:17 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -28,7 +28,7 @@ let rec factorial (n: int) =
         let mutable value: int = 1
         let mutable i: int = 1
         while i <= n do
-            value <- int ((int64 value) * (int64 i))
+            value <- value * i
             i <- i + 1
         __ret <- value
         raise Return
@@ -44,7 +44,7 @@ and factorial_recursive (n: int) =
         if n <= 1 then
             __ret <- 1
             raise Return
-        __ret <- int ((int64 n) * (int64 (factorial_recursive (n - 1))))
+        __ret <- n * (factorial_recursive (n - 1))
         raise Return
         __ret
     with

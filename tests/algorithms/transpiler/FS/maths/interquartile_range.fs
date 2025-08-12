@@ -1,4 +1,4 @@
-// Generated 2025-08-12 07:47 +0700
+// Generated 2025-08-12 08:17 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -57,8 +57,8 @@ let rec bubble_sort (nums: float array) =
             while b < ((n - a) - 1) do
                 if (_idx arr (int b)) > (_idx arr (int (b + 1))) then
                     let temp: float = _idx arr (int b)
-                    arr.[int b] <- _idx arr (int (b + 1))
-                    arr.[int (b + 1)] <- temp
+                    arr.[b] <- _idx arr (int (b + 1))
+                    arr.[(b + 1)] <- temp
                 b <- b + 1
             a <- a + 1
         __ret <- arr

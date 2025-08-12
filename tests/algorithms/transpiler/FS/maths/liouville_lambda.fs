@@ -1,4 +1,4 @@
-// Generated 2025-08-12 07:47 +0700
+// Generated 2025-08-12 08:17 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -32,7 +32,7 @@ let rec prime_factors (n: int) =
         let mutable i: int = 2
         let mutable x: int = n
         let mutable factors: int array = Array.empty<int>
-        while ((int64 i) * (int64 i)) <= (int64 x) do
+        while (i * i) <= x do
             if (((x % i + i) % i)) = 0 then
                 factors <- Array.append factors [|i|]
                 x <- int (_floordiv x i)

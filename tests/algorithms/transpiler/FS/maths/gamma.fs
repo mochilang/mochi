@@ -1,4 +1,4 @@
-// Generated 2025-08-12 07:47 +0700
+// Generated 2025-08-12 08:17 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -57,7 +57,7 @@ and ln (x: float) =
         let mutable sum: float = 0.0
         let mutable k: int = 0
         while k < 10 do
-            let denom: float = float (((int64 2) * (int64 k)) + (int64 1))
+            let denom: float = float ((2 * k) + 1)
             sum <- sum + (term / denom)
             term <- term * y2
             k <- k + 1

@@ -1,4 +1,4 @@
-// Generated 2025-08-12 07:47 +0700
+// Generated 2025-08-12 08:17 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -43,7 +43,7 @@ let rec combinations (n: int) (k: int) =
         let mutable res: int = 1
         let mutable i: int = 0
         while i < k do
-            res <- int ((int64 res) * (int64 (n - i)))
+            res <- res * (n - i)
             res <- _floordiv res (i + 1)
             i <- i + 1
         __ret <- res

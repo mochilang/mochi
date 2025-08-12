@@ -1,4 +1,4 @@
-// Generated 2025-08-12 07:47 +0700
+// Generated 2025-08-12 08:17 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -68,7 +68,7 @@ and lcm_fast (a: int) (b: int) =
     let mutable a = a
     let mutable b = b
     try
-        __ret <- int ((int64 (_floordiv a (gcd (a) (b)))) * (int64 b))
+        __ret <- (_floordiv a (gcd (a) (b))) * b
         raise Return
         __ret
     with

@@ -1,4 +1,4 @@
-// Generated 2025-08-12 07:47 +0700
+// Generated 2025-08-12 08:17 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -72,7 +72,7 @@ and matrix_mul (a: int array array) (b: int array array) =
                 let mutable cell: int = 0
                 let mutable k: int = 0
                 while k < n do
-                    cell <- int ((int64 cell) + ((int64 (_idx (_idx a (int i)) (int k))) * (int64 (_idx (_idx b (int k)) (int j)))))
+                    cell <- cell + ((_idx (_idx a (int i)) (int k)) * (_idx (_idx b (int k)) (int j)))
                     k <- k + 1
                 row <- Array.append row [|cell|]
                 j <- j + 1
@@ -115,7 +115,7 @@ and fibonacci_with_matrix_exponentiation (n: int) (f1: int) (f2: int) =
             raise Return
         let ``base``: int array array = [|[|1; 1|]; [|1; 0|]|]
         let m: int array array = matrix_pow (``base``) (n - 2)
-        __ret <- int (((int64 f2) * (int64 (_idx (_idx m (int 0)) (int 0)))) + ((int64 f1) * (int64 (_idx (_idx m (int 0)) (int 1)))))
+        __ret <- (f2 * (_idx (_idx m (int 0)) (int 0))) + (f1 * (_idx (_idx m (int 0)) (int 1)))
         raise Return
         __ret
     with
