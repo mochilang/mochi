@@ -47,7 +47,7 @@ $__start = _now();
   $sum = 1.0;
   $n = 1;
   while ($n < 20) {
-  $term = $term * $x / to_float($n);
+  $term = $term * $x / floatval($n);
   $sum = $sum + $term;
   $n = $n + 1;
 };

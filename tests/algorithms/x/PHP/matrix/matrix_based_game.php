@@ -36,6 +36,9 @@ function _append($arr, $x) {
     return $arr;
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
@@ -56,7 +59,7 @@ $__start = _now();
   $res = 0;
   $i = 0;
   while ($i < strlen($token)) {
-  $res = $res * 10 + (ord(substr($token, $i, $i + 1 - $i)));
+  $res = $res * 10 + ((ctype_digit($token[$i]) ? intval($token[$i]) : ord($token[$i])));
   $i = $i + 1;
 };
   return $res;
@@ -79,7 +82,7 @@ $__start = _now();
   return $res;
 };
   function parse_moves($input_str) {
-  $pairs = explode(',', $input_str);
+  $pairs = split($input_str, ',');
   $moves = [];
   $i = 0;
   while ($i < count($pairs)) {
@@ -171,7 +174,7 @@ $__start = _now();
   while (count($stack) > 0) {
   $idx = count($stack) - 1;
   $pos = $stack[$idx];
-  $stack = array_slice($stack, 0, $idx - 0);
+  $stack = array_slice($stack, 0, $idx);
   if ($pos['x'] < 0 || $pos['x'] >= $size || $pos['y'] < 0 || $pos['y'] >= $size) {
   continue;
 }
@@ -192,7 +195,7 @@ $__start = _now();
   function increment_score($count) {
   return _intdiv($count * ($count + 1), 2);
 };
-  function move_x(&$matrix_g, $column, $size) {
+  function move_x($matrix_g, $column, $size) {
   $new_list = [];
   $row = 0;
   while ($row < $size) {
@@ -211,7 +214,7 @@ $__start = _now();
 };
   return $matrix_g;
 };
-  function move_y(&$matrix_g, $size) {
+  function move_y($matrix_g, $size) {
   $empty_cols = [];
   $column = $size - 1;
   while ($column >= 0) {

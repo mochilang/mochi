@@ -212,7 +212,7 @@ $__start = _now();
   global $seed;
   return ['units' => $units, 'weight' => random_matrix($units, $back_units), 'bias' => random_vector($units), 'output' => [], 'xdata' => [], 'learn_rate' => $lr];
 };
-  function forward(&$layers, $x) {
+  function forward($layers, $x) {
   global $seed;
   $data = $x;
   $i = 0;
@@ -231,7 +231,7 @@ $__start = _now();
 };
   return $layers;
 };
-  function backward(&$layers, $grad) {
+  function backward($layers, $grad) {
   global $seed;
   $g = $grad;
   $i = count($layers) - 1;
