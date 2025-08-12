@@ -1,0 +1,8 @@
+run: exit status 1
+Exception in thread "main" java.lang.RuntimeException: ln domain error
+	at SoftplusKt.panic(softplus.kt:1)
+	at SoftplusKt.ln(softplus.kt:31)
+	at SoftplusKt.softplus(softplus.kt:64)
+	at SoftplusKt.user_main(softplus.kt:75)
+	at SoftplusKt.main(softplus.kt:85)
+	at SoftplusKt.main(softplus.kt)

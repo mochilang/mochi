@@ -1,0 +1,250 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:30:83: error: the integer literal does not conform to the expected type Int
+var example1: MutableList<Item> = alternative_list_arrange(mutableListOf(from_int(1), from_int(2), from_int(3), from_int(4), from_int(5)), mutableListOf(from_string("A"), from_string("B"), from_string("C")))
+                                                                                  ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:30:96: error: the integer literal does not conform to the expected type Int
+var example1: MutableList<Item> = alternative_list_arrange(mutableListOf(from_int(1), from_int(2), from_int(3), from_int(4), from_int(5)), mutableListOf(from_string("A"), from_string("B"), from_string("C")))
+                                                                                               ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:30:109: error: the integer literal does not conform to the expected type Int
+var example1: MutableList<Item> = alternative_list_arrange(mutableListOf(from_int(1), from_int(2), from_int(3), from_int(4), from_int(5)), mutableListOf(from_string("A"), from_string("B"), from_string("C")))
+                                                                                                            ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:30:122: error: the integer literal does not conform to the expected type Int
+var example1: MutableList<Item> = alternative_list_arrange(mutableListOf(from_int(1), from_int(2), from_int(3), from_int(4), from_int(5)), mutableListOf(from_string("A"), from_string("B"), from_string("C")))
+                                                                                                                         ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:30:135: error: the integer literal does not conform to the expected type Int
+var example1: MutableList<Item> = alternative_list_arrange(mutableListOf(from_int(1), from_int(2), from_int(3), from_int(4), from_int(5)), mutableListOf(from_string("A"), from_string("B"), from_string("C")))
+                                                                                                                                      ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:42:24: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline fun String.toInt(): Int defined in kotlin.text
+@SinceKotlin @InlineOnly public inline fun String.toInt(radix: Int): Int defined in kotlin.text
+private fun Iterable<FlagEnum>.toInt(): Int defined in kotlin.text
+    var v: Int = (((it.toInt())).value).toInt()
+                       ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:53:21: error: type mismatch: inferred type is kotlin.Int but Int was expected
+    var len1: Int = (first.size).toInt()
+                    ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:54:21: error: type mismatch: inferred type is kotlin.Int but Int was expected
+    var len2: Int = (second.size).toInt()
+                    ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:55:34: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+public fun String.compareTo(other: String, ignoreCase: Boolean = ...): Int defined in kotlin.text
+    var abs_len: Int = (if (len1 > len2) len1 else len2).toInt()
+                                 ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:55:58: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline fun String.toInt(): Int defined in kotlin.text
+@SinceKotlin @InlineOnly public inline fun String.toInt(radix: Int): Int defined in kotlin.text
+private fun Iterable<FlagEnum>.toInt(): Int defined in kotlin.text
+    var abs_len: Int = (if (len1 > len2) len1 else len2).toInt()
+                                                         ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:57:18: error: type mismatch: inferred type is kotlin.Int but Int was expected
+    var i: Int = (0).toInt()
+                 ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:58:14: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+public fun String.compareTo(other: String, ignoreCase: Boolean = ...): Int defined in kotlin.text
+    while (i < abs_len) {
+             ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:59:15: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+public fun String.compareTo(other: String, ignoreCase: Boolean = ...): Int defined in kotlin.text
+        if (i < len1) {
+              ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:60:78: error: type mismatch: inferred type is Int but kotlin.Int was expected
+            result = run { val _tmp = result.toMutableList(); _tmp.add(first[i]!!); _tmp }
+                                                                             ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:62:15: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+public fun String.compareTo(other: String, ignoreCase: Boolean = ...): Int defined in kotlin.text
+        if (i < len2) {
+              ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:63:79: error: type mismatch: inferred type is Int but kotlin.Int was expected
+            result = run { val _tmp = result.toMutableList(); _tmp.add(second[i]!!); _tmp }
+                                                                              ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:65:15: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun BigDecimal.plus(other: BigDecimal): BigDecimal defined in kotlin
+@InlineOnly public inline operator fun BigInteger.plus(other: BigInteger): BigInteger defined in kotlin
+public operator fun <T> Array<???>.plus(elements: Array<out ???>): Array<???> defined in kotlin.collections
+public operator fun <T> Array<???>.plus(elements: Collection<???>): Array<???> defined in kotlin.collections
+public operator fun <T> Array<Int>.plus(element: Int): Array<Int> defined in kotlin.collections
+public operator fun BooleanArray.plus(element: Boolean): BooleanArray defined in kotlin.collections
+public operator fun BooleanArray.plus(elements: BooleanArray): BooleanArray defined in kotlin.collections
+public operator fun BooleanArray.plus(elements: Collection<Boolean>): BooleanArray defined in kotlin.collections
+public operator fun ByteArray.plus(element: Byte): ByteArray defined in kotlin.collections
+public operator fun ByteArray.plus(elements: ByteArray): ByteArray defined in kotlin.collections
+public operator fun ByteArray.plus(elements: Collection<Byte>): ByteArray defined in kotlin.collections
+@InlineOnly public inline operator fun Char.plus(other: String): String defined in kotlin.text
+public operator fun CharArray.plus(element: Char): CharArray defined in kotlin.collections
+public operator fun CharArray.plus(elements: CharArray): CharArray defined in kotlin.collections
+public operator fun CharArray.plus(elements: Collection<Char>): CharArray defined in kotlin.collections
+public operator fun DoubleArray.plus(element: Double): DoubleArray defined in kotlin.collections
+public operator fun DoubleArray.plus(elements: DoubleArray): DoubleArray defined in kotlin.collections
+public operator fun DoubleArray.plus(elements: Collection<Double>): DoubleArray defined in kotlin.collections
+public operator fun FloatArray.plus(element: Float): FloatArray defined in kotlin.collections
+public operator fun FloatArray.plus(elements: FloatArray): FloatArray defined in kotlin.collections
+public operator fun FloatArray.plus(elements: Collection<Float>): FloatArray defined in kotlin.collections
+public operator fun IntArray.plus(element: Int): IntArray defined in kotlin.collections
+public operator fun IntArray.plus(elements: IntArray): IntArray defined in kotlin.collections
+public operator fun IntArray.plus(elements: Collection<Int>): IntArray defined in kotlin.collections
+public operator fun LongArray.plus(element: Long): LongArray defined in kotlin.collections
+public operator fun LongArray.plus(elements: LongArray): LongArray defined in kotlin.collections
+public operator fun LongArray.plus(elements: Collection<Long>): LongArray defined in kotlin.collections
+public operator fun ShortArray.plus(element: Short): ShortArray defined in kotlin.collections
+public operator fun ShortArray.plus(elements: ShortArray): ShortArray defined in kotlin.collections
+public operator fun ShortArray.plus(elements: Collection<Short>): ShortArray defined in kotlin.collections
+public operator fun String?.plus(other: Any?): String defined in kotlin
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline operator fun UByteArray.plus(element: UByte): UByteArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline operator fun UByteArray.plus(elements: UByteArray): UByteArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes public operator fun UByteArray.plus(elements: Collection<UByte>): UByteArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline operator fun UIntArray.plus(element: UInt): UIntArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline operator fun UIntArray.plus(elements: UIntArray): UIntArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes public operator fun UIntArray.plus(elements: Collection<UInt>): UIntArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline operator fun ULongArray.plus(element: ULong): ULongArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline operator fun ULongArray.plus(elements: ULongArray): ULongArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes public operator fun ULongArray.plus(elements: Collection<ULong>): ULongArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline operator fun UShortArray.plus(element: UShort): UShortArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline operator fun UShortArray.plus(elements: UShortArray): UShortArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes public operator fun UShortArray.plus(elements: Collection<UShort>): UShortArray defined in kotlin.collections
+public operator fun <T> Collection<???>.plus(elements: Array<out ???>): List<???> defined in kotlin.collections
+public operator fun <T> Collection<???>.plus(elements: Iterable<???>): List<???> defined in kotlin.collections
+public operator fun <T> Collection<???>.plus(elements: Sequence<???>): List<???> defined in kotlin.collections
+public operator fun <T> Collection<Int>.plus(element: Int): List<Int> defined in kotlin.collections
+public operator fun <T> Iterable<???>.plus(elements: Array<out ???>): List<???> defined in kotlin.collections
+public operator fun <T> Iterable<???>.plus(elements: Iterable<???>): List<???> defined in kotlin.collections
+public operator fun <T> Iterable<???>.plus(elements: Sequence<???>): List<???> defined in kotlin.collections
+public operator fun <T> Iterable<Int>.plus(element: Int): List<Int> defined in kotlin.collections
+public operator fun <K, V> Map<out ???, ???>.plus(pairs: Array<out Pair<???, ???>>): Map<???, ???> defined in kotlin.collections
+public operator fun <K, V> Map<out ???, ???>.plus(pair: Pair<???, ???>): Map<???, ???> defined in kotlin.collections
+public operator fun <K, V> Map<out ???, ???>.plus(pairs: Iterable<Pair<???, ???>>): Map<???, ???> defined in kotlin.collections
+public operator fun <K, V> Map<out ???, ???>.plus(map: Map<out ???, ???>): Map<???, ???> defined in kotlin.collections
+public operator fun <K, V> Map<out ???, ???>.plus(pairs: Sequence<Pair<???, ???>>): Map<???, ???> defined in kotlin.collections
+public operator fun <T> Set<???>.plus(elements: Array<out ???>): Set<???> defined in kotlin.collections
+public operator fun <T> Set<???>.plus(elements: Iterable<???>): Set<???> defined in kotlin.collections
+public operator fun <T> Set<???>.plus(elements: Sequence<???>): Set<???> defined in kotlin.collections
+public operator fun <T> Set<Int>.plus(element: Int): Set<Int> defined in kotlin.collections
+public operator fun <T> Sequence<???>.plus(elements: Array<out ???>): Sequence<???> defined in kotlin.sequences
+public operator fun <T> Sequence<???>.plus(elements: Iterable<???>): Sequence<???> defined in kotlin.sequences
+public operator fun <T> Sequence<???>.plus(elements: Sequence<???>): Sequence<???> defined in kotlin.sequences
+public operator fun <T> Sequence<Int>.plus(element: Int): Sequence<Int> defined in kotlin.sequences
+        i = i + 1
+              ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:72:18: error: type mismatch: inferred type is kotlin.Int but Int was expected
+    var i: Int = (0).toInt()
+                 ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:73:14: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+public fun String.compareTo(other: String, ignoreCase: Boolean = ...): Int defined in kotlin.text
+    while (i < xs.size) {
+             ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:74:35: error: type mismatch: inferred type is Int but kotlin.Int was expected
+        s = s + item_to_string(xs[i]!!)
+                                  ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:75:15: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+public fun String.compareTo(other: String, ignoreCase: Boolean = ...): Int defined in kotlin.text
+        if (i < (xs.size - 1)) {
+              ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:78:15: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun BigDecimal.plus(other: BigDecimal): BigDecimal defined in kotlin
+@InlineOnly public inline operator fun BigInteger.plus(other: BigInteger): BigInteger defined in kotlin
+public operator fun <T> Array<???>.plus(elements: Array<out ???>): Array<???> defined in kotlin.collections
+public operator fun <T> Array<???>.plus(elements: Collection<???>): Array<???> defined in kotlin.collections
+public operator fun <T> Array<Int>.plus(element: Int): Array<Int> defined in kotlin.collections
+public operator fun BooleanArray.plus(element: Boolean): BooleanArray defined in kotlin.collections
+public operator fun BooleanArray.plus(elements: BooleanArray): BooleanArray defined in kotlin.collections
+public operator fun BooleanArray.plus(elements: Collection<Boolean>): BooleanArray defined in kotlin.collections
+public operator fun ByteArray.plus(element: Byte): ByteArray defined in kotlin.collections
+public operator fun ByteArray.plus(elements: ByteArray): ByteArray defined in kotlin.collections
+public operator fun ByteArray.plus(elements: Collection<Byte>): ByteArray defined in kotlin.collections
+@InlineOnly public inline operator fun Char.plus(other: String): String defined in kotlin.text
+public operator fun CharArray.plus(element: Char): CharArray defined in kotlin.collections
+public operator fun CharArray.plus(elements: CharArray): CharArray defined in kotlin.collections
+public operator fun CharArray.plus(elements: Collection<Char>): CharArray defined in kotlin.collections
+public operator fun DoubleArray.plus(element: Double): DoubleArray defined in kotlin.collections
+public operator fun DoubleArray.plus(elements: DoubleArray): DoubleArray defined in kotlin.collections
+public operator fun DoubleArray.plus(elements: Collection<Double>): DoubleArray defined in kotlin.collections
+public operator fun FloatArray.plus(element: Float): FloatArray defined in kotlin.collections
+public operator fun FloatArray.plus(elements: FloatArray): FloatArray defined in kotlin.collections
+public operator fun FloatArray.plus(elements: Collection<Float>): FloatArray defined in kotlin.collections
+public operator fun IntArray.plus(element: Int): IntArray defined in kotlin.collections
+public operator fun IntArray.plus(elements: IntArray): IntArray defined in kotlin.collections
+public operator fun IntArray.plus(elements: Collection<Int>): IntArray defined in kotlin.collections
+public operator fun LongArray.plus(element: Long): LongArray defined in kotlin.collections
+public operator fun LongArray.plus(elements: LongArray): LongArray defined in kotlin.collections
+public operator fun LongArray.plus(elements: Collection<Long>): LongArray defined in kotlin.collections
+public operator fun ShortArray.plus(element: Short): ShortArray defined in kotlin.collections
+public operator fun ShortArray.plus(elements: ShortArray): ShortArray defined in kotlin.collections
+public operator fun ShortArray.plus(elements: Collection<Short>): ShortArray defined in kotlin.collections
+public operator fun String?.plus(other: Any?): String defined in kotlin
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline operator fun UByteArray.plus(element: UByte): UByteArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline operator fun UByteArray.plus(elements: UByteArray): UByteArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes public operator fun UByteArray.plus(elements: Collection<UByte>): UByteArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline operator fun UIntArray.plus(element: UInt): UIntArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline operator fun UIntArray.plus(elements: UIntArray): UIntArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes public operator fun UIntArray.plus(elements: Collection<UInt>): UIntArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline operator fun ULongArray.plus(element: ULong): ULongArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline operator fun ULongArray.plus(elements: ULongArray): ULongArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes public operator fun ULongArray.plus(elements: Collection<ULong>): ULongArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline operator fun UShortArray.plus(element: UShort): UShortArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline operator fun UShortArray.plus(elements: UShortArray): UShortArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes public operator fun UShortArray.plus(elements: Collection<UShort>): UShortArray defined in kotlin.collections
+public operator fun <T> Collection<???>.plus(elements: Array<out ???>): List<???> defined in kotlin.collections
+public operator fun <T> Collection<???>.plus(elements: Iterable<???>): List<???> defined in kotlin.collections
+public operator fun <T> Collection<???>.plus(elements: Sequence<???>): List<???> defined in kotlin.collections
+public operator fun <T> Collection<Int>.plus(element: Int): List<Int> defined in kotlin.collections
+public operator fun <T> Iterable<???>.plus(elements: Array<out ???>): List<???> defined in kotlin.collections
+public operator fun <T> Iterable<???>.plus(elements: Iterable<???>): List<???> defined in kotlin.collections
+public operator fun <T> Iterable<???>.plus(elements: Sequence<???>): List<???> defined in kotlin.collections
+public operator fun <T> Iterable<Int>.plus(element: Int): List<Int> defined in kotlin.collections
+public operator fun <K, V> Map<out ???, ???>.plus(pairs: Array<out Pair<???, ???>>): Map<???, ???> defined in kotlin.collections
+public operator fun <K, V> Map<out ???, ???>.plus(pair: Pair<???, ???>): Map<???, ???> defined in kotlin.collections
+public operator fun <K, V> Map<out ???, ???>.plus(pairs: Iterable<Pair<???, ???>>): Map<???, ???> defined in kotlin.collections
+public operator fun <K, V> Map<out ???, ???>.plus(map: Map<out ???, ???>): Map<???, ???> defined in kotlin.collections
+public operator fun <K, V> Map<out ???, ???>.plus(pairs: Sequence<Pair<???, ???>>): Map<???, ???> defined in kotlin.collections
+public operator fun <T> Set<???>.plus(elements: Array<out ???>): Set<???> defined in kotlin.collections
+public operator fun <T> Set<???>.plus(elements: Iterable<???>): Set<???> defined in kotlin.collections
+public operator fun <T> Set<???>.plus(elements: Sequence<???>): Set<???> defined in kotlin.collections
+public operator fun <T> Set<Int>.plus(element: Int): Set<Int> defined in kotlin.collections
+public operator fun <T> Sequence<???>.plus(elements: Array<out ???>): Sequence<???> defined in kotlin.sequences
+public operator fun <T> Sequence<???>.plus(elements: Iterable<???>): Sequence<???> defined in kotlin.sequences
+public operator fun <T> Sequence<???>.plus(elements: Sequence<???>): Sequence<???> defined in kotlin.sequences
+public operator fun <T> Sequence<Int>.plus(element: Int): Sequence<Int> defined in kotlin.sequences
+        i = i + 1
+              ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:90:160: error: the integer literal does not conform to the expected type Int
+        var example2: MutableList<Item> = alternative_list_arrange(mutableListOf(from_string("A"), from_string("B"), from_string("C")), mutableListOf(from_int(1), from_int(2), from_int(3), from_int(4), from_int(5)))
+                                                                                                                                                               ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:90:173: error: the integer literal does not conform to the expected type Int
+        var example2: MutableList<Item> = alternative_list_arrange(mutableListOf(from_string("A"), from_string("B"), from_string("C")), mutableListOf(from_int(1), from_int(2), from_int(3), from_int(4), from_int(5)))
+                                                                                                                                                                            ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:90:186: error: the integer literal does not conform to the expected type Int
+        var example2: MutableList<Item> = alternative_list_arrange(mutableListOf(from_string("A"), from_string("B"), from_string("C")), mutableListOf(from_int(1), from_int(2), from_int(3), from_int(4), from_int(5)))
+                                                                                                                                                                                         ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:90:199: error: the integer literal does not conform to the expected type Int
+        var example2: MutableList<Item> = alternative_list_arrange(mutableListOf(from_string("A"), from_string("B"), from_string("C")), mutableListOf(from_int(1), from_int(2), from_int(3), from_int(4), from_int(5)))
+                                                                                                                                                                                                      ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:90:212: error: the integer literal does not conform to the expected type Int
+        var example2: MutableList<Item> = alternative_list_arrange(mutableListOf(from_string("A"), from_string("B"), from_string("C")), mutableListOf(from_int(1), from_int(2), from_int(3), from_int(4), from_int(5)))
+                                                                                                                                                                                                                   ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:92:160: error: the integer literal does not conform to the expected type Int
+        var example3: MutableList<Item> = alternative_list_arrange(mutableListOf(from_string("X"), from_string("Y"), from_string("Z")), mutableListOf(from_int(9), from_int(8), from_int(7), from_int(6)))
+                                                                                                                                                               ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:92:173: error: the integer literal does not conform to the expected type Int
+        var example3: MutableList<Item> = alternative_list_arrange(mutableListOf(from_string("X"), from_string("Y"), from_string("Z")), mutableListOf(from_int(9), from_int(8), from_int(7), from_int(6)))
+                                                                                                                                                                            ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:92:186: error: the integer literal does not conform to the expected type Int
+        var example3: MutableList<Item> = alternative_list_arrange(mutableListOf(from_string("X"), from_string("Y"), from_string("Z")), mutableListOf(from_int(9), from_int(8), from_int(7), from_int(6)))
+                                                                                                                                                                                         ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:92:199: error: the integer literal does not conform to the expected type Int
+        var example3: MutableList<Item> = alternative_list_arrange(mutableListOf(from_string("X"), from_string("Y"), from_string("Z")), mutableListOf(from_int(9), from_int(8), from_int(7), from_int(6)))
+                                                                                                                                                                                                      ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:94:91: error: the integer literal does not conform to the expected type Int
+        var example4: MutableList<Item> = alternative_list_arrange(mutableListOf(from_int(1), from_int(2), from_int(3), from_int(4), from_int(5)), mutableListOf<Item>())
+                                                                                          ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:94:104: error: the integer literal does not conform to the expected type Int
+        var example4: MutableList<Item> = alternative_list_arrange(mutableListOf(from_int(1), from_int(2), from_int(3), from_int(4), from_int(5)), mutableListOf<Item>())
+                                                                                                       ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:94:117: error: the integer literal does not conform to the expected type Int
+        var example4: MutableList<Item> = alternative_list_arrange(mutableListOf(from_int(1), from_int(2), from_int(3), from_int(4), from_int(5)), mutableListOf<Item>())
+                                                                                                                    ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:94:130: error: the integer literal does not conform to the expected type Int
+        var example4: MutableList<Item> = alternative_list_arrange(mutableListOf(from_int(1), from_int(2), from_int(3), from_int(4), from_int(5)), mutableListOf<Item>())
+                                                                                                                                 ^
+/workspace/mochi/tests/algorithms/x/Kotlin/other/alternative_list_arrange.kt:94:143: error: the integer literal does not conform to the expected type Int
+        var example4: MutableList<Item> = alternative_list_arrange(mutableListOf(from_int(1), from_int(2), from_int(3), from_int(4), from_int(5)), mutableListOf<Item>())
+                                                                                                                                              ^
