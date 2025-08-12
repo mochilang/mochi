@@ -54,6 +54,7 @@ var useExists bool
 var useAnyVec bool
 var useIndex bool
 var inStr bool
+var tmpCounter int
 var reserved = map[string]bool{
 	// C++ keywords
 	"alignas": true, "alignof": true, "and": true, "and_eq": true, "asm": true, "auto": true,
@@ -116,6 +117,11 @@ func safeName(n string) string {
 		return "_" + n
 	}
 	return n
+}
+
+func nextTmp() string {
+	tmpCounter++
+	return fmt.Sprintf("__tmp%d", tmpCounter)
 }
 
 func emitIndex(w io.Writer, e Expr) {
@@ -1361,34 +1367,71 @@ func emitToStream(w io.Writer, stream string, e Expr, indent int) {
 	switch {
 	case strings.HasPrefix(typ, "std::vector<"):
 		elem := elementTypeFromListType(typ)
+		tmp := nextTmp()
 		io.WriteString(w, ind+"{")
-		io.WriteString(w, " auto __tmp = ")
+		io.WriteString(w, " auto "+tmp+" = ")
 		e.emit(w)
-		io.WriteString(w, "; "+stream+" << \"[\"; for(size_t i=0;i<__tmp.size();++i){ if(i>0) "+stream+" << ' '; ")
+		io.WriteString(w, "; "+stream+" << \"[\"; for(size_t i=0;i<"+tmp+".size();++i){ if(i>0) "+stream+" << ' '; ")
 		if strings.HasPrefix(elem, "std::vector<") || strings.HasPrefix(elem, "std::map<") || strings.HasPrefix(elem, "std::optional<") {
 			io.WriteString(w, "{ std::ostringstream __ss; ")
-			emitToStream(w, "__ss", &IndexExpr{Target: &VarRef{Name: "__tmp"}, Index: &VarRef{Name: "i"}}, indent)
+			if localTypes != nil {
+				prev := localTypes[tmp]
+				localTypes[tmp] = typ
+				emitToStream(w, "__ss", &IndexExpr{Target: &VarRef{Name: tmp}, Index: &VarRef{Name: "i"}}, indent)
+				if prev != "" {
+					localTypes[tmp] = prev
+				} else {
+					delete(localTypes, tmp)
+				}
+			} else {
+				emitToStream(w, "__ss", &IndexExpr{Target: &VarRef{Name: tmp}, Index: &VarRef{Name: "i"}}, indent)
+			}
 			io.WriteString(w, " "+stream+" << __ss.str(); }")
 		} else if elem == "std::any" {
-			io.WriteString(w, "any_to_stream("+stream+", __tmp[i])")
+			io.WriteString(w, "any_to_stream("+stream+", "+tmp+"[i])")
 		} else if elem == "std::string" {
-			io.WriteString(w, stream+" << __tmp[i]")
+			io.WriteString(w, stream+" << "+tmp+"[i]")
 		} else {
-			io.WriteString(w, stream+" << __tmp[i]")
+			io.WriteString(w, stream+" << "+tmp+"[i]")
 		}
 		io.WriteString(w, "; } "+stream+" << \"]\"; }")
 		io.WriteString(w, "\n")
 	case strings.HasPrefix(typ, "std::optional<"):
+		tmp := nextTmp()
 		io.WriteString(w, ind+"{")
-		io.WriteString(w, " auto __tmp = ")
+		io.WriteString(w, " auto "+tmp+" = ")
 		e.emit(w)
-		io.WriteString(w, "; if(__tmp) "+stream+" << *__tmp; else "+stream+" << \"None\"; }")
+		io.WriteString(w, "; if("+tmp+") "+stream+" << *"+tmp+"; else "+stream+" << \"None\"; }")
 		io.WriteString(w, "\n")
 	case strings.HasPrefix(typ, "std::map<"):
+		val := valueTypeFromMapType(typ)
+		tmp := nextTmp()
 		io.WriteString(w, ind+"{")
-		io.WriteString(w, " auto __tmp = ")
+		io.WriteString(w, " auto "+tmp+" = ")
 		e.emit(w)
-		io.WriteString(w, "; "+stream+" << \"{\"; bool first=true; for(const auto& __p : __tmp){ if(!first) "+stream+" << \", \"; first=false; "+stream+" << __p.first << ': '; any_to_stream("+stream+", __p.second); } "+stream+" << \"}\"; }")
+		io.WriteString(w, "; "+stream+" << \"{\"; bool first=true; for(const auto& __p : "+tmp+"){ if(!first) "+stream+" << \", \"; first=false; "+stream+" << __p.first << ': '; ")
+		switch {
+		case strings.HasPrefix(val, "std::vector<") || strings.HasPrefix(val, "std::map<") || strings.HasPrefix(val, "std::optional<"):
+			io.WriteString(w, "{ std::ostringstream __ss; ")
+			if localTypes != nil {
+				prev := localTypes["__p.second"]
+				localTypes["__p.second"] = val
+				emitToStream(w, "__ss", &VarRef{Name: "__p.second"}, indent)
+				if prev != "" {
+					localTypes["__p.second"] = prev
+				} else {
+					delete(localTypes, "__p.second")
+				}
+			} else {
+				emitToStream(w, "__ss", &VarRef{Name: "__p.second"}, indent)
+			}
+			io.WriteString(w, " "+stream+" << __ss.str(); }")
+		case val == "std::any":
+			io.WriteString(w, "any_to_stream("+stream+", __p.second)")
+		default:
+			io.WriteString(w, stream+" << __p.second")
+		}
+		io.WriteString(w, "; } "+stream+" << \"}\"; }")
 		io.WriteString(w, "\n")
 	case typ == "std::any":
 		io.WriteString(w, ind+"any_to_stream("+stream+", ")
@@ -7753,6 +7796,26 @@ func elementTypeFromListType(t string) string {
 		}
 	}
 	return "auto"
+}
+
+func valueTypeFromMapType(t string) string {
+	if strings.HasPrefix(t, "std::map<") && strings.HasSuffix(t, ">") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(t, "std::map<"), ">")
+		depth := 0
+		for i := 0; i < len(inner); i++ {
+			switch inner[i] {
+			case '<':
+				depth++
+			case '>':
+				depth--
+			case ',':
+				if depth == 0 {
+					return strings.TrimSpace(inner[i+1:])
+				}
+			}
+		}
+	}
+	return "std::any"
 }
 
 func typeRefString(t *parser.TypeRef) string {

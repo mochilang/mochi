@@ -1,0 +1,21 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/open_google_results.cpp:86:215: warning: multi-character character constant [-Wmultichar]
+   86 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/open_google_results.cpp:86:251: warning: multi-character character constant [-Wmultichar]
+   86 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/open_google_results.cpp:142:13: error: ‘std::string link’ redeclared as different kind of entity
+  142 | std::string link = std::string();
+      |             ^~~~
+In file included from /workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/open_google_results.cpp:15:
+/usr/include/unistd.h:819:12: note: previous declaration ‘int link(const char*, const char*)’
+  819 | extern int link (const char *__from, const char *__to)
+      |            ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/open_google_results.cpp: In function ‘int main()’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/open_google_results.cpp:210:14: error: assignment of function ‘int link(const char*, const char*)’
+  210 |         link = first_link(sample_html);
+      |         ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/open_google_results.cpp:211:19: error: request for member ‘size’ in ‘link’, which is of non-class type ‘int(const char*, const char*) noexcept’
+  211 |         if ((link.size() > int64_t(0))) {
+      |                   ^~~~

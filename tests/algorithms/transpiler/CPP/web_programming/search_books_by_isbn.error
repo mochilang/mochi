@@ -1,0 +1,17 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/search_books_by_isbn.cpp:87:215: warning: multi-character character constant [-Wmultichar]
+   87 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/search_books_by_isbn.cpp:87:251: warning: multi-character character constant [-Wmultichar]
+   87 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/search_books_by_isbn.cpp: In function ‘BookData _fetch_BookData(const std::string&)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/search_books_by_isbn.cpp:216:25: error: could not convert ‘1’ from ‘int’ to ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’}
+  216 |         return BookData{1, 1, "delectus aut autem", false};
+      |                         ^
+      |                         |
+      |                         int
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/search_books_by_isbn.cpp: In function ‘AuthorData _fetch_AuthorData(const std::string&)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/search_books_by_isbn.cpp:222:60: error: too many initializers for ‘AuthorData’
+  222 |         return AuthorData{1, 1, "delectus aut autem", false};
+      |                                                            ^

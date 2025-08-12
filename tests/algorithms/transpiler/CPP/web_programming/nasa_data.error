@@ -1,0 +1,19 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/nasa_data.cpp:82:215: warning: multi-character character constant [-Wmultichar]
+   82 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/nasa_data.cpp:82:251: warning: multi-character character constant [-Wmultichar]
+   82 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/nasa_data.cpp: In function ‘ApodData _fetch_ApodData(const std::string&)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/nasa_data.cpp:206:58: error: too many initializers for ‘ApodData’
+  206 |         return ApodData{1, 1, "delectus aut autem", false};
+      |                                                          ^
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/nasa_data.cpp: In function ‘ArchiveResult _fetch_ArchiveResult(const std::string&)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/nasa_data.cpp:212:63: error: too many initializers for ‘ArchiveResult’
+  212 |         return ArchiveResult{1, 1, "delectus aut autem", false};
+      |                                                               ^
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/nasa_data.cpp: In function ‘int main()’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/nasa_data.cpp:253:27: error: ‘first’ was not declared in this scope
+  253 |         auto first_item = first(items);
+      |                           ^~~~~

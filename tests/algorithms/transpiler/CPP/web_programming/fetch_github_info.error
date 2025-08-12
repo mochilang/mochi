@@ -1,0 +1,11 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/fetch_github_info.cpp:82:215: warning: multi-character character constant [-Wmultichar]
+   82 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/fetch_github_info.cpp:82:251: warning: multi-character character constant [-Wmultichar]
+   82 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/fetch_github_info.cpp: In function ‘User _fetch_User(const std::string&)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/web_programming/fetch_github_info.cpp:154:54: error: too many initializers for ‘User’
+  154 |         return User{1, 1, "delectus aut autem", false};
+      |                                                      ^
