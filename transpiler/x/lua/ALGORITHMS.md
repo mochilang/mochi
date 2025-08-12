@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-12 13:55 GMT+7
+Last updated: 2025-08-12 16:15 GMT+7
 
 ## Algorithms Golden Test Checklist (1021/1077)
 | Index | Name | Status | Duration | Memory |
@@ -727,7 +727,7 @@ Last updated: 2025-08-12 13:55 GMT+7
 | 718 | matrix/validate_sudoku_board | ✓ | 239µs | 4.7 KB |
 | 719 | networking_flow/ford_fulkerson | ✓ | 231µs | 1.9 KB |
 | 720 | networking_flow/minimum_cut | ✓ | 231µs | 2.3 KB |
-| 721 | neural_network/activation_functions/binary_step | ✓ | 62µs | 912 B |
+| 721 | neural_network/activation_functions/binary_step | ✓ | 101µs | 912 B |
 | 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 99µs | 840 B |
 | 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 96µs | 984 B |
 | 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 127µs | 1.3 KB |
