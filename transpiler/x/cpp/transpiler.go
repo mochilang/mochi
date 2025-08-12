@@ -947,14 +947,11 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "}")
 	}
 	if p.UseIndex {
-		fmt.Fprintln(w, "template<typename V> decltype(auto) _index(V& v, int64_t i) {")
-		fmt.Fprintln(w, "    if (i < 0) i += v.size();")
-		fmt.Fprintln(w, "    return v[static_cast<size_t>(i)];")
-		fmt.Fprintln(w, "}")
-		fmt.Fprintln(w, "template<typename V> decltype(auto) _index(const V& v, int64_t i) {")
-		fmt.Fprintln(w, "    if (i < 0) i += v.size();")
-		fmt.Fprintln(w, "    return v[static_cast<size_t>(i)];")
-		fmt.Fprintln(w, "}")
+                fmt.Fprintln(w, "template<typename V> auto _index(const V& v, int64_t i) {")
+                fmt.Fprintln(w, "    if (i < 0) i += v.size();")
+                fmt.Fprintln(w, "    if (i < 0 || i >= (int64_t)v.size()) return typename V::value_type{};")
+                fmt.Fprintln(w, "    return v[static_cast<size_t>(i)];")
+                fmt.Fprintln(w, "}")
 	}
 	if p.UseSlice {
 		fmt.Fprintln(w, "template<typename T> std::vector<T> _slice(const std::vector<T>& s, int64_t start, int64_t end) {")
