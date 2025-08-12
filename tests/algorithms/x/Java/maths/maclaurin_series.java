@@ -2,61 +2,61 @@ public class Main {
     static double PI;
 
     static double floor(double x) {
-        int i = ((Number)(x)).intValue();
+        long i = ((Number)(x)).intValue();
         if ((((Number)(i)).doubleValue()) > x) {
             i = i - 1;
         }
         return ((Number)(i)).doubleValue();
     }
 
-    static double pow(double x, int n) {
+    static double pow(double x, long n) {
         double result = 1.0;
-        int i_1 = 0;
-        while (i_1 < n) {
+        long i_2 = 0;
+        while (i_2 < n) {
             result = result * x;
-            i_1 = i_1 + 1;
+            i_2 = i_2 + 1;
         }
         return result;
     }
 
-    static double factorial(int n) {
+    static double factorial(long n) {
         double result_1 = 1.0;
-        int i_2 = 2;
-        while (i_2 <= n) {
-            result_1 = result_1 * (((Number)(i_2)).doubleValue());
-            i_2 = i_2 + 1;
+        long i_4 = 2;
+        while (i_4 <= n) {
+            result_1 = result_1 * (((Number)(i_4)).doubleValue());
+            i_4 = i_4 + 1;
         }
         return result_1;
     }
 
-    static double maclaurin_sin(double theta, int accuracy) {
+    static double maclaurin_sin(double theta, long accuracy) {
         double t = theta;
-        double div = floor(t / (2.0 * PI));
-        t = t - 2.0 * div * PI;
-        double sum = 0.0;
-        int r = 0;
-        while (r < accuracy) {
-            int power = 2 * r + 1;
-            double sign = Math.floorMod(r, 2) == 0 ? 1.0 : -1.0;
-            sum = sum + sign * pow(t, power) / factorial(power);
-            r = r + 1;
-        }
-        return sum;
-    }
-
-    static double maclaurin_cos(double theta, int accuracy) {
-        double t_1 = theta;
-        double div_1 = floor(t_1 / (2.0 * PI));
-        t_1 = t_1 - 2.0 * div_1 * PI;
+        double div_1 = floor(t / (2.0 * PI));
+        t = t - 2.0 * div_1 * PI;
         double sum_1 = 0.0;
-        int r_1 = 0;
+        long r_1 = 0;
         while (r_1 < accuracy) {
-            int power_1 = 2 * r_1;
+            long power_1 = 2 * r_1 + 1;
             double sign_1 = Math.floorMod(r_1, 2) == 0 ? 1.0 : -1.0;
-            sum_1 = sum_1 + sign_1 * pow(t_1, power_1) / factorial(power_1);
+            sum_1 = sum_1 + sign_1 * pow(t, power_1) / factorial(power_1);
             r_1 = r_1 + 1;
         }
         return sum_1;
+    }
+
+    static double maclaurin_cos(double theta, long accuracy) {
+        double t_1 = theta;
+        double div_3 = floor(t_1 / (2.0 * PI));
+        t_1 = t_1 - 2.0 * div_3 * PI;
+        double sum_3 = 0.0;
+        long r_3 = 0;
+        while (r_3 < accuracy) {
+            long power_3 = 2 * r_3;
+            double sign_3 = Math.floorMod(r_3, 2) == 0 ? 1.0 : -1.0;
+            sum_3 = sum_3 + sign_3 * pow(t_1, power_3) / factorial(power_3);
+            r_3 = r_3 + 1;
+        }
+        return sum_3;
     }
     public static void main(String[] args) {
         {
@@ -116,6 +116,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

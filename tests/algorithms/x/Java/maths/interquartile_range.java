@@ -2,61 +2,61 @@ public class Main {
 
     static double[] bubble_sort(double[] nums) {
         double[] arr = ((double[])(new double[]{}));
-        int i = 0;
-        while (i < nums.length) {
-            arr = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(arr), java.util.stream.DoubleStream.of(nums[i])).toArray()));
-            i = i + 1;
+        long i_1 = 0;
+        while (i_1 < nums.length) {
+            arr = ((double[])(appendDouble(arr, nums[(int)(i_1)])));
+            i_1 = i_1 + 1;
         }
-        int n = arr.length;
-        int a = 0;
-        while (a < n) {
-            int b = 0;
-            while (b < n - a - 1) {
-                if (arr[b] > arr[b + 1]) {
-                    double temp = arr[b];
-arr[b] = arr[b + 1];
-arr[b + 1] = temp;
+        long n_1 = arr.length;
+        long a_1 = 0;
+        while (a_1 < n_1) {
+            long b_1 = 0;
+            while (b_1 < n_1 - a_1 - 1) {
+                if (arr[(int)(b_1)] > arr[(int)(b_1 + 1)]) {
+                    double temp_1 = arr[(int)(b_1)];
+arr[(int)(b_1)] = arr[(int)(b_1 + 1)];
+arr[(int)(b_1 + 1)] = temp_1;
                 }
-                b = b + 1;
+                b_1 = b_1 + 1;
             }
-            a = a + 1;
+            a_1 = a_1 + 1;
         }
         return arr;
     }
 
     static double find_median(double[] nums) {
-        int length = nums.length;
-        int div = length / 2;
-        int mod = Math.floorMod(length, 2);
-        if (mod != 0) {
-            return nums[div];
+        long length = nums.length;
+        long div_1 = Math.floorDiv(length, 2);
+        long mod_1 = Math.floorMod(length, 2);
+        if (mod_1 != 0) {
+            return nums[(int)(div_1)];
         }
-        return (nums[div] + nums[div - 1]) / 2.0;
+        return (nums[(int)(div_1)] + nums[(int)(div_1 - 1)]) / 2.0;
     }
 
     static double interquartile_range(double[] nums) {
         if (nums.length == 0) {
             throw new RuntimeException(String.valueOf("The list is empty. Provide a non-empty list."));
         }
-        double[] sorted = ((double[])(bubble_sort(((double[])(nums)))));
-        int length_1 = sorted.length;
-        int div_1 = length_1 / 2;
-        int mod_1 = Math.floorMod(length_1, 2);
-        double[] lower = ((double[])(new double[]{}));
-        int i_1 = 0;
-        while (i_1 < div_1) {
-            lower = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(lower), java.util.stream.DoubleStream.of(sorted[i_1])).toArray()));
-            i_1 = i_1 + 1;
+        double[] sorted_1 = ((double[])(bubble_sort(((double[])(nums)))));
+        long length_2 = sorted_1.length;
+        Object div_3 = Math.floorDiv(length_2, 2);
+        long mod_3 = Math.floorMod(length_2, 2);
+        double[] lower_1 = ((double[])(new double[]{}));
+        long i_3 = 0;
+        while (i_3 < ((Number)(div_3)).intValue()) {
+            lower_1 = ((double[])(appendDouble(lower_1, sorted_1[(int)(i_3)])));
+            i_3 = i_3 + 1;
         }
-        double[] upper = ((double[])(new double[]{}));
-        int j = div_1 + mod_1;
-        while (j < length_1) {
-            upper = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(upper), java.util.stream.DoubleStream.of(sorted[j])).toArray()));
-            j = j + 1;
+        double[] upper_1 = ((double[])(new double[]{}));
+        long j_1 = ((Number)(div_3)).intValue() + mod_3;
+        while (j_1 < length_2) {
+            upper_1 = ((double[])(appendDouble(upper_1, sorted_1[(int)(j_1)])));
+            j_1 = j_1 + 1;
         }
-        double q1 = find_median(((double[])(lower)));
-        double q3 = find_median(((double[])(upper)));
-        return q3 - q1;
+        double q1_1 = find_median(((double[])(lower_1)));
+        double q3_1 = find_median(((double[])(upper_1)));
+        return q3_1 - q1_1;
     }
 
     static double absf(double x) {
@@ -128,6 +128,12 @@ arr[b + 1] = temp;
         return rt.totalMemory() - rt.freeMemory();
     }
 
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
+    }
+
     static String _p(Object v) {
         if (v == null) return "<nil>";
         if (v.getClass().isArray()) {
@@ -140,6 +146,11 @@ arr[b + 1] = temp;
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

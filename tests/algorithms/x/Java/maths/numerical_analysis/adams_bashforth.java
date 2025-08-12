@@ -13,31 +13,31 @@ public class Main {
     }
 
     static void validate_inputs(double[] x_initials, double step_size, double x_final) {
-        if (x_initials[x_initials.length - 1] >= x_final) {
+        if (x_initials[(int)(x_initials.length - 1)] >= x_final) {
             throw new RuntimeException(String.valueOf("The final value of x must be greater than the initial values of x."));
         }
         if (step_size <= 0.0) {
             throw new RuntimeException(String.valueOf("Step size must be positive."));
         }
-        int i = 0;
-        while (i < x_initials.length - 1) {
-            double diff = x_initials[i + 1] - x_initials[i];
-            if (abs_float(diff - step_size) > 1e-10) {
+        long i_1 = 0;
+        while (i_1 < x_initials.length - 1) {
+            double diff_1 = x_initials[(int)(i_1 + 1)] - x_initials[(int)(i_1)];
+            if (abs_float(diff_1 - step_size) > 1e-10) {
                 throw new RuntimeException(String.valueOf("x-values must be equally spaced according to step size."));
             }
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
     }
 
     static String list_to_string(double[] xs) {
         String s = "[";
-        int i_1 = 0;
-        while (i_1 < xs.length) {
-            s = s + _p(_geto(xs, i_1));
-            if (i_1 + 1 < xs.length) {
+        long i_3 = 0;
+        while (i_3 < xs.length) {
+            s = s + _p(_getd(xs, ((Number)(i_3)).intValue()));
+            if (i_3 + 1 < xs.length) {
                 s = s + ", ";
             }
-            i_1 = i_1 + 1;
+            i_3 = i_3 + 1;
         }
         s = s + "]";
         return s;
@@ -48,22 +48,22 @@ public class Main {
         if (x_initials.length != 2 || y_initials.length != 2) {
             throw new RuntimeException(String.valueOf("Insufficient initial points information."));
         }
-        double x0 = x_initials[0];
-        double x1 = x_initials[1];
-        double[] y = ((double[])(new double[]{}));
-        y = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(y), java.util.stream.DoubleStream.of(y_initials[0])).toArray()));
-        y = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(y), java.util.stream.DoubleStream.of(y_initials[1])).toArray()));
-        int n = ((Number)(((x_final - x1) / step_size))).intValue();
-        int i_2 = 0;
-        while (i_2 < n) {
-            double term = 3.0 * f.apply(x1, y[i_2 + 1]) - f.apply(x0, y[i_2]);
-            double y_next = y[i_2 + 1] + (step_size / 2.0) * term;
-            y = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(y), java.util.stream.DoubleStream.of(y_next)).toArray()));
-            x0 = x1;
-            x1 = x1 + step_size;
-            i_2 = i_2 + 1;
+        double x0_1 = x_initials[(int)(0)];
+        double x1_1 = x_initials[(int)(1)];
+        double[] y_1 = ((double[])(new double[]{}));
+        y_1 = ((double[])(appendDouble(y_1, y_initials[(int)(0)])));
+        y_1 = ((double[])(appendDouble(y_1, y_initials[(int)(1)])));
+        long n_1 = ((Number)(((x_final - x1_1) / step_size))).intValue();
+        long i_5 = 0;
+        while (i_5 < n_1) {
+            double term_1 = 3.0 * f.apply(x1_1, y_1[(int)(i_5 + 1)]) - f.apply(x0_1, y_1[(int)(i_5)]);
+            double y_next_1 = y_1[(int)(i_5 + 1)] + (step_size / 2.0) * term_1;
+            y_1 = ((double[])(appendDouble(y_1, y_next_1)));
+            x0_1 = x1_1;
+            x1_1 = x1_1 + step_size;
+            i_5 = i_5 + 1;
         }
-        return y;
+        return y_1;
     }
 
     static double[] adams_bashforth_step3(java.util.function.BiFunction<Double,Double,Double> f, double[] x_initials, double[] y_initials, double step_size, double x_final) {
@@ -71,25 +71,25 @@ public class Main {
         if (x_initials.length != 3 || y_initials.length != 3) {
             throw new RuntimeException(String.valueOf("Insufficient initial points information."));
         }
-        double x0_1 = x_initials[0];
-        double x1_1 = x_initials[1];
-        double x2 = x_initials[2];
-        double[] y_1 = ((double[])(new double[]{}));
-        y_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(y_1), java.util.stream.DoubleStream.of(y_initials[0])).toArray()));
-        y_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(y_1), java.util.stream.DoubleStream.of(y_initials[1])).toArray()));
-        y_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(y_1), java.util.stream.DoubleStream.of(y_initials[2])).toArray()));
-        int n_1 = ((Number)(((x_final - x2) / step_size))).intValue();
-        int i_3 = 0;
-        while (i_3 <= n_1) {
-            double term_1 = 23.0 * f.apply(x2, y_1[i_3 + 2]) - 16.0 * f.apply(x1_1, y_1[i_3 + 1]) + 5.0 * f.apply(x0_1, y_1[i_3]);
-            double y_next_1 = y_1[i_3 + 2] + (step_size / 12.0) * term_1;
-            y_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(y_1), java.util.stream.DoubleStream.of(y_next_1)).toArray()));
-            x0_1 = x1_1;
-            x1_1 = x2;
-            x2 = x2 + step_size;
-            i_3 = i_3 + 1;
+        double x0_3 = x_initials[(int)(0)];
+        double x1_3 = x_initials[(int)(1)];
+        double x2_1 = x_initials[(int)(2)];
+        double[] y_3 = ((double[])(new double[]{}));
+        y_3 = ((double[])(appendDouble(y_3, y_initials[(int)(0)])));
+        y_3 = ((double[])(appendDouble(y_3, y_initials[(int)(1)])));
+        y_3 = ((double[])(appendDouble(y_3, y_initials[(int)(2)])));
+        long n_3 = ((Number)(((x_final - x2_1) / step_size))).intValue();
+        long i_7 = 0;
+        while (i_7 <= n_3) {
+            double term_3 = 23.0 * f.apply(x2_1, y_3[(int)(i_7 + 2)]) - 16.0 * f.apply(x1_3, y_3[(int)(i_7 + 1)]) + 5.0 * f.apply(x0_3, y_3[(int)(i_7)]);
+            double y_next_3 = y_3[(int)(i_7 + 2)] + (step_size / 12.0) * term_3;
+            y_3 = ((double[])(appendDouble(y_3, y_next_3)));
+            x0_3 = x1_3;
+            x1_3 = x2_1;
+            x2_1 = x2_1 + step_size;
+            i_7 = i_7 + 1;
         }
-        return y_1;
+        return y_3;
     }
 
     static double[] adams_bashforth_step4(java.util.function.BiFunction<Double,Double,Double> f, double[] x_initials, double[] y_initials, double step_size, double x_final) {
@@ -97,28 +97,28 @@ public class Main {
         if (x_initials.length != 4 || y_initials.length != 4) {
             throw new RuntimeException(String.valueOf("Insufficient initial points information."));
         }
-        double x0_2 = x_initials[0];
-        double x1_2 = x_initials[1];
-        double x2_1 = x_initials[2];
-        double x3 = x_initials[3];
-        double[] y_2 = ((double[])(new double[]{}));
-        y_2 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(y_2), java.util.stream.DoubleStream.of(y_initials[0])).toArray()));
-        y_2 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(y_2), java.util.stream.DoubleStream.of(y_initials[1])).toArray()));
-        y_2 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(y_2), java.util.stream.DoubleStream.of(y_initials[2])).toArray()));
-        y_2 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(y_2), java.util.stream.DoubleStream.of(y_initials[3])).toArray()));
-        int n_2 = ((Number)(((x_final - x3) / step_size))).intValue();
-        int i_4 = 0;
-        while (i_4 < n_2) {
-            double term_2 = 55.0 * f.apply(x3, y_2[i_4 + 3]) - 59.0 * f.apply(x2_1, y_2[i_4 + 2]) + 37.0 * f.apply(x1_2, y_2[i_4 + 1]) - 9.0 * f.apply(x0_2, y_2[i_4]);
-            double y_next_2 = y_2[i_4 + 3] + (step_size / 24.0) * term_2;
-            y_2 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(y_2), java.util.stream.DoubleStream.of(y_next_2)).toArray()));
-            x0_2 = x1_2;
-            x1_2 = x2_1;
-            x2_1 = x3;
-            x3 = x3 + step_size;
-            i_4 = i_4 + 1;
+        double x0_5 = x_initials[(int)(0)];
+        double x1_5 = x_initials[(int)(1)];
+        double x2_3 = x_initials[(int)(2)];
+        double x3_1 = x_initials[(int)(3)];
+        double[] y_5 = ((double[])(new double[]{}));
+        y_5 = ((double[])(appendDouble(y_5, y_initials[(int)(0)])));
+        y_5 = ((double[])(appendDouble(y_5, y_initials[(int)(1)])));
+        y_5 = ((double[])(appendDouble(y_5, y_initials[(int)(2)])));
+        y_5 = ((double[])(appendDouble(y_5, y_initials[(int)(3)])));
+        long n_5 = ((Number)(((x_final - x3_1) / step_size))).intValue();
+        long i_9 = 0;
+        while (i_9 < n_5) {
+            double term_5 = 55.0 * f.apply(x3_1, y_5[(int)(i_9 + 3)]) - 59.0 * f.apply(x2_3, y_5[(int)(i_9 + 2)]) + 37.0 * f.apply(x1_5, y_5[(int)(i_9 + 1)]) - 9.0 * f.apply(x0_5, y_5[(int)(i_9)]);
+            double y_next_5 = y_5[(int)(i_9 + 3)] + (step_size / 24.0) * term_5;
+            y_5 = ((double[])(appendDouble(y_5, y_next_5)));
+            x0_5 = x1_5;
+            x1_5 = x2_3;
+            x2_3 = x3_1;
+            x3_1 = x3_1 + step_size;
+            i_9 = i_9 + 1;
         }
-        return y_2;
+        return y_5;
     }
 
     static double[] adams_bashforth_step5(java.util.function.BiFunction<Double,Double,Double> f, double[] x_initials, double[] y_initials, double step_size, double x_final) {
@@ -126,31 +126,31 @@ public class Main {
         if (x_initials.length != 5 || y_initials.length != 5) {
             throw new RuntimeException(String.valueOf("Insufficient initial points information."));
         }
-        double x0_3 = x_initials[0];
-        double x1_3 = x_initials[1];
-        double x2_2 = x_initials[2];
-        double x3_1 = x_initials[3];
-        double x4 = x_initials[4];
-        double[] y_3 = ((double[])(new double[]{}));
-        y_3 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(y_3), java.util.stream.DoubleStream.of(y_initials[0])).toArray()));
-        y_3 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(y_3), java.util.stream.DoubleStream.of(y_initials[1])).toArray()));
-        y_3 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(y_3), java.util.stream.DoubleStream.of(y_initials[2])).toArray()));
-        y_3 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(y_3), java.util.stream.DoubleStream.of(y_initials[3])).toArray()));
-        y_3 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(y_3), java.util.stream.DoubleStream.of(y_initials[4])).toArray()));
-        int n_3 = ((Number)(((x_final - x4) / step_size))).intValue();
-        int i_5 = 0;
-        while (i_5 <= n_3) {
-            double term_3 = 1901.0 * f.apply(x4, y_3[i_5 + 4]) - 2774.0 * f.apply(x3_1, y_3[i_5 + 3]) - 2616.0 * f.apply(x2_2, y_3[i_5 + 2]) - 1274.0 * f.apply(x1_3, y_3[i_5 + 1]) + 251.0 * f.apply(x0_3, y_3[i_5]);
-            double y_next_3 = y_3[i_5 + 4] + (step_size / 720.0) * term_3;
-            y_3 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(y_3), java.util.stream.DoubleStream.of(y_next_3)).toArray()));
-            x0_3 = x1_3;
-            x1_3 = x2_2;
-            x2_2 = x3_1;
-            x3_1 = x4;
-            x4 = x4 + step_size;
-            i_5 = i_5 + 1;
+        double x0_7 = x_initials[(int)(0)];
+        double x1_7 = x_initials[(int)(1)];
+        double x2_5 = x_initials[(int)(2)];
+        double x3_3 = x_initials[(int)(3)];
+        double x4_1 = x_initials[(int)(4)];
+        double[] y_7 = ((double[])(new double[]{}));
+        y_7 = ((double[])(appendDouble(y_7, y_initials[(int)(0)])));
+        y_7 = ((double[])(appendDouble(y_7, y_initials[(int)(1)])));
+        y_7 = ((double[])(appendDouble(y_7, y_initials[(int)(2)])));
+        y_7 = ((double[])(appendDouble(y_7, y_initials[(int)(3)])));
+        y_7 = ((double[])(appendDouble(y_7, y_initials[(int)(4)])));
+        long n_7 = ((Number)(((x_final - x4_1) / step_size))).intValue();
+        long i_11 = 0;
+        while (i_11 <= n_7) {
+            double term_7 = 1901.0 * f.apply(x4_1, y_7[(int)(i_11 + 4)]) - 2774.0 * f.apply(x3_3, y_7[(int)(i_11 + 3)]) - 2616.0 * f.apply(x2_5, y_7[(int)(i_11 + 2)]) - 1274.0 * f.apply(x1_7, y_7[(int)(i_11 + 1)]) + 251.0 * f.apply(x0_7, y_7[(int)(i_11)]);
+            double y_next_7 = y_7[(int)(i_11 + 4)] + (step_size / 720.0) * term_7;
+            y_7 = ((double[])(appendDouble(y_7, y_next_7)));
+            x0_7 = x1_7;
+            x1_7 = x2_5;
+            x2_5 = x3_3;
+            x3_3 = x4_1;
+            x4_1 = x4_1 + step_size;
+            i_11 = i_11 + 1;
         }
-        return y_3;
+        return y_7;
     }
 
     static double f_x(double x, double y) {
@@ -167,12 +167,12 @@ public class Main {
             y2 = ((double[])(adams_bashforth_step2(Main::f_x, ((double[])(new double[]{0.0, 0.2})), ((double[])(new double[]{0.0, 0.0})), 0.2, 1.0)));
             System.out.println(list_to_string(((double[])(y2))));
             y3 = ((double[])(adams_bashforth_step3(Main::f_xy, ((double[])(new double[]{0.0, 0.2, 0.4})), ((double[])(new double[]{0.0, 0.0, 0.04})), 0.2, 1.0)));
-            System.out.println(_p(_geto(y3, 3)));
+            System.out.println(_p(_getd(y3, ((Number)(3)).intValue())));
             y4 = ((double[])(adams_bashforth_step4(Main::f_xy, ((double[])(new double[]{0.0, 0.2, 0.4, 0.6})), ((double[])(new double[]{0.0, 0.0, 0.04, 0.128})), 0.2, 1.0)));
-            System.out.println(_p(_geto(y4, 4)));
-            System.out.println(_p(_geto(y4, 5)));
+            System.out.println(_p(_getd(y4, ((Number)(4)).intValue())));
+            System.out.println(_p(_getd(y4, ((Number)(5)).intValue())));
             y5 = ((double[])(adams_bashforth_step5(Main::f_xy, ((double[])(new double[]{0.0, 0.2, 0.4, 0.6, 0.8})), ((double[])(new double[]{0.0, 0.0214, 0.0214, 0.22211, 0.42536})), 0.2, 1.0)));
-            System.out.println(_p(_geto(y5, y5.length - 1)));
+            System.out.println(_p(_getd(y5, ((Number)(y5.length - 1)).intValue())));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -206,6 +206,12 @@ public class Main {
         return rt.totalMemory() - rt.freeMemory();
     }
 
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
+    }
+
     static String _p(Object v) {
         if (v == null) return "<nil>";
         if (v.getClass().isArray()) {
@@ -219,10 +225,15 @@ public class Main {
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
     }
 
-    static Object _geto(Object[] a, int i) {
+    static Double _getd(double[] a, int i) {
         return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }

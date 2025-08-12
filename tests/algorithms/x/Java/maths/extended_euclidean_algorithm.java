@@ -1,8 +1,8 @@
 public class Main {
     static class Coeffs {
-        int x;
-        int y;
-        Coeffs(int x, int y) {
+        long x;
+        long y;
+        Coeffs(long x, long y) {
             this.x = x;
             this.y = y;
         }
@@ -13,45 +13,45 @@ public class Main {
     }
 
 
-    static int abs_val(int n) {
+    static long abs_val(long n) {
         if (n < 0) {
             return -n;
         }
         return n;
     }
 
-    static Coeffs extended_euclidean_algorithm(int a, int b) {
+    static Coeffs extended_euclidean_algorithm(long a, long b) {
         if (abs_val(a) == 1) {
             return new Coeffs(a, 0);
         }
         if (abs_val(b) == 1) {
             return new Coeffs(0, b);
         }
-        int old_remainder = a;
-        int remainder = b;
-        int old_coeff_a = 1;
-        int coeff_a = 0;
-        int old_coeff_b = 0;
-        int coeff_b = 1;
-        while (remainder != 0) {
-            int quotient = old_remainder / remainder;
-            int temp_remainder = old_remainder - quotient * remainder;
-            old_remainder = remainder;
-            remainder = temp_remainder;
-            int temp_a = old_coeff_a - quotient * coeff_a;
-            old_coeff_a = coeff_a;
-            coeff_a = temp_a;
-            int temp_b = old_coeff_b - quotient * coeff_b;
-            old_coeff_b = coeff_b;
-            coeff_b = temp_b;
+        long old_remainder_1 = a;
+        long remainder_1 = b;
+        long old_coeff_a_1 = 1;
+        long coeff_a_1 = 0;
+        long old_coeff_b_1 = 0;
+        long coeff_b_1 = 1;
+        while (remainder_1 != 0) {
+            long quotient_1 = Math.floorDiv(old_remainder_1, remainder_1);
+            long temp_remainder_1 = old_remainder_1 - quotient_1 * remainder_1;
+            old_remainder_1 = remainder_1;
+            remainder_1 = temp_remainder_1;
+            long temp_a_1 = old_coeff_a_1 - quotient_1 * coeff_a_1;
+            old_coeff_a_1 = coeff_a_1;
+            coeff_a_1 = temp_a_1;
+            long temp_b_1 = old_coeff_b_1 - quotient_1 * coeff_b_1;
+            old_coeff_b_1 = coeff_b_1;
+            coeff_b_1 = temp_b_1;
         }
         if (a < 0) {
-            old_coeff_a = -old_coeff_a;
+            old_coeff_a_1 = -old_coeff_a_1;
         }
         if (b < 0) {
-            old_coeff_b = -old_coeff_b;
+            old_coeff_b_1 = -old_coeff_b_1;
         }
-        return new Coeffs(old_coeff_a, old_coeff_b);
+        return new Coeffs(old_coeff_a_1, old_coeff_b_1);
     }
 
     static void test_extended_euclidean_algorithm() {
@@ -59,36 +59,36 @@ public class Main {
         if ((r1.x != 1) || (r1.y != 0)) {
             throw new RuntimeException(String.valueOf("test1 failed"));
         }
-        Coeffs r2 = extended_euclidean_algorithm(8, 14);
-        if ((r2.x != 2) || (r2.y != (-1))) {
+        Coeffs r2_1 = extended_euclidean_algorithm(8, 14);
+        if ((r2_1.x != 2) || (r2_1.y != (-1))) {
             throw new RuntimeException(String.valueOf("test2 failed"));
         }
-        Coeffs r3 = extended_euclidean_algorithm(240, 46);
-        if ((r3.x != (-9)) || (r3.y != 47)) {
+        Coeffs r3_1 = extended_euclidean_algorithm(240, 46);
+        if ((r3_1.x != (-9)) || (r3_1.y != 47)) {
             throw new RuntimeException(String.valueOf("test3 failed"));
         }
-        Coeffs r4 = extended_euclidean_algorithm(1, -4);
-        if ((r4.x != 1) || (r4.y != 0)) {
+        Coeffs r4_1 = extended_euclidean_algorithm(1, -4);
+        if ((r4_1.x != 1) || (r4_1.y != 0)) {
             throw new RuntimeException(String.valueOf("test4 failed"));
         }
-        Coeffs r5 = extended_euclidean_algorithm(-2, -4);
-        if ((r5.x != (-1)) || (r5.y != 0)) {
+        Coeffs r5_1 = extended_euclidean_algorithm(-2, -4);
+        if ((r5_1.x != (-1)) || (r5_1.y != 0)) {
             throw new RuntimeException(String.valueOf("test5 failed"));
         }
-        Coeffs r6 = extended_euclidean_algorithm(0, -4);
-        if ((r6.x != 0) || (r6.y != (-1))) {
+        Coeffs r6_1 = extended_euclidean_algorithm(0, -4);
+        if ((r6_1.x != 0) || (r6_1.y != (-1))) {
             throw new RuntimeException(String.valueOf("test6 failed"));
         }
-        Coeffs r7 = extended_euclidean_algorithm(2, 0);
-        if ((r7.x != 1) || (r7.y != 0)) {
+        Coeffs r7_1 = extended_euclidean_algorithm(2, 0);
+        if ((r7_1.x != 1) || (r7_1.y != 0)) {
             throw new RuntimeException(String.valueOf("test7 failed"));
         }
     }
 
     static void main() {
         test_extended_euclidean_algorithm();
-        Coeffs res = extended_euclidean_algorithm(240, 46);
-        System.out.println("(" + _p(res.x) + ", " + _p(res.y) + ")");
+        Coeffs res_1 = extended_euclidean_algorithm(240, 46);
+        System.out.println("(" + _p(res_1.x) + ", " + _p(res_1.y) + ")");
     }
     public static void main(String[] args) {
         {
@@ -140,6 +140,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

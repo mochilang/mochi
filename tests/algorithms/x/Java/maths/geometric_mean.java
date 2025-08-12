@@ -7,83 +7,83 @@ public class Main {
         return x;
     }
 
-    static double pow_int(double base, int exp) {
+    static double pow_int(double base, long exp) {
         double result = 1.0;
-        int i = 0;
-        while (i < exp) {
+        long i_1 = 0;
+        while (i_1 < exp) {
             result = result * base;
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
         return result;
     }
 
-    static double nth_root(double x, int n) {
+    static double nth_root(double x, long n) {
         if (x == 0.0) {
             return 0.0;
         }
-        double guess = x;
-        int i_1 = 0;
-        while (i_1 < 10) {
-            double denom = pow_int(guess, n - 1);
-            guess = (((Number)((n - 1))).doubleValue() * guess + x / denom) / (((Number)(n)).doubleValue());
-            i_1 = i_1 + 1;
+        double guess_1 = x;
+        long i_3 = 0;
+        while (i_3 < 10) {
+            double denom_1 = pow_int(guess_1, n - 1);
+            guess_1 = (((Number)((n - 1))).doubleValue() * guess_1 + x / denom_1) / (((Number)(n)).doubleValue());
+            i_3 = i_3 + 1;
         }
-        return guess;
+        return guess_1;
     }
 
     static double round_nearest(double x) {
         if (x >= 0.0) {
-            int n = ((Number)((x + 0.5))).intValue();
+            long n = ((Number)((x + 0.5))).intValue();
             return ((Number)(n)).doubleValue();
         }
-        int n_1 = ((Number)((x - 0.5))).intValue();
-        return ((Number)(n_1)).doubleValue();
+        long n_2 = ((Number)((x - 0.5))).intValue();
+        return ((Number)(n_2)).doubleValue();
     }
 
     static double compute_geometric_mean(double[] nums) {
         if (nums.length == 0) {
             throw new RuntimeException(String.valueOf("no numbers"));
         }
-        double product = 1.0;
-        int i_2 = 0;
-        while (i_2 < nums.length) {
-            product = product * nums[i_2];
-            i_2 = i_2 + 1;
+        double product_1 = 1.0;
+        long i_5 = 0;
+        while (i_5 < nums.length) {
+            product_1 = product_1 * nums[(int)(i_5)];
+            i_5 = i_5 + 1;
         }
-        if (product < 0.0 && Math.floorMod(nums.length, 2) == 0) {
+        if (product_1 < 0.0 && Math.floorMod(nums.length, 2) == 0) {
             throw new RuntimeException(String.valueOf("Cannot Compute Geometric Mean for these numbers."));
         }
-        double mean = nth_root(((Number)(Math.abs(product))).doubleValue(), nums.length);
-        if (product < 0.0) {
-            mean = -mean;
+        double mean_1 = nth_root(((Number)(Math.abs(product_1))).doubleValue(), nums.length);
+        if (product_1 < 0.0) {
+            mean_1 = -mean_1;
         }
-        double possible = round_nearest(mean);
-        if (pow_int(possible, nums.length) == product) {
-            mean = possible;
+        double possible_1 = round_nearest(mean_1);
+        if (pow_int(possible_1, nums.length) == product_1) {
+            mean_1 = possible_1;
         }
-        return mean;
+        return mean_1;
     }
 
     static void test_compute_geometric_mean() {
         double eps = 0.0001;
-        double m1 = compute_geometric_mean(((double[])(new double[]{2.0, 8.0})));
-        if (Math.abs(m1 - 4.0) > eps) {
+        double m1_1 = compute_geometric_mean(((double[])(new double[]{2.0, 8.0})));
+        if (Math.abs(m1_1 - 4.0) > eps) {
             throw new RuntimeException(String.valueOf("test1 failed"));
         }
-        double m2 = compute_geometric_mean(((double[])(new double[]{5.0, 125.0})));
-        if (Math.abs(m2 - 25.0) > eps) {
+        double m2_1 = compute_geometric_mean(((double[])(new double[]{5.0, 125.0})));
+        if (Math.abs(m2_1 - 25.0) > eps) {
             throw new RuntimeException(String.valueOf("test2 failed"));
         }
-        double m3 = compute_geometric_mean(((double[])(new double[]{1.0, 0.0})));
-        if (Math.abs(m3 - 0.0) > eps) {
+        double m3_1 = compute_geometric_mean(((double[])(new double[]{1.0, 0.0})));
+        if (Math.abs(m3_1 - 0.0) > eps) {
             throw new RuntimeException(String.valueOf("test3 failed"));
         }
-        double m4 = compute_geometric_mean(((double[])(new double[]{1.0, 5.0, 25.0, 5.0})));
-        if (Math.abs(m4 - 5.0) > eps) {
+        double m4_1 = compute_geometric_mean(((double[])(new double[]{1.0, 5.0, 25.0, 5.0})));
+        if (Math.abs(m4_1 - 5.0) > eps) {
             throw new RuntimeException(String.valueOf("test4 failed"));
         }
-        double m5 = compute_geometric_mean(((double[])(new double[]{-5.0, 25.0, 1.0})));
-        if (Math.abs(m5 + 5.0) > eps) {
+        double m5_1 = compute_geometric_mean(((double[])(new double[]{-5.0, 25.0, 1.0})));
+        if (Math.abs(m5_1 + 5.0) > eps) {
             throw new RuntimeException(String.valueOf("test5 failed"));
         }
     }

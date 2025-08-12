@@ -4,34 +4,34 @@ public class Main {
         if (n == 0.0) {
             return 0.0;
         }
-        double x = n;
-        int i = 0;
-        while (i < 20) {
-            x = (x + n / x) / 2.0;
-            i = i + 1;
+        double x_1 = n;
+        long i_1 = 0;
+        while (i_1 < 20) {
+            x_1 = (x_1 + n / x_1) / 2.0;
+            i_1 = i_1 + 1;
         }
-        return x;
+        return x_1;
     }
 
     static double hypot(double a, double b) {
         return sqrt_newton(a * a + b * b);
     }
 
-    static double line_length(java.util.function.Function<Double,Double> fnc, double x_start, double x_end, int steps) {
+    static double line_length(java.util.function.Function<Double,Double> fnc, double x_start, double x_end, long steps) {
         double x1 = x_start;
-        double fx1 = fnc.apply(x_start);
-        double length = 0.0;
-        int i_1 = 0;
-        double step = (x_end - x_start) / (1.0 * steps);
-        while (i_1 < steps) {
-            double x2 = step + x1;
-            double fx2 = fnc.apply(x2);
-            length = length + hypot(x2 - x1, fx2 - fx1);
-            x1 = x2;
-            fx1 = fx2;
-            i_1 = i_1 + 1;
+        double fx1_1 = fnc.apply(x_start);
+        double length_1 = 0.0;
+        long i_3 = 0;
+        double step_1 = (x_end - x_start) / (1.0 * steps);
+        while (i_3 < steps) {
+            double x2_1 = step_1 + x1;
+            double fx2_1 = fnc.apply(x2_1);
+            length_1 = length_1 + hypot(x2_1 - x1, fx2_1 - fx1_1);
+            x1 = x2_1;
+            fx1_1 = fx2_1;
+            i_3 = i_3 + 1;
         }
-        return length;
+        return length_1;
     }
 
     static double f1(double x) {

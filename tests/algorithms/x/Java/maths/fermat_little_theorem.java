@@ -1,28 +1,28 @@
 public class Main {
-    static int p;
-    static int a;
-    static int b_1;
-    static int left;
-    static int right_fast;
-    static int right_naive;
+    static long p;
+    static long a;
+    static long b_2;
+    static long left;
+    static long right_fast;
+    static long right_naive;
 
-    static int binary_exponentiation(int a, int n, int mod) {
+    static long binary_exponentiation(long a, long n, long mod) {
         if (n == 0) {
             return 1;
         }
         if (Math.floorMod(n, 2) == 1) {
             return Math.floorMod((binary_exponentiation(a, n - 1, mod) * a), mod);
         }
-        int b = binary_exponentiation(a, n / 2, mod);
-        return Math.floorMod((b * b), mod);
+        long b_1 = binary_exponentiation(a, Math.floorDiv(n, 2), mod);
+        return Math.floorMod((b_1 * b_1), mod);
     }
 
-    static int naive_exponent_mod(int a, int n, int mod) {
-        int result = 1;
-        int i = 0;
-        while (i < n) {
+    static long naive_exponent_mod(long a, long n, long mod) {
+        long result = 1;
+        long i_1 = 0;
+        while (i_1 < n) {
             result = Math.floorMod((result * a), mod);
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
         return result;
     }
@@ -40,11 +40,11 @@ public class Main {
             long _benchMem = _mem();
             p = 701;
             a = 1000000000;
-            b_1 = 10;
-            left = Math.floorMod((a / b_1), p);
-            right_fast = Math.floorMod((a * binary_exponentiation(b_1, p - 2, p)), p);
+            b_2 = 10;
+            left = Math.floorMod((Math.floorDiv(a, b_2)), p);
+            right_fast = Math.floorMod((a * binary_exponentiation(b_2, p - 2, p)), p);
             print_bool(left == right_fast);
-            right_naive = Math.floorMod((a * naive_exponent_mod(b_1, p - 2, p)), p);
+            right_naive = Math.floorMod((a * naive_exponent_mod(b_2, p - 2, p)), p);
             print_bool(left == right_naive);
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;

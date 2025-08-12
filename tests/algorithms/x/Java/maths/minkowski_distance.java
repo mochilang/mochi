@@ -7,45 +7,45 @@ public class Main {
         return x;
     }
 
-    static double pow_float(double base, int exp) {
+    static double pow_float(double base, long exp) {
         double result = 1.0;
-        int i = 0;
-        while (i < exp) {
+        long i_1 = 0;
+        while (i_1 < exp) {
             result = result * base;
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
         return result;
     }
 
-    static double nth_root(double value, int n) {
+    static double nth_root(double value, long n) {
         if (value == 0.0) {
             return 0.0;
         }
-        double x = value / (((Number)(n)).doubleValue());
-        int i_1 = 0;
-        while (i_1 < 20) {
-            double num = (((Number)((n - 1))).doubleValue()) * x + value / pow_float(x, n - 1);
-            x = num / (((Number)(n)).doubleValue());
-            i_1 = i_1 + 1;
+        double x_1 = value / (((Number)(n)).doubleValue());
+        long i_3 = 0;
+        while (i_3 < 20) {
+            double num_1 = (((Number)((n - 1))).doubleValue()) * x_1 + value / pow_float(x_1, n - 1);
+            x_1 = num_1 / (((Number)(n)).doubleValue());
+            i_3 = i_3 + 1;
         }
-        return x;
+        return x_1;
     }
 
-    static double minkowski_distance(double[] point_a, double[] point_b, int order) {
+    static double minkowski_distance(double[] point_a, double[] point_b, long order) {
         if (order < 1) {
             throw new RuntimeException(String.valueOf("The order must be greater than or equal to 1."));
         }
         if (point_a.length != point_b.length) {
             throw new RuntimeException(String.valueOf("Both points must have the same dimension."));
         }
-        double total = 0.0;
-        int idx = 0;
-        while (idx < point_a.length) {
-            double diff = abs_val(point_a[idx] - point_b[idx]);
-            total = total + pow_float(diff, order);
-            idx = idx + 1;
+        double total_1 = 0.0;
+        long idx_1 = 0;
+        while (idx_1 < point_a.length) {
+            double diff_1 = abs_val(point_a[(int)(idx_1)] - point_b[(int)(idx_1)]);
+            total_1 = total_1 + pow_float(diff_1, order);
+            idx_1 = idx_1 + 1;
         }
-        return nth_root(total, order);
+        return nth_root(total_1, order);
     }
 
     static void test_minkowski() {

@@ -1,25 +1,25 @@
 public class Main {
 
-    static int exact_prime_factor_count(int n) {
-        int count = 0;
-        int num = n;
-        if (Math.floorMod(num, 2) == 0) {
+    static long exact_prime_factor_count(long n) {
+        long count = 0;
+        long num_1 = n;
+        if (Math.floorMod(num_1, 2) == 0) {
             count = count + 1;
-            while (Math.floorMod(num, 2) == 0) {
-                num = num / 2;
+            while (Math.floorMod(num_1, 2) == 0) {
+                num_1 = Math.floorDiv(num_1, 2);
             }
         }
-        int i = 3;
-        while (i * i <= num) {
-            if (Math.floorMod(num, i) == 0) {
+        long i_1 = 3;
+        while (i_1 * i_1 <= num_1) {
+            if (Math.floorMod(num_1, i_1) == 0) {
                 count = count + 1;
-                while (Math.floorMod(num, i) == 0) {
-                    num = num / i;
+                while (Math.floorMod(num_1, i_1) == 0) {
+                    num_1 = Math.floorDiv(num_1, i_1);
                 }
             }
-            i = i + 2;
+            i_1 = i_1 + 2;
         }
-        if (num > 2) {
+        if (num_1 > 2) {
             count = count + 1;
         }
         return count;
@@ -27,34 +27,34 @@ public class Main {
 
     static double ln(double x) {
         double ln2 = 0.6931471805599453;
-        double y = x;
-        double k = 0.0;
-        while (y > 2.0) {
-            y = y / 2.0;
-            k = k + ln2;
+        double y_1 = x;
+        double k_1 = 0.0;
+        while (y_1 > 2.0) {
+            y_1 = y_1 / 2.0;
+            k_1 = k_1 + ln2;
         }
-        while (y < 1.0) {
-            y = y * 2.0;
-            k = k - ln2;
+        while (y_1 < 1.0) {
+            y_1 = y_1 * 2.0;
+            k_1 = k_1 - ln2;
         }
-        double t = (y - 1.0) / (y + 1.0);
-        double term = t;
-        double sum = 0.0;
-        int n = 1;
-        while (n <= 19) {
-            sum = sum + term / (((Number)(n)).doubleValue());
-            term = term * t * t;
-            n = n + 2;
+        double t_1 = (y_1 - 1.0) / (y_1 + 1.0);
+        double term_1 = t_1;
+        double sum_1 = 0.0;
+        long n_1 = 1;
+        while (n_1 <= 19) {
+            sum_1 = sum_1 + term_1 / (((Number)(n_1)).doubleValue());
+            term_1 = term_1 * t_1 * t_1;
+            n_1 = n_1 + 2;
         }
-        return k + 2.0 * sum;
+        return k_1 + 2.0 * sum_1;
     }
 
     static double floor(double x) {
-        int i_1 = ((Number)(x)).intValue();
-        if ((((Number)(i_1)).doubleValue()) > x) {
-            i_1 = i_1 - 1;
+        long i_2 = ((Number)(x)).intValue();
+        if ((((Number)(i_2)).doubleValue()) > x) {
+            i_2 = i_2 - 1;
         }
-        return ((Number)(i_1)).doubleValue();
+        return ((Number)(i_2)).doubleValue();
     }
 
     static double round4(double x) {
@@ -63,11 +63,11 @@ public class Main {
     }
 
     static void main() {
-        int n_1 = 51242183;
-        int count_1 = exact_prime_factor_count(n_1);
-        System.out.println("The number of distinct prime factors is/are " + _p(count_1));
-        double loglog = ln(ln(((Number)(n_1)).doubleValue()));
-        System.out.println("The value of log(log(n)) is " + _p(round4(loglog)));
+        long n_2 = 51242183;
+        long count_2 = exact_prime_factor_count(n_2);
+        System.out.println("The number of distinct prime factors is/are " + _p(count_2));
+        double loglog_1 = ln(ln(((Number)(n_2)).doubleValue()));
+        System.out.println("The value of log(log(n)) is " + _p(round4(loglog_1)));
     }
     public static void main(String[] args) {
         {
@@ -119,6 +119,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

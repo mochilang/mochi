@@ -8,21 +8,21 @@ public class Main {
         if (equation(a) * equation(b) >= 0.0) {
             throw new RuntimeException(String.valueOf("Wrong space!"));
         }
-        double left = a;
-        double right = b;
-        double c = left;
-        while ((right - left) >= 0.01) {
-            c = (left + right) / 2.0;
-            if (equation(c) == 0.0) {
+        double left_1 = a;
+        double right_1 = b;
+        double c_1 = left_1;
+        while ((right_1 - left_1) >= 0.01) {
+            c_1 = (left_1 + right_1) / 2.0;
+            if (equation(c_1) == 0.0) {
                 break;
             }
-            if (equation(c) * equation(left) < 0.0) {
-                right = c;
+            if (equation(c_1) * equation(left_1) < 0.0) {
+                right_1 = c_1;
             } else {
-                left = c;
+                left_1 = c_1;
             }
         }
-        return c;
+        return c_1;
     }
     public static void main(String[] args) {
         {

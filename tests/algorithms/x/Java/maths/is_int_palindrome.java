@@ -1,16 +1,16 @@
 public class Main {
 
-    static boolean is_int_palindrome(int num) {
+    static boolean is_int_palindrome(long num) {
         if (num < 0) {
             return false;
         }
-        int n = num;
-        int rev = 0;
-        while (n > 0) {
-            rev = rev * 10 + (Math.floorMod(n, 10));
-            n = n / 10;
+        long n_1 = num;
+        long rev_1 = 0;
+        while (n_1 > 0) {
+            rev_1 = rev_1 * 10 + (Math.floorMod(n_1, 10));
+            n_1 = Math.floorDiv(n_1, 10);
         }
-        return rev == num;
+        return rev_1 == num;
     }
 
     static void main() {

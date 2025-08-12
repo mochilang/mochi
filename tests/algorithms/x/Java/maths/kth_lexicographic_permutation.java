@@ -1,96 +1,96 @@
 public class Main {
 
-    static int[] remove_at(int[] xs, int idx) {
-        int[] res = ((int[])(new int[]{}));
-        int i = 0;
-        while (i < xs.length) {
-            if (i != idx) {
-                res = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res), java.util.stream.IntStream.of(xs[i])).toArray()));
+    static long[] remove_at(long[] xs, long idx) {
+        long[] res = ((long[])(new long[]{}));
+        long i_1 = 0;
+        while (i_1 < xs.length) {
+            if (i_1 != idx) {
+                res = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res), java.util.stream.LongStream.of(xs[(int)(i_1)])).toArray()));
             }
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
         return res;
     }
 
-    static int[] kth_permutation(int k, int n) {
+    static long[] kth_permutation(long k, long n) {
         if (n <= 0) {
             throw new RuntimeException(String.valueOf("n must be positive"));
         }
-        int[] factorials = ((int[])(new int[]{1}));
-        int i_1 = 2;
-        while (i_1 < n) {
-            factorials = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(factorials), java.util.stream.IntStream.of(factorials[factorials.length - 1] * i_1)).toArray()));
-            i_1 = i_1 + 1;
+        long[] factorials_1 = ((long[])(new long[]{1}));
+        long i_3 = 2;
+        while (i_3 < n) {
+            factorials_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(factorials_1), java.util.stream.LongStream.of(factorials_1[(int)(factorials_1.length - 1)] * i_3)).toArray()));
+            i_3 = i_3 + 1;
         }
-        int total = factorials[factorials.length - 1] * n;
-        if ((k < 0) || (k >= total)) {
+        long total_1 = factorials_1[(int)(factorials_1.length - 1)] * n;
+        if ((k < 0) || (k >= total_1)) {
             throw new RuntimeException(String.valueOf("k out of bounds"));
         }
-        int[] elements = ((int[])(new int[]{}));
-        int e = 0;
-        while (e < n) {
-            elements = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(elements), java.util.stream.IntStream.of(e)).toArray()));
-            e = e + 1;
+        long[] elements_1 = ((long[])(new long[]{}));
+        long e_1 = 0;
+        while (e_1 < n) {
+            elements_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(elements_1), java.util.stream.LongStream.of(e_1)).toArray()));
+            e_1 = e_1 + 1;
         }
-        int[] permutation = ((int[])(new int[]{}));
-        int idx = factorials.length - 1;
-        while (idx >= 0) {
-            int factorial = factorials[idx];
-            int number = k / factorial;
-            k = Math.floorMod(k, factorial);
-            permutation = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(permutation), java.util.stream.IntStream.of(elements[number])).toArray()));
-            elements = ((int[])(remove_at(((int[])(elements)), number)));
-            idx = idx - 1;
+        long[] permutation_1 = ((long[])(new long[]{}));
+        long idx_1 = factorials_1.length - 1;
+        while (idx_1 >= 0) {
+            long factorial_1 = factorials_1[(int)(idx_1)];
+            long number_1 = Math.floorDiv(k, factorial_1);
+            k = Math.floorMod(k, factorial_1);
+            permutation_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(permutation_1), java.util.stream.LongStream.of(elements_1[(int)(number_1)])).toArray()));
+            elements_1 = ((long[])(remove_at(((long[])(elements_1)), number_1)));
+            idx_1 = idx_1 - 1;
         }
-        permutation = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(permutation), java.util.stream.IntStream.of(elements[0])).toArray()));
-        return permutation;
+        permutation_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(permutation_1), java.util.stream.LongStream.of(elements_1[(int)(0)])).toArray()));
+        return permutation_1;
     }
 
-    static boolean list_equal(int[] a, int[] b) {
+    static boolean list_equal(long[] a, long[] b) {
         if (a.length != b.length) {
             return false;
         }
-        int i_2 = 0;
-        while (i_2 < a.length) {
-            if (a[i_2] != b[i_2]) {
+        long i_5 = 0;
+        while (i_5 < a.length) {
+            if (a[(int)(i_5)] != b[(int)(i_5)]) {
                 return false;
             }
-            i_2 = i_2 + 1;
+            i_5 = i_5 + 1;
         }
         return true;
     }
 
-    static String list_to_string(int[] xs) {
+    static String list_to_string(long[] xs) {
         if (xs.length == 0) {
             return "[]";
         }
-        String s = "[" + _p(_geti(xs, 0));
-        int i_3 = 1;
-        while (i_3 < xs.length) {
-            s = s + ", " + _p(_geti(xs, i_3));
-            i_3 = i_3 + 1;
+        String s_1 = "[" + _p(_geti(xs, ((Number)(0)).intValue()));
+        long i_7 = 1;
+        while (i_7 < xs.length) {
+            s_1 = s_1 + ", " + _p(_geti(xs, ((Number)(i_7)).intValue()));
+            i_7 = i_7 + 1;
         }
-        s = s + "]";
-        return s;
+        s_1 = s_1 + "]";
+        return s_1;
     }
 
     static void test_kth_permutation() {
-        int[] expected1 = ((int[])(new int[]{0, 1, 2, 3, 4}));
-        int[] res1 = ((int[])(kth_permutation(0, 5)));
-        if (!(Boolean)list_equal(((int[])(res1)), ((int[])(expected1)))) {
+        long[] expected1 = ((long[])(new long[]{0, 1, 2, 3, 4}));
+        long[] res1_1 = ((long[])(kth_permutation(0, 5)));
+        if (!(Boolean)list_equal(((long[])(res1_1)), ((long[])(expected1)))) {
             throw new RuntimeException(String.valueOf("test case 1 failed"));
         }
-        int[] expected2 = ((int[])(new int[]{1, 3, 0, 2}));
-        int[] res2 = ((int[])(kth_permutation(10, 4)));
-        if (!(Boolean)list_equal(((int[])(res2)), ((int[])(expected2)))) {
+        long[] expected2_1 = ((long[])(new long[]{1, 3, 0, 2}));
+        long[] res2_1 = ((long[])(kth_permutation(10, 4)));
+        if (!(Boolean)list_equal(((long[])(res2_1)), ((long[])(expected2_1)))) {
             throw new RuntimeException(String.valueOf("test case 2 failed"));
         }
     }
 
     static void main() {
         test_kth_permutation();
-        int[] res_1 = ((int[])(kth_permutation(10, 4)));
-        System.out.println(list_to_string(((int[])(res_1))));
+        long[] res_2 = ((long[])(kth_permutation(10, 4)));
+        System.out.println(list_to_string(((long[])(res_2))));
     }
     public static void main(String[] args) {
         {
@@ -143,10 +143,15 @@ public class Main {
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
     }
 
-    static Integer _geti(int[] a, int i) {
+    static Long _geti(long[] a, int i) {
         return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }

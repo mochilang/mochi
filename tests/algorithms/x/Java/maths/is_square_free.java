@@ -1,14 +1,14 @@
 public class Main {
 
-    static boolean is_square_free(int[] factors) {
-        int i = 0;
+    static boolean is_square_free(long[] factors) {
+        long i = 0;
         while (i < factors.length) {
-            int j = i + 1;
-            while (j < factors.length) {
-                if (factors[i] == factors[j]) {
+            long j_1 = i + 1;
+            while (j_1 < factors.length) {
+                if (factors[(int)(i)] == factors[(int)(j_1)]) {
                     return false;
                 }
-                j = j + 1;
+                j_1 = j_1 + 1;
             }
             i = i + 1;
         }
@@ -18,9 +18,9 @@ public class Main {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            System.out.println(_p(is_square_free(((int[])(new int[]{1, 2, 3, 4})))));
-            System.out.println(_p(is_square_free(((int[])(new int[]{1, 1, 2, 3, 4})))));
-            System.out.println(_p(is_square_free(((int[])(new int[]{1, 2, 2, 5})))));
+            System.out.println(_p(is_square_free(((long[])(new long[]{1, 2, 3, 4})))));
+            System.out.println(_p(is_square_free(((long[])(new long[]{1, 1, 2, 3, 4})))));
+            System.out.println(_p(is_square_free(((long[])(new long[]{1, 2, 2, 5})))));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -66,6 +66,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

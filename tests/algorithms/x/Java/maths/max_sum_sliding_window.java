@@ -1,42 +1,42 @@
 public class Main {
 
-    static int max_sum_sliding_window(int[] arr, int k) {
+    static long max_sum_sliding_window(long[] arr, long k) {
         if (k < 0 || arr.length < k) {
             throw new RuntimeException(String.valueOf("Invalid Input"));
         }
-        int idx = 0;
-        int current_sum = 0;
-        while (idx < k) {
-            current_sum = current_sum + arr[idx];
-            idx = idx + 1;
+        long idx_1 = 0;
+        long current_sum_1 = 0;
+        while (idx_1 < k) {
+            current_sum_1 = current_sum_1 + arr[(int)(idx_1)];
+            idx_1 = idx_1 + 1;
         }
-        int max_sum = current_sum;
-        int i = 0;
-        while (i < arr.length - k) {
-            current_sum = current_sum - arr[i] + arr[i + k];
-            if (current_sum > max_sum) {
-                max_sum = current_sum;
+        long max_sum_1 = current_sum_1;
+        long i_1 = 0;
+        while (i_1 < arr.length - k) {
+            current_sum_1 = current_sum_1 - arr[(int)(i_1)] + arr[(int)(i_1 + k)];
+            if (current_sum_1 > max_sum_1) {
+                max_sum_1 = current_sum_1;
             }
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
-        return max_sum;
+        return max_sum_1;
     }
 
     static void test_max_sum_sliding_window() {
-        int[] arr1 = ((int[])(new int[]{1, 4, 2, 10, 2, 3, 1, 0, 20}));
-        if (max_sum_sliding_window(((int[])(arr1)), 4) != 24) {
+        long[] arr1 = ((long[])(new long[]{1, 4, 2, 10, 2, 3, 1, 0, 20}));
+        if (max_sum_sliding_window(((long[])(arr1)), 4) != 24) {
             throw new RuntimeException(String.valueOf("test1 failed"));
         }
-        int[] arr2 = ((int[])(new int[]{1, 4, 2, 10, 2, 13, 1, 0, 2}));
-        if (max_sum_sliding_window(((int[])(arr2)), 4) != 27) {
+        long[] arr2_1 = ((long[])(new long[]{1, 4, 2, 10, 2, 13, 1, 0, 2}));
+        if (max_sum_sliding_window(((long[])(arr2_1)), 4) != 27) {
             throw new RuntimeException(String.valueOf("test2 failed"));
         }
     }
 
     static void main() {
         test_max_sum_sliding_window();
-        int[] sample = ((int[])(new int[]{1, 4, 2, 10, 2, 3, 1, 0, 20}));
-        System.out.println(_p(max_sum_sliding_window(((int[])(sample)), 4)));
+        long[] sample_1 = ((long[])(new long[]{1, 4, 2, 10, 2, 3, 1, 0, 20}));
+        System.out.println(_p(max_sum_sliding_window(((long[])(sample_1)), 4)));
     }
     public static void main(String[] args) {
         {
@@ -88,6 +88,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

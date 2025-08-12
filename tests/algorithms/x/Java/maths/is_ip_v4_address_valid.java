@@ -2,19 +2,19 @@ public class Main {
 
     static String[] split_by_dot(String s) {
         String[] res = ((String[])(new String[]{}));
-        String current = "";
-        int i = 0;
-        while (i < _runeLen(s)) {
-            String c = s.substring(i, i+1);
-            if ((c.equals("."))) {
-                res = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(current)).toArray(String[]::new)));
-                current = "";
+        String current_1 = "";
+        long i_1 = 0;
+        while (i_1 < _runeLen(s)) {
+            String c_1 = s.substring((int)(i_1), (int)(i_1)+1);
+            if ((c_1.equals("."))) {
+                res = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(current_1)).toArray(String[]::new)));
+                current_1 = "";
             } else {
-                current = current + c;
+                current_1 = current_1 + c_1;
             }
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
-        res = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(current)).toArray(String[]::new)));
+        res = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(current_1)).toArray(String[]::new)));
         return res;
     }
 
@@ -22,24 +22,24 @@ public class Main {
         if (_runeLen(s) == 0) {
             return false;
         }
-        int i_1 = 0;
-        while (i_1 < _runeLen(s)) {
-            String c_1 = s.substring(i_1, i_1+1);
-            if ((c_1.compareTo("0") < 0) || (c_1.compareTo("9") > 0)) {
+        long i_3 = 0;
+        while (i_3 < _runeLen(s)) {
+            String c_3 = s.substring((int)(i_3), (int)(i_3)+1);
+            if ((c_3.compareTo("0") < 0) || (c_3.compareTo("9") > 0)) {
                 return false;
             }
-            i_1 = i_1 + 1;
+            i_3 = i_3 + 1;
         }
         return true;
     }
 
-    static int parse_decimal(String s) {
-        int value = 0;
-        int i_2 = 0;
-        while (i_2 < _runeLen(s)) {
-            String c_2 = s.substring(i_2, i_2+1);
-            value = value * 10 + (Integer.parseInt(c_2));
-            i_2 = i_2 + 1;
+    static long parse_decimal(String s) {
+        long value = 0;
+        long i_5 = 0;
+        while (i_5 < _runeLen(s)) {
+            String c_5 = s.substring((int)(i_5), (int)(i_5)+1);
+            value = value * 10 + (Integer.parseInt(c_5));
+            i_5 = i_5 + 1;
         }
         return value;
     }
@@ -49,20 +49,20 @@ public class Main {
         if (octets.length != 4) {
             return false;
         }
-        int i_3 = 0;
-        while (i_3 < 4) {
-            String oct = octets[i_3];
-            if (!(Boolean)is_digit_str(oct)) {
+        long i_7 = 0;
+        while (i_7 < 4) {
+            String oct_1 = octets[(int)(i_7)];
+            if (!(Boolean)is_digit_str(oct_1)) {
                 return false;
             }
-            int number = parse_decimal(oct);
-            if (_runeLen(_p(number)) != _runeLen(oct)) {
+            long number_1 = parse_decimal(oct_1);
+            if (_runeLen(_p(number_1)) != _runeLen(oct_1)) {
                 return false;
             }
-            if (number < 0 || number > 255) {
+            if (number_1 < 0 || number_1 > 255) {
                 return false;
             }
-            i_3 = i_3 + 1;
+            i_7 = i_7 + 1;
         }
         return true;
     }
@@ -131,6 +131,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

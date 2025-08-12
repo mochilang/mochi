@@ -1,91 +1,91 @@
 public class Main {
 
-    static int[][] identity(int n) {
-        int i = 0;
-        int[][] mat = ((int[][])(new int[][]{}));
+    static long[][] identity(long n) {
+        long i = 0;
+        long[][] mat_1 = ((long[][])(new long[][]{}));
         while (i < n) {
-            int[] row = ((int[])(new int[]{}));
-            int j = 0;
-            while (j < n) {
-                if (i == j) {
-                    row = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row), java.util.stream.IntStream.of(1)).toArray()));
-                } else {
-                    row = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row), java.util.stream.IntStream.of(0)).toArray()));
-                }
-                j = j + 1;
-            }
-            mat = ((int[][])(appendObj(mat, row)));
-            i = i + 1;
-        }
-        return mat;
-    }
-
-    static int[][] matrix_mul(int[][] a, int[][] b) {
-        int n = a.length;
-        int[][] result = ((int[][])(new int[][]{}));
-        int i_1 = 0;
-        while (i_1 < n) {
-            int[] row_1 = ((int[])(new int[]{}));
-            int j_1 = 0;
+            long[] row_1 = ((long[])(new long[]{}));
+            long j_1 = 0;
             while (j_1 < n) {
-                int cell = 0;
-                int k = 0;
-                while (k < n) {
-                    cell = cell + a[i_1][k] * b[k][j_1];
-                    k = k + 1;
+                if (i == j_1) {
+                    row_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(row_1), java.util.stream.LongStream.of(1)).toArray()));
+                } else {
+                    row_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(row_1), java.util.stream.LongStream.of(0)).toArray()));
                 }
-                row_1 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row_1), java.util.stream.IntStream.of(cell)).toArray()));
                 j_1 = j_1 + 1;
             }
-            result = ((int[][])(appendObj(result, row_1)));
-            i_1 = i_1 + 1;
+            mat_1 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(mat_1), java.util.stream.Stream.of(row_1)).toArray(long[][]::new)));
+            i = i + 1;
         }
-        return result;
+        return mat_1;
     }
 
-    static int[][] matrix_pow(int[][] base, int exp) {
-        int[][] result_1 = ((int[][])(identity(base.length)));
-        int[][] b = ((int[][])(base));
-        int e = exp;
-        while (e > 0) {
-            if (Math.floorMod(e, 2) == 1) {
-                result_1 = ((int[][])(matrix_mul(((int[][])(result_1)), ((int[][])(b)))));
+    static long[][] matrix_mul(long[][] a, long[][] b) {
+        long n = a.length;
+        long[][] result_1 = ((long[][])(new long[][]{}));
+        long i_2 = 0;
+        while (i_2 < n) {
+            long[] row_3 = ((long[])(new long[]{}));
+            long j_3 = 0;
+            while (j_3 < n) {
+                long cell_1 = 0;
+                long k_1 = 0;
+                while (k_1 < n) {
+                    cell_1 = cell_1 + a[(int)(i_2)][(int)(k_1)] * b[(int)(k_1)][(int)(j_3)];
+                    k_1 = k_1 + 1;
+                }
+                row_3 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(row_3), java.util.stream.LongStream.of(cell_1)).toArray()));
+                j_3 = j_3 + 1;
             }
-            b = ((int[][])(matrix_mul(((int[][])(b)), ((int[][])(b)))));
-            e = e / 2;
+            result_1 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(result_1), java.util.stream.Stream.of(row_3)).toArray(long[][]::new)));
+            i_2 = i_2 + 1;
         }
         return result_1;
     }
 
-    static int fibonacci_with_matrix_exponentiation(int n, int f1, int f2) {
-        if (n == 1) {
-            return f1;
+    static long[][] matrix_pow(long[][] base, long exp) {
+        long[][] result_2 = ((long[][])(identity(base.length)));
+        long[][] b_1 = ((long[][])(base));
+        long e_1 = exp;
+        while (e_1 > 0) {
+            if (Math.floorMod(e_1, 2) == 1) {
+                result_2 = ((long[][])(matrix_mul(((long[][])(result_2)), ((long[][])(b_1)))));
+            }
+            b_1 = ((long[][])(matrix_mul(((long[][])(b_1)), ((long[][])(b_1)))));
+            e_1 = Math.floorDiv(e_1, 2);
         }
-        if (n == 2) {
-            return f2;
-        }
-        int[][] base = ((int[][])(new int[][]{new int[]{1, 1}, new int[]{1, 0}}));
-        int[][] m = ((int[][])(matrix_pow(((int[][])(base)), n - 2)));
-        return f2 * m[0][0] + f1 * m[0][1];
+        return result_2;
     }
 
-    static int simple_fibonacci(int n, int f1, int f2) {
+    static long fibonacci_with_matrix_exponentiation(long n, long f1, long f2) {
         if (n == 1) {
             return f1;
         }
         if (n == 2) {
             return f2;
         }
-        int a = f1;
-        int b_1 = f2;
-        int count = n - 2;
-        while (count > 0) {
-            int tmp = a + b_1;
-            a = b_1;
-            b_1 = tmp;
-            count = count - 1;
+        long[][] base_1 = ((long[][])(new long[][]{new long[]{1, 1}, new long[]{1, 0}}));
+        long[][] m_1 = ((long[][])(matrix_pow(((long[][])(base_1)), n - 2)));
+        return f2 * m_1[(int)(0)][(int)(0)] + f1 * m_1[(int)(0)][(int)(1)];
+    }
+
+    static long simple_fibonacci(long n, long f1, long f2) {
+        if (n == 1) {
+            return f1;
         }
-        return b_1;
+        if (n == 2) {
+            return f2;
+        }
+        long a_1 = f1;
+        long b_3 = f2;
+        long count_1 = n - 2;
+        while (count_1 > 0) {
+            long tmp_1 = a_1 + b_3;
+            a_1 = b_3;
+            b_3 = tmp_1;
+            count_1 = count_1 - 1;
+        }
+        return b_3;
     }
     public static void main(String[] args) {
         {
@@ -134,12 +134,6 @@ public class Main {
         return rt.totalMemory() - rt.freeMemory();
     }
 
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
-    }
-
     static String _p(Object v) {
         if (v == null) return "<nil>";
         if (v.getClass().isArray()) {
@@ -152,6 +146,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

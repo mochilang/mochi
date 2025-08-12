@@ -10,7 +10,7 @@ public class Main {
 
     static double bisection(java.util.function.Function<Double,Double> f, double a, double b) {
         double start = a;
-        double end = b;
+        double end_1 = b;
         if (f.apply(a) == 0.0) {
             return a;
         }
@@ -20,20 +20,20 @@ public class Main {
         if (f.apply(a) * f.apply(b) > 0.0) {
             throw new RuntimeException(String.valueOf("could not find root in given interval."));
         }
-        double mid = start + (end - start) / 2.0;
-        while (abs_float(start - mid) > 1e-07) {
-            double fmid = f.apply(mid);
-            if (fmid == 0.0) {
-                return mid;
+        double mid_1 = start + (end_1 - start) / 2.0;
+        while (abs_float(start - mid_1) > 1e-07) {
+            double fmid_1 = f.apply(mid_1);
+            if (fmid_1 == 0.0) {
+                return mid_1;
             }
-            if (fmid * f.apply(start) < 0.0) {
-                end = mid;
+            if (fmid_1 * f.apply(start) < 0.0) {
+                end_1 = mid_1;
             } else {
-                start = mid;
+                start = mid_1;
             }
-            mid = start + (end - start) / 2.0;
+            mid_1 = start + (end_1 - start) / 2.0;
         }
-        return mid;
+        return mid_1;
     }
 
     static double f(double x) {
@@ -93,6 +93,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

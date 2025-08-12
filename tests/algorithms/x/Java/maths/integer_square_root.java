@@ -1,38 +1,38 @@
 public class Main {
 
-    static int integer_square_root(int num) {
+    static long integer_square_root(long num) {
         if (num < 0) {
             throw new RuntimeException(String.valueOf("num must be non-negative integer"));
         }
         if (num < 2) {
             return num;
         }
-        int left_bound = 0;
-        int right_bound = num / 2;
-        while (left_bound <= right_bound) {
-            int mid = left_bound + (right_bound - left_bound) / 2;
-            int mid_squared = mid * mid;
-            if (mid_squared == num) {
-                return mid;
+        long left_bound_1 = 0;
+        long right_bound_1 = Math.floorDiv(num, 2);
+        while (left_bound_1 <= right_bound_1) {
+            long mid_1 = left_bound_1 + Math.floorDiv((right_bound_1 - left_bound_1), 2);
+            long mid_squared_1 = mid_1 * mid_1;
+            if (mid_squared_1 == num) {
+                return mid_1;
             }
-            if (mid_squared < num) {
-                left_bound = mid + 1;
+            if (mid_squared_1 < num) {
+                left_bound_1 = mid_1 + 1;
             } else {
-                right_bound = mid - 1;
+                right_bound_1 = mid_1 - 1;
             }
         }
-        return right_bound;
+        return right_bound_1;
     }
 
     static void test_integer_square_root() {
-        int[] expected = ((int[])(new int[]{0, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4}));
-        int i = 0;
-        while (i < expected.length) {
-            int result = integer_square_root(i);
-            if (result != expected[i]) {
-                throw new RuntimeException(String.valueOf("test failed at index " + _p(i)));
+        long[] expected = ((long[])(new long[]{0, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4}));
+        long i_1 = 0;
+        while (i_1 < expected.length) {
+            long result_1 = integer_square_root(i_1);
+            if (result_1 != expected[(int)(i_1)]) {
+                throw new RuntimeException(String.valueOf("test failed at index " + _p(i_1)));
             }
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
         if (integer_square_root(625) != 25) {
             throw new RuntimeException(String.valueOf("sqrt of 625 incorrect"));
@@ -96,6 +96,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

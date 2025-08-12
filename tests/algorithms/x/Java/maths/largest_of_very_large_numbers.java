@@ -2,15 +2,15 @@ public class Main {
 
     static double ln(double x) {
         double t = (x - 1.0) / (x + 1.0);
-        double term = t;
-        double sum = 0.0;
-        int k = 1;
-        while (k <= 99) {
-            sum = sum + term / (((Number)(k)).doubleValue());
-            term = term * t * t;
-            k = k + 2;
+        double term_1 = t;
+        double sum_1 = 0.0;
+        long k_1 = 1;
+        while (k_1 <= 99) {
+            sum_1 = sum_1 + term_1 / (((Number)(k_1)).doubleValue());
+            term_1 = term_1 * t * t;
+            k_1 = k_1 + 2;
         }
-        return 2.0 * sum;
+        return 2.0 * sum_1;
     }
 
     static double log10(double x) {
@@ -24,7 +24,7 @@ public class Main {
         return x;
     }
 
-    static double res(int x, int y) {
+    static double res(long x, long y) {
         if (x == 0) {
             return 0.0;
         }
@@ -49,13 +49,13 @@ public class Main {
         }
     }
 
-    static String compare(int x1, int y1, int x2, int y2) {
+    static String compare(long x1, long y1, long x2, long y2) {
         double r1 = res(x1, y1);
-        double r2 = res(x2, y2);
-        if (r1 > r2) {
+        double r2_1 = res(x2, y2);
+        if (r1 > r2_1) {
             return "Largest number is " + _p(x1) + " ^ " + _p(y1);
         }
-        if (r2 > r1) {
+        if (r2_1 > r1) {
             return "Largest number is " + _p(x2) + " ^ " + _p(y2);
         }
         return "Both are equal";
@@ -111,6 +111,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

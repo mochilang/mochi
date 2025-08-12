@@ -1,7 +1,7 @@
 public class Main {
 
-    static int floor(double x) {
-        int i = ((Number)(x)).intValue();
+    static long floor(double x) {
+        long i = ((Number)(x)).intValue();
         if (x - ((Number)(i)).doubleValue() >= 0.0) {
             return i;
         }
@@ -10,13 +10,13 @@ public class Main {
 
     static void test_floor() {
         double[] nums = ((double[])(new double[]{1.0, -1.0, 0.0, 0.0, 1.1, -1.1, 1.0, -1.0, 1000000000.0}));
-        int[] expected = ((int[])(new int[]{1, -1, 0, 0, 1, -2, 1, -1, 1000000000}));
-        int idx = 0;
-        while (idx < nums.length) {
-            if (floor(nums[idx]) != expected[idx]) {
+        long[] expected_1 = ((long[])(new long[]{1, -1, 0, 0, 1, -2, 1, -1, 1000000000}));
+        long idx_1 = 0;
+        while (idx_1 < nums.length) {
+            if (floor(nums[(int)(idx_1)]) != expected_1[(int)(idx_1)]) {
                 throw new RuntimeException(String.valueOf("floor test failed"));
             }
-            idx = idx + 1;
+            idx_1 = idx_1 + 1;
         }
     }
 
@@ -74,6 +74,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

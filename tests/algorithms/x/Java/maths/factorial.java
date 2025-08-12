@@ -1,19 +1,19 @@
 public class Main {
 
-    static int factorial(int n) {
+    static long factorial(long n) {
         if (n < 0) {
             throw new RuntimeException(String.valueOf("factorial() not defined for negative values"));
         }
-        int value = 1;
-        int i = 1;
-        while (i <= n) {
-            value = value * i;
-            i = i + 1;
+        long value_1 = 1;
+        long i_1 = 1;
+        while (i_1 <= n) {
+            value_1 = value_1 * i_1;
+            i_1 = i_1 + 1;
         }
-        return value;
+        return value_1;
     }
 
-    static int factorial_recursive(int n) {
+    static long factorial_recursive(long n) {
         if (n < 0) {
             throw new RuntimeException(String.valueOf("factorial() not defined for negative values"));
         }
@@ -24,12 +24,12 @@ public class Main {
     }
 
     static void test_factorial() {
-        int i_1 = 0;
-        while (i_1 <= 10) {
-            if (factorial(i_1) != factorial_recursive(i_1)) {
+        long i_2 = 0;
+        while (i_2 <= 10) {
+            if (factorial(i_2) != factorial_recursive(i_2)) {
                 throw new RuntimeException(String.valueOf("mismatch between factorial and factorial_recursive"));
             }
-            i_1 = i_1 + 1;
+            i_2 = i_2 + 1;
         }
         if (factorial(6) != 720) {
             throw new RuntimeException(String.valueOf("factorial(6) should be 720"));

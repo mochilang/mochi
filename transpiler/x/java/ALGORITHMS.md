@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-11 18:44 GMT+7
+Last updated: 2025-08-11 22:50 GMT+7
 
-## Algorithms Golden Test Checklist (927/1077)
+## Algorithms Golden Test Checklist (929/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -566,56 +566,56 @@ Last updated: 2025-08-11 18:44 GMT+7
 | 557 | maths/dual_number_automatic_differentiation | ✓ | 36.0ms | 60.98KB |
 | 558 | maths/entropy | error |  |  |
 | 559 | maths/euclidean_distance | ✓ | 14.0ms | 10.45KB |
-| 560 | maths/euler_method | ✓ | 47.0ms | 58.75KB |
-| 561 | maths/euler_modified | ✓ | 27.0ms | 60.42KB |
-| 562 | maths/eulers_totient | ✓ | 52.0ms | 93.09KB |
-| 563 | maths/extended_euclidean_algorithm | ✓ | 36.0ms | 77.92KB |
-| 564 | maths/factorial | ✓ | 16.0ms | 448B |
+| 560 | maths/euler_method | ✓ | 36.0ms | 48.90KB |
+| 561 | maths/euler_modified | ✓ | 31.0ms | 50.81KB |
+| 562 | maths/eulers_totient | ✓ | 61.0ms | 93.91KB |
+| 563 | maths/extended_euclidean_algorithm | ✓ | 42.0ms | 78.22KB |
+| 564 | maths/factorial | ✓ | 17.0ms | 448B |
 | 565 | maths/factors | error |  |  |
-| 566 | maths/fast_inverse_sqrt | ✓ | 35.0ms | 87.45KB |
-| 567 | maths/fermat_little_theorem | ✓ | 17.0ms | 712B |
+| 566 | maths/fast_inverse_sqrt | ✓ | 43.0ms | 87.55KB |
+| 567 | maths/fermat_little_theorem | ✓ | 25.0ms | 712B |
 | 568 | maths/fibonacci | error |  |  |
-| 569 | maths/find_max | ✓ | 13.0ms | 10.25KB |
-| 570 | maths/find_min | ✓ | 14.0ms | 10.45KB |
-| 571 | maths/floor | ✓ | 16.0ms | 552B |
-| 572 | maths/gamma | ✓ | 35.0ms | 10.79KB |
-| 573 | maths/gaussian | ✓ | 13.0ms | 10.25KB |
-| 574 | maths/gcd_of_n_numbers | ✓ | 15.0ms | 768B |
+| 569 | maths/find_max | ✓ | 17.0ms | 10.35KB |
+| 570 | maths/find_min | ✓ | 17.0ms | 864B |
+| 571 | maths/floor | ✓ | 18.0ms | 656B |
+| 572 | maths/gamma | ✓ | 46.0ms | 10.79KB |
+| 573 | maths/gaussian | ✓ | 18.0ms | 10.25KB |
+| 574 | maths/gcd_of_n_numbers | ✓ | 17.0ms | 968B |
 | 575 | maths/geometric_mean | error |  |  |
-| 576 | maths/germain_primes | ✓ | 13.0ms | 664B |
-| 577 | maths/greatest_common_divisor | ✓ | 14.0ms | 880B |
-| 578 | maths/hardy_ramanujanalgo | ✓ | 23.0ms | 47.66KB |
-| 579 | maths/integer_square_root | error |  |  |
-| 580 | maths/interquartile_range | ✓ | 34.0ms | 57.13KB |
-| 581 | maths/is_int_palindrome | ✓ | 14.0ms | 552B |
-| 582 | maths/is_ip_v4_address_valid | ✓ | 30.0ms | 52.00KB |
-| 583 | maths/is_square_free | ✓ | 14.0ms | 664B |
-| 584 | maths/jaccard_similarity | ✓ | 28.0ms | 55.94KB |
-| 585 | maths/joint_probability_distribution | ✓ | 36.0ms | 91.11KB |
-| 586 | maths/josephus_problem | ✓ | 27.0ms | 46.35KB |
-| 587 | maths/juggler_sequence | ✓ | 33.0ms | 46.24KB |
-| 588 | maths/karatsuba | ✓ | 15.0ms | 768B |
-| 589 | maths/kth_lexicographic_permutation | ✓ | 38.0ms | 95.68KB |
-| 590 | maths/largest_of_very_large_numbers | ✓ | 34.0ms | 77.50KB |
-| 591 | maths/least_common_multiple | ✓ | 14.0ms | 768B |
-| 592 | maths/line_length | ✓ | 27.0ms | 51.44KB |
-| 593 | maths/liouville_lambda | ✓ | 30.0ms | 46.14KB |
-| 594 | maths/lucas_lehmer_primality_test | ✓ | 14.0ms | 768B |
-| 595 | maths/lucas_series | ✓ | 16.0ms | 944B |
-| 596 | maths/maclaurin_series | ✓ | 16.0ms | 10.45KB |
-| 597 | maths/manhattan_distance | ✓ | 16.0ms | 10.45KB |
-| 598 | maths/matrix_exponentiation | ✓ | 29.0ms | 46.35KB |
-| 599 | maths/max_sum_sliding_window | ✓ | 14.0ms | 664B |
-| 600 | maths/minkowski_distance | ✓ | 16.0ms | 10.25KB |
-| 601 | maths/mobius_function | ✓ | 29.0ms | 46.47KB |
-| 602 | maths/modular_division | ✓ | 14.0ms | 768B |
-| 603 | maths/monte_carlo | ✓ | 29.0ms | 60.39KB |
-| 604 | maths/monte_carlo_dice | ✓ | 33.0ms | 59.05KB |
-| 605 | maths/number_of_digits | ✓ | 15.0ms | 664B |
-| 606 | maths/numerical_analysis/adams_bashforth | error |  |  |
-| 607 | maths/numerical_analysis/bisection | ✓ | 24.0ms | 50.25KB |
-| 608 | maths/numerical_analysis/bisection_2 | ✓ | 15.0ms | 10.25KB |
-| 609 | maths/numerical_analysis/integration_by_simpson_approx | ✓ | 29.0ms | 50.97KB |
+| 576 | maths/germain_primes | ✓ | 19.0ms | 664B |
+| 577 | maths/greatest_common_divisor | ✓ | 19.0ms | 1.05KB |
+| 578 | maths/hardy_ramanujanalgo | ✓ | 27.0ms | 47.76KB |
+| 579 | maths/integer_square_root | ✓ | 18.0ms | 968B |
+| 580 | maths/interquartile_range | ✓ | 18.0ms | 1.16KB |
+| 581 | maths/is_int_palindrome | ✓ | 18.0ms | 552B |
+| 582 | maths/is_ip_v4_address_valid | ✓ | 36.0ms | 52.30KB |
+| 583 | maths/is_square_free | ✓ | 18.0ms | 872B |
+| 584 | maths/jaccard_similarity | ✓ | 30.0ms | 55.94KB |
+| 585 | maths/joint_probability_distribution | ✓ | 43.0ms | 91.41KB |
+| 586 | maths/josephus_problem | ✓ | 33.0ms | 47.28KB |
+| 587 | maths/juggler_sequence | ✓ | 34.0ms | 46.98KB |
+| 588 | maths/karatsuba | ✓ | 19.0ms | 968B |
+| 589 | maths/kth_lexicographic_permutation | ✓ | 47.0ms | 96.51KB |
+| 590 | maths/largest_of_very_large_numbers | ✓ | 40.0ms | 77.70KB |
+| 591 | maths/least_common_multiple | ✓ | 23.0ms | 864B |
+| 592 | maths/line_length | ✓ | 32.0ms | 51.44KB |
+| 593 | maths/liouville_lambda | ✓ | 33.0ms | 46.88KB |
+| 594 | maths/lucas_lehmer_primality_test | ✓ | 17.0ms | 976B |
+| 595 | maths/lucas_series | ✓ | 18.0ms | 1.12KB |
+| 596 | maths/maclaurin_series | ✓ | 19.0ms | 10.45KB |
+| 597 | maths/manhattan_distance | ✓ | 18.0ms | 10.66KB |
+| 598 | maths/matrix_exponentiation | ✓ | 34.0ms | 49.12KB |
+| 599 | maths/max_sum_sliding_window | ✓ | 19.0ms | 864B |
+| 600 | maths/minkowski_distance | ✓ | 17.0ms | 10.25KB |
+| 601 | maths/mobius_function | ✓ | 33.0ms | 47.09KB |
+| 602 | maths/modular_division | ✓ | 17.0ms | 864B |
+| 603 | maths/monte_carlo | ✓ | 34.0ms | 60.39KB |
+| 604 | maths/monte_carlo_dice | ✓ | 37.0ms | 57.06KB |
+| 605 | maths/number_of_digits | ✓ | 17.0ms | 968B |
+| 606 | maths/numerical_analysis/adams_bashforth | ✓ | 34.0ms | 61.49KB |
+| 607 | maths/numerical_analysis/bisection | ✓ | 29.0ms | 50.45KB |
+| 608 | maths/numerical_analysis/bisection_2 | ✓ | 17.0ms | 10.25KB |
+| 609 | maths/numerical_analysis/integration_by_simpson_approx | ✓ | 30.0ms | 50.97KB |
 | 610 | maths/numerical_analysis/intersection | ✓ | 24.0ms | 50.25KB |
 | 611 | maths/numerical_analysis/nevilles_method | ✓ | 30.0ms | 57.18KB |
 | 612 | maths/numerical_analysis/newton_forward_interpolation | ✓ | 28.0ms | 57.12KB |

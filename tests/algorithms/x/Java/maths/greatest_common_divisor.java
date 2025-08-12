@@ -1,28 +1,28 @@
 public class Main {
 
-    static int abs_int(int n) {
+    static long abs_int(long n) {
         if (n < 0) {
             return -n;
         }
         return n;
     }
 
-    static int greatest_common_divisor(int a, int b) {
-        int x = abs_int(a);
-        int y = abs_int(b);
+    static long greatest_common_divisor(long a, long b) {
+        long x = abs_int(a);
+        long y_1 = abs_int(b);
         if (x == 0) {
-            return y;
+            return y_1;
         }
-        return greatest_common_divisor(Math.floorMod(y, x), x);
+        return greatest_common_divisor(Math.floorMod(y_1, x), x);
     }
 
-    static int gcd_by_iterative(int x, int y) {
-        int a = abs_int(x);
-        int b = abs_int(y);
-        while (b != 0) {
-            int temp = b;
-            b = Math.floorMod(a, b);
-            a = temp;
+    static long gcd_by_iterative(long x, long y) {
+        long a = abs_int(x);
+        long b_1 = abs_int(y);
+        while (b_1 != 0) {
+            long temp_1 = b_1;
+            b_1 = Math.floorMod(a, b_1);
+            a = temp_1;
         }
         return a;
     }
@@ -91,6 +91,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

@@ -1,7 +1,7 @@
 public class Main {
-    static int r;
+    static long r;
 
-    static int josephus_recursive(int num_people, int step_size) {
+    static long josephus_recursive(long num_people, long step_size) {
         if (num_people <= 0 || step_size <= 0) {
             throw new RuntimeException(String.valueOf("num_people or step_size is not a positive integer."));
         }
@@ -11,38 +11,38 @@ public class Main {
         return Math.floorMod((josephus_recursive(num_people - 1, step_size) + step_size), num_people);
     }
 
-    static int find_winner(int num_people, int step_size) {
+    static long find_winner(long num_people, long step_size) {
         return josephus_recursive(num_people, step_size) + 1;
     }
 
-    static int[] remove_at(int[] xs, int idx) {
-        int[] res = ((int[])(new int[]{}));
-        int i = 0;
-        while (i < xs.length) {
-            if (i != idx) {
-                res = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res), java.util.stream.IntStream.of(xs[i])).toArray()));
+    static long[] remove_at(long[] xs, long idx) {
+        long[] res = ((long[])(new long[]{}));
+        long i_1 = 0;
+        while (i_1 < xs.length) {
+            if (i_1 != idx) {
+                res = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res), java.util.stream.LongStream.of(xs[(int)(i_1)])).toArray()));
             }
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
         return res;
     }
 
-    static int josephus_iterative(int num_people, int step_size) {
+    static long josephus_iterative(long num_people, long step_size) {
         if (num_people <= 0 || step_size <= 0) {
             throw new RuntimeException(String.valueOf("num_people or step_size is not a positive integer."));
         }
-        int[] circle = ((int[])(new int[]{}));
-        int i_1 = 1;
-        while (i_1 <= num_people) {
-            circle = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(circle), java.util.stream.IntStream.of(i_1)).toArray()));
-            i_1 = i_1 + 1;
+        long[] circle_1 = ((long[])(new long[]{}));
+        long i_3 = 1;
+        while (i_3 <= num_people) {
+            circle_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(circle_1), java.util.stream.LongStream.of(i_3)).toArray()));
+            i_3 = i_3 + 1;
         }
-        int current = 0;
-        while (circle.length > 1) {
-            current = Math.floorMod((current + step_size - 1), circle.length);
-            circle = ((int[])(remove_at(((int[])(circle)), current)));
+        long current_1 = 0;
+        while (circle_1.length > 1) {
+            current_1 = Math.floorMod((current_1 + step_size - 1), circle_1.length);
+            circle_1 = ((long[])(remove_at(((long[])(circle_1)), current_1)));
         }
-        return circle[0];
+        return circle_1[(int)(0)];
     }
     public static void main(String[] args) {
         {
@@ -97,6 +97,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

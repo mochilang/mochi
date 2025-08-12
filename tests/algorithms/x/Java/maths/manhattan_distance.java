@@ -19,13 +19,13 @@ public class Main {
         if (a.length != b.length) {
             throw new RuntimeException(String.valueOf("Both points must be in the same n-dimensional space"));
         }
-        double total = 0.0;
-        int i = 0;
-        while (i < a.length) {
-            total = total + abs_val(a[i] - b[i]);
-            i = i + 1;
+        double total_1 = 0.0;
+        long i_1 = 0;
+        while (i_1 < a.length) {
+            total_1 = total_1 + abs_val(a[(int)(i_1)] - b[(int)(i_1)]);
+            i_1 = i_1 + 1;
         }
-        return total;
+        return total_1;
     }
 
     static double manhattan_distance_one_liner(double[] a, double[] b) {
@@ -84,6 +84,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

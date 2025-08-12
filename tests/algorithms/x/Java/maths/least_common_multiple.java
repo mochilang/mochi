@@ -1,27 +1,27 @@
 public class Main {
 
-    static int gcd(int a, int b) {
-        int x = a >= 0 ? a : -a;
-        int y = b >= 0 ? b : -b;
-        while (y != 0) {
-            int temp = Math.floorMod(x, y);
-            x = y;
-            y = temp;
+    static long gcd(long a, long b) {
+        long x = a >= 0 ? a : -a;
+        long y_1 = b >= 0 ? b : -b;
+        while (y_1 != 0) {
+            long temp_1 = Math.floorMod(x, y_1);
+            x = y_1;
+            y_1 = temp_1;
         }
         return x;
     }
 
-    static int lcm_slow(int a, int b) {
-        int max = a >= b ? a : b;
-        int multiple = max;
-        while ((Math.floorMod(multiple, a) != 0) || (Math.floorMod(multiple, b) != 0)) {
-            multiple = multiple + max;
+    static long lcm_slow(long a, long b) {
+        long max = a >= b ? a : b;
+        long multiple_1 = max;
+        while ((Math.floorMod(multiple_1, a) != 0) || (Math.floorMod(multiple_1, b) != 0)) {
+            multiple_1 = multiple_1 + max;
         }
-        return multiple;
+        return multiple_1;
     }
 
-    static int lcm_fast(int a, int b) {
-        return (a / gcd(a, b)) * b;
+    static long lcm_fast(long a, long b) {
+        return ((Number)((Math.floorDiv(a, gcd(a, b))))).intValue() * b;
     }
     public static void main(String[] args) {
         {
@@ -76,6 +76,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

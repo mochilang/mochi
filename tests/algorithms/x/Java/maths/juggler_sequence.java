@@ -1,6 +1,6 @@
 public class Main {
 
-    static double to_float(int x) {
+    static double to_float(long x) {
         return x * 1.0;
     }
 
@@ -8,41 +8,41 @@ public class Main {
         if (x <= 0.0) {
             return 0.0;
         }
-        double guess = x;
-        int i = 0;
-        while (i < 10) {
-            guess = (guess + x / guess) / 2.0;
-            i = i + 1;
+        double guess_1 = x;
+        long i_1 = 0;
+        while (i_1 < 10) {
+            guess_1 = (guess_1 + x / guess_1) / 2.0;
+            i_1 = i_1 + 1;
         }
-        return guess;
+        return guess_1;
     }
 
-    static int floor(double x) {
-        int n = 0;
-        double y = x;
-        while (y >= 1.0) {
-            y = y - 1.0;
+    static long floor(double x) {
+        long n = 0;
+        double y_1 = x;
+        while (y_1 >= 1.0) {
+            y_1 = y_1 - 1.0;
             n = n + 1;
         }
         return n;
     }
 
-    static int[] juggler_sequence(int n) {
+    static long[] juggler_sequence(long n) {
         if (n < 1) {
             throw new RuntimeException(String.valueOf("number must be a positive integer"));
         }
-        int[] seq = ((int[])(new int[]{n}));
-        int current = n;
-        while (current != 1) {
-            if (Math.floorMod(current, 2) == 0) {
-                current = floor(sqrt(to_float(current)));
+        long[] seq_1 = ((long[])(new long[]{n}));
+        long current_1 = n;
+        while (current_1 != 1) {
+            if (Math.floorMod(current_1, 2) == 0) {
+                current_1 = floor(sqrt(to_float(current_1)));
             } else {
-                double r = sqrt(to_float(current));
-                current = floor(r * r * r);
+                double r_1 = sqrt(to_float(current_1));
+                current_1 = floor(r_1 * r_1 * r_1);
             }
-            seq = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(seq), java.util.stream.IntStream.of(current)).toArray()));
+            seq_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(seq_1), java.util.stream.LongStream.of(current_1)).toArray()));
         }
-        return seq;
+        return seq_1;
     }
     public static void main(String[] args) {
         {
@@ -95,6 +95,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

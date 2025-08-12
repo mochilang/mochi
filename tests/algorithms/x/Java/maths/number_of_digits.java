@@ -1,34 +1,34 @@
 public class Main {
 
-    static int abs_int(int n) {
+    static long abs_int(long n) {
         if (n < 0) {
             return -n;
         }
         return n;
     }
 
-    static int num_digits(int n) {
-        int x = abs_int(n);
-        int digits = 1;
+    static long num_digits(long n) {
+        long x = abs_int(n);
+        long digits_1 = 1;
         while (x >= 10) {
-            x = x / 10;
-            digits = digits + 1;
-        }
-        return digits;
-    }
-
-    static int num_digits_fast(int n) {
-        int x_1 = abs_int(n);
-        int digits_1 = 1;
-        int power = 10;
-        while (x_1 >= power) {
-            power = power * 10;
+            x = Math.floorDiv(x, 10);
             digits_1 = digits_1 + 1;
         }
         return digits_1;
     }
 
-    static int num_digits_faster(int n) {
+    static long num_digits_fast(long n) {
+        long x_1 = abs_int(n);
+        long digits_3 = 1;
+        long power_1 = 10;
+        while (x_1 >= power_1) {
+            power_1 = power_1 * 10;
+            digits_3 = digits_3 + 1;
+        }
+        return digits_3;
+    }
+
+    static long num_digits_faster(long n) {
         String s = _p(abs_int(n));
         return _runeLen(s);
     }
@@ -141,6 +141,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }
