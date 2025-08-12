@@ -1,0 +1,32 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 55 │       {guess, i} = try do
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/physics/n_body_simulation.exs:55:15: Main.sqrtApprox/1
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 97 │           {force_x, force_y, j} = try do
+    │                              ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/physics/n_body_simulation.exs:97:30: Main.update_system/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 111 │       {bodies, i} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/physics/n_body_simulation.exs:111:16: Main.update_system/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 129 │       {bodies, i} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/physics/n_body_simulation.exs:129:16: Main.update_system/2
+
+%{"x" => 0.01, "y" => 0.0}
+%{"vx" => 0.01, "vy" => 0.0}
+%{"x" => -9.0, "y" => 0.0}
+%{"vx" => 0.1, "vy" => 0.0}

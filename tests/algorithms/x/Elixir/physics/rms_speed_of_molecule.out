@@ -1,0 +1,10 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 19 │       {guess, i} = try do
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/physics/rms_speed_of_molecule.exs:19:15: Main.sqrt/1
+
+rms_speed_of_molecule(100, 2) = 35.315279554323226
+rms_speed_of_molecule(273, 12) = 23.82145842197744
+Vrms of Nitrogen gas at 300 K is 16.347797820239535 m/s
