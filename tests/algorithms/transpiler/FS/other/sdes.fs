@@ -1,4 +1,4 @@
-// Generated 2025-08-09 23:14 +0700
+// Generated 2025-08-12 16:24 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -63,7 +63,7 @@ let rec apply_table (inp: string) (table: int array) =
         __ret
     with
         | Return -> __ret
-let rec left_shift (data: string) =
+and left_shift (data: string) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable data = data
     try
@@ -72,7 +72,7 @@ let rec left_shift (data: string) =
         __ret
     with
         | Return -> __ret
-let rec xor (a: string) (b: string) =
+and xor (a: string) (b: string) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable a = a
     let mutable b = b
@@ -90,7 +90,7 @@ let rec xor (a: string) (b: string) =
         __ret
     with
         | Return -> __ret
-let rec int_to_binary (n: int) =
+and int_to_binary (n: int) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable n = n
     try
@@ -107,7 +107,7 @@ let rec int_to_binary (n: int) =
         __ret
     with
         | Return -> __ret
-let rec pad_left (s: string) (width: int) =
+and pad_left (s: string) (width: int) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable s = s
     let mutable width = width
@@ -120,7 +120,7 @@ let rec pad_left (s: string) (width: int) =
         __ret
     with
         | Return -> __ret
-let rec bin_to_int (s: string) =
+and bin_to_int (s: string) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable s = s
     try
@@ -128,14 +128,14 @@ let rec bin_to_int (s: string) =
         let mutable i: int = 0
         while i < (String.length (s)) do
             let digit: int = int (_substring s (i) (i + 1))
-            result <- int (((int64 result) * (int64 2)) + (int64 digit))
+            result <- (result * 2) + digit
             i <- i + 1
         __ret <- result
         raise Return
         __ret
     with
         | Return -> __ret
-let rec apply_sbox (s: int array array) (data: string) =
+and apply_sbox (s: int array array) (data: string) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable s = s
     let mutable data = data
@@ -200,13 +200,13 @@ temp <- f (expansion) (s0) (s1) (key1) (temp)
 temp <- (_substring temp (4) (8)) + (_substring temp (0) (4))
 temp <- f (expansion) (s0) (s1) (key2) (temp)
 let CT: string = apply_table (temp) (IP_inv)
-printfn "%s" ("Cipher text is: " + CT)
+ignore (printfn "%s" ("Cipher text is: " + CT))
 temp <- apply_table (CT) (IP)
 temp <- f (expansion) (s0) (s1) (key2) (temp)
 temp <- (_substring temp (4) (8)) + (_substring temp (0) (4))
 temp <- f (expansion) (s0) (s1) (key1) (temp)
 let PT: string = apply_table (temp) (IP_inv)
-printfn "%s" ("Plain text after decypting is: " + PT)
+ignore (printfn "%s" ("Plain text after decypting is: " + PT))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

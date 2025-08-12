@@ -1,4 +1,4 @@
-// Generated 2025-08-09 23:14 +0700
+// Generated 2025-08-12 16:24 +0700
 
 let mutable _nowSeed:int64 = 0L
 let mutable _nowSeeded = false
@@ -34,12 +34,12 @@ let rec move_tower (height: int) (from_pole: string) (to_pole: string) (with_pol
         __ret
     with
         | Return -> __ret
-let rec move_disk (fp: string) (tp: string) =
+and move_disk (fp: string) (tp: string) =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     let mutable fp = fp
     let mutable tp = tp
     try
-        printfn "%s" ((("moving disk from " + fp) + " to ") + tp)
+        ignore (printfn "%s" ((("moving disk from " + fp) + " to ") + tp))
         __ret
     with
         | Return -> __ret

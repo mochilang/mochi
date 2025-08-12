@@ -1,4 +1,4 @@
-// Generated 2025-08-09 23:14 +0700
+// Generated 2025-08-12 16:24 +0700
 
 exception Break
 exception Continue
@@ -52,7 +52,7 @@ let mutable _seed: int = 123456789
 let rec rand () =
     let mutable __ret : int = Unchecked.defaultof<int>
     try
-        _seed <- int ((((((int64 _seed) * (int64 1103515245)) + (int64 12345)) % 2147483648L + 2147483648L) % 2147483648L))
+        _seed <- int ((((int64 ((_seed * 1103515245) + 12345)) % 2147483648L + 2147483648L) % 2147483648L))
         __ret <- _seed
         raise Return
         __ret
@@ -75,8 +75,8 @@ and shuffle (list_int: int array) =
         while i > 0 do
             let j: int = rand_range (i + 1)
             let tmp: int = _idx list_int (int i)
-            list_int.[int i] <- _idx list_int (int j)
-            list_int.[int j] <- tmp
+            list_int.[i] <- _idx list_int (int j)
+            list_int.[j] <- tmp
             i <- i - 1
         __ret <- list_int
         raise Return
@@ -134,9 +134,9 @@ and insert_dir (ws: WordSearch) (word: string) (dr: int) (dc: int) (rows: int ar
                         while ci < (Seq.length (cols)) do
                             try
                                 let col: int = _idx cols (int ci)
-                                let end_r: int64 = (int64 row) + ((int64 dr) * (int64 (word_len - 1)))
-                                let end_c: int64 = (int64 col) + ((int64 dc) * (int64 (word_len - 1)))
-                                if (((end_r < (int64 0)) || (end_r >= (int64 (ws._height)))) || (end_c < (int64 0))) || (end_c >= (int64 (ws._width))) then
+                                let end_r: int = row + (dr * (word_len - 1))
+                                let end_c: int = col + (dc * (word_len - 1))
+                                if (((end_r < 0) || (end_r >= (ws._height))) || (end_c < 0)) || (end_c >= (ws._width)) then
                                     ci <- ci + 1
                                     raise Continue
                                 let mutable k: int = 0
@@ -144,8 +144,8 @@ and insert_dir (ws: WordSearch) (word: string) (dr: int) (dc: int) (rows: int ar
                                 try
                                     while k < word_len do
                                         try
-                                            let rr: int64 = (int64 row) + ((int64 dr) * (int64 k))
-                                            let cc: int64 = (int64 col) + ((int64 dc) * (int64 k))
+                                            let rr: int = row + (dr * k)
+                                            let cc: int = col + (dc * k)
                                             if (_idx (_idx (ws._board) (int rr)) (int cc)) <> "" then
                                                 ok <- false
                                                 raise Break
@@ -159,10 +159,10 @@ and insert_dir (ws: WordSearch) (word: string) (dr: int) (dc: int) (rows: int ar
                                 if ok then
                                     k <- 0
                                     while k < word_len do
-                                        let rr2: int64 = (int64 row) + ((int64 dr) * (int64 k))
-                                        let cc2: int64 = (int64 col) + ((int64 dc) * (int64 k))
+                                        let rr2: int = row + (dr * k)
+                                        let cc2: int = col + (dc * k)
                                         let mutable row_list: string array = _idx (ws._board) (int rr2)
-                                        row_list.[int64 cc2] <- _substring word (k) (k + 1)
+                                        row_list.[cc2] <- _substring word (k) (k + 1)
                                         k <- k + 1
                                     __ret <- true
                                     raise Return
@@ -207,7 +207,7 @@ and generate_board (ws: WordSearch) =
             rows <- shuffle (rows)
             cols <- shuffle (cols)
             let d: int = rand_range (8)
-            insert_dir (ws) (word) (_idx dirs_r (int d)) (_idx dirs_c (int d)) (rows) (cols)
+            ignore (insert_dir (ws) (word) (_idx dirs_r (int d)) (_idx dirs_c (int d)) (rows) (cols))
             i <- i + 1
         __ret
     with
@@ -245,7 +245,7 @@ and main () =
         let _words: string array = unbox<string array> [|"cat"; "dog"; "snake"; "fish"|]
         let mutable ws: WordSearch = make_word_search (_words) (10) (10)
         generate_board (ws)
-        printfn "%s" (visualise (ws) (true))
+        ignore (printfn "%s" (visualise (ws) (true)))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

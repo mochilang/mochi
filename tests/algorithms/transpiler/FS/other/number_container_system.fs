@@ -1,4 +1,4 @@
-// Generated 2025-08-09 23:14 +0700
+// Generated 2025-08-12 16:24 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,6 +19,9 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
+    d.[k] <- v
+    d
 let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
     let d = System.Collections.Generic.Dictionary<'K, 'V>()
     for (k, v) in pairs do
@@ -58,7 +61,7 @@ let rec remove_at (xs: int array) (idx: int) =
         __ret
     with
         | Return -> __ret
-let rec insert_at (xs: int array) (idx: int) (``val``: int) =
+and insert_at (xs: int array) (idx: int) (``val``: int) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable xs = xs
     let mutable idx = idx
@@ -78,7 +81,7 @@ let rec insert_at (xs: int array) (idx: int) (``val``: int) =
         __ret
     with
         | Return -> __ret
-let rec binary_search_delete (array: int array) (item: int) =
+and binary_search_delete (array: int array) (item: int) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable array = array
     let mutable item = item
@@ -97,13 +100,13 @@ let rec binary_search_delete (array: int array) (item: int) =
                     low <- mid + 1
                 else
                     high <- mid - 1
-        printfn "%s" ("ValueError: Either the item is not in the array or the array was unsorted")
+        ignore (printfn "%s" ("ValueError: Either the item is not in the array or the array was unsorted"))
         __ret <- arr
         raise Return
         __ret
     with
         | Return -> __ret
-let rec binary_search_insert (array: int array) (index: int) =
+and binary_search_insert (array: int array) (index: int) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable array = array
     let mutable index = index
@@ -128,7 +131,7 @@ let rec binary_search_insert (array: int array) (index: int) =
         __ret
     with
         | Return -> __ret
-let rec change (cont: NumberContainer) (idx: int) (num: int) =
+and change (cont: NumberContainer) (idx: int) (num: int) =
     let mutable __ret : NumberContainer = Unchecked.defaultof<NumberContainer>
     let mutable cont = cont
     let mutable idx = idx
@@ -140,20 +143,20 @@ let rec change (cont: NumberContainer) (idx: int) (num: int) =
             let old: int = _dictGet _indexmap (idx)
             let indexes: int array = _dictGet _numbermap (old)
             if (Seq.length (indexes)) = 1 then
-                _numbermap.[int old] <- Array.empty<int>
+                _numbermap <- _dictAdd (_numbermap) (old) (Array.empty<int>)
             else
-                _numbermap.[int old] <- binary_search_delete (indexes) (idx)
-        _indexmap.[int idx] <- num
+                _numbermap <- _dictAdd (_numbermap) (old) (binary_search_delete (indexes) (idx))
+        _indexmap <- _dictAdd (_indexmap) (idx) (num)
         if _numbermap.ContainsKey(num) then
-            _numbermap.[int num] <- binary_search_insert (_dictGet _numbermap (num)) (idx)
+            _numbermap <- _dictAdd (_numbermap) (num) (binary_search_insert (_dictGet _numbermap (num)) (idx))
         else
-            _numbermap.[int num] <- unbox<int array> [|idx|]
+            _numbermap <- _dictAdd (_numbermap) (num) (unbox<int array> [|idx|])
         __ret <- { _numbermap = _numbermap; _indexmap = _indexmap }
         raise Return
         __ret
     with
         | Return -> __ret
-let rec find (cont: NumberContainer) (num: int) =
+and find (cont: NumberContainer) (num: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable cont = cont
     let mutable num = num
@@ -172,12 +175,12 @@ let rec find (cont: NumberContainer) (num: int) =
 let mutable nm: System.Collections.Generic.IDictionary<int, int array> = _dictCreate []
 let mutable im: System.Collections.Generic.IDictionary<int, int> = _dictCreate []
 let mutable cont: NumberContainer = { _numbermap = nm; _indexmap = im }
-printfn "%d" (find (cont) (10))
+ignore (printfn "%d" (find (cont) (10)))
 cont <- change (cont) (0) (10)
-printfn "%d" (find (cont) (10))
+ignore (printfn "%d" (find (cont) (10)))
 cont <- change (cont) (0) (20)
-printfn "%d" (find (cont) (10))
-printfn "%d" (find (cont) (20))
+ignore (printfn "%d" (find (cont) (10)))
+ignore (printfn "%d" (find (cont) (20)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

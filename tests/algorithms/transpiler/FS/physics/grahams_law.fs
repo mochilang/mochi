@@ -1,4 +1,4 @@
-// Generated 2025-08-09 23:14 +0700
+// Generated 2025-08-12 16:24 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -32,7 +32,7 @@ let rec to_float (x: int) =
         __ret
     with
         | Return -> __ret
-let rec round6 (x: float) =
+and round6 (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -42,7 +42,7 @@ let rec round6 (x: float) =
         __ret
     with
         | Return -> __ret
-let rec sqrtApprox (x: float) =
+and sqrtApprox (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -56,7 +56,7 @@ let rec sqrtApprox (x: float) =
         __ret
     with
         | Return -> __ret
-let rec validate (values: float array) =
+and validate (values: float array) =
     let mutable __ret : bool = Unchecked.defaultof<bool>
     let mutable values = values
     try
@@ -74,13 +74,13 @@ let rec validate (values: float array) =
         __ret
     with
         | Return -> __ret
-let rec effusion_ratio (m1: float) (m2: float) =
+and effusion_ratio (m1: float) (m2: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable m1 = m1
     let mutable m2 = m2
     try
         if not (validate (unbox<float array> [|m1; m2|])) then
-            printfn "%s" ("ValueError: Molar mass values must greater than 0.")
+            ignore (printfn "%s" ("ValueError: Molar mass values must greater than 0."))
             __ret <- 0.0
             raise Return
         __ret <- round6 (sqrtApprox (m2 / m1))
@@ -88,14 +88,14 @@ let rec effusion_ratio (m1: float) (m2: float) =
         __ret
     with
         | Return -> __ret
-let rec first_effusion_rate (rate: float) (m1: float) (m2: float) =
+and first_effusion_rate (rate: float) (m1: float) (m2: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable rate = rate
     let mutable m1 = m1
     let mutable m2 = m2
     try
         if not (validate (unbox<float array> [|rate; m1; m2|])) then
-            printfn "%s" ("ValueError: Molar mass and effusion rate values must greater than 0.")
+            ignore (printfn "%s" ("ValueError: Molar mass and effusion rate values must greater than 0."))
             __ret <- 0.0
             raise Return
         __ret <- round6 (rate * (sqrtApprox (m2 / m1)))
@@ -103,14 +103,14 @@ let rec first_effusion_rate (rate: float) (m1: float) (m2: float) =
         __ret
     with
         | Return -> __ret
-let rec second_effusion_rate (rate: float) (m1: float) (m2: float) =
+and second_effusion_rate (rate: float) (m1: float) (m2: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable rate = rate
     let mutable m1 = m1
     let mutable m2 = m2
     try
         if not (validate (unbox<float array> [|rate; m1; m2|])) then
-            printfn "%s" ("ValueError: Molar mass and effusion rate values must greater than 0.")
+            ignore (printfn "%s" ("ValueError: Molar mass and effusion rate values must greater than 0."))
             __ret <- 0.0
             raise Return
         __ret <- round6 (rate / (sqrtApprox (m2 / m1)))
@@ -118,14 +118,14 @@ let rec second_effusion_rate (rate: float) (m1: float) (m2: float) =
         __ret
     with
         | Return -> __ret
-let rec first_molar_mass (mass: float) (r1: float) (r2: float) =
+and first_molar_mass (mass: float) (r1: float) (r2: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable mass = mass
     let mutable r1 = r1
     let mutable r2 = r2
     try
         if not (validate (unbox<float array> [|mass; r1; r2|])) then
-            printfn "%s" ("ValueError: Molar mass and effusion rate values must greater than 0.")
+            ignore (printfn "%s" ("ValueError: Molar mass and effusion rate values must greater than 0."))
             __ret <- 0.0
             raise Return
         let ratio: float = r1 / r2
@@ -134,14 +134,14 @@ let rec first_molar_mass (mass: float) (r1: float) (r2: float) =
         __ret
     with
         | Return -> __ret
-let rec second_molar_mass (mass: float) (r1: float) (r2: float) =
+and second_molar_mass (mass: float) (r1: float) (r2: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable mass = mass
     let mutable r1 = r1
     let mutable r2 = r2
     try
         if not (validate (unbox<float array> [|mass; r1; r2|])) then
-            printfn "%s" ("ValueError: Molar mass and effusion rate values must greater than 0.")
+            ignore (printfn "%s" ("ValueError: Molar mass and effusion rate values must greater than 0."))
             __ret <- 0.0
             raise Return
         let ratio: float = r1 / r2
@@ -150,11 +150,11 @@ let rec second_molar_mass (mass: float) (r1: float) (r2: float) =
         __ret
     with
         | Return -> __ret
-printfn "%g" (effusion_ratio (2.016) (4.002))
-printfn "%g" (first_effusion_rate (1.0) (2.016) (4.002))
-printfn "%g" (second_effusion_rate (1.0) (2.016) (4.002))
-printfn "%g" (first_molar_mass (2.0) (1.408943) (0.709752))
-printfn "%g" (second_molar_mass (2.0) (1.408943) (0.709752))
+ignore (printfn "%g" (effusion_ratio (2.016) (4.002)))
+ignore (printfn "%g" (first_effusion_rate (1.0) (2.016) (4.002)))
+ignore (printfn "%g" (second_effusion_rate (1.0) (2.016) (4.002)))
+ignore (printfn "%g" (first_molar_mass (2.0) (1.408943) (0.709752)))
+ignore (printfn "%g" (second_molar_mass (2.0) (1.408943) (0.709752)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

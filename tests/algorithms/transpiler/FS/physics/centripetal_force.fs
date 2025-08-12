@@ -1,4 +1,4 @@
-// Generated 2025-08-09 23:14 +0700
+// Generated 2025-08-12 16:24 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -36,15 +36,15 @@ let rec centripetal (mass: float) (velocity: float) (radius: float) =
     let mutable radius = radius
     try
         if mass < 0.0 then
-            failwith ("The mass of the body cannot be negative")
+            ignore (failwith ("The mass of the body cannot be negative"))
         if radius <= 0.0 then
-            failwith ("The radius is always a positive non zero integer")
+            ignore (failwith ("The radius is always a positive non zero integer"))
         __ret <- ((mass * velocity) * velocity) / radius
         raise Return
         __ret
     with
         | Return -> __ret
-let rec floor (x: float) =
+and floor (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -56,7 +56,7 @@ let rec floor (x: float) =
         __ret
     with
         | Return -> __ret
-let rec pow10 (n: int) =
+and pow10 (n: int) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable n = n
     try
@@ -70,7 +70,7 @@ let rec pow10 (n: int) =
         __ret
     with
         | Return -> __ret
-let rec round (x: float) (n: int) =
+and round (x: float) (n: int) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     let mutable n = n
@@ -81,14 +81,14 @@ let rec round (x: float) (n: int) =
         __ret
     with
         | Return -> __ret
-let rec show (mass: float) (velocity: float) (radius: float) =
+and show (mass: float) (velocity: float) (radius: float) =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     let mutable mass = mass
     let mutable velocity = velocity
     let mutable radius = radius
     try
         let f: float = centripetal (mass) (velocity) (radius)
-        printfn "%s" (_str (round (f) (2)))
+        ignore (printfn "%s" (_str (round (f) (2))))
         __ret
     with
         | Return -> __ret

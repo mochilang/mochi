@@ -1,4 +1,4 @@
-// Generated 2025-08-09 23:14 +0700
+// Generated 2025-08-12 16:24 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -27,10 +27,10 @@ let rec doppler_effect (org_freq: float) (wave_vel: float) (obs_vel: float) (src
     let mutable src_vel = src_vel
     try
         if wave_vel = src_vel then
-            failwith ("division by zero implies vs=v and observer in front of the source")
+            ignore (failwith ("division by zero implies vs=v and observer in front of the source"))
         let doppler_freq: float = (org_freq * (wave_vel + obs_vel)) / (wave_vel - src_vel)
         if doppler_freq <= 0.0 then
-            failwith ("non-positive frequency implies vs>v or v0>v (in the opposite direction)")
+            ignore (failwith ("non-positive frequency implies vs>v or v0>v (in the opposite direction)"))
         __ret <- doppler_freq
         raise Return
         __ret
@@ -60,17 +60,17 @@ and test_doppler_effect () =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     try
         if not (almost_equal (doppler_effect (100.0) (330.0) (10.0) (0.0)) (103.03030303030303) (0.0000001)) then
-            failwith ("test 1 failed")
+            ignore (failwith ("test 1 failed"))
         if not (almost_equal (doppler_effect (100.0) (330.0) (-10.0) (0.0)) (96.96969696969697) (0.0000001)) then
-            failwith ("test 2 failed")
+            ignore (failwith ("test 2 failed"))
         if not (almost_equal (doppler_effect (100.0) (330.0) (0.0) (10.0)) (103.125) (0.0000001)) then
-            failwith ("test 3 failed")
+            ignore (failwith ("test 3 failed"))
         if not (almost_equal (doppler_effect (100.0) (330.0) (0.0) (-10.0)) (97.05882352941177) (0.0000001)) then
-            failwith ("test 4 failed")
+            ignore (failwith ("test 4 failed"))
         if not (almost_equal (doppler_effect (100.0) (330.0) (10.0) (10.0)) (106.25) (0.0000001)) then
-            failwith ("test 5 failed")
+            ignore (failwith ("test 5 failed"))
         if not (almost_equal (doppler_effect (100.0) (330.0) (-10.0) (-10.0)) (94.11764705882354) (0.0000001)) then
-            failwith ("test 6 failed")
+            ignore (failwith ("test 6 failed"))
         __ret
     with
         | Return -> __ret
@@ -80,7 +80,7 @@ and main () =
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
         test_doppler_effect()
-        printfn "%g" (doppler_effect (100.0) (330.0) (10.0) (0.0))
+        ignore (printfn "%g" (doppler_effect (100.0) (330.0) (10.0) (0.0)))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

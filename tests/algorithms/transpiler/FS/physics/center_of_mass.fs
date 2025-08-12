@@ -1,4 +1,4 @@
-// Generated 2025-08-09 23:14 +0700
+// Generated 2025-08-12 16:24 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -53,18 +53,18 @@ let rec round2 (x: float) =
         __ret
     with
         | Return -> __ret
-let rec center_of_mass (ps: Particle array) =
+and center_of_mass (ps: Particle array) =
     let mutable __ret : Coord3D = Unchecked.defaultof<Coord3D>
     let mutable ps = ps
     try
         if (Seq.length (ps)) = 0 then
-            failwith ("No particles provided")
+            ignore (failwith ("No particles provided"))
         let mutable i: int = 0
         let mutable total_mass: float = 0.0
         while i < (Seq.length (ps)) do
             let p: Particle = _idx ps (int i)
             if (p._mass) <= 0.0 then
-                failwith ("Mass of all particles must be greater than 0")
+                ignore (failwith ("Mass of all particles must be greater than 0"))
             total_mass <- total_mass + (p._mass)
             i <- i + 1
         let mutable sum_x: float = 0.0
@@ -85,7 +85,7 @@ let rec center_of_mass (ps: Particle array) =
         __ret
     with
         | Return -> __ret
-let rec coord_to_string (c: Coord3D) =
+and coord_to_string (c: Coord3D) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable c = c
     try
@@ -95,9 +95,9 @@ let rec coord_to_string (c: Coord3D) =
     with
         | Return -> __ret
 let r1: Coord3D = center_of_mass (unbox<Particle array> [|{ x = 1.5; y = 4.0; z = 3.4; _mass = 4.0 }; { x = 5.0; y = 6.8; z = 7.0; _mass = 8.1 }; { x = 9.4; y = 10.1; z = 11.6; _mass = 12.0 }|])
-printfn "%s" (coord_to_string (r1))
+ignore (printfn "%s" (coord_to_string (r1)))
 let r2: Coord3D = center_of_mass (unbox<Particle array> [|{ x = 1.0; y = 2.0; z = 3.0; _mass = 4.0 }; { x = 5.0; y = 6.0; z = 7.0; _mass = 8.0 }; { x = 9.0; y = 10.0; z = 11.0; _mass = 12.0 }|])
-printfn "%s" (coord_to_string (r2))
+ignore (printfn "%s" (coord_to_string (r2)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
