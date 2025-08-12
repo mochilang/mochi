@@ -1,3 +1,0 @@
-run: signal: aborted
-terminate called after throwing an instance of 'std::runtime_error'
-  what():  solution failed

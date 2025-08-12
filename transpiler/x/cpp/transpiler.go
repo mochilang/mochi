@@ -2122,20 +2122,20 @@ func (c *CastExpr) emit(w io.Writer) {
 		io.WriteString(w, c.Type+"{}")
 		return
 	}
-	if (c.Type == "int" || c.Type == "int64_t") && valType == "std::string" {
-		if idx, ok := c.Value.(*IndexExpr); ok && exprType(idx.Target) == "std::string" {
-			io.WriteString(w, "static_cast<int64_t>(_index(")
-			idx.Target.emit(w)
-			io.WriteString(w, ", ")
-			idx.Index.emit(w)
-			io.WriteString(w, "))")
-		} else {
-			io.WriteString(w, "std::stoll(")
-			c.Value.emit(w)
-			io.WriteString(w, ")")
-		}
-		return
-	}
+       if (c.Type == "int" || c.Type == "int64_t") && valType == "std::string" {
+               if idx, ok := c.Value.(*IndexExpr); ok && exprType(idx.Target) == "std::string" {
+                       io.WriteString(w, "static_cast<int64_t>(_index(")
+                       idx.Target.emit(w)
+                       io.WriteString(w, ", ")
+                       idx.Index.emit(w)
+                       io.WriteString(w, ") - '0')")
+               } else {
+                       io.WriteString(w, "std::stoll(")
+                       c.Value.emit(w)
+                       io.WriteString(w, ")")
+               }
+               return
+       }
 	if c.Type == "BigRat" {
 		useBigRat = true
 		io.WriteString(w, "_bigrat(")
