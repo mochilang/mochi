@@ -1,7 +1,7 @@
 # Ruby Algorithms Transpiler Output
 
-Completed programs: 1049/1077
-Last updated: 2025-08-12 15:27 +0700
+Completed programs: 1050/1077
+Last updated: 2025-08-12 16:27 +0700
 
 Checklist:
 
@@ -770,7 +770,7 @@ Checklist:
 | 761 | physics/altitude_pressure | ✓ | 145µs | 10.2 KB |
 | 762 | physics/archimedes_principle_of_buoyant_force | ✓ | 14µs | 1.1 KB |
 | 763 | physics/basic_orbital_capture |   |  |  |
-| 764 | physics/casimir_effect |   | 1ms | 10.6 KB |
+| 764 | physics/casimir_effect | ✓ | 234µs | 11.3 KB |
 | 765 | physics/center_of_mass | ✓ | 137µs | 16.2 KB |
 | 766 | physics/centripetal_force | ✓ | 88µs | 10.3 KB |
 | 767 | physics/coulombs_law | ✓ | 56µs | 11.1 KB |
@@ -794,7 +794,7 @@ Checklist:
 | 785 | physics/period_of_pendulum | ✓ | 53µs | 9.8 KB |
 | 786 | physics/photoelectric_effect | ✓ | 41µs | 9.7 KB |
 | 787 | physics/potential_energy | ✓ | 27µs | 9.4 KB |
-| 788 | physics/rainfall_intensity | ✓ | 202µs | 10.2 KB |
+| 788 | physics/rainfall_intensity | ✓ | 333µs | 10.2 KB |
 | 789 | physics/reynolds_number | ✓ | 46µs | 9.5 KB |
 | 790 | physics/rms_speed_of_molecule | ✓ | 59µs | 10.4 KB |
 | 791 | physics/shear_stress | ✓ | 63µs | 13.1 KB |

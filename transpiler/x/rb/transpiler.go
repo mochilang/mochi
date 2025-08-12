@@ -86,7 +86,10 @@ end
 const helperEq = `
 def _eq(a, b)
   if a.is_a?(Float) || b.is_a?(Float)
-    (a.to_f - b.to_f).abs < 1e-6
+    diff = (a.to_f - b.to_f).abs
+    scale = [a.to_f.abs, b.to_f.abs].max
+    scale = 1.0 if scale == 0.0
+    diff <= 1e-6 * scale
   else
     a == b
   end
@@ -1965,11 +1968,11 @@ func (i *IntLit) emit(e *emitter) { fmt.Fprintf(e.w, "%d", i.Value) }
 type FloatLit struct{ Value float64 }
 
 func (f *FloatLit) emit(e *emitter) {
-        s := strconv.FormatFloat(f.Value, 'g', -1, 64)
-        if !strings.ContainsAny(s, ".eE") {
-                s += ".0"
-        }
-        io.WriteString(e.w, s)
+	s := strconv.FormatFloat(f.Value, 'g', -1, 64)
+	if !strings.ContainsAny(s, ".eE") {
+		s += ".0"
+	}
+	io.WriteString(e.w, s)
 }
 
 type BoolLit struct{ Value bool }
@@ -3581,7 +3584,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		return &ReturnStmt{Value: v}, nil
 	case st.Fun != nil:
-		if (st.Fun.Name == "ln" || st.Fun.Name == "exp" || st.Fun.Name == "sqrt") && len(st.Fun.Params) == 1 {
+		if (st.Fun.Name == "ln" || st.Fun.Name == "exp" || st.Fun.Name == "sqrt") && len(st.Fun.Params) == 1 && len(st.Fun.Body) == 0 {
 			p := safeName(st.Fun.Params[0].Name)
 			call := "Math.log"
 			if st.Fun.Name == "exp" {
