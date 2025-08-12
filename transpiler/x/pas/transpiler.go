@@ -182,6 +182,7 @@ type Program struct {
 	LateAliases        map[string]string
 	FuncAliases        map[string]string
 	FuncAliasDefs      map[string]string
+	FuncAliasRet       map[string]string
 	UseFGL             bool
 	Stmts              []Stmt
 	UseSysUtils        bool
@@ -1013,6 +1014,18 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			return
 		}
 	}
+	lt := inferType(b.Left)
+	rt := inferType(b.Right)
+	if (b.Op == "=" || b.Op == "<>") && (isArrayType(lt) || isArrayType(rt)) {
+		fnL := arrayStrFunc(lt)
+		fnR := arrayStrFunc(rt)
+		io.WriteString(w, fnL+"(")
+		b.Left.emit(w)
+		io.WriteString(w, ") "+b.Op+" "+fnR+"(")
+		b.Right.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
 	if b.Op == "in" {
 		io.WriteString(w, "Pos(")
 		b.Left.emit(w)
@@ -1309,7 +1322,7 @@ func (p *Program) Emit() []byte {
 	currentVarTypes = p.VarTypes
 	defer func() { currentVarTypes = prev }()
 	var buf bytes.Buffer
-	buf.WriteString("{$mode objfpc}\nprogram Main;\n")
+	buf.WriteString("{$mode objfpc}{$modeswitch nestedprocvars}\nprogram Main;\n")
 	var uses []string
 	if p.UseSysUtils {
 		uses = append(uses, "SysUtils")
@@ -2775,8 +2788,8 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 			case "xor", "and", "or", "div", "mod", "type", "set", "label", "repeat", "panic":
 				name = name + "_"
 			}
+			funcNames[strings.ToLower(name)] = struct{}{}
 			if name != fn.Name {
-				funcNames[strings.ToLower(name)] = struct{}{}
 				nameMap[fn.Name] = name
 				fn.Name = name
 			}
@@ -3069,8 +3082,24 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 				be.Rat = true
 			}
 		case "==":
+			lt := inferType(left)
+			rt := inferType(right)
+			if isArrayType(lt) || isArrayType(rt) {
+				fnL := arrayStrFunc(lt)
+				fnR := arrayStrFunc(rt)
+				left = &CallExpr{Name: fnL, Args: []Expr{left}}
+				right = &CallExpr{Name: fnR, Args: []Expr{right}}
+			}
 			be = &BinaryExpr{Op: "=", Left: left, Right: right, Bool: true}
 		case "!=":
+			lt := inferType(left)
+			rt := inferType(right)
+			if isArrayType(lt) || isArrayType(rt) {
+				fnL := arrayStrFunc(lt)
+				fnR := arrayStrFunc(rt)
+				left = &CallExpr{Name: fnL, Args: []Expr{left}}
+				right = &CallExpr{Name: fnR, Args: []Expr{right}}
+			}
 			be = &BinaryExpr{Op: "<>", Left: left, Right: right, Bool: true}
 		case "<", "<=", ">", ">=":
 			be = &BinaryExpr{Op: op, Left: left, Right: right, Bool: true}
@@ -4094,8 +4123,39 @@ func exprToVarRef(e Expr) string {
 		if len(v.Tail) == 0 {
 			return v.Root
 		}
+		s := v.Root
+		for _, t := range v.Tail {
+			s += "." + t
+		}
+		return s
 	}
 	return ""
+}
+
+func arrayStrFunc(t string) string {
+	t = resolveAlias(t)
+	switch {
+	case strings.HasPrefix(t, "array of string"):
+		currProg.NeedListStr = true
+		return "list_to_str"
+	case strings.HasPrefix(t, "array of array") || strings.HasPrefix(t, "array of IntArray") || strings.HasPrefix(t, "array of Int64Array"):
+		currProg.NeedListStr2 = true
+		return "list_list_int_to_str"
+	case strings.HasPrefix(t, "array of int64"):
+		currProg.NeedListStr2 = true
+		return "list_int_to_str"
+	case strings.HasPrefix(t, "array of real"):
+		currProg.NeedListStrReal = true
+		return "list_real_to_str"
+	case strings.HasPrefix(t, "array of Variant"):
+		currProg.NeedListStrVariant = true
+		currProg.UseSysUtils = true
+		currProg.UseVariants = true
+		return "list_variant_to_str"
+	default:
+		currProg.NeedListStr2 = true
+		return "list_int_to_str"
+	}
 }
 
 func ensureRecord(fields []Field) string {
@@ -4937,15 +4997,21 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			keyStr, ok := literalString(it.Key)
-			if !ok {
-				keyStr, ok = exprToIdent(it.Key)
+			keyExpr, err := convertExpr(env, it.Key)
+			if err != nil {
+				return nil, err
 			}
-			if !ok {
+			kType := inferType(keyExpr)
+			if kType != "string" && kType != "integer" {
 				return nil, fmt.Errorf("unsupported map key")
 			}
+			if kType == "integer" {
+				keyType = "integer"
+			} else {
+				keyType = "string"
+			}
 			vType := inferType(val)
-			items = append(items, MapItem{Key: &StringLit{Value: keyStr}, Value: val, Type: vType})
+			items = append(items, MapItem{Key: keyExpr, Value: val, Type: vType})
 			collectVarNames(val, varsSet)
 			if vType != "integer" {
 				allInts = false
@@ -5094,13 +5160,19 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		currProg.Vars = currProg.Vars[:startVarCount]
 		rt := ""
 		if p.FunExpr.Return != nil && p.FunExpr.Return.Simple != nil {
-			if *p.FunExpr.Return.Simple == "int" {
+			switch *p.FunExpr.Return.Simple {
+			case "int":
 				rt = "integer"
-			} else if *p.FunExpr.Return.Simple == "string" {
+			case "string":
 				rt = "string"
+			case "float":
+				rt = "real"
+			case "bool":
+				rt = "boolean"
 			}
 		}
 		currProg.Funs = append(currProg.Funs, FunDecl{Name: name, Params: params, ReturnType: rt, Locals: locals, Body: body})
+		funcNames[strings.ToLower(name)] = struct{}{}
 		if rt != "" {
 			funcReturns[name] = rt
 		}
@@ -5306,6 +5378,13 @@ func inferType(e Expr) string {
 		default:
 			if rt, ok := funcReturns[v.Name]; ok {
 				return rt
+			}
+			if t, ok := currentVarTypes[v.Name]; ok {
+				if currProg != nil {
+					if ret, ok := currProg.FuncAliasRet[resolveAlias(t)]; ok {
+						return ret
+					}
+				}
 			}
 			return ""
 		}
@@ -5801,6 +5880,7 @@ func (p *Program) addFuncAlias(ft types.FuncType) string {
 	if p.FuncAliases == nil {
 		p.FuncAliases = make(map[string]string)
 		p.FuncAliasDefs = make(map[string]string)
+		p.FuncAliasRet = make(map[string]string)
 	}
 	sigParts := make([]string, len(ft.Params))
 	for i, par := range ft.Params {
@@ -5822,12 +5902,13 @@ func (p *Program) addFuncAlias(ft types.FuncType) string {
 	decl := ""
 	retT := pasTypeFromType(ft.Return)
 	if retT == "" {
-		decl = fmt.Sprintf("procedure(%s)", strings.Join(params, "; "))
+		decl = fmt.Sprintf("procedure(%s) is nested", strings.Join(params, "; "))
 	} else {
-		decl = fmt.Sprintf("function(%s): %s", strings.Join(params, "; "), retT)
+		decl = fmt.Sprintf("function(%s): %s is nested", strings.Join(params, "; "), retT)
 	}
 	p.FuncAliases[sig] = alias
 	p.FuncAliasDefs[alias] = decl
+	p.FuncAliasRet[alias] = retT
 	return alias
 }
 
