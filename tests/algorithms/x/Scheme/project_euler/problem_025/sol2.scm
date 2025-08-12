@@ -7,6 +7,7 @@
 (import (srfi 1))
 (define _list list)
 (define (void) '())
+(import (chibi io))
 (import (chibi time))
 (define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))
 (import (chibi json))
@@ -106,15 +107,18 @@
         (else (length x))))
 (define (list-ref-safe lst idx) (if (and (integer? idx) (>= idx 0) (< idx (length lst))) (list-ref lst idx) '()))
 (define (list-set-safe! lst idx val) (when (and (integer? idx) (>= idx 0) (< idx (length lst))) (list-set! lst idx val)))
+(define (_input)
+  (let ((l (read-line)))
+    (if (eof-object? l) "" l)))
 (
   let (
     (
-      start2 (
+      start3 (
         current-jiffy
       )
     )
      (
-      jps5 (
+      jps6 (
         jiffies-per-second
       )
     )
@@ -122,85 +126,86 @@
    (
     begin (
       define (
-        binary_step vector
+        solution n
       )
        (
         let (
           (
-            out (
-              _list
-            )
+            a 0
           )
         )
          (
           begin (
             let (
               (
-                i 0
+                b 1
               )
             )
              (
               begin (
-                letrec (
+                let (
                   (
-                    loop1 (
-                      lambda (
-                        
-                      )
-                       (
-                        if (
-                          < i (
-                            _len vector
-                          )
-                        )
-                         (
-                          begin (
-                            if (
-                              >= (
-                                list-ref-safe vector i
-                              )
-                               0.0
-                            )
-                             (
-                              begin (
-                                set! out (
-                                  append out (
-                                    _list 1
-                                  )
-                                )
-                              )
-                            )
-                             (
-                              begin (
-                                set! out (
-                                  append out (
-                                    _list 0
-                                  )
-                                )
-                              )
-                            )
-                          )
-                           (
-                            set! i (
-                              + i 1
-                            )
-                          )
-                           (
-                            loop1
-                          )
-                        )
-                         (
-                          void
-                        )
-                      )
-                    )
+                    index 1
                   )
                 )
                  (
-                  loop1
+                  begin (
+                    letrec (
+                      (
+                        loop1 (
+                          lambda (
+                            
+                          )
+                           (
+                            if (
+                              < (
+                                _len (
+                                  to-str-space b
+                                )
+                              )
+                               n
+                            )
+                             (
+                              begin (
+                                let (
+                                  (
+                                    temp (
+                                      + a b
+                                    )
+                                  )
+                                )
+                                 (
+                                  begin (
+                                    set! a b
+                                  )
+                                   (
+                                    set! b temp
+                                  )
+                                   (
+                                    set! index (
+                                      + index 1
+                                    )
+                                  )
+                                )
+                              )
+                               (
+                                loop1
+                              )
+                            )
+                             (
+                              void
+                            )
+                          )
+                        )
+                      )
+                    )
+                     (
+                      loop1
+                    )
+                  )
+                   index
                 )
               )
-               out
             )
           )
         )
@@ -213,14 +218,43 @@
        (
         let (
           (
-            vector (
-              _list (
-                - 1.2
+            n (
+              let (
+                (
+                  v2 (
+                    _input
+                  )
+                )
               )
-               0.0 2.0 1.45 (
-                - 3.7
+               (
+                cond (
+                  (
+                    string? v2
+                  )
+                   (
+                    exact (
+                      _floor (
+                        string->number v2
+                      )
+                    )
+                  )
+                )
+                 (
+                  (
+                    boolean? v2
+                  )
+                   (
+                    if v2 1 0
+                  )
+                )
+                 (
+                  else (
+                    exact (
+                      _floor v2
+                    )
+                  )
+                )
               )
-               0.3
             )
           )
         )
@@ -228,8 +262,8 @@
           begin (
             let (
               (
-                result (
-                  binary_step vector
+                ans (
+                  solution n
                 )
               )
             )
@@ -237,10 +271,17 @@
               begin (
                 _display (
                   if (
-                    string? result
+                    string? (
+                      to-str-space ans
+                    )
                   )
-                   result (
-                    to-str result
+                   (
+                    to-str-space ans
+                  )
+                   (
+                    to-str (
+                      to-str-space ans
+                    )
                   )
                 )
               )
@@ -258,7 +299,7 @@
      (
       let (
         (
-          end3 (
+          end4 (
             current-jiffy
           )
         )
@@ -266,14 +307,14 @@
        (
         let (
           (
-            dur4 (
+            dur5 (
               quotient (
                 * (
-                  - end3 start2
+                  - end4 start3
                 )
                  1000000
               )
-               jps5
+               jps6
             )
           )
         )
@@ -281,7 +322,7 @@
           begin (
             _display (
               string-append "{\n  \"duration_us\": " (
-                number->string dur4
+                number->string dur5
               )
                ",\n  \"memory_bytes\": " (
                 number->string (

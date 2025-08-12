@@ -109,12 +109,12 @@
 (
   let (
     (
-      start2 (
+      start4 (
         current-jiffy
       )
     )
      (
-      jps5 (
+      jps7 (
         jiffies-per-second
       )
     )
@@ -122,21 +122,19 @@
    (
     begin (
       define (
-        binary_step vector
+        num_digits x
       )
        (
         let (
           (
-            out (
-              _list
-            )
+            count 0
           )
         )
          (
           begin (
             let (
               (
-                i 0
+                n x
               )
             )
              (
@@ -149,40 +147,17 @@
                       )
                        (
                         if (
-                          < i (
-                            _len vector
-                          )
+                          > n 0
                         )
                          (
                           begin (
-                            if (
-                              >= (
-                                list-ref-safe vector i
-                              )
-                               0.0
-                            )
-                             (
-                              begin (
-                                set! out (
-                                  append out (
-                                    _list 1
-                                  )
-                                )
-                              )
-                            )
-                             (
-                              begin (
-                                set! out (
-                                  append out (
-                                    _list 0
-                                  )
-                                )
-                              )
+                            set! count (
+                              + count 1
                             )
                           )
                            (
-                            set! i (
-                              + i 1
+                            set! n (
+                              _div n 10
                             )
                           )
                            (
@@ -200,7 +175,7 @@
                   loop1
                 )
               )
-               out
+               count
             )
           )
         )
@@ -208,44 +183,102 @@
     )
      (
       define (
-        main
+        solution n
       )
        (
         let (
           (
-            vector (
-              _list (
-                - 1.2
-              )
-               0.0 2.0 1.45 (
-                - 3.7
-              )
-               0.3
-            )
+            f1 1
           )
         )
          (
           begin (
             let (
               (
-                result (
-                  binary_step vector
-                )
+                f2 1
               )
             )
              (
               begin (
-                _display (
-                  if (
-                    string? result
-                  )
-                   result (
-                    to-str result
+                let (
+                  (
+                    index 2
                   )
                 )
-              )
-               (
-                newline
+                 (
+                  begin (
+                    call/cc (
+                      lambda (
+                        break3
+                      )
+                       (
+                        letrec (
+                          (
+                            loop2 (
+                              lambda (
+                                
+                              )
+                               (
+                                if #t (
+                                  begin (
+                                    let (
+                                      (
+                                        f (
+                                          + f1 f2
+                                        )
+                                      )
+                                    )
+                                     (
+                                      begin (
+                                        set! f1 f2
+                                      )
+                                       (
+                                        set! f2 f
+                                      )
+                                       (
+                                        set! index (
+                                          + index 1
+                                        )
+                                      )
+                                       (
+                                        if (
+                                          equal? (
+                                            num_digits f
+                                          )
+                                           n
+                                        )
+                                         (
+                                          begin (
+                                            break3 (
+                                              void
+                                            )
+                                          )
+                                        )
+                                         (
+                                          void
+                                        )
+                                      )
+                                    )
+                                  )
+                                   (
+                                    loop2
+                                  )
+                                )
+                                 (
+                                  void
+                                )
+                              )
+                            )
+                          )
+                        )
+                         (
+                          loop2
+                        )
+                      )
+                    )
+                  )
+                   index
+                )
               )
             )
           )
@@ -253,12 +286,137 @@
       )
     )
      (
-      main
+      _display (
+        if (
+          string? (
+            string-append "solution(1000) = " (
+              to-str-space (
+                solution 1000
+              )
+            )
+          )
+        )
+         (
+          string-append "solution(1000) = " (
+            to-str-space (
+              solution 1000
+            )
+          )
+        )
+         (
+          to-str (
+            string-append "solution(1000) = " (
+              to-str-space (
+                solution 1000
+              )
+            )
+          )
+        )
+      )
+    )
+     (
+      newline
+    )
+     (
+      _display (
+        if (
+          string? (
+            string-append "solution(100) = " (
+              to-str-space (
+                solution 100
+              )
+            )
+          )
+        )
+         (
+          string-append "solution(100) = " (
+            to-str-space (
+              solution 100
+            )
+          )
+        )
+         (
+          to-str (
+            string-append "solution(100) = " (
+              to-str-space (
+                solution 100
+              )
+            )
+          )
+        )
+      )
+    )
+     (
+      newline
+    )
+     (
+      _display (
+        if (
+          string? (
+            string-append "solution(50) = " (
+              to-str-space (
+                solution 50
+              )
+            )
+          )
+        )
+         (
+          string-append "solution(50) = " (
+            to-str-space (
+              solution 50
+            )
+          )
+        )
+         (
+          to-str (
+            string-append "solution(50) = " (
+              to-str-space (
+                solution 50
+              )
+            )
+          )
+        )
+      )
+    )
+     (
+      newline
+    )
+     (
+      _display (
+        if (
+          string? (
+            string-append "solution(3) = " (
+              to-str-space (
+                solution 3
+              )
+            )
+          )
+        )
+         (
+          string-append "solution(3) = " (
+            to-str-space (
+              solution 3
+            )
+          )
+        )
+         (
+          to-str (
+            string-append "solution(3) = " (
+              to-str-space (
+                solution 3
+              )
+            )
+          )
+        )
+      )
+    )
+     (
+      newline
     )
      (
       let (
         (
-          end3 (
+          end5 (
             current-jiffy
           )
         )
@@ -266,14 +424,14 @@
        (
         let (
           (
-            dur4 (
+            dur6 (
               quotient (
                 * (
-                  - end3 start2
+                  - end5 start4
                 )
                  1000000
               )
-               jps5
+               jps7
             )
           )
         )
@@ -281,7 +439,7 @@
           begin (
             _display (
               string-append "{\n  \"duration_us\": " (
-                number->string dur4
+                number->string dur6
               )
                ",\n  \"memory_bytes\": " (
                 number->string (

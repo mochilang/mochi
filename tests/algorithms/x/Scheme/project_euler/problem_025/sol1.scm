@@ -7,6 +7,7 @@
 (import (srfi 1))
 (define _list list)
 (define (void) '())
+(import (chibi io))
 (import (chibi time))
 (define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))
 (import (chibi json))
@@ -106,15 +107,18 @@
         (else (length x))))
 (define (list-ref-safe lst idx) (if (and (integer? idx) (>= idx 0) (< idx (length lst))) (list-ref lst idx) '()))
 (define (list-set-safe! lst idx val) (when (and (integer? idx) (>= idx 0) (< idx (length lst))) (list-set! lst idx val)))
+(define (_input)
+  (let ((l (read-line)))
+    (if (eof-object? l) "" l)))
 (
   let (
     (
-      start2 (
+      start5 (
         current-jiffy
       )
     )
      (
-      jps5 (
+      jps8 (
         jiffies-per-second
       )
     )
@@ -122,71 +126,178 @@
    (
     begin (
       define (
-        binary_step vector
+        fibonacci n
+      )
+       (
+        call/cc (
+          lambda (
+            ret1
+          )
+           (
+            begin (
+              if (
+                equal? n 1
+              )
+               (
+                begin (
+                  ret1 0
+                )
+              )
+               (
+                void
+              )
+            )
+             (
+              if (
+                equal? n 2
+              )
+               (
+                begin (
+                  ret1 1
+                )
+              )
+               (
+                void
+              )
+            )
+             (
+              let (
+                (
+                  a 0
+                )
+              )
+               (
+                begin (
+                  let (
+                    (
+                      b 1
+                    )
+                  )
+                   (
+                    begin (
+                      let (
+                        (
+                          i 2
+                        )
+                      )
+                       (
+                        begin (
+                          letrec (
+                            (
+                              loop2 (
+                                lambda (
+                                  
+                                )
+                                 (
+                                  if (
+                                    <= i n
+                                  )
+                                   (
+                                    begin (
+                                      let (
+                                        (
+                                          c (
+                                            + a b
+                                          )
+                                        )
+                                      )
+                                       (
+                                        begin (
+                                          set! a b
+                                        )
+                                         (
+                                          set! b c
+                                        )
+                                         (
+                                          set! i (
+                                            + i 1
+                                          )
+                                        )
+                                      )
+                                    )
+                                     (
+                                      loop2
+                                    )
+                                  )
+                                   (
+                                    void
+                                  )
+                                )
+                              )
+                            )
+                          )
+                           (
+                            loop2
+                          )
+                        )
+                         (
+                          ret1 b
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+     (
+      define (
+        fibonacci_digits_index n
       )
        (
         let (
           (
-            out (
-              _list
-            )
+            digits 0
           )
         )
          (
           begin (
             let (
               (
-                i 0
+                index 2
               )
             )
              (
               begin (
                 letrec (
                   (
-                    loop1 (
+                    loop3 (
                       lambda (
                         
                       )
                        (
                         if (
-                          < i (
-                            _len vector
-                          )
+                          < digits n
                         )
                          (
                           begin (
-                            if (
-                              >= (
-                                list-ref-safe vector i
-                              )
-                               0.0
+                            set! index (
+                              + index 1
                             )
-                             (
-                              begin (
-                                set! out (
-                                  append out (
-                                    _list 1
-                                  )
+                          )
+                           (
+                            let (
+                              (
+                                fib (
+                                  fibonacci index
                                 )
                               )
                             )
                              (
                               begin (
-                                set! out (
-                                  append out (
-                                    _list 0
+                                set! digits (
+                                  _len (
+                                    to-str-space fib
                                   )
                                 )
                               )
                             )
                           )
                            (
-                            set! i (
-                              + i 1
-                            )
-                          )
-                           (
-                            loop1
+                            loop3
                           )
                         )
                          (
@@ -197,13 +308,21 @@
                   )
                 )
                  (
-                  loop1
+                  loop3
                 )
               )
-               out
+               index
             )
           )
         )
+      )
+    )
+     (
+      define (
+        solution n
+      )
+       (
+        fibonacci_digits_index n
       )
     )
      (
@@ -213,41 +332,66 @@
        (
         let (
           (
-            vector (
-              _list (
-                - 1.2
+            n (
+              let (
+                (
+                  v4 (
+                    _input
+                  )
+                )
               )
-               0.0 2.0 1.45 (
-                - 3.7
+               (
+                cond (
+                  (
+                    string? v4
+                  )
+                   (
+                    exact (
+                      _floor (
+                        string->number v4
+                      )
+                    )
+                  )
+                )
+                 (
+                  (
+                    boolean? v4
+                  )
+                   (
+                    if v4 1 0
+                  )
+                )
+                 (
+                  else (
+                    exact (
+                      _floor v4
+                    )
+                  )
+                )
               )
-               0.3
             )
           )
         )
          (
           begin (
-            let (
-              (
-                result (
-                  binary_step vector
-                )
-              )
-            )
-             (
-              begin (
-                _display (
-                  if (
-                    string? result
-                  )
-                   result (
-                    to-str result
-                  )
+            _display (
+              if (
+                string? (
+                  solution n
                 )
               )
                (
-                newline
+                solution n
+              )
+               (
+                to-str (
+                  solution n
+                )
               )
             )
+          )
+           (
+            newline
           )
         )
       )
@@ -258,7 +402,7 @@
      (
       let (
         (
-          end3 (
+          end6 (
             current-jiffy
           )
         )
@@ -266,14 +410,14 @@
        (
         let (
           (
-            dur4 (
+            dur7 (
               quotient (
                 * (
-                  - end3 start2
+                  - end6 start5
                 )
                  1000000
               )
-               jps5
+               jps8
             )
           )
         )
@@ -281,7 +425,7 @@
           begin (
             _display (
               string-append "{\n  \"duration_us\": " (
-                number->string dur4
+                number->string dur7
               )
                ",\n  \"memory_bytes\": " (
                 number->string (
