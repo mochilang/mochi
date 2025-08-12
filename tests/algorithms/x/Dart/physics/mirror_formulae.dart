@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,10 +33,18 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+
+
+Never _error(String msg) {
+  throw Exception(msg);
+}
 
 double abs_float(double x) {
   if (x < 0.0) {
@@ -51,21 +59,21 @@ bool isclose(double a, double b, double tolerance) {
 
 double focal_length(double distance_of_object, double distance_of_image) {
   if (distance_of_object == 0.0 || distance_of_image == 0.0) {
-    ;
+    _error("Invalid inputs. Enter non zero values with respect to the sign convention.");
   }
   return 1.0 / (1.0 / distance_of_object + 1.0 / distance_of_image);
 }
 
 double object_distance(double focal_length, double distance_of_image) {
   if (distance_of_image == 0.0 || focal_length == 0.0) {
-    ;
+    _error("Invalid inputs. Enter non zero values with respect to the sign convention.");
   }
   return 1.0 / (1.0 / focal_length - 1.0 / distance_of_image);
 }
 
 double image_distance(double focal_length, double distance_of_object) {
   if (distance_of_object == 0.0 || focal_length == 0.0) {
-    ;
+    _error("Invalid inputs. Enter non zero values with respect to the sign convention.");
   }
   return 1.0 / (1.0 / focal_length - 1.0 / distance_of_object);
 }
@@ -73,33 +81,33 @@ double image_distance(double focal_length, double distance_of_object) {
 void test_focal_length() {
   double f1 = focal_length(10.0, 20.0);
   if (!isclose(f1, 6.66666666666666, 0.00000001)) {
-    ;
+    _error("focal_length test1 failed");
   }
   double f2 = focal_length(9.5, 6.7);
   if (!isclose(f2, 3.929012346, 0.00000001)) {
-    ;
+    _error("focal_length test2 failed");
   }
 }
 
 void test_object_distance() {
   double u1 = object_distance(30.0, 20.0);
   if (!isclose(u1, -60.0, 0.00000001)) {
-    ;
+    _error("object_distance test1 failed");
   }
   double u2 = object_distance(10.5, 11.7);
   if (!isclose(u2, 102.375, 0.00000001)) {
-    ;
+    _error("object_distance test2 failed");
   }
 }
 
 void test_image_distance() {
   double v1 = image_distance(10.0, 40.0);
   if (!isclose(v1, 13.33333333, 0.00000001)) {
-    ;
+    _error("image_distance test1 failed");
   }
   double v2 = image_distance(1.5, 6.7);
   if (!isclose(v2, 1.932692308, 0.00000001)) {
-    ;
+    _error("image_distance test2 failed");
   }
 }
 

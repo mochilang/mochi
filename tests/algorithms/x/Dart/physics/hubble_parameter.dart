@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,7 +33,15 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
+}
+
+
+Never _error(String msg) {
+  throw Exception(msg);
 }
 
 double pow(double base, int exp) {
@@ -64,14 +72,14 @@ double hubble_parameter(double hubble_constant, double radiation_density, double
   int i = 0;
   while (i < parameters.length) {
     if (parameters[i] < 0.0) {
-    ;
+    _error("All input parameters must be positive");
   }
     i = i + 1;
   }
   i = 1;
   while (i < 4) {
     if (parameters[i] > 1.0) {
-    ;
+    _error("Relative densities cannot be greater than one");
   }
     i = i + 1;
   }
@@ -84,7 +92,7 @@ double hubble_parameter(double hubble_constant, double radiation_density, double
 void test_hubble_parameter() {
   double h = hubble_parameter(68.3, 0.0001, 0.3, 0.7, 0.0);
   if (h < 68.2999 || h > 68.3001) {
-    ;
+    _error("hubble_parameter test failed");
   }
 }
 

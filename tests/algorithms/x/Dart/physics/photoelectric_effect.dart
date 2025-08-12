@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,10 +33,18 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+
+
+Never _error(String msg) {
+  throw Exception(msg);
+}
 
 double pow10(int exp) {
   double result = 1.0;
@@ -52,7 +60,7 @@ double PLANCK_CONSTANT_JS = 6.6261 / pow10(34);
 double PLANCK_CONSTANT_EVS = 4.1357 / pow10(15);
 double maximum_kinetic_energy(double frequency, double work_function, bool in_ev) {
   if (frequency < 0.0) {
-    ;
+    _error("Frequency can't be negative.");
   }
   double energy = (in_ev ? PLANCK_CONSTANT_EVS * frequency - work_function : PLANCK_CONSTANT_JS * frequency - work_function);
   if (energy > 0.0) {

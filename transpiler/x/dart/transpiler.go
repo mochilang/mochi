@@ -1512,6 +1512,19 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 		return err
 	}
 	if (b.Op == "<" || b.Op == "<=" || b.Op == ">" || b.Op == ">=") && (lt == "dynamic" || rt == "dynamic") {
+		// If both sides appear numeric, emit a direct comparison.
+		if isMaybeNumber(b.Left) && isMaybeNumber(b.Right) {
+			if err := left(); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, " "+b.Op+" "); err != nil {
+				return err
+			}
+			if err := right(); err != nil {
+				return err
+			}
+			return nil
+		}
 		// When types are dynamic we can't rely on the comparison
 		// operators being defined directly. Instead use Comparable
 		// which works for strings and numbers.
@@ -2736,6 +2749,39 @@ func isMaybeString(e Expr) bool {
 		if sel, ok := ex.Func.(*SelectorExpr); ok {
 			switch sel.Field {
 			case "toUpperCase", "toLowerCase", "substring", "substr", "padLeft", "padRight":
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func isMaybeNumber(e Expr) bool {
+	switch ex := e.(type) {
+	case *IntLit, *FloatLit:
+		return true
+	case *Name:
+		if t, ok := localVarTypes[ex.Name]; ok {
+			if t == "int" || t == "double" || t == "num" || t == "dynamic" {
+				return true
+			}
+		}
+		if currentEnv != nil {
+			if vt, err := currentEnv.GetVar(ex.Name); err == nil {
+				if dt := dartType(vt); dt == "int" || dt == "double" || dt == "num" || dt == "dynamic" {
+					return true
+				}
+			}
+		}
+	case *BinaryExpr:
+		switch ex.Op {
+		case "+", "-", "*", "/", "%":
+			return isMaybeNumber(ex.Left) && isMaybeNumber(ex.Right)
+		}
+	case *CallExpr:
+		if n, ok := ex.Func.(*Name); ok {
+			switch n.Name {
+			case "abs", "sqrt", "pow", "max", "min", "pow10", "floor", "ceil":
 				return true
 			}
 		}

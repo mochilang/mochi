@@ -1,4 +1,3 @@
-../../../tests/algorithms/x/Dart/physics/shear_stress.dart:24:8: Error: A non-null value must be returned since the return type 'Result' doesn't allow null.
- - 'Result' is from '../../../tests/algorithms/x/Dart/physics/shear_stress.dart'.
-Result shear_stress(double stress, double tangential_force, double area) {
-       ^
+Result(name='area', value=4)
+Result(name='stress', value=8)
+Result(name='tangential_force', value=1200000)

@@ -22,8 +22,8 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, num start, num end) {
-  var n = s.length;
+dynamic _substr(dynamic s, num start, num end) {
+  int n = s.length;
   int s0 = start.toInt();
   int e0 = end.toInt();
   if (s0 < 0) s0 += n;
@@ -33,10 +33,18 @@ String _substr(String s, num start, num end) {
   if (e0 < 0) e0 = 0;
   if (e0 > n) e0 = n;
   if (s0 > e0) s0 = e0;
-  return s.substring(s0, e0);
+  if (s is String) {
+    return s.substring(s0, e0);
+  }
+  return s.sublist(s0, e0);
 }
 
-String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { return v.toInt().toString(); } return v.toString(); }
+String _str(dynamic v) { if (v is double && v == v.roundToDouble()) { var i = v.toInt(); if (i == 0) return '0'; return i.toString(); } return v.toString(); }
+
+
+Never _error(String msg) {
+  throw Exception(msg);
+}
 
 bool contains(List<int> xs, int value) {
   int i = 0;
@@ -56,7 +64,7 @@ int solution(int n) {
   while (true) {
     int result = 3 * temp;
     if (result < n) {
-    zmulti = (zmulti..add(result));
+    zmulti = [...zmulti, result];
     temp = temp + 1;
   } else {
     break;
@@ -66,7 +74,7 @@ int solution(int n) {
   while (true) {
     int result = 5 * temp;
     if (result < n) {
-    xmulti = (xmulti..add(result));
+    xmulti = [...xmulti, result];
     temp = temp + 1;
   } else {
     break;
@@ -76,16 +84,16 @@ int solution(int n) {
   int i = 0;
   while (i < zmulti.length) {
     int v = zmulti[i];
-    if (!collection.contains(v)) {
-    collection = (collection..add(v));
+    if (!contains(collection, v)) {
+    collection = [...collection, v];
   }
     i = i + 1;
   }
   i = 0;
   while (i < xmulti.length) {
     int v = xmulti[i];
-    if (!collection.contains(v)) {
-    collection = (collection..add(v));
+    if (!contains(collection, v)) {
+    collection = [...collection, v];
   }
     i = i + 1;
   }
@@ -100,16 +108,16 @@ int solution(int n) {
 
 void test_solution() {
   if (solution(3) != 0) {
-    ;
+    _error("solution(3) failed");
   }
   if (solution(4) != 3) {
-    ;
+    _error("solution(4) failed");
   }
   if (solution(10) != 23) {
-    ;
+    _error("solution(10) failed");
   }
   if (solution(600) != 83700) {
-    ;
+    _error("solution(600) failed");
   }
 }
 
