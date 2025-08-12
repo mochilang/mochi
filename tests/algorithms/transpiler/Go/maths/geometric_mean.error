@@ -1,0 +1,13 @@
+exit status 1
+panic: test4 failed
+
+goroutine 1 [running]:
+main.test_compute_geometric_mean()
+	/workspace/mochi/tests/algorithms/transpiler/Go/maths/geometric_mean.go:232 +0x2f8
+main.mochiMain()
+	/workspace/mochi/tests/algorithms/transpiler/Go/maths/geometric_mean.go:260 +0x17
+main.main.func1(...)
+	/workspace/mochi/tests/algorithms/transpiler/Go/maths/geometric_mean.go:297
+main.main()
+	/workspace/mochi/tests/algorithms/transpiler/Go/maths/geometric_mean.go:304 +0x92
+exit status 2
