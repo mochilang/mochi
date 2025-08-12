@@ -1,4 +1,4 @@
-// Generated 2025-08-09 10:14 +0700
+// Generated 2025-08-12 09:13 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
@@ -449,24 +437,24 @@ and main () =
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
         let m: Matrix = make_matrix ([|[|1.0; 2.0; 3.0|]; [|4.0; 5.0; 6.0|]; [|7.0; 8.0; 9.0|]|])
-        printfn "%s" (matrix_to_string (m))
-        printfn "%s" (_str (matrix_columns (m)))
-        printfn "%s" (((_str (m._rows)) + ",") + (_str (m._cols)))
-        printfn "%s" (_str (matrix_is_invertible (m)))
-        printfn "%s" (matrix_to_string (matrix_identity (m)))
-        printfn "%s" (_str (matrix_determinant (m)))
-        printfn "%s" (matrix_to_string (matrix_minors (m)))
-        printfn "%s" (matrix_to_string (matrix_cofactors (m)))
-        printfn "%s" (matrix_to_string (matrix_adjugate (m)))
+        ignore (printfn "%s" (matrix_to_string (m)))
+        ignore (printfn "%s" (_str (matrix_columns (m))))
+        ignore (printfn "%s" (((_str (m._rows)) + ",") + (_str (m._cols))))
+        ignore (printfn "%s" (_str (matrix_is_invertible (m))))
+        ignore (printfn "%s" (matrix_to_string (matrix_identity (m))))
+        ignore (printfn "%s" (_str (matrix_determinant (m))))
+        ignore (printfn "%s" (matrix_to_string (matrix_minors (m))))
+        ignore (printfn "%s" (matrix_to_string (matrix_cofactors (m))))
+        ignore (printfn "%s" (matrix_to_string (matrix_adjugate (m))))
         let m2: Matrix = matrix_mul_scalar (m) (3.0)
-        printfn "%s" (matrix_to_string (m2))
-        printfn "%s" (matrix_to_string (matrix_add (m) (m2)))
-        printfn "%s" (matrix_to_string (matrix_sub (m) (m2)))
-        printfn "%s" (matrix_to_string (matrix_pow (m) (3)))
+        ignore (printfn "%s" (matrix_to_string (m2)))
+        ignore (printfn "%s" (matrix_to_string (matrix_add (m) (m2))))
+        ignore (printfn "%s" (matrix_to_string (matrix_sub (m) (m2))))
+        ignore (printfn "%s" (matrix_to_string (matrix_pow (m) (3))))
         let m3: Matrix = matrix_add_row (m) (unbox<float array> [|10.0; 11.0; 12.0|])
-        printfn "%s" (matrix_to_string (m3))
+        ignore (printfn "%s" (matrix_to_string (m3)))
         let m4: Matrix = matrix_add_column (m2) (unbox<float array> [|8.0; 16.0; 32.0|])
-        printfn "%s" (matrix_to_string (matrix_mul (m3) (m4)))
+        ignore (printfn "%s" (matrix_to_string (matrix_mul (m3) (m4))))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

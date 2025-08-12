@@ -1,4 +1,4 @@
-// Generated 2025-08-09 10:14 +0700
+// Generated 2025-08-12 09:13 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _repr v =
@@ -43,14 +31,14 @@ let rec ln (x: float) =
     let mutable x = x
     try
         if x <= 0.0 then
-            failwith ("ln domain error")
+            ignore (failwith ("ln domain error"))
         let y: float = (x - 1.0) / (x + 1.0)
         let y2: float = y * y
         let mutable term: float = y
         let mutable sum: float = 0.0
         let mutable k: int = 0
         while k < 10 do
-            let denom: float = float (((int64 2) * (int64 k)) + (int64 1))
+            let denom: float = float ((2 * k) + 1)
             sum <- sum + (term / denom)
             term <- term * y2
             k <- k + 1
@@ -63,14 +51,7 @@ and exp (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
-        let mutable term: float = 1.0
-        let mutable sum: float = 1.0
-        let mutable n: int = 1
-        while n < 20 do
-            term <- (term * x) / (float n)
-            sum <- sum + term
-            n <- n + 1
-        __ret <- sum
+        __ret <- System.Math.Exp(x)
         raise Return
         __ret
     with
@@ -100,8 +81,8 @@ and main () =
         let v2: float array = unbox<float array> [|-9.2; -0.3; 0.45; -4.56|]
         let r1: float array = softplus (v1)
         let r2: float array = softplus (v2)
-        printfn "%s" (_repr (r1))
-        printfn "%s" (_repr (r2))
+        ignore (printfn "%s" (_repr (r1)))
+        ignore (printfn "%s" (_repr (r2)))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

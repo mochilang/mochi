@@ -1,4 +1,4 @@
-// Generated 2025-08-09 10:14 +0700
+// Generated 2025-08-12 09:13 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -177,7 +165,7 @@ and train (net: Network) (inputs: float array array) (outputs: float array) (ite
                 let mutable k4: int = 0
                 while k4 < 3 do
                     let mutable w3row: float array = _idx (net._w3) (int k4)
-                    w3row.[int 0] <- (_idx w3row (int 0)) + ((_idx hidden2 (int k4)) * delta_output)
+                    w3row.[0] <- (_idx w3row (int 0)) + ((_idx hidden2 (int k4)) * delta_output)
                     new_w3 <- Array.append new_w3 [|w3row|]
                     k4 <- k4 + 1
                 net._w3 <- new_w3
@@ -194,7 +182,7 @@ and train (net: Network) (inputs: float array array) (outputs: float array) (ite
                     let mutable w2row: float array = _idx (net._w2) (int j)
                     let mutable k6: int = 0
                     while k6 < 3 do
-                        w2row.[int k6] <- (_idx w2row (int k6)) + ((_idx hidden1 (int j)) * (_idx delta_hidden2 (int k6)))
+                        w2row.[k6] <- (_idx w2row (int k6)) + ((_idx hidden1 (int j)) * (_idx delta_hidden2 (int k6)))
                         k6 <- k6 + 1
                     new_w2 <- Array.append new_w2 [|w2row|]
                     j <- j + 1
@@ -216,7 +204,7 @@ and train (net: Network) (inputs: float array array) (outputs: float array) (ite
                     let mutable w1row: float array = _idx (net._w1) (int i2)
                     j <- 0
                     while j < 4 do
-                        w1row.[int j] <- (_idx w1row (int j)) + ((_idx inp (int i2)) * (_idx delta_hidden1 (int j)))
+                        w1row.[j] <- (_idx w1row (int j)) + ((_idx inp (int i2)) * (_idx delta_hidden1 (int j)))
                         j <- j + 1
                     new_w1 <- Array.append new_w1 [|w1row|]
                     i2 <- i2 + 1
@@ -248,7 +236,7 @@ and example () =
         let mutable net: Network = new_network()
         train (net) (inputs) (outputs) (10)
         let result: int = predict (net) (unbox<float array> [|1.0; 1.0; 1.0|])
-        printfn "%s" (_str (result))
+        ignore (printfn "%s" (_str (result)))
         __ret <- result
         raise Return
         __ret
@@ -259,7 +247,7 @@ and main () =
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        example()
+        ignore (example())
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

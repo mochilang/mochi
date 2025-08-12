@@ -1,4 +1,4 @@
-// Generated 2025-08-09 10:14 +0700
+// Generated 2025-08-12 09:13 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let rec _str v =
     let s = sprintf "%A" v
     let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
@@ -61,11 +49,11 @@ let rec make_lcg (_multiplier: int) (_increment: int) (_modulo: int) (_seed: int
         __ret
     with
         | Return -> __ret
-let rec next_number (lcg: LCG) =
+and next_number (lcg: LCG) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable lcg = lcg
     try
-        lcg._seed <- int ((((((int64 (lcg._multiplier)) * (int64 (lcg._seed))) + (int64 (lcg._increment))) % (int64 (lcg._modulo)) + (int64 (lcg._modulo))) % (int64 (lcg._modulo))))
+        lcg._seed <- (((((lcg._multiplier) * (lcg._seed)) + (lcg._increment)) % (lcg._modulo) + (lcg._modulo)) % (lcg._modulo))
         __ret <- lcg._seed
         raise Return
         __ret
@@ -74,7 +62,7 @@ let rec next_number (lcg: LCG) =
 let mutable lcg: LCG = make_lcg (1664525) (1013904223) (int 4294967296L) (int (_now()))
 let mutable i: int = 0
 while i < 5 do
-    printfn "%s" (_str (next_number (lcg)))
+    ignore (printfn "%s" (_str (next_number (lcg))))
     i <- i + 1
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)

@@ -1,4 +1,4 @@
-// Generated 2025-08-09 10:14 +0700
+// Generated 2025-08-12 09:13 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -79,7 +79,7 @@ let rec new_clause (lits: string array) =
         let mutable i: int = 0
         while i < (Seq.length (lits)) do
             let lit: string = _idx lits (int i)
-            m.[lit] <- 0 - 1
+            m <- _dictAdd (m) (string (lit)) (0 - 1)
             _names <- Array.append _names [|lit|]
             i <- i + 1
         __ret <- { _literals = m; _names = _names }
@@ -87,7 +87,7 @@ let rec new_clause (lits: string array) =
         __ret
     with
         | Return -> __ret
-let rec assign_clause (c: Clause) (_model: System.Collections.Generic.IDictionary<string, int>) =
+and assign_clause (c: Clause) (_model: System.Collections.Generic.IDictionary<string, int>) =
     let mutable __ret : Clause = Unchecked.defaultof<Clause>
     let mutable c = c
     let mutable _model = _model
@@ -101,7 +101,7 @@ let rec assign_clause (c: Clause) (_model: System.Collections.Generic.IDictionar
                 let mutable _value: int = _dictGet _model ((string (symbol)))
                 if ((_substring lit ((String.length (lit)) - 1) (String.length (lit))) = "'") && (_value <> (0 - 1)) then
                     _value <- 1 - _value
-                lits.[lit] <- _value
+                lits <- _dictAdd (lits) (string (lit)) (_value)
             i <- i + 1
         c._literals <- lits
         __ret <- c
@@ -109,7 +109,7 @@ let rec assign_clause (c: Clause) (_model: System.Collections.Generic.IDictionar
         __ret
     with
         | Return -> __ret
-let rec evaluate_clause (c: Clause) (_model: System.Collections.Generic.IDictionary<string, int>) =
+and evaluate_clause (c: Clause) (_model: System.Collections.Generic.IDictionary<string, int>) =
     let mutable __ret : EvalResult = Unchecked.defaultof<EvalResult>
     let mutable c = c
     let mutable _model = _model
@@ -146,7 +146,7 @@ let rec evaluate_clause (c: Clause) (_model: System.Collections.Generic.IDiction
         __ret
     with
         | Return -> __ret
-let rec new_formula (cs: Clause array) =
+and new_formula (cs: Clause array) =
     let mutable __ret : Formula = Unchecked.defaultof<Formula>
     let mutable cs = cs
     try
@@ -155,7 +155,7 @@ let rec new_formula (cs: Clause array) =
         __ret
     with
         | Return -> __ret
-let rec remove_symbol (symbols: string array) (s: string) =
+and remove_symbol (symbols: string array) (s: string) =
     let mutable __ret : string array = Unchecked.defaultof<string array>
     let mutable symbols = symbols
     let mutable s = s
@@ -171,7 +171,7 @@ let rec remove_symbol (symbols: string array) (s: string) =
         __ret
     with
         | Return -> __ret
-let rec dpll_algorithm (_clauses: Clause array) (symbols: string array) (_model: System.Collections.Generic.IDictionary<string, int>) =
+and dpll_algorithm (_clauses: Clause array) (symbols: string array) (_model: System.Collections.Generic.IDictionary<string, int>) =
     let mutable __ret : DPLLResult = Unchecked.defaultof<DPLLResult>
     let mutable _clauses = _clauses
     let mutable symbols = symbols
@@ -183,7 +183,7 @@ let rec dpll_algorithm (_clauses: Clause array) (symbols: string array) (_model:
             let ev: EvalResult = evaluate_clause (_idx _clauses (int i)) (_model)
             _clauses <- _arrset _clauses (int i) (ev._clause)
             if (ev._value) = 0 then
-                __ret <- { _sat = false; _model = unbox<System.Collections.Generic.IDictionary<string, int>> (_dictCreate []) }
+                __ret <- { _sat = false; _model = _dictCreate<string, int> [] }
                 raise Return
             else
                 if (ev._value) = (0 - 1) then
@@ -196,8 +196,8 @@ let rec dpll_algorithm (_clauses: Clause array) (symbols: string array) (_model:
         let rest: string array = remove_symbol (symbols) (p)
         let mutable tmp1: System.Collections.Generic.IDictionary<string, int> = _model
         let mutable tmp2: System.Collections.Generic.IDictionary<string, int> = _model
-        tmp1.[p] <- 1
-        tmp2.[p] <- 0
+        tmp1 <- _dictAdd (tmp1) (string (p)) (1)
+        tmp2 <- _dictAdd (tmp2) (string (p)) (0)
         let res1: DPLLResult = dpll_algorithm (_clauses) (rest) (tmp1)
         if res1._sat then
             __ret <- res1
@@ -207,7 +207,7 @@ let rec dpll_algorithm (_clauses: Clause array) (symbols: string array) (_model:
         __ret
     with
         | Return -> __ret
-let rec str_clause (c: Clause) =
+and str_clause (c: Clause) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable c = c
     try
@@ -228,7 +228,7 @@ let rec str_clause (c: Clause) =
         __ret
     with
         | Return -> __ret
-let rec str_formula (f: Formula) =
+and str_formula (f: Formula) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable f = f
     try
@@ -254,9 +254,9 @@ let symbols: string array = unbox<string array> [|"A4"; "A3"; "A5"; "A1"|]
 let mutable _model: System.Collections.Generic.IDictionary<string, int> = _dictCreate []
 let result: DPLLResult = dpll_algorithm (_clauses) (symbols) (_model)
 if result._sat then
-    printfn "%s" (("The formula " + formula_str) + " is satisfiable.")
+    ignore (printfn "%s" (("The formula " + formula_str) + " is satisfiable."))
 else
-    printfn "%s" (("The formula " + formula_str) + " is not satisfiable.")
+    ignore (printfn "%s" (("The formula " + formula_str) + " is not satisfiable."))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

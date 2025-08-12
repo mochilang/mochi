@@ -1,4 +1,4 @@
-// Generated 2025-08-09 10:14 +0700
+// Generated 2025-08-12 09:13 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -69,7 +57,7 @@ let rec get_value (t: Thing) =
         __ret
     with
         | Return -> __ret
-let rec get_weight (t: Thing) =
+and get_weight (t: Thing) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable t = t
     try
@@ -78,7 +66,7 @@ let rec get_weight (t: Thing) =
         __ret
     with
         | Return -> __ret
-let rec get_name (t: Thing) =
+and get_name (t: Thing) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable t = t
     try
@@ -87,7 +75,7 @@ let rec get_name (t: Thing) =
         __ret
     with
         | Return -> __ret
-let rec value_weight (t: Thing) =
+and value_weight (t: Thing) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable t = t
     try
@@ -96,7 +84,7 @@ let rec value_weight (t: Thing) =
         __ret
     with
         | Return -> __ret
-let rec build_menu (names: string array) (values: float array) (weights: float array) =
+and build_menu (names: string array) (values: float array) (weights: float array) =
     let mutable __ret : Thing array = Unchecked.defaultof<Thing array>
     let mutable names = names
     let mutable values = values
@@ -112,7 +100,7 @@ let rec build_menu (names: string array) (values: float array) (weights: float a
         __ret
     with
         | Return -> __ret
-let rec sort_desc (_items: Thing array) (key_func: Thing -> float) =
+and sort_desc (_items: Thing array) (key_func: Thing -> float) =
     let mutable __ret : Thing array = Unchecked.defaultof<Thing array>
     let mutable _items = _items
     let mutable key_func = key_func
@@ -128,16 +116,16 @@ let rec sort_desc (_items: Thing array) (key_func: Thing -> float) =
             let key_val: float = key_func (key_item)
             let mutable k: int = j - 1
             while (k >= 0) && ((float (key_func (_idx arr (int k)))) < key_val) do
-                arr.[int (k + 1)] <- _idx arr (int k)
+                arr.[(k + 1)] <- _idx arr (int k)
                 k <- k - 1
-            arr.[int (k + 1)] <- key_item
+            arr.[(k + 1)] <- key_item
             j <- j + 1
         __ret <- arr
         raise Return
         __ret
     with
         | Return -> __ret
-let rec greedy (_items: Thing array) (max_cost: float) (key_func: Thing -> float) =
+and greedy (_items: Thing array) (max_cost: float) (key_func: Thing -> float) =
     let mutable __ret : GreedyResult = Unchecked.defaultof<GreedyResult>
     let mutable _items = _items
     let mutable max_cost = max_cost
@@ -161,7 +149,7 @@ let rec greedy (_items: Thing array) (max_cost: float) (key_func: Thing -> float
         __ret
     with
         | Return -> __ret
-let rec thing_to_string (t: Thing) =
+and thing_to_string (t: Thing) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable t = t
     try
@@ -170,7 +158,7 @@ let rec thing_to_string (t: Thing) =
         __ret
     with
         | Return -> __ret
-let rec list_to_string (ts: Thing array) =
+and list_to_string (ts: Thing array) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable ts = ts
     try
@@ -191,10 +179,10 @@ let food: string array = unbox<string array> [|"Burger"; "Pizza"; "Coca Cola"; "
 let _value: float array = unbox<float array> [|80.0; 100.0; 60.0; 70.0; 50.0; 110.0; 90.0; 60.0|]
 let _weight: float array = unbox<float array> [|40.0; 60.0; 40.0; 70.0; 100.0; 85.0; 55.0; 70.0|]
 let foods: Thing array = build_menu (food) (_value) (_weight)
-printfn "%s" (list_to_string (foods))
+ignore (printfn "%s" (list_to_string (foods)))
 let res: GreedyResult = greedy (foods) (500.0) (unbox<Thing -> float> get_value)
-printfn "%s" (list_to_string (res._items))
-printfn "%s" (_str (res._total_value))
+ignore (printfn "%s" (list_to_string (res._items)))
+ignore (printfn "%s" (_str (res._total_value)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

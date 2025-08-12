@@ -1,4 +1,4 @@
-// Generated 2025-08-09 10:14 +0700
+// Generated 2025-08-12 09:13 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
@@ -46,7 +34,7 @@ let rec check_matrix (mat: float array array) =
     let mutable mat = mat
     try
         if ((Seq.length (mat)) < 2) || ((Seq.length (_idx mat (int 0))) < 2) then
-            failwith ("Expected a matrix with at least 2x2 dimensions")
+            ignore (failwith ("Expected a matrix with at least 2x2 dimensions"))
         __ret
     with
         | Return -> __ret
@@ -58,7 +46,7 @@ and add (a: float array array) (b: float array array) =
         check_matrix (a)
         check_matrix (b)
         if ((Seq.length (a)) <> (Seq.length (b))) || ((Seq.length (_idx a (int 0))) <> (Seq.length (_idx b (int 0)))) then
-            failwith ("Matrices must have the same dimensions")
+            ignore (failwith ("Matrices must have the same dimensions"))
         let rows: int = Seq.length (a)
         let cols: int = Seq.length (_idx a (int 0))
         let mutable result: float array array = Array.empty<float array>
@@ -84,7 +72,7 @@ and subtract (a: float array array) (b: float array array) =
         check_matrix (a)
         check_matrix (b)
         if ((Seq.length (a)) <> (Seq.length (b))) || ((Seq.length (_idx a (int 0))) <> (Seq.length (_idx b (int 0)))) then
-            failwith ("Matrices must have the same dimensions")
+            ignore (failwith ("Matrices must have the same dimensions"))
         let rows: int = Seq.length (a)
         let cols: int = Seq.length (_idx a (int 0))
         let mutable result: float array array = Array.empty<float array>
@@ -133,7 +121,7 @@ and multiply (a: float array array) (b: float array array) =
         check_matrix (a)
         check_matrix (b)
         if (Seq.length (_idx a (int 0))) <> (Seq.length (b)) then
-            failwith ("Invalid dimensions for matrix multiplication")
+            ignore (failwith ("Invalid dimensions for matrix multiplication"))
         let rows: int = Seq.length (a)
         let cols: int = Seq.length (_idx b (int 0))
         let mutable result: float array array = Array.empty<float array>
@@ -208,12 +196,12 @@ and main () =
         let mat_a: float array array = [|[|12.0; 10.0|]; [|3.0; 9.0|]|]
         let mat_b: float array array = [|[|3.0; 4.0|]; [|7.0; 4.0|]|]
         let mat_c: float array array = [|[|3.0; 0.0; 2.0|]; [|2.0; 0.0; -2.0|]; [|0.0; 1.0; 1.0|]|]
-        printfn "%s" (_str (add (mat_a) (mat_b)))
-        printfn "%s" (_str (subtract (mat_a) (mat_b)))
-        printfn "%s" (_str (multiply (mat_a) (mat_b)))
-        printfn "%s" (_str (scalar_multiply (mat_a) (3.5)))
-        printfn "%s" (_str (identity (5)))
-        printfn "%s" (_str (transpose (mat_c)))
+        ignore (printfn "%s" (_str (add (mat_a) (mat_b))))
+        ignore (printfn "%s" (_str (subtract (mat_a) (mat_b))))
+        ignore (printfn "%s" (_str (multiply (mat_a) (mat_b))))
+        ignore (printfn "%s" (_str (scalar_multiply (mat_a) (3.5))))
+        ignore (printfn "%s" (_str (identity (5))))
+        ignore (printfn "%s" (_str (transpose (mat_c))))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

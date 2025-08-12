@@ -1,4 +1,4 @@
-// Generated 2025-08-09 10:14 +0700
+// Generated 2025-08-12 09:13 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
@@ -52,7 +40,7 @@ let rec abs_int (n: int) =
         __ret
     with
         | Return -> __ret
-let rec make_matrix (row_size: int) =
+and make_matrix (row_size: int) =
     let mutable __ret : int array array = Unchecked.defaultof<int array array>
     let mutable row_size = row_size
     try
@@ -65,7 +53,7 @@ let rec make_matrix (row_size: int) =
             let mutable row: int array = Array.empty<int>
             let mutable x: int = 0
             while x < size do
-                row <- Array.append row [|int ((int64 (1 + x)) + ((int64 y) * (int64 size)))|]
+                row <- Array.append row [|((1 + x) + (y * size))|]
                 x <- x + 1
             mat <- Array.append mat [|row|]
             y <- y + 1
@@ -74,7 +62,7 @@ let rec make_matrix (row_size: int) =
         __ret
     with
         | Return -> __ret
-let rec transpose (mat: int array array) =
+and transpose (mat: int array array) =
     let mutable __ret : int array array = Unchecked.defaultof<int array array>
     let mutable mat = mat
     try
@@ -94,7 +82,7 @@ let rec transpose (mat: int array array) =
         __ret
     with
         | Return -> __ret
-let rec reverse_row (mat: int array array) =
+and reverse_row (mat: int array array) =
     let mutable __ret : int array array = Unchecked.defaultof<int array array>
     let mutable mat = mat
     try
@@ -108,7 +96,7 @@ let rec reverse_row (mat: int array array) =
         __ret
     with
         | Return -> __ret
-let rec reverse_column (mat: int array array) =
+and reverse_column (mat: int array array) =
     let mutable __ret : int array array = Unchecked.defaultof<int array array>
     let mutable mat = mat
     try
@@ -127,7 +115,7 @@ let rec reverse_column (mat: int array array) =
         __ret
     with
         | Return -> __ret
-let rec rotate_90 (mat: int array array) =
+and rotate_90 (mat: int array array) =
     let mutable __ret : int array array = Unchecked.defaultof<int array array>
     let mutable mat = mat
     try
@@ -138,7 +126,7 @@ let rec rotate_90 (mat: int array array) =
         __ret
     with
         | Return -> __ret
-let rec rotate_180 (mat: int array array) =
+and rotate_180 (mat: int array array) =
     let mutable __ret : int array array = Unchecked.defaultof<int array array>
     let mutable mat = mat
     try
@@ -149,7 +137,7 @@ let rec rotate_180 (mat: int array array) =
         __ret
     with
         | Return -> __ret
-let rec rotate_270 (mat: int array array) =
+and rotate_270 (mat: int array array) =
     let mutable __ret : int array array = Unchecked.defaultof<int array array>
     let mutable mat = mat
     try
@@ -160,7 +148,7 @@ let rec rotate_270 (mat: int array array) =
         __ret
     with
         | Return -> __ret
-let rec row_to_string (row: int array) =
+and row_to_string (row: int array) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable row = row
     try
@@ -177,33 +165,33 @@ let rec row_to_string (row: int array) =
         __ret
     with
         | Return -> __ret
-let rec print_matrix (mat: int array array) =
+and print_matrix (mat: int array array) =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     let mutable mat = mat
     try
         let mutable i: int = 0
         while i < (Seq.length (mat)) do
-            printfn "%s" (row_to_string (_idx mat (int i)))
+            ignore (printfn "%s" (row_to_string (_idx mat (int i))))
             i <- i + 1
         __ret
     with
         | Return -> __ret
 let mutable mat: int array array = make_matrix (4)
-printfn "%s" ("\norigin:\n")
+ignore (printfn "%s" ("\norigin:\n"))
 print_matrix (mat)
-printfn "%s" ("\nrotate 90 counterclockwise:\n")
+ignore (printfn "%s" ("\nrotate 90 counterclockwise:\n"))
 let r90: int array array = rotate_90 (mat)
 print_matrix (r90)
 mat <- make_matrix (4)
-printfn "%s" ("\norigin:\n")
+ignore (printfn "%s" ("\norigin:\n"))
 print_matrix (mat)
-printfn "%s" ("\nrotate 180:\n")
+ignore (printfn "%s" ("\nrotate 180:\n"))
 let r180: int array array = rotate_180 (mat)
 print_matrix (r180)
 mat <- make_matrix (4)
-printfn "%s" ("\norigin:\n")
+ignore (printfn "%s" ("\norigin:\n"))
 print_matrix (mat)
-printfn "%s" ("\nrotate 270 counterclockwise:\n")
+ignore (printfn "%s" ("\nrotate 270 counterclockwise:\n"))
 let r270: int array array = rotate_270 (mat)
 print_matrix (r270)
 let __bench_end = _now()

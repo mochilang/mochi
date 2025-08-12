@@ -1,4 +1,4 @@
-// Generated 2025-08-09 10:14 +0700
+// Generated 2025-08-12 09:13 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
@@ -52,14 +40,14 @@ let rec search_in_sorted_matrix (mat: float array array) (m: int) (n: int) (key:
         let mutable j: int = 0
         while (i >= 0) && (j < n) do
             if key = (_idx (_idx mat (int i)) (int j)) then
-                printfn "%s" ((((("Key " + (_str (key))) + " found at row- ") + (_str (i + 1))) + " column- ") + (_str (j + 1)))
+                ignore (printfn "%s" ((((("Key " + (_str (key))) + " found at row- ") + (_str (i + 1))) + " column- ") + (_str (j + 1))))
                 __ret <- ()
                 raise Return
             if key < (_idx (_idx mat (int i)) (int j)) then
                 i <- i - 1
             else
                 j <- j + 1
-        printfn "%s" (("Key " + (_str (key))) + " not found")
+        ignore (printfn "%s" (("Key " + (_str (key))) + " not found"))
         __ret
     with
         | Return -> __ret

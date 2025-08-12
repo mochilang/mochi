@@ -1,4 +1,4 @@
-// Generated 2025-08-09 10:14 +0700
+// Generated 2025-08-12 09:13 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -108,7 +96,7 @@ and lfu_get (_cache: LFUCache) (_key: int) =
         e._freq <- (e._freq) + 1
         let new_tick: int = (_cache._tick) + 1
         e._order <- new_tick
-        _entries.[int idx] <- e
+        _entries.[idx] <- e
         let new_cache: LFUCache = { _entries = _entries; _capacity = _cache._capacity; _hits = (_cache._hits) + 1; _miss = _cache._miss; _tick = new_tick }
         __ret <- { _cache = new_cache; _value = e.``val``; _ok = true }
         raise Return
@@ -155,7 +143,7 @@ and lfu_put (_cache: LFUCache) (_key: int) (_value: int) =
             e._freq <- (e._freq) + 1
             let new_tick: int = (_cache._tick) + 1
             e._order <- new_tick
-            _entries.[int idx] <- e
+            _entries.[idx] <- e
             __ret <- { _entries = _entries; _capacity = _cache._capacity; _hits = _cache._hits; _miss = _cache._miss; _tick = new_tick }
             raise Return
         if (Seq.length (_entries)) >= (_cache._capacity) then
@@ -188,36 +176,36 @@ and main () =
         let mutable r: GetResult = lfu_get (_cache) (1)
         _cache <- r._cache
         if r._ok then
-            printfn "%s" (_str (r._value))
+            ignore (printfn "%s" (_str (r._value)))
         else
-            printfn "%s" ("None")
+            ignore (printfn "%s" ("None"))
         _cache <- lfu_put (_cache) (3) (3)
         r <- lfu_get (_cache) (2)
         _cache <- r._cache
         if r._ok then
-            printfn "%s" (_str (r._value))
+            ignore (printfn "%s" (_str (r._value)))
         else
-            printfn "%s" ("None")
+            ignore (printfn "%s" ("None"))
         _cache <- lfu_put (_cache) (4) (4)
         r <- lfu_get (_cache) (1)
         _cache <- r._cache
         if r._ok then
-            printfn "%s" (_str (r._value))
+            ignore (printfn "%s" (_str (r._value)))
         else
-            printfn "%s" ("None")
+            ignore (printfn "%s" ("None"))
         r <- lfu_get (_cache) (3)
         _cache <- r._cache
         if r._ok then
-            printfn "%s" (_str (r._value))
+            ignore (printfn "%s" (_str (r._value)))
         else
-            printfn "%s" ("None")
+            ignore (printfn "%s" ("None"))
         r <- lfu_get (_cache) (4)
         _cache <- r._cache
         if r._ok then
-            printfn "%s" (_str (r._value))
+            ignore (printfn "%s" (_str (r._value)))
         else
-            printfn "%s" ("None")
-        printfn "%s" (cache_info (_cache))
+            ignore (printfn "%s" ("None"))
+        ignore (printfn "%s" (cache_info (_cache)))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

@@ -1,4 +1,4 @@
-// Generated 2025-08-09 10:14 +0700
+// Generated 2025-08-12 09:13 +0700
 
 exception Break
 exception Continue
@@ -22,18 +22,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -79,7 +67,7 @@ let rec processes_resource_summation (_alloc: int array array) =
         __ret
     with
         | Return -> __ret
-let rec available_resources (_claim: int array) (alloc_sum: int array) =
+and available_resources (_claim: int array) (alloc_sum: int array) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable _claim = _claim
     let mutable alloc_sum = alloc_sum
@@ -94,7 +82,7 @@ let rec available_resources (_claim: int array) (alloc_sum: int array) =
         __ret
     with
         | Return -> __ret
-let rec need (_max: int array array) (_alloc: int array array) =
+and need (_max: int array array) (_alloc: int array array) =
     let mutable __ret : int array array = Unchecked.defaultof<int array array>
     let mutable _max = _max
     let mutable _alloc = _alloc
@@ -114,13 +102,13 @@ let rec need (_max: int array array) (_alloc: int array array) =
         __ret
     with
         | Return -> __ret
-let rec pretty_print (_claim: int array) (_alloc: int array array) (_max: int array array) =
+and pretty_print (_claim: int array) (_alloc: int array array) (_max: int array array) =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     let mutable _claim = _claim
     let mutable _alloc = _alloc
     let mutable _max = _max
     try
-        printfn "%s" ("         Allocated Resource Table")
+        ignore (printfn "%s" ("         Allocated Resource Table"))
         let mutable i: int = 0
         while i < (Seq.length (_alloc)) do
             let mutable row: int array = _idx _alloc (int i)
@@ -131,10 +119,10 @@ let rec pretty_print (_claim: int array) (_alloc: int array array) (_max: int ar
                 if j < ((Seq.length (row)) - 1) then
                     line <- line + "        "
                 j <- j + 1
-            printfn "%s" (line)
-            printfn "%s" ("")
+            ignore (printfn "%s" (line))
+            ignore (printfn "%s" (""))
             i <- i + 1
-        printfn "%s" ("         System Resource Table")
+        ignore (printfn "%s" ("         System Resource Table"))
         i <- 0
         while i < (Seq.length (_max)) do
             let mutable row: int array = _idx _max (int i)
@@ -145,8 +133,8 @@ let rec pretty_print (_claim: int array) (_alloc: int array array) (_max: int ar
                 if j < ((Seq.length (row)) - 1) then
                     line <- line + "        "
                 j <- j + 1
-            printfn "%s" (line)
-            printfn "%s" ("")
+            ignore (printfn "%s" (line))
+            ignore (printfn "%s" (""))
             i <- i + 1
         let mutable usage: string = ""
         i <- 0
@@ -164,12 +152,12 @@ let rec pretty_print (_claim: int array) (_alloc: int array array) (_max: int ar
                 avail_str <- avail_str + " "
             avail_str <- avail_str + (_str (_idx avail (int i)))
             i <- i + 1
-        printfn "%s" ("Current Usage by Active Processes: " + usage)
-        printfn "%s" ("Initial Available Resources:       " + avail_str)
+        ignore (printfn "%s" ("Current Usage by Active Processes: " + usage))
+        ignore (printfn "%s" ("Initial Available Resources:       " + avail_str))
         __ret
     with
         | Return -> __ret
-let rec bankers_algorithm (_claim: int array) (_alloc: int array array) (_max: int array array) =
+and bankers_algorithm (_claim: int array) (_alloc: int array array) (_max: int array array) =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     let mutable _claim = _claim
     let mutable _alloc = _alloc
@@ -178,8 +166,8 @@ let rec bankers_algorithm (_claim: int array) (_alloc: int array array) (_max: i
         let mutable need_list: int array array = need (_max) (_alloc)
         let mutable alloc_sum: int array = processes_resource_summation (_alloc)
         let mutable avail: int array = available_resources (_claim) (alloc_sum)
-        printfn "%s" ("__________________________________________________")
-        printfn "%s" ("")
+        ignore (printfn "%s" ("__________________________________________________"))
+        ignore (printfn "%s" (""))
         let mutable finished: bool array = Array.empty<bool>
         let mutable i: int = 0
         while i < (Seq.length (need_list)) do
@@ -212,10 +200,10 @@ let rec bankers_algorithm (_claim: int array) (_alloc: int array array) (_max: i
                                     | Continue -> ()
                                     if exec then
                                         safe <- true
-                                        printfn "%s" (("Process " + (_str (p + 1))) + " is executing.")
+                                        ignore (printfn "%s" (("Process " + (_str (p + 1))) + " is executing."))
                                         r <- 0
                                         while r < (Seq.length (avail)) do
-                                            avail.[int r] <- (_idx avail (int r)) + (_idx (_idx _alloc (int p)) (int r))
+                                            avail.[r] <- (_idx avail (int r)) + (_idx (_idx _alloc (int p)) (int r))
                                             r <- r + 1
                                         let mutable avail_str: string = ""
                                         r <- 0
@@ -224,10 +212,10 @@ let rec bankers_algorithm (_claim: int array) (_alloc: int array array) (_max: i
                                                 avail_str <- avail_str + " "
                                             avail_str <- avail_str + (_str (_idx avail (int r)))
                                             r <- r + 1
-                                        printfn "%s" ("Updated available resource stack for processes: " + avail_str)
-                                        printfn "%s" ("The process is in a safe state.")
-                                        printfn "%s" ("")
-                                        finished.[int p] <- true
+                                        ignore (printfn "%s" ("Updated available resource stack for processes: " + avail_str))
+                                        ignore (printfn "%s" ("The process is in a safe state."))
+                                        ignore (printfn "%s" (""))
+                                        finished.[p] <- true
                                         remaining <- remaining - 1
                                 p <- p + 1
                             with
@@ -237,8 +225,8 @@ let rec bankers_algorithm (_claim: int array) (_alloc: int array array) (_max: i
                     | Break -> ()
                     | Continue -> ()
                     if not safe then
-                        printfn "%s" ("System in unsafe state. Aborting...")
-                        printfn "%s" ("")
+                        ignore (printfn "%s" ("System in unsafe state. Aborting..."))
+                        ignore (printfn "%s" (""))
                         raise Break
                 with
                 | Continue -> ()

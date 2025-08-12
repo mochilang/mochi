@@ -1,4 +1,4 @@
-// Generated 2025-08-09 10:14 +0700
+// Generated 2025-08-12 09:13 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -65,7 +53,7 @@ let rec bfs (graph: int array array) (s: int) (t: int) (parent: int array) =
             i <- i + 1
         let mutable queue: int array = unbox<int array> [|s|]
         let mutable head: int = 0
-        visited.[int s] <- true
+        visited.[s] <- true
         while head < (Seq.length (queue)) do
             let u: int = _idx queue (int head)
             head <- head + 1
@@ -73,15 +61,15 @@ let rec bfs (graph: int array array) (s: int) (t: int) (parent: int array) =
             while ind < (Seq.length (_idx graph (int u))) do
                 if ((_idx visited (int ind)) = false) && ((_idx (_idx graph (int u)) (int ind)) > 0) then
                     queue <- Array.append queue [|ind|]
-                    visited.[int ind] <- true
-                    parent.[int ind] <- u
+                    visited.[ind] <- true
+                    parent.[ind] <- u
                 ind <- ind + 1
         __ret <- _idx visited (int t)
         raise Return
         __ret
     with
         | Return -> __ret
-let rec mincut (graph: int array array) (source: int) (sink: int) =
+and mincut (graph: int array array) (source: int) (sink: int) =
     let mutable __ret : int array array = Unchecked.defaultof<int array array>
     let mutable graph = graph
     let mutable source = source
@@ -115,8 +103,8 @@ let rec mincut (graph: int array array) (source: int) (sink: int) =
             let mutable v: int = sink
             while v <> source do
                 let u: int = _idx parent (int v)
-                g.[int u].[int v] <- (_idx (_idx g (int u)) (int v)) - path_flow
-                g.[int v].[int u] <- (_idx (_idx g (int v)) (int u)) + path_flow
+                g.[u].[v] <- (_idx (_idx g (int u)) (int v)) - path_flow
+                g.[v].[u] <- (_idx (_idx g (int v)) (int u)) + path_flow
                 v <- u
         let mutable res: int array array = Array.empty<int array>
         i <- 0
@@ -134,7 +122,7 @@ let rec mincut (graph: int array array) (source: int) (sink: int) =
         | Return -> __ret
 let test_graph: int array array = [|[|0; 16; 13; 0; 0; 0|]; [|0; 0; 10; 12; 0; 0|]; [|0; 4; 0; 0; 14; 0|]; [|0; 0; 9; 0; 0; 20|]; [|0; 0; 0; 7; 0; 4|]; [|0; 0; 0; 0; 0; 0|]|]
 let result: int array array = mincut (test_graph) (0) (5)
-printfn "%s" (_str (result))
+ignore (printfn "%s" (_str (result)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

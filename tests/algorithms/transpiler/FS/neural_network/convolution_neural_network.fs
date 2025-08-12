@@ -1,4 +1,4 @@
-// Generated 2025-08-09 10:14 +0700
+// Generated 2025-08-12 09:13 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -61,7 +49,7 @@ let mutable _seed: int = 1
 let rec random () =
     let mutable __ret : float = Unchecked.defaultof<float>
     try
-        _seed <- int ((((((int64 _seed) * (int64 13)) + (int64 7)) % (int64 100) + (int64 100)) % (int64 100)))
+        _seed <- ((((_seed * 13) + 7) % 100 + 100) % 100)
         __ret <- (float _seed) / 100.0
         raise Return
         __ret
@@ -89,14 +77,7 @@ and exp (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
-        let mutable term: float = 1.0
-        let mutable sum: float = 1.0
-        let mutable n: int = 1
-        while n < 20 do
-            term <- (term * x) / (to_float (n))
-            sum <- sum + term
-            n <- n + 1
-        __ret <- sum
+        __ret <- System.Math.Exp(x)
         raise Return
         __ret
     with
@@ -152,7 +133,7 @@ and average_pool (map: float array array) (size: int) =
                         sum <- sum + (_idx (_idx map (int (i + a))) (int (j + b)))
                         b <- b + 1
                     a <- a + 1
-                row <- Array.append row [|(sum / (float ((int64 size) * (int64 size))))|]
+                row <- Array.append row [|(sum / (float (size * size)))|]
                 j <- j + size
             out <- Array.append out [|row|]
             i <- i + size
@@ -378,23 +359,23 @@ and train (cnn: CNN) (samples: TrainSample array) (epochs: int) =
                 while j < (Seq.length (_w_out)) do
                     let mutable k: int = 0
                     while k < (Seq.length (_idx _w_out (int j))) do
-                        _w_out.[int j].[int k] <- (_idx (_idx _w_out (int j)) (int k)) + (((cnn._rate_weight) * (_idx hidden_out (int j))) * (_idx pd_out (int k)))
+                        _w_out.[j].[k] <- (_idx (_idx _w_out (int j)) (int k)) + (((cnn._rate_weight) * (_idx hidden_out (int j))) * (_idx pd_out (int k)))
                         k <- k + 1
                     j <- j + 1
                 j <- 0
                 while j < (Seq.length (_b_out)) do
-                    _b_out.[int j] <- (_idx _b_out (int j)) - ((cnn._rate_bias) * (_idx pd_out (int j)))
+                    _b_out.[j] <- (_idx _b_out (int j)) - ((cnn._rate_bias) * (_idx pd_out (int j)))
                     j <- j + 1
                 let mutable i_h: int = 0
                 while i_h < (Seq.length (_w_hidden)) do
                     let mutable j_h: int = 0
                     while j_h < (Seq.length (_idx _w_hidden (int i_h))) do
-                        _w_hidden.[int i_h].[int j_h] <- (_idx (_idx _w_hidden (int i_h)) (int j_h)) + (((cnn._rate_weight) * (_idx flat (int i_h))) * (_idx pd_hidden (int j_h)))
+                        _w_hidden.[i_h].[j_h] <- (_idx (_idx _w_hidden (int i_h)) (int j_h)) + (((cnn._rate_weight) * (_idx flat (int i_h))) * (_idx pd_hidden (int j_h)))
                         j_h <- j_h + 1
                     i_h <- i_h + 1
                 j <- 0
                 while j < (Seq.length (_b_hidden)) do
-                    _b_hidden.[int j] <- (_idx _b_hidden (int j)) - ((cnn._rate_bias) * (_idx pd_hidden (int j)))
+                    _b_hidden.[j] <- (_idx _b_hidden (int j)) - ((cnn._rate_bias) * (_idx pd_hidden (int j)))
                     j <- j + 1
                 s <- s + 1
             e <- e + 1
@@ -411,9 +392,9 @@ and main () =
         let cnn: CNN = new_cnn()
         let _image: float array array = [|[|1.0; 0.0; 1.0; 0.0|]; [|0.0; 1.0; 0.0; 1.0|]; [|1.0; 0.0; 1.0; 0.0|]; [|0.0; 1.0; 0.0; 1.0|]|]
         let sample: TrainSample = { _image = _image; _target = unbox<float array> [|1.0; 0.0|] }
-        printfn "%s" (String.concat " " ([|sprintf "%s" ("Before training:"); sprintf "%A" (forward (cnn) (_image))|]))
+        ignore (printfn "%s" (String.concat " " ([|sprintf "%s" ("Before training:"); sprintf "%A" (forward (cnn) (_image))|])))
         let trained: CNN = train (cnn) (unbox<TrainSample array> [|sample|]) (50)
-        printfn "%s" (String.concat " " ([|sprintf "%s" ("After training:"); sprintf "%A" (forward (trained) (_image))|]))
+        ignore (printfn "%s" (String.concat " " ([|sprintf "%s" ("After training:"); sprintf "%A" (forward (trained) (_image))|])))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

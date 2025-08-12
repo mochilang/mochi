@@ -1,4 +1,4 @@
-// Generated 2025-08-09 10:14 +0700
+// Generated 2025-08-12 09:13 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -61,7 +49,7 @@ let rec update_area_of_max_square (row: int) (col: int) (rows: int) (cols: int) 
         if (_idx (_idx mat (int row)) (int col)) = 1 then
             let sub = 1 + (int (Array.min ([|right; diagonal; down|])))
             if (int sub) > (_idx largest_square_area (int 0)) then
-                largest_square_area.[int 0] <- sub
+                largest_square_area.[0] <- sub
             __ret <- int sub
             raise Return
         else
@@ -70,20 +58,20 @@ let rec update_area_of_max_square (row: int) (col: int) (rows: int) (cols: int) 
         __ret
     with
         | Return -> __ret
-let rec largest_square_area_in_matrix_top_down (rows: int) (cols: int) (mat: int array array) =
+and largest_square_area_in_matrix_top_down (rows: int) (cols: int) (mat: int array array) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable rows = rows
     let mutable cols = cols
     let mutable mat = mat
     try
         let mutable largest: int array = unbox<int array> [|0|]
-        update_area_of_max_square (0) (0) (rows) (cols) (mat) (largest)
+        ignore (update_area_of_max_square (0) (0) (rows) (cols) (mat) (largest))
         __ret <- _idx largest (int 0)
         raise Return
         __ret
     with
         | Return -> __ret
-let rec update_area_of_max_square_with_dp (row: int) (col: int) (rows: int) (cols: int) (mat: int array array) (dp_array: int array array) (largest_square_area: int array) =
+and update_area_of_max_square_with_dp (row: int) (col: int) (rows: int) (cols: int) (mat: int array array) (dp_array: int array array) (largest_square_area: int array) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable row = row
     let mutable col = col
@@ -105,18 +93,18 @@ let rec update_area_of_max_square_with_dp (row: int) (col: int) (rows: int) (col
         if (_idx (_idx mat (int row)) (int col)) = 1 then
             let sub = 1 + (int (Array.min ([|right; diagonal; down|])))
             if (int sub) > (_idx largest_square_area (int 0)) then
-                largest_square_area.[int 0] <- sub
-            dp_array.[int row].[int col] <- sub
+                largest_square_area.[0] <- sub
+            dp_array.[row].[col] <- sub
             __ret <- int sub
             raise Return
         else
-            dp_array.[int row].[int col] <- 0
+            dp_array.[row].[col] <- 0
             __ret <- 0
             raise Return
         __ret
     with
         | Return -> __ret
-let rec largest_square_area_in_matrix_top_down_with_dp (rows: int) (cols: int) (mat: int array array) =
+and largest_square_area_in_matrix_top_down_with_dp (rows: int) (cols: int) (mat: int array array) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable rows = rows
     let mutable cols = cols
@@ -133,13 +121,13 @@ let rec largest_square_area_in_matrix_top_down_with_dp (rows: int) (cols: int) (
                 c <- c + 1
             dp_array <- Array.append dp_array [|row_list|]
             r <- r + 1
-        update_area_of_max_square_with_dp (0) (0) (rows) (cols) (mat) (dp_array) (largest)
+        ignore (update_area_of_max_square_with_dp (0) (0) (rows) (cols) (mat) (dp_array) (largest))
         __ret <- _idx largest (int 0)
         raise Return
         __ret
     with
         | Return -> __ret
-let rec largest_square_area_in_matrix_bottom_up (rows: int) (cols: int) (mat: int array array) =
+and largest_square_area_in_matrix_bottom_up (rows: int) (cols: int) (mat: int array array) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable rows = rows
     let mutable cols = cols
@@ -165,11 +153,11 @@ let rec largest_square_area_in_matrix_bottom_up (rows: int) (cols: int) (mat: in
                 let bottom: int = _idx (_idx dp_array (int (row + 1))) (int col)
                 if (_idx (_idx mat (int row)) (int col)) = 1 then
                     let value = 1 + (int (Array.min ([|right; diagonal; bottom|])))
-                    dp_array.[int row].[int col] <- value
+                    dp_array.[row].[col] <- value
                     if (int value) > largest then
                         largest <- int value
                 else
-                    dp_array.[int row].[int col] <- 0
+                    dp_array.[row].[col] <- 0
                 col <- col - 1
             row <- row - 1
         __ret <- largest
@@ -177,7 +165,7 @@ let rec largest_square_area_in_matrix_bottom_up (rows: int) (cols: int) (mat: in
         __ret
     with
         | Return -> __ret
-let rec largest_square_area_in_matrix_bottom_up_space_optimization (rows: int) (cols: int) (mat: int array array) =
+and largest_square_area_in_matrix_bottom_up_space_optimization (rows: int) (cols: int) (mat: int array array) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable rows = rows
     let mutable cols = cols
@@ -203,11 +191,11 @@ let rec largest_square_area_in_matrix_bottom_up_space_optimization (rows: int) (
                 let bottom: int = _idx next_row (int col)
                 if (_idx (_idx mat (int row)) (int col)) = 1 then
                     let value = 1 + (int (Array.min ([|right; diagonal; bottom|])))
-                    current_row.[int col] <- value
+                    current_row.[col] <- value
                     if (int value) > largest then
                         largest <- int value
                 else
-                    current_row.[int col] <- 0
+                    current_row.[col] <- 0
                 col <- col - 1
             next_row <- current_row
             current_row <- Array.empty<int>
@@ -222,10 +210,10 @@ let rec largest_square_area_in_matrix_bottom_up_space_optimization (rows: int) (
     with
         | Return -> __ret
 let sample: int array array = [|[|1; 1|]; [|1; 1|]|]
-printfn "%d" (largest_square_area_in_matrix_top_down (2) (2) (sample))
-printfn "%d" (largest_square_area_in_matrix_top_down_with_dp (2) (2) (sample))
-printfn "%d" (largest_square_area_in_matrix_bottom_up (2) (2) (sample))
-printfn "%d" (largest_square_area_in_matrix_bottom_up_space_optimization (2) (2) (sample))
+ignore (printfn "%d" (largest_square_area_in_matrix_top_down (2) (2) (sample)))
+ignore (printfn "%d" (largest_square_area_in_matrix_top_down_with_dp (2) (2) (sample)))
+ignore (printfn "%d" (largest_square_area_in_matrix_bottom_up (2) (2) (sample)))
+ignore (printfn "%d" (largest_square_area_in_matrix_bottom_up_space_optimization (2) (2) (sample)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

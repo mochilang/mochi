@@ -1,4 +1,4 @@
-// Generated 2025-08-09 10:14 +0700
+// Generated 2025-08-12 09:13 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -100,12 +100,12 @@ and dll_add (lst: DoubleLinkedList) (idx: int) =
         let mutable node: Node = _idx _nodes (int idx)
         node._prev <- prev_idx
         node._next <- tail_idx
-        _nodes.[int idx] <- node
+        _nodes.[idx] <- node
         let mutable prev_node: Node = _idx _nodes (int prev_idx)
         prev_node._next <- idx
-        _nodes.[int prev_idx] <- prev_node
+        _nodes.[prev_idx] <- prev_node
         tail_node._prev <- idx
-        _nodes.[int tail_idx] <- tail_node
+        _nodes.[tail_idx] <- tail_node
         lst._nodes <- _nodes
         __ret <- lst
         raise Return
@@ -126,13 +126,13 @@ and dll_remove (lst: DoubleLinkedList) (idx: int) =
             raise Return
         let mutable prev_node: Node = _idx _nodes (int prev_idx)
         prev_node._next <- next_idx
-        _nodes.[int prev_idx] <- prev_node
+        _nodes.[prev_idx] <- prev_node
         let mutable next_node: Node = _idx _nodes (int next_idx)
         next_node._prev <- prev_idx
-        _nodes.[int next_idx] <- next_node
+        _nodes.[next_idx] <- next_node
         node._prev <- 0 - 1
         node._next <- 0 - 1
-        _nodes.[int idx] <- node
+        _nodes.[idx] <- node
         lst._nodes <- _nodes
         __ret <- lst
         raise Return
@@ -188,17 +188,17 @@ and lru_put (c: LRUCache) (_key: int) (value: int) =
                 let old_key: int = first_node._key
                 cache._list <- dll_remove (cache._list) (first_idx)
                 let mutable mdel: System.Collections.Generic.IDictionary<string, int> = cache.cache
-                mdel.[(_str (old_key))] <- 0 - 1
+                mdel <- _dictAdd (mdel) (string (_str (old_key))) (0 - 1)
                 cache.cache <- mdel
                 cache._num_keys <- (cache._num_keys) - 1
             let mutable _nodes: Node array = (cache._list)._nodes
             let new_node: Node = { _key = _key; value = value; _prev = 0 - 1; _next = 0 - 1 }
             _nodes <- Array.append _nodes [|new_node|]
             let idx: int = (Seq.length (_nodes)) - 1
-            ((((cache :?> LRUCache)._list) :?> DoubleLinkedList)._nodes) <- _nodes
+            cache._list._nodes <- _nodes
             cache._list <- dll_add (cache._list) (idx)
             let mutable m: System.Collections.Generic.IDictionary<string, int> = cache.cache
-            m.[key_str] <- idx
+            m <- _dictAdd (m) (string (key_str)) (idx)
             cache.cache <- m
             cache._num_keys <- (cache._num_keys) + 1
         else
@@ -207,8 +207,8 @@ and lru_put (c: LRUCache) (_key: int) (value: int) =
             let mutable _nodes: Node array = (cache._list)._nodes
             let mutable node: Node = _idx _nodes (int idx)
             node.value <- value
-            _nodes.[int idx] <- node
-            ((((cache :?> LRUCache)._list) :?> DoubleLinkedList)._nodes) <- _nodes
+            _nodes.[idx] <- node
+            cache._list._nodes <- _nodes
             cache._list <- dll_remove (cache._list) (idx)
             cache._list <- dll_add (cache._list) (idx)
             cache.cache <- m
@@ -231,9 +231,9 @@ and print_result (res: GetResult) =
     let mutable res = res
     try
         if res._ok then
-            printfn "%s" (_str (res.value))
+            ignore (printfn "%s" (_str (res.value)))
         else
-            printfn "%s" ("None")
+            ignore (printfn "%s" ("None"))
         __ret
     with
         | Return -> __ret
@@ -262,7 +262,7 @@ and main () =
         let mutable r5: GetResult = lru_get (cache) (4)
         cache <- r5.cache
         print_result (r5)
-        printfn "%s" (cache_info (cache))
+        ignore (printfn "%s" (cache_info (cache)))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

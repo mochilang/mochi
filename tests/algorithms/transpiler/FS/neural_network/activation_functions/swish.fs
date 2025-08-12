@@ -1,4 +1,4 @@
-// Generated 2025-08-09 10:14 +0700
+// Generated 2025-08-12 09:13 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
@@ -137,13 +125,13 @@ and test_swish () =
         let v: float array = unbox<float array> [|-1.0; 1.0; 2.0|]
         let eps: float = 0.001
         if not (approx_equal_list (sigmoid (v)) (unbox<float array> [|0.26894142; 0.73105858; 0.88079708|]) (eps)) then
-            failwith ("sigmoid incorrect")
+            ignore (failwith ("sigmoid incorrect"))
         if not (approx_equal_list (sigmoid_linear_unit (v)) (unbox<float array> [|-0.26894142; 0.73105858; 1.76159416|]) (eps)) then
-            failwith ("sigmoid_linear_unit incorrect")
+            ignore (failwith ("sigmoid_linear_unit incorrect"))
         if not (approx_equal_list (swish (v) (2.0)) (unbox<float array> [|-0.11920292; 0.88079708; 1.96402758|]) (eps)) then
-            failwith ("swish incorrect")
+            ignore (failwith ("swish incorrect"))
         if not (approx_equal_list (swish (unbox<float array> [|-2.0|]) (1.0)) (unbox<float array> [|-0.23840584|]) (eps)) then
-            failwith ("swish with parameter 1 incorrect")
+            ignore (failwith ("swish with parameter 1 incorrect"))
         __ret
     with
         | Return -> __ret
@@ -153,10 +141,10 @@ and main () =
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
         test_swish()
-        printfn "%s" (_str (sigmoid (unbox<float array> [|-1.0; 1.0; 2.0|])))
-        printfn "%s" (_str (sigmoid_linear_unit (unbox<float array> [|-1.0; 1.0; 2.0|])))
-        printfn "%s" (_str (swish (unbox<float array> [|-1.0; 1.0; 2.0|]) (2.0)))
-        printfn "%s" (_str (swish (unbox<float array> [|-2.0|]) (1.0)))
+        ignore (printfn "%s" (_str (sigmoid (unbox<float array> [|-1.0; 1.0; 2.0|]))))
+        ignore (printfn "%s" (_str (sigmoid_linear_unit (unbox<float array> [|-1.0; 1.0; 2.0|]))))
+        ignore (printfn "%s" (_str (swish (unbox<float array> [|-1.0; 1.0; 2.0|]) (2.0))))
+        ignore (printfn "%s" (_str (swish (unbox<float array> [|-2.0|]) (1.0))))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

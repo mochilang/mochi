@@ -1,4 +1,4 @@
-// Generated 2025-08-09 10:14 +0700
+// Generated 2025-08-12 09:13 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -59,13 +47,13 @@ let mutable _seed: int = 1
 let rec rand () =
     let mutable __ret : int = Unchecked.defaultof<int>
     try
-        _seed <- int ((((((int64 _seed) * (int64 1103515245)) + (int64 12345)) % 2147483648L + 2147483648L) % 2147483648L))
+        _seed <- int ((((int64 ((_seed * 1103515245) + 12345)) % 2147483648L + 2147483648L) % 2147483648L))
         __ret <- _floordiv _seed 65536
         raise Return
         __ret
     with
         | Return -> __ret
-let rec randint (a: int) (b: int) =
+and randint (a: int) (b: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable a = a
     let mutable b = b
@@ -76,7 +64,7 @@ let rec randint (a: int) (b: int) =
         __ret
     with
         | Return -> __ret
-let rec fisher_yates_shuffle_int (data: int array) =
+and fisher_yates_shuffle_int (data: int array) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable data = data
     try
@@ -86,15 +74,15 @@ let rec fisher_yates_shuffle_int (data: int array) =
             let a: int = randint (0) ((Seq.length (res)) - 1)
             let b: int = randint (0) ((Seq.length (res)) - 1)
             let temp: int = _idx res (int a)
-            res.[int a] <- _idx res (int b)
-            res.[int b] <- temp
+            res.[a] <- _idx res (int b)
+            res.[b] <- temp
             i <- i + 1
         __ret <- res
         raise Return
         __ret
     with
         | Return -> __ret
-let rec fisher_yates_shuffle_str (data: string array) =
+and fisher_yates_shuffle_str (data: string array) =
     let mutable __ret : string array = Unchecked.defaultof<string array>
     let mutable data = data
     try
@@ -104,8 +92,8 @@ let rec fisher_yates_shuffle_str (data: string array) =
             let a: int = randint (0) ((Seq.length (res)) - 1)
             let b: int = randint (0) ((Seq.length (res)) - 1)
             let temp: string = _idx res (int a)
-            res.[int a] <- _idx res (int b)
-            res.[int b] <- temp
+            res.[a] <- _idx res (int b)
+            res.[b] <- temp
             i <- i + 1
         __ret <- res
         raise Return
@@ -114,9 +102,9 @@ let rec fisher_yates_shuffle_str (data: string array) =
         | Return -> __ret
 let integers: int array = unbox<int array> [|0; 1; 2; 3; 4; 5; 6; 7|]
 let strings: string array = unbox<string array> [|"python"; "says"; "hello"; "!"|]
-printfn "%s" ("Fisher-Yates Shuffle:")
-printfn "%s" ((("List " + (_str (integers))) + " ") + (_str (strings)))
-printfn "%s" ((("FY Shuffle " + (_str (fisher_yates_shuffle_int (integers)))) + " ") + (_str (fisher_yates_shuffle_str (strings))))
+ignore (printfn "%s" ("Fisher-Yates Shuffle:"))
+ignore (printfn "%s" ((("List " + (_str (integers))) + " ") + (_str (strings))))
+ignore (printfn "%s" ((("FY Shuffle " + (_str (fisher_yates_shuffle_int (integers)))) + " ") + (_str (fisher_yates_shuffle_str (strings)))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
