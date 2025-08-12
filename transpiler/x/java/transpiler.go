@@ -447,12 +447,12 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 	}
 	// Cast map lookups to the destination type when needed.
 	if typ == "boolean" {
-		if inferType(e) == "boolean" {
+		if it := inferType(e); it == "boolean" || it == "bool" {
 			e.emit(w)
 		} else {
 			fmt.Fprint(w, "((Boolean)(")
 			e.emit(w)
-			fmt.Fprint(w, ")")
+			fmt.Fprint(w, "))")
 		}
 		return
 	}
@@ -2445,6 +2445,14 @@ func (b *BinaryExpr) emit(w io.Writer) {
 				b.Left.emit(w)
 			}
 			fmt.Fprint(w, " == null)")
+			return
+		}
+		if lt == "boolean" || lt == "bool" || rt == "boolean" || rt == "bool" {
+			fmt.Fprint(w, "(")
+			emitCastExpr(w, b.Left, "boolean")
+			fmt.Fprint(w, " "+b.Op+" ")
+			emitCastExpr(w, b.Right, "boolean")
+			fmt.Fprint(w, ")")
 			return
 		}
 	}
