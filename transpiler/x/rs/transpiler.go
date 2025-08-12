@@ -832,6 +832,27 @@ func (e *EnumLit) emit(w io.Writer) {
 		}
 		fmt.Fprintf(w, "%s: ", e.Names[i])
 		f.emit(w)
+		if !patternMode {
+			if nr, ok := f.(*NameRef); ok {
+				typ := nr.Type
+				if typ == "" {
+					typ = varTypes[nr.Name]
+				}
+				ft := ""
+				if i < len(e.Types) {
+					ft = e.Types[i]
+				}
+				if typ == "&str" && ft == "String" {
+					io.WriteString(w, ".to_string()")
+				} else if strings.HasPrefix(typ, "&") {
+					if ft != "i64" && ft != "f64" && ft != "bool" && ft != "&str" && ft != "" {
+						io.WriteString(w, ".clone()")
+					}
+				} else if typ != "i64" && typ != "f64" && typ != "bool" && typ != "String" {
+					io.WriteString(w, ".clone()")
+				}
+			}
+		}
 	}
 	patternMode = old
 	io.WriteString(w, " }")
@@ -1870,9 +1891,16 @@ type StringCastExpr struct{ Expr Expr }
 func (s *StringCastExpr) emit(w io.Writer) {
 	t := inferType(s.Expr)
 	if t == "String" {
-		if nr, ok := s.Expr.(*NameRef); ok && cloneVars[nr.Name] {
-			s.Expr.emit(w)
-			return
+		if nr, ok := s.Expr.(*NameRef); ok {
+			if pt, ok2 := currentParamTypes[nr.Name]; ok2 && pt == "&str" {
+				s.Expr.emit(w)
+				io.WriteString(w, ".to_string()")
+				return
+			}
+			if cloneVars[nr.Name] {
+				s.Expr.emit(w)
+				return
+			}
 		}
 		if _, ok := s.Expr.(*StringLit); ok {
 			io.WriteString(w, "String::from(")

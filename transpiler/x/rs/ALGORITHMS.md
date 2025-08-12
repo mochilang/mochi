@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-12 13:50 GMT+7
+Last updated: 2025-08-12 14:21 GMT+7
 
 ## Algorithms Golden Test Checklist (646/1077)
 | Index | Name | Status | Duration | Memory |
@@ -744,7 +744,7 @@ Last updated: 2025-08-12 13:50 GMT+7
 | 735 | neural_network/simple_neural_network | ✓ | 98.423ms | 2.2 MB |
 | 736 | neural_network/two_hidden_layers_neural_network | ✓ | 819µs | 2.3 MB |
 | 737 | other/activity_selection | ✓ | 42µs | 2.0 MB |
-| 738 | other/alternative_list_arrange | ✓ | 110µs | 2.1 MB |
+| 738 | other/alternative_list_arrange | ✓ | 89µs | 2.1 MB |
 | 739 | other/bankers_algorithm | ✓ | 144µs | 2.0 MB |
 | 740 | other/davis_putnam_logemann_loveland | ✓ | 141µs | 2.2 MB |
 | 741 | other/doomsday | ✓ | 40µs | 2.0 MB |
