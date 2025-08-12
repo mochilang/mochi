@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:35 +0700
+// Generated 2025-08-12 07:47 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
@@ -44,7 +32,7 @@ let rec prime_factors (n: int) =
         let mutable i: int = 2
         let mutable x: int = n
         let mutable factors: int array = Array.empty<int>
-        while (i * i) <= x do
+        while ((int64 i) * (int64 i)) <= (int64 x) do
             if (((x % i + i) % i)) = 0 then
                 factors <- Array.append factors [|i|]
                 x <- int (_floordiv x i)
@@ -57,7 +45,7 @@ let rec prime_factors (n: int) =
         __ret
     with
         | Return -> __ret
-let rec liouville_lambda (n: int) =
+and liouville_lambda (n: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable n = n
     try

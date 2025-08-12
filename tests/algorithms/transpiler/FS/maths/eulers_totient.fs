@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:35 +0700
+// Generated 2025-08-12 07:47 +0700
 
 exception Break
 exception Continue
@@ -22,18 +22,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -46,6 +34,7 @@ let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -67,20 +56,20 @@ let rec totient (n: int) =
         try
             while i <= n do
                 try
-                    if _idx is_prime (i) then
+                    if _idx is_prime (int i) then
                         primes <- Array.append primes [|i|]
                     let mutable j: int = 0
                     try
                         while j < (Seq.length (primes)) do
                             try
-                                let p: int = _idx primes (j)
+                                let p: int = _idx primes (int j)
                                 if (i * p) >= n then
                                     raise Break
-                                is_prime.[i * p] <- false
+                                is_prime.[(i * p)] <- false
                                 if (((i % p + p) % p)) = 0 then
-                                    totients.[i * p] <- (_idx totients (i)) * p
+                                    totients.[(i * p)] <- (_idx totients (int i)) * p
                                     raise Break
-                                totients.[i * p] <- (_idx totients (i)) * (p - 1)
+                                totients.[(i * p)] <- (_idx totients (int i)) * (p - 1)
                                 j <- j + 1
                             with
                             | Continue -> ()
@@ -107,7 +96,7 @@ and test_totient () =
         let res: int array = totient (10)
         let mutable idx: int = 0
         while idx < (Seq.length (expected)) do
-            if (_idx res (idx)) <> (_idx expected (idx)) then
+            if (_idx res (int idx)) <> (_idx expected (int idx)) then
                 failwith ("totient mismatch at " + (_str (idx)))
             idx <- idx + 1
         __ret
@@ -123,7 +112,7 @@ and main () =
         let res: int array = totient (n)
         let mutable i: int = 1
         while i < n do
-            printfn "%s" ((((_str (i)) + " has ") + (_str (_idx res (i)))) + " relative primes.")
+            printfn "%s" ((((_str (i)) + " has ") + (_str (_idx res (int i)))) + " relative primes.")
             i <- i + 1
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)

@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:35 +0700
+// Generated 2025-08-12 07:47 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,9 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
 let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
     let d = System.Collections.Generic.Dictionary<'K, 'V>()
     for (k, v) in pairs do
@@ -35,6 +32,7 @@ let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -65,7 +63,7 @@ let rec sqrt (x: float) =
         __ret
     with
         | Return -> __ret
-let rec powf (x: float) (n: int) =
+and powf (x: float) (n: int) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     let mutable n = n
@@ -80,7 +78,7 @@ let rec powf (x: float) (n: int) =
         __ret
     with
         | Return -> __ret
-let rec roundf (x: float) =
+and roundf (x: float) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable x = x
     try
@@ -89,7 +87,7 @@ let rec roundf (x: float) =
         __ret
     with
         | Return -> __ret
-let rec fib_iterative (n: int) =
+and fib_iterative (n: int) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable n = n
     try
@@ -101,14 +99,14 @@ let rec fib_iterative (n: int) =
         let mutable fib: int array = unbox<int array> [|0; 1|]
         let mutable i: int = 2
         while i <= n do
-            fib <- Array.append fib [|((_idx fib (i - 1)) + (_idx fib (i - 2)))|]
+            fib <- Array.append fib [|((_idx fib (int (i - 1))) + (_idx fib (int (i - 2))))|]
             i <- i + 1
         __ret <- fib
         raise Return
         __ret
     with
         | Return -> __ret
-let rec fib_recursive_term (i: int) =
+and fib_recursive_term (i: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable i = i
     try
@@ -122,7 +120,7 @@ let rec fib_recursive_term (i: int) =
         __ret
     with
         | Return -> __ret
-let rec fib_recursive (n: int) =
+and fib_recursive (n: int) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable n = n
     try
@@ -158,7 +156,7 @@ let rec fib_recursive_cached_term (i: int) =
         __ret
     with
         | Return -> __ret
-let rec fib_recursive_cached (n: int) =
+and fib_recursive_cached (n: int) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable n = n
     try
@@ -189,7 +187,7 @@ let rec fib_memoization_term (num: int) =
         __ret
     with
         | Return -> __ret
-let rec fib_memoization (n: int) =
+and fib_memoization (n: int) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable n = n
     try
@@ -205,7 +203,7 @@ let rec fib_memoization (n: int) =
         __ret
     with
         | Return -> __ret
-let rec fib_binet (n: int) =
+and fib_binet (n: int) =
     let mutable __ret : int array = Unchecked.defaultof<int array>
     let mutable n = n
     try
@@ -226,21 +224,21 @@ let rec fib_binet (n: int) =
         __ret
     with
         | Return -> __ret
-let rec matrix_mul (a: int array array) (b: int array array) =
+and matrix_mul (a: int array array) (b: int array array) =
     let mutable __ret : int array array = Unchecked.defaultof<int array array>
     let mutable a = a
     let mutable b = b
     try
-        let a00: int = ((_idx (_idx a (0)) (0)) * (_idx (_idx b (0)) (0))) + ((_idx (_idx a (0)) (1)) * (_idx (_idx b (1)) (0)))
-        let a01: int = ((_idx (_idx a (0)) (0)) * (_idx (_idx b (0)) (1))) + ((_idx (_idx a (0)) (1)) * (_idx (_idx b (1)) (1)))
-        let a10: int = ((_idx (_idx a (1)) (0)) * (_idx (_idx b (0)) (0))) + ((_idx (_idx a (1)) (1)) * (_idx (_idx b (1)) (0)))
-        let a11: int = ((_idx (_idx a (1)) (0)) * (_idx (_idx b (0)) (1))) + ((_idx (_idx a (1)) (1)) * (_idx (_idx b (1)) (1)))
+        let a00: int = ((_idx (_idx a (int 0)) (int 0)) * (_idx (_idx b (int 0)) (int 0))) + ((_idx (_idx a (int 0)) (int 1)) * (_idx (_idx b (int 1)) (int 0)))
+        let a01: int = ((_idx (_idx a (int 0)) (int 0)) * (_idx (_idx b (int 0)) (int 1))) + ((_idx (_idx a (int 0)) (int 1)) * (_idx (_idx b (int 1)) (int 1)))
+        let a10: int = ((_idx (_idx a (int 1)) (int 0)) * (_idx (_idx b (int 0)) (int 0))) + ((_idx (_idx a (int 1)) (int 1)) * (_idx (_idx b (int 1)) (int 0)))
+        let a11: int = ((_idx (_idx a (int 1)) (int 0)) * (_idx (_idx b (int 0)) (int 1))) + ((_idx (_idx a (int 1)) (int 1)) * (_idx (_idx b (int 1)) (int 1)))
         __ret <- [|[|a00; a01|]; [|a10; a11|]|]
         raise Return
         __ret
     with
         | Return -> __ret
-let rec matrix_pow (m: int array array) (power: int) =
+and matrix_pow (m: int array array) (power: int) =
     let mutable __ret : int array array = Unchecked.defaultof<int array array>
     let mutable m = m
     let mutable power = power
@@ -260,7 +258,7 @@ let rec matrix_pow (m: int array array) (power: int) =
         __ret
     with
         | Return -> __ret
-let rec fib_matrix (n: int) =
+and fib_matrix (n: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable n = n
     try
@@ -271,12 +269,12 @@ let rec fib_matrix (n: int) =
             raise Return
         let m: int array array = [|[|1; 1|]; [|1; 0|]|]
         let mutable res: int array array = matrix_pow (m) (n - 1)
-        __ret <- _idx (_idx res (0)) (0)
+        __ret <- _idx (_idx res (int 0)) (int 0)
         raise Return
         __ret
     with
         | Return -> __ret
-let rec run_tests () =
+and run_tests () =
     let mutable __ret : int = Unchecked.defaultof<int>
     try
         let expected: int array = unbox<int array> [|0; 1; 1; 2; 3; 5; 8; 13; 21; 34; 55|]

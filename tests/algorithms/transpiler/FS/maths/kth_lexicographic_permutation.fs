@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:35 +0700
+// Generated 2025-08-12 07:47 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,22 +19,11 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -53,7 +42,7 @@ let rec remove_at (xs: int array) (idx: int) =
         let mutable i: int = 0
         while i < (Seq.length (xs)) do
             if i <> idx then
-                res <- Array.append res [|(_idx xs (i))|]
+                res <- Array.append res [|(_idx xs (int i))|]
             i <- i + 1
         __ret <- res
         raise Return
@@ -70,10 +59,10 @@ and kth_permutation (k: int) (n: int) =
         let mutable factorials: int array = unbox<int array> [|1|]
         let mutable i: int = 2
         while i < n do
-            factorials <- Array.append factorials [|((_idx factorials ((Seq.length (factorials)) - 1)) * i)|]
+            factorials <- Array.append factorials [|int ((int64 (_idx factorials (int ((Seq.length (factorials)) - 1)))) * (int64 i))|]
             i <- i + 1
-        let total: int = (_idx factorials ((Seq.length (factorials)) - 1)) * n
-        if (k < 0) || (k >= total) then
+        let total: int64 = (int64 (_idx factorials (int ((Seq.length (factorials)) - 1)))) * (int64 n)
+        if (k < 0) || ((int64 k) >= total) then
             failwith ("k out of bounds")
         let mutable elements: int array = Array.empty<int>
         let mutable e: int = 0
@@ -83,13 +72,13 @@ and kth_permutation (k: int) (n: int) =
         let mutable permutation: int array = Array.empty<int>
         let mutable idx: int = (Seq.length (factorials)) - 1
         while idx >= 0 do
-            let factorial: int = _idx factorials (idx)
+            let factorial: int = _idx factorials (int idx)
             let number: int = _floordiv k factorial
             k <- ((k % factorial + factorial) % factorial)
-            permutation <- Array.append permutation [|(_idx elements (number))|]
+            permutation <- Array.append permutation [|(_idx elements (int number))|]
             elements <- remove_at (elements) (number)
             idx <- idx - 1
-        permutation <- Array.append permutation [|(_idx elements (0))|]
+        permutation <- Array.append permutation [|(_idx elements (int 0))|]
         __ret <- permutation
         raise Return
         __ret
@@ -105,7 +94,7 @@ and list_equal (a: int array) (b: int array) =
             raise Return
         let mutable i: int = 0
         while i < (Seq.length (a)) do
-            if (_idx a (i)) <> (_idx b (i)) then
+            if (_idx a (int i)) <> (_idx b (int i)) then
                 __ret <- false
                 raise Return
             i <- i + 1
@@ -121,10 +110,10 @@ and list_to_string (xs: int array) =
         if (Seq.length (xs)) = 0 then
             __ret <- "[]"
             raise Return
-        let mutable s: string = "[" + (_str (_idx xs (0)))
+        let mutable s: string = "[" + (_str (_idx xs (int 0)))
         let mutable i: int = 1
         while i < (Seq.length (xs)) do
-            s <- (s + ", ") + (_str (_idx xs (i)))
+            s <- (s + ", ") + (_str (_idx xs (int i)))
             i <- i + 1
         s <- s + "]"
         __ret <- s

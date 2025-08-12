@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:35 +0700
+// Generated 2025-08-12 07:47 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _idx (arr:'a array) (i:int) : 'a =
     if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
@@ -78,12 +66,12 @@ and dual_add (a: Dual) (b: Dual) =
         let mutable s_dual: float array = Array.empty<float>
         let mutable i: int = 0
         while i < (Seq.length (a._duals)) do
-            s_dual <- Array.append s_dual [|(_idx (a._duals) (i))|]
+            s_dual <- Array.append s_dual [|(_idx (a._duals) (int i))|]
             i <- i + 1
         let mutable o_dual: float array = Array.empty<float>
         let mutable j: int = 0
         while j < (Seq.length (b._duals)) do
-            o_dual <- Array.append o_dual [|(_idx (b._duals) (j))|]
+            o_dual <- Array.append o_dual [|(_idx (b._duals) (int j))|]
             j <- j + 1
         if (Seq.length (s_dual)) > (Seq.length (o_dual)) then
             let mutable diff: int = (Seq.length (s_dual)) - (Seq.length (o_dual))
@@ -101,7 +89,7 @@ and dual_add (a: Dual) (b: Dual) =
         let mutable new_duals: float array = Array.empty<float>
         let mutable idx: int = 0
         while idx < (Seq.length (s_dual)) do
-            new_duals <- Array.append new_duals [|((_idx s_dual (idx)) + (_idx o_dual (idx)))|]
+            new_duals <- Array.append new_duals [|((_idx s_dual (int idx)) + (_idx o_dual (int idx)))|]
             idx <- idx + 1
         __ret <- { _real = (a._real) + (b._real); _duals = new_duals }
         raise Return
@@ -116,7 +104,7 @@ and dual_add_real (a: Dual) (b: float) =
         let mutable ds: float array = Array.empty<float>
         let mutable i: int = 0
         while i < (Seq.length (a._duals)) do
-            ds <- Array.append ds [|(_idx (a._duals) (i))|]
+            ds <- Array.append ds [|(_idx (a._duals) (int i))|]
             i <- i + 1
         __ret <- { _real = (a._real) + b; _duals = ds }
         raise Return
@@ -139,19 +127,19 @@ and dual_mul (a: Dual) (b: Dual) =
             let mutable j: int = 0
             while j < (Seq.length (b._duals)) do
                 let pos: int = (i + j) + 1
-                let ``val``: float = (_idx new_duals (pos)) + ((_idx (a._duals) (i)) * (_idx (b._duals) (j)))
-                new_duals.[pos] <- ``val``
+                let ``val``: float = (_idx new_duals (int pos)) + ((_idx (a._duals) (int i)) * (_idx (b._duals) (int j)))
+                new_duals.[int pos] <- ``val``
                 j <- j + 1
             i <- i + 1
         let mutable k: int = 0
         while k < (Seq.length (a._duals)) do
-            let ``val``: float = (_idx new_duals (k)) + ((_idx (a._duals) (k)) * (b._real))
-            new_duals.[k] <- ``val``
+            let ``val``: float = (_idx new_duals (int k)) + ((_idx (a._duals) (int k)) * (b._real))
+            new_duals.[int k] <- ``val``
             k <- k + 1
         let mutable l: int = 0
         while l < (Seq.length (b._duals)) do
-            let ``val``: float = (_idx new_duals (l)) + ((_idx (b._duals) (l)) * (a._real))
-            new_duals.[l] <- ``val``
+            let ``val``: float = (_idx new_duals (int l)) + ((_idx (b._duals) (int l)) * (a._real))
+            new_duals.[int l] <- ``val``
             l <- l + 1
         __ret <- { _real = (a._real) * (b._real); _duals = new_duals }
         raise Return
@@ -166,7 +154,7 @@ and dual_mul_real (a: Dual) (b: float) =
         let mutable ds: float array = Array.empty<float>
         let mutable i: int = 0
         while i < (Seq.length (a._duals)) do
-            ds <- Array.append ds [|((_idx (a._duals) (i)) * b)|]
+            ds <- Array.append ds [|((_idx (a._duals) (int i)) * b)|]
             i <- i + 1
         __ret <- { _real = (a._real) * b; _duals = ds }
         raise Return
@@ -218,7 +206,7 @@ and differentiate (func: Dual -> Dual) (position: float) (order: int) =
         if order = 0 then
             __ret <- result._real
             raise Return
-        __ret <- (_idx (result._duals) (order - 1)) * (factorial (order))
+        __ret <- (_idx (result._duals) (int (order - 1))) * (factorial (order))
         raise Return
         __ret
     with

@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:35 +0700
+// Generated 2025-08-12 07:47 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -19,18 +19,6 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
-let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
-    let d = System.Collections.Generic.Dictionary<'K, 'V>()
-    for (k, v) in pairs do
-        d.[k] <- v
-    upcast d
-let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) : 'V =
-    match d.TryGetValue(k) with
-    | true, v -> v
-    | _ -> Unchecked.defaultof<'V>
 let _floordiv (a:int) (b:int) : int =
     let q = a / b
     let r = a % b
@@ -47,15 +35,15 @@ let rec binary_exponentiation (a: int) (n: int) (``mod``: int) =
             __ret <- 1
             raise Return
         if (((n % 2 + 2) % 2)) = 1 then
-            __ret <- ((((binary_exponentiation (a) (n - 1) (``mod``)) * a) % ``mod`` + ``mod``) % ``mod``)
+            __ret <- int (((((int64 (binary_exponentiation (a) (n - 1) (``mod``))) * (int64 a)) % (int64 ``mod``) + (int64 ``mod``)) % (int64 ``mod``)))
             raise Return
         let b: int = binary_exponentiation (a) (_floordiv n 2) (``mod``)
-        __ret <- (((b * b) % ``mod`` + ``mod``) % ``mod``)
+        __ret <- int (((((int64 b) * (int64 b)) % (int64 ``mod``) + (int64 ``mod``)) % (int64 ``mod``)))
         raise Return
         __ret
     with
         | Return -> __ret
-let rec naive_exponent_mod (a: int) (n: int) (``mod``: int) =
+and naive_exponent_mod (a: int) (n: int) (``mod``: int) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable a = a
     let mutable n = n
@@ -64,14 +52,14 @@ let rec naive_exponent_mod (a: int) (n: int) (``mod``: int) =
         let mutable result: int = 1
         let mutable i: int = 0
         while i < n do
-            result <- (((result * a) % ``mod`` + ``mod``) % ``mod``)
+            result <- int (((((int64 result) * (int64 a)) % (int64 ``mod``) + (int64 ``mod``)) % (int64 ``mod``)))
             i <- i + 1
         __ret <- result
         raise Return
         __ret
     with
         | Return -> __ret
-let rec print_bool (b: bool) =
+and print_bool (b: bool) =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     let mutable b = b
     try
@@ -86,10 +74,10 @@ let p: int = 701
 let a: int = 1000000000
 let b: int = 10
 let left: int = (((_floordiv a b) % p + p) % p)
-let right_fast: int = (((a * (binary_exponentiation (b) (p - 2) (p))) % p + p) % p)
-print_bool (left = right_fast)
-let right_naive: int = (((a * (naive_exponent_mod (b) (p - 2) (p))) % p + p) % p)
-print_bool (left = right_naive)
+let right_fast: int64 = ((((int64 a) * (int64 (binary_exponentiation (b) (p - 2) (p)))) % (int64 p) + (int64 p)) % (int64 p))
+print_bool ((int64 left) = right_fast)
+let right_naive: int64 = ((((int64 a) * (int64 (naive_exponent_mod (b) (p - 2) (p)))) % (int64 p) + (int64 p)) % (int64 p))
+print_bool ((int64 left) = right_naive)
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

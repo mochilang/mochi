@@ -1,4 +1,4 @@
-// Generated 2025-08-08 17:35 +0700
+// Generated 2025-08-12 07:47 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -29,9 +29,6 @@ let _substring (s:string) (start:int) (finish:int) =
     if st > en then st <- en
     s.Substring(st, en - st)
 
-let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
-    d.[k] <- v
-    d
 let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
     let d = System.Collections.Generic.Dictionary<'K, 'V>()
     for (k, v) in pairs do
@@ -41,10 +38,9 @@ let _dictGet<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary
     match d.TryGetValue(k) with
     | true, v -> v
     | _ -> Unchecked.defaultof<'V>
-let _idx (arr:'a array) (i:int) : 'a =
-    if not (obj.ReferenceEquals(arr, null)) && i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec _str v =
     let s = sprintf "%A" v
+    let s = if s.EndsWith(".0") then s.Substring(0, s.Length - 2) else s
     s.Replace("[|", "[")
      .Replace("|]", "]")
      .Replace("; ", " ")
@@ -84,7 +80,7 @@ let rec log2 (x: float) =
         __ret
     with
         | Return -> __ret
-let rec analyze_text (text: string) =
+and analyze_text (text: string) =
     let mutable __ret : TextCounts = Unchecked.defaultof<TextCounts>
     let mutable text = text
     try
@@ -120,7 +116,7 @@ let rec analyze_text (text: string) =
         __ret
     with
         | Return -> __ret
-let rec round_to_int (x: float) =
+and round_to_int (x: float) =
     let mutable __ret : int = Unchecked.defaultof<int>
     let mutable x = x
     try
@@ -129,7 +125,7 @@ let rec round_to_int (x: float) =
         __ret
     with
         | Return -> __ret
-let rec calculate_entropy (text: string) =
+and calculate_entropy (text: string) =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     let mutable text = text
     try
