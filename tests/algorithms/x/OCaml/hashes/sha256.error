@@ -1,0 +1,5 @@
+exit status 2
+File "/workspace/mochi/tests/algorithms/x/OCaml/hashes/sha256.ml", line 90, characters 5-11:
+90 | open Sha256
+          ^^^^^^
+Error: Unbound module Sha256

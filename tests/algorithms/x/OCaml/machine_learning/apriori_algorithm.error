@@ -1,0 +1,7 @@
+exit status 2
+File "/workspace/mochi/tests/algorithms/x/OCaml/machine_learning/apriori_algorithm.ml", line 357, characters 13-60:
+357 |   itemset := prune (!itemset) (!combos) (Obj.repr (!length));
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This expression has type string list list list
+       but an expression was expected of type string list list
+       Type string list is not compatible with type string 

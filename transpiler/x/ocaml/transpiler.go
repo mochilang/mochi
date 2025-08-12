@@ -514,7 +514,17 @@ func isDynamicMapType(typ string) bool {
 		}
 		// Treat maps whose values are composite types (e.g. lists or nested
 		// maps) as dynamic because the OCaml representation stores elements
-		// via Obj.repr.
+		// via Obj.repr. However, allow lists of primitive types to remain
+		// static since they map cleanly to typed OCaml lists.
+		if strings.HasPrefix(val, "list-") {
+			elem := strings.TrimPrefix(val, "list-")
+			switch elem {
+			case "int", "float", "string", "bool":
+				return isDynamicMapType(elem)
+			default:
+				return true
+			}
+		}
 		if strings.Contains(val, "-") {
 			return true
 		}
@@ -553,6 +563,9 @@ func ocamlType(t string) string {
 			return "(string * Obj.t) list"
 		}
 		if strings.HasPrefix(t, "map-") {
+			if isDynamicMapType(t) {
+				return "(string * Obj.t) list"
+			}
 			inner := strings.TrimPrefix(t, "map-")
 			return "(string * " + ocamlType(inner) + ") list"
 		}
@@ -1116,9 +1129,9 @@ func (s *StrBuiltin) emit(w io.Writer) {
 		s.Expr.emit(w)
 		io.WriteString(w, "))")
 	case strings.HasPrefix(s.Typ, "list"):
-		io.WriteString(w, "(__str (")
+		io.WriteString(w, "(__str (Obj.magic (")
 		s.Expr.emit(w)
-		io.WriteString(w, "))")
+		io.WriteString(w, ") : Obj.t))")
 	case s.Typ == "string":
 		io.WriteString(w, "(")
 		s.Expr.emit(w)
