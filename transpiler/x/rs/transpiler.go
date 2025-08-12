@@ -27,6 +27,7 @@ var mapVars map[string]bool
 var stringVars map[string]bool
 var groupVars map[string]bool
 var varTypes map[string]string
+var mutVars map[string]bool
 var funParams map[string]int
 var funParamTypes map[string][]string
 var funReturns map[string]string
@@ -106,8 +107,10 @@ func isConstExpr(e Expr) bool {
 		return true
 	}
 	switch v := e.(type) {
-	case *StringLit, *NumberLit, *BoolLit, *NullLit:
+	case *NumberLit, *BoolLit, *NullLit:
 		return true
+	case *StringLit:
+		return false
 	case *StringCastExpr:
 		return isConstExpr(v.Expr)
 	case *IntCastExpr:
@@ -118,19 +121,9 @@ func isConstExpr(e Expr) bool {
 		}
 		return false
 	case *ListLit:
-		for _, el := range v.Elems {
-			if !isConstExpr(el) {
-				return false
-			}
-		}
-		return true
+		return false
 	case *MapLit:
-		for _, it := range v.Items {
-			if !isConstExpr(it.Key) || !isConstExpr(it.Value) {
-				return false
-			}
-		}
-		return true
+		return false
 	case *StructLit:
 		for _, f := range v.Fields {
 			if !isConstExpr(f) {
@@ -187,6 +180,9 @@ func cloneArgExpr(e Expr, name string) Expr {
 	switch ex := e.(type) {
 	case *NameRef:
 		if ex.Name == name {
+			if globalVars[ex.Name] {
+				return ex
+			}
 			return &MethodCallExpr{Receiver: ex, Name: "clone"}
 		}
 	case *IndexExpr:
@@ -793,14 +789,18 @@ func (s *StructLit) emit(w io.Writer) {
 		}
 		f.emit(w)
 		if nr, ok := f.(*NameRef); ok {
-			if pt, ok2 := currentParamTypes[nr.Name]; ok2 && strings.HasPrefix(pt, "&") {
+			typ := nr.Type
+			if typ == "" {
+				typ = varTypes[nr.Name]
+			}
+			if strings.HasPrefix(typ, "&") {
 				if st, ok3 := structTypes[s.Name]; ok3 {
-					if ft, ok4 := st.Fields[s.Names[i]]; ok4 {
-						if !types.IsNumericType(ft) && !types.IsBoolType(ft) {
-							io.WriteString(w, ".clone()")
-						}
+					if ft, ok4 := st.Fields[s.Names[i]]; ok4 && !types.IsNumericType(ft) && !types.IsBoolType(ft) {
+						io.WriteString(w, ".clone()")
 					}
 				}
+			} else if typ != "i64" && typ != "bool" && typ != "f64" {
+				io.WriteString(w, ".clone()")
 			}
 		}
 	}
@@ -1977,10 +1977,11 @@ func (n *NameRef) emit(w io.Writer) {
 	// Wrap global variable references in `unsafe {}` so functions using
 	// globals don't themselves need to be marked unsafe.  This mirrors the
 	// unsafe block wrapped around `main` for global initialisation.
-	if globalVars[name] && !isLocal(n.Name) {
+	if globalVars[name] && !isLocal(n.Name) && !indexLHS {
 		if t, ok := varTypes[name]; !ok || !strings.HasPrefix(t, "HashMap") {
 			io.WriteString(w, "unsafe { ")
 			io.WriteString(w, rustIdent(name))
+			io.WriteString(w, ".clone()")
 			io.WriteString(w, " }")
 			return
 		}
@@ -2051,8 +2052,9 @@ func (n *NameRef) emit(w io.Writer) {
 		base := strings.TrimSpace(strings.TrimPrefix(strings.TrimPrefix(typ, "&mut"), "&"))
 		switch base {
 		case "i64", "bool", "f64":
-			io.WriteString(w, "*")
+			io.WriteString(w, "(*")
 			io.WriteString(w, rustIdent(name))
+			io.WriteString(w, ")")
 		case "str":
 			io.WriteString(w, rustIdent(name))
 		default:
@@ -2078,6 +2080,9 @@ type VarDecl struct {
 }
 
 func (v *VarDecl) emit(w io.Writer) {
+	if mutVars[v.Name] {
+		v.Mutable = true
+	}
 	if v.Global {
 		typ := v.Type
 		if typ == "" {
@@ -2210,6 +2215,23 @@ func (a *AssignStmt) emit(w io.Writer) {
 			a.Expr.emit(w)
 		}
 		io.WriteString(w, " }")
+		return
+	}
+	if pt, ok := currentParamTypes[a.Name]; ok && strings.HasPrefix(pt, "&") {
+		io.WriteString(w, "(*")
+		io.WriteString(w, rustIdent(name))
+		io.WriteString(w, ") = ")
+		if _, ok := a.Expr.(*NameRef); ok {
+			typ := inferType(a.Expr)
+			if typ != "i64" && typ != "bool" && typ != "f64" && !strings.HasPrefix(typ, "&") {
+				a.Expr.emit(w)
+				io.WriteString(w, ".clone()")
+			} else {
+				a.Expr.emit(w)
+			}
+		} else {
+			a.Expr.emit(w)
+		}
 		return
 	}
 	io.WriteString(w, name)
@@ -3168,6 +3190,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	builtinAliases = map[string]string{}
 	globalRenames = map[string]string{}
 	globalRenameBack = map[string]string{}
+	mutVars = make(map[string]bool)
 	prog := &Program{}
 	for _, st := range p.Statements {
 		if st.Import != nil {
@@ -4293,15 +4316,8 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 			assign := paramAssigned(fn.Body, p.Name)
 			if mut && !assign && (fn.Return == nil || rustTypeRef(fn.Return) != typ) {
 				sigType = "&mut " + typ
-			} else if mut {
-				sigType = typ
-			} else if nested {
-				// Nested functions are often used as callbacks; keep
-				// struct parameters by value to match `FnMut(T)`
-				// expectations.
-				sigType = typ
 			} else {
-				sigType = "&" + typ
+				sigType = typ
 			}
 		}
 		params[i] = Param{Name: p.Name, Type: sigType}
@@ -4838,7 +4854,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				return &IntCastExpr{Expr: args[0]}, nil
 			}
 		}
-		if name == "float" && len(args) == 1 {
+		if (name == "float" || name == "to_float") && len(args) == 1 {
 			funReturns[name] = "f64"
 			return &FloatCastExpr{Expr: args[0]}, nil
 		}
@@ -5068,6 +5084,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 								// already a reference
 							} else {
 								args[i] = &UnaryExpr{Op: "&mut", Expr: args[i]}
+								mutVars[nr.Name] = true
 							}
 						} else {
 							args[i] = &UnaryExpr{Op: "&mut", Expr: args[i]}
@@ -5097,19 +5114,27 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					args[i] = &UnaryExpr{Op: "*", Expr: &MethodCallExpr{Receiver: args[i], Name: "clone"}}
 				} else if _, ok := args[i].(*NameRef); ok && !strings.HasPrefix(pts[i], "&") && (pts[i] == "String" || strings.HasPrefix(pts[i], "Vec<") || strings.HasPrefix(pts[i], "HashMap<")) {
 					args[i] = &MethodCallExpr{Receiver: args[i], Name: "clone"}
+				} else if _, ok := args[i].(*NameRef); ok && !strings.HasPrefix(pts[i], "&") {
+					t := inferType(args[i])
+					if t != "i64" && t != "bool" && t != "f64" && t != "String" && !strings.HasPrefix(t, "Vec<") && !strings.HasPrefix(t, "HashMap<") {
+						args[i] = &MethodCallExpr{Receiver: args[i], Name: "clone"}
+					}
 				} else if _, ok := args[i].(*FieldExpr); ok && !strings.HasPrefix(pts[i], "&") && (pts[i] == "String" || strings.HasPrefix(pts[i], "Vec<") || strings.HasPrefix(pts[i], "HashMap<")) {
 					args[i] = &MethodCallExpr{Receiver: args[i], Name: "clone"}
 				}
 			}
 		} else {
-			if vt, vok := varTypes[name]; vok && strings.HasPrefix(vt, "impl Fn") {
-				start := strings.Index(vt, "(")
-				end := strings.Index(vt, ")")
-				if start >= 0 && end > start {
-					parts := strings.Split(vt[start+1:end], ",")
-					paramTypes = make([]string, len(parts))
-					for i, p := range parts {
-						paramTypes[i] = strings.TrimSpace(p)
+			if vt, vok := varTypes[name]; vok {
+				base := strings.TrimPrefix(strings.TrimPrefix(vt, "&mut "), "&")
+				if strings.HasPrefix(base, "impl Fn") {
+					start := strings.Index(base, "(")
+					end := strings.Index(base, ")")
+					if start >= 0 && end > start {
+						parts := strings.Split(base[start+1:end], ",")
+						paramTypes = make([]string, len(parts))
+						for i, p := range parts {
+							paramTypes[i] = strings.TrimSpace(p)
+						}
 					}
 				}
 			}
@@ -5122,6 +5147,16 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				if nr, ok := a.(*NameRef); ok {
 					if varTypes[nr.Name] == "&String" {
 						args[i] = &MethodCallExpr{Receiver: &UnaryExpr{Op: "*", Expr: a}, Name: "clone"}
+					}
+				}
+			}
+			if len(paramTypes) == 0 {
+				for i, a := range args {
+					if _, ok := a.(*NameRef); ok {
+						t := inferType(a)
+						if t != "i64" && t != "bool" && t != "f64" && t != "String" && !strings.HasPrefix(t, "Vec<") && !strings.HasPrefix(t, "HashMap<") {
+							args[i] = &MethodCallExpr{Receiver: a, Name: "clone"}
+						}
 					}
 				}
 			}
