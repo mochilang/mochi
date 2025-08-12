@@ -137,6 +137,7 @@ mochi_parse_int_str(S) ->
 
 const helperNth = `
 -compile({nowarn_unused_function, mochi_nth/2}).
+-spec mochi_nth(integer(), list()) -> any().
 mochi_nth(I, L) ->
     try lists:nth(I, L) catch _:_ -> nil end.
 `

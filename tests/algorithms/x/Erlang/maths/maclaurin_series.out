@@ -1,22 +1,8 @@
-/workspace/mochi/tests/algorithms/x/Erlang/maths/maclaurin_series.erl:39:1: Warning: function mochi_nth/2 is unused
-%   39| mochi_nth(I, L) ->
-%     | ^
-
-/workspace/mochi/tests/algorithms/x/Erlang/maths/maclaurin_series.erl:125:15: Warning: ambiguous call of overridden auto-imported BIF floor/1 --
-use erlang:floor/1 or "-compile({no_auto_import,[floor/1]})." to resolve name clash
-%  125|         Div = floor(mochi_safe_div(T, mochi_safe_mul(2.0, 3.141592653589793))),
-%     |               ^
-
-/workspace/mochi/tests/algorithms/x/Erlang/maths/maclaurin_series.erl:150:17: Warning: ambiguous call of overridden auto-imported BIF floor/1 --
-use erlang:floor/1 or "-compile({no_auto_import,[floor/1]})." to resolve name clash
-%  150|         Div_2 = floor(mochi_safe_div(T_3, mochi_safe_mul(2.0, 3.141592653589793))),
-%     |                 ^
-
--1.2058204576336944
-0.12544005858906318
--1.2058204576336944
-0.12544005858906318
+-0.544021110889369
+0.5440211108893703
+-0.5440211108893689
+0.5440211108893703
 0.28366218546322675
-0.5779481213119239
--0.4663085704296646
--0.5607656520859365
+0.2836621854632266
+-0.8390715290764525
+-0.8390715290764521

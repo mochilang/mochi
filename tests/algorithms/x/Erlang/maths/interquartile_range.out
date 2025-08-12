@@ -1,5 +1,5 @@
-/workspace/mochi/tests/algorithms/x/Erlang/maths/interquartile_range.erl:55:1: Warning: function mochi_safe_mul/2 is unused
-%   55| mochi_safe_mul(A, B) ->
+/workspace/mochi/tests/algorithms/x/Erlang/maths/interquartile_range.erl:70:1: Warning: function mochi_safe_mul/2 is unused
+%   70| mochi_safe_mul(A, B) ->
 %     | ^
 
-2.0
+2
