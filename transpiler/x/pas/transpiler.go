@@ -218,6 +218,8 @@ type Program struct {
 	UseSHA256           bool
 	NeedPadStart        bool
 	NeedJSON            bool
+	NeedJSONReal        bool
+	NeedToFloat         bool
 	Maps                []MapLitDef
 	VarTypes            map[string]string
 }
@@ -1466,7 +1468,13 @@ func (p *Program) Emit() []byte {
 	buf.WriteString("procedure panic(msg: string);\nbegin\n  writeln(msg);\n  halt(1);\nend;\n")
 	if p.NeedJSON {
 		buf.WriteString("procedure json_intarray(xs: IntArray);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(',');\n  end;\n  write(']');\nend;\n")
+		if p.NeedJSONReal {
+			buf.WriteString("procedure json_realarray(xs: RealArray);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(',');\n  end;\n  write(']');\nend;\n")
+		}
 		buf.WriteString("procedure json(xs: IntArrayArray);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    if i > 0 then write(',');\n    json_intarray(xs[i]);\n  end;\n  writeln(']');\nend;\n")
+	}
+	if p.NeedToFloat {
+		buf.WriteString("function to_float(x: real): real; begin to_float := x; end;\n")
 	}
 	if p.UseSHA256 {
 		buf.WriteString("function _sha256(bs: IntArray): IntArray;\nvar tmp, outFile, hex: string; f: file; t: Text; i: integer; res: IntArray;\nbegin\n  tmp := GetTempFileName('', 'mochi_sha256');\n  Assign(f, tmp);\n  Rewrite(f,1);\n  for i := 0 to Length(bs)-1 do\n    BlockWrite(f, bs[i],1);\n  Close(f);\n  outFile := tmp + '.hash';\n  fpSystem(PChar(AnsiString('sha256sum ' + tmp + ' > ' + outFile)));\n  Assign(t, outFile);\n  Reset(t);\n  ReadLn(t, hex);\n  Close(t);\n  DeleteFile(tmp);\n  DeleteFile(outFile);\n  hex := Trim(hex);\n  SetLength(res, 32);\n  for i := 0 to 31 do\n    res[i] := StrToInt('$'+Copy(hex, i*2+1,2));\n  _sha256 := res;\nend;\n")
@@ -2779,13 +2787,10 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 						tt := resolveAlias(t)
 						if strings.HasPrefix(tt, "array of string") {
 							currProg.NeedListStr = true
-							needSys = true
 						} else if strings.HasPrefix(tt, "array of array") || strings.HasPrefix(tt, "array of IntArray") || strings.HasPrefix(tt, "array of Int64Array") {
-							currProg.NeedListStr2 = true
-							needSys = true
+							currProg.NeedShowList2 = true
 						} else if strings.HasPrefix(tt, "array of int64") {
-							currProg.NeedListStr2 = true
-							needSys = true
+							currProg.NeedShowListInt64 = true
 						} else if strings.HasPrefix(tt, "array of real") {
 							currProg.NeedListStrReal = true
 							needSys = true
@@ -2794,8 +2799,7 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 							currProg.UseVariants = true
 							needSys = true
 						} else {
-							currProg.NeedListStr2 = true
-							needSys = true
+							currProg.NeedShowList = true
 						}
 					} else if strings.HasPrefix(t, "specialize TFPGMap") {
 						tt := strings.ToLower(t)
@@ -4517,14 +4521,23 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 				}
 				if name == "json" && len(args) == 1 {
 					currProg.NeedJSON = true
-					arr := currProg.addArrayAlias("integer")
-					_ = currProg.addArrayAlias(arr)
 					t := inferType(args[0])
-					if strings.HasPrefix(t, "array of array") {
+					if strings.HasPrefix(t, "array of real") || t == "RealArray" {
+						_ = currProg.addArrayAlias("real")
+						currProg.NeedJSONReal = true
+						expr = &CallExpr{Name: "json", Args: args}
+					} else if strings.HasPrefix(t, "array of array") || strings.HasPrefix(t, "array of IntArray") || t == "IntArrayArray" {
+						arr := currProg.addArrayAlias("integer")
+						_ = currProg.addArrayAlias(arr)
 						expr = &CallExpr{Name: name, Args: args}
 					} else {
+						arr := currProg.addArrayAlias("integer")
+						_ = currProg.addArrayAlias(arr)
 						expr = &CallExpr{Name: "json_intarray", Args: args}
 					}
+				} else if name == "to_float" && len(args) == 1 {
+					currProg.NeedToFloat = true
+					expr = &CallExpr{Name: "to_float", Args: args}
 				} else if name == "indexOf" && len(args) == 2 {
 					currProg.NeedIndexOf = true
 					expr = &CallExpr{Name: name, Args: args}

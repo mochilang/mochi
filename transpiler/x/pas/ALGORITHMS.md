@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-12 10:20 GMT+7
+Last updated: 2025-08-12 11:57 GMT+7
 
-## Algorithms Golden Test Checklist (398/1077)
+## Algorithms Golden Test Checklist (399/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -727,7 +727,7 @@ Last updated: 2025-08-12 10:20 GMT+7
 | 718 | matrix/validate_sudoku_board | error |  |  |
 | 719 | networking_flow/ford_fulkerson | ✓ | 0ns | 544B |
 | 720 | networking_flow/minimum_cut | ✓ | 0ns | 640B |
-| 721 | neural_network/activation_functions/binary_step | error |  |  |
+| 721 | neural_network/activation_functions/binary_step | ✓ | 0ns | 0B |
 | 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 1.0µs | 192B |
 | 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 0ns | 256B |
 | 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 0ns | 256B |
