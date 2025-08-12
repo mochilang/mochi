@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Scheme code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Scheme`.
-Last updated: 2025-08-12 08:00 GMT+7
+Last updated: 2025-08-12 08:58 GMT+7
 
-## Algorithms Golden Test Checklist (833/1077)
+## Algorithms Golden Test Checklist (838/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 0s | 12.4 MB |
@@ -456,56 +456,56 @@ Last updated: 2025-08-12 08:00 GMT+7
 | 447 | graphs/multi_heuristic_astar | ✓ | 23ms | 16.6 MB |
 | 448 | graphs/page_rank | ✓ | 1ms | 13.3 MB |
 | 449 | graphs/prim | ✓ | 2ms | 14.4 MB |
-| 450 | graphs/random_graph_generator | ✓ | 0s | 12.8 MB |
-| 451 | graphs/scc_kosaraju | ✓ | 0s | 13.3 MB |
-| 452 | graphs/strongly_connected_components | ✓ | 2ms | 13.2 MB |
-| 453 | graphs/tarjans_scc |   |  |  |
-| 454 | graphs/tests/test_min_spanning_tree_kruskal | ✓ | 2ms | 13.7 MB |
-| 455 | graphs/tests/test_min_spanning_tree_prim | ✓ | 5ms | 13.5 MB |
-| 456 | greedy_methods/best_time_to_buy_and_sell_stock | ✓ | 0s | 12.5 MB |
-| 457 | greedy_methods/fractional_cover_problem | ✓ | 0s | 12.2 MB |
-| 458 | greedy_methods/fractional_knapsack | ✓ | 0s | 13.4 MB |
-| 459 | greedy_methods/fractional_knapsack_2 | ✓ | 1ms | 13.4 MB |
-| 460 | greedy_methods/gas_station | ✓ | 0s | 12.5 MB |
-| 461 | greedy_methods/minimum_coin_change | ✓ | 0s | 12.7 MB |
-| 462 | greedy_methods/minimum_waiting_time | ✓ | 1ms | 12.5 MB |
-| 463 | greedy_methods/optimal_merge_pattern | ✓ | 2ms | 12.6 MB |
-| 464 | greedy_methods/smallest_range | ✓ | 1ms | 13.3 MB |
-| 465 | hashes/adler32 | ✓ | 3ms | 12.4 MB |
-| 466 | hashes/chaos_machine | ✓ | 10ms | 14.1 MB |
-| 467 | hashes/djb2 | ✓ | 11ms | 12.6 MB |
-| 468 | hashes/elf | ✓ | 25ms | 13.2 MB |
-| 469 | hashes/enigma_machine | ✓ | 11ms | 13.6 MB |
-| 470 | hashes/fletcher16 | ✓ | 0s | 12.6 MB |
-| 471 | hashes/hamming_code | ✓ | 42ms | 16.6 MB |
-| 472 | hashes/luhn | ✓ | 0s | 13.0 MB |
-| 473 | hashes/md5 | ✓ | 0s | 14.6 MB |
-| 474 | hashes/sdbm | ✓ | 17ms | 12.0 MB |
-| 475 | hashes/sha1 | ✓ | 300ms | 16.6 MB |
-| 476 | hashes/sha256 | ✓ | 2ms | 12.2 MB |
-| 477 | knapsack/greedy_knapsack | ✓ | 1ms | 12.7 MB |
-| 478 | knapsack/knapsack | ✓ | 0s | 12.4 MB |
-| 479 | knapsack/recursive_approach_knapsack | ✓ | 1ms | 12.9 MB |
-| 480 | knapsack/tests/test_greedy_knapsack | ✓ | 0s | 14.3 MB |
-| 481 | knapsack/tests/test_knapsack | ✓ | 1ms | 12.9 MB |
-| 482 | linear_algebra/gaussian_elimination | ✓ | 0s | 13.6 MB |
-| 483 | linear_algebra/jacobi_iteration_method | ✓ | 1ms | 12.8 MB |
-| 484 | linear_algebra/lu_decomposition | ✓ | 1ms | 13.9 MB |
-| 485 | linear_algebra/matrix_inversion | ✓ | 1ms | 13.6 MB |
-| 486 | linear_algebra/src/conjugate_gradient | ✓ | 5ms | 13.9 MB |
-| 487 | linear_algebra/src/gaussian_elimination_pivoting | ✓ | 2ms | 13.8 MB |
-| 488 | linear_algebra/src/lib | ✓ | 2ms | 16.6 MB |
-| 489 | linear_algebra/src/polynom_for_points | ✓ | 15ms | 14.3 MB |
+| 450 | graphs/random_graph_generator | ✓ | 0s | 12.4 MB |
+| 451 | graphs/scc_kosaraju | ✓ | 0s | 13.4 MB |
+| 452 | graphs/strongly_connected_components | ✓ | 1ms | 12.7 MB |
+| 453 | graphs/tarjans_scc | ✓ | 1ms | 13.5 MB |
+| 454 | graphs/tests/test_min_spanning_tree_kruskal | ✓ | 2ms | 13.2 MB |
+| 455 | graphs/tests/test_min_spanning_tree_prim | ✓ | 7ms | 13.3 MB |
+| 456 | greedy_methods/best_time_to_buy_and_sell_stock | ✓ | 0s | 11.9 MB |
+| 457 | greedy_methods/fractional_cover_problem | ✓ | 0s | 12.7 MB |
+| 458 | greedy_methods/fractional_knapsack | ✓ | 0s | 13.2 MB |
+| 459 | greedy_methods/fractional_knapsack_2 | ✓ | 1ms | 12.9 MB |
+| 460 | greedy_methods/gas_station | ✓ | 0s | 12.1 MB |
+| 461 | greedy_methods/minimum_coin_change | ✓ | 1ms | 12.3 MB |
+| 462 | greedy_methods/minimum_waiting_time | ✓ | 0s | 12.4 MB |
+| 463 | greedy_methods/optimal_merge_pattern | ✓ | 1ms | 11.9 MB |
+| 464 | greedy_methods/smallest_range | ✓ | 0s | 13.4 MB |
+| 465 | hashes/adler32 | ✓ | 8ms | 12.6 MB |
+| 466 | hashes/chaos_machine | ✓ | 5ms | 13.2 MB |
+| 467 | hashes/djb2 | ✓ | 13ms | 12.1 MB |
+| 468 | hashes/elf | ✓ | 26ms | 13.0 MB |
+| 469 | hashes/enigma_machine | ✓ | 13ms | 13.5 MB |
+| 470 | hashes/fletcher16 | ✓ | 0s | 12.2 MB |
+| 471 | hashes/hamming_code | ✓ | 46ms | 16.6 MB |
+| 472 | hashes/luhn | ✓ | 0s | 12.4 MB |
+| 473 | hashes/md5 | ✓ | 0s | 13.9 MB |
+| 474 | hashes/sdbm | ✓ | 25ms | 12.2 MB |
+| 475 | hashes/sha1 | ✓ | 230ms | 16.6 MB |
+| 476 | hashes/sha256 | ✓ | 2ms | 11.9 MB |
+| 477 | knapsack/greedy_knapsack | ✓ | 1ms | 12.9 MB |
+| 478 | knapsack/knapsack | ✓ | 0s | 12.2 MB |
+| 479 | knapsack/recursive_approach_knapsack | ✓ | 0s | 12.4 MB |
+| 480 | knapsack/tests/test_greedy_knapsack | ✓ | 1ms | 13.3 MB |
+| 481 | knapsack/tests/test_knapsack | ✓ | 1ms | 12.4 MB |
+| 482 | linear_algebra/gaussian_elimination | ✓ | 4ms | 13.5 MB |
+| 483 | linear_algebra/jacobi_iteration_method | ✓ | 1ms | 12.7 MB |
+| 484 | linear_algebra/lu_decomposition | ✓ | 1ms | 13.2 MB |
+| 485 | linear_algebra/matrix_inversion | ✓ | 1ms | 13.2 MB |
+| 486 | linear_algebra/src/conjugate_gradient | ✓ | 3ms | 13.5 MB |
+| 487 | linear_algebra/src/gaussian_elimination_pivoting | ✓ | 2ms | 13.9 MB |
+| 488 | linear_algebra/src/lib | ✓ | 1ms | 16.3 MB |
+| 489 | linear_algebra/src/polynom_for_points | ✓ | 9ms | 13.8 MB |
 | 490 | linear_algebra/src/power_iteration |   |  |  |
-| 491 | linear_algebra/src/rank_of_matrix | ✓ | 0s | 13.7 MB |
-| 492 | linear_algebra/src/rayleigh_quotient | ✓ | 1ms | 13.5 MB |
-| 493 | linear_algebra/src/schur_complement | ✓ | 1ms | 14.1 MB |
-| 494 | linear_algebra/src/test_linear_algebra | ✓ | 5ms | 16.6 MB |
-| 495 | linear_algebra/src/transformations_2d |   |  |  |
-| 496 | linear_programming/simplex | ✓ | 1ms | 13.9 MB |
-| 497 | machine_learning/apriori_algorithm |   |  |  |
-| 498 | machine_learning/astar |   |  |  |
-| 499 | machine_learning/automatic_differentiation |   |  |  |
+| 491 | linear_algebra/src/rank_of_matrix | ✓ | 0s | 13.4 MB |
+| 492 | linear_algebra/src/rayleigh_quotient | ✓ | 1ms | 13.3 MB |
+| 493 | linear_algebra/src/schur_complement | ✓ | 1ms | 13.9 MB |
+| 494 | linear_algebra/src/test_linear_algebra | ✓ | 9ms | 16.6 MB |
+| 495 | linear_algebra/src/transformations_2d | ✓ | 1ms | 13.4 MB |
+| 496 | linear_programming/simplex | ✓ | 1ms | 13.8 MB |
+| 497 | machine_learning/apriori_algorithm | ✓ | 1ms | 13.5 MB |
+| 498 | machine_learning/astar | ✓ | 91ms | 16.6 MB |
+| 499 | machine_learning/automatic_differentiation | ✓ | 0s | 12.0 MB |
 | 500 | machine_learning/data_transformations | ✓ | 1ms | 13.6 MB |
 | 501 | machine_learning/decision_tree | ✓ | 2.402s | 16.6 MB |
 | 502 | machine_learning/dimensionality_reduction | ✓ | 0s | 12.5 MB |
