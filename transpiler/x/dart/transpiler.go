@@ -3956,33 +3956,33 @@ func inferType(e Expr) string {
 				return "double"
 			}
 			return "num"
-               case "/":
-                       lt := inferType(ex.Left)
-                       rt := inferType(ex.Right)
-                       if lt == "BigInt" || rt == "BigInt" {
-                               return "BigInt"
-                       }
-                       if lt == "int" && rt == "int" {
-                               return "int"
-                       }
-                       if lt == "double" || rt == "double" || lt == "num" || rt == "num" {
-                               return "double"
-                       }
-                       return "num"
-               case "<", "<=", ">", ">=", "&&", "||":
-                       return "bool"
-               case "==", "!=":
-                       lt := inferType(ex.Left)
-                       rt := inferType(ex.Right)
-                       if strings.HasPrefix(lt, "List<") && strings.HasPrefix(rt, "List<") {
-                               usesJSON = true
-                       }
-                       return "bool"
-               case "union", "union_all", "except", "intersect":
-                       return inferType(ex.Left)
-               default:
-                       return "dynamic"
-               }
+		case "/":
+			lt := inferType(ex.Left)
+			rt := inferType(ex.Right)
+			if lt == "BigInt" || rt == "BigInt" {
+				return "BigInt"
+			}
+			if lt == "int" && rt == "int" {
+				return "int"
+			}
+			if lt == "double" || rt == "double" || lt == "num" || rt == "num" {
+				return "double"
+			}
+			return "num"
+		case "<", "<=", ">", ">=", "&&", "||":
+			return "bool"
+		case "==", "!=":
+			lt := inferType(ex.Left)
+			rt := inferType(ex.Right)
+			if strings.HasPrefix(lt, "List<") && strings.HasPrefix(rt, "List<") {
+				usesJSON = true
+			}
+			return "bool"
+		case "union", "union_all", "except", "intersect":
+			return inferType(ex.Left)
+		default:
+			return "dynamic"
+		}
 	case *UnaryExpr:
 		if ex.Op == "-" {
 			t := inferType(ex.X)
@@ -5811,12 +5811,25 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			return &CallExpr{Func: &SelectorExpr{Receiver: v, Field: "abs"}}, nil
 		}
 		if p.Call.Func == "floor" && len(p.Call.Args) == 1 {
-			v, err := convertExpr(p.Call.Args[0])
-			if err != nil {
-				return nil, err
+			if currentEnv != nil {
+				if _, ok := currentEnv.GetFunc("floor"); ok {
+					// user-defined floor; treat as normal call
+				} else {
+					v, err := convertExpr(p.Call.Args[0])
+					if err != nil {
+						return nil, err
+					}
+					useFloor = true
+					return &CallExpr{Func: &Name{Name: "floor"}, Args: []Expr{v}}, nil
+				}
+			} else {
+				v, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				useFloor = true
+				return &CallExpr{Func: &Name{Name: "floor"}, Args: []Expr{v}}, nil
 			}
-			useFloor = true
-			return &CallExpr{Func: &Name{Name: "floor"}, Args: []Expr{v}}, nil
 		}
 		if p.Call.Func == "panic" && len(p.Call.Args) == 1 {
 			useError = true

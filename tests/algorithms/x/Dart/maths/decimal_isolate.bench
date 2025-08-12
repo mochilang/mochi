@@ -1,8 +1,1 @@
-Unhandled exception:
-type 'double' is not a subtype of type 'int' in type cast
-#0      decimal_isolate (file:///workspace/mochi/tests/algorithms/x/Dart/maths/decimal_isolate.dart:63:22)
-#1      _main (file:///workspace/mochi/tests/algorithms/x/Dart/maths/decimal_isolate.dart:72:10)
-#2      _start (file:///workspace/mochi/tests/algorithms/x/Dart/maths/decimal_isolate.dart:90:3)
-#3      main (file:///workspace/mochi/tests/algorithms/x/Dart/maths/decimal_isolate.dart:100:16)
-#4      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
-#5      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)
+{"duration_us":8358,"memory_bytes":3801088,"name":"_start"}
