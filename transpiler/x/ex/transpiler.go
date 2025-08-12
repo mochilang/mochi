@@ -37,6 +37,9 @@ var elixirReserved = map[string]struct{}{
 	"not":   {},
 	"when":  {},
 	"after": {},
+	"true":  {},
+	"false": {},
+	"nil":   {},
 }
 
 var kernelReserved = map[string]int{

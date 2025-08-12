@@ -1,0 +1,25 @@
+run: exit status 1
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 48 │           {j, product} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_008/sol1.exs:48:12: Main.solution/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 66 │       {i, largest_product} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_008/sol1.exs:66:8: Main.solution/1
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a number
+
+    :erlang.trunc("7")
+    /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_008/sol1.exs:41: anonymous fn/5 in Main.solution/1
+    /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_008/sol1.exs:49: anonymous fn/4 in Main.solution/1
+    /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_008/sol1.exs:67: Main.solution/1
+    /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_008/sol1.exs:79: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_008/sol1.exs:82: (file)
