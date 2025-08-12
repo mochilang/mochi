@@ -1,0 +1,7 @@
+exit status 2
+File "/workspace/mochi/tests/algorithms/x/OCaml/graphs/strongly_connected_components.ml", line 189, characters 66-81:
+189 |   print_endline ((__str (Obj.magic (strongly_connected_components (!test_graph_2)) : Obj.t)));
+                                                                        ^^^^^^^^^^^^^^^
+Error: This expression has type int list list
+       but an expression was expected of type Obj.t list
+       Type int list is not compatible with type Obj.t 

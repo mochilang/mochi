@@ -1,0 +1,6 @@
+exit status 2
+File "/workspace/mochi/tests/algorithms/x/OCaml/machine_learning/astar.ml", line 280, characters 92-99:
+280 |   print_endline ((((((((("path from (" ^ (string_of_int ((Obj.obj (List.assoc (__str ("x")) (start) : Obj.t) : int)))) ^ ", ") ^ (string_of_int ((Obj.obj (List.assoc (__str ("y")) (start) : Obj.t) : int)))) ^ ") to (") ^ (string_of_int ((Obj.obj (List.assoc (__str ("x")) (goal) : Obj.t) : int)))) ^ ", ") ^ (string_of_int ((Obj.obj (List.assoc (__str ("y")) (goal) : Obj.t) : int)))) ^ ")"));
+                                                                                                  ^^^^^^^
+Error: This expression has type int but an expression was expected of type
+         (string * 'a) list

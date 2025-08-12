@@ -1,0 +1,6 @@
+exit status 2
+File "/workspace/mochi/tests/algorithms/x/OCaml/greedy_methods/fractional_cover_problem.ml", line 112, characters 37-44:
+112 |   let __tmp0 = List.sort (fun a b -> compare ratio ((Obj.magic b : (string * Obj.t) list)) ratio ((Obj.magic a : (string * Obj.t) list))) __tmp0 in
+                                           ^^^^^^^
+Error: This function has type 'a -> 'a -> int
+       It is applied to too many arguments; maybe you forgot a `;'.
