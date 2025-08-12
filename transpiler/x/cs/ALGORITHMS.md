@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-12 07:56 GMT+7
+Last updated: 2025-08-12 08:20 GMT+7
 
-## Algorithms Golden Test Checklist (1012/1077)
+## Algorithms Golden Test Checklist (1010/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -556,7 +556,7 @@ Last updated: 2025-08-12 07:56 GMT+7
 | 547 | maths/check_polygon | ✓ | 2.0ms | 14.62KB |
 | 548 | maths/chinese_remainder_theorem | ✓ | 1.0ms | 18.70KB |
 | 549 | maths/chudnovsky_algorithm | ✓ | 1.0ms | 17.36KB |
-| 550 | maths/collatz_sequence | ✓ | 3.0ms | 20.06KB |
+| 550 | maths/collatz_sequence | ✓ | 2.0ms | 20.06KB |
 | 551 | maths/combinations | ✓ | 1.0ms | 17.12KB |
 | 552 | maths/continued_fraction | ✓ | 3.0ms | 17.62KB |
 | 553 | maths/decimal_isolate | ✓ | 3.0ms | 14.21KB |
@@ -779,12 +779,12 @@ Last updated: 2025-08-12 07:56 GMT+7
 | 770 | physics/grahams_law | ✓ | 3.0ms | 14.26KB |
 | 771 | physics/horizontal_projectile_motion | ✓ | 3.0ms | 13.90KB |
 | 772 | physics/hubble_parameter | ✓ | 3.0ms | 13.88KB |
-| 773 | physics/ideal_gas_law | ✓ | 3.0ms | 14.02KB |
+| 773 | physics/ideal_gas_law | error |  |  |
 | 774 | physics/in_static_equilibrium | ✓ | 3.0ms | 14.26KB |
 | 775 | physics/kinetic_energy | ✓ | 3.0ms | 14.08KB |
 | 776 | physics/lens_formulae | ✓ | 3.0ms | 14.22KB |
 | 777 | physics/lorentz_transformation_four_vector | ✓ | 3.0ms | 17.80KB |
-| 778 | physics/malus_law | ✓ | 15.0ms | 1.56MB |
+| 778 | physics/malus_law | error |  |  |
 | 779 | physics/mass_energy_equivalence | ✓ | 3.0ms | 14.18KB |
 | 780 | physics/mirror_formulae | ✓ | 3.0ms | 13.97KB |
 | 781 | physics/n_body_simulation | ✓ | 11.0ms | 121.21KB |
