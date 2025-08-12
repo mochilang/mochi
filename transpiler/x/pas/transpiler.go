@@ -206,6 +206,7 @@ type Program struct {
 	NeedListStr2        bool
 	NeedListStrList     bool
 	NeedListStrReal     bool
+	NeedListStrRealList bool
 	NeedListStrVariant  bool
 	NeedIndexOf         bool
 	UseLookupHost       bool
@@ -1597,6 +1598,19 @@ begin
   Result := '[';
   for i := 0 to High(xs) do begin
     Result := Result + FloatToStr(xs[i]);
+    if i < High(xs) then Result := Result + ' ';
+  end;
+  Result := Result + ']';
+end;
+`)
+	}
+	if p.NeedListStrRealList {
+		buf.WriteString(`function list_list_real_to_str(xs: array of RealArray): string;
+var i: integer;
+begin
+  Result := '[';
+  for i := 0 to High(xs) do begin
+    Result := Result + list_real_to_str(xs[i]);
     if i < High(xs) then Result := Result + ' ';
   end;
   Result := Result + ']';
@@ -4164,6 +4178,10 @@ func arrayStrFunc(t string) string {
 	case strings.HasPrefix(t, "array of string"):
 		currProg.NeedListStr = true
 		return "list_to_str"
+	case strings.HasPrefix(t, "array of array of real") || strings.HasPrefix(t, "array of RealArray") || strings.HasSuffix(t, "RealArrayArray"):
+		currProg.NeedListStrReal = true
+		currProg.NeedListStrRealList = true
+		return "list_list_real_to_str"
 	case strings.HasPrefix(t, "array of array") || strings.HasPrefix(t, "array of IntArray") || strings.HasPrefix(t, "array of Int64Array"):
 		currProg.NeedListStr2 = true
 		return "list_list_int_to_str"
@@ -4813,6 +4831,12 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				currProg.NeedListStrReal = true
 				currProg.UseSysUtils = true
 				return &CallExpr{Name: "list_real_to_str", Args: args}, nil
+			}
+			if strings.HasPrefix(t, "array of array of real") || strings.HasPrefix(t, "array of RealArray") || strings.HasSuffix(t, "RealArrayArray") || strings.HasPrefix(rt, "array of array of real") {
+				currProg.NeedListStrReal = true
+				currProg.NeedListStrRealList = true
+				currProg.UseSysUtils = true
+				return &CallExpr{Name: "list_list_real_to_str", Args: args}, nil
 			}
 			if strings.HasPrefix(t, "array of array of ") || strings.HasPrefix(t, "array of IntArray") || strings.HasSuffix(t, "IntArrayArray") || strings.HasPrefix(rt, "array of array of ") {
 				currProg.NeedListStr2 = true

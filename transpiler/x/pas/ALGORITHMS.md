@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-12 09:20 GMT+7
+Last updated: 2025-08-12 10:20 GMT+7
 
-## Algorithms Golden Test Checklist (352/1077)
+## Algorithms Golden Test Checklist (398/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -756,56 +756,56 @@ Last updated: 2025-08-12 09:20 GMT+7
 | 747 | other/least_recently_used | ✓ | 0ns | 4.56KB |
 | 748 | other/lfu_cache | ✓ | 0ns | 0B |
 | 749 | other/linear_congruential_generator | error |  |  |
-| 750 | other/lru_cache |   |  |  |
-| 751 | other/magicdiamondpattern |   |  |  |
-| 752 | other/majority_vote_algorithm |   |  |  |
-| 753 | other/maximum_subsequence |   |  |  |
-| 754 | other/nested_brackets |   |  |  |
-| 755 | other/number_container_system |   |  |  |
-| 756 | other/quine |   |  |  |
-| 757 | other/scoring_algorithm |   |  |  |
-| 758 | other/sdes |   |  |  |
-| 759 | other/tower_of_hanoi |   |  |  |
-| 760 | other/word_search |   |  |  |
-| 761 | physics/altitude_pressure |   |  |  |
-| 762 | physics/archimedes_principle_of_buoyant_force |   |  |  |
-| 763 | physics/basic_orbital_capture |   |  |  |
-| 764 | physics/casimir_effect |   |  |  |
-| 765 | physics/center_of_mass |   |  |  |
-| 766 | physics/centripetal_force |   |  |  |
-| 767 | physics/coulombs_law |   |  |  |
-| 768 | physics/doppler_frequency |   |  |  |
-| 769 | physics/escape_velocity |   |  |  |
-| 770 | physics/grahams_law |   |  |  |
-| 771 | physics/horizontal_projectile_motion |   |  |  |
-| 772 | physics/hubble_parameter |   |  |  |
-| 773 | physics/ideal_gas_law |   |  |  |
-| 774 | physics/in_static_equilibrium |   |  |  |
-| 775 | physics/kinetic_energy |   |  |  |
-| 776 | physics/lens_formulae |   |  |  |
-| 777 | physics/lorentz_transformation_four_vector |   |  |  |
-| 778 | physics/malus_law |   |  |  |
-| 779 | physics/mass_energy_equivalence |   |  |  |
-| 780 | physics/mirror_formulae |   |  |  |
-| 781 | physics/n_body_simulation |   |  |  |
-| 782 | physics/newtons_law_of_gravitation |   |  |  |
-| 783 | physics/newtons_second_law_of_motion |   |  |  |
-| 784 | physics/orbital_transfer_work |   |  |  |
-| 785 | physics/period_of_pendulum |   |  |  |
-| 786 | physics/photoelectric_effect |   |  |  |
-| 787 | physics/potential_energy |   |  |  |
-| 788 | physics/rainfall_intensity |   |  |  |
-| 789 | physics/reynolds_number |   |  |  |
-| 790 | physics/rms_speed_of_molecule |   |  |  |
-| 791 | physics/shear_stress |   |  |  |
-| 792 | physics/speed_of_sound |   |  |  |
-| 793 | physics/speeds_of_gas_molecules |   |  |  |
-| 794 | physics/terminal_velocity |   |  |  |
-| 795 | project_euler/problem_001/sol1 |   |  |  |
-| 796 | project_euler/problem_001/sol2 |   |  |  |
-| 797 | project_euler/problem_001/sol3 |   |  |  |
-| 798 | project_euler/problem_001/sol4 |   |  |  |
-| 799 | project_euler/problem_001/sol5 |   |  |  |
+| 750 | other/lru_cache | ✓ | 0ns | 1.44KB |
+| 751 | other/magicdiamondpattern | ✓ | 0ns | 0B |
+| 752 | other/majority_vote_algorithm | ✓ | 0ns | 0B |
+| 753 | other/maximum_subsequence | ✓ | 0ns | 64B |
+| 754 | other/nested_brackets | ✓ | 0ns | 2.66KB |
+| 755 | other/number_container_system | ✓ | 0ns | 448B |
+| 756 | other/quine | ✓ | 0ns | 0B |
+| 757 | other/scoring_algorithm | ✓ | 0ns | 608B |
+| 758 | other/sdes | ✓ | 0ns | 1.00KB |
+| 759 | other/tower_of_hanoi | ✓ | 0ns | 0B |
+| 760 | other/word_search | ✓ | 2.0µs | 0B |
+| 761 | physics/altitude_pressure | ✓ | 0ns | 64B |
+| 762 | physics/archimedes_principle_of_buoyant_force | ✓ | 0ns | 0B |
+| 763 | physics/basic_orbital_capture | error |  |  |
+| 764 | physics/casimir_effect | error |  |  |
+| 765 | physics/center_of_mass | ✓ | 0ns | 128B |
+| 766 | physics/centripetal_force | ✓ | 0ns | 0B |
+| 767 | physics/coulombs_law | ✓ | 0ns | 0B |
+| 768 | physics/doppler_frequency | ✓ | 0ns | 0B |
+| 769 | physics/escape_velocity | ✓ | 1.0µs | 0B |
+| 770 | physics/grahams_law | ✓ | 0ns | 0B |
+| 771 | physics/horizontal_projectile_motion | ✓ | 0ns | 0B |
+| 772 | physics/hubble_parameter | ✓ | 0ns | 0B |
+| 773 | physics/ideal_gas_law | ✓ | 0ns | 0B |
+| 774 | physics/in_static_equilibrium | ✓ | 0ns | 2.12KB |
+| 775 | physics/kinetic_energy | ✓ | 0ns | 0B |
+| 776 | physics/lens_formulae | ✓ | 0ns | 64B |
+| 777 | physics/lorentz_transformation_four_vector | error |  |  |
+| 778 | physics/malus_law | ✓ | 0ns | 0B |
+| 779 | physics/mass_energy_equivalence | ✓ | 0ns | 64B |
+| 780 | physics/mirror_formulae | ✓ | 0ns | 0B |
+| 781 | physics/n_body_simulation | error |  |  |
+| 782 | physics/newtons_law_of_gravitation | ✓ | 0ns | 192B |
+| 783 | physics/newtons_second_law_of_motion | ✓ | 0ns | 128B |
+| 784 | physics/orbital_transfer_work | ✓ | 0ns | 0B |
+| 785 | physics/period_of_pendulum | ✓ | 0ns | 64B |
+| 786 | physics/photoelectric_effect | ✓ | 0ns | 64B |
+| 787 | physics/potential_energy | ✓ | 0ns | 0B |
+| 788 | physics/rainfall_intensity | ✓ | 0ns | 64B |
+| 789 | physics/reynolds_number | ✓ | 0ns | 0B |
+| 790 | physics/rms_speed_of_molecule | ✓ | 1.0µs | 224B |
+| 791 | physics/shear_stress | ✓ | 1.0µs | 0B |
+| 792 | physics/speed_of_sound | ✓ | 0ns | 64B |
+| 793 | physics/speeds_of_gas_molecules | ✓ | 0ns | 64B |
+| 794 | physics/terminal_velocity | ✓ | 0ns | 64B |
+| 795 | project_euler/problem_001/sol1 | ✓ | 0ns | 64B |
+| 796 | project_euler/problem_001/sol2 | ✓ | 0ns | 128B |
+| 797 | project_euler/problem_001/sol3 | ✓ | 0ns | 64B |
+| 798 | project_euler/problem_001/sol4 | ✓ | 2.0µs | 0B |
+| 799 | project_euler/problem_001/sol5 | ✓ | 0ns | 64B |
 | 800 | project_euler/problem_001/sol6 |   |  |  |
 | 801 | project_euler/problem_001/sol7 |   |  |  |
 | 802 | project_euler/problem_002/sol1 |   |  |  |
