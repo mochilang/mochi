@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
 Completed programs: 915/1077
-Last updated: 2025-08-12 14:00 +0700
+Last updated: 2025-08-12 14:03 +0700
 
 Checklist:
 
@@ -731,7 +731,7 @@ Checklist:
 | 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 183.317ms | 8.8 MB |
 | 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 183.317ms | 8.7 MB |
 | 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 183.317ms | 8.7 MB |
-| 725 | neural_network/activation_functions/mish | ✓ | 183.317ms | 8.7 MB |
+| 725 | neural_network/activation_functions/mish | ✓ | 183.317ms | 8.8 MB |
 | 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 183.317ms | 8.7 MB |
 | 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 183.317ms | 8.7 MB |
 | 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 183.317ms | 8.7 MB |
@@ -779,7 +779,7 @@ Checklist:
 | 770 | physics/grahams_law | ✓ | 8µs | 8.7 MB |
 | 771 | physics/horizontal_projectile_motion | ✓ | 5µs | 8.7 MB |
 | 772 | physics/hubble_parameter | ✓ | 5µs | 8.7 MB |
-| 773 | physics/ideal_gas_law | error |  |  |
+| 773 | physics/ideal_gas_law | error | 183.317ms | 8.7 MB |
 | 774 | physics/in_static_equilibrium | ✓ | 5µs | 8.7 MB |
 | 775 | physics/kinetic_energy | ✓ | 2µs | 8.7 MB |
 | 776 | physics/lens_formulae | ✓ | 2µs | 8.7 MB |
