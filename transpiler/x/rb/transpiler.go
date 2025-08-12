@@ -1965,11 +1965,11 @@ func (i *IntLit) emit(e *emitter) { fmt.Fprintf(e.w, "%d", i.Value) }
 type FloatLit struct{ Value float64 }
 
 func (f *FloatLit) emit(e *emitter) {
-	if math.Trunc(f.Value) == f.Value {
-		fmt.Fprintf(e.w, "%.1f", f.Value)
-	} else {
-		fmt.Fprintf(e.w, "%g", f.Value)
-	}
+        s := strconv.FormatFloat(f.Value, 'g', -1, 64)
+        if !strings.ContainsAny(s, ".eE") {
+                s += ".0"
+        }
+        io.WriteString(e.w, s)
 }
 
 type BoolLit struct{ Value bool }
