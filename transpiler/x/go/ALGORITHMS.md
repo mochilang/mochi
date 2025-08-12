@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 651/1077
-Last updated: 2025-08-12 12:40 +0700
+Completed programs: 652/1077
+Last updated: 2025-08-12 13:41 +0700
 
 Checklist:
 
@@ -696,7 +696,7 @@ Checklist:
 | 687 | maths/test_factorial |   |  |  |
 | 688 | maths/test_prime_check |   |  |  |
 | 689 | maths/three_sum |   |  |  |
-| 690 | maths/trapezoidal_rule |   |  |  |
+| 690 | maths/trapezoidal_rule | ✓ | 420.0µs | 1.25KB |
 | 691 | maths/triplet_sum |   |  |  |
 | 692 | maths/twin_prime |   |  |  |
 | 693 | maths/two_pointer |   |  |  |
