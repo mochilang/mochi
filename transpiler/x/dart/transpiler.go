@@ -7064,6 +7064,85 @@ func replaceVars(e Expr, vars map[string]Expr) Expr {
 		ex.Then = replaceVars(ex.Then, vars)
 		ex.Else = replaceVars(ex.Else, vars)
 		return ex
+	case *StrExpr:
+		ex.Value = replaceVars(ex.Value, vars)
+		return ex
+	case *LenExpr:
+		ex.X = replaceVars(ex.X, vars)
+		return ex
+	case *AppendExpr:
+		ex.List = replaceVars(ex.List, vars)
+		ex.Value = replaceVars(ex.Value, vars)
+		return ex
+	case *UnionExpr:
+		ex.Left = replaceVars(ex.Left, vars)
+		ex.Right = replaceVars(ex.Right, vars)
+		return ex
+	case *UnionAllExpr:
+		ex.Left = replaceVars(ex.Left, vars)
+		ex.Right = replaceVars(ex.Right, vars)
+		return ex
+	case *ExceptExpr:
+		ex.Left = replaceVars(ex.Left, vars)
+		ex.Right = replaceVars(ex.Right, vars)
+		return ex
+	case *IntersectExpr:
+		ex.Left = replaceVars(ex.Left, vars)
+		ex.Right = replaceVars(ex.Right, vars)
+		return ex
+	case *AvgExpr:
+		ex.List = replaceVars(ex.List, vars)
+		return ex
+	case *SumExpr:
+		ex.List = replaceVars(ex.List, vars)
+		return ex
+	case *MinExpr:
+		ex.List = replaceVars(ex.List, vars)
+		return ex
+	case *MaxExpr:
+		ex.List = replaceVars(ex.List, vars)
+		return ex
+	case *MapGetExpr:
+		ex.Map = replaceVars(ex.Map, vars)
+		ex.Key = replaceVars(ex.Key, vars)
+		if ex.Default != nil {
+			ex.Default = replaceVars(ex.Default, vars)
+		}
+		return ex
+	case *ValuesExpr:
+		ex.Map = replaceVars(ex.Map, vars)
+		return ex
+	case *SubstringExpr:
+		ex.Str = replaceVars(ex.Str, vars)
+		if ex.Start != nil {
+			ex.Start = replaceVars(ex.Start, vars)
+		}
+		if ex.End != nil {
+			ex.End = replaceVars(ex.End, vars)
+		}
+		return ex
+	case *ContainsExpr:
+		ex.Target = replaceVars(ex.Target, vars)
+		ex.Elem = replaceVars(ex.Elem, vars)
+		return ex
+	case *CastExpr:
+		ex.Value = replaceVars(ex.Value, vars)
+		return ex
+	case *CountExpr:
+		ex.X = replaceVars(ex.X, vars)
+		return ex
+	case *NotNilExpr:
+		ex.X = replaceVars(ex.X, vars)
+		return ex
+	case *PanicExpr:
+		ex.Arg = replaceVars(ex.Arg, vars)
+		return ex
+	case *SelectorExpr:
+		ex.Receiver = replaceVars(ex.Receiver, vars)
+		return ex
+	case *LambdaExpr:
+		ex.Body = replaceVars(ex.Body, vars)
+		return ex
 	default:
 		return ex
 	}

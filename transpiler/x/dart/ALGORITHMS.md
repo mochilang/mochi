@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-12 10:17 GMT+7
+Last updated: 2025-08-12 11:55 GMT+7
 
-## Algorithms Golden Test Checklist (892/1077)
+## Algorithms Golden Test Checklist (893/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 16.068ms | 2.7 MB |
@@ -744,7 +744,7 @@ Last updated: 2025-08-12 10:17 GMT+7
 | 735 | neural_network/simple_neural_network | ✓ | 118.805ms | 8.1 MB |
 | 736 | neural_network/two_hidden_layers_neural_network | ✓ | 20.845ms | 8.0 MB |
 | 737 | other/activity_selection | ✓ | 18.84ms | 10.4 MB |
-| 738 | other/alternative_list_arrange | error |  |  |
+| 738 | other/alternative_list_arrange | ✓ | 11.683ms | 2.4 MB |
 | 739 | other/bankers_algorithm | ✓ | 11.768ms | 4.4 MB |
 | 740 | other/davis_putnam_logemann_loveland | ✓ | 13.461ms | 3.8 MB |
 | 741 | other/doomsday | ✓ | 8.677ms | 3.1 MB |
