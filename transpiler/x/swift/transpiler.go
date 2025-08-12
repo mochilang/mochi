@@ -3184,14 +3184,14 @@ func convertFunDecl(env *types.Env, f *parser.FunStmt) (Stmt, error) {
 			pt = types.ResolveTypeRef(p.Type, env)
 		}
 		child.SetVar(p.Name, pt, true)
-		// Lists and maps in Mochi are reference types, but requiring
-		// callers to pass variables with `&` (inout) causes
-		// complications when immutable values are used at call sites.
-		// Instead of using Swift's `inout` for these container types,
-		// operate on a local copy when mutated. Only struct and union
-		// types still use `inout` to propagate mutations back to the
-		// caller.
-		useInOut := m && (types.IsStructType(pt) || types.IsUnionType(pt))
+		// Lists and maps in Mochi are reference types. Previously the
+		// transpiler avoided using Swift's `inout` for these container
+		// types and instead worked on a local copy, which meant
+		// mutations inside a function were not visible to callers. For
+		// algorithms that expect such mutations to propagate (e.g.
+		// mutating a parent list within a BFS routine), we now mark
+		// list and map parameters as `inout` as well.
+		useInOut := m && (types.IsStructType(pt) || types.IsUnionType(pt) || types.IsListType(pt) || types.IsMapType(pt))
 		paramTypes[i] = swiftTypeOf(pt)
 		if st, ok := pt.(types.StructType); ok {
 			if classStructs[st.Name] {
@@ -4618,18 +4618,18 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 					pt := swiftTypeOf(paramTypes[j])
 					if lit, ok := ae.(*LitExpr); ok && lit.Value == "nil" && pt == "Any" {
 						ae = &RawStmt{Code: "nil as Any?"}
-                                       } else if pt == "Int" {
-                                               srcT := swiftTypeOf(types.TypeOfExpr(a, env))
-                                               if srcT != "" && srcT != "Int" {
-                                                       ae = &CallExpr{Func: "_int", Args: []Expr{ae}}
-                                                       usesInt = true
-                                               }
-                                       } else if pt != "Any" && !(j < len(mutInfo) && mutInfo[j]) {
-                                               srcT := swiftTypeOf(types.TypeOfExpr(a, env))
-                                               if srcT != pt {
-                                                       ae = &CastExpr{Expr: ae, Type: pt + "!"}
-                                               }
-                                       }
+					} else if pt == "Int" {
+						srcT := swiftTypeOf(types.TypeOfExpr(a, env))
+						if srcT != "" && srcT != "Int" {
+							ae = &CallExpr{Func: "_int", Args: []Expr{ae}}
+							usesInt = true
+						}
+					} else if pt != "Any" && !(j < len(mutInfo) && mutInfo[j]) {
+						srcT := swiftTypeOf(types.TypeOfExpr(a, env))
+						if srcT != pt {
+							ae = &CastExpr{Expr: ae, Type: pt + "!"}
+						}
+					}
 				}
 				ce.Args = append(ce.Args, ae)
 			}

@@ -2,12 +2,12 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 769/1077
-Last updated: 2025-08-12 10:04 +0700
+Completed programs: 770/1077
+Last updated: 2025-08-12 11:18 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 2.345ms | 3.7 MB |
+| 1 | backtracking/all_combinations | ✓ | 1.031ms | 3.9 MB |
 | 2 | backtracking/all_permutations | ✓ | 1.383ms | 3.5 MB |
 | 3 | backtracking/all_subsequences | ✓ | 914µs | 3.4 MB |
 | 4 | backtracking/coloring | ✓ | 540µs | 3.3 MB |
@@ -726,7 +726,7 @@ Last updated: 2025-08-12 10:04 +0700
 | 717 | matrix/tests/test_matrix_operation | ✓ | 1.627ms | 3.9 MB |
 | 718 | matrix/validate_sudoku_board | ✓ | 860µs | 3.1 MB |
 | 719 | networking_flow/ford_fulkerson |   |  |  |
-| 720 | networking_flow/minimum_cut |   |  |  |
+| 720 | networking_flow/minimum_cut | ✓ | 1.13ms | 3.9 MB |
 | 721 | neural_network/activation_functions/binary_step | ✓ | 495µs | 3.1 MB |
 | 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 1.07ms | 3.7 MB |
 | 723 | neural_network/activation_functions/gaussian_error_linear_unit |   |  |  |
