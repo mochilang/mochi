@@ -1472,7 +1472,9 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			cast(b.Right, "BigInteger")
 			io.WriteString(w, ")")
 		case "%":
-			io.WriteString(w, ".remainder(")
+			// Kotlin's BigInteger.remainder can yield negative results,
+			// so prefer mod to mirror Mochi's non-negative semantics.
+			io.WriteString(w, ".mod(")
 			cast(b.Right, "BigInteger")
 			io.WriteString(w, ")")
 		case "==", "!=", "<", ">", "<=", ">=":
