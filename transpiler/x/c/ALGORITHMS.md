@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (292/1077) - Last updated 2025-08-11 21:16 +0700:
+Checklist of programs that currently transpile and run (312/1077) - Last updated 2025-08-11 22:22 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -556,32 +556,32 @@ Checklist of programs that currently transpile and run (292/1077) - Last updated
 | 549 | maths/chudnovsky_algorithm | ✓ | 432us | 1.7 MB |
 | 550 | maths/collatz_sequence | ✓ | 530us | 1.4 MB |
 | 551 | maths/combinations | ✓ | 754us | 1.6 MB |
-| 552 | maths/continued_fraction |  |  |  |
-| 553 | maths/decimal_isolate |  |  |  |
-| 554 | maths/decimal_to_fraction |  |  |  |
-| 555 | maths/dodecahedron |  |  |  |
-| 556 | maths/double_factorial |  |  |  |
+| 552 | maths/continued_fraction | ✓ | 253us | 1.5 MB |
+| 553 | maths/decimal_isolate | ✓ | 337us | 1.6 MB |
+| 554 | maths/decimal_to_fraction | ✓ | 472us | 1.7 MB |
+| 555 | maths/dodecahedron | ✓ | 404us | 1.7 MB |
+| 556 | maths/double_factorial | ✓ | 296us | 1.6 MB |
 | 557 | maths/dual_number_automatic_differentiation |  |  |  |
 | 558 | maths/entropy |  |  |  |
-| 559 | maths/euclidean_distance |  |  |  |
+| 559 | maths/euclidean_distance | ✓ | 534us | 1.6 MB |
 | 560 | maths/euler_method |  |  |  |
-| 561 | maths/euler_modified |  |  |  |
-| 562 | maths/eulers_totient |  |  |  |
-| 563 | maths/extended_euclidean_algorithm |  |  |  |
-| 564 | maths/factorial |  |  |  |
+| 561 | maths/euler_modified | ✓ | 320us | 1.6 MB |
+| 562 | maths/eulers_totient | ✓ | 276us | 1.6 MB |
+| 563 | maths/extended_euclidean_algorithm | ✓ | 302us | 1.6 MB |
+| 564 | maths/factorial | ✓ | 177us | 1.4 MB |
 | 565 | maths/factors |  |  |  |
-| 566 | maths/fast_inverse_sqrt |  |  |  |
-| 567 | maths/fermat_little_theorem |  |  |  |
+| 566 | maths/fast_inverse_sqrt | ✓ | 502us | 1.7 MB |
+| 567 | maths/fermat_little_theorem | ✓ | 295us | 1.5 MB |
 | 568 | maths/fibonacci |  |  |  |
-| 569 | maths/find_max |  |  |  |
-| 570 | maths/find_min |  |  |  |
-| 571 | maths/floor |  |  |  |
-| 572 | maths/gamma |  |  |  |
-| 573 | maths/gaussian |  |  |  |
-| 574 | maths/gcd_of_n_numbers |  |  |  |
+| 569 | maths/find_max | ✓ | 536us | 1.6 MB |
+| 570 | maths/find_min | ✓ | 328us | 1.6 MB |
+| 571 | maths/floor | ✓ | 518us | 1.5 MB |
+| 572 | maths/gamma | ✓ | 28.51ms | 1.5 MB |
+| 573 | maths/gaussian | ✓ | 327us | 1.6 MB |
+| 574 | maths/gcd_of_n_numbers | ✓ | 270us | 1.5 MB |
 | 575 | maths/geometric_mean |  |  |  |
-| 576 | maths/germain_primes |  |  |  |
-| 577 | maths/greatest_common_divisor |  |  |  |
+| 576 | maths/germain_primes | ✓ | 208us | 1.6 MB |
+| 577 | maths/greatest_common_divisor | ✓ | 289us | 1.5 MB |
 | 578 | maths/hardy_ramanujanalgo |  |  |  |
 | 579 | maths/integer_square_root |  |  |  |
 | 580 | maths/interquartile_range |  |  |  |

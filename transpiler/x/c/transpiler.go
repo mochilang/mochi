@@ -3828,11 +3828,14 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("}\n\n")
 	}
 	if needStrFloat {
-		buf.WriteString("static char* str_float(double v) {\n")
-		buf.WriteString("    char buf[64];\n")
-		buf.WriteString("    snprintf(buf, sizeof(buf), \"%g\", v);\n")
-		buf.WriteString("    return strdup(buf);\n")
-		buf.WriteString("}\n\n")
+               buf.WriteString("static char* str_float(double v) {\n")
+               buf.WriteString("    char buf[64];\n")
+               buf.WriteString("    snprintf(buf, sizeof(buf), \"%f\", v);\n")
+               buf.WriteString("    char *p = buf + strlen(buf) - 1;\n")
+               buf.WriteString("    while (p > buf && *p == '0') *p-- = '\\0';\n")
+               buf.WriteString("    if (p > buf && *p == '.') *p = '\\0';\n")
+               buf.WriteString("    return strdup(buf);\n")
+               buf.WriteString("}\n\n")
 	}
 	if needStrBigInt {
 		buf.WriteString("static char* str_bigint(const mpz_t v) {\n")

@@ -1,0 +1,81 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/maths/dual_number_automatic_differentiation.c: In function ‘make_dual’:
+/workspace/mochi/tests/algorithms/x/C/maths/dual_number_automatic_differentiation.c:89:36: warning: passing argument 1 of ‘list_append_long_long’ from incompatible pointer type [-Wincompatible-pointer-types]
+   89 |         ds = list_append_long_long(ds, &ds_len, 1.0);
+      |                                    ^~
+      |                                    |
+      |                                    double *
+/workspace/mochi/tests/algorithms/x/C/maths/dual_number_automatic_differentiation.c:62:52: note: expected ‘long long int *’ but argument is of type ‘double *’
+   62 | static long long* list_append_long_long(long long *arr, size_t *len, long long val) {
+      |                                         ~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/maths/dual_number_automatic_differentiation.c:89:12: warning: assignment to ‘double *’ from incompatible pointer type ‘long long int *’ [-Wincompatible-pointer-types]
+   89 |         ds = list_append_long_long(ds, &ds_len, 1.0);
+      |            ^
+/workspace/mochi/tests/algorithms/x/C/maths/dual_number_automatic_differentiation.c: In function ‘dual_add’:
+/workspace/mochi/tests/algorithms/x/C/maths/dual_number_automatic_differentiation.c:118:44: warning: passing argument 1 of ‘list_append_long_long’ from incompatible pointer type [-Wincompatible-pointer-types]
+  118 |             o_dual = list_append_long_long(o_dual, &o_dual_len, 1.0);
+      |                                            ^~~~~~
+      |                                            |
+      |                                            double *
+/workspace/mochi/tests/algorithms/x/C/maths/dual_number_automatic_differentiation.c:62:52: note: expected ‘long long int *’ but argument is of type ‘double *’
+   62 | static long long* list_append_long_long(long long *arr, size_t *len, long long val) {
+      |                                         ~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/maths/dual_number_automatic_differentiation.c:118:20: warning: assignment to ‘double *’ from incompatible pointer type ‘long long int *’ [-Wincompatible-pointer-types]
+  118 |             o_dual = list_append_long_long(o_dual, &o_dual_len, 1.0);
+      |                    ^
+/workspace/mochi/tests/algorithms/x/C/maths/dual_number_automatic_differentiation.c:126:48: warning: passing argument 1 of ‘list_append_long_long’ from incompatible pointer type [-Wincompatible-pointer-types]
+  126 |                 s_dual = list_append_long_long(s_dual, &s_dual_len, 1.0);
+      |                                                ^~~~~~
+      |                                                |
+      |                                                double *
+/workspace/mochi/tests/algorithms/x/C/maths/dual_number_automatic_differentiation.c:62:52: note: expected ‘long long int *’ but argument is of type ‘double *’
+   62 | static long long* list_append_long_long(long long *arr, size_t *len, long long val) {
+      |                                         ~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/maths/dual_number_automatic_differentiation.c:126:24: warning: assignment to ‘double *’ from incompatible pointer type ‘long long int *’ [-Wincompatible-pointer-types]
+  126 |                 s_dual = list_append_long_long(s_dual, &s_dual_len, 1.0);
+      |                        ^
+/workspace/mochi/tests/algorithms/x/C/maths/dual_number_automatic_differentiation.c: In function ‘dual_mul’:
+/workspace/mochi/tests/algorithms/x/C/maths/dual_number_automatic_differentiation.c:158:43: warning: passing argument 1 of ‘list_append_long_long’ from incompatible pointer type [-Wincompatible-pointer-types]
+  158 |         new_duals = list_append_long_long(new_duals, &new_duals_len, 0.0);
+      |                                           ^~~~~~~~~
+      |                                           |
+      |                                           double *
+/workspace/mochi/tests/algorithms/x/C/maths/dual_number_automatic_differentiation.c:62:52: note: expected ‘long long int *’ but argument is of type ‘double *’
+   62 | static long long* list_append_long_long(long long *arr, size_t *len, long long val) {
+      |                                         ~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/maths/dual_number_automatic_differentiation.c:158:19: warning: assignment to ‘double *’ from incompatible pointer type ‘long long int *’ [-Wincompatible-pointer-types]
+  158 |         new_duals = list_append_long_long(new_duals, &new_duals_len, 0.0);
+      |                   ^
+/workspace/mochi/tests/algorithms/x/C/maths/dual_number_automatic_differentiation.c: In function ‘differentiate’:
+/workspace/mochi/tests/algorithms/x/C/maths/dual_number_automatic_differentiation.c:226:24: error: incompatible types when initializing type ‘long long int’ using type ‘Dual’
+  226 |     long long result = func(d);
+      |                        ^~~~
+/workspace/mochi/tests/algorithms/x/C/maths/dual_number_automatic_differentiation.c:228:22: error: request for member ‘real’ in something not a structure or union
+  228 |         return result.real;
+      |                      ^
+/workspace/mochi/tests/algorithms/x/C/maths/dual_number_automatic_differentiation.c:230:18: error: request for member ‘duals’ in something not a structure or union
+  230 |     return result.duals[(int)({long long _mochi_idx = order - 1LL; _mochi_idx < 0 ? result.duals_len + _mochi_idx : _mochi_idx;})] * factorial(order);
+      |                  ^
+/workspace/mochi/tests/algorithms/x/C/maths/dual_number_automatic_differentiation.c:230:91: error: request for member ‘duals_len’ in something not a structure or union
+  230 |     return result.duals[(int)({long long _mochi_idx = order - 1LL; _mochi_idx < 0 ? result.duals_len + _mochi_idx : _mochi_idx;})] * factorial(order);
+      |                                                                                           ^
+/workspace/mochi/tests/algorithms/x/C/maths/dual_number_automatic_differentiation.c: In function ‘test_differentiate’:
+/workspace/mochi/tests/algorithms/x/C/maths/dual_number_automatic_differentiation.c:234:23: error: ‘f1’ undeclared (first use in this function); did you mean ‘_f1’?
+  234 |     if (differentiate(f1, 2.0, 2LL) != 2.0) {
+      |                       ^~
+      |                       _f1
+/workspace/mochi/tests/algorithms/x/C/maths/dual_number_automatic_differentiation.c:234:23: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/algorithms/x/C/maths/dual_number_automatic_differentiation.c:237:23: error: ‘f2’ undeclared (first use in this function)
+  237 |     if (differentiate(f2, 9.0, 2LL) != 196830.0) {
+      |                       ^~
+/workspace/mochi/tests/algorithms/x/C/maths/dual_number_automatic_differentiation.c:240:23: error: ‘f3’ undeclared (first use in this function)
+  240 |     if (differentiate(f3, 3.5, 4LL) != 7605.0) {
+      |                       ^~
+/workspace/mochi/tests/algorithms/x/C/maths/dual_number_automatic_differentiation.c:243:23: error: ‘f4’ undeclared (first use in this function)
+  243 |     if (differentiate(f4, 4.0, 3LL) != 0.0) {
+      |                       ^~
+/workspace/mochi/tests/algorithms/x/C/maths/dual_number_automatic_differentiation.c: In function ‘user_main’:
+/workspace/mochi/tests/algorithms/x/C/maths/dual_number_automatic_differentiation.c:254:32: error: ‘f’ undeclared (first use in this function); did you mean ‘_f’?
+  254 |     double res = differentiate(f, 9.0, 2LL);
+      |                                ^
+      |                                _f

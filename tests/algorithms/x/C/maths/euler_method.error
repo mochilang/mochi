@@ -1,0 +1,20 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/maths/euler_method.c: In function ‘explicit_euler’:
+/workspace/mochi/tests/algorithms/x/C/maths/euler_method.c:78:35: warning: passing argument 1 of ‘list_append_long_long’ from incompatible pointer type [-Wincompatible-pointer-types]
+   78 |         y = list_append_long_long(y, &y_len, 0.0);
+      |                                   ^
+      |                                   |
+      |                                   double *
+/workspace/mochi/tests/algorithms/x/C/maths/euler_method.c:48:52: note: expected ‘long long int *’ but argument is of type ‘double *’
+   48 | static long long* list_append_long_long(long long *arr, size_t *len, long long val) {
+      |                                         ~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/maths/euler_method.c:78:11: warning: assignment to ‘double *’ from incompatible pointer type ‘long long int *’ [-Wincompatible-pointer-types]
+   78 |         y = list_append_long_long(y, &y_len, 0.0);
+      |           ^
+/workspace/mochi/tests/algorithms/x/C/maths/euler_method.c: At top level:
+/workspace/mochi/tests/algorithms/x/C/maths/euler_method.c:119:8: error: redefinition of ‘f’
+  119 | double f(double x, double y) {
+      |        ^
+/workspace/mochi/tests/algorithms/x/C/maths/euler_method.c:108:8: note: previous definition of ‘f’ with type ‘double(double,  double)’
+  108 | double f(double x, double y) {
+      |        ^
