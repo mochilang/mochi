@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-12 10:23 GMT+7
+Last updated: 2025-08-12 11:53 GMT+7
 
-## Algorithms Golden Test Checklist (749/1077)
+## Algorithms Golden Test Checklist (748/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 50.25ms | 19.66MB |
@@ -726,7 +726,7 @@ Last updated: 2025-08-12 10:23 GMT+7
 | 717 | matrix/tests/test_matrix_operation | ✓ | 75.464ms | 25.25MB |
 | 718 | matrix/validate_sudoku_board | ✓ |  |  |
 | 719 | networking_flow/ford_fulkerson | ✓ |  |  |
-| 720 | networking_flow/minimum_cut | ✓ |  |  |
+| 720 | networking_flow/minimum_cut | ✓ | 77.986ms | 23.97MB |
 | 721 | neural_network/activation_functions/binary_step | ✓ | 56.957ms | 19.85MB |
 | 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 63.032ms | 20.59MB |
 | 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 65.63ms | 21.07MB |
