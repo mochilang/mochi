@@ -19,7 +19,7 @@ $__start_mem = memory_get_usage();
 $__start = _now();
   $base_url = 'https://downloadgram.net/wp-json/wppress/video-downloader/video?url=';
   function download_video($url) {
-  global $base_url;
+  global $base_url, $link, $sample_url;
   $request_url = $base_url . $url;
   return $request_url;
 };

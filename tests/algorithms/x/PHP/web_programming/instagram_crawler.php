@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -16,7 +31,10 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
-function index_of($s, $sub) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  function index_of($s, $sub) {
+  global $sample_script, $user;
   $i = 0;
   while ($i <= strlen($s) - strlen($sub)) {
   if (substr($s, $i, $i + strlen($sub) - $i) == $sub) {
@@ -25,8 +43,9 @@ function index_of($s, $sub) {
   $i = $i + 1;
 };
   return -1;
-}
-function parse_int($s) {
+};
+  function parse_int($s) {
+  global $sample_script, $user;
   $value = 0;
   $i = 0;
   while ($i < strlen($s)) {
@@ -34,8 +53,9 @@ function parse_int($s) {
   $i = $i + 1;
 };
   return $value;
-}
-function extract_string($text, $key) {
+};
+  function extract_string($text, $key) {
+  global $sample_script, $user;
   $pattern = '"' . $key . '":"';
   $start = index_of($text, $pattern) + strlen($pattern);
   $end = $start;
@@ -43,8 +63,9 @@ function extract_string($text, $key) {
   $end = $end + 1;
 };
   return substr($text, $start, $end - $start);
-}
-function extract_int($text, $key) {
+};
+  function extract_int($text, $key) {
+  global $sample_script, $user;
   $pattern = '"' . $key . '":{"count":';
   $start = index_of($text, $pattern) + strlen($pattern);
   $end = $start;
@@ -58,8 +79,9 @@ function extract_int($text, $key) {
   $digits = substr($text, $start, $end - $start);
   $num = parse_int($digits);
   return $num;
-}
-function extract_bool($text, $key) {
+};
+  function extract_bool($text, $key) {
+  global $sample_script, $user;
   $pattern = '"' . $key . '":';
   $start = index_of($text, $pattern) + strlen($pattern);
   $val = substr($text, $start, $start + 5 - $start);
@@ -68,18 +90,27 @@ function extract_bool($text, $key) {
   return true;
 }
   return false;
-}
-function extract_user_profile($script) {
+};
+  function extract_user_profile($script) {
+  global $sample_script, $user;
   return ['username' => extract_string($script, 'username'), 'full_name' => extract_string($script, 'full_name'), 'biography' => extract_string($script, 'biography'), 'business_email' => extract_string($script, 'business_email'), 'external_url' => extract_string($script, 'external_url'), 'edge_followed_by' => ['count' => extract_int($script, 'edge_followed_by')], 'edge_follow' => ['count' => extract_int($script, 'edge_follow')], 'edge_owner_to_timeline_media' => ['count' => extract_int($script, 'edge_owner_to_timeline_media')], 'profile_pic_url_hd' => extract_string($script, 'profile_pic_url_hd'), 'is_verified' => extract_bool($script, 'is_verified'), 'is_private' => extract_bool($script, 'is_private')];
-}
-$sample_script = '{"entry_data":{"ProfilePage":[{"graphql":{"user":{"username":"github","full_name":"GitHub","biography":"Built for developers.","business_email":"support@github.com","external_url":"https://github.com/readme","edge_followed_by":{"count":120000},"edge_follow":{"count":16},"edge_owner_to_timeline_media":{"count":150},"profile_pic_url_hd":"https://instagram.com/pic.jpg","is_verified":true,"is_private":false}}}]}}';
-$user = extract_user_profile($sample_script);
-echo rtrim($user['full_name'] . ' (' . $user['username'] . ') is ' . $user['biography']), PHP_EOL;
-echo rtrim('number_of_posts = ' . _str($user['edge_owner_to_timeline_media']['count'])), PHP_EOL;
-echo rtrim('number_of_followers = ' . _str($user['edge_followed_by']['count'])), PHP_EOL;
-echo rtrim('number_of_followings = ' . _str($user['edge_follow']['count'])), PHP_EOL;
-echo rtrim('email = ' . $user['business_email']), PHP_EOL;
-echo rtrim('website = ' . $user['external_url']), PHP_EOL;
-echo rtrim('profile_picture_url = ' . $user['profile_pic_url_hd']), PHP_EOL;
-echo rtrim('is_verified = ' . _str($user['is_verified'])), PHP_EOL;
-echo rtrim('is_private = ' . _str($user['is_private'])), PHP_EOL;
+};
+  $sample_script = '{"entry_data":{"ProfilePage":[{"graphql":{"user":{"username":"github","full_name":"GitHub","biography":"Built for developers.","business_email":"support@github.com","external_url":"https://github.com/readme","edge_followed_by":{"count":120000},"edge_follow":{"count":16},"edge_owner_to_timeline_media":{"count":150},"profile_pic_url_hd":"https://instagram.com/pic.jpg","is_verified":true,"is_private":false}}}]}}';
+  $user = extract_user_profile($sample_script);
+  echo rtrim($user['full_name'] . ' (' . $user['username'] . ') is ' . $user['biography']), PHP_EOL;
+  echo rtrim('number_of_posts = ' . _str($user['edge_owner_to_timeline_media']['count'])), PHP_EOL;
+  echo rtrim('number_of_followers = ' . _str($user['edge_followed_by']['count'])), PHP_EOL;
+  echo rtrim('number_of_followings = ' . _str($user['edge_follow']['count'])), PHP_EOL;
+  echo rtrim('email = ' . $user['business_email']), PHP_EOL;
+  echo rtrim('website = ' . $user['external_url']), PHP_EOL;
+  echo rtrim('profile_picture_url = ' . $user['profile_pic_url_hd']), PHP_EOL;
+  echo rtrim('is_verified = ' . _str($user['is_verified'])), PHP_EOL;
+  echo rtrim('is_private = ' . _str($user['is_private'])), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;
