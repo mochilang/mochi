@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
-Completed programs: 914/1077
-Last updated: 2025-08-12 12:29 +0700
+Completed programs: 915/1077
+Last updated: 2025-08-12 14:00 +0700
 
 Checklist:
 
@@ -696,20 +696,20 @@ Checklist:
 | 687 | maths/test_factorial | ✓ | 5µs | 8.7 MB |
 | 688 | maths/test_prime_check | ✓ | 5µs | 8.7 MB |
 | 689 | maths/three_sum | ✓ | 14µs | 8.7 MB |
-| 690 | maths/trapezoidal_rule | ✓ | 5µs | 8.7 MB |
-| 691 | maths/triplet_sum | ✓ | 8µs | 8.7 MB |
-| 692 | maths/twin_prime | ✓ | 5µs | 8.7 MB |
-| 693 | maths/two_pointer | ✓ | 10µs | 8.8 MB |
-| 694 | maths/two_sum | ✓ | 9µs | 8.7 MB |
-| 695 | maths/volume | ✓ | 5µs | 8.7 MB |
-| 696 | maths/zellers_congruence | ✓ | 13µs | 8.7 MB |
-| 697 | matrix/binary_search_matrix | ✓ | 14µs | 8.7 MB |
-| 698 | matrix/count_islands_in_matrix | ✓ | 13µs | 8.7 MB |
-| 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 557µs | 170.0 MB |
+| 690 | maths/trapezoidal_rule | ✓ | 183.317ms | 8.7 MB |
+| 691 | maths/triplet_sum | ✓ | 183.317ms | 8.7 MB |
+| 692 | maths/twin_prime | ✓ | 183.317ms | 8.7 MB |
+| 693 | maths/two_pointer | ✓ | 183.317ms | 8.7 MB |
+| 694 | maths/two_sum | ✓ | 183.317ms | 8.7 MB |
+| 695 | maths/volume | ✓ | 183.317ms | 8.7 MB |
+| 696 | maths/zellers_congruence | ✓ | 183.317ms | 8.7 MB |
+| 697 | matrix/binary_search_matrix | ✓ | 183.317ms | 8.7 MB |
+| 698 | matrix/count_islands_in_matrix | ✓ | 183.317ms | 8.7 MB |
+| 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 183.317ms | 170.2 MB |
 | 700 | matrix/count_paths | ✓ | 183.317ms | 8.7 MB |
-| 701 | matrix/cramers_rule_2x2 | ✓ | 183.317ms | 8.8 MB |
+| 701 | matrix/cramers_rule_2x2 | ✓ | 183.317ms | 8.7 MB |
 | 702 | matrix/inverse_of_matrix | ✓ | 183.317ms | 8.8 MB |
-| 703 | matrix/largest_square_area_in_matrix | ✓ | 183.317ms | 8.8 MB |
+| 703 | matrix/largest_square_area_in_matrix | ✓ | 183.317ms | 8.7 MB |
 | 704 | matrix/matrix_based_game | ✓ | 183.317ms | 8.7 MB |
 | 705 | matrix/matrix_class | ✓ | 183.317ms | 8.7 MB |
 | 706 | matrix/matrix_equalization | ✓ | 183.317ms | 8.7 MB |
@@ -720,7 +720,7 @@ Checklist:
 | 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ | 183.317ms | 8.7 MB |
 | 712 | matrix/pascal_triangle | ✓ | 183.317ms | 8.7 MB |
 | 713 | matrix/rotate_matrix | ✓ | 183.317ms | 8.7 MB |
-| 714 | matrix/searching_in_sorted_matrix | ✓ | 183.317ms | 8.7 MB |
+| 714 | matrix/searching_in_sorted_matrix | ✓ | 183.317ms | 8.8 MB |
 | 715 | matrix/sherman_morrison | ✓ | 183.317ms | 8.7 MB |
 | 716 | matrix/spiral_print | ✓ | 183.317ms | 8.7 MB |
 | 717 | matrix/tests/test_matrix_operation | ✓ | 183.317ms | 8.7 MB |
@@ -728,23 +728,23 @@ Checklist:
 | 719 | networking_flow/ford_fulkerson | ✓ | 183.317ms | 8.7 MB |
 | 720 | networking_flow/minimum_cut | ✓ | 183.317ms | 8.7 MB |
 | 721 | neural_network/activation_functions/binary_step | ✓ | 183.317ms | 8.7 MB |
-| 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 183.317ms | 8.7 MB |
+| 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 183.317ms | 8.8 MB |
 | 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 183.317ms | 8.7 MB |
 | 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 183.317ms | 8.7 MB |
 | 725 | neural_network/activation_functions/mish | ✓ | 183.317ms | 8.7 MB |
 | 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 183.317ms | 8.7 MB |
 | 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 183.317ms | 8.7 MB |
-| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 183.317ms | 8.8 MB |
+| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 183.317ms | 8.7 MB |
 | 729 | neural_network/activation_functions/softplus | error |  |  |
 | 730 | neural_network/activation_functions/squareplus | ✓ | 183.317ms | 8.7 MB |
-| 731 | neural_network/activation_functions/swish | ✓ | 183.317ms | 8.7 MB |
+| 731 | neural_network/activation_functions/swish | ✓ | 183.317ms | 8.8 MB |
 | 732 | neural_network/back_propagation_neural_network | ✓ | 183.317ms | 8.7 MB |
 | 733 | neural_network/convolution_neural_network | ✓ | 183.317ms | 8.8 MB |
 | 734 | neural_network/input_data | error | 5µs | 8.7 MB |
-| 735 | neural_network/simple_neural_network | ✓ | 183.317ms | 8.7 MB |
-| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 183.317ms | 8.8 MB |
+| 735 | neural_network/simple_neural_network | ✓ | 183.317ms | 8.8 MB |
+| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 183.317ms | 8.7 MB |
 | 737 | other/activity_selection | ✓ | 183.317ms | 8.7 MB |
-| 738 | other/alternative_list_arrange | error |  |  |
+| 738 | other/alternative_list_arrange | ✓ | 183.317ms | 8.7 MB |
 | 739 | other/bankers_algorithm | ✓ | 183.317ms | 8.7 MB |
 | 740 | other/davis_putnam_logemann_loveland | ✓ | 3µs | 8.7 MB |
 | 741 | other/doomsday | ✓ | 183.317ms | 8.7 MB |

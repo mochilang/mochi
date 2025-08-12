@@ -467,6 +467,9 @@ func (s *LetStmt) emit(w io.Writer) {
 	if s.Value != nil {
 		fmt.Fprint(w, " = ")
 		s.Value.emit(w)
+		if s.Type == "ArrayBuffer[Any]" {
+			fmt.Fprintf(w, ".asInstanceOf[%s]", s.Type)
+		}
 	}
 }
 
@@ -592,6 +595,9 @@ func (s *VarStmt) emit(w io.Writer) {
 		}
 		fmt.Fprint(w, " = ")
 		s.Value.emit(w)
+		if typ == "ArrayBuffer[Any]" {
+			fmt.Fprintf(w, ".asInstanceOf[%s]", typ)
+		}
 	} else if typ != "" {
 		if def := defaultExpr(typ); def != nil {
 			fmt.Fprint(w, " = ")
