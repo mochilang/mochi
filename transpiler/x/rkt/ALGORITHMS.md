@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Racket code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Racket`.
-Last updated: 2025-08-12 05:45 UTC
+Last updated: 2025-08-12 07:00 UTC
 
-## Algorithms Golden Test Checklist (819/1077)
+## Algorithms Golden Test Checklist (865/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 39µs | 18.9 KB |
@@ -696,48 +696,48 @@ Last updated: 2025-08-12 05:45 UTC
 | 687 | maths/test_factorial |   |  |  |
 | 688 | maths/test_prime_check |   |  |  |
 | 689 | maths/three_sum |   |  |  |
-| 690 | maths/trapezoidal_rule |   |  |  |
-| 691 | maths/triplet_sum |   |  |  |
-| 692 | maths/twin_prime |   |  |  |
-| 693 | maths/two_pointer |   |  |  |
-| 694 | maths/two_sum |   |  |  |
-| 695 | maths/volume |   |  |  |
-| 696 | maths/zellers_congruence |   |  |  |
-| 697 | matrix/binary_search_matrix |   |  |  |
+| 690 | maths/trapezoidal_rule | ✓ | 23µs | 1.8 KB |
+| 691 | maths/triplet_sum | ✓ | 91µs | 116.8 KB |
+| 692 | maths/twin_prime | ✓ | 19µs | 12.4 KB |
+| 693 | maths/two_pointer | ✓ | 41µs | 46.8 KB |
+| 694 | maths/two_sum | ✓ | 26µs | 3.3 KB |
+| 695 | maths/volume | ✓ | 101µs | 28.8 KB |
+| 696 | maths/zellers_congruence | ✓ | 62µs | 45.5 KB |
+| 697 | matrix/binary_search_matrix | ✓ | 45µs | 16.3 KB |
 | 698 | matrix/count_islands_in_matrix | ✓ | 330µs | 480.0 KB |
-| 699 | matrix/count_negative_numbers_in_sorted_matrix |   |  |  |
+| 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ |  |  |
 | 700 | matrix/count_paths | ✓ | 161µs | 96.7 KB |
-| 701 | matrix/cramers_rule_2x2 |   |  |  |
-| 702 | matrix/inverse_of_matrix |   |  |  |
-| 703 | matrix/largest_square_area_in_matrix |   |  |  |
-| 704 | matrix/matrix_based_game |   |  |  |
-| 705 | matrix/matrix_class |   |  |  |
-| 706 | matrix/matrix_equalization |   |  |  |
-| 707 | matrix/matrix_multiplication_recursion |   |  |  |
-| 708 | matrix/matrix_operation |   |  |  |
-| 709 | matrix/max_area_of_island |   |  |  |
-| 710 | matrix/median_matrix |   |  |  |
-| 711 | matrix/nth_fibonacci_using_matrix_exponentiation |   |  |  |
-| 712 | matrix/pascal_triangle |   |  |  |
-| 713 | matrix/rotate_matrix |   |  |  |
-| 714 | matrix/searching_in_sorted_matrix |   |  |  |
-| 715 | matrix/sherman_morrison |   |  |  |
-| 716 | matrix/spiral_print |   |  |  |
-| 717 | matrix/tests/test_matrix_operation |   |  |  |
-| 718 | matrix/validate_sudoku_board |   |  |  |
-| 719 | networking_flow/ford_fulkerson |   |  |  |
+| 701 | matrix/cramers_rule_2x2 | ✓ | 33µs | 4.7 KB |
+| 702 | matrix/inverse_of_matrix | ✓ | 125µs | 16.7 KB |
+| 703 | matrix/largest_square_area_in_matrix | ✓ | 57µs | 49.3 KB |
+| 704 | matrix/matrix_based_game | ✓ | 178µs | 190.9 KB |
+| 705 | matrix/matrix_class | ✓ | 3.123ms |  |
+| 706 | matrix/matrix_equalization | ✓ | 83µs | 135.0 KB |
+| 707 | matrix/matrix_multiplication_recursion | ✓ | 99µs | 75.5 KB |
+| 708 | matrix/matrix_operation | ✓ | 295µs | 305.0 KB |
+| 709 | matrix/max_area_of_island | ✓ | 224µs | 334.7 KB |
+| 710 | matrix/median_matrix | ✓ | 45µs | 47.4 KB |
+| 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ | 494µs | 984.8 KB |
+| 712 | matrix/pascal_triangle | ✓ | 61µs | 50.6 KB |
+| 713 | matrix/rotate_matrix | ✓ | 133µs | 104.9 KB |
+| 714 | matrix/searching_in_sorted_matrix | ✓ | 54µs | 15.3 KB |
+| 715 | matrix/sherman_morrison | ✓ | 254µs | 96.2 KB |
+| 716 | matrix/spiral_print | ✓ | 71µs | 33.8 KB |
+| 717 | matrix/tests/test_matrix_operation | ✓ | 124µs | 73.8 KB |
+| 718 | matrix/validate_sudoku_board | ✓ | 59µs | 24.8 KB |
+| 719 | networking_flow/ford_fulkerson | ✓ |  |  |
 | 720 | networking_flow/minimum_cut |   |  |  |
-| 721 | neural_network/activation_functions/binary_step | ✓ | 21µs | 5.5 KB |
-| 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 85µs | 84.2 KB |
+| 721 | neural_network/activation_functions/binary_step | ✓ | 24µs | 5.2 KB |
+| 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 74µs | 62.2 KB |
 | 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 57µs | 84.4 KB |
 | 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 35µs | 6.7 KB |
 | 725 | neural_network/activation_functions/mish | ✓ | 107µs | 335.5 KB |
 | 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 25µs | 4.5 KB |
 | 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 34µs | 9.8 KB |
-| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent |   |  |  |
+| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 145µs | 243.1 KB |
 | 729 | neural_network/activation_functions/softplus |   |  |  |
 | 730 | neural_network/activation_functions/squareplus | ✓ | 59µs | 87.6 KB |
-| 731 | neural_network/activation_functions/swish |   |  |  |
+| 731 | neural_network/activation_functions/swish | ✓ | 129µs | 235.0 KB |
 | 732 | neural_network/back_propagation_neural_network | ✓ | 2.305274s |  |
 | 733 | neural_network/convolution_neural_network | ✓ | 8.123ms | 2.8 MB |
 | 734 | neural_network/input_data | ✓ | 72µs | 57.6 KB |
@@ -767,7 +767,7 @@ Last updated: 2025-08-12 05:45 UTC
 | 758 | other/sdes | ✓ | 72µs | 132.0 KB |
 | 759 | other/tower_of_hanoi | ✓ | 14µs | 11.5 KB |
 | 760 | other/word_search | ✓ | 260µs | 530.6 KB |
-| 761 | physics/altitude_pressure |   | 54µs | 90.4 KB |
+| 761 | physics/altitude_pressure | ✓ | 62µs | 90.6 KB |
 | 762 | physics/archimedes_principle_of_buoyant_force | ✓ | 2µs | 512 B |
 | 763 | physics/basic_orbital_capture |   |  |  |
 | 764 | physics/casimir_effect | ✓ | 55µs | 13.1 KB |
@@ -779,12 +779,12 @@ Last updated: 2025-08-12 05:45 UTC
 | 770 | physics/grahams_law | ✓ | 38µs | 45.8 KB |
 | 771 | physics/horizontal_projectile_motion | ✓ | 32µs | 18.6 KB |
 | 772 | physics/hubble_parameter | ✓ | 69µs | 39.2 KB |
-| 773 | physics/ideal_gas_law |   |  |  |
+| 773 | physics/ideal_gas_law | ✓ | 37µs | 6.6 KB |
 | 774 | physics/in_static_equilibrium | ✓ | 17µs | 11.2 KB |
 | 775 | physics/kinetic_energy | ✓ | 83µs | 7.4 KB |
 | 776 | physics/lens_formulae | ✓ | 34µs | 9.3 KB |
 | 777 | physics/lorentz_transformation_four_vector | ✓ | 124µs | 62.6 KB |
-| 778 | physics/malus_law |   |  |  |
+| 778 | physics/malus_law | ✓ | 30µs | 4.0 KB |
 | 779 | physics/mass_energy_equivalence | ✓ | 50µs | 15.9 KB |
 | 780 | physics/mirror_formulae | ✓ | 43µs | 14.5 KB |
 | 781 | physics/n_body_simulation |   |  |  |
@@ -856,19 +856,19 @@ Last updated: 2025-08-12 05:45 UTC
 | 847 | project_euler/problem_021/sol1 | ✓ | 310.23ms | 5.0 MB |
 | 848 | project_euler/problem_022/sol1 | ✓ | 44µs | 4.8 KB |
 | 849 | project_euler/problem_022/sol2 |   |  |  |
-| 850 | project_euler/problem_023/sol1 |   |  |  |
-| 851 | project_euler/problem_024/sol1 |   |  |  |
-| 852 | project_euler/problem_025/sol1 |   |  |  |
-| 853 | project_euler/problem_025/sol2 |   |  |  |
-| 854 | project_euler/problem_025/sol3 |   |  |  |
-| 855 | project_euler/problem_026/sol1 |   |  |  |
-| 856 | project_euler/problem_027/sol1 |   |  |  |
-| 857 | project_euler/problem_028/sol1 |   |  |  |
-| 858 | project_euler/problem_029/sol1 |   |  |  |
-| 859 | project_euler/problem_030/sol1 |   |  |  |
-| 860 | project_euler/problem_031/sol1 |   |  |  |
-| 861 | project_euler/problem_031/sol2 |   |  |  |
-| 862 | project_euler/problem_032/sol32 |   |  |  |
+| 850 | project_euler/problem_023/sol1 | ✓ |  |  |
+| 851 | project_euler/problem_024/sol1 | ✓ | 31µs | 30.4 KB |
+| 852 | project_euler/problem_025/sol1 | ✓ | 35µs | 2.8 KB |
+| 853 | project_euler/problem_025/sol2 | ✓ | 37µs | 2.3 KB |
+| 854 | project_euler/problem_025/sol3 | ✓ | 2.530582s |  |
+| 855 | project_euler/problem_026/sol1 | ✓ | 2.63492s |  |
+| 856 | project_euler/problem_027/sol1 | ✓ | 949.725ms | 1.3 MB |
+| 857 | project_euler/problem_028/sol1 | ✓ | 83µs | 289.6 KB |
+| 858 | project_euler/problem_029/sol1 | ✓ | 41µs | 2.8 KB |
+| 859 | project_euler/problem_030/sol1 | ✓ | 1.866481s |  |
+| 860 | project_euler/problem_031/sol1 | ✓ | 62µs | 8.5 KB |
+| 861 | project_euler/problem_031/sol2 | ✓ | 762.701ms | 4.1 MB |
+| 862 | project_euler/problem_032/sol32 | ✓ | 3.943662s |  |
 | 863 | project_euler/problem_033/sol1 |   |  |  |
 | 864 | project_euler/problem_034/sol1 |   |  |  |
 | 865 | project_euler/problem_035/sol1 |   |  |  |

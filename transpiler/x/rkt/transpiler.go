@@ -3348,6 +3348,10 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 			}
 			return &CallExpr{Func: "_parse-int-str", Args: []Expr{v0, v1}}, nil
 		}
+	case "to_float":
+		if len(args) == 1 {
+			return &CallExpr{Func: "float", Args: args}, nil
+		}
 	case "min":
 		if len(args) == 1 {
 			return &MinExpr{Arg: args[0]}, nil
