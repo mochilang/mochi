@@ -1,13 +1,13 @@
-/workspace/mochi/tests/algorithms/x/Erlang/linear_algebra/src/test_linear_algebra.erl:105:5: Warning: variable 'Neg_3' exported from 'case' (line 85, column 9)
-%  105| {N, Neg_3, Num_4, Res_2} = Fun(N, Neg_3, Num_3, Res),
+/workspace/mochi/tests/algorithms/x/Erlang/linear_algebra/src/test_linear_algebra.erl:124:5: Warning: variable 'Neg_3' exported from 'case' (line 104, column 9)
+%  124| {N, Neg_3, Num_4, Res_2} = Fun(N, Neg_3, Num_3, Res),
 %     |     ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/linear_algebra/src/test_linear_algebra.erl:144:30: Warning: variable 'Neg_6' exported from 'case' (line 118, column 9)
-%  144| {Dec, Frac_3, I_2, Int_part, Neg_6, Num_7, Res_7, X} = Fun_2(Dec, Frac, I, Int_part, Neg_6, Num_7, Res_6, X),
+/workspace/mochi/tests/algorithms/x/Erlang/linear_algebra/src/test_linear_algebra.erl:163:30: Warning: variable 'Neg_6' exported from 'case' (line 137, column 9)
+%  163| {Dec, Frac_3, I_2, Int_part, Neg_6, Num_7, Res_7, X} = Fun_2(Dec, Frac, I, Int_part, Neg_6, Num_7, Res_6, X),
 %     |                              ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/linear_algebra/src/test_linear_algebra.erl:144:37: Warning: variable 'Num_7' exported from 'case' (line 118, column 9)
-%  144| {Dec, Frac_3, I_2, Int_part, Neg_6, Num_7, Res_7, X} = Fun_2(Dec, Frac, I, Int_part, Neg_6, Num_7, Res_6, X),
+/workspace/mochi/tests/algorithms/x/Erlang/linear_algebra/src/test_linear_algebra.erl:163:37: Warning: variable 'Num_7' exported from 'case' (line 137, column 9)
+%  163| {Dec, Frac_3, I_2, Int_part, Neg_6, Num_7, Res_7, X} = Fun_2(Dec, Frac, I, Int_part, Neg_6, Num_7, Res_6, X),
 %     |                                     ^
 
 "component0 ok"
