@@ -38,17 +38,35 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function to_float(x: integer): real;
+begin
+  to_float := x;
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  b_value: real;
   x: real;
+  d_value: real;
+  a_value: real;
+  b_value: real;
   vector: RealArray;
   c_value: real;
-  a_value: real;
-  d_value: real;
 function exp(x: real): real; forward;
 function soboleva_modified_hyperbolic_tangent(vector: RealArray; a_value: real; b_value: real; c_value: real; d_value: real): RealArray; forward;
 procedure main(); forward;

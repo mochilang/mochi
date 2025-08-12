@@ -39,7 +39,21 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
 function contains(xs: array of integer; v: integer): boolean;
+var i: integer;
+begin
+  for i := 0 to High(xs) do begin
+    if xs[i] = v then begin
+      contains := true; exit;
+    end;
+  end;
+  contains := false;
+end;
+function contains(xs: array of string; v: string): boolean;
 var i: integer;
 begin
   for i := 0 to High(xs) do begin

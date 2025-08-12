@@ -2,7 +2,6 @@
 program Main;
 uses SysUtils;
 type RealArray = array of real;
-type LayerArray = array of Layer;
 type RealArrayArray = array of RealArray;
 type Layer = record
   units: integer;
@@ -16,6 +15,7 @@ type Data = record
   x: array of RealArray;
   y: array of RealArray;
 end;
+type LayerArray = array of Layer;
 var _nowSeed: int64 = 0;
 var _nowSeeded: boolean = false;
 procedure init_now();
@@ -52,35 +52,53 @@ begin
   writeln(msg);
   halt(1);
 end;
+procedure error(msg: string);
+begin
+  panic(msg);
+end;
+function to_float(x: integer): real;
+begin
+  to_float := x;
+end;
+procedure json(xs: array of real);
+var i: integer;
+begin
+  write('[');
+  for i := 0 to High(xs) do begin
+    write(xs[i]);
+    if i < High(xs) then write(', ');
+  end;
+  writeln(']');
+end;
 var
   bench_start_0: integer;
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
   seed: integer;
-  x: RealArray;
-  v: RealArray;
-  vec: RealArray;
-  mat: RealArrayArray;
-  b: RealArrayArray;
-  y: RealArray;
-  out: RealArray;
-  a: RealArrayArray;
-  s: real;
-  back_units: integer;
   r: integer;
-  xdata: RealArrayArray;
-  rounds: integer;
-  units: integer;
-  grad: RealArray;
-  ydata: RealArrayArray;
+  mat: RealArrayArray;
   layers: LayerArray;
-  c: integer;
-  n: integer;
+  rounds: integer;
   z: real;
   lr: real;
-  acc: real;
+  c: integer;
+  v: RealArray;
+  grad: RealArray;
+  x: RealArray;
+  out_: RealArray;
+  vec: RealArray;
+  a: RealArrayArray;
+  s: real;
+  y: RealArray;
   yhat: RealArray;
+  xdata: RealArrayArray;
+  n: integer;
+  acc: real;
+  b: RealArrayArray;
+  units: integer;
+  ydata: RealArrayArray;
+  back_units: integer;
 function makeData(x: RealArrayArray; y: RealArrayArray): Data; forward;
 function makeLayer(units: integer; weight: RealArrayArray; bias: RealArray; output: RealArray; xdata: RealArray; learn_rate: real): Layer; forward;
 function rand(): integer; forward;
@@ -88,7 +106,7 @@ function random(): real; forward;
 function expApprox(x: real): real; forward;
 function sigmoid(z: real): real; forward;
 function sigmoid_vec(v: RealArray): RealArray; forward;
-function sigmoid_derivative(out: RealArray): RealArray; forward;
+function sigmoid_derivative(sigmoid_derivative_out_: RealArray): RealArray; forward;
 function random_vector(n: integer): RealArray; forward;
 function random_matrix(r: integer; c: integer): RealArrayArray; forward;
 function matvec(mat: RealArrayArray; vec: RealArray): RealArray; forward;
@@ -174,7 +192,7 @@ begin
 end;
   exit(sigmoid_vec_res);
 end;
-function sigmoid_derivative(out: RealArray): RealArray;
+function sigmoid_derivative(sigmoid_derivative_out_: RealArray): RealArray;
 var
   sigmoid_derivative_res: array of real;
   sigmoid_derivative_i: integer;
@@ -182,8 +200,8 @@ var
 begin
   sigmoid_derivative_res := [];
   sigmoid_derivative_i := 0;
-  while sigmoid_derivative_i < Length(out) do begin
-  sigmoid_derivative_val := out[sigmoid_derivative_i];
+  while sigmoid_derivative_i < Length(out_) do begin
+  sigmoid_derivative_val := out_[sigmoid_derivative_i];
   sigmoid_derivative_res := concat(sigmoid_derivative_res, [sigmoid_derivative_val * (1 - sigmoid_derivative_val)]);
   sigmoid_derivative_i := sigmoid_derivative_i + 1;
 end;
@@ -445,7 +463,7 @@ function train(layers: LayerArray; xdata: RealArrayArray; ydata: RealArrayArray;
 var
   train_r: integer;
   train_i: integer;
-  train_out: array of real;
+  train_out_: array of real;
   train_grad: RealArray;
 begin
   train_r := 0;
@@ -453,8 +471,8 @@ begin
   train_i := 0;
   while train_i < Length(xdata) do begin
   layers := forward(layers, xdata[train_i]);
-  train_out := layers[Length(layers) - 1].output;
-  train_grad := calc_gradient(ydata[train_i], train_out);
+  train_out_ := layers[Length(layers) - 1].output;
+  train_grad := calc_gradient(ydata[train_i], train_out_);
   layers := backward(layers, train_grad);
   train_i := train_i + 1;
 end;
