@@ -4527,7 +4527,7 @@ func Emit(w io.Writer, p *Program) error {
 	}
 	if useStr {
 		if _, err := io.WriteString(w, "String _str(dynamic v) {"+
-			" if (v is double && v == v.roundToDouble()) {"+
+			" if (v is double && v.abs() <= 9007199254740991 && v == v.roundToDouble()) {"+
 			" var i = v.toInt();"+
 			" if (i == 0) return '0';"+
 			" return i.toString();"+
