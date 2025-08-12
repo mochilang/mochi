@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
-Completed programs: 909/1077
-Last updated: 2025-08-12 07:47 +0700
+Completed programs: 914/1077
+Last updated: 2025-08-12 08:38 +0700
 
 Checklist:
 
@@ -456,57 +456,57 @@ Checklist:
 | 447 | graphs/multi_heuristic_astar | ✓ | 8µs | 8.7 MB |
 | 448 | graphs/page_rank | ✓ | 10µs | 8.7 MB |
 | 449 | graphs/prim | ✓ | 12µs | 8.7 MB |
-| 450 | graphs/random_graph_generator | ✓ | 9µs | 8.7 MB |
-| 451 | graphs/scc_kosaraju | ✓ | 6µs | 8.8 MB |
-| 452 | graphs/strongly_connected_components | error |  |  |
-| 453 | graphs/tarjans_scc | error |  |  |
-| 454 | graphs/tests/test_min_spanning_tree_kruskal | ✓ | 12µs | 8.7 MB |
-| 455 | graphs/tests/test_min_spanning_tree_prim | ✓ | 25µs | 8.7 MB |
-| 456 | greedy_methods/best_time_to_buy_and_sell_stock | ✓ | 4µs | 8.7 MB |
-| 457 | greedy_methods/fractional_cover_problem | ✓ | 10µs | 8.8 MB |
+| 450 | graphs/random_graph_generator | ✓ | 41µs | 8.7 MB |
+| 451 | graphs/scc_kosaraju | ✓ | 9µs | 8.7 MB |
+| 452 | graphs/strongly_connected_components | ✓ | 12µs | 8.7 MB |
+| 453 | graphs/tarjans_scc | ✓ | 9µs | 8.7 MB |
+| 454 | graphs/tests/test_min_spanning_tree_kruskal | ✓ | 13µs | 8.7 MB |
+| 455 | graphs/tests/test_min_spanning_tree_prim | ✓ | 16µs | 8.7 MB |
+| 456 | greedy_methods/best_time_to_buy_and_sell_stock | ✓ | 5µs | 8.7 MB |
+| 457 | greedy_methods/fractional_cover_problem | ✓ | 10µs | 8.7 MB |
 | 458 | greedy_methods/fractional_knapsack | ✓ | 2µs | 8.7 MB |
-| 459 | greedy_methods/fractional_knapsack_2 | ✓ | 5µs | 8.7 MB |
-| 460 | greedy_methods/gas_station | error |  |  |
-| 461 | greedy_methods/minimum_coin_change | ✓ | 4µs | 8.7 MB |
-| 462 | greedy_methods/minimum_waiting_time | ✓ | 4µs | 8.7 MB |
-| 463 | greedy_methods/optimal_merge_pattern | ✓ | 4µs | 8.7 MB |
-| 464 | greedy_methods/smallest_range | ✓ | 5µs | 8.7 MB |
-| 465 | hashes/adler32 | ✓ | 6µs | 8.7 MB |
-| 466 | hashes/chaos_machine | ✓ | 35µs | 8.8 MB |
-| 467 | hashes/djb2 | ✓ | 8µs | 8.7 MB |
-| 468 | hashes/elf | error |  |  |
-| 469 | hashes/enigma_machine | ✓ | 3µs | 8.7 MB |
+| 459 | greedy_methods/fractional_knapsack_2 | ✓ | 7µs | 8.7 MB |
+| 460 | greedy_methods/gas_station | ✓ | 3µs | 8.7 MB |
+| 461 | greedy_methods/minimum_coin_change | ✓ | 5µs | 8.7 MB |
+| 462 | greedy_methods/minimum_waiting_time | ✓ | 6µs | 8.7 MB |
+| 463 | greedy_methods/optimal_merge_pattern | ✓ | 6µs | 8.7 MB |
+| 464 | greedy_methods/smallest_range | ✓ | 10µs | 8.7 MB |
+| 465 | hashes/adler32 | ✓ | 5µs | 8.7 MB |
+| 466 | hashes/chaos_machine | ✓ | 34µs | 8.7 MB |
+| 467 | hashes/djb2 | ✓ | 7µs | 8.7 MB |
+| 468 | hashes/elf | ✓ | 10µs | 8.7 MB |
+| 469 | hashes/enigma_machine | ✓ | 2µs | 8.7 MB |
 | 470 | hashes/fletcher16 | ✓ |  |  |
-| 471 | hashes/hamming_code |   |  |  |
-| 472 | hashes/luhn | ✓ | 7µs | 8.7 MB |
+| 471 | hashes/hamming_code | ✓ | 22µs | 8.7 MB |
+| 472 | hashes/luhn | ✓ | 5µs | 8.7 MB |
 | 473 | hashes/md5 | ✓ |  |  |
-| 474 | hashes/sdbm | ✓ | 11µs | 8.7 MB |
-| 475 | hashes/sha1 | ✓ | 46µs | 8.7 MB |
-| 476 | hashes/sha256 | ✓ | 43µs | 8.9 MB |
-| 477 | knapsack/greedy_knapsack | ✓ | 13µs | 8.7 MB |
-| 478 | knapsack/knapsack | ✓ | 6µs | 8.7 MB |
+| 474 | hashes/sdbm | ✓ | 7µs | 8.7 MB |
+| 475 | hashes/sha1 | ✓ | 35µs | 8.7 MB |
+| 476 | hashes/sha256 | ✓ | 29µs | 8.9 MB |
+| 477 | knapsack/greedy_knapsack | ✓ | 10µs | 8.7 MB |
+| 478 | knapsack/knapsack | ✓ | 5µs | 8.7 MB |
 | 479 | knapsack/recursive_approach_knapsack | ✓ | 5µs | 8.7 MB |
-| 480 | knapsack/tests/test_greedy_knapsack | ✓ | 11µs | 8.7 MB |
+| 480 | knapsack/tests/test_greedy_knapsack | ✓ | 7µs | 8.7 MB |
 | 481 | knapsack/tests/test_knapsack | ✓ | 5µs | 8.7 MB |
-| 482 | linear_algebra/gaussian_elimination | ✓ | 12µs | 8.7 MB |
-| 483 | linear_algebra/jacobi_iteration_method | ✓ | 4µs | 8.7 MB |
-| 484 | linear_algebra/lu_decomposition | ✓ | 6µs | 8.7 MB |
-| 485 | linear_algebra/matrix_inversion | ✓ | 6µs | 8.7 MB |
-| 486 | linear_algebra/src/conjugate_gradient | ✓ | 4µs | 8.7 MB |
-| 487 | linear_algebra/src/gaussian_elimination_pivoting | ✓ | 5µs | 8.7 MB |
-| 488 | linear_algebra/src/lib | ✓ | 10µs | 8.7 MB |
-| 489 | linear_algebra/src/polynom_for_points | ✓ | 18µs | 8.7 MB |
-| 490 | linear_algebra/src/power_iteration | ✓ | 5µs | 8.7 MB |
-| 491 | linear_algebra/src/rank_of_matrix | ✓ | 1µs | 8.7 MB |
-| 492 | linear_algebra/src/rayleigh_quotient | ✓ | 5µs | 8.7 MB |
-| 493 | linear_algebra/src/schur_complement | ✓ | 5µs | 8.8 MB |
+| 482 | linear_algebra/gaussian_elimination | ✓ | 11µs | 8.7 MB |
+| 483 | linear_algebra/jacobi_iteration_method | ✓ | 2µs | 8.7 MB |
+| 484 | linear_algebra/lu_decomposition | ✓ | 4µs | 8.7 MB |
+| 485 | linear_algebra/matrix_inversion | ✓ | 7µs | 8.8 MB |
+| 486 | linear_algebra/src/conjugate_gradient | ✓ | 3µs | 8.7 MB |
+| 487 | linear_algebra/src/gaussian_elimination_pivoting | ✓ | 3µs | 8.7 MB |
+| 488 | linear_algebra/src/lib | ✓ | 7µs | 8.7 MB |
+| 489 | linear_algebra/src/polynom_for_points | ✓ | 17µs | 8.7 MB |
+| 490 | linear_algebra/src/power_iteration | ✓ | 3µs | 8.8 MB |
+| 491 | linear_algebra/src/rank_of_matrix | ✓ |  |  |
+| 492 | linear_algebra/src/rayleigh_quotient | ✓ | 6µs | 8.7 MB |
+| 493 | linear_algebra/src/schur_complement | ✓ | 10µs | 8.8 MB |
 | 494 | linear_algebra/src/test_linear_algebra | ✓ | 11µs | 8.8 MB |
-| 495 | linear_algebra/src/transformations_2d | ✓ | 10µs | 8.7 MB |
-| 496 | linear_programming/simplex | ✓ | 6µs | 8.7 MB |
+| 495 | linear_algebra/src/transformations_2d | ✓ | 9µs | 8.8 MB |
+| 496 | linear_programming/simplex | ✓ | 3µs | 8.7 MB |
 | 497 | machine_learning/apriori_algorithm | error |  |  |
-| 498 | machine_learning/astar | ✓ | 6µs | 8.7 MB |
-| 499 | machine_learning/automatic_differentiation | ✓ | 8µs | 8.7 MB |
-| 500 | machine_learning/data_transformations | ✓ | 21µs | 8.7 MB |
+| 498 | machine_learning/astar | ✓ | 3µs | 8.7 MB |
+| 499 | machine_learning/automatic_differentiation | ✓ | 6µs | 8.7 MB |
+| 500 | machine_learning/data_transformations | ✓ | 10µs | 8.8 MB |
 | 501 | machine_learning/decision_tree | error |  |  |
 | 502 | machine_learning/dimensionality_reduction | ✓ | 3µs | 8.7 MB |
 | 503 | machine_learning/forecasting/run | ✓ | 14µs | 8.8 MB |
