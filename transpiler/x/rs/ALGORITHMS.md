@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-12 08:11 GMT+7
+Last updated: 2025-08-12 08:45 GMT+7
 
-## Algorithms Golden Test Checklist (515/1077)
+## Algorithms Golden Test Checklist (516/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -456,7 +456,7 @@ Last updated: 2025-08-12 08:11 GMT+7
 | 447 | graphs/multi_heuristic_astar |   |  |  |
 | 448 | graphs/page_rank |   |  |  |
 | 449 | graphs/prim |   |  |  |
-| 450 | graphs/random_graph_generator |   |  |  |
+| 450 | graphs/random_graph_generator | ✓ | 50µs | 2.1 MB |
 | 451 | graphs/scc_kosaraju |   |  |  |
 | 452 | graphs/strongly_connected_components |   |  |  |
 | 453 | graphs/tarjans_scc |   |  |  |
