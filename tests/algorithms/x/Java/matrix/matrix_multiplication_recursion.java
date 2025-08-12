@@ -1,96 +1,96 @@
 public class Main {
-    static int[][] matrix_1_to_4;
-    static int[][] matrix_5_to_8;
-    static int[][] matrix_count_up;
-    static int[][] matrix_unordered;
+    static long[][] matrix_1_to_4;
+    static long[][] matrix_5_to_8;
+    static long[][] matrix_count_up;
+    static long[][] matrix_unordered;
 
-    static boolean is_square(int[][] matrix) {
-        int n = matrix.length;
-        int i = 0;
-        while (i < n) {
-            if (matrix[i].length != n) {
+    static boolean is_square(long[][] matrix) {
+        long n = (long)(matrix.length);
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(n)) {
+            if ((long)(((long[])_geto(matrix, (int)((long)(i_1)))).length) != (long)(n)) {
                 return false;
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
         return true;
     }
 
-    static int[][] matrix_multiply(int[][] a, int[][] b) {
-        int rows = a.length;
-        int cols = b[0].length;
-        int inner = b.length;
-        int[][] result = ((int[][])(new int[][]{}));
-        int i_1 = 0;
-        while (i_1 < rows) {
-            int[] row = ((int[])(new int[]{}));
-            int j = 0;
-            while (j < cols) {
-                int sum = 0;
-                int k = 0;
-                while (k < inner) {
-                    sum = sum + a[i_1][k] * b[k][j];
-                    k = k + 1;
+    static long[][] matrix_multiply(long[][] a, long[][] b) {
+        long rows = (long)(a.length);
+        long cols_1 = (long)(((long[])_geto(b, (int)((long)(0)))).length);
+        long inner_1 = (long)(b.length);
+        long[][] result_1 = ((long[][])(new long[][]{}));
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(rows)) {
+            long[] row_1 = ((long[])(new long[]{}));
+            long j_1 = 0L;
+            while ((long)(j_1) < (long)(cols_1)) {
+                long sum_1 = 0L;
+                long k_1 = 0L;
+                while ((long)(k_1) < (long)(inner_1)) {
+                    sum_1 = (long)((long)(sum_1) + (long)(_geti(((long[])_geto(a, (int)((long)(i_3)))), (int)((long)(k_1))) * _geti(((long[])_geto(b, (int)((long)(k_1)))), (int)((long)(j_1)))));
+                    k_1 = (long)((long)(k_1) + (long)(1));
                 }
-                row = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row), java.util.stream.IntStream.of(sum)).toArray()));
-                j = j + 1;
+                row_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(row_1), java.util.stream.LongStream.of((long)(sum_1))).toArray()));
+                j_1 = (long)((long)(j_1) + (long)(1));
             }
-            result = ((int[][])(appendObj(result, row)));
-            i_1 = i_1 + 1;
+            result_1 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(result_1), java.util.stream.Stream.of(row_1)).toArray(long[][]::new)));
+            i_3 = (long)((long)(i_3) + (long)(1));
         }
-        return result;
+        return result_1;
     }
 
-    static void multiply(int i, int j, int k, int[][] a, int[][] b, int[][] result, int n, int m) {
+    static void multiply(long i, long j, long k, long[][] a, long[][] b, long[][] result, long n, long m) {
         if (i >= n) {
             return;
         }
         if (j >= m) {
-            multiply(i + 1, 0, 0, ((int[][])(a)), ((int[][])(b)), ((int[][])(result)), n, m);
+            multiply((long)(i + (long)(1)), 0L, 0L, ((long[][])(a)), ((long[][])(b)), ((long[][])(result)), n, m);
             return;
         }
-        if (k >= b.length) {
-            multiply(i, j + 1, 0, ((int[][])(a)), ((int[][])(b)), ((int[][])(result)), n, m);
+        if (k >= (long)(b.length)) {
+            multiply(i, (long)(j + (long)(1)), 0L, ((long[][])(a)), ((long[][])(b)), ((long[][])(result)), n, m);
             return;
         }
-result[i][j] = result[i][j] + a[i][k] * b[k][j];
-        multiply(i, j, k + 1, ((int[][])(a)), ((int[][])(b)), ((int[][])(result)), n, m);
+((long[])_geto(result, (int)((long)(i))))[(int)((long)(j))] = (long)(_geti(((long[])_geto(result, (int)((long)(i)))), (int)((long)(j))) + (long)(_geti(((long[])_geto(a, (int)((long)(i)))), (int)((long)(k))) * _geti(((long[])_geto(b, (int)((long)(k)))), (int)((long)(j)))));
+        multiply(i, j, (long)(k + (long)(1)), ((long[][])(a)), ((long[][])(b)), ((long[][])(result)), n, m);
     }
 
-    static int[][] matrix_multiply_recursive(int[][] a, int[][] b) {
-        if (a.length == 0 || b.length == 0) {
-            return new int[][]{};
+    static long[][] matrix_multiply_recursive(long[][] a, long[][] b) {
+        if ((long)(a.length) == (long)(0) || (long)(b.length) == (long)(0)) {
+            return new long[][]{};
         }
-        if (a.length != b.length || (!(Boolean)is_square(((int[][])(a)))) || (!(Boolean)is_square(((int[][])(b))))) {
+        if ((long)(a.length) != (long)(b.length) || (!(Boolean)is_square(((long[][])(a)))) || (!(Boolean)is_square(((long[][])(b))))) {
             throw new RuntimeException(String.valueOf("Invalid matrix dimensions"));
         }
-        int n_1 = a.length;
-        int m = b[0].length;
-        int[][] result_1 = ((int[][])(new int[][]{}));
-        int i_2 = 0;
-        while (i_2 < n_1) {
-            int[] row_1 = ((int[])(new int[]{}));
-            int j_1 = 0;
-            while (j_1 < m) {
-                row_1 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row_1), java.util.stream.IntStream.of(0)).toArray()));
-                j_1 = j_1 + 1;
+        long n_2 = (long)(a.length);
+        long m_1 = (long)(((long[])_geto(b, (int)((long)(0)))).length);
+        long[][] result_3 = ((long[][])(new long[][]{}));
+        long i_5 = 0L;
+        while ((long)(i_5) < (long)(n_2)) {
+            long[] row_3 = ((long[])(new long[]{}));
+            long j_3 = 0L;
+            while ((long)(j_3) < (long)(m_1)) {
+                row_3 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(row_3), java.util.stream.LongStream.of(0L)).toArray()));
+                j_3 = (long)((long)(j_3) + (long)(1));
             }
-            result_1 = ((int[][])(appendObj(result_1, row_1)));
-            i_2 = i_2 + 1;
+            result_3 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(result_3), java.util.stream.Stream.of(row_3)).toArray(long[][]::new)));
+            i_5 = (long)((long)(i_5) + (long)(1));
         }
-        multiply(0, 0, 0, ((int[][])(a)), ((int[][])(b)), ((int[][])(result_1)), n_1, m);
-        return result_1;
+        multiply(0L, 0L, 0L, ((long[][])(a)), ((long[][])(b)), ((long[][])(result_3)), (long)(n_2), (long)(m_1));
+        return result_3;
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            matrix_1_to_4 = ((int[][])(new int[][]{new int[]{1, 2}, new int[]{3, 4}}));
-            matrix_5_to_8 = ((int[][])(new int[][]{new int[]{5, 6}, new int[]{7, 8}}));
-            matrix_count_up = ((int[][])(new int[][]{new int[]{1, 2, 3, 4}, new int[]{5, 6, 7, 8}, new int[]{9, 10, 11, 12}, new int[]{13, 14, 15, 16}}));
-            matrix_unordered = ((int[][])(new int[][]{new int[]{5, 8, 1, 2}, new int[]{6, 7, 3, 0}, new int[]{4, 5, 9, 1}, new int[]{2, 6, 10, 14}}));
-            System.out.println(matrix_multiply_recursive(((int[][])(matrix_1_to_4)), ((int[][])(matrix_5_to_8))));
-            System.out.println(matrix_multiply_recursive(((int[][])(matrix_count_up)), ((int[][])(matrix_unordered))));
+            matrix_1_to_4 = ((long[][])(new long[][]{new long[]{1, 2}, new long[]{3, 4}}));
+            matrix_5_to_8 = ((long[][])(new long[][]{new long[]{5, 6}, new long[]{7, 8}}));
+            matrix_count_up = ((long[][])(new long[][]{new long[]{1, 2, 3, 4}, new long[]{5, 6, 7, 8}, new long[]{9, 10, 11, 12}, new long[]{13, 14, 15, 16}}));
+            matrix_unordered = ((long[][])(new long[][]{new long[]{5, 8, 1, 2}, new long[]{6, 7, 3, 0}, new long[]{4, 5, 9, 1}, new long[]{2, 6, 10, 14}}));
+            System.out.println(matrix_multiply_recursive(((long[][])(matrix_1_to_4)), ((long[][])(matrix_5_to_8))));
+            System.out.println(matrix_multiply_recursive(((long[][])(matrix_count_up)), ((long[][])(matrix_unordered))));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -124,9 +124,17 @@ result[i][j] = result[i][j] + a[i][k] * b[k][j];
         return rt.totalMemory() - rt.freeMemory();
     }
 
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
+    static long _geti(long[] a, int i) {
+        if (a == null) return 0L;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return 0L;
+        return a[i];
+    }
+
+    static Object _geto(Object[] a, int i) {
+        if (a == null) return null;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return null;
+        return a[i];
     }
 }

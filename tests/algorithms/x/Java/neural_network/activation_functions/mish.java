@@ -2,78 +2,78 @@ public class Main {
 
     static double exp_approx(double x) {
         boolean neg = false;
-        double y = x;
-        if (x < 0.0) {
+        double y_1 = (double)(x);
+        if ((double)(x) < 0.0) {
             neg = true;
-            y = -x;
+            y_1 = (double)(-x);
         }
-        double term = 1.0;
-        double sum = 1.0;
-        int n = 1;
-        while (n < 30) {
-            term = term * y / (((Number)(n)).doubleValue());
-            sum = sum + term;
-            n = n + 1;
+        double term_1 = 1.0;
+        double sum_1 = 1.0;
+        long n_1 = 1L;
+        while ((long)(n_1) < (long)(30)) {
+            term_1 = term_1 * y_1 / (((Number)(n_1)).doubleValue());
+            sum_1 = sum_1 + term_1;
+            n_1 = (long)((long)(n_1) + (long)(1));
         }
         if (neg) {
-            return 1.0 / sum;
+            return 1.0 / sum_1;
         }
-        return sum;
+        return sum_1;
     }
 
     static double ln_series(double x) {
-        double t = (x - 1.0) / (x + 1.0);
-        double term_1 = t;
-        double acc = 0.0;
-        int n_1 = 1;
-        while (n_1 <= 19) {
-            acc = acc + term_1 / (((Number)(n_1)).doubleValue());
-            term_1 = term_1 * t * t;
-            n_1 = n_1 + 2;
+        double t = ((double)(x) - 1.0) / ((double)(x) + 1.0);
+        double term_3 = t;
+        double acc_1 = 0.0;
+        long n_3 = 1L;
+        while ((long)(n_3) <= (long)(19)) {
+            acc_1 = acc_1 + term_3 / (((Number)(n_3)).doubleValue());
+            term_3 = term_3 * t * t;
+            n_3 = (long)((long)(n_3) + (long)(2));
         }
-        return 2.0 * acc;
+        return 2.0 * acc_1;
     }
 
     static double ln(double x) {
-        double y_1 = x;
-        int k = 0;
-        while (y_1 >= 10.0) {
-            y_1 = y_1 / 10.0;
-            k = k + 1;
+        double y_2 = (double)(x);
+        long k_1 = 0L;
+        while (y_2 >= 10.0) {
+            y_2 = y_2 / 10.0;
+            k_1 = (long)((long)(k_1) + (long)(1));
         }
-        while (y_1 < 1.0) {
-            y_1 = y_1 * 10.0;
-            k = k - 1;
+        while (y_2 < 1.0) {
+            y_2 = y_2 * 10.0;
+            k_1 = (long)((long)(k_1) - (long)(1));
         }
-        return ln_series(y_1) + (((Number)(k)).doubleValue()) * ln_series(10.0);
+        return (double)(ln_series(y_2)) + (((Number)(k_1)).doubleValue()) * (double)(ln_series(10.0));
     }
 
     static double softplus(double x) {
-        return ln(1.0 + exp_approx(x));
+        return ln(1.0 + (double)(exp_approx((double)(x))));
     }
 
     static double tanh_approx(double x) {
-        return (2.0 / (1.0 + exp_approx(-2.0 * x))) - 1.0;
+        return (2.0 / (1.0 + (double)(exp_approx(-2.0 * (double)(x))))) - 1.0;
     }
 
     static double[] mish(double[] vector) {
         double[] result = ((double[])(new double[]{}));
-        int i = 0;
-        while (i < vector.length) {
-            double x = vector[i];
-            double sp = softplus(x);
-            double y_2 = x * tanh_approx(sp);
-            result = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(result), java.util.stream.DoubleStream.of(y_2)).toArray()));
-            i = i + 1;
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(vector.length)) {
+            double x_1 = (double)(_getd(vector, (int)((long)(i_1))));
+            double sp_1 = (double)(softplus((double)(x_1)));
+            double y_4 = (double)(x_1) * (double)(tanh_approx((double)(sp_1)));
+            result = ((double[])(appendDouble(result, y_4)));
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
         return result;
     }
 
     static void main() {
         double[] v1 = ((double[])(new double[]{2.3, 0.6, -2.0, -3.8}));
-        double[] v2 = ((double[])(new double[]{-9.2, -0.3, 0.45, -4.56}));
+        double[] v2_1 = ((double[])(new double[]{-9.2, -0.3, 0.45, -4.56}));
         System.out.println(_p(mish(((double[])(v1)))));
-        System.out.println(_p(mish(((double[])(v2)))));
+        System.out.println(_p(mish(((double[])(v2_1)))));
     }
     public static void main(String[] args) {
         {
@@ -113,6 +113,12 @@ public class Main {
         return rt.totalMemory() - rt.freeMemory();
     }
 
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
+    }
+
     static String _p(Object v) {
         if (v == null) return "<nil>";
         if (v.getClass().isArray()) {
@@ -126,6 +132,18 @@ public class Main {
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
+    }
+
+    static double _getd(double[] a, int i) {
+        if (a == null) return 0.0;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return 0.0;
+        return a[i];
     }
 }

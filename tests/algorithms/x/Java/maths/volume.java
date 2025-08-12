@@ -3,140 +3,140 @@ public class Main {
     static double SQRT5;
 
     static double minf(double a, double b) {
-        if (a < b) {
+        if ((double)(a) < (double)(b)) {
             return a;
         }
         return b;
     }
 
     static double maxf(double a, double b) {
-        if (a > b) {
+        if ((double)(a) > (double)(b)) {
             return a;
         }
         return b;
     }
 
     static double vol_cube(double side_length) {
-        if (side_length < 0.0) {
+        if ((double)(side_length) < 0.0) {
             throw new RuntimeException(String.valueOf("vol_cube() only accepts non-negative values"));
         }
-        return side_length * side_length * side_length;
+        return (double)(side_length) * (double)(side_length) * (double)(side_length);
     }
 
     static double vol_spherical_cap(double height, double radius) {
-        if (height < 0.0 || radius < 0.0) {
+        if ((double)(height) < 0.0 || (double)(radius) < 0.0) {
             throw new RuntimeException(String.valueOf("vol_spherical_cap() only accepts non-negative values"));
         }
-        return (1.0 / 3.0) * PI * height * height * (3.0 * radius - height);
+        return (1.0 / 3.0) * PI * (double)(height) * (double)(height) * (3.0 * (double)(radius) - (double)(height));
     }
 
     static double vol_sphere(double radius) {
-        if (radius < 0.0) {
+        if ((double)(radius) < 0.0) {
             throw new RuntimeException(String.valueOf("vol_sphere() only accepts non-negative values"));
         }
-        return (4.0 / 3.0) * PI * radius * radius * radius;
+        return (4.0 / 3.0) * PI * (double)(radius) * (double)(radius) * (double)(radius);
     }
 
     static double vol_spheres_intersect(double radius_1, double radius_2, double centers_distance) {
-        if (radius_1 < 0.0 || radius_2 < 0.0 || centers_distance < 0.0) {
+        if ((double)(radius_1) < 0.0 || (double)(radius_2) < 0.0 || (double)(centers_distance) < 0.0) {
             throw new RuntimeException(String.valueOf("vol_spheres_intersect() only accepts non-negative values"));
         }
-        if (centers_distance == 0.0) {
-            return vol_sphere(minf(radius_1, radius_2));
+        if ((double)(centers_distance) == 0.0) {
+            return vol_sphere((double)(minf((double)(radius_1), (double)(radius_2))));
         }
-        double h1 = (radius_1 - radius_2 + centers_distance) * (radius_1 + radius_2 - centers_distance) / (2.0 * centers_distance);
-        double h2 = (radius_2 - radius_1 + centers_distance) * (radius_2 + radius_1 - centers_distance) / (2.0 * centers_distance);
-        return vol_spherical_cap(h1, radius_2) + vol_spherical_cap(h2, radius_1);
+        double h1_1 = ((double)(radius_1) - (double)(radius_2) + (double)(centers_distance)) * ((double)(radius_1) + (double)(radius_2) - (double)(centers_distance)) / (2.0 * (double)(centers_distance));
+        double h2_1 = ((double)(radius_2) - (double)(radius_1) + (double)(centers_distance)) * ((double)(radius_2) + (double)(radius_1) - (double)(centers_distance)) / (2.0 * (double)(centers_distance));
+        return (double)(vol_spherical_cap(h1_1, (double)(radius_2))) + (double)(vol_spherical_cap(h2_1, (double)(radius_1)));
     }
 
     static double vol_spheres_union(double radius_1, double radius_2, double centers_distance) {
-        if (radius_1 <= 0.0 || radius_2 <= 0.0 || centers_distance < 0.0) {
+        if ((double)(radius_1) <= 0.0 || (double)(radius_2) <= 0.0 || (double)(centers_distance) < 0.0) {
             throw new RuntimeException(String.valueOf("vol_spheres_union() only accepts non-negative values, non-zero radius"));
         }
-        if (centers_distance == 0.0) {
-            return vol_sphere(maxf(radius_1, radius_2));
+        if ((double)(centers_distance) == 0.0) {
+            return vol_sphere((double)(maxf((double)(radius_1), (double)(radius_2))));
         }
-        return vol_sphere(radius_1) + vol_sphere(radius_2) - vol_spheres_intersect(radius_1, radius_2, centers_distance);
+        return (double)(vol_sphere((double)(radius_1))) + (double)(vol_sphere((double)(radius_2))) - (double)(vol_spheres_intersect((double)(radius_1), (double)(radius_2), (double)(centers_distance)));
     }
 
     static double vol_cuboid(double width, double height, double length) {
-        if (width < 0.0 || height < 0.0 || length < 0.0) {
+        if ((double)(width) < 0.0 || (double)(height) < 0.0 || (double)(length) < 0.0) {
             throw new RuntimeException(String.valueOf("vol_cuboid() only accepts non-negative values"));
         }
-        return width * height * length;
+        return (double)(width) * (double)(height) * (double)(length);
     }
 
     static double vol_cone(double area_of_base, double height) {
-        if (height < 0.0 || area_of_base < 0.0) {
+        if ((double)(height) < 0.0 || (double)(area_of_base) < 0.0) {
             throw new RuntimeException(String.valueOf("vol_cone() only accepts non-negative values"));
         }
-        return area_of_base * height / 3.0;
+        return (double)(area_of_base) * (double)(height) / 3.0;
     }
 
     static double vol_right_circ_cone(double radius, double height) {
-        if (height < 0.0 || radius < 0.0) {
+        if ((double)(height) < 0.0 || (double)(radius) < 0.0) {
             throw new RuntimeException(String.valueOf("vol_right_circ_cone() only accepts non-negative values"));
         }
-        return PI * radius * radius * height / 3.0;
+        return PI * (double)(radius) * (double)(radius) * (double)(height) / 3.0;
     }
 
     static double vol_prism(double area_of_base, double height) {
-        if (height < 0.0 || area_of_base < 0.0) {
+        if ((double)(height) < 0.0 || (double)(area_of_base) < 0.0) {
             throw new RuntimeException(String.valueOf("vol_prism() only accepts non-negative values"));
         }
-        return area_of_base * height;
+        return (double)(area_of_base) * (double)(height);
     }
 
     static double vol_pyramid(double area_of_base, double height) {
-        if (height < 0.0 || area_of_base < 0.0) {
+        if ((double)(height) < 0.0 || (double)(area_of_base) < 0.0) {
             throw new RuntimeException(String.valueOf("vol_pyramid() only accepts non-negative values"));
         }
-        return area_of_base * height / 3.0;
+        return (double)(area_of_base) * (double)(height) / 3.0;
     }
 
     static double vol_hemisphere(double radius) {
-        if (radius < 0.0) {
+        if ((double)(radius) < 0.0) {
             throw new RuntimeException(String.valueOf("vol_hemisphere() only accepts non-negative values"));
         }
-        return radius * radius * radius * PI * 2.0 / 3.0;
+        return (double)(radius) * (double)(radius) * (double)(radius) * PI * 2.0 / 3.0;
     }
 
     static double vol_circular_cylinder(double radius, double height) {
-        if (height < 0.0 || radius < 0.0) {
+        if ((double)(height) < 0.0 || (double)(radius) < 0.0) {
             throw new RuntimeException(String.valueOf("vol_circular_cylinder() only accepts non-negative values"));
         }
-        return radius * radius * height * PI;
+        return (double)(radius) * (double)(radius) * (double)(height) * PI;
     }
 
     static double vol_hollow_circular_cylinder(double inner_radius, double outer_radius, double height) {
-        if (inner_radius < 0.0 || outer_radius < 0.0 || height < 0.0) {
+        if ((double)(inner_radius) < 0.0 || (double)(outer_radius) < 0.0 || (double)(height) < 0.0) {
             throw new RuntimeException(String.valueOf("vol_hollow_circular_cylinder() only accepts non-negative values"));
         }
-        if (outer_radius <= inner_radius) {
+        if ((double)(outer_radius) <= (double)(inner_radius)) {
             throw new RuntimeException(String.valueOf("outer_radius must be greater than inner_radius"));
         }
-        return PI * (outer_radius * outer_radius - inner_radius * inner_radius) * height;
+        return PI * ((double)(outer_radius) * (double)(outer_radius) - (double)(inner_radius) * (double)(inner_radius)) * (double)(height);
     }
 
     static double vol_conical_frustum(double height, double radius_1, double radius_2) {
-        if (radius_1 < 0.0 || radius_2 < 0.0 || height < 0.0) {
+        if ((double)(radius_1) < 0.0 || (double)(radius_2) < 0.0 || (double)(height) < 0.0) {
             throw new RuntimeException(String.valueOf("vol_conical_frustum() only accepts non-negative values"));
         }
-        return (1.0 / 3.0) * PI * height * (radius_1 * radius_1 + radius_2 * radius_2 + radius_1 * radius_2);
+        return (1.0 / 3.0) * PI * (double)(height) * ((double)(radius_1) * (double)(radius_1) + (double)(radius_2) * (double)(radius_2) + (double)(radius_1) * (double)(radius_2));
     }
 
     static double vol_torus(double torus_radius, double tube_radius) {
-        if (torus_radius < 0.0 || tube_radius < 0.0) {
+        if ((double)(torus_radius) < 0.0 || (double)(tube_radius) < 0.0) {
             throw new RuntimeException(String.valueOf("vol_torus() only accepts non-negative values"));
         }
-        return 2.0 * PI * PI * torus_radius * tube_radius * tube_radius;
+        return 2.0 * PI * PI * (double)(torus_radius) * (double)(tube_radius) * (double)(tube_radius);
     }
 
     static double vol_icosahedron(double tri_side) {
-        if (tri_side < 0.0) {
+        if ((double)(tri_side) < 0.0) {
             throw new RuntimeException(String.valueOf("vol_icosahedron() only accepts non-negative values"));
         }
-        return tri_side * tri_side * tri_side * (3.0 + SQRT5) * 5.0 / 12.0;
+        return (double)(tri_side) * (double)(tri_side) * (double)(tri_side) * (3.0 + SQRT5) * 5.0 / 12.0;
     }
 
     static void main() {
@@ -210,6 +210,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

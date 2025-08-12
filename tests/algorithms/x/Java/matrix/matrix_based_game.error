@@ -1,4 +1,5 @@
-Exception in thread "main" java.lang.ArrayStoreException: [D
+run: exit status 1
+Exception in thread "main" java.lang.ArrayStoreException: java.lang.String
 	at java.base/java.util.stream.Nodes$FixedNodeBuilder.accept(Nodes.java:1231)
 	at java.base/java.util.Spliterators$ArraySpliterator.forEachRemaining(Spliterators.java:1024)
 	at java.base/java.util.stream.Streams$ConcatSpliterator.forEachRemaining(Streams.java:735)
@@ -7,6 +8,7 @@ Exception in thread "main" java.lang.ArrayStoreException: [D
 	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:575)
 	at java.base/java.util.stream.AbstractPipeline.evaluateToArrayNode(AbstractPipeline.java:260)
 	at java.base/java.util.stream.ReferencePipeline.toArray(ReferencePipeline.java:616)
-	at Main.forward(Main.java:261)
-	at Main.main(Main.java:339)
-	at Main.main(Main.java:348)
+	at Main.build_matrix(Main.java:273)
+	at Main.process_game(Main.java:280)
+	at Main.main(Main.java:300)
+	at Main.main(Main.java:307)

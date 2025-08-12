@@ -1,29 +1,29 @@
 public class Main {
-    static int[] start;
-    static int[] finish;
+    static long[] start;
+    static long[] finish;
 
-    static unit print_max_activities(int[] start, int[] finish) {
-        int n = finish.length;
+    static void print_max_activities(long[] start, long[] finish) {
+        long n = (long)(finish.length);
         System.out.println("The following activities are selected:");
-        int i = 0;
-        String result = "0,";
-        int j = 1;
-        while (j < n) {
-            if (start[j] >= finish[i]) {
-                result = result + _p(j) + ",";
-                i = j;
+        long i_1 = 0L;
+        String result_1 = "0,";
+        long j_1 = 1L;
+        while (j_1 < n) {
+            if (_geti(start, (int)((long)(j_1))) >= _geti(finish, (int)((long)(i_1)))) {
+                result_1 = result_1 + _p(j_1) + ",";
+                i_1 = j_1;
             }
-            j = j + 1;
+            j_1 = (long)(j_1 + (long)(1));
         }
-        System.out.println(result);
+        System.out.println(result_1);
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            start = ((int[])(new int[]{1, 3, 0, 5, 8, 5}));
-            finish = ((int[])(new int[]{2, 4, 6, 7, 9, 9}));
-            print_max_activities(((int[])(start)), ((int[])(finish)));
+            start = ((long[])(new long[]{1, 3, 0, 5, 8, 5}));
+            finish = ((long[])(new long[]{2, 4, 6, 7, 9, 9}));
+            print_max_activities(((long[])(start)), ((long[])(finish)));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -70,6 +70,18 @@ public class Main {
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
+    }
+
+    static long _geti(long[] a, int i) {
+        if (a == null) return 0L;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return 0L;
+        return a[i];
     }
 }

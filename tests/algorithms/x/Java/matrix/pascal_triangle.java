@@ -1,67 +1,67 @@
 public class Main {
 
-    static int[] populate_current_row(int[][] triangle, int current_row_idx) {
-        int[] row = ((int[])(new int[]{}));
-        int i = 0;
-        while (i <= current_row_idx) {
-            if (i == 0 || i == current_row_idx) {
-                row = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row), java.util.stream.IntStream.of(1)).toArray()));
+    static long[] populate_current_row(long[][] triangle, long current_row_idx) {
+        long[] row = ((long[])(new long[]{}));
+        long i_1 = 0L;
+        while ((long)(i_1) <= current_row_idx) {
+            if ((long)(i_1) == (long)(0) || (long)(i_1) == current_row_idx) {
+                row = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(row), java.util.stream.LongStream.of(1L)).toArray()));
             } else {
-                int left = triangle[current_row_idx - 1][i - 1];
-                int right = triangle[current_row_idx - 1][i];
-                row = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row), java.util.stream.IntStream.of(left + right)).toArray()));
+                long left_1 = _geti(((long[])_geto(triangle, (int)((long)(current_row_idx - (long)(1))))), (int)((long)((long)(i_1) - (long)(1))));
+                long right_1 = _geti(((long[])_geto(triangle, (int)((long)(current_row_idx - (long)(1))))), (int)((long)(i_1)));
+                row = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(row), java.util.stream.LongStream.of((long)(left_1 + right_1))).toArray()));
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
         return row;
     }
 
-    static int[][] generate_pascal_triangle(int num_rows) {
-        if (num_rows <= 0) {
-            return new int[][]{};
+    static long[][] generate_pascal_triangle(long num_rows) {
+        if (num_rows <= (long)(0)) {
+            return new long[][]{};
         }
-        int[][] triangle = ((int[][])(new int[][]{}));
-        int row_idx = 0;
-        while (row_idx < num_rows) {
-            int[] row_1 = ((int[])(populate_current_row(((int[][])(triangle)), row_idx)));
-            triangle = ((int[][])(appendObj(triangle, row_1)));
-            row_idx = row_idx + 1;
+        long[][] triangle_1 = ((long[][])(new long[][]{}));
+        long row_idx_1 = 0L;
+        while ((long)(row_idx_1) < num_rows) {
+            long[] row_2 = ((long[])(populate_current_row(((long[][])(triangle_1)), (long)(row_idx_1))));
+            triangle_1 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(triangle_1), java.util.stream.Stream.of(row_2)).toArray(long[][]::new)));
+            row_idx_1 = (long)((long)(row_idx_1) + (long)(1));
         }
-        return triangle;
+        return triangle_1;
     }
 
-    static String row_to_string(int[] row, int total_rows, int row_idx) {
+    static String row_to_string(long[] row, long total_rows, long row_idx) {
         String line = "";
-        int spaces = total_rows - row_idx - 1;
-        int s = 0;
-        while (s < spaces) {
+        long spaces_1 = (long)((long)(total_rows - row_idx) - (long)(1));
+        long s_1 = 0L;
+        while ((long)(s_1) < (long)(spaces_1)) {
             line = line + " ";
-            s = s + 1;
+            s_1 = (long)((long)(s_1) + (long)(1));
         }
-        int c = 0;
-        while (c <= row_idx) {
-            line = line + _p(_geti(row, c));
-            if (c != row_idx) {
+        long c_1 = 0L;
+        while ((long)(c_1) <= row_idx) {
+            line = line + _p(_geti(row, ((Number)(c_1)).intValue()));
+            if ((long)(c_1) != row_idx) {
                 line = line + " ";
             }
-            c = c + 1;
+            c_1 = (long)((long)(c_1) + (long)(1));
         }
         return line;
     }
 
-    static void print_pascal_triangle(int num_rows) {
-        int[][] triangle_1 = ((int[][])(generate_pascal_triangle(num_rows)));
-        int r = 0;
-        while (r < num_rows) {
-            String line_1 = String.valueOf(row_to_string(((int[])(triangle_1[r])), num_rows, r));
-            System.out.println(line_1);
-            r = r + 1;
+    static void print_pascal_triangle(long num_rows) {
+        long[][] triangle_2 = ((long[][])(generate_pascal_triangle(num_rows)));
+        long r_1 = 0L;
+        while ((long)(r_1) < num_rows) {
+            String line_2 = String.valueOf(row_to_string(((long[])(((long[])_geto(triangle_2, (int)((long)(r_1)))))), num_rows, (long)(r_1)));
+            System.out.println(line_2);
+            r_1 = (long)((long)(r_1) + (long)(1));
         }
     }
 
     static void main() {
-        print_pascal_triangle(5);
-        System.out.println(_p(generate_pascal_triangle(5)));
+        print_pascal_triangle(5L);
+        System.out.println(_p(generate_pascal_triangle(5L)));
     }
     public static void main(String[] args) {
         {
@@ -101,12 +101,6 @@ public class Main {
         return rt.totalMemory() - rt.freeMemory();
     }
 
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
-    }
-
     static String _p(Object v) {
         if (v == null) return "<nil>";
         if (v.getClass().isArray()) {
@@ -120,10 +114,25 @@ public class Main {
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
     }
 
-    static Integer _geti(int[] a, int i) {
-        return (i >= 0 && i < a.length) ? a[i] : null;
+    static long _geti(long[] a, int i) {
+        if (a == null) return 0L;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return 0L;
+        return a[i];
+    }
+
+    static Object _geto(Object[] a, int i) {
+        if (a == null) return null;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return null;
+        return a[i];
     }
 }

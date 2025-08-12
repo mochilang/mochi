@@ -1,7 +1,7 @@
 compile: exit status 1
-/tmp/TestJavaTranspiler_Algorithms_Golden728_soboleva_modified_hyperbolic_tangent778682191/001/Main.java:8: error: cannot find symbol
-            term = term * x / ((Number)(to_float(n))).doubleValue();
-                                        ^
-  symbol:   method to_float(int)
+/tmp/TestJavaTranspiler_Algorithms_Golden728_soboleva_modified_hyperbolic_tangent3072536635/001/Main.java:8: error: cannot find symbol
+            term = term * (double)(x) / ((Number)(to_float(n_1))).doubleValue();
+                                                  ^
+  symbol:   method to_float(long)
   location: class Main
 1 error

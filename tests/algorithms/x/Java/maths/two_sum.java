@@ -1,24 +1,24 @@
 public class Main {
 
-    static int[] two_sum(int[] nums, int target) {
-        java.util.Map<Integer,Integer> chk_map = ((java.util.Map<Integer,Integer>)(new java.util.LinkedHashMap<Integer, Integer>()));
-        int idx = 0;
-        while (idx < nums.length) {
-            int val = nums[idx];
-            int compl = target - val;
-            if (((Boolean)(chk_map.containsKey(compl)))) {
-                return new int[]{(int)(((int)(chk_map).getOrDefault(compl, 0))) - 1, idx};
+    static long[] two_sum(long[] nums, long target) {
+        java.util.Map<Long,Long> chk_map = ((java.util.Map<Long,Long>)(new java.util.LinkedHashMap<Long, Long>()));
+        long idx_1 = 0L;
+        while ((long)(idx_1) < (long)(nums.length)) {
+            long val_1 = _geti(nums, (int)((long)(idx_1)));
+            long compl_1 = (long)(target - val_1);
+            if (chk_map.containsKey(compl_1)) {
+                return new long[]{(long)(((long)(chk_map).getOrDefault(compl_1, 0L))) - (long)(1), idx_1};
             }
-chk_map.put(val, idx + 1);
-            idx = idx + 1;
+chk_map.put(val_1, (long)((long)(idx_1) + (long)(1)));
+            idx_1 = (long)((long)(idx_1) + (long)(1));
         }
-        return new int[]{};
+        return new long[]{};
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            System.out.println(_p(two_sum(((int[])(new int[]{2, 7, 11, 15})), 9)));
+            System.out.println(_p(two_sum(((long[])(new long[]{2, 7, 11, 15})), 9L)));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -65,6 +65,18 @@ chk_map.put(val, idx + 1);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
+    }
+
+    static long _geti(long[] a, int i) {
+        if (a == null) return 0L;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return 0L;
+        return a[i];
     }
 }

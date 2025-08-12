@@ -1,50 +1,50 @@
 public class Main {
 
-    static boolean is_prime(int n) {
-        if (n < 2) {
+    static boolean is_prime(long n) {
+        if (n < (long)(2)) {
             return false;
         }
-        if (Math.floorMod(n, 2) == 0) {
-            return n == 2;
+        if (Math.floorMod(n, 2) == (long)(0)) {
+            return n == (long)(2);
         }
-        int i = 3;
-        while (i * i <= n) {
-            if (Math.floorMod(n, i) == 0) {
+        long i_1 = 3L;
+        while ((long)((long)(i_1) * (long)(i_1)) <= n) {
+            if (Math.floorMod(n, i_1) == (long)(0)) {
                 return false;
             }
-            i = i + 2;
+            i_1 = (long)((long)(i_1) + (long)(2));
         }
         return true;
     }
 
-    static int twin_prime(int number) {
-        if (((Boolean)(is_prime(number))) && ((Boolean)(is_prime(number + 2)))) {
-            return number + 2;
+    static long twin_prime(long number) {
+        if (is_prime(number) && is_prime((long)(number + (long)(2)))) {
+            return number + (long)(2);
         }
         return -1;
     }
 
     static void test_twin_prime() {
-        if (twin_prime(3) != 5) {
+        if (twin_prime(3L) != (long)(5)) {
             throw new RuntimeException(String.valueOf("twin_prime(3) failed"));
         }
-        if (twin_prime(4) != (-1)) {
+        if (twin_prime(4L) != (long)((-1))) {
             throw new RuntimeException(String.valueOf("twin_prime(4) failed"));
         }
-        if (twin_prime(5) != 7) {
+        if (twin_prime(5L) != (long)(7)) {
             throw new RuntimeException(String.valueOf("twin_prime(5) failed"));
         }
-        if (twin_prime(17) != 19) {
+        if (twin_prime(17L) != (long)(19)) {
             throw new RuntimeException(String.valueOf("twin_prime(17) failed"));
         }
-        if (twin_prime(0) != (-1)) {
+        if (twin_prime(0L) != (long)((-1))) {
             throw new RuntimeException(String.valueOf("twin_prime(0) failed"));
         }
     }
 
     static void main() {
         test_twin_prime();
-        System.out.println(twin_prime(3));
+        System.out.println(twin_prime(3L));
     }
     public static void main(String[] args) {
         {

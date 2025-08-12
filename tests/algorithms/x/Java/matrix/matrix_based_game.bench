@@ -1,5 +1,13 @@
-{
-  "duration_us": 62759,
-  "memory_bytes": 66568,
-  "name": "main"
-}
+Exception in thread "main" java.lang.ArrayStoreException: java.lang.String
+	at java.base/java.util.stream.Nodes$FixedNodeBuilder.accept(Nodes.java:1231)
+	at java.base/java.util.Spliterators$ArraySpliterator.forEachRemaining(Spliterators.java:1024)
+	at java.base/java.util.stream.Streams$ConcatSpliterator.forEachRemaining(Streams.java:735)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:575)
+	at java.base/java.util.stream.AbstractPipeline.evaluateToArrayNode(AbstractPipeline.java:260)
+	at java.base/java.util.stream.ReferencePipeline.toArray(ReferencePipeline.java:616)
+	at Main.build_matrix(Main.java:273)
+	at Main.process_game(Main.java:280)
+	at Main.main(Main.java:300)
+	at Main.main(Main.java:307)

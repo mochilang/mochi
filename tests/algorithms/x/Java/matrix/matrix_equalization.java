@@ -1,62 +1,62 @@
 public class Main {
 
-    static int[] unique(int[] nums) {
-        int[] res = ((int[])(new int[]{}));
-        int i = 0;
-        while (i < nums.length) {
-            int v = nums[i];
-            boolean found = false;
-            int j = 0;
-            while (j < res.length) {
-                if (res[j] == v) {
-                    found = true;
+    static long[] unique(long[] nums) {
+        long[] res = ((long[])(new long[]{}));
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(nums.length)) {
+            long v_1 = _geti(nums, (int)((long)(i_1)));
+            boolean found_1 = false;
+            long j_1 = 0L;
+            while ((long)(j_1) < (long)(res.length)) {
+                if (_geti(res, (int)((long)(j_1))) == v_1) {
+                    found_1 = true;
                     break;
                 }
-                j = j + 1;
+                j_1 = (long)((long)(j_1) + (long)(1));
             }
-            if (!found) {
-                res = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res), java.util.stream.IntStream.of(v)).toArray()));
+            if (!found_1) {
+                res = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res), java.util.stream.LongStream.of(v_1)).toArray()));
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
         return res;
     }
 
-    static int array_equalization(int[] vector, int step_size) {
-        if (step_size <= 0) {
+    static long array_equalization(long[] vector, long step_size) {
+        if (step_size <= (long)(0)) {
             throw new RuntimeException(String.valueOf("Step size must be positive and non-zero."));
         }
-        int[] elems = ((int[])(unique(((int[])(vector)))));
-        int min_updates = vector.length;
-        int i_1 = 0;
-        while (i_1 < elems.length) {
-            int target = elems[i_1];
-            int idx = 0;
-            int updates = 0;
-            while (idx < vector.length) {
-                if (vector[idx] != target) {
-                    updates = updates + 1;
-                    idx = idx + step_size;
+        long[] elems_1 = ((long[])(unique(((long[])(vector)))));
+        long min_updates_1 = (long)(vector.length);
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(elems_1.length)) {
+            long target_1 = _geti(elems_1, (int)((long)(i_3)));
+            long idx_1 = 0L;
+            long updates_1 = 0L;
+            while ((long)(idx_1) < (long)(vector.length)) {
+                if (_geti(vector, (int)((long)(idx_1))) != target_1) {
+                    updates_1 = (long)((long)(updates_1) + (long)(1));
+                    idx_1 = (long)((long)(idx_1) + step_size);
                 } else {
-                    idx = idx + 1;
+                    idx_1 = (long)((long)(idx_1) + (long)(1));
                 }
             }
-            if (updates < min_updates) {
-                min_updates = updates;
+            if ((long)(updates_1) < (long)(min_updates_1)) {
+                min_updates_1 = (long)(updates_1);
             }
-            i_1 = i_1 + 1;
+            i_3 = (long)((long)(i_3) + (long)(1));
         }
-        return min_updates;
+        return min_updates_1;
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            System.out.println(_p(array_equalization(((int[])(new int[]{1, 1, 6, 2, 4, 6, 5, 1, 7, 2, 2, 1, 7, 2, 2})), 4)));
-            System.out.println(_p(array_equalization(((int[])(new int[]{22, 81, 88, 71, 22, 81, 632, 81, 81, 22, 92})), 2)));
-            System.out.println(_p(array_equalization(((int[])(new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})), 5)));
-            System.out.println(_p(array_equalization(((int[])(new int[]{22, 22, 22, 33, 33, 33})), 2)));
-            System.out.println(_p(array_equalization(((int[])(new int[]{1, 2, 3})), 2147483647)));
+            System.out.println(_p(array_equalization(((long[])(new long[]{1, 1, 6, 2, 4, 6, 5, 1, 7, 2, 2, 1, 7, 2, 2})), 4L)));
+            System.out.println(_p(array_equalization(((long[])(new long[]{22, 81, 88, 71, 22, 81, 632, 81, 81, 22, 92})), 2L)));
+            System.out.println(_p(array_equalization(((long[])(new long[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})), 5L)));
+            System.out.println(_p(array_equalization(((long[])(new long[]{22, 22, 22, 33, 33, 33})), 2L)));
+            System.out.println(_p(array_equalization(((long[])(new long[]{1, 2, 3})), 2147483647L)));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -103,6 +103,18 @@ public class Main {
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
+    }
+
+    static long _geti(long[] a, int i) {
+        if (a == null) return 0L;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return 0L;
+        return a[i];
     }
 }

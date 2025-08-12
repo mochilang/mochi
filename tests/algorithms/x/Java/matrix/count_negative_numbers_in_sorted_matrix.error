@@ -1,2 +1,3 @@
+run: exit status 1
 Exception in thread "main" java.lang.ClassCastException: class [Ljava.lang.Object; cannot be cast to class [[[J ([Ljava.lang.Object; and [[[J are in module java.base of loader 'bootstrap')
 	at Main.main(Main.java:106)

@@ -1,6 +1,6 @@
 compile: exit status 1
-/tmp/TestJavaTranspiler_Algorithms_Golden734_input_data3428084220/001/Main.java:88: error: incompatible types: Object cannot be converted to int[][]
-            return new BatchResult(new_ds, batch_images, batch_labels);
-                                           ^
+/tmp/TestJavaTranspiler_Algorithms_Golden734_input_data1213957190/001/Main.java:88: error: incompatible types: Object cannot be converted to long[][]
+            return new BatchResult(new_ds_2, batch_images_2, batch_labels_2);
+                                             ^
 Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
 1 error

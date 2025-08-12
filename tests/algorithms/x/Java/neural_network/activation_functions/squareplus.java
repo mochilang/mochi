@@ -1,35 +1,35 @@
 public class Main {
 
     static double sqrtApprox(double x) {
-        if (x <= 0.0) {
+        if ((double)(x) <= 0.0) {
             return 0.0;
         }
-        double guess = x;
-        int i = 0;
-        while (i < 20) {
-            guess = (guess + x / guess) / 2.0;
-            i = i + 1;
+        double guess_1 = (double)(x);
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(20)) {
+            guess_1 = ((double)(guess_1) + (double)(x) / (double)(guess_1)) / 2.0;
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
-        return guess;
+        return guess_1;
     }
 
     static double[] squareplus(double[] vector, double beta) {
         double[] result = ((double[])(new double[]{}));
-        int i_1 = 0;
-        while (i_1 < vector.length) {
-            double x = vector[i_1];
-            double val = (x + sqrtApprox(x * x + beta)) / 2.0;
-            result = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(result), java.util.stream.DoubleStream.of(val)).toArray()));
-            i_1 = i_1 + 1;
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(vector.length)) {
+            double x_1 = (double)(_getd(vector, (int)((long)(i_3))));
+            double val_1 = ((double)(x_1) + (double)(sqrtApprox((double)(x_1) * (double)(x_1) + (double)(beta)))) / 2.0;
+            result = ((double[])(appendDouble(result, val_1)));
+            i_3 = (long)((long)(i_3) + (long)(1));
         }
         return result;
     }
 
     static void main() {
         double[] v1 = ((double[])(new double[]{2.3, 0.6, -2.0, -3.8}));
-        double[] v2 = ((double[])(new double[]{-9.2, -0.3, 0.45, -4.56}));
+        double[] v2_1 = ((double[])(new double[]{-9.2, -0.3, 0.45, -4.56}));
         System.out.println(_p(squareplus(((double[])(v1)), 2.0)));
-        System.out.println(_p(squareplus(((double[])(v2)), 3.0)));
+        System.out.println(_p(squareplus(((double[])(v2_1)), 3.0)));
     }
     public static void main(String[] args) {
         {
@@ -69,6 +69,12 @@ public class Main {
         return rt.totalMemory() - rt.freeMemory();
     }
 
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
+    }
+
     static String _p(Object v) {
         if (v == null) return "<nil>";
         if (v.getClass().isArray()) {
@@ -82,6 +88,18 @@ public class Main {
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
+    }
+
+    static double _getd(double[] a, int i) {
+        if (a == null) return 0.0;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return 0.0;
+        return a[i];
     }
 }

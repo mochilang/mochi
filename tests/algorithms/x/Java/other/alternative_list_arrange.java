@@ -2,8 +2,8 @@ public class Main {
     interface Item {}
 
     static class Int implements Item {
-        int value;
-        Int(int value) {
+        long value;
+        Int(long value) {
             this.value = value;
         }
         Int() {}
@@ -28,12 +28,12 @@ public class Main {
     static Item[] example3;
     static Item[] example4;
 
-    static Item from_int(int x) {
-        return new Int(x);
+    static Item from_int(long x) {
+        return ((Item)(new Int(x)));
     }
 
     static Item from_string(String s) {
-        return new Str(s);
+        return ((Item)(new Str(s)));
     }
 
     static String item_to_string(Item it) {
@@ -41,32 +41,32 @@ public class Main {
     }
 
     static Item[] alternative_list_arrange(Item[] first, Item[] second) {
-        int len1 = first.length;
-        int len2 = second.length;
-        int abs_len = len1 > len2 ? len1 : len2;
-        Item[] result = ((Item[])(new Item[]{}));
-        int i = 0;
-        while (i < abs_len) {
-            if (i < len1) {
-                result = ((Item[])(java.util.stream.Stream.concat(java.util.Arrays.stream(result), java.util.stream.Stream.of(first[i])).toArray(Item[]::new)));
+        long len1 = (long)(first.length);
+        long len2_1 = (long)(second.length);
+        long abs_len_1 = (long)((long)(len1) > (long)(len2_1) ? len1 : len2_1);
+        Item[] result_1 = ((Item[])(new Item[]{}));
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(abs_len_1)) {
+            if ((long)(i_1) < (long)(len1)) {
+                result_1 = ((Item[])(java.util.stream.Stream.concat(java.util.Arrays.stream(result_1), java.util.stream.Stream.of(((Item)_geto(first, (int)((long)(i_1)))))).toArray(Item[]::new)));
             }
-            if (i < len2) {
-                result = ((Item[])(java.util.stream.Stream.concat(java.util.Arrays.stream(result), java.util.stream.Stream.of(second[i])).toArray(Item[]::new)));
+            if ((long)(i_1) < (long)(len2_1)) {
+                result_1 = ((Item[])(java.util.stream.Stream.concat(java.util.Arrays.stream(result_1), java.util.stream.Stream.of(((Item)_geto(second, (int)((long)(i_1)))))).toArray(Item[]::new)));
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
-        return result;
+        return result_1;
     }
 
     static String list_to_string(Item[] xs) {
         String s = "[";
-        int i_1 = 0;
-        while (i_1 < xs.length) {
-            s = s + String.valueOf(item_to_string(xs[i_1]));
-            if (i_1 < xs.length - 1) {
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(xs.length)) {
+            s = s + String.valueOf(item_to_string(((Item)_geto(xs, (int)((long)(i_3))))));
+            if ((long)(i_3) < (long)((long)(xs.length) - (long)(1))) {
                 s = s + ", ";
             }
-            i_1 = i_1 + 1;
+            i_3 = (long)((long)(i_3) + (long)(1));
         }
         s = s + "]";
         return s;
@@ -75,13 +75,13 @@ public class Main {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            example1 = ((Item[])(alternative_list_arrange(((Item[])(new Item[]{from_int(1), from_int(2), from_int(3), from_int(4), from_int(5)})), ((Item[])(new Item[]{from_string("A"), from_string("B"), from_string("C")})))));
+            example1 = ((Item[])(alternative_list_arrange(((Item[])(new Item[]{from_int(1L), from_int(2L), from_int(3L), from_int(4L), from_int(5L)})), ((Item[])(new Item[]{from_string("A"), from_string("B"), from_string("C")})))));
             System.out.println(list_to_string(((Item[])(example1))));
-            example2 = ((Item[])(alternative_list_arrange(((Item[])(new Item[]{from_string("A"), from_string("B"), from_string("C")})), ((Item[])(new Item[]{from_int(1), from_int(2), from_int(3), from_int(4), from_int(5)})))));
+            example2 = ((Item[])(alternative_list_arrange(((Item[])(new Item[]{from_string("A"), from_string("B"), from_string("C")})), ((Item[])(new Item[]{from_int(1L), from_int(2L), from_int(3L), from_int(4L), from_int(5L)})))));
             System.out.println(list_to_string(((Item[])(example2))));
-            example3 = ((Item[])(alternative_list_arrange(((Item[])(new Item[]{from_string("X"), from_string("Y"), from_string("Z")})), ((Item[])(new Item[]{from_int(9), from_int(8), from_int(7), from_int(6)})))));
+            example3 = ((Item[])(alternative_list_arrange(((Item[])(new Item[]{from_string("X"), from_string("Y"), from_string("Z")})), ((Item[])(new Item[]{from_int(9L), from_int(8L), from_int(7L), from_int(6L)})))));
             System.out.println(list_to_string(((Item[])(example3))));
-            example4 = ((Item[])(alternative_list_arrange(((Item[])(new Item[]{from_int(1), from_int(2), from_int(3), from_int(4), from_int(5)})), ((Item[])(new Item[]{})))));
+            example4 = ((Item[])(alternative_list_arrange(((Item[])(new Item[]{from_int(1L), from_int(2L), from_int(3L), from_int(4L), from_int(5L)})), ((Item[])(new Item[]{})))));
             System.out.println(list_to_string(((Item[])(example4))));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
@@ -129,6 +129,18 @@ public class Main {
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
+    }
+
+    static Object _geto(Object[] a, int i) {
+        if (a == null) return null;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return null;
+        return a[i];
     }
 }

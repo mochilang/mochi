@@ -1,8 +1,8 @@
 public class Main {
     static class Coord {
-        int x;
-        int y;
-        Coord(int x, int y) {
+        long x;
+        long y;
+        Coord(long x, long y) {
             this.x = x;
             this.y = y;
         }
@@ -14,8 +14,8 @@ public class Main {
 
     static class PlayResult {
         String[][] matrix;
-        int score;
-        PlayResult(String[][] matrix, int score) {
+        long score;
+        PlayResult(String[][] matrix, long score) {
             this.matrix = matrix;
             this.score = score;
         }
@@ -30,275 +30,275 @@ public class Main {
         return ((ch.compareTo("0") >= 0) && (ch.compareTo("9") <= 0)) || ((ch.compareTo("A") >= 0) && (ch.compareTo("Z") <= 0)) || ((ch.compareTo("a") >= 0) && (ch.compareTo("z") <= 0));
     }
 
-    static int to_int(String token) {
-        int res = 0;
-        int i = 0;
-        while (i < _runeLen(token)) {
-            res = res * 10 + (Integer.parseInt(_substr(token, i, i + 1)));
-            i = i + 1;
+    static long to_int(String token) {
+        long res = 0L;
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(_runeLen(token))) {
+            res = (long)((long)((long)(res) * (long)(10)) + (long)((Integer.parseInt(_substr(token, (int)((long)(i_1)), (int)((long)((long)(i_1) + (long)(1))))))));
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
         return res;
     }
 
     static String[] split(String s, String sep) {
         String[] res_1 = ((String[])(new String[]{}));
-        String current = "";
-        int i_1 = 0;
-        while (i_1 < _runeLen(s)) {
-            String ch = _substr(s, i_1, i_1 + 1);
-            if ((ch.equals(sep))) {
-                res_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_1), java.util.stream.Stream.of(current)).toArray(String[]::new)));
-                current = "";
+        String current_1 = "";
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(_runeLen(s))) {
+            String ch_1 = _substr(s, (int)((long)(i_3)), (int)((long)((long)(i_3) + (long)(1))));
+            if ((ch_1.equals(sep))) {
+                res_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_1), java.util.stream.Stream.of(current_1)).toArray(String[]::new)));
+                current_1 = "";
             } else {
-                current = current + ch;
+                current_1 = current_1 + ch_1;
             }
-            i_1 = i_1 + 1;
+            i_3 = (long)((long)(i_3) + (long)(1));
         }
-        res_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_1), java.util.stream.Stream.of(current)).toArray(String[]::new)));
+        res_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_1), java.util.stream.Stream.of(current_1)).toArray(String[]::new)));
         return res_1;
     }
 
     static Coord[] parse_moves(String input_str) {
         String[] pairs = ((String[])(input_str.split(java.util.regex.Pattern.quote(","))));
-        Coord[] moves = ((Coord[])(new Coord[]{}));
-        int i_2 = 0;
-        while (i_2 < pairs.length) {
-            String pair = pairs[i_2];
-            String[] numbers = ((String[])(new String[]{}));
-            String num = "";
-            int j = 0;
-            while (j < _runeLen(pair)) {
-                String ch_1 = _substr(pair, j, j + 1);
-                if ((ch_1.equals(" "))) {
-                    if (!(num.equals(""))) {
-                        numbers = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(numbers), java.util.stream.Stream.of(num)).toArray(String[]::new)));
-                        num = "";
+        Coord[] moves_1 = ((Coord[])(new Coord[]{}));
+        long i_5 = 0L;
+        while ((long)(i_5) < (long)(pairs.length)) {
+            String pair_1 = ((String)_geto(pairs, (int)((long)(i_5))));
+            String[] numbers_1 = ((String[])(new String[]{}));
+            String num_1 = "";
+            long j_1 = 0L;
+            while ((long)(j_1) < (long)(_runeLen(pair_1))) {
+                String ch_3 = _substr(pair_1, (int)((long)(j_1)), (int)((long)((long)(j_1) + (long)(1))));
+                if ((ch_3.equals(" "))) {
+                    if (!(num_1.equals(""))) {
+                        numbers_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(numbers_1), java.util.stream.Stream.of(num_1)).toArray(String[]::new)));
+                        num_1 = "";
                     }
                 } else {
-                    num = num + ch_1;
+                    num_1 = num_1 + ch_3;
                 }
-                j = j + 1;
+                j_1 = (long)((long)(j_1) + (long)(1));
             }
-            if (!(num.equals(""))) {
-                numbers = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(numbers), java.util.stream.Stream.of(num)).toArray(String[]::new)));
+            if (!(num_1.equals(""))) {
+                numbers_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(numbers_1), java.util.stream.Stream.of(num_1)).toArray(String[]::new)));
             }
-            if (numbers.length != 2) {
+            if ((long)(numbers_1.length) != (long)(2)) {
                 throw new RuntimeException(String.valueOf("Each move must have exactly two numbers."));
             }
-            int x = to_int(numbers[0]);
-            int y = to_int(numbers[1]);
-            moves = ((Coord[])(java.util.stream.Stream.concat(java.util.Arrays.stream(moves), java.util.stream.Stream.of(new Coord(x, y))).toArray(Coord[]::new)));
-            i_2 = i_2 + 1;
+            long x_1 = to_int(((String)_geto(numbers_1, (int)((long)(0)))));
+            long y_1 = to_int(((String)_geto(numbers_1, (int)((long)(1)))));
+            moves_1 = ((Coord[])(java.util.stream.Stream.concat(java.util.Arrays.stream(moves_1), java.util.stream.Stream.of(new Coord(x_1, y_1))).toArray(Coord[]::new)));
+            i_5 = (long)((long)(i_5) + (long)(1));
         }
-        return moves;
+        return moves_1;
     }
 
-    static void validate_matrix_size(int size) {
-        if (size <= 0) {
+    static void validate_matrix_size(long size) {
+        if (size <= (long)(0)) {
             throw new RuntimeException(String.valueOf("Matrix size must be a positive integer."));
         }
     }
 
-    static void validate_matrix_content(String[] matrix, int size) {
-        if (matrix.length != size) {
+    static void validate_matrix_content(String[] matrix, long size) {
+        if ((long)(matrix.length) != size) {
             throw new RuntimeException(String.valueOf("The matrix dont match with size."));
         }
-        int i_3 = 0;
-        while (i_3 < size) {
-            String row = matrix[i_3];
-            if (_runeLen(row) != size) {
+        long i_7 = 0L;
+        while ((long)(i_7) < size) {
+            String row_1 = ((String)_geto(matrix, (int)((long)(i_7))));
+            if ((long)(_runeLen(row_1)) != size) {
                 throw new RuntimeException(String.valueOf("Each row in the matrix must have exactly " + _p(size) + " characters."));
             }
-            int j_1 = 0;
-            while (j_1 < size) {
-                String ch_2 = _substr(row, j_1, j_1 + 1);
-                if (!(Boolean)is_alnum(ch_2)) {
+            long j_3 = 0L;
+            while ((long)(j_3) < size) {
+                String ch_5 = _substr(row_1, (int)((long)(j_3)), (int)((long)((long)(j_3) + (long)(1))));
+                if (!(Boolean)is_alnum(ch_5)) {
                     throw new RuntimeException(String.valueOf("Matrix rows can only contain letters and numbers."));
                 }
-                j_1 = j_1 + 1;
+                j_3 = (long)((long)(j_3) + (long)(1));
             }
-            i_3 = i_3 + 1;
+            i_7 = (long)((long)(i_7) + (long)(1));
         }
     }
 
-    static void validate_moves(Coord[] moves, int size) {
-        int i_4 = 0;
-        while (i_4 < moves.length) {
-            Coord mv = moves[i_4];
-            if (mv.x < 0 || mv.x >= size || mv.y < 0 || mv.y >= size) {
+    static void validate_moves(Coord[] moves, long size) {
+        long i_8 = 0L;
+        while ((long)(i_8) < (long)(moves.length)) {
+            Coord mv_1 = ((Coord)_geto(moves, (int)((long)(i_8))));
+            if ((long)(mv_1.x) < (long)(0) || (long)(mv_1.x) >= size || (long)(mv_1.y) < (long)(0) || (long)(mv_1.y) >= size) {
                 throw new RuntimeException(String.valueOf("Move is out of bounds for a matrix."));
             }
-            i_4 = i_4 + 1;
+            i_8 = (long)((long)(i_8) + (long)(1));
         }
     }
 
-    static boolean contains(Coord[] pos, int r, int c) {
-        int i_5 = 0;
-        while (i_5 < pos.length) {
-            Coord p = pos[i_5];
-            if (p.x == r && p.y == c) {
+    static boolean contains(Coord[] pos, long r, long c) {
+        long i_9 = 0L;
+        while ((long)(i_9) < (long)(pos.length)) {
+            Coord p_1 = ((Coord)_geto(pos, (int)((long)(i_9))));
+            if ((long)(p_1.x) == r && (long)(p_1.y) == c) {
                 return true;
             }
-            i_5 = i_5 + 1;
+            i_9 = (long)((long)(i_9) + (long)(1));
         }
         return false;
     }
 
-    static Coord[] find_repeat(String[][] matrix_g, int row, int column, int size) {
-        column = size - 1 - column;
-        Coord[] visited = ((Coord[])(new Coord[]{}));
-        Coord[] repeated = ((Coord[])(new Coord[]{}));
-        String color = matrix_g[column][row];
-        if ((color.equals("-"))) {
-            return repeated;
+    static Coord[] find_repeat(String[][] matrix_g, long row, long column, long size) {
+        column = (long)((long)(size - (long)(1)) - column);
+        Coord[] visited_1 = ((Coord[])(new Coord[]{}));
+        Coord[] repeated_1 = ((Coord[])(new Coord[]{}));
+        String color_1 = ((String)_geto(((String[])_geto(matrix_g, (int)((long)(column)))), (int)((long)(row))));
+        if ((color_1.equals("-"))) {
+            return repeated_1;
         }
-        Coord[] stack = ((Coord[])(new Coord[]{new Coord(column, row)}));
-        while (stack.length > 0) {
-            int idx = stack.length - 1;
-            Coord pos = stack[idx];
-            stack = ((Coord[])(java.util.Arrays.copyOfRange(stack, 0, idx)));
-            if (pos.x < 0 || pos.x >= size || pos.y < 0 || pos.y >= size) {
+        Coord[] stack_1 = ((Coord[])(new Coord[]{new Coord(column, row)}));
+        while ((long)(stack_1.length) > (long)(0)) {
+            long idx_1 = (long)((long)(stack_1.length) - (long)(1));
+            Coord pos_1 = ((Coord)_geto(stack_1, (int)((long)(idx_1))));
+            stack_1 = ((Coord[])(java.util.Arrays.copyOfRange(stack_1, (int)((long)(0)), (int)((long)(idx_1)))));
+            if ((long)(pos_1.x) < (long)(0) || (long)(pos_1.x) >= size || (long)(pos_1.y) < (long)(0) || (long)(pos_1.y) >= size) {
                 continue;
             }
-            if (((Boolean)(contains(((Coord[])(visited)), pos.x, pos.y)))) {
+            if (contains(((Coord[])(visited_1)), (long)(pos_1.x), (long)(pos_1.y))) {
                 continue;
             }
-            visited = ((Coord[])(java.util.stream.Stream.concat(java.util.Arrays.stream(visited), java.util.stream.Stream.of(pos)).toArray(Coord[]::new)));
-            if ((matrix_g[pos.x][pos.y].equals(color))) {
-                repeated = ((Coord[])(java.util.stream.Stream.concat(java.util.Arrays.stream(repeated), java.util.stream.Stream.of(pos)).toArray(Coord[]::new)));
-                stack = ((Coord[])(java.util.stream.Stream.concat(java.util.Arrays.stream(stack), java.util.stream.Stream.of(new Coord(pos.x - 1, pos.y))).toArray(Coord[]::new)));
-                stack = ((Coord[])(java.util.stream.Stream.concat(java.util.Arrays.stream(stack), java.util.stream.Stream.of(new Coord(pos.x + 1, pos.y))).toArray(Coord[]::new)));
-                stack = ((Coord[])(java.util.stream.Stream.concat(java.util.Arrays.stream(stack), java.util.stream.Stream.of(new Coord(pos.x, pos.y - 1))).toArray(Coord[]::new)));
-                stack = ((Coord[])(java.util.stream.Stream.concat(java.util.Arrays.stream(stack), java.util.stream.Stream.of(new Coord(pos.x, pos.y + 1))).toArray(Coord[]::new)));
+            visited_1 = ((Coord[])(java.util.stream.Stream.concat(java.util.Arrays.stream(visited_1), java.util.stream.Stream.of(pos_1)).toArray(Coord[]::new)));
+            if ((((String)_geto(((String[])_geto(matrix_g, (int)((long)(pos_1.x)))), (int)((long)(pos_1.y)))).equals(color_1))) {
+                repeated_1 = ((Coord[])(java.util.stream.Stream.concat(java.util.Arrays.stream(repeated_1), java.util.stream.Stream.of(pos_1)).toArray(Coord[]::new)));
+                stack_1 = ((Coord[])(java.util.stream.Stream.concat(java.util.Arrays.stream(stack_1), java.util.stream.Stream.of(new Coord((long)(pos_1.x) - (long)(1), pos_1.y))).toArray(Coord[]::new)));
+                stack_1 = ((Coord[])(java.util.stream.Stream.concat(java.util.Arrays.stream(stack_1), java.util.stream.Stream.of(new Coord((long)(pos_1.x) + (long)(1), pos_1.y))).toArray(Coord[]::new)));
+                stack_1 = ((Coord[])(java.util.stream.Stream.concat(java.util.Arrays.stream(stack_1), java.util.stream.Stream.of(new Coord(pos_1.x, (long)(pos_1.y) - (long)(1)))).toArray(Coord[]::new)));
+                stack_1 = ((Coord[])(java.util.stream.Stream.concat(java.util.Arrays.stream(stack_1), java.util.stream.Stream.of(new Coord(pos_1.x, (long)(pos_1.y) + (long)(1)))).toArray(Coord[]::new)));
             }
         }
-        return repeated;
+        return repeated_1;
     }
 
-    static int increment_score(int count) {
-        return Math.floorDiv(count * (count + 1), 2);
+    static long increment_score(long count) {
+        return ((long)(Math.floorDiv(count * (long)((count + (long)(1))), 2)));
     }
 
-    static String[][] move_x(String[][] matrix_g, int column, int size) {
+    static String[][] move_x(String[][] matrix_g, long column, long size) {
         String[] new_list = ((String[])(new String[]{}));
-        int row_1 = 0;
-        while (row_1 < size) {
-            String val = matrix_g[row_1][column];
-            if (!(val.equals("-"))) {
-                new_list = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(new_list), java.util.stream.Stream.of(val)).toArray(String[]::new)));
+        long row_3 = 0L;
+        while ((long)(row_3) < size) {
+            String val_1 = ((String)_geto(((String[])_geto(matrix_g, (int)((long)(row_3)))), (int)((long)(column))));
+            if (!(val_1.equals("-"))) {
+                new_list = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(new_list), java.util.stream.Stream.of(val_1)).toArray(String[]::new)));
             } else {
-                new_list = ((String[])(concat(new String[]{val}, new_list)));
+                new_list = ((String[])(concat(new String[]{val_1}, new_list)));
             }
-            row_1 = row_1 + 1;
+            row_3 = (long)((long)(row_3) + (long)(1));
         }
-        row_1 = 0;
-        while (row_1 < size) {
-matrix_g[row_1][column] = new_list[row_1];
-            row_1 = row_1 + 1;
+        row_3 = (long)(0);
+        while ((long)(row_3) < size) {
+((String[])_geto(matrix_g, (int)((long)(row_3))))[(int)((long)(column))] = ((String)_geto(new_list, (int)((long)(row_3))));
+            row_3 = (long)((long)(row_3) + (long)(1));
         }
         return matrix_g;
     }
 
-    static String[][] move_y(String[][] matrix_g, int size) {
-        int[] empty_cols = ((int[])(new int[]{}));
-        int column = size - 1;
-        while (column >= 0) {
-            int row_2 = 0;
-            boolean all_empty = true;
-            while (row_2 < size) {
-                if (!(matrix_g[row_2][column].equals("-"))) {
-                    all_empty = false;
+    static String[][] move_y(String[][] matrix_g, long size) {
+        long[] empty_cols = ((long[])(new long[]{}));
+        long column_1 = (long)(size - (long)(1));
+        while ((long)(column_1) >= (long)(0)) {
+            long row_5 = 0L;
+            boolean all_empty_1 = true;
+            while ((long)(row_5) < size) {
+                if (!(((String)_geto(((String[])_geto(matrix_g, (int)((long)(row_5)))), (int)((long)(column_1)))).equals("-"))) {
+                    all_empty_1 = false;
                     break;
                 }
-                row_2 = row_2 + 1;
+                row_5 = (long)((long)(row_5) + (long)(1));
             }
-            if (all_empty) {
-                empty_cols = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(empty_cols), java.util.stream.IntStream.of(column)).toArray()));
+            if (all_empty_1) {
+                empty_cols = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(empty_cols), java.util.stream.LongStream.of((long)(column_1))).toArray()));
             }
-            column = column - 1;
+            column_1 = (long)((long)(column_1) - (long)(1));
         }
-        int i_6 = 0;
-        while (i_6 < empty_cols.length) {
-            int col = empty_cols[i_6];
-            int c = col + 1;
-            while (c < size) {
-                int r = 0;
-                while (r < size) {
-matrix_g[r][c - 1] = matrix_g[r][c];
-                    r = r + 1;
+        long i_11 = 0L;
+        while ((long)(i_11) < (long)(empty_cols.length)) {
+            long col_1 = _geti(empty_cols, (int)((long)(i_11)));
+            long c_1 = (long)(col_1 + (long)(1));
+            while ((long)(c_1) < size) {
+                long r_2 = 0L;
+                while ((long)(r_2) < size) {
+((String[])_geto(matrix_g, (int)((long)(r_2))))[(int)((long)((long)(c_1) - (long)(1)))] = ((String)_geto(((String[])_geto(matrix_g, (int)((long)(r_2)))), (int)((long)(c_1))));
+                    r_2 = (long)((long)(r_2) + (long)(1));
                 }
-                c = c + 1;
+                c_1 = (long)((long)(c_1) + (long)(1));
             }
-            int r_1 = 0;
-            while (r_1 < size) {
-matrix_g[r_1][size - 1] = "-";
-                r_1 = r_1 + 1;
+            long r_3 = 0L;
+            while ((long)(r_3) < size) {
+((String[])_geto(matrix_g, (int)((long)(r_3))))[(int)((long)(size - (long)(1)))] = "-";
+                r_3 = (long)((long)(r_3) + (long)(1));
             }
-            i_6 = i_6 + 1;
+            i_11 = (long)((long)(i_11) + (long)(1));
         }
         return matrix_g;
     }
 
-    static PlayResult play(String[][] matrix_g, int pos_x, int pos_y, int size) {
+    static PlayResult play(String[][] matrix_g, long pos_x, long pos_y, long size) {
         Coord[] same_colors = ((Coord[])(find_repeat(((String[][])(matrix_g)), pos_x, pos_y, size)));
-        if (same_colors.length != 0) {
-            int i_7 = 0;
-            while (i_7 < same_colors.length) {
-                Coord p_1 = same_colors[i_7];
-matrix_g[p_1.x][p_1.y] = "-";
-                i_7 = i_7 + 1;
+        if ((long)(same_colors.length) != (long)(0)) {
+            long i_13 = 0L;
+            while ((long)(i_13) < (long)(same_colors.length)) {
+                Coord p_3 = ((Coord)_geto(same_colors, (int)((long)(i_13))));
+((String[])_geto(matrix_g, (int)((long)(p_3.x))))[(int)((long)(p_3.y))] = "-";
+                i_13 = (long)((long)(i_13) + (long)(1));
             }
-            int column_1 = 0;
-            while (column_1 < size) {
-                matrix_g = ((String[][])(move_x(((String[][])(matrix_g)), column_1, size)));
-                column_1 = column_1 + 1;
+            long column_3 = 0L;
+            while ((long)(column_3) < size) {
+                matrix_g = ((String[][])(move_x(((String[][])(matrix_g)), (long)(column_3), size)));
+                column_3 = (long)((long)(column_3) + (long)(1));
             }
             matrix_g = ((String[][])(move_y(((String[][])(matrix_g)), size)));
         }
-        int sc = increment_score(same_colors.length);
-        return new PlayResult(matrix_g, sc);
+        long sc_1 = increment_score((long)(same_colors.length));
+        return new PlayResult(matrix_g, sc_1);
     }
 
     static String[][] build_matrix(String[] matrix) {
         String[][] res_2 = ((String[][])(new String[][]{}));
-        int i_8 = 0;
-        while (i_8 < matrix.length) {
-            String row_3 = matrix[i_8];
-            String[] row_list = ((String[])(new String[]{}));
-            int j_2 = 0;
-            while (j_2 < _runeLen(row_3)) {
-                row_list = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(row_list), java.util.stream.Stream.of(_substr(row_3, j_2, j_2 + 1))).toArray(String[]::new)));
-                j_2 = j_2 + 1;
+        long i_15 = 0L;
+        while ((long)(i_15) < (long)(matrix.length)) {
+            String row_7 = ((String)_geto(matrix, (int)((long)(i_15))));
+            String[] row_list_1 = ((String[])(new String[]{}));
+            long j_5 = 0L;
+            while ((long)(j_5) < (long)(_runeLen(row_7))) {
+                row_list_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(row_list_1), java.util.stream.Stream.of(_substr(row_7, (int)((long)(j_5)), (int)((long)((long)(j_5) + (long)(1)))))).toArray(String[]::new)));
+                j_5 = (long)((long)(j_5) + (long)(1));
             }
-            res_2 = ((String[][])(appendObj(res_2, row_list)));
-            i_8 = i_8 + 1;
+            res_2 = ((String[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_2), java.util.stream.Stream.of(row_list_1)).toArray(String[][]::new)));
+            i_15 = (long)((long)(i_15) + (long)(1));
         }
         return res_2;
     }
 
-    static int process_game(int size, String[] matrix, Coord[] moves) {
+    static long process_game(long size, String[] matrix, Coord[] moves) {
         String[][] game_matrix = ((String[][])(build_matrix(((String[])(matrix)))));
-        int total = 0;
-        int i_9 = 0;
-        while (i_9 < moves.length) {
-            Coord mv_1 = moves[i_9];
-            PlayResult res_3 = play(((String[][])(game_matrix)), mv_1.x, mv_1.y, size);
-            game_matrix = ((String[][])(res_3.matrix));
-            total = total + res_3.score;
-            i_9 = i_9 + 1;
+        long total_1 = 0L;
+        long i_17 = 0L;
+        while ((long)(i_17) < (long)(moves.length)) {
+            Coord mv_3 = ((Coord)_geto(moves, (int)((long)(i_17))));
+            PlayResult res_4 = play(((String[][])(game_matrix)), (long)(mv_3.x), (long)(mv_3.y), size);
+            game_matrix = ((String[][])(res_4.matrix));
+            total_1 = (long)((long)(total_1) + (long)(res_4.score));
+            i_17 = (long)((long)(i_17) + (long)(1));
         }
-        return total;
+        return total_1;
     }
 
     static void main() {
-        int size = 4;
-        String[] matrix = ((String[])(new String[]{"RRBG", "RBBG", "YYGG", "XYGG"}));
-        Coord[] moves_1 = ((Coord[])(parse_moves("0 1,1 1")));
-        validate_matrix_size(size);
-        validate_matrix_content(((String[])(matrix)), size);
-        validate_moves(((Coord[])(moves_1)), size);
-        int score = process_game(size, ((String[])(matrix)), ((Coord[])(moves_1)));
-        System.out.println(_p(score));
+        long size = (long)(4);
+        String[] matrix_1 = ((String[])(new String[]{"RRBG", "RBBG", "YYGG", "XYGG"}));
+        Coord[] moves_3 = ((Coord[])(parse_moves("0 1,1 1")));
+        validate_matrix_size((long)(size));
+        validate_matrix_content(((String[])(matrix_1)), (long)(size));
+        validate_moves(((Coord[])(moves_3)), (long)(size));
+        long score_1 = process_game((long)(size), ((String[])(matrix_1)), ((Coord[])(moves_3)));
+        System.out.println(_p(score_1));
     }
     public static void main(String[] args) {
         {
@@ -338,12 +338,6 @@ matrix_g[p_1.x][p_1.y] = "-";
         return rt.totalMemory() - rt.freeMemory();
     }
 
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
-    }
-
     static <T> T[] concat(T[] a, T[] b) {
         T[] out = java.util.Arrays.copyOf(a, a.length + b.length);
         System.arraycopy(b, 0, out, a.length, b.length);
@@ -355,6 +349,10 @@ matrix_g[p_1.x][p_1.y] = "-";
     }
 
     static String _substr(String s, int i, int j) {
+        int len = _runeLen(s);
+        if (i < 0) i = 0;
+        if (j > len) j = len;
+        if (i > j) i = j;
         int start = s.offsetByCodePoints(0, i);
         int end = s.offsetByCodePoints(0, j);
         return s.substring(start, end);
@@ -373,6 +371,25 @@ matrix_g[p_1.x][p_1.y] = "-";
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
+    }
+
+    static long _geti(long[] a, int i) {
+        if (a == null) return 0L;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return 0L;
+        return a[i];
+    }
+
+    static Object _geto(Object[] a, int i) {
+        if (a == null) return null;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return null;
+        return a[i];
     }
 }

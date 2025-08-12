@@ -1,9 +1,9 @@
 public class Main {
     static class Matrix {
         double[][] data;
-        int rows;
-        int cols;
-        Matrix(double[][] data, int rows, int cols) {
+        long rows;
+        long cols;
+        Matrix(double[][] data, long rows, long cols) {
             this.data = data;
             this.rows = rows;
             this.cols = cols;
@@ -16,197 +16,197 @@ public class Main {
 
 
     static Matrix make_matrix(double[][] values) {
-        int r = values.length;
-        if (r == 0) {
+        long r = (long)(values.length);
+        if ((long)(r) == (long)(0)) {
             return new Matrix(new double[][]{}, 0, 0);
         }
-        int c = values[0].length;
-        int i = 0;
-        while (i < r) {
-            if (values[i].length != c) {
+        long c_1 = (long)(((double[])_geto(values, (int)((long)(0)))).length);
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(r)) {
+            if ((long)(((double[])_geto(values, (int)((long)(i_1)))).length) != (long)(c_1)) {
                 return new Matrix(new double[][]{}, 0, 0);
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
-        return new Matrix(values, r, c);
+        return new Matrix(values, r, c_1);
     }
 
     static double[][] matrix_columns(Matrix m) {
         double[][] cols = ((double[][])(new double[][]{}));
-        int j = 0;
-        while (j < m.cols) {
-            double[] col = ((double[])(new double[]{}));
-            int i_1 = 0;
-            while (i_1 < m.rows) {
-                col = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(col), java.util.stream.DoubleStream.of(m.data[i_1][j])).toArray()));
-                i_1 = i_1 + 1;
+        long j_1 = 0L;
+        while ((long)(j_1) < (long)(m.cols)) {
+            double[] col_1 = ((double[])(new double[]{}));
+            long i_3 = 0L;
+            while ((long)(i_3) < (long)(m.rows)) {
+                col_1 = ((double[])(appendDouble(col_1, _getd(((double[])_geto(m.data, (int)((long)(i_3)))), (int)((long)(j_1))))));
+                i_3 = (long)((long)(i_3) + (long)(1));
             }
-            cols = ((double[][])(appendObj(cols, col)));
-            j = j + 1;
+            cols = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(cols), java.util.stream.Stream.of(col_1)).toArray(double[][]::new)));
+            j_1 = (long)((long)(j_1) + (long)(1));
         }
         return cols;
     }
 
     static Matrix matrix_identity(Matrix m) {
         double[][] vals = ((double[][])(new double[][]{}));
-        int i_2 = 0;
-        while (i_2 < m.rows) {
-            double[] row = ((double[])(new double[]{}));
-            int j_1 = 0;
-            while (j_1 < m.cols) {
-                double v = i_2 == j_1 ? 1.0 : 0.0;
-                row = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row), java.util.stream.DoubleStream.of(v)).toArray()));
-                j_1 = j_1 + 1;
+        long i_5 = 0L;
+        while ((long)(i_5) < (long)(m.rows)) {
+            double[] row_1 = ((double[])(new double[]{}));
+            long j_3 = 0L;
+            while ((long)(j_3) < (long)(m.cols)) {
+                double v_1 = (long)(i_5) == (long)(j_3) ? 1.0 : 0.0;
+                row_1 = ((double[])(appendDouble(row_1, v_1)));
+                j_3 = (long)((long)(j_3) + (long)(1));
             }
-            vals = ((double[][])(appendObj(vals, row)));
-            i_2 = i_2 + 1;
+            vals = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(vals), java.util.stream.Stream.of(row_1)).toArray(double[][]::new)));
+            i_5 = (long)((long)(i_5) + (long)(1));
         }
         return new Matrix(vals, m.rows, m.cols);
     }
 
-    static double matrix_minor(Matrix m, int r, int c) {
+    static double matrix_minor(Matrix m, long r, long c) {
         double[][] vals_1 = ((double[][])(new double[][]{}));
-        int i_3 = 0;
-        while (i_3 < m.rows) {
-            if (i_3 != r) {
-                double[] row_1 = ((double[])(new double[]{}));
-                int j_2 = 0;
-                while (j_2 < m.cols) {
-                    if (j_2 != c) {
-                        row_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row_1), java.util.stream.DoubleStream.of(m.data[i_3][j_2])).toArray()));
+        long i_7 = 0L;
+        while ((long)(i_7) < (long)(m.rows)) {
+            if ((long)(i_7) != r) {
+                double[] row_3 = ((double[])(new double[]{}));
+                long j_5 = 0L;
+                while ((long)(j_5) < (long)(m.cols)) {
+                    if ((long)(j_5) != c) {
+                        row_3 = ((double[])(appendDouble(row_3, _getd(((double[])_geto(m.data, (int)((long)(i_7)))), (int)((long)(j_5))))));
                     }
-                    j_2 = j_2 + 1;
+                    j_5 = (long)((long)(j_5) + (long)(1));
                 }
-                vals_1 = ((double[][])(appendObj(vals_1, row_1)));
+                vals_1 = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(vals_1), java.util.stream.Stream.of(row_3)).toArray(double[][]::new)));
             }
-            i_3 = i_3 + 1;
+            i_7 = (long)((long)(i_7) + (long)(1));
         }
-        Matrix sub = new Matrix(vals_1, m.rows - 1, m.cols - 1);
-        return matrix_determinant(sub);
+        Matrix sub_1 = new Matrix(vals_1, (long)(m.rows) - (long)(1), (long)(m.cols) - (long)(1));
+        return matrix_determinant(sub_1);
     }
 
-    static double matrix_cofactor(Matrix m, int r, int c) {
-        double minor = matrix_minor(m, r, c);
-        if (Math.floorMod((r + c), 2) == 0) {
+    static double matrix_cofactor(Matrix m, long r, long c) {
+        double minor = (double)(matrix_minor(m, r, c));
+        if (Math.floorMod((r + c), 2) == (long)(0)) {
             return minor;
         }
-        return -1.0 * minor;
+        return -1.0 * (double)(minor);
     }
 
     static Matrix matrix_minors(Matrix m) {
         double[][] vals_2 = ((double[][])(new double[][]{}));
-        int i_4 = 0;
-        while (i_4 < m.rows) {
-            double[] row_2 = ((double[])(new double[]{}));
-            int j_3 = 0;
-            while (j_3 < m.cols) {
-                row_2 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row_2), java.util.stream.DoubleStream.of(matrix_minor(m, i_4, j_3))).toArray()));
-                j_3 = j_3 + 1;
+        long i_9 = 0L;
+        while ((long)(i_9) < (long)(m.rows)) {
+            double[] row_5 = ((double[])(new double[]{}));
+            long j_7 = 0L;
+            while ((long)(j_7) < (long)(m.cols)) {
+                row_5 = ((double[])(appendDouble(row_5, (double)(matrix_minor(m, (long)(i_9), (long)(j_7))))));
+                j_7 = (long)((long)(j_7) + (long)(1));
             }
-            vals_2 = ((double[][])(appendObj(vals_2, row_2)));
-            i_4 = i_4 + 1;
+            vals_2 = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(vals_2), java.util.stream.Stream.of(row_5)).toArray(double[][]::new)));
+            i_9 = (long)((long)(i_9) + (long)(1));
         }
         return new Matrix(vals_2, m.rows, m.cols);
     }
 
     static Matrix matrix_cofactors(Matrix m) {
         double[][] vals_3 = ((double[][])(new double[][]{}));
-        int i_5 = 0;
-        while (i_5 < m.rows) {
-            double[] row_3 = ((double[])(new double[]{}));
-            int j_4 = 0;
-            while (j_4 < m.cols) {
-                row_3 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row_3), java.util.stream.DoubleStream.of(matrix_cofactor(m, i_5, j_4))).toArray()));
-                j_4 = j_4 + 1;
+        long i_11 = 0L;
+        while ((long)(i_11) < (long)(m.rows)) {
+            double[] row_7 = ((double[])(new double[]{}));
+            long j_9 = 0L;
+            while ((long)(j_9) < (long)(m.cols)) {
+                row_7 = ((double[])(appendDouble(row_7, (double)(matrix_cofactor(m, (long)(i_11), (long)(j_9))))));
+                j_9 = (long)((long)(j_9) + (long)(1));
             }
-            vals_3 = ((double[][])(appendObj(vals_3, row_3)));
-            i_5 = i_5 + 1;
+            vals_3 = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(vals_3), java.util.stream.Stream.of(row_7)).toArray(double[][]::new)));
+            i_11 = (long)((long)(i_11) + (long)(1));
         }
         return new Matrix(vals_3, m.rows, m.cols);
     }
 
     static double matrix_determinant(Matrix m) {
-        if (m.rows != m.cols) {
+        if ((long)(m.rows) != (long)(m.cols)) {
             return 0.0;
         }
-        if (m.rows == 0) {
+        if ((long)(m.rows) == (long)(0)) {
             return 0.0;
         }
-        if (m.rows == 1) {
-            return m.data[0][0];
+        if ((long)(m.rows) == (long)(1)) {
+            return _getd(((double[])_geto(m.data, (int)((long)(0)))), (int)((long)(0)));
         }
-        if (m.rows == 2) {
-            return m.data[0][0] * m.data[1][1] - m.data[0][1] * m.data[1][0];
+        if ((long)(m.rows) == (long)(2)) {
+            return _getd(((double[])_geto(m.data, (int)((long)(0)))), (int)((long)(0))) * _getd(((double[])_geto(m.data, (int)((long)(1)))), (int)((long)(1))) - _getd(((double[])_geto(m.data, (int)((long)(0)))), (int)((long)(1))) * _getd(((double[])_geto(m.data, (int)((long)(1)))), (int)((long)(0)));
         }
-        double sum = 0.0;
-        int j_5 = 0;
-        while (j_5 < m.cols) {
-            sum = sum + m.data[0][j_5] * matrix_cofactor(m, 0, j_5);
-            j_5 = j_5 + 1;
+        double sum_1 = 0.0;
+        long j_11 = 0L;
+        while ((long)(j_11) < (long)(m.cols)) {
+            sum_1 = sum_1 + _getd(((double[])_geto(m.data, (int)((long)(0)))), (int)((long)(j_11))) * (double)(matrix_cofactor(m, 0L, (long)(j_11)));
+            j_11 = (long)((long)(j_11) + (long)(1));
         }
-        return sum;
+        return sum_1;
     }
 
     static boolean matrix_is_invertible(Matrix m) {
-        return matrix_determinant(m) != 0.0;
+        return (double)(matrix_determinant(m)) != 0.0;
     }
 
     static Matrix matrix_adjugate(Matrix m) {
         Matrix cof = matrix_cofactors(m);
-        double[][] vals_4 = ((double[][])(new double[][]{}));
-        int i_6 = 0;
-        while (i_6 < m.rows) {
-            double[] row_4 = ((double[])(new double[]{}));
-            int j_6 = 0;
-            while (j_6 < m.cols) {
-                row_4 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row_4), java.util.stream.DoubleStream.of(cof.data[j_6][i_6])).toArray()));
-                j_6 = j_6 + 1;
+        double[][] vals_5 = ((double[][])(new double[][]{}));
+        long i_13 = 0L;
+        while ((long)(i_13) < (long)(m.rows)) {
+            double[] row_9 = ((double[])(new double[]{}));
+            long j_13 = 0L;
+            while ((long)(j_13) < (long)(m.cols)) {
+                row_9 = ((double[])(appendDouble(row_9, _getd(((double[])_geto(cof.data, (int)((long)(j_13)))), (int)((long)(i_13))))));
+                j_13 = (long)((long)(j_13) + (long)(1));
             }
-            vals_4 = ((double[][])(appendObj(vals_4, row_4)));
-            i_6 = i_6 + 1;
+            vals_5 = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(vals_5), java.util.stream.Stream.of(row_9)).toArray(double[][]::new)));
+            i_13 = (long)((long)(i_13) + (long)(1));
         }
-        return new Matrix(vals_4, m.rows, m.cols);
+        return new Matrix(vals_5, m.rows, m.cols);
     }
 
     static Matrix matrix_inverse(Matrix m) {
-        double det = matrix_determinant(m);
-        if (det == 0.0) {
+        double det = (double)(matrix_determinant(m));
+        if ((double)(det) == 0.0) {
             return new Matrix(new double[][]{}, 0, 0);
         }
-        Matrix adj = matrix_adjugate(m);
-        return matrix_mul_scalar(adj, 1.0 / det);
+        Matrix adj_1 = matrix_adjugate(m);
+        return matrix_mul_scalar(adj_1, 1.0 / (double)(det));
     }
 
     static Matrix matrix_add_row(Matrix m, double[] row) {
         double[][] newData = ((double[][])(m.data));
-        newData = ((double[][])(appendObj(newData, row)));
-        return new Matrix(newData, m.rows + 1, m.cols);
+        newData = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(newData), java.util.stream.Stream.of(row)).toArray(double[][]::new)));
+        return new Matrix(newData, (long)(m.rows) + (long)(1), m.cols);
     }
 
     static Matrix matrix_add_column(Matrix m, double[] col) {
         double[][] newData_1 = ((double[][])(new double[][]{}));
-        int i_7 = 0;
-        while (i_7 < m.rows) {
-            newData_1 = ((double[][])(appendObj(newData_1, java.util.stream.DoubleStream.concat(java.util.Arrays.stream(m.data[i_7]), java.util.stream.DoubleStream.of(col[i_7])).toArray())));
-            i_7 = i_7 + 1;
+        long i_15 = 0L;
+        while ((long)(i_15) < (long)(m.rows)) {
+            newData_1 = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(newData_1), java.util.stream.Stream.of(appendDouble(((double[])_geto(m.data, (int)((long)(i_15)))), (double)(_getd(col, (int)((long)(i_15))))))).toArray(double[][]::new)));
+            i_15 = (long)((long)(i_15) + (long)(1));
         }
-        return new Matrix(newData_1, m.rows, m.cols + 1);
+        return new Matrix(newData_1, m.rows, (long)(m.cols) + (long)(1));
     }
 
     static Matrix matrix_mul_scalar(Matrix m, double s) {
-        double[][] vals_5 = ((double[][])(new double[][]{}));
-        int i_8 = 0;
-        while (i_8 < m.rows) {
-            double[] row_5 = ((double[])(new double[]{}));
-            int j_7 = 0;
-            while (j_7 < m.cols) {
-                row_5 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row_5), java.util.stream.DoubleStream.of(m.data[i_8][j_7] * s)).toArray()));
-                j_7 = j_7 + 1;
+        double[][] vals_6 = ((double[][])(new double[][]{}));
+        long i_17 = 0L;
+        while ((long)(i_17) < (long)(m.rows)) {
+            double[] row_11 = ((double[])(new double[]{}));
+            long j_15 = 0L;
+            while ((long)(j_15) < (long)(m.cols)) {
+                row_11 = ((double[])(appendDouble(row_11, _getd(((double[])_geto(m.data, (int)((long)(i_17)))), (int)((long)(j_15))) * (double)(s))));
+                j_15 = (long)((long)(j_15) + (long)(1));
             }
-            vals_5 = ((double[][])(appendObj(vals_5, row_5)));
-            i_8 = i_8 + 1;
+            vals_6 = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(vals_6), java.util.stream.Stream.of(row_11)).toArray(double[][]::new)));
+            i_17 = (long)((long)(i_17) + (long)(1));
         }
-        return new Matrix(vals_5, m.rows, m.cols);
+        return new Matrix(vals_6, m.rows, m.cols);
     }
 
     static Matrix matrix_neg(Matrix m) {
@@ -214,116 +214,116 @@ public class Main {
     }
 
     static Matrix matrix_add(Matrix a, Matrix b) {
-        if (a.rows != b.rows || a.cols != b.cols) {
+        if ((long)(a.rows) != (long)(b.rows) || (long)(a.cols) != (long)(b.cols)) {
             return new Matrix(new double[][]{}, 0, 0);
         }
-        double[][] vals_6 = ((double[][])(new double[][]{}));
-        int i_9 = 0;
-        while (i_9 < a.rows) {
-            double[] row_6 = ((double[])(new double[]{}));
-            int j_8 = 0;
-            while (j_8 < a.cols) {
-                row_6 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row_6), java.util.stream.DoubleStream.of(a.data[i_9][j_8] + b.data[i_9][j_8])).toArray()));
-                j_8 = j_8 + 1;
+        double[][] vals_8 = ((double[][])(new double[][]{}));
+        long i_19 = 0L;
+        while ((long)(i_19) < (long)(a.rows)) {
+            double[] row_13 = ((double[])(new double[]{}));
+            long j_17 = 0L;
+            while ((long)(j_17) < (long)(a.cols)) {
+                row_13 = ((double[])(appendDouble(row_13, _getd(((double[])_geto(a.data, (int)((long)(i_19)))), (int)((long)(j_17))) + _getd(((double[])_geto(b.data, (int)((long)(i_19)))), (int)((long)(j_17))))));
+                j_17 = (long)((long)(j_17) + (long)(1));
             }
-            vals_6 = ((double[][])(appendObj(vals_6, row_6)));
-            i_9 = i_9 + 1;
+            vals_8 = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(vals_8), java.util.stream.Stream.of(row_13)).toArray(double[][]::new)));
+            i_19 = (long)((long)(i_19) + (long)(1));
         }
-        return new Matrix(vals_6, a.rows, a.cols);
+        return new Matrix(vals_8, a.rows, a.cols);
     }
 
     static Matrix matrix_sub(Matrix a, Matrix b) {
-        if (a.rows != b.rows || a.cols != b.cols) {
+        if ((long)(a.rows) != (long)(b.rows) || (long)(a.cols) != (long)(b.cols)) {
             return new Matrix(new double[][]{}, 0, 0);
         }
-        double[][] vals_7 = ((double[][])(new double[][]{}));
-        int i_10 = 0;
-        while (i_10 < a.rows) {
-            double[] row_7 = ((double[])(new double[]{}));
-            int j_9 = 0;
-            while (j_9 < a.cols) {
-                row_7 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row_7), java.util.stream.DoubleStream.of(a.data[i_10][j_9] - b.data[i_10][j_9])).toArray()));
-                j_9 = j_9 + 1;
+        double[][] vals_10 = ((double[][])(new double[][]{}));
+        long i_21 = 0L;
+        while ((long)(i_21) < (long)(a.rows)) {
+            double[] row_15 = ((double[])(new double[]{}));
+            long j_19 = 0L;
+            while ((long)(j_19) < (long)(a.cols)) {
+                row_15 = ((double[])(appendDouble(row_15, _getd(((double[])_geto(a.data, (int)((long)(i_21)))), (int)((long)(j_19))) - _getd(((double[])_geto(b.data, (int)((long)(i_21)))), (int)((long)(j_19))))));
+                j_19 = (long)((long)(j_19) + (long)(1));
             }
-            vals_7 = ((double[][])(appendObj(vals_7, row_7)));
-            i_10 = i_10 + 1;
+            vals_10 = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(vals_10), java.util.stream.Stream.of(row_15)).toArray(double[][]::new)));
+            i_21 = (long)((long)(i_21) + (long)(1));
         }
-        return new Matrix(vals_7, a.rows, a.cols);
+        return new Matrix(vals_10, a.rows, a.cols);
     }
 
     static double matrix_dot(double[] row, double[] col) {
-        double sum_1 = 0.0;
-        int i_11 = 0;
-        while (i_11 < row.length) {
-            sum_1 = sum_1 + row[i_11] * col[i_11];
-            i_11 = i_11 + 1;
+        double sum_2 = 0.0;
+        long i_23 = 0L;
+        while ((long)(i_23) < (long)(row.length)) {
+            sum_2 = sum_2 + (double)(_getd(row, (int)((long)(i_23)))) * (double)(_getd(col, (int)((long)(i_23))));
+            i_23 = (long)((long)(i_23) + (long)(1));
         }
-        return sum_1;
+        return sum_2;
     }
 
     static Matrix matrix_mul(Matrix a, Matrix b) {
-        if (a.cols != b.rows) {
+        if ((long)(a.cols) != (long)(b.rows)) {
             return new Matrix(new double[][]{}, 0, 0);
         }
-        double[][] bcols = ((double[][])(matrix_columns(b)));
-        double[][] vals_8 = ((double[][])(new double[][]{}));
-        int i_12 = 0;
-        while (i_12 < a.rows) {
-            double[] row_8 = ((double[])(new double[]{}));
-            int j_10 = 0;
-            while (j_10 < b.cols) {
-                row_8 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row_8), java.util.stream.DoubleStream.of(matrix_dot(((double[])(a.data[i_12])), ((double[])(bcols[j_10]))))).toArray()));
-                j_10 = j_10 + 1;
+        double[][] bcols_1 = ((double[][])(matrix_columns(b)));
+        double[][] vals_12 = ((double[][])(new double[][]{}));
+        long i_25 = 0L;
+        while ((long)(i_25) < (long)(a.rows)) {
+            double[] row_17 = ((double[])(new double[]{}));
+            long j_21 = 0L;
+            while ((long)(j_21) < (long)(b.cols)) {
+                row_17 = ((double[])(appendDouble(row_17, (double)(matrix_dot(((double[])(((double[])_geto(a.data, (int)((long)(i_25)))))), ((double[])(((double[])_geto(bcols_1, (int)((long)(j_21)))))))))));
+                j_21 = (long)((long)(j_21) + (long)(1));
             }
-            vals_8 = ((double[][])(appendObj(vals_8, row_8)));
-            i_12 = i_12 + 1;
+            vals_12 = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(vals_12), java.util.stream.Stream.of(row_17)).toArray(double[][]::new)));
+            i_25 = (long)((long)(i_25) + (long)(1));
         }
-        return new Matrix(vals_8, a.rows, b.cols);
+        return new Matrix(vals_12, a.rows, b.cols);
     }
 
-    static Matrix matrix_pow(Matrix m, int p) {
-        if (p == 0) {
+    static Matrix matrix_pow(Matrix m, long p) {
+        if (p == (long)(0)) {
             return matrix_identity(m);
         }
-        if (p < 0) {
-            if (((Boolean)(matrix_is_invertible(m)))) {
+        if (p < (long)(0)) {
+            if (matrix_is_invertible(m)) {
                 return matrix_pow(matrix_inverse(m), -p);
             }
             return new Matrix(new double[][]{}, 0, 0);
         }
-        Matrix result = m;
-        int i_13 = 1;
-        while (i_13 < p) {
-            result = matrix_mul(result, m);
-            i_13 = i_13 + 1;
+        Matrix result_1 = m;
+        long i_27 = 1L;
+        while ((long)(i_27) < p) {
+            result_1 = matrix_mul(result_1, m);
+            i_27 = (long)((long)(i_27) + (long)(1));
         }
-        return result;
+        return result_1;
     }
 
     static String matrix_to_string(Matrix m) {
-        if (m.rows == 0) {
+        if ((long)(m.rows) == (long)(0)) {
             return "[]";
         }
-        String s = "[";
-        int i_14 = 0;
-        while (i_14 < m.rows) {
-            s = s + "[";
-            int j_11 = 0;
-            while (j_11 < m.cols) {
-                s = s + _p(_getd(m.data[i_14], j_11));
-                if (j_11 < m.cols - 1) {
-                    s = s + " ";
+        String s_1 = "[";
+        long i_29 = 0L;
+        while ((long)(i_29) < (long)(m.rows)) {
+            s_1 = s_1 + "[";
+            long j_23 = 0L;
+            while ((long)(j_23) < (long)(m.cols)) {
+                s_1 = s_1 + _p(_getd(((double[])_geto(m.data, (int)((long)(i_29)))), ((Number)(j_23)).intValue()));
+                if ((long)(j_23) < (long)((long)(m.cols) - (long)(1))) {
+                    s_1 = s_1 + " ";
                 }
-                j_11 = j_11 + 1;
+                j_23 = (long)((long)(j_23) + (long)(1));
             }
-            s = s + "]";
-            if (i_14 < m.rows - 1) {
-                s = s + "\n ";
+            s_1 = s_1 + "]";
+            if ((long)(i_29) < (long)((long)(m.rows) - (long)(1))) {
+                s_1 = s_1 + "\n ";
             }
-            i_14 = i_14 + 1;
+            i_29 = (long)((long)(i_29) + (long)(1));
         }
-        s = s + "]";
-        return s;
+        s_1 = s_1 + "]";
+        return s_1;
     }
 
     static void main() {
@@ -337,15 +337,15 @@ public class Main {
         System.out.println(matrix_to_string(matrix_minors(m)));
         System.out.println(matrix_to_string(matrix_cofactors(m)));
         System.out.println(matrix_to_string(matrix_adjugate(m)));
-        Matrix m2 = matrix_mul_scalar(m, 3.0);
-        System.out.println(matrix_to_string(m2));
-        System.out.println(matrix_to_string(matrix_add(m, m2)));
-        System.out.println(matrix_to_string(matrix_sub(m, m2)));
-        System.out.println(matrix_to_string(matrix_pow(m, 3)));
-        Matrix m3 = matrix_add_row(m, ((double[])(new double[]{10.0, 11.0, 12.0})));
-        System.out.println(matrix_to_string(m3));
-        Matrix m4 = matrix_add_column(m2, ((double[])(new double[]{8.0, 16.0, 32.0})));
-        System.out.println(matrix_to_string(matrix_mul(m3, m4)));
+        Matrix m2_1 = matrix_mul_scalar(m, 3.0);
+        System.out.println(matrix_to_string(m2_1));
+        System.out.println(matrix_to_string(matrix_add(m, m2_1)));
+        System.out.println(matrix_to_string(matrix_sub(m, m2_1)));
+        System.out.println(matrix_to_string(matrix_pow(m, 3L)));
+        Matrix m3_1 = matrix_add_row(m, ((double[])(new double[]{10.0, 11.0, 12.0})));
+        System.out.println(matrix_to_string(m3_1));
+        Matrix m4_1 = matrix_add_column(m2_1, ((double[])(new double[]{8.0, 16.0, 32.0})));
+        System.out.println(matrix_to_string(matrix_mul(m3_1, m4_1)));
     }
     public static void main(String[] args) {
         {
@@ -385,8 +385,8 @@ public class Main {
         return rt.totalMemory() - rt.freeMemory();
     }
 
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
         out[arr.length] = v;
         return out;
     }
@@ -404,10 +404,25 @@ public class Main {
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
     }
 
-    static Double _getd(double[] a, int i) {
-        return (i >= 0 && i < a.length) ? a[i] : null;
+    static double _getd(double[] a, int i) {
+        if (a == null) return 0.0;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return 0.0;
+        return a[i];
+    }
+
+    static Object _geto(Object[] a, int i) {
+        if (a == null) return null;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return null;
+        return a[i];
     }
 }

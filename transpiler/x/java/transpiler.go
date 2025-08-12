@@ -452,7 +452,7 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 		} else {
 			fmt.Fprint(w, "((Boolean)(")
 			e.emit(w)
-			fmt.Fprint(w, "))")
+               fmt.Fprint(w, ")")
 		}
 		return
 	}
@@ -553,10 +553,10 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 					}
 				}
 				jt := javaType(typ)
-				fmt.Fprintf(w, "((%s)(", jt)
-				e.emit(w)
-				fmt.Fprint(w, "))")
-				return
+                                 fmt.Fprintf(w, "((%s)(", jt)
+                                 e.emit(w)
+                                 fmt.Fprint(w, "))")
+                                 return
 			}
 		}
 	}
@@ -592,7 +592,7 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 		}
 		fmt.Fprint(w, "new java.math.BigInteger(String.valueOf(")
 		e.emit(w)
-		fmt.Fprint(w, "))")
+               fmt.Fprint(w, ")")
 		return
 	}
 	if strings.HasSuffix(jt, "[]") {
@@ -2208,25 +2208,29 @@ func (l *ListLit) emit(w io.Writer) {
 	// `new int[]{...}` cast to Object[], leading to `int[] cannot be converted
 	// to Object[]` compilation errors. Only attempt to refine the type when
 	// the element type was not explicitly provided.
-	if arrType == "Object" && l.ElemType == "" {
-		t := ""
-		same := true
-		for _, el := range l.Elems {
-			et := inferType(el)
-			if et == "" {
-				continue
-			}
-			if t == "" {
-				t = et
-			} else if et != t && !(t == "string" && et == "String") && !(t == "String" && et == "string") {
-				same = false
-				break
-			}
-		}
-		if same && t != "" {
-			arrType = javaType(t)
-		}
-	}
+       if arrType == "Object" && l.ElemType == "" {
+               t := ""
+               same := true
+               for _, el := range l.Elems {
+                       et := inferType(el)
+                       if et == "" {
+                               continue
+                       }
+                       if t == "" {
+                               t = et
+                       } else if et != t && !(t == "string" && et == "String") && !(t == "String" && et == "string") {
+                               same = false
+                               break
+                       }
+               }
+               if same && t != "" {
+                       arrType = javaType(t)
+               } else if len(l.Elems) > 0 {
+                       if t := inferType(l.Elems[0]); t != "" && t != "Object" {
+                               arrType = javaType(t)
+                       }
+               }
+       }
 	raw := arrType
 	dims := 0
 	for strings.HasSuffix(raw, "[]") {
@@ -3077,16 +3081,18 @@ func (c *FloatCastExpr) emit(w io.Writer) {
 }
 
 func (c *CastExpr) emit(w io.Writer) {
-	jt := javaType(c.Type)
-	if strings.HasSuffix(jt, "[]") {
-		if ll, ok := c.Value.(*ListLit); ok && len(ll.Elems) == 0 && ll.ElemType == "" {
-			saved := ll.ElemType
-			ll.ElemType = strings.TrimSuffix(jt, "[]")
-			ll.emit(w)
-			ll.ElemType = saved
-			return
-		}
-	}
+       jt := javaType(c.Type)
+       if strings.HasSuffix(jt, "[]") {
+               if ll, ok := c.Value.(*ListLit); ok {
+                       saved := ll.ElemType
+                       if ll.ElemType == "" {
+                               ll.ElemType = strings.TrimSuffix(jt, "[]")
+                       }
+                       ll.emit(w)
+                       ll.ElemType = saved
+                       return
+               }
+       }
 	if jt == "int[][]" {
 		needCastInt2D = true
 		fmt.Fprint(w, "_castInt2D(")
@@ -3584,19 +3590,39 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ", ")
 		emitIndex(w, ix.Index)
 		fmt.Fprint(w, "+1)")
-	} else if isArrayExpr(ix.Target) {
-		needCast := ix.ResultType != "" && ix.ResultType != arrayElemType(ix.Target)
-		if needCast {
-			fmt.Fprintf(w, "((%s)(", javaType(ix.ResultType))
-		}
-		ix.Target.emit(w)
-		fmt.Fprint(w, "[")
-		emitIndex(w, ix.Index)
-		fmt.Fprint(w, "]")
-		if needCast {
-			fmt.Fprint(w, "))")
-		}
-	} else if isListExpr(ix.Target) {
+       } else if isArrayExpr(ix.Target) {
+               elem := arrayElemType(ix.Target)
+               switch elem {
+               case "int", "long":
+                       needArrGetI = true
+                       fmt.Fprint(w, "_geti(")
+                       ix.Target.emit(w)
+                       fmt.Fprint(w, ", ")
+                       emitIndex(w, ix.Index)
+                       fmt.Fprint(w, ")")
+               case "double", "float":
+                       needArrGetD = true
+                       fmt.Fprint(w, "_getd(")
+                       ix.Target.emit(w)
+                       fmt.Fprint(w, ", ")
+                       emitIndex(w, ix.Index)
+                       fmt.Fprint(w, ")")
+               case "boolean", "bool":
+                       needArrGetB = true
+                       fmt.Fprint(w, "_getb(")
+                       ix.Target.emit(w)
+                       fmt.Fprint(w, ", ")
+                       emitIndex(w, ix.Index)
+                       fmt.Fprint(w, ")")
+               default:
+                       needArrGetO = true
+                       fmt.Fprintf(w, "((%s)_geto(", javaType(elem))
+                       ix.Target.emit(w)
+                       fmt.Fprint(w, ", ")
+                       emitIndex(w, ix.Index)
+                       fmt.Fprint(w, "))")
+               }
+       } else if isListExpr(ix.Target) {
 		ix.Target.emit(w)
 		fmt.Fprint(w, ".get(")
 		emitIndex(w, ix.Index)
@@ -3642,7 +3668,7 @@ func (sli *SliceExpr) emit(w io.Writer) {
 		emitIndex(w, sli.Start)
 		fmt.Fprint(w, ", ")
 		emitIndex(w, sli.End)
-		fmt.Fprint(w, "))")
+                fmt.Fprint(w, ")")
 	case isArrayExpr(sli.Value):
 		fmt.Fprint(w, "java.util.Arrays.copyOfRange(")
 		sli.Value.emit(w)
@@ -7474,26 +7500,38 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("        return String.valueOf(v);\n")
 		buf.WriteString("    }\n")
 	}
-	if needArrGetI {
-		buf.WriteString("\n    static Long _geti(long[] a, int i) {\n")
-		buf.WriteString("        return (i >= 0 && i < a.length) ? a[i] : null;\n")
-		buf.WriteString("    }\n")
-	}
-	if needArrGetD {
-		buf.WriteString("\n    static Double _getd(double[] a, int i) {\n")
-		buf.WriteString("        return (i >= 0 && i < a.length) ? a[i] : null;\n")
-		buf.WriteString("    }\n")
-	}
-	if needArrGetB {
-		buf.WriteString("\n    static Boolean _getb(boolean[] a, int i) {\n")
-		buf.WriteString("        return (i >= 0 && i < a.length) ? a[i] : null;\n")
-		buf.WriteString("    }\n")
-	}
-	if needArrGetO {
-		buf.WriteString("\n    static Object _geto(Object[] a, int i) {\n")
-		buf.WriteString("        return (i >= 0 && i < a.length) ? a[i] : null;\n")
-		buf.WriteString("    }\n")
-	}
+       if needArrGetI {
+               buf.WriteString("\n    static long _geti(long[] a, int i) {\n")
+               buf.WriteString("        if (a == null) return 0L;\n")
+               buf.WriteString("        if (i < 0) i += a.length;\n")
+               buf.WriteString("        if (i < 0 || i >= a.length) return 0L;\n")
+               buf.WriteString("        return a[i];\n")
+               buf.WriteString("    }\n")
+       }
+       if needArrGetD {
+               buf.WriteString("\n    static double _getd(double[] a, int i) {\n")
+               buf.WriteString("        if (a == null) return 0.0;\n")
+               buf.WriteString("        if (i < 0) i += a.length;\n")
+               buf.WriteString("        if (i < 0 || i >= a.length) return 0.0;\n")
+               buf.WriteString("        return a[i];\n")
+               buf.WriteString("    }\n")
+       }
+       if needArrGetB {
+               buf.WriteString("\n    static boolean _getb(boolean[] a, int i) {\n")
+               buf.WriteString("        if (a == null) return false;\n")
+               buf.WriteString("        if (i < 0) i += a.length;\n")
+               buf.WriteString("        if (i < 0 || i >= a.length) return false;\n")
+               buf.WriteString("        return a[i];\n")
+               buf.WriteString("    }\n")
+       }
+       if needArrGetO {
+               buf.WriteString("\n    static Object _geto(Object[] a, int i) {\n")
+               buf.WriteString("        if (a == null) return null;\n")
+               buf.WriteString("        if (i < 0) i += a.length;\n")
+               buf.WriteString("        if (i < 0 || i >= a.length) return null;\n")
+               buf.WriteString("        return a[i];\n")
+               buf.WriteString("    }\n")
+       }
 	buf.WriteString("}\n")
 	return formatJava(buf.Bytes())
 }

@@ -1,4 +1,5 @@
-Exception in thread "main" java.lang.RuntimeException: case1
-	at Main.test_two_pointer(Main.java:22)
-	at Main.main(Main.java:48)
-	at Main.main(Main.java:55)
+{
+  "duration_us": 18156,
+  "memory_bytes": 600,
+  "name": "main"
+}

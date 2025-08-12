@@ -1,61 +1,61 @@
 public class Main {
-    static int[][] matrix;
+    static long[][] matrix;
 
-    static String encode(int row, int col) {
+    static String encode(long row, long col) {
         return _p(row) + "," + _p(col);
     }
 
-    static boolean is_safe(int row, int col, int rows, int cols) {
-        return row >= 0 && row < rows && col >= 0 && col < cols;
+    static boolean is_safe(long row, long col, long rows, long cols) {
+        return row >= (long)(0) && row < rows && col >= (long)(0) && col < cols;
     }
 
     static boolean has(java.util.Map<String,Boolean> seen, String key) {
         return seen.containsKey(key);
     }
 
-    static int depth_first_search(int row, int col, java.util.Map<String,Boolean> seen, int[][] mat) {
-        int rows = mat.length;
-        int cols = mat[0].length;
-        String key = String.valueOf(encode(row, col));
-        if (((Boolean)(is_safe(row, col, rows, cols))) && (!(Boolean)has(seen, key)) && mat[row][col] == 1) {
-seen.put(key, true);
-            return 1 + depth_first_search(row + 1, col, seen, ((int[][])(mat))) + depth_first_search(row - 1, col, seen, ((int[][])(mat))) + depth_first_search(row, col + 1, seen, ((int[][])(mat))) + depth_first_search(row, col - 1, seen, ((int[][])(mat)));
+    static long depth_first_search(long row, long col, java.util.Map<String,Boolean> seen, long[][] mat) {
+        long rows = (long)(mat.length);
+        long cols_1 = (long)(((long[])_geto(mat, (int)((long)(0)))).length);
+        String key_1 = String.valueOf(encode(row, col));
+        if (is_safe(row, col, (long)(rows), (long)(cols_1)) && (!(Boolean)has(seen, key_1)) && _geti(((long[])_geto(mat, (int)((long)(row)))), (int)((long)(col))) == (long)(1)) {
+seen.put(key_1, true);
+            return (long)((long)((long)((long)(1) + depth_first_search((long)(row + (long)(1)), col, seen, ((long[][])(mat)))) + depth_first_search((long)(row - (long)(1)), col, seen, ((long[][])(mat)))) + depth_first_search(row, (long)(col + (long)(1)), seen, ((long[][])(mat)))) + depth_first_search(row, (long)(col - (long)(1)), seen, ((long[][])(mat)));
         } else {
             return 0;
         }
     }
 
-    static int find_max_area(int[][] mat) {
+    static long find_max_area(long[][] mat) {
         java.util.Map<String,Boolean> seen = ((java.util.Map<String,Boolean>)(new java.util.LinkedHashMap<String, Boolean>()));
-        int rows_1 = mat.length;
-        int max_area = 0;
-        int r = 0;
-        while (r < rows_1) {
-            int[] line = ((int[])(mat[r]));
-            int cols_1 = line.length;
-            int c = 0;
-            while (c < cols_1) {
-                if (line[c] == 1) {
-                    String key_1 = String.valueOf(encode(r, c));
-                    if (!(Boolean)(seen.containsKey(key_1))) {
-                        int area = depth_first_search(r, c, seen, ((int[][])(mat)));
-                        if (area > max_area) {
-                            max_area = area;
+        long rows_2 = (long)(mat.length);
+        long max_area_1 = 0L;
+        long r_1 = 0L;
+        while ((long)(r_1) < (long)(rows_2)) {
+            long[] line_1 = ((long[])(((long[])_geto(mat, (int)((long)(r_1))))));
+            long cols_3 = (long)(line_1.length);
+            long c_1 = 0L;
+            while ((long)(c_1) < (long)(cols_3)) {
+                if (_geti(line_1, (int)((long)(c_1))) == (long)(1)) {
+                    String key_3 = String.valueOf(encode((long)(r_1), (long)(c_1)));
+                    if (!(seen.containsKey(key_3))) {
+                        long area_1 = depth_first_search((long)(r_1), (long)(c_1), seen, ((long[][])(mat)));
+                        if (area_1 > (long)(max_area_1)) {
+                            max_area_1 = area_1;
                         }
                     }
                 }
-                c = c + 1;
+                c_1 = (long)((long)(c_1) + (long)(1));
             }
-            r = r + 1;
+            r_1 = (long)((long)(r_1) + (long)(1));
         }
-        return max_area;
+        return max_area_1;
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            matrix = ((int[][])(new int[][]{new int[]{0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0}, new int[]{0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0}, new int[]{0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0}, new int[]{0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0}, new int[]{0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0}, new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0}, new int[]{0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0}, new int[]{0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0}}));
-            System.out.println(find_max_area(((int[][])(matrix))));
+            matrix = ((long[][])(new long[][]{new long[]{0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0}, new long[]{0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0}, new long[]{0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0}, new long[]{0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0}, new long[]{0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0}, new long[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0}, new long[]{0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0}, new long[]{0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0}}));
+            System.out.println(find_max_area(((long[][])(matrix))));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -102,6 +102,25 @@ seen.put(key, true);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
+    }
+
+    static long _geti(long[] a, int i) {
+        if (a == null) return 0L;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return 0L;
+        return a[i];
+    }
+
+    static Object _geto(Object[] a, int i) {
+        if (a == null) return null;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return null;
+        return a[i];
     }
 }

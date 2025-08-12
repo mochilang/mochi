@@ -1,9 +1,9 @@
 public class Main {
     static class State {
-        int[] claim;
-        int[][] alloc;
-        int[][] max;
-        State(int[] claim, int[][] alloc, int[][] max) {
+        long[] claim;
+        long[][] alloc;
+        long[][] max;
+        State(long[] claim, long[][] alloc, long[][] max) {
             this.claim = claim;
             this.alloc = alloc;
             this.max = max;
@@ -14,166 +14,166 @@ public class Main {
         }
     }
 
-    static int[] claim_vector = new int[0];
-    static int[][] allocated_resources_table = new int[0][];
-    static int[][] maximum_claim_table = new int[0][];
+    static long[] claim_vector = new long[0];
+    static long[][] allocated_resources_table = new long[0][];
+    static long[][] maximum_claim_table = new long[0][];
 
-    static int[] processes_resource_summation(int[][] alloc) {
-        int resources = alloc[0].length;
-        int[] sums = ((int[])(new int[]{}));
-        int i = 0;
-        while (i < resources) {
-            int total = 0;
-            int j = 0;
-            while (j < alloc.length) {
-                total = total + alloc[j][i];
-                j = j + 1;
+    static long[] processes_resource_summation(long[][] alloc) {
+        long resources = (long)(((long[])_geto(alloc, (int)((long)(0)))).length);
+        long[] sums_1 = ((long[])(new long[]{}));
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(resources)) {
+            long total_1 = 0L;
+            long j_1 = 0L;
+            while ((long)(j_1) < (long)(alloc.length)) {
+                total_1 = (long)((long)(total_1) + _geti(((long[])_geto(alloc, (int)((long)(j_1)))), (int)((long)(i_1))));
+                j_1 = (long)((long)(j_1) + (long)(1));
             }
-            sums = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(sums), java.util.stream.IntStream.of(total)).toArray()));
-            i = i + 1;
+            sums_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(sums_1), java.util.stream.LongStream.of((long)(total_1))).toArray()));
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
-        return sums;
+        return sums_1;
     }
 
-    static int[] available_resources(int[] claim, int[] alloc_sum) {
-        int[] avail = ((int[])(new int[]{}));
-        int i_1 = 0;
-        while (i_1 < claim.length) {
-            avail = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(avail), java.util.stream.IntStream.of(claim[i_1] - alloc_sum[i_1])).toArray()));
-            i_1 = i_1 + 1;
+    static long[] available_resources(long[] claim, long[] alloc_sum) {
+        long[] avail = ((long[])(new long[]{}));
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(claim.length)) {
+            avail = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(avail), java.util.stream.LongStream.of((long)(_geti(claim, (int)((long)(i_3))) - _geti(alloc_sum, (int)((long)(i_3)))))).toArray()));
+            i_3 = (long)((long)(i_3) + (long)(1));
         }
         return avail;
     }
 
-    static int[][] need(int[][] max, int[][] alloc) {
-        int[][] needs = ((int[][])(new int[][]{}));
-        int i_2 = 0;
-        while (i_2 < max.length) {
-            int[] row = ((int[])(new int[]{}));
-            int j_1 = 0;
-            while (j_1 < max[0].length) {
-                row = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row), java.util.stream.IntStream.of(max[i_2][j_1] - alloc[i_2][j_1])).toArray()));
-                j_1 = j_1 + 1;
+    static long[][] need(long[][] max, long[][] alloc) {
+        long[][] needs = ((long[][])(new long[][]{}));
+        long i_5 = 0L;
+        while ((long)(i_5) < (long)(max.length)) {
+            long[] row_1 = ((long[])(new long[]{}));
+            long j_3 = 0L;
+            while ((long)(j_3) < (long)(((long[])_geto(max, (int)((long)(0)))).length)) {
+                row_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(row_1), java.util.stream.LongStream.of((long)(_geti(((long[])_geto(max, (int)((long)(i_5)))), (int)((long)(j_3))) - _geti(((long[])_geto(alloc, (int)((long)(i_5)))), (int)((long)(j_3)))))).toArray()));
+                j_3 = (long)((long)(j_3) + (long)(1));
             }
-            needs = ((int[][])(appendObj(needs, row)));
-            i_2 = i_2 + 1;
+            needs = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(needs), java.util.stream.Stream.of(row_1)).toArray(long[][]::new)));
+            i_5 = (long)((long)(i_5) + (long)(1));
         }
         return needs;
     }
 
-    static void pretty_print(int[] claim, int[][] alloc, int[][] max) {
+    static void pretty_print(long[] claim, long[][] alloc, long[][] max) {
         System.out.println("         Allocated Resource Table");
-        int i_3 = 0;
-        while (i_3 < alloc.length) {
-            int[] row_1 = ((int[])(alloc[i_3]));
-            String line = "P" + _p(i_3 + 1) + "       ";
-            int j_2 = 0;
-            while (j_2 < row_1.length) {
-                line = line + _p(_geti(row_1, j_2));
-                if (j_2 < row_1.length - 1) {
-                    line = line + "        ";
-                }
-                j_2 = j_2 + 1;
-            }
-            System.out.println(line);
-            System.out.println("");
-            i_3 = i_3 + 1;
-        }
-        System.out.println("         System Resource Table");
-        i_3 = 0;
-        while (i_3 < max.length) {
-            int[] row_2 = ((int[])(max[i_3]));
-            String line_1 = "P" + _p(i_3 + 1) + "       ";
-            int j_3 = 0;
-            while (j_3 < row_2.length) {
-                line_1 = line_1 + _p(_geti(row_2, j_3));
-                if (j_3 < row_2.length - 1) {
+        long i_7 = 0L;
+        while ((long)(i_7) < (long)(alloc.length)) {
+            long[] row_3 = ((long[])(((long[])_geto(alloc, (int)((long)(i_7))))));
+            String line_1 = "P" + _p((long)(i_7) + (long)(1)) + "       ";
+            long j_5 = 0L;
+            while ((long)(j_5) < (long)(row_3.length)) {
+                line_1 = line_1 + _p(_geti(row_3, ((Number)(j_5)).intValue()));
+                if ((long)(j_5) < (long)((long)(row_3.length) - (long)(1))) {
                     line_1 = line_1 + "        ";
                 }
-                j_3 = j_3 + 1;
+                j_5 = (long)((long)(j_5) + (long)(1));
             }
             System.out.println(line_1);
             System.out.println("");
-            i_3 = i_3 + 1;
+            i_7 = (long)((long)(i_7) + (long)(1));
         }
-        String usage = "";
-        i_3 = 0;
-        while (i_3 < claim.length) {
-            if (i_3 > 0) {
-                usage = usage + " ";
+        System.out.println("         System Resource Table");
+        i_7 = (long)(0);
+        while ((long)(i_7) < (long)(max.length)) {
+            long[] row_5 = ((long[])(((long[])_geto(max, (int)((long)(i_7))))));
+            String line_3 = "P" + _p((long)(i_7) + (long)(1)) + "       ";
+            long j_7 = 0L;
+            while ((long)(j_7) < (long)(row_5.length)) {
+                line_3 = line_3 + _p(_geti(row_5, ((Number)(j_7)).intValue()));
+                if ((long)(j_7) < (long)((long)(row_5.length) - (long)(1))) {
+                    line_3 = line_3 + "        ";
+                }
+                j_7 = (long)((long)(j_7) + (long)(1));
             }
-            usage = usage + _p(_geti(claim, i_3));
-            i_3 = i_3 + 1;
+            System.out.println(line_3);
+            System.out.println("");
+            i_7 = (long)((long)(i_7) + (long)(1));
         }
-        int[] alloc_sum = ((int[])(processes_resource_summation(((int[][])(alloc)))));
-        int[] avail_1 = ((int[])(available_resources(((int[])(claim)), ((int[])(alloc_sum)))));
-        String avail_str = "";
-        i_3 = 0;
-        while (i_3 < avail_1.length) {
-            if (i_3 > 0) {
-                avail_str = avail_str + " ";
+        String usage_1 = "";
+        i_7 = (long)(0);
+        while ((long)(i_7) < (long)(claim.length)) {
+            if ((long)(i_7) > (long)(0)) {
+                usage_1 = usage_1 + " ";
             }
-            avail_str = avail_str + _p(_geti(avail_1, i_3));
-            i_3 = i_3 + 1;
+            usage_1 = usage_1 + _p(_geti(claim, ((Number)(i_7)).intValue()));
+            i_7 = (long)((long)(i_7) + (long)(1));
         }
-        System.out.println("Current Usage by Active Processes: " + usage);
-        System.out.println("Initial Available Resources:       " + avail_str);
+        long[] alloc_sum_1 = ((long[])(processes_resource_summation(((long[][])(alloc)))));
+        long[] avail_2 = ((long[])(available_resources(((long[])(claim)), ((long[])(alloc_sum_1)))));
+        String avail_str_1 = "";
+        i_7 = (long)(0);
+        while ((long)(i_7) < (long)(avail_2.length)) {
+            if ((long)(i_7) > (long)(0)) {
+                avail_str_1 = avail_str_1 + " ";
+            }
+            avail_str_1 = avail_str_1 + _p(_geti(avail_2, ((Number)(i_7)).intValue()));
+            i_7 = (long)((long)(i_7) + (long)(1));
+        }
+        System.out.println("Current Usage by Active Processes: " + usage_1);
+        System.out.println("Initial Available Resources:       " + avail_str_1);
     }
 
-    static void bankers_algorithm(int[] claim, int[][] alloc, int[][] max) {
-        int[][] need_list = ((int[][])(need(((int[][])(max)), ((int[][])(alloc)))));
-        int[] alloc_sum_1 = ((int[])(processes_resource_summation(((int[][])(alloc)))));
-        int[] avail_2 = ((int[])(available_resources(((int[])(claim)), ((int[])(alloc_sum_1)))));
+    static void bankers_algorithm(long[] claim, long[][] alloc, long[][] max) {
+        long[][] need_list = ((long[][])(need(((long[][])(max)), ((long[][])(alloc)))));
+        long[] alloc_sum_3 = ((long[])(processes_resource_summation(((long[][])(alloc)))));
+        long[] avail_4 = ((long[])(available_resources(((long[])(claim)), ((long[])(alloc_sum_3)))));
         System.out.println("__________________________________________________");
         System.out.println("");
-        boolean[] finished = ((boolean[])(new boolean[]{}));
-        int i_4 = 0;
-        while (i_4 < need_list.length) {
-            finished = ((boolean[])(appendBool(finished, false)));
-            i_4 = i_4 + 1;
+        boolean[] finished_1 = ((boolean[])(new boolean[]{}));
+        long i_9 = 0L;
+        while ((long)(i_9) < (long)(need_list.length)) {
+            finished_1 = ((boolean[])(appendBool(finished_1, false)));
+            i_9 = (long)((long)(i_9) + (long)(1));
         }
-        int remaining = need_list.length;
-        while (remaining > 0) {
-            boolean safe = false;
-            int p = 0;
-            while (p < need_list.length) {
-                if (!(Boolean)finished[p]) {
-                    boolean exec = true;
-                    int r = 0;
-                    while (r < avail_2.length) {
-                        if (need_list[p][r] > avail_2[r]) {
-                            exec = false;
+        long remaining_1 = (long)(need_list.length);
+        while ((long)(remaining_1) > (long)(0)) {
+            boolean safe_1 = false;
+            long p_1 = 0L;
+            while ((long)(p_1) < (long)(need_list.length)) {
+                if (!(Boolean)_getb(finished_1, (int)((long)(p_1)))) {
+                    boolean exec_1 = true;
+                    long r_1 = 0L;
+                    while ((long)(r_1) < (long)(avail_4.length)) {
+                        if ((long)(_geti(((long[])_geto(need_list, (int)((long)(p_1)))), (int)((long)(r_1)))) > (long)(_geti(avail_4, (int)((long)(r_1))))) {
+                            exec_1 = false;
                             break;
                         }
-                        r = r + 1;
+                        r_1 = (long)((long)(r_1) + (long)(1));
                     }
-                    if (exec) {
-                        safe = true;
-                        System.out.println("Process " + _p(p + 1) + " is executing.");
-                        r = 0;
-                        while (r < avail_2.length) {
-avail_2[r] = avail_2[r] + alloc[p][r];
-                            r = r + 1;
+                    if (exec_1) {
+                        safe_1 = true;
+                        System.out.println("Process " + _p((long)(p_1) + (long)(1)) + " is executing.");
+                        r_1 = (long)(0);
+                        while ((long)(r_1) < (long)(avail_4.length)) {
+avail_4[(int)((long)(r_1))] = (long)((long)(_geti(avail_4, (int)((long)(r_1)))) + _geti(((long[])_geto(alloc, (int)((long)(p_1)))), (int)((long)(r_1))));
+                            r_1 = (long)((long)(r_1) + (long)(1));
                         }
-                        String avail_str_1 = "";
-                        r = 0;
-                        while (r < avail_2.length) {
-                            if (r > 0) {
-                                avail_str_1 = avail_str_1 + " ";
+                        String avail_str_3 = "";
+                        r_1 = (long)(0);
+                        while ((long)(r_1) < (long)(avail_4.length)) {
+                            if ((long)(r_1) > (long)(0)) {
+                                avail_str_3 = avail_str_3 + " ";
                             }
-                            avail_str_1 = avail_str_1 + _p(_geti(avail_2, r));
-                            r = r + 1;
+                            avail_str_3 = avail_str_3 + _p(_geti(avail_4, ((Number)(r_1)).intValue()));
+                            r_1 = (long)((long)(r_1) + (long)(1));
                         }
-                        System.out.println("Updated available resource stack for processes: " + avail_str_1);
+                        System.out.println("Updated available resource stack for processes: " + avail_str_3);
                         System.out.println("The process is in a safe state.");
                         System.out.println("");
-finished[p] = true;
-                        remaining = remaining - 1;
+finished_1[(int)((long)(p_1))] = true;
+                        remaining_1 = (long)((long)(remaining_1) - (long)(1));
                     }
                 }
-                p = p + 1;
+                p_1 = (long)((long)(p_1) + (long)(1));
             }
-            if (!safe) {
+            if (!safe_1) {
                 System.out.println("System in unsafe state. Aborting...");
                 System.out.println("");
                 break;
@@ -184,11 +184,11 @@ finished[p] = true;
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            claim_vector = ((int[])(new int[]{8, 5, 9, 7}));
-            allocated_resources_table = ((int[][])(new int[][]{new int[]{2, 0, 1, 1}, new int[]{0, 1, 2, 1}, new int[]{4, 0, 0, 3}, new int[]{0, 2, 1, 0}, new int[]{1, 0, 3, 0}}));
-            maximum_claim_table = ((int[][])(new int[][]{new int[]{3, 2, 1, 4}, new int[]{0, 2, 5, 2}, new int[]{5, 1, 0, 5}, new int[]{1, 5, 3, 0}, new int[]{3, 0, 3, 3}}));
-            pretty_print(((int[])(claim_vector)), ((int[][])(allocated_resources_table)), ((int[][])(maximum_claim_table)));
-            bankers_algorithm(((int[])(claim_vector)), ((int[][])(allocated_resources_table)), ((int[][])(maximum_claim_table)));
+            claim_vector = ((long[])(new long[]{8, 5, 9, 7}));
+            allocated_resources_table = ((long[][])(new long[][]{new long[]{2, 0, 1, 1}, new long[]{0, 1, 2, 1}, new long[]{4, 0, 0, 3}, new long[]{0, 2, 1, 0}, new long[]{1, 0, 3, 0}}));
+            maximum_claim_table = ((long[][])(new long[][]{new long[]{3, 2, 1, 4}, new long[]{0, 2, 5, 2}, new long[]{5, 1, 0, 5}, new long[]{1, 5, 3, 0}, new long[]{3, 0, 3, 3}}));
+            pretty_print(((long[])(claim_vector)), ((long[][])(allocated_resources_table)), ((long[][])(maximum_claim_table)));
+            bankers_algorithm(((long[])(claim_vector)), ((long[][])(allocated_resources_table)), ((long[][])(maximum_claim_table)));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -228,12 +228,6 @@ finished[p] = true;
         return out;
     }
 
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
-    }
-
     static String _p(Object v) {
         if (v == null) return "<nil>";
         if (v.getClass().isArray()) {
@@ -247,10 +241,32 @@ finished[p] = true;
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
     }
 
-    static Integer _geti(int[] a, int i) {
-        return (i >= 0 && i < a.length) ? a[i] : null;
+    static long _geti(long[] a, int i) {
+        if (a == null) return 0L;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return 0L;
+        return a[i];
+    }
+
+    static boolean _getb(boolean[] a, int i) {
+        if (a == null) return false;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return false;
+        return a[i];
+    }
+
+    static Object _geto(Object[] a, int i) {
+        if (a == null) return null;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return null;
+        return a[i];
     }
 }

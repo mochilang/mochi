@@ -1,43 +1,43 @@
 public class Main {
-    static int NUM_SQUARES;
+    static long NUM_SQUARES;
     static String EMPTY_CELL;
     static String[][] valid_board;
     static String[][] invalid_board;
 
     static boolean is_valid_sudoku_board(String[][] board) {
-        if (board.length != NUM_SQUARES) {
+        if ((long)(board.length) != (long)(NUM_SQUARES)) {
             return false;
         }
-        int i = 0;
-        while (i < NUM_SQUARES) {
-            if (board[i].length != NUM_SQUARES) {
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(NUM_SQUARES)) {
+            if ((long)(((String[])_geto(board, (int)((long)(i_1)))).length) != (long)(NUM_SQUARES)) {
                 return false;
             }
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
-        String[][] rows = ((String[][])(new String[][]{}));
-        String[][] cols = ((String[][])(new String[][]{}));
-        String[][] boxes = ((String[][])(new String[][]{}));
-        i = 0;
-        while (i < NUM_SQUARES) {
-            rows = ((String[][])(appendObj(rows, new String[]{})));
-            cols = ((String[][])(appendObj(cols, new String[]{})));
-            boxes = ((String[][])(appendObj(boxes, new String[]{})));
-            i = i + 1;
+        String[][] rows_1 = ((String[][])(new String[][]{}));
+        String[][] cols_1 = ((String[][])(new String[][]{}));
+        String[][] boxes_1 = ((String[][])(new String[][]{}));
+        i_1 = (long)(0);
+        while ((long)(i_1) < (long)(NUM_SQUARES)) {
+            rows_1 = ((String[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(rows_1), java.util.stream.Stream.of(new String[]{})).toArray(String[][]::new)));
+            cols_1 = ((String[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(cols_1), java.util.stream.Stream.of(new String[]{})).toArray(String[][]::new)));
+            boxes_1 = ((String[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(boxes_1), java.util.stream.Stream.of(new String[]{})).toArray(String[][]::new)));
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
         for (int r = 0; r < NUM_SQUARES; r++) {
             for (int c = 0; c < NUM_SQUARES; c++) {
-                String value = board[r][c];
-                if ((value.equals(EMPTY_CELL))) {
+                String value_1 = ((String)_geto(((String[])_geto(board, (int)((long)(r)))), (int)((long)(c))));
+                if ((value_1.equals(EMPTY_CELL))) {
                     continue;
                 }
-                int box = ((Number)(Math.floorDiv(r, 3))).intValue() * 3 + ((Number)(Math.floorDiv(c, 3))).intValue();
-                if (java.util.Arrays.asList(rows[r]).contains(value) || java.util.Arrays.asList(cols[c]).contains(value) || java.util.Arrays.asList(boxes[box]).contains(value)) {
+                long box_1 = (long)((long)((long)(((Number)(Math.floorDiv(r, 3))).intValue()) * (long)(3)) + (long)(((Number)(Math.floorDiv(c, 3))).intValue()));
+                if (java.util.Arrays.asList(((String[])_geto(rows_1, (int)((long)(r))))).contains(value_1) || java.util.Arrays.asList(((String[])_geto(cols_1, (int)((long)(c))))).contains(value_1) || java.util.Arrays.asList(((String[])_geto(boxes_1, (int)((long)(box_1))))).contains(value_1)) {
                     return false;
                 }
-rows[r] = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(rows[r]), java.util.stream.Stream.of(value)).toArray(String[]::new)));
-cols[c] = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(cols[c]), java.util.stream.Stream.of(value)).toArray(String[]::new)));
-boxes[box] = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(boxes[box]), java.util.stream.Stream.of(value)).toArray(String[]::new)));
+rows_1[(int)((long)(r))] = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(((String[])_geto(rows_1, (int)((long)(r))))), java.util.stream.Stream.of(value_1)).toArray(String[]::new)));
+cols_1[(int)((long)(c))] = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(((String[])_geto(cols_1, (int)((long)(c))))), java.util.stream.Stream.of(value_1)).toArray(String[]::new)));
+boxes_1[(int)((long)(box_1))] = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(((String[])_geto(boxes_1, (int)((long)(box_1))))), java.util.stream.Stream.of(value_1)).toArray(String[]::new)));
             }
         }
         return true;
@@ -46,7 +46,7 @@ boxes[box] = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            NUM_SQUARES = 9;
+            NUM_SQUARES = (long)(9);
             EMPTY_CELL = ".";
             valid_board = ((String[][])(new String[][]{new String[]{"5", "3", ".", ".", "7", ".", ".", ".", "."}, new String[]{"6", ".", ".", "1", "9", "5", ".", ".", "."}, new String[]{".", "9", "8", ".", ".", ".", ".", "6", "."}, new String[]{"8", ".", ".", ".", "6", ".", ".", ".", "3"}, new String[]{"4", ".", ".", "8", ".", "3", ".", ".", "1"}, new String[]{"7", ".", ".", ".", "2", ".", ".", ".", "6"}, new String[]{".", "6", ".", ".", ".", ".", "2", "8", "."}, new String[]{".", ".", ".", "4", "1", "9", ".", ".", "5"}, new String[]{".", ".", ".", ".", "8", ".", ".", "7", "9"}}));
             invalid_board = ((String[][])(new String[][]{new String[]{"8", "3", ".", ".", "7", ".", ".", ".", "."}, new String[]{"6", ".", ".", "1", "9", "5", ".", ".", "."}, new String[]{".", "9", "8", ".", ".", ".", ".", "6", "."}, new String[]{"8", ".", ".", ".", "6", ".", ".", ".", "3"}, new String[]{"4", ".", ".", "8", ".", "3", ".", ".", "1"}, new String[]{"7", ".", ".", ".", "2", ".", ".", ".", "6"}, new String[]{".", "6", ".", ".", ".", ".", "2", "8", "."}, new String[]{".", ".", ".", "4", "1", "9", ".", ".", "5"}, new String[]{".", ".", ".", ".", "8", ".", ".", "7", "9"}}));
@@ -85,9 +85,10 @@ boxes[box] = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(
         return rt.totalMemory() - rt.freeMemory();
     }
 
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
+    static Object _geto(Object[] a, int i) {
+        if (a == null) return null;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return null;
+        return a[i];
     }
 }

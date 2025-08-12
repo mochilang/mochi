@@ -1,41 +1,41 @@
 public class Main {
 
-    static int binary_search(int[] arr, int lower_bound, int upper_bound, int value) {
-        int r = Math.floorDiv((lower_bound + upper_bound), 2);
-        if (arr[r] == value) {
+    static long binary_search(long[] arr, long lower_bound, long upper_bound, long value) {
+        long r = Math.floorDiv((lower_bound + upper_bound), 2);
+        if (_geti(arr, (int)((long)(r))) == value) {
             return r;
         }
         if (lower_bound >= upper_bound) {
             return -1;
         }
-        if (arr[r] < value) {
-            return binary_search(((int[])(arr)), r + 1, upper_bound, value);
+        if (_geti(arr, (int)((long)(r))) < value) {
+            return binary_search(((long[])(arr)), (long)((long)(r) + (long)(1)), upper_bound, value);
         }
-        return binary_search(((int[])(arr)), lower_bound, r - 1, value);
+        return binary_search(((long[])(arr)), lower_bound, (long)((long)(r) - (long)(1)), value);
     }
 
-    static int[] mat_bin_search(int value, int[][] matrix) {
-        int index = 0;
-        if (matrix[index][0] == value) {
-            return new int[]{index, 0};
+    static long[] mat_bin_search(long value, long[][] matrix) {
+        long index = 0L;
+        if (_geti(((long[])_geto(matrix, (int)((long)(index)))), (int)((long)(0))) == value) {
+            return new long[]{index, 0};
         }
-        while (index < matrix.length && matrix[index][0] < value) {
-            int r_1 = binary_search(((int[])(matrix[index])), 0, matrix[index].length - 1, value);
-            if (r_1 != (-1)) {
-                return new int[]{index, r_1};
+        while (index < (long)(matrix.length) && _geti(((long[])_geto(matrix, (int)((long)(index)))), (int)((long)(0))) < value) {
+            long r_2 = binary_search(((long[])(((long[])_geto(matrix, (int)((long)(index)))))), 0L, (long)((long)(((long[])_geto(matrix, (int)((long)(index)))).length) - (long)(1)), value);
+            if (r_2 != (long)((-1))) {
+                return new long[]{index, r_2};
             }
-            index = index + 1;
+            index = (long)(index + (long)(1));
         }
-        return new int[]{-1, -1};
+        return new long[]{-1, -1};
     }
 
     static void main() {
-        int[] row = ((int[])(new int[]{1, 4, 7, 11, 15}));
-        System.out.println(_p(binary_search(((int[])(row)), 0, row.length - 1, 1)));
-        System.out.println(_p(binary_search(((int[])(row)), 0, row.length - 1, 23)));
-        int[][] matrix = ((int[][])(new int[][]{new int[]{1, 4, 7, 11, 15}, new int[]{2, 5, 8, 12, 19}, new int[]{3, 6, 9, 16, 22}, new int[]{10, 13, 14, 17, 24}, new int[]{18, 21, 23, 26, 30}}));
-        System.out.println(_p(mat_bin_search(1, ((int[][])(matrix)))));
-        System.out.println(_p(mat_bin_search(34, ((int[][])(matrix)))));
+        long[] row = ((long[])(new long[]{1, 4, 7, 11, 15}));
+        System.out.println(_p(binary_search(((long[])(row)), 0L, (long)((long)(row.length) - (long)(1)), 1L)));
+        System.out.println(_p(binary_search(((long[])(row)), 0L, (long)((long)(row.length) - (long)(1)), 23L)));
+        long[][] matrix_1 = ((long[][])(new long[][]{new long[]{1, 4, 7, 11, 15}, new long[]{2, 5, 8, 12, 19}, new long[]{3, 6, 9, 16, 22}, new long[]{10, 13, 14, 17, 24}, new long[]{18, 21, 23, 26, 30}}));
+        System.out.println(_p(mat_bin_search(1L, ((long[][])(matrix_1)))));
+        System.out.println(_p(mat_bin_search(34L, ((long[][])(matrix_1)))));
     }
     public static void main(String[] args) {
         {
@@ -88,6 +88,25 @@ public class Main {
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
+    }
+
+    static long _geti(long[] a, int i) {
+        if (a == null) return 0L;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return 0L;
+        return a[i];
+    }
+
+    static Object _geto(Object[] a, int i) {
+        if (a == null) return null;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return null;
+        return a[i];
     }
 }

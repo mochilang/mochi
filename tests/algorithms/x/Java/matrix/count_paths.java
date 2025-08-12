@@ -1,53 +1,53 @@
 public class Main {
 
-    static int depth_first_search(int[][] grid, int row, int col, boolean[][] visit) {
-        int row_length = grid.length;
-        int col_length = grid[0].length;
-        if (row < 0 || col < 0 || row == row_length || col == col_length) {
+    static long depth_first_search(long[][] grid, long row, long col, boolean[][] visit) {
+        long row_length = (long)(grid.length);
+        long col_length_1 = (long)(((long[])_geto(grid, (int)((long)(0)))).length);
+        if (row < (long)(0) || col < (long)(0) || row == (long)(row_length) || col == (long)(col_length_1)) {
             return 0;
         }
-        if (((Boolean)(visit[row][col]))) {
+        if (_getb(((boolean[])_geto(visit, (int)((long)(row)))), (int)((long)(col)))) {
             return 0;
         }
-        if (grid[row][col] == 1) {
+        if (_geti(((long[])_geto(grid, (int)((long)(row)))), (int)((long)(col))) == (long)(1)) {
             return 0;
         }
-        if (row == row_length - 1 && col == col_length - 1) {
+        if (row == (long)((long)(row_length) - (long)(1)) && col == (long)((long)(col_length_1) - (long)(1))) {
             return 1;
         }
-visit[row][col] = true;
-        int count = 0;
-        count = count + depth_first_search(((int[][])(grid)), row + 1, col, ((boolean[][])(visit)));
-        count = count + depth_first_search(((int[][])(grid)), row - 1, col, ((boolean[][])(visit)));
-        count = count + depth_first_search(((int[][])(grid)), row, col + 1, ((boolean[][])(visit)));
-        count = count + depth_first_search(((int[][])(grid)), row, col - 1, ((boolean[][])(visit)));
-visit[row][col] = false;
-        return count;
+((boolean[])_geto(visit, (int)((long)(row))))[(int)((long)(col))] = true;
+        long count_1 = 0L;
+        count_1 = (long)((long)(count_1) + depth_first_search(((long[][])(grid)), (long)(row + (long)(1)), col, ((boolean[][])(visit))));
+        count_1 = (long)((long)(count_1) + depth_first_search(((long[][])(grid)), (long)(row - (long)(1)), col, ((boolean[][])(visit))));
+        count_1 = (long)((long)(count_1) + depth_first_search(((long[][])(grid)), row, (long)(col + (long)(1)), ((boolean[][])(visit))));
+        count_1 = (long)((long)(count_1) + depth_first_search(((long[][])(grid)), row, (long)(col - (long)(1)), ((boolean[][])(visit))));
+((boolean[])_geto(visit, (int)((long)(row))))[(int)((long)(col))] = false;
+        return count_1;
     }
 
-    static int count_paths(int[][] grid) {
-        int rows = grid.length;
-        int cols = grid[0].length;
-        boolean[][] visit = ((boolean[][])(new boolean[][]{}));
-        int i = 0;
-        while (i < rows) {
-            boolean[] row_visit = ((boolean[])(new boolean[]{}));
-            int j = 0;
-            while (j < cols) {
-                row_visit = ((boolean[])(appendBool(row_visit, false)));
-                j = j + 1;
+    static long count_paths(long[][] grid) {
+        long rows = (long)(grid.length);
+        long cols_1 = (long)(((long[])_geto(grid, (int)((long)(0)))).length);
+        boolean[][] visit_1 = ((boolean[][])(new boolean[][]{}));
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(rows)) {
+            boolean[] row_visit_1 = ((boolean[])(new boolean[]{}));
+            long j_1 = 0L;
+            while ((long)(j_1) < (long)(cols_1)) {
+                row_visit_1 = ((boolean[])(appendBool(row_visit_1, false)));
+                j_1 = (long)((long)(j_1) + (long)(1));
             }
-            visit = ((boolean[][])(appendObj(visit, row_visit)));
-            i = i + 1;
+            visit_1 = ((boolean[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(visit_1), java.util.stream.Stream.of(row_visit_1)).toArray(boolean[][]::new)));
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
-        return depth_first_search(((int[][])(grid)), 0, 0, ((boolean[][])(visit)));
+        return depth_first_search(((long[][])(grid)), 0L, 0L, ((boolean[][])(visit_1)));
     }
 
     static void main() {
-        int[][] grid1 = ((int[][])(new int[][]{new int[]{0, 0, 0, 0}, new int[]{1, 1, 0, 0}, new int[]{0, 0, 0, 1}, new int[]{0, 1, 0, 0}}));
-        System.out.println(_p(count_paths(((int[][])(grid1)))));
-        int[][] grid2 = ((int[][])(new int[][]{new int[]{0, 0, 0, 0, 0}, new int[]{0, 1, 1, 1, 0}, new int[]{0, 1, 1, 1, 0}, new int[]{0, 0, 0, 0, 0}}));
-        System.out.println(_p(count_paths(((int[][])(grid2)))));
+        long[][] grid1 = ((long[][])(new long[][]{new long[]{0, 0, 0, 0}, new long[]{1, 1, 0, 0}, new long[]{0, 0, 0, 1}, new long[]{0, 1, 0, 0}}));
+        System.out.println(_p(count_paths(((long[][])(grid1)))));
+        long[][] grid2_1 = ((long[][])(new long[][]{new long[]{0, 0, 0, 0, 0}, new long[]{0, 1, 1, 1, 0}, new long[]{0, 1, 1, 1, 0}, new long[]{0, 0, 0, 0, 0}}));
+        System.out.println(_p(count_paths(((long[][])(grid2_1)))));
     }
     public static void main(String[] args) {
         {
@@ -93,12 +93,6 @@ visit[row][col] = false;
         return out;
     }
 
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
-    }
-
     static String _p(Object v) {
         if (v == null) return "<nil>";
         if (v.getClass().isArray()) {
@@ -112,6 +106,32 @@ visit[row][col] = false;
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
+    }
+
+    static long _geti(long[] a, int i) {
+        if (a == null) return 0L;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return 0L;
+        return a[i];
+    }
+
+    static boolean _getb(boolean[] a, int i) {
+        if (a == null) return false;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return false;
+        return a[i];
+    }
+
+    static Object _geto(Object[] a, int i) {
+        if (a == null) return null;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return null;
+        return a[i];
     }
 }

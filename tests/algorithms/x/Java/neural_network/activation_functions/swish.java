@@ -2,36 +2,36 @@ public class Main {
 
     static double exp_approx(double x) {
         double sum = 1.0;
-        double term = 1.0;
-        int i = 1;
-        while (i <= 20) {
-            term = term * x / (((Number)(i)).doubleValue());
-            sum = sum + term;
-            i = i + 1;
+        double term_1 = 1.0;
+        long i_1 = 1L;
+        while ((long)(i_1) <= (long)(20)) {
+            term_1 = (double)(term_1) * (double)(x) / (((Number)(i_1)).doubleValue());
+            sum = (double)(sum) + (double)(term_1);
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
         return sum;
     }
 
     static double[] sigmoid(double[] vector) {
         double[] result = ((double[])(new double[]{}));
-        int i_1 = 0;
-        while (i_1 < vector.length) {
-            double v = vector[i_1];
-            double s = 1.0 / (1.0 + exp_approx(-v));
-            result = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(result), java.util.stream.DoubleStream.of(s)).toArray()));
-            i_1 = i_1 + 1;
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(vector.length)) {
+            double v_1 = (double)(_getd(vector, (int)((long)(i_3))));
+            double s_1 = 1.0 / (1.0 + (double)(exp_approx((double)(-v_1))));
+            result = ((double[])(appendDouble(result, s_1)));
+            i_3 = (long)((long)(i_3) + (long)(1));
         }
         return result;
     }
 
     static double[] swish(double[] vector, double beta) {
         double[] result_1 = ((double[])(new double[]{}));
-        int i_2 = 0;
-        while (i_2 < vector.length) {
-            double v_1 = vector[i_2];
-            double s_1 = 1.0 / (1.0 + exp_approx(-beta * v_1));
-            result_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(result_1), java.util.stream.DoubleStream.of(v_1 * s_1)).toArray()));
-            i_2 = i_2 + 1;
+        long i_5 = 0L;
+        while ((long)(i_5) < (long)(vector.length)) {
+            double v_3 = (double)(_getd(vector, (int)((long)(i_5))));
+            double s_3 = 1.0 / (1.0 + (double)(exp_approx((double)(-beta) * (double)(v_3))));
+            result_1 = ((double[])(appendDouble(result_1, (double)(v_3) * s_3)));
+            i_5 = (long)((long)(i_5) + (long)(1));
         }
         return result_1;
     }
@@ -41,37 +41,37 @@ public class Main {
     }
 
     static boolean approx_equal(double a, double b, double eps) {
-        double diff = a > b ? a - b : b - a;
-        return diff < eps;
+        double diff = (double)(a) > (double)(b) ? (double)(a) - (double)(b) : (double)(b) - (double)(a);
+        return diff < (double)(eps);
     }
 
     static boolean approx_equal_list(double[] a, double[] b, double eps) {
-        if (a.length != b.length) {
+        if ((long)(a.length) != (long)(b.length)) {
             return false;
         }
-        int i_3 = 0;
-        while (i_3 < a.length) {
-            if (!(Boolean)approx_equal(a[i_3], b[i_3], eps)) {
+        long i_7 = 0L;
+        while ((long)(i_7) < (long)(a.length)) {
+            if (!(Boolean)approx_equal((double)(_getd(a, (int)((long)(i_7)))), (double)(_getd(b, (int)((long)(i_7)))), (double)(eps))) {
                 return false;
             }
-            i_3 = i_3 + 1;
+            i_7 = (long)((long)(i_7) + (long)(1));
         }
         return true;
     }
 
     static void test_swish() {
-        double[] v_2 = ((double[])(new double[]{-1.0, 1.0, 2.0}));
-        double eps = 0.001;
-        if (!(Boolean)approx_equal_list(((double[])(sigmoid(((double[])(v_2))))), ((double[])(new double[]{0.26894142, 0.73105858, 0.88079708})), eps)) {
+        double[] v_4 = ((double[])(new double[]{-1.0, 1.0, 2.0}));
+        double eps_1 = 0.001;
+        if (!(Boolean)approx_equal_list(((double[])(sigmoid(((double[])(v_4))))), ((double[])(new double[]{0.26894142, 0.73105858, 0.88079708})), eps_1)) {
             throw new RuntimeException(String.valueOf("sigmoid incorrect"));
         }
-        if (!(Boolean)approx_equal_list(((double[])(sigmoid_linear_unit(((double[])(v_2))))), ((double[])(new double[]{-0.26894142, 0.73105858, 1.76159416})), eps)) {
+        if (!(Boolean)approx_equal_list(((double[])(sigmoid_linear_unit(((double[])(v_4))))), ((double[])(new double[]{-0.26894142, 0.73105858, 1.76159416})), eps_1)) {
             throw new RuntimeException(String.valueOf("sigmoid_linear_unit incorrect"));
         }
-        if (!(Boolean)approx_equal_list(((double[])(swish(((double[])(v_2)), 2.0))), ((double[])(new double[]{-0.11920292, 0.88079708, 1.96402758})), eps)) {
+        if (!(Boolean)approx_equal_list(((double[])(swish(((double[])(v_4)), 2.0))), ((double[])(new double[]{-0.11920292, 0.88079708, 1.96402758})), eps_1)) {
             throw new RuntimeException(String.valueOf("swish incorrect"));
         }
-        if (!(Boolean)approx_equal_list(((double[])(swish(((double[])(new double[]{-2.0})), 1.0))), ((double[])(new double[]{-0.23840584})), eps)) {
+        if (!(Boolean)approx_equal_list(((double[])(swish(((double[])(new double[]{-2.0})), 1.0))), ((double[])(new double[]{-0.23840584})), eps_1)) {
             throw new RuntimeException(String.valueOf("swish with parameter 1 incorrect"));
         }
     }
@@ -121,6 +121,12 @@ public class Main {
         return rt.totalMemory() - rt.freeMemory();
     }
 
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
+    }
+
     static String _p(Object v) {
         if (v == null) return "<nil>";
         if (v.getClass().isArray()) {
@@ -134,6 +140,18 @@ public class Main {
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
+    }
+
+    static double _getd(double[] a, int i) {
+        if (a == null) return 0.0;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return 0.0;
+        return a[i];
     }
 }

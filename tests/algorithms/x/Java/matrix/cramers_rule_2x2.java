@@ -1,42 +1,42 @@
 public class Main {
 
     static double[] cramers_rule_2x2(double[] eq1, double[] eq2) {
-        if (eq1.length != 3 || eq2.length != 3) {
+        if ((long)(eq1.length) != (long)(3) || (long)(eq2.length) != (long)(3)) {
             throw new RuntimeException(String.valueOf("Please enter a valid equation."));
         }
-        if (eq1[0] == 0.0 && eq1[1] == 0.0 && eq2[0] == 0.0 && eq2[1] == 0.0) {
+        if ((double)(_getd(eq1, (int)((long)(0)))) == 0.0 && (double)(_getd(eq1, (int)((long)(1)))) == 0.0 && (double)(_getd(eq2, (int)((long)(0)))) == 0.0 && (double)(_getd(eq2, (int)((long)(1)))) == 0.0) {
             throw new RuntimeException(String.valueOf("Both a & b of two equations can't be zero."));
         }
-        double a1 = eq1[0];
-        double b1 = eq1[1];
-        double c1 = eq1[2];
-        double a2 = eq2[0];
-        double b2 = eq2[1];
-        double c2 = eq2[2];
-        double determinant = a1 * b2 - a2 * b1;
-        double determinant_x = c1 * b2 - c2 * b1;
-        double determinant_y = a1 * c2 - a2 * c1;
-        if (determinant == 0.0) {
-            if (determinant_x == 0.0 && determinant_y == 0.0) {
+        double a1_1 = (double)(_getd(eq1, (int)((long)(0))));
+        double b1_1 = (double)(_getd(eq1, (int)((long)(1))));
+        double c1_1 = (double)(_getd(eq1, (int)((long)(2))));
+        double a2_1 = (double)(_getd(eq2, (int)((long)(0))));
+        double b2_1 = (double)(_getd(eq2, (int)((long)(1))));
+        double c2_1 = (double)(_getd(eq2, (int)((long)(2))));
+        double determinant_1 = (double)(a1_1) * (double)(b2_1) - (double)(a2_1) * (double)(b1_1);
+        double determinant_x_1 = (double)(c1_1) * (double)(b2_1) - (double)(c2_1) * (double)(b1_1);
+        double determinant_y_1 = (double)(a1_1) * (double)(c2_1) - (double)(a2_1) * (double)(c1_1);
+        if (determinant_1 == 0.0) {
+            if (determinant_x_1 == 0.0 && determinant_y_1 == 0.0) {
                 throw new RuntimeException(String.valueOf("Infinite solutions. (Consistent system)"));
             }
             throw new RuntimeException(String.valueOf("No solution. (Inconsistent system)"));
         }
-        if (determinant_x == 0.0 && determinant_y == 0.0) {
+        if (determinant_x_1 == 0.0 && determinant_y_1 == 0.0) {
             return new double[]{0.0, 0.0};
         }
-        double x = determinant_x / determinant;
-        double y = determinant_y / determinant;
-        return new double[]{x, y};
+        double x_1 = determinant_x_1 / determinant_1;
+        double y_1 = determinant_y_1 / determinant_1;
+        return new double[]{x_1, y_1};
     }
 
     static void test_cramers_rule_2x2() {
         double[] r1 = ((double[])(cramers_rule_2x2(((double[])(new double[]{2.0, 3.0, 0.0})), ((double[])(new double[]{5.0, 1.0, 0.0})))));
-        if (r1[0] != 0.0 || r1[1] != 0.0) {
+        if ((double)(_getd(r1, (int)((long)(0)))) != 0.0 || (double)(_getd(r1, (int)((long)(1)))) != 0.0) {
             throw new RuntimeException(String.valueOf("Test1 failed"));
         }
-        double[] r2 = ((double[])(cramers_rule_2x2(((double[])(new double[]{0.0, 4.0, 50.0})), ((double[])(new double[]{2.0, 0.0, 26.0})))));
-        if (r2[0] != 13.0 || r2[1] != 12.5) {
+        double[] r2_1 = ((double[])(cramers_rule_2x2(((double[])(new double[]{0.0, 4.0, 50.0})), ((double[])(new double[]{2.0, 0.0, 26.0})))));
+        if ((double)(_getd(r2_1, (int)((long)(0)))) != 13.0 || (double)(_getd(r2_1, (int)((long)(1)))) != 12.5) {
             throw new RuntimeException(String.valueOf("Test2 failed"));
         }
     }
@@ -81,5 +81,12 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static double _getd(double[] a, int i) {
+        if (a == null) return 0.0;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return 0.0;
+        return a[i];
     }
 }

@@ -2,24 +2,24 @@ public class Main {
 
     static double exp(double x) {
         double term = 1.0;
-        double sum = 1.0;
-        int n = 1;
-        while (n < 20) {
-            term = term * x / (((Number)(n)).doubleValue());
-            sum = sum + term;
-            n = n + 1;
+        double sum_1 = 1.0;
+        long n_1 = 1L;
+        while ((long)(n_1) < (long)(20)) {
+            term = term * (double)(x) / (((Number)(n_1)).doubleValue());
+            sum_1 = sum_1 + term;
+            n_1 = (long)((long)(n_1) + (long)(1));
         }
-        return sum;
+        return sum_1;
     }
 
     static double[] scaled_exponential_linear_unit(double[] vector, double alpha, double lambda_) {
         double[] result = ((double[])(new double[]{}));
-        int i = 0;
-        while (i < vector.length) {
-            double x = vector[i];
-            double y = x > 0.0 ? lambda_ * x : lambda_ * alpha * (exp(x) - 1.0);
-            result = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(result), java.util.stream.DoubleStream.of(y)).toArray()));
-            i = i + 1;
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(vector.length)) {
+            double x_1 = (double)(_getd(vector, (int)((long)(i_1))));
+            double y_1 = (double)(x_1) > 0.0 ? (double)(lambda_) * (double)(x_1) : (double)(lambda_) * (double)(alpha) * ((double)(exp((double)(x_1))) - 1.0);
+            result = ((double[])(appendDouble(result, y_1)));
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
         return result;
     }
@@ -60,5 +60,18 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
+    }
+
+    static double _getd(double[] a, int i) {
+        if (a == null) return 0.0;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return 0.0;
+        return a[i];
     }
 }

@@ -1,17 +1,17 @@
 public class Main {
 
-    static void search_in_sorted_matrix(double[][] mat, int m, int n, double key) {
-        int i = m - 1;
-        int j = 0;
-        while (i >= 0 && j < n) {
-            if (key == mat[i][j]) {
-                System.out.println("Key " + _p(key) + " found at row- " + _p(i + 1) + " column- " + _p(j + 1));
+    static void search_in_sorted_matrix(double[][] mat, long m, long n, double key) {
+        long i = (long)(m - (long)(1));
+        long j_1 = 0L;
+        while ((long)(i) >= (long)(0) && (long)(j_1) < n) {
+            if ((double)(key) == (double)(_getd(((double[])_geto(mat, (int)((long)(i)))), (int)((long)(j_1))))) {
+                System.out.println("Key " + _p(key) + " found at row- " + _p((long)(i) + (long)(1)) + " column- " + _p((long)(j_1) + (long)(1)));
                 return;
             }
-            if (key < mat[i][j]) {
-                i = i - 1;
+            if ((double)(key) < (double)(_getd(((double[])_geto(mat, (int)((long)(i)))), (int)((long)(j_1))))) {
+                i = (long)((long)(i) - (long)(1));
             } else {
-                j = j + 1;
+                j_1 = (long)((long)(j_1) + (long)(1));
             }
         }
         System.out.println("Key " + _p(key) + " not found");
@@ -19,11 +19,11 @@ public class Main {
 
     static void main() {
         double[][] mat = ((double[][])(new double[][]{new double[]{2.0, 5.0, 7.0}, new double[]{4.0, 8.0, 13.0}, new double[]{9.0, 11.0, 15.0}, new double[]{12.0, 17.0, 20.0}}));
-        search_in_sorted_matrix(((double[][])(mat)), mat.length, mat[0].length, 5.0);
-        search_in_sorted_matrix(((double[][])(mat)), mat.length, mat[0].length, 21.0);
-        double[][] mat2 = ((double[][])(new double[][]{new double[]{2.1, 5.0, 7.0}, new double[]{4.0, 8.0, 13.0}, new double[]{9.0, 11.0, 15.0}, new double[]{12.0, 17.0, 20.0}}));
-        search_in_sorted_matrix(((double[][])(mat2)), mat2.length, mat2[0].length, 2.1);
-        search_in_sorted_matrix(((double[][])(mat2)), mat2.length, mat2[0].length, 2.2);
+        search_in_sorted_matrix(((double[][])(mat)), (long)(mat.length), (long)(((double[])_geto(mat, (int)((long)(0)))).length), 5.0);
+        search_in_sorted_matrix(((double[][])(mat)), (long)(mat.length), (long)(((double[])_geto(mat, (int)((long)(0)))).length), 21.0);
+        double[][] mat2_1 = ((double[][])(new double[][]{new double[]{2.1, 5.0, 7.0}, new double[]{4.0, 8.0, 13.0}, new double[]{9.0, 11.0, 15.0}, new double[]{12.0, 17.0, 20.0}}));
+        search_in_sorted_matrix(((double[][])(mat2_1)), (long)(mat2_1.length), (long)(((double[])_geto(mat2_1, (int)((long)(0)))).length), 2.1);
+        search_in_sorted_matrix(((double[][])(mat2_1)), (long)(mat2_1.length), (long)(((double[])_geto(mat2_1, (int)((long)(0)))).length), 2.2);
     }
     public static void main(String[] args) {
         {
@@ -76,6 +76,25 @@ public class Main {
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
+    }
+
+    static double _getd(double[] a, int i) {
+        if (a == null) return 0.0;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return 0.0;
+        return a[i];
+    }
+
+    static Object _geto(Object[] a, int i) {
+        if (a == null) return null;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return null;
+        return a[i];
     }
 }

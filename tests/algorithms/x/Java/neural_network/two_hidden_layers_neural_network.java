@@ -17,22 +17,22 @@ public class Main {
 
     static double exp_approx(double x) {
         double sum = 1.0;
-        double term = 1.0;
-        int i = 1;
-        while (i < 10) {
-            term = term * x / ((Number)(i)).doubleValue();
-            sum = sum + term;
-            i = i + 1;
+        double term_1 = 1.0;
+        long i_1 = 1L;
+        while (i_1 < (long)(10)) {
+            term_1 = (double)(term_1) * (double)(x) / ((Number)(i_1)).doubleValue();
+            sum = (double)(sum) + (double)(term_1);
+            i_1 = (long)(i_1 + (long)(1));
         }
         return sum;
     }
 
     static double sigmoid(double x) {
-        return 1.0 / (1.0 + exp_approx(-x));
+        return 1.0 / (1.0 + (double)(exp_approx((double)(-x))));
     }
 
     static double sigmoid_derivative(double x) {
-        return x * (1.0 - x);
+        return (double)(x) * (1.0 - (double)(x));
     }
 
     static Network new_network() {
@@ -41,157 +41,157 @@ public class Main {
 
     static double feedforward(Network net, double[] input) {
         double[] hidden1 = ((double[])(new double[]{}));
-        int j = 0;
-        while (j < 4) {
-            double sum1 = 0.0;
-            int i_1 = 0;
-            while (i_1 < 3) {
-                sum1 = sum1 + input[i_1] * net.w1[i_1][j];
-                i_1 = i_1 + 1;
+        long j_1 = 0L;
+        while (j_1 < (long)(4)) {
+            double sum1_1 = 0.0;
+            long i_3 = 0L;
+            while (i_3 < (long)(3)) {
+                sum1_1 = (double)(sum1_1) + (double)(_getd(input, (int)((long)(i_3)))) * _getd(((double[])_geto(net.w1, (int)((long)(i_3)))), (int)((long)(j_1)));
+                i_3 = (long)(i_3 + (long)(1));
             }
-            hidden1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(hidden1), java.util.stream.DoubleStream.of(sigmoid(sum1))).toArray()));
-            j = j + 1;
+            hidden1 = ((double[])(appendDouble(hidden1, (double)(sigmoid((double)(sum1_1))))));
+            j_1 = (long)(j_1 + (long)(1));
         }
-        double[] hidden2 = ((double[])(new double[]{}));
-        int k = 0;
-        while (k < 3) {
-            double sum2 = 0.0;
-            int j2 = 0;
-            while (j2 < 4) {
-                sum2 = sum2 + hidden1[j2] * net.w2[j2][k];
-                j2 = j2 + 1;
+        double[] hidden2_1 = ((double[])(new double[]{}));
+        long k_1 = 0L;
+        while (k_1 < (long)(3)) {
+            double sum2_1 = 0.0;
+            long j2_1 = 0L;
+            while (j2_1 < (long)(4)) {
+                sum2_1 = (double)(sum2_1) + (double)(_getd(hidden1, (int)((long)(j2_1)))) * _getd(((double[])_geto(net.w2, (int)((long)(j2_1)))), (int)((long)(k_1)));
+                j2_1 = (long)(j2_1 + (long)(1));
             }
-            hidden2 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(hidden2), java.util.stream.DoubleStream.of(sigmoid(sum2))).toArray()));
-            k = k + 1;
+            hidden2_1 = ((double[])(appendDouble(hidden2_1, (double)(sigmoid((double)(sum2_1))))));
+            k_1 = (long)(k_1 + (long)(1));
         }
-        double sum3 = 0.0;
-        int k2 = 0;
-        while (k2 < 3) {
-            sum3 = sum3 + hidden2[k2] * net.w3[k2][0];
-            k2 = k2 + 1;
+        double sum3_1 = 0.0;
+        long k2_1 = 0L;
+        while (k2_1 < (long)(3)) {
+            sum3_1 = (double)(sum3_1) + (double)(_getd(hidden2_1, (int)((long)(k2_1)))) * _getd(((double[])_geto(net.w3, (int)((long)(k2_1)))), (int)((long)(0)));
+            k2_1 = (long)(k2_1 + (long)(1));
         }
-        double out = sigmoid(sum3);
-        return out;
+        double out_1 = (double)(sigmoid((double)(sum3_1)));
+        return out_1;
     }
 
-    static void train(Network net, double[][] inputs, double[] outputs, int iterations) {
-        int iter = 0;
+    static void train(Network net, double[][] inputs, double[] outputs, long iterations) {
+        long iter = 0L;
         while (iter < iterations) {
-            int s = 0;
-            while (s < inputs.length) {
-                double[] inp = ((double[])(inputs[s]));
-                double target = outputs[s];
-                double[] hidden1_1 = ((double[])(new double[]{}));
-                int j_1 = 0;
-                while (j_1 < 4) {
-                    double sum1_1 = 0.0;
-                    int i_2 = 0;
-                    while (i_2 < 3) {
-                        sum1_1 = sum1_1 + inp[i_2] * net.w1[i_2][j_1];
-                        i_2 = i_2 + 1;
+            long s_1 = 0L;
+            while (s_1 < (long)(inputs.length)) {
+                double[] inp_1 = ((double[])(((double[])_geto(inputs, (int)((long)(s_1))))));
+                double target_1 = (double)(_getd(outputs, (int)((long)(s_1))));
+                double[] hidden1_2 = ((double[])(new double[]{}));
+                long j_3 = 0L;
+                while (j_3 < (long)(4)) {
+                    double sum1_3 = 0.0;
+                    long i_5 = 0L;
+                    while (i_5 < (long)(3)) {
+                        sum1_3 = (double)(sum1_3) + (double)(_getd(inp_1, (int)((long)(i_5)))) * _getd(((double[])_geto(net.w1, (int)((long)(i_5)))), (int)((long)(j_3)));
+                        i_5 = (long)(i_5 + (long)(1));
                     }
-                    hidden1_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(hidden1_1), java.util.stream.DoubleStream.of(sigmoid(sum1_1))).toArray()));
-                    j_1 = j_1 + 1;
+                    hidden1_2 = ((double[])(appendDouble(hidden1_2, (double)(sigmoid((double)(sum1_3))))));
+                    j_3 = (long)(j_3 + (long)(1));
                 }
-                double[] hidden2_1 = ((double[])(new double[]{}));
-                int k_1 = 0;
-                while (k_1 < 3) {
-                    double sum2_1 = 0.0;
-                    int j2_1 = 0;
-                    while (j2_1 < 4) {
-                        sum2_1 = sum2_1 + hidden1_1[j2_1] * net.w2[j2_1][k_1];
-                        j2_1 = j2_1 + 1;
+                double[] hidden2_3 = ((double[])(new double[]{}));
+                long k_3 = 0L;
+                while (k_3 < (long)(3)) {
+                    double sum2_3 = 0.0;
+                    long j2_3 = 0L;
+                    while (j2_3 < (long)(4)) {
+                        sum2_3 = (double)(sum2_3) + (double)(_getd(hidden1_2, (int)((long)(j2_3)))) * _getd(((double[])_geto(net.w2, (int)((long)(j2_3)))), (int)((long)(k_3)));
+                        j2_3 = (long)(j2_3 + (long)(1));
                     }
-                    hidden2_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(hidden2_1), java.util.stream.DoubleStream.of(sigmoid(sum2_1))).toArray()));
-                    k_1 = k_1 + 1;
+                    hidden2_3 = ((double[])(appendDouble(hidden2_3, (double)(sigmoid((double)(sum2_3))))));
+                    k_3 = (long)(k_3 + (long)(1));
                 }
-                double sum3_1 = 0.0;
-                int k3 = 0;
-                while (k3 < 3) {
-                    sum3_1 = sum3_1 + hidden2_1[k3] * net.w3[k3][0];
-                    k3 = k3 + 1;
+                double sum3_3 = 0.0;
+                long k3_1 = 0L;
+                while (k3_1 < (long)(3)) {
+                    sum3_3 = (double)(sum3_3) + (double)(_getd(hidden2_3, (int)((long)(k3_1)))) * _getd(((double[])_geto(net.w3, (int)((long)(k3_1)))), (int)((long)(0)));
+                    k3_1 = (long)(k3_1 + (long)(1));
                 }
-                double output = sigmoid(sum3_1);
-                double error = target - output;
-                double delta_output = error * sigmoid_derivative(output);
-                double[][] new_w3 = ((double[][])(new double[][]{}));
-                int k4 = 0;
-                while (k4 < 3) {
-                    double[] w3row = ((double[])(((double[])(net.w3[k4]))));
-w3row[0] = w3row[0] + hidden2_1[k4] * delta_output;
-                    new_w3 = ((double[][])(appendObj(new_w3, w3row)));
-                    k4 = k4 + 1;
+                double output_1 = (double)(sigmoid((double)(sum3_3)));
+                double error_1 = (double)(target_1) - (double)(output_1);
+                double delta_output_1 = error_1 * (double)(sigmoid_derivative((double)(output_1)));
+                double[][] new_w3_1 = ((double[][])(new double[][]{}));
+                long k4_1 = 0L;
+                while (k4_1 < (long)(3)) {
+                    double[] w3row_1 = ((double[])(((double[])_geto(net.w3, (int)((long)(k4_1))))));
+w3row_1[(int)((long)(0))] = (double)(_getd(w3row_1, (int)((long)(0)))) + (double)(_getd(hidden2_3, (int)((long)(k4_1)))) * delta_output_1;
+                    new_w3_1 = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(new_w3_1), java.util.stream.Stream.of(w3row_1)).toArray(double[][]::new)));
+                    k4_1 = (long)(k4_1 + (long)(1));
                 }
-net.w3 = new_w3;
-                double[] delta_hidden2 = ((double[])(new double[]{}));
-                int k5 = 0;
-                while (k5 < 3) {
-                    double[] row = ((double[])(net.w3[k5]));
-                    double dh2 = row[0] * delta_output * sigmoid_derivative(hidden2_1[k5]);
-                    delta_hidden2 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(delta_hidden2), java.util.stream.DoubleStream.of(dh2)).toArray()));
-                    k5 = k5 + 1;
+net.w3 = new_w3_1;
+                double[] delta_hidden2_1 = ((double[])(new double[]{}));
+                long k5_1 = 0L;
+                while (k5_1 < (long)(3)) {
+                    double[] row_1 = ((double[])(((double[])_geto(net.w3, (int)((long)(k5_1))))));
+                    double dh2_1 = _getd(row_1, (int)((long)(0))) * delta_output_1 * (double)(sigmoid_derivative((double)(_getd(hidden2_3, (int)((long)(k5_1))))));
+                    delta_hidden2_1 = ((double[])(appendDouble(delta_hidden2_1, dh2_1)));
+                    k5_1 = (long)(k5_1 + (long)(1));
                 }
-                double[][] new_w2 = ((double[][])(new double[][]{}));
-                j_1 = 0;
-                while (j_1 < 4) {
-                    double[] w2row = ((double[])(((double[])(net.w2[j_1]))));
-                    int k6 = 0;
-                    while (k6 < 3) {
-w2row[k6] = w2row[k6] + hidden1_1[j_1] * delta_hidden2[k6];
-                        k6 = k6 + 1;
+                double[][] new_w2_1 = ((double[][])(new double[][]{}));
+                j_3 = 0L;
+                while (j_3 < (long)(4)) {
+                    double[] w2row_1 = ((double[])(((double[])_geto(net.w2, (int)((long)(j_3))))));
+                    long k6_1 = 0L;
+                    while (k6_1 < (long)(3)) {
+w2row_1[(int)((long)(k6_1))] = (double)(_getd(w2row_1, (int)((long)(k6_1)))) + (double)(_getd(hidden1_2, (int)((long)(j_3)))) * (double)(_getd(delta_hidden2_1, (int)((long)(k6_1))));
+                        k6_1 = (long)(k6_1 + (long)(1));
                     }
-                    new_w2 = ((double[][])(appendObj(new_w2, w2row)));
-                    j_1 = j_1 + 1;
+                    new_w2_1 = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(new_w2_1), java.util.stream.Stream.of(w2row_1)).toArray(double[][]::new)));
+                    j_3 = (long)(j_3 + (long)(1));
                 }
-net.w2 = new_w2;
-                double[] delta_hidden1 = ((double[])(new double[]{}));
-                j_1 = 0;
-                while (j_1 < 4) {
-                    double sumdh = 0.0;
-                    int k7 = 0;
-                    while (k7 < 3) {
-                        double[] row2 = ((double[])(net.w2[j_1]));
-                        sumdh = sumdh + row2[k7] * delta_hidden2[k7];
-                        k7 = k7 + 1;
+net.w2 = new_w2_1;
+                double[] delta_hidden1_1 = ((double[])(new double[]{}));
+                j_3 = 0L;
+                while (j_3 < (long)(4)) {
+                    double sumdh_1 = 0.0;
+                    long k7_1 = 0L;
+                    while (k7_1 < (long)(3)) {
+                        double[] row2_1 = ((double[])(((double[])_geto(net.w2, (int)((long)(j_3))))));
+                        sumdh_1 = (double)(sumdh_1) + _getd(row2_1, (int)((long)(k7_1))) * (double)(_getd(delta_hidden2_1, (int)((long)(k7_1))));
+                        k7_1 = (long)(k7_1 + (long)(1));
                     }
-                    delta_hidden1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(delta_hidden1), java.util.stream.DoubleStream.of(sumdh * sigmoid_derivative(hidden1_1[j_1]))).toArray()));
-                    j_1 = j_1 + 1;
+                    delta_hidden1_1 = ((double[])(appendDouble(delta_hidden1_1, (double)(sumdh_1) * (double)(sigmoid_derivative((double)(_getd(hidden1_2, (int)((long)(j_3)))))))));
+                    j_3 = (long)(j_3 + (long)(1));
                 }
-                double[][] new_w1 = ((double[][])(new double[][]{}));
-                int i2 = 0;
-                while (i2 < 3) {
-                    double[] w1row = ((double[])(((double[])(net.w1[i2]))));
-                    j_1 = 0;
-                    while (j_1 < 4) {
-w1row[j_1] = w1row[j_1] + inp[i2] * delta_hidden1[j_1];
-                        j_1 = j_1 + 1;
+                double[][] new_w1_1 = ((double[][])(new double[][]{}));
+                long i2_1 = 0L;
+                while (i2_1 < (long)(3)) {
+                    double[] w1row_1 = ((double[])(((double[])_geto(net.w1, (int)((long)(i2_1))))));
+                    j_3 = 0L;
+                    while (j_3 < (long)(4)) {
+w1row_1[(int)((long)(j_3))] = (double)(_getd(w1row_1, (int)((long)(j_3)))) + (double)(_getd(inp_1, (int)((long)(i2_1)))) * (double)(_getd(delta_hidden1_1, (int)((long)(j_3))));
+                        j_3 = (long)(j_3 + (long)(1));
                     }
-                    new_w1 = ((double[][])(appendObj(new_w1, w1row)));
-                    i2 = i2 + 1;
+                    new_w1_1 = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(new_w1_1), java.util.stream.Stream.of(w1row_1)).toArray(double[][]::new)));
+                    i2_1 = (long)(i2_1 + (long)(1));
                 }
-net.w1 = new_w1;
-                s = s + 1;
+net.w1 = new_w1_1;
+                s_1 = (long)(s_1 + (long)(1));
             }
-            iter = iter + 1;
+            iter = (long)(iter + (long)(1));
         }
     }
 
-    static int predict(Network net, double[] input) {
-        double out_1 = feedforward(net, ((double[])(input)));
-        if (out_1 > 0.6) {
+    static long predict(Network net, double[] input) {
+        double out_2 = (double)(feedforward(net, ((double[])(input))));
+        if ((double)(out_2) > 0.6) {
             return 1;
         }
         return 0;
     }
 
-    static int example() {
+    static long example() {
         double[][] inputs = ((double[][])(new double[][]{new double[]{0.0, 0.0, 0.0}, new double[]{0.0, 0.0, 1.0}, new double[]{0.0, 1.0, 0.0}, new double[]{0.0, 1.0, 1.0}, new double[]{1.0, 0.0, 0.0}, new double[]{1.0, 0.0, 1.0}, new double[]{1.0, 1.0, 0.0}, new double[]{1.0, 1.0, 1.0}}));
-        double[] outputs = ((double[])(new double[]{0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0}));
-        Network net = new_network();
-        train(net, ((double[][])(inputs)), ((double[])(outputs)), 10);
-        int result = predict(net, ((double[])(new double[]{1.0, 1.0, 1.0})));
-        System.out.println(_p(result));
-        return result;
+        double[] outputs_1 = ((double[])(new double[]{0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0}));
+        Network net_1 = new_network();
+        train(net_1, ((double[][])(inputs)), ((double[])(outputs_1)), 10L);
+        long result_1 = predict(net_1, ((double[])(new double[]{1.0, 1.0, 1.0})));
+        System.out.println(_p(result_1));
+        return result_1;
     }
 
     static void main() {
@@ -235,8 +235,8 @@ net.w1 = new_w1;
         return rt.totalMemory() - rt.freeMemory();
     }
 
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
         out[arr.length] = v;
         return out;
     }
@@ -254,6 +254,25 @@ net.w1 = new_w1;
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
+    }
+
+    static double _getd(double[] a, int i) {
+        if (a == null) return 0.0;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return 0.0;
+        return a[i];
+    }
+
+    static Object _geto(Object[] a, int i) {
+        if (a == null) return null;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return null;
+        return a[i];
     }
 }

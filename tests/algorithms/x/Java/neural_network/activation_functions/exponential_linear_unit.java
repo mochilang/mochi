@@ -2,32 +2,32 @@ public class Main {
 
     static double exp_approx(double x) {
         double sum = 1.0;
-        double term = 1.0;
-        int i = 1;
-        double absx = x < 0.0 ? -x : x;
-        while (i <= 20) {
-            term = term * absx / (((Number)(i)).doubleValue());
-            sum = sum + term;
-            i = i + 1;
+        double term_1 = 1.0;
+        long i_1 = 1L;
+        double absx_1 = (double)((double)(x) < 0.0 ? -x : x);
+        while ((long)(i_1) <= (long)(20)) {
+            term_1 = (double)(term_1) * absx_1 / (((Number)(i_1)).doubleValue());
+            sum = (double)(sum) + (double)(term_1);
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
-        if (x < 0.0) {
-            return 1.0 / sum;
+        if ((double)(x) < 0.0) {
+            return 1.0 / (double)(sum);
         }
         return sum;
     }
 
     static double[] exponential_linear_unit(double[] vector, double alpha) {
         double[] result = ((double[])(new double[]{}));
-        int i_1 = 0;
-        while (i_1 < vector.length) {
-            double v = vector[i_1];
-            if (v > 0.0) {
-                result = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(result), java.util.stream.DoubleStream.of(v)).toArray()));
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(vector.length)) {
+            double v_1 = (double)(_getd(vector, (int)((long)(i_3))));
+            if ((double)(v_1) > 0.0) {
+                result = ((double[])(appendDouble(result, (double)(v_1))));
             } else {
-                double neg = alpha * (exp_approx(v) - 1.0);
-                result = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(result), java.util.stream.DoubleStream.of(neg)).toArray()));
+                double neg_1 = (double)(alpha) * ((double)(exp_approx((double)(v_1))) - 1.0);
+                result = ((double[])(appendDouble(result, neg_1)));
             }
-            i_1 = i_1 + 1;
+            i_3 = (long)((long)(i_3) + (long)(1));
         }
         return result;
     }
@@ -70,6 +70,12 @@ public class Main {
         return rt.totalMemory() - rt.freeMemory();
     }
 
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
+    }
+
     static String _p(Object v) {
         if (v == null) return "<nil>";
         if (v.getClass().isArray()) {
@@ -83,6 +89,18 @@ public class Main {
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
+    }
+
+    static double _getd(double[] a, int i) {
+        if (a == null) return 0.0;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return 0.0;
+        return a[i];
     }
 }

@@ -3,38 +3,38 @@ public class Main {
     static double[][] m3 = new double[0][];
 
     static double[][] inverse_of_matrix(double[][] matrix) {
-        if (matrix.length == 2 && matrix[0].length == 2 && matrix[1].length == 2) {
-            double det = matrix[0][0] * matrix[1][1] - matrix[1][0] * matrix[0][1];
+        if ((long)(matrix.length) == (long)(2) && (long)(((double[])_geto(matrix, (int)((long)(0)))).length) == (long)(2) && (long)(((double[])_geto(matrix, (int)((long)(1)))).length) == (long)(2)) {
+            double det = (double)(_getd(((double[])_geto(matrix, (int)((long)(0)))), (int)((long)(0)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(1)))), (int)((long)(1)))) - (double)(_getd(((double[])_geto(matrix, (int)((long)(1)))), (int)((long)(0)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(0)))), (int)((long)(1))));
             if (det == 0.0) {
                 System.out.println("This matrix has no inverse.");
                 return new double[][]{};
             }
-            return new double[][]{new double[]{matrix[1][1] / det, -matrix[0][1] / det}, new double[]{-matrix[1][0] / det, matrix[0][0] / det}};
-        } else         if (matrix.length == 3 && matrix[0].length == 3 && matrix[1].length == 3 && matrix[2].length == 3) {
-            double det_1 = matrix[0][0] * matrix[1][1] * matrix[2][2] + matrix[0][1] * matrix[1][2] * matrix[2][0] + matrix[0][2] * matrix[1][0] * matrix[2][1] - (matrix[0][2] * matrix[1][1] * matrix[2][0] + matrix[0][1] * matrix[1][0] * matrix[2][2] + matrix[0][0] * matrix[1][2] * matrix[2][1]);
+            return new double[][]{new double[]{(double)(_getd(((double[])_geto(matrix, (int)((long)(1)))), (int)((long)(1)))) / det, (double)(-_getd(((double[])_geto(matrix, (int)((long)(0)))), (int)((long)(1)))) / det}, new double[]{(double)(-_getd(((double[])_geto(matrix, (int)((long)(1)))), (int)((long)(0)))) / det, (double)(_getd(((double[])_geto(matrix, (int)((long)(0)))), (int)((long)(0)))) / det}};
+        } else         if ((long)(matrix.length) == (long)(3) && (long)(((double[])_geto(matrix, (int)((long)(0)))).length) == (long)(3) && (long)(((double[])_geto(matrix, (int)((long)(1)))).length) == (long)(3) && (long)(((double[])_geto(matrix, (int)((long)(2)))).length) == (long)(3)) {
+            double det_1 = (double)(_getd(((double[])_geto(matrix, (int)((long)(0)))), (int)((long)(0)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(1)))), (int)((long)(1)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(2)))), (int)((long)(2)))) + (double)(_getd(((double[])_geto(matrix, (int)((long)(0)))), (int)((long)(1)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(1)))), (int)((long)(2)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(2)))), (int)((long)(0)))) + (double)(_getd(((double[])_geto(matrix, (int)((long)(0)))), (int)((long)(2)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(1)))), (int)((long)(0)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(2)))), (int)((long)(1)))) - ((double)(_getd(((double[])_geto(matrix, (int)((long)(0)))), (int)((long)(2)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(1)))), (int)((long)(1)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(2)))), (int)((long)(0)))) + (double)(_getd(((double[])_geto(matrix, (int)((long)(0)))), (int)((long)(1)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(1)))), (int)((long)(0)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(2)))), (int)((long)(2)))) + (double)(_getd(((double[])_geto(matrix, (int)((long)(0)))), (int)((long)(0)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(1)))), (int)((long)(2)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(2)))), (int)((long)(1)))));
             if (det_1 == 0.0) {
                 System.out.println("This matrix has no inverse.");
                 return new double[][]{};
             }
             double[][] cof = ((double[][])(new double[][]{new double[]{0.0, 0.0, 0.0}, new double[]{0.0, 0.0, 0.0}, new double[]{0.0, 0.0, 0.0}}));
-cof[0][0] = matrix[1][1] * matrix[2][2] - matrix[1][2] * matrix[2][1];
-cof[0][1] = -(matrix[1][0] * matrix[2][2] - matrix[1][2] * matrix[2][0]);
-cof[0][2] = matrix[1][0] * matrix[2][1] - matrix[1][1] * matrix[2][0];
-cof[1][0] = -(matrix[0][1] * matrix[2][2] - matrix[0][2] * matrix[2][1]);
-cof[1][1] = matrix[0][0] * matrix[2][2] - matrix[0][2] * matrix[2][0];
-cof[1][2] = -(matrix[0][0] * matrix[2][1] - matrix[0][1] * matrix[2][0]);
-cof[2][0] = matrix[0][1] * matrix[1][2] - matrix[0][2] * matrix[1][1];
-cof[2][1] = -(matrix[0][0] * matrix[1][2] - matrix[0][2] * matrix[1][0]);
-cof[2][2] = matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+((double[])_geto(cof, (int)((long)(0))))[(int)((long)(0))] = (double)(_getd(((double[])_geto(matrix, (int)((long)(1)))), (int)((long)(1)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(2)))), (int)((long)(2)))) - (double)(_getd(((double[])_geto(matrix, (int)((long)(1)))), (int)((long)(2)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(2)))), (int)((long)(1))));
+((double[])_geto(cof, (int)((long)(0))))[(int)((long)(1))] = -((double)(_getd(((double[])_geto(matrix, (int)((long)(1)))), (int)((long)(0)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(2)))), (int)((long)(2)))) - (double)(_getd(((double[])_geto(matrix, (int)((long)(1)))), (int)((long)(2)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(2)))), (int)((long)(0)))));
+((double[])_geto(cof, (int)((long)(0))))[(int)((long)(2))] = (double)(_getd(((double[])_geto(matrix, (int)((long)(1)))), (int)((long)(0)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(2)))), (int)((long)(1)))) - (double)(_getd(((double[])_geto(matrix, (int)((long)(1)))), (int)((long)(1)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(2)))), (int)((long)(0))));
+((double[])_geto(cof, (int)((long)(1))))[(int)((long)(0))] = -((double)(_getd(((double[])_geto(matrix, (int)((long)(0)))), (int)((long)(1)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(2)))), (int)((long)(2)))) - (double)(_getd(((double[])_geto(matrix, (int)((long)(0)))), (int)((long)(2)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(2)))), (int)((long)(1)))));
+((double[])_geto(cof, (int)((long)(1))))[(int)((long)(1))] = (double)(_getd(((double[])_geto(matrix, (int)((long)(0)))), (int)((long)(0)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(2)))), (int)((long)(2)))) - (double)(_getd(((double[])_geto(matrix, (int)((long)(0)))), (int)((long)(2)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(2)))), (int)((long)(0))));
+((double[])_geto(cof, (int)((long)(1))))[(int)((long)(2))] = -((double)(_getd(((double[])_geto(matrix, (int)((long)(0)))), (int)((long)(0)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(2)))), (int)((long)(1)))) - (double)(_getd(((double[])_geto(matrix, (int)((long)(0)))), (int)((long)(1)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(2)))), (int)((long)(0)))));
+((double[])_geto(cof, (int)((long)(2))))[(int)((long)(0))] = (double)(_getd(((double[])_geto(matrix, (int)((long)(0)))), (int)((long)(1)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(1)))), (int)((long)(2)))) - (double)(_getd(((double[])_geto(matrix, (int)((long)(0)))), (int)((long)(2)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(1)))), (int)((long)(1))));
+((double[])_geto(cof, (int)((long)(2))))[(int)((long)(1))] = -((double)(_getd(((double[])_geto(matrix, (int)((long)(0)))), (int)((long)(0)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(1)))), (int)((long)(2)))) - (double)(_getd(((double[])_geto(matrix, (int)((long)(0)))), (int)((long)(2)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(1)))), (int)((long)(0)))));
+((double[])_geto(cof, (int)((long)(2))))[(int)((long)(2))] = (double)(_getd(((double[])_geto(matrix, (int)((long)(0)))), (int)((long)(0)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(1)))), (int)((long)(1)))) - (double)(_getd(((double[])_geto(matrix, (int)((long)(0)))), (int)((long)(1)))) * (double)(_getd(((double[])_geto(matrix, (int)((long)(1)))), (int)((long)(0))));
             double[][] inv = ((double[][])(new double[][]{new double[]{0.0, 0.0, 0.0}, new double[]{0.0, 0.0, 0.0}, new double[]{0.0, 0.0, 0.0}}));
-            int i = 0;
-            while (i < 3) {
-                int j = 0;
-                while (j < 3) {
-inv[i][j] = cof[j][i] / det_1;
-                    j = j + 1;
+            long i = 0L;
+            while ((long)(i) < (long)(3)) {
+                long j = 0L;
+                while ((long)(j) < (long)(3)) {
+((double[])_geto(inv, (int)((long)(i))))[(int)((long)(j))] = (double)(_getd(((double[])_geto(cof, (int)((long)(j)))), (int)((long)(i)))) / det_1;
+                    j = (long)((long)(j) + (long)(1));
                 }
-                i = i + 1;
+                i = (long)((long)(i) + (long)(1));
             }
             return inv;
         }
@@ -80,5 +80,19 @@ inv[i][j] = cof[j][i] / det_1;
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static double _getd(double[] a, int i) {
+        if (a == null) return 0.0;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return 0.0;
+        return a[i];
+    }
+
+    static Object _geto(Object[] a, int i) {
+        if (a == null) return null;
+        if (i < 0) i += a.length;
+        if (i < 0 || i >= a.length) return null;
+        return a[i];
     }
 }
