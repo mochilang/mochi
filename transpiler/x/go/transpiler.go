@@ -105,10 +105,10 @@ var (
 func SetBenchMain(v bool) { benchMain = v }
 
 func (p *Program) enableBench() {
-    p.UseTime = true
-    p.UseJSON = true
-    p.UsePrint = true
-    p.UseRuntime = true
+	p.UseTime = true
+	p.UseJSON = true
+	p.UsePrint = true
+	p.UseRuntime = true
 }
 
 func toPascalCase(s string) string {
@@ -1274,9 +1274,13 @@ func (l *ListLit) emit(w io.Writer) {
 			sl.emitBare(w)
 		} else {
 			if l.ElemType == "int" {
-				fmt.Fprint(w, "func(v any) int { if vv, ok := v.(int); ok { return vv }; return 0 }(")
-				e.emit(w)
-				fmt.Fprint(w, ")")
+				if _, ok := e.(*IntLit); ok {
+					e.emit(w)
+				} else {
+					fmt.Fprint(w, "func(v any) int { if vv, ok := v.(int); ok { return vv }; return 0 }(")
+					e.emit(w)
+					fmt.Fprint(w, ")")
+				}
 			} else {
 				e.emit(w)
 			}
