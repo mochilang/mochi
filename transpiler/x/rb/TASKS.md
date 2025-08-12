@@ -1,3 +1,533 @@
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-12 14:01 +0700)
+- Commit c249981ea3: java: drop resolved algorithm errors
+- Generated Ruby for 104/105 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-08-12 12:29 +0700)
 - Commit b87d343d9c: zig: support slice literals and to_float
 - Generated Ruby for 104/105 programs
