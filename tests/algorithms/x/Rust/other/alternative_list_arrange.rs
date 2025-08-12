@@ -46,10 +46,10 @@ fn main() {
     return Item::Int { value: x }
 };
     fn from_string(s: &str) -> Item {
-    return Item::Str { value: s.to_string() }
+    return Item::Str { value: s.clone() }
 };
-    fn item_to_string(it: &Item) -> String {
-    return match it { Item::Int { value: v } => (*v).to_string(), Item::Str { value: s } => (*s).clone(), }.to_string().clone()
+    fn item_to_string(mut it: Item) -> String {
+    return match it { Item::Int { value: v } => v.to_string(), Item::Str { value: s } => s, }.to_string().clone()
 };
     fn alternative_list_arrange(mut first: Vec<Item>, mut second: Vec<Item>) -> Vec<Item> {
     let len1: i64 = (first.len() as i64);
@@ -72,7 +72,7 @@ fn main() {
     let mut s: String = String::from("[").clone();
     let mut i: i64 = 0;
     while (i < (xs.len() as i64)) {
-        s = format!("{}{}", s, item_to_string(&xs[i as usize].clone()));
+        s = format!("{}{}", s, item_to_string(xs[i as usize].clone()));
         if (i < ((xs.len() as i64) - 1)) {
             s = format!("{}{}", s, ", ");
         }

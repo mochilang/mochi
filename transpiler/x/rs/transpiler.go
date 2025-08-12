@@ -790,15 +790,19 @@ func (s *StructLit) emit(w io.Writer) {
 			continue
 		}
 		f.emit(w)
-		if nr, ok := f.(*NameRef); ok {
+		if nr, ok := f.(*NameRef); ok && !patternMode {
 			typ := nr.Type
 			if typ == "" {
 				typ = varTypes[nr.Name]
 			}
 			if strings.HasPrefix(typ, "&") {
 				if st, ok3 := structTypes[s.Name]; ok3 {
-					if ft, ok4 := st.Fields[s.Names[i]]; ok4 && !types.IsNumericType(ft) && !types.IsBoolType(ft) {
-						io.WriteString(w, ".clone()")
+					if ft, ok4 := st.Fields[s.Names[i]]; ok4 {
+						if types.IsStringType(ft) {
+							io.WriteString(w, ".to_string()")
+						} else if !types.IsNumericType(ft) && !types.IsBoolType(ft) {
+							io.WriteString(w, ".clone()")
+						}
 					}
 				}
 			} else if typ != "i64" && typ != "bool" && typ != "f64" {
@@ -830,8 +834,31 @@ func (e *EnumLit) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
+		if patternMode {
+			if mc, ok2 := f.(*MethodCallExpr); ok2 && mc.Name == "clone" {
+				f = mc.Receiver
+			}
+		}
 		fmt.Fprintf(w, "%s: ", e.Names[i])
 		f.emit(w)
+		if nr, ok := f.(*NameRef); ok && !patternMode {
+			ft := ""
+			if i < len(e.Types) {
+				ft = e.Types[i]
+			}
+			typ := nr.Type
+			if typ == "" {
+				typ = varTypes[nr.Name]
+				if typ == "" && currentParamTypes != nil {
+					typ = currentParamTypes[nr.Name]
+				}
+			}
+			if ft == "String" && (typ == "" || strings.HasPrefix(typ, "&") || typ != "String") {
+				io.WriteString(w, ".to_string()")
+			} else if typ != "i64" && typ != "bool" && typ != "f64" && typ != "String" {
+				io.WriteString(w, ".clone()")
+			}
+		}
 	}
 	patternMode = old
 	io.WriteString(w, " }")
@@ -5783,6 +5810,13 @@ func compilePattern(e *parser.Expr) (Expr, error) {
 	ex, err := compileExpr(e)
 	patternMode = false
 	if el, ok := ex.(*EnumLit); ok {
+		for i, f := range el.Fields {
+			if mc, ok2 := f.(*MethodCallExpr); ok2 && mc.Name == "clone" {
+				if nr, ok3 := mc.Receiver.(*NameRef); ok3 {
+					el.Fields[i] = nr
+				}
+			}
+		}
 		for i, t := range el.Types {
 			if strings.HasPrefix(t, "Box<") {
 				if nr, ok := el.Fields[i].(*NameRef); ok {
