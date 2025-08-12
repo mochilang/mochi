@@ -644,6 +644,25 @@ func typeString(t types.Type) string {
 	}
 }
 
+func zeroValue(t string) string {
+	switch {
+	case t == "int" || t == "rune":
+		return "0"
+	case t == "float":
+		return "0."
+	case t == "bool":
+		return "false"
+	case t == "string":
+		return "\"\""
+	case strings.HasPrefix(t, "list") || t == "list":
+		return "[]"
+	case strings.HasPrefix(t, "map") || t == "map":
+		return "[]"
+	default:
+		return "0"
+	}
+}
+
 var ocamlReserved = map[string]bool{
 	"and": true, "as": true, "assert": true, "begin": true, "class": true,
 	"end": true, "exception": true, "external": true, "fun": true, "function": true,
@@ -1856,11 +1875,11 @@ type MapIndexExpr struct {
 
 func (mi *MapIndexExpr) emit(w io.Writer) {
 	if mi.Dyn {
-		io.WriteString(w, "(Obj.obj (List.assoc (__str (")
+		io.WriteString(w, "(match List.assoc_opt (__str (")
 		mi.Key.emit(w)
 		io.WriteString(w, ")) (")
 		mi.Map.emit(w)
-		io.WriteString(w, ") : Obj.t) : ")
+		io.WriteString(w, ") with Some v -> (Obj.obj (v : Obj.t) : ")
 		if strings.HasPrefix(mi.Typ, "map") {
 			val := strings.TrimPrefix(mi.Typ, "map-")
 			keyTyp := "string"
@@ -1871,12 +1890,16 @@ func (mi *MapIndexExpr) emit(w io.Writer) {
 		} else {
 			io.WriteString(w, ocamlType(mi.Typ))
 		}
+		io.WriteString(w, ") | None -> ")
+		io.WriteString(w, zeroValue(mi.Typ))
 		io.WriteString(w, ")")
 	} else {
-		io.WriteString(w, "List.assoc (__str (")
+		io.WriteString(w, "(match List.assoc_opt (__str (")
 		mi.Key.emit(w)
 		io.WriteString(w, ")) (")
 		mi.Map.emit(w)
+		io.WriteString(w, ") with Some v -> v | None -> ")
+		io.WriteString(w, zeroValue(mi.Typ))
 		io.WriteString(w, ")")
 	}
 }
@@ -1897,23 +1920,14 @@ func (mi *MapIndexExpr) emitPrint(w io.Writer) {
 	} else {
 		switch mi.Typ {
 		case "int":
-			io.WriteString(w, "string_of_int (List.assoc (__str (")
-			mi.Key.emit(w)
-			io.WriteString(w, ")) (")
-			mi.Map.emit(w)
-			io.WriteString(w, ") )")
+			io.WriteString(w, "string_of_int ")
+			mi.emit(w)
 		case "float":
-			io.WriteString(w, "string_of_float (List.assoc (__str (")
-			mi.Key.emit(w)
-			io.WriteString(w, ")) (")
-			mi.Map.emit(w)
-			io.WriteString(w, ") )")
+			io.WriteString(w, "string_of_float ")
+			mi.emit(w)
 		default:
-			io.WriteString(w, "__show (List.assoc (__str (")
-			mi.Key.emit(w)
-			io.WriteString(w, ")) (")
-			mi.Map.emit(w)
-			io.WriteString(w, ") )")
+			io.WriteString(w, "__show ")
+			mi.emit(w)
 		}
 	}
 }
@@ -2324,27 +2338,27 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, " in let __i = ")
 		ix.Index.emit(w)
 		io.WriteString(w, " in let __len = String.length __s in String.make 1 (String.get __s (if __i >= 0 then __i else __len + __i)))")
-	case "list":
-		io.WriteString(w, "(let __l = ")
-		ix.Col.emit(w)
-		io.WriteString(w, " in let __i = ")
-		ix.Index.emit(w)
-		io.WriteString(w, " in let __len = List.length __l in ")
-		if ix.Typ == "int" {
-			io.WriteString(w, "(Obj.magic (List.nth __l (if __i >= 0 then __i else __len + __i)) : int))")
-		} else if ix.Typ == "float" {
-			io.WriteString(w, "(Obj.magic (List.nth __l (if __i >= 0 then __i else __len + __i)) : float))")
-		} else if ix.Typ == "string" {
-			io.WriteString(w, "(Obj.magic (List.nth __l (if __i >= 0 then __i else __len + __i)) : string))")
-		} else {
-			io.WriteString(w, "List.nth __l (if __i >= 0 then __i else __len + __i))")
-		}
 	default:
-		io.WriteString(w, "(let __l = ")
-		ix.Col.emit(w)
-		io.WriteString(w, " in let __i = ")
-		ix.Index.emit(w)
-		io.WriteString(w, " in let __len = List.length __l in List.nth __l (if __i >= 0 then __i else __len + __i))")
+		if strings.HasPrefix(ix.ColTyp, "list") {
+			io.WriteString(w, "(let __l = ")
+			ix.Col.emit(w)
+			io.WriteString(w, " in let __i = ")
+			ix.Index.emit(w)
+			io.WriteString(w, " in match List.nth_opt __l __i with Some v -> ")
+			if ix.Typ == "int" {
+				io.WriteString(w, "(Obj.magic v : int) | None -> 0)")
+			} else if ix.Typ == "float" {
+				io.WriteString(w, "(Obj.magic v : float) | None -> 0.)")
+			} else if ix.Typ == "string" {
+				io.WriteString(w, "(Obj.magic v : string) | None -> \"\")")
+			} else {
+				io.WriteString(w, "v | None -> ")
+				io.WriteString(w, zeroValue(ix.Typ))
+				io.WriteString(w, ")")
+			}
+		} else {
+			io.WriteString(w, "()")
+		}
 	}
 }
 

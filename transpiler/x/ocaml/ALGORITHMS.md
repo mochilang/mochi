@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 782/1077
-Last updated: 2025-08-12 09:13 +0700
+Completed programs: 749/1077
+Last updated: 2025-08-12 10:04 +0700
 
 Checklist:
 
@@ -97,7 +97,7 @@ Checklist:
 | 88 | ciphers/mixed_keyword_cypher | ✓ | 464.0µs | 67.78KB |
 | 89 | ciphers/mono_alphabetic_ciphers | ✓ | 36.0µs | 3.74KB |
 | 90 | ciphers/morse_code | ✓ | 940.0µs | 27.87KB |
-| 91 | ciphers/onepad_cipher | ✓ |  |  |
+| 91 | ciphers/onepad_cipher |   |  |  |
 | 92 | ciphers/permutation_cipher | ✓ | 212.0µs | 18.30KB |
 | 93 | ciphers/playfair_cipher | ✓ | 548.0µs | 46.70KB |
 | 94 | ciphers/polybius | ✓ | 328.0µs | 25.71KB |
@@ -155,7 +155,7 @@ Checklist:
 | 146 | conversions/roman_numerals | ✓ | 4.0µs | 208B |
 | 147 | conversions/speed_conversions | ✓ | 315.0µs | 9.42KB |
 | 148 | conversions/temperature_conversions | ✓ | 251.0µs | 4.02KB |
-| 149 | conversions/time_conversions | ✓ |  |  |
+| 149 | conversions/time_conversions |   |  |  |
 | 150 | conversions/volume_conversions | ✓ | 234.0µs | 5.46KB |
 | 151 | conversions/weight_conversion | ✓ | 178.0µs | 528B |
 | 152 | data_compression/burrows_wheeler | ✓ | 503.0µs | 54.02KB |
@@ -177,13 +177,13 @@ Checklist:
 | 168 | data_structures/arrays/product_sum |   |  |  |
 | 169 | data_structures/arrays/sparse_table | ✓ | 171.0µs | 4.14KB |
 | 170 | data_structures/arrays/sudoku_solver | ✓ | 10.0ms | 1.27MB |
-| 171 | data_structures/binary_tree/avl_tree | ✓ |  |  |
+| 171 | data_structures/binary_tree/avl_tree |   |  |  |
 | 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 207.0µs | 4.10KB |
-| 173 | data_structures/binary_tree/binary_search_tree | ✓ |  |  |
+| 173 | data_structures/binary_tree/binary_search_tree |   |  |  |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive |   |  |  |
-| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ |  |  |
+| 175 | data_structures/binary_tree/binary_tree_mirror |   |  |  |
 | 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 190.0µs | 368B |
-| 177 | data_structures/binary_tree/binary_tree_path_sum | ✓ |  |  |
+| 177 | data_structures/binary_tree/binary_tree_path_sum |   |  |  |
 | 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 363.0µs | 15.57KB |
 | 179 | data_structures/binary_tree/distribute_coins | ✓ | 171.0µs | 3.03KB |
 | 180 | data_structures/binary_tree/fenwick_tree | ✓ | 285.0µs | 11.37KB |
@@ -222,7 +222,7 @@ Checklist:
 | 213 | data_structures/heap/heap_generic | ✓ | 252.0µs | 18.11KB |
 | 214 | data_structures/heap/max_heap | ✓ | 136.0µs | 3.47KB |
 | 215 | data_structures/heap/min_heap | ✓ | 212.0µs | 3.60KB |
-| 216 | data_structures/heap/randomized_heap | ✓ |  |  |
+| 216 | data_structures/heap/randomized_heap |   |  |  |
 | 217 | data_structures/kd_tree/build_kdtree | ✓ | 287.0µs | 19.29KB |
 | 218 | data_structures/kd_tree/example/example_usage |   |  |  |
 | 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 161.0µs | 1.51KB |
@@ -248,8 +248,8 @@ Checklist:
 | 239 | data_structures/queues/circular_queue | ✓ | 131.0µs | 2.69KB |
 | 240 | data_structures/queues/circular_queue_linked_list | ✓ | 107.0µs | 3.01KB |
 | 241 | data_structures/queues/double_ended_queue | ✓ | 138.0µs | 2.80KB |
-| 242 | data_structures/queues/linked_queue | ✓ |  |  |
-| 243 | data_structures/queues/priority_queue_using_list | ✓ |  |  |
+| 242 | data_structures/queues/linked_queue |   |  |  |
+| 243 | data_structures/queues/priority_queue_using_list |   |  |  |
 | 244 | data_structures/queues/queue_by_list | ✓ | 102.0µs | 2.73KB |
 | 245 | data_structures/queues/queue_by_two_stacks | ✓ | 112.0µs | 1.83KB |
 | 246 | data_structures/queues/queue_on_pseudo_stack | ✓ | 115.0µs | 3.48KB |
@@ -261,7 +261,7 @@ Checklist:
 | 252 | data_structures/stacks/lexicographical_numbers | ✓ | 366.0µs | 67.44KB |
 | 253 | data_structures/stacks/next_greater_element | ✓ | 604.0µs | 58.73KB |
 | 254 | data_structures/stacks/postfix_evaluation | ✓ | 201.0µs | 5.72KB |
-| 255 | data_structures/stacks/prefix_evaluation | ✓ |  |  |
+| 255 | data_structures/stacks/prefix_evaluation |   |  |  |
 | 256 | data_structures/stacks/stack | ✓ | 242.0µs | 2.20KB |
 | 257 | data_structures/stacks/stack_using_two_queues | ✓ | 123.0µs | 3.48KB |
 | 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 165.0µs | 3.95KB |
@@ -279,7 +279,7 @@ Checklist:
 | 270 | digital_image_processing/dithering/burkes | ✓ | 699.0µs | 66.66KB |
 | 271 | digital_image_processing/edge_detection/canny | ✓ | 189.0µs | 5.40KB |
 | 272 | digital_image_processing/filters/bilateral_filter | ✓ | 449.0µs | 26.34KB |
-| 273 | digital_image_processing/filters/convolve | ✓ |  |  |
+| 273 | digital_image_processing/filters/convolve |   |  |  |
 | 274 | digital_image_processing/filters/gabor_filter | ✓ | 226.0µs | 1.94KB |
 | 275 | digital_image_processing/filters/gaussian_filter | ✓ | 278.0µs | 1.80KB |
 | 276 | digital_image_processing/filters/laplacian_filter | ✓ | 288.0µs | 4.27KB |
@@ -290,7 +290,7 @@ Checklist:
 | 281 | digital_image_processing/index_calculation | ✓ | 403.0µs | 2.07KB |
 | 282 | digital_image_processing/morphological_operations/dilation_operation | ✓ | 460.0µs | 16.73KB |
 | 283 | digital_image_processing/morphological_operations/erosion_operation | ✓ | 315.0µs | 6.47KB |
-| 284 | digital_image_processing/resize/resize | ✓ |  |  |
+| 284 | digital_image_processing/resize/resize |   |  |  |
 | 285 | digital_image_processing/rotation/rotation | ✓ | 151.0µs | 968B |
 | 286 | digital_image_processing/sepia | ✓ | 250.0µs | 1.55KB |
 | 287 | digital_image_processing/test_digital_image_processing | ✓ | 438.0µs | 6.42KB |
@@ -420,12 +420,12 @@ Checklist:
 | 411 | graphs/connected_components | ✓ | 1.0ms | 7.46KB |
 | 412 | graphs/deep_clone_graph |   |  |  |
 | 413 | graphs/depth_first_search | ✓ | 25.0µs | 3.16KB |
-| 414 | graphs/depth_first_search_2 | ✓ |  |  |
-| 415 | graphs/dijkstra | ✓ |  |  |
+| 414 | graphs/depth_first_search_2 |   |  |  |
+| 415 | graphs/dijkstra |   |  |  |
 | 416 | graphs/dijkstra_2 | ✓ | 232.0µs | 7.44KB |
 | 417 | graphs/dijkstra_algorithm | ✓ | 127.0µs | 408B |
 | 418 | graphs/dijkstra_alternate | ✓ | 186.0µs | 1000B |
-| 419 | graphs/dijkstra_binary_grid | ✓ |  |  |
+| 419 | graphs/dijkstra_binary_grid |   |  |  |
 | 420 | graphs/dinic | ✓ | 2.0ms | 219.63KB |
 | 421 | graphs/directed_and_undirected_weighted_graph | ✓ |  |  |
 | 422 | graphs/edmonds_karp_multiple_source_and_sink |   |  |  |
@@ -453,17 +453,17 @@ Checklist:
 | 444 | graphs/minimum_spanning_tree_kruskal2 | ✓ | 214.0µs | 10.12KB |
 | 445 | graphs/minimum_spanning_tree_prims | ✓ | 152.0µs | 1.45KB |
 | 446 | graphs/minimum_spanning_tree_prims2 | ✓ | 206.0µs | 5.88KB |
-| 447 | graphs/multi_heuristic_astar | ✓ |  |  |
+| 447 | graphs/multi_heuristic_astar |   |  |  |
 | 448 | graphs/page_rank | ✓ | 446.0µs | 22.99KB |
-| 449 | graphs/prim | ✓ |  |  |
+| 449 | graphs/prim |   |  |  |
 | 450 | graphs/random_graph_generator | ✓ | 213.0µs | 7.45KB |
 | 451 | graphs/scc_kosaraju | ✓ | 216.0µs | 7.03KB |
-| 452 | graphs/strongly_connected_components | ✓ |  |  |
+| 452 | graphs/strongly_connected_components |   |  |  |
 | 453 | graphs/tarjans_scc | ✓ | 289.0µs | 21.53KB |
 | 454 | graphs/tests/test_min_spanning_tree_kruskal | ✓ | 665.0µs | 48.38KB |
-| 455 | graphs/tests/test_min_spanning_tree_prim | ✓ |  |  |
+| 455 | graphs/tests/test_min_spanning_tree_prim |   |  |  |
 | 456 | greedy_methods/best_time_to_buy_and_sell_stock | ✓ | 144.0µs | 552B |
-| 457 | greedy_methods/fractional_cover_problem | ✓ |  |  |
+| 457 | greedy_methods/fractional_cover_problem |   |  |  |
 | 458 | greedy_methods/fractional_knapsack | ✓ | 171.0µs | 712B |
 | 459 | greedy_methods/fractional_knapsack_2 | ✓ | 332.0µs | 15.01KB |
 | 460 | greedy_methods/gas_station | ✓ | 144.0µs | 1.29KB |
@@ -477,12 +477,12 @@ Checklist:
 | 468 | hashes/elf | ✓ | 315.0µs | 12.77KB |
 | 469 | hashes/enigma_machine | ✓ | 36.0µs | 208B |
 | 470 | hashes/fletcher16 | ✓ | 2.0µs | 208B |
-| 471 | hashes/hamming_code | ✓ |  |  |
+| 471 | hashes/hamming_code |   |  |  |
 | 472 | hashes/luhn | ✓ | 32.0µs | 208B |
 | 473 | hashes/md5 | ✓ | 2.0µs | 208B |
 | 474 | hashes/sdbm | ✓ | 418.0µs | 26.31KB |
 | 475 | hashes/sha1 | ✓ | 3.0ms | 198.69KB |
-| 476 | hashes/sha256 | ✓ |  |  |
+| 476 | hashes/sha256 |   |  |  |
 | 477 | knapsack/greedy_knapsack | ✓ | 239.0µs | 5.02KB |
 | 478 | knapsack/knapsack | ✓ | 107.0µs | 656B |
 | 479 | knapsack/recursive_approach_knapsack | ✓ | 128.0µs | 1.31KB |
@@ -503,8 +503,8 @@ Checklist:
 | 494 | linear_algebra/src/test_linear_algebra | ✓ | 430.0µs | 31.40KB |
 | 495 | linear_algebra/src/transformations_2d | ✓ | 433.0µs | 21.53KB |
 | 496 | linear_programming/simplex | ✓ | 125.0µs | 1.87KB |
-| 497 | machine_learning/apriori_algorithm | ✓ |  |  |
-| 498 | machine_learning/astar | ✓ |  |  |
+| 497 | machine_learning/apriori_algorithm |   |  |  |
+| 498 | machine_learning/astar |   |  |  |
 | 499 | machine_learning/automatic_differentiation | ✓ | 248.0µs | 2.17KB |
 | 500 | machine_learning/data_transformations | ✓ | 294.0µs | 12.66KB |
 | 501 | machine_learning/decision_tree |   |  |  |
@@ -577,11 +577,11 @@ Checklist:
 | 568 | maths/fibonacci | ✓ | 150.0µs | 20.09KB |
 | 569 | maths/find_max | ✓ | 231.0µs | 1.23KB |
 | 570 | maths/find_min | ✓ | 248.0µs | 1.66KB |
-| 571 | maths/floor | ✓ |  |  |
+| 571 | maths/floor |   |  |  |
 | 572 | maths/gamma | ✓ | 204.0ms | 311.28MB |
 | 573 | maths/gaussian | ✓ | 214.0µs | 3.71KB |
 | 574 | maths/gcd_of_n_numbers | ✓ | 125.0µs | 656B |
-| 575 | maths/geometric_mean | ✓ |  |  |
+| 575 | maths/geometric_mean |   |  |  |
 | 576 | maths/germain_primes | ✓ | 34.0µs | 208B |
 | 577 | maths/greatest_common_divisor | ✓ | 130.0µs | 448B |
 | 578 | maths/hardy_ramanujanalgo | ✓ | 199.0µs | 3.55KB |
@@ -607,7 +607,7 @@ Checklist:
 | 598 | maths/matrix_exponentiation | ✓ | 356.0µs | 18.29KB |
 | 599 | maths/max_sum_sliding_window | ✓ | 156.0µs | 1.20KB |
 | 600 | maths/minkowski_distance | ✓ | 197.0µs | 7.81KB |
-| 601 | maths/mobius_function | ✓ |  |  |
+| 601 | maths/mobius_function |   |  |  |
 | 602 | maths/modular_division | ✓ | 141.0µs | 4.20KB |
 | 603 | maths/monte_carlo | ✓ | 6.0ms | 1.36MB |
 | 604 | maths/monte_carlo_dice | ✓ | 15.0ms | 4.43MB |
@@ -635,7 +635,7 @@ Checklist:
 | 626 | maths/persistence | ✓ | 170.0µs | 240B |
 | 627 | maths/pi_generator | ✓ | 54.0µs | 392B |
 | 628 | maths/pi_monte_carlo_estimation | ✓ | 17.0ms | 1.99MB |
-| 629 | maths/points_are_collinear_3d | ✓ |  |  |
+| 629 | maths/points_are_collinear_3d |   |  |  |
 | 630 | maths/pollard_rho | ✓ | 280.0µs | 1.06KB |
 | 631 | maths/polynomial_evaluation | ✓ | 299.0µs | 1.77KB |
 | 632 | maths/polynomials/single_indeterminate_operations | ✓ | 295.0µs | 10.59KB |
@@ -644,7 +644,7 @@ Checklist:
 | 635 | maths/prime_factors | ✓ | 197.0µs | 4.79KB |
 | 636 | maths/prime_numbers | ✓ | 210.0µs | 4.70KB |
 | 637 | maths/prime_sieve_eratosthenes | ✓ | 423.0µs | 30.85KB |
-| 638 | maths/primelib | ✓ |  |  |
+| 638 | maths/primelib |   |  |  |
 | 639 | maths/print_multiplication_table | ✓ | 179.0µs | 4.52KB |
 | 640 | maths/pythagoras | ✓ | 222.0µs | 5.56KB |
 | 641 | maths/qr_decomposition | ✓ | 444.0µs | 12.42KB |
@@ -756,7 +756,7 @@ Checklist:
 | 747 | other/least_recently_used | ✓ | 94.0µs | 2.24KB |
 | 748 | other/lfu_cache | ✓ | 135.0µs | 6.09KB |
 | 749 | other/linear_congruential_generator | ✓ | 90.0µs | 640B |
-| 750 | other/lru_cache |   |  |  |
+| 750 | other/lru_cache | ✓ | 208.0µs | 17.44KB |
 | 751 | other/magicdiamondpattern | ✓ | 13.0µs | 888B |
 | 752 | other/majority_vote_algorithm | ✓ | 169.0µs | 6.73KB |
 | 753 | other/maximum_subsequence | ✓ | 62.0µs | 480B |
@@ -991,10 +991,10 @@ Checklist:
 | 982 | sorts/strand_sort | ✓ | 203.0µs | 3.74KB |
 | 983 | sorts/tim_sort | ✓ | 184.0µs | 3.20KB |
 | 984 | sorts/topological_sort | ✓ | 58.0µs | 1.57KB |
-| 985 | sorts/tree_sort | ✓ |  |  |
+| 985 | sorts/tree_sort |   |  |  |
 | 986 | sorts/unknown_sort | ✓ | 195.0µs | 4.30KB |
 | 987 | sorts/wiggle_sort | ✓ | 270.0µs | 5.59KB |
-| 988 | strings/aho_corasick | ✓ |  |  |
+| 988 | strings/aho_corasick |   |  |  |
 | 989 | strings/alternative_string_arrange | ✓ | 32.0µs | 848B |
 | 990 | strings/anagrams |   |  |  |
 | 991 | strings/autocomplete_using_trie | ✓ | 38.0µs | 984B |
@@ -1050,10 +1050,10 @@ Checklist:
 | 1041 | strings/word_occurrence | ✓ | 91.0µs | 880B |
 | 1042 | strings/word_patterns | ✓ | 373.0µs | 13.33KB |
 | 1043 | strings/z_function | ✓ | 542.0µs | 60.26KB |
-| 1044 | web_programming/co2_emission | ✓ |  |  |
+| 1044 | web_programming/co2_emission |   |  |  |
 | 1045 | web_programming/covid_stats_via_xpath | ✓ | 156.0µs | 6.69KB |
 | 1046 | web_programming/crawl_google_results | ✓ | 128.0µs | 3.81KB |
-| 1047 | web_programming/crawl_google_scholar_citation | ✓ |  |  |
+| 1047 | web_programming/crawl_google_scholar_citation |   |  |  |
 | 1048 | web_programming/currency_converter | ✓ | 158.0µs | 712B |
 | 1049 | web_programming/current_stock_price | ✓ | 48.0µs | 3.57KB |
 | 1050 | web_programming/current_weather | ✓ | 42.0µs | 1.53KB |
@@ -1064,7 +1064,7 @@ Checklist:
 | 1055 | web_programming/fetch_bbc_news | ✓ | 18.0µs | 336B |
 | 1056 | web_programming/fetch_github_info | ✓ | 100.0µs | 400B |
 | 1057 | web_programming/fetch_jobs | ✓ | 200.0µs | 17.55KB |
-| 1058 | web_programming/fetch_quotes | ✓ |  |  |
+| 1058 | web_programming/fetch_quotes |   |  |  |
 | 1059 | web_programming/fetch_well_rx_price | ✓ | 10.0µs | 496B |
 | 1060 | web_programming/get_amazon_product_data | ✓ | 696.0µs | 78.13KB |
 | 1061 | web_programming/get_imdb_top_250_movies_csv |   |  |  |
