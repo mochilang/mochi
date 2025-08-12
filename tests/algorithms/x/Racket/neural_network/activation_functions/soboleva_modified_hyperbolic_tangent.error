@@ -1,5 +1,0 @@
-run: exit status 1
-/workspace/mochi/tests/algorithms/x/Racket/neural_network/activation_functions/soboleva_modified_hyperbolic_tangent.rkt:89:32: to_float: unbound identifier
-  in: to_float
-  location...:
-   /workspace/mochi/tests/algorithms/x/Racket/neural_network/activation_functions/soboleva_modified_hyperbolic_tangent.rkt:89:32
