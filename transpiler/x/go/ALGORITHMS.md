@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 652/1077
-Last updated: 2025-08-12 13:41 +0700
+Completed programs: 653/1077
+Last updated: 2025-08-12 15:27 +0700
 
 Checklist:
 
@@ -727,7 +727,7 @@ Checklist:
 | 718 | matrix/validate_sudoku_board | ✓ | 925.0µs | 17.20KB |
 | 719 | networking_flow/ford_fulkerson | ✓ | 450.0µs | 1.91KB |
 | 720 | networking_flow/minimum_cut | ✓ | 522.0µs | 3.34KB |
-| 721 | neural_network/activation_functions/binary_step | ✓ | 910.0µs | 3.16KB |
+| 721 | neural_network/activation_functions/binary_step | ✓ | 954.0µs | 3.16KB |
 | 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 575.0µs | 1.54KB |
 | 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 941.0µs | 3.85KB |
 | 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 837.0µs | 1.33KB |
@@ -735,7 +735,7 @@ Checklist:
 | 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 581.0µs | 1.03KB |
 | 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 564.0µs | 3.45KB |
 | 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 949.0µs | 4.72KB |
-| 729 | neural_network/activation_functions/softplus |   |  |  |
+| 729 | neural_network/activation_functions/softplus | ✓ | 747.0µs | 3.91KB |
 | 730 | neural_network/activation_functions/squareplus | ✓ | 701.0µs | 1.47KB |
 | 731 | neural_network/activation_functions/swish | ✓ | 477.0µs | 1.87KB |
 | 732 | neural_network/back_propagation_neural_network | ✓ | 112.0ms | 2.19MB |

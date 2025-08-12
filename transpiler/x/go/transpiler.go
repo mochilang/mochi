@@ -6174,6 +6174,16 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 				expr = &IntCastExpr{Expr: expr}
 			}
 			return expr, nil
+		case "ln":
+			if imports != nil {
+				imports["math"] = "math"
+			}
+			return &CallExpr{Func: "math.Log", Args: []Expr{args[0]}}, nil
+		case "exp":
+			if imports != nil {
+				imports["math"] = "math"
+			}
+			return &CallExpr{Func: "math.Exp", Args: []Expr{args[0]}}, nil
 		case "sum":
 			isFloat := false
 			switch a := args[0].(type) {
