@@ -305,7 +305,6 @@ return x / pow2(n)
 		"_sha256":         "MutableList<Int>",
 		"indexOf":         "Int",
 		"split":           "MutableList<String>",
-		"concat":          "MutableList<Any?>",
 	}
 }
 
