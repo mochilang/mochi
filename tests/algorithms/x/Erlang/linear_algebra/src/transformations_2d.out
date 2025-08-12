@@ -1,14 +1,9 @@
-/workspace/mochi/tests/algorithms/x/Erlang/linear_algebra/src/transformations_2d.erl:75:31: Warning: ambiguous call of overridden auto-imported BIF floor/1 --
-use erlang:floor/1 or "-compile({no_auto_import,[floor/1]})." to resolve name clash
-%   75|         (X_2 - mochi_safe_mul(floor(mochi_safe_div(X_2, M)), M))
-%     |                               ^
-
-/workspace/mochi/tests/algorithms/x/Erlang/linear_algebra/src/transformations_2d.erl:101:29: Warning: variable 'X_5' exported from 'case' (line 81, column 9)
-%  101| {Angle, I_5, Sum_2, Term_2, X_5} = Fun(Angle, I_4, Sum, Term, X_5),
+/workspace/mochi/tests/algorithms/x/Erlang/linear_algebra/src/transformations_2d.erl:126:29: Warning: variable 'X_5' exported from 'case' (line 106, column 9)
+%  126| {Angle, I_5, Sum_2, Term_2, X_5} = Fun(Angle, I_4, Sum, Term, X_5),
 %     |                             ^
 
-/workspace/mochi/tests/algorithms/x/Erlang/linear_algebra/src/transformations_2d.erl:128:31: Warning: variable 'X_8' exported from 'case' (line 108, column 9)
-%  128| {Angle_2, I_7, Sum_4, Term_4, X_8} = Fun_2(Angle_2, I_6, Sum_3, Term_3, X_8),
+/workspace/mochi/tests/algorithms/x/Erlang/linear_algebra/src/transformations_2d.erl:153:31: Warning: variable 'X_8' exported from 'case' (line 133, column 9)
+%  153| {Angle_2, I_7, Sum_4, Term_4, X_8} = Fun_2(Angle_2, I_6, Sum_3, Term_3, X_8),
 %     |                               ^
 
 "    scaling(5) = [[5,  0],  [0,  5]]"

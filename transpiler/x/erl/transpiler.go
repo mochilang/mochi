@@ -6,7 +6,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"math"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -136,7 +135,7 @@ mochi_parse_int_str(S) ->
 `
 
 const helperNth = `
--compile({nowarn_unused_function, mochi_nth/2}).
+-compile({nowarn_unused_function, [mochi_nth/2]}).
 -spec mochi_nth(integer(), list()) -> any().
 mochi_nth(I, L) ->
     try lists:nth(I, L) catch _:_ -> nil end.
@@ -256,7 +255,7 @@ mochi_repeat(_, _) -> [].
 `
 
 const helperStr = `
--compile({nowarn_unused_function, mochi_str/1}).
+-compile({nowarn_unused_function, [mochi_str/1]}).
 mochi_str(V) when is_float(V) ->
     S0 = erlang:float_to_list(V, [short]),
     S1 = re:replace(S0, "\.?0+$", "", [{return, list}]),
@@ -271,7 +270,7 @@ mochi_str(V) ->
 `
 
 const helperRepr = `
--compile({nowarn_unused_function, mochi_repr/1}).
+-compile({nowarn_unused_function, [mochi_repr/1]}).
 mochi_repr(V) ->
     S = lists:flatten(io_lib:format("~p", [V])),
     lists:flatten(string:replace(S, ",", ", ", all)).
@@ -3251,9 +3250,6 @@ func valueToExpr(v any) Expr {
 	case int64:
 		return &IntLit{Value: val}
 	case float64:
-		if math.Trunc(val) == val {
-			return &IntLit{Value: int64(val)}
-		}
 		return &FloatLit{Value: val}
 	case string:
 		return &StringLit{Value: val}
@@ -6450,7 +6446,7 @@ func (p *Program) Emit() []byte {
 	}
 	buf.WriteString("#!/usr/bin/env escript\n")
 	buf.WriteString("-module(main).\n")
-	buf.WriteString("-compile([nowarn_shadow_vars, nowarn_unused_vars]).\n")
+	buf.WriteString("-compile([nowarn_shadow_vars, nowarn_unused_vars, nowarn_export_vars, nowarn_unused_expr, nowarn_unused_function]).\n")
 	exports := []string{"main/1"}
 	for _, f := range p.Funs {
 		exports = append(exports, fmt.Sprintf("%s/%d", f.Name, len(f.Params)))
