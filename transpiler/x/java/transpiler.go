@@ -5893,6 +5893,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			return &FloatCastExpr{Value: args[0]}, nil
 		}
+		if name == "to_float" && len(args) == 1 {
+			return &FloatCastExpr{Value: args[0]}, nil
+		}
 		if name == "num" && len(args) == 1 {
 			needBigRat = true
 			return &CallExpr{Func: "_num", Args: []Expr{args[0]}}, nil
@@ -5955,6 +5958,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			case "int", "long", "double", "boolean":
 				return &ConcatExpr{Left: args[0], Right: args[1]}, nil
 			default:
+				if strings.HasSuffix(et, "[]") {
+					return &ConcatExpr{Left: args[0], Right: args[1]}, nil
+				}
 				needConcat = true
 				return &CallExpr{Func: "concat", Args: args}, nil
 			}

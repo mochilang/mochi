@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-12 12:41 GMT+7
+Last updated: 2025-08-12 13:56 GMT+7
 
-## Algorithms Golden Test Checklist (932/1077)
+## Algorithms Golden Test Checklist (938/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -699,12 +699,12 @@ Last updated: 2025-08-12 12:41 GMT+7
 | 690 | maths/trapezoidal_rule | ✓ | 50.0ms | 64.61KB |
 | 691 | maths/triplet_sum | ✓ | 77.0ms | 99.49KB |
 | 692 | maths/twin_prime | ✓ | 30.0ms | 664B |
-| 693 | maths/two_pointer | error |  |  |
+| 693 | maths/two_pointer | ✓ | 20.0ms | 600B |
 | 694 | maths/two_sum | ✓ | 24.0ms | 992B |
 | 695 | maths/volume | ✓ | 53.0ms | 50.80KB |
 | 696 | maths/zellers_congruence | ✓ | 59.0ms | 78.27KB |
 | 697 | matrix/binary_search_matrix | ✓ | 33.0ms | 872B |
-| 698 | matrix/count_islands_in_matrix | error |  |  |
+| 698 | matrix/count_islands_in_matrix | ✓ |  |  |
 | 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 5.38s | 7.73MB |
 | 700 | matrix/count_paths | ✓ | 30.0ms | 992B |
 | 701 | matrix/cramers_rule_2x2 | ✓ | 27.0ms | 496B |
@@ -712,7 +712,7 @@ Last updated: 2025-08-12 12:41 GMT+7
 | 703 | matrix/largest_square_area_in_matrix | ✓ | 39.0ms | 48.75KB |
 | 704 | matrix/matrix_based_game | ✓ | 62.0ms | 65.01KB |
 | 705 | matrix/matrix_class | ✓ | 80.0ms | 107.25KB |
-| 706 | matrix/matrix_equalization | error |  |  |
+| 706 | matrix/matrix_equalization | ✓ | 42.0ms | 47.18KB |
 | 707 | matrix/matrix_multiplication_recursion | ✓ | 45.0ms | 46.65KB |
 | 708 | matrix/matrix_operation | ✓ | 84.0ms | 114.97KB |
 | 709 | matrix/max_area_of_island | ✓ | 61.0ms | 78.36KB |
@@ -734,16 +734,16 @@ Last updated: 2025-08-12 12:41 GMT+7
 | 725 | neural_network/activation_functions/mish | ✓ | 66.0ms | 56.82KB |
 | 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 71.0ms | 56.82KB |
 | 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 47.0ms | 46.95KB |
-| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | error |  |  |
+| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 21.0ms | 10.57KB |
 | 729 | neural_network/activation_functions/softplus | error |  |  |
 | 730 | neural_network/activation_functions/squareplus | ✓ | 47.0ms | 56.82KB |
 | 731 | neural_network/activation_functions/swish | ✓ | 62.0ms | 56.93KB |
 | 732 | neural_network/back_propagation_neural_network | ✓ | 1.99s | 51.52KB |
 | 733 | neural_network/convolution_neural_network | ✓ | 75.0ms | 56.59KB |
-| 734 | neural_network/input_data | error |  |  |
+| 734 | neural_network/input_data | ✓ | 41.0ms | 49.19KB |
 | 735 | neural_network/simple_neural_network | ✓ | 147.0ms | 10.69KB |
 | 736 | neural_network/two_hidden_layers_neural_network | ✓ | 60.0ms | 47.62KB |
-| 737 | other/activity_selection | error |  |  |
+| 737 | other/activity_selection | ✓ | 41.0ms | 77.90KB |
 | 738 | other/alternative_list_arrange | ✓ | 52.0ms | 56.10KB |
 | 739 | other/bankers_algorithm | ✓ | 74.0ms | 91.55KB |
 | 740 | other/davis_putnam_logemann_loveland | ✓ | 65.0ms | 91.04KB |
