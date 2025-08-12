@@ -7196,14 +7196,14 @@ func Emit(prog *Program, bench bool) []byte {
 	}
 	if prog.UseIndex {
 		buf.WriteString("func _index[T any](s []T, i any) T {\n")
-		buf.WriteString("    idx := func(v any) int { if vv, ok := v.(int); ok { return vv }; if vv, ok := v.(float64); ok { return int(vv) }; return v.(int) }(i)\n")
+		buf.WriteString("    idx := func(v any) int { switch vv := v.(type) { case int: return vv; case int64: return int(vv); case float64: return int(vv); case float32: return int(vv); default: return v.(int) } }(i)\n")
 		buf.WriteString("    if idx < 0 { idx += len(s) }\n")
 		buf.WriteString("    return s[idx]\n")
 		buf.WriteString("}\n\n")
 	}
 	if prog.UseSetIndex {
 		buf.WriteString("func _setIndex[T any](s []T, i any, v T) {\n")
-		buf.WriteString("    idx := func(v any) int { if vv, ok := v.(int); ok { return vv }; if vv, ok := v.(float64); ok { return int(vv) }; return v.(int) }(i)\n")
+		buf.WriteString("    idx := func(v any) int { switch vv := v.(type) { case int: return vv; case int64: return int(vv); case float64: return int(vv); case float32: return int(vv); default: return v.(int) } }(i)\n")
 		buf.WriteString("    if idx < 0 { idx += len(s) }\n")
 		buf.WriteString("    s[idx] = v\n")
 		buf.WriteString("}\n\n")
