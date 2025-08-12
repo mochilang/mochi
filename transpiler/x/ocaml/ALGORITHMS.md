@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 647/1077
-Last updated: 2025-08-12 07:47 +0700
+Completed programs: 649/1077
+Last updated: 2025-08-12 08:21 +0700
 
 Checklist:
 
@@ -559,12 +559,12 @@ Checklist:
 | 550 | maths/collatz_sequence | ✓ | 170.0µs | 3.96KB |
 | 551 | maths/combinations | ✓ | 101.0µs | 784B |
 | 552 | maths/continued_fraction | ✓ | 116.0µs | 1.02KB |
-| 553 | maths/decimal_isolate | ✓ | 292.0µs | 5.98KB |
+| 553 | maths/decimal_isolate | ✓ | 182.0µs | 5.80KB |
 | 554 | maths/decimal_to_fraction | ✓ | 343.0µs | 9.53KB |
 | 555 | maths/dodecahedron | ✓ | 244.0µs | 9.59KB |
 | 556 | maths/double_factorial | ✓ | 94.0µs | 224B |
 | 557 | maths/dual_number_automatic_differentiation | ✓ | 933.0µs | 69.41KB |
-| 558 | maths/entropy | ✓ | 33.0ms | 2.06MB |
+| 558 | maths/entropy | ✓ | 23.0ms | 2.06MB |
 | 559 | maths/euclidean_distance | ✓ | 252.0µs | 8.85KB |
 | 560 | maths/euler_method | ✓ |  |  |
 | 561 | maths/euler_modified | ✓ |  |  |
@@ -572,9 +572,9 @@ Checklist:
 | 563 | maths/extended_euclidean_algorithm | ✓ | 137.0µs | 1.05KB |
 | 564 | maths/factorial | ✓ | 104.0µs | 224B |
 | 565 | maths/factors | ✓ | 188.0µs | 2.55KB |
-| 566 | maths/fast_inverse_sqrt |   |  |  |
+| 566 | maths/fast_inverse_sqrt | ✓ | 714.0µs | 79.78KB |
 | 567 | maths/fermat_little_theorem | ✓ | 30.0µs | 208B |
-| 568 | maths/fibonacci |   |  |  |
+| 568 | maths/fibonacci | ✓ | 150.0µs | 20.09KB |
 | 569 | maths/find_max | ✓ | 231.0µs | 1.23KB |
 | 570 | maths/find_min | ✓ | 248.0µs | 1.66KB |
 | 571 | maths/floor |   |  |  |
