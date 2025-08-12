@@ -38,7 +38,6 @@ function _append($arr, $x) {
 $__start_mem = memory_get_usage();
 $__start = _now();
   function bfs($graph, $s, $t, &$parent) {
-  global $test_graph, $result;
   $visited = [];
   $i = 0;
   while ($i < count($graph)) {
@@ -64,7 +63,6 @@ $__start = _now();
   return $visited[$t];
 };
   function mincut($graph, $source, $sink) {
-  global $test_graph, $result;
   $g = $graph;
   $parent = [];
   $i = 0;

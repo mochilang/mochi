@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-12 10:20 GMT+7
+Last updated: 2025-08-12 11:46 GMT+7
 
 ## Algorithms Golden Test Checklist (956/1077)
 | Index | Name | Status | Duration | Memory |
@@ -726,7 +726,7 @@ Last updated: 2025-08-12 10:20 GMT+7
 | 717 | matrix/tests/test_matrix_operation | ✓ | 124µs | 74.1 KB |
 | 718 | matrix/validate_sudoku_board | ✓ | 145µs | 39.2 KB |
 | 719 | networking_flow/ford_fulkerson | ✓ | 107µs | 39.9 KB |
-| 720 | networking_flow/minimum_cut | ✓ | 121µs | 40.0 KB |
+| 720 | networking_flow/minimum_cut | ✓ | 169µs | 40.0 KB |
 | 721 | neural_network/activation_functions/binary_step | ✓ | 74µs | 35.7 KB |
 | 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 105µs | 38.8 KB |
 | 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 104µs | 35.9 KB |

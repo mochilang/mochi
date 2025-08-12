@@ -1180,30 +1180,19 @@ func (f *FuncDecl) emit(w io.Writer) {
 	}
 	fmt.Fprint(w, ") {\n")
 	if len(globalNames) > 0 {
-		locals := map[string]struct{}{}
-		gatherLocals(f.Body, locals)
+		fv := freeVars(f.Body, f.Params)
 		var vars []string
-		for _, g := range globalNames {
-			if g == f.Name {
+		for _, name := range fv {
+			if name == f.Name {
 				continue
 			}
-			skip := false
-			for _, p := range f.Params {
-				if g == p {
-					skip = true
-					break
-				}
-			}
-			if _, ok := locals[g]; ok {
-				skip = true
-			}
-			if _, ok := globalFuncs[g]; ok {
-				skip = true
-			}
-			if skip {
+			if _, ok := globalSet[name]; !ok {
 				continue
 			}
-			vars = append(vars, "$"+sanitizeVarName(g))
+			if _, ok := globalFuncs[name]; ok {
+				continue
+			}
+			vars = append(vars, "$"+sanitizeVarName(name))
 		}
 		if len(vars) > 0 {
 			fmt.Fprintf(w, "  global %s;\n", strings.Join(vars, ", "))
