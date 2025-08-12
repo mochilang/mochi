@@ -124,6 +124,16 @@ func structNameFromVar(name string) string {
 	return toPascalCase(name)
 }
 
+func isStringLikeCall(e Expr) bool {
+	if c, ok := e.(*CallExpr); ok {
+		switch c.Func {
+		case "_substr", "substring":
+			return true
+		}
+	}
+	return false
+}
+
 func guessStructForField(field string) string {
 	for name, st := range topEnv.Structs() {
 		if _, ok := st.Fields[field]; ok {
@@ -2746,8 +2756,11 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				valType = types.TypeOfExpr(st.Let.Value, env)
 				if fe, ok := e.(*FieldExpr); ok {
 					if st, ok2 := valType.(types.StructType); ok2 {
-						if ft, ok3 := st.Fields[fe.Name]; ok3 {
-							valType = ft
+						for fn, ft := range st.Fields {
+							if toGoFieldName(fn) == fe.Name {
+								valType = ft
+								break
+							}
 						}
 					}
 				}
@@ -2770,8 +2783,11 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				valType = types.TypeOfExpr(st.Let.Value, env)
 				if fe, ok := e.(*FieldExpr); ok {
 					if st, ok2 := valType.(types.StructType); ok2 {
-						if ft, ok3 := st.Fields[fe.Name]; ok3 {
-							valType = ft
+						for fn, ft := range st.Fields {
+							if toGoFieldName(fn) == fe.Name {
+								valType = ft
+								break
+							}
 						}
 					}
 				}
@@ -5877,25 +5893,28 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 					}
 				}
 				if name == "int" {
-					switch t.(type) {
-					case types.StringType:
+					if types.IsStringType(t) || (types.IsAnyType(t) && isStringLikeCall(expr)) {
+						// Casting from string to int parses the string value.
 						usesStrconv = true
 						expr = &AtoiExpr{Expr: expr}
-					case types.BigIntType:
-						usesBigInt = true
-						expr = &BigIntToIntExpr{Value: expr}
-					case types.AnyType:
-						// Without a precise static type, assume a numeric
-						// value and use Go's int() conversion. Falling back
-						// to string parsing here caused incorrect results
-						// for numeric expressions in algorithms.
-						expr = &IntCastExpr{Expr: expr}
-					default:
-						if _, ok := expr.(*BigBinaryExpr); ok {
+					} else {
+						switch t.(type) {
+						case types.BigIntType:
 							usesBigInt = true
 							expr = &BigIntToIntExpr{Value: expr}
-						} else {
+						case types.AnyType:
+							// Without a precise static type, assume a numeric
+							// value and use Go's int() conversion. Falling back
+							// to string parsing here caused incorrect results
+							// for numeric expressions in algorithms.
 							expr = &IntCastExpr{Expr: expr}
+						default:
+							if _, ok := expr.(*BigBinaryExpr); ok {
+								usesBigInt = true
+								expr = &BigIntToIntExpr{Value: expr}
+							} else {
+								expr = &IntCastExpr{Expr: expr}
+							}
 						}
 					}
 					t = types.IntType{}
@@ -6103,6 +6122,8 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 				return &AssertExpr{Expr: args[0], Type: "int"}, nil
 			}
 			return &IntCastExpr{Expr: args[0]}, nil
+		case "to_float":
+			return &CallExpr{Func: "float64", Args: []Expr{args[0]}}, nil
 		case "float":
 			if types.IsAnyType(types.TypeOfExpr(p.Call.Args[0], env)) {
 				return &AssertExpr{Expr: args[0], Type: "float64"}, nil
