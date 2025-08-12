@@ -45,6 +45,7 @@ var needMem bool
 var needPadStart bool
 var needRepeat bool
 var needMin bool
+var needMinLong bool
 var needMax bool
 var needExists bool
 var needToObjectArray bool
@@ -451,7 +452,7 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 		} else {
 			fmt.Fprint(w, "((Boolean)(")
 			e.emit(w)
-			fmt.Fprint(w, "))")
+			fmt.Fprint(w, ")")
 		}
 		return
 	}
@@ -3489,7 +3490,7 @@ func (s *SubstringExpr) emit(w io.Writer) {
 	emitIndex(w, s.Start)
 	fmt.Fprint(w, ", ")
 	emitIndex(w, s.End)
-	fmt.Fprint(w, "))")
+	fmt.Fprint(w, ")")
 }
 
 // IndexExpr represents s[i]. For strings it emits charAt.
@@ -4042,6 +4043,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	needEnviron = false
 	needRepeat = false
 	needMin = false
+	needMinLong = false
 	needMax = false
 	needExists = false
 	needToObjectArray = false
@@ -5910,6 +5912,12 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			return &AppendExpr{List: args[0], Value: args[1], ElemType: et}, nil
 		}
 		if name == "min" && len(args) == 1 {
+			t := inferType(args[0])
+			if t == "long[]" {
+				needMinLong = true
+				funcRet["_minLong"] = "long"
+				return &CallExpr{Func: "_minLong", Args: args}, nil
+			}
 			needMin = true
 			needToObjectArray = true
 			funcRet["_min"] = "double"
@@ -7212,6 +7220,16 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("        double m = ((Number)arr[0]).doubleValue();\n")
 		buf.WriteString("        for (int i = 1; i < arr.length; i++) {\n")
 		buf.WriteString("            double v = ((Number)arr[i]).doubleValue();\n")
+		buf.WriteString("            if (v < m) m = v;\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        return m;\n")
+		buf.WriteString("    }\n")
+	}
+	if needMinLong {
+		buf.WriteString("\n    static long _minLong(long[] arr) {\n")
+		buf.WriteString("        long m = arr[0];\n")
+		buf.WriteString("        for (int i = 1; i < arr.length; i++) {\n")
+		buf.WriteString("            long v = arr[i];\n")
 		buf.WriteString("            if (v < m) m = v;\n")
 		buf.WriteString("        }\n")
 		buf.WriteString("        return m;\n")
