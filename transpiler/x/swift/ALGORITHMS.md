@@ -3,7 +3,7 @@
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
 Completed programs: 800/1077
-Last updated: 2025-08-12 12:29 +0700
+Last updated: 2025-08-12 13:41 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -696,7 +696,7 @@ Last updated: 2025-08-12 12:29 +0700
 | 687 | maths/test_factorial | ✓ | 401µs | 3.2 MB |
 | 688 | maths/test_prime_check | ✓ | 447µs | 3.1 MB |
 | 689 | maths/three_sum | ✓ | 1.645ms | 3.9 MB |
-| 690 | maths/trapezoidal_rule | ✓ | 366µs | 3.1 MB |
+| 690 | maths/trapezoidal_rule | ✓ | 383µs | 3.3 MB |
 | 691 | maths/triplet_sum | ✓ | 505µs | 3.1 MB |
 | 692 | maths/twin_prime | ✓ | 379µs | 3.2 MB |
 | 693 | maths/two_pointer | ✓ | 539µs | 3.2 MB |
