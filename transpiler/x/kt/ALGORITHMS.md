@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-12 14:08 GMT+7
+Last updated: 2025-08-12 14:21 GMT+7
 
-## Algorithms Golden Test Checklist (457/1077)
+## Algorithms Golden Test Checklist (463/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 30.54ms | 124.45KiB |
@@ -696,48 +696,48 @@ Last updated: 2025-08-12 14:08 GMT+7
 | 687 | maths/test_factorial |   |  |  |
 | 688 | maths/test_prime_check |   |  |  |
 | 689 | maths/three_sum |   |  |  |
-| 690 | maths/trapezoidal_rule | ✓ | 11.40ms | 124.16KiB |
-| 691 | maths/triplet_sum | ✓ | 25.38ms | 113.46KiB |
-| 692 | maths/twin_prime | ✓ | 9.30ms | 134.19KiB |
-| 693 | maths/two_pointer | error |  |  |
-| 694 | maths/two_sum | ✓ | 22.08ms | 124.88KiB |
-| 695 | maths/volume | ✓ | 9.82ms | 123.34KiB |
-| 696 | maths/zellers_congruence | ✓ | 28.62ms | 111.58KiB |
-| 697 | matrix/binary_search_matrix | ✓ | 23.59ms | 124.23KiB |
-| 698 | matrix/count_islands_in_matrix | error |  |  |
-| 699 | matrix/count_negative_numbers_in_sorted_matrix | ✓ | 95.80ms | 30.26KiB |
-| 700 | matrix/count_paths | ✓ | 24.05ms | 123.07KiB |
-| 701 | matrix/cramers_rule_2x2 | ✓ | 26.16ms | 113.77KiB |
-| 702 | matrix/inverse_of_matrix | ✓ | 11.48ms | 122.91KiB |
-| 703 | matrix/largest_square_area_in_matrix | ✓ | 12.93ms | 123.18KiB |
+| 690 | maths/trapezoidal_rule | ✓ | 16.99ms | 89.16KiB |
+| 691 | maths/triplet_sum |   |  |  |
+| 692 | maths/twin_prime |   |  |  |
+| 693 | maths/two_pointer |   |  |  |
+| 694 | maths/two_sum |   |  |  |
+| 695 | maths/volume |   |  |  |
+| 696 | maths/zellers_congruence |   |  |  |
+| 697 | matrix/binary_search_matrix |   |  |  |
+| 698 | matrix/count_islands_in_matrix |   |  |  |
+| 699 | matrix/count_negative_numbers_in_sorted_matrix |   |  |  |
+| 700 | matrix/count_paths | ✓ | 27.37ms | 123.02KiB |
+| 701 | matrix/cramers_rule_2x2 | ✓ | 27.76ms | 113.73KiB |
+| 702 | matrix/inverse_of_matrix | ✓ | 10.93ms | 122.86KiB |
+| 703 | matrix/largest_square_area_in_matrix | ✓ | 18.56ms | 123.13KiB |
 | 704 | matrix/matrix_based_game | error |  |  |
-| 705 | matrix/matrix_class | error |  |  |
+| 705 | matrix/matrix_class | ✓ | 39.18ms | 112.91KiB |
 | 706 | matrix/matrix_equalization | error |  |  |
-| 707 | matrix/matrix_multiplication_recursion | ✓ | 11.55ms | 132.03KiB |
-| 708 | matrix/matrix_operation | error |  |  |
-| 709 | matrix/max_area_of_island | ✓ | 12.53ms | 133.20KiB |
-| 710 | matrix/median_matrix | ✓ | 10.11ms | 132.78KiB |
-| 711 | matrix/nth_fibonacci_using_matrix_exponentiation | error |  |  |
-| 712 | matrix/pascal_triangle | error |  |  |
-| 713 | matrix/rotate_matrix | ✓ | 13.77ms | 122.89KiB |
-| 714 | matrix/searching_in_sorted_matrix | error |  |  |
-| 715 | matrix/sherman_morrison | error |  |  |
-| 716 | matrix/spiral_print | error |  |  |
-| 717 | matrix/tests/test_matrix_operation | error |  |  |
-| 718 | matrix/validate_sudoku_board | ✓ | 11.38ms | 132.67KiB |
-| 719 | networking_flow/ford_fulkerson | ✓ | 11.61ms | 132.41KiB |
-| 720 | networking_flow/minimum_cut | ✓ | 8.62ms | 134.12KiB |
-| 721 | neural_network/activation_functions/binary_step | error |  |  |
-| 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 25.05ms | 112.70KiB |
-| 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 11.92ms | 123.15KiB |
-| 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 10.73ms | 124.00KiB |
-| 725 | neural_network/activation_functions/mish | error |  |  |
-| 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 24.36ms | 112.77KiB |
-| 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 23.45ms | 112.70KiB |
-| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | error |  |  |
+| 707 | matrix/matrix_multiplication_recursion | ✓ | 12.32ms | 131.98KiB |
+| 708 | matrix/matrix_operation | ✓ | 34.04ms | 112.63KiB |
+| 709 | matrix/max_area_of_island | ✓ | 9.80ms | 133.16KiB |
+| 710 | matrix/median_matrix | ✓ | 17.67ms | 132.73KiB |
+| 711 | matrix/nth_fibonacci_using_matrix_exponentiation | ✓ | 40.01ms | 31.46KiB |
+| 712 | matrix/pascal_triangle | ✓ | 42.17ms | 115.48KiB |
+| 713 | matrix/rotate_matrix | ✓ | 16.42ms | 122.84KiB |
+| 714 | matrix/searching_in_sorted_matrix | ✓ | 40.75ms | 105.02KiB |
+| 715 | matrix/sherman_morrison | ✓ | 45.59ms | 112.84KiB |
+| 716 | matrix/spiral_print | ✓ | 31.40ms | 114.20KiB |
+| 717 | matrix/tests/test_matrix_operation | ✓ | 95.18ms | 113.27KiB |
+| 718 | matrix/validate_sudoku_board | ✓ | 26.45ms | 132.62KiB |
+| 719 | networking_flow/ford_fulkerson | ✓ | 24.32ms | 132.37KiB |
+| 720 | networking_flow/minimum_cut | ✓ | 4.11ms | 28.62KiB |
+| 721 | neural_network/activation_functions/binary_step | ✓ | 17.14ms | 40.28KiB |
+| 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 16.74ms | 41.36KiB |
+| 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 6.86ms | 30.84KiB |
+| 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 5.68ms | 29.97KiB |
+| 725 | neural_network/activation_functions/mish | ✓ | 17.58ms | 41.23KiB |
+| 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 17.17ms | 41.33KiB |
+| 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 16.27ms | 41.33KiB |
+| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 26.23ms | 49.81KiB |
 | 729 | neural_network/activation_functions/softplus | error |  |  |
-| 730 | neural_network/activation_functions/squareplus | error |  |  |
-| 731 | neural_network/activation_functions/swish | error |  |  |
+| 730 | neural_network/activation_functions/squareplus | ✓ | 27.83ms | 112.77KiB |
+| 731 | neural_network/activation_functions/swish | ✓ | 37.20ms | 112.73KiB |
 | 732 | neural_network/back_propagation_neural_network | error |  |  |
 | 733 | neural_network/convolution_neural_network | error |  |  |
 | 734 | neural_network/input_data | error |  |  |
