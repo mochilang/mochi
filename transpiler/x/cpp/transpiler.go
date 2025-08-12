@@ -701,6 +701,7 @@ func (p *Program) write(w io.Writer) {
 	p.addInclude("<vector>")
 	p.addInclude("<any>")
 	p.addInclude("<type_traits>")
+	p.addInclude("<limits>")
 	if p.UseBigInt || p.UseBigRat {
 		p.addInclude("<boost/multiprecision/cpp_int.hpp>")
 	}
@@ -1030,9 +1031,13 @@ func (p *Program) write(w io.Writer) {
 	fmt.Fprintln(w)
 
 	fmt.Fprintln(w, "template<typename T> std::string _to_string(const T& v) {")
-	fmt.Fprintln(w, "    std::ostringstream ss;")
-	fmt.Fprintln(w, "    ss << std::boolalpha << v;")
-	fmt.Fprintln(w, "    return ss.str();")
+	fmt.Fprintln(w, "    if constexpr(std::is_same_v<T, double>) {")
+	fmt.Fprintln(w, "        return std::to_string(v);")
+	fmt.Fprintln(w, "    } else {")
+	fmt.Fprintln(w, "        std::ostringstream ss;")
+	fmt.Fprintln(w, "        ss << std::boolalpha << v;")
+	fmt.Fprintln(w, "        return ss.str();")
+	fmt.Fprintln(w, "    }")
 	fmt.Fprintln(w, "}")
 	for _, al := range p.Aliases {
 		fmt.Fprintf(w, "using %s = %s;\n", al.Name, al.Type)
@@ -1968,9 +1973,15 @@ func (s *StrExpr) emit(w io.Writer) {
 		currentProgram.addInclude("<sstream>")
 		currentProgram.addInclude("<iomanip>")
 	}
+	typ := exprType(s.Value)
 	if inFunction || inLambda > 0 {
+		if typ == "double" {
+			io.WriteString(w, "std::to_string(")
+			s.Value.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
 		io.WriteString(w, "([&]{ std::ostringstream ss; ")
-		typ := exprType(s.Value)
 		switch {
 		case strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") || strings.HasPrefix(typ, "std::optional<"):
 			inStr = true
@@ -1987,9 +1998,15 @@ func (s *StrExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, " return ss.str(); }())")
 	} else {
-		io.WriteString(w, "_to_string(")
-		s.Value.emit(w)
-		io.WriteString(w, ")")
+		if typ == "double" {
+			io.WriteString(w, "std::to_string(")
+			s.Value.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			io.WriteString(w, "_to_string(")
+			s.Value.emit(w)
+			io.WriteString(w, ")")
+		}
 	}
 }
 
