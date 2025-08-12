@@ -262,9 +262,15 @@ type StructDefStmt struct {
 }
 
 func (s *StructDefStmt) emit(e *emitter) {
-	io.WriteString(e.w, s.Name)
-	if len(s.Fields) == 0 {
-		io.WriteString(e.w, " = Class.new do")
+        io.WriteString(e.w, "Object.send(:remove_const, :")
+        io.WriteString(e.w, s.Name)
+        io.WriteString(e.w, ") if Object.const_defined?(:")
+        io.WriteString(e.w, s.Name)
+        io.WriteString(e.w, ")\n")
+        e.writeIndent()
+        io.WriteString(e.w, s.Name)
+        if len(s.Fields) == 0 {
+                io.WriteString(e.w, " = Class.new do")
 		e.indent++
 		e.nl()
 		e.writeIndent()

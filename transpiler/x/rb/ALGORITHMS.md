@@ -1,7 +1,7 @@
 # Ruby Algorithms Transpiler Output
 
 Completed programs: 1046/1077
-Last updated: 2025-08-11 18:28 +0700
+Last updated: 2025-08-12 08:38 +0700
 
 Checklist:
 
@@ -498,10 +498,10 @@ Checklist:
 | 489 | linear_algebra/src/polynom_for_points | ✓ | 1ms | 41.1 KB |
 | 490 | linear_algebra/src/power_iteration | ✓ | 1ms | 23.3 KB |
 | 491 | linear_algebra/src/rank_of_matrix | ✓ | 1ms | 2.0 KB |
-| 492 | linear_algebra/src/rayleigh_quotient | ✓ | 1ms | 41.6 KB |
+| 492 | linear_algebra/src/rayleigh_quotient | ✓ | 183.317ms | 39.9 KB |
 | 493 | linear_algebra/src/schur_complement | ✓ | 1ms | 16.6 KB |
 | 494 | linear_algebra/src/test_linear_algebra | ✓ | 1ms | 82.8 KB |
-| 495 | linear_algebra/src/transformations_2d | ✓ | 1ms | 24.3 KB |
+| 495 | linear_algebra/src/transformations_2d | ✓ | 183.317ms | 17.9 KB |
 | 496 | linear_programming/simplex | ✓ | 1ms | 14.2 KB |
 | 497 | machine_learning/apriori_algorithm | ✓ | 1ms | 17.9 KB |
 | 498 | machine_learning/astar | ✓ | 1ms | 70.0 KB |
