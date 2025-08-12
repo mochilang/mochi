@@ -900,15 +900,6 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 			}
 		}
 		op := b.Op
-		if op == "/" {
-			if isIntOnlyExpr(b.Left, currentEnv) && isIntOnlyExpr(b.Right, currentEnv) {
-				op = "//"
-			} else if isIntLike(inferPyType(b.Left, currentEnv)) && isIntLike(inferPyType(b.Right, currentEnv)) {
-				op = "//"
-			} else if isLikelyIntExpr(b.Left) && isLikelyIntExpr(b.Right) {
-				op = "//"
-			}
-		}
 		switch op {
 		case "&&":
 			op = "and"
@@ -1914,9 +1905,6 @@ func replaceIntDiv(e Expr) Expr {
 	case *BinaryExpr:
 		ex.Left = replaceIntDiv(ex.Left)
 		ex.Right = replaceIntDiv(ex.Right)
-		if ex.Op == "/" && isLikelyIntExpr(ex.Left) && isLikelyIntExpr(ex.Right) {
-			ex.Op = "//"
-		}
 		return ex
 	case *UnaryExpr:
 		ex.Expr = replaceIntDiv(ex.Expr)
@@ -4213,7 +4201,7 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 				}
 				for i := 0; i < len(s.Assign.Field)-1; i++ {
 					target = &FieldExpr{Target: target, Name: s.Assign.Field[i].Name, MapIndex: mapIndex}
-					mapIndex = true
+					mapIndex = mapIndex
 				}
 				field := s.Assign.Field[len(s.Assign.Field)-1].Name
 				if mapIndex {
@@ -4679,15 +4667,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	}
 
 	apply := func(left Expr, op string, right Expr) Expr {
-		if op == "/" {
-			lt := inferPyType(left, currentEnv)
-			rt := inferPyType(right, currentEnv)
-			if isIntLike(lt) && isIntLike(rt) {
-				op = "//"
-			} else if isLikelyIntExpr(left) && isLikelyIntExpr(right) {
-				op = "//"
-			}
-		}
+
 		if op == "+" {
 			if s, ok := left.(*SliceExpr); ok && sliceOfStringList(s) {
 				left = &CallExpr{Func: &FieldExpr{Target: &StringLit{Value: ""}, Name: "join"}, Args: []Expr{s}}
@@ -4804,7 +4784,7 @@ func convertSelector(sel *parser.SelectorExpr, method bool) Expr {
 			}
 		}
 		expr = &FieldExpr{Target: expr, Name: t, MapIndex: useMap}
-		mapIndex = true
+		mapIndex = useMap
 	}
 	return expr
 }
