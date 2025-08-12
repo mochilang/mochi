@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Racket code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Racket`.
-Last updated: 2025-08-12 02:16 UTC
+Last updated: 2025-08-12 04:56 UTC
 
-## Algorithms Golden Test Checklist (795/1077)
+## Algorithms Golden Test Checklist (819/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 39µs | 18.9 KB |
@@ -727,57 +727,57 @@ Last updated: 2025-08-12 02:16 UTC
 | 718 | matrix/validate_sudoku_board |   |  |  |
 | 719 | networking_flow/ford_fulkerson |   |  |  |
 | 720 | networking_flow/minimum_cut |   |  |  |
-| 721 | neural_network/activation_functions/binary_step |   |  |  |
-| 722 | neural_network/activation_functions/exponential_linear_unit |   |  |  |
-| 723 | neural_network/activation_functions/gaussian_error_linear_unit |   |  |  |
-| 724 | neural_network/activation_functions/leaky_rectified_linear_unit |   |  |  |
-| 725 | neural_network/activation_functions/mish |   |  |  |
-| 726 | neural_network/activation_functions/rectified_linear_unit |   |  |  |
-| 727 | neural_network/activation_functions/scaled_exponential_linear_unit |   |  |  |
+| 721 | neural_network/activation_functions/binary_step | ✓ | 21µs | 5.5 KB |
+| 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 85µs | 84.2 KB |
+| 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 57µs | 84.4 KB |
+| 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 35µs | 6.7 KB |
+| 725 | neural_network/activation_functions/mish | ✓ | 107µs | 335.5 KB |
+| 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 25µs | 4.5 KB |
+| 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 34µs | 9.8 KB |
 | 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent |   |  |  |
 | 729 | neural_network/activation_functions/softplus |   |  |  |
-| 730 | neural_network/activation_functions/squareplus |   |  |  |
+| 730 | neural_network/activation_functions/squareplus | ✓ | 59µs | 87.6 KB |
 | 731 | neural_network/activation_functions/swish |   |  |  |
-| 732 | neural_network/back_propagation_neural_network |   |  |  |
-| 733 | neural_network/convolution_neural_network |   |  |  |
-| 734 | neural_network/input_data |   |  |  |
-| 735 | neural_network/simple_neural_network |   |  |  |
-| 736 | neural_network/two_hidden_layers_neural_network |   |  |  |
-| 737 | other/activity_selection |   |  |  |
-| 738 | other/alternative_list_arrange |   |  |  |
-| 739 | other/bankers_algorithm |   |  |  |
-| 740 | other/davis_putnam_logemann_loveland |   |  |  |
-| 741 | other/doomsday |   |  |  |
-| 742 | other/fischer_yates_shuffle |   |  |  |
-| 743 | other/gauss_easter |   |  |  |
-| 744 | other/greedy |   |  |  |
-| 745 | other/guess_the_number_search |   |  |  |
-| 746 | other/h_index |   |  |  |
+| 732 | neural_network/back_propagation_neural_network | ✓ | 2.305274s |  |
+| 733 | neural_network/convolution_neural_network | ✓ | 8.123ms | 2.8 MB |
+| 734 | neural_network/input_data | ✓ | 72µs | 57.6 KB |
+| 735 | neural_network/simple_neural_network | ✓ | 31µs | 1.8 KB |
+| 736 | neural_network/two_hidden_layers_neural_network | ✓ | 4.869ms | 1.2 MB |
+| 737 | other/activity_selection | ✓ | 12µs | 3.9 KB |
+| 738 | other/alternative_list_arrange | ✓ | 31µs | 32.0 KB |
+| 739 | other/bankers_algorithm | ✓ | 112µs | 133.1 KB |
+| 740 | other/davis_putnam_logemann_loveland | ✓ | 7µs | 1.2 KB |
+| 741 | other/doomsday | ✓ | 19µs | 4.2 KB |
+| 742 | other/fischer_yates_shuffle | ✓ | 60µs | 36.5 KB |
+| 743 | other/gauss_easter | ✓ | 38µs | 24.3 KB |
+| 744 | other/greedy | ✓ | 47µs | 47.2 KB |
+| 745 | other/guess_the_number_search | ✓ | 39µs | 36.1 KB |
+| 746 | other/h_index | ✓ | 41µs | 66.0 KB |
 | 747 | other/least_recently_used |   |  |  |
-| 748 | other/lfu_cache |   |  |  |
-| 749 | other/linear_congruential_generator |   |  |  |
-| 750 | other/lru_cache | ✓ | 98µs | 25.5 KB |
-| 751 | other/magicdiamondpattern | ✓ | 18µs | 20.1 KB |
-| 752 | other/majority_vote_algorithm | ✓ | 58µs | 100.2 KB |
-| 753 | other/maximum_subsequence | ✓ | 16µs | 13.4 KB |
-| 754 | other/nested_brackets | ✓ | 77µs | 98.5 KB |
-| 755 | other/number_container_system | ✓ | 17µs | 5.0 KB |
-| 756 | other/quine | ✓ | 7µs | 768 B |
+| 748 | other/lfu_cache | ✓ | 47µs | 32.5 KB |
+| 749 | other/linear_congruential_generator | ✓ | 18µs | 6.1 KB |
+| 750 | other/lru_cache | ✓ | 72µs | 24.5 KB |
+| 751 | other/magicdiamondpattern | ✓ | 19µs | 20.4 KB |
+| 752 | other/majority_vote_algorithm | ✓ | 58µs | 98.1 KB |
+| 753 | other/maximum_subsequence | ✓ | 17µs | 77.4 KB |
+| 754 | other/nested_brackets | ✓ | 68µs | 98.5 KB |
+| 755 | other/number_container_system | ✓ | 18µs | 5.0 KB |
+| 756 | other/quine | ✓ | 9µs | 768 B |
 | 757 | other/scoring_algorithm | ✓ | 12µs | 1.3 KB |
-| 758 | other/sdes | ✓ | 70µs | 131.5 KB |
-| 759 | other/tower_of_hanoi | ✓ | 15µs | 11.5 KB |
-| 760 | other/word_search | ✓ | 291µs | 601.0 KB |
-| 761 | physics/altitude_pressure | ✓ | 54µs | 90.4 KB |
+| 758 | other/sdes | ✓ | 72µs | 132.0 KB |
+| 759 | other/tower_of_hanoi | ✓ | 14µs | 11.5 KB |
+| 760 | other/word_search | ✓ | 260µs | 530.6 KB |
+| 761 | physics/altitude_pressure |   | 54µs | 90.4 KB |
 | 762 | physics/archimedes_principle_of_buoyant_force | ✓ | 2µs | 512 B |
 | 763 | physics/basic_orbital_capture |   |  |  |
-| 764 | physics/casimir_effect | ✓ | 72µs | 94.3 KB |
-| 765 | physics/center_of_mass | ✓ | 24µs | 5.4 KB |
-| 766 | physics/centripetal_force | ✓ | 34µs | 20.8 KB |
-| 767 | physics/coulombs_law | ✓ | 26µs | 7.3 KB |
-| 768 | physics/doppler_frequency | ✓ | 25µs | 10.7 KB |
-| 769 | physics/escape_velocity | ✓ | 48µs | 85.0 KB |
-| 770 | physics/grahams_law | ✓ | 44µs | 47.3 KB |
-| 771 | physics/horizontal_projectile_motion | ✓ | 32µs | 17.8 KB |
+| 764 | physics/casimir_effect | ✓ | 55µs | 13.1 KB |
+| 765 | physics/center_of_mass | ✓ | 21µs | 5.4 KB |
+| 766 | physics/centripetal_force | ✓ | 40µs | 22.6 KB |
+| 767 | physics/coulombs_law | ✓ | 28µs | 8.4 KB |
+| 768 | physics/doppler_frequency | ✓ | 28µs | 12.5 KB |
+| 769 | physics/escape_velocity | ✓ | 42µs | 85.7 KB |
+| 770 | physics/grahams_law | ✓ | 38µs | 45.8 KB |
+| 771 | physics/horizontal_projectile_motion | ✓ | 32µs | 18.6 KB |
 | 772 | physics/hubble_parameter | ✓ | 69µs | 39.2 KB |
 | 773 | physics/ideal_gas_law |   |  |  |
 | 774 | physics/in_static_equilibrium | ✓ | 17µs | 11.2 KB |
