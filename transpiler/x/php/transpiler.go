@@ -340,9 +340,11 @@ var phpReserved = map[string]struct{}{
 	"sin":           {},
 	"cos":           {},
 	"tan":           {},
-	"log":           {},
-	"log10":         {},
-	"pi":            {},
+        "log":           {},
+        "log10":         {},
+        "pi":            {},
+        "time":          {},
+        "date":          {},
 }
 
 // phpReservedVar lists variable names that cannot be used directly in PHP

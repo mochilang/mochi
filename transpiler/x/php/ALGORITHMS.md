@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-12 07:59 GMT+7
+Last updated: 2025-08-12 08:44 GMT+7
 
 ## Algorithms Golden Test Checklist (951/1077)
 | Index | Name | Status | Duration | Memory |
@@ -456,7 +456,7 @@ Last updated: 2025-08-12 07:59 GMT+7
 | 447 | graphs/multi_heuristic_astar | ✓ | 257µs | 107.7 KB |
 | 448 | graphs/page_rank | error |  |  |
 | 449 | graphs/prim | ✓ | 202µs | 73.1 KB |
-| 450 | graphs/random_graph_generator | ✓ | 156µs | 34.9 KB |
+| 450 | graphs/random_graph_generator | ✓ | 85µs | 34.9 KB |
 | 451 | graphs/scc_kosaraju | ✓ | 122µs | 36.6 KB |
 | 452 | graphs/strongly_connected_components | ✓ | 239µs | 36.6 KB |
 | 453 | graphs/tarjans_scc | error |  |  |
