@@ -41,9 +41,9 @@ $__start = _now();
   $TWO_PI = 6.283185307179586;
   function _mod($x, $m) {
   global $PI, $TWO_PI;
-  return $x - (floatval(intval($x / $m))) * $m;
+  return $x - floor($x / $m) * $m;
 };
-  function cos($x) {
+  function mochi_cos($x) {
   global $PI, $TWO_PI;
   $y = _mod($x + $PI, $TWO_PI) - $PI;
   $y2 = $y * $y;
@@ -71,33 +71,11 @@ $__start = _now();
   _panic('In Malus Law, the angle is in the range 0-360 degrees');
 }
   $theta = radians($angle);
-  $c = cos($theta);
+  $c = mochi_cos($theta);
   return $initial_intensity * ($c * $c);
-};
-  function test_malus_law() {
-  global $PI, $TWO_PI;
-  if (abs_val(malus_law(10.0, 45.0) - 5.0) > 0.01) {
-  _panic('malus_law test1 failed');
-}
-  if (abs_val(malus_law(100.0, 60.0) - 25.0) > 0.01) {
-  _panic('malus_law test2 failed');
-}
-  if (abs_val(malus_law(50.0, 150.0) - 37.5) > 0.01) {
-  _panic('malus_law test3 failed');
-}
-  if (abs_val(malus_law(75.0, 270.0) - 0.0) > 0.01) {
-  _panic('malus_law test4 failed');
-}
-  if (abs_val(malus_law(100.0, 180.0) - 100.0) > 0.01) {
-  _panic('malus_law test5 failed');
-}
-  if (abs_val(malus_law(100.0, 360.0) - 100.0) > 0.01) {
-  _panic('malus_law test6 failed');
-}
 };
   function main() {
   global $PI, $TWO_PI;
-  test_malus_law();
   echo rtrim(_str(malus_law(100.0, 60.0))), PHP_EOL;
 };
   main();

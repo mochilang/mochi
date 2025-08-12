@@ -20,12 +20,12 @@ $__start = _now();
   function make_body($px, $py, $vx, $vy, $mass) {
   return ['position_x' => $px, 'position_y' => $py, 'velocity_x' => $vx, 'velocity_y' => $vy, 'mass' => $mass];
 };
-  function update_velocity(&$body, $force_x, $force_y, $delta_time) {
+  function update_velocity($body, $force_x, $force_y, $delta_time) {
   $body['velocity_x'] = $body['velocity_x'] + $force_x * $delta_time;
   $body['velocity_y'] = $body['velocity_y'] + $force_y * $delta_time;
   return $body;
 };
-  function update_position(&$body, $delta_time) {
+  function update_position($body, $delta_time) {
   $body['position_x'] = $body['position_x'] + $body['velocity_x'] * $delta_time;
   $body['position_y'] = $body['position_y'] + $body['velocity_y'] * $delta_time;
   return $body;
@@ -42,7 +42,7 @@ $__start = _now();
 };
   return $guess;
 };
-  function update_system(&$system, $delta_time) {
+  function update_system($system, $delta_time) {
   $bodies = $system['bodies'];
   $i = 0;
   while ($i < count($bodies)) {

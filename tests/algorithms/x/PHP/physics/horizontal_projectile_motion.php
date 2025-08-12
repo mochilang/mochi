@@ -28,7 +28,7 @@ $__start = _now();
   global $PI, $TWO_PI, $g, $v0, $angle;
   return $x - (floatval(intval($x / $m))) * $m;
 };
-  function sin($x) {
+  function mochi_sin($x) {
   global $PI, $TWO_PI, $g, $v0, $angle;
   $y = _mod($x + $PI, $TWO_PI) - $PI;
   $y2 = $y * $y;
@@ -78,20 +78,20 @@ $__start = _now();
   global $PI, $TWO_PI, $g, $v0;
   check_args($init_velocity, $angle);
   $radians = deg_to_rad(2.0 * $angle);
-  return mochi_round(($init_velocity * $init_velocity * sin($radians)) / $g, 2);
+  return mochi_round(($init_velocity * $init_velocity * mochi_sin($radians)) / $g, 2);
 };
   function max_height($init_velocity, $angle) {
   global $PI, $TWO_PI, $g, $v0;
   check_args($init_velocity, $angle);
   $radians = deg_to_rad($angle);
-  $s = sin($radians);
+  $s = mochi_sin($radians);
   return mochi_round(($init_velocity * $init_velocity * $s * $s) / (2.0 * $g), 2);
 };
   function total_time($init_velocity, $angle) {
   global $PI, $TWO_PI, $g, $v0;
   check_args($init_velocity, $angle);
   $radians = deg_to_rad($angle);
-  return mochi_round((2.0 * $init_velocity * sin($radians)) / $g, 2);
+  return mochi_round((2.0 * $init_velocity * mochi_sin($radians)) / $g, 2);
 };
   $v0 = 25.0;
   $angle = 20.0;

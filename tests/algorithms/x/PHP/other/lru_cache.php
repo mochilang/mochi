@@ -45,7 +45,7 @@ $__start = _now();
   $nodes = _append($nodes, $tail);
   return ['nodes' => $nodes, 'head' => 0, 'tail' => 1];
 };
-  function dll_add(&$lst, $idx) {
+  function dll_add($lst, $idx) {
   $nodes = $lst['nodes'];
   $tail_idx = $lst['tail'];
   $tail_node = $nodes[$tail_idx];
@@ -62,7 +62,7 @@ $__start = _now();
   $lst['nodes'] = $nodes;
   return $lst;
 };
-  function dll_remove(&$lst, $idx) {
+  function dll_remove($lst, $idx) {
   $nodes = $lst['nodes'];
   $node = $nodes[$idx];
   $prev_idx = $node['prev'];

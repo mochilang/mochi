@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-12 09:23 GMT+7
+Last updated: 2025-08-12 10:20 GMT+7
 
-## Algorithms Golden Test Checklist (951/1077)
+## Algorithms Golden Test Checklist (956/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 117µs | 38.8 KB |
@@ -756,7 +756,7 @@ Last updated: 2025-08-12 09:23 GMT+7
 | 747 | other/least_recently_used | ✓ | 142µs | 41.0 KB |
 | 748 | other/lfu_cache | ✓ | 87µs | 72.3 KB |
 | 749 | other/linear_congruential_generator | ✓ | 78µs | 38.9 KB |
-| 750 | other/lru_cache | ✓ | 212µs | 75.3 KB |
+| 750 | other/lru_cache | ✓ | 104µs | 75.3 KB |
 | 751 | other/magicdiamondpattern | ✓ | 56µs | 35.6 KB |
 | 752 | other/majority_vote_algorithm | ✓ | 150µs | 36.9 KB |
 | 753 | other/maximum_subsequence | ✓ | 115µs | 38.4 KB |
@@ -777,21 +777,21 @@ Last updated: 2025-08-12 09:23 GMT+7
 | 768 | physics/doppler_frequency | ✓ | 59µs | 38.6 KB |
 | 769 | physics/escape_velocity | ✓ | 95µs | 35.0 KB |
 | 770 | physics/grahams_law | ✓ | 98µs | 36.7 KB |
-| 771 | physics/horizontal_projectile_motion | error |  |  |
+| 771 | physics/horizontal_projectile_motion | ✓ |  |  |
 | 772 | physics/hubble_parameter | ✓ | 109µs | 38.1 KB |
 | 773 | physics/ideal_gas_law | ✓ | 83µs | 34.9 KB |
 | 774 | physics/in_static_equilibrium | ✓ | 116µs | 36.1 KB |
 | 775 | physics/kinetic_energy | ✓ | 75µs | 35.3 KB |
-| 776 | physics/lens_formulae | error |  |  |
+| 776 | physics/lens_formulae | ✓ | 116µs | 35.9 KB |
 | 777 | physics/lorentz_transformation_four_vector | ✓ | 198µs | 36.6 KB |
-| 778 | physics/malus_law | error |  |  |
+| 778 | physics/malus_law | ✓ |  |  |
 | 779 | physics/mass_energy_equivalence | ✓ | 63µs | 35.6 KB |
-| 780 | physics/mirror_formulae | error |  |  |
+| 780 | physics/mirror_formulae | ✓ |  |  |
 | 781 | physics/n_body_simulation | ✓ | 177µs | 37.3 KB |
 | 782 | physics/newtons_law_of_gravitation | ✓ | 177µs | 36.4 KB |
 | 783 | physics/newtons_second_law_of_motion | ✓ | 55µs | 39.5 KB |
 | 784 | physics/orbital_transfer_work | ✓ | 142µs | 40.4 KB |
-| 785 | physics/period_of_pendulum | error |  |  |
+| 785 | physics/period_of_pendulum | ✓ |  |  |
 | 786 | physics/photoelectric_effect | ✓ | 58µs | 35.3 KB |
 | 787 | physics/potential_energy | ✓ | 118µs | 38.7 KB |
 | 788 | physics/rainfall_intensity | ✓ | 68µs | 35.9 KB |
@@ -806,7 +806,7 @@ Last updated: 2025-08-12 09:23 GMT+7
 | 797 | project_euler/problem_001/sol3 | ✓ | 63µs | 39.2 KB |
 | 798 | project_euler/problem_001/sol4 | ✓ | 2.715ms | 44.3 KB |
 | 799 | project_euler/problem_001/sol5 | ✓ | 41µs | 38.9 KB |
-| 800 | project_euler/problem_001/sol6 | ✓ | 58µs | 35.9 KB |
+| 800 | project_euler/problem_001/sol6 | ✓ | 51µs | 35.9 KB |
 | 801 | project_euler/problem_001/sol7 | ✓ | 64µs | 39.2 KB |
 | 802 | project_euler/problem_002/sol1 | ✓ | 43µs | 39.5 KB |
 | 803 | project_euler/problem_002/sol2 | ✓ | 36µs | 39.5 KB |

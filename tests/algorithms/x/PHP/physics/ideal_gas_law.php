@@ -15,38 +15,38 @@ function _now() {
     }
     return hrtime(true);
 }
+function _panic($msg) {
+    fwrite(STDERR, strval($msg));
+    exit(1);
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   $UNIVERSAL_GAS_CONSTANT = 8.314462;
   function pressure_of_gas_system($moles, $kelvin, $volume) {
   global $UNIVERSAL_GAS_CONSTANT;
   if ($moles < 0 || $kelvin < 0 || $volume < 0) {
-  $throw;
-  'Invalid inputs. Enter positive value.';
+  _panic('Invalid inputs. Enter positive value.');
 }
   return $moles * $kelvin * $UNIVERSAL_GAS_CONSTANT / $volume;
 };
   function volume_of_gas_system($moles, $kelvin, $pressure) {
   global $UNIVERSAL_GAS_CONSTANT;
   if ($moles < 0 || $kelvin < 0 || $pressure < 0) {
-  $throw;
-  'Invalid inputs. Enter positive value.';
+  _panic('Invalid inputs. Enter positive value.');
 }
   return $moles * $kelvin * $UNIVERSAL_GAS_CONSTANT / $pressure;
 };
   function temperature_of_gas_system($moles, $volume, $pressure) {
   global $UNIVERSAL_GAS_CONSTANT;
   if ($moles < 0 || $volume < 0 || $pressure < 0) {
-  $throw;
-  'Invalid inputs. Enter positive value.';
+  _panic('Invalid inputs. Enter positive value.');
 }
   return $pressure * $volume / ($moles * $UNIVERSAL_GAS_CONSTANT);
 };
   function moles_of_gas_system($kelvin, $volume, $pressure) {
   global $UNIVERSAL_GAS_CONSTANT;
   if ($kelvin < 0 || $volume < 0 || $pressure < 0) {
-  $throw;
-  'Invalid inputs. Enter positive value.';
+  _panic('Invalid inputs. Enter positive value.');
 }
   return $pressure * $volume / ($kelvin * $UNIVERSAL_GAS_CONSTANT);
 };

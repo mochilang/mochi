@@ -1,5 +1,20 @@
 <?php
 ini_set('memory_limit', '-1');
+$now_seed = 0;
+$now_seeded = false;
+$s = getenv('MOCHI_NOW_SEED');
+if ($s !== false && $s !== '') {
+    $now_seed = intval($s);
+    $now_seeded = true;
+}
+function _now() {
+    global $now_seed, $now_seeded;
+    if ($now_seeded) {
+        $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647;
+        return $now_seed;
+    }
+    return hrtime(true);
+}
 function _str($x) {
     if (is_array($x)) {
         $isList = array_keys($x) === range(0, count($x) - 1);
@@ -20,9 +35,11 @@ function _panic($msg) {
     fwrite(STDERR, strval($msg));
     exit(1);
 }
-$PI = 3.141592653589793;
-$R = 8.31446261815324;
-function mochi_sqrt($x) {
+$__start_mem = memory_get_usage();
+$__start = _now();
+  $PI = 3.141592653589793;
+  $R = 8.31446261815324;
+  function mochi_sqrt($x) {
   global $PI, $R;
   if ($x <= 0.0) {
   return 0.0;
@@ -34,8 +51,8 @@ function mochi_sqrt($x) {
   $i = $i + 1;
 };
   return $guess;
-}
-function avg_speed_of_molecule($temperature, $molar_mass) {
+};
+  function avg_speed_of_molecule($temperature, $molar_mass) {
   global $PI, $R;
   if ($temperature < 0.0) {
   _panic('Absolute temperature cannot be less than 0 K');
@@ -46,8 +63,8 @@ function avg_speed_of_molecule($temperature, $molar_mass) {
   $expr = 8.0 * $R * $temperature / ($PI * $molar_mass);
   $s = mochi_sqrt($expr);
   return $s;
-}
-function mps_speed_of_molecule($temperature, $molar_mass) {
+};
+  function mps_speed_of_molecule($temperature, $molar_mass) {
   global $PI, $R;
   if ($temperature < 0.0) {
   _panic('Absolute temperature cannot be less than 0 K');
@@ -58,8 +75,16 @@ function mps_speed_of_molecule($temperature, $molar_mass) {
   $expr = 2.0 * $R * $temperature / $molar_mass;
   $s = mochi_sqrt($expr);
   return $s;
-}
-echo rtrim(_str(avg_speed_of_molecule(273.0, 0.028))), PHP_EOL;
-echo rtrim(_str(avg_speed_of_molecule(300.0, 0.032))), PHP_EOL;
-echo rtrim(_str(mps_speed_of_molecule(273.0, 0.028))), PHP_EOL;
-echo rtrim(_str(mps_speed_of_molecule(300.0, 0.032))), PHP_EOL;
+};
+  echo rtrim(_str(avg_speed_of_molecule(273.0, 0.028))), PHP_EOL;
+  echo rtrim(_str(avg_speed_of_molecule(300.0, 0.032))), PHP_EOL;
+  echo rtrim(_str(mps_speed_of_molecule(273.0, 0.028))), PHP_EOL;
+  echo rtrim(_str(mps_speed_of_molecule(300.0, 0.032))), PHP_EOL;
+$__end = _now();
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
+$__mem_diff = max(0, $__end_mem - $__start_mem);
+$__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
+$__j = json_encode($__bench, 128);
+$__j = str_replace("    ", "  ", $__j);
+echo $__j, PHP_EOL;

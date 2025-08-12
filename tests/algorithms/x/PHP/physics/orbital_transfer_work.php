@@ -32,6 +32,9 @@ function _str($x) {
     return strval($x);
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
@@ -123,19 +126,19 @@ $__start = _now();
   return format_scientific_3($work);
 };
   function test_orbital_transfer_work() {
-  if (orbital_transfer_work(5.972 * pow10(24), 1000.0, 6.371 * pow10(6), 7.0 * pow10(6)) != '2.811e+09') {
+  if (orbital_transfer_work(5972000000000000419220214.0, 1000.0, 6371000.0, 7000000.0) != '2.811e+09') {
   _panic('case1 failed');
 }
-  if (orbital_transfer_work(5.972 * pow10(24), 500.0, 7.0 * pow10(6), 6.371 * pow10(6)) != '-1.405e+09') {
+  if (orbital_transfer_work(5972000000000000419220214.0, 500.0, 7000000.0, 6371000.0) != '-1.405e+09') {
   _panic('case2 failed');
 }
-  if (orbital_transfer_work(1.989 * pow10(30), 1000.0, 1.5 * pow10(11), 2.28 * pow10(11)) != '1.514e+11') {
+  if (orbital_transfer_work(1989000000000000101252339845814.0, 1000.0, 150000000000.0, 228000000000.0) != '1.514e+11') {
   _panic('case3 failed');
 }
 };
   function main() {
   test_orbital_transfer_work();
-  echo rtrim(orbital_transfer_work(5.972 * pow10(24), 1000.0, 6.371 * pow10(6), 7.0 * pow10(6))), PHP_EOL;
+  echo rtrim(orbital_transfer_work(5972000000000000419220214.0, 1000.0, 6371000.0, 7000000.0)), PHP_EOL;
 };
   main();
 $__end = _now();

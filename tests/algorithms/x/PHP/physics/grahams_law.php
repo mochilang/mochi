@@ -22,7 +22,7 @@ $__start = _now();
 };
   function round6($x) {
   $factor = 1000000.0;
-  return to_float(intval($x * $factor + 0.5)) / $factor;
+  return floatval(intval($x * $factor + 0.5)) / $factor;
 };
   function sqrtApprox($x) {
   $guess = $x / 2.0;

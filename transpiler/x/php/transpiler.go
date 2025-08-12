@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"math/big"
 	"os"
 	"path/filepath"
 	"sort"
@@ -340,11 +341,11 @@ var phpReserved = map[string]struct{}{
 	"sin":           {},
 	"cos":           {},
 	"tan":           {},
-        "log":           {},
-        "log10":         {},
-        "pi":            {},
-        "time":          {},
-        "date":          {},
+	"log":           {},
+	"log10":         {},
+	"pi":            {},
+	"time":          {},
+	"date":          {},
 }
 
 // phpReservedVar lists variable names that cannot be used directly in PHP
@@ -2095,6 +2096,24 @@ func (s *StringLit) emit(w io.Writer) {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
+	if b.Op == "*" {
+		if fl, ok := b.Left.(*FloatLit); ok {
+			if ce, ok := b.Right.(*CallExpr); ok && ce.Func == "pow10" && len(ce.Args) == 1 {
+				if arg, ok := ce.Args[0].(*IntLit); ok {
+					emitFloatPow10(w, fl.Value, arg.Value)
+					return
+				}
+			}
+		}
+		if ce, ok := b.Left.(*CallExpr); ok && ce.Func == "pow10" && len(ce.Args) == 1 {
+			if fl, ok := b.Right.(*FloatLit); ok {
+				if arg, ok := ce.Args[0].(*IntLit); ok {
+					emitFloatPow10(w, fl.Value, arg.Value)
+					return
+				}
+			}
+		}
+	}
 	if b.Op == "+" {
 		lp := precedence(b.Op)
 		if isStringExpr(b.Left) || isStringExpr(b.Right) {
@@ -2373,6 +2392,18 @@ func (f *FloatLit) emit(w io.Writer) {
 		s += ".0"
 	}
 	fmt.Fprint(w, s)
+}
+
+func emitFloatPow10(w io.Writer, f float64, n int) {
+	bf := new(big.Float).SetPrec(200).SetFloat64(f)
+	exp := new(big.Int).Exp(big.NewInt(10), big.NewInt(int64(n)), nil)
+	bf.Mul(bf, new(big.Float).SetInt(exp))
+	s := bf.Text('f', 15)
+	s = strings.TrimRight(s, "0")
+	if strings.HasSuffix(s, ".") {
+		s += "0"
+	}
+	io.WriteString(w, s)
 }
 
 func (b *BoolLit) emit(w io.Writer) {
@@ -3538,6 +3569,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			lookup = newName
 		}
 		if _, ok := globalFuncs[lookup]; ok {
+			if isVarInScope(name) {
+				return &Var{Name: name}, nil
+			}
 			if newName, ok := renameMap[name]; ok {
 				name = newName
 			}

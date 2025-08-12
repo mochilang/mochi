@@ -50,7 +50,7 @@ $__start = _now();
   $sum = 0.0;
   $k = 0;
   while ($k < 10) {
-  $denom = to_float(2 * $k + 1);
+  $denom = floatval(2 * $k + 1);
   $sum = $sum + $term / $denom;
   $term = $term * $y2;
   $k = $k + 1;
@@ -62,7 +62,7 @@ $__start = _now();
   $sum = 1.0;
   $n = 1;
   while ($n < 20) {
-  $term = $term * $x / to_float($n);
+  $term = $term * $x / floatval($n);
   $sum = $sum + $term;
   $n = $n + 1;
 };

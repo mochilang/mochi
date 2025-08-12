@@ -39,7 +39,7 @@ $__start_mem = memory_get_usage();
 $__start = _now();
   $PI = 3.141592653589793;
   $G = 9.80665;
-  function sqrt($x) {
+  function mochi_sqrt($x) {
   global $PI, $G;
   if ($x <= 0.0) {
   return 0.0;
@@ -57,7 +57,7 @@ $__start = _now();
   if ($length < 0.0) {
   _panic('The length should be non-negative');
 }
-  return 2.0 * $PI * sqrt($length / $G);
+  return 2.0 * $PI * mochi_sqrt($length / $G);
 };
   echo rtrim(_str(period_of_pendulum(1.23))), PHP_EOL;
   echo rtrim(_str(period_of_pendulum(2.37))), PHP_EOL;

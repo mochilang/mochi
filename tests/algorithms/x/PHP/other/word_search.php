@@ -37,7 +37,7 @@ $__start = _now();
   global $seed;
   return fmod(mochi_rand(), $max);
 };
-  function mochi_shuffle(&$list_int) {
+  function mochi_shuffle($list_int) {
   global $seed;
   $i = count($list_int) - 1;
   while ($i > 0) {

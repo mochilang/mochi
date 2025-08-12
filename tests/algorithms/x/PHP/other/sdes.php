@@ -32,6 +32,9 @@ function _str($x) {
     return strval($x);
 }
 function _intdiv($a, $b) {
+    if ($b === 0 || $b === '0') {
+        throw new DivisionByZeroError();
+    }
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
         $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
@@ -57,7 +60,7 @@ $__start = _now();
 };
   function left_shift($data) {
   global $p4_table, $key, $message, $p8_table, $p10_table, $IP, $IP_inv, $expansion, $s0, $s1, $temp, $left, $right, $key1, $key2, $CT, $PT;
-  return substr($data, 1, strlen($data) - 1) . substr($data, 0, 1 - 0);
+  return substr($data, 1, strlen($data) - 1) . substr($data, 0, 1);
 };
   function mochi_xor($a, $b) {
   global $p4_table, $key, $message, $p8_table, $p10_table, $IP, $IP_inv, $expansion, $s0, $s1, $temp, $left, $right, $key1, $key2, $CT, $PT;
@@ -99,7 +102,7 @@ $__start = _now();
   $result = 0;
   $i = 0;
   while ($i < strlen($s)) {
-  $digit = ord(substr($s, $i, $i + 1 - $i));
+  $digit = (ctype_digit($s[$i]) ? intval($s[$i]) : ord($s[$i]));
   $result = $result * 2 + $digit;
   $i = $i + 1;
 };
@@ -107,7 +110,7 @@ $__start = _now();
 };
   function apply_sbox($s, $data) {
   global $p4_table, $key, $message, $p8_table, $p10_table, $IP, $IP_inv, $expansion, $s0, $s1, $temp, $left, $right, $key1, $key2, $CT, $PT;
-  $row_bits = substr($data, 0, 1 - 0) . substr($data, strlen($data) - 1, strlen($data) - (strlen($data) - 1));
+  $row_bits = substr($data, 0, 1) . substr($data, strlen($data) - 1, strlen($data) - (strlen($data) - 1));
   $col_bits = substr($data, 1, 3 - 1);
   $row = bin_to_int($row_bits);
   $col = bin_to_int($col_bits);
@@ -118,11 +121,11 @@ $__start = _now();
   $p4_table = [2, 4, 3, 1];
   function f($expansion, $s0, $s1, $key, $message) {
   global $p4_table, $p8_table, $p10_table, $IP, $IP_inv, $key1, $key2, $CT, $PT;
-  $left = substr($message, 0, 4 - 0);
+  $left = substr($message, 0, 4);
   $right = substr($message, 4, 8 - 4);
   $temp = apply_table($right, $expansion);
   $temp = mochi_xor($temp, $key);
-  $left_bin_str = apply_sbox($s0, substr($temp, 0, 4 - 0));
+  $left_bin_str = apply_sbox($s0, substr($temp, 0, 4));
   $right_bin_str = apply_sbox($s1, substr($temp, 4, 8 - 4));
   $left_bin_str = pad_left($left_bin_str, 2);
   $right_bin_str = pad_left($right_bin_str, 2);
@@ -140,7 +143,7 @@ $__start = _now();
   $s0 = [[1, 0, 3, 2], [3, 2, 1, 0], [0, 2, 1, 3], [3, 1, 3, 2]];
   $s1 = [[0, 1, 2, 3], [2, 0, 1, 3], [3, 0, 1, 0], [2, 1, 0, 3]];
   $temp = apply_table($key, $p10_table);
-  $left = substr($temp, 0, 5 - 0);
+  $left = substr($temp, 0, 5);
   $right = substr($temp, 5, 10 - 5);
   $left = left_shift($left);
   $right = left_shift($right);
@@ -152,13 +155,13 @@ $__start = _now();
   $key2 = apply_table($left . $right, $p8_table);
   $temp = apply_table($message, $IP);
   $temp = f($expansion, $s0, $s1, $key1, $temp);
-  $temp = substr($temp, 4, 8 - 4) . substr($temp, 0, 4 - 0);
+  $temp = substr($temp, 4, 8 - 4) . substr($temp, 0, 4);
   $temp = f($expansion, $s0, $s1, $key2, $temp);
   $CT = apply_table($temp, $IP_inv);
   echo rtrim('Cipher text is: ' . $CT), PHP_EOL;
   $temp = apply_table($CT, $IP);
   $temp = f($expansion, $s0, $s1, $key2, $temp);
-  $temp = substr($temp, 4, 8 - 4) . substr($temp, 0, 4 - 0);
+  $temp = substr($temp, 4, 8 - 4) . substr($temp, 0, 4);
   $temp = f($expansion, $s0, $s1, $key1, $temp);
   $PT = apply_table($temp, $IP_inv);
   echo rtrim('Plain text after decypting is: ' . $PT), PHP_EOL;
