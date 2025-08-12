@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-12 12:45 GMT+7
+Last updated: 2025-08-12 13:34 GMT+7
 
 ## Algorithms Golden Test Checklist (1013/1077)
 | Index | Name | Status | Duration | Memory |
@@ -786,7 +786,7 @@ Last updated: 2025-08-12 12:45 GMT+7
 | 777 | physics/lorentz_transformation_four_vector | ✓ | 2.0ms | 17.80KB |
 | 778 | physics/malus_law | ✓ | 9.0ms | 1.56MB |
 | 779 | physics/mass_energy_equivalence | ✓ | 2.0ms | 14.18KB |
-| 780 | physics/mirror_formulae | ✓ | 3.0ms | 13.97KB |
+| 780 | physics/mirror_formulae | ✓ | 2.0ms | 13.97KB |
 | 781 | physics/n_body_simulation | ✓ | 6.0ms | 121.21KB |
 | 782 | physics/newtons_law_of_gravitation | ✓ | 1.0ms | 14.34KB |
 | 783 | physics/newtons_second_law_of_motion | ✓ | 1.0ms | 13.84KB |
