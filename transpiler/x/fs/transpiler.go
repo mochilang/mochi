@@ -94,6 +94,8 @@ var (
 	methodDefs     []Stmt
 	definedFuncs   map[string]bool
 	funcParamTypes map[string][]string
+	funcParamNames map[string][]string
+	funcDefs       map[string]*FunDef
 	useParseIntStr bool
 	mutatedVars    map[string]bool
 	letPtrs        map[string][]*LetStmt
@@ -4124,6 +4126,16 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		currentReturn = prevReturn
 		hasNull := funcHasNull
 		funcHasNull = saveNull
+		if retType == "int" {
+			for _, st := range body {
+				if r, ok := st.(*ReturnStmt); ok {
+					if inferType(r.Expr) == "int64" {
+						retType = "int64"
+						break
+					}
+				}
+			}
+		}
 		if hasNull && strings.Contains(retType, "int array") {
 			retType = "obj array"
 			for _, st := range body {
@@ -4147,13 +4159,27 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			funcParamTypes = map[string][]string{}
 		}
 		funcParamTypes[st.Fun.Name] = paramTypes
+		if funcParamNames == nil {
+			funcParamNames = map[string][]string{}
+		}
+		funcParamNames[st.Fun.Name] = params
 		if st.Fun.Name == "exp" && len(params) == 1 && (retType == "" || retType == "float") {
 			retType = "float"
-			return &FunDef{Name: st.Fun.Name, Params: params, Types: paramTypes, Return: retType, Body: []Stmt{
+			fd := &FunDef{Name: st.Fun.Name, Params: params, Types: paramTypes, Return: retType, Body: []Stmt{
 				&ReturnStmt{Expr: &CallExpr{Func: "System.Math.Exp", Args: []Expr{&IdentExpr{Name: params[0]}}}},
-			}}, nil
+			}}
+			if funcDefs == nil {
+				funcDefs = map[string]*FunDef{}
+			}
+			funcDefs[st.Fun.Name] = fd
+			return fd, nil
 		}
-		return &FunDef{Name: st.Fun.Name, Params: params, Types: paramTypes, Body: body, Return: retType}, nil
+		fd := &FunDef{Name: st.Fun.Name, Params: params, Types: paramTypes, Body: body, Return: retType}
+		if funcDefs == nil {
+			funcDefs = map[string]*FunDef{}
+		}
+		funcDefs[st.Fun.Name] = fd
+		return fd, nil
 	case st.While != nil:
 		cond, err := convertExpr(st.While.Cond)
 		if err != nil {
@@ -4446,6 +4472,57 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		if definedFuncs[p.Call.Func] {
 			if funcParamTypes != nil {
 				if pts, ok := funcParamTypes[p.Call.Func]; ok {
+					// Allow promotion of int parameters to int64 when
+					// a call site provides an int64 argument. This avoids
+					// overflow when the Mochi program uses large integer
+					// literals that exceed the range of F#'s 32-bit int.
+					if pnames, ok2 := funcParamNames[p.Call.Func]; ok2 {
+						for i, t := range pts {
+							if i < len(args) {
+								argT := inferType(args[i])
+								if t == "int" && argT == "int64" {
+									// Promote all int parameters for this function to int64
+									for j, pt := range pts {
+										if pt == "int" {
+											pts[j] = "int64"
+											if j < len(pnames) {
+												varTypes[pnames[j]] = "int64"
+											}
+										}
+									}
+									// Update struct field types if the function returns a struct
+									if retT, ok3 := varTypes[p.Call.Func]; ok3 {
+										if fd, ok4 := funcDefs[p.Call.Func]; ok4 {
+											if retT == "int" {
+												retT = "int64"
+												varTypes[p.Call.Func] = retT
+												fd.Return = "int64"
+											}
+										}
+										for si, sd := range structDefs {
+											if sd.Name == retT {
+												for k := range sd.Fields {
+													if sd.Fields[k].Type == "int" {
+														structDefs[si].Fields[k].Type = "int64"
+													}
+												}
+											}
+										}
+										for fname, fd := range funcDefs {
+											for _, pt := range fd.Types {
+												if pt == retT && fd.Return == "int" {
+													fd.Return = "int64"
+													varTypes[fname] = "int64"
+													break
+												}
+											}
+										}
+									}
+									break
+								}
+							}
+						}
+					}
 					for i, t := range pts {
 						if i < len(args) && t != "" && t != inferType(args[i]) {
 							if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") && inferType(args[i]) == "map" {

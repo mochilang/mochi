@@ -1,4 +1,4 @@
-// Generated 2025-08-12 09:13 +0700
+// Generated 2025-08-12 11:18 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -28,16 +28,16 @@ let rec _str v =
      .Replace(";", "")
      .Replace("\"", "")
 type LCG = {
-    mutable _multiplier: int
-    mutable _increment: int
-    mutable _modulo: int
-    mutable _seed: int
+    mutable _multiplier: int64
+    mutable _increment: int64
+    mutable _modulo: int64
+    mutable _seed: int64
 }
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
 open System
 
-let rec make_lcg (_multiplier: int) (_increment: int) (_modulo: int) (_seed: int) =
+let rec make_lcg (_multiplier: int64) (_increment: int64) (_modulo: int64) (_seed: int64) =
     let mutable __ret : LCG = Unchecked.defaultof<LCG>
     let mutable _multiplier = _multiplier
     let mutable _increment = _increment
@@ -50,7 +50,7 @@ let rec make_lcg (_multiplier: int) (_increment: int) (_modulo: int) (_seed: int
     with
         | Return -> __ret
 and next_number (lcg: LCG) =
-    let mutable __ret : int = Unchecked.defaultof<int>
+    let mutable __ret : int64 = Unchecked.defaultof<int64>
     let mutable lcg = lcg
     try
         lcg._seed <- (((((lcg._multiplier) * (lcg._seed)) + (lcg._increment)) % (lcg._modulo) + (lcg._modulo)) % (lcg._modulo))
@@ -59,7 +59,7 @@ and next_number (lcg: LCG) =
         __ret
     with
         | Return -> __ret
-let mutable lcg: LCG = make_lcg (1664525) (1013904223) (int 4294967296L) (int (_now()))
+let mutable lcg: LCG = make_lcg (int64 1664525) (int64 1013904223) (4294967296L) (int64 (_now()))
 let mutable i: int = 0
 while i < 5 do
     ignore (printfn "%s" (_str (next_number (lcg))))
