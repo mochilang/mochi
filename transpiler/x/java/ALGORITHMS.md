@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-11 22:50 GMT+7
+Last updated: 2025-08-12 07:52 GMT+7
 
 ## Algorithms Golden Test Checklist (929/1077)
 | Index | Name | Status | Duration | Memory |
@@ -556,7 +556,7 @@ Last updated: 2025-08-11 22:50 GMT+7
 | 547 | maths/check_polygon | ✓ | 16.0ms | 10.80KB |
 | 548 | maths/chinese_remainder_theorem | ✓ | 35.0ms | 78.55KB |
 | 549 | maths/chudnovsky_algorithm | ✓ | 39.0ms | 87.63KB |
-| 550 | maths/collatz_sequence | ✓ | 36.0ms | 93.04KB |
+| 550 | maths/collatz_sequence | ✓ | 35.0ms | 94.08KB |
 | 551 | maths/combinations | ✓ | 30.0ms | 72.49KB |
 | 552 | maths/continued_fraction | ✓ | 29.0ms | 55.70KB |
 | 553 | maths/decimal_isolate | ✓ | 14.0ms | 10.35KB |
