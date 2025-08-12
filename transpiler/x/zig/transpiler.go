@@ -1578,6 +1578,9 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return @as(i64, @intCast(std.time.nanoTimestamp()));\n")
 		buf.WriteString("}\n")
 	}
+	buf.WriteString("\nfn _idx(len: usize, i: i64) usize {\n")
+	buf.WriteString("    return if (i < 0 or i >= @as(i64, @intCast(len))) 0 else @as(usize, @intCast(i));\n")
+	buf.WriteString("}\n")
 	if useStr {
 		buf.WriteString("\nfn _str(v: anytype) []const u8 {\n")
 		buf.WriteString("    if (@TypeOf(v) == f64 or @TypeOf(v) == f32) {\n")
@@ -1598,8 +1601,8 @@ func (p *Program) Emit() []byte {
 		}
 		buf.WriteString("    const info = @typeInfo(@TypeOf(v));\n")
 		buf.WriteString("    switch (info) {\n")
-		buf.WriteString("    .Pointer => |p| {\n")
-		buf.WriteString("        if (p.size == .Slice) {\n")
+		buf.WriteString("    .pointer => |p| {\n")
+		buf.WriteString("        if (p.size == .slice) {\n")
 		buf.WriteString("            var out = std.ArrayList(u8).init(std.heap.page_allocator);\n")
 		buf.WriteString("            defer out.deinit();\n")
 		buf.WriteString("            out.append('[') catch unreachable;\n")
@@ -1612,7 +1615,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("            return out.toOwnedSlice() catch unreachable;\n")
 		buf.WriteString("        }\n")
 		buf.WriteString("    },\n")
-		buf.WriteString("    .Struct => |_| {\n")
+		buf.WriteString("    .@\"struct\" => |_| {\n")
 		buf.WriteString("        if (@hasDecl(@TypeOf(v), \"iterator\")) {\n")
 		buf.WriteString("            const KVPair = struct{ ks: []const u8, vs: []const u8 };\n")
 		buf.WriteString("            var pairs = std.ArrayList(KVPair).init(std.heap.page_allocator);\n")
@@ -2207,9 +2210,17 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		if isStringType(lt) || isStringType(rt) || (strings.HasPrefix(lt, "[]") && strings.HasSuffix(lt, "u8")) || (strings.HasPrefix(rt, "[]") && strings.HasSuffix(rt, "u8")) {
 			useConcat = true
 			io.WriteString(w, "_concat_string(")
-			b.Left.emit(w)
+			if _, ok := b.Left.(*ListLit); ok {
+				(&CastExpr{Type: lt, Value: b.Left}).emit(w)
+			} else {
+				b.Left.emit(w)
+			}
 			io.WriteString(w, ", ")
-			b.Right.emit(w)
+			if _, ok := b.Right.(*ListLit); ok {
+				(&CastExpr{Type: lt, Value: b.Right}).emit(w)
+			} else {
+				b.Right.emit(w)
+			}
 			io.WriteString(w, ")")
 			return
 		}
@@ -2425,9 +2436,17 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			} else {
 				fmt.Fprintf(w, "!std.mem.eql(%s, ", elem)
 			}
-			b.Left.emit(w)
+			if _, ok := b.Left.(*ListLit); ok {
+				(&CastExpr{Type: lt, Value: b.Left}).emit(w)
+			} else {
+				b.Left.emit(w)
+			}
 			io.WriteString(w, ", ")
-			b.Right.emit(w)
+			if _, ok := b.Right.(*ListLit); ok {
+				(&CastExpr{Type: lt, Value: b.Right}).emit(w)
+			} else {
+				b.Right.emit(w)
+			}
 			io.WriteString(w, ")")
 			return
 		}
@@ -2679,16 +2698,22 @@ func (i *IndexExpr) emit(w io.Writer) {
 	targetType := zigTypeFromExpr(i.Target)
 	if isStringType(targetType) || (i.ElemType == "[]const u8" && !strings.HasPrefix(targetType, "[]")) {
 		i.Target.emit(w)
-		io.WriteString(w, "[@as(usize, @intCast(")
+		io.WriteString(w, "[_idx(")
+		i.Target.emit(w)
+		io.WriteString(w, ".len, ")
 		i.Index.emit(w)
-		io.WriteString(w, "))..@as(usize, @intCast(")
+		io.WriteString(w, ").._idx(")
+		i.Target.emit(w)
+		io.WriteString(w, ".len, ")
 		i.Index.emit(w)
-		io.WriteString(w, ")) + 1]")
+		io.WriteString(w, ") + 1]")
 	} else {
 		i.Target.emit(w)
-		io.WriteString(w, "[@as(usize, @intCast(")
+		io.WriteString(w, "[_idx(")
+		i.Target.emit(w)
+		io.WriteString(w, ".len, ")
 		i.Index.emit(w)
-		io.WriteString(w, "))]")
+		io.WriteString(w, ")]")
 	}
 }
 
@@ -2719,9 +2744,15 @@ func (c *CastExpr) emit(w io.Writer) {
 			if l.ElemType == "" {
 				l.ElemType = c.Type[2:]
 			}
-			io.WriteString(w, "@constCast((&(")
-			l.emit(w)
-			io.WriteString(w, "))[0..])")
+			io.WriteString(w, "@constCast(")
+			if len(l.Elems) == 0 {
+				l.emit(w)
+			} else {
+				io.WriteString(w, "&(")
+				l.emit(w)
+				io.WriteString(w, ")")
+			}
+			io.WriteString(w, ")[0..]")
 			return
 		}
 	}
@@ -2985,6 +3016,8 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 									io.WriteString(w, "}")
 								}
 							}
+						} else if _, ok := e.(*ListLit); ok {
+							(&CastExpr{Type: ll.ElemType, Value: e}).emit(w)
 						} else {
 							e.emit(w)
 						}
@@ -4012,6 +4045,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 						}
 					}
 				}
+			}
+			return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
+		case "slice":
+			if len(args) != 3 {
+				return nil, fmt.Errorf("slice expects 3 args")
 			}
 			return &SliceExpr{Target: args[0], Start: args[1], End: args[2]}, nil
 		case "upper":
