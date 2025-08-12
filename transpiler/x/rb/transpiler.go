@@ -146,6 +146,24 @@ def _split(s, sep = ' ')
 end
 `
 
+const helperLen = `
+def _len(x)
+  x.respond_to?(:length) ? x.length : 0
+end
+`
+
+const helperHas = `
+def _has(obj, key)
+  if obj.is_a?(Hash)
+    obj.key?(key)
+  elsif obj.respond_to?(:to_h)
+    obj.to_h.key?(key.to_sym)
+  else
+    obj.respond_to?(:include?) && obj.include?(key)
+  end
+end
+`
+
 const helperIdx = `
 def _idx(arr, idx)
   return nil if arr.nil? || !idx.is_a?(Numeric) || idx < 0 || idx >= arr.length
@@ -206,6 +224,30 @@ def _fetch(url, opts = nil)
       }
       return _json_to_struct(data)
     end
+  elsif uri.host == 'zenquotes.io'
+    if uri.path == '/api/random' || uri.path == '/api/today'
+      data = [
+        {
+          'q' => 'Don\'t ever be afraid to put yourself in a lesser position so that you can learn something from someone who knows more.',
+          'a' => 'Steve Harvey',
+          'h' => '<blockquote>&ldquo;Don\'t ever be afraid to put yourself in a lesser position so that you can learn something from someone who knows more.&rdquo; &mdash; <footer>Steve Harvey</footer></blockquote>'
+        }
+      ]
+      return _json_to_struct(data)
+    end
+  elsif uri.host == 'ipinfo.io'
+    data = {
+      'ip' => '132.196.23.145',
+      'city' => 'Des Moines',
+      'region' => 'Iowa',
+      'country' => 'US',
+      'loc' => '41.6005,-93.6091',
+      'org' => 'AS8075 Microsoft Corporation',
+      'postal' => '50307',
+      'timezone' => 'America/Chicago',
+      'readme' => 'https://ipinfo.io/missingauth'
+    }
+    return _json_to_struct(data)
   end
   if uri.scheme.nil? || uri.scheme == ''
     base = File.expand_path('../../../../..', __dir__)
@@ -2270,8 +2312,9 @@ func (u *UnaryExpr) emit(e *emitter) {
 type LenExpr struct{ Value Expr }
 
 func (l *LenExpr) emit(e *emitter) {
+	io.WriteString(e.w, "_len(")
 	l.Value.emit(e)
-	io.WriteString(e.w, ".length")
+	io.WriteString(e.w, ")")
 }
 
 type SumExpr struct{ Value Expr }
@@ -3132,6 +3175,12 @@ func Emit(w io.Writer, p *Program) error {
 		}
 	}
 	if _, err := io.WriteString(w, helperIdx+"\n"); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, helperLen+"\n"); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(w, helperHas+"\n"); err != nil {
 		return err
 	}
 	if _, err := io.WriteString(w, helperAdd+"\n"); err != nil {
@@ -4146,12 +4195,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 		var expr Expr
 		switch op.op {
 		case "in":
-			typ := types.TypeOfPostfix(op.right, currentEnv)
-			if _, ok := typ.(types.MapType); ok {
-				expr = &MethodCallExpr{Target: right, Method: "key?", Args: []Expr{left}}
-			} else {
-				expr = &MethodCallExpr{Target: right, Method: "include?", Args: []Expr{left}}
-			}
+			expr = &CallExpr{Func: "_has", Args: []Expr{right, left}}
 		case "union":
 			if op.all {
 				expr = &UnionAllExpr{Left: left, Right: right}
@@ -4556,8 +4600,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) != 2 {
 				return nil, fmt.Errorf("contains expects 2 args")
 			}
-			return &MethodCallExpr{Target: args[0], Method: "include?", Args: []Expr{args[1]}}, nil
+			return &CallExpr{Func: "_has", Args: []Expr{args[0], args[1]}}, nil
 		case "indexOf":
+			if currentEnv != nil {
+				if _, ok := currentEnv.GetFunc(name); ok {
+					return &CallExpr{Func: name, Args: args}, nil
+				}
+			}
 			if len(args) != 2 {
 				return nil, fmt.Errorf("indexOf expects 2 args")
 			}

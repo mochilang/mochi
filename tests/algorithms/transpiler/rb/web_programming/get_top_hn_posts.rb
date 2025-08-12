@@ -27,12 +27,11 @@ end
 
 require 'net/http'
 require 'uri'
-require 'ostruct'
 require 'json'
 def _json_to_struct(obj)
   case obj
   when Hash
-    OpenStruct.new(obj.transform_values { |v| _json_to_struct(v) })
+    obj.transform_values { |v| _json_to_struct(v) }
   when Array
     obj.map { |v| _json_to_struct(v) }
   else
@@ -128,17 +127,6 @@ def _len(x)
 end
 
 
-def _has(obj, key)
-  if obj.is_a?(Hash)
-    obj.key?(key)
-  elsif obj.respond_to?(:to_h)
-    obj.to_h.key?(key)
-  else
-    obj.respond_to?(:include?) && obj.include?(key)
-  end
-end
-
-
 def _add(a, b)
   if a.is_a?(Array) && b.is_a?(String)
     a.join + b
@@ -198,25 +186,45 @@ end
 __name__ = '__main__'
 start_mem = _mem()
 start = Process.clock_gettime(Process::CLOCK_MONOTONIC, :nanosecond)
-  def fetch_bbc_news(api_key)
-    url = _add("https://newsapi.org/v1/articles?source=bbc-news&sortBy=top&apiKey=", api_key)
-    resp = _fetch(url, {"timeout" => 10.0})
-    if _eq(_len((__tmp1 = resp; __tmp1.is_a?(Hash) ? __tmp1["articles"] : _idx(__tmp1, "articles"))), 0)
-      puts("No articles found.")
-      return
+  def get_hackernews_story(story_id)
+    url = _add(_add("https://hacker-news.firebaseio.com/v0/item/", _str(story_id)), ".json?print=pretty")
+    story = ((_fetch(url)))
+    if _eq(story.url, "")
+      story.url = _add("https://news.ycombinator.com/item?id=", _str(story_id))
     end
+    return story
+  end
+  def hackernews_top_stories(max_stories)
+    url = "https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty"
+    ids = (_fetch(url))
+    ids = ids[0...max_stories]
+    stories = []
     i = 0
-    while i < _len((__tmp2 = resp; __tmp2.is_a?(Hash) ? __tmp2["articles"] : _idx(__tmp2, "articles")))
-      article = (__tmp3 = (__tmp4 = resp; __tmp4.is_a?(Hash) ? __tmp4["articles"] : _idx(__tmp4, "articles")); __tmp3.is_a?(Hash) ? __tmp3[i] : _idx(__tmp3, i))
-      puts(_add(_add(_str(_add(i, 1)), ".) "), (__tmp5 = article; __tmp5.is_a?(Hash) ? __tmp5["title"] : _idx(__tmp5, "title"))))
+    while i < _len(ids)
+      stories = (stories + [get_hackernews_story((__tmp1 = ids; __tmp1.is_a?(Hash) ? __tmp1[i] : _idx(__tmp1, i)))])
       i = _add(i, 1)
     end
+    return stories
   end
-  Object.send(:remove_const, :Article) if Object.const_defined?(:Article)
-  Article = Struct.new(:title, keyword_init: true)
-  Object.send(:remove_const, :NewsResponse) if Object.const_defined?(:NewsResponse)
-  NewsResponse = Struct.new(:articles, keyword_init: true)
-  fetch_bbc_news("test")
+  def hackernews_top_stories_as_markdown(max_stories)
+    stories = hackernews_top_stories(max_stories)
+    output = ""
+    i = 0
+    while i < _len(stories)
+      s = (__tmp2 = stories; __tmp2.is_a?(Hash) ? __tmp2[i] : _idx(__tmp2, i))
+      line = _add(_add(_add(_add("* [", s.title), "]("), s.url), ")")
+      if _eq(i, 0)
+        output = line
+      else
+        output = _add(_add(output, "\n"), line)
+      end
+      i = _add(i, 1)
+    end
+    return output
+  end
+  Object.send(:remove_const, :Story) if Object.const_defined?(:Story)
+  Story = Struct.new(:title, :url, keyword_init: true)
+  puts(hackernews_top_stories_as_markdown(5))
 end_time = Process.clock_gettime(Process::CLOCK_MONOTONIC, :nanosecond)
 end_mem = _mem()
 result = {"duration_us" => ((end_time - start) / 1000), "memory_bytes" => (end_mem - start_mem), "name" => "main"}
