@@ -2539,6 +2539,26 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		}
 		return &ReturnStmt{Value: val}, nil
 	case st.Fun != nil:
+		if (st.Fun.Name == "ln" || st.Fun.Name == "exp") && len(st.Fun.Params) == 1 {
+			param := st.Fun.Params[0].Name
+			child := types.NewEnv(env)
+			if st.Fun.Params[0].Type != nil {
+				child.SetVar(param, types.ResolveTypeRef(st.Fun.Params[0].Type, env), false)
+			} else {
+				child.SetVar(param, types.AnyType{}, false)
+			}
+			locals := map[string]struct{}{param: {}}
+			var fn string
+			if st.Fun.Name == "ln" {
+				fn = ":math.log"
+			} else {
+				fn = ":math.exp"
+			}
+			params := []string{param}
+			body := []Stmt{&ReturnStmt{Value: &CallExpr{Func: fn, Args: []Expr{&VarRef{Name: param}}}}}
+			env.SetVar(st.Fun.Name, types.FuncType{}, false)
+			return &FuncDecl{Name: st.Fun.Name, Params: params, Body: body, Locals: locals}, nil
+		}
 		child := types.NewEnv(env)
 		locals := map[string]struct{}{}
 		for _, p := range st.Fun.Params {
@@ -3866,7 +3886,7 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			typ = types.AnyType{}
 			i++
 		} else if op.Field != nil {
-			expr = &IndexExpr{Target: expr, Index: &StringLit{Value: op.Field.Name}, UseMapSyntax: true}
+			expr = &IndexExpr{Target: expr, Index: &AtomLit{Name: ":" + op.Field.Name}, UseMapSyntax: true}
 			switch tt := typ.(type) {
 			case types.StructType:
 				if t, ok := tt.Fields[op.Field.Name]; ok {

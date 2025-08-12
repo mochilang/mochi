@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-12 16:09 GMT+7
+Last updated: 2025-08-12 16:26 GMT+7
 
-## Algorithms Golden Test Checklist (823/1077)
+## Algorithms Golden Test Checklist (824/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -735,7 +735,7 @@ Last updated: 2025-08-12 16:09 GMT+7
 | 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 6.57ms | 32.7 MB |
 | 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 6.97ms | 17.3 MB |
 | 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 7.07ms | 25.0 MB |
-| 729 | neural_network/activation_functions/softplus | error |  |  |
+| 729 | neural_network/activation_functions/softplus | ✓ | 5.16ms | 32.7 MB |
 | 730 | neural_network/activation_functions/squareplus | ✓ | 6.67ms | 25.2 MB |
 | 731 | neural_network/activation_functions/swish | ✓ | 6.03ms | 25.6 MB |
 | 732 | neural_network/back_propagation_neural_network | error |  |  |
