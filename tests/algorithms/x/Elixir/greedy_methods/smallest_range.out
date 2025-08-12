@@ -1,0 +1,44 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 58 │           {j, min_idx} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/smallest_range.exs:58:12: Main.smallest_range/1
+
+    warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 81 │           {k, new_heap} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/smallest_range.exs:81:12: Main.smallest_range/1
+
+     warning: variable "current_max" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 111 │       {best, current_max, heap} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/smallest_range.exs:111:14: Main.smallest_range/1
+
+     warning: variable "heap" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 111 │       {best, current_max, heap} = try do
+     │                           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/smallest_range.exs:111:27: Main.smallest_range/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 31 │       {current_max, heap, i} = try do
+    │                           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/smallest_range.exs:31:27: Main.smallest_range/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 141 │       {i, s} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/smallest_range.exs:141:8: Main.list_to_string/1
+
+"[20, 24]"
+"[1, 1]"

@@ -1,0 +1,30 @@
+warning: variable "k" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 10 │       {total} = Enum.reduce(Map.keys(adjacency), {total}, fn k, {total} ->
+    │                                                              ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/tests/test_min_spanning_tree_prim.exs:10:62: Main.prims_algorithm/1
+
+    warning: variable "best_cost" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 19 │           {best_cost, best_u, best_v} = Enum.reduce(Map.keys(adjacency), {best_cost, best_u, best_v}, fn u_str, {best_cost, best_u, best_v} ->
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/tests/test_min_spanning_tree_prim.exs:19:12: Main.prims_algorithm/1
+
+    warning: variable "count" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 47 │       {count, mst, visited} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/tests/test_min_spanning_tree_prim.exs:47:8: Main.prims_algorithm/1
+
+    warning: variable "visited" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 47 │       {count, mst, visited} = try do
+    │                    ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/graphs/tests/test_min_spanning_tree_prim.exs:47:20: Main.prims_algorithm/1
+
+true
+true

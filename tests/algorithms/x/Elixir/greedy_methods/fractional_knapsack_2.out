@@ -1,0 +1,45 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 40 │       {i, index} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/fractional_knapsack_2.exs:40:8: Main.sort_by_ratio/2
+
+     warning: variable "capacity" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 128 │       {capacity, fractions, idx, max_value} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/fractional_knapsack_2.exs:128:8: Main.fractional_knapsack/3
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 65 │       {i, index} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/fractional_knapsack_2.exs:65:8: Main.fractional_knapsack/3
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 82 │       {i, ratio} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/fractional_knapsack_2.exs:82:8: Main.fractional_knapsack/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 100 │       {fractions, i} = try do
+     │                   ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/fractional_knapsack_2.exs:100:19: Main.fractional_knapsack/3
+
+     warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 128 │       {capacity, fractions, idx, max_value} = try do
+     │                             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/greedy_methods/fractional_knapsack_2.exs:128:29: Main.fractional_knapsack/3
+
+%{fractions: [1.0, 1.0, 1.0, 1.0, 1.0], max_value: 25.0}
+%{fractions: [1.0, 1.0, 1.0, 1.0], max_value: 16.0}
+%{fractions: [], max_value: 0.0}
