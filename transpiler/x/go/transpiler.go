@@ -4797,6 +4797,14 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 }
 
 func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
+	// Some algorithm implementations provide a dummy "panic" function
+	// with an empty body. In Go this would shadow the built-in panic and
+	// cause compile errors where the function is expected to be
+	// non-returning. If we detect such a stub, skip emitting it so that
+	// calls map to Go's builtin panic instead.
+	if fn.Name == "panic" && len(fn.Body) == 0 {
+		return nil, nil
+	}
 	child := types.NewEnv(env)
 	// Register this function's type in the outer environment so that nested
 	// references (including recursive ones) use the correct signature. Any
