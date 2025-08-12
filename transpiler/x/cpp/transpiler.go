@@ -947,11 +947,11 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "}")
 	}
 	if p.UseIndex {
-                fmt.Fprintln(w, "template<typename V> auto _index(const V& v, int64_t i) {")
-                fmt.Fprintln(w, "    if (i < 0) i += v.size();")
-                fmt.Fprintln(w, "    if (i < 0 || i >= (int64_t)v.size()) return typename V::value_type{};")
-                fmt.Fprintln(w, "    return v[static_cast<size_t>(i)];")
-                fmt.Fprintln(w, "}")
+		fmt.Fprintln(w, "template<typename V> auto _index(const V& v, int64_t i) {")
+		fmt.Fprintln(w, "    if (i < 0) i += v.size();")
+		fmt.Fprintln(w, "    if (i < 0 || i >= (int64_t)v.size()) return typename V::value_type{};")
+		fmt.Fprintln(w, "    return v[static_cast<size_t>(i)];")
+		fmt.Fprintln(w, "}")
 	}
 	if p.UseSlice {
 		fmt.Fprintln(w, "template<typename T> std::vector<T> _slice(const std::vector<T>& s, int64_t start, int64_t end) {")
@@ -1033,12 +1033,16 @@ func (p *Program) write(w io.Writer) {
 	fmt.Fprintln(w, "        std::ostringstream ss;")
 	fmt.Fprintln(w, "        ss << std::defaultfloat << std::setprecision(15) << v;")
 	fmt.Fprintln(w, "        auto s = ss.str();")
+	fmt.Fprintln(w, "        auto epos = s.find('e');")
+	fmt.Fprintln(w, "        if(epos == std::string::npos) epos = s.find('E');")
+	fmt.Fprintln(w, "        std::string exp;")
+	fmt.Fprintln(w, "        if(epos != std::string::npos){ exp = s.substr(epos); s = s.substr(0, epos); }")
 	fmt.Fprintln(w, "        auto pos = s.find('.');")
 	fmt.Fprintln(w, "        if(pos != std::string::npos){")
 	fmt.Fprintln(w, "            while(!s.empty() && s.back() == '0') s.pop_back();")
 	fmt.Fprintln(w, "            if(!s.empty() && s.back() == '.') s.pop_back();")
 	fmt.Fprintln(w, "        }")
-	fmt.Fprintln(w, "        return s;")
+	fmt.Fprintln(w, "        return s + exp;")
 	fmt.Fprintln(w, "    } else {")
 	fmt.Fprintln(w, "        std::ostringstream ss;")
 	fmt.Fprintln(w, "        ss << std::boolalpha << v;")
@@ -2119,20 +2123,20 @@ func (c *CastExpr) emit(w io.Writer) {
 		io.WriteString(w, c.Type+"{}")
 		return
 	}
-       if (c.Type == "int" || c.Type == "int64_t") && valType == "std::string" {
-               if idx, ok := c.Value.(*IndexExpr); ok && exprType(idx.Target) == "std::string" {
-                       io.WriteString(w, "static_cast<int64_t>(_index(")
-                       idx.Target.emit(w)
-                       io.WriteString(w, ", ")
-                       idx.Index.emit(w)
-                       io.WriteString(w, ") - '0')")
-               } else {
-                       io.WriteString(w, "std::stoll(")
-                       c.Value.emit(w)
-                       io.WriteString(w, ")")
-               }
-               return
-       }
+	if (c.Type == "int" || c.Type == "int64_t") && valType == "std::string" {
+		if idx, ok := c.Value.(*IndexExpr); ok && exprType(idx.Target) == "std::string" {
+			io.WriteString(w, "static_cast<int64_t>(_index(")
+			idx.Target.emit(w)
+			io.WriteString(w, ", ")
+			idx.Index.emit(w)
+			io.WriteString(w, ") - '0')")
+		} else {
+			io.WriteString(w, "std::stoll(")
+			c.Value.emit(w)
+			io.WriteString(w, ")")
+		}
+		return
+	}
 	if c.Type == "BigRat" {
 		useBigRat = true
 		io.WriteString(w, "_bigrat(")
@@ -2939,6 +2943,43 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			b.Right.emit(w)
 			io.WriteString(w, ")")
 			return
+		}
+	}
+	if b.Op == "*" {
+		lt := exprType(b.Left)
+		rt := exprType(b.Right)
+		if lt == "double" && rt == "double" {
+			if reflect.DeepEqual(b.Left, b.Right) {
+				if currentProgram != nil {
+					currentProgram.addInclude("<cmath>")
+				}
+				io.WriteString(w, "std::pow(")
+				b.Left.emit(w)
+				io.WriteString(w, ", 2)")
+				return
+			}
+			if bl, ok := b.Left.(*BinaryExpr); ok && bl.Op == "*" && reflect.DeepEqual(bl.Right, b.Right) {
+				if currentProgram != nil {
+					currentProgram.addInclude("<cmath>")
+				}
+				io.WriteString(w, "(")
+				bl.Left.emit(w)
+				io.WriteString(w, " * std::pow(")
+				b.Right.emit(w)
+				io.WriteString(w, ", 2))")
+				return
+			}
+			if br, ok := b.Right.(*BinaryExpr); ok && br.Op == "*" && reflect.DeepEqual(br.Right, b.Left) {
+				if currentProgram != nil {
+					currentProgram.addInclude("<cmath>")
+				}
+				io.WriteString(w, "(")
+				b.Left.emit(w)
+				io.WriteString(w, " * std::pow(")
+				br.Right.emit(w)
+				io.WriteString(w, ", 2))")
+				return
+			}
 		}
 	}
 	if b.Op == "/" {
