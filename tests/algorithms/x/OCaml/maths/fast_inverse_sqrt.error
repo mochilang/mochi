@@ -1,0 +1,2 @@
+exit status 2
+Fatal error: exception Failure("fast_inverse_sqrt(10) failed")
