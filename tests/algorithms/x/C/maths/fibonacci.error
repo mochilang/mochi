@@ -1,0 +1,19 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/maths/fibonacci.c: In function ‘fib_recursive_cached_term’:
+/workspace/mochi/tests/algorithms/x/C/maths/fibonacci.c:203:26: error: ‘fib_cache_global_keys’ undeclared (first use in this function)
+  203 |     if (contains_map_int(fib_cache_global_keys, fib_cache_global_len, i)) {
+      |                          ^~~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/maths/fibonacci.c:203:26: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/algorithms/x/C/maths/fibonacci.c:203:49: error: ‘fib_cache_global_len’ undeclared (first use in this function)
+  203 |     if (contains_map_int(fib_cache_global_keys, fib_cache_global_len, i)) {
+      |                                                 ^~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/maths/fibonacci.c:204:50: error: ‘fib_cache_global_vals’ undeclared (first use in this function)
+  204 |         return map_get_ii(fib_cache_global_keys, fib_cache_global_vals, fib_cache_global_len, i);
+      |                                                  ^~~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/maths/fibonacci.c: In function ‘matrix_mul’:
+/workspace/mochi/tests/algorithms/x/C/maths/fibonacci.c:278:24: warning: assignment to ‘long long int *’ from incompatible pointer type ‘int *’ [-Wincompatible-pointer-types]
+  278 |         __tmp1_data[0] = ({int *tmp = malloc(2 * sizeof(int)); tmp[0] = a00; tmp[1] = a01; tmp;});
+      |                        ^
+/workspace/mochi/tests/algorithms/x/C/maths/fibonacci.c:279:24: warning: assignment to ‘long long int *’ from incompatible pointer type ‘int *’ [-Wincompatible-pointer-types]
+  279 |         __tmp1_data[1] = ({int *tmp = malloc(2 * sizeof(int)); tmp[0] = a10; tmp[1] = a11; tmp;});
+      |                        ^
