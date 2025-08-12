@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-12 12:45 GMT+7
+Last updated: 2025-08-12 13:50 GMT+7
 
-## Algorithms Golden Test Checklist (645/1077)
+## Algorithms Golden Test Checklist (646/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -696,7 +696,7 @@ Last updated: 2025-08-12 12:45 GMT+7
 | 687 | maths/test_factorial |   |  |  |
 | 688 | maths/test_prime_check |   |  |  |
 | 689 | maths/three_sum |   |  |  |
-| 690 | maths/trapezoidal_rule |   |  |  |
+| 690 | maths/trapezoidal_rule | ✓ | 29µs | 2.0 MB |
 | 691 | maths/triplet_sum |   |  |  |
 | 692 | maths/twin_prime |   |  |  |
 | 693 | maths/two_pointer |   |  |  |
