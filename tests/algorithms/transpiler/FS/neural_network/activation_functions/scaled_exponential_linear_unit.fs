@@ -1,4 +1,4 @@
-// Generated 2025-08-12 09:13 +0700
+// Generated 2025-08-12 16:24 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -32,14 +32,7 @@ let rec exp (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
-        let mutable term: float = 1.0
-        let mutable sum: float = 1.0
-        let mutable n: int = 1
-        while n < 20 do
-            term <- (term * x) / (float n)
-            sum <- sum + term
-            n <- n + 1
-        __ret <- sum
+        __ret <- System.Math.Exp(x)
         raise Return
         __ret
     with

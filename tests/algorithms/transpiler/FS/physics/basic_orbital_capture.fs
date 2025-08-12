@@ -1,4 +1,4 @@
-// Generated 2025-08-09 23:14 +0700
+// Generated 2025-08-12 16:24 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -77,11 +77,11 @@ and capture_radii (target_body_radius: float) (target_body_mass: float) (project
     let mutable projectile_velocity = projectile_velocity
     try
         if target_body_mass < 0.0 then
-            failwith ("Mass cannot be less than 0")
+            ignore (failwith ("Mass cannot be less than 0"))
         if target_body_radius < 0.0 then
-            failwith ("Radius cannot be less than 0")
+            ignore (failwith ("Radius cannot be less than 0"))
         if projectile_velocity > C then
-            failwith ("Cannot go beyond speed of light")
+            ignore (failwith ("Cannot go beyond speed of light"))
         let escape_velocity_squared: float = ((2.0 * G) * target_body_mass) / target_body_radius
         let denom: float = projectile_velocity * projectile_velocity
         let capture_radius: float = target_body_radius * (sqrt (1.0 + (escape_velocity_squared / denom)))
@@ -95,7 +95,7 @@ and capture_area (capture_radius: float) =
     let mutable capture_radius = capture_radius
     try
         if capture_radius < 0.0 then
-            failwith ("Cannot have a capture radius less than 0")
+            ignore (failwith ("Cannot have a capture radius less than 0"))
         let sigma: float = (PI * capture_radius) * capture_radius
         __ret <- sigma
         raise Return
@@ -107,10 +107,10 @@ and run_tests () =
     try
         let r: float = capture_radii (6.957 * (pow10 (8))) (1.99 * (pow10 (30))) (25000.0)
         if (abs (r - (1.720959069143714 * (pow10 (10))))) > 1.0 then
-            failwith ("capture_radii failed")
+            ignore (failwith ("capture_radii failed"))
         let a: float = capture_area (r)
         if (abs (a - (9.304455331801812 * (pow10 (20))))) > 1.0 then
-            failwith ("capture_area failed")
+            ignore (failwith ("capture_area failed"))
         __ret
     with
         | Return -> __ret
@@ -121,8 +121,8 @@ and main () =
         let __mem_start = System.GC.GetTotalMemory(true)
         run_tests()
         let r: float = capture_radii (6.957 * (pow10 (8))) (1.99 * (pow10 (30))) (25000.0)
-        printfn "%s" (_str (r))
-        printfn "%s" (_str (capture_area (r)))
+        ignore (printfn "%s" (_str (r)))
+        ignore (printfn "%s" (_str (capture_area (r))))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

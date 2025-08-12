@@ -1,4 +1,4 @@
-// Generated 2025-08-09 23:14 +0700
+// Generated 2025-08-12 16:24 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -52,7 +52,7 @@ let rec get_data (source_data: float array array) =
                 if (Seq.length (data_lists)) < (j + 1) then
                     let mutable empty: float array = Array.empty<float>
                     data_lists <- Array.append data_lists [|empty|]
-                data_lists.[int j] <- Array.append (_idx data_lists (int j)) [|(_idx row (int j))|]
+                data_lists.[j] <- Array.append (_idx data_lists (int j)) [|(_idx row (int j))|]
                 j <- j + 1
             i <- i + 1
         __ret <- data_lists
@@ -60,7 +60,7 @@ let rec get_data (source_data: float array array) =
         __ret
     with
         | Return -> __ret
-let rec calculate_each_score (data_lists: float array array) (weights: int array) =
+and calculate_each_score (data_lists: float array array) (weights: int array) =
     let mutable __ret : float array array = Unchecked.defaultof<float array array>
     let mutable data_lists = data_lists
     let mutable weights = weights
@@ -105,7 +105,7 @@ let rec calculate_each_score (data_lists: float array array) (weights: int array
         __ret
     with
         | Return -> __ret
-let rec generate_final_scores (score_lists: float array array) =
+and generate_final_scores (score_lists: float array array) =
     let mutable __ret : float array = Unchecked.defaultof<float array>
     let mutable score_lists = score_lists
     try
@@ -120,7 +120,7 @@ let rec generate_final_scores (score_lists: float array array) =
             let slist: float array = _idx score_lists (int i)
             let mutable j: int = 0
             while j < (Seq.length (slist)) do
-                final_scores.[int j] <- (_idx final_scores (int j)) + (_idx slist (int j))
+                final_scores.[j] <- (_idx final_scores (int j)) + (_idx slist (int j))
                 j <- j + 1
             i <- i + 1
         __ret <- final_scores
@@ -128,7 +128,7 @@ let rec generate_final_scores (score_lists: float array array) =
         __ret
     with
         | Return -> __ret
-let rec procentual_proximity (source_data: float array array) (weights: int array) =
+and procentual_proximity (source_data: float array array) (weights: int array) =
     let mutable __ret : float array array = Unchecked.defaultof<float array array>
     let mutable source_data = source_data
     let mutable weights = weights
@@ -138,7 +138,7 @@ let rec procentual_proximity (source_data: float array array) (weights: int arra
         let mutable final_scores: float array = generate_final_scores (score_lists)
         let mutable i: int = 0
         while i < (Seq.length (final_scores)) do
-            source_data.[int i] <- Array.append (_idx source_data (int i)) [|(_idx final_scores (int i))|]
+            source_data.[i] <- Array.append (_idx source_data (int i)) [|(_idx final_scores (int i))|]
             i <- i + 1
         __ret <- source_data
         raise Return
@@ -151,7 +151,7 @@ vehicles <- Array.append vehicles [|[|23.0; 90.0; 2015.0|]|]
 vehicles <- Array.append vehicles [|[|22.0; 50.0; 2011.0|]|]
 let mutable weights: int array = unbox<int array> [|0; 0; 1|]
 let result: float array array = procentual_proximity (vehicles) (weights)
-printfn "%s" (_str (result))
+ignore (printfn "%s" (_str (result)))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

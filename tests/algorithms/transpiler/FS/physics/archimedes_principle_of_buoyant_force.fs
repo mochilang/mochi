@@ -1,4 +1,4 @@
-// Generated 2025-08-09 23:14 +0700
+// Generated 2025-08-12 16:24 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -29,17 +29,17 @@ let rec archimedes_principle (fluid_density: float) (volume: float) (gravity: fl
     let mutable gravity = gravity
     try
         if fluid_density <= 0.0 then
-            failwith ("Impossible fluid density")
+            ignore (failwith ("Impossible fluid density"))
         if volume <= 0.0 then
-            failwith ("Impossible object volume")
+            ignore (failwith ("Impossible object volume"))
         if gravity < 0.0 then
-            failwith ("Impossible gravity")
+            ignore (failwith ("Impossible gravity"))
         __ret <- (fluid_density * volume) * gravity
         raise Return
         __ret
     with
         | Return -> __ret
-let rec archimedes_principle_default (fluid_density: float) (volume: float) =
+and archimedes_principle_default (fluid_density: float) (volume: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable fluid_density = fluid_density
     let mutable volume = volume

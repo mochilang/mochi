@@ -1,4 +1,4 @@
-// Generated 2025-08-09 23:14 +0700
+// Generated 2025-08-12 16:24 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -41,7 +41,7 @@ let rec pow10 (n: int) =
         __ret
     with
         | Return -> __ret
-let rec sqrt_newton (n: float) =
+and sqrt_newton (n: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable n = n
     try
@@ -58,7 +58,7 @@ let rec sqrt_newton (n: float) =
         __ret
     with
         | Return -> __ret
-let rec round3 (x: float) =
+and round3 (x: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable x = x
     try
@@ -71,13 +71,13 @@ let rec round3 (x: float) =
         __ret
     with
         | Return -> __ret
-let rec escape_velocity (mass: float) (radius: float) =
+and escape_velocity (mass: float) (radius: float) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable mass = mass
     let mutable radius = radius
     try
         if radius = 0.0 then
-            failwith ("Radius cannot be zero.")
+            ignore (failwith ("Radius cannot be zero."))
         let G: float = 6.6743 * (pow10 (-11))
         let velocity: float = sqrt_newton (((2.0 * G) * mass) / radius)
         __ret <- round3 (velocity)
@@ -85,9 +85,9 @@ let rec escape_velocity (mass: float) (radius: float) =
         __ret
     with
         | Return -> __ret
-printfn "%g" (escape_velocity (5.972 * (pow10 (24))) (6.371 * (pow10 (6))))
-printfn "%g" (escape_velocity (7.348 * (pow10 (22))) (1.737 * (pow10 (6))))
-printfn "%g" (escape_velocity (1.898 * (pow10 (27))) (6.9911 * (pow10 (7))))
+ignore (printfn "%g" (escape_velocity (5.972 * (pow10 (24))) (6.371 * (pow10 (6)))))
+ignore (printfn "%g" (escape_velocity (7.348 * (pow10 (22))) (1.737 * (pow10 (6)))))
+ignore (printfn "%g" (escape_velocity (1.898 * (pow10 (27))) (6.9911 * (pow10 (7)))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

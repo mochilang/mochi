@@ -1,4 +1,4 @@
-// Generated 2025-08-09 23:14 +0700
+// Generated 2025-08-12 16:24 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -62,18 +62,18 @@ let rec coulombs_law (q1: float) (q2: float) (radius: float) =
     let mutable radius = radius
     try
         if radius <= 0.0 then
-            failwith ("radius must be positive")
+            ignore (failwith ("radius must be positive"))
         let force: float = ((K * q1) * q2) / (radius * radius)
         __ret <- force
         raise Return
         __ret
     with
         | Return -> __ret
-printfn "%s" (format2 (coulombs_law (15.5) (20.0) (15.0)))
-printfn "%s" (format2 (coulombs_law (1.0) (15.0) (5.0)))
-printfn "%s" (format2 (coulombs_law (20.0) (-50.0) (15.0)))
-printfn "%s" (format2 (coulombs_law (-5.0) (-8.0) (10.0)))
-printfn "%s" (format2 (coulombs_law (50.0) (100.0) (50.0)))
+ignore (printfn "%s" (format2 (coulombs_law (15.5) (20.0) (15.0))))
+ignore (printfn "%s" (format2 (coulombs_law (1.0) (15.0) (5.0))))
+ignore (printfn "%s" (format2 (coulombs_law (20.0) (-50.0) (15.0))))
+ignore (printfn "%s" (format2 (coulombs_law (-5.0) (-8.0) (10.0))))
+ignore (printfn "%s" (format2 (coulombs_law (50.0) (100.0) (50.0))))
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

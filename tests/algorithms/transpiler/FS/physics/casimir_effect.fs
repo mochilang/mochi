@@ -1,4 +1,4 @@
-// Generated 2025-08-09 23:14 +0700
+// Generated 2025-08-12 16:24 +0700
 
 exception Return
 let mutable _nowSeed:int64 = 0L
@@ -68,13 +68,13 @@ and casimir_force (force: float) (area: float) (distance: float) =
         if distance = 0.0 then
             zero_count <- zero_count + 1
         if zero_count <> 1 then
-            failwith ("One and only one argument must be 0")
+            ignore (failwith ("One and only one argument must be 0"))
         if force < 0.0 then
-            failwith ("Magnitude of force can not be negative")
+            ignore (failwith ("Magnitude of force can not be negative"))
         if distance < 0.0 then
-            failwith ("Distance can not be negative")
+            ignore (failwith ("Distance can not be negative"))
         if area < 0.0 then
-            failwith ("Area can not be negative")
+            ignore (failwith ("Area can not be negative"))
         if force = 0.0 then
             let num: float = (((REDUCED_PLANCK_CONSTANT * SPEED_OF_LIGHT) * PI) * PI) * area
             let den: float = (((240.0 * distance) * distance) * distance) * distance
@@ -101,9 +101,9 @@ and main () =
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        printfn "%s" (_str (casimir_force (0.0) (4.0) (0.03)))
-        printfn "%s" (_str (casimir_force (0.0000000002635) (0.0023) (0.0)))
-        printfn "%s" (_str (casimir_force (0.000000000000000002737) (0.0) (0.0023746)))
+        ignore (printfn "%s" (_str (casimir_force (0.0) (4.0) (0.03))))
+        ignore (printfn "%s" (_str (casimir_force (0.0000000002635) (0.0023) (0.0))))
+        ignore (printfn "%s" (_str (casimir_force (0.000000000000000002737) (0.0) (0.0023746))))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
