@@ -188,6 +188,7 @@ const helperPanic = `
 local function _panic(msg)
   -- ensure panic messages are newline-terminated for readability
   io.stderr:write(tostring(msg) .. '\n')
+  io.stderr:flush()
   os.exit(1)
 end
 `

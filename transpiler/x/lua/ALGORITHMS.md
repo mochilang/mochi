@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-12 10:11 GMT+7
+Last updated: 2025-08-12 12:36 GMT+7
 
 ## Algorithms Golden Test Checklist (1019/1077)
 | Index | Name | Status | Duration | Memory |
@@ -786,7 +786,7 @@ Last updated: 2025-08-12 10:11 GMT+7
 | 777 | physics/lorentz_transformation_four_vector | ✓ | 185µs | 1.2 KB |
 | 778 | physics/malus_law | error |  |  |
 | 779 | physics/mass_energy_equivalence | ✓ | 138µs | 840 B |
-| 780 | physics/mirror_formulae | ✓ | 85µs | 1.3 KB |
+| 780 | physics/mirror_formulae | ✓ | 67µs | 1.3 KB |
 | 781 | physics/n_body_simulation | ✓ | 265µs | 2.4 KB |
 | 782 | physics/newtons_law_of_gravitation | ✓ | 76µs | 1.2 KB |
 | 783 | physics/newtons_second_law_of_motion | ✓ | 67µs | 736 B |
