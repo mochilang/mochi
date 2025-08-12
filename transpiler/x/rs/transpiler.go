@@ -1979,11 +1979,24 @@ type IntCastExpr struct{ Expr Expr }
 func (i *IntCastExpr) emit(w io.Writer) {
 	if inferType(i.Expr) == "i64" {
 		i.Expr.emit(w)
-	} else {
-		io.WriteString(w, "(")
-		i.Expr.emit(w)
-		io.WriteString(w, " as i64)")
+		return
 	}
+	if idx, ok := i.Expr.(*IndexExpr); ok {
+		if nr, ok2 := idx.Target.(*NameRef); ok2 {
+			ttype := inferType(idx.Target)
+			if ttype == "String" || stringVars[nr.Name] {
+				io.WriteString(w, "((")
+				idx.Target.emit(w)
+				io.WriteString(w, ".as_bytes()[")
+				idx.Index.emit(w)
+				io.WriteString(w, " as usize] - b'0') as i64)")
+				return
+			}
+		}
+	}
+	io.WriteString(w, "(")
+	i.Expr.emit(w)
+	io.WriteString(w, " as i64)")
 }
 
 type AtoiExpr struct{ Expr Expr }
@@ -3516,6 +3529,7 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			}
 			if typ == "String" {
 				e = &StringCastExpr{Expr: e}
+				stringVars[stmt.Let.Name] = true
 			} else if typ == "Vec<String>" {
 				if ll, ok := e.(*ListLit); ok {
 					for i, el := range ll.Elems {
@@ -4644,7 +4658,8 @@ func applyIndexOps(base Expr, ops []*parser.IndexOp) (Expr, error) {
 			case *StringLit:
 				base = &StringIndexExpr{Str: b, Index: idx}
 			case *NameRef:
-				if inferType(b) == "String" {
+				bt := inferType(b)
+				if bt == "String" || stringVars[b.Name] || varTypes[b.Name] == "String" {
 					base = &StringIndexExpr{Str: b, Index: idx}
 				} else {
 					base = &IndexExpr{Target: base, Index: idx}
