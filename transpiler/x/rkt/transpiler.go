@@ -79,6 +79,8 @@ func sanitizeName(name string) string {
 		return "quotient_"
 	case "panic":
 		return "panic_"
+	case "append":
+		return "append_"
 	default:
 		return name
 	}
