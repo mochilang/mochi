@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Racket code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Racket`.
-Last updated: 2025-08-12 09:14 UTC
+Last updated: 2025-08-12 09:21 UTC
 
 ## Algorithms Golden Test Checklist (863/1077)
 | Index | Name | Status | Duration | Memory |
@@ -727,7 +727,7 @@ Last updated: 2025-08-12 09:14 UTC
 | 718 | matrix/validate_sudoku_board | ✓ | 59µs | 24.8 KB |
 | 719 | networking_flow/ford_fulkerson |   |  |  |
 | 720 | networking_flow/minimum_cut |   |  |  |
-| 721 | neural_network/activation_functions/binary_step | ✓ | 25µs | 5.2 KB |
+| 721 | neural_network/activation_functions/binary_step | ✓ | 21µs | 5.2 KB |
 | 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 90µs | 126.2 KB |
 | 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 470µs | 77.9 KB |
 | 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 49µs | 5.8 KB |
