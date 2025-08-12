@@ -262,15 +262,15 @@ type StructDefStmt struct {
 }
 
 func (s *StructDefStmt) emit(e *emitter) {
-        io.WriteString(e.w, "Object.send(:remove_const, :")
-        io.WriteString(e.w, s.Name)
-        io.WriteString(e.w, ") if Object.const_defined?(:")
-        io.WriteString(e.w, s.Name)
-        io.WriteString(e.w, ")\n")
-        e.writeIndent()
-        io.WriteString(e.w, s.Name)
-        if len(s.Fields) == 0 {
-                io.WriteString(e.w, " = Class.new do")
+	io.WriteString(e.w, "Object.send(:remove_const, :")
+	io.WriteString(e.w, s.Name)
+	io.WriteString(e.w, ") if Object.const_defined?(:")
+	io.WriteString(e.w, s.Name)
+	io.WriteString(e.w, ")\n")
+	e.writeIndent()
+	io.WriteString(e.w, s.Name)
+	if len(s.Fields) == 0 {
+		io.WriteString(e.w, " = Class.new do")
 		e.indent++
 		e.nl()
 		e.writeIndent()
@@ -1579,7 +1579,7 @@ func (b *BenchStmt) emit(e *emitter) {
 	io.WriteString(e.w, "start_mem = _mem()")
 	e.nl()
 	e.writeIndent()
-	io.WriteString(e.w, "start = _now()")
+	io.WriteString(e.w, "start = Process.clock_gettime(Process::CLOCK_MONOTONIC, :nanosecond)")
 	e.nl()
 	e.indent++
 	for _, st := range b.Body {
@@ -1589,7 +1589,7 @@ func (b *BenchStmt) emit(e *emitter) {
 	}
 	e.indent--
 	e.writeIndent()
-	io.WriteString(e.w, "end_time = _now()")
+	io.WriteString(e.w, "end_time = Process.clock_gettime(Process::CLOCK_MONOTONIC, :nanosecond)")
 	e.nl()
 	e.writeIndent()
 	io.WriteString(e.w, "end_mem = _mem()")
@@ -3323,6 +3323,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 	case st.Var != nil:
 		var v Expr
 		var err error
+		clone := false
 		if st.Var.Value != nil {
 			v, err = convertExpr(st.Var.Value)
 			if err != nil {
@@ -3331,11 +3332,19 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			if currentEnv != nil {
 				t := types.ExprType(st.Var.Value, currentEnv)
 				currentEnv.SetVar(st.Var.Name, t, true)
+				switch t.(type) {
+				case *types.MapType, *types.ListType:
+					clone = true
+				}
 			}
 		} else if st.Var.Type != nil && currentEnv != nil {
 			typ := types.ResolveTypeRef(st.Var.Type, currentEnv)
 			v = zeroValueExpr(typ)
 			currentEnv.SetVar(st.Var.Name, typ, true)
+			switch typ.(type) {
+			case *types.MapType, *types.ListType:
+				clone = true
+			}
 		} else {
 			v = &Ident{Name: "nil"}
 			if currentEnv != nil {
@@ -3348,11 +3357,19 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		addVar(st.Var.Name)
-		return &VarStmt{Name: st.Var.Name, Value: v}, nil
+		return &VarStmt{Name: st.Var.Name, Value: v, Clone: clone}, nil
 	case st.Assign != nil:
 		v, err := convertExpr(st.Assign.Value)
 		if err != nil {
 			return nil, err
+		}
+		clone := false
+		if currentEnv != nil {
+			t := types.ExprType(st.Assign.Value, currentEnv)
+			switch t.(type) {
+			case *types.MapType, *types.ListType:
+				clone = true
+			}
 		}
 		if len(st.Assign.Index) >= 1 && len(st.Assign.Field) == 0 {
 			target := Expr(&Ident{Name: identName(st.Assign.Name)})
@@ -3403,7 +3420,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			return &IndexAssignStmt{Target: target, Index: idx, Value: v}, nil
 		}
 		if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
-			return &AssignStmt{Name: identName(st.Assign.Name), Value: v}, nil
+			return &AssignStmt{Name: identName(st.Assign.Name), Value: v, Clone: clone}, nil
 		}
 		return nil, fmt.Errorf("unsupported assignment")
 	case st.If != nil:
