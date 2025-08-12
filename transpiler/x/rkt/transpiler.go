@@ -60,6 +60,10 @@ func currentContinue() string {
 // SetBenchMain configures benchmark wrapping for the main program.
 func SetBenchMain(v bool) { benchMain = v }
 
+// sanitizeName rewrites identifiers that would otherwise clash with Racket's
+// core functions. This keeps user defined names from shadowing important
+// bindings like `list` or `length` in the generated code.
+// Additional cases can be added here as new conflicts arise.
 func sanitizeName(name string) string {
 	switch name {
 	case "list":
