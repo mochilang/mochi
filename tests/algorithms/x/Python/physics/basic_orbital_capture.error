@@ -1,11 +1,16 @@
 run: exit status 1
+{
+  "duration_us": 10,
+  "memory_bytes": 13361152,
+  "name": "main"
+}
 Traceback (most recent call last):
-  File "/workspace/mochi/tests/algorithms/x/Python/physics/basic_orbital_capture.py", line 70, in <module>
+  File "/workspace/mochi/tests/algorithms/x/Python/physics/basic_orbital_capture.py", line 111, in <module>
     main()
-  File "/workspace/mochi/tests/algorithms/x/Python/physics/basic_orbital_capture.py", line 66, in main
+  File "/workspace/mochi/tests/algorithms/x/Python/physics/basic_orbital_capture.py", line 100, in main
     run_tests()
-  File "/workspace/mochi/tests/algorithms/x/Python/physics/basic_orbital_capture.py", line 64, in run_tests
-    panic("capture_area failed")
-  File "/workspace/mochi/tests/algorithms/x/Python/physics/basic_orbital_capture.py", line 11, in panic
+  File "/workspace/mochi/tests/algorithms/x/Python/physics/basic_orbital_capture.py", line 89, in run_tests
+    panic("capture_radii failed")
+  File "/workspace/mochi/tests/algorithms/x/Python/physics/basic_orbital_capture.py", line 19, in panic
     raise RuntimeError(msg)
-RuntimeError: capture_area failed
+RuntimeError: capture_radii failed

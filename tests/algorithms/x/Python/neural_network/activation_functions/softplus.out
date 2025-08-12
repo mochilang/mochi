@@ -1,14 +1,2 @@
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/algorithms/x/Python/neural_network/activation_functions/softplus.py", line 56, in <module>
-    main()
-  File "/workspace/mochi/tests/algorithms/x/Python/neural_network/activation_functions/softplus.py", line 53, in main
-    r2 = softplus(v2)
-         ^^^^^^^^^^^^
-  File "/workspace/mochi/tests/algorithms/x/Python/neural_network/activation_functions/softplus.py", line 45, in softplus
-    value = ln(1.0 + exp(x))
-            ^^^^^^^^^^^^^^^^
-  File "/workspace/mochi/tests/algorithms/x/Python/neural_network/activation_functions/softplus.py", line 19, in ln
-    panic("ln domain error")
-  File "/workspace/mochi/tests/algorithms/x/Python/neural_network/activation_functions/softplus.py", line 11, in panic
-    raise RuntimeError(msg)
-RuntimeError: ln domain error
+[2.3955454645979626, 1.0374879504858856, 0.1269280110429726, 0.022124216454879247]
+[0.000101034297700481, 0.554355244468527, 0.9432489459974548, 0.010407710341623785]

@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/physics/malus_law.py", line 48, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/physics/malus_law.py", line 47, in main
+    print(_str(malus_law(100.0, 60.0)))
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/physics/malus_law.py", line 44, in malus_law
+    c = cos(theta)
+        ^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/physics/malus_law.py", line 27, in cos
+    y = _mod(x + PI, TWO_PI) - PI
+        ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/physics/malus_law.py", line 25, in _mod
+    return x - floor(x // m) * m
+               ^^^^^
+NameError: name 'floor' is not defined. Did you mean: 'float'?
