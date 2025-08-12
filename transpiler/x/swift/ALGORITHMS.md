@@ -3,7 +3,7 @@
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
 Completed programs: 830/1077
-Last updated: 2025-08-12 13:55 +0700
+Last updated: 2025-08-12 15:27 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -727,7 +727,7 @@ Last updated: 2025-08-12 13:55 +0700
 | 718 | matrix/validate_sudoku_board | ✓ | 860µs | 3.1 MB |
 | 719 | networking_flow/ford_fulkerson |   |  |  |
 | 720 | networking_flow/minimum_cut | ✓ | 1.13ms | 3.9 MB |
-| 721 | neural_network/activation_functions/binary_step | ✓ | 495µs | 3.1 MB |
+| 721 | neural_network/activation_functions/binary_step | ✓ | 421µs | 3.2 MB |
 | 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 1.07ms | 3.7 MB |
 | 723 | neural_network/activation_functions/gaussian_error_linear_unit |   |  |  |
 | 724 | neural_network/activation_functions/leaky_rectified_linear_unit |   |  |  |
