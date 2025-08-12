@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-12 04:52 UTC
+Last updated: 2025-08-12 06:49 UTC
 
 ## Algorithms Golden Test Checklist (1053/1077)
 | Index | Name | Status | Duration | Memory |
@@ -696,7 +696,7 @@ Last updated: 2025-08-12 04:52 UTC
 | 687 | maths/test_factorial | ✓ | 500µs | 16.7 KB |
 | 688 | maths/test_prime_check | ✓ | 1.005ms | 58.8 KB |
 | 689 | maths/three_sum | ✓ | 771µs | 533.0 KB |
-| 690 | maths/trapezoidal_rule | ✓ | 526µs | 17.2 KB |
+| 690 | maths/trapezoidal_rule | ✓ | 571.223ms | 19.2 KB |
 | 691 | maths/triplet_sum | ✓ | 1.272ms | 536.6 KB |
 | 692 | maths/twin_prime | ✓ | 462µs | 15.5 KB |
 | 693 | maths/two_pointer | ✓ |  |  |
