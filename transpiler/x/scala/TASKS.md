@@ -1,3 +1,215 @@
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-12 11:18 +0700)
+- ts transpiler: respect custom ln and exp
+- Regenerated golden files - 93/105 vm valid programs passing
+
 ## Progress (2025-08-12 08:38 +0700)
 - chore(lua): update algorithms progress
 - Regenerated golden files - 93/105 vm valid programs passing

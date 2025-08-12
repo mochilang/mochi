@@ -108,6 +108,11 @@ var scalaKeywords = map[string]bool{
 	"implicit": true,
 	"lazy":     true,
 	"override": true,
+	// Scala 3 keywords
+	"inline":    true,
+	"opaque":    true,
+	"open":      true,
+	"extension": true,
 	// Future Scala keywords
 	"enum":  true,
 	"given": true,
@@ -2026,13 +2031,13 @@ func Emit(p *Program) []byte {
 		buf.WriteString("  private var _nowSeeded: Boolean = false\n")
 		buf.WriteString("  private def _now(): Int = {\n")
 		buf.WriteString("    if (!_nowSeeded) {\n")
-                buf.WriteString("      sys.env.get(\"MOCHI_NOW_SEED\").foreach { s =>\n")
-                buf.WriteString("        try { _nowSeed = s.toInt; _nowSeeded = true } catch { case _ : NumberFormatException => () }\n")
-                buf.WriteString("      }\n")
-                if benchMain {
-                        buf.WriteString("      if (!_nowSeeded) { _nowSeed = 0L; _nowSeeded = true }\n")
-                }
-                buf.WriteString("    }\n")
+		buf.WriteString("      sys.env.get(\"MOCHI_NOW_SEED\").foreach { s =>\n")
+		buf.WriteString("        try { _nowSeed = s.toInt; _nowSeeded = true } catch { case _ : NumberFormatException => () }\n")
+		buf.WriteString("      }\n")
+		if benchMain {
+			buf.WriteString("      if (!_nowSeeded) { _nowSeed = 0L; _nowSeeded = true }\n")
+		}
+		buf.WriteString("    }\n")
 		buf.WriteString("    if (_nowSeeded) {\n")
 		buf.WriteString("      _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647\n")
 		buf.WriteString("      _nowSeed.toInt\n")
