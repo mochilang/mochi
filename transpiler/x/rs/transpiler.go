@@ -1159,17 +1159,19 @@ func (i *IndexExpr) emit(w io.Writer) {
 			closeBlock := false
 			if lockedMap != "" && lockedMap == t.Name {
 				io.WriteString(w, "_map")
-			} else if globalVars[t.Name] {
+			} else {
 				name := t.Name
 				if newName, ok := globalRenames[t.Name]; ok && !isLocal(t.Name) {
 					name = newName
 				}
-				io.WriteString(w, "{ let _map = ")
-				io.WriteString(w, name)
-				io.WriteString(w, ".lock().unwrap(); _map")
-				closeBlock = true
-			} else {
-				t.emit(w)
+				if globalVars[name] {
+					io.WriteString(w, "{ let _map = ")
+					io.WriteString(w, name)
+					io.WriteString(w, ".lock().unwrap(); _map")
+					closeBlock = true
+				} else {
+					t.emit(w)
+				}
 			}
 			idxT := inferType(i.Index)
 			if idxT == "" && strings.HasPrefix(ttype, "HashMap<String") {
@@ -1464,7 +1466,7 @@ func (m *MethodCallExpr) emit(w io.Writer) {
 		if newName, ok := globalRenames[nr.Name]; ok && !isLocal(nr.Name) {
 			name = newName
 		}
-		if globalVars[name] && strings.HasPrefix(varTypes[name], "HashMap") {
+		if globalVars[name] && (strings.HasPrefix(varTypes[name], "HashMap") || strings.HasPrefix(varTypes[name], "LazyLock<Mutex<HashMap")) {
 			io.WriteString(w, name)
 			io.WriteString(w, ".lock().unwrap().")
 			io.WriteString(w, m.Name)
@@ -2077,6 +2079,16 @@ func (v *VarDecl) emit(w io.Writer) {
 		if typ == "" {
 			typ = "i64"
 		}
+		if v.Expr != nil && !v.Mutable && !strings.HasPrefix(typ, "HashMap") {
+			io.WriteString(w, "static ")
+			io.WriteString(w, rustIdent(v.Name))
+			io.WriteString(w, ": ")
+			io.WriteString(w, typ)
+			io.WriteString(w, " = ")
+			v.Expr.emit(w)
+			io.WriteString(w, ";")
+			return
+		}
 		if strings.HasPrefix(typ, "HashMap") {
 			useLazy = true
 			useRefCell = true
@@ -2093,7 +2105,11 @@ func (v *VarDecl) emit(w io.Writer) {
 			io.WriteString(w, "));")
 			return
 		}
-		io.WriteString(w, "static mut ")
+		if v.Mutable {
+			io.WriteString(w, "static mut ")
+		} else {
+			io.WriteString(w, "static ")
+		}
 		io.WriteString(w, rustIdent(v.Name))
 		io.WriteString(w, ": ")
 		io.WriteString(w, typ)
@@ -2230,57 +2246,59 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 			}
 		}
 		if strings.HasPrefix(inferType(idx.Target), "HashMap") {
-			if nr, ok := idx.Target.(*NameRef); ok && globalVars[nr.Name] {
+			if nr, ok := idx.Target.(*NameRef); ok {
 				name := nr.Name
 				if newName, ok := globalRenames[nr.Name]; ok && !isLocal(nr.Name) {
 					name = newName
 				}
-				io.WriteString(w, "{ let mut _map = ")
-				io.WriteString(w, name)
-				io.WriteString(w, ".lock().unwrap(); let _val = ")
-				lockedMap = nr.Name
-				indexLHS = old
-				if strings.Contains(inferType(idx.Target), ", String>") {
-					switch v := s.Value.(type) {
-					case *StringLit:
-						io.WriteString(w, "String::from(")
-						v.emit(w)
-						io.WriteString(w, ")")
-					case *NameRef:
-						if inferType(s.Value) == "&str" {
+				if globalVars[name] {
+					io.WriteString(w, "{ let mut _map = ")
+					io.WriteString(w, name)
+					io.WriteString(w, ".lock().unwrap(); let _val = ")
+					lockedMap = nr.Name
+					indexLHS = old
+					if strings.Contains(inferType(idx.Target), ", String>") {
+						switch v := s.Value.(type) {
+						case *StringLit:
+							io.WriteString(w, "String::from(")
 							v.emit(w)
-							io.WriteString(w, ".to_string()")
-						} else {
+							io.WriteString(w, ")")
+						case *NameRef:
+							if inferType(s.Value) == "&str" {
+								v.emit(w)
+								io.WriteString(w, ".to_string()")
+							} else {
+								s.Value.emit(w)
+							}
+						default:
 							s.Value.emit(w)
 						}
-					default:
+					} else {
 						s.Value.emit(w)
 					}
-				} else {
-					s.Value.emit(w)
-				}
-				lockedMap = ""
-				io.WriteString(w, "; _map.insert(")
-				switch inferType(idx.Index) {
-				case "String":
-					if _, ok := idx.Index.(*StringLit); ok {
-						io.WriteString(w, "String::from(")
+					lockedMap = ""
+					io.WriteString(w, "; _map.insert(")
+					switch inferType(idx.Index) {
+					case "String":
+						if _, ok := idx.Index.(*StringLit); ok {
+							io.WriteString(w, "String::from(")
+							idx.Index.emit(w)
+							io.WriteString(w, ")")
+						} else {
+							idx.Index.emit(w)
+							io.WriteString(w, ".clone()")
+						}
+					case "&str":
 						idx.Index.emit(w)
-						io.WriteString(w, ")")
-					} else {
+						io.WriteString(w, ".to_string()")
+					default:
 						idx.Index.emit(w)
 						io.WriteString(w, ".clone()")
 					}
-				case "&str":
-					idx.Index.emit(w)
-					io.WriteString(w, ".to_string()")
-				default:
-					idx.Index.emit(w)
-					io.WriteString(w, ".clone()")
+					io.WriteString(w, ", _val); }")
+					indexLHS = old
+					return
 				}
-				io.WriteString(w, ", _val); }")
-				indexLHS = old
-				return
 			}
 			// local hash map
 			idx.Target.emit(w)
@@ -3389,9 +3407,12 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 				e = &StringCastExpr{Expr: e}
 			}
 		}
-		mut := true
+		mut := false
 		if typ == "" {
 			typ = inferType(e)
+		}
+		if _, ok := e.(*FunLit); ok {
+			mut = true
 		}
 		if stmt.Let.Name == "_" {
 			mut = false
@@ -4243,6 +4264,11 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 				sigType = "&mut " + typ
 			} else if mut {
 				sigType = typ
+			} else if nested {
+				// Nested functions are often used as callbacks; keep
+				// struct parameters by value to match `FnMut(T)`
+				// expectations.
+				sigType = typ
 			} else {
 				sigType = "&" + typ
 			}
@@ -4424,7 +4450,9 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 		if flit == nil {
 			flit = &FunLit{Params: params, Return: ret, Body: body}
 		}
-		vd := &VarDecl{Name: name, Expr: flit}
+		// Nested functions are stored as variables. Make them mutable so
+		// they can be borrowed mutably for `FnMut` callbacks.
+		vd := &VarDecl{Name: name, Expr: flit, Mutable: true}
 		if len(localVarStack) > 0 {
 			localVarStack[len(localVarStack)-1][name] = true
 		}
@@ -7342,7 +7370,7 @@ func Emit(prog *Program) []byte {
 		indent++
 	}
 	for _, g := range prog.Globals {
-		if g.Expr != nil {
+		if g.Expr != nil && g.Mutable {
 			typ := g.Type
 			if typ == "" {
 				if orig, ok := globalRenameBack[g.Name]; ok {

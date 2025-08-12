@@ -1,0 +1,5 @@
+run: exit status 101
+
+thread 'main' panicked at /workspace/mochi/tests/algorithms/x/Rust/maths/geometric_mean.rs:114:9:
+test4 failed
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
