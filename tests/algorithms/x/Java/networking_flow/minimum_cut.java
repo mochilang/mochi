@@ -1,134 +1,94 @@
 public class Main {
-    static int[][] test_graph;
-    static int[][] result;
+    static long[][] test_graph;
+    static long[][] result;
 
-    static boolean bfs(int[][] graph, int s, int t, int[] parent) {
+    static boolean bfs(long[][] graph, long s, long t, long[] parent) {
         boolean[] visited = ((boolean[])(new boolean[]{}));
-        int i = 0;
-        while (i < graph.length) {
+        long i_1 = 0L;
+        while ((long)(i_1) < (long)(graph.length)) {
             visited = ((boolean[])(appendBool(visited, false)));
-            i = i + 1;
+            i_1 = (long)((long)(i_1) + (long)(1));
         }
-        int[] queue = ((int[])(new int[]{s}));
-        int head = 0;
-visited[s] = true;
-        while (head < queue.length) {
-            int u = queue[head];
-            head = head + 1;
-            int ind = 0;
-            while (ind < graph[u].length) {
-                if (visited[ind] == false && graph[u][ind] > 0) {
-                    queue = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(queue), java.util.stream.IntStream.of(ind)).toArray()));
-visited[ind] = true;
-parent[ind] = u;
+        long[] queue_1 = ((long[])(new long[]{s}));
+        long head_1 = 0L;
+visited[(int)((long)(s))] = true;
+        while ((long)(head_1) < (long)(queue_1.length)) {
+            long u_1 = queue_1[(int)((long)(head_1))];
+            head_1 = (long)((long)(head_1) + (long)(1));
+            long ind_1 = 0L;
+            while ((long)(ind_1) < (long)(graph[(int)((long)(u_1))].length)) {
+                if ((visited[(int)((long)(ind_1))] == false) && graph[(int)((long)(u_1))][(int)((long)(ind_1))] > (long)(0)) {
+                    queue_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(queue_1), java.util.stream.LongStream.of((long)(ind_1))).toArray()));
+visited[(int)((long)(ind_1))] = true;
+parent[(int)((long)(ind_1))] = u_1;
                 }
-                ind = ind + 1;
+                ind_1 = (long)((long)(ind_1) + (long)(1));
             }
         }
-        return visited[t];
+        return visited[(int)((long)(t))];
     }
 
-    static int[][] mincut(int[][] graph, int source, int sink) {
-        int[][] g = ((int[][])(graph));
-        int[] parent = ((int[])(new int[]{}));
-        int i_1 = 0;
-        while (i_1 < g.length) {
-            parent = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(parent), java.util.stream.IntStream.of(-1)).toArray()));
-            i_1 = i_1 + 1;
+    static long[][] mincut(long[][] graph, long source, long sink) {
+        long[][] g = ((long[][])(graph));
+        long[] parent_1 = ((long[])(new long[]{}));
+        long i_3 = 0L;
+        while ((long)(i_3) < (long)(g.length)) {
+            parent_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(parent_1), java.util.stream.LongStream.of((long)(-1))).toArray()));
+            i_3 = (long)((long)(i_3) + (long)(1));
         }
-        int[][] temp = ((int[][])(new int[][]{}));
-        i_1 = 0;
-        while (i_1 < g.length) {
-            int[] row = ((int[])(new int[]{}));
-            int j = 0;
-            while (j < g[i_1].length) {
-                row = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row), java.util.stream.IntStream.of(g[i_1][j])).toArray()));
-                j = j + 1;
+        long[][] temp_1 = ((long[][])(new long[][]{}));
+        i_3 = (long)(0);
+        while ((long)(i_3) < (long)(g.length)) {
+            long[] row_1 = ((long[])(new long[]{}));
+            long j_1 = 0L;
+            while ((long)(j_1) < (long)(g[(int)((long)(i_3))].length)) {
+                row_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(row_1), java.util.stream.LongStream.of(g[(int)((long)(i_3))][(int)((long)(j_1))])).toArray()));
+                j_1 = (long)((long)(j_1) + (long)(1));
             }
-            temp = ((int[][])(appendObj(temp, row)));
-            i_1 = i_1 + 1;
+            temp_1 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(temp_1), java.util.stream.Stream.of(row_1)).toArray(long[][]::new)));
+            i_3 = (long)((long)(i_3) + (long)(1));
         }
-        while (bfs(((int[][])(g)), source, sink, ((int[])(parent)))) {
-            int path_flow = 1000000000;
-            int s = sink;
-            while (s != source) {
-                int p = parent[s];
-                int cap = g[p][s];
-                if (cap < path_flow) {
-                    path_flow = cap;
+        while (bfs(((long[][])(g)), source, sink, ((long[])(parent_1)))) {
+            long path_flow_1 = 1000000000L;
+            long s_1 = sink;
+            while ((long)(s_1) != source) {
+                long p_1 = parent_1[(int)((long)(s_1))];
+                long cap_1 = g[(int)((long)(p_1))][(int)((long)(s_1))];
+                if (cap_1 < (long)(path_flow_1)) {
+                    path_flow_1 = cap_1;
                 }
-                s = p;
+                s_1 = p_1;
             }
-            int v = sink;
-            while (v != source) {
-                int u_1 = parent[v];
-g[u_1][v] = g[u_1][v] - path_flow;
-g[v][u_1] = g[v][u_1] + path_flow;
-                v = u_1;
+            long v_1 = sink;
+            while ((long)(v_1) != source) {
+                long u_3 = parent_1[(int)((long)(v_1))];
+g[(int)((long)(u_3))][(int)((long)(v_1))] = (long)(g[(int)((long)(u_3))][(int)((long)(v_1))] - (long)(path_flow_1));
+g[(int)((long)(v_1))][(int)((long)(u_3))] = (long)(g[(int)((long)(v_1))][(int)((long)(u_3))] + (long)(path_flow_1));
+                v_1 = u_3;
             }
         }
-        int[][] res = ((int[][])(new int[][]{}));
-        i_1 = 0;
-        while (i_1 < g.length) {
-            int j_1 = 0;
-            while (j_1 < g[0].length) {
-                if (g[i_1][j_1] == 0 && temp[i_1][j_1] > 0) {
-                    res = ((int[][])(appendObj(res, new int[]{i_1, j_1})));
+        long[][] res_1 = ((long[][])(new long[][]{}));
+        i_3 = (long)(0);
+        while ((long)(i_3) < (long)(g.length)) {
+            long j_3 = 0L;
+            while ((long)(j_3) < (long)(g[(int)((long)(0))].length)) {
+                if (g[(int)((long)(i_3))][(int)((long)(j_3))] == (long)(0) && temp_1[(int)((long)(i_3))][(int)((long)(j_3))] > (long)(0)) {
+                    res_1 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_1), java.util.stream.Stream.of(new long[]{i_3, j_3})).toArray(long[][]::new)));
                 }
-                j_1 = j_1 + 1;
+                j_3 = (long)((long)(j_3) + (long)(1));
             }
-            i_1 = i_1 + 1;
+            i_3 = (long)((long)(i_3) + (long)(1));
         }
-        return res;
+        return res_1;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            test_graph = ((int[][])(new int[][]{new int[]{0, 16, 13, 0, 0, 0}, new int[]{0, 0, 10, 12, 0, 0}, new int[]{0, 4, 0, 0, 14, 0}, new int[]{0, 0, 9, 0, 0, 20}, new int[]{0, 0, 0, 7, 0, 4}, new int[]{0, 0, 0, 0, 0, 0}}));
-            result = ((int[][])(mincut(((int[][])(test_graph)), 0, 5)));
-            System.out.println(_p(result));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        test_graph = ((long[][])(new long[][]{new long[]{0, 16, 13, 0, 0, 0}, new long[]{0, 0, 10, 12, 0, 0}, new long[]{0, 4, 0, 0, 14, 0}, new long[]{0, 0, 9, 0, 0, 20}, new long[]{0, 0, 0, 7, 0, 4}, new long[]{0, 0, 0, 0, 0, 0}}));
+        result = ((long[][])(mincut(((long[][])(test_graph)), 0L, 5L)));
+        System.out.println(_p(result));
     }
 
     static boolean[] appendBool(boolean[] arr, boolean v) {
         boolean[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
-    }
-
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
         out[arr.length] = v;
         return out;
     }
@@ -145,6 +105,11 @@ g[v][u_1] = g[v][u_1] + path_flow;
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }
