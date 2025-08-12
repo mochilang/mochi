@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-12 13:34 GMT+7
+Last updated: 2025-08-12 13:47 GMT+7
 
 ## Algorithms Golden Test Checklist (1013/1077)
 | Index | Name | Status | Duration | Memory |
@@ -696,7 +696,7 @@ Last updated: 2025-08-12 13:34 GMT+7
 | 687 | maths/test_factorial | ✓ | 3.0ms | 16.35KB |
 | 688 | maths/test_prime_check | ✓ | 3.0ms | 13.25KB |
 | 689 | maths/three_sum | ✓ | 3.0ms | 18.80KB |
-| 690 | maths/trapezoidal_rule | ✓ | 2.0ms | 15.06KB |
+| 690 | maths/trapezoidal_rule | ✓ | 3.0ms | 13.88KB |
 | 691 | maths/triplet_sum | ✓ | 3.0ms | 20.84KB |
 | 692 | maths/twin_prime | ✓ | 2.0ms | 16.34KB |
 | 693 | maths/two_pointer | ✓ | 3.0ms | 18.21KB |
