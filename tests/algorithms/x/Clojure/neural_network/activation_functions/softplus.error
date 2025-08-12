@@ -1,0 +1,6 @@
+run: exit status 1
+Execution error at main/ln (softplus.clj:62).
+ln domain error
+
+Full report at:
+/tmp/clojure-4387406876354055939.edn

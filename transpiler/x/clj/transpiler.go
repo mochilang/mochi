@@ -988,7 +988,68 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 			pr.Forms = append(pr.Forms, n)
 			continue
 		}
-		if st.Let != nil || st.Var != nil {
+		if st.Let != nil {
+			// top-level let statements in the main body should
+			// evaluate in sequence inside -main instead of during
+			// namespace initialization. Define a dynamic var with
+			// nil and assign within the main body to preserve
+			// ordering.
+			if funDepth == 1 && currentFun == "main" {
+				var v Node
+				var err error
+				if st.Let.Value != nil {
+					v, err = transpileExpr(st.Let.Value)
+					if err != nil {
+						return nil, err
+					}
+					if stLit, ok := inferStructLiteral(st.Let.Value, transpileEnv); ok {
+						base := pascalCase(st.Let.Name)
+						name := types.UniqueStructName(base, transpileEnv, nil)
+						if currentProgram != nil {
+							addRecordDef(currentProgram, name, stLit.Order)
+						}
+						stLit.Name = name
+						if transpileEnv != nil {
+							transpileEnv.SetStruct(name, stLit)
+						}
+					}
+				} else {
+					if st.Let.Type != nil {
+						v = defaultValue(st.Let.Type)
+					} else {
+						v = Symbol("nil")
+					}
+				}
+				name := renameVar(st.Let.Name)
+				if stringVars != nil && isStringNode(v) {
+					stringVars[name] = true
+				}
+				if stringListVars != nil && isStringListNode(v) {
+					stringListVars[name] = true
+				}
+				if mapVars != nil && isMapNode(v) {
+					mapVars[name] = true
+				}
+				pr.Forms = append(pr.Forms, &List{Elems: []Node{Symbol("def"), Symbol("^:dynamic"), Symbol(name), Symbol("nil")}})
+				assign := &List{Elems: []Node{Symbol("set!"), Symbol(name), v}}
+				assign = &List{Elems: []Node{
+					Symbol("alter-var-root"),
+					&List{Elems: []Node{Symbol("var"), Symbol(name)}},
+					&List{Elems: []Node{Symbol("constantly"), v}},
+				}}
+				body = append(body, assign)
+				continue
+			}
+			n, err := transpileStmt(st)
+			if err != nil {
+				return nil, err
+			}
+			if n != nil {
+				pr.Forms = append(pr.Forms, n)
+			}
+			continue
+		}
+		if st.Var != nil {
 			n, err := transpileStmt(st)
 			if err != nil {
 				return nil, err
@@ -1259,6 +1320,9 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 				return &List{Elems: []Node{Symbol("alter-var-root"), &List{Elems: []Node{Symbol("var"), Symbol(name)}}, fnExpr}}, nil
 			}
 			return &List{Elems: []Node{Symbol("set!"), Symbol(name), assignVal}}, nil
+		}
+		if funDepth == 1 && currentFun == "main" {
+			return &List{Elems: []Node{Symbol("alter-var-root"), &List{Elems: []Node{Symbol("var"), Symbol(name)}}, &List{Elems: []Node{Symbol("constantly"), assignVal}}}}, nil
 		}
 		return &List{Elems: []Node{Symbol("def"), Symbol(name), assignVal}}, nil
 	case s.Fun != nil:
@@ -2634,6 +2698,15 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 				return nil, err
 			}
 			return &List{Elems: []Node{Symbol("clojure.string/upper-case"), arg}}, nil
+		case "to_float":
+			if len(c.Args) != 1 {
+				return nil, fmt.Errorf("to_float expects 1 arg")
+			}
+			arg, err := transpileExpr(c.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &List{Elems: []Node{Symbol("double"), arg}}, nil
 		case "int":
 			if len(c.Args) != 1 {
 				return nil, fmt.Errorf("int expects 1 arg")
@@ -2819,7 +2892,15 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 			for _, mp := range mps {
 				if mp.Index < len(c.Args) {
 					if argName, ok := identName(c.Args[mp.Index]); ok {
-						bodyElems = append(bodyElems, &List{Elems: []Node{Symbol("set!"), Symbol(argName), Symbol(mp.Name)}})
+						assign := &List{Elems: []Node{Symbol("set!"), Symbol(argName), Symbol(mp.Name)}}
+						if funDepth == 1 && currentFun == "main" {
+							assign = &List{Elems: []Node{
+								Symbol("alter-var-root"),
+								&List{Elems: []Node{Symbol("var"), Symbol(argName)}},
+								&List{Elems: []Node{Symbol("constantly"), Symbol(mp.Name)}},
+							}}
+						}
+						bodyElems = append(bodyElems, assign)
 					}
 				}
 			}

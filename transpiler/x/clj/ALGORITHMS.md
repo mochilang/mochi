@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-12 12:41 GMT+7
+Last updated: 2025-08-12 16:14 GMT+7
 
 ## Algorithms Golden Test Checklist (777/1077)
 | Index | Name | Status | Duration | Memory |
@@ -727,15 +727,15 @@ Last updated: 2025-08-12 12:41 GMT+7
 | 718 | matrix/validate_sudoku_board | ✓ |  |  |
 | 719 | networking_flow/ford_fulkerson | ✓ |  |  |
 | 720 | networking_flow/minimum_cut | ✓ | 77.986ms | 23.97MB |
-| 721 | neural_network/activation_functions/binary_step | ✓ | 56.957ms | 19.85MB |
-| 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 63.032ms | 20.59MB |
-| 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 65.63ms | 21.07MB |
-| 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 60.744ms | 20.13MB |
-| 725 | neural_network/activation_functions/mish | ✓ | 69.572ms | 22.70MB |
-| 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 59.032ms | 19.75MB |
-| 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 59.685ms | 20.34MB |
-| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ |  |  |
-| 729 | neural_network/activation_functions/softplus | ✓ |  |  |
+| 721 | neural_network/activation_functions/binary_step | ✓ | 56.266ms | 19.60MB |
+| 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 59.878ms | 20.31MB |
+| 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 57.246ms | 20.68MB |
+| 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 56.105ms | 19.66MB |
+| 725 | neural_network/activation_functions/mish | ✓ | 59.528ms | 22.64MB |
+| 726 | neural_network/activation_functions/rectified_linear_unit | ✓ | 53.13ms | 19.16MB |
+| 727 | neural_network/activation_functions/scaled_exponential_linear_unit | ✓ | 50.86ms | 20.04MB |
+| 728 | neural_network/activation_functions/soboleva_modified_hyperbolic_tangent | ✓ | 46.468ms | 20.92MB |
+| 729 | neural_network/activation_functions/softplus | error |  |  |
 | 730 | neural_network/activation_functions/squareplus | ✓ | 60.457ms | 20.71MB |
 | 731 | neural_network/activation_functions/swish | ✓ | 74.303ms | 22.98MB |
 | 732 | neural_network/back_propagation_neural_network | ✓ | 4.365411s | 32.62MB |
@@ -763,7 +763,7 @@ Last updated: 2025-08-12 12:41 GMT+7
 | 754 | other/nested_brackets | ✓ | 35.274ms | 20.27MB |
 | 755 | other/number_container_system | ✓ | 40.989ms | 22.72MB |
 | 756 | other/quine | ✓ | 29.938ms | 18.47MB |
-| 757 | other/scoring_algorithm | error |  |  |
+| 757 | other/scoring_algorithm | ✓ | 56.711ms | 22.94MB |
 | 758 | other/sdes |   |  |  |
 | 759 | other/tower_of_hanoi | ✓ | 49.908ms | 19.30MB |
 | 760 | other/word_search | ✓ | 63.711ms | 25.01MB |
