@@ -17,114 +17,86 @@ public class Main {
     static double result;
 
     static Item[] sort_by_ratio_desc(Item[] arr) {
-        int i = 1;
+        long i = 1L;
         while (i < arr.length) {
-            Item key = arr[i];
-            int j = i - 1;
-            while (j >= 0) {
-                Item current = arr[j];
-                if (current.value / current.weight < key.value / key.weight) {
-arr[j + 1] = current;
-                    j = j - 1;
+            Item key_1 = arr[(int)((long)(i))];
+            long j_1 = i - 1;
+            while (j_1 >= 0) {
+                Item current_1 = arr[(int)((long)(j_1))];
+                if (current_1.value / current_1.weight < key_1.value / key_1.weight) {
+arr[(int)((long)(j_1 + 1))] = current_1;
+                    j_1 = j_1 - 1;
                 } else {
                     break;
                 }
             }
-arr[j + 1] = key;
+arr[(int)((long)(j_1 + 1))] = key_1;
             i = i + 1;
         }
         return arr;
     }
 
-    static double sum_first(double[] arr, int k) {
+    static double sum_first(double[] arr, long k) {
         double s = 0.0;
-        int i_1 = 0;
-        while (i_1 < k && i_1 < arr.length) {
-            s = s + arr[i_1];
-            i_1 = i_1 + 1;
+        long i_2 = 0L;
+        while (i_2 < k && i_2 < arr.length) {
+            s = s + arr[(int)((long)(i_2))];
+            i_2 = i_2 + 1;
         }
         return s;
     }
 
-    static double frac_knapsack(double[] vl, double[] wt, double w, int n) {
+    static double frac_knapsack(double[] vl, double[] wt, double w, long n) {
         Item[] items = ((Item[])(new Item[]{}));
-        int i_2 = 0;
-        while (i_2 < vl.length && i_2 < wt.length) {
-            items = ((Item[])(java.util.stream.Stream.concat(java.util.Arrays.stream(items), java.util.stream.Stream.of(new Item(vl[i_2], wt[i_2]))).toArray(Item[]::new)));
-            i_2 = i_2 + 1;
+        long i_4 = 0L;
+        while (i_4 < vl.length && i_4 < wt.length) {
+            items = ((Item[])(java.util.stream.Stream.concat(java.util.Arrays.stream(items), java.util.stream.Stream.of(new Item(vl[(int)((long)(i_4))], wt[(int)((long)(i_4))]))).toArray(Item[]::new)));
+            i_4 = i_4 + 1;
         }
         items = ((Item[])(sort_by_ratio_desc(((Item[])(items)))));
-        double[] values = ((double[])(new double[]{}));
-        double[] weights = ((double[])(new double[]{}));
-        i_2 = 0;
-        while (i_2 < items.length) {
-            Item itm = items[i_2];
-            values = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(values), java.util.stream.DoubleStream.of(itm.value)).toArray()));
-            weights = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(weights), java.util.stream.DoubleStream.of(itm.weight)).toArray()));
-            i_2 = i_2 + 1;
+        double[] values_1 = ((double[])(new double[]{}));
+        double[] weights_1 = ((double[])(new double[]{}));
+        i_4 = 0;
+        while (i_4 < items.length) {
+            Item itm_1 = items[(int)((long)(i_4))];
+            values_1 = ((double[])(appendDouble(values_1, itm_1.value)));
+            weights_1 = ((double[])(appendDouble(weights_1, itm_1.weight)));
+            i_4 = i_4 + 1;
         }
-        double[] acc = ((double[])(new double[]{}));
-        double total = 0.0;
-        i_2 = 0;
-        while (i_2 < weights.length) {
-            total = total + weights[i_2];
-            acc = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(acc), java.util.stream.DoubleStream.of(total)).toArray()));
-            i_2 = i_2 + 1;
+        double[] acc_1 = ((double[])(new double[]{}));
+        double total_1 = 0.0;
+        i_4 = 0;
+        while (i_4 < weights_1.length) {
+            total_1 = total_1 + weights_1[(int)((long)(i_4))];
+            acc_1 = ((double[])(appendDouble(acc_1, total_1)));
+            i_4 = i_4 + 1;
         }
-        int k = 0;
-        while (k < acc.length && w >= acc[k]) {
-            k = k + 1;
+        long k_1 = 0L;
+        while (k_1 < acc_1.length && w >= acc_1[(int)((long)(k_1))]) {
+            k_1 = k_1 + 1;
         }
-        if (k == 0) {
+        if (k_1 == 0) {
             return 0.0;
         }
-        if (k >= values.length) {
-            return sum_first(((double[])(values)), values.length);
+        if (k_1 >= values_1.length) {
+            return sum_first(((double[])(values_1)), values_1.length);
         }
-        if (k != n) {
-            return sum_first(((double[])(values)), k) + (w - acc[k - 1]) * values[k] / weights[k];
+        if (k_1 != n) {
+            return sum_first(((double[])(values_1)), k_1) + (w - acc_1[(int)((long)(k_1 - 1))]) * values_1[(int)((long)(k_1))] / weights_1[(int)((long)(k_1))];
         }
-        return sum_first(((double[])(values)), k);
+        return sum_first(((double[])(values_1)), k_1);
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            vl = ((double[])(new double[]{60.0, 100.0, 120.0}));
-            wt = ((double[])(new double[]{10.0, 20.0, 30.0}));
-            result = frac_knapsack(((double[])(vl)), ((double[])(wt)), 50.0, 3);
-            System.out.println(_p(result));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
+        vl = ((double[])(new double[]{60.0, 100.0, 120.0}));
+        wt = ((double[])(new double[]{10.0, 20.0, 30.0}));
+        result = frac_knapsack(((double[])(vl)), ((double[])(wt)), 50.0, 3L);
+        System.out.println(_p(result));
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 
     static String _p(Object v) {
@@ -139,6 +111,11 @@ arr[j + 1] = key;
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

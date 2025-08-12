@@ -1,0 +1,25 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden469_enigma_machine741382251/001/Main.java:79: error: no suitable method found for of(long)
+        gear_one_1[0] = ((long[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(gear_one_1[0]), java.util.stream.IntStream.of(i_9)).toArray()));
+                                                                                                                                      ^
+    method IntStream.of(int) is not applicable
+      (argument mismatch; possible lossy conversion from long to int)
+    method IntStream.of(int...) is not applicable
+      (varargs mismatch; possible lossy conversion from long to int)
+/tmp/TestJavaTranspiler_Algorithms_Golden469_enigma_machine741382251/001/Main.java:84: error: no suitable method found for of(long)
+            gear_two_1[0] = ((long[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(gear_two_1[0]), java.util.stream.IntStream.of(i_9)).toArray()));
+                                                                                                                                          ^
+    method IntStream.of(int) is not applicable
+      (argument mismatch; possible lossy conversion from long to int)
+    method IntStream.of(int...) is not applicable
+      (varargs mismatch; possible lossy conversion from long to int)
+/tmp/TestJavaTranspiler_Algorithms_Golden469_enigma_machine741382251/001/Main.java:89: error: no suitable method found for of(long)
+                gear_three_1[0] = ((long[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(gear_three_1[0]), java.util.stream.IntStream.of(i_9)).toArray()));
+                                                                                                                                                  ^
+    method IntStream.of(int) is not applicable
+      (argument mismatch; possible lossy conversion from long to int)
+    method IntStream.of(int...) is not applicable
+      (varargs mismatch; possible lossy conversion from long to int)
+Note: /tmp/TestJavaTranspiler_Algorithms_Golden469_enigma_machine741382251/001/Main.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+3 errors

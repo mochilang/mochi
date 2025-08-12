@@ -1,8 +1,8 @@
 public class Main {
     static class Item {
-        int weight;
-        int value;
-        Item(int weight, int value) {
+        long weight;
+        long value;
+        Item(long weight, long value) {
             this.weight = weight;
             this.value = value;
         }
@@ -21,68 +21,34 @@ public class Main {
         return (((Number)(item.value)).doubleValue()) / (((Number)(item.weight)).doubleValue());
     }
 
-    static double fractional_cover(Item[] items, int capacity) {
+    static double fractional_cover(Item[] items, long capacity) {
         if (capacity < 0) {
             throw new RuntimeException(String.valueOf("Capacity cannot be negative"));
         }
-        double total = 0.0;
-        int remaining = capacity;
-        java.util.List<Item> sorted = new java.util.ArrayList<Item>() {{ java.util.ArrayList<Item> _tmp = new java.util.ArrayList<>(); for (var it : items) { _tmp.add(it); } java.util.ArrayList<Item> list = _tmp; java.util.ArrayList<Item> _res = new java.util.ArrayList<>(); list.sort((a, b) -> {Comparable _va = (Comparable)(ratio(a)); Comparable _vb = (Comparable)(ratio(b)); return _vb.compareTo(_va);}); int skip = 0; int take = -1; for (int i = 0; i < list.size(); i++) { if (i < skip) continue; if (take >= 0 && i >= skip + take) break; _res.add((Item)list.get(i)); } addAll(_res);}};
-        int idx = 0;
-        while (idx < String.valueOf(sorted).length() && remaining > 0) {
-            Item item = sorted[idx];
-            int take = item.weight < remaining ? item.weight : remaining;
-            total = total + (((Number)(take)).doubleValue()) * ratio(item);
-            remaining = remaining - take;
-            idx = idx + 1;
+        double total_1 = 0.0;
+        long remaining_1 = capacity;
+        java.util.List<Item> sorted_1 = new java.util.ArrayList<Item>() {{ java.util.ArrayList<Item> _tmp = new java.util.ArrayList<>(); for (var it : items) { _tmp.add(it); } java.util.ArrayList<Item> list = _tmp; java.util.ArrayList<Item> _res = new java.util.ArrayList<>(); list.sort((a, b) -> {Comparable _va = (Comparable)(ratio(a)); Comparable _vb = (Comparable)(ratio(b)); return _vb.compareTo(_va);}); int skip = 0; int take = -1; for (int i = 0; i < list.size(); i++) { if (i < skip) continue; if (take >= 0 && i >= skip + take) break; _res.add((Item)list.get(i)); } addAll(_res);}};
+        long idx_1 = 0L;
+        while (idx_1 < String.valueOf(sorted_1).length() && remaining_1 > 0) {
+            Item item_1 = sorted_1.get((int)((long)(idx_1)));
+            long take_1 = item_1.weight < remaining_1 ? item_1.weight : remaining_1;
+            total_1 = total_1 + (((Number)(take_1)).doubleValue()) * ratio(item_1);
+            remaining_1 = remaining_1 - take_1;
+            idx_1 = idx_1 + 1;
         }
-        return total;
+        return total_1;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            items1 = ((Item[])(new Item[]{new Item(10, 60), new Item(20, 100), new Item(30, 120)}));
-            System.out.println(_p(fractional_cover(((Item[])(items1)), 50)));
-            items2 = ((Item[])(new Item[]{new Item(20, 100), new Item(30, 120), new Item(10, 60)}));
-            System.out.println(_p(fractional_cover(((Item[])(items2)), 25)));
-            items3 = ((Item[])(new Item[]{}));
-            System.out.println(_p(fractional_cover(((Item[])(items3)), 50)));
-            items4 = ((Item[])(new Item[]{new Item(10, 60)}));
-            System.out.println(_p(fractional_cover(((Item[])(items4)), 5)));
-            System.out.println(_p(fractional_cover(((Item[])(items4)), 1)));
-            System.out.println(_p(fractional_cover(((Item[])(items4)), 0)));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        items1 = ((Item[])(new Item[]{new Item(10, 60), new Item(20, 100), new Item(30, 120)}));
+        System.out.println(_p(fractional_cover(((Item[])(items1)), 50L)));
+        items2 = ((Item[])(new Item[]{new Item(20, 100), new Item(30, 120), new Item(10, 60)}));
+        System.out.println(_p(fractional_cover(((Item[])(items2)), 25L)));
+        items3 = ((Item[])(new Item[]{}));
+        System.out.println(_p(fractional_cover(((Item[])(items3)), 50L)));
+        items4 = ((Item[])(new Item[]{new Item(10, 60)}));
+        System.out.println(_p(fractional_cover(((Item[])(items4)), 5L)));
+        System.out.println(_p(fractional_cover(((Item[])(items4)), 1L)));
+        System.out.println(_p(fractional_cover(((Item[])(items4)), 0L)));
     }
 
     static String _p(Object v) {
@@ -97,6 +63,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

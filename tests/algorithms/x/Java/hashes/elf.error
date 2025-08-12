@@ -1,0 +1,8 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden468_elf2024260660/001/Main.java:7: error: illegal start of expression
+            if ((_substr(ascii, (int)((long)(i)), (int)((long)(i + 1)))).equals(ch))) {
+                                                                                    ^
+/tmp/TestJavaTranspiler_Algorithms_Golden468_elf2024260660/001/Main.java:69: error: ';' expected
+            long c_1 = ord(_substr(data, (int)((long)(i_2)), (int)((long)(i_2 + 1)))));
+                                                                                     ^
+2 errors

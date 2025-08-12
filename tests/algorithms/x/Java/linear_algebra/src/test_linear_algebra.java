@@ -1,70 +1,43 @@
 public class Main {
-    static int[] vx;
-    static int[] vs;
-    static int[] vsize;
-    static int[] va;
-    static int[] vb;
-    static int[] vsum;
-    static int[] vsub;
+    static long[] vx;
+    static long[] vs;
+    static long[] vsize;
+    static long[] va;
+    static long[] vb;
+    static long[] vsum;
+    static long[] vsub;
     static double[] vmul;
-    static int[] zvec;
+    static long[] zvec;
     static String zstr;
-    static int zcount = 0;
-    static int zi = 0;
-    static int[] vcopy;
-    static int[] vchange = new int[0];
-    static int[][] ma = new int[0][];
-    static int[][] mb = new int[0][];
-    static int[] mv;
-    static int[][] msc;
-    static int[][] mc = new int[0][];
-    static int[][] madd = new int[0][];
-    static int[][] msub = new int[0][];
-    static int[][] mzero;
+    static long zcount = 0;
+    static long zi = 0;
+    static long[] vcopy;
+    static long[] vchange = new long[0];
+    static long[][] ma = new long[0][];
+    static long[][] mb = new long[0][];
+    static long[] mv;
+    static long[][] msc;
+    static long[][] mc = new long[0][];
+    static long[][] madd = new long[0][];
+    static long[][] msub = new long[0][];
+    static long[][] mzero;
 
-    static String int_to_string(int n) {
+    static String int_to_string(long n) {
         if (n == 0) {
             return "0";
         }
-        int num = n;
-        boolean neg = false;
-        if (num < 0) {
-            neg = true;
-            num = -num;
-        }
-        String res = "";
-        while (num > 0) {
-            int digit = Math.floorMod(num, 10);
-            String ch = _substr("0123456789", digit, digit + 1);
-            res = ch + res;
-            num = num / 10;
-        }
-        if (neg) {
-            res = "-" + res;
-        }
-        return res;
-    }
-
-    static String float_to_string(double x, int dec) {
+        long num_1 = n;
         boolean neg_1 = false;
-        double num_1 = x;
-        if (num_1 < 0.0) {
+        if (num_1 < 0) {
             neg_1 = true;
             num_1 = -num_1;
         }
-        int int_part = ((Number)(num_1)).intValue();
-        String res_1 = String.valueOf(int_to_string(int_part));
-        if (dec > 0) {
-            res_1 = res_1 + ".";
-            double frac = num_1 - (((Number)(int_part)).doubleValue());
-            int i = 0;
-            while (i < dec) {
-                frac = frac * 10.0;
-                int digit_1 = ((Number)(frac)).intValue();
-                res_1 = res_1 + _substr("0123456789", digit_1, digit_1 + 1);
-                frac = frac - (((Number)(digit_1)).doubleValue());
-                i = i + 1;
-            }
+        String res_1 = "";
+        while (num_1 > 0) {
+            long digit_1 = Math.floorMod(num_1, 10);
+            String ch_1 = _substr("0123456789", (int)((long)(digit_1)), (int)((long)(digit_1 + 1))));
+            res_1 = ch_1 + res_1;
+            num_1 = Math.floorDiv(num_1, 10);
         }
         if (neg_1) {
             res_1 = "-" + res_1;
@@ -72,74 +45,101 @@ public class Main {
         return res_1;
     }
 
-    static int vector_component(int[] v, int i) {
-        return v[i];
+    static String float_to_string(double x, long dec) {
+        boolean neg_2 = false;
+        double num_3 = x;
+        if (num_3 < 0.0) {
+            neg_2 = true;
+            num_3 = -num_3;
+        }
+        long int_part_1 = ((Number)(num_3)).intValue();
+        String res_3 = String.valueOf(int_to_string(int_part_1));
+        if (dec > 0) {
+            res_3 = res_3 + ".";
+            double frac_1 = num_3 - (((Number)(int_part_1)).doubleValue());
+            long i_1 = 0L;
+            while (i_1 < dec) {
+                frac_1 = frac_1 * 10.0;
+                long digit_3 = ((Number)(frac_1)).intValue();
+                res_3 = res_3 + _substr("0123456789", (int)((long)(digit_3)), (int)((long)(digit_3 + 1))));
+                frac_1 = frac_1 - (((Number)(digit_3)).doubleValue());
+                i_1 = i_1 + 1;
+            }
+        }
+        if (neg_2) {
+            res_3 = "-" + res_3;
+        }
+        return res_3;
     }
 
-    static String vector_str_int(int[] v) {
+    static long vector_component(long[] v, long i) {
+        return v[(int)((long)(i))];
+    }
+
+    static String vector_str_int(long[] v) {
         String s = "(";
-        int i_1 = 0;
-        while (i_1 < v.length) {
-            s = s + String.valueOf(int_to_string(v[i_1]));
-            if (i_1 + 1 < v.length) {
+        long i_3 = 0L;
+        while (i_3 < v.length) {
+            s = s + String.valueOf(int_to_string(v[(int)((long)(i_3))]));
+            if (i_3 + 1 < v.length) {
                 s = s + ",";
             }
-            i_1 = i_1 + 1;
+            i_3 = i_3 + 1;
         }
         s = s + ")";
         return s;
     }
 
-    static String vector_str_float(double[] v, int dec) {
+    static String vector_str_float(double[] v, long dec) {
         String s_1 = "(";
-        int i_2 = 0;
-        while (i_2 < v.length) {
-            s_1 = s_1 + String.valueOf(float_to_string(v[i_2], dec));
-            if (i_2 + 1 < v.length) {
+        long i_5 = 0L;
+        while (i_5 < v.length) {
+            s_1 = s_1 + String.valueOf(float_to_string(v[(int)((long)(i_5))], dec));
+            if (i_5 + 1 < v.length) {
                 s_1 = s_1 + ",";
             }
-            i_2 = i_2 + 1;
+            i_5 = i_5 + 1;
         }
         s_1 = s_1 + ")";
         return s_1;
     }
 
-    static int[] vector_add(int[] a, int[] b) {
-        int[] res_2 = ((int[])(new int[]{}));
-        int i_3 = 0;
-        while (i_3 < a.length) {
-            res_2 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res_2), java.util.stream.IntStream.of(a[i_3] + b[i_3])).toArray()));
-            i_3 = i_3 + 1;
-        }
-        return res_2;
-    }
-
-    static int[] vector_sub(int[] a, int[] b) {
-        int[] res_3 = ((int[])(new int[]{}));
-        int i_4 = 0;
-        while (i_4 < a.length) {
-            res_3 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res_3), java.util.stream.IntStream.of(a[i_4] - b[i_4])).toArray()));
-            i_4 = i_4 + 1;
-        }
-        return res_3;
-    }
-
-    static double[] vector_scalar_mul(int[] v, double s) {
-        double[] res_4 = ((double[])(new double[]{}));
-        int i_5 = 0;
-        while (i_5 < v.length) {
-            res_4 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(res_4), java.util.stream.DoubleStream.of((((double)(v[i_5]))) * s)).toArray()));
-            i_5 = i_5 + 1;
+    static long[] vector_add(long[] a, long[] b) {
+        long[] res_4 = ((long[])(new long[]{}));
+        long i_7 = 0L;
+        while (i_7 < a.length) {
+            res_4 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res_4), java.util.stream.LongStream.of(a[(int)((long)(i_7))] + b[(int)((long)(i_7))])).toArray()));
+            i_7 = i_7 + 1;
         }
         return res_4;
     }
 
-    static int vector_dot(int[] a, int[] b) {
-        int sum = 0;
-        int i_6 = 0;
-        while (i_6 < a.length) {
-            sum = sum + a[i_6] * b[i_6];
-            i_6 = i_6 + 1;
+    static long[] vector_sub(long[] a, long[] b) {
+        long[] res_5 = ((long[])(new long[]{}));
+        long i_9 = 0L;
+        while (i_9 < a.length) {
+            res_5 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res_5), java.util.stream.LongStream.of(a[(int)((long)(i_9))] - b[(int)((long)(i_9))])).toArray()));
+            i_9 = i_9 + 1;
+        }
+        return res_5;
+    }
+
+    static double[] vector_scalar_mul(long[] v, double s) {
+        double[] res_6 = ((double[])(new double[]{}));
+        long i_11 = 0L;
+        while (i_11 < v.length) {
+            res_6 = ((double[])(appendDouble(res_6, (((double)(v[(int)((long)(i_11))]))) * s)));
+            i_11 = i_11 + 1;
+        }
+        return res_6;
+    }
+
+    static long vector_dot(long[] a, long[] b) {
+        long sum = 0L;
+        long i_13 = 0L;
+        while (i_13 < a.length) {
+            sum = sum + a[(int)((long)(i_13))] * b[(int)((long)(i_13))];
+            i_13 = i_13 + 1;
         }
         return sum;
     }
@@ -148,232 +148,232 @@ public class Main {
         if (x == 0.0) {
             return 0.0;
         }
-        double low = 0.0;
-        double high = x;
+        double low_1 = 0.0;
+        double high_1 = x;
         if (x < 1.0) {
-            high = 1.0;
+            high_1 = 1.0;
         }
-        double mid = 0.0;
-        int i_7 = 0;
-        while (i_7 < 40) {
-            mid = (low + high) / 2.0;
-            if (mid * mid > x) {
-                high = mid;
+        double mid_1 = 0.0;
+        long i_15 = 0L;
+        while (i_15 < 40) {
+            mid_1 = (low_1 + high_1) / 2.0;
+            if (mid_1 * mid_1 > x) {
+                high_1 = mid_1;
             } else {
-                low = mid;
+                low_1 = mid_1;
             }
-            i_7 = i_7 + 1;
+            i_15 = i_15 + 1;
         }
-        return mid;
+        return mid_1;
     }
 
-    static double euclidean_length(int[] v) {
+    static double euclidean_length(long[] v) {
         double sum_1 = 0.0;
-        int i_8 = 0;
-        while (i_8 < v.length) {
-            double val = ((double)(v[i_8]));
-            sum_1 = sum_1 + val * val;
-            i_8 = i_8 + 1;
+        long i_17 = 0L;
+        while (i_17 < v.length) {
+            double val_1 = ((double)(v[(int)((long)(i_17))]));
+            sum_1 = sum_1 + val_1 * val_1;
+            i_17 = i_17 + 1;
         }
         return sqrt_newton(sum_1);
     }
 
-    static int[] zero_vector(int n) {
-        int[] v = ((int[])(new int[]{}));
-        int i_9 = 0;
-        while (i_9 < n) {
-            v = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(v), java.util.stream.IntStream.of(0)).toArray()));
-            i_9 = i_9 + 1;
+    static long[] zero_vector(long n) {
+        long[] v = ((long[])(new long[]{}));
+        long i_19 = 0L;
+        while (i_19 < n) {
+            v = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(v), java.util.stream.LongStream.of(0L)).toArray()));
+            i_19 = i_19 + 1;
         }
         return v;
     }
 
-    static int[] unit_basis_vector(int n, int idx) {
-        int[] v_1 = ((int[])(zero_vector(n)));
-v_1[idx] = 1;
+    static long[] unit_basis_vector(long n, long idx) {
+        long[] v_1 = ((long[])(zero_vector(n)));
+v_1[(int)((long)(idx))] = 1;
         return v_1;
     }
 
-    static int[] axpy(int a, int[] x, int[] y) {
-        int[] res_5 = ((int[])(new int[]{}));
-        int i_10 = 0;
-        while (i_10 < x.length) {
-            res_5 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res_5), java.util.stream.IntStream.of(a * x[i_10] + y[i_10])).toArray()));
-            i_10 = i_10 + 1;
-        }
-        return res_5;
-    }
-
-    static int[] copy_vector(int[] x) {
-        int[] res_6 = ((int[])(new int[]{}));
-        int i_11 = 0;
-        while (i_11 < x.length) {
-            res_6 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res_6), java.util.stream.IntStream.of(x[i_11])).toArray()));
-            i_11 = i_11 + 1;
-        }
-        return res_6;
-    }
-
-    static void change_component(int[] v, int idx, int val) {
-v[idx] = val;
-    }
-
-    static String matrix_str(int[][] m) {
-        String s_2 = "";
-        int i_12 = 0;
-        while (i_12 < m.length) {
-            s_2 = s_2 + "|";
-            int j = 0;
-            while (j < m[0].length) {
-                s_2 = s_2 + String.valueOf(int_to_string(m[i_12][j]));
-                if (j + 1 < m[0].length) {
-                    s_2 = s_2 + ",";
-                }
-                j = j + 1;
-            }
-            s_2 = s_2 + "|\n";
-            i_12 = i_12 + 1;
-        }
-        return s_2;
-    }
-
-    static int[][] submatrix(int[][] m, int row, int col) {
-        int[][] res_7 = ((int[][])(new int[][]{}));
-        int i_13 = 0;
-        while (i_13 < m.length) {
-            if (i_13 != row) {
-                int[] r = ((int[])(new int[]{}));
-                int j_1 = 0;
-                while (j_1 < m[0].length) {
-                    if (j_1 != col) {
-                        r = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(r), java.util.stream.IntStream.of(m[i_13][j_1])).toArray()));
-                    }
-                    j_1 = j_1 + 1;
-                }
-                res_7 = ((int[][])(appendObj(res_7, r)));
-            }
-            i_13 = i_13 + 1;
+    static long[] axpy(long a, long[] x, long[] y) {
+        long[] res_7 = ((long[])(new long[]{}));
+        long i_21 = 0L;
+        while (i_21 < x.length) {
+            res_7 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res_7), java.util.stream.LongStream.of(a * x[(int)((long)(i_21))] + y[(int)((long)(i_21))])).toArray()));
+            i_21 = i_21 + 1;
         }
         return res_7;
     }
 
-    static int determinant(int[][] m) {
-        int n = m.length;
-        if (n == 1) {
-            return m[0][0];
-        }
-        if (n == 2) {
-            return m[0][0] * m[1][1] - m[0][1] * m[1][0];
-        }
-        int det = 0;
-        int c = 0;
-        while (c < n) {
-            int[][] sub = ((int[][])(submatrix(((int[][])(m)), 0, c)));
-            int sign = 1;
-            if (Math.floorMod(c, 2) == 1) {
-                sign = -1;
-            }
-            det = det + sign * m[0][c] * determinant(((int[][])(sub)));
-            c = c + 1;
-        }
-        return det;
-    }
-
-    static int matrix_minor(int[][] m, int row, int col) {
-        return determinant(((int[][])(submatrix(((int[][])(m)), row, col))));
-    }
-
-    static int matrix_cofactor(int[][] m, int row, int col) {
-        int sign_1 = 1;
-        if (Math.floorMod((row + col), 2) == 1) {
-            sign_1 = -1;
-        }
-        return sign_1 * matrix_minor(((int[][])(m)), row, col);
-    }
-
-    static int[] matrix_mul_vector(int[][] m, int[] v) {
-        int[] res_8 = ((int[])(new int[]{}));
-        int i_14 = 0;
-        while (i_14 < m.length) {
-            int sum_2 = 0;
-            int j_2 = 0;
-            while (j_2 < m[0].length) {
-                sum_2 = sum_2 + m[i_14][j_2] * v[j_2];
-                j_2 = j_2 + 1;
-            }
-            res_8 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res_8), java.util.stream.IntStream.of(sum_2)).toArray()));
-            i_14 = i_14 + 1;
+    static long[] copy_vector(long[] x) {
+        long[] res_8 = ((long[])(new long[]{}));
+        long i_23 = 0L;
+        while (i_23 < x.length) {
+            res_8 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res_8), java.util.stream.LongStream.of(x[(int)((long)(i_23))])).toArray()));
+            i_23 = i_23 + 1;
         }
         return res_8;
     }
 
-    static int[][] matrix_mul_scalar(int[][] m, int s) {
-        int[][] res_9 = ((int[][])(new int[][]{}));
-        int i_15 = 0;
-        while (i_15 < m.length) {
-            int[] row = ((int[])(new int[]{}));
-            int j_3 = 0;
-            while (j_3 < m[0].length) {
-                row = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row), java.util.stream.IntStream.of(m[i_15][j_3] * s)).toArray()));
-                j_3 = j_3 + 1;
+    static void change_component(long[] v, long idx, long val) {
+v[(int)((long)(idx))] = val;
+    }
+
+    static String matrix_str(long[][] m) {
+        String s_2 = "";
+        long i_25 = 0L;
+        while (i_25 < m.length) {
+            s_2 = s_2 + "|";
+            long j_1 = 0L;
+            while (j_1 < m[(int)((long)(0))].length) {
+                s_2 = s_2 + String.valueOf(int_to_string(m[(int)((long)(i_25))][(int)((long)(j_1))]));
+                if (j_1 + 1 < m[(int)((long)(0))].length) {
+                    s_2 = s_2 + ",";
+                }
+                j_1 = j_1 + 1;
             }
-            res_9 = ((int[][])(appendObj(res_9, row)));
-            i_15 = i_15 + 1;
+            s_2 = s_2 + "|\n";
+            i_25 = i_25 + 1;
+        }
+        return s_2;
+    }
+
+    static long[][] submatrix(long[][] m, long row, long col) {
+        long[][] res_9 = ((long[][])(new long[][]{}));
+        long i_27 = 0L;
+        while (i_27 < m.length) {
+            if (i_27 != row) {
+                long[] r_1 = ((long[])(new long[]{}));
+                long j_3 = 0L;
+                while (j_3 < m[(int)((long)(0))].length) {
+                    if (j_3 != col) {
+                        r_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(r_1), java.util.stream.LongStream.of(m[(int)((long)(i_27))][(int)((long)(j_3))])).toArray()));
+                    }
+                    j_3 = j_3 + 1;
+                }
+                res_9 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_9), java.util.stream.Stream.of(r_1)).toArray(long[][]::new)));
+            }
+            i_27 = i_27 + 1;
         }
         return res_9;
     }
 
-    static void matrix_change_component(int[][] m, int i, int j, int val) {
-m[i][j] = val;
-    }
-
-    static int matrix_component(int[][] m, int i, int j) {
-        return m[i][j];
-    }
-
-    static int[][] matrix_add(int[][] a, int[][] b) {
-        int[][] res_10 = ((int[][])(new int[][]{}));
-        int i_16 = 0;
-        while (i_16 < a.length) {
-            int[] row_1 = ((int[])(new int[]{}));
-            int j_4 = 0;
-            while (j_4 < a[0].length) {
-                row_1 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row_1), java.util.stream.IntStream.of(a[i_16][j_4] + b[i_16][j_4])).toArray()));
-                j_4 = j_4 + 1;
+    static long determinant(long[][] m) {
+        long n = m.length;
+        if (n == 1) {
+            return m[(int)((long)(0))][(int)((long)(0))];
+        }
+        if (n == 2) {
+            return m[(int)((long)(0))][(int)((long)(0))] * m[(int)((long)(1))][(int)((long)(1))] - m[(int)((long)(0))][(int)((long)(1))] * m[(int)((long)(1))][(int)((long)(0))];
+        }
+        long det_1 = 0L;
+        long c_1 = 0L;
+        while (c_1 < n) {
+            long[][] sub_1 = ((long[][])(submatrix(((long[][])(m)), 0L, c_1)));
+            long sign_1 = 1L;
+            if (Math.floorMod(c_1, 2) == 1) {
+                sign_1 = -1;
             }
-            res_10 = ((int[][])(appendObj(res_10, row_1)));
-            i_16 = i_16 + 1;
+            det_1 = det_1 + sign_1 * m[(int)((long)(0))][(int)((long)(c_1))] * determinant(((long[][])(sub_1)));
+            c_1 = c_1 + 1;
+        }
+        return det_1;
+    }
+
+    static long matrix_minor(long[][] m, long row, long col) {
+        return determinant(((long[][])(submatrix(((long[][])(m)), row, col))));
+    }
+
+    static long matrix_cofactor(long[][] m, long row, long col) {
+        long sign_2 = 1L;
+        if (Math.floorMod((row + col), 2) == 1) {
+            sign_2 = -1;
+        }
+        return sign_2 * matrix_minor(((long[][])(m)), row, col);
+    }
+
+    static long[] matrix_mul_vector(long[][] m, long[] v) {
+        long[] res_10 = ((long[])(new long[]{}));
+        long i_29 = 0L;
+        while (i_29 < m.length) {
+            long sum_3 = 0L;
+            long j_5 = 0L;
+            while (j_5 < m[(int)((long)(0))].length) {
+                sum_3 = sum_3 + m[(int)((long)(i_29))][(int)((long)(j_5))] * v[(int)((long)(j_5))];
+                j_5 = j_5 + 1;
+            }
+            res_10 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(res_10), java.util.stream.LongStream.of(sum_3)).toArray()));
+            i_29 = i_29 + 1;
         }
         return res_10;
     }
 
-    static int[][] matrix_sub(int[][] a, int[][] b) {
-        int[][] res_11 = ((int[][])(new int[][]{}));
-        int i_17 = 0;
-        while (i_17 < a.length) {
-            int[] row_2 = ((int[])(new int[]{}));
-            int j_5 = 0;
-            while (j_5 < a[0].length) {
-                row_2 = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(row_2), java.util.stream.IntStream.of(a[i_17][j_5] - b[i_17][j_5])).toArray()));
-                j_5 = j_5 + 1;
+    static long[][] matrix_mul_scalar(long[][] m, long s) {
+        long[][] res_11 = ((long[][])(new long[][]{}));
+        long i_31 = 0L;
+        while (i_31 < m.length) {
+            long[] row_1 = ((long[])(new long[]{}));
+            long j_7 = 0L;
+            while (j_7 < m[(int)((long)(0))].length) {
+                row_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(row_1), java.util.stream.LongStream.of(m[(int)((long)(i_31))][(int)((long)(j_7))] * s)).toArray()));
+                j_7 = j_7 + 1;
             }
-            res_11 = ((int[][])(appendObj(res_11, row_2)));
-            i_17 = i_17 + 1;
+            res_11 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_11), java.util.stream.Stream.of(row_1)).toArray(long[][]::new)));
+            i_31 = i_31 + 1;
         }
         return res_11;
     }
 
-    static int[][] square_zero_matrix(int n) {
-        int[][] m = ((int[][])(new int[][]{}));
-        int i_18 = 0;
-        while (i_18 < n) {
-            m = ((int[][])(appendObj(m, zero_vector(n))));
-            i_18 = i_18 + 1;
+    static void matrix_change_component(long[][] m, long i, long j, long val) {
+m[(int)((long)(i))][(int)((long)(j))] = val;
+    }
+
+    static long matrix_component(long[][] m, long i, long j) {
+        return m[(int)((long)(i))][(int)((long)(j))];
+    }
+
+    static long[][] matrix_add(long[][] a, long[][] b) {
+        long[][] res_12 = ((long[][])(new long[][]{}));
+        long i_33 = 0L;
+        while (i_33 < a.length) {
+            long[] row_3 = ((long[])(new long[]{}));
+            long j_9 = 0L;
+            while (j_9 < a[(int)((long)(0))].length) {
+                row_3 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(row_3), java.util.stream.LongStream.of(a[(int)((long)(i_33))][(int)((long)(j_9))] + b[(int)((long)(i_33))][(int)((long)(j_9))])).toArray()));
+                j_9 = j_9 + 1;
+            }
+            res_12 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_12), java.util.stream.Stream.of(row_3)).toArray(long[][]::new)));
+            i_33 = i_33 + 1;
+        }
+        return res_12;
+    }
+
+    static long[][] matrix_sub(long[][] a, long[][] b) {
+        long[][] res_13 = ((long[][])(new long[][]{}));
+        long i_35 = 0L;
+        while (i_35 < a.length) {
+            long[] row_5 = ((long[])(new long[]{}));
+            long j_11 = 0L;
+            while (j_11 < a[(int)((long)(0))].length) {
+                row_5 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(row_5), java.util.stream.LongStream.of(a[(int)((long)(i_35))][(int)((long)(j_11))] - b[(int)((long)(i_35))][(int)((long)(j_11))])).toArray()));
+                j_11 = j_11 + 1;
+            }
+            res_13 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(res_13), java.util.stream.Stream.of(row_5)).toArray(long[][]::new)));
+            i_35 = i_35 + 1;
+        }
+        return res_13;
+    }
+
+    static long[][] square_zero_matrix(long n) {
+        long[][] m = ((long[][])(new long[][]{}));
+        long i_37 = 0L;
+        while (i_37 < n) {
+            m = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(m), java.util.stream.Stream.of(zero_vector(n))).toArray(long[][]::new)));
+            i_37 = i_37 + 1;
         }
         return m;
     }
 
-    static void assert_int(String name, int actual, int expected) {
+    static void assert_int(String name, long actual, long expected) {
         if (actual == expected) {
             System.out.println(name + " ok");
         } else {
@@ -403,101 +403,67 @@ m[i][j] = val;
         }
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            vx = ((int[])(new int[]{1, 2, 3}));
-            assert_int("component0", vector_component(((int[])(vx)), 0), 1);
-            assert_int("component2", vector_component(((int[])(vx)), 2), 3);
-            vs = ((int[])(new int[]{0, 0, 0, 0, 0, 1}));
-            assert_str("str_vector", String.valueOf(vector_str_int(((int[])(vs)))), "(0,0,0,0,0,1)");
-            vsize = ((int[])(new int[]{1, 2, 3, 4}));
-            assert_int("size", vsize.length, 4);
-            va = ((int[])(new int[]{1, 2, 3}));
-            vb = ((int[])(new int[]{1, 1, 1}));
-            vsum = ((int[])(vector_add(((int[])(va)), ((int[])(vb)))));
-            assert_int("add0", vector_component(((int[])(vsum)), 0), 2);
-            assert_int("add1", vector_component(((int[])(vsum)), 1), 3);
-            assert_int("add2", vector_component(((int[])(vsum)), 2), 4);
-            vsub = ((int[])(vector_sub(((int[])(va)), ((int[])(vb)))));
-            assert_int("sub0", vector_component(((int[])(vsub)), 0), 0);
-            assert_int("sub1", vector_component(((int[])(vsub)), 1), 1);
-            assert_int("sub2", vector_component(((int[])(vsub)), 2), 2);
-            vmul = ((double[])(vector_scalar_mul(((int[])(va)), 3.0)));
-            assert_str("scalar_mul", String.valueOf(vector_str_float(((double[])(vmul)), 1)), "(3.0,6.0,9.0)");
-            assert_int("dot_product", vector_dot(((int[])(new int[]{2, -1, 4})), ((int[])(new int[]{1, -2, -1}))), 0);
-            zvec = ((int[])(zero_vector(10)));
-            zstr = String.valueOf(vector_str_int(((int[])(zvec))));
-            zcount = 0;
-            zi = 0;
-            while (zi < _runeLen(zstr)) {
-                if ((_substr(zstr, zi, zi + 1).equals("0"))) {
-                    zcount = zcount + 1;
-                }
-                zi = zi + 1;
+        vx = ((long[])(new long[]{1, 2, 3}));
+        assert_int("component0", vector_component(((long[])(vx)), 0L), 1L);
+        assert_int("component2", vector_component(((long[])(vx)), 2L), 3L);
+        vs = ((long[])(new long[]{0, 0, 0, 0, 0, 1}));
+        assert_str("str_vector", String.valueOf(vector_str_int(((long[])(vs)))), "(0,0,0,0,0,1)");
+        vsize = ((long[])(new long[]{1, 2, 3, 4}));
+        assert_int("size", vsize.length, 4L);
+        va = ((long[])(new long[]{1, 2, 3}));
+        vb = ((long[])(new long[]{1, 1, 1}));
+        vsum = ((long[])(vector_add(((long[])(va)), ((long[])(vb)))));
+        assert_int("add0", vector_component(((long[])(vsum)), 0L), 2L);
+        assert_int("add1", vector_component(((long[])(vsum)), 1L), 3L);
+        assert_int("add2", vector_component(((long[])(vsum)), 2L), 4L);
+        vsub = ((long[])(vector_sub(((long[])(va)), ((long[])(vb)))));
+        assert_int("sub0", vector_component(((long[])(vsub)), 0L), 0L);
+        assert_int("sub1", vector_component(((long[])(vsub)), 1L), 1L);
+        assert_int("sub2", vector_component(((long[])(vsub)), 2L), 2L);
+        vmul = ((double[])(vector_scalar_mul(((long[])(va)), 3.0)));
+        assert_str("scalar_mul", String.valueOf(vector_str_float(((double[])(vmul)), 1L)), "(3.0,6.0,9.0)");
+        assert_int("dot_product", vector_dot(((long[])(new long[]{2, -1, 4})), ((long[])(new long[]{1, -2, -1}))), 0L);
+        zvec = ((long[])(zero_vector(10L)));
+        zstr = String.valueOf(vector_str_int(((long[])(zvec))));
+        zcount = 0;
+        zi = 0;
+        while (zi < _runeLen(zstr)) {
+            if ((_substr(zstr, (int)((long)(zi)), (int)((long)(zi + 1)))).equals("0"))) {
+                zcount = zcount + 1;
             }
-            assert_int("zero_vector", zcount, 10);
-            assert_str("unit_basis", String.valueOf(vector_str_int(((int[])(unit_basis_vector(3, 1))))), "(0,1,0)");
-            assert_str("axpy", String.valueOf(vector_str_int(((int[])(axpy(2, ((int[])(new int[]{1, 2, 3})), ((int[])(new int[]{1, 0, 1}))))))), "(3,4,7)");
-            vcopy = ((int[])(copy_vector(((int[])(new int[]{1, 0, 0, 0, 0, 0})))));
-            assert_str("copy", String.valueOf(vector_str_int(((int[])(vcopy)))), "(1,0,0,0,0,0)");
-            vchange = ((int[])(new int[]{1, 0, 0}));
-            change_component(((int[])(vchange)), 0, 0);
-            change_component(((int[])(vchange)), 1, 1);
-            assert_str("change_component", String.valueOf(vector_str_int(((int[])(vchange)))), "(0,1,0)");
-            ma = ((int[][])(new int[][]{new int[]{1, 2, 3}, new int[]{2, 4, 5}, new int[]{6, 7, 8}}));
-            assert_str("matrix_str", String.valueOf(matrix_str(((int[][])(ma)))), "|1,2,3|\n|2,4,5|\n|6,7,8|\n");
-            assert_int("determinant", determinant(((int[][])(ma))), -5);
-            mb = ((int[][])(new int[][]{new int[]{1, 2, 3}, new int[]{4, 5, 6}, new int[]{7, 8, 9}}));
-            mv = ((int[])(matrix_mul_vector(((int[][])(mb)), ((int[])(new int[]{1, 2, 3})))));
-            assert_str("matrix_vec_mul", String.valueOf(vector_str_int(((int[])(mv)))), "(14,32,50)");
-            msc = ((int[][])(matrix_mul_scalar(((int[][])(mb)), 2)));
-            assert_str("matrix_scalar_mul", String.valueOf(matrix_str(((int[][])(msc)))), "|2,4,6|\n|8,10,12|\n|14,16,18|\n");
-            mc = ((int[][])(new int[][]{new int[]{1, 2, 3}, new int[]{2, 4, 5}, new int[]{6, 7, 8}}));
-            matrix_change_component(((int[][])(mc)), 0, 2, 5);
-            assert_str("change_component_matrix", String.valueOf(matrix_str(((int[][])(mc)))), "|1,2,5|\n|2,4,5|\n|6,7,8|\n");
-            assert_int("matrix_component", matrix_component(((int[][])(mc)), 2, 1), 7);
-            madd = ((int[][])(matrix_add(((int[][])(new int[][]{new int[]{1, 2, 3}, new int[]{2, 4, 5}, new int[]{6, 7, 8}})), ((int[][])(new int[][]{new int[]{1, 2, 7}, new int[]{2, 4, 5}, new int[]{6, 7, 10}})))));
-            assert_str("matrix_add", String.valueOf(matrix_str(((int[][])(madd)))), "|2,4,10|\n|4,8,10|\n|12,14,18|\n");
-            msub = ((int[][])(matrix_sub(((int[][])(new int[][]{new int[]{1, 2, 3}, new int[]{2, 4, 5}, new int[]{6, 7, 8}})), ((int[][])(new int[][]{new int[]{1, 2, 7}, new int[]{2, 4, 5}, new int[]{6, 7, 10}})))));
-            assert_str("matrix_sub", String.valueOf(matrix_str(((int[][])(msub)))), "|0,0,-4|\n|0,0,0|\n|0,0,-2|\n");
-            mzero = ((int[][])(square_zero_matrix(5)));
-            assert_str("square_zero_matrix", String.valueOf(matrix_str(((int[][])(mzero)))), "|0,0,0,0,0|\n|0,0,0,0,0|\n|0,0,0,0,0|\n|0,0,0,0,0|\n|0,0,0,0,0|\n");
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
+            zi = zi + 1;
         }
+        assert_int("zero_vector", zcount, 10L);
+        assert_str("unit_basis", String.valueOf(vector_str_int(((long[])(unit_basis_vector(3L, 1L))))), "(0,1,0)");
+        assert_str("axpy", String.valueOf(vector_str_int(((long[])(axpy(2L, ((long[])(new long[]{1, 2, 3})), ((long[])(new long[]{1, 0, 1}))))))), "(3,4,7)");
+        vcopy = ((long[])(copy_vector(((long[])(new long[]{1, 0, 0, 0, 0, 0})))));
+        assert_str("copy", String.valueOf(vector_str_int(((long[])(vcopy)))), "(1,0,0,0,0,0)");
+        vchange = ((long[])(new long[]{1, 0, 0}));
+        change_component(((long[])(vchange)), 0L, 0L);
+        change_component(((long[])(vchange)), 1L, 1L);
+        assert_str("change_component", String.valueOf(vector_str_int(((long[])(vchange)))), "(0,1,0)");
+        ma = ((long[][])(new long[][]{new long[]{1, 2, 3}, new long[]{2, 4, 5}, new long[]{6, 7, 8}}));
+        assert_str("matrix_str", String.valueOf(matrix_str(((long[][])(ma)))), "|1,2,3|\n|2,4,5|\n|6,7,8|\n");
+        assert_int("determinant", determinant(((long[][])(ma))), -5);
+        mb = ((long[][])(new long[][]{new long[]{1, 2, 3}, new long[]{4, 5, 6}, new long[]{7, 8, 9}}));
+        mv = ((long[])(matrix_mul_vector(((long[][])(mb)), ((long[])(new long[]{1, 2, 3})))));
+        assert_str("matrix_vec_mul", String.valueOf(vector_str_int(((long[])(mv)))), "(14,32,50)");
+        msc = ((long[][])(matrix_mul_scalar(((long[][])(mb)), 2L)));
+        assert_str("matrix_scalar_mul", String.valueOf(matrix_str(((long[][])(msc)))), "|2,4,6|\n|8,10,12|\n|14,16,18|\n");
+        mc = ((long[][])(new long[][]{new long[]{1, 2, 3}, new long[]{2, 4, 5}, new long[]{6, 7, 8}}));
+        matrix_change_component(((long[][])(mc)), 0L, 2L, 5L);
+        assert_str("change_component_matrix", String.valueOf(matrix_str(((long[][])(mc)))), "|1,2,5|\n|2,4,5|\n|6,7,8|\n");
+        assert_int("matrix_component", matrix_component(((long[][])(mc)), 2L, 1L), 7L);
+        madd = ((long[][])(matrix_add(((long[][])(new long[][]{new long[]{1, 2, 3}, new long[]{2, 4, 5}, new long[]{6, 7, 8}})), ((long[][])(new long[][]{new long[]{1, 2, 7}, new long[]{2, 4, 5}, new long[]{6, 7, 10}})))));
+        assert_str("matrix_add", String.valueOf(matrix_str(((long[][])(madd)))), "|2,4,10|\n|4,8,10|\n|12,14,18|\n");
+        msub = ((long[][])(matrix_sub(((long[][])(new long[][]{new long[]{1, 2, 3}, new long[]{2, 4, 5}, new long[]{6, 7, 8}})), ((long[][])(new long[][]{new long[]{1, 2, 7}, new long[]{2, 4, 5}, new long[]{6, 7, 10}})))));
+        assert_str("matrix_sub", String.valueOf(matrix_str(((long[][])(msub)))), "|0,0,-4|\n|0,0,0|\n|0,0,-2|\n");
+        mzero = ((long[][])(square_zero_matrix(5L)));
+        assert_str("square_zero_matrix", String.valueOf(matrix_str(((long[][])(mzero)))), "|0,0,0,0,0|\n|0,0,0,0,0|\n|0,0,0,0,0|\n|0,0,0,0,0|\n|0,0,0,0,0|\n");
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
-    }
-
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
         out[arr.length] = v;
         return out;
     }
@@ -507,6 +473,10 @@ m[i][j] = val;
     }
 
     static String _substr(String s, int i, int j) {
+        int len = _runeLen(s);
+        if (i < 0) i = 0;
+        if (j > len) j = len;
+        if (i > j) i = j;
         int start = s.offsetByCodePoints(0, i);
         int end = s.offsetByCodePoints(0, j);
         return s.substring(start, end);

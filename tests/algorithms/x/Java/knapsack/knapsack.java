@@ -1,67 +1,33 @@
 public class Main {
 
-    static int knapsack(int capacity, int[] weights, int[] values, int counter) {
+    static long knapsack(long capacity, long[] weights, long[] values, long counter) {
         if (counter == 0 || capacity == 0) {
             return 0;
         }
-        if (weights[counter - 1] > capacity) {
-            return knapsack(capacity, ((int[])(weights)), ((int[])(values)), counter - 1);
+        if (weights[(int)((long)(counter - 1))] > capacity) {
+            return knapsack(capacity, ((long[])(weights)), ((long[])(values)), counter - 1);
         } else {
-            int left_capacity = capacity - weights[counter - 1];
-            int new_value_included = values[counter - 1] + knapsack(left_capacity, ((int[])(weights)), ((int[])(values)), counter - 1);
-            int without_new_value = knapsack(capacity, ((int[])(weights)), ((int[])(values)), counter - 1);
-            if (new_value_included > without_new_value) {
-                return new_value_included;
+            long left_capacity_1 = capacity - weights[(int)((long)(counter - 1))];
+            long new_value_included_1 = values[(int)((long)(counter - 1))] + knapsack(left_capacity_1, ((long[])(weights)), ((long[])(values)), counter - 1);
+            long without_new_value_1 = knapsack(capacity, ((long[])(weights)), ((long[])(values)), counter - 1);
+            if (new_value_included_1 > without_new_value_1) {
+                return new_value_included_1;
             } else {
-                return without_new_value;
+                return without_new_value_1;
             }
         }
     }
 
     static void main() {
-        int[] weights = ((int[])(new int[]{10, 20, 30}));
-        int[] values = ((int[])(new int[]{60, 100, 120}));
-        int cap = 50;
-        int count = values.length;
-        int result = knapsack(cap, ((int[])(weights)), ((int[])(values)), count);
-        System.out.println(_p(result));
+        long[] weights = ((long[])(new long[]{10, 20, 30}));
+        long[] values_1 = ((long[])(new long[]{60, 100, 120}));
+        long cap_1 = 50L;
+        long count_1 = values_1.length;
+        long result_1 = knapsack(cap_1, ((long[])(weights)), ((long[])(values_1)), count_1);
+        System.out.println(_p(result_1));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 
     static String _p(Object v) {
@@ -76,6 +42,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

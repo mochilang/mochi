@@ -1,30 +1,30 @@
 public class Main {
-    static int MOD_ADLER;
+    static long MOD_ADLER;
 
-    static int ord(String ch) {
+    static long ord(String ch) {
         String lower = "abcdefghijklmnopqrstuvwxyz";
-        String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        String digits = "0123456789";
-        int i = 0;
-        while (i < _runeLen(lower)) {
-            if ((lower.substring(i, i+1).equals(ch))) {
-                return 97 + i;
+        String upper_1 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String digits_1 = "0123456789";
+        long i_1 = 0L;
+        while (i_1 < _runeLen(lower)) {
+            if ((lower.substring((int)((long)(i_1)), (int)((long)(i_1))+1).equals(ch))) {
+                return 97 + i_1;
             }
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
-        i = 0;
-        while (i < _runeLen(upper)) {
-            if ((upper.substring(i, i+1).equals(ch))) {
-                return 65 + i;
+        i_1 = 0;
+        while (i_1 < _runeLen(upper_1)) {
+            if ((upper_1.substring((int)((long)(i_1)), (int)((long)(i_1))+1).equals(ch))) {
+                return 65 + i_1;
             }
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
-        i = 0;
-        while (i < _runeLen(digits)) {
-            if ((digits.substring(i, i+1).equals(ch))) {
-                return 48 + i;
+        i_1 = 0;
+        while (i_1 < _runeLen(digits_1)) {
+            if ((digits_1.substring((int)((long)(i_1)), (int)((long)(i_1))+1).equals(ch))) {
+                return 48 + i_1;
             }
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
         if ((ch.equals(" "))) {
             return 32;
@@ -32,17 +32,17 @@ public class Main {
         return 0;
     }
 
-    static int adler32(String plain_text) {
-        int a = 1;
-        int b = 0;
-        int i_1 = 0;
-        while (i_1 < _runeLen(plain_text)) {
-            int code = ord(plain_text.substring(i_1, i_1+1));
-            a = Math.floorMod((a + code), MOD_ADLER);
-            b = Math.floorMod((b + a), MOD_ADLER);
-            i_1 = i_1 + 1;
+    static long adler32(String plain_text) {
+        long a = 1L;
+        long b_1 = 0L;
+        long i_3 = 0L;
+        while (i_3 < _runeLen(plain_text)) {
+            long code_1 = ord(plain_text.substring((int)((long)(i_3)), (int)((long)(i_3))+1));
+            a = Math.floorMod((a + code_1), MOD_ADLER);
+            b_1 = Math.floorMod((b_1 + a), MOD_ADLER);
+            i_3 = i_3 + 1;
         }
-        return b * 65536 + a;
+        return b_1 * 65536 + a;
     }
 
     static void main() {
@@ -50,42 +50,8 @@ public class Main {
         System.out.println(_p(adler32("go adler em all")));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            MOD_ADLER = 65521;
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        MOD_ADLER = 65521;
+        main();
     }
 
     static int _runeLen(String s) {
@@ -104,6 +70,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

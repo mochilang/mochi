@@ -610,6 +610,12 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 	e.emit(w)
 }
 
+func emitIndex(w io.Writer, e Expr) {
+	fmt.Fprint(w, "(int)((long)(")
+	e.emit(w)
+	fmt.Fprint(w, "))")
+}
+
 func typeFromName(n string) types.Type {
 	switch n {
 	case "int", "Integer", "long", "Long":
@@ -1975,18 +1981,18 @@ func (s *IndexAssignStmt) emit(w io.Writer, indent string) {
 			return
 		}
 		base.emit(w)
-		fmt.Fprint(w, "[(int)(")
-		last.emit(w)
-		fmt.Fprint(w, ")] = ")
+		fmt.Fprint(w, "[")
+		emitIndex(w, last)
+		fmt.Fprint(w, "] = ")
 		elem := arrayElemType(base)
 		emitCastExpr(w, s.Expr, elem)
 		fmt.Fprint(w, ";\n")
 		return
 	}
 	s.Target.emit(w)
-	fmt.Fprint(w, "[(int)(")
-	s.Indices[0].emit(w)
-	fmt.Fprint(w, ")] = ")
+	fmt.Fprint(w, "[")
+	emitIndex(w, s.Indices[0])
+	fmt.Fprint(w, "] = ")
 	elem := arrayElemType(s.Target)
 	emitCastExpr(w, s.Expr, elem)
 	fmt.Fprint(w, ";\n")
@@ -3424,11 +3430,29 @@ func (m *MethodCallExpr) emit(w io.Writer) {
 		name = "getOrDefault"
 	}
 	fmt.Fprint(w, "."+name+"(")
+	var params []string
+	if name == "apply" {
+		switch t := m.Target.(type) {
+		case *VarExpr:
+			params = funcParams[t.Name]
+		case *IndexExpr:
+			if v, ok := t.Target.(*VarExpr); ok {
+				params = funcParams[v.Name]
+			}
+		}
+	}
 	for i, a := range m.Args {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
 		}
-		a.emit(w)
+		typ := ""
+		if i < len(params) {
+			typ = params[i]
+		}
+		if name == "apply" && typ == "" {
+			typ = "long"
+		}
+		emitCastExpr(w, a, typ)
 	}
 	fmt.Fprint(w, ")")
 }
@@ -3461,10 +3485,10 @@ func (s *SubstringExpr) emit(w io.Writer) {
 	needSubstr = true
 	fmt.Fprint(w, "_substr(")
 	s.Str.emit(w)
-	fmt.Fprint(w, ", (int)(")
-	s.Start.emit(w)
-	fmt.Fprint(w, "), (int)(")
-	s.End.emit(w)
+	fmt.Fprint(w, ", ")
+	emitIndex(w, s.Start)
+	fmt.Fprint(w, ", ")
+	emitIndex(w, s.End)
 	fmt.Fprint(w, "))")
 }
 
@@ -3537,28 +3561,28 @@ func (ix *IndexExpr) emit(w io.Writer) {
 	}
 	if isStringExpr(ix.Target) {
 		ix.Target.emit(w)
-		fmt.Fprint(w, ".substring((int)(")
-		ix.Index.emit(w)
-		fmt.Fprint(w, "), (int)(")
-		ix.Index.emit(w)
-		fmt.Fprint(w, ")+1)")
+		fmt.Fprint(w, ".substring(")
+		emitIndex(w, ix.Index)
+		fmt.Fprint(w, ", ")
+		emitIndex(w, ix.Index)
+		fmt.Fprint(w, "+1)")
 	} else if isArrayExpr(ix.Target) {
 		needCast := ix.ResultType != "" && ix.ResultType != arrayElemType(ix.Target)
 		if needCast {
 			fmt.Fprintf(w, "((%s)(", javaType(ix.ResultType))
 		}
 		ix.Target.emit(w)
-		fmt.Fprint(w, "[(int)(")
-		ix.Index.emit(w)
-		fmt.Fprint(w, ")]")
+		fmt.Fprint(w, "[")
+		emitIndex(w, ix.Index)
+		fmt.Fprint(w, "]")
 		if needCast {
 			fmt.Fprint(w, "))")
 		}
 	} else if isListExpr(ix.Target) {
 		ix.Target.emit(w)
-		fmt.Fprint(w, ".get((int)(")
-		ix.Index.emit(w)
-		fmt.Fprint(w, "))")
+		fmt.Fprint(w, ".get(")
+		emitIndex(w, ix.Index)
+		fmt.Fprint(w, ")")
 	} else if isMapExpr(ix.Target) {
 		castType := "java.util.Map"
 		if ix.ResultType != "" {
@@ -3596,19 +3620,19 @@ func (sli *SliceExpr) emit(w io.Writer) {
 		needRuneLen = true
 		fmt.Fprint(w, "_substr(")
 		sli.Value.emit(w)
-		fmt.Fprint(w, ", (int)(")
-		sli.Start.emit(w)
-		fmt.Fprint(w, "), (int)(")
-		sli.End.emit(w)
+		fmt.Fprint(w, ", ")
+		emitIndex(w, sli.Start)
+		fmt.Fprint(w, ", ")
+		emitIndex(w, sli.End)
 		fmt.Fprint(w, "))")
 	case isArrayExpr(sli.Value):
 		fmt.Fprint(w, "java.util.Arrays.copyOfRange(")
 		sli.Value.emit(w)
-		fmt.Fprint(w, ", (int)(")
-		sli.Start.emit(w)
-		fmt.Fprint(w, "), (int)(")
-		sli.End.emit(w)
-		fmt.Fprint(w, "))")
+		fmt.Fprint(w, ", ")
+		emitIndex(w, sli.Start)
+		fmt.Fprint(w, ", ")
+		emitIndex(w, sli.End)
+		fmt.Fprint(w, ")")
 	case isListExpr(sli.Value):
 		fmt.Fprint(w, "new java.util.ArrayList<>(")
 		sli.Value.emit(w)

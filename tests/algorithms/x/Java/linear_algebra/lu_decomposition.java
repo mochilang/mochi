@@ -16,122 +16,88 @@ public class Main {
     static LU result;
 
     static LU lu_decomposition(double[][] mat) {
-        int n = mat.length;
+        long n = mat.length;
         if (n == 0) {
             return new LU(new double[][]{}, new double[][]{});
         }
-        int m = mat[0].length;
-        if (n != m) {
+        long m_1 = mat[(int)((long)(0))].length;
+        if (n != m_1) {
             throw new RuntimeException(String.valueOf("Matrix must be square"));
         }
-        double[][] lower = ((double[][])(new double[][]{}));
-        double[][] upper = ((double[][])(new double[][]{}));
-        int i = 0;
-        while (i < n) {
-            double[] lrow = ((double[])(new double[]{}));
-            double[] urow = ((double[])(new double[]{}));
-            int j = 0;
-            while (j < n) {
-                lrow = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(lrow), java.util.stream.DoubleStream.of(0.0)).toArray()));
-                urow = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(urow), java.util.stream.DoubleStream.of(0.0)).toArray()));
-                j = j + 1;
+        double[][] lower_1 = ((double[][])(new double[][]{}));
+        double[][] upper_1 = ((double[][])(new double[][]{}));
+        long i_1 = 0L;
+        while (i_1 < n) {
+            double[] lrow_1 = ((double[])(new double[]{}));
+            double[] urow_1 = ((double[])(new double[]{}));
+            long j_1 = 0L;
+            while (j_1 < n) {
+                lrow_1 = ((double[])(appendDouble(lrow_1, 0.0)));
+                urow_1 = ((double[])(appendDouble(urow_1, 0.0)));
+                j_1 = j_1 + 1;
             }
-            lower = ((double[][])(appendObj(lower, lrow)));
-            upper = ((double[][])(appendObj(upper, urow)));
-            i = i + 1;
+            lower_1 = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(lower_1), java.util.stream.Stream.of(lrow_1)).toArray(double[][]::new)));
+            upper_1 = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(upper_1), java.util.stream.Stream.of(urow_1)).toArray(double[][]::new)));
+            i_1 = i_1 + 1;
         }
-        i = 0;
-        while (i < n) {
-            int j1 = 0;
-            while (j1 < i) {
-                double total = 0.0;
-                int k = 0;
-                while (k < i) {
-                    total = total + lower[i][k] * upper[k][j1];
-                    k = k + 1;
+        i_1 = 0L;
+        while (i_1 < n) {
+            long j1_1 = 0L;
+            while (j1_1 < i_1) {
+                double total_1 = 0.0;
+                long k_1 = 0L;
+                while (k_1 < i_1) {
+                    total_1 = total_1 + lower_1[(int)((long)(i_1))][(int)((long)(k_1))] * upper_1[(int)((long)(k_1))][(int)((long)(j1_1))];
+                    k_1 = k_1 + 1;
                 }
-                if (upper[j1][j1] == 0.0) {
+                if (upper_1[(int)((long)(j1_1))][(int)((long)(j1_1))] == 0.0) {
                     throw new RuntimeException(String.valueOf("No LU decomposition exists"));
                 }
-lower[i][j1] = (mat[i][j1] - total) / upper[j1][j1];
-                j1 = j1 + 1;
+lower_1[(int)((long)(i_1))][(int)((long)(j1_1))] = (mat[(int)((long)(i_1))][(int)((long)(j1_1))] - total_1) / upper_1[(int)((long)(j1_1))][(int)((long)(j1_1))];
+                j1_1 = j1_1 + 1;
             }
-lower[i][i] = 1.0;
-            int j2 = i;
-            while (j2 < n) {
-                double total2 = 0.0;
-                int k2 = 0;
-                while (k2 < i) {
-                    total2 = total2 + lower[i][k2] * upper[k2][j2];
-                    k2 = k2 + 1;
+lower_1[(int)((long)(i_1))][(int)((long)(i_1))] = 1.0;
+            long j2_1 = i_1;
+            while (j2_1 < n) {
+                double total2_1 = 0.0;
+                long k2_1 = 0L;
+                while (k2_1 < i_1) {
+                    total2_1 = total2_1 + lower_1[(int)((long)(i_1))][(int)((long)(k2_1))] * upper_1[(int)((long)(k2_1))][(int)((long)(j2_1))];
+                    k2_1 = k2_1 + 1;
                 }
-upper[i][j2] = mat[i][j2] - total2;
-                j2 = j2 + 1;
+upper_1[(int)((long)(i_1))][(int)((long)(j2_1))] = mat[(int)((long)(i_1))][(int)((long)(j2_1))] - total2_1;
+                j2_1 = j2_1 + 1;
             }
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
-        return new LU(lower, upper);
+        return new LU(lower_1, upper_1);
     }
 
     static void print_matrix(double[][] mat) {
-        int i_1 = 0;
-        while (i_1 < mat.length) {
-            String line = "";
-            int j_1 = 0;
-            while (j_1 < mat[i_1].length) {
-                line = line + _p(_geto(mat[i_1], j_1));
-                if (j_1 + 1 < mat[i_1].length) {
-                    line = line + " ";
+        long i_2 = 0L;
+        while (i_2 < mat.length) {
+            String line_1 = "";
+            long j_3 = 0L;
+            while (j_3 < mat[(int)((long)(i_2))].length) {
+                line_1 = line_1 + _p(_getd(mat[(int)((long)(i_2))], ((Number)(j_3)).intValue()));
+                if (j_3 + 1 < mat[(int)((long)(i_2))].length) {
+                    line_1 = line_1 + " ";
                 }
-                j_1 = j_1 + 1;
+                j_3 = j_3 + 1;
             }
-            System.out.println(line);
-            i_1 = i_1 + 1;
+            System.out.println(line_1);
+            i_2 = i_2 + 1;
         }
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            matrix = ((double[][])(new double[][]{new double[]{2.0, -2.0, 1.0}, new double[]{0.0, 1.0, 2.0}, new double[]{5.0, 3.0, 1.0}}));
-            result = lu_decomposition(((double[][])(matrix)));
-            print_matrix(((double[][])(result.lower)));
-            print_matrix(((double[][])(result.upper)));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
+        matrix = ((double[][])(new double[][]{new double[]{2.0, -2.0, 1.0}, new double[]{0.0, 1.0, 2.0}, new double[]{5.0, 3.0, 1.0}}));
+        result = lu_decomposition(((double[][])(matrix)));
+        print_matrix(((double[][])(result.lower)));
+        print_matrix(((double[][])(result.upper)));
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
-    }
-
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
         out[arr.length] = v;
         return out;
     }
@@ -149,10 +115,15 @@ upper[i][j2] = mat[i][j2] - total2;
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
         }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
+        }
         return String.valueOf(v);
     }
 
-    static Object _geto(Object[] a, int i) {
+    static Double _getd(double[] a, int i) {
         return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }

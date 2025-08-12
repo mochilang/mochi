@@ -17,12 +17,12 @@ public class Main {
         return new Dual(v, d);
     }
 
-    static double pow_float(double base, int exp) {
+    static double pow_float(double base, long exp) {
         double res = 1.0;
-        int i = 0;
-        while (i < exp) {
+        long i_1 = 0L;
+        while (i_1 < exp) {
             res = res * base;
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
         return res;
     }
@@ -43,57 +43,23 @@ public class Main {
         return new Dual(a.value / b.value, (a.deriv * b.value - b.deriv * a.value) / (b.value * b.value));
     }
 
-    static Dual power(Dual a, int p) {
+    static Dual power(Dual a, long p) {
         return new Dual(pow_float(a.value, p), (1.0 * p) * pow_float(a.value, p - 1) * a.deriv);
     }
 
     static void main() {
         Dual a = dual(2.0, 1.0);
-        Dual b = dual(1.0, 0.0);
-        Dual c = add(a, b);
-        Dual d = mul(a, b);
-        Dual e = div(c, d);
-        System.out.println(_p(e.deriv));
-        Dual x = dual(2.0, 1.0);
-        Dual y = power(x, 3);
-        System.out.println(_p(y.deriv));
+        Dual b_1 = dual(1.0, 0.0);
+        Dual c_1 = add(a, b_1);
+        Dual d_1 = mul(a, b_1);
+        Dual e_1 = div(c_1, d_1);
+        System.out.println(_p(e_1.deriv));
+        Dual x_1 = dual(2.0, 1.0);
+        Dual y_1 = power(x_1, 3L);
+        System.out.println(_p(y_1.deriv));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 
     static String _p(Object v) {
@@ -108,6 +74,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

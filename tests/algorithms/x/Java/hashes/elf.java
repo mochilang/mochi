@@ -1,10 +1,10 @@
 public class Main {
     static String ascii;
 
-    static int ord(String ch) {
-        int i = 0;
+    static long ord(String ch) {
+        long i = 0L;
         while (i < _runeLen(ascii)) {
-            if ((ascii.substring(i, i + 1).equals(ch))) {
+            if ((_substr(ascii, (int)((long)(i)), (int)((long)(i + 1)))).equals(ch))) {
                 return 32 + i;
             }
             i = i + 1;
@@ -12,112 +12,88 @@ public class Main {
         return 0;
     }
 
-    static int bit_and(int a, int b) {
-        int ua = a;
-        int ub = b;
-        int res = 0;
-        int bit = 1;
-        while (ua > 0 || ub > 0) {
-            if (Math.floorMod(ua, 2) == 1 && Math.floorMod(ub, 2) == 1) {
-                res = res + bit;
-            }
-            ua = ((Number)((ua / 2))).intValue();
-            ub = ((Number)((ub / 2))).intValue();
-            bit = bit * 2;
-        }
-        return res;
-    }
-
-    static int bit_xor(int a, int b) {
-        int ua_1 = a;
-        int ub_1 = b;
-        int res_1 = 0;
-        int bit_1 = 1;
-        while (ua_1 > 0 || ub_1 > 0) {
-            int abit = Math.floorMod(ua_1, 2);
-            int bbit = Math.floorMod(ub_1, 2);
-            if (abit != bbit) {
+    static long bit_and(long a, long b) {
+        long ua = a;
+        long ub_1 = b;
+        long res_1 = 0L;
+        long bit_1 = 1L;
+        while (ua > 0 || ub_1 > 0) {
+            if (Math.floorMod(ua, 2) == 1 && Math.floorMod(ub_1, 2) == 1) {
                 res_1 = res_1 + bit_1;
             }
-            ua_1 = ((Number)((ua_1 / 2))).intValue();
-            ub_1 = ((Number)((ub_1 / 2))).intValue();
+            ua = ((Number)((Math.floorDiv(ua, 2)))).intValue();
+            ub_1 = ((Number)((Math.floorDiv(ub_1, 2)))).intValue();
             bit_1 = bit_1 * 2;
         }
         return res_1;
     }
 
-    static int bit_not32(int x) {
-        int ux = x;
-        int res_2 = 0;
-        int bit_2 = 1;
-        int count = 0;
-        while (count < 32) {
-            if (Math.floorMod(ux, 2) == 0) {
-                res_2 = res_2 + bit_2;
+    static long bit_xor(long a, long b) {
+        long ua_1 = a;
+        long ub_3 = b;
+        long res_3 = 0L;
+        long bit_3 = 1L;
+        while (ua_1 > 0 || ub_3 > 0) {
+            long abit_1 = Math.floorMod(ua_1, 2);
+            long bbit_1 = Math.floorMod(ub_3, 2);
+            if (abit_1 != bbit_1) {
+                res_3 = res_3 + bit_3;
             }
-            ux = ((Number)((ux / 2))).intValue();
-            bit_2 = bit_2 * 2;
-            count = count + 1;
+            ua_1 = ((Number)((Math.floorDiv(ua_1, 2)))).intValue();
+            ub_3 = ((Number)((Math.floorDiv(ub_3, 2)))).intValue();
+            bit_3 = bit_3 * 2;
         }
-        return res_2;
+        return res_3;
     }
 
-    static int elf_hash(String data) {
-        int hash_ = 0;
-        int i_1 = 0;
-        while (i_1 < _runeLen(data)) {
-            int c = ord(data.substring(i_1, i_1 + 1));
-            hash_ = hash_ * 16 + c;
-            int x = bit_and(hash_, (int)4026531840L);
-            if (x != 0) {
-                hash_ = bit_xor(hash_, ((Number)((x / 16777216))).intValue());
+    static long bit_not32(long x) {
+        long ux = x;
+        long res_5 = 0L;
+        long bit_5 = 1L;
+        long count_1 = 0L;
+        while (count_1 < 32) {
+            if (Math.floorMod(ux, 2) == 0) {
+                res_5 = res_5 + bit_5;
             }
-            hash_ = bit_and(hash_, bit_not32(x));
-            i_1 = i_1 + 1;
+            ux = ((Number)((Math.floorDiv(ux, 2)))).intValue();
+            bit_5 = bit_5 * 2;
+            count_1 = count_1 + 1;
+        }
+        return res_5;
+    }
+
+    static long elf_hash(String data) {
+        long hash_ = 0L;
+        long i_2 = 0L;
+        while (i_2 < _runeLen(data)) {
+            long c_1 = ord(_substr(data, (int)((long)(i_2)), (int)((long)(i_2 + 1)))));
+            hash_ = hash_ * 16 + c_1;
+            long x_1 = bit_and(hash_, 4026531840L);
+            if (x_1 != 0) {
+                hash_ = bit_xor(hash_, ((Number)((Math.floorDiv(x_1, 16777216)))).intValue());
+            }
+            hash_ = bit_and(hash_, bit_not32(x_1));
+            i_2 = i_2 + 1;
         }
         return hash_;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            ascii = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
-            System.out.println(_p(elf_hash("lorem ipsum")));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        ascii = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+        System.out.println(_p(elf_hash("lorem ipsum")));
     }
 
     static int _runeLen(String s) {
         return s.codePointCount(0, s.length());
+    }
+
+    static String _substr(String s, int i, int j) {
+        int len = _runeLen(s);
+        if (i < 0) i = 0;
+        if (j > len) j = len;
+        if (i > j) i = j;
+        int start = s.offsetByCodePoints(0, i);
+        int end = s.offsetByCodePoints(0, j);
+        return s.substring(start, end);
     }
 
     static String _p(Object v) {
@@ -132,6 +108,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

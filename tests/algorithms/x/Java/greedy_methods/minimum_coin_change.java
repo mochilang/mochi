@@ -1,25 +1,25 @@
 public class Main {
 
-    static int[] find_minimum_change(int[] denominations, int value) {
+    static long[] find_minimum_change(long[] denominations, long value) {
         if (value <= 0) {
-            return new int[]{};
+            return new long[]{};
         }
-        int total = value;
-        int[] answer = ((int[])(new int[]{}));
-        int i = denominations.length - 1;
-        while (i >= 0) {
-            int denom = denominations[i];
-            while (total >= denom) {
-                total = total - denom;
-                answer = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(answer), java.util.stream.IntStream.of(denom)).toArray()));
+        long total_1 = value;
+        long[] answer_1 = ((long[])(new long[]{}));
+        long i_1 = denominations.length - 1;
+        while (i_1 >= 0) {
+            long denom_1 = denominations[(int)((long)(i_1))];
+            while (total_1 >= denom_1) {
+                total_1 = total_1 - denom_1;
+                answer_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(answer_1), java.util.stream.LongStream.of(denom_1)).toArray()));
             }
-            i = i - 1;
+            i_1 = i_1 - 1;
         }
-        return answer;
+        return answer_1;
     }
     public static void main(String[] args) {
-        System.out.println(_p(find_minimum_change(((int[])(new int[]{1, 2, 5, 10, 20, 50, 100, 500, 2000})), 987)));
-        System.out.println(_p(find_minimum_change(((int[])(new int[]{1, 5, 100, 500, 1000})), 456)));
+        System.out.println(_p(find_minimum_change(((long[])(new long[]{1, 2, 5, 10, 20, 50, 100, 500, 2000})), 987L)));
+        System.out.println(_p(find_minimum_change(((long[])(new long[]{1, 5, 100, 500, 1000})), 456L)));
     }
 
     static String _p(Object v) {
@@ -34,6 +34,11 @@ public class Main {
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

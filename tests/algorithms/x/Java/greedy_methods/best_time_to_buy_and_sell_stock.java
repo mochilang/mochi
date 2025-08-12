@@ -1,61 +1,27 @@
 public class Main {
 
-    static int max_profit(int[] prices) {
+    static long max_profit(long[] prices) {
         if (prices.length == 0) {
             return 0;
         }
-        int min_price = prices[0];
-        int max_profit = 0;
-        int i = 0;
-        while (i < prices.length) {
-            int price = prices[i];
-            if (price < min_price) {
-                min_price = price;
+        long min_price_1 = prices[(int)((long)(0))];
+        long max_profit_1 = 0L;
+        long i_1 = 0L;
+        while (i_1 < prices.length) {
+            long price_1 = prices[(int)((long)(i_1))];
+            if (price_1 < min_price_1) {
+                min_price_1 = price_1;
             }
-            int profit = price - min_price;
-            if (profit > max_profit) {
-                max_profit = profit;
+            long profit_1 = price_1 - min_price_1;
+            if (profit_1 > max_profit_1) {
+                max_profit_1 = profit_1;
             }
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
-        return max_profit;
+        return max_profit_1;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(max_profit(((int[])(new int[]{7, 1, 5, 3, 6, 4}))));
-            System.out.println(max_profit(((int[])(new int[]{7, 6, 4, 3, 1}))));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        System.out.println(max_profit(((long[])(new long[]{7, 1, 5, 3, 6, 4}))));
+        System.out.println(max_profit(((long[])(new long[]{7, 6, 4, 3, 1}))));
     }
 }

@@ -1,6 +1,5 @@
-Exception in thread "main" java.lang.ArithmeticException: / by zero
-	at java.base/java.lang.Math.floorMod(Math.java:1583)
-	at Main.rotate_left(Main.java:89)
-	at Main.sha1(Main.java:170)
-	at Main.main(Main.java:214)
-	at Main.main(Main.java:222)
+{
+  "duration_us": 36781,
+  "memory_bytes": 58760,
+  "name": "main"
+}

@@ -1,121 +1,87 @@
 public class Main {
 
     static double[][] retroactive_resolution(double[][] coefficients, double[][] vector) {
-        int rows = coefficients.length;
-        double[][] x = ((double[][])(new double[][]{}));
-        int i = 0;
-        while (i < rows) {
-            double[] inner = ((double[])(new double[]{}));
-            inner = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(inner), java.util.stream.DoubleStream.of(0.0)).toArray()));
-            x = ((double[][])(appendObj(x, inner)));
-            i = i + 1;
+        long rows = coefficients.length;
+        double[][] x_1 = ((double[][])(new double[][]{}));
+        long i_1 = 0L;
+        while (i_1 < rows) {
+            double[] inner_1 = ((double[])(new double[]{}));
+            inner_1 = ((double[])(appendDouble(inner_1, 0.0)));
+            x_1 = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(x_1), java.util.stream.Stream.of(inner_1)).toArray(double[][]::new)));
+            i_1 = i_1 + 1;
         }
-        int r = rows - 1;
-        while (r >= 0) {
-            double total = 0.0;
-            int c = r + 1;
-            while (c < rows) {
-                total = total + coefficients[r][c] * x[c][0];
-                c = c + 1;
+        long r_1 = rows - 1;
+        while (r_1 >= 0) {
+            double total_1 = 0.0;
+            long c_1 = r_1 + 1;
+            while (c_1 < rows) {
+                total_1 = total_1 + coefficients[(int)((long)(r_1))][(int)((long)(c_1))] * x_1[(int)((long)(c_1))][(int)((long)(0))];
+                c_1 = c_1 + 1;
             }
-x[r][0] = (vector[r][0] - total) / coefficients[r][r];
-            r = r - 1;
+x_1[(int)((long)(r_1))][(int)((long)(0))] = (vector[(int)((long)(r_1))][(int)((long)(0))] - total_1) / coefficients[(int)((long)(r_1))][(int)((long)(r_1))];
+            r_1 = r_1 - 1;
         }
-        return x;
+        return x_1;
     }
 
     static double[][] gaussian_elimination(double[][] coefficients, double[][] vector) {
-        int rows_1 = coefficients.length;
-        int columns = coefficients[0].length;
-        if (rows_1 != columns) {
+        long rows_1 = coefficients.length;
+        long columns_1 = coefficients[(int)((long)(0))].length;
+        if (rows_1 != columns_1) {
             return new double[][]{};
         }
-        double[][] augmented = ((double[][])(new double[][]{}));
-        int i_1 = 0;
-        while (i_1 < rows_1) {
-            double[] row = ((double[])(new double[]{}));
-            int j = 0;
-            while (j < columns) {
-                row = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row), java.util.stream.DoubleStream.of(coefficients[i_1][j])).toArray()));
-                j = j + 1;
-            }
-            row = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row), java.util.stream.DoubleStream.of(vector[i_1][0])).toArray()));
-            augmented = ((double[][])(appendObj(augmented, row)));
-            i_1 = i_1 + 1;
-        }
-        int row_idx = 0;
-        while (row_idx < rows_1 - 1) {
-            double pivot = augmented[row_idx][row_idx];
-            int col = row_idx + 1;
-            while (col < rows_1) {
-                double factor = augmented[col][row_idx] / pivot;
-                int k = row_idx;
-                while (k < columns + 1) {
-augmented[col][k] = augmented[col][k] - factor * augmented[row_idx][k];
-                    k = k + 1;
-                }
-                col = col + 1;
-            }
-            row_idx = row_idx + 1;
-        }
-        double[][] coeffs = ((double[][])(new double[][]{}));
-        double[][] vec = ((double[][])(new double[][]{}));
-        int r_1 = 0;
-        while (r_1 < rows_1) {
+        double[][] augmented_1 = ((double[][])(new double[][]{}));
+        long i_3 = 0L;
+        while (i_3 < rows_1) {
             double[] row_1 = ((double[])(new double[]{}));
-            int c_1 = 0;
-            while (c_1 < columns) {
-                row_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row_1), java.util.stream.DoubleStream.of(augmented[r_1][c_1])).toArray()));
-                c_1 = c_1 + 1;
+            long j_1 = 0L;
+            while (j_1 < columns_1) {
+                row_1 = ((double[])(appendDouble(row_1, coefficients[(int)((long)(i_3))][(int)((long)(j_1))])));
+                j_1 = j_1 + 1;
             }
-            coeffs = ((double[][])(appendObj(coeffs, row_1)));
-            vec = ((double[][])(appendObj(vec, new double[]{augmented[r_1][columns]})));
-            r_1 = r_1 + 1;
+            row_1 = ((double[])(appendDouble(row_1, vector[(int)((long)(i_3))][(int)((long)(0))])));
+            augmented_1 = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(augmented_1), java.util.stream.Stream.of(row_1)).toArray(double[][]::new)));
+            i_3 = i_3 + 1;
         }
-        double[][] x_1 = ((double[][])(retroactive_resolution(((double[][])(coeffs)), ((double[][])(vec)))));
-        return x_1;
+        long row_idx_1 = 0L;
+        while (row_idx_1 < rows_1 - 1) {
+            double pivot_1 = augmented_1[(int)((long)(row_idx_1))][(int)((long)(row_idx_1))];
+            long col_1 = row_idx_1 + 1;
+            while (col_1 < rows_1) {
+                double factor_1 = augmented_1[(int)((long)(col_1))][(int)((long)(row_idx_1))] / pivot_1;
+                long k_1 = row_idx_1;
+                while (k_1 < columns_1 + 1) {
+augmented_1[(int)((long)(col_1))][(int)((long)(k_1))] = augmented_1[(int)((long)(col_1))][(int)((long)(k_1))] - factor_1 * augmented_1[(int)((long)(row_idx_1))][(int)((long)(k_1))];
+                    k_1 = k_1 + 1;
+                }
+                col_1 = col_1 + 1;
+            }
+            row_idx_1 = row_idx_1 + 1;
+        }
+        double[][] coeffs_1 = ((double[][])(new double[][]{}));
+        double[][] vec_1 = ((double[][])(new double[][]{}));
+        long r_3 = 0L;
+        while (r_3 < rows_1) {
+            double[] row_3 = ((double[])(new double[]{}));
+            long c_3 = 0L;
+            while (c_3 < columns_1) {
+                row_3 = ((double[])(appendDouble(row_3, augmented_1[(int)((long)(r_3))][(int)((long)(c_3))])));
+                c_3 = c_3 + 1;
+            }
+            coeffs_1 = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(coeffs_1), java.util.stream.Stream.of(row_3)).toArray(double[][]::new)));
+            vec_1 = ((double[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(vec_1), java.util.stream.Stream.of(new double[]{augmented_1[(int)((long)(r_3))][(int)((long)(columns_1))]})).toArray(double[][]::new)));
+            r_3 = r_3 + 1;
+        }
+        double[][] x_3 = ((double[][])(retroactive_resolution(((double[][])(coeffs_1)), ((double[][])(vec_1)))));
+        return x_3;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            System.out.println(gaussian_elimination(((double[][])(new double[][]{new double[]{1.0, -4.0, -2.0}, new double[]{5.0, 2.0, -2.0}, new double[]{1.0, -1.0, 0.0}})), ((double[][])(new double[][]{new double[]{-2.0}, new double[]{-3.0}, new double[]{4.0}}))));
-            System.out.println(gaussian_elimination(((double[][])(new double[][]{new double[]{1.0, 2.0}, new double[]{5.0, 2.0}})), ((double[][])(new double[][]{new double[]{5.0}, new double[]{5.0}}))));
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
+        System.out.println(gaussian_elimination(((double[][])(new double[][]{new double[]{1.0, -4.0, -2.0}, new double[]{5.0, 2.0, -2.0}, new double[]{1.0, -1.0, 0.0}})), ((double[][])(new double[][]{new double[]{-2.0}, new double[]{-3.0}, new double[]{4.0}}))));
+        System.out.println(gaussian_elimination(((double[][])(new double[][]{new double[]{1.0, 2.0}, new double[]{5.0, 2.0}})), ((double[][])(new double[][]{new double[]{5.0}, new double[]{5.0}}))));
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
-    }
-
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+    static double[] appendDouble(double[] arr, double v) {
+        double[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
         out[arr.length] = v;
         return out;
     }

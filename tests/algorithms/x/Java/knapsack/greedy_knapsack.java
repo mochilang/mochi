@@ -1,103 +1,69 @@
 public class Main {
 
-    static double calc_profit(int[] profit, int[] weight, int max_weight) {
+    static double calc_profit(long[] profit, long[] weight, long max_weight) {
         if (profit.length != weight.length) {
             throw new RuntimeException(String.valueOf("The length of profit and weight must be same."));
         }
         if (max_weight <= 0) {
             throw new RuntimeException(String.valueOf("max_weight must greater than zero."));
         }
-        int i = 0;
-        while (i < profit.length) {
-            if (profit[i] < 0) {
+        long i_1 = 0L;
+        while (i_1 < profit.length) {
+            if (profit[(int)((long)(i_1))] < 0) {
                 throw new RuntimeException(String.valueOf("Profit can not be negative."));
             }
-            if (weight[i] < 0) {
+            if (weight[(int)((long)(i_1))] < 0) {
                 throw new RuntimeException(String.valueOf("Weight can not be negative."));
             }
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
-        int n = profit.length;
-        boolean[] used = ((boolean[])(new boolean[]{}));
-        int j = 0;
-        while (j < n) {
-            used = ((boolean[])(appendBool(used, false)));
-            j = j + 1;
+        long n_1 = profit.length;
+        boolean[] used_1 = ((boolean[])(new boolean[]{}));
+        long j_1 = 0L;
+        while (j_1 < n_1) {
+            used_1 = ((boolean[])(appendBool(used_1, false)));
+            j_1 = j_1 + 1;
         }
-        int limit = 0;
-        double gain = 0.0;
-        int count = 0;
-        while (limit < max_weight && count < n) {
-            double maxRatio = -1.0;
-            int maxIndex = -1;
-            int k = 0;
-            while (k < n) {
-                if (!(Boolean)used[k]) {
-                    double ratio = (((double)(profit[k]))) / (((double)(weight[k])));
-                    if (ratio > maxRatio) {
-                        maxRatio = ratio;
-                        maxIndex = k;
+        long limit_1 = 0L;
+        double gain_1 = 0.0;
+        long count_1 = 0L;
+        while (limit_1 < max_weight && count_1 < n_1) {
+            double maxRatio_1 = -1.0;
+            long maxIndex_1 = -1;
+            long k_1 = 0L;
+            while (k_1 < n_1) {
+                if (!(Boolean)used_1[(int)((long)(k_1))]) {
+                    double ratio_1 = (((double)(profit[(int)((long)(k_1))]))) / (((double)(weight[(int)((long)(k_1))])));
+                    if (ratio_1 > maxRatio_1) {
+                        maxRatio_1 = ratio_1;
+                        maxIndex_1 = k_1;
                     }
                 }
-                k = k + 1;
+                k_1 = k_1 + 1;
             }
-            if (maxIndex < 0) {
+            if (maxIndex_1 < 0) {
                 break;
             }
-used[maxIndex] = true;
-            if (max_weight - limit >= weight[maxIndex]) {
-                limit = limit + weight[maxIndex];
-                gain = gain + (((double)(profit[maxIndex])));
+used_1[(int)((long)(maxIndex_1))] = true;
+            if (max_weight - limit_1 >= weight[(int)((long)(maxIndex_1))]) {
+                limit_1 = limit_1 + weight[(int)((long)(maxIndex_1))];
+                gain_1 = gain_1 + (((double)(profit[(int)((long)(maxIndex_1))])));
             } else {
-                gain = gain + (((Number)((max_weight - limit))).doubleValue() / (((double)(weight[maxIndex])))) * (((double)(profit[maxIndex])));
+                gain_1 = gain_1 + (((Number)((max_weight - limit_1))).doubleValue() / (((double)(weight[(int)((long)(maxIndex_1))])))) * (((double)(profit[(int)((long)(maxIndex_1))])));
                 break;
             }
-            count = count + 1;
+            count_1 = count_1 + 1;
         }
-        return gain;
+        return gain_1;
     }
 
     static void main() {
-        System.out.println(calc_profit(((int[])(new int[]{1, 2, 3})), ((int[])(new int[]{3, 4, 5})), 15));
-        System.out.println(calc_profit(((int[])(new int[]{10, 9, 8})), ((int[])(new int[]{3, 4, 5})), 25));
-        System.out.println(calc_profit(((int[])(new int[]{10, 9, 8})), ((int[])(new int[]{3, 4, 5})), 5));
+        System.out.println(calc_profit(((long[])(new long[]{1, 2, 3})), ((long[])(new long[]{3, 4, 5})), 15L));
+        System.out.println(calc_profit(((long[])(new long[]{10, 9, 8})), ((long[])(new long[]{3, 4, 5})), 25L));
+        System.out.println(calc_profit(((long[])(new long[]{10, 9, 8})), ((long[])(new long[]{3, 4, 5})), 5L));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 
     static boolean[] appendBool(boolean[] arr, boolean v) {

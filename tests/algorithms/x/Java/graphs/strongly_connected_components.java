@@ -1,125 +1,79 @@
 public class Main {
 
-    static int[] topology_sort(int[][] graph, int vert, boolean[] visited) {
-visited[vert] = true;
-        int[] order = ((int[])(new int[]{}));
-        for (int neighbour : graph[vert]) {
-            if (!(Boolean)visited[neighbour]) {
-                order = ((int[])(concat(order, topology_sort(((int[][])(graph)), neighbour, ((boolean[])(visited))))));
+    static long[] topology_sort(long[][] graph, long vert, boolean[] visited) {
+visited[(int)(vert)] = true;
+        long[] order_1 = ((long[])(new long[]{}));
+        for (long neighbour : graph[(int)(vert)]) {
+            if (!(Boolean)visited[(int)(neighbour)]) {
+                order_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(order_1), java.util.Arrays.stream(topology_sort(((long[][])(graph)), neighbour, ((boolean[])(visited))))).toArray()));
             }
         }
-        order = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(order), java.util.stream.IntStream.of(vert)).toArray()));
-        return order;
+        order_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(order_1), java.util.stream.LongStream.of(vert)).toArray()));
+        return order_1;
     }
 
-    static int[] find_component(int[][] graph, int vert, boolean[] visited) {
-visited[vert] = true;
-        int[] comp = ((int[])(new int[]{vert}));
-        for (int neighbour : graph[vert]) {
-            if (!(Boolean)visited[neighbour]) {
-                comp = ((int[])(concat(comp, find_component(((int[][])(graph)), neighbour, ((boolean[])(visited))))));
+    static long[] find_component(long[][] graph, long vert, boolean[] visited) {
+visited[(int)(vert)] = true;
+        long[] comp_1 = ((long[])(new long[]{vert}));
+        for (long neighbour : graph[(int)(vert)]) {
+            if (!(Boolean)visited[(int)(neighbour)]) {
+                comp_1 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(comp_1), java.util.Arrays.stream(find_component(((long[][])(graph)), neighbour, ((boolean[])(visited))))).toArray()));
             }
         }
-        return comp;
+        return comp_1;
     }
 
-    static int[][] strongly_connected_components(int[][] graph) {
-        int n = graph.length;
-        boolean[] visited = ((boolean[])(new boolean[]{}));
+    static long[][] strongly_connected_components(long[][] graph) {
+        long n = graph.length;
+        boolean[] visited_1 = ((boolean[])(new boolean[]{}));
         for (int _v = 0; _v < n; _v++) {
-            visited = ((boolean[])(appendBool(visited, false)));
+            visited_1 = ((boolean[])(appendBool(visited_1, false)));
         }
-        int[][] reversed = ((int[][])(new int[][]{}));
+        long[][] reversed_1 = ((long[][])(new long[][]{}));
         for (int _v = 0; _v < n; _v++) {
-            reversed = ((int[][])(appendObj(reversed, new int[]{})));
+            reversed_1 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(reversed_1), java.util.stream.Stream.of(new long[]{})).toArray(long[][]::new)));
         }
         for (int i = 0; i < n; i++) {
-            for (int neighbour : graph[i]) {
-reversed[neighbour] = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(reversed[neighbour]), java.util.stream.IntStream.of(i)).toArray()));
+            for (long neighbour : graph[(int)(i)]) {
+reversed_1[(int)(neighbour)] = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(reversed_1[(int)(neighbour)]), java.util.stream.LongStream.of(i)).toArray()));
             }
         }
-        int[] order_1 = ((int[])(new int[]{}));
+        long[] order_3 = ((long[])(new long[]{}));
         for (int i = 0; i < n; i++) {
-            if (!(Boolean)visited[i]) {
-                order_1 = ((int[])(concat(order_1, topology_sort(((int[][])(graph)), i, ((boolean[])(visited))))));
+            if (!(Boolean)visited_1[(int)(i)]) {
+                order_3 = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(order_3), java.util.Arrays.stream(topology_sort(((long[][])(graph)), i, ((boolean[])(visited_1))))).toArray()));
             }
         }
-        visited = ((boolean[])(new boolean[]{}));
+        visited_1 = ((boolean[])(new boolean[]{}));
         for (int _v = 0; _v < n; _v++) {
-            visited = ((boolean[])(appendBool(visited, false)));
+            visited_1 = ((boolean[])(appendBool(visited_1, false)));
         }
-        int[][] components = ((int[][])(new int[][]{}));
-        int i = 0;
-        while (i < n) {
-            int v = order_1[n - i - 1];
-            if (!(Boolean)visited[v]) {
-                int[] comp_1 = ((int[])(find_component(((int[][])(reversed)), v, ((boolean[])(visited)))));
-                components = ((int[][])(appendObj(components, comp_1)));
+        long[][] components_1 = ((long[][])(new long[][]{}));
+        long i_1 = 0L;
+        while (i_1 < n) {
+            long v_1 = order_3[(int)(n - i_1 - 1)];
+            if (!(Boolean)visited_1[(int)(v_1)]) {
+                long[] comp_3 = ((long[])(find_component(((long[][])(reversed_1)), v_1, ((boolean[])(visited_1)))));
+                components_1 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(components_1), java.util.stream.Stream.of(comp_3)).toArray(long[][]::new)));
             }
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
-        return components;
+        return components_1;
     }
 
     static void main() {
-        int[][] test_graph_1 = ((int[][])(new int[][]{new int[]{2, 3}, new int[]{0}, new int[]{1}, new int[]{4}, new int[]{}}));
-        int[][] test_graph_2 = ((int[][])(new int[][]{new int[]{1, 2, 3}, new int[]{2}, new int[]{0}, new int[]{4}, new int[]{5}, new int[]{3}}));
-        System.out.println(_p(strongly_connected_components(((int[][])(test_graph_1)))));
-        System.out.println(_p(strongly_connected_components(((int[][])(test_graph_2)))));
+        long[][] test_graph_1 = ((long[][])(new long[][]{new long[]{2, 3}, new long[]{0}, new long[]{1}, new long[]{4}, new long[]{}}));
+        long[][] test_graph_2_1 = ((long[][])(new long[][]{new long[]{1, 2, 3}, new long[]{2}, new long[]{0}, new long[]{4}, new long[]{5}, new long[]{3}}));
+        System.out.println(_p(strongly_connected_components(((long[][])(test_graph_1)))));
+        System.out.println(_p(strongly_connected_components(((long[][])(test_graph_2_1)))));
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 
     static boolean[] appendBool(boolean[] arr, boolean v) {
         boolean[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
         out[arr.length] = v;
-        return out;
-    }
-
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
-    }
-
-    static <T> T[] concat(T[] a, T[] b) {
-        T[] out = java.util.Arrays.copyOf(a, a.length + b.length);
-        System.arraycopy(b, 0, out, a.length, b.length);
         return out;
     }
 
@@ -135,6 +89,11 @@ reversed[neighbour] = ((int[])(java.util.stream.IntStream.concat(java.util.Array
             if (v instanceof short[]) return java.util.Arrays.toString((short[]) v);
             if (v instanceof float[]) return java.util.Arrays.toString((float[]) v);
             return java.util.Arrays.deepToString((Object[]) v);
+        }
+        if (v instanceof Double || v instanceof Float) {
+            double d = ((Number) v).doubleValue();
+            if (d == Math.rint(d)) return String.valueOf((long) d);
+            return String.valueOf(d);
         }
         return String.valueOf(v);
     }

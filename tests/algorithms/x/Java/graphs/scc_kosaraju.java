@@ -1,132 +1,92 @@
 public class Main {
 
-    static int[] dfs(int u, int[][] graph, boolean[] visit, int[] stack) {
-        if (((Boolean)(visit[u]))) {
+    static long[] dfs(long u, long[][] graph, boolean[] visit, long[] stack) {
+        if (((Boolean)(visit[(int)(u)]))) {
             return stack;
         }
-visit[u] = true;
-        for (int v : graph[u]) {
-            stack = ((int[])(dfs(v, ((int[][])(graph)), ((boolean[])(visit)), ((int[])(stack)))));
+visit[(int)(u)] = true;
+        for (long v : graph[(int)(u)]) {
+            stack = ((long[])(dfs(v, ((long[][])(graph)), ((boolean[])(visit)), ((long[])(stack)))));
         }
-        stack = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(stack), java.util.stream.IntStream.of(u)).toArray()));
+        stack = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(stack), java.util.stream.LongStream.of(u)).toArray()));
         return stack;
     }
 
-    static int[] dfs2(int u, int[][] reversed_graph, boolean[] visit, int[] component) {
-        if (((Boolean)(visit[u]))) {
+    static long[] dfs2(long u, long[][] reversed_graph, boolean[] visit, long[] component) {
+        if (((Boolean)(visit[(int)(u)]))) {
             return component;
         }
-visit[u] = true;
-        component = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(component), java.util.stream.IntStream.of(u)).toArray()));
-        for (int v : reversed_graph[u]) {
-            component = ((int[])(dfs2(v, ((int[][])(reversed_graph)), ((boolean[])(visit)), ((int[])(component)))));
+visit[(int)(u)] = true;
+        component = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(component), java.util.stream.LongStream.of(u)).toArray()));
+        for (long v : reversed_graph[(int)(u)]) {
+            component = ((long[])(dfs2(v, ((long[][])(reversed_graph)), ((boolean[])(visit)), ((long[])(component)))));
         }
         return component;
     }
 
-    static int[][] kosaraju(int[][] graph) {
-        int n = graph.length;
-        int[][] reversed_graph = ((int[][])(new int[][]{}));
-        int i = 0;
-        while (i < n) {
-            reversed_graph = ((int[][])(appendObj(reversed_graph, new int[]{})));
-            i = i + 1;
+    static long[][] kosaraju(long[][] graph) {
+        long n = graph.length;
+        long[][] reversed_graph_1 = ((long[][])(new long[][]{}));
+        long i_1 = 0L;
+        while (i_1 < n) {
+            reversed_graph_1 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(reversed_graph_1), java.util.stream.Stream.of(new long[]{})).toArray(long[][]::new)));
+            i_1 = i_1 + 1;
         }
-        i = 0;
-        while (i < n) {
-            for (int v : graph[i]) {
-reversed_graph[v] = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(reversed_graph[v]), java.util.stream.IntStream.of(i)).toArray()));
+        i_1 = 0;
+        while (i_1 < n) {
+            for (long v : graph[(int)(i_1)]) {
+reversed_graph_1[(int)(v)] = ((long[])(java.util.stream.LongStream.concat(java.util.Arrays.stream(reversed_graph_1[(int)(v)]), java.util.stream.LongStream.of(i_1)).toArray()));
             }
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
-        boolean[] visit = ((boolean[])(new boolean[]{}));
-        i = 0;
-        while (i < n) {
-            visit = ((boolean[])(appendBool(visit, false)));
-            i = i + 1;
+        boolean[] visit_1 = ((boolean[])(new boolean[]{}));
+        i_1 = 0;
+        while (i_1 < n) {
+            visit_1 = ((boolean[])(appendBool(visit_1, false)));
+            i_1 = i_1 + 1;
         }
-        int[] stack = ((int[])(new int[]{}));
-        i = 0;
-        while (i < n) {
-            if (visit[i] == false) {
-                stack = ((int[])(dfs(i, ((int[][])(graph)), ((boolean[])(visit)), ((int[])(stack)))));
+        long[] stack_1 = ((long[])(new long[]{}));
+        i_1 = 0;
+        while (i_1 < n) {
+            if (((Boolean)(visit_1[(int)(i_1)])) == false) {
+                stack_1 = ((long[])(dfs(i_1, ((long[][])(graph)), ((boolean[])(visit_1)), ((long[])(stack_1)))));
             }
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
-        i = 0;
-        while (i < n) {
-visit[i] = false;
-            i = i + 1;
+        i_1 = 0;
+        while (i_1 < n) {
+visit_1[(int)(i_1)] = false;
+            i_1 = i_1 + 1;
         }
-        int[][] scc = ((int[][])(new int[][]{}));
-        int idx = stack.length - 1;
-        while (idx >= 0) {
-            int node = stack[idx];
-            if (visit[node] == false) {
-                int[] component = ((int[])(new int[]{}));
-                component = ((int[])(dfs2(node, ((int[][])(reversed_graph)), ((boolean[])(visit)), ((int[])(component)))));
-                scc = ((int[][])(appendObj(scc, component)));
+        long[][] scc_1 = ((long[][])(new long[][]{}));
+        long idx_1 = stack_1.length - 1;
+        while (idx_1 >= 0) {
+            long node_1 = stack_1[(int)(idx_1)];
+            if (((Boolean)(visit_1[(int)(node_1)])) == false) {
+                long[] component_1 = ((long[])(new long[]{}));
+                component_1 = ((long[])(dfs2(node_1, ((long[][])(reversed_graph_1)), ((boolean[])(visit_1)), ((long[])(component_1)))));
+                scc_1 = ((long[][])(java.util.stream.Stream.concat(java.util.Arrays.stream(scc_1), java.util.stream.Stream.of(component_1)).toArray(long[][]::new)));
             }
-            idx = idx - 1;
+            idx_1 = idx_1 - 1;
         }
-        return scc;
+        return scc_1;
     }
 
     static void main() {
-        int[][] graph = ((int[][])(new int[][]{new int[]{1}, new int[]{2}, new int[]{0, 3}, new int[]{4}, new int[]{}}));
-        int[][] comps = ((int[][])(kosaraju(((int[][])(graph)))));
-        int i_1 = 0;
-        while (i_1 < comps.length) {
-            System.out.println(java.util.Arrays.toString(comps[i_1]));
-            i_1 = i_1 + 1;
+        long[][] graph = ((long[][])(new long[][]{new long[]{1}, new long[]{2}, new long[]{0, 3}, new long[]{4}, new long[]{}}));
+        long[][] comps_1 = ((long[][])(kosaraju(((long[][])(graph)))));
+        long i_3 = 0L;
+        while (i_3 < comps_1.length) {
+            System.out.println(java.util.Arrays.toString(comps_1[(int)(i_3)]));
+            i_3 = i_3 + 1;
         }
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            main();
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
-        }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
+        main();
     }
 
     static boolean[] appendBool(boolean[] arr, boolean v) {
         boolean[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
-        out[arr.length] = v;
-        return out;
-    }
-
-    static <T> T[] appendObj(T[] arr, T v) {
-        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
         out[arr.length] = v;
         return out;
     }

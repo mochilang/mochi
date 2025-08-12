@@ -30,114 +30,80 @@ public class Main {
 
     static Complex complex_mul(Complex a, Complex b) {
         double real = a.re * b.re - a.im * b.im;
-        double imag = a.re * b.im + a.im * b.re;
-        return new Complex(real, imag);
+        double imag_1 = a.re * b.im + a.im * b.re;
+        return new Complex(real, imag_1);
     }
 
     static Complex[] conj_vector(Complex[] v) {
         Complex[] res = ((Complex[])(new Complex[]{}));
-        int i = 0;
-        while (i < v.length) {
-            res = ((Complex[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(complex_conj(v[i]))).toArray(Complex[]::new)));
-            i = i + 1;
+        long i_1 = 0L;
+        while (i_1 < v.length) {
+            res = ((Complex[])(java.util.stream.Stream.concat(java.util.Arrays.stream(res), java.util.stream.Stream.of(complex_conj(v[(int)((long)(i_1))]))).toArray(Complex[]::new)));
+            i_1 = i_1 + 1;
         }
         return res;
     }
 
     static Complex[] vec_mat_mul(Complex[] v, Complex[][] m) {
         Complex[] result = ((Complex[])(new Complex[]{}));
-        int col = 0;
-        while (col < m[0].length) {
-            Complex sum = new Complex(0.0, 0.0);
-            int row = 0;
-            while (row < v.length) {
-                sum = complex_add(sum, complex_mul(v[row], m[row][col]));
-                row = row + 1;
+        long col_1 = 0L;
+        while (col_1 < m[(int)((long)(0))].length) {
+            Complex sum_1 = new Complex(0.0, 0.0);
+            long row_1 = 0L;
+            while (row_1 < v.length) {
+                sum_1 = complex_add(sum_1, complex_mul(v[(int)((long)(row_1))], m[(int)((long)(row_1))][(int)((long)(col_1))]));
+                row_1 = row_1 + 1;
             }
-            result = ((Complex[])(java.util.stream.Stream.concat(java.util.Arrays.stream(result), java.util.stream.Stream.of(sum)).toArray(Complex[]::new)));
-            col = col + 1;
+            result = ((Complex[])(java.util.stream.Stream.concat(java.util.Arrays.stream(result), java.util.stream.Stream.of(sum_1)).toArray(Complex[]::new)));
+            col_1 = col_1 + 1;
         }
         return result;
     }
 
     static Complex dot(Complex[] a, Complex[] b) {
-        Complex sum_1 = new Complex(0.0, 0.0);
-        int i_1 = 0;
-        while (i_1 < a.length) {
-            sum_1 = complex_add(sum_1, complex_mul(a[i_1], b[i_1]));
-            i_1 = i_1 + 1;
+        Complex sum_2 = new Complex(0.0, 0.0);
+        long i_3 = 0L;
+        while (i_3 < a.length) {
+            sum_2 = complex_add(sum_2, complex_mul(a[(int)((long)(i_3))], b[(int)((long)(i_3))]));
+            i_3 = i_3 + 1;
         }
-        return sum_1;
+        return sum_2;
     }
 
     static boolean is_hermitian(Complex[][] m) {
-        int i_2 = 0;
-        while (i_2 < m.length) {
-            int j = 0;
-            while (j < m.length) {
-                if (!(Boolean)complex_eq(m[i_2][j], complex_conj(m[j][i_2]))) {
+        long i_4 = 0L;
+        while (i_4 < m.length) {
+            long j_1 = 0L;
+            while (j_1 < m.length) {
+                if (!(Boolean)complex_eq(m[(int)((long)(i_4))][(int)((long)(j_1))], complex_conj(m[(int)((long)(j_1))][(int)((long)(i_4))]))) {
                     return false;
                 }
-                j = j + 1;
+                j_1 = j_1 + 1;
             }
-            i_2 = i_2 + 1;
+            i_4 = i_4 + 1;
         }
         return true;
     }
 
     static double rayleigh_quotient(Complex[][] a, Complex[] v) {
         Complex[] v_star = ((Complex[])(conj_vector(((Complex[])(v)))));
-        Complex[] v_star_dot = ((Complex[])(vec_mat_mul(((Complex[])(v_star)), ((Complex[][])(a)))));
-        Complex num = dot(((Complex[])(v_star_dot)), ((Complex[])(v)));
-        Complex den = dot(((Complex[])(v_star)), ((Complex[])(v)));
-        return num.re / den.re;
+        Complex[] v_star_dot_1 = ((Complex[])(vec_mat_mul(((Complex[])(v_star)), ((Complex[][])(a)))));
+        Complex num_1 = dot(((Complex[])(v_star_dot_1)), ((Complex[])(v)));
+        Complex den_1 = dot(((Complex[])(v_star)), ((Complex[])(v)));
+        return num_1.re / den_1.re;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            a = ((Complex[][])(new Complex[][]{new Complex[]{new Complex(2.0, 0.0), new Complex(2.0, 1.0), new Complex(4.0, 0.0)}, new Complex[]{new Complex(2.0, -1.0), new Complex(3.0, 0.0), new Complex(0.0, 1.0)}, new Complex[]{new Complex(4.0, 0.0), new Complex(0.0, -1.0), new Complex(1.0, 0.0)}}));
-            v = ((Complex[])(new Complex[]{new Complex(1.0, 0.0), new Complex(2.0, 0.0), new Complex(3.0, 0.0)}));
-            if (((Boolean)(is_hermitian(((Complex[][])(a)))))) {
-                double r1 = rayleigh_quotient(((Complex[][])(a)), ((Complex[])(v)));
-                System.out.println(r1);
-                System.out.println("\n");
-            }
-            b = ((Complex[][])(new Complex[][]{new Complex[]{new Complex(1.0, 0.0), new Complex(2.0, 0.0), new Complex(4.0, 0.0)}, new Complex[]{new Complex(2.0, 0.0), new Complex(3.0, 0.0), new Complex(-1.0, 0.0)}, new Complex[]{new Complex(4.0, 0.0), new Complex(-1.0, 0.0), new Complex(1.0, 0.0)}}));
-            if (((Boolean)(is_hermitian(((Complex[][])(b)))))) {
-                double r2 = rayleigh_quotient(((Complex[][])(b)), ((Complex[])(v)));
-                System.out.println(r2);
-            }
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
+        a = ((Complex[][])(new Complex[][]{new Complex[]{new Complex(2.0, 0.0), new Complex(2.0, 1.0), new Complex(4.0, 0.0)}, new Complex[]{new Complex(2.0, -1.0), new Complex(3.0, 0.0), new Complex(0.0, 1.0)}, new Complex[]{new Complex(4.0, 0.0), new Complex(0.0, -1.0), new Complex(1.0, 0.0)}}));
+        v = ((Complex[])(new Complex[]{new Complex(1.0, 0.0), new Complex(2.0, 0.0), new Complex(3.0, 0.0)}));
+        if (((Boolean)(is_hermitian(((Complex[][])(a)))))) {
+            double r1 = rayleigh_quotient(((Complex[][])(a)), ((Complex[])(v)));
+            System.out.println(r1);
+            System.out.println("\n");
         }
-    }
-
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
+        b = ((Complex[][])(new Complex[][]{new Complex[]{new Complex(1.0, 0.0), new Complex(2.0, 0.0), new Complex(4.0, 0.0)}, new Complex[]{new Complex(2.0, 0.0), new Complex(3.0, 0.0), new Complex(-1.0, 0.0)}, new Complex[]{new Complex(4.0, 0.0), new Complex(-1.0, 0.0), new Complex(1.0, 0.0)}}));
+        if (((Boolean)(is_hermitian(((Complex[][])(b)))))) {
+            double r2 = rayleigh_quotient(((Complex[][])(b)), ((Complex[])(v)));
+            System.out.println(r2);
         }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        rt.gc();
-        return rt.totalMemory() - rt.freeMemory();
     }
 }
