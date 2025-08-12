@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-12 11:46 GMT+7
+Last updated: 2025-08-12 13:42 GMT+7
 
-## Algorithms Golden Test Checklist (956/1077)
+## Algorithms Golden Test Checklist (965/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 117µs | 38.8 KB |
@@ -786,7 +786,7 @@ Last updated: 2025-08-12 11:46 GMT+7
 | 777 | physics/lorentz_transformation_four_vector | ✓ | 198µs | 36.6 KB |
 | 778 | physics/malus_law | ✓ |  |  |
 | 779 | physics/mass_energy_equivalence | ✓ | 63µs | 35.6 KB |
-| 780 | physics/mirror_formulae | ✓ |  |  |
+| 780 | physics/mirror_formulae | ✓ | 39µs | 38.3 KB |
 | 781 | physics/n_body_simulation | ✓ | 177µs | 37.3 KB |
 | 782 | physics/newtons_law_of_gravitation | ✓ | 177µs | 36.4 KB |
 | 783 | physics/newtons_second_law_of_motion | ✓ | 55µs | 39.5 KB |
@@ -1064,17 +1064,17 @@ Last updated: 2025-08-12 11:46 GMT+7
 | 1055 | web_programming/fetch_bbc_news |   |  |  |
 | 1056 | web_programming/fetch_github_info |   |  |  |
 | 1057 | web_programming/fetch_jobs |   |  |  |
-| 1058 | web_programming/fetch_quotes |   |  |  |
-| 1059 | web_programming/fetch_well_rx_price |   |  |  |
-| 1060 | web_programming/get_amazon_product_data |   |  |  |
-| 1061 | web_programming/get_imdb_top_250_movies_csv |   |  |  |
+| 1058 | web_programming/fetch_quotes | ✓ | 131.597ms | 40.7 KB |
+| 1059 | web_programming/fetch_well_rx_price | ✓ | 141µs | 39.4 KB |
+| 1060 | web_programming/get_amazon_product_data | ✓ | 250µs | 39.4 KB |
+| 1061 | web_programming/get_imdb_top_250_movies_csv | ✓ | 122µs | 36.0 KB |
 | 1062 | web_programming/get_ip_geolocation |   |  |  |
-| 1063 | web_programming/get_top_billionaires |   |  |  |
-| 1064 | web_programming/get_top_hn_posts |   |  |  |
-| 1065 | web_programming/giphy |   |  |  |
-| 1066 | web_programming/instagram_crawler |   |  |  |
-| 1067 | web_programming/instagram_pic |   |  |  |
-| 1068 | web_programming/instagram_video |   |  |  |
+| 1063 | web_programming/get_top_billionaires | ✓ | 86.279ms | 42.1 KB |
+| 1064 | web_programming/get_top_hn_posts | error |  |  |
+| 1065 | web_programming/giphy | ✓ | 146µs | 39.5 KB |
+| 1066 | web_programming/instagram_crawler | ✓ | 218µs | 39.2 KB |
+| 1067 | web_programming/instagram_pic | ✓ | 51µs | 34.6 KB |
+| 1068 | web_programming/instagram_video | ✓ | 33µs | 39.0 KB |
 | 1069 | web_programming/nasa_data |   |  |  |
 | 1070 | web_programming/open_google_results |   |  |  |
 | 1071 | web_programming/random_anime_character |   |  |  |
