@@ -1410,9 +1410,11 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		b.Left.emit(w)
 		io.WriteString(w, "] [__r ")
 		b.Right.emit(w)
-		io.WriteString(w, "]) (")
+		io.WriteString(w, "]) (cond [(and (number? __l) (number? __r)) (")
 		io.WriteString(w, b.Op)
-		io.WriteString(w, " (int __l) (int __r)))")
+		io.WriteString(w, " __l __r)] [else (")
+		io.WriteString(w, b.Op)
+		io.WriteString(w, " (int __l) (int __r))]))")
 	case "list-append":
 		io.WriteString(w, "(append (or ")
 		b.Left.emit(w)
