@@ -1,0 +1,22 @@
+warning: variable "multiple" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 22 │             {composite, multiple} = try do
+    │                         ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_010/sol2.exs:22:25: Main.solution/1
+
+    warning: variable "composite" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 38 │       {composite, num, total} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_010/sol2.exs:38:8: Main.solution/1
+
+    warning: variable "num" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 38 │       {composite, num, total} = try do
+    │                   ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/project_euler/problem_010/sol2.exs:38:19: Main.solution/1
+
+142913828922
