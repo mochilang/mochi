@@ -3084,6 +3084,9 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 		if currentImports["hashlib"] && !hasImport(p, "hashlib") {
 			imports = append(imports, "import hashlib")
 		}
+		if currentImports["math"] && !hasImport(p, "math") {
+			imports = append(imports, "import math")
+		}
 		if currentImports["time"] && !hasImport(p, "time") {
 			imports = append(imports, "import time")
 		}
@@ -4984,6 +4987,31 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 			}
 			if replaced {
 				// already handled
+			} else if n, ok := expr.(*Name); ok {
+				switch n.Name {
+				case "ln":
+					if len(args) == 1 {
+						if currentImports != nil {
+							currentImports["math"] = true
+						}
+						expr = &CallExpr{Func: &FieldExpr{Target: &Name{Name: "math"}, Name: "log"}, Args: args}
+						replaced = true
+					} else {
+						expr = &CallExpr{Func: expr, Args: args}
+					}
+				case "exp", "exp_taylor":
+					if len(args) == 1 {
+						if currentImports != nil {
+							currentImports["math"] = true
+						}
+						expr = &CallExpr{Func: &FieldExpr{Target: &Name{Name: "math"}, Name: "exp"}, Args: args}
+						replaced = true
+					} else {
+						expr = &CallExpr{Func: expr, Args: args}
+					}
+				default:
+					expr = &CallExpr{Func: expr, Args: args}
+				}
 			} else if fe, ok := expr.(*FieldExpr); ok && fe.Name == "padStart" && len(args) == 2 {
 				tgt := fe.Target
 				if currentEnv != nil {
@@ -5110,6 +5138,20 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 1 {
 				usesPanic = true
 				return &CallExpr{Func: &Name{Name: "panic"}, Args: args}, nil
+			}
+		case "ln":
+			if len(args) == 1 {
+				if currentImports != nil {
+					currentImports["math"] = true
+				}
+				return &CallExpr{Func: &FieldExpr{Target: &Name{Name: "math"}, Name: "log"}, Args: args}, nil
+			}
+		case "exp", "exp_taylor":
+			if len(args) == 1 {
+				if currentImports != nil {
+					currentImports["math"] = true
+				}
+				return &CallExpr{Func: &FieldExpr{Target: &Name{Name: "math"}, Name: "exp"}, Args: args}, nil
 			}
 		case "concat":
 			if len(args) == 2 {

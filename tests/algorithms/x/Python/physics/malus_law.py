@@ -36,42 +36,38 @@ def _now():
         return _now_seed
     return int(time.time_ns())
 
-def pow(base, exp):
-    result = 1.0
-    i = 0
-    while i < exp:
-        result = result * base
-        i = i + 1
-    return result
-def sqrt_approx(x):
-    if x == 0.0:
-        return 0.0
-    guess = x / 2.0
-    i = 0
-    while i < 20:
-        guess = (guess + x // guess) / 2.0
-        i = i + 1
-    return guess
-def hubble_parameter(hubble_constant, radiation_density, matter_density, dark_energy, redshift):
-    parameters = [redshift, radiation_density, matter_density, dark_energy]
-    i = 0
-    while i < len(parameters):
-        if parameters[i] < 0.0:
-            panic("All input parameters must be positive")
-        i = i + 1
-    i = 1
-    while i < 4:
-        if parameters[i] > 1.0:
-            panic("Relative densities cannot be greater than one")
-        i = i + 1
-    curvature = 1.0 - (matter_density + radiation_density + dark_energy)
-    zp1 = redshift + 1.0
-    e2 = radiation_density * pow(zp1, 4) + matter_density * pow(zp1, 3) + curvature * pow(zp1, 2) + dark_energy
-    return hubble_constant * sqrt_approx(e2)
-def test_hubble_parameter():
-    h = hubble_parameter(68.3, 0.0001, 0.3, 0.7, 0.0)
-    if h < 68.2999 or h > 68.3001:
-        panic("hubble_parameter test failed")
+
+def _str(v):
+    if isinstance(v, float):
+        if v.is_integer():
+            return str(int(v))
+        return format(v, ".17g")
+    return str(v)
+
+PI = 3.141592653589793
+TWO_PI = 6.283185307179586
+def _mod(x, m):
+    return x - floor(x // m) * m
+def cos(x):
+    y = _mod(x + PI, TWO_PI) - PI
+    y2 = y * y
+    y4 = y2 * y2
+    y6 = y4 * y2
+    return 1.0 - y2 / 2.0 + y4 / 24.0 - y6 / 720.0
+def radians(deg):
+    return deg * PI / 180.0
+def abs_val(x):
+    if x < 0.0:
+        return -x
+    return x
+def malus_law(initial_intensity, angle):
+    if initial_intensity < 0.0:
+        panic("The value of intensity cannot be negative")
+    if angle < 0.0 or angle > 360.0:
+        panic("In Malus Law, the angle is in the range 0-360 degrees")
+    theta = radians(angle)
+    c = cos(theta)
+    return initial_intensity * (c * c)
 def main():
     if resource:
         _bench_mem_start = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
@@ -79,8 +75,7 @@ def main():
         _bench_mem_start = 0
     _bench_start = _now()
     try:
-        test_hubble_parameter()
-        print(hubble_parameter(68.3, 0.0001, 0.3, 0.7, 0.0))
+        print(_str(malus_law(100.0, 60.0)))
     finally:
         _bench_end = _now()
         if resource:
