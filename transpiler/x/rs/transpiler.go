@@ -6198,11 +6198,23 @@ func inferType(e Expr) string {
 		return "String"
 	case *NameRef:
 		if ex.Type != "" {
-			return ex.Type
+			t := ex.Type
+			if strings.HasPrefix(t, "&") {
+				t = strings.TrimPrefix(t, "&")
+				if t == "str" {
+					return "String"
+				}
+				return t
+			}
+			return t
 		}
 		if t, ok := currentParamTypes[ex.Name]; ok && t != "" {
 			if strings.HasPrefix(t, "&") {
-				return strings.TrimPrefix(t, "&")
+				t = strings.TrimPrefix(t, "&")
+				if t == "str" {
+					return "String"
+				}
+				return t
 			}
 			return t
 		}
