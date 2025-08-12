@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-12 14:21 GMT+7
+Last updated: 2025-08-12 16:15 GMT+7
 
 ## Algorithms Golden Test Checklist (463/1077)
 | Index | Name | Status | Duration | Memory |
@@ -727,7 +727,7 @@ Last updated: 2025-08-12 14:21 GMT+7
 | 718 | matrix/validate_sudoku_board | ✓ | 26.45ms | 132.62KiB |
 | 719 | networking_flow/ford_fulkerson | ✓ | 24.32ms | 132.37KiB |
 | 720 | networking_flow/minimum_cut | ✓ | 4.11ms | 28.62KiB |
-| 721 | neural_network/activation_functions/binary_step | ✓ | 17.14ms | 40.28KiB |
+| 721 | neural_network/activation_functions/binary_step | ✓ | 22.44ms | 122.52KiB |
 | 722 | neural_network/activation_functions/exponential_linear_unit | ✓ | 16.74ms | 41.36KiB |
 | 723 | neural_network/activation_functions/gaussian_error_linear_unit | ✓ | 6.86ms | 30.84KiB |
 | 724 | neural_network/activation_functions/leaky_rectified_linear_unit | ✓ | 5.68ms | 29.97KiB |

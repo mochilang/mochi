@@ -3915,6 +3915,13 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			return nil, fmt.Errorf("unsupported statement")
 		}
 	}
+	for _, st := range p.Stmts {
+		if es, ok := st.(*ExprStmt); ok {
+			if ce, ok := es.Expr.(*CallExpr); ok && ce.Func == "main" {
+				ce.Func = "user_main"
+			}
+		}
+	}
 	if benchMain {
 		useHelper("_now")
 		useHelper("toJson")
